@@ -95,8 +95,8 @@ import {
   slotOvr,
 } from '../packages/engine/src/player-state';
 import { transferOffers } from '../packages/engine/src/scout-search';
-import { financeStance, wageWithinLimit } from '../packages/engine/src/direction';
-import { recentRevenue, wageBill } from '../packages/engine/src/finance';
+import { delegatePlan } from '../packages/engine/src/delegation';
+import { SAFETY_ROUNDS } from '../packages/engine/src/delegation-info';
 import { SEASON_ROUNDS } from '../packages/engine/src/calendar';
 
 const args = process.argv.slice(2);
@@ -594,24 +594,19 @@ function fitWage(w: World, p: Player, tier: number) {
   };
 }
 /**
- * 재정 기조's checks on a signing (→ECON-33, `signingVerdict`'s arithmetic) replayed at the first
+ * The 단장's plan's checks on a signing (`signingVerdict`'s arithmetic) replayed at the first
  * round boundary after it, with his fee added back to the cash and `wage` in place of his paid one;
  * the season's cash projection is not replayed. The reason refused, or false.
  */
 function replaySigning(w: World, p: Player, fee: bigint, wage: bigint): string | false {
-  const stance = financeStance(w, 'recruitment'),
+  const plan = delegatePlan(w, 'recruitment'),
     paid = BigInt(p.wage);
-  if (!wageWithinLimit(w, 'recruitment', wage.toString())) return 'wage cap';
   const perRound = (BigInt(operatingCosts(w).annual) - paid + wage) / BigInt(SEASON_ROUNDS),
-    runway = perRound * BigInt(stance.runway),
-    spare = BigInt(w.cash) + fee - runway;
+    floor = perRound * BigInt(SAFETY_ROUNDS),
+    spare = BigInt(w.cash) + fee - floor;
   if (spare < fee) return 'runway';
-  const cap =
-    spare > 0n ? (spare * BigInt(Math.round(stance.signing.feeShare * 1000))) / 1000n : 0n;
-  if (fee > cap) return 'fee share';
-  const bill = BigInt(wageBill(w)) - paid + wage,
-    revenue = BigInt(recentRevenue(w));
-  if (bill * 100n > revenue * BigInt(Math.round(stance.wageShare * 100))) return 'wage bill';
+  if (fee + wage > BigInt(plan.left) + fee + paid) return 'budget';
+  if (BigInt(plan.committed) - paid + wage > BigInt(plan.budget)) return 'wage bill';
   return false;
 }
 /** The owner's league's clubs nobody owns (its division and group). */

@@ -32,7 +32,9 @@ import {
 } from '../../../../../../packages/engine/src/staff-info';
 import { managerRenewal, managerTermLimit } from '../../../../../../packages/engine/src/ops-staff';
 import { coachCriteriaOf, coachDelegated } from '../../../../../../packages/engine/src/hiring';
-import { directionOption, financeStance } from '../../../../../../packages/engine/src/direction';
+import { directionOption } from '../../../../../../packages/engine/src/direction';
+import { SAFETY_ROUNDS, sharePercent } from '../../../../../../packages/engine/src/delegation-info';
+import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import { SALE_BARS } from '../../../../../../packages/engine/src/transfers';
 import { managerPickPreview } from '../../../../../../packages/engine/src/managerMarket';
 import { buildOf, cardOf } from '../../../../../../packages/engine/src/build';
@@ -381,7 +383,7 @@ export function CoachingPlan({ w }: { w: World }) {
       />
       <details data-ui="disclosure" className={management.reference}>
         <summary>{richMessage('copy.ClubStaff.d112f7379a')}</summary>
-        <DirectionFacts w={w} rows={['coaches', 'finance']} responsibility="staff" />
+        <DirectionFacts w={w} rows={['coaches']} responsibility="staff" />
       </details>
       {localizeValue(
         expiring.length > 0 && (
@@ -1147,7 +1149,7 @@ export function ManagerPost({ w }: { w: World; client?: GameClient }) {
       />
       <details data-ui="disclosure" className={management.reference}>
         <summary>{richMessage('copy.ClubStaff.44d280d2a4')}</summary>
-        <DirectionFacts w={w} rows={['school', 'manager', 'finance']} responsibility="manager" />
+        <DirectionFacts w={w} rows={['school', 'manager']} responsibility="manager" />
         <ManagerPreview w={w} title={displayMessage('copy.ClubStaff.d4167cd8d7')} />
       </details>
     </section>
@@ -1251,12 +1253,14 @@ function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: st
 }
 
 /**
- * 계약 협상 (→CLUB-26): who answers, the rows the staff follow (재계약 기조, 재정 기조) and what
- * stays fixed; a refusal may leave the player unhappy (→CLUB-27).
+ * 계약 협상 (→CLUB-26): who answers, the rows the staff follow (재계약 기조, the 단장's plan) and
+ * what stays fixed; a refusal may leave the player unhappy (→CLUB-27).
  */
 export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
   useTextLocale();
-  const stance = financeStance(w, 'contracts');
+  const office = useOfficeRead(w);
+  if (!office) return null;
+  const plan = office.delegation.contracts.plan;
   return (
     <section
       data-surface="sheet"
@@ -1273,18 +1277,11 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
         auto={sourceMessage('copy.ClubStaff.5fe81d8483')}
         owner={sourceMessage('copy.ClubStaff.670fe07b8a')}
       />
-      <DirectionFacts w={w} rows={['renewal', 'finance']} responsibility="contracts" />
+      <DirectionFacts w={w} rows={['renewal']} responsibility="contracts" />
       <ul className={s.fixed}>
         <li>{localizeValue(directionOption(w, 'renewal').summary)}</li>
         <li>{richMessage('copy.ClubStaff.9d5c92492d')}</li>
-        <li>
-          {richMessage('copy.ClubStaff.6084b91f02', {
-            p0: stance.runway,
-            p1: ' ',
-            p2: Math.round(stance.wageShare * 100),
-            p3: stance.runway,
-          })}
-        </li>
+        <li>{richMessage('delegation.talk.money', { share: sharePercent(plan.share) })}</li>
         <li>{richMessage('copy.ClubStaff.e257a74a0b')}</li>
       </ul>
     </section>
@@ -1296,10 +1293,14 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
  */
 export function OfferAnswers({ w }: { w: World }) {
   useTextLocale();
+  const office = useOfficeRead(w);
+  if (!office) return null;
   const card = cardOf(buildOf(w), 'market').label,
     [bar, prospect] = SALE_BARS[w.build?.market ?? 'standard'],
-    [first, second] = financeStance(w, 'sales').sellSteps,
-    signing = financeStance(w, 'recruitment').signing,
+    [first, second] = office.delegation.sales.plan.stance.sellAbove,
+    recruitment = office.delegation.recruitment.plan,
+    signing = recruitment.stance.signing,
+    code = clubOf(w).country,
     hold = w.build?.market === 'hold';
   return (
     <section
@@ -1324,7 +1325,7 @@ export function OfferAnswers({ w }: { w: World }) {
         auto={sourceMessage('copy.ClubStaff.386ff78aec')}
         owner={sourceMessage('copy.ClubStaff.093dbc6ce0')}
       />
-      <DirectionFacts w={w} rows={['market', 'finance']} responsibility="sales" />
+      <DirectionFacts w={w} rows={['market']} responsibility="sales" />
       <ul className={s.fixed}>
         <li>{richMessage('copy.ClubStaff.169f48d4c7')}</li>
         <li>
@@ -1338,20 +1339,18 @@ export function OfferAnswers({ w }: { w: World }) {
               : sourceMessage('copy.ClubStaff.131f1f83e6'),
           })}
         </li>
-        <li>{richMessage('copy.ClubStaff.cfc5a016a7', { p0: first, p1: second })}</li>
+        <li>{richMessage('delegation.offer.cuts', { first, second, weeks: SAFETY_ROUNDS })}</li>
         <li>{richMessage('copy.ClubStaff.5909c8a6d1', { p0: <b>{localizeValue(card)}</b> })}</li>
         <li>
-          {richMessage('copy.ClubStaff.8bfea3920c', {
-            p0: ' ',
-            p1:
+          {richMessage('delegation.offer.signings', {
+            upgrades:
               signing.margin === undefined
-                ? sourceMessage('copy.ClubStaff.e26d4b538e')
+                ? sourceMessage('delegation.offer.noUpgrades')
                 : sourceMessage('copy.ClubStaff.42b9e5f546', {
                     p0: signing.margin,
                     p1: signing.upgrades,
                   }),
-            p2: ' ',
-            p3: Math.round(signing.feeShare * 100),
+            left: compactMoney(recruitment.left, code, w.year),
           })}
         </li>
       </ul>

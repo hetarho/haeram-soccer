@@ -3,7 +3,7 @@ import type { PolicyLevel } from '../../contracts/src/types';
 import { careerWorld } from './career.testkit';
 import { operate } from './operations';
 import { policyEffects, policyOf } from './policy';
-import { financeStance } from './direction';
+import { directionOf } from './direction';
 import { talkGoodwill } from './contracts';
 import { progressFacilityWorks } from './facilities';
 import { facilityInvestmentPreview } from './investment';
@@ -28,12 +28,12 @@ describe('owner controls as released (→ECON-16/17/22/25/32, CLUB-26)', () => {
     operate(w, { type: 'club-policy', key: 'support', level: 5 });
     operate(w, { type: 'club-ticket', price: 0.08 });
     operate(w, { type: 'club-build', slot: 'culture', choice: 'family' });
-    operate(w, { type: 'club-direction', key: 'finance', choice: 'stable' });
+    operate(w, { type: 'club-direction', key: 'renewal', choice: 'frugal' });
     expect(policyOf(w).support).toBe(5);
     expect(policyEffects(policyOf(w)).goodwill).toBe(15);
     expect(w.ticket).toBe(0.08);
     expect(w.build?.culture).toBe('family');
-    expect(financeStance(w).runway).toBe(30);
+    expect(directionOf(w, 'renewal')).toBe('frugal');
     expect(w.events.slice(events).map((event) => event.kind)).toEqual([
       'club-policy',
       'club-ticket',
@@ -47,13 +47,20 @@ describe('owner controls as released (→ECON-16/17/22/25/32, CLUB-26)', () => {
     expect(() => operate(w, { type: 'club-ticket', price: 0.06 })).toThrow();
     expect(() => operate(w, { type: 'club-build', slot: 'culture', choice: 'nonsense' })).toThrow();
     expect(() =>
-      operate(w, { type: 'club-direction', key: 'finance', choice: 'nonsense' }),
+      operate(w, { type: 'club-direction', key: 'renewal', choice: 'nonsense' }),
     ).toThrow();
     expect(w).toEqual(before);
     operate(w, { type: 'club-build', slot: 'culture', choice: 'standard' });
-    operate(w, { type: 'club-direction', key: 'finance', choice: 'standard' });
+    operate(w, { type: 'club-direction', key: 'renewal', choice: 'standard' });
     expect(w.build).not.toHaveProperty('culture');
-    expect(w.direction).not.toHaveProperty('finance');
+    expect(w.direction).not.toHaveProperty('renewal');
+    // A row a delegated person sets is his: the owner's change is refused and changes nothing.
+    w.settings!.responsibilities.contracts = 'delegated';
+    const held = structuredClone(w);
+    expect(() => operate(w, { type: 'club-direction', key: 'renewal', choice: 'frugal' })).toThrow(
+      '위임 중',
+    );
+    expect(w).toEqual(held);
   });
 
   it('adds the completed training ground to contract-talk goodwill, +1 to +5% by level', () => {

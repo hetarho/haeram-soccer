@@ -1,8 +1,8 @@
 import type {
+  BudgetResponsibility,
   FacilityPart,
   PolicyKey,
   PolicyLevel,
-  WageResponsibility,
   World,
 } from '../../../../packages/contracts/src/types';
 import {
@@ -20,8 +20,13 @@ import {
   academyPotentialBonus,
   ACADEMY_LIMIT,
 } from '../../../../packages/engine/src/academy';
-import { coachWage, staffEffects, staffQuote } from '../../../../packages/engine/src/staff';
-import { marketWage } from '../../../../packages/engine/src/market-prices';
+import { departmentEffects, staffEffects } from '../../../../packages/engine/src/staff';
+import { delegatePlan, planRevenue } from '../../../../packages/engine/src/delegation';
+import { clubBudgets, ownerSeasonFlows } from '../../../../packages/engine/src/club-budget';
+import {
+  BUDGET_RESPONSIBILITIES,
+  SPEND_REQUESTS,
+} from '../../../../packages/engine/src/delegation-info';
 import { synergyEffects } from '../../../../packages/engine/src/synergy';
 import { baseEffects, tourTerms } from '../../../../packages/engine/src/bases';
 import { localSupporters } from '../../../../packages/engine/src/fans';
@@ -48,7 +53,8 @@ export function officeRead(w: World) {
   const policy = policyOf(w),
     effects = policyEffects(policy),
     build = buildEffects(w);
-  const costs = operatingCosts(w);
+  const costs = operatingCosts(w),
+    revenue = planRevenue(w);
   const policyCosts = Object.fromEntries(
     POLICY_KEYS.map((key) => [
       key,
@@ -60,20 +66,6 @@ export function officeRead(w: World) {
       ),
     ]),
   ) as Record<PolicyKey, Partial<Record<PolicyLevel, ReturnType<typeof operatingCosts>>>>;
-  const reference = (responsibility: WageResponsibility) => {
-    if (responsibility === 'manager') return staffQuote(w, 200);
-    if (responsibility === 'staff') return coachWage(w, 70);
-    const people =
-      responsibility === 'academy'
-        ? (w.academy?.players ?? [])
-        : w.players.filter((player) => player.status === 'active');
-    const sum = people.reduce(
-      (sum, player) =>
-        sum + BigInt(responsibility === 'academy' ? marketWage(w, player) : player.wage),
-      0n,
-    );
-    return sum > 0n ? (sum / BigInt(people.length)).toString() : staffQuote(w, 60);
-  };
   return {
     costs,
     policyCosts,
@@ -93,6 +85,8 @@ export function officeRead(w: World) {
       ]),
     ),
     staff: staffEffects(w),
+    /** What the youth director's training adds on his own (→WEB-116): his effect, not his pay. */
+    youthCoach: departmentEffects(w, 'youth'),
     academy: {
       growth: academyGrowth(w),
       intake: academyIntakeSize(w),
@@ -115,12 +109,27 @@ export function officeRead(w: World) {
     managerCriteria: managerCriteriaOf(w),
     coachCriteria: coachCriteriaOf(w),
     talkRule: talkRuleOf(w),
-    wageReference: Object.fromEntries(
-      (['manager', 'staff', 'contracts', 'recruitment', 'academy'] as const).map((key) => [
+    /** The club's books season by season (→`clubBudgets`), read from the whole ledger. */
+    budgets: clubBudgets(w),
+    /** The owner's money this season so far (→`ownerSeasonFlows`). */
+    ownerFlows: ownerSeasonFlows(w),
+    /**
+     * Each spending responsibility's plan now and, per request, the plan the 단장 would make if
+     * asked that (→`delegation.ts`), so the delegation page previews a request before it is sent.
+     * All rest on the season's income he plans on (→`planRevenue`).
+     */
+    delegation: Object.fromEntries(
+      BUDGET_RESPONSIBILITIES.map((key) => [
         key,
-        reference(key),
+        {
+          plan: delegatePlan(w, key, undefined, revenue),
+          previews: SPEND_REQUESTS.map((level) => delegatePlan(w, key, level, revenue)),
+        },
       ]),
-    ) as Record<WageResponsibility, string>,
+    ) as Record<
+      BudgetResponsibility,
+      { plan: ReturnType<typeof delegatePlan>; previews: ReturnType<typeof delegatePlan>[] }
+    >,
   };
 }
 export type OfficeRead = ReturnType<typeof officeRead>;

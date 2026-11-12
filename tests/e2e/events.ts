@@ -16,7 +16,7 @@ const LABELS: Record<ResponsibilityKey, string> = {
   contracts: '선수 계약',
   recruitment: '선수 영입',
   sales: '선수 매각',
-  academy: '유소년 승격·방출',
+  academy: '유소년 운영',
   sponsors: '스폰서 계약',
 };
 /**
@@ -42,7 +42,7 @@ export async function dismissMatchReport(page: Page) {
   if (await eve.isVisible())
     await eve.getByRole('button', { name: '창 닫기', exact: true }).click();
 }
-/** Opens 결재 설정 over the current page (→WEB-79) and returns its owner-office content. */
+/** Opens 위임 설정 over the current page (→WEB-79) and returns its owner-office content. */
 export async function openOffice(page: Page) {
   await dismissMatchReport(page);
   const settings = await openDecisionSettings(page);
@@ -68,7 +68,7 @@ async function confirmAuthority(page: Page, label: string, value: 'direct' | 'de
   await expect(choice).toHaveAttribute('aria-pressed', 'true');
 }
 /**
- * Change only requested office choices in 결재 설정, which opens over the current page (→WEB-79);
+ * Change only requested office choices in 위임 설정, which opens over the current page (→WEB-79);
  * the office's own dialogs close for it and the 결재함 opens again afterwards.
  */
 export async function configureResponsibilities(

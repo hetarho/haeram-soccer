@@ -230,12 +230,12 @@ describe('approval queue view (→WEB-39/100)', () => {
   });
   it('names whom each title goes to, with its 직접/위임 and 전체 직접/전체 위임 over them all', () => {
     const html = render(world(undefined, ['contracts', 'academy']), []);
-    // The delegates of each title: 단장, 감독 and the youth director, a vacant post as 공석.
+    // The delegates of each title: 단장 and 감독; youth money is the 단장's too.
     expect(titleBlock(html, 'manager')).toContain('위임 대상</span>단장 Real Director');
     expect(titleBlock(html, 'contracts')).toContain(
       '위임 중</span>단장 Real Director · 감독 Real Manager',
     );
-    expect(titleBlock(html, 'academy')).toContain('위임 중</span>유스 디렉터 공석');
+    expect(titleBlock(html, 'academy')).toContain('위임 중</span>단장 Real Director');
     expect(pressed(html, '선수 계약 결재 방식')).toEqual(['위임']);
     expect(pressed(html, '감독 인사 결재 방식')).toEqual(['직접']);
     // Neither every title direct nor every one delegated: no whole switch reads as applied.
@@ -244,7 +244,9 @@ describe('approval queue view (→WEB-39/100)', () => {
     expect(html).toContain('>전체 위임</button>');
     // A quiet title says what it covers and who handles it meanwhile.
     expect(titleBlock(html, 'contracts')).toContain('위임받은 담당자가 처리하고 결과를 보고해요');
-    expect(titleBlock(html, 'manager')).toContain('감독 선임·재계약 · 대기 없음');
+    expect(titleBlock(html, 'manager')).toContain(
+      '감독 선임·재계약과 감독 기조·선호 학파 · 대기 없음',
+    );
     const all = render(world(undefined, RESPONSIBILITY_KEYS), []);
     expect(pressed(all, '전체 결재 방식')).toEqual(['전체 위임']);
     expect(pressed(render(world(), []), '전체 결재 방식')).toEqual(['전체 직접']);

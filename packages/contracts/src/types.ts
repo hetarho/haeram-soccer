@@ -165,9 +165,10 @@ export interface TalkRule {
   maxAge?: number;
 }
 /**
- * The direction rows the delegated staff follow (→ECON-25), each absent at its default (표준, or
- * any school): 재계약 기조 (→CLUB-26), 선호 학파 and 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15),
- * 재정 기조 (→ECON-33), 육성 목표 and 데뷔 시점 (→CLUB-32).
+ * The direction rows the staff follow (→ECON-25), each absent at its default (표준, or any school):
+ * 재계약 기조 (→CLUB-26), 선호 학파 and 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15), 육성 목표 and
+ * 데뷔 시점 (→CLUB-32). While a responsibility is delegated its person sets the rows it steers
+ * (`delegation.ts`); otherwise the owner does.
  */
 export interface Direction {
   /** Standing recruitment mediation support; absent means balanced (→STAFF-26). */
@@ -176,22 +177,20 @@ export interface Direction {
   school?: ManagerStyle;
   manager?: 'developer' | 'proven' | 'young' | 'cheap';
   coaches?: 'volunteer' | 'cheap' | 'elite';
-  finance?: 'aggressive' | 'bold' | 'careful' | 'stable';
   /** 육성 목표 (→CLUB-32): what the academy is for. */
   youthGoal?: 'firstTeam' | 'sell' | 'minimal';
   /** 데뷔 시점 (→CLUB-32): how early prospects go up. */
   debut?: 'early' | 'ready' | 'late';
 }
 export type DirectionKey = keyof Direction;
-/** Independent spending instructions for each decision, in the club's nominal currency. */
+/** The responsibilities that spend the club's money, each carrying the owner's spending request. */
 export type BudgetResponsibility = Exclude<ResponsibilityKey, 'sponsors'>;
-export type WageResponsibility = Exclude<BudgetResponsibility, 'sales'>;
-export type FinanceChoice = NonNullable<Direction['finance']> | 'standard';
-export interface DecisionBudget {
-  finance?: FinanceChoice;
-  /** Maximum annual wage per person; absent has no additional monetary cap, zero is unpaid. */
-  maxAnnualWage?: string;
-}
+/**
+ * The owner's request to the person a responsibility is delegated to: how much of the club's money
+ * to put into it, 1 (최소한만) to 5 (아낌없이); for sales, how readily to sell (1) or hold (5). A
+ * request is not an order: the person turns it into a plan by temperament and the club's money.
+ */
+export type SpendRequest = 1 | 2 | 3 | 4 | 5;
 /** Seasons a contract is signed for (→CLUB-26, STAFF-14). */
 export type ContractTerm = 1 | 2 | 3 | 4 | 5;
 /**
@@ -1362,7 +1361,14 @@ export interface World {
   sponsors?: SponsorContract[];
   /** The direction rows the delegated staff follow (→ECON-25); absent rows are at their default. */
   direction?: Direction;
-  decisionBudgets?: Partial<Record<BudgetResponsibility, DecisionBudget>>;
+  /** The owner's spending request per delegated responsibility; absent is 적당히 (3). */
+  delegationRequests?: Partial<Record<BudgetResponsibility, SpendRequest>>;
+  /**
+   * The 단장's season plan: the season's income he planned on and the player sales already in
+   * when he made it, written at each plan moment (→`delegation.ts`). Absent, or from another
+   * season, the plans read the income projection live.
+   */
+  budgetPlan?: { year: number; revenue: string; sales: string };
   /** 지역 기반 and 글로벌 인지도, 0–100 (→ECON-34); absent is 0. */
   localBase?: number;
   globalReach?: number;
@@ -1415,8 +1421,7 @@ export type Command =
   | { type: 'club-direction'; key: DirectionKey; choice: string }
   | { type: 'club-build'; slot: keyof ClubBuild; choice: string }
   | { type: 'club-ticket'; price: number }
-  | { type: 'decision-wage-limit'; responsibility: WageResponsibility; amount: string | null }
-  | { type: 'decision-finance'; responsibility: BudgetResponsibility; choice: FinanceChoice }
+  | { type: 'delegation-request'; responsibility: BudgetResponsibility; level: SpendRequest }
   | { type: 'coaching-investment'; choice: 'volunteer' | 'cheap' | 'standard' | 'elite' }
   | { type: 'facility-upgrade'; part: FacilityPart; from: number; cost: string }
   | { type: 'next-event' }

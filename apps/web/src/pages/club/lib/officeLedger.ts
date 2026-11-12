@@ -25,13 +25,7 @@ import { STAFF_INFO, staffMember } from '../../../../../../packages/engine/src/s
 import { STYLE_INFO } from '../../../../../../packages/engine/src/styles';
 import { displayMessage, localizeValue } from '../../../presentation/text';
 import type { OfficeRead } from '../../../runtime/officeRead';
-import {
-  DECISION_BUILDS,
-  DECISION_DIRECTIONS,
-  DECISION_POLICIES,
-  PASSIVE_BUILDS,
-  PASSIVE_POLICIES,
-} from '../../../entities/office';
+import { AREA_DIRECTIONS, PASSIVE_BUILDS, PASSIVE_POLICIES } from '../../../entities/office';
 import { decimal, number, signed } from '../../../presentation/format';
 import type { InvestmentArea } from '../../../shared/routing/investmentAreas';
 import {
@@ -384,19 +378,15 @@ export function effectDestination(source: EffectSource): EffectDestination | und
   switch (source.kind) {
     case 'policy': {
       const area = areaOfSource(source);
-      if (area) return { kind: 'investment', area, control: `policy:${source.key}` };
-      const key = homeOf<string, ResponsibilityKey>(DECISION_POLICIES, source.key);
-      return key && { kind: 'decision', key };
+      return area && { kind: 'investment', area, control: `policy:${source.key}` };
     }
     case 'build': {
       const area = areaOfSource(source);
-      if (area) return { kind: 'investment', area, control: `build:${source.slot}` };
-      const key = homeOf<string, ResponsibilityKey>(DECISION_BUILDS, source.slot);
-      return key && { kind: 'decision', key };
+      return area && { kind: 'investment', area, control: `build:${source.slot}` };
     }
     case 'direction': {
-      const key = homeOf<string, ResponsibilityKey>(DECISION_DIRECTIONS, source.key);
-      return key && { kind: 'decision', key };
+      const area = homeOf<string, InvestmentArea>(AREA_DIRECTIONS, source.key);
+      return area && { kind: 'investment', area, control: `direction:${source.key}` };
     }
     case 'facility':
       return {

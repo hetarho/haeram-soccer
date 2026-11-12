@@ -101,17 +101,17 @@ describe('lossless career stream compaction', () => {
     expect(old.europe[0]).not.toHaveProperty('ownQualification');
   });
 
-  it('keeps the direction rows, the strategy and the manager market through a pack round trip', () => {
+  it('keeps the direction rows, the delegation requests, the strategy and the manager market through a pack round trip', () => {
     const w = simulatedWorld(COMPACT, { rounds: 8 });
     w.direction = {
       renewal: 'coreOnly',
       school: 'positional',
       manager: 'cheap',
       coaches: 'elite',
-      finance: 'careful',
       youthGoal: 'sell',
       debut: 'early',
     };
+    w.delegationRequests = { recruitment: 5, sales: 1 };
     w.build = { youth: 'elite' };
     expect(w.managerMarket?.free.length).toBeGreaterThan(0);
     const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));

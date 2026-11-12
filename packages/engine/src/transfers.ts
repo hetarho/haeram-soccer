@@ -48,7 +48,8 @@ import { ownStarters } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './transactions';
 import { locateOffer, transferOffers } from './scout-search';
-import { financeStance } from './direction';
+import { applyDelegatePlans, wagePressure } from './delegation';
+import { SAFETY_ROUNDS } from './delegation-info';
 import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
 import { staffEffects } from './staff';
@@ -445,8 +446,10 @@ function announceWindows(w: World, day: number) {
       detail: sourceMessage('copy.transfers.8caca6c7a1', { p0: WINDOW_INFO[opening].deadline }),
       attention: true,
     });
-    // The chief scout lists candidates and the manager asks before the window's first day of
-    // business (→CLUB-33).
+    // Delegated people plan the window — the 단장 its signing budget and search — before the
+    // chief scout lists candidates and the manager asks, ahead of the first day of business
+    // (→CLUB-33).
+    applyDelegatePlans(w, 'window');
     openShortlistWindow(w);
     if (isDelegated(w, 'sales')) staffStances(w);
   }
@@ -674,8 +677,9 @@ export function isProspect(w: World, p: Player) {
 }
 /**
  * The lowest fee, as a percentage of value, delegated staff accept for a player (→CLUB-18):
- * 130%, or 200% for a prospect, lowered for age, a contract near its end and a short cash runway,
- * never below 80%. Each cut is listed so the report can say why.
+ * 130%, or 200% for a prospect, lowered for age, a contract near its end, a wage bill past the
+ * 단장's sales lines (`wagePressure`) and a cash crisis (`SAFETY_ROUNDS`), never below 80%. Each cut
+ * is listed so the report can say why.
  */
 export function saleBar(w: World, p: Player) {
   const age = w.year - p.born,
@@ -684,7 +688,7 @@ export function saleBar(w: World, p: Player) {
     runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     prospect = isProspect(w, p),
     base = SALE_BARS[w.build?.market ?? 'standard'][prospect ? 1 : 0],
-    [first, second] = financeStance(w, 'sales').sellSteps,
+    pressure = wagePressure(w),
     cuts: string[] = [];
   let percent = base;
   const cut = (points: number, why: string) => {
@@ -695,8 +699,12 @@ export function saleBar(w: World, p: Player) {
   else if (age >= 30) cut(15, sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: age }));
   if (seasons <= 1) cut(20, sourceMessage('copy.transfers.53f9e38caf'));
   else if (seasons === 2) cut(10, sourceMessage('copy.transfers.d8bb752fd6'));
-  if (runway < first) cut(20, sourceMessage('copy.transfers.c1074e3430'));
-  else if (runway < second) cut(10, sourceMessage('copy.transfers.7f834a5b0d'));
+  if (runway < SAFETY_ROUNDS) cut(20, sourceMessage('copy.transfers.c1074e3430'));
+  else if (pressure.level)
+    cut(
+      pressure.level === 2 ? 20 : 10,
+      sourceMessage('delegation.sale.wages', { share: pressure.share }),
+    );
   return { percent: Math.max(SALE_BAR_FLOOR, percent), base, prospect, cuts };
 }
 /**
@@ -857,24 +865,25 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
 export const UNTOUCHABLE_PRICE = { standard: 200, selling: 150, showcase: 175, hardball: 225 };
 /**
  * The staff and manager's answer to a big offer for an untouchable player when transfers are
- * delegated: the market card sets the price, a tight cash runway lowers it by 25 points, a cash
- * crisis sells, and the manager holds out 25 points longer for a starter nobody can replace.
+ * delegated: the market card sets the price, a wage bill past the 단장's second sales line lowers
+ * it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
+ * nobody can replace.
  */
 export function untouchableVerdict(w: World, offered: number, essential: boolean) {
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     market = w.build?.market,
     card = cardOf(buildOf(w), 'market').label,
-    [first, second] = financeStance(w, 'sales').sellSteps;
-  if (runway < first)
+    pressure = wagePressure(w);
+  if (runway < SAFETY_ROUNDS)
     return { accept: true, reason: sourceMessage('copy.transfers.838216488c', { p0: runway }) };
   if (market === 'hold')
     return { accept: false, reason: sourceMessage('copy.transfers.57ffab38e3', { p0: card }) };
   const base = UNTOUCHABLE_PRICE[market ?? 'standard'],
     steps = [sourceMessage('copy.transfers.363d93e2b9', { p0: card, p1: base })];
   let bar = base;
-  if (runway < second) {
+  if (pressure.level === 2) {
     bar -= 25;
-    steps.push(sourceMessage('copy.transfers.e69d5f4ed0'));
+    steps.push(sourceMessage('delegation.sale.wagesUntouchable', { share: pressure.share }));
   }
   if (essential) {
     bar += 25;

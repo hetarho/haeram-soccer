@@ -249,6 +249,12 @@ export function openDecisionSettings(key: ResponsibilityKey | 'finance') {
     values: { ...memory.values, 'office-overview': true, 'office-focus': key },
   }));
 }
+/** Closes the delegation page, as a link that leaves it for a work's page does. */
+export function closeDecisionSettings() {
+  useTaskMemory.setState((memory) => ({
+    values: { ...memory.values, 'office-overview': false },
+  }));
+}
 export function openClubOverview() {
   useTaskMemory.setState((memory) => ({
     values: { ...memory.values, 'club-summary-open': true },

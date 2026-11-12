@@ -13,21 +13,13 @@ import { marketWage, signingClauses } from './contracts';
 import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
 import { growAttributes, recordDevelopment } from './training';
-import { moneyLabel, operatingCosts } from './finance';
+import { moneyLabel } from './finance';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { isDelegated } from './responsibilities';
-import {
-  annualWageLimit,
-  debutRule,
-  directionOf,
-  directionOption,
-  financeOption,
-  financeStance,
-  releaseRule,
-  wageWithinLimit,
-} from './direction';
+import { debutRule, directionOf, directionOption, releaseRule } from './direction';
+import { insolvencyStop } from './delegation';
 import { academyFacilityTerms } from './facilities';
 import { intakePotential } from './owner-traits';
 
@@ -420,11 +412,6 @@ function staffReport(w: World, title: string, detail: string, ref?: string) {
   });
 }
 /** Season boundary: academy ages, and delegated staff promote or release prospects. */
-/** Cash below which the delegated youth director defers promotions: 재정 기조's floor (→ECON-33). */
-export function promotionFloor(w: World) {
-  const years = financeStance(w, 'academy').promotionYears;
-  return (BigInt(operatingCosts(w).annual) * BigInt(Math.round(years * 100))) / 100n;
-}
 export function seasonAcademy(w: World): void {
   if (!w.academy?.players.length) return;
   // Academy football ends at 21 whoever decides; this also bounds the academy.
@@ -464,36 +451,23 @@ export function seasonAcademy(w: World): void {
     return;
   }
   const promoted = new Set<string>();
-  // Every promotion adds a first-team wage, so the director waits while cash is under 재정 기조's
-  // promotion floor (→ECON-33; a year of operating costs at 표준).
-  const years = financeStance(w, 'academy').promotionYears,
-    affordable = BigInt(w.cash) >= promotionFloor(w);
-  if (!affordable && ready.length)
+  // Every promotion adds a first-team wage: only the plain insolvency stop holds them back.
+  const stop = ready.length
+      ? insolvencyStop(
+          w,
+          0n,
+          ready.reduce((all, player) => all + BigInt(player.wage), 0n),
+          true,
+        )
+      : undefined,
+    affordable = !stop;
+  if (stop)
     staffReport(
       w,
       sourceMessage('copy.academy.daeb17db53', { p0: ready.length }),
-      sourceMessage('copy.academy.6a6b9c3ff8', {
-        p0: financeOption(w, 'academy').name,
-        p1:
-          years < 1
-            ? sourceMessage('copy.academy.76367e9ed0', { p0: Math.round(years * 12) })
-            : sourceMessage('copy.academy.e112fae4e0', { p0: years }),
-      }),
+      sourceMessage('delegation.promotion.stop', { reason: stop }),
     );
   for (const player of affordable ? ready : []) {
-    const wage = marketWage(w, player);
-    if (!wageWithinLimit(w, 'academy', wage)) {
-      staffReport(
-        w,
-        sourceMessage('copy.academy.7e6395c178', { p0: player.name }),
-        sourceMessage('copy.academy.ff44c36d07', {
-          p0: moneyLabel(w, wage),
-          p1: moneyLabel(w, annualWageLimit(w, 'academy')!),
-        }),
-        player.id,
-      );
-      continue;
-    }
     if (registrationRoom(w, { ...player, graduate: true, joined: w.year })) continue;
     if (!lineRoom(w, lineOfPlayer(player))) continue;
     promoteYouth(w, player.id);
@@ -510,7 +484,7 @@ export function seasonAcademy(w: World): void {
     );
   }
   for (const player of affordable ? ready : [])
-    if (!promoted.has(player.id) && wageWithinLimit(w, 'academy', marketWage(w, player)))
+    if (!promoted.has(player.id))
       staffReport(
         w,
         sourceMessage('copy.academy.0162002ab6', { p0: player.name }),

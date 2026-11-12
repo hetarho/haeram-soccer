@@ -43,7 +43,6 @@ const MARKET_START = TAKEOVER_DECADES[0];
 import { ownLeagueClubs } from './season';
 import { managerCriteriaOf } from './hiring';
 import { moneyLabel } from './finance';
-import { annualWageLimit, wageWithinLimit } from './direction';
 import { networkCandidates, networkedCandidate } from './owner-traits';
 import { employmentWageInBuyerCurrency } from './employment-money';
 
@@ -331,12 +330,6 @@ function managerChecks(w: World, c: ManagerCriteria): ManagerCheck[] {
       (m) => m.ability >= c.minOvr,
     ],
     [
-      sourceMessage('copy.managerMarket.7875f4d9d5', {
-        p0: moneyLabel(w, annualWageLimit(w, 'manager') ?? '0'),
-      }),
-      (m) => wageWithinLimit(w, 'manager', m.wage),
-    ],
-    [
       sourceMessage('copy.managerMarket.c25c9d5f08', {
         p0: c.schools.map((style) => STYLE_INFO[style].label).join('·'),
       }),
@@ -391,8 +384,8 @@ function byPriority(priority: ManagerCriteria['priority']) {
 export const managerHireCost = (m: ManagerCandidate) =>
   BigInt(m.fee) + BigInt(m.compensation ?? '0') + BigInt(m.coachingRelease ?? '0');
 /**
- * Cash after his fee and any compensation still keeps 재정 기조's runway with his wage in place of
- * the current manager's (→STAFF-18, as →STAFF-15, →ECON-33).
+ * His fee and any compensation, with his wage in place of the current manager's, pass the plain
+ * insolvency stop (→STAFF-18, as →STAFF-15, →`affordable`).
  */
 function affordableManager(w: World, m: ManagerCandidate) {
   return affordable(
@@ -401,7 +394,6 @@ function affordableManager(w: World, m: ManagerCandidate) {
     BigInt(m.wage) -
       BigInt(w.manager.wage) -
       BigInt((m.person && w.staff?.find((member) => member.person === m.person)?.wage) || '0'),
-    'manager',
   );
 }
 /** Free agents, and other clubs' managers too when the criteria allow poaching. */
@@ -422,7 +414,6 @@ export function managerMatches(w: World): ManagerCandidate[] {
 export function bestFreeAgent(w: World): ManagerCandidate | undefined {
   return managerCandidates(w)
     .filter((m) => m.source !== 'club')
-    .filter((m) => wageWithinLimit(w, 'manager', m.wage))
     .filter((m) => affordableManager(w, m))
     .sort(byPriority(managerCriteriaOf(w).priority))[0];
 }

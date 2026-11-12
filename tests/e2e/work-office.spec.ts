@@ -40,14 +40,14 @@ for (const width of [360, 1280]) {
     await expect(homeAreas(page).getByRole('button')).toHaveCount(8);
     const office = await openOfficePage(page);
     const menu = officeMenu(page);
-    await expect(menu.getByRole('button')).toHaveText(['오버뷰', /^결재함/, '결재 설정']);
+    await expect(menu.getByRole('button')).toHaveText(['오버뷰', /^결재함/, '위임 설정']);
     await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-    // 오버뷰, 결재함 and 결재 설정 each open their modal over the office, which stays (→WEB-39).
+    // 오버뷰, 결재함 and 위임 설정 each open their modal over the office, which stays (→WEB-39).
     for (const [button, dialog] of [
       ['오버뷰', '우리 팀 오버뷰'],
       [/^결재함/, '결재함'],
-      ['결재 설정', '결재 설정'],
+      ['위임 설정', '위임 설정'],
     ] as const) {
       await menu.getByRole('button', { name: button }).click();
       const modal = page.getByRole('dialog', { name: dialog, exact: true });
@@ -61,8 +61,8 @@ for (const width of [360, 1280]) {
       await expect(page).toHaveURL(/\/club-operations\?view=investment$/);
     }
     // An area opens from its home card and leads back home, where it was opened (→WEB-10 r216,
-    // →WEB-14): 재정 · 사업 reads the books (→WEB-110).
-    await openArea(page, '재정 · 사업');
+    // →WEB-14): 구단 예산 reads the books (→WEB-110).
+    await openArea(page, '구단 예산');
     await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     await page.getByRole('button', { name: '클럽하우스 홈으로', exact: true }).click();
@@ -88,7 +88,7 @@ for (const width of [360, 1280]) {
         await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
       }
     }
-    // 후원: the actual slots and who signs them, from 결재 설정's 스폰서 계약 (→WEB-79/110).
+    // 후원: the actual slots and who signs them, from 위임 설정's 스폰서 계약 (→WEB-79/110).
     const sponsors = await openSponsors(page);
     await expect(sponsors.getByTestId('sponsor-slot-shirt')).toBeVisible();
     await expect(sponsors.getByRole('region', { name: '후원 위임', exact: true })).toBeVisible();

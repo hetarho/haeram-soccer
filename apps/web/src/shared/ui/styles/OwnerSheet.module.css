@@ -36,29 +36,6 @@
 .combinedMoney .businessBalance[data-negative] {
   color: var(--danger);
 }
-.balances {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-.balances > p {
-  min-width: 0;
-}
-.balances b {
-  overflow-wrap: anywhere;
-}
-.balances > .businessFunds {
-  align-content: end;
-}
-.balances .businessFunds > .businessAmount {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.2;
-}
-.cashSummary {
-  display: grid;
-  gap: 12px;
-}
 @media (max-width: 760px) {
   .combinedMoney .clubBalance > b {
     font-size: 14px;
@@ -248,4 +225,80 @@
 }
 .message:empty {
   display: none;
+}
+
+/* 내 자산: where the owner's money goes — the business, living costs and the club — side by
+   side, then its seasons and the controls that move it. */
+.flows {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+.flows > [data-ui='card'] {
+  --card-title-size: 17px;
+}
+.flows p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.flows p + p {
+  margin-top: 6px;
+  font-weight: 600;
+}
+.historyHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.historyHead h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.flowFacts {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+.flowFacts > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px 10px;
+  padding-block: 4px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.flowFacts dt {
+  color: var(--text-muted);
+}
+.flowFacts dd {
+  margin: 0;
+  font-variant-numeric: var(--numeric-variant);
+  font-weight: 600;
+}
+.flowFacts > [data-total] {
+  border-bottom: 0;
+  font-size: 15px;
+}
+.flowFacts > [data-total] dt {
+  color: var(--text);
+  font-weight: 700;
+}
+.flowFacts > [data-total] dd {
+  font-weight: 800;
+}
+.moveTitle {
+  margin: 8px 0 0;
+  font-size: 16px;
+}
+.anchor {
+  scroll-margin-top: 12px;
+}
+@media (max-width: 760px) {
+  .flows {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

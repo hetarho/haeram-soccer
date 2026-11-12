@@ -1,16 +1,13 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { BuildSlot } from '../../../../../../packages/contracts/src/build';
 import { BUILD_OPTIONS } from '../../../../../../packages/contracts/src/build';
 import type {
-  BudgetResponsibility,
   Command,
   DirectionKey,
-  FinanceChoice,
-  PolicyLevel,
-  WageResponsibility,
+  PolicyKey,
   World,
 } from '../../../../../../packages/contracts/src/types';
 import {
@@ -18,14 +15,11 @@ import {
   BUILD_SLOT_INFO,
   type BuildEffects,
 } from '../../../../../../packages/engine/src/build';
+import { DIRECTION_INFO, directionOf } from '../../../../../../packages/engine/src/direction';
 import {
-  annualWageLimit,
-  DIRECTION_INFO,
-  directionOf,
-  financeChoiceOf,
-  financeStance,
-} from '../../../../../../packages/engine/src/direction';
-import { POLICY_INFO, policyOf } from '../../../../../../packages/engine/src/policy';
+  settingDelegate,
+  settingPerson,
+} from '../../../../../../packages/engine/src/delegation-info';
 import { SALE_BARS } from '../../../../../../packages/engine/src/transfer-policy';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
 import type { GameClient } from '../../../runtime/client';
@@ -33,7 +27,6 @@ import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { TICKET_LEVELS } from '../../../shared/routing/ticketLevels';
 import { Money } from '../../../shared/ui/Money';
 import { number } from '../../../presentation/format';
-import { compactMoney } from '../../../presentation/format';
 import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import s from './ClubSettingControl.module.css';
 
@@ -102,14 +95,16 @@ export function InvestmentSlider<T extends string | number>({
       <span
         className={s.names}
         data-many={options.length > 6 || undefined}
-        style={{
-          gridTemplateColumns: `repeat(${options.length > 6 ? 2 : options.length}, minmax(0, 1fr))`,
-        }}
+        style={{ '--stops': Math.max(1, options.length - 1) } as CSSProperties}
         aria-hidden="true"
       >
         {localizeValue(
-          options.map((option) => (
-            <span key={option.value} data-selected={value === option.value || undefined}>
+          options.map((option, stop) => (
+            <span
+              key={option.value}
+              data-selected={value === option.value || undefined}
+              style={{ '--stop': stop } as CSSProperties}
+            >
               {localizeValue(option.name)}
             </span>
           )),
@@ -198,6 +193,7 @@ function ChoiceSetting<T extends string | number>({
   preview,
   applyLabel = sourceMessage('copy.ClubSettingControl.120e27aa88'),
   sequential = false,
+  lock,
 }: {
   id: string;
   label: string;
@@ -209,17 +205,25 @@ function ChoiceSetting<T extends string | number>({
   applyLabel?: string;
   sequential?: boolean;
   preview?: (value: T) => ReactNode;
+  /** Who sets this while its work is delegated (→`settingLock`): read only, without an apply. */
+  lock?: string;
 }) {
   useTextLocale();
-  const [selected, setSelected] = useState(current);
+  const [draft, setSelected] = useState(current);
   useEffect(() => setSelected(current), [current]);
+  const selected = lock ? current : draft;
   const action = useClubSettingAction(client);
   const currentName =
     options.find((option) => option.value === current)?.name ??
     sourceMessage('copy.ClubSettingControl.e1f51d6620');
   const option = options.find((option) => option.value === selected) ?? options[0];
   return (
-    <section className={s.setting} data-control={id} aria-label={localizeValue(label)}>
+    <section
+      className={s.setting}
+      data-control={id}
+      data-locked={lock ? '' : undefined}
+      aria-label={localizeValue(label)}
+    >
       <header>
         <h4>{localizeValue(label)}</h4>
         <small>{richMessage('copy.ClubSettingControl.49f6765faa', { p0: currentName })}</small>
@@ -230,7 +234,7 @@ function ChoiceSetting<T extends string | number>({
             label={localizeValue(label)}
             value={selected}
             options={options}
-            disabled={action.blocked}
+            disabled={action.blocked || !!lock}
             onChange={setSelected}
           />
         ) : (
@@ -238,31 +242,36 @@ function ChoiceSetting<T extends string | number>({
             label={localizeValue(label)}
             value={selected}
             options={options}
-            disabled={action.blocked}
+            disabled={action.blocked || !!lock}
             onChange={setSelected}
           />
         ),
       )}
       <p className={s.summary}>{localizeValue(option.summary)}</p>
       {localizeValue(preview?.(selected))}
-      <footer>
-        {localizeValue(note && <small>{localizeValue(note)}</small>)}
-        <button
-          type="button"
-          data-ui="primary"
-          disabled={action.blocked || selected === current}
-          onClick={() =>
-            void action.apply(
-              command(selected),
-              sourceMessage('copy.ClubSettingControl.a37d577f75', { p0: label, p1: option.name }),
-            )
-          }
-        >
-          {localizeValue(
-            action.busy ? sourceMessage('copy.ClubSettingControl.304d48a5d2') : applyLabel,
-          )}
-        </button>
-      </footer>
+      {localizeValue(
+        lock ? (
+          <p className={s.locked}>
+            <span data-ui="badge" data-compact="">
+              {richMessage('delegation.badge.delegated')}
+            </span>
+            <span>{localizeValue(lock)}</span>
+          </p>
+        ) : (
+          <SettingFooter
+            note={note}
+            disabled={action.blocked || selected === current}
+            busy={action.busy}
+            applyLabel={applyLabel}
+            onApply={() =>
+              void action.apply(
+                command(selected),
+                sourceMessage('copy.ClubSettingControl.a37d577f75', { p0: label, p1: option.name }),
+              )
+            }
+          />
+        ),
+      )}
       {localizeValue(action.error && <p role="alert">{localizeValue(action.error)}</p>)}
       {localizeValue(
         action.message && (
@@ -273,6 +282,43 @@ function ChoiceSetting<T extends string | number>({
       )}
     </section>
   );
+}
+function SettingFooter({
+  note,
+  disabled,
+  busy,
+  applyLabel,
+  onApply,
+}: {
+  note?: string;
+  disabled: boolean;
+  busy: boolean;
+  applyLabel: string;
+  onApply: () => void;
+}) {
+  useTextLocale();
+  return (
+    <footer>
+      {localizeValue(note && <small>{localizeValue(note)}</small>)}
+      <button type="button" data-ui="primary" disabled={disabled} onClick={onApply}>
+        {localizeValue(busy ? sourceMessage('copy.ClubSettingControl.304d48a5d2') : applyLabel)}
+      </button>
+    </footer>
+  );
+}
+
+/**
+ * Who sets a dial or direction row now, when its work is delegated (→`DELEGATE_CONTROLS`):
+ * "위임 중 · 단장 Mateus Teixeira 담당", the youth director for the academy's football rows;
+ * undefined while the owner sets it.
+ */
+export function settingLock(
+  w: World,
+  setting: { policy: PolicyKey } | { direction: DirectionKey },
+): string | undefined {
+  if (!settingDelegate(w, setting)) return undefined;
+  const person = settingPerson(w, setting);
+  return sourceMessage('delegation.locked', { post: person.postLabel, name: person.name });
 }
 
 export function DirectionSetting({
@@ -298,9 +344,8 @@ export function DirectionSetting({
       label={localizeValue(info.label)}
       current={directionOf(w, directionKey)}
       client={client}
-      sequential={
-        directionKey === 'finance' || directionKey === 'coaches' || directionKey === 'debut'
-      }
+      lock={settingLock(w, { direction: directionKey })}
+      sequential={directionKey === 'coaches' || directionKey === 'debut'}
       options={options.map((option) => ({
         value: option.id,
         name: option.name,
@@ -308,245 +353,6 @@ export function DirectionSetting({
       }))}
       command={(choice) => ({ type: 'club-direction', key: directionKey, choice })}
       note={sourceMessage('copy.ClubSettingControl.f27e1608d6')}
-    />
-  );
-}
-
-function financeSummary(w: World, responsibility: BudgetResponsibility, choice: FinanceChoice) {
-  const sample = {
-    ...w,
-    decisionBudgets: {
-      ...w.decisionBudgets,
-      [responsibility]: { ...w.decisionBudgets?.[responsibility], finance: choice },
-    },
-  };
-  const rule = financeStance(sample, responsibility);
-  if (responsibility === 'sales')
-    return sourceMessage('copy.ClubSettingControl.a53c6105cc', {
-      p0: rule.sellSteps[0],
-      p1: rule.sellSteps[1],
-    });
-  if (responsibility === 'academy')
-    return sourceMessage('copy.ClubSettingControl.6084714551', { p0: rule.promotionYears });
-  const common = sourceMessage('copy.ClubSettingControl.c7b9a9a3c9', { p0: rule.runway });
-  if (responsibility === 'manager' || responsibility === 'staff') return common;
-  const player = sourceMessage('copy.ClubSettingControl.46eb84c6e8', {
-    p0: common,
-    p1: Math.round(rule.wageShare * 100),
-  });
-  return responsibility === 'recruitment'
-    ? sourceMessage('copy.ClubSettingControl.32693ff5d7', {
-        p0: player,
-        p1: Math.round(rule.signing.feeShare * 100),
-        p2:
-          rule.signing.margin === undefined
-            ? sourceMessage('copy.ClubSettingControl.dfc8cdd784')
-            : sourceMessage('copy.ClubSettingControl.561f6031d5', {
-                p0: rule.signing.margin,
-                p1: rule.signing.upgrades,
-              }),
-      })
-    : player;
-}
-export function DecisionFinanceSetting({
-  w,
-  client,
-  responsibility,
-}: {
-  w: World;
-  client: GameClient;
-  responsibility: BudgetResponsibility;
-}) {
-  useTextLocale();
-  return (
-    <ChoiceSetting<FinanceChoice>
-      id={`finance:${responsibility}`}
-      label={displayMessage('copy.ClubSettingControl.847e6f4135')}
-      sequential
-      current={financeChoiceOf(w, responsibility)}
-      client={client}
-      options={DIRECTION_INFO.finance.options.map((option) => ({
-        value: option.id as FinanceChoice,
-        name: option.name,
-        summary: financeSummary(w, responsibility, option.id as FinanceChoice),
-      }))}
-      command={(choice) => ({ type: 'decision-finance', responsibility, choice })}
-      note={sourceMessage('copy.ClubSettingControl.584bcdc82b')}
-    />
-  );
-}
-
-const WAGE_LABELS: Record<WageResponsibility, string> = {
-  manager: sourceMessage('copy.ClubSettingControl.f6ea0031ad'),
-  staff: sourceMessage('copy.ClubSettingControl.6bd58fd2ae'),
-  contracts: sourceMessage('copy.ClubSettingControl.1ca4d1ca3a'),
-  recruitment: sourceMessage('copy.ClubSettingControl.f6b9e11a7c'),
-  academy: sourceMessage('copy.ClubSettingControl.786a3bd73f'),
-};
-const WAGE_NOTES: Record<WageResponsibility, string> = {
-  manager: sourceMessage('copy.ClubSettingControl.f2c4b06904'),
-  staff: sourceMessage('copy.ClubSettingControl.653dbbed71'),
-  contracts: sourceMessage('copy.ClubSettingControl.e05463e298'),
-  recruitment: sourceMessage('copy.ClubSettingControl.baa2a7ac34'),
-  academy: sourceMessage('copy.ClubSettingControl.315e4b60de'),
-};
-export function WageBudgetSetting({
-  w,
-  client,
-  responsibility,
-}: {
-  w: World;
-  client: GameClient;
-  responsibility: WageResponsibility;
-}) {
-  useTextLocale();
-  const current = annualWageLimit(w, responsibility) ?? 'unlimited';
-  const [selected, setSelected] = useState(current);
-  useEffect(() => setSelected(current), [current]);
-  const action = useClubSettingAction(client);
-  const club = clubOf(w);
-  const office = useOfficeRead(w);
-  if (!office) return <p role="status">{richMessage('copy.ClubSettingControl.0bfb2eb6fb')}</p>;
-  const reference = BigInt(office.wageReference[responsibility]);
-  const base = reference > 0n ? reference : 1n;
-  const amounts = [
-    ...new Set([
-      ...[0, 25, 50, 75, 100, 125, 150, 175, 200, 250, 300, 400, 500].map((percent) =>
-        ((base * BigInt(percent)) / 100n).toString(),
-      ),
-      ...[current, selected].filter((value) => value !== 'unlimited'),
-    ]),
-  ].sort((a, b) => (BigInt(a) < BigInt(b) ? -1 : BigInt(a) > BigInt(b) ? 1 : 0));
-  const format = (value: string) => compactMoney(value, club.country, w.year);
-  const options = [
-    ...amounts.map((value) => ({
-      value,
-      name:
-        value === '0'
-          ? sourceMessage('team.volunteer')
-          : sourceMessage('copy.ClubSettingControl.1db473c2be', { p0: format(value) }),
-    })),
-    { value: 'unlimited', name: sourceMessage('copy.ClubSettingControl.5d57a45e99') },
-  ];
-  const currentTotal =
-    responsibility === 'manager'
-      ? BigInt(w.manager.wage)
-      : responsibility === 'staff'
-        ? (w.staff ?? []).reduce((sum, person) => sum + BigInt(person.wage), 0n)
-        : responsibility === 'academy'
-          ? 0n
-          : w.players
-              .filter((player) => player.status === 'active')
-              .reduce((sum, player) => sum + BigInt(player.wage), 0n);
-  return (
-    <section
-      className={`${s.setting} ${s.wageBudget}`}
-      data-control={`wage:${responsibility}`}
-      aria-label={localizeValue(WAGE_LABELS[responsibility])}
-    >
-      <header>
-        <h4>{localizeValue(WAGE_LABELS[responsibility])}</h4>
-        <small>
-          {richMessage('copy.ClubSettingControl.49f6765faa', {
-            p0:
-              current === 'unlimited'
-                ? sourceMessage('copy.ClubSettingControl.5d57a45e99')
-                : sourceMessage('copy.ClubSettingControl.1db473c2be', { p0: format(current) }),
-          })}
-        </small>
-      </header>
-      <InvestmentSlider
-        label={localizeValue(WAGE_LABELS[responsibility])}
-        options={options}
-        value={selected}
-        disabled={action.blocked}
-        onChange={setSelected}
-      />
-      <dl className={s.facts}>
-        <div>
-          <dt>{richMessage('copy.ClubSettingControl.6ca2855a88')}</dt>
-          <dd>
-            {localizeValue(
-              selected === 'unlimited' ? (
-                sourceMessage('copy.ClubSettingControl.5d57a45e99')
-              ) : (
-                <Money value={selected} code={club.country} year={w.year} plain />
-              ),
-            )}
-          </dd>
-        </div>
-        {localizeValue(
-          responsibility !== 'academy' && (
-            <div>
-              <dt>
-                {localizeValue(
-                  responsibility === 'manager'
-                    ? sourceMessage('copy.ClubSettingControl.405d32305e')
-                    : responsibility === 'staff'
-                      ? sourceMessage('copy.ClubSettingControl.56517f62ff')
-                      : sourceMessage('copy.ClubSettingControl.1e791904c3'),
-                )}
-              </dt>
-              <dd>
-                <Money value={currentTotal} code={club.country} year={w.year} plain />
-              </dd>
-            </div>
-          ),
-        )}
-      </dl>
-      <p className={s.summary}>{localizeValue(WAGE_NOTES[responsibility])}</p>
-      <footer>
-        <small>{richMessage('copy.ClubSettingControl.afd24f50c6')}</small>
-        <button
-          type="button"
-          data-ui="primary"
-          disabled={action.blocked || selected === current}
-          onClick={() =>
-            void action.apply(
-              {
-                type: 'decision-wage-limit',
-                responsibility,
-                amount: selected === 'unlimited' ? null : selected,
-              },
-              sourceMessage('copy.ClubSettingControl.160b7a07f3'),
-            )
-          }
-        >
-          {localizeValue(
-            action.busy
-              ? sourceMessage('copy.ClubSettingControl.304d48a5d2')
-              : sourceMessage('copy.ClubSettingControl.d3c4f6c6bb'),
-          )}
-        </button>
-      </footer>
-      {localizeValue(action.error && <p role="alert">{localizeValue(action.error)}</p>)}
-      {localizeValue(
-        action.message && (
-          <p role="status" className={s.message}>
-            {localizeValue(action.message)}
-          </p>
-        ),
-      )}
-    </section>
-  );
-}
-
-export function RecruitmentGuideline({ w, client }: { w: World; client: GameClient }) {
-  useTextLocale();
-  const info = POLICY_INFO.recruitment;
-  return (
-    <ChoiceSetting<PolicyLevel>
-      id="policy:recruitment"
-      label={localizeValue(info.label)}
-      current={policyOf(w).recruitment}
-      client={client}
-      options={info.levels.map((option) => ({
-        value: option.level,
-        name: option.name,
-        summary: option.summary,
-      }))}
-      command={(level) => ({ type: 'club-policy', key: 'recruitment', level })}
-      note={sourceMessage('copy.ClubSettingControl.7cb248c3df')}
     />
   );
 }

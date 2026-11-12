@@ -193,6 +193,25 @@ list at its saved scroll position, or to manager history when a tenure opened th
 Reuse the quiet link control and chevron resource so the list remains reachable while reading
 the detailed report at phone widths.
 
+Who decides a work is chosen on the delegation page (위임 설정) only; no other screen offers a
+direct/delegate switch. A delegated work sends the 단장 a spending request on the shared
+five-step `InvestmentSlider`, previewing the plan he would make of it (`PlanPreview`: one
+sentence, the money as a `PlanFlow` — `stat-tile`s joined by quiet chevrons that read income →
+the work's share → already committed → left to spend, two by two on a phone — one plain line,
+then the settings he sets). Each area page opens with one `DelegationNote` per work it holds —
+the person, temperament and request, or the owner — and a control its person sets stays visible
+but read only: its options disabled at the value in force and, in place of the apply footer, the
+compact `badge` 위임 중 beside who sets it.
+
+A stepped slider names each stop exactly under it: the thumb travels between half its width
+from either end, so the names read the shared `--range-thumb-size` the resource skin draws the
+thumb with, and the end names keep to the track's ends.
+
+구단 예산 shows a season as two bars of one length — what came in (earned, player sales, the
+owner's money, cash drawn on) and where it went (paid regardless, chosen spending, kept) — in the
+theme's semantic colours with one legend line per part; the season in progress adds the 단장's
+`PlanFlow`s.
+
 ### Detail pages read as reports
 
 A detail page serves one decision. The recruitment candidate detail (WEB-109, CLUB-47) is the
@@ -270,8 +289,9 @@ work, never in its place. Its current-club summary (`ClubSituation`, →WEB-44) 
 on wide screens and, on phones, strength and availability over the three moods in a six-column
 grid, so no tile drops below 12px text. Tone colours the value and note, and a warning is also
 written as a word (주의, 위험) beside the note; a summary tile never becomes a button or a
-redirect. The office offers no immediate owner action beside it (→WEB-39), and the HUD cash
-sheet only explains cash, fixed costs and runway (→WEB-44).
+redirect. The office offers no immediate owner action beside it (→WEB-39). The HUD money
+dialog (자금 관리) reads, under two tabs, 구단 예산 — the club's money season by season with the
+league pages' ‹ season › stepper, never an editing control — and, for an owner, 내 자산.
 
 The clubhouse's home briefing keeps the season card, NEXT MATCH and the illustrated office
 entrance only (→WEB-11): the manager-room art fills a reserved slot (168–280px) under a light top

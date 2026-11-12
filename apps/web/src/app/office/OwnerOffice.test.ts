@@ -61,7 +61,8 @@ describe('owner office page', () => {
       expect(buttons).toHaveLength(20);
       expect(buttons.every(([, attributes]) => attributes.includes('disabled=""'))).toBe(true);
       expect(markup).toMatch(/<input[^>]*disabled=""/);
-      expect(markup).toContain('role="radiogroup"');
+      // Delegated work carries its spending request, read-only while the clock runs.
+      expect(markup).toContain('data-testid="delegation-request-staff"');
     }
     gameStore.setState({ clockRunning: false, processing: true });
     expect(render()).toMatch(/<button[^>]*disabled=""/);
@@ -82,7 +83,11 @@ describe('owner office page', () => {
     expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 직접/);
     expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 자동/);
     expect(markup).not.toContain('role="dialog"');
-    expect(markup).toContain('적용');
+    // Delegation asks for a request only: no 재정 기조, wage caps or detailed rows here.
+    expect(markup).toContain('요청 보내기');
+    expect(markup).not.toContain('재정 기조');
+    expect(markup).not.toContain('연봉 한도');
+    expect(markup).not.toContain('role="radiogroup"');
     // The result notice preference sits on its own, above the 자리를 비운 동안 section.
     expect(markup).toMatch(/<input type="checkbox"[^>]*\/>경기 결과 알림/);
     expect(markup.indexOf('경기 결과 알림')).toBeLessThan(markup.indexOf('자리를 비운 동안'));

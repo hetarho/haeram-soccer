@@ -51,8 +51,9 @@ describe('the office ledger read (→WEB-116)', () => {
       control: 'policy:support',
     });
     expect(effectDestination({ kind: 'policy', key: 'recruitment' })).toEqual({
-      kind: 'decision',
-      key: 'recruitment',
+      kind: 'investment',
+      area: 'scouting',
+      control: 'policy:recruitment',
     });
     expect(effectDestination({ kind: 'build', slot: 'culture' })).toEqual({
       kind: 'investment',
@@ -60,12 +61,14 @@ describe('the office ledger read (→WEB-116)', () => {
       control: 'build:culture',
     });
     expect(effectDestination({ kind: 'build', slot: 'market' })).toEqual({
-      kind: 'decision',
-      key: 'sales',
+      kind: 'investment',
+      area: 'firstTeam',
+      control: 'build:market',
     });
     expect(effectDestination({ kind: 'direction', key: 'debut' })).toEqual({
-      kind: 'decision',
-      key: 'academy',
+      kind: 'investment',
+      area: 'youth',
+      control: 'direction:debut',
     });
     expect(effectDestination({ kind: 'facility', part: 'training' })).toEqual({
       kind: 'investment',

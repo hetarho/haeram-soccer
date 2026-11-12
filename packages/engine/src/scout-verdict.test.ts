@@ -112,7 +112,7 @@ describe("the scout's verdict (→CLUB-47)", () => {
     const asked = scoutVerdict(w, offer, fitAt(w, offer, 66, 60))!;
     expect(asked.pros).toEqual(['감독이 고른 선수', expect.stringMatching(/^감독 요청 충족 · /)]);
     delete w.shortlist;
-    // A new career has no revenue yet, so 재정 기조's wage share fails every signing; give it some.
+    // A new career has no revenue yet, so the 단장's wage share fails every signing; give it some.
     const revenue = vi.spyOn(finance, 'recentRevenue').mockReturnValue('999999999999');
     // The gap is the verdict's own line, never a reason.
     const plain = scoutVerdict(w, offer, { ...fitAt(w, offer, 66, 60), fitDelta: 3 })!;
@@ -133,7 +133,7 @@ describe("the scout's verdict (→CLUB-47)", () => {
     expect(settled.cons[0]).toBe(
       `${VERDICT_CONFIG.declineAge}세 · 속도·체력이 해마다 떨어지는 나이`,
     );
-    expect(settled.cons[1]).toMatch(/재정 기조/);
+    expect(settled.cons[1]).toMatch(/단장 판단/);
 
     const prospect = structuredClone(offer);
     prospect.player.born = w.year - 21;

@@ -10,7 +10,14 @@ import {
   type AreaKey,
   type RowKey,
 } from '../../../shared/routing/areas';
-import { financeOption } from '../../../../../../packages/engine/src/direction';
+import {
+  actedLevel,
+  delegateOf,
+  requestLabel,
+  requestOf,
+  TEMPERAMENT_INFO,
+} from '../../../../../../packages/engine/src/delegation-info';
+import { isDelegated } from '../../../../../../packages/engine/src/responsibilities';
 import s from './DirectionFacts.module.css';
 
 /**
@@ -27,24 +34,32 @@ export function DirectionFacts({
   responsibility?: BudgetResponsibility;
 }) {
   useTextLocale();
+  const lines = rows.map((row) => ({ row: row as string, ...rowInForce(w, row) }));
+  // The person's plan behind the delegated work: the owner's request as he acts on it.
+  if (responsibility) {
+    const person = delegateOf(w),
+      request = requestOf(w, responsibility);
+    lines.push({
+      row: 'plan',
+      label: sourceMessage('delegation.fact.plan'),
+      value: isDelegated(w, responsibility)
+        ? sourceMessage('delegation.fact.planValue', {
+            request: requestLabel(responsibility, request),
+            level: requestLabel(responsibility, actedLevel(request, person.temperament)),
+            temperament: TEMPERAMENT_INFO[person.temperament].label,
+          })
+        : sourceMessage('delegation.badge.direct'),
+    });
+  }
   return (
     <dl className={s.lines}>
       {localizeValue(
-        rows.map((row) => {
-          const { label, value } =
-            row === 'finance' && responsibility
-              ? {
-                  label: sourceMessage('copy.ClubSettingControl.847e6f4135'),
-                  value: financeOption(w, responsibility).name,
-                }
-              : rowInForce(w, row);
-          return (
-            <div key={row} className={s.line} data-row={row}>
-              <dt>{localizeValue(label)}</dt>
-              <dd>{localizeValue(value)}</dd>
-            </div>
-          );
-        }),
+        lines.map(({ row, label, value }) => (
+          <div key={row} className={s.line} data-row={row}>
+            <dt>{localizeValue(label)}</dt>
+            <dd>{localizeValue(value)}</dd>
+          </div>
+        )),
       )}
     </dl>
   );

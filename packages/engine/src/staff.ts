@@ -11,7 +11,6 @@ import { ATTRIBUTE_LABEL } from './player';
 import { moraleOf } from './morale';
 import type {
   Club,
-  BudgetResponsibility,
   CoachCriteria,
   ContractTerm,
   ManagerStyle,
@@ -33,9 +32,10 @@ import { clamp, compareIds, integer, random, ratio, scaleBy } from './primitives
 import { debit } from './transactions';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
 import { managerBeats, managerFits, managerLine, managerMatches } from './managerMarket';
-import { annualWageLimit, directionLine, financeStance, wageWithinLimit } from './direction';
+import { directionLine } from './direction';
+import { insolvencyStop, youthPayCap } from './delegation';
 import { pushInbox } from './inbox';
-import { moneyLabel, operatingCosts } from './finance';
+import { moneyLabel } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
 import { coachSeason } from './coaching';
 import { STYLE_INFO } from './styles';
@@ -519,15 +519,17 @@ export function volunteer(w: World, role: StaffRole): Staff {
     until: w.year + 1,
   };
 }
-/** Cash left after `spend` still keeps 재정 기조's runway with `wage` added to the costs (→ECON-33). */
-export function affordable(
-  w: World,
-  spend: bigint,
-  wage: bigint,
-  responsibility: BudgetResponsibility = 'staff',
-) {
-  const perRound = (BigInt(operatingCosts(w).annual) + wage) / 46n;
-  return BigInt(w.cash) - spend >= perRound * BigInt(financeStance(w, responsibility).runway);
+/**
+ * Whether a delegated hire or renewal may spend `spend` now and add `wage` a year: the plain
+ * insolvency stop lets it through and, for a youth director (`role` youth) while the academy's
+ * money is delegated, his pay stays within the 단장's youth plan (→`youthPayCap`). The manager's
+ * and the coaches' pay are otherwise set by the criteria the 단장 chose (→`DELEGATE_CONTROLS`).
+ */
+export function affordable(w: World, spend: bigint, wage: bigint, role?: StaffRole) {
+  if (insolvencyStop(w, spend, wage, true)) return false;
+  if (role !== 'youth' || wage <= 0n) return true;
+  const cap = youthPayCap(w);
+  return cap === undefined || BigInt(staffMember(w, 'youth')?.wage ?? '0') + wage <= cap;
 }
 /** A match this much abler beats an expiring coach who meets the criteria, under 능력 높은 순. */
 export const COACH_RENEWAL_MARGIN = 3;
@@ -553,12 +555,6 @@ function coachChecks(w: World, role: StaffRole, c: CoachCriteria): CoachCheck[] 
     [
       sourceMessage('copy.staff.614681d845', { p0: c.minAbility }),
       (coach) => coach.ability >= c.minAbility,
-    ],
-    [
-      sourceMessage('copy.staff.9494efbca1', {
-        p0: moneyLabel(w, annualWageLimit(w, 'staff') ?? '0'),
-      }),
-      (coach) => wageWithinLimit(w, 'staff', coach.wage),
     ],
     ...(trait
       ? [
@@ -605,7 +601,7 @@ export function coachMatches(w: World, role: StaffRole, replacing?: Staff) {
     .filter(
       (offer) =>
         checks.every(([, fits]) => fits(offer)) &&
-        affordable(w, staffHireCost(offer), BigInt(offer.wage) - freed),
+        affordable(w, staffHireCost(offer), BigInt(offer.wage) - freed, role),
     )
     .sort(
       c.priority === 'ability'
@@ -798,8 +794,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
   const terms = renewalTerms(w, member, c.term),
     payable =
       !c.volunteer &&
-      wageWithinLimit(w, 'staff', terms.wage) &&
-      affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage)),
+      affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage), role),
     beaten =
       !!first &&
       (c.priority === 'ability'
@@ -974,11 +969,7 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
     });
     return true;
   }
-  if (
-    !wageWithinLimit(w, 'manager', kept.wage) ||
-    !affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage), 'manager')
-  )
-    return false;
+  if (!affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage))) return false;
   renewManager(w, term, true);
   pushInbox(w, {
     kind: 'staff-report',

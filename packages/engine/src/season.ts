@@ -1,5 +1,6 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { refreshReadModels } from './read-models';
+import { applyDelegatePlans } from './delegation';
 import { openNeed } from './replacements';
 import { callUpFor, callUpProspects } from './squad-target';
 import { SQUAD_TARGET } from './squad-size';
@@ -691,6 +692,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     // before anything this rollover weighs fixed costs.
     w.operatingExpenses = assessOperatingExpenses(w);
     yearlySponsor(w);
+    // Each delegated person plans the new season on its fixed costs and cash.
+    applyDelegatePlans(w, 'season');
     yearlyStaff(w);
     seasonStaff(w);
     seasonAcademy(w);

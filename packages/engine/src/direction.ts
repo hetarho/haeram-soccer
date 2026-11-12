@@ -1,19 +1,12 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
-import type {
-  BudgetResponsibility,
-  DirectionKey,
-  FinanceChoice,
-  ManagerStyle,
-  WageResponsibility,
-  World,
-} from '../../contracts/src/types';
+import type { DirectionKey, ManagerStyle, World } from '../../contracts/src/types';
 import { MANAGER_STYLES, STYLE_INFO } from './styles';
 
 /**
- * The direction rows the delegated staff follow (→ECON-25): 재계약 기조 (→CLUB-26), 선호 학파 and
- * 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15) and 재정 기조 (→ECON-33). Each option is a named
- * choice like a dial step; the first-listed default keeps the club as it was before the rows
- * existed, and is never stored.
+ * The direction rows the staff follow (→ECON-25): 재계약 기조 (→CLUB-26), 선호 학파 and 감독 기조
+ * (→STAFF-18), 코치 기조 (→STAFF-15), 육성 목표 and 데뷔 시점 (→CLUB-32). Each option is a named
+ * choice like a dial step; the default keeps the club as it was before the rows existed, and is
+ * never stored. A delegated person sets the rows of his work (`DELEGATE_CONTROLS`).
  */
 export interface DirectionOption {
   id: string;
@@ -27,7 +20,6 @@ export const DIRECTION_KEYS: readonly DirectionKey[] = [
   'school',
   'manager',
   'coaches',
-  'finance',
   'youthGoal',
   'debut',
 ];
@@ -38,83 +30,8 @@ export const DIRECTION_DEFAULT: Readonly<Record<DirectionKey, string>> = {
   school: 'any',
   manager: 'standard',
   coaches: 'standard',
-  finance: 'standard',
   youthGoal: 'standard',
   debut: 'standard',
-};
-
-/**
- * 재정 기조 (→ECON-33): the runway the staff keep after a delegated spend (rounds of fixed costs),
- * the wage bill's ceiling against 12 months' revenue, the operating costs (in years) below which
- * academy promotions wait, the two runways below which the staff sell harder, and the chief
- * scout's signings (→CLUB-33): the margin an upgrade needs over a starter (none: no upgrades),
- * upgrades a window, the share of the cash above the runway a fee may take while director traits set bids (→CLUB-41).
- */
-export interface FinanceStance {
-  runway: number;
-  wageShare: number;
-  promotionYears: number;
-  sellSteps: readonly [number, number];
-  signing: { margin?: number; upgrades: number; feeShare: number };
-}
-export const FINANCE_STANCES: Readonly<Record<string, FinanceStance>> = {
-  aggressive: {
-    runway: 6,
-    wageShare: 0.75,
-    promotionYears: 0.25,
-    sellSteps: [6, 14],
-    signing: { margin: 2, upgrades: 3, feeShare: 1 },
-  },
-  bold: {
-    runway: 9,
-    wageShare: 0.7,
-    promotionYears: 0.5,
-    sellSteps: [9, 20],
-    signing: { margin: 3, upgrades: 2, feeShare: 0.75 },
-  },
-  standard: {
-    runway: 13,
-    wageShare: 0.65,
-    promotionYears: 1,
-    sellSteps: [13, 30],
-    signing: { margin: 5, upgrades: 1, feeShare: 0.5 },
-  },
-  careful: {
-    runway: 20,
-    wageShare: 0.6,
-    promotionYears: 1.5,
-    sellSteps: [20, 45],
-    signing: { upgrades: 0, feeShare: 0.35 },
-  },
-  stable: {
-    runway: 30,
-    wageShare: 0.55,
-    promotionYears: 2,
-    sellSteps: [30, 65],
-    signing: { upgrades: 0, feeShare: 0.25 },
-  },
-};
-const years = (value: number) =>
-  value < 1
-    ? sourceMessage('copy.academy.76367e9ed0', { p0: Math.round(value * 12) })
-    : value === 1
-      ? sourceMessage('copy.direction.c492c27533')
-      : sourceMessage('copy.academy.e112fae4e0', { p0: value });
-const financeSummary = (id: string) => {
-  const stance = FINANCE_STANCES[id];
-  return sourceMessage('copy.direction.f4a5e54811', {
-    p0: stance.runway,
-    p1: Math.round(stance.wageShare * 100),
-    p2: years(stance.promotionYears),
-    p3: Math.round(stance.signing.feeShare * 100),
-    p4:
-      stance.signing.margin === undefined
-        ? sourceMessage('copy.direction.2e0ad8a457')
-        : sourceMessage('copy.direction.433e73e8a4', {
-            p0: stance.signing.margin,
-            p1: stance.signing.upgrades,
-          }),
-  });
 };
 
 export const DIRECTION_INFO: Readonly<
@@ -240,36 +157,6 @@ export const DIRECTION_INFO: Readonly<
       },
     ],
   },
-  finance: {
-    label: sourceMessage('copy.direction.8d47afe1b5'),
-    options: [
-      {
-        id: 'aggressive',
-        name: sourceMessage('copy.direction.be829627d2'),
-        summary: financeSummary('aggressive'),
-      },
-      {
-        id: 'bold',
-        name: sourceMessage('copy.direction.c41a48f2a9'),
-        summary: financeSummary('bold'),
-      },
-      {
-        id: 'standard',
-        name: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
-        summary: financeSummary('standard'),
-      },
-      {
-        id: 'careful',
-        name: sourceMessage('copy.direction.3ac9642af9'),
-        summary: financeSummary('careful'),
-      },
-      {
-        id: 'stable',
-        name: sourceMessage('copy.direction.92005ab199'),
-        summary: financeSummary('stable'),
-      },
-    ],
-  },
   youthGoal: {
     label: sourceMessage('copy.direction.1046577cf5'),
     options: [
@@ -371,42 +258,4 @@ export function preferredSchool(w: Pick<World, 'direction'>): ManagerStyle | und
 /** "감독 기조 육성가": a row and its option in force, for the staff's reports. */
 export function directionLine(w: Pick<World, 'direction'>, key: DirectionKey) {
   return `${DIRECTION_INFO[key].label} ${directionOption(w, key).name}`;
-}
-/** 재정 기조 in force (→ECON-33). */
-export function financeChoiceOf(
-  w: Pick<World, 'direction' | 'decisionBudgets'>,
-  responsibility?: BudgetResponsibility,
-): FinanceChoice {
-  return (
-    (responsibility && w.decisionBudgets?.[responsibility]?.finance) ||
-    (directionOf(w, 'finance') as FinanceChoice)
-  );
-}
-export function financeOption(
-  w: Pick<World, 'direction' | 'decisionBudgets'>,
-  responsibility: BudgetResponsibility,
-) {
-  return DIRECTION_INFO.finance.options.find(
-    (option) => option.id === financeChoiceOf(w, responsibility),
-  )!;
-}
-export function financeStance(
-  w: Pick<World, 'direction' | 'decisionBudgets'>,
-  responsibility?: BudgetResponsibility,
-): FinanceStance {
-  return FINANCE_STANCES[financeChoiceOf(w, responsibility)];
-}
-export function annualWageLimit(
-  w: Pick<World, 'decisionBudgets'>,
-  responsibility: WageResponsibility,
-) {
-  return w.decisionBudgets?.[responsibility]?.maxAnnualWage;
-}
-export function wageWithinLimit(
-  w: Pick<World, 'decisionBudgets'>,
-  responsibility: WageResponsibility,
-  wage: string,
-) {
-  const cap = annualWageLimit(w, responsibility);
-  return cap === undefined || BigInt(wage) <= BigInt(cap);
 }

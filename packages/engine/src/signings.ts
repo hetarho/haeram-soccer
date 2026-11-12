@@ -20,7 +20,7 @@ import { LINE_MINIMUM, LINE_NAME, lineOf, POSITION_LABEL, requestLabel } from '.
 export { requestLabel } from './player';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import { MARKET_REFRESH_ROUNDS } from './managerMarket';
-import { clamp, compareIds, ratio, scaleBy } from './primitives';
+import { clamp, compareIds, ratio } from './primitives';
 import {
   activePlayers,
   lineOfPlayer,
@@ -31,9 +31,9 @@ import {
 } from './player-state';
 import { addEvent } from './events';
 import { joinClub, ownStarters } from './world';
-import { annualWageLimit, financeOption, financeStance, wageWithinLimit } from './direction';
-import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
-import { financeProjection } from './projection';
+import { delegatePlan, insolvencyStop, planLabel, spendingStance } from './delegation';
+import { sharePercent } from './delegation-info';
+import { moneyLabel } from './finance';
 import { pushInbox } from './inbox';
 import { isDelegated } from './responsibilities';
 import { signFreeAgent, squadCommand } from './ops-squad';
@@ -146,71 +146,55 @@ export function shortLines(w: World): ShortNeed[] {
 }
 
 /**
- * 재정 기조's checks on a signing (→ECON-33): the fee within its share of the cash above the
- * runway, and with his wage the runway, the wage bill ceiling and the season's cash projection.
+ * The 단장's plan's checks on a signing (→`delegatePlan`): with his wage the players' wage bill
+ * stays inside the squad's share of the season's income, the fee and a year of his wage fit what is
+ * left of the season's squad money, and the plain insolvency stop lets it through. A line the team
+ * cannot field (`need` short) is filled with a free agent whatever the plan's ratio, as any
+ * director must put out a side: only the insolvency stop reads that one.
  */
-export function signingVerdict(w: World, player: Player, fee: string) {
-  const stance = financeStance(w, 'recruitment'),
-    finance = financeOption(w, 'recruitment').name,
-    perRound = (BigInt(operatingCosts(w).annual) + BigInt(player.wage)) / BigInt(SEASON_ROUNDS),
-    runway = perRound * BigInt(stance.runway),
-    spare = BigInt(w.cash) - runway,
-    cap = spare > 0n ? scaleBy(spare.toString(), stance.signing.feeShare, 100n) : '0';
+export function signingVerdict(w: World, player: Player, fee: string, need?: SigningNeed['kind']) {
+  const plan = delegatePlan(w, 'recruitment'),
+    label = planLabel(w, 'recruitment'),
+    wage = BigInt(player.wage),
+    share = sharePercent(plan.share);
   const no = (reason: string) => ({
     ok: false as const,
-    reason: sourceMessage('copy.signings.1ed3f9250d', { p0: reason, p1: finance }),
+    reason: sourceMessage('delegation.verdict.wrap', { reason, plan: label }),
   });
-  if (!wageWithinLimit(w, 'recruitment', player.wage))
-    return no(
-      sourceMessage('copy.signings.ef4cd4ff44', {
-        p0: moneyLabel(w, player.wage),
-        p1: moneyLabel(w, annualWageLimit(w, 'recruitment')!),
-      }),
-    );
-  if (spare < BigInt(fee))
-    return no(sourceMessage('copy.signings.a436f357d9', { p0: stance.runway }));
-  if (BigInt(fee) > BigInt(cap))
-    return no(
-      sourceMessage('copy.signings.228afae599', {
-        p0: moneyLabel(w, fee),
-        p1: Math.round(stance.signing.feeShare * 100),
-        p2: moneyLabel(w, cap),
-      }),
-    );
-  const bill = BigInt(wageBill(w)) + BigInt(player.wage),
-    revenue = recentRevenue(w),
-    share = Math.round(stance.wageShare * 100);
-  if (bill * 100n > BigInt(revenue) * BigInt(share))
-    return no(
-      sourceMessage('copy.signings.ae8b1bfd1d', {
-        p0: moneyLabel(w, bill.toString()),
-        p1: moneyLabel(w, revenue),
-        p2: share,
-      }),
-    );
-  const cash = w.cash;
-  w.players.push(player);
-  w.cash = (BigInt(cash) - BigInt(fee)).toString();
-  let seasonEnd: string;
-  try {
-    seasonEnd = financeProjection(w).seasonEnd.low;
-  } finally {
-    w.players.pop();
-    w.cash = cash;
+  if (need === 'short' && BigInt(fee) === 0n) {
+    const stop = insolvencyStop(w, 0n, wage);
+    return stop
+      ? no(stop)
+      : {
+          ok: true as const,
+          reason: sourceMessage('delegation.verdict.shortFree', { plan: label }),
+        };
   }
-  if (BigInt(seasonEnd) < runway)
+  const bill = BigInt(plan.committed) + wage;
+  if (wage > 0n && bill > BigInt(plan.budget))
     return no(
-      sourceMessage('copy.signings.d4c4571f86', {
-        p0: moneyLabel(w, seasonEnd),
-        p1: stance.runway,
+      sourceMessage('delegation.verdict.wageBill', {
+        bill: moneyLabel(w, bill.toString()),
+        revenue: moneyLabel(w, plan.revenue),
+        share,
       }),
     );
+  if (BigInt(fee) + wage > BigInt(plan.left))
+    return no(
+      sourceMessage('delegation.verdict.squadBudget', {
+        fee: moneyLabel(w, fee),
+        wage: moneyLabel(w, player.wage),
+        left: moneyLabel(w, plan.left),
+      }),
+    );
+  const stop = insolvencyStop(w, BigInt(fee), wage);
+  if (stop) return no(stop);
   return {
     ok: true as const,
-    reason: sourceMessage('copy.signings.56746fd995', {
-      p0: Math.round(stance.signing.feeShare * 100),
-      p1: share,
-      p2: finance,
+    reason: sourceMessage('delegation.verdict.signingOk', {
+      left: moneyLabel(w, plan.left),
+      share,
+      plan: label,
     }),
   };
 }
@@ -236,13 +220,13 @@ export function needLine(w: World, need: SigningNeed) {
             p1: SIGNING_CONFIG.squadMinimum,
           }))
     );
-  return sourceMessage('copy.signings.c997ed1cf6', {
-    p0: asked,
-    p1: POSITION_LABEL[need.position],
-    p2: need.measure.name,
-    p3: Math.round(need.level),
-    p4: need.margin,
-    p5: financeOption(w, 'recruitment').name,
+  return sourceMessage('delegation.need.upgrade', {
+    asked,
+    position: POSITION_LABEL[need.position],
+    starter: need.measure.name,
+    level: Math.round(need.level),
+    margin: need.margin,
+    plan: planLabel(w, 'recruitment'),
   });
 }
 /** " · 감독이 고른 선수" when the 단장 moves for the manager's pick. */
@@ -688,7 +672,7 @@ export function staffSignings(w: World) {
   if (!regular && !retry && !replacements.length) return;
   const squad = activePlayers(w).length;
   if (squad >= registration(w).ceiling) return;
-  const stance = financeStance(w, 'recruitment'),
+  const stance = spendingStance(w, 'recruitment'),
     upgrades = bids.filter(
       (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
     ).length,
@@ -726,7 +710,7 @@ export function staffSignings(w: World) {
   for (const need of needs)
     for (const { offer, index } of candidates(w, offers, need, tried)) {
       const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
-      const verdict = signingVerdict(w, offer.player, fee);
+      const verdict = signingVerdict(w, offer.player, fee, need.kind);
       if (!verdict.ok) continue;
       if (offer.freeAgent) directorSignsFreeAgent(w, offer, need, verdict.reason);
       else {

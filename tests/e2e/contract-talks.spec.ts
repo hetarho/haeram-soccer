@@ -121,7 +121,7 @@ test('the talk rule shows under 선수 as the club was taken over', async ({ pag
   test.skip(browserName !== 'chromium', 'One browser covers the journey.');
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  // An existing 알뜰 생존 save retains 재계약 기조 짠물 and 재정 기조 안정적 (→ECON-22).
+  // An existing 알뜰 생존 save retains 재계약 기조 짠물 and asks every person to spend the minimum.
   await importLegacyDirection(page, 'shoestring', 'talk-rule-journey');
   await openPersonnel(page, 'players');
   // The owner holds contracts; the delegated criteria remain visible for a later handover.
@@ -130,11 +130,11 @@ test('the talk rule shows under 선수 as the club was taken over', async ({ pag
   await expect(talks.getByTestId('decision-owner-contracts')).toContainText('직접');
   // The rows read as taken over; no line opens an editor (→STAFF-26, ECON-25).
   await expect(talks.locator('[data-row="renewal"]')).toContainText('짠물');
-  await expect(talks.locator('[data-row="finance"]')).toContainText('안정적');
+  await expect(talks.locator('[data-row="plan"]')).toContainText('직접 결정');
   await expect(talks.getByRole('button', { name: /^재계약 기조/ })).toHaveCount(0);
   await expect(talks).toContainText('시장가까지만');
   await expect(talks).toContainText('32세부터 1시즌');
-  await expect(talks).toContainText('30라운드 운영비');
+  await expect(talks).toContainText('이번 시즌 수입 예상의');
   await expect(talks).toContainText('언해피');
   await expect(page.getByRole('dialog', { name: '재정 업무 기준', exact: true })).toHaveCount(0);
 });

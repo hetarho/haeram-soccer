@@ -1,8 +1,8 @@
-/** Office entity: the owner's office as data and small views; exports desks, club setting controls, delegation rules, office changes, progress mode, owner figures, facility art, the cash summary and the owner sheet. */
+/** Office entity: the owner's office as data and small views; exports desks, club setting controls and their page homes, delegation plans and notes, office changes, progress mode, owner figures, facility art, the cash summary and the owner sheet. */
 export {
-  DECISION_BUILDS,
-  DECISION_DIRECTIONS,
-  DECISION_POLICIES,
+  AREA_DELEGATIONS,
+  AREA_DIRECTIONS,
+  delegationArea,
   PASSIVE_BUILDS,
   PASSIVE_POLICIES,
 } from './lib/clubControls';
@@ -39,22 +39,24 @@ export {
   moodChange,
   nextSettlement,
   ownerLock,
+  ownerSeasonRows,
   ownerStatuses,
+  settlementsLeft,
+  stakeExpectation,
   stakeAmount,
   stakeOutlook,
 } from './lib/ownerFigures';
 export { modeSwitchBlocked, switchProgressMode } from './lib/progressMode';
-export { ClubCashSummary } from './ui/ClubCashSummary';
+export { ClubBudget } from './ui/ClubBudget';
 export {
   BuildSetting,
-  DecisionFinanceSetting,
   DirectionSetting,
   InvestmentSlider,
-  RecruitmentGuideline,
+  settingLock,
   TicketSetting,
   useClubSettingAction,
-  WageBudgetSetting,
 } from './ui/ClubSettingControl';
+export { DelegationNote, PlanPreview } from './ui/DelegationPlan';
 export { FacilityArt } from './ui/FacilityArt';
 export { DeskBody, DeskSettings, type DeskStat, DeskStats } from './ui/OfficeDesk';
-export { OwnerFunds, OwnerSheet, OwnerSheetBody } from './ui/OwnerSheet';
+export { OwnerFunds, OwnerSheetBody } from './ui/OwnerSheet';

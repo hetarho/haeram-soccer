@@ -23,7 +23,7 @@
  *            --abroad 1–5 (해외 스카우트망, the owner's dial; 1)   --brief (no per-look lines)
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import type { CountryCode, Player, World } from '../packages/contracts/src/types';
+import type { CountryCode, Player, SpendRequest, World } from '../packages/contracts/src/types';
 import type { TakeoverDecade, WealthTier } from '../packages/contracts/src/owner';
 import { careerEnded } from '../packages/contracts/src/owner';
 import { generateHistory } from '../packages/engine/src/history';
@@ -46,12 +46,13 @@ import { scoutReach, transferOffers } from '../packages/engine/src/scout-search'
 import { shortLines, signingVerdict, SIGNING_CONFIG } from '../packages/engine/src/signings';
 import { staffBidShare } from '../packages/engine/src/director-bidding';
 import { transferWindow, transferWindowDays } from '../packages/engine/src/transfer-window';
-import { financeStance, wageWithinLimit } from '../packages/engine/src/direction';
-import { operatingCosts, recentRevenue, wageBill } from '../packages/engine/src/finance';
+import { delegatePlan, insolvencyStop } from '../packages/engine/src/delegation';
+import { SAFETY_ROUNDS } from '../packages/engine/src/delegation-info';
+import { operatingCosts } from '../packages/engine/src/finance';
 import { financeProjection } from '../packages/engine/src/projection';
 import { openNeeds } from '../packages/engine/src/replacements';
 import { clubTerms } from '../packages/engine/src/world-market';
-import { ratio, scaleBy } from '../packages/engine/src/primitives';
+import { ratio } from '../packages/engine/src/primitives';
 import { REVENUE_SINCE_TAKEOVER } from '../packages/engine/src/finance';
 import { SEARCH_CEILING } from '../packages/engine/src/scout-search';
 
@@ -64,6 +65,15 @@ const SEED = option('seed', 'spread-0');
 const CODE = option('country', 'ENG') as CountryCode;
 const TIER = option('tier', 'oil') as WealthTier;
 const FINANCE = option('finance', 'aggressive');
+/** The legacy 재정 기조 names map to the 단장's spending request (→`SpendRequest`). */
+const REQUEST_OF: Record<string, SpendRequest> = {
+  stable: 1,
+  careful: 2,
+  standard: 3,
+  bold: 4,
+  aggressive: 5,
+};
+
 const FROM = Number(option('from', '2000')) as TakeoverDecade;
 const UNTIL = Number(option('until', '2002'));
 const INJECT = Number(option('inject', '0'));
@@ -200,21 +210,15 @@ interface Career {
   }[];
 }
 
-/** The first of 재정 기조's checks a signing fails (→ECON-33), as `signingVerdict` orders them. */
+/** The first of the 단장's plan's checks a signing fails, as `signingVerdict` orders them. */
 function checkOf(w: World, player: Player, fee: string) {
-  const stance = financeStance(w, 'recruitment'),
-    perRound = (BigInt(operatingCosts(w).annual) + BigInt(player.wage)) / BigInt(SEASON_ROUNDS),
-    spare = BigInt(w.cash) - perRound * BigInt(stance.runway),
-    cap = spare > 0n ? BigInt(scaleBy(spare.toString(), stance.signing.feeShare, 100n)) : 0n;
+  const plan = delegatePlan(w, 'recruitment'),
+    wage = BigInt(player.wage);
   const verdict = signingVerdict(w, player, fee);
   if (verdict.ok) return 'ok';
-  if (!wageWithinLimit(w, 'recruitment', player.wage)) return 'wage cap';
-  if (spare < BigInt(fee)) return 'runway';
-  if (BigInt(fee) > cap) return 'share';
-  const bill = BigInt(wageBill(w)) + BigInt(player.wage);
-  if (bill * 100n > BigInt(recentRevenue(w)) * BigInt(Math.round(stance.wageShare * 100)))
-    return 'wage bill';
-  return 'projection';
+  if (wage > 0n && BigInt(plan.committed) + wage > BigInt(plan.budget)) return 'wage bill';
+  if (BigInt(fee) + wage > BigInt(plan.left)) return 'share';
+  return insolvencyStop(w, BigInt(fee), wage, true) ? 'runway' : 'projection';
 }
 
 function gapOf(w: World, player: Player) {
@@ -248,14 +252,14 @@ function candidate(w: World, player: Player, fee: string, club: string, inBand: 
 }
 
 function read(w: World): Read {
-  const stance = financeStance(w, 'recruitment'),
+  const plan = delegatePlan(w, 'recruitment'),
     costs = operatingCosts(w),
     perRound = BigInt(costs.annual) / BigInt(SEASON_ROUNDS),
-    runway = perRound * BigInt(stance.runway),
+    runway = perRound * BigInt(SAFETY_ROUNDS),
     spare = BigInt(w.cash) - runway,
-    cap = spare > 0n ? BigInt(scaleBy(spare.toString(), stance.signing.feeShare, 100n)) : 0n,
-    revenue = BigInt(recentRevenue(w)),
-    bill = BigInt(wageBill(w));
+    cap = BigInt(plan.left),
+    revenue = BigInt(plan.revenue),
+    bill = BigInt(plan.committed);
   const reach = scoutReach(w),
     [low, high] = reach.ability,
     [young, old] = reach.age;
@@ -296,7 +300,7 @@ function read(w: World): Read {
     cap: pounds(cap),
     wageBill: pounds(bill),
     revenue: pounds(revenue),
-    wageRoom: pounds((revenue * BigInt(Math.round(stance.wageShare * 100))) / 100n - bill),
+    wageRoom: pounds(BigInt(plan.budget) - bill),
     projection: pounds(projection),
     squad: activePlayers(w).length,
     short: shortLines(w).length,
@@ -321,10 +325,7 @@ function playCareer(): Career | undefined {
   takeOver(w, pick.club.id, { tier: TIER, traits: [] });
   w.settings = defaultSettings();
   for (const key of RESPONSIBILITY_KEYS) w.settings.responsibilities[key] = 'delegated';
-  w.decisionBudgets = {
-    ...w.decisionBudgets,
-    recruitment: { finance: FINANCE },
-  } as World['decisionBudgets'];
+  w.delegationRequests = { recruitment: REQUEST_OF[FINANCE] ?? 3 };
   // 영입 기조 (→ECON-16), the owner's own dial: 3 (표준) unless the run names another level.
   if (RECRUITMENT !== 3) w.policy = { ...w.policy, recruitment: RECRUITMENT } as World['policy'];
   // 해외 스카우트망 (→ECON-16, CLUB-51), the owner's dial for the top flights abroad: 1 unless named.

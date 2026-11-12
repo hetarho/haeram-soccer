@@ -80,7 +80,7 @@ describe('worker command protocol', () => {
     );
     expect(step.ok).toBe(true);
     const settings = structuredClone(h.world!.settings);
-    // The intervention level is withdrawn (→WEB-45): only 결재 설정 changes who decides.
+    // The intervention level is withdrawn (→WEB-45): only 위임 설정 changes who decides.
     expect(
       (
         await h.handle(

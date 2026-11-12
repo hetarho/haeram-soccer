@@ -9,11 +9,11 @@ import { settle } from './layout';
 export const LOBBY = '결재함';
 /** The clubhouse's illustrated office entrance and the office's page (→WEB-11/39). */
 export const OFFICE = '구단주 사무실';
-/** Who decides each title and what is reported (→WEB-79), the modal 결재 설정 opens. */
-export const SETTINGS = '결재 설정';
+/** Who decides each title and what is reported (→WEB-79), the modal 위임 설정 opens. */
+export const SETTINGS = '위임 설정';
 /**
  * The bottom controls on every playing page but a match (→WEB-18): the mode, 결재함 and
- * 결재 설정, and the clock.
+ * 위임 설정, and the clock.
  */
 export const seasonTransport = (page: Page) => page.locator('[data-ui="season-transport"]');
 /**
@@ -165,7 +165,7 @@ export async function outsideOffice(page: Page) {
 
 /**
  * Runs a menu action (an export, a save retry) with the office's dialogs closed and opens the
- * 결재함 again afterwards; a review is left by its queue, unresolved (→WEB-100). 결재 설정 and its
+ * 결재함 again afterwards; a review is left by its queue, unresolved (→WEB-100). 위임 설정 and its
  * sheets close for good. Outside the office the action runs in place, keeping a page's place and
  * draft.
  */
@@ -178,7 +178,7 @@ export async function aroundOffice<T>(page: Page, action: () => Promise<T>) {
   return result;
 }
 
-/** The 결재 설정 modal (→WEB-79). */
+/** The 위임 설정 modal (→WEB-79). */
 export const decisionSettings = (page: Page) =>
   page.getByRole('dialog', { name: SETTINGS, exact: true });
 
@@ -195,7 +195,7 @@ export async function closeDecisionSettings(page: Page) {
   await expect(settings).toHaveCount(0);
 }
 
-/** Opens 결재 설정 from the bottom controls over the current page (→WEB-18/79). */
+/** Opens 위임 설정 from the bottom controls over the current page (→WEB-18/79). */
 export async function openDecisionSettings(page: Page) {
   const settings = decisionSettings(page);
   if (await settings.isVisible()) return settings;
@@ -210,7 +210,7 @@ export async function openDecisionSettings(page: Page) {
 }
 
 /**
- * The office menu over the office's pages (→WEB-10): 오버뷰, 결재함 and 결재 설정, beside its
+ * The office menu over the office's pages (→WEB-10): 오버뷰, 결재함 and 위임 설정, beside its
  * link home (or back to the office from an area).
  */
 export const officeMenu = (page: Page) =>
@@ -291,7 +291,7 @@ export const AREAS = {
   경기장: 'stadium',
   스카우팅: 'scouting',
   '팬 · 마케팅': 'community',
-  '재정 · 사업': 'finance',
+  '구단 예산': 'finance',
   '구단 디자인': 'identity',
 } as const;
 export type Area = keyof typeof AREAS;
@@ -413,7 +413,7 @@ export async function openTraining(page: Page) {
 }
 
 /**
- * 후원 (→WEB-110): the sponsor slots, offers, signatures and who signs them, as the sheet 결재 설정's
+ * 후원 (→WEB-110): the sponsor slots, offers, signatures and who signs them, as the sheet 위임 설정's
  * 스폰서 계약 opens (→WEB-79).
  */
 export async function openSponsors(page: Page) {
@@ -426,14 +426,14 @@ export async function openSponsors(page: Page) {
 
 /**
  * Opens where an office area's work lives now (→WEB-39/110/112): the investment areas from the
- * clubhouse (재정·투자's finance and facilities in 재정 · 사업), sponsors through 결재 설정, player
- * and staff contracts with the roster and the coaches, 결재 설정 as its modal and 결재함 as the
+ * clubhouse (재정·투자's finance and facilities in 구단 예산), sponsors through 위임 설정, player
+ * and staff contracts with the roster and the coaches, 위임 설정 as its modal and 결재함 as the
  * office's queue.
  */
 export async function openOfficeArea(page: Page, area: string) {
   if (area === SETTINGS) return void (await openDecisionSettings(page));
   if (area === LOBBY) return enterOffice(page);
-  if (area === '투자' || area === '재정·투자') area = '재정 · 사업';
+  if (area === '투자' || area === '재정·투자') area = '구단 예산';
   if (area === '후원') return void (await openSponsors(page));
   if (area === '선수 계약') return openTeamWork(page, '1군');
   if (area === '스태프 계약') return openTeamWork(page, '코치진');

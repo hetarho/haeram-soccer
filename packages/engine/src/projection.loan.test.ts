@@ -4,7 +4,6 @@ import { message } from '../../contracts/src/messages';
 import { financeProjection, type ProjectionLine } from './projection';
 import { operatingCosts, moneyLabel } from './finance';
 import { roundShare } from './finance-read';
-import { financeStance } from './direction';
 import { signingVerdict } from './signings';
 import { SEASON_ROUNDS } from './calendar';
 
@@ -125,31 +124,32 @@ describe('takeover loan cash projections', () => {
     },
   );
 
-  it('makes the existing staff policy refuse a signing whose unpaid loan consumes its projected runway', () => {
+  it('makes the plain insolvency stop refuse a signing whose unpaid loan takes the season below zero', () => {
     const w = world(10, 2);
     w.operatingExpenses = '460000000000';
     w.income = '4600000000000';
+    // A plan with room for anything, so only the stop speaks.
+    w.budgetPlan = { year: w.year, revenue: '999999999999999', sales: '0' };
     const plain = structuredClone(w);
     delete plain.loan;
-    const stance = financeStance(w, 'recruitment');
-    const runway =
-      (BigInt(operatingCosts(w).annual) / BigInt(SEASON_ROUNDS)) * BigInt(stance.runway);
+    const floor = (BigInt(operatingCosts(w).annual) / BigInt(SEASON_ROUNDS)) * 4n;
     const netWithoutLoan = BigInt(financeProjection(plain).seasonEnd.low) - BigInt(plain.cash);
     const remaining = remainingPayments(w.loan!.installment, w.round);
-    w.cash = (runway - netWithoutLoan + remaining / 2n).toString();
+    // Cash that ends the season above zero without the loan's rounds left, below zero with them.
+    w.cash = (-netWithoutLoan + remaining / 2n).toString();
     plain.cash = w.cash;
     const player = { id: 'synthetic-signing', status: 'active', wage: '0' } as Player;
     const before = structuredClone(w);
     const projected = financeProjection(w).seasonEnd.low;
-    // Current cash clears the same policy's runway; the corrected future cash does not.
-    expect(BigInt(w.cash)).toBeGreaterThan(runway);
-    expect(BigInt(projected)).toBeLessThan(runway);
-    expect(BigInt(projected) + remaining).toBeGreaterThanOrEqual(runway);
+    // Current cash clears the stop's month of costs; the corrected future cash does not.
+    expect(BigInt(w.cash)).toBeGreaterThan(floor);
+    expect(BigInt(projected)).toBeLessThan(0n);
+    expect(BigInt(projected) + remaining).toBeGreaterThanOrEqual(0n);
     expect(signingVerdict(plain, player, '0').ok).toBe(true);
     const verdict = signingVerdict(w, player, '0');
     expect(verdict.ok).toBe(false);
     expect(verdict.reason).toContain(
-      message('copy.signings.d4c4571f86', { p0: moneyLabel(w, projected), p1: stance.runway }),
+      message('delegation.stop.seasonEnd', { projected: moneyLabel(w, projected) }),
     );
     expect(w).toEqual(before);
   });

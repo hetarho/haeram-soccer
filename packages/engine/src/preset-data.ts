@@ -1,6 +1,6 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ClubBuild } from '../../contracts/src/build';
-import type { ClubPolicy, Direction } from '../../contracts/src/types';
+import type { ClubPolicy, Direction, SpendRequest } from '../../contracts/src/types';
 
 // Data only, with type imports: the founding screen reads the presets from here without loading
 // the engine (→ARCH-28).
@@ -12,6 +12,8 @@ export interface PresetRows {
   policy?: Partial<ClubPolicy>;
   ticket?: number;
   direction?: Direction;
+  /** The spending request every delegated person starts with (→`SpendRequest`); absent is 적당히. */
+  request?: SpendRequest;
 }
 /**
  * Ready-made directions (→ECON-22), one tap to fill every row of the board. Each has one identity
@@ -45,7 +47,8 @@ export const BUILD_PRESETS: {
     rows: {
       policy: { localInvest: 3 },
       ticket: 0.035,
-      direction: { renewal: 'keepAll', youthGoal: 'firstTeam', finance: 'careful' },
+      direction: { renewal: 'keepAll', youthGoal: 'firstTeam' },
+      request: 2,
     },
   },
   {
@@ -89,7 +92,7 @@ export const BUILD_PRESETS: {
     rows: {
       policy: { globalMarketing: 3, tour: 2 },
       ticket: 0.08,
-      direction: { finance: 'bold' },
+      request: 4,
     },
   },
   {
@@ -120,8 +123,8 @@ export const BUILD_PRESETS: {
         renewal: 'coreOnly',
         manager: 'proven',
         youthGoal: 'minimal',
-        finance: 'aggressive',
       },
+      request: 5,
     },
   },
   {
@@ -140,7 +143,8 @@ export const BUILD_PRESETS: {
     },
     rows: {
       policy: { support: 2 },
-      direction: { renewal: 'frugal', manager: 'cheap', coaches: 'cheap', finance: 'stable' },
+      direction: { renewal: 'frugal', manager: 'cheap', coaches: 'cheap' },
+      request: 1,
     },
   },
 ];

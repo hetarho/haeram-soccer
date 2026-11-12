@@ -13,10 +13,9 @@ import {
 import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
 import { Card } from '../../../shared/ui/Card';
-import { Dialog } from '../../../shared/ui/Dialog';
 import { Money } from '../../../shared/ui/Money';
-import { DeskStats } from './OfficeDesk';
-import { ClubCashSummary } from './ClubCashSummary';
+import { SeasonStepper } from '../../../shared/ui/SeasonStepper';
+import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import { compactMoney, percent, seasonName } from '../../../presentation/format';
 import {
   DIVIDEND_DIAL,
@@ -29,11 +28,16 @@ import {
   ownerIdentity,
   ownerLock,
   ownerStatuses,
+  ownerSeasonRows,
   ownMoney,
+  settlementsLeft,
+  stakeExpectation,
   stakeOutlook,
+  type OwnerSeasonRow,
 } from '../lib/ownerFigures';
 import s from '../../../shared/ui/styles/OwnerSheet.module.css';
 
+const NO_FLOWS = { business: '0', living: '0', injected: '0', dividend: '0' };
 /** A change's tone by sign (→DESIGN-SYSTEM: a rise in red, a fall in blue). */
 const tone = (value: bigint | number) => (value > 0 ? s.up : value < 0 ? s.down : undefined);
 const odds = (chance: number) => percent(chance * 100, 100);
@@ -64,6 +68,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
   const [injectionPercent, setInjectionPercent] = useState(0);
   const disabled = !!lock || sending;
   const identity = ownerIdentity(owner);
+  const office = useOfficeRead(w);
   const statuses = ownerStatuses(w);
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const money = (value: string) => <Money value={value} code={own.country} year={w.year} />;
@@ -77,31 +82,32 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
   const take = dividendOutlook(w, dividend);
   const last = lastDividend(owner);
   const fortune = BigInt(owner.fortune);
+  const left = settlementsLeft(w),
+    running = stakeOutlook(w, owner.stake),
+    expected = BigInt(stakeExpectation(running.chance, running.amount, left)),
+    rows = ownerSeasonRows(w, office?.ownerFlows ?? NO_FLOWS),
+    now = rows.at(-1)!;
+  const jump = (target: string) =>
+    document
+      .getElementById(`${id}-${target}`)
+      ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   return (
     <div className={s.sheet} data-testid="owner-sheet">
       <Card
         as="section"
         surface="ticket"
-        aria-label={displayMessage('copy.ClubCashSummary.00a2861721')}
+        aria-label={displayMessage('owner.money.title')}
         meta={[identity.tier, ...identity.traits].join(' · ')}
       >
-        <div className={s.balances}>
-          <p className={s.fortune}>
-            <small>{richMessage('copy.HudCash.5008c66043')}</small>
-            <b className={BigInt(w.cash) < 0n ? s.negative : undefined}>
-              {localizeValue(money(w.cash))}
-            </b>
-          </p>
-          <p className={`${s.fortune} ${s.businessFunds}`}>
-            <small>{richMessage('copy.InvestmentTotals.aa2afbf21f')}</small>
-            <b
-              className={`${s.businessAmount} ${fortune < 0n ? s.negative : ''}`}
-              data-testid="owner-fortune"
-            >
-              {localizeValue(money(owner.fortune))}
-            </b>
-          </p>
-        </div>
+        <p className={s.fortune}>
+          <small>{richMessage('owner.money.title')}</small>
+          <b
+            className={`${s.businessAmount} ${fortune < 0n ? s.negative : ''}`}
+            data-testid="owner-fortune"
+          >
+            {localizeValue(money(owner.fortune))}
+          </b>
+        </p>
         {localizeValue(
           statuses.map((status) => (
             <p key={status.id} className={s.crisis} role="status">
@@ -109,35 +115,85 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
             </p>
           )),
         )}
-        <DeskStats
-          label={displayMessage('copy.OwnerSheet.037fb4d60f')}
-          stats={[
-            {
-              label: sourceMessage('copy.OwnerSheet.83e6c77117'),
-              value: business.next.date.replace(/^\d+년 /, ''),
-              note: business.next.close
-                ? sourceMessage('copy.OwnerSheet.ce1c739e52')
-                : sourceMessage('copy.OwnerSheet.2549e67ec9', { p0: business.next.days }),
-            },
-            {
-              label: sourceMessage('copy.OwnerEras.ef04fe60f2'),
-              value: ownMoney(w, business.living),
-              note: sourceMessage('copy.OwnerSheet.5d5bf32e91'),
-            },
-            { label: sourceMessage('copy.influences.db4838080d'), value: `${owner.stake}%` },
-          ]}
-        />
+        <p className={s.note}>
+          {richMessage('owner.money.next', {
+            date: business.next.date.replace(/^\d+년 /, ''),
+            days: business.next.days,
+            left,
+          })}
+        </p>
       </Card>
 
-      <section className={s.section} aria-labelledby={`${id}-cash`}>
-        <h3 id={`${id}-cash`}>{richMessage('copy.OwnerSheet.a21f08a56d')}</h3>
-        <div className={s.cashSummary}>
-          <ClubCashSummary w={w} />
+      <section className={s.section} aria-labelledby={`${id}-flows`}>
+        <h3 id={`${id}-flows`}>{richMessage('owner.flows.title')}</h3>
+        <p className={s.note}>{richMessage('owner.flows.lead')}</p>
+        <div className={s.flows}>
+          <Card
+            as="article"
+            surface="detail"
+            meta={displayMessage('owner.flows.business')}
+            title={localizeValue(
+              ownMoney(w, fortune > 0n ? (fortune * BigInt(owner.stake)) / 100n : 0n),
+            )}
+            actions={
+              <button type="button" data-ui="link" onClick={() => jump('business')}>
+                {richMessage('owner.flows.businessAction')}
+              </button>
+            }
+          >
+            <p>
+              {richMessage('owner.flows.businessBody', {
+                stake: owner.stake,
+                chance: odds(running.chance),
+                swing: ownMoney(w, running.amount),
+              })}
+            </p>
+            <p className={tone(expected)}>
+              {richMessage('owner.flows.businessExpect', {
+                left,
+                amount: `${expected > 0n ? '+' : expected < 0n ? '−' : ''}${ownMoney(w, expected < 0n ? -expected : expected)}`,
+              })}
+            </p>
+          </Card>
+          <Card
+            as="article"
+            surface="detail"
+            meta={displayMessage('owner.flows.living')}
+            title={localizeValue(ownMoney(w, business.living))}
+          >
+            <p>{richMessage('owner.flows.livingBody', { spent: ownMoney(w, now.living) })}</p>
+          </Card>
+          <Card
+            as="article"
+            surface="detail"
+            meta={displayMessage('owner.flows.club')}
+            title={localizeValue(ownMoney(w, now.injected))}
+            actions={
+              <>
+                <button type="button" data-ui="link" onClick={() => jump('inject')}>
+                  {richMessage('owner.flows.injectAction')}
+                </button>
+                <button type="button" data-ui="link" onClick={() => jump('dividend')}>
+                  {richMessage('owner.flows.dividendAction')}
+                </button>
+              </>
+            }
+          >
+            <p>
+              {richMessage('owner.flows.clubBody', {
+                share: owner.dividendShare,
+                received: ownMoney(w, now.dividend),
+              })}
+            </p>
+          </Card>
         </div>
       </section>
 
+      <OwnerHistory w={w} rows={rows} />
+
+      <h3 className={s.moveTitle}>{richMessage('owner.move.title')}</h3>
       <section className={s.section} aria-labelledby={`${id}-business`}>
-        <h3 id={`${id}-business`}>
+        <h3 id={`${id}-business`} className={s.anchor}>
           {richMessage('copy.OwnerSheet.da2dfee887', {
             p0: <span>{richMessage('copy.OwnerSheet.928f379bb6', { p0: owner.stake })}</span>,
           })}
@@ -226,7 +282,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
       </section>
 
       <section className={s.section} aria-labelledby={`${id}-inject`}>
-        <h3 id={`${id}-inject`}>
+        <h3 id={`${id}-inject`} className={s.anchor}>
           {richMessage('copy.OwnerSheet.3defbad5e4', {
             p0: (
               <span>
@@ -351,7 +407,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
       </section>
 
       <section className={s.section} aria-labelledby={`${id}-dividend`}>
-        <h3 id={`${id}-dividend`}>
+        <h3 id={`${id}-dividend`} className={s.anchor}>
           {richMessage('copy.OwnerSheet.5279fa5469', {
             p0: (
               <span>{richMessage('copy.OwnerSheet.928f379bb6', { p0: owner.dividendShare })}</span>
@@ -452,6 +508,66 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
 }
 
 /**
+ * 구단주 자금 season by season (→OWNER-17), browsed with the league pages' ‹ season › stepper: what
+ * the season began with, what the business won or lost, the living costs, the money put into the
+ * club and the dividend taken out, and what was left.
+ */
+function OwnerHistory({ w, rows }: { w: World; rows: readonly OwnerSeasonRow[] }) {
+  useTextLocale();
+  const [chosen, setYear] = useState(w.year);
+  const row = rows.find((one) => one.year === chosen) ?? rows.at(-1);
+  if (!row) return null;
+  const code = w.clubs.find((club) => club.id === w.playerClub)!.country,
+    amount = (value: string, sign: 1 | -1 = 1) => {
+      const n = BigInt(value) * BigInt(sign);
+      return `${n > 0n ? '+' : n < 0n ? '−' : ''}${compactMoney((n < 0n ? -n : n).toString(), code, row.year)}`;
+    };
+  const lines: [string, string, bigint][] = [
+    [sourceMessage('owner.history.business'), amount(row.business), BigInt(row.business)],
+    [sourceMessage('owner.history.living'), amount(row.living, -1), -BigInt(row.living)],
+    [sourceMessage('owner.history.injected'), amount(row.injected, -1), -BigInt(row.injected)],
+    [sourceMessage('owner.history.dividend'), amount(row.dividend), BigInt(row.dividend)],
+  ];
+  return (
+    <section className={s.section} aria-label={displayMessage('owner.history.title')}>
+      <header className={s.historyHead}>
+        <h3>{richMessage('owner.history.title')}</h3>
+        <SeasonStepper
+          years={rows.map((one) => one.year)}
+          value={row.year}
+          current={w.year}
+          onChange={setYear}
+        />
+      </header>
+      <dl className={s.flowFacts}>
+        <div>
+          <dt>{richMessage('owner.history.start')}</dt>
+          <dd>{localizeValue(compactMoney(row.start, code, row.year))}</dd>
+        </div>
+        {localizeValue(
+          lines.map(([label, text, value]) => (
+            <div key={label}>
+              <dt>{localizeValue(label)}</dt>
+              <dd className={tone(value)}>{localizeValue(text)}</dd>
+            </div>
+          )),
+        )}
+        <div data-total="">
+          <dt>
+            {localizeValue(
+              row.closed
+                ? sourceMessage('owner.history.closed')
+                : sourceMessage('owner.history.now'),
+            )}
+          </dt>
+          <dd>{localizeValue(compactMoney(row.fortune, code, row.year))}</dd>
+        </div>
+      </dl>
+    </section>
+  );
+}
+
+/**
  * The 구단주 sheet (→WEB-114): opened from the HUD's fortune while the clock runs, its controls
  * locked as →WEB-97 locks every management change. Each command goes through the client, so its
  * outcome card shows once the sheet closes (→WEB-36).
@@ -483,17 +599,4 @@ export function OwnerFunds({ client }: { client?: GameClient }) {
     }
   };
   return <OwnerSheetBody w={w} lock={lock} sending={sending} message={message} onCommand={send} />;
-}
-export function OwnerSheet({ client, onClose }: { client?: GameClient; onClose: () => void }) {
-  useTextLocale();
-  return (
-    <Dialog
-      label={displayMessage('copy.OwnerSheet.3b1b6aab0e')}
-      onClose={onClose}
-      actions={null}
-      wide
-    >
-      <OwnerFunds client={client} />
-    </Dialog>
-  );
 }

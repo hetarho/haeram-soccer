@@ -1,0 +1,165 @@
+/* The 단장's plan: one sentence, the money as steps, a plain line, then the settings he sets. */
+.plan {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.response {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.sentence {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.sentence[data-over] {
+  color: var(--warm);
+}
+
+/*
+ * A plan's money read as one sentence: the shared stat tiles, income first and what is left last,
+ * joined by a quiet chevron in the gap between them. A phone stacks them two by two.
+ */
+.flow {
+  --flow-gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px var(--flow-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.flow[data-steps='3'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.flow > li {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 1px;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+  color: var(--text);
+  text-align: center;
+  font-family: var(--display);
+}
+.flow > li + li::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  inset-inline-start: calc(var(--flow-gap) / -2 - 4px);
+  width: 6px;
+  height: 6px;
+  border-top: 2px solid var(--line-strong, var(--text-muted));
+  border-inline-end: 2px solid var(--line-strong, var(--text-muted));
+  transform: translateY(-50%) rotate(45deg);
+}
+.flow > li + li:dir(rtl)::before {
+  transform: translateY(-50%) rotate(-45deg);
+}
+.stepLabel {
+  max-width: 100%;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.flow b {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: clamp(15px, 1.4vw, 19px);
+  font-weight: 800;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.flow small {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.3;
+}
+.flow > li[data-tone='result'] b {
+  color: var(--accent-text, var(--text));
+}
+.flow > li[data-tone='empty'] b {
+  color: var(--text-muted);
+}
+@media (max-width: 600px) {
+  .flow,
+  .flow[data-steps='3'] {
+    --flow-gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .flow > li:nth-child(odd)::before {
+    display: none;
+  }
+  .flow b {
+    font-size: 15px;
+  }
+}
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 6px 16px;
+  margin: 0;
+  font-size: 12px;
+}
+.choices > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  padding-block: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.choices dt {
+  color: var(--text-muted);
+}
+.choices dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* The head of a work's page: who decides it. */
+.note {
+  --card-gap: 10px;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+.meta > [data-ui='badge'] {
+  padding-inline: 6px;
+}
+.person,
+.next,
+.hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.person {
+  color: var(--text);
+}
+.next {
+  color: var(--accent-text, var(--text));
+  font-weight: 600;
+}
+.hint {
+  color: var(--text-muted);
+}

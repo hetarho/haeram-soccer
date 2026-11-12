@@ -2,9 +2,10 @@ import type { World } from '../../contracts/src/types';
 import { staffMember } from './staff';
 import { currentDay } from './calendar';
 import { transferWindow } from './transfer-window';
+import { spendingStance } from './delegation';
 
 export const directorTrait = (w: World) => staffMember(w, 'director')?.trait;
-export const bidExtra = (w: World) => (w.direction?.finance === 'aggressive' ? 10 : 0);
+export const bidExtra = (w: World) => spendingStance(w, 'recruitment').bidExtra;
 export const bidCeiling = (w: World) => 100 + bidExtra(w);
 export const haggling = (w: World) =>
   directorTrait(w) === 'negotiator' && (transferWindow(w, currentDay(w)).daysLeft ?? Infinity) > 6;

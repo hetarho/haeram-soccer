@@ -50,7 +50,6 @@ import {
   recentRevenue,
   retireAtClose,
   seasonDayOf,
-  seasonEndWithWage,
   settleClauses,
   settleMorale,
   STAR_SPREAD_CONFIG,
@@ -70,6 +69,7 @@ import {
   wageBill,
 } from './index';
 import { buyOffer, handTo, holdRows, staffAuthority } from './testing';
+import { financeProjection } from './projection';
 import { askingMultiplier } from './world-market';
 import { locateOffer } from './scout-search';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -492,12 +492,12 @@ describe('contract talks (→CLUB-26)', () => {
 
     const broke = talking(80);
     holdRows(broke.w, { direction: { renewal: 'keepAll' } });
-    // Twelve rounds of today's costs: short of the 13-round runway even before the raise.
-    broke.w.cash = ((BigInt(operatingCosts(broke.w).annual) / 46n) * 12n).toString();
+    // Three rounds of today's costs: short of the month the plain insolvency stop keeps.
+    broke.w.cash = ((BigInt(operatingCosts(broke.w).annual) / 46n) * 3n).toString();
     const until = broke.p.until;
     newYear(broke.w);
     expect(broke.p.until).toBe(until);
-    expect(talkItems(broke.w, broke.p.id)[0].detail).toContain('13라운드');
+    expect(talkItems(broke.w, broke.p.id)[0].detail).toContain('현금이 바닥나지 않게');
   });
 
   it('refuses an owner’s offer below the floor, stating it, and signs one at the floor', () => {
@@ -627,24 +627,28 @@ describe('contract talks (→CLUB-26)', () => {
       w.calendar = { day: 0 };
       // A manager paid far beyond the club's income makes the season a loss: four times its costs
       // and its projected surplus, since a taken-over club's books can earn more than they cost.
-      const surplus = BigInt(seasonEndWithWage(w, p, p.wage)) - BigInt(w.cash);
+      const surplus = BigInt(financeProjection(w).seasonEnd.low) - BigInt(w.cash);
       w.manager.wage = (
         (BigInt(operatingCosts(w).annual) + (surplus > 0n ? surplus : 0n)) *
         4n
       ).toString();
-      const floor = talkTerms(w, p).floor,
-        perRound = (BigInt(operatingCosts(w).annual) + BigInt(floor) - BigInt(p.wage)) / BigInt(46),
-        runway = perRound * 13n,
-        // The season-end projection moves with cash one for one.
-        loss = BigInt(w.cash) - BigInt(seasonEndWithWage(w, p, floor));
+      const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage),
+        played = BigInt(Math.min(w.round, 46)),
+        // The season-end projection moves with cash one for one; the raise is paid from the next
+        // round on.
+        loss =
+          BigInt(w.cash) -
+          BigInt(financeProjection(w).seasonEnd.low) +
+          (raise * (46n - played)) / 46n;
       expect(loss).toBeGreaterThan(0n);
-      return { w, p, runway, loss };
+      return { w, p, loss };
     };
     const short = losing(),
       covered = losing();
-    // Cash now covers 13 rounds either way; only the projected season end differs.
-    short.w.cash = (short.runway + short.loss - 1n).toString();
-    covered.w.cash = (covered.runway + covered.loss).toString();
+    // Cash covers the stop's month of fixed costs either way; only the projected season end
+    // differs, one below zero, one at zero.
+    short.w.cash = (short.loss - 1n).toString();
+    covered.w.cash = covered.loss.toString();
     const until = short.p.until;
     contractTalks(short.w);
     contractTalks(covered.w);

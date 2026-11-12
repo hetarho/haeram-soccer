@@ -44,9 +44,9 @@ for (const width of [360, 1280]) {
     await expect(page.getByRole('table', { name: '영입 후보 목록', exact: true })).toBeVisible();
     await expect(officeMenu(page)).toHaveCount(0);
     // The player responsibilities stay in the shared overview; cancelling commits nothing (→WEB-79).
-    await openOfficeArea(page, '결재 설정');
-    const overview = page.getByRole('dialog', { name: '결재 설정', exact: true });
-    for (const responsibility of ['선수 계약', '선수 영입', '선수 매각', '유소년 승격·방출']) {
+    await openOfficeArea(page, '위임 설정');
+    const overview = page.getByRole('dialog', { name: '위임 설정', exact: true });
+    for (const responsibility of ['선수 계약', '선수 영입', '선수 매각', '유소년 운영']) {
       const choices = overview.getByRole('group', { name: responsibility, exact: true });
       const applied = await choices.locator('button[aria-pressed="true"]').innerText();
       await choices.locator('button[aria-pressed="false"]').click();

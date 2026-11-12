@@ -156,7 +156,7 @@ describe('controller approval overview', () => {
         createElement(ProgressControls, { client: {} as GameClient, controller }),
       );
       expect(markup).toMatch(
-        /<button(?![^>]*disabled)[^>]*aria-haspopup="dialog"[^>]*>결재 설정<\/button>/,
+        /<button(?![^>]*disabled)[^>]*aria-haspopup="dialog"[^>]*>위임 설정<\/button>/,
       );
       expect(markup).toMatch(/<button[^>]*data-progress-mode[^>]*disabled=""/);
       if (mode === 'automatic') {

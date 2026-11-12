@@ -227,8 +227,8 @@ test('navigation detours and passing days keep the drafts beside the policy draf
   view = await openDesign(page);
   await expectDrafts(view);
   expect((await savedWorld(page)).designCommission?.drafts).toEqual(drafts);
-  // A detour through 재정 · 사업, which only reads the books, leaves the drafts as delivered.
-  await openArea(page, '재정 · 사업');
+  // A detour through 구단 예산, which only reads the books, leaves the drafts as delivered.
+  await openArea(page, '구단 예산');
   view = await openDesign(page);
   await expectDrafts(view);
   await adoptDraft(view, 0);

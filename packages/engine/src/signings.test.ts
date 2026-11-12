@@ -2,7 +2,7 @@ import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import { lineOf, POSITION_LABEL } from './player';
 import { describe, expect, it } from 'vitest';
 import type {
-  Direction,
+  SpendRequest,
   FreeAgent,
   Line,
   Player,
@@ -16,7 +16,6 @@ import {
   compareIds,
   currentDay,
   drawShortlist,
-  financeStance,
   formationOf,
   noteSigning,
   ownStarters,
@@ -28,7 +27,6 @@ import {
   overall,
   placeBid,
   ratio,
-  SEASON_ROUNDS,
   seasonDayOf,
   shortlistOffers,
   joinedThisWindow,
@@ -44,20 +42,22 @@ import {
 import { holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { careerWorld } from './career.testkit';
+import { holdTemperament } from './delegation.testkit';
 import { scoutReach } from './scout-search';
 
 /**
  * A rich level-4 club on the winter window's opening day, half its season played with revenue far
  * beyond its wage bill, so only the rule under test holds the chief scout back.
  */
-function club(finance?: Direction['finance'], seed = 'staff-signings') {
+function club(request?: SpendRequest, seed = 'staff-signings') {
   const w = founded(seed);
   w.settings = staffAuthority(4);
   w.cash = '999999999999';
   w.round = 23;
   w.income = '999999999999';
   w.calendar = { day: seasonDayOf(w.year, 1, 1) };
-  if (finance) w.direction = { finance };
+  holdTemperament(w, 'director', 'balanced');
+  if (request) w.delegationRequests = { recruitment: request };
   return w;
 }
 /** The club as founded, built once per seed, on the released model: signings are the subject. */
@@ -98,7 +98,7 @@ const clubIndex = (w: World) => transferOffers(w).findIndex((offer) => !offer.fr
 
 describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it('fills a short role with a free agent on equal sporting quality', () => {
-    const w = club('careful');
+    const w = club(2);
     const best = transferOffers(w)[0]!;
     w.freeAgents = [{ ...structuredClone(best.player), id: 'signings:free', freeSince: w.year }];
     const free = transferOffers(w).find((offer) => offer.freeAgent)!;
@@ -138,39 +138,41 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     expect(overall(offer.player)).toBeGreaterThanOrEqual(starter + 5);
     expect(reports(w).at(-1)!.title).toBe(`단장 영입 제안 · ${offer.player.name}`);
     // 공격적 bids 110% of asking.
-    const bold = club('aggressive');
+    const bold = club(5);
     passFree(bold);
     staffSignings(bold);
     const [high] = staffBids(bold);
     const asked = transferOffers(bold).find((one) => one.player.id === high.playerId)!.fee;
     expect(high.fee).toBe(ratio(asked, 110n, 100n));
-    for (const finance of ['careful', 'stable'] as const) {
-      const quiet = club(finance);
+    for (const request of [2, 1] as const) {
+      const quiet = club(request);
       staffSignings(quiet);
       expect(staffBids(quiet)).toEqual([]);
       expect(quiet.players).toHaveLength(w.players.length);
     }
   });
 
-  it("keeps 재정 기조's money checks", () => {
+  it("keeps the 단장's money checks", () => {
     const w = club();
     const offer = transferOffers(w)[clubIndex(w)]!;
-    const perRound =
-      (BigInt(operatingCosts(w).annual) + BigInt(offer.player.wage)) / BigInt(SEASON_ROUNDS);
-    // Cash for the runway and one and a half fees: 표준 may spend half the cash above it.
-    w.cash = (perRound * 13n + (BigInt(offer.fee) * 3n) / 2n).toString();
+    // A season's income at which the fee and a year of his wage fit 80% of it after the wages
+    // already paid, but not 62%.
+    const wages = BigInt(operatingCosts(w).playerWages),
+      cost = BigInt(offer.fee) + BigInt(offer.player.wage),
+      planned = { year: w.year, revenue: (((cost + wages) * 10n) / 7n).toString(), sales: '0' };
+    w.budgetPlan = planned;
     const standard = signingVerdict(w, offer.player, offer.fee);
     expect(standard.ok).toBe(false);
-    expect(standard.reason).toContain('여유 자금의 50%');
-    w.direction = { finance: 'aggressive' };
+    expect(standard.reason).toContain('영입에 쓸 돈');
+    w.delegationRequests = { recruitment: 5 };
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(true);
-    // Below the runway nothing is spent at all.
-    w.cash = (perRound * BigInt(financeStance(w).runway)).toString();
-    expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('운영비');
-    // Without revenue the wage bill has no room.
+    // Whatever the plan allows, the plain stop keeps a month of fixed costs in cash.
+    w.cash = BigInt(offer.fee).toString();
+    expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('현금이 바닥나지');
+    // Without income the wage bill has no room.
     const poor = club();
-    poor.income = '0';
-    expect(signingVerdict(poor, offer.player, offer.fee).reason).toContain('인건비');
+    poor.budgetPlan = { ...planned, revenue: '0' };
+    expect(signingVerdict(poor, offer.player, offer.fee).reason).toContain('연봉 총액');
     passFree(poor);
     staffSignings(poor);
     expect(staffBids(poor)).toEqual([]);
@@ -627,7 +629,7 @@ describe('a signing still settling in closes the slot he was bought for (→CLUB
    * keepers given; other clubs' keepers on the list are passed by, so the moves are the test's.
    */
   function keeperNeed(starter: number, ...pool: [string, number][]) {
-    const w = club('aggressive');
+    const w = club(5);
     for (const p of activePlayers(w)) {
       const goal = p.position === 'GK';
       rate(p, goal ? starter : 99);
@@ -711,7 +713,7 @@ describe('a signing still settling in closes the slot he was bought for (→CLUB
   });
 
   it('one newcomer closes at most one slot, the weakest he beats', () => {
-    const w = club('aggressive');
+    const w = club(5);
     const needs = upgradeNeeds(w, 2);
     const everywhere = (id: string): Player => {
       const p = {

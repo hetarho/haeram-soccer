@@ -136,6 +136,7 @@ export async function takeOverClub(page: Page, name: string) {
 export async function fundClub(page: Page) {
   await page.getByTestId('hud-cash').click();
   const sheet = page.getByRole('dialog', { name: '자금 관리', exact: true });
+  await sheet.getByRole('tab', { name: '내 자산', exact: true }).click();
   await sheet.getByRole('slider', { name: '자금 투입 금액', exact: true }).fill('25');
   await sheet.getByRole('button', { name: /넣기$/ }).click();
   await expect(sheet.getByTestId('owner-message')).toContainText('투입했어요');

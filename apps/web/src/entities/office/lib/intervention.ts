@@ -5,29 +5,26 @@ import type {
   World,
 } from '../../../../../../packages/contracts/src/types';
 import { isDelegated } from '../../../../../../packages/engine/src/responsibilities';
+import { RESPONSIBILITY_NAMES } from '../../../../../../packages/engine/src/delegation-info';
 import { STAFF_INFO, staffMember } from '../../../../../../packages/engine/src/staff-info';
 import type { GameClient } from '../../../runtime/client';
 
-export const RESPONSIBILITY_LABELS: Readonly<Record<ResponsibilityKey, string>> = {
-  manager: sourceMessage('copy.intervention.4670efb7ec'),
-  staff: sourceMessage('copy.intervention.aed9dbd6ea'),
-  contracts: sourceMessage('copy.stories.cb2c18aee9'),
-  recruitment: sourceMessage('copy.intervention.d12b6b87e1'),
-  sales: sourceMessage('copy.intervention.5ea61dab56'),
-  academy: sourceMessage('copy.OwnerOfficeView.dc639eb0dc'),
-  sponsors: sourceMessage('copy.intervention.710956eea4'),
-};
-/** What each responsibility covers, under its label. */
+export const RESPONSIBILITY_LABELS: Readonly<Record<ResponsibilityKey, string>> =
+  RESPONSIBILITY_NAMES;
+/** What each responsibility covers, under its label: its decisions and the settings its person sets. */
 export const RESPONSIBILITY_DETAILS: Readonly<Record<ResponsibilityKey, string>> = {
-  manager: sourceMessage('copy.OwnerOfficeView.ff794c03f8'),
-  staff: sourceMessage('copy.intervention.20143ef8ea'),
-  contracts: sourceMessage('copy.intervention.7afd0357ff'),
-  recruitment: sourceMessage('copy.intervention.c58f247587'),
+  manager: sourceMessage('delegation.detail.manager'),
+  staff: sourceMessage('delegation.detail.staff'),
+  contracts: sourceMessage('delegation.detail.contracts'),
+  recruitment: sourceMessage('delegation.detail.recruitment'),
   sales: sourceMessage('copy.intervention.e68edb2830'),
-  academy: sourceMessage('copy.intervention.1969f5af28'),
+  academy: sourceMessage('delegation.detail.academy'),
   sponsors: sourceMessage('copy.intervention.c5ca8c981c'),
 };
-/** Who takes each responsibility once the owner delegates it. */
+/**
+ * Who takes each responsibility's money once the owner delegates it: the 단장, youth money included
+ * (the youth director's football calls are named in the academy's plan).
+ */
 export type ResponsibilityPost = 'director' | 'manager' | 'youth';
 export const RESPONSIBILITY_DELEGATES: Readonly<
   Record<ResponsibilityKey, readonly ResponsibilityPost[]>
@@ -37,7 +34,7 @@ export const RESPONSIBILITY_DELEGATES: Readonly<
   contracts: ['director', 'manager'],
   recruitment: ['director', 'manager'],
   sales: ['director', 'manager'],
-  academy: ['youth'],
+  academy: ['director'],
   sponsors: ['director'],
 };
 /** Current holders and their person records for a delegated responsibility. */

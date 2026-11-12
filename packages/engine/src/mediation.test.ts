@@ -32,7 +32,7 @@ describe('actual financial recruitment mediation', () => {
       candidate: { id: offer.player.id },
       status: 'pending',
     });
-    expect(record.directorReason).toContain('재정 기조');
+    expect(record.directorReason).toContain('단장 판단');
     w.shortlist!.requests = [{ kind: 'short', line: 'MF' }];
     w.shortlist!.day = 1;
     w.calendar = { day: 1 };

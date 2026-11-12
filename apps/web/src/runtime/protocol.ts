@@ -25,9 +25,8 @@ import type {
 import type { Envelope } from '../adapters/repository';
 import {
   budgetResponsibilitySchema,
-  financeChoiceSchema,
   gameSettingsSchema,
-  wageResponsibilitySchema,
+  spendRequestSchema,
 } from '../../../../packages/contracts/src/schema';
 import {
   DIVIDEND_SHARES,
@@ -119,7 +118,6 @@ const command = z.discriminatedUnion('type', [
       'school',
       'manager',
       'coaches',
-      'finance',
       'youthGoal',
       'debut',
     ]),
@@ -132,17 +130,9 @@ const command = z.discriminatedUnion('type', [
   }),
   z.strictObject({ type: z.literal('club-ticket'), price: z.number().finite().min(0.01).max(1) }),
   z.strictObject({
-    type: z.literal('decision-wage-limit'),
-    responsibility: wageResponsibilitySchema,
-    amount: z
-      .string()
-      .regex(/^\d{1,40}$/)
-      .nullable(),
-  }),
-  z.strictObject({
-    type: z.literal('decision-finance'),
+    type: z.literal('delegation-request'),
     responsibility: budgetResponsibilitySchema,
-    choice: financeChoiceSchema,
+    level: spendRequestSchema,
   }),
   z.strictObject({
     type: z.literal('facility-upgrade'),

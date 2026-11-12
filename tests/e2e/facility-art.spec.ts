@@ -91,10 +91,10 @@ async function expectArt(
 
 /** The manager's office scene heads the 결재라인 overview, opened from the bottom controls. */
 async function expectOverviewArt(page: Page, era: FacilityEra) {
-  const sheet = page.getByRole('dialog', { name: '결재 설정', exact: true });
+  const sheet = page.getByRole('dialog', { name: '위임 설정', exact: true });
   await page
     .locator('[data-ui="season-transport"]')
-    .getByRole('button', { name: '결재 설정', exact: true })
+    .getByRole('button', { name: '위임 설정', exact: true })
     .click();
   await expect(sheet).toBeVisible();
   // Home's office entrance shows the same room behind the sheet.
@@ -152,7 +152,7 @@ for (const scenario of [
     await expect(dialog).toHaveCount(0);
     const overview = page.getByTestId('facility-overview');
     // The 결재함 opens with no room scene in it (→WEB-39); the manager room stays on the home
-    // entrance behind it and in 결재 설정 (→WEB-72).
+    // entrance behind it and in 위임 설정 (→WEB-72).
     await settle(page);
     await enterOffice(page);
     await expect(officeDialog(page).locator('[data-facility-art]')).toHaveCount(0);
