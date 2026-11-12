@@ -17,14 +17,12 @@ import {
 import { encode } from '../adapters/persistence';
 import { headToHead } from './headToHead';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req, startedHost, startedWorld } from './host.testkit';
 import type { View } from './protocol';
 
-// Archive and history reads on the pre-feature path, careers and hosts alike: the reads, not the
-// match model, are the subject.
-const host = () => new Host(undefined, { release: DISABLED_RELEASE });
+// Archive and history reads: the reads, not the match model, are the subject.
+const host = () => new Host();
 /** A host with a game just started in it by `startedHost`. */
 const started = async () => (await startedHost(undefined, undefined, host())).host;
 /**
@@ -34,7 +32,7 @@ const started = async () => (await startedHost(undefined, undefined, host())).ho
  */
 const playedSeason = (key: string, settings?: GameSettings) =>
   cachedWorld(key, () => {
-    const w = startedWorld(undefined, undefined, DISABLED_RELEASE);
+    const w = startedWorld();
     w.cash = '999999999999';
     if (settings) w.settings = settings;
     return simulateSeason(w);
@@ -45,7 +43,7 @@ const ownerSeason = () => playedSeason('takeover-season');
 describe('worker command protocol', () => {
   it('projects closed seasons without brackets and scorer tables and returns them in the archive', async () => {
     const h = await started();
-    playOn(h, ownerSeason(), DISABLED_RELEASE);
+    playOn(h, ownerSeason());
     const season = h.world!.history[0];
     expect(season.brackets?.length).toBeGreaterThan(0);
     expect(season.scorers?.length).toBeGreaterThan(0);
@@ -98,7 +96,7 @@ describe('worker command protocol', () => {
   });
   it('reads the all-time head-to-head from every own match without queueing or projecting', async () => {
     const h = await started();
-    playOn(h, playedSeason('takeover-delegated-season', staffAuthority(4)), DISABLED_RELEASE);
+    playOn(h, playedSeason('takeover-delegated-season', staffAuthority(4)));
     const w = h.world!,
       met = w.ownMatches.find((m) => m.kind === 'league')!,
       club = met.home === w.playerClub ? met.away : met.home,
@@ -136,7 +134,7 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
   /** The started game grown through a season, its manager then replaced `hires` times today. */
   async function career(hires = 0, untracked = false) {
     const h = await started();
-    playOn(h, ownerSeason(), DISABLED_RELEASE);
+    playOn(h, ownerSeason());
     const w = untracked ? withoutManagerHistory(h.world!) : h.world!;
     w.cash = '999999999999';
     for (let n = 0; n < hires; n++)
@@ -244,7 +242,7 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
   it('keeps an appointment in the week tracking began a tenure, never an older event too', async () => {
     // A career saved before manager history, its manager replaced in round 3, then loaded by the
     // writer on a day between league rounds.
-    const source = withoutManagerHistory(simulatedWorld(input, { rounds: 3 }, DISABLED_RELEASE));
+    const source = withoutManagerHistory(simulatedWorld(input, { rounds: 3 }));
     source.cash = '999999999999';
     operate(source, {
       type: 'hire',

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { DISABLED_RELEASE } from '../../../../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../../../../tests/fixtures/worlds';
 import { finalZones } from './league';
 import { finalRows, seasonRecords, seasonSnapshots } from './seasonArchive';
@@ -10,7 +9,7 @@ const input = { country: 'ENG' as const, seed: 'season-archive' };
 
 describe('closed season tables', () => {
   it('rebuilds a professional table from the archived standings in the engine order', () => {
-    const w = simulatedWorld(input, { seasons: 1 }, DISABLED_RELEASE),
+    const w = simulatedWorld(input, { seasons: 1 }),
       season = w.history[0];
     expect(seasonSnapshots(w, season).map((s) => s.round)).toEqual(
       Array.from({ length: 46 }, (_, i) => i + 1),
@@ -60,7 +59,7 @@ describe('closed season tables', () => {
   });
 
   it('marks a closed Italian third-division group: its winner up, three to the play-off, none down', () => {
-    const w = simulatedWorld({ ...input, country: 'ITA' }, { seasons: 1 }, DISABLED_RELEASE),
+    const w = simulatedWorld({ ...input, country: 'ITA' }, { seasons: 1 }),
       season = w.history[0];
     expect(season.tier).toBe(2);
     const rows = finalRows(w, season, season.standings)!;

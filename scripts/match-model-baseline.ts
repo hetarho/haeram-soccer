@@ -1,52 +1,38 @@
 import { measurementIdentity } from './lib/measurement-identity';
 /**
- * Match-model baseline measurement (→ARCH-31, MATCH-28, spec/ssot/MATCH.md).
+ * Match-model measurement (→ARCH-31, MATCH-28, spec/ssot/MATCH.md) on the released model.
  *
- * On fixed worlds it times fixture preparation, isolated grid and legacy-summary fixtures,
- * observation, record settlement, complete seasons of both century workload profiles and the
- * checkpoint codec separately, then plays a pilot sample of the core condition on both paths through
- * the registry's coverage, target, invariant and equivalence reports (scripts/lib/match-parity.ts).
- * It reads the public engine API only and never reads or writes the release switch: every world is
- * founded with an explicit release — the isolated fixtures and the pilot on the pre-feature path
- * careers founded before the release keep, the century seasons on the full model with
- * `--model candidate` — and it measures a candidate aggregate path only when the engine exports one.
- * A candidate run reports ARCH-31's absolute release gates (→releaseGates); `--release` marks the
- * full 100-season run on the reference machine whose quiet result is release evidence (T286).
+ * On fixed worlds it times the result path's fixtures without the own club and their stages, own
+ * fixtures (record, script and post-match material), record settlement, complete seasons of both
+ * century workload profiles and the checkpoint codec separately, then plays a pilot sample of the
+ * core condition on the result path through the registry's coverage, target, outcome-curve and
+ * invariant reports (scripts/lib/match-parity.ts). Throughput has no absolute budget: a run is
+ * compared with the previous release's run of this runner on the same machine (`--paired-with`,
+ * →comparePerformance, ARCH-34). T844 removed the grid and pre-feature stages.
  *
  *   pnpm exec tsx scripts/match-model-baseline.ts --smoke
  *   pnpm exec tsx scripts/match-model-baseline.ts --fixtures 200 --seasons 100 --out FILE
- *   pnpm exec tsx scripts/match-model-baseline.ts --model candidate --seasons 10 \
- *     --paired-with BASELINE.json --out FILE
- *   pnpm exec tsx scripts/match-model-baseline.ts --model candidate --release \
- *     --paired-with BASELINE.json --out artifacts/benchmarks/t286/candidate-100.json
+ *   pnpm exec tsx scripts/match-model-baseline.ts --seasons 10 --paired-with PREVIOUS.json --out FILE
  *   options: --out FILE (default artifacts/benchmarks/match-model-baseline.json), --fixtures N (timed
- *            fixtures per path), --seasons N (per century profile), --pilot N (pilot matches per path),
- *            --model candidate (T285: the century seasons, own fixtures and settlement run on worlds
- *            with the candidate model and its complete statistics; the codec is measured at the
- *            last season's final round, while the season's ledger is full), --paired-with FILE (a
- *            baseline report of this runner: the paired ratios against it, context only,
- *            →comparePerformance), --release (a release run: candidate model, full mode, the
- *            release season count and the default fixtures; not provisional, →releaseGates)
+ *            fixtures), --seasons N (per century profile), --pilot N (pilot matches), --paired-with
+ *            FILE (the previous release's report of this runner: the paired ratios against it)
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { arch, cpus, loadavg, platform, totalmem } from 'node:os';
 import { dirname } from 'node:path';
-import type { Fixture, MatchPlayback, MatchRecord, World } from '../packages/contracts/src/types';
-import * as engine from '../packages/engine/src/index';
+import type { Fixture, MatchRecord, World } from '../packages/contracts/src/types';
 import { careerWorld, type CareerInput } from '../packages/engine/src/career.testkit';
 import {
   advanceRound,
   clubOf,
-  isScoringFixture,
   managerCandidates,
   nextWork,
   debit,
   startFacilityWork,
   operate,
   operatingCost,
-  OWN_LEAGUE_ENGINE,
   policyOf,
   prepareMatch,
   quote,
@@ -55,10 +41,8 @@ import {
   simulateMatch,
   simulateSeason,
   sponsorSlots,
+  transferOffers,
 } from '../packages/engine/src/index';
-import { playGrid, type GridResult } from '../packages/engine/src/grid/engine';
-import { buildFrames } from '../packages/engine/src/grid/playback';
-import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import { decode, encode } from '../apps/web/src/adapters/persistence';
 import { ACTIVE } from '../apps/web/src/adapters/repository';
 import {
@@ -74,23 +58,19 @@ import { buildAggregateInput } from '../packages/engine/src/aggregate/input';
 import { attributePlayerFacts } from '../packages/engine/src/aggregate/players';
 import { aggregateStreams } from '../packages/engine/src/aggregate/team';
 import { eraRules } from '../packages/engine/src/match/rules';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from '../tests/fixtures/releases';
-import { withCandidateModel } from '../tests/fixtures/worlds';
+import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
 import {
   buildParityReport,
   buildPerformanceReport,
   calibrationSize,
   comparePerformance,
-  conditionValidationSize,
   CORPUS_CONFIG,
   corpusFixtureId,
-  pilotNeeds,
   MATCH_PARITY_VERSION,
   median,
   METRIC_REGISTRY,
   PARITY_CONFIG,
   PERFORMANCE_CONFIG,
-  releaseGates,
   TARGET_BANDS,
   type MatchSample,
   type PerformanceComponent,
@@ -111,16 +91,9 @@ function count(name: string, fallback: number) {
 const out = args.includes('--out')
   ? args[args.indexOf('--out') + 1]!
   : 'artifacts/benchmarks/match-model-baseline.json';
-const model = args.includes('--model') ? args[args.indexOf('--model') + 1] : 'production';
-if (model !== 'production' && model !== 'candidate')
-  throw new Error('--model takes production or candidate');
-const candidateModel = model === 'candidate';
 const pairedWith = args.includes('--paired-with')
   ? args[args.indexOf('--paired-with') + 1]!
   : undefined;
-if (pairedWith && !candidateModel)
-  throw new Error('--paired-with pairs a candidate run: add --model candidate');
-const releaseRun = args.includes('--release');
 const settings = {
   mode: smoke ? 'smoke' : 'full',
   fixtures: count(
@@ -140,17 +113,6 @@ const settings = {
     smoke ? CORPUS_CONFIG.smokePerCondition : calibrationSize(CORPUS_CONFIG.conditions[0]!),
   ),
 };
-if (
-  releaseRun &&
-  (!candidateModel ||
-    smoke ||
-    settings.seasons !== PERFORMANCE_CONFIG.seasons.release ||
-    settings.fixtures !== PERFORMANCE_CONFIG.fixtures.default)
-)
-  throw new Error(
-    `--release measures the candidate model in full mode over ${PERFORMANCE_CONFIG.seasons.release} seasons and ${PERFORMANCE_CONFIG.fixtures.default} fixtures`,
-  );
-
 // ---- Provenance -----------------------------------------------------------------------------------
 /** What the timings depend on: the engine, contracts, catalogs, codec adapters, tooling and lockfile. */
 const SOURCE_SCOPE = [
@@ -247,12 +209,10 @@ function sampleMemory() {
 /** Exact checks; null when the run had nothing to compare. */
 const checks: {
   repeatsIdentical: boolean | null;
-  observedMatchesUnobserved: boolean | null;
   /** The stage-by-stage replay settles each fixture's own `simulateAggregate` record. */
   candidateStagesMatchWhole: boolean | null;
 } = {
   repeatsIdentical: settings.repetitions > 1 ? true : null,
-  observedMatchesUnobserved: null,
   candidateStagesMatchWhole: null,
 };
 /** A record without the post-match material, for comparing settled results. */
@@ -285,90 +245,29 @@ const started = performance.now();
 console.error(`match-model baseline (${settings.mode}): source ${source.sha256.slice(0, 12)}`);
 
 // ---- Isolated fixtures and settlement on the century baseline world --------------------------------
-// The pre-feature path careers founded before the release keep; the candidate path is measured
-// on the same world through `simulateAggregate` and on a copy carrying the model.
-const world = careerWorld(
-  { country: 'ENG', seed: PERFORMANCE_CONFIG.profiles.baseline },
-  DISABLED_RELEASE,
-);
+const world = careerWorld({ country: 'ENG', seed: PERFORMANCE_CONFIG.profiles.baseline });
 const ordered = [...world.fixtures].sort((a, b) => a.round - b.round || (a.id < b.id ? -1 : 1));
 const isOwn = (f: Fixture) => f.home === world.playerClub || f.away === world.playerClub;
 const ownFixtures = ordered.filter(isOwn);
-const ownLeague = ordered.filter((f) => !isOwn(f) && isScoringFixture(world, f));
-const others = ordered.filter((f) => !isOwn(f) && !isScoringFixture(world, f));
 const n = settings.fixtures;
-/** Grid fixtures: the own club's, then own-league fixtures played the way own matches are. */
-const gridSet = [...ownFixtures, ...ownLeague].slice(0, n);
-const summarySet = others.slice(0, n);
-const linesSet = ownLeague.slice(0, n);
+/** Fixtures without the own club: the result path's fixtures every club plays (→MATCH-22). */
+const npcSet = ordered.filter((f) => !isOwn(f)).slice(0, n);
+const ownSet = ownFixtures.slice(0, n);
 // A club's generated squad and lineup are cached once a season (world.ts `squad`, `startingSquad`);
 // that cost belongs to the season timings, so every timed fixture is prepared once untimed and
 // each component measures the steady state.
-for (const f of [...gridSet, ...summarySet, ...linesSet]) prepareMatch(world, f);
+for (const f of [...npcSet, ...ownSet]) prepareMatch(world, f);
 sampleMemory();
 
 const playbackRecord = (p: { record: MatchRecord }) => p.record;
-measure('preparation.summary', summarySet, (f) => prepareMatch(world, f));
-measure('preparation.grid', gridSet, (f) =>
-  buildGridSetup(world, f, { observe: false, recordPlayers: true }),
-);
-const summaryPlaybacks = measure(
-  'fixture.summary',
-  summarySet,
-  (f) => simulateMatch(world, f),
+const npcPlaybacks = measure(
+  'fixture.candidate',
+  npcSet,
+  (f) => simulateAggregate(world, f),
   playbackRecord,
 );
-const linePlaybacks = measure(
-  'fixture.summary-lines',
-  linesSet,
-  (f) => simulateMatch(world, f, false, true),
-  playbackRecord,
-);
-const gridPlaybacks = measure(
-  'fixture.grid',
-  gridSet,
-  (f): MatchPlayback => {
-    const setup = buildGridSetup(world, f, { observe: false, recordPlayers: true });
-    return { record: playGrid(setup).record, frames: [], squads: setup.rosters };
-  },
-  playbackRecord,
-);
-const observedSet = gridSet.slice(0, Math.min(n, ownFixtures.length));
-observedSet.forEach((f, i) => {
-  const setup = buildGridSetup(world, f, { observe: true, recordPlayers: true });
-  const [result, playMs] = timed(() => playGrid(setup));
-  const [, framesMs] = timed(() => buildFrames(result, setup, world.seed));
-  record('observation.grid', playMs);
-  record('observation.frames', framesMs);
-  // Observing adds frames only; the settled facts are those of the unobserved run (→MATCH-7).
-  const same = resultOf(result.record) === resultOf(gridPlaybacks[i]!.record);
-  checks.observedMatchesUnobserved = (checks.observedMatchesUnobserved ?? true) && same;
-});
-sampleMemory();
 
-// Every fixture settles once, on a copy, so no settlement repeats a fixture (→MATCH-27).
-const settled = structuredClone(world);
-for (const p of [...summaryPlaybacks, ...linePlaybacks])
-  record('settlement.npc', timed(() => recordMatch(settled, p, true))[1]);
-for (const p of gridPlaybacks.slice(0, ownFixtures.length))
-  record('settlement.own', timed(() => recordMatch(settled, p, true))[1]);
-sampleMemory();
-
-// ---- Optional candidate path ------------------------------------------------------------------------
-/** A later aggregate path is measured when the engine exports it; nothing switches it on. */
-const adapter = (engine as Record<string, unknown>).simulateAggregate;
-const candidateFn =
-  typeof adapter === 'function' ? (adapter as (w: World, f: Fixture) => MatchPlayback) : undefined;
-const revisionModule = '../packages/contracts/src/match-model.ts';
-const revision = await import(revisionModule).then(
-  (m: { MATCH_MODEL_REVISION?: string }) => m.MATCH_MODEL_REVISION ?? null,
-  () => null,
-);
-const candidatePlaybacks = candidateFn
-  ? measure('fixture.candidate', summarySet, (f) => candidateFn(world, f), playbackRecord)
-  : [];
-
-// ---- The candidate fixture's stages, own fixtures and settlement (T285) ---------------------------
+// ---- The fixture's stages, own fixtures and settlement (T285) -------------------------------------
 /**
  * `playAggregate`'s regulation path stage by stage on the same fixtures (none of them is a
  * knockout): preparation (prepareMatch and the matchday rosters), generation (participation plan,
@@ -377,10 +276,10 @@ const candidatePlaybacks = candidateFn
  * equal the fixture's own `simulateAggregate` record.
  */
 let stageRetries = 0;
-if (candidateModel) {
+{
   const stage = new Map<PerformanceComponent, number[]>();
-  for (const f of summarySet.slice(0, settings.warmup)) simulateAggregate(world, f);
-  summarySet.forEach((f, i) => {
+  for (const f of npcSet.slice(0, settings.warmup)) simulateAggregate(world, f);
+  npcSet.forEach((f, i) => {
     const runs = Array.from({ length: settings.repetitions }, () => {
       const [prep, prepMs] = timed(() => {
         const prepared = prepareMatch(world, f);
@@ -415,7 +314,7 @@ if (candidateModel) {
       stageRetries++;
       return;
     }
-    const same = resultOf(runs[0]!.settled) === resultOf(candidatePlaybacks[i]!.record);
+    const same = resultOf(runs[0]!.settled) === resultOf(npcPlaybacks[i]!.record);
     checks.candidateStagesMatchWhole = (checks.candidateStagesMatchWhole ?? true) && same;
     (
       [
@@ -432,19 +331,17 @@ if (candidateModel) {
     timings.set(id, { id, samplesMs, warmup: settings.warmup, repetitions: settings.repetitions });
   sampleMemory();
 
-  // Own fixtures through the candidate dispatch, on a copy that carries the candidate model.
-  const candidateWorld = withCandidateModel(structuredClone(world));
-  const ownSet = ownFixtures.slice(0, n);
-  for (const f of ownSet) prepareMatch(candidateWorld, f);
-  measure(
+  // Own fixtures through the dispatch: record, script and post-match material (→MATCH-38).
+  const ownPlaybacks = measure(
     'fixture.own-candidate',
     ownSet,
-    (f) => simulateMatch(candidateWorld, f, false, true),
+    (f) => simulateMatch(world, f, false, true),
     playbackRecord,
   );
-  // Each aggregate record settles once on the candidate world, ledger included (→MATCH-27).
-  for (const p of candidatePlaybacks)
-    record('settlement.candidate', timed(() => recordMatch(candidateWorld, p, true))[1]);
+  // Every record settles once, on a copy, ledger included (→MATCH-27).
+  const settled = structuredClone(world);
+  for (const p of [...npcPlaybacks, ...ownPlaybacks])
+    record('settlement.candidate', timed(() => recordMatch(settled, p, true))[1]);
   sampleMemory();
 }
 
@@ -463,9 +360,9 @@ function manage(w: World, season: number) {
   // The town's investment row, held from the first season as a founded club holds its rows.
   if (season === 0) w.policy = { ...policyOf(w), localInvest: 2 };
   // A loan bid for the scout's first club player: free agents list first and are never loaned.
-  const loanable = engine
-    .transferOffers(w)
-    .findIndex((offer) => offer.source.kind === 'club' && offer.available);
+  const loanable = transferOffers(w).findIndex(
+    (offer) => offer.source.kind === 'club' && offer.available,
+  );
   if (
     season % 10 === 0 &&
     loanable >= 0 &&
@@ -484,23 +381,18 @@ function manage(w: World, season: number) {
 }
 const seasons: Record<string, unknown>[] = [];
 for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
-  const founded = careerWorld(
-    { country: 'ENG', seed },
-    candidateModel ? ENABLED_RELEASE : DISABLED_RELEASE,
-  );
-  // The candidate model from founding: complete statistics tracked from the first day.
-  const w = candidateModel ? withCandidateModel(founded, 'founding') : founded;
+  // The released model from the takeover: complete statistics tracked from the first day.
+  const w = careerWorld({ country: 'ENG', seed });
   let raw: string | undefined;
   for (let season = 0; season < settings.seasons; season++) {
     const last = season === settings.seasons - 1;
     const [, ms] = timed(() => {
       if (profile === 'active-management') manage(w, season);
-      // A candidate run stops the last season at its final round for the codec: the season's
-      // ledger is then at its fullest. simulateSeason plays the same rounds, then closes.
-      if (candidateModel && last)
-        while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+      // The last season stops at its final round for the codec: the season's ledger is then at
+      // its fullest. simulateSeason plays the same rounds, then closes.
+      if (last) while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
     });
-    if (candidateModel && last) {
+    if (last) {
       const [encoded, encodeMs] = await timedAsync(() => encode(w, 2, 1));
       const [, decodeMs] = await timedAsync(() => decode(encoded));
       record('codec.encode', encodeMs);
@@ -525,12 +417,10 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
   seasons.push({
     profile,
     seed,
-    model,
+    model: MATCH_MODEL_REVISION,
     seasons: w.history.length,
     year: w.year,
-    checkpointAt: candidateModel
-      ? 'final round of the last season, before its close'
-      : 'after the close',
+    checkpointAt: 'final round of the last season, before its close',
     checkpointChars: raw.length,
     checkpointBytes,
     withinCheckpointLimit: checkpointBytes <= PERFORMANCE_CONFIG.storage.checkpointBytes,
@@ -551,7 +441,7 @@ const params = core.params as {
 if (params.pairing !== 'world-country-roster' || params.tactics !== 'club')
   throw new Error(`the runner builds only world-country-roster pairs playing their clubs' tactics`);
 const pairs = params.worldSeeds.flatMap((seed) => {
-  const w = careerWorld({ ...params.world, seed }, DISABLED_RELEASE);
+  const w = careerWorld({ ...params.world, seed });
   return params.countries.flatMap((country) => {
     const clubs = w.clubs
       .filter((c) => c.country === country && c.tier === 0 && c.id !== w.playerClub)
@@ -564,9 +454,7 @@ const pairs = params.worldSeeds.flatMap((seed) => {
     );
   });
 });
-const reference: MatchSample[] = [],
-  legacy: MatchSample[] = [],
-  candidate: MatchSample[] = [];
+const pilot: MatchSample[] = [];
 for (let i = 0; i < settings.pilot; i++) {
   const { w, home, away } = pairs[i % pairs.length]!;
   const f: Fixture = {
@@ -576,55 +464,36 @@ for (let i = 0; i < settings.pilot; i++) {
     home: home.id,
     away: away.id,
   };
-  const grid: GridResult = playGrid(buildGridSetup(w, f, { observe: false, recordPlayers: true }));
   // Match strength of two clubs nobody owns: XI ratings and home ground (their manager terms cancel).
   const gap = rating(w, home, f) + 3 - rating(w, away, f);
-  const base = { incidentsTracked: true, condition: core.id, gap };
-  reference.push({ ...base, record: grid.record, diagnostics: grid.diagnostics });
-  legacy.push({ ...base, record: simulateMatch(w, f, false, true).record });
-  if (candidateFn) candidate.push({ ...base, record: candidateFn(w, f).record });
+  pilot.push({
+    incidentsTracked: true,
+    condition: core.id,
+    gap,
+    record: simulateAggregate(w, f).record,
+  });
 }
 sampleMemory();
-const legacyPath = `simulateMatch, own-league dispatch ${OWN_LEAGUE_ENGINE}`;
 const parity = buildParityReport({
   provenance,
   partition: 'calibration',
   condition: core.id,
-  reference: { path: 'grid (buildGridSetup + playGrid)', engine: 'detailed', samples: reference },
-  candidate: { path: legacyPath, engine: 'aggregate', samples: legacy },
+  path: 'simulateAggregate (the result path)',
+  samples: pilot,
 });
-const candidateParity = candidateFn
-  ? buildParityReport({
-      provenance,
-      partition: 'calibration',
-      condition: core.id,
-      reference: {
-        path: 'grid (buildGridSetup + playGrid)',
-        engine: 'detailed',
-        samples: reference,
-      },
-      candidate: { path: 'simulateAggregate', engine: 'aggregate', samples: candidate },
-    })
-  : null;
-// The validation size the reference pilot implies for every metric this condition judges.
-const pilotSizing = conditionValidationSize(pilotNeeds(reference, core));
 
 // ---- Report -----------------------------------------------------------------------------------------
 if (measurementIdentity('scripts/match-model-baseline.ts').sha256 !== computation.sha256)
   throw new Error('Source changed during the measurement; rerun after edits settle');
 const components = [...timings.values()];
-const performanceReport = buildPerformanceReport({ components, provisional: !releaseRun });
+const performanceReport = buildPerformanceReport({ components, provisional: smoke });
 const sortedLoads = [...loads].sort((a, b) => a - b);
 const load = {
   samples: loads.length,
   load1Median: loads.length ? Number(median(sortedLoads).toFixed(2)) : null,
   load1Max: loads.length ? Number(sortedLoads.at(-1)!.toFixed(2)) : null,
 };
-/** ARCH-31's absolute release gates on this run (a candidate run only). */
-const gates = candidateModel
-  ? releaseGates({ provenance, report: performanceReport, maxLoad: load.load1Max ?? undefined })
-  : null;
-/** The paired ratios to a baseline report of this runner, when one is named: context only. */
+/** The paired ratios to the previous release's report of this runner, when one is named (→ARCH-31). */
 const pairedComparison = pairedWith
   ? (() => {
       const baseline = JSON.parse(readFileSync(pairedWith, 'utf8')) as {
@@ -658,19 +527,12 @@ const report = {
   kind: 'match-model-baseline',
   version: MATCH_PARITY_VERSION,
   mode: settings.mode,
-  model,
-  provisional: !releaseRun,
-  provisionalReason: releaseRun
-    ? null
-    : candidateModel
-      ? 'A candidate run outside --release (fewer seasons, smoke or other fixtures): its gate results guide work and are not release evidence (→ARCH-31).'
-      : 'A baseline-path run of this source. T273 recorded the release baseline at 9f69553 (post-T255, before the match-model football changes); paired runs re-run that source on the measuring machine (→ARCH-31).',
-  releaseGates: gates,
-  releaseEvidence: gates?.releaseEvidence ?? false,
+  model: MATCH_MODEL_REVISION,
+  provisional: smoke,
   load,
   pairedComparison,
   pairedNote: pairedWith
-    ? 'Ratios pair this run with the named baseline report only when machine, toolchain and worlds match, and settingsMatch says whether both ran the same seasons, fixtures, warm-up and repetitions; ARCH-31 reports them as context, never as the release gate.'
+    ? 'Ratios pair this run with the named baseline report only when machine, toolchain and worlds match, and settingsMatch says whether both ran the same seasons, fixtures, warm-up and repetitions; ARCH-31 reports them with the release, never as a gate.'
     : 'No paired baseline named (--paired-with); the historic timings under context come from other machines and are never a paired result (→ARCH-31).',
   context: [
     {
@@ -694,25 +556,12 @@ const report = {
     performance: PERFORMANCE_CONFIG,
     registry: { metrics: METRIC_REGISTRY.length, targets: TARGET_BANDS.length },
   },
-  productionDispatch: {
-    ownLeagueEngine: OWN_LEAGUE_ENGINE,
-    changedByRunner: false,
-    releaseSwitch: 'not read or written: every world names its release',
-  },
-  candidate: {
-    available: !!candidateFn,
-    adapter: 'simulateAggregate(world, fixture) → { record } from packages/engine/src/index',
-    matchModelRevision: revision,
-  },
   fixtureSets: {
     world: PERFORMANCE_CONFIG.profiles.baseline,
-    grid: gridSet.length,
-    ownInGrid: Math.min(ownFixtures.length, gridSet.length),
-    summary: summarySet.length,
-    summaryLines: linesSet.length,
-    observed: observedSet.length,
+    npc: npcSet.length,
+    own: ownSet.length,
     seasonFixtures: world.fixtures.length,
-    /** Candidate stage samples left out because the fixture settled on a retry stream. */
+    /** Stage samples left out because the fixture settled on a retry stream. */
     candidateStageRetries: stageRetries,
   },
   checks,
@@ -720,8 +569,6 @@ const report = {
   memory,
   seasons,
   parity,
-  pilotSizing,
-  candidateParity,
   elapsedMs: Math.round(performance.now() - started),
 };
 mkdirSync(dirname(out), { recursive: true });
@@ -731,16 +578,14 @@ const rounded = (_key: string, value: unknown) =>
 writeFileSync(out, JSON.stringify(report, rounded, 2) + '\n');
 
 const by = (id: string) => report.performance.components.find((c) => c.id === id)?.medianMs;
-const statuses = parity.equivalence.summary.metrics;
+const inside = parity.targets.filter((t) => t.status === 'inside').length;
 console.log(
   [
     `wrote ${out} (${settings.mode}, ${report.elapsedMs} ms)`,
-    `median ms: summary ${by('fixture.summary')?.toFixed(3)}, grid ${by('fixture.grid')?.toFixed(1)}, settlement ${by('settlement.npc')?.toFixed(3)}`,
-    `candidate ms: fixture ${by('fixture.candidate')?.toFixed(3)} (preparation ${by('candidate.preparation')?.toFixed(3)}, generation ${by('candidate.generation')?.toFixed(3)}, attribution ${by('candidate.attribution')?.toFixed(3)}, record ${by('candidate.record')?.toFixed(3)}), own ${by('fixture.own-candidate')?.toFixed(1)}, settlement ${by('settlement.candidate')?.toFixed(3)}`,
-    `release gates: ${gates ? JSON.stringify(gates.gates.map((g) => [g.id, g.status, g.medianMs === undefined ? null : Number(g.medianMs.toFixed(3))])) : 'none'}; evidence ${gates?.releaseEvidence ?? false}${gates?.reasons.length ? ` (${gates.reasons.join('; ')})` : ''}; load median ${load.load1Median}, max ${load.load1Max}`,
+    `median ms: fixture ${by('fixture.candidate')?.toFixed(3)} (preparation ${by('candidate.preparation')?.toFixed(3)}, generation ${by('candidate.generation')?.toFixed(3)}, attribution ${by('candidate.attribution')?.toFixed(3)}, record ${by('candidate.record')?.toFixed(3)}), own ${by('fixture.own-candidate')?.toFixed(1)}, settlement ${by('settlement.candidate')?.toFixed(3)}; load median ${load.load1Median}, max ${load.load1Max}`,
     `paired ratios: ${pairedComparison ? JSON.stringify(pairedComparison.ratios.map((r) => [r.id, r.status, r.ratio === undefined ? null : Number(r.ratio.toFixed(3))])) : 'none'}`,
     `season s: baseline ${((by('season.baseline') ?? NaN) / 1000).toFixed(2)}, active ${((by('season.active-management') ?? NaN) / 1000).toFixed(2)}`,
-    `pilot ${settings.pilot} matches: ${JSON.stringify(statuses)}, constants ${parity.equivalence.constants.join(' ')}, blocking ${parity.equivalence.blocking.length}`,
+    `pilot ${settings.pilot} matches: targets inside ${inside}/${parity.targets.length}, invariant failures ${parity.invariants.filter((x) => x.failed).length}`,
     `checks: ${JSON.stringify(checks)}`,
   ].join('\n'),
 );

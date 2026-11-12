@@ -13,34 +13,6 @@ const GRID = 'packages/engine/src/grid/';
 const DISPATCH = 'packages/engine/src/match.ts';
 const SCOPES = ['packages', 'apps/web/src', 'scripts', 'tests'];
 
-/**
- * Files outside `grid/` that still import it, each removed by a planned task: the scripts that run
- * or measure the grid (T844). The engine's tests left it in T843. The list only shrinks: a new
- * importer fails, and so does a listed file that no longer imports the grid.
- */
-const LEAVING = [
-  // T844: scripts that play, tune or compare the grid.
-  'scripts/calibrate.ts',
-  'scripts/gameplay-read.ts',
-  'scripts/grid-bands.ts',
-  'scripts/lib/match-parity.test.ts',
-  'scripts/lib/match-parity.ts',
-  'scripts/match-model-baseline.ts',
-  'scripts/match-parity.ts',
-  'scripts/perf/workloads.ts',
-  'scripts/scoring-box-entries.ts',
-  'scripts/scoring-chased-shots.ts',
-  'scripts/scoring-clear-chances.ts',
-  'scripts/scoring-concentration.ts',
-  'scripts/scoring-press-counter.ts',
-  'scripts/scoring-regain-shots.ts',
-  'scripts/scoring-shot-origins.ts',
-  'scripts/scoring-striker-stress.ts',
-  'scripts/season-throughput.ts',
-  'scripts/t328-counter-roles-variants.ts',
-  'scripts/t328-counter-roles.ts',
-];
-
 /** Every module a file names: static imports and exports, type-only ones too, and literal `import()`. */
 function specifiers(text: string, file: string): string[] {
   const tree = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
@@ -99,9 +71,9 @@ it('reads a module in grid/ from a relative name and from nothing else', () => {
   ).toEqual(['./a', '../b', './c']);
 });
 
-it('nothing outside grid/ but match.ts imports from it, beyond the listed files leaving', () => {
+it('nothing outside grid/ but match.ts imports from it', () => {
   const root = process.cwd();
   const importers = gridImporters(root);
-  expect(importers).toContain(DISPATCH);
-  expect(importers.filter((path) => path !== DISPATCH)).toEqual([...LEAVING].sort());
+  // The scripts that ran, tuned or compared the grid left in T844; T845 removes the dispatch.
+  expect(importers).toEqual([DISPATCH]);
 });

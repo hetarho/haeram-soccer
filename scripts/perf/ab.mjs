@@ -3,14 +3,15 @@
  * the candidate is faster than its baseline on the machine measured, beyond the noise; no target
  * in seconds).
  *
- *   node scripts/perf/ab.mjs --base <git ref | dir> [--cand <git ref | dir>] [--workload grid]
+ *   node scripts/perf/ab.mjs --base <git ref | dir> [--cand <git ref | dir>] [--workload own-match]
  *     [--procs 8] [--reps n] [--warm n] [--seed s] [--json out.json]
  *
  * Each side's `workloads.ts` is bundled with esbuild from its own tree (a git ref is exported with
  * `git archive` into a scratch directory; a directory is used as it stands; the default candidate
  * is this checkout). Every process (`pair.mjs`) loads both bundles and alternates their reps
  * A B / B A, so load swings on a shared host hit both sides of a pair alike; measured on 261028,
- * separate processes per side gave A/A intervals of ±3% (aggregate) and ±5% (grid).
+ * separate processes per side gave A/A intervals of ±3% (aggregate) and ±5% (the grid engine, gone
+ * since T844).
  *
  * Estimate: per process, the median log-ratio B/A of its pairs (main-thread CPU time, the primary
  * measure; wall time beside it); over processes, their trimmed mean with a 95% bootstrap interval. The call
@@ -36,16 +37,13 @@ const arg = (name, fallback) => {
   const at = process.argv.indexOf(name);
   return at < 0 ? fallback : process.argv[at + 1];
 };
-const workload = arg('--workload', 'grid');
+const workload = arg('--workload', 'own-match');
 const DEFAULTS = {
   'own-match': { procs: 8, reps: 12, warm: 4 },
   staging: { procs: 8, reps: 3, warm: 1 },
   'staging-core': { procs: 8, reps: 3, warm: 1 },
   'staging-first': { procs: 8, reps: 12, warm: 4 },
-  'grid-own': { procs: 8, reps: 6, warm: 2 },
-  'grid-observed': { procs: 8, reps: 6, warm: 2 },
   fixture: { procs: 8, reps: 12, warm: 4 },
-  grid: { procs: 16, reps: 18, warm: 6 },
   aggregate: { procs: 16, reps: 20, warm: 4 },
   day: { procs: 4, reps: 60, warm: 0 },
   view: { procs: 4, reps: 60, warm: 6 },

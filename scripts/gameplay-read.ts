@@ -6,8 +6,9 @@
  *   win share by XI strength gap (0–5, 5–15, 15+, ratings read at the season's last round);
  * hat-tricks a match from a replay of each season's top-tier league fixtures on the aggregate path
  * (settled records of fixtures without the own club are not retained, →MATCH-25), on a copy of the
- * world at the season's start, so the season itself is untouched. Then 5 observed detailed fixtures
- * per MATCH-29 tactic pairing (calibration partition, round 0) read beside MATCH-23's bands.
+ * world at the season's start, so the season itself is untouched. Then 5 fixtures per MATCH-29
+ * tactic pairing on the result path (calibration partition, round 0) read beside MATCH-23's bands
+ * (the rows read on own matches' scripts are listed as script-only, →MATCH-23/38).
  *
  *   pnpm exec tsx scripts/gameplay-read.ts [--seasons 10] [--per-pairing 5]
  *     [--out artifacts/benchmarks/gameplay-read.json]
@@ -18,13 +19,11 @@ import type { Fixture, World } from '../packages/contracts/src/types';
 import { simulateAggregate } from '../packages/engine/src/aggregate/engine';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { M } from '../packages/engine/src/match/record';
-import type { GridResult } from '../packages/engine/src/grid/engine';
 import { advanceRound, closeSeason } from '../packages/engine/src/season';
 import { findClub, rating } from '../packages/engine/src/world';
 import { cachedWorld, ENABLED_RELEASE } from '../tests/fixtures/worlds';
-import { measure } from './grid-bands';
-import { referenceCondition } from './match-parity';
-import { CORPUS_CONFIG } from './lib/match-parity';
+import { aggregateCondition } from './match-parity';
+import { buildTargetReport, CORPUS_CONFIG } from './lib/match-parity';
 import { measurementIdentity } from './lib/measurement-identity';
 
 const arg = (name: string, fallback: string) => {
@@ -174,16 +173,24 @@ const seasonSeconds = (Date.now() - started) / 1000;
 const pairings = CORPUS_CONFIG.conditions.filter((c) => c.family === 'tactics');
 const t1 = Date.now();
 const observed = pairings.flatMap((c) =>
-  referenceCondition(c.id, 'calibration', 0, PER_PAIRING).map((s) => ({ ...s, pairing: c.id })),
+  aggregateCondition(c.id, 'calibration', 0, PER_PAIRING).samples.map((s) => ({
+    ...s,
+    pairing: c.id,
+  })),
 );
-const bands = measure(observed as unknown as GridResult[]).map((row) => ({
-  ...row,
-  value: round2(row.value),
-  inBand: row.value >= row.band[0] && row.value <= row.band[1],
+const bands = buildTargetReport(observed).map((row) => ({
+  id: row.id,
+  label: row.label,
+  band: row.band,
+  status: row.status,
+  ...(row.value !== undefined && {
+    value: round2(row.value),
+    inBand: row.value >= row.band[0] && row.value <= row.band[1],
+  }),
 }));
 const perMatch = (f: (r: (typeof observed)[number]['record']) => number) =>
   round2(observed.reduce((a, s) => a + f(s.record), 0) / observed.length);
-const detailed = {
+const pairingRead = {
   pairings: pairings.length,
   perPairing: PER_PAIRING,
   matches: observed.length,
@@ -201,10 +208,13 @@ const summary = {
   career: CAREER,
   identity: measurementIdentity('scripts/gameplay-read.ts'),
   ...built,
-  detailed,
-  seconds: { seasons: seasonSeconds, detailed: detailed.seconds },
+  pairings: pairingRead,
+  seconds: { seasons: seasonSeconds, pairings: pairingRead.seconds },
 };
 writeFileSync(OUT, `${JSON.stringify(summary, null, 2)}\n`);
 console.log(
-  JSON.stringify({ seasons: built.seasons.length, detailed: { ...detailed, bands: undefined } }),
+  JSON.stringify({
+    seasons: built.seasons.length,
+    pairings: { ...pairingRead, bands: undefined },
+  }),
 );

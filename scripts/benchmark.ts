@@ -62,7 +62,7 @@ import {
   modelEvidence,
   writerActivation,
 } from '../tests/fixtures/full-model-workload';
-import { DISABLED_RELEASE } from '../tests/fixtures/releases';
+import { withoutMatchModel } from '../tests/fixtures/earlier-saves';
 
 /**
  * The storage benchmark in phases (T308): `pnpm run benchmark` runs every phase in one process,
@@ -106,7 +106,7 @@ const HALF = SEASONS / 2;
 const MID_SEASON = HALF - 1;
 const ERA_END = smoke ? CAREER_YEAR + 2 : 2025;
 const ERA_HALF = smoke ? CAREER_YEAR + 1 : 1988;
-/** Whole seasons the activation profile plays on the pre-feature model before its writer load. */
+/** Whole seasons the activation profile plays before it is saved as an earlier writer saved it. */
 const PRE_RELEASE_SEASONS = smoke ? 1 : 10;
 /** Seasons it then closes on the full model after the activated season. */
 const ACTIVATED_SEASONS = smoke ? 1 : 2;
@@ -777,18 +777,20 @@ async function writerLoad(raw: string) {
   return { world: host.world, raw: reply.raw };
 }
 /**
- * T286: a supported career founded before the release plays `PRE_RELEASE_SEASONS` seasons and half
- * of the next on the pre-feature model, is saved, and is loaded by the worker host's writer path
- * with the switch as it stands. Released, that load records the model mid-season, one revision on,
+ * T286: a supported career saved before the full model's release — a career played
+ * `PRE_RELEASE_SEASONS` seasons and half of the next, saved without the model data such a writer
+ * never held (`withoutMatchModel`, T844: no earlier model is played) — is loaded by the worker
+ * host's writer path with the switch as it stands. Released, that load records the model mid-season, one revision on,
  * exactly as `writerActivation` predicts, rewriting nothing settled. The activated checkpoint
  * round-trips; the season resumed from it settles as the uninterrupted one does; and after
  * `ACTIVATED_SEASONS` more seasons the career still fits its limits with complete aggregates and
  * every newer own record complete, the pre-feature ones as they were.
  */
 async function activation() {
-  const legacy = careerWorld(ACTIVATION_CAREER, DISABLED_RELEASE);
+  const legacy = careerWorld(ACTIVATION_CAREER);
   for (let n = 0; n < PRE_RELEASE_SEASONS; n++) simulateSeason(legacy);
   for (let round = 0; round < 23; round++) advanceRound(legacy, undefined, false);
+  withoutMatchModel(legacy);
   const before = retainedFacts(legacy);
   const { raw: legacyRaw } = await measure(legacy, 'activation pre-release career mid-season');
   if (!MATCH_MODEL_RELEASE.enabled) return { released: false, legacy: modelEvidence(legacy) };

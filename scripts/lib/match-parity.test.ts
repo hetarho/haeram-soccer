@@ -8,11 +8,9 @@ import {
   PRESS_LOAD_FATIGUE,
 } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
-import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import { inMatchFatigue } from '../../packages/engine/src/match/changes';
 import { M } from '../../packages/engine/src/match/record';
-import { buildGridSetup } from '../../packages/engine/src/grid/setup';
-import { forcedGap, forceTacticRosters } from '../grid-bands';
+import { forcedGap } from './match-conditions';
 import { FORMATIONS, levelFactor } from '../../packages/engine/src/player';
 import { zeroMetrics } from '../../packages/engine/src/primitives';
 import {
@@ -43,7 +41,6 @@ import {
   corpusFixtureIds,
   COUNTER_INDEXES,
   describeAdvancedCounters,
-  describeTacticPairingParity,
   describeTacticPairings,
   equivalencePower,
   HAT_TRICK_CONTEXT,
@@ -62,7 +59,6 @@ import {
   pilotNeeds,
   poissonReading,
   rareComparisonPower,
-  releaseGates,
   requiredRareEvents,
   ruleExclusions,
   SCORING_CONCENTRATION_TARGET,
@@ -70,7 +66,6 @@ import {
   seedOverlap,
   TACTIC_PAIRING_TARGET,
   TARGET_BANDS,
-  tacticPairingParity,
   tacticPairingVerdicts,
   validateCorpusConfig,
   validateRegistry,
@@ -583,7 +578,7 @@ describe('match parity registry', () => {
     const baseline = buildPerformanceReport({
       provisional: true,
       components: [
-        timing('fixture.summary', [2, 2, 2]),
+        timing('fixture.candidate', [2, 2, 2]),
         timing('season.baseline', [8000, 8100]),
         timing('season.active-management', [8200]),
         timing('codec.encode', [900]),
@@ -593,7 +588,7 @@ describe('match parity registry', () => {
     expect(baseline.categories.codec.totalMs).toBe(1300);
     expect(baseline.categories.computation.totalMs).toBe(6);
     expect(baseline.categories.season.totalMs).toBe(24300);
-    // A slower codec does not count against the engine budgets.
+    // A slower codec does not count against the engine's time.
     const candidate = buildPerformanceReport({
       provisional: false,
       components: [
@@ -616,7 +611,7 @@ describe('match parity registry', () => {
       conditions: [],
       partitions: {},
     };
-    // The paired ratios to the summary path are context (→ARCH-31 r19), never a gate.
+    // The paired ratios to the previous release on one machine are reported (→ARCH-31/34), never a gate.
     const paired = comparePerformance(
       { provenance, report: baseline },
       { provenance, report: candidate },
@@ -624,6 +619,7 @@ describe('match parity registry', () => {
     expect(paired.paired).toBe(true);
     expect(paired.ratios.map((r) => [r.id, r.status, r.ratio])).toEqual([
       ['npc-fixture', 'measured', 0.5],
+      ['own-fixture', 'missing', undefined],
       ['season.baseline', 'measured', 6000 / 8050],
       ['season.active-management', 'measured', 6400 / 8200],
     ]);
@@ -646,79 +642,14 @@ describe('match parity registry', () => {
     expect(() =>
       buildPerformanceReport({
         provisional: true,
-        components: [timing('fixture.grid+codec' as PerformanceComponent, [1])],
+        components: [timing('fixture.grid' as PerformanceComponent, [1])],
       }),
     ).toThrow(/unknown/);
   });
 
-  it('gates the release on absolute budgets, as evidence only from a quiet reference run', () => {
-    const timing = (id: PerformanceComponent, samplesMs: number[]) => ({
-      id,
-      samplesMs,
-      warmup: 1,
-      repetitions: 1,
-    });
-    const run = (fixtureMs: number[], seasonMs: number[], provisional = false) =>
-      buildPerformanceReport({
-        provisional,
-        components: [
-          timing('fixture.candidate', fixtureMs),
-          timing('season.baseline', seasonMs),
-          timing('season.active-management', seasonMs),
-        ],
-      });
-    const { referenceMachine, npcFixtureMs, seasonMs, quietLoad } = PERFORMANCE_CONFIG.release;
-    const provenance: Provenance = {
-      date: '2026-10-25T00:00:00.000Z',
-      source: {
-        gitHead: 'synthetic',
-        gitDirty: false,
-        fingerprint: { algorithm: 'sha256', sha256: '0'.repeat(64), files: 1, scope: ['packages'] },
-      },
-      toolchain: { node: 'v26.8.1' },
-      machine: { ...referenceMachine, memoryBytes: 1 },
-      seeds: {},
-      conditions: [],
-      partitions: {},
-    };
-    // Each budget holds at its value and fails just past it; the median decides.
-    const at = releaseGates({
-      provenance,
-      report: run([0.5, npcFixtureMs, 9], [1, seasonMs, 99_999]),
-      maxLoad: quietLoad,
-    });
-    expect(at.gates.map((g) => [g.id, g.status, g.budgetMs])).toEqual([
-      ['npc-fixture', 'pass', npcFixtureMs],
-      ['season.baseline', 'pass', seasonMs],
-      ['season.active-management', 'pass', seasonMs],
-    ]);
-    expect(at).toMatchObject({ referenceMachine: true, reasons: [], passed: true });
-    expect(at.releaseEvidence).toBe(true);
-    const over = releaseGates({
-      provenance,
-      report: run([npcFixtureMs + 0.001], [seasonMs]),
-      maxLoad: 1,
-    });
-    expect(over.gates.map((g) => g.status)).toEqual(['fail', 'pass', 'pass']);
-    expect(over).toMatchObject({ passed: false, releaseEvidence: false, reasons: [] });
-    // Another machine, a loaded or unsampled window and a provisional run are context only.
-    const context = (input: Partial<Parameters<typeof releaseGates>[0]>) =>
-      releaseGates({ provenance, report: run([0.5], [1]), maxLoad: 1, ...input });
-    expect(
-      context({ provenance: { ...provenance, machine: { ...provenance.machine, cpu: 'Xeon' } } }),
-    ).toMatchObject({ referenceMachine: false, passed: true, releaseEvidence: false });
-    expect(context({ maxLoad: quietLoad + 0.01 }).reasons).toEqual([
-      `not quiet: load ${quietLoad + 0.01} > ${quietLoad}`,
-    ]);
-    expect(context({ maxLoad: undefined }).reasons).toEqual(['load not sampled']);
-    expect(context({ report: run([0.5], [1], true) }).reasons).toEqual(['provisional run']);
-    expect(
-      releaseGates({
-        provenance,
-        report: buildPerformanceReport({ provisional: false, components: [] }),
-        maxLoad: 1,
-      }).gates.every((g) => g.status === 'missing'),
-    ).toBe(true);
+  it('sets no absolute throughput budget (→ARCH-31)', () => {
+    expect(PERFORMANCE_CONFIG).not.toHaveProperty('release');
+    expect(Object.keys(PERFORMANCE_CONFIG.components)).not.toContain('fixture.grid');
   });
 
   it('fails exact invariants without tolerance', () => {
@@ -948,94 +879,6 @@ describe('MATCH-29 tactic pairings', () => {
     });
   });
 
-  describe('paired parity of the two paths (T396)', () => {
-    /** `n` fixtures at one venue, results cycling home win, away win, then three draws. */
-    const fixtures = (home: Tactic, away: Tactic, n: number) =>
-      Array.from({ length: n }, (_, i) => ({
-        ...tactical(home, away, i % 5 === 0 ? [1, 0] : i % 5 === 1 ? [0, 1] : [0, 0], {
-          freshness: [80, 80],
-        }),
-        fixture: `${home}-${away}:${i}`,
-      }));
-    /** The same fixtures with the first `k` decisive results of a venue drawn instead. */
-    const drawn = (samples: MatchSample[], home: Tactic, away: Tactic, k: number) => {
-      let left = k;
-      return samples.map((s) => {
-        const decisive = s.record.score.home !== s.record.score.away;
-        if (s.record.tactics[0] !== home || s.record.tactics[1] !== away || !decisive || !left)
-          return s;
-        left -= 1;
-        return { ...s, record: { ...s.record, score: { home: 0, away: 0 } } };
-      });
-    };
-    const every = (n: number) =>
-      TACTICS.flatMap((home) => TACTICS.flatMap((away) => fixtures(home, away, n)));
-    const parity = (aggregate: MatchSample[], detailed: MatchSample[], id: string) =>
-      tacticPairingParity(aggregate, detailed).rows.find((r) => r.id === id)!;
-
-    it('pairs MATCH-29 rows by fixture and gives each difference a 95% interval', () => {
-      const detailed = every(40);
-      // Reversed, so only the fixture id pairs them; two press–press fixtures end level instead.
-      const aggregate = drawn(detailed, 'press', 'press', 2).reverse();
-      const report = tacticPairingParity(aggregate, detailed);
-      expect(report.matches).toEqual({ aggregate: 640, detailed: 640, paired: 640 });
-      expect(report.rows.map((r) => r.id)).toEqual(
-        tacticPairingVerdicts(detailed).rows.map((r) => r.id),
-      );
-      // Paired by fixture, every other row's difference is exactly 0.
-      const other = report.rows.find((r) => r.id === 'draws:possession-counter')!;
-      expect(other).toMatchObject({ verdict: 'equivalent', difference: 0, interval: [0, 0] });
-      expect(other.margin).toBe(0.03);
-      // Two of 40 paired differences are 1: mean 0.05 with the paired sample's interval.
-      const drawRow = report.rows.find((r) => r.id === 'draws:press-press')!;
-      const d = [1, 1, ...Array<number>(38).fill(0)];
-      const sd = Math.sqrt(d.reduce((a, x) => a + (x - 0.05) ** 2, 0) / 39);
-      expect(drawRow.difference).toBeCloseTo(0.05, 12);
-      expect(drawRow.interval![0]).toBeCloseTo(0.05 - (z * sd) / Math.sqrt(40), 12);
-      expect(drawRow.interval![1]).toBeCloseTo(0.05 + (z * sd) / Math.sqrt(40), 12);
-      expect(drawRow.aggregate).toBeDefined();
-      expect(drawRow.detailed).toBeDefined();
-      // Points take MATCH-28's mean margin from the detailed reference: 3, 0, 1, 1, 1 a side.
-      const points = [3, 0, 1, 1, 1, 0, 3, 1, 1, 1];
-      const pointsSd = Math.sqrt(
-        (points.reduce((a, x) => a + (x - 1.2) ** 2, 0) * 128) / (points.length * 128 - 1),
-      );
-      expect(report.rows.find((r) => r.id === 'points:press')!.margin).toBeCloseTo(
-        Math.max(0.05 * 1.2, 0.1 * pointsSd),
-        12,
-      );
-      // An ordering reports each pairwise gap's paired difference.
-      const order = report.rows.find((r) => r.id === 'ordering:possession')!;
-      expect(order.differences!.length).toBe(5);
-      expect(
-        order.differences!.every((x) => x.difference === 0 && x.verdict === 'equivalent'),
-      ).toBe(true);
-      expect(report.counts.equivalent + report.counts.different + report.counts.insufficient).toBe(
-        25,
-      );
-      expect(describeTacticPairingParity(report)[0]).toContain('640 paired fixtures');
-    });
-
-    it('a MATCH-29 difference whose interval leaves the margin is different and one straddling it insufficient', () => {
-      // 40 of 400 fixtures drawn instead: 0.10 with half-width ≈ 0.03, wholly beyond 0.03.
-      const wide = fixtures('press', 'press', 400);
-      const beyond = parity(drawn(wide, 'press', 'press', 40), wide, 'draws:press-press');
-      expect(beyond.verdict).toBe('different');
-      expect(beyond.interval![0]).toBeGreaterThan(0.03);
-      // 2 of 40: 0.05 whose interval holds both 0 and the margin edge, so it decides nothing.
-      const few = fixtures('press', 'press', 40);
-      const straddling = parity(drawn(few, 'press', 'press', 2), few, 'draws:press-press');
-      expect(straddling.verdict).toBe('insufficient');
-      expect(straddling.interval![0]).toBeLessThan(0.03);
-      expect(straddling.interval![1]).toBeGreaterThan(0.03);
-      expect(straddling.reason).toBe('the interval crosses a margin edge');
-      // A fixture on one path only is left out; a venue short of pairs is never a pass.
-      const unpaired = parity(few.slice(0, 20), few, 'draws:press-press');
-      expect(unpaired).toMatchObject({ verdict: 'insufficient', pairs: 20 });
-      expect(unpaired.reason).toMatch(/fewer than 30/);
-    });
-  });
-
   it('reads knockout counts per 90 minutes', () => {
     const kicks = (extraTime: boolean) => {
       const r = record({ detail: [emptyTeamDetail(), emptyTeamDetail()] });
@@ -1104,11 +947,11 @@ describe('aggregate measurement (T284)', () => {
     expect(read(samples, 'setPieceGoals').value).toBe(50);
     expect(read(samples, 'goalsMF').value).toBe(50);
     expect(read(samples, 'ballInPlay')).toMatchObject({ value: 56, status: 'inside' });
-    // A point or a possession sequence the ledger does not hold is missing, never a reading.
+    // A point or a possession sequence the ledger does not hold is read on scripts, never here.
     for (const id of ['shotDistance', 'shotsFar', 'possessions', 'possessionShots'])
-      expect(read(samples, id).status).toBe('missing');
+      expect(read(samples, id).status).toBe('script-only');
     expect(
-      TARGET_BANDS.filter((t) => t.reads === 'diagnostics')
+      TARGET_BANDS.filter((t) => t.reads === 'script')
         .map((t) => t.id)
         .sort(),
     ).toEqual(
@@ -1185,18 +1028,11 @@ describe('aggregate measurement (T284)', () => {
     expect(forced.rosters.flat().every((p) => p.fatigue === NEUTRAL_SQUAD_FATIGUE)).toBe(true);
     expect(plain.rosters[0].every((p) => p.fatigue === PRESS_LOAD_FATIGUE)).toBe(true);
     expect(forced.gap).toBe(plain.gap + 2);
-    // The detailed runner rates the same forced rosters at the formations played (CORPUS_CONFIG
-    // v3): both runners give a forced sample one gap.
-    const setup = buildGridSetup(w, f, {
-      observe: false,
-      recordPlayers: true,
-      model: MATCH_MODEL_REVISION,
-      tactics: ['counter', 'press'],
-    });
-    forceTacticRosters(w, f, setup, [press, other], NEUTRAL_SQUAD_FATIGUE);
-    expect(forcedGap(w, [press, other], setup.rosters, setup.tactics)).toBe(forced.gap);
+    // The condition fixtures rate the same forced rosters at the formations played (CORPUS_CONFIG
+    // v3): a forced sample has one gap.
+    expect(forcedGap(w, [press, other], forced.rosters, ['counter', 'press'])).toBe(forced.gap);
     expect(forced.prepared.profiles[1]!.pressure).toBeGreaterThan(0);
-    // Each squad is built for its forced formation, as the detailed runner's (T321): every starter
+    // Each squad is built for its forced formation, as T321 rules: every starter
     // plays his own position, and without a declared squad fatigue there is no freshness reading.
     forced.rosters.forEach((side, i) => {
       const slots = FORMATIONS[forced.prepared.tactics[i]!].slots;
@@ -1429,11 +1265,10 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
     expect(lines.some((l) => l.includes('ppda: inside [9.75, 16.25]'))).toBe(true);
   });
 
-  it("lists MATCH-23's trace-only rows as detailed-only on the aggregate path", () => {
+  it("lists MATCH-23's rows read on own matches' scripts as script-only", () => {
     const set = matches(40, { crosses: 16 });
-    const detailed = buildTargetReport(set);
-    const aggregate = buildTargetReport(set, 'aggregate');
-    const traceOnly = TARGET_BANDS.filter((t) => t.reads === 'diagnostics').map((t) => t.id);
+    const targets = buildTargetReport(set);
+    const traceOnly = TARGET_BANDS.filter((t) => t.reads === 'script').map((t) => t.id);
     expect(traceOnly).toEqual([
       'possessions',
       'passesPerPossession',
@@ -1442,14 +1277,11 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
       'shotsFar',
       'shotsOwnHalf',
     ]);
-    for (const id of traceOnly) {
-      expect(detailed.find((t) => t.id === id)!.status).toBe('missing');
-      expect(aggregate.find((t) => t.id === id)!.status).toBe('detailed-only');
-    }
-    // Every other row reads the same on both paths.
-    for (const t of aggregate.filter((x) => !traceOnly.includes(x.id)))
-      expect(t).toEqual(detailed.find((x) => x.id === t.id));
-    // The parity report names each side's engine and reads its targets the same way.
+    for (const id of traceOnly)
+      expect(targets.find((t) => t.id === id)).toMatchObject({ status: 'script-only', missing: 0 });
+    // Every other row is read from the samples.
+    expect(targets.filter((t) => t.status === 'script-only').length).toBe(traceOnly.length);
+    // The one-path report reads its targets the same way.
     const provenance: Provenance = {
       date: '2026-10-22T00:00:00.000Z',
       source: {
@@ -1467,11 +1299,11 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
       provenance,
       partition: 'calibration',
       condition: 'core:equal-top-tier',
-      reference: { path: 'synthetic grid', engine: 'detailed', samples: set },
-      candidate: { path: 'synthetic aggregate', engine: 'aggregate', samples: set },
+      path: 'synthetic result path',
+      samples: set,
     });
-    expect(parity.targets.reference).toEqual(detailed);
-    expect(parity.targets.candidate).toEqual(aggregate);
+    expect(parity.targets).toEqual(targets);
+    expect(parity.version).toBe(MATCH_PARITY_VERSION);
   });
 
   it("holds scoring concentration to MATCH-23's ratified rows", () => {

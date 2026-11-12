@@ -211,10 +211,7 @@ export function summarizeRun(samples: readonly LabSample[], context: RunContext 
     else if (l === r) draws++;
     else rightWins++;
   }
-  const report = buildTargetReport(
-    ordered.map((s) => s.sample),
-    'aggregate',
-  );
+  const report = buildTargetReport(ordered.map((s) => s.sample));
   const targets = report.map((row) => {
     const band = TARGET_BANDS.find((b) => b.id === row.id)!;
     // A single match's ratio rows have no spread: their interval is the value, as for side means.

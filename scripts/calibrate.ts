@@ -1,16 +1,17 @@
 /**
  * Match-outcome calibration harness (MATCH-2, MATCH-22, artifacts/benchmarks/calibration-results.json).
  *
- * Simulates thousands of fixtures per strength-gap bucket on both engine paths (the grid engine
- * and the team-level summary) and whole 20-club double round robins, and prints them next to
- * real-football targets: a ClubElo-style mapping of one rating point to 16 Elo points, the draw
- * share of top European leagues by expected score, and season-level points per game.
+ * Simulates thousands of fixtures per strength-gap bucket on the released result path, the same
+ * path for every fixture (→MATCH-22), and whole 20-club double round robins, and prints them next
+ * to real-football targets: a ClubElo-style mapping of one rating point to 16 Elo points, the draw
+ * share of top European leagues by expected score, and season-level points per game. The own
+ * club's rows play its fixtures on the same path, so equal prepared strengths must give it the
+ * same curve as every other club (→MATCH-2). Before T844 it also played the grid engine.
  *
- *   pnpm exec tsx scripts/calibrate.ts            full run (about an hour; a grid match takes ~40 ms)
+ *   pnpm exec tsx scripts/calibrate.ts            full run
  *   pnpm exec tsx scripts/calibrate.ts --quick    smaller samples
- *   options: --engine grid|summary (default both), --matches N (gap sample per path),
- *            --tier N (sample per tier), --seasons N (summary and Elo rows),
- *            --grid-seasons N (grid rows), --own-seasons N, --only curves|tiers|seasons|own,
+ *   options: --matches N (gap sample), --tier N (sample per tier), --seasons N (season rows),
+ *            --own-seasons N, --only curves|tiers|seasons|own,
  *            --setting flat|spread (WORLD-6's squad spread for the run, T808; else the default)
  */
 import { ATTRIBUTES } from '../packages/contracts/src/player';
@@ -34,8 +35,6 @@ import {
   simulateMatch,
 } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
-import { playGrid } from '../packages/engine/src/grid/engine';
-import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import { squadSpreadSetting } from './lib/squad-spread-setting';
 
 const args = process.argv.slice(2);
@@ -49,18 +48,10 @@ const quick = args.includes('--quick');
 const MATCHES = option('matches', quick ? 6000 : 30000);
 const PER_TIER = option('tier', quick ? 1500 : 4000);
 const SEASONS = option('seasons', quick ? 40 : 200);
-const GRID_SEASONS = option('grid-seasons', quick ? 4 : 20);
 const OWN_SEASONS = option('own-seasons', quick ? 10 : 40);
 
-type Engine = 'grid' | 'summary';
-const engineArg = args.includes('--engine') ? args[args.indexOf('--engine') + 1] : undefined;
-const ENGINES: Engine[] =
-  engineArg === 'grid' || engineArg === 'summary' ? [engineArg] : ['grid', 'summary'];
-/** A fixture's record on one path: the grid engine, or the team-level summary of two unowned clubs. */
-const playOn = (world: World, f: Fixture, engine: Engine): MatchRecord =>
-  engine === 'grid'
-    ? playGrid(buildGridSetup(world, f, { observe: false, recordPlayers: false })).record
-    : simulateMatch(world, f).record;
+/** A fixture's record on the released result path (→MATCH-22). */
+const playOn = (world: World, f: Fixture): MatchRecord => simulateMatch(world, f).record;
 
 // ---- Targets ---------------------------------------------------------------------------------
 /** One rating point is worth this many Elo points (a division gap of ~11 points ≈ 175 Elo). */
@@ -168,8 +159,8 @@ const tally = (): Tally => ({
   shots: 0,
   gap: 0,
 });
-function play(t: Tally, f: Fixture, gap: number, engine: Engine) {
-  const { score, metrics } = playOn(w, f, engine);
+function play(t: Tally, f: Fixture, gap: number) {
+  const { score, metrics } = playOn(w, f);
   t.n++;
   t.gap += gap;
   if (score.home > score.away) t.w++;
@@ -188,7 +179,7 @@ const pct = (part: number, whole: number) => (whole ? ((100 * part) / whole).toF
 const fixed = (value: number, digits = 2) => (Number.isFinite(value) ? value.toFixed(digits) : '-');
 
 /** Fixtures across the whole gap range, five tiers deep, bucketed by the actual match gap. */
-function gapCurve(engine: Engine) {
+function gapCurve() {
   const r = random('calibration:gaps');
   const buckets = new Map<number, Tally>();
   const bases = [77, 66, 55, 44, 86];
@@ -200,7 +191,7 @@ function gapCurve(engine: Engine) {
     const gap = gapOf(home, away),
       bucket = Math.max(-35, Math.min(40, Math.round(gap / 5) * 5));
     if (!buckets.has(bucket)) buckets.set(bucket, tally());
-    play(buckets.get(bucket)!, fixture(`cal:gap:${i}`, home, away), gap, engine);
+    play(buckets.get(bucket)!, fixture(`cal:gap:${i}`, home, away), gap);
   }
   return [...buckets.entries()].sort((a, b) => a[0] - b[0]);
 }
@@ -240,30 +231,19 @@ const TIERS: [string, number, number][] = [
 ];
 function tierTable() {
   console.log('\n### Ordinary league fixtures per tier (both clubs drawn from the tier range)\n');
-  console.log(
-    '| tier | path | home W/D/A % | goals | 5+ margin % | pass % | passes/side | shots/side | grid ÷ summary goals |',
-  );
-  console.log('|---|---|---|---:|---:|---:|---:|---:|---:|');
+  console.log('| tier | home W/D/A % | goals | 5+ margin % | pass % | passes/side | shots/side |');
+  console.log('|---|---|---:|---:|---:|---:|---:|');
   for (const [label, low, high] of TIERS) {
-    const results = ENGINES.map((engine) => {
-      const r = random(`calibration:tier:${label}`),
-        t = tally();
-      for (let i = 0; i < PER_TIER; i++) {
-        const home = poolClub(integer(r, low, high), r()),
-          away = poolClub(integer(r, low, high), r());
-        if (home === away) continue;
-        play(t, fixture(`cal:tier:${label}:${i}`, home, away), gapOf(home, away), engine);
-      }
-      return t;
-    });
-    const ratio =
-      results.length === 2
-        ? fixed(results[0].goals / results[0].n / (results[1].goals / results[1].n))
-        : '-';
-    results.forEach((t, index) =>
-      console.log(
-        `| ${label} | ${ENGINES[index]} | ${pct(t.w, t.n)}/${pct(t.d, t.n)}/${pct(t.l, t.n)} | ${fixed(t.goals / t.n)} | ${pct(t.rout, t.n)} | ${pct(t.completed, t.passes)} | ${fixed(t.passes / t.n / 2, 0)} | ${fixed(t.shots / t.n / 2, 1)} | ${ENGINES[index] === 'grid' ? ratio : ''} |`,
-      ),
+    const r = random(`calibration:tier:${label}`),
+      t = tally();
+    for (let i = 0; i < PER_TIER; i++) {
+      const home = poolClub(integer(r, low, high), r()),
+        away = poolClub(integer(r, low, high), r());
+      if (home === away) continue;
+      play(t, fixture(`cal:tier:${label}:${i}`, home, away), gapOf(home, away));
+    }
+    console.log(
+      `| ${label} | ${pct(t.w, t.n)}/${pct(t.d, t.n)}/${pct(t.l, t.n)} | ${fixed(t.goals / t.n)} | ${pct(t.rout, t.n)} | ${pct(t.completed, t.passes)} | ${fixed(t.passes / t.n / 2, 0)} | ${fixed(t.shots / t.n / 2, 1)} |`,
     );
   }
 }
@@ -285,10 +265,7 @@ interface SeasonSummary {
   allDraws: number;
 }
 type Outcome = (f: Fixture, gap: number, r: () => number) => { home: number; away: number };
-const engineOutcome =
-  (engine: Engine): Outcome =>
-  (f) =>
-    playOn(w, f, engine).score;
+const engineOutcome: Outcome = (f) => playOn(w, f).score;
 /** Outcomes drawn straight from the target curve: what Elo says this league should look like. */
 const eloOutcome: Outcome = (_f, gap, r) => {
   const goal = target(gap),
@@ -406,7 +383,7 @@ const quantile = (values: number[], q: number) => {
 
 function seasonTable() {
   console.log(
-    `\n### 20-club seasons (${SEASONS} seasons per Elo and summary row, ${GRID_SEASONS} per grid row; ordinary leagues 72–82, leagues with a dominant club 62–72 plus that club; Elo rows draw outcomes from the target curve)\n`,
+    `\n### 20-club seasons (${SEASONS} seasons per row; ordinary leagues 72–82, leagues with a dominant club 62–72 plus that club; Elo rows draw outcomes from the target curve)\n`,
   );
   console.log(
     '| league | outcomes | seasons | champion PPG (p10–p90) | bottom PPG | dominant rating gap | dominant PPG | dominant titles % | dominant unbeaten % | dominant L/D per season | goals | home W % | draws % |',
@@ -415,11 +392,7 @@ function seasonTable() {
   for (const boost of [undefined, 10, 15, 20, 25]) {
     for (const [label, outcome, total] of [
       ['Elo target', eloOutcome, SEASONS],
-      ...ENGINES.map((engine) => [
-        engine,
-        engineOutcome(engine),
-        engine === 'grid' ? GRID_SEASONS : SEASONS,
-      ]),
+      ['result path', engineOutcome, SEASONS],
     ] as [string, Outcome, number][]) {
       const s = seasons(boost, outcome, label, total);
       const n = s.champion.length;
@@ -446,8 +419,8 @@ function shape(player: Player, level: number) {
 
 /**
  * The owner's club with every player rated `level`, a manager of `ability` and morale `morale`,
- * in a 20-club league of 72–82 clubs. The own club's fixtures play the grid engine (MATCH-22), the
- * others the summary; fatigue and morale stay fixed so each row is one steady state.
+ * in a 20-club league of 72–82 clubs. Every fixture, the own club's included, plays the result
+ * path (MATCH-22); fatigue and morale stay fixed so each row is one steady state.
  */
 function ownSeasons(level: number, ability: number, morale: number, tactic: Tactic) {
   const own = careerWorld({ country: 'ENG', seed: 'calibration-own', tier: 'midsize' });
@@ -478,11 +451,7 @@ function ownSeasons(level: number, ability: number, morale: number, tactic: Tact
   for (let season = 0; season < OWN_SEASONS; season++) {
     const table = new Map(clubs.map((c) => [c.id, { points: 0, l: 0, d: 0, gd: 0 }]));
     for (const f of fixturesFor(clubs, own.year)) {
-      const { score } = playOn(
-        own,
-        { ...f, id: `own:${season}:${f.id}` },
-        f.home === club.id || f.away === club.id ? 'grid' : 'summary',
-      );
+      const { score } = playOn(own, { ...f, id: `own:${season}:${f.id}` });
       const home = table.get(f.home)!,
         away = table.get(f.away)!;
       home.gd += score.home - score.away;
@@ -517,7 +486,7 @@ function ownSeasons(level: number, ability: number, morale: number, tactic: Tact
 
 function ownTable() {
   console.log(
-    `\n### The owner's club in a 72–82 league (${OWN_SEASONS} seasons per row, its fixtures on the grid engine, the rest on the summary)\n`,
+    `\n### The owner's club in a 72–82 league (${OWN_SEASONS} seasons per row, every fixture on the result path)\n`,
   );
   console.log(
     '| own XI | league XI | manager / morale | tactic | strength edge (home/away) | PPG | titles % | unbeaten % | L/D per season |',
@@ -540,16 +509,11 @@ function ownTable() {
 
 const started = performance.now();
 console.log(
-  `# Match calibration (${ENGINES.join(' and ')}) — ${MATCHES} gap fixtures and ${PER_TIER} tier fixtures per path`,
+  `# Match calibration (the result path) — ${MATCHES} gap fixtures and ${PER_TIER} tier fixtures`,
 );
 const only = args.includes('--only') ? args[args.indexOf('--only') + 1] : undefined;
-const TITLES: Record<Engine, string> = {
-  grid: 'Grid engine (own club and own-league fixtures)',
-  summary: 'Team-level summary (every other fixture)',
-};
-if (!only || only === 'curves')
-  for (const engine of ENGINES) printCurve(TITLES[engine], gapCurve(engine));
+if (!only || only === 'curves') printCurve('Result path (every fixture)', gapCurve());
 if (!only || only === 'tiers') tierTable();
 if (!only || only === 'seasons') seasonTable();
-if ((!only || only === 'own') && ENGINES.includes('grid')) ownTable();
+if (!only || only === 'own') ownTable();
 console.log(`\n_${((performance.now() - started) / 1000).toFixed(1)} s_`);

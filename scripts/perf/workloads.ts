@@ -7,10 +7,7 @@
  * - `own-match`: revision-11 own settlement, retaining script/material but staging no frames;
  * - `staging`: production `stageAll` of that frozen written match; `staging-first`: its first
  *   emitted minute. `staging-core` isolates the complete motion program if the adapter fails;
- * - `grid-own` / `grid-observed`: the same own fixture on the current grid, with `buildFrames`
- *   included in the observed case; `fixture`: one aggregate fixture. These hash after timing;
- * - `grid`: the detailed engine on one of `GRID_FIXTURES` top-tier fixtures a rep, in turn (setup
- *   built per rep, as an own match is: no observation, player records on);
+ * - `fixture`: the same fixture on the aggregate path. These hash after timing;
  * - `aggregate`: `simulateAggregate` on the first `AGGREGATE_FIXTURES` fixtures without the own club;
  * - `day`: one automatic-play day of a career (`advanceDays(w, 1)`); its reps are successive days,
  *   which the two sides step in lockstep so a pair is the same day on both.
@@ -26,15 +23,10 @@
  * baseline.
  */
 import { createHash } from 'node:crypto';
-import { diagnosticCanonical } from './digest';
 import * as engine from '../../packages/engine/src/index';
 // A tree before T670 has no career testkit; such a baseline needs its own world builder here.
 import { careerWorld } from '../../packages/engine/src/career.testkit';
-import { buildGridSetup } from '../../packages/engine/src/grid/setup';
-import { playGrid } from '../../packages/engine/src/grid/engine';
-import { buildFrames } from '../../packages/engine/src/grid/playback';
 import { simulateMatch } from '../../packages/engine/src/match';
-import { MATCH_MODEL_RELEASE } from '../../packages/engine/src/match-model-release';
 import { invalidDetail } from '../../packages/engine/src/script/failure';
 import { stageAll, stageFrames } from '../../packages/engine/src/staging/frames';
 import { advance, createStaging } from '../../packages/engine/src/staging/staging';
@@ -47,7 +39,6 @@ import { Host } from '../../apps/web/src/runtime/host';
 import { forPosting } from '../../apps/web/src/runtime/viewPublisher';
 import type { Reply } from '../../apps/web/src/runtime/protocol';
 
-const GRID_FIXTURES = 3;
 const AGGREGATE_FIXTURES = 150;
 
 export interface Workload {
@@ -68,7 +59,7 @@ export function cpuMs(): number {
 }
 
 function world(seed: string): World {
-  return careerWorld({ country: 'ENG', seed }, engine.MATCH_MODEL_RELEASE);
+  return careerWorld({ country: 'ENG', seed });
 }
 
 function otherFixtures(w: World, count: number, filter: (f: Fixture) => boolean): Fixture[] {
@@ -79,25 +70,10 @@ function otherFixtures(w: World, count: number, filter: (f: Fixture) => boolean)
 
 export function workloadOf(name: string, seed: string): Workload {
   const hash = createHash('sha256');
-  if (
-    [
-      'own-match',
-      'staging',
-      'staging-core',
-      'staging-first',
-      'grid-own',
-      'grid-observed',
-      'fixture',
-    ].includes(name)
-  ) {
-    // One frozen top-flight own fixture, identical inputs for settlement, picture and grid context.
+  if (['own-match', 'staging', 'staging-core', 'staging-first', 'fixture'].includes(name)) {
+    // One frozen top-flight own fixture, identical inputs for settlement, picture and fixture.
     // Building the world and (for staging) writing the script are outside the timed window.
-    const w = careerWorld(
-      { country: 'ENG', club: 'ENG:0:0:0', seed },
-      name.startsWith('grid-')
-        ? { revision: 'continuous-aggregate-10', enabled: true }
-        : MATCH_MODEL_RELEASE,
-    );
+    const w = careerWorld({ country: 'ENG', club: 'ENG:0:0:0', seed });
     const fixture = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
     let written: MatchPlayback | undefined;
     const write = () => {
@@ -110,35 +86,25 @@ export function workloadOf(name: string, seed: string): Workload {
     let output: unknown;
     return {
       cycle: 1,
-      // Hash outside the timing: serializing a full picture is not staging it. The old grid's
-      // interval-whistle coordinates are NaN: diagnostic tags retain their non-finite kind.
-      digest: () =>
-        hash
-          .update(name === 'grid-observed' ? diagnosticCanonical(output) : canonical(output))
-          .digest('hex')
-          .slice(0, 16),
+      // Hash outside the timing: serializing a full picture is not staging it.
+      digest: () => hash.update(canonical(output)).digest('hex').slice(0, 16),
       rep(record) {
         let result: unknown;
         if (name === 'own-match') result = write();
         else if (name === 'fixture') result = simulateAggregate(w, fixture);
-        else if (written) {
-          const args = [written.script!, written.staging!, written.record, written.squads] as const;
+        else {
+          const args = [
+            written!.script!,
+            written!.staging!,
+            written!.record,
+            written!.squads,
+          ] as const;
           result =
             name === 'staging-core'
-              ? advance(createStaging(written.script!, written.staging!), Infinity)
+              ? advance(createStaging(written!.script!, written!.staging!), Infinity)
               : name === 'staging'
                 ? stageAll(...args)
                 : stageFrames(...args).next().value;
-        } else {
-          const setup = buildGridSetup(w, fixture, {
-            observe: name === 'grid-observed',
-            recordPlayers: true,
-          });
-          const grid = playGrid(setup);
-          result =
-            name === 'grid-observed'
-              ? { record: grid.record, frames: buildFrames(grid, setup, w.seed) }
-              : grid.record;
         }
         if (record) output = result;
         return name;
@@ -161,25 +127,6 @@ export function workloadOf(name: string, seed: string): Workload {
   }
   const w = world(seed);
   const digest = () => hash.digest('hex').slice(0, 16);
-  if (name === 'grid') {
-    const top = new Set(
-      w.clubs.filter((c) => c.country === 'ENG' && c.tier === 0).map((c) => c.id),
-    );
-    const fixtures = otherFixtures(w, GRID_FIXTURES, (f) => top.has(f.home) && top.has(f.away));
-    // One fixture a rep, in turn: short reps keep the two sides of a pair close in time, so a load
-    // swing lands on both (measured 261028: three fixtures a rep left pairs ±6% apart).
-    let next = 0;
-    return {
-      digest,
-      cycle: fixtures.length,
-      rep(record) {
-        const f = fixtures[next++ % fixtures.length]!;
-        const result = playGrid(buildGridSetup(w, f, { observe: false, recordPlayers: true }));
-        if (record) hash.update(canonical(result.record));
-        return 'grid';
-      },
-    };
-  }
   if (name === 'aggregate') {
     const fixtures = otherFixtures(w, AGGREGATE_FIXTURES, () => true);
     return {

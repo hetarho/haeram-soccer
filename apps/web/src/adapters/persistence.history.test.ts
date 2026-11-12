@@ -18,18 +18,17 @@ import {
 } from '../../../../packages/engine/src/index';
 import { sharedTransferredScorer } from '../../../../tests/fixtures/transferred-scorer';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, recognizedLegacy } from './persistence';
 import { pack, unpack } from './packing';
 import { CAREER, legacyIntegers } from './persistence.testkit';
 
-// The archive's history, not the match model, is the subject of the two round trips below: their
-// seasons are played on the pre-feature path.
+// The archive's history, not the match model, is the subject of the two round trips below.
 it('preserves first and second European phases and global standings in a historical checkpoint', async () => {
   const w = cachedWorld('season from 2000', () => {
     // A career taken over in a world made fresh in 2000.
-    const w = simulatedWorld({ ...CAREER, year: 2000 }, {}, DISABLED_RELEASE);
+    const w = simulatedWorld({ ...CAREER, year: 2000 }, {});
     simulateSeason(w);
     return w;
   });
@@ -101,9 +100,8 @@ describe('own-manager history checkpoints (→SAVE-24)', () => {
   });
 
   it('keeps an untracked career in its older container with attribution absent', async () => {
-    // A career saved before both features: no manager history and, played with the release off,
-    // no full model.
-    const w = withoutManagerHistory(tracked(DISABLED_RELEASE));
+    // A career saved before both features: no manager history and no full model.
+    const w = withoutManagerHistory(withoutMatchModel(tracked()));
     const loaded = await decode(await encode(w));
     expect(loaded.envelope.schema).toBe(CURRENT_CHECKPOINT_SCHEMA);
     expect(loaded.world).not.toHaveProperty('managerHistory');

@@ -1,11 +1,11 @@
 /**
  * T689 diagnostic (measurement only, no engine change): MATCH-23's season scorer concentration on the
- * grid engine. Each run takes over a top-flight club in `--year` (a fresh world, `careerWorld`, every
+ * released model (T844: the result path; it read the grid engine before). Each run takes over a top-flight club in `--year` (a fresh world, `careerWorld`, every
  * business responsibility as a new career holds it) and plays its whole league season as a career
  * does — the manager's selection, fatigue, injuries, suspensions and substitutions — then reads the
  * own club's league top scorer's share of its league goals from the season's settled ledger (→HIST-17),
- * checked against its fixtures' scores. Unlike `scoring-concentration.ts`, nobody plays every match
- * fresh; only the own club's fixtures play the grid engine (→MATCH-22), so only its share is read.
+ * checked against its fixtures' scores. Nobody plays a match fresh; only the own club's records
+ * keep their player lines (→MATCH-22/25), so only its share is read.
  *
  *   pnpm exec tsx scripts/scoring-season-share.ts --country ENG --clubs 0,1,2 --seeds a,b
  *     [--seasons 1] [--year 2024] --out FILE
