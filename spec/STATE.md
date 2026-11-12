@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| n813 | ihaelam-ui-MacBookPro | autopilot | 2026-11-12T17:22Z | 2026-11-12T17:22Z | T856 |
+| n813 | ihaelam-ui-MacBookPro | autopilot | 2026-11-12T17:22Z | 2026-11-12T17:22Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -979,12 +979,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T856 | Fix final gate failure | ARCH | - | doing@261112.n813 |
 
 ## next
-- gusta-implement-task T856
+- no runnable task: plan next with gusta-sketch
 
 ## log
+- 261112 T856 done
 - 261112 T855 done
 - 261112 T854 done
 - 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
@@ -1004,4 +1004,3 @@
 - 261112 hf12 handed off to origin/wip/hf12 at 21:00 KST: T838–T844 done (release, browser migration, verdict, prototype removed, leaves out of grid/, tests and scripts off the earlier models); T845 and T848 todo; no final gate or main push yet hf12
 - 261112 T844 done
 - 261112 T843 done
-- 261112 T842 done
