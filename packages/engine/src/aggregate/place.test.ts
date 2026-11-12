@@ -5,7 +5,7 @@ import {
   MATCH_MODEL_REVISION,
   MATCH_MODEL_REVISIONS,
 } from '../../../contracts/src/match-model';
-import { BAND_EDGES, LANE_EDGES, toEngine } from '../grid/pitch';
+import { BAND_EDGES, LANE_EDGES, toEngine } from '../match/pitch';
 import { MATCH_MODEL_RELEASE } from '../match-model-release';
 import { FORMATIONS } from '../player';
 import { placeFor } from '../staging/shape';

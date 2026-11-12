@@ -10,10 +10,7 @@ packages/catalogs/data
 # frozen rules 3.0.0 envelope: the raw text written by scripts/freeze-legacy-fixture.ts
 tests/fixtures/legacy-rules3.haeram-save.json
 # byte-identical copy of artifacts/benchmarks/match-baselines-40.json (T204)
-packages/engine/src/grid/baselines.json
+packages/engine/src/match/baselines.json
 
 # Portable game exports are user data, not source files.
 *.haeram-save.json
-
-# settled matches written by scripts/export-settled.ts as compact JSON, byte-identical per run (T819)
-scripts/match-proto/fixtures

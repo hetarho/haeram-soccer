@@ -7,7 +7,7 @@ import type { Player, Position, Tactic } from '../../../contracts/src/types';
 import type { RoleId } from '../../../contracts/src/player';
 import { clamp, integer, random } from '../primitives';
 import { FORMATIONS, lineOf } from '../player';
-import { eraRules } from '../grid/rules';
+import { eraRules } from '../match/rules';
 import { makePlayer, PRESS_LOAD_FATIGUE, squadPlaces } from '../world';
 
 export const LAB_CONFIG = {

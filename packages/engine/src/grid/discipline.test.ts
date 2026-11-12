@@ -11,7 +11,7 @@ import {
   isTactical,
   type CardVerdict,
 } from './discipline';
-import type { Point } from './pitch';
+import type { Point } from '../match/pitch';
 import { gridKit } from './testkit';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { playGrid } from './engine';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PD, TD } from '../../../contracts/src/detail';
-import { M } from '../grid/record';
+import { M } from '../match/record';
 import { sampleDetail } from '../../../../tests/fixtures/match-script';
 import { countScript, compareRecord } from './count';
 import { writeScript } from './write';

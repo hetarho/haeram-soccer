@@ -1,4 +1,4 @@
-import { BAND_EDGES, LANE_EDGES, cellBand, cellLane, toEngine } from '../grid/pitch';
+import { BAND_EDGES, LANE_EDGES, cellBand, cellLane, toEngine } from '../match/pitch';
 import { exp } from '../portable-math';
 import { placeFor, type ShapeSide } from '../staging/shape';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC } from './config';

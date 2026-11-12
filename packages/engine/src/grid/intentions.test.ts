@@ -23,13 +23,13 @@ import {
   type Intention,
 } from './intentions';
 import { GRID_MOVEMENT_CONFIG, readAt } from './movement';
-import type { Point } from './pitch';
+import type { Point } from '../match/pitch';
 import { MOTION_STATES, buildFrames } from './playback';
 import { buildGridSetup } from './setup';
 import { runPlan, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
 import { random } from '../primitives';
 import { createState, skill, type GridPlayer, type GridState } from './state';
-import type { PlayerTendencies } from './tendencies';
+import type { PlayerTendencies } from '../match/tendencies';
 import type { TraceEntry } from './trace';
 import { gridKit, type Kit } from './testkit';
 

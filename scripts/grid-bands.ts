@@ -59,13 +59,10 @@ import { npcMatchContext } from '../packages/engine/src/match';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid, type GridResult } from '../packages/engine/src/grid/engine';
 import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG } from '../packages/engine/src/grid/movement';
-import { M } from '../packages/engine/src/grid/record';
-import {
-  buildGridSetup,
-  takersFor,
-  type DecideRule,
-  type GridSetup,
-} from '../packages/engine/src/grid/setup';
+import { M } from '../packages/engine/src/match/record';
+import { buildGridSetup, type GridSetup } from '../packages/engine/src/grid/setup';
+import { takersFor } from '../packages/engine/src/match/bench';
+import { type DecideRule } from '../packages/engine/src/match/rules';
 import {
   ADVANCED_COUNTER_TARGET,
   advancedCounterVerdicts,

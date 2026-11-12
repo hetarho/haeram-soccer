@@ -6,8 +6,8 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
  * nothing is zero-filled or clamped until it fits.
  */
 import { TD, TEAM_DETAIL_SIZE } from '../../../contracts/src/detail';
-import { CELL_BASELINES } from '../grid/baselines';
-import { cellBand, cellLane } from '../grid/pitch';
+import { CELL_BASELINES } from '../match/baselines';
+import { cellBand, cellLane } from '../match/pitch';
 import {
   COUNTER_ZONES,
   inBoxCell,
@@ -15,7 +15,7 @@ import {
   M,
   mirrorBand,
   possessionShare,
-} from '../grid/record';
+} from '../match/record';
 import { zeroMetrics } from '../primitives';
 import { AGGREGATE_CONFIG } from './config';
 import {

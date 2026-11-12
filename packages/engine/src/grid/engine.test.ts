@@ -6,7 +6,7 @@ import { playGrid } from './engine';
 import { BOX_CONFIG } from './box';
 import { LANE_CONFIG, reachOnPath } from './lanes';
 import { benchPoint, flightSeconds, IN_STRIDE_CONFIG, type MotionKnot } from './movement';
-import { attackFrame, inBox, toEngine, type Point } from './pitch';
+import { attackFrame, inBox, toEngine, type Point } from '../match/pitch';
 import { M, Tally } from './record';
 import { saveRebound, secondBall } from './resolve';
 import { RESTART_CONFIG } from './restarts';

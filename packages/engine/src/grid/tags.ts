@@ -8,16 +8,17 @@ import {
   type Band,
   type Lane,
   type Point,
-} from './pitch';
+} from '../match/pitch';
 import { lineX, offsideLine } from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
 import { FORMATIONS } from '../player';
+import type { PlayPhase } from '../match/record';
 
 export interface Tags {
   cell: number;
   band: Band;
   lane: Lane;
-  phase: 'buildUp' | 'progression' | 'finalThird' | 'counter' | 'settled' | 'setPiece' | 'contest';
+  phase: PlayPhase;
   /** Σ over opponents within 4.6 m: 1 if goal-side of the carrier, else 0.5. */
   pressure: number;
   /** Metres to the nearest opponent. */

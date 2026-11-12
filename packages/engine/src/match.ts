@@ -62,9 +62,10 @@ import { resultsOnlyMatch } from './results-only';
 import { hasOwner } from './owner';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
-import { buildGridSetup, eraRules, isLevel, type DecideRule } from './grid/setup';
-export { MATCH_MOTION_CONFIG, teamMotionProfile } from './grid/playback';
-export { matchdayRole, playerTendencies } from './grid/tendencies';
+import { buildGridSetup } from './grid/setup';
+import { eraRules, isLevel, type DecideRule } from './match/rules';
+export { MATCH_MOTION_CONFIG, teamMotionProfile } from './match/motion';
+export { matchdayRole, playerTendencies } from './match/tendencies';
 
 type Side = 0 | 1;
 /** Skill offsets in the per-slot effective-skill table. */

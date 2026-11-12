@@ -15,15 +15,11 @@ import {
   seasonLength,
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { world as calendarClub } from './calendar.testkit';
 import { CAREER_YEAR } from './career.testkit';
 
-/**
- * The calendar club on the pre-feature path: the calendar's mechanics, not the match model, are
- * the subject (calendar.fast-path and calendar.progression-* keep what new careers play).
- */
-const world = () => calendarClub('ENG', DISABLED_RELEASE);
+/** The calendar club on the released model: the calendar's mechanics are the subject. */
+const world = () => calendarClub('ENG');
 
 describe('persistent season calendar', () => {
   it('advances off days without playing fixtures or charging weekly costs', () => {
@@ -109,11 +105,12 @@ describe('persistent season calendar', () => {
     const fast = structuredClone(w);
     const p = advanceToNextMatch(w);
     const fastPlayback = advanceToNextMatch(fast, undefined, false);
-    expect(fastPlayback?.frames).toEqual([]);
+    expect(fastPlayback?.script).toBeUndefined();
     expect(fastPlayback?.record).toEqual(p?.record);
     expect(canonical(fast)).toBe(canonical(w));
     expect(p?.record.id).toBe('midweek');
-    expect(p?.frames.length).toBeGreaterThan(0);
+    // Watching adds the script the staging plays, never frames (→MATCH-38/39).
+    expect(p?.script?.beats.length).toBeGreaterThan(0);
     expect(w.round).toBe(0);
     expect(currentDay(w)).toBe(4);
     expect(w.tables[w.playerClub].played).toBe(0);

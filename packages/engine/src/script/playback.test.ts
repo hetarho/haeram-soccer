@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Attributes } from '../../../contracts/src/player';
 import type { MatchRecord, Player } from '../../../contracts/src/types';
 import { smallDetail } from '../../../../tests/fixtures/match-script';
-import { playerTendencies } from '../grid/tendencies';
+import { playerTendencies } from '../match/tendencies';
 import { ownMatchPlayback, stagingSides } from './playback';
 import { recordOf, type MatchDetail } from './detail';
 import { writeScript } from './write';

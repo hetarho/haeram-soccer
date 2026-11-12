@@ -23,7 +23,6 @@ import { fanFollowing } from './fans';
 import { footballQuote, quote } from './quotes';
 import { scaleBy } from './primitives';
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 const big = (amount: string) => BigInt(amount);
@@ -120,7 +119,7 @@ describe('club value (→ECON-37)', () => {
   });
 
   it('values the owner’s club on its own facilities, supporters, cash and loan', () => {
-    const w = careerWorld({ seed: 'valued' }, DISABLED_RELEASE);
+    const w = careerWorld({ seed: 'valued' });
     const own = clubOf(w);
     // Its own facilities, as the takeover left them in the lowest professional division.
     expect(facilityStage(w, own)).toEqual({ stadium: 1, trainingGround: 0, academyFacility: 0 });

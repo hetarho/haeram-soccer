@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { normalQuantile } from '../../../../scripts/lib/match-parity';
 import type { Fixture, World } from '../../../contracts/src/types';
 import { careerWorld } from '../career.testkit';
-import { eraRules } from '../grid/setup';
+import { eraRules } from '../match/rules';
 import { prepareMatch } from '../match';
 import { validateFullMatchRecord } from '../match-model';
 import { MATCH_MODEL_RELEASE } from '../match-model-release';

@@ -24,7 +24,6 @@ import {
 } from './index';
 import { holdRows, sellPlayer, staffAuthority, unreadAttention } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { CLOSED, incoming, on, world } from './transfers.testkit';
 import { CAREER_YEAR, careerWorld } from './career.testkit';
 import { clubById, squad } from './world';
@@ -49,9 +48,7 @@ const round45 = () =>
 
 /** `world`'s market seen from `club`, taken over instead of the lowest division's first club. */
 function clubMarket(club: string, seed = 'transfer-market') {
-  const w = cachedWorld(`founded:${seed}:${club}`, () =>
-    careerWorld({ seed, club }, DISABLED_RELEASE),
-  );
+  const w = cachedWorld(`founded:${seed}:${club}`, () => careerWorld({ seed, club }));
   w.settings = staffAuthority(2);
   w.cash = '999999999999';
   return w;

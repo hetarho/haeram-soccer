@@ -10,7 +10,7 @@ import {
 import { activePlayers, ownLeagueClubs, ownStarters, startingSquad } from './index';
 import { matchdayRosters } from './aggregate/engine';
 import { currentDay } from './calendar';
-import { buildGridSetup, eraRules } from './grid/setup';
+import { eraRules } from './match/rules';
 import { prepareMatch, simulateMatch } from './match';
 import { lineOf } from './player';
 import { advanceRound } from './season';
@@ -154,8 +154,8 @@ describe('discipline (→MATCH-19)', () => {
     const starter = ownStarters(w)[0];
     applyDiscipline(w, booked(f, ownSide(w, f), starter.id, 'red', 'serious'));
     expect(ownStarters(w, f).map((p) => p.id)).not.toContain(starter.id);
-    const setup = buildGridSetup(w, f, { observe: false, recordPlayers: true });
-    expect(setup.rosters[ownSide(w, f)].map((p) => p.id)).not.toContain(starter.id);
+    const rosters = matchdayRosters(w, f, prepareMatch(w, f), eraRules(f.year));
+    expect(rosters[ownSide(w, f)].map((p) => p.id)).not.toContain(starter.id);
     // Europe is outside a domestic ban's scope.
     expect(ownStarters(w, europe(w)).map((p) => p.id)).toContain(starter.id);
   });
@@ -241,20 +241,8 @@ describe('candidate model incidents and availability (→LEAGUE-15, MATCH-19, MA
     for (const p of [...hurt, ...spare])
       p.injury = { year: w.year, day: currentDay(w) + 30, label: '테스트 부상' };
     expect(ownStarters(w, f)).toEqual(expect.arrayContaining(hurt));
-    // The detailed engine sends the fit substitute on for the first, as the aggregate path would.
-    const setup = buildGridSetup(w, f, { observe: false, recordPlayers: true });
-    expect(setup.model).toBeDefined();
-    expect(setup.rosters[side].map((p) => p.id)).toEqual(
-      xi.map((p, slot) => (slot === 3 ? fit! : p).id),
-    );
-    expect(setup.bench[side]).toBe(0);
-    const shared = matchdayRosters(w, f, prepareMatch(w, f), eraRules(f.year));
-    expect(setup.rosters).toEqual(shared);
-    // The pre-feature grid keeps him, as its settled matches always have.
-    const plain = structuredClone(w);
-    delete plain.matchModel;
-    delete plain.npcSeason;
-    const before = buildGridSetup(plain, f, { observe: false, recordPlayers: true });
-    expect(before.rosters[side].map((p) => p.id)).toEqual([...xi, fit!].map((p) => p.id));
+    // The fit substitute goes on for the first.
+    const rosters = matchdayRosters(w, f, prepareMatch(w, f), eraRules(f.year));
+    expect(rosters[side].map((p) => p.id)).toEqual(xi.map((p, slot) => (slot === 3 ? fit! : p).id));
   });
 });

@@ -1,7 +1,7 @@
 /** Three complete record/script/stage/frame pipelines, including rare knockout scenes: integration. */
 import { expect, it } from 'vitest';
 import { frameTimeIssues } from '../../../contracts/src/match-model';
-import { M } from '../grid/record';
+import { M } from '../match/record';
 import { detailSample } from '../script/sample.testkit';
 import { writeScript } from '../script/write';
 import { frameTestInputs } from './frames.testkit';

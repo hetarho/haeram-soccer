@@ -7,7 +7,7 @@ import {
   cellBand,
   cellLane,
   toEngine,
-} from '../grid/pitch';
+} from '../match/pitch';
 import { STAGING_CONFIG } from './config';
 import { roleFreedom } from './tendency';
 import { clamp, dist, type Vec } from './vec';

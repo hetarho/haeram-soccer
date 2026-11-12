@@ -3,7 +3,7 @@ import { TD } from '../../../contracts/src/detail';
 import { FORMATIONS } from '../player';
 import type { Incident } from '../../../contracts/src/types';
 import type { Line } from '../../../contracts/src/player';
-import { DEFAULT_SUB_POLICY, eraRules } from '../grid/setup';
+import { DEFAULT_SUB_POLICY, eraRules } from '../match/rules';
 import { finishing, targetChance } from '../match';
 import { buildAggregateInput, sideUnits } from './input';
 import {

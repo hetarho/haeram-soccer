@@ -22,7 +22,7 @@ import {
   PITCH,
   cellName,
   cellOf,
-} from '../../../../../../packages/engine/src/grid/pitch';
+} from '../../../../../../packages/engine/src/match/pitch';
 
 /** The drawing: 190 × 100 like the theatre's 1.9:1 canvas, with its 6.5% margin around the lines. */
 export const VIEW = { width: 190, height: 100, pad: 190 * 0.065 } as const;

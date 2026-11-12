@@ -6,7 +6,7 @@
  */
 import type { Incident, Metrics, Tactic } from '../../../contracts/src/types';
 import type { Line, PlayTrait } from '../../../contracts/src/player';
-import type { EraRules, SubPolicy } from '../grid/setup';
+import type { EraRules, SubPolicy } from '../match/rules';
 import type { MatchAction } from '../match';
 import type { ShapeSide } from '../staging/shape';
 
@@ -162,7 +162,7 @@ export interface AggregateStreams {
 /**
  * The kernel's pass kinds, then the carrying kinds. Crosses and through balls are MATCH-13's
  * counters by kind; `cutBack` is the kernel's pull-back flow, while MATCH-13's cut-back counter
- * reads the cells of any pass (grid/record.ts `isCutBack`), as the detailed tally does.
+ * reads the cells of any pass (match/record.ts `isCutBack`), as the detailed tally does.
  */
 export const AGGREGATE_PASS_KINDS = ['short', 'long', 'through', 'cross', 'cutBack'] as const;
 export const AGGREGATE_MOVE_KINDS = [...AGGREGATE_PASS_KINDS, 'carry', 'takeOn'] as const;

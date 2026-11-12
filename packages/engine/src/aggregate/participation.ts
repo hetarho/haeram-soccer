@@ -9,9 +9,9 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
 import type { Incident } from '../../../contracts/src/types';
 import type { Line } from '../../../contracts/src/player';
 import { cos, exp, log } from '../portable-math';
-import { CHANGES_CONFIG, inMatchFatigue } from '../grid/changes';
+import { CHANGES_CONFIG, inMatchFatigue } from '../match/changes';
 import { INTERVAL_STAMPS } from '../match-model';
-import type { EraRules } from '../grid/setup';
+import type { EraRules } from '../match/rules';
 import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
 import { participationIssues } from './input';
 import type {

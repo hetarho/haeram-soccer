@@ -22,11 +22,11 @@ import type {
   MatchFrame,
   World,
 } from '../../../../../../packages/contracts/src/types';
+import { MATCH_MOTION_CONFIG } from '../../../../../../packages/engine/src/match/motion';
 import {
-  MATCH_MOTION_CONFIG,
   matchdayRole,
   playerTendencies,
-} from '../../../../../../packages/engine/src/match';
+} from '../../../../../../packages/engine/src/match/tendencies';
 import { clubManager } from '../../../../../../packages/engine/src/managerMarket';
 import { tacticLabel } from '../../../../../../packages/engine/src/tactics';
 import { percent } from '../../../presentation/format';

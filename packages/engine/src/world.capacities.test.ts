@@ -1,16 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import { validateWorld } from '../../contracts/src/schema';
 import { CAREER_YEAR } from './career.testkit';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { assertCapacities, input } from './world.testkit';
 describe('world progression', () => {
   it('conserves league capacities across promotions and retains records', () => {
     // The world after each of four seasons (checks only read it, so one chain plays them all), on
-    // the pre-feature path: league capacities, not the match model, are the subject.
-    const seasons = [1, 2, 3, 4].map((seasons) =>
-      simulatedWorld(input, { seasons }, DISABLED_RELEASE),
-    );
+    // the released model: league capacities, not the match model, are the subject.
+    const seasons = [1, 2, 3, 4].map((seasons) => simulatedWorld(input, { seasons }));
     for (const after of seasons) {
       assertCapacities(after);
       validateWorld(after);

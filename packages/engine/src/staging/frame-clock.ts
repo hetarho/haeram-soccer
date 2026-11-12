@@ -1,6 +1,6 @@
 /** Fit staged seconds to record seconds between fixed moments (MATCH-12). */
 import type { MatchScript, ScriptBeat } from '../../../contracts/src/match-script';
-import { LENGTH, OFFSET } from '../grid/clock';
+import { LENGTH, OFFSET } from '../match/clock';
 import { invalidDetail } from '../script/failure';
 import type { StageEvent, StageFrame } from './staging';
 import { STAGING_CONFIG } from './config';

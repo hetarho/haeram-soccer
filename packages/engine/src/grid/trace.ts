@@ -1,6 +1,6 @@
 /** The touch-by-touch trace playback is built from. Only kept when the match is observed. */
 import { MOTION_STATES, OBSERVATION_STATES, SAMPLING } from './observation';
-import { attackFrame, cellOf, clamp, PITCH, toEngine } from './pitch';
+import { attackFrame, cellOf, clamp, PITCH, toEngine } from '../match/pitch';
 import type { Outcome, ShotOutcome } from './resolve';
 import type { EndedIntention, Intention, IntentionKind } from './intentions';
 import type { MotionKnot } from './movement';

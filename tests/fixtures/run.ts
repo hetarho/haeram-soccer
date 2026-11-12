@@ -13,7 +13,6 @@ import {
 } from '../../packages/engine/src/index';
 import { careerWorld, type CareerInput } from '../../packages/engine/src/career.testkit';
 import { staffAuthority, stagePlayingCoach } from '../../packages/engine/src/testing';
-import { DISABLED_RELEASE } from './releases';
 export interface FixtureDefinition {
   name: string;
   input: CareerInput;
@@ -26,17 +25,17 @@ export interface FixtureDefinition {
   commands: Command[];
   expected?: unknown;
 }
-/** The portable scenario's career: taken over on `year`'s first day, on the pre-feature model. */
+/** The portable scenario's career: taken over on `year`'s first day, on the released model. */
 export function fixtureCareer(definition: Pick<FixtureDefinition, 'input' | 'year'>) {
-  return careerWorld(
-    { ...definition.input, ...(definition.year ? { year: definition.year } : {}) },
-    DISABLED_RELEASE,
-  );
+  return careerWorld({
+    ...definition.input,
+    ...(definition.year ? { year: definition.year } : {}),
+  });
 }
 export function runFixture(definition: FixtureDefinition) {
   // Freeze the portable v1 scenarios to their original authority, independently of new-game
-  // defaults: the pre-feature match model they were recorded on (the released full model of new
-  // careers, T286, is not part of portable v1) and, unless asked, the original settings.
+  // defaults: unless asked, the original settings. They play the released match model, as every
+  // career does (→SAVE-23).
   const w = fixtureCareer(definition);
   if (!definition.currentRules) w.settings = staffAuthority(2);
   const code = clubOf(w).country;

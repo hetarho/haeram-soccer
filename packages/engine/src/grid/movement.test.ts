@@ -34,7 +34,7 @@ import {
   type Mover,
 } from './movement';
 import { SAMPLING } from './observation';
-import { attackFrame, cellOf, PITCH, toEngine } from './pitch';
+import { attackFrame, cellOf, PITCH, toEngine } from '../match/pitch';
 import { playRestart, RESTART_CONFIG, type Restart } from './restarts';
 import { shotContext } from './resolve';
 import { buildGridSetup } from './setup';

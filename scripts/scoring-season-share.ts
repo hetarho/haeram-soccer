@@ -14,7 +14,7 @@ import { writeFileSync } from 'node:fs';
 import { activeMatchModel } from '../packages/contracts/src/match-model';
 import type { Fixture, World } from '../packages/contracts/src/types';
 import { careerWorld } from '../packages/engine/src/career.testkit';
-import { M } from '../packages/engine/src/grid/record';
+import { M } from '../packages/engine/src/match/record';
 import { advanceRound, closeSeason } from '../packages/engine/src/season';
 import { findClub, rating } from '../packages/engine/src/world';
 

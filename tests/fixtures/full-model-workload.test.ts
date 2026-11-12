@@ -5,25 +5,30 @@ import { Host } from '../../apps/web/src/runtime/host';
 import { canonical } from '../../packages/contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import type { World } from '../../packages/contracts/src/types';
-import { advanceRound, trackingBoundary } from '../../packages/engine/src/index';
 import {
   ACTIVATION_CAREER,
   assertCompleteModel,
   modelEvidence,
   writerActivation,
 } from './full-model-workload';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
+import { onPreviousRevision, withoutMatchModel } from './earlier-saves';
+import { ENABLED_RELEASE } from './releases';
 import { simulatedWorld } from './worlds';
 
-/** A supported career taken over before the release, three rounds in on the pre-feature model. */
-const preRelease = () => {
-  const world = simulatedWorld(ACTIVATION_CAREER, { rounds: 3 }, DISABLED_RELEASE);
+/**
+ * A supported career three rounds in, saved by a game whose released revision was 10: the labels it
+ * recorded are the only difference from today's (→SAVE-23); nothing replays them.
+ */
+const onRevision10 = () => {
+  const world = onPreviousRevision(
+    structuredClone(simulatedWorld(ACTIVATION_CAREER, { rounds: 3 })),
+  );
   initializeReadModels(world);
   return world;
 };
 /** The writer tab's load of `raw` under `release`, as the client sends it (→SAVE-3/23). */
-async function writerLoad(raw: string, release: typeof ENABLED_RELEASE) {
-  const host = new Host(undefined, { release });
+async function writerLoad(raw: string) {
+  const host = new Host(undefined, { release: ENABLED_RELEASE });
   const reply = await host.handle({
     protocol: 1,
     session: 'workload',
@@ -39,29 +44,24 @@ async function writerLoad(raw: string, release: typeof ENABLED_RELEASE) {
 
 describe('full-model workload (T286; →SAVE-23, HIST-17)', () => {
   it('writerActivation is what the host writer load holds and writes', async () => {
-    const legacy = preRelease();
-    expect(legacy.matchModel).toBeUndefined();
-    const { host, reply } = await writerLoad(await encode(legacy, 1, 0), ENABLED_RELEASE);
+    const legacy = onRevision10();
+    const { host, reply } = await writerLoad(await encode(legacy, 1, 0));
     const predicted = writerActivation(legacy, ENABLED_RELEASE);
     expect(canonical(host.world)).toBe(canonical(predicted));
     expect(reply.upgraded).toBe(true);
     expect(canonical((await decode(reply.raw!)).world)).toBe(canonical(predicted));
     expect(predicted.revision).toBe(legacy.revision + 1);
-    expect(predicted.matchModel).toMatchObject({
-      coverage: 'activation',
-      trackedFrom: trackingBoundary(legacy),
-      activated: { revision: predicted.revision },
+    // Only the revision moves: its activation, tracking boundary and coverage stay.
+    expect(predicted.matchModel).toEqual({
+      ...legacy.matchModel!,
+      revision: MATCH_MODEL_REVISION,
     });
-    // A release that is off loads the career as stored, and the replica refuses it.
-    const off = await writerLoad(await encode(legacy, 1, 0), DISABLED_RELEASE);
-    expect(off.reply.upgraded).toBeUndefined();
-    expect(canonical(off.host.world)).toBe(canonical(legacy));
-    expect(() => writerActivation(legacy, DISABLED_RELEASE)).toThrow(/does not activate/);
+    expect(canonical(predicted.ownMatches)).toBe(canonical(legacy.ownMatches));
     expect(() => writerActivation(predicted, ENABLED_RELEASE)).toThrow(/does not activate/);
   });
 
-  it('reads complete aggregates and records from founding and from a mid-season activation', () => {
-    const founded = simulatedWorld(ACTIVATION_CAREER, { rounds: 3 }, ENABLED_RELEASE);
+  it('reads complete aggregates and records from the takeover', () => {
+    const founded = simulatedWorld(ACTIVATION_CAREER, { rounds: 3 });
     const tracked = assertCompleteModel(founded, 'founding');
     expect(tracked.model).toMatchObject({ revision: MATCH_MODEL_REVISION, coverage: 'founding' });
     expect(tracked.npcSeason!.competitions).toBeGreaterThan(0);
@@ -70,29 +70,22 @@ describe('full-model workload (T286; →SAVE-23, HIST-17)', () => {
     expect(tracked.fullRecords).toBe(founded.ownMatches.length);
     expect(tracked.preFeatureRecords).toBe(0);
 
-    // Activated mid-season: earlier own matches keep their pre-feature records, newer are complete.
-    const legacy = preRelease();
-    const activated = writerActivation(legacy, ENABLED_RELEASE);
-    advanceRound(activated, undefined, false);
-    const before = legacy.ownMatches.length;
-    const evidence = assertCompleteModel(activated, 'activation', before);
-    expect(evidence.preFeatureRecords).toBe(before);
-    expect(evidence.fullRecords).toBe(activated.ownMatches.length - before);
-    expect(evidence.fullRecords).toBeGreaterThan(0);
-    expect(canonical(activated.ownMatches.slice(0, before))).toBe(canonical(legacy.ownMatches));
-
     // Each missing part is named.
     const fails = (w: World, coverage: 'founding' | 'activation', from = 0) =>
       expect(() => assertCompleteModel(w, coverage, from));
-    fails(legacy, 'activation').toThrow(/no released model recorded/);
+    const unmodelled = withoutMatchModel(structuredClone(founded));
+    fails(unmodelled, 'founding').toThrow(/no released model recorded/);
     fails(founded, 'activation').toThrow(/coverage founding/);
-    fails(activated, 'activation').toThrow(/without a complete record/);
     const broken = structuredClone(founded);
     delete broken.ownMatches.at(-1)!.detail;
     fails(broken, 'founding').toThrow(/1 complete records without their counters/);
     const closed = structuredClone(founded);
     delete closed.npcSeason;
     fails(closed, 'founding').toThrow(/no open season ledger/);
-    expect(modelEvidence(legacy)).toMatchObject({ model: null, npcSeason: null, fullRecords: 0 });
+    expect(modelEvidence(unmodelled)).toMatchObject({
+      model: null,
+      npcSeason: null,
+      fullRecords: 0,
+    });
   });
 });

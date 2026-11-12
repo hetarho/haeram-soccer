@@ -19,12 +19,11 @@ import { SEASON_END_DAY } from './calendar';
 import { activePlayers, clubOf, overall } from './player-state';
 import { recordTransfer } from './transfer-records';
 import { withOwner } from './testing';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 /** A taken-over career at 팬 민심 `mood`, holding `traits`. */
 function world(mood: number = FAN_MOOD.start, traits: OwnerTrait[] = []) {
-  const w = careerWorld({ seed: 'fan-mood' }, DISABLED_RELEASE);
+  const w = careerWorld({ seed: 'fan-mood' });
   withOwner(w, { fanMood: mood, traits, fortune: '100000000000' });
   w.income = '0';
   w.expense = '0';

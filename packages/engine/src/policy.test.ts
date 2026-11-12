@@ -26,15 +26,14 @@ import {
   baseEffects,
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { buyOffer } from './testing';
 import { marketValueAt } from './market-prices';
 import { clubById } from './world';
 
-/** The club on the pre-feature path: club policy, not the match model, is the subject. */
+/** The club on the released model: club policy, not the match model, is the subject. */
 function world(policy?: Partial<ClubPolicy>) {
-  const w = simulatedWorld({ country: 'ENG', seed: 'club-policy' }, {}, DISABLED_RELEASE);
+  const w = simulatedWorld({ country: 'ENG', seed: 'club-policy' });
   w.cash = '999999999';
   if (policy) w.policy = { ...POLICY_DEFAULTS, ...policy };
   return w;

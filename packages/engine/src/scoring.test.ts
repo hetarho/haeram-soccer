@@ -13,14 +13,13 @@ import {
   simulateSeason,
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
-import { preFeatureTransferredScorer } from '../../../tests/fixtures/transferred-scorer';
+import { sharedTransferredScorer } from '../../../tests/fixtures/transferred-scorer';
 import { careerWorld, CAREER_YEAR } from './career.testkit';
 
-/** The scorer race's club on the pre-feature path: the league's scorer ledger is the subject. */
+/** The scorer race's club on the released model: the league's scorer ledger is the subject. */
 function world() {
-  const w = careerWorld({ seed: 'goal-race' }, DISABLED_RELEASE);
+  const w = careerWorld({ seed: 'goal-race' });
   w.cash = '999999999999';
   return w;
 }
@@ -200,7 +199,7 @@ describe('actual league scorer standings', () => {
 
 describe('retained scorer transfers', () => {
   it('keeps one identity and exact per-club contributions through a real in-league sale', async () => {
-    const transferred = preFeatureTransferredScorer;
+    const transferred = sharedTransferredScorer;
     const fixture = transferred(),
       { playerId, buyer } = fixture;
     let w = fixture.w;

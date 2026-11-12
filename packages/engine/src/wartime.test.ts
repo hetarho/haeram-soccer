@@ -4,7 +4,6 @@ import type { PersonCareer, World } from '../../contracts/src/types';
 import { crossWar, seasonAfter, seasonFrom, WARTIME } from './wartime';
 import { ownerSettleGap } from './owner';
 import { SEASON_END_DAY } from './calendar';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 vi.mock('./owner', async (importOriginal) => {
@@ -14,7 +13,7 @@ vi.mock('./owner', async (importOriginal) => {
 
 /** A founded career closed after 1938/39: its year already the restart, its season not opened. */
 function atRestart() {
-  const w = careerWorld({ seed: 'wartime' }, DISABLED_RELEASE);
+  const w = careerWorld({ seed: 'wartime' });
   const club = w.clubs.find((c) => c.id !== w.playerClub)!.id;
   const person: PersonCareer = {
     id: 'person:coach',

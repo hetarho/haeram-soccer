@@ -93,10 +93,7 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/world.ts',
   ],
   'apps/web/src/entities/player/ui/OvrBadge.tsx': ['packages/engine/src/world.ts'],
-  'apps/web/src/features/match-viewer/ui/Pitch.tsx': [
-    'packages/engine/src/managerMarket.ts',
-    'packages/engine/src/match.ts',
-  ],
+  'apps/web/src/features/match-viewer/ui/Pitch.tsx': ['packages/engine/src/managerMarket.ts'],
   'apps/web/src/entities/player/ui/PlayerProfile.tsx': [
     'packages/engine/src/career-assessment.ts',
     'packages/engine/src/world.ts',
@@ -118,7 +115,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/pages/club/ui/ScoutShortlist.tsx': ['packages/engine/src/signings.ts'],
   'apps/web/src/features/match-prep/ui/StrategyPanel.tsx': [
     'packages/engine/src/discipline.ts',
-    'packages/engine/src/grid/setup.ts',
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],

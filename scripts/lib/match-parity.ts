@@ -11,13 +11,10 @@
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../packages/contracts/src/detail';
 import type { Incident, MatchRecord, Tactic } from '../../packages/contracts/src/types';
 import { inBoxCell, inGoalAreaCell } from '../../packages/engine/src/aggregate/ledger';
-import { BAND_EDGES, goalDistance, inBox, inGoalArea } from '../../packages/engine/src/grid/pitch';
-import {
-  M,
-  type GridDiagnostics,
-  type ShotDiagnostic,
-} from '../../packages/engine/src/grid/record';
-import { eraRules, isLevel, type DecideRule } from '../../packages/engine/src/grid/setup';
+import { BAND_EDGES, goalDistance, inBox, inGoalArea } from '../../packages/engine/src/match/pitch';
+import { M } from '../../packages/engine/src/match/record';
+import { type GridDiagnostics, type ShotDiagnostic } from '../../packages/engine/src/grid/record';
+import { eraRules, isLevel, type DecideRule } from '../../packages/engine/src/match/rules';
 import { random, zeroMetrics } from '../../packages/engine/src/primitives';
 import {
   INDEXED_CHECKPOINT_LIMIT,

@@ -43,7 +43,6 @@ import {
 } from './index';
 import { holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 import { scoutReach } from './scout-search';
 
@@ -61,9 +60,8 @@ function club(finance?: Direction['finance'], seed = 'staff-signings') {
   if (finance) w.direction = { finance };
   return w;
 }
-/** The club as founded, built once per seed, on the pre-feature path: signings are the subject. */
-const founded = (seed: string) =>
-  cachedWorld(`founded:${seed}`, () => careerWorld({ seed }, DISABLED_RELEASE));
+/** The club as founded, built once per seed, on the released model: signings are the subject. */
+const founded = (seed: string) => cachedWorld(`founded:${seed}`, () => careerWorld({ seed }));
 const staffBids = (w: World) => (w.bids || []).filter((bid) => bid.staff);
 const reports = (w: World) =>
   (w.inbox || []).filter(

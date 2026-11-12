@@ -3,7 +3,6 @@ import { staffAuthority } from './testing';
 import { validateWorld } from '../../contracts/src/index';
 import type { ManagerStyle, World } from '../../contracts/src/types';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 import {
   advanceRound,
@@ -26,9 +25,9 @@ import {
   STYLE_INFO,
 } from './index';
 
-/** The test club, on the pre-feature path: managers, not the match model, are the subject. */
+/** The test club, on the released model: managers, not the match model, are the subject. */
 function world(seed = 'manager-schools') {
-  const w = careerWorld({ seed }, DISABLED_RELEASE);
+  const w = careerWorld({ seed });
   w.cash = '999999999';
   return w;
 }

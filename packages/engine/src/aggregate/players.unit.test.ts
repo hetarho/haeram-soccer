@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { PD } from '../../../contracts/src/detail';
-import { M } from '../grid/record';
+import { M } from '../match/record';
 import { deriveTeamFacts } from './ledger';
 import { attributePlayerFacts } from './players';
 import { attributionFixture } from './players.testkit';

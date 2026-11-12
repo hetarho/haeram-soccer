@@ -16,13 +16,12 @@ import { openNeed, openNeeds, takeWindowNeeds } from './replacements';
 import { transferWindowDays } from './transfers';
 import { lineOf } from './player';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { careerWorld } from './career.testkit';
 const world = (count = 20) => cachedWorld(`world:${count}`, () => found(count));
-/** The club on the pre-feature path: replacement needs, not the match model, are the subject. */
+/** The club on the released model: replacement needs, not the match model, are the subject. */
 function found(count: number) {
-  const w = careerWorld({ seed: 'replacement-needs' }, DISABLED_RELEASE);
+  const w = careerWorld({ seed: 'replacement-needs' });
   w.calendar = { day: 1 };
   return equip(w, count);
 }

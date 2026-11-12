@@ -11,7 +11,7 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { validateFullMatchRecord } from '../match-model';
 import { GRID_BALL_CONFIG } from './movement';
 import { playGrid } from './engine';
-import { attackFrame, PITCH, toUnits } from './pitch';
+import { attackFrame, PITCH, toUnits } from '../match/pitch';
 import { ballPath, buildFrames } from './playback';
 import { buildGridSetup, type DecideRule } from './setup';
 import { SHAPE_CONFIG } from './shape';
@@ -766,7 +766,7 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
       deliveries(match('set-piece-2')).map((d) => d.window),
     );
     // The pre-feature path keeps its own set pieces: no intentions are traced there (its settled
-    // facts are guarded by grid-throughput's pre-feature digests).
+    // facts are guarded by grid/throughput.test's pre-feature digests).
     expect(result.trace!.some((x) => x.action === 'corner')).toBe(true);
     expect(result.trace!.every((x) => x.intentions === undefined)).toBe(true);
   });

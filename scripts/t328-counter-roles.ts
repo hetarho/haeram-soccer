@@ -28,8 +28,8 @@ import type { Tactic } from '../packages/contracts/src/types';
 import { FORMATIONS } from '../packages/engine/src/player';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { M } from '../packages/engine/src/grid/record';
-import { attackFrame, inBox } from '../packages/engine/src/grid/pitch';
+import { M } from '../packages/engine/src/match/record';
+import { attackFrame, inBox } from '../packages/engine/src/match/pitch';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import {
   conditionClubs,

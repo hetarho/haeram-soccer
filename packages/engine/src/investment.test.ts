@@ -12,12 +12,11 @@ import {
 } from './index';
 import { holdRows, startWork } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
-/** The club on the pre-feature path: investment plans, not the match model, are the subject. */
+/** The club on the released model: investment plans, not the match model, are the subject. */
 function world() {
-  const w = simulatedWorld({ country: 'ENG', seed: 'investment-plans' }, {}, DISABLED_RELEASE);
+  const w = simulatedWorld({ country: 'ENG', seed: 'investment-plans' });
   w.cash = '999999999999';
   // The first ground, so the ladder's first step is the work under test (→ECON-32).
   w.stadium = 0;

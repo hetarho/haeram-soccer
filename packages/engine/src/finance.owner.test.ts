@@ -12,7 +12,6 @@ import { OWNER_TRAITS, TAKEOVER_DEBT } from './owner-config';
 import { SEASON_END_DAY, SEASON_ROUNDS } from './calendar';
 import { scaleBy } from './primitives';
 import { withOwner } from './testing';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 /**
@@ -20,7 +19,7 @@ import { careerWorld } from './career.testkit';
  * owner state, as a hand-built world does.
  */
 const world = (owned = true) => {
-  const w = careerWorld({ seed: 'owner-finance' }, DISABLED_RELEASE);
+  const w = careerWorld({ seed: 'owner-finance' });
   if (owned) withOwner(w);
   else delete w.owner;
   w.cash = '100000000000';

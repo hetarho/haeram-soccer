@@ -4,7 +4,6 @@ import { canonical, validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../tests/fixtures/worlds';
 import { advanceRound, managerCandidates, operate, simulateSeason } from './index';
 import { careerWorld } from './career.testkit';
@@ -22,10 +21,10 @@ import { currentDay } from './calendar';
 const CAREER = { country: 'ENG' as const, seed: 'manager-capture' };
 /**
  * A career with money for hires; `delegated` hands the manager post to the staff. On the
- * pre-feature path: manager attribution, not the match model, is the subject.
+ * released model: manager attribution, not the match model, is the subject.
  */
 function founded(delegated = false) {
-  const w = simulatedWorld(CAREER, {}, DISABLED_RELEASE);
+  const w = simulatedWorld(CAREER);
   w.cash = '999999999999';
   if (delegated) {
     w.settings = staffAuthority(4);
@@ -151,16 +150,16 @@ describe('manager-history capture (→HIST-18/19, SAVE-24)', () => {
 
   it('credits a domestic cup as its final is decided in play', () => {
     // An overwhelming own squad, the cups played out as the close does; the first seeded career
-    // whose final we win is the scene (a lost final still happens even then).
-    const won = ['manager-cup-2', 'manager-cup-3', 'manager-cup-4']
-      .map((seed) => {
-        const w = careerWorld({ seed }, DISABLED_RELEASE);
-        for (const p of w.players)
-          for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[]) p.attrs[key] = 99;
-        finishCups(w);
-        return w;
-      })
-      .find((w) => w.cups!.some((c) => c.winner === w.playerClub));
+    // whose final we win is the scene (a strength gap counts with diminishing returns, →MATCH-2,
+    // so even such a squad loses a tie now and then).
+    let won: World | undefined;
+    for (let seed = 2; seed < 14 && !won; seed++) {
+      const w = careerWorld({ seed: `manager-cup-${seed}` });
+      for (const p of w.players)
+        for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[]) p.attrs[key] = 99;
+      finishCups(w);
+      if (w.cups!.some((c) => c.winner === w.playerClub)) won = w;
+    }
     expect(won).toBeDefined();
     const w = won!;
     expect(facts(w).outcomes).toEqual([

@@ -1,5 +1,5 @@
 /** Cards in the match: how a foul is punished and when a player argues (→MATCH-19). WIP: the engine does not apply cards yet. */
-import { attackFrame, bandOf, laneOf, type Point } from './pitch';
+import { attackFrame, bandOf, laneOf, type Point } from '../match/pitch';
 import { offsideLine } from './shape';
 import { onPitch, other, type GridState } from './state';
 

@@ -13,7 +13,7 @@ import { rating } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { FORMATIONS } from '../packages/engine/src/player';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { M } from '../packages/engine/src/grid/record';
+import { M } from '../packages/engine/src/match/record';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 
 const args = process.argv.slice(2);

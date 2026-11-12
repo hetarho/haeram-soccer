@@ -5,8 +5,8 @@ import {
   sampleDetail,
   smallDetail,
 } from '../../../../tests/fixtures/match-script';
-import { cellOf } from '../grid/pitch';
-import { MaterialTally, M } from '../grid/record';
+import { cellOf } from '../match/pitch';
+import { MaterialTally, M } from '../match/record';
 import { MATERIAL_LAYOUT, REPORT_SLOTS } from '../material';
 import { TD } from '../../../contracts/src/detail';
 import { cellAt, toAttack } from './cells';

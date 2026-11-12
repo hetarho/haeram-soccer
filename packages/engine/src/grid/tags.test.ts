@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FORMATIONS } from '../player';
-import type { Point } from './pitch';
+import type { Point } from '../match/pitch';
 import { computeTags } from './tags';
 import { gridKit } from './testkit';
 

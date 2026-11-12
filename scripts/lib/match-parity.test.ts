@@ -9,8 +9,8 @@ import {
 } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
-import { inMatchFatigue } from '../../packages/engine/src/grid/changes';
-import { M } from '../../packages/engine/src/grid/record';
+import { inMatchFatigue } from '../../packages/engine/src/match/changes';
+import { M } from '../../packages/engine/src/match/record';
 import { buildGridSetup } from '../../packages/engine/src/grid/setup';
 import { forcedGap, forceTacticRosters } from '../grid-bands';
 import { FORMATIONS, levelFactor } from '../../packages/engine/src/player';

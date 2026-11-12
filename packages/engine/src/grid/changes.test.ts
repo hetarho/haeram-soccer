@@ -134,12 +134,6 @@ describe('grid substitutions and injuries', () => {
   });
 
   it('lets a gegenpress manager change tired pressers from the 55th minute', () => {
-    expect(subPolicyFor(manager({ style: 'gegenpress' }))).toMatchObject({
-      fatigueFrom: 55,
-      earlyPress: true,
-    });
-    expect(subPolicyFor(manager({ trait: 'rotation' })).earlyPress).toBe(true);
-    expect(subPolicyFor(manager({ style: 'gegenpress', interim: true })).earlyPress).toBe(false);
     const press = { fatigue: 40, policy: { style: 'gegenpress' as const } };
     expect(plan(stateAt(54, press))).toEqual([]);
     expect(reasons(plan(stateAt(56, press)))).toEqual(['policy']);
@@ -198,7 +192,6 @@ describe('grid substitutions and injuries', () => {
   });
 
   it('delays changes by ten minutes with the stable trait', () => {
-    expect(subPolicyFor(manager({ trait: 'stable' })).delay).toBe(10);
     const stable = { fatigue: 40, policy: { trait: 'stable' as const } };
     expect(reasons(plan(stateAt(61, { fatigue: 40 })))).toEqual(['policy']);
     expect(plan(stateAt(61, stable))).toEqual([]);

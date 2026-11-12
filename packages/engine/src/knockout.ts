@@ -10,7 +10,7 @@ import type {
 } from '../../contracts/src/types';
 import { compareIds, random } from './primitives';
 import { simulateMatch } from './match';
-import type { DecideRule } from './grid/setup';
+import type { DecideRule } from './match/rules';
 import { recordMatch } from './season';
 import { fixtureDay } from './calendar';
 import { legsOf, tieAggregate, tieId } from './competition-keys';

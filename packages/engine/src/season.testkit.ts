@@ -13,13 +13,12 @@ import {
 } from './index';
 import { staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 /**
  * A club taken over on `year`'s first day (default `CAREER_YEAR`) under `release` (default the
  * switch as it stands), in a world made fresh that season. An enabled release records the model at
- * the takeover, so a candidate of `year` is `withCandidateModel(founded(year, DISABLED_RELEASE))`.
+ * the takeover, so a candidate of `year` is `withCandidateModel(founded(year))`.
  */
 export function founded(year?: number, release: MatchModelRelease = MATCH_MODEL_RELEASE) {
   const w = careerWorld({ seed: 'season-archive', year }, release);
@@ -35,11 +34,11 @@ export function toLastRound(w: World) {
 
 /**
  * The archive club's first season (taken over in `CAREER_YEAR` or in 1980) at its last round, on
- * the pre-feature path: the season's archive, not the match model, is the subject.
+ * the released model: the season's archive, not the match model, is the subject.
  */
 export function archiveLastRound(start: 'professional' | 1980) {
   return cachedWorld(`archive-last-round-${start}`, () =>
-    toLastRound(founded(start === 1980 ? 1980 : undefined, DISABLED_RELEASE)),
+    toLastRound(founded(start === 1980 ? 1980 : undefined)),
   );
 }
 
@@ -55,13 +54,13 @@ export function closedSeason(w: World) {
 
 /**
  * A club of the lowest professional division taken over in `code`, its first season played to the
- * last round, on the pre-feature path: promotion and relegation, not the match model, are the
+ * last round, on the released model: promotion and relegation, not the match model, are the
  * subject.
  */
 export function lastRound(code: CountryCode) {
   // Exactly 46 round steps: one stays put once the club is bankrupt, which then never gets here.
   const w = cachedWorld(`professional-last-round-${code}`, () => {
-    const w = careerWorld({ country: code, seed: 'lowest-division' }, DISABLED_RELEASE);
+    const w = careerWorld({ country: code, seed: 'lowest-division' });
     for (let n = 0; n < 46; n++) advanceRound(w, undefined, false);
     return w;
   });

@@ -9,7 +9,7 @@ import {
   simulateSeason,
   yearlyStaff,
 } from '../../packages/engine/src/index';
-import { DISABLED_RELEASE } from './releases';
+import { onPreviousRevision } from './earlier-saves';
 import { withoutManagerHistory } from './worlds';
 
 const freeManager = (w: World, except: readonly string[] = []) =>
@@ -69,7 +69,7 @@ export function buildManagerJourneyWorld(): World {
 }
 
 export function buildManagerActivationWorld(): World {
-  const w = careerWorld({ country: 'ENG', seed: 'manager-activation' }, DISABLED_RELEASE);
+  const w = careerWorld({ country: 'ENG', seed: 'manager-activation' });
   w.cash = '999999999999';
   // Every business decision delegated, so the seeded seasons leave no owner answer pending.
   const responsibilities = w.settings!.responsibilities;
@@ -80,6 +80,6 @@ export function buildManagerActivationWorld(): World {
   simulateSeason(w);
   if (w.critical) hire(w, freeManager(w)?.id);
   for (let round = 0; round < 3; round++) advanceRound(w, undefined, false);
-  const world = withoutManagerHistory(w);
-  return world;
+  // Saved by the game before this one, before manager history (→SAVE-23/24).
+  return onPreviousRevision(withoutManagerHistory(w));
 }

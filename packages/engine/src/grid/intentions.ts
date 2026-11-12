@@ -28,7 +28,7 @@ import {
   type CoordinationPlan,
 } from './coordination';
 import { pressScale } from './freedom';
-import { attackFrame, PITCH, toEngine } from './pitch';
+import { attackFrame, PITCH, toEngine } from '../match/pitch';
 import {
   intentionTarget,
   offsideLine,

@@ -34,9 +34,9 @@ import type { Club, Fixture, Tactic, World } from '../packages/contracts/src/typ
 import { rating } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { clearChance } from '../packages/engine/src/grid/decide';
-import { CELL_BASELINES } from '../packages/engine/src/grid/baselines';
+import { CELL_BASELINES } from '../packages/engine/src/match/baselines';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { attackFrame, cellKey, cellOf, type Point } from '../packages/engine/src/grid/pitch';
+import { attackFrame, cellKey, cellOf, type Point } from '../packages/engine/src/match/pitch';
 import {
   chanceXg,
   closingBlockers,

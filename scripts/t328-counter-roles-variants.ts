@@ -11,7 +11,7 @@ import {
   AGGREGATE_PARTICIPATION_CONFIG,
 } from '../packages/engine/src/aggregate/config';
 import { BOX_CONFIG } from '../packages/engine/src/grid/box';
-import { CHANGES_CONFIG } from '../packages/engine/src/grid/changes';
+import { CHANGES_CONFIG } from '../packages/engine/src/match/changes';
 import { COORDINATION_CONFIG } from '../packages/engine/src/grid/coordination';
 import { DECISION_CONFIG } from '../packages/engine/src/grid/decide';
 import { LANE_CONFIG, SHADOW_CONFIG } from '../packages/engine/src/grid/lanes';
@@ -19,7 +19,7 @@ import { IN_STRIDE_CONFIG } from '../packages/engine/src/grid/movement';
 import { DUEL_CONFIG, SHOT_CONFIG } from '../packages/engine/src/grid/resolve';
 import { RESTART_CONFIG } from '../packages/engine/src/grid/restarts';
 import { SHAPE_CONFIG } from '../packages/engine/src/grid/shape';
-import { STRENGTH_CONFIG } from '../packages/engine/src/grid/state';
+import { STRENGTH_CONFIG } from '../packages/engine/src/match/config';
 
 export type SlotSpec = readonly [Position, RoleId];
 const BASE: SlotSpec[] = [

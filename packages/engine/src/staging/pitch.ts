@@ -1,7 +1,7 @@
 import type { Fixture, TeamId, Vec } from './types';
 import { clamp } from './vec';
-import { PITCH, attackFrame } from '../grid/pitch';
-export { PITCH } from '../grid/pitch';
+import { PITCH, attackFrame } from '../match/pitch';
+export { PITCH } from '../match/pitch';
 export const HALFWAY = 52.5;
 export const CENTRE: Vec = [52.5, 34];
 export const GOAL_Y = 34;

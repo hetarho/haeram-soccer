@@ -21,7 +21,7 @@ import {
 } from '../../contracts/src/match-model';
 import type { Fixture, MatchPlayback, Metrics, Player, World } from '../../contracts/src/types';
 import { currentDay, fixtureDay, SEASON_ROUNDS } from './calendar';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { zeroMetrics } from './primitives';
 
 /**

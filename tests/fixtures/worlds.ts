@@ -12,7 +12,7 @@ import {
 import { ENABLED_RELEASE } from './releases';
 import { cachedJson } from './json-cache';
 export { cachedWorld } from './cached-world';
-export { ENABLED_RELEASE, DISABLED_RELEASE, declaredRelease } from './releases';
+export { ENABLED_RELEASE, declaredRelease } from './releases';
 
 const SELF = fileURLToPath(import.meta.url);
 const CAREER = fileURLToPath(

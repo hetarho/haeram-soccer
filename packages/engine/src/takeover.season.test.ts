@@ -16,7 +16,6 @@ import {
   parachutePayment,
 } from './finance';
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
 /** A club at `place` by strength in a division of `code`, independent of wealth-tier reach. */
 const atPlace = (w: World, code: string, tier: number, place: number) => {
@@ -32,7 +31,7 @@ it('plays a taken-over club’s first season with the existing loop', () => {
   const wages = squad(w, club).reduce((sum, p) => sum + BigInt(p.wage), 0n);
   withBooks(w, club, { cash: (2n * wages).toString(), debt: wages.toString() });
   const year = w.year;
-  takeOver(w, club.id, { tier: 'industrial', traits: [] }, 'youth-academy', DISABLED_RELEASE);
+  takeOver(w, club.id, { tier: 'industrial', traits: [] }, 'youth-academy');
   simulateSeason(w);
   expect(w.bankrupt).toBeUndefined();
   expect(w.year).toBe(year + 1);
@@ -70,7 +69,7 @@ it('takes over a club of a generated world and plays its first season (→WORLD-
 
 it('keeps the world’s season before the takeover apart from the club’s own (→HIST-2)', () => {
   // One season the world lived (1930/31), archived with every own-club field empty.
-  const lived = liveHistory(historyWorld('takeover-archive', DISABLED_RELEASE), 1931);
+  const lived = liveHistory(historyWorld('takeover-archive'), 1931);
   const [archived] = lived.history;
   const index = (id: string) => lived.clubs.findIndex((c) => c.id === id);
   const row = (id: string) => archived!.standings.find((r) => r[0] === index(id))!;
@@ -80,7 +79,7 @@ it('keeps the world’s season before the takeover apart from the club’s own (
   const club = w.clubs.find(
     (c) => c.country === 'ENG' && c.tier === 1 && !c.representative && row(c.id)[1] === 0,
   )!;
-  takeOver(w, club.id, { tier: 'oil', traits: [] }, undefined, DISABLED_RELEASE);
+  takeOver(w, club.id, { tier: 'oil', traits: [] });
   expect(isOwnSeason(w, archived!)).toBe(false);
   // The relegation the world's standings show pays its parachute; no turnover of the club's is
   // known from a season nobody owned it in.
@@ -104,7 +103,7 @@ it('keeps the world’s season before the takeover apart from the club’s own (
   const jobs = (x: World, id: string) =>
     activeCoachingEmployment(x).filter(({ job }) => job.club === id).length;
   const other = coached.clubs.find((c) => !c.representative && jobs(coached, c.id) > 0)!;
-  takeOver(coached, other.id, { tier: 'oil', traits: [] }, undefined, DISABLED_RELEASE);
+  takeOver(coached, other.id, { tier: 'oil', traits: [] });
   expect(jobs(coached, other.id)).toBe(0);
   expect(() => validateWorld(structuredClone(coached))).not.toThrow();
 });

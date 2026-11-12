@@ -11,7 +11,7 @@ import { ATTRIBUTES, type PlayTrait } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { actionWeight } from '../match';
 import { random } from '../primitives';
-import { CELL_BASELINES } from './baselines';
+import { CELL_BASELINES } from '../match/baselines';
 import { BOX_CONFIG, boxScene, deliveries, DELIVERY_ACTION, deliveryPoint } from './box';
 import {
   actionMix,
@@ -33,7 +33,7 @@ import {
   type Decision,
 } from './decide';
 import { carryInStride } from './movement';
-import { BAND_EDGES, LANE_EDGES, type Point } from './pitch';
+import { BAND_EDGES, LANE_EDGES, type Point } from '../match/pitch';
 import { chanceXg } from './resolve';
 import { enterSlot, slotOf } from './state';
 import { computeTags, type Tags } from './tags';

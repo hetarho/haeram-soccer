@@ -16,119 +16,18 @@ export {
   type DecideRule,
 } from './rules';
 /** Everything a grid match needs before kick-off: era rules, rosters, bench, takers and bends (→MATCH-2, MATCH-18, MATCH-20, CLUB-6). */
-import type { Club, Fixture, Player, Tactic, World } from '../../../contracts/src/types';
+import type { Fixture, Player, Tactic, World } from '../../../contracts/src/types';
 import { activeMatchModel, type MatchModelRevision } from '../../../contracts/src/match-model';
-import { bestRoleAt, FORMATIONS, lineOf } from '../player';
+import { bestRoleAt, FORMATIONS } from '../player';
 import { clubManager } from '../managerMarket';
-import { activePlayers, ownMultiplier, slotOvr } from '../player-state';
-import { isInjured, squad } from '../world';
-import { prepareMatch, type Prepared } from '../match';
+import { prepareMatch } from '../match';
 import { PORTABLE_MATH } from '../portable-math';
-import { isUnavailable } from '../discipline';
+import { takersFor, type Takers } from '../match/bench';
+import { fixtureRosters } from '../match/roster';
 import { subPolicyFor } from './changes';
-import { playerTendencies, type PlayerTendencies } from './tendencies';
-
-/** Roster indexes of the set-piece takers. */
-export interface Takers {
-  penalty: number;
-  directFreeKick: number;
-  corner: number;
-}
-
-/** Picks each taker from the XI by his key; the goalkeeper (index 0) takes none unless alone; ties go to the lower index. */
-export function takersFor(xi: readonly Player[]): Takers {
-  const best = (key: (p: Player) => number) => {
-    let index = xi.length > 1 ? 1 : 0;
-    for (let i = index + 1; i < xi.length; i++) if (key(xi[i]!) > key(xi[index]!)) index = i;
-    return index;
-  };
-  return {
-    penalty: best((p) => 0.6 * p.attrs.finishing + 0.4 * p.attrs.composure),
-    directFreeKick: best((p) => 0.5 * p.attrs.finishing + 0.5 * p.attrs.crossing),
-    corner: best((p) => p.attrs.crossing),
-  };
-}
-
-/**
- * The named substitutes. The own club picks among its active, fit, available players; another
- * club names squad places behind its XI in order (→CLUB-6).
- */
-export function benchFor(
-  w: World,
-  club: Club,
-  xi: readonly Player[],
-  era: EraRules,
-  unavailable: (p: Player) => boolean = () => false,
-): Player[] {
-  if (era.named === 0) return [];
-  const taken = new Set(xi);
-  if (club.id !== w.playerClub)
-    return squad(w, club)
-      .filter((p) => !taken.has(p) && !unavailable(p))
-      .slice(0, era.named);
-  const slots = FORMATIONS[w.tactic].slots;
-  const pool = activePlayers(w).filter((p) => !taken.has(p) && !isInjured(w, p) && !unavailable(p));
-  // His best effective OVR over the slots of a line in the applied formation (no line: the goalkeeper's).
-  const level = (p: Player, line?: string) =>
-    slots.reduce(
-      (best, slot, i) =>
-        (line === undefined ? i === 0 : lineOf(slot.position) === line)
-          ? Math.max(best, slotOvr(p, slot, ownMultiplier(p)))
-          : best,
-      -Infinity,
-    );
-  const bench: Player[] = [];
-  const pick = (line?: string) => {
-    let chosen: Player | undefined,
-      value = -Infinity;
-    for (const p of pool) {
-      const v = level(p, line);
-      if (v > value) [chosen, value] = [p, v];
-    }
-    if (!chosen) return false;
-    pool.splice(pool.indexOf(chosen), 1);
-    bench.push(chosen);
-    return true;
-  };
-  if (era.named >= 3) pick();
-  for (let line = 0; bench.length < era.named && pool.length; line++) {
-    if (!pick(['DF', 'MF', 'FW'][line % 3])) break;
-  }
-  return bench;
-}
-
-/**
- * Each side's matchday roster (→MATCH-19, MATCH-20, LEAGUE-15): the prepared XI in slot order, then
- * the era's named substitutes, nobody injured or banned for this fixture among them. The XI already
- * leaves out whoever it can; with `replace`, the one rule of both candidate paths, a starter it had
- * to keep while unavailable is replaced by the best available substitute for his slot. The
- * pre-feature grid keeps him (`replace` false), as its settled matches always have.
- */
-export function fixtureRosters(
-  w: World,
-  f: Fixture,
-  prepared: Pick<Prepared, 'teams' | 'squads' | 'tactics'>,
-  era: EraRules,
-  replace = true,
-): [Player[], Player[]] {
-  return ([0, 1] as const).map((side) => {
-    const club = prepared.teams[side];
-    const out = (p: Player) => isUnavailable(w, p, club.id, f);
-    const xi = [...prepared.squads[side]];
-    const bench = benchFor(w, club, xi, era, out);
-    if (replace) {
-      const slots = FORMATIONS[prepared.tactics[side]].slots;
-      xi.forEach((p, slot) => {
-        if (!out(p) || bench.length === 0) return;
-        let best = 0;
-        for (let i = 1; i < bench.length; i++)
-          if (slotOvr(bench[i]!, slots[slot]!) > slotOvr(bench[best]!, slots[slot]!)) best = i;
-        xi[slot] = bench.splice(best, 1)[0]!;
-      });
-    }
-    return [...xi, ...bench];
-  }) as [Player[], Player[]];
-}
+import { playerTendencies, type PlayerTendencies } from '../match/tendencies';
+export { ownBench, takersFor, type Takers } from '../match/bench';
+export { benchFor, fixtureRosters } from '../match/roster';
 
 /** Percentage-point style and synergy bends of a side's play (→STAFF-14); all zero for another club. */
 export interface StyleBend {

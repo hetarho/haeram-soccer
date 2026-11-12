@@ -111,9 +111,9 @@ const legacyViews = (views: ReturnType<typeof managerRowView>[]) =>
   views.filter((view): view is ManagerLegacyView => view.kind === 'legacy');
 
 /**
- * A supported career saved before manager history and the full match model's release: one season
- * on the pre-feature model with a mid-season appointment and three rounds into the next, its facts
- * and links stripped as an older writer left it.
+ * A supported career saved before manager history and the released match model's revision: one
+ * season with a mid-season appointment and three rounds into the next, on the revision before
+ * today's, its manager facts and links stripped as an older writer left it.
  */
 export async function managerActivationCareer(): Promise<ManagerActivationCareer> {
   const world = preparedWorld('manager-activation');

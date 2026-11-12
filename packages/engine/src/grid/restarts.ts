@@ -8,7 +8,7 @@ import {
   temperature,
   type Decision,
 } from './decide';
-import { attackFrame, bandOf, goalDistance, inBox, laneOf, PITCH, toEngine } from './pitch';
+import { attackFrame, bandOf, goalDistance, inBox, laneOf, PITCH, toEngine } from '../match/pitch';
 import {
   resolveCross,
   resolvePass,
@@ -26,6 +26,7 @@ import {
   type SetPieceScene,
 } from './shape';
 import { modelAtLeast } from './rules';
+import { OFFSIDE_CONFIG } from '../match/config';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { computeTags } from './tags';
 
@@ -77,40 +78,7 @@ export const RESTART_CONFIG = {
    * which a free kick played as a pass goes to the nearest centre-back or keeper.
    */
   ownThird: 35,
-  offside: {
-    base: 0.03,
-    /** Points of 판단력 per unit of offside chance: 200 on the raw scale, times the grid's skill scale (T216). */
-    decisions: 360,
-    linebreaker: 0.1,
-    highLine: 0.05,
-    highLineFrom: 40,
-    min: 0.012,
-    max: 0.7,
-    /**
-     * The candidate model's call (→MATCH-18 r21, T384): with `spread` above 0 the chance is
-     * `base` × e^(−(판단력 − `pivot`) / `spread`) on the receiver's own 판단력 attribute, times
-     * `linebreakerFactor` for a linebreaker and `highLineFactor` against a high line, then
-     * clamped. The attribute, not the duels' scale: there the match's level, the day's form, the
-     * slot and fatigue outweigh it, and the attribute's quarters stayed at 1.5× whatever the slope
-     * (T384's screens). Factors rather than the shared rule's added terms keep his 판단력 deciding
-     * against every line. `spread` 0 keeps the shared linear rule. T397: `base` 0.055 → 0.05, as
-     * the stronger pull of a ball in behind (DECISION_CONFIG.candidate.through) finds more runners
-     * in an offside position, so calls stay at 1.85 a team.
-     */
-    candidate: {
-      base: 0.05,
-      decisions: 360,
-      pivot: 67,
-      spread: 15,
-      linebreaker: 0.1,
-      linebreakerFactor: 0.3,
-      highLine: 0.05,
-      highLineFactor: 1.5,
-      highLineFrom: 40,
-      min: 0.002,
-      max: 0.7,
-    },
-  },
+  offside: OFFSIDE_CONFIG,
 } as const;
 
 /** Which restart follows a ball that left play. */

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { withCandidateModel } from '../../../tests/fixtures/worlds';
 import { PD, TD } from '../../contracts/src/detail';
 import type { Fixture, Incident, MatchRecord, World } from '../../contracts/src/types';
@@ -7,7 +7,7 @@ import { settleRate } from './adaptation';
 import { INJURY } from './careers';
 import { dayCountedFrom } from './calendar';
 import { isUnavailable } from './discipline';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { simulateMatch } from './index';
 import { playFixture } from './knockout';
 import { type MatchModelRelease, validateFullMatchRecord } from './match-model';
@@ -28,11 +28,8 @@ function ownLeague(w: World) {
   const group = w.fixtures.find((f) => f.kind === 'league' && isOwn(w, f))!.groupKey;
   return w.fixtures.filter((f) => f.kind === 'league' && f.groupKey === group);
 }
-/**
- * A 2024 world on the model a new career plays, recorded once the year has moved (founded off,
- * then activated), whatever the switch: it names substitutes (→MATCH-20).
- */
-const modern = () => withCandidateModel(founded(2024, DISABLED_RELEASE));
+/** A 2024 world on the released model, taken over that year: it names substitutes (→MATCH-20). */
+const modern = () => withCandidateModel(founded(2024));
 const isOwn = (w: World, f: Fixture) => f.home === w.playerClub || f.away === w.playerClub;
 const ownFixtures = (w: World) =>
   w.fixtures.filter((f) => f.kind === 'league' && isOwn(w, f)).sort((a, b) => a.round - b.round);

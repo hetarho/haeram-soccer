@@ -22,7 +22,7 @@ import { careerWorld } from '../packages/engine/src/career.testkit';
 import { FORMATIONS, lineOf } from '../packages/engine/src/player';
 import { npcSquad } from '../packages/engine/src/world';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { M } from '../packages/engine/src/grid/record';
+import { M } from '../packages/engine/src/match/record';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 

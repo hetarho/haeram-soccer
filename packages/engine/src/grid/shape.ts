@@ -1,8 +1,8 @@
 /** Off the ball: formation shape by phase and tactic, role habit, pressing, marking, runs and movement (→MATCH-8, MATCH-17). */
 import type { RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
-import type { Point } from './pitch';
-import { attackFrame, bandOf, clamp, inBox, LANE_EDGES, PITCH, toEngine } from './pitch';
+import type { Point } from '../match/pitch';
+import { attackFrame, bandOf, clamp, inBox, LANE_EDGES, PITCH, toEngine } from '../match/pitch';
 import { FORMATIONS, lineOf } from '../player';
 import { actionWeight } from '../match-weights';
 import type { MatchMath } from '../portable-math';
@@ -12,7 +12,7 @@ import { coverShadow } from './lanes';
 import type { GridPlayer, GridState } from './state';
 import { minutesOn, onPitch, other, regMinute, skill, slotOf } from './state';
 import { modelAtLeast } from './rules';
-import { ROLE_SHIFT, SPOTS } from './spots';
+import { ROLE_SHIFT, SPOTS } from '../match/spots';
 
 /** Initial values; T215 and T216 tune them. */
 export const SHAPE_CONFIG = {

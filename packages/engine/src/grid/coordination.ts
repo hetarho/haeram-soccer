@@ -31,7 +31,7 @@ import { CHANGES_CONFIG } from './changes';
 import { modelAtLeast } from './rules';
 import { pressScale } from './freedom';
 import { dangerousOption, nearbyThreat, SHADOW_CONFIG, threatGain } from './lanes';
-import { attackFrame, clamp, laneOf, PITCH, toEngine } from './pitch';
+import { attackFrame, clamp, laneOf, PITCH, toEngine } from '../match/pitch';
 import {
   coverPoint,
   lineFloor,

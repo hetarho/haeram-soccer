@@ -1,15 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { advanceToNextMatch } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld, withCandidateModel } from '../../../tests/fixtures/worlds';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
 import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
 import { simulateAggregate } from './aggregate/engine';
 import { nextOwnFixture } from './calendar';
-import { playGrid } from './grid/engine';
-import { buildGridSetup, type DecideRule } from './grid/setup';
+import { type DecideRule } from './match/rules';
 import { closeSeason, eloOf, ownLeagueClubs, simulateSeason } from './index';
 import { playFixture, tieRule } from './knockout';
 import { OWN_LEAGUE_ENGINE, setOwnLeagueEngine, simulateMatch } from './match';
@@ -135,15 +133,12 @@ describe('league settlement appearance (→KIT-12)', () => {
 });
 
 const isOwn = (w: World, f: Fixture) => f.home === w.playerClub || f.away === w.playerClub;
-/**
- * A 2024 world (substitutes, cups and Europe) on the candidate model from its founding: founded
- * with the release off and activated once its year is 2024, whatever the switch.
- */
-const candidate = () => withCandidateModel(founded(2024, DISABLED_RELEASE));
+/** A 2024 world (substitutes, cups and Europe) on the released model from its takeover. */
+const candidate = () => withCandidateModel(founded(2024));
 /** The candidate world seven rounds in, by rounds: league days, a cup round and a Europe day. */
 const sevenRounds = () =>
   cachedWorld('candidate-2024-seven-rounds', () => {
-    const w = withCandidateModel(founded(2024, DISABLED_RELEASE));
+    const w = withCandidateModel(founded(2024));
     while (w.round < 7) advanceRound(w, undefined, false);
     return w;
   });
@@ -179,7 +174,6 @@ const facts = (w: World) => canonical({ ...w, critical: undefined, revision: 0, 
 describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-17)', () => {
   it('dispatches every non-own competition to aggregate', () => {
     const w = candidate();
-    const plain = founded(2024, DISABLED_RELEASE);
     const cup = w.cups!.find((c) => c.fixtures.some((f) => !isOwn(w, f)))!;
     const cupTie = cup.fixtures.find((f) => !isOwn(w, f))!;
     const others: [Fixture, DecideRule | undefined][] = [
@@ -204,17 +198,12 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       } finally {
         setOwnLeagueEngine(OWN_LEAGUE_ENGINE);
       }
-      // A world that never activated keeps its settled model.
-      expect(simulateMatch(plain, f, false, true, decide).record.model).toBeUndefined();
     }
     const ownCup = (w.cups ?? []).flatMap((c) => c.fixtures).find((f) => isOwn(w, f))!;
     const owns: [Fixture, DecideRule | undefined][] = [
       [w.fixtures.find((f) => isOwn(w, f))!, undefined],
       [ownCup, { awayGoals: false }],
     ];
-    // Revision 10, pinned by name, plays an own fixture on the grid until T844 removes it.
-    const grid = structuredClone(w);
-    grid.matchModel = { ...grid.matchModel!, revision: 'continuous-aggregate-10' };
     for (const [f, decide] of owns) {
       // The released revision 11 settles it on the result path and writes its script and material
       // whether watched or not; watching adds the script and staging inputs, never frames
@@ -227,16 +216,10 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       expect([quiet.frames, watched.frames]).toEqual([[], []]);
       expect(quiet.script).toBeUndefined();
       expect(watched.script?.beats.length).toBeGreaterThan(0);
-      const detailed = playGrid(
-        buildGridSetup(grid, f, { observe: false, recordPlayers: true, ...(decide && { decide }) }),
-      ).record;
-      expect(simulateMatch(grid, f, false, false, decide).record).toEqual(detailed);
-      expect(simulateMatch(grid, f, true, true, decide).frames.length).toBeGreaterThan(0);
       // Every named participant of both sides, with his advanced counters.
       expect(validateFullMatchRecord(quiet.record)).toEqual([]);
       expect(quiet.record.lineCounts![0]).toBeGreaterThanOrEqual(11);
       expect(quiet.record.lineCounts![1]).toBeGreaterThanOrEqual(11);
-      expect(simulateMatch(plain, f, false, true, decide).record.model).toBeUndefined();
     }
     // Through the season's own paths every competition reaches the ledger.
     const s = sevenRounds();
@@ -252,10 +235,8 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       [tie.home, 1],
       [tie.away, 1],
     ]);
-    // Only the explicit release activated: the candidate from its founding, the world founded
-    // with the release off never (the switch's own value is match-model.test.ts's).
+    // The model is recorded from the takeover.
     expect(s.matchModel!.coverage).toBe('founding');
-    expect(plain.matchModel).toBeUndefined();
   });
 
   it('settles a fixture once', () => {
@@ -301,13 +282,12 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
     const days = candidate();
     while (days.round < 7) advanceDays(days, 1, undefined, false);
     expect(facts(days)).toBe(facts(sevenRounds()));
-    // Across the close: activated two rounds before it, then day, round and season commands.
-    const late = cachedWorld('late-2024', () => {
-      const w = founded(2024, DISABLED_RELEASE);
+    // Across the close: two rounds before it, then day, round and season commands.
+    const start = cachedWorld('late-2024', () => {
+      const w = founded(2024);
       while (w.round < 44) advanceRound(w, undefined, false);
       return w;
     });
-    const start = withCandidateModel(late);
     const year = start.year;
     const done = (w: World) => w.year > year && w.round === 1;
     const byDays = structuredClone(start);
@@ -329,8 +309,8 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
     advanceRound(bySeason, undefined, false);
     expect(facts(byRounds)).toBe(facts(byDays));
     expect(facts(bySeason)).toBe(facts(byDays));
-    // The activation boundary stays; the new season's aggregates start whole and count round 1.
-    expect(byDays.matchModel!.trackedFrom).toEqual({ year, day: 309, round: 45 });
+    // The tracking boundary stays; the new season's aggregates start whole and count round 1.
+    expect(byDays.matchModel!.trackedFrom).toEqual(start.matchModel!.trackedFrom);
     expect(byDays.npcSeason!.year).toBe(year + 1);
     expect(byDays.npcSeason!.trackedFrom).toEqual({ year: year + 1, day: 1, round: 1 });
     expect(byDays.npcSeason!.competitions.length).toBeGreaterThan(0);

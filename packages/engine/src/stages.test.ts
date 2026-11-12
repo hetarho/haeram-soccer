@@ -4,7 +4,6 @@ import type { CountryCode, Fixture, KnockoutRound } from '../../contracts/src/ty
 import { finishCups, finishEurope, prepareSeason } from './index';
 import { knockoutStage, type CupStage } from './stages';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 /** Seasons that span every domestic cup size and each continental format and calendar change. */
@@ -21,12 +20,12 @@ function liveStage(competition: string, rounds: KnockoutRound[], f: Fixture): Cu
 
 /**
  * The domestic cups and continental competitions of a `code`-founded club's season in each of
- * `YEARS`, every round played and drawn; on the pre-feature path, since the stages, not the match
+ * `YEARS`, every round played and drawn; on the released model, since the stages, not the match
  * model, are the subject.
  */
 function seasonsOf(code: CountryCode) {
   return cachedWorld(`stage-seasons-${code}`, () => {
-    const baseline = careerWorld({ country: code, seed: `stages-${code}` }, DISABLED_RELEASE);
+    const baseline = careerWorld({ country: code, seed: `stages-${code}` });
     return YEARS.map((year) => {
       // Each is a fresh synthetic epoch, not thirteen jumps through one retained career.
       const w = structuredClone(baseline);

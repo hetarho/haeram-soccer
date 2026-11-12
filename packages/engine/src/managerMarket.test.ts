@@ -30,13 +30,12 @@ import {
 import { holdRows, staffAuthority } from './testing';
 import { ratio } from './primitives';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { careerWorld, type CareerInput } from './career.testkit';
 
 const founding = (seed: string): CareerInput => ({ country: 'ENG', seed });
-/** The club on the pre-feature path: the manager market, not the match model, is the subject. */
-const world = (seed = 'market') => simulatedWorld(founding(seed), {}, DISABLED_RELEASE);
+/** The club on the released model: the manager market, not the match model, is the subject. */
+const world = (seed = 'market') => simulatedWorld(founding(seed));
 
 describe('manager market (STAFF-17)', () => {
   it('opens with the season four and drops the man the owner hires', () => {
@@ -116,7 +115,7 @@ describe('manager market (STAFF-17)', () => {
   it('moves every four rounds within 4-8 free agents, the same for the same seed', () => {
     // One run comes from the shared cache, built in its own pass; the other is played here.
     const played = () => {
-      const w = careerWorld({ seed: 'moving' }, DISABLED_RELEASE);
+      const w = careerWorld({ seed: 'moving' });
       for (let i = 0; i < MARKET_REFRESH_ROUNDS * 3; i++) advanceRound(w, undefined, false);
       return w;
     };

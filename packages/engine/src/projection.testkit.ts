@@ -2,12 +2,11 @@ import type { World } from '../../contracts/src/types';
 import { advanceRound, operate, operatingCosts } from './index';
 import { holdRows } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
-/** The forecast club on the pre-feature path: the budget forecast, not the match model, is the subject. */
+/** The forecast club on the released model: the budget forecast, not the match model, is the subject. */
 export function world(seed = 'projection') {
-  const w = careerWorld({ seed }, DISABLED_RELEASE);
+  const w = careerWorld({ seed });
   // The squad stays fixed, so every realised bill can be compared exactly.
   return w;
 }

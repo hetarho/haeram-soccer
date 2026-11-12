@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PersonCareer } from '../../contracts/src/types';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import {
   atCareerDate,
   careerDate,
@@ -14,8 +13,8 @@ import {
   syncMentorExposures,
 } from './person-careers';
 import { careerWorld } from './career.testkit';
-/** The club on the pre-feature path: coaching service, not the match model, is the subject. */
-const world = () => careerWorld({ seed: 'service' }, DISABLED_RELEASE);
+/** The club on the released model: coaching service, not the match model, is the subject. */
+const world = () => careerWorld({ seed: 'service' });
 function person() {
   const w = world(),
     p = w.people![w.players[0].id];

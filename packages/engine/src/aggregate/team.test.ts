@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { TD, TEAM_DETAIL_SIZE } from '../../../contracts/src/detail';
 import type { Incident, Tactic } from '../../../contracts/src/types';
-import { cellBand } from '../grid/pitch';
-import { M } from '../grid/record';
+import { cellBand } from '../match/pitch';
+import { M } from '../match/record';
 import { finishing, targetChance } from '../match';
 import { AGGREGATE_CONFIG } from './config';
 import { buildAggregateInput, fullParticipation } from './input';

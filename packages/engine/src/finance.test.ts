@@ -38,7 +38,6 @@ import { addEvent } from './events';
 import { advanceEconomy } from './economy';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { world } from './finance.testkit';
 import { careerWorld } from './career.testkit';
 
@@ -271,7 +270,7 @@ describe('earned, auditable club finances', () => {
   });
 
   it('writes money in the one notation of the app', () => {
-    const spain = careerWorld({ country: 'ESP', seed: 'notation' }, DISABLED_RELEASE);
+    const spain = careerWorld({ country: 'ESP', seed: 'notation' });
     const euro = { ...spain, year: 2001 },
       sterling = { ...world(), year: 1950 };
     const eur = (euros: number) => moneyLabel(euro, String(Math.round(euros * 100)));

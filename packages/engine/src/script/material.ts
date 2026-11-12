@@ -1,6 +1,6 @@
 /** Post-match facts from the script, independent of staging and observation (MATCH-25). */
 import type { MatchMaterial } from '../../../contracts/src/types';
-import { isCutBack, MaterialTally } from '../grid/record';
+import { isCutBack, MaterialTally } from '../match/record';
 import { EVENT_KINDS, EV, SH, SHOT_OUTCOMES } from './codes';
 import { cellAt, toAttack } from './cells';
 import type { MatchDetail } from './detail';

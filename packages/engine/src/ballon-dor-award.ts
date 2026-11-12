@@ -16,7 +16,7 @@ import { cupKey } from './competition-keys';
 import { europeFinal } from './europe';
 import { addEvent } from './events';
 import { moneyLabel } from './finance';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { groupKey, ranked as rankedClubs } from './league-fixtures';
 import { overall } from './player-state';
 import { compareIds, ratio } from './primitives';

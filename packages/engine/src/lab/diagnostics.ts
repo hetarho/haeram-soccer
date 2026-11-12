@@ -1,6 +1,6 @@
 import type { AggregateMatch } from '../aggregate/engine';
 import { slotAt } from '../aggregate/participation';
-import { cellBand } from '../grid/pitch';
+import { cellBand } from '../match/pitch';
 
 /**
  * The aggregate ledger's readings for the target rows its cells resolve: open-play pass attempts by

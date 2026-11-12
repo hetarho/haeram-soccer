@@ -19,10 +19,10 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC } from './aggregate/config';
-import { M } from './grid/record';
-import { SHOT_CONFIG } from './grid/resolve';
-import { isLevel, type DecideRule } from './grid/setup';
-import { STRENGTH_CONFIG } from './grid/state';
+import { M } from './match/record';
+import { PENALTY_CONFIG } from './match/config';
+import { isLevel, type DecideRule } from './match/rules';
+import { STRENGTH_CONFIG } from './match/config';
 import { npcStrength } from './match';
 import { actionWeight, type MatchAction } from './match-weights';
 import { FORMATIONS, isWide, levelFactor, lineOf } from './player';
@@ -138,7 +138,7 @@ function elevenOf(xi: Player[], tactic: Tactic): Eleven {
     out.cross.push(
       weight(slot, AC.through, 'cross', a.crossing, level) * (isWide(position) ? AC.wide : 1),
     );
-    // The penalty taker's and the shoot-out's keys (grid/setup.ts `takersFor`).
+    // The penalty taker's and the shoot-out's keys (match/bench.ts `takersFor`).
     const kick = (0.6 * a.finishing + 0.4 * a.composure) * level;
     out.kick.push(kick);
     if (slot > 0 && kick > best) [best, out.taker] = [kick, slot];
@@ -184,7 +184,7 @@ function weighted(r: () => number, weights: readonly number[], except = -1) {
  * be caught, then sudden death; each kick goes in at the penalty chance against the keeper's 선방.
  */
 function shootout(r: () => number, sides: readonly [Eleven, Eleven]): Score {
-  const P = SHOT_CONFIG.penalty;
+  const P = PENALTY_CONFIG;
   const scored = [0, 0],
     taken = [0, 0];
   const kick = (side: 0 | 1) => {

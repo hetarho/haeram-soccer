@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { OWNER_TRAITS } from './owner-config';
 import type { Club, PersonCareer, Staff, StaffRole, World } from '../../contracts/src/types';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import {
   clubStaffMember,
   nameNextHolder,
@@ -122,7 +121,7 @@ describe('staff free agents (→STAFF-49)', () => {
     for (const role of STAFF_ROLES)
       expect(pool(w, role).length).toBeGreaterThanOrEqual(STAFF_MARKET_CONFIG.poolMin);
     // Nothing moves before anyone owns a club.
-    const ownerless = historyWorld('club-staff-ownerless', DISABLED_RELEASE);
+    const ownerless = historyWorld('club-staff-ownerless');
     refreshStaffMarket(ownerless);
     expect(ownerless.staffMarket).toBeUndefined();
     let left = 0,
@@ -182,7 +181,7 @@ describe('staff free agents (→STAFF-49)', () => {
   it('with 마당발 hold one more, every new free agent +5 at the wage he was drawn with', () => {
     const { candidates, ability } = OWNER_TRAITS.networker;
     const plain = fresh(),
-      wide = careerWorld({ seed: 'club-staff', traits: ['networker'] }, DISABLED_RELEASE);
+      wide = careerWorld({ seed: 'club-staff', traits: ['networker'] });
     for (const role of STAFF_ROLES)
       expect(pool(wide, role)).toHaveLength(pool(plain, role).length + candidates);
     let shared = 0;
@@ -452,7 +451,7 @@ describe('former players placed at clubs nobody owns (→STAFF-43)', () => {
   });
 
   it('reads the markets of a world before anyone owns a club as empty', () => {
-    const w = historyWorld('club-staff-before', DISABLED_RELEASE);
+    const w = historyWorld('club-staff-before');
     expect(staffMarketOf(w).free).toEqual({});
   });
 });

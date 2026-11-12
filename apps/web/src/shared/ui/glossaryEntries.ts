@@ -1,5 +1,5 @@
 import { message as sourceMessage } from '../../../../../packages/contracts/src/messages';
-import { BAND_KEYS, cellName, LANE_KEYS } from '../../../../../packages/engine/src/grid/pitch';
+import { BAND_KEYS, cellName, LANE_KEYS } from '../../../../../packages/engine/src/match/pitch';
 import type { GlossaryEntry } from './metricGlossary';
 
 /** Column heads of the pitch-zones table: the five lanes, left to right in the attacking direction. */

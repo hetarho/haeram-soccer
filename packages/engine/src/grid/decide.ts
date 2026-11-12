@@ -4,7 +4,7 @@ import type { Tactic } from '../../../contracts/src/types';
 import { lineOf } from '../player';
 import { actionWeight } from '../match-weights';
 import { PORTABLE_MATH, type MatchMath } from '../portable-math';
-import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
+import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from '../match/baselines';
 import { BOX_CONFIG, deliveries, DELIVERY_ACTION, type Delivery, type DeliveryAim } from './box';
 import {
   attackFrame,
@@ -19,7 +19,7 @@ import {
   PITCH,
   toEngine,
   type Point,
-} from './pitch';
+} from '../match/pitch';
 import { reachOnPath } from './lanes';
 import { chanceXg, shotBlockers, unblocked } from './resolve';
 import { modelAtLeast } from './rules';

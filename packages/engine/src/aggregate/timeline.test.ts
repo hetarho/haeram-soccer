@@ -8,7 +8,7 @@ import { writeScript } from '../script/write';
 import { validateScript } from '../script/validate';
 import { compareRecord, countScript } from '../script/count';
 import { validateFullMatchRecord } from '../match-model';
-import { eraRules } from '../grid/setup';
+import { eraRules } from '../match/rules';
 import { aggregateRecord } from './engine';
 import { deriveTeamFacts } from './ledger';
 import { attributePlayerFacts } from './players';

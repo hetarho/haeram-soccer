@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { overall } from '../player-state';
 import { PRESS_LOAD_FATIGUE } from '../world';
 import { FORMATIONS } from '../player';
-import { eraRules } from '../grid/rules';
+import { eraRules } from '../match/rules';
 import {
   generateLabSide,
   LAB_CONFIG,

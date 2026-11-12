@@ -2,25 +2,20 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import type { World } from '../../contracts/src/types';
 import { activePlayers, advanceRound } from './index';
 import { staffAuthority } from './testing';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /**
  * A club of the lowest professional division (or the `club` named) taken over in `year` (1950 by
- * default), on the pre-feature path, since sponsorship, not the match model, is the subject. Its
+ * default), on the released model, since sponsorship, not the match model, is the subject. Its
  * squad stays as taken over, so results follow only what a test sets.
  */
 export function club({ year, club }: { year?: number; club?: string } = {}) {
-  const w = simulatedWorld(
-    {
-      country: 'ENG',
-      seed: 'sponsors',
-      ...(year === undefined ? {} : { year }),
-      ...(club === undefined ? {} : { club }),
-    },
-    {},
-    DISABLED_RELEASE,
-  );
+  const w = simulatedWorld({
+    country: 'ENG',
+    seed: 'sponsors',
+    ...(year === undefined ? {} : { year }),
+    ...(club === undefined ? {} : { club }),
+  });
   w.settings = staffAuthority(2);
   return w;
 }

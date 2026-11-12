@@ -15,7 +15,7 @@ import {
   settleClauses,
   zeroMetrics,
 } from './index';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { careerWorld } from './career.testkit';
 import { ballonDorProduction } from './ballon-dor';
 
