@@ -979,12 +979,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T855 | Fix the recruitment journey's loan operating cost the final gate failed | ARCH | - | todo |
 
 ## next
-- gusta-implement-task T855
+- no runnable task: plan next with gusta-sketch
 
 ## log
+- 261112 T855 done
 - 261112 T854 done
 - 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
 - 261112 T853 done
@@ -1004,4 +1004,3 @@
 - 261112 T844 done
 - 261112 T843 done
 - 261112 T842 done
-- 261112 T841 done
