@@ -20,6 +20,8 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261113 decided STAFF-51 ARCH-21 T851: how `staff.test`'s basic-staff and no-staff seasons compare once a vacant post acts 안정 지향 and basic volunteers carry their own temperaments and names in the 단장's reports → hold the basic 단장 and youth director 안정 지향 and compare the two seasons with the basic delegates' names read as 공석, so only what STAFF-51 states differs (alt: make an absent staff list read as basic volunteers in `staffMember`, an engine change for saves no new career writes | drop the equality, losing the check that nothing else differs) n813
+- 261113 decided ARCH-21 STAFF-50 T851: `holdTemperament` gave a volunteer 단장 an unregistered `director:n` person, which delegated staff could not close on replacing him (signings' three `인물을 확인하세요.` throws) → a test-setup gap: the testkit re-keys a person-less holder by his staff id (`temperamentOf` reads person, else id) and refuses to re-key a registered person; no engine change, since the engine only sets `person` for registered people (alt: register a synthetic person in the testkit | let `closeEmployment` skip unknown people, hiding a real broken link) n813
 - 261113 decided SAVE-23 ARCH-30 T845: what of the earlier models' tests and the acceptance's "by hand" integration runs survives once no earlier model has code → host.test's two cases that queued a round on an earlier model (`does not replace an unfinished settled playback`, `the upgrade waits for a queued playback and happens on load`) are removed, since every load activates the released model before a fixture and a fixture on another model now throws `UnreleasedMatchModelError`; the release-on probe goes with the `enabled` switch; by hand only the new activation cases and the touched round-jobs case ran, and the rest of the touched integration files go to the batch gate (ARCH-30 r40, the unit host's tier rule) (alt: keep the queued-playback cases on a relabelled released career, which plays the released model and tests nothing earlier | run every touched integration file in the unit, against the host's tier rule) n813
 - 261113 suggest SAVE-30 T851: a career whose direction still carries the retired 재정 기조 row is refused as incompatible; the game's UI never wrote it, but a preset, script-made or imported career could — dropping the row on load is one line in the load path if such careers matter
 - 261113 suggest WEB-44 WEB-118: the adopted money-spend variant took the fixed-cost runway out of 구단 예산; it still shows in the HUD warning, the red band and the overview — keep it out, or bring it back to the dialog
@@ -976,14 +978,14 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T851 | the adopted money rules hold in the integration tier | ECON CLUB STAFF SAVE ARCH | - | todo |
 | T852 | a refused change to a delegated setting names the person who sets it | ECON WEB | - | todo |
 
 ## next
-- gusta-implement-task T851 T852
+- gusta-implement-task T852
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261112 T851 done
 - 261112 T848 done
 - 261112 T845 done
 - 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
@@ -1003,4 +1005,3 @@
 - 261112 T839 done
 - 261112 T838 done: revision 11 released; capacity gate passed on the staking workload (worst checkpoint 4,367,776 of 6,291,456 bytes, portable file 6,551,024 of 8,388,608), every century own match a full revision-11 record from the takeover, era probe to 2025 passed; season 1.4–1.8× revision 10 reported, not a gate; no push hf12
 - 261112 gusta-create-task MATCH r62: T848 refreshed as a guard (every traced pair on the pitch together over 8 placed 2008 fixtures, pairs add up to the trace's counts, `commonSpan`/`pairParticipants` edge cases), dep T833, base MATCH@62 hf12
-- 261112 gusta-update-ssot MATCH r62 (MATCH-16✎ two-man actions: both men on their own weights matched over shared playing time, only an unmatched second man redrawn) hf12
