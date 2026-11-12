@@ -9,7 +9,7 @@ band (`CHAMPION_BAND`, `REAL_CHAMPIONS`) and the 261011 band kept as a labelled 
 over the four seeds, its points outside the real leagues' spread stay within released + history's noise (allowance
 6). Production stays released: `STAR_SPREAD_CONFIG` s = 1 with no own anchor, `MEANS_LEVEL.inForce` and
 `BOOK_COMPETITIONS.inForce` false; nothing is switched here. The careers' check and the activation on T697's table
-are the next create-task slice. T696's candidate passes as well, as context only (CLUB-48 admits a table only with
+are the next gusta-create-task slice. T696's candidate passes as well, as context only (CLUB-48 admits a table only with
 competition money in the books).
 
 | part | worlds read | result |

@@ -192,7 +192,7 @@
         "TASK": "T462",
         "TASKS": "T462"
       },
-      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/logs/check-aca3bfce-4a7b-4618-8e2e-87a9146c6b35.log",
+      "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-aca3bfce-4a7b-4618-8e2e-87a9146c6b35.log",
       "failedTests": [
         "1) [chromium] › tests/e2e/match-core.spec.ts:327:1 › an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes",
         "2) [chromium] › tests/e2e/mobile-match-presentation.spec.ts:196:3 › goal cue and ball ownership in the normal view at 360"
@@ -229,7 +229,7 @@
         "TASK": "T462",
         "TASKS": "T462"
       },
-      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/logs/check-319ddd72-d355-487d-bb78-f7ee55a0c1df.log",
+      "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-319ddd72-d355-487d-bb78-f7ee55a0c1df.log",
       "failedTests": [],
       "tail": [
         "(node:4112923) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.",

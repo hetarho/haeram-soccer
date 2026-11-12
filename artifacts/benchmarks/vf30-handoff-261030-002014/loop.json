@@ -17,7 +17,7 @@
       "pnpm run typecheck",
       "pnpm run lint",
       "pnpm run format:check",
-      "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+      "pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
     ],
     "batch": [
       "pnpm run test:unit",
@@ -54,7 +54,7 @@
       "- ARCH-30 [o] Verification runs in three tiers; no task runs the whole suite or any browser spec. \u2190 the serial suite took about 22 minutes, 15\u00bd of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow",
       "  - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.",
       "  - an acceptance item naming `tests/e2e` specs is confirmed by the batch run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the batch run in `- limits:`.",
-      "  - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
+      "  - `GUSTA_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
       "  - browser specs run only in that batch run; a failing spec there stops the push until it is fixed.",
       "  - CI, after a push that carries code: ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.",
       "  - a work group collecting local commits maps task \u2192 `--task-verify`, quick checks \u2192 `--verify`, and the complete batch \u2192 `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.",
@@ -73,9 +73,9 @@
     "pnpm run art:check",
     "node --import tsx /Users/ihaelam/project/haeram-soccer/.tmp/vf30/reuse-measurements.mts"
   ],
-  "directory": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/vf30",
-  "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/vf30/STOP",
-  "manifest": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/vf30/loop.json",
+  "directory": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/vf30",
+  "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/vf30/STOP",
+  "manifest": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/vf30/loop.json",
   "freshSessionPerUnit": true,
   "pushEachUnit": false,
   "pid": 49789,
@@ -96,7 +96,7 @@
         "next": "coordinator guard on a901a423 (WebKit+Chromium): training.spec.ts 360/390, club-identity-continuity phone cases, management-surfaces standard/pixel, mobile-match-presentation goal cue 360; then full batch, capacity/perf reuse check, main push, one CI read"
       },
       "session": "d41e7dbf-5e4a-4db0-ae47-843eb4f1370a",
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/vf30/63d2f535-cfd3-4f7d-b47f-ed3c17b485a5.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/vf30/63d2f535-cfd3-4f7d-b47f-ed3c17b485a5.log",
       "unit": 1,
       "head": "a901a4238aad1b8afb66ceb3451792f789615e5e",
       "at": "2026-10-29T23:29:45.310Z"
@@ -114,7 +114,7 @@
         "next": "owner-scoped CI repair, engine follow-ups and goal-scene replay complete; leave unrelated legacy ideation untouched"
       },
       "session": null,
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/vf30/b8b857ad-2c8d-472b-a930-23e7de1af0fa.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/vf30/b8b857ad-2c8d-472b-a930-23e7de1af0fa.log",
       "unit": 2,
       "head": "4c14f0a7f69001bda17d8e9d1e07ef6d277badd1",
       "at": "2026-10-29T23:29:46.756Z"
@@ -132,7 +132,7 @@
         "next": "owner-scoped CI repair, engine follow-ups and goal-scene replay complete; leave unrelated legacy ideation untouched"
       },
       "session": null,
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/vf30/b58737f9-f2df-4d49-be46-491b01f14539.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/vf30/b58737f9-f2df-4d49-be46-491b01f14539.log",
       "unit": 3,
       "head": "1cbeb47d50681254d3a24254d0cc9ac41fac2514",
       "at": "2026-10-29T23:29:48.478Z"
@@ -156,7 +156,7 @@
       },
       "commit": "fab817b8b2b97bfb0c68f2b36c31488a277d6705",
       "tree": "da33b52732f16cc172f1e6366bfc0a94b245c24a",
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-dffaeb58-4f1e-4859-9cd2-f6ee385bea7e.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-dffaeb58-4f1e-4859-9cd2-f6ee385bea7e.log",
       "failedTests": [],
       "tail": [
         "",
@@ -186,7 +186,7 @@
       },
       "commit": "fab817b8b2b97bfb0c68f2b36c31488a277d6705",
       "tree": "da33b52732f16cc172f1e6366bfc0a94b245c24a",
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-0ed0df10-dd3e-4c11-a91e-aa374346969e.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-0ed0df10-dd3e-4c11-a91e-aa374346969e.log",
       "failedTests": [],
       "tail": [
         "(node:62153) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.",
@@ -216,7 +216,7 @@
       },
       "commit": "fab817b8b2b97bfb0c68f2b36c31488a277d6705",
       "tree": "da33b52732f16cc172f1e6366bfc0a94b245c24a",
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-4584aff8-0034-431d-b058-53051a29a436.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-4584aff8-0034-431d-b058-53051a29a436.log",
       "failedTests": [],
       "tail": [
         "  \u2713  330 [chromium] \u203a tests/e2e/work-office.spec.ts:17:3 \u203a working desks retain authority and shared command panels at 1280 (10.3s)",
@@ -246,7 +246,7 @@
       },
       "commit": "fab817b8b2b97bfb0c68f2b36c31488a277d6705",
       "tree": "da33b52732f16cc172f1e6366bfc0a94b245c24a",
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-aa4fba35-5e9a-4e11-94ed-ac5eb20d3920.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-aa4fba35-5e9a-4e11-94ed-ac5eb20d3920.log",
       "failedTests": [],
       "tail": [
         "      \"theme\": \"sticker-club\",",
@@ -276,7 +276,7 @@
       },
       "commit": "fab817b8b2b97bfb0c68f2b36c31488a277d6705",
       "tree": "da33b52732f16cc172f1e6366bfc0a94b245c24a",
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-23e96d0a-abb3-4b94-b160-615b78b3378f.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-23e96d0a-abb3-4b94-b160-615b78b3378f.log",
       "failedTests": [],
       "tail": [
         "    \"files\": 203,",

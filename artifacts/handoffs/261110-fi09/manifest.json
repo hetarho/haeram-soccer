@@ -28,8 +28,8 @@
   "archives": [
     {
       "file": "session-evidence.tar.gz",
-      "source": ".tmp/self-improve-local-261109-fi09",
-      "extractAt": "repository root; creates only the historical .tmp/self-improve-local-261109-fi09 tree",
+      "source": ".tmp/gusta-self-improve-261109-fi09",
+      "extractAt": "repository root; creates only the historical .tmp/gusta-self-improve-261109-fi09 tree",
       "compressedBytes": 22641652,
       "archiveSha256": "3950fec3e4364dcdc94d26ede2a95357659e86e9cecbddb6a86e0c23d658fe06",
       "members": 700,
@@ -43,7 +43,7 @@
     },
     {
       "file": "av11-verification.tar.gz",
-      "source": ".git/haeram/v1/loops/av11/verification",
+      "source": ".git/gusta/v1/loops/av11/verification",
       "extractAt": ".tmp/fi09-av11-evidence; do not restore into .git",
       "compressedBytes": 54370464,
       "archiveSha256": "ad644322920159db2fd17b8819728ca647a6d4180800ac42c795ba60b52f1b3c",
@@ -80,7 +80,7 @@
   "snapshots": 26,
   "patches": [
     {
-      "originalWorkspace": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-563069b9",
+      "originalWorkspace": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-563069b9",
       "base": "a48adec65d18a6a06b080bf6125ca95e15d21b48",
       "file": "unintegrated/fi09-finance-views-563069b9.patch",
       "sha256": "c63f2a77820c0b4e808a51ba05464c1e75c6e1bf7c22ed7f71bb30c8a09341e7",

@@ -130,7 +130,7 @@ Unmet; no scoring source is committed. The held-out reads of `sn01a100` and `sn0
 
 1. MATCH-29 through how often counter's chances arise, not their shot choice: the shot-volume cut must reach the clear chances behind press's high line (22–25 counter shots a press match in the control too). Levers named by the SSOTs: press's back line recovering goal-side on a turnover (MATCH-17's recover intention, MATCH-32's screening), the keeper sweeping behind a high line (MATCH-11's 스위퍼 키퍼 against a through ball). Read on `pc-*` at 1,200 matches a venue beside `pc-ctl`.
 2. With MATCH-29 restored, re-read `sn01o08h25` (or its successor) on held-out seeds, the stress case, MATCH-28's core and tactics on both partitions; then the goal-area share (18–19%) and the set-piece rows (corners 3.6, set-piece goals 10.6%, headed 11.0%, DF goals 5.3%).
-3. Before any commit: update-ssot of MATCH-35 (narrowing and come-out by situation), MATCH-12 (keeper's release), MATCH-16 (alone clause), MATCH-17/33 (arrivals), MATCH-18's call values if `o08h25` is kept, then a prospective model revision (SAVE-23) measured at a resolving size.
+3. Before any commit: gusta-update-ssot of MATCH-35 (narrowing and come-out by situation), MATCH-12 (keeper's release), MATCH-16 (alone clause), MATCH-17/33 (arrivals), MATCH-18's call values if `o08h25` is kept, then a prospective model revision (SAVE-23) measured at a resolving size.
 
 ## Limits
 

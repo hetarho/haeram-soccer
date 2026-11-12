@@ -11,7 +11,7 @@ git fetch origin
 git switch --create resume-fi09 --track origin/handoff/fi09-261110/current
 ```
 
-Read `AGENTS.md`, `.codex/skills/self-improve-local/SKILL.md`, `spec/reports/261109-fi09.md` and this document. All T747-T768 implementations are already integrated:19 product corrections and3 verification repairs. Do not implement those tasks again. T689 is an unrelated preserved calibration backlog item.
+Read `AGENTS.md`, `.codex/skills/gusta-self-improve/SKILL.md`, `spec/reports/261109-fi09.md` and this document. All T747-T768 implementations are already integrated:19 product corrections and3 verification repairs. Do not implement those tasks again. T689 is an unrelated preserved calibration backlog item.
 
 The application/code snapshot before this documentation and evidence export is `a4ee7b02b967eacdd0e78f9748019a3d3fce2779`. This handoff changes only documentation and archived evidence. The last implementation integration is `b02f431d50c6611aab01c3cfe67549cd58d4fb41`.
 

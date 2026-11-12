@@ -10,7 +10,7 @@
   "contributors": [
     "ec10-reference"
   ],
-  "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T743-ceba3772",
+  "workspace": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/economy-ec09-T743-ceba3772",
   "branch": "task/economy-ec09/T743-ceba3772",
   "managed": true,
   "startCommit": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
@@ -31,10 +31,10 @@
   "submittedBase": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
   "verification": [
     {
-      "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+      "command": "pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
       "startedAt": "2026-11-09T06:14:26.774Z",
       "finishedAt": "2026-11-09T06:14:35.331Z",
-      "stdout": "\n RUN  v5.0.3 /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T743-ceba3772\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  15:14:34\n   Duration  998ms (import 56%, transform 40%, tests 4%, worker 1%)\n\n",
+      "stdout": "\n RUN  v5.0.3 /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/economy-ec09-T743-ceba3772\n\n\n Test Files  1 passed (1)\n      Tests  4 passed (4)\n   Start at  15:14:34\n   Duration  998ms (import 56%, transform 40%, tests 4%, worker 1%)\n\n",
       "stderr": ""
     }
   ],
@@ -44,7 +44,7 @@
       "commit": "04d966d95eda188e78818a70e0c60e3214921e7a",
       "verification": [
         {
-          "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-09T06:14:26.774Z",
           "finishedAt": "2026-11-09T06:14:35.331Z"
         }
@@ -67,7 +67,7 @@
     "submissionId": "fd7ada22-e522-4215-815d-925bf57e9b85",
     "commit": "04d966d95eda188e78818a70e0c60e3214921e7a",
     "baseCommit": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
-    "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-2f68d578",
+    "workspace": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/economy-ec09-review-2f68d578",
     "createdAt": "2026-11-09T06:14:54.182Z",
     "heartbeatAt": "2026-11-09T06:14:54.182Z",
     "verdict": "approved",
@@ -76,10 +76,10 @@
     "finishedAt": "2026-11-09T06:17:27.512Z"
   },
   "candidates": [
-    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-2f68d578",
-    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-bc3734b2"
+    "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/economy-ec09-review-2f68d578",
+    "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-bc3734b2"
   ],
-  "candidate": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-bc3734b2",
+  "candidate": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-bc3734b2",
   "targetCommit": "2ad1482f1fcb06ebabc42adec5a8360f36ba54f1",
   "candidateCommit": "20ea0cbbb314287febbacb8c5087f37919b391f0",
   "integrationVerification": [

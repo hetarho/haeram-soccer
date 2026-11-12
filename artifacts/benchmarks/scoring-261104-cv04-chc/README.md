@@ -82,7 +82,7 @@ Unmet; no scoring source is committed. MATCH r51's reference keeper, set off his
 
 1. The box's chance is the 1v1, and it is the striker's and counter's chance: any relief of the keeper's narrowing on a carrier running at him (a floor, `reach`, `ref` uncapped) lifts the striker's conversion and counter's goals before anyone else's. Real box conversion therefore needs box chances that are not 1v1s — receptions in the box with a defender near but not between, cut-backs (0.09 a team on `B`), second balls — at their place's level, with the 1v1 left where MATCH-35 puts it; a planning question for MATCH-11/35 (what the bodies and the blocks take from a box chance with a defender between, as `B` scores them at xG 0.045 for a pass received in the box) before more measurement.
 2. The offside receiver (`flag`, MATCH-16 r51) holds offsides inside (1.96–2.14 a team with call `base` 0.10–0.12) without moving goals or the box, and does not take back counter's chances behind press's line once the narrowing is relieved (−0.360 against −0.364, §3): the 1v1's quality, not its count through offside receptions, carries the regression.
-3. As before: before any commit, update-ssot of every rule `B` changes (MATCH-12/17/18/32/33/34; MATCH-11/16/35 beyond r51), then a prospective model revision (SAVE-23) measured at a resolving size on both partitions and the season read.
+3. As before: before any commit, gusta-update-ssot of every rule `B` changes (MATCH-12/17/18/32/33/34; MATCH-11/16/35 beyond r51), then a prospective model revision (SAVE-23) measured at a resolving size on both partitions and the season read.
 
 ## Limits
 

@@ -84,7 +84,7 @@ Readings:
 
 ## 3. A definition gap: own goals
 
-The grid engine records no own goals: every goal is credited to a player of the scoring side (no own-goal fact in `packages/contracts` or the engine, and no SSOT names one). MATCH-23's season share is a real-football range whose denominator is a club's league goals, own goals included; Premier League seasons commonly record 25–40 own goals in about 1,000 goals (about 2.5–4%; an unsourced estimate — no repository source states it). Arithmetic context only, not a measurement and not a pass: if a share `r` of the goals were own goals with the total held, the top scorer's share would read ×(1 − r); at r = 3% `B`'s season share 30.6% [29.2, 32.0] would read 29.7% [28.3, 31.0] and its fixed-XI held-out share 32.8% [31.6, 33.9] 31.8% [30.7, 32.9]. Whether the engine should produce own goals (a deflection or a defender's touch into his own net, →MATCH-35) and how MATCH-27 attributes them is a planning question for update-ssot (MATCH-3, MATCH-23, MATCH-27), not a setting.
+The grid engine records no own goals: every goal is credited to a player of the scoring side (no own-goal fact in `packages/contracts` or the engine, and no SSOT names one). MATCH-23's season share is a real-football range whose denominator is a club's league goals, own goals included; Premier League seasons commonly record 25–40 own goals in about 1,000 goals (about 2.5–4%; an unsourced estimate — no repository source states it). Arithmetic context only, not a measurement and not a pass: if a share `r` of the goals were own goals with the total held, the top scorer's share would read ×(1 − r); at r = 3% `B`'s season share 30.6% [29.2, 32.0] would read 29.7% [28.3, 31.0] and its fixed-XI held-out share 32.8% [31.6, 33.9] 31.8% [30.7, 32.9]. Whether the engine should produce own goals (a deflection or a defender's touch into his own net, →MATCH-35) and how MATCH-27 attributes them is a planning question for gusta-update-ssot (MATCH-3, MATCH-23, MATCH-27), not a setting.
 
 ## Gate
 
@@ -93,8 +93,8 @@ Unmet; no scoring source is committed. The decomposition places the striker's sh
 ## Next
 
 1. The box-entry volume (MATCH-30 box entries and box shots twice real football's, rest-of-box conversion about a third of the reference): a planned change to how the defending side denies entries and how the attack plays in front of a set defence (MATCH-16's carrier in front of the box, MATCH-17/32/34's block), T411's attacking-phase question, measured on MATCH-30's box entries and box shots, the open-play goal-area share of goals, the held-out share and the season share. It is beyond a switch: no setting moved box entries in T397, T408, T411 or this run. It is worth about five points of the ST slot's open-play goal share; the rest needs the box's shots shared more evenly (the striker slot takes 28% of them on `B`).
-2. Own goals (§3): update-ssot on MATCH-3/23/27 — whether the engine produces them and how a season share counts them — before the share is judged against MATCH-23's real range.
-3. Before any commit, as cv04-sym's Next 3: update-ssot of MATCH-16, MATCH-35, MATCH-12, MATCH-17/33, MATCH-18 and MATCH-11's set-piece header quality, then a prospective model revision (SAVE-23) measured at a resolving size on both partitions and the season read.
+2. Own goals (§3): gusta-update-ssot on MATCH-3/23/27 — whether the engine produces them and how a season share counts them — before the share is judged against MATCH-23's real range.
+3. Before any commit, as cv04-sym's Next 3: gusta-update-ssot of MATCH-16, MATCH-35, MATCH-12, MATCH-17/33, MATCH-18 and MATCH-11's set-piece header quality, then a prospective model revision (SAVE-23) measured at a resolving size on both partitions and the season read.
 
 ## Limits
 

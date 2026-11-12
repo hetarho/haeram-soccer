@@ -1,100 +1,100 @@
 {
   "inventory": [
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-563069b9",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-563069b9",
       "head": "a48adec65d18a6a06b080bf6125ca95e15d21b48",
       "status": "M apps/web/src/entities/office/lib/ownerFigures.ts\n M packages/engine/src/finance-read.ts\n M packages/engine/src/finance.ts"
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-football-data-55ae7ca1",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-football-data-55ae7ca1",
       "head": "a48adec65d18a6a06b080bf6125ca95e15d21b48",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-14e190ce",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-14e190ce",
       "head": "aae6475b0cfc6326b8692cc8e00c1a934e70ff7e",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-football-data-e199eda6",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-football-data-e199eda6",
       "head": "108e6a84710d45d724da8e1bff2953beb93ad61e",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-football-data-db13bc3a",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-football-data-db13bc3a",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-57403414",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-57403414",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T758-b18d804f",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T758-b18d804f",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T753-3c0477ee",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T753-3c0477ee",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T759-3dce08af",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T759-3dce08af",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T764-17a63e2d",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T764-17a63e2d",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-league-record-views-cded9e6f",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-league-record-views-cded9e6f",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T765-aaacd6a2",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T765-aaacd6a2",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T765-e0766cc8",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T765-e0766cc8",
       "missing": true
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T755-ccadd29d",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T755-ccadd29d",
       "head": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T754-011a4423",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T754-011a4423",
       "head": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T766-0a41d5cf",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T766-0a41d5cf",
       "head": "78fbac67ee40bec72ed27eab11f46f0cb34fe18a",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T756-f471efc6",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T756-f471efc6",
       "head": "f0c16dffd4c55379c8b79183fcac979a41d044e7",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T767-71d1a37b",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T767-71d1a37b",
       "head": "37190239a090aa14f3f5f06d02719c316c9c7bac",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-T760-507dba8e",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-T760-507dba8e",
       "head": "952f330ab02c75480ab49986ef88922aebc68a72",
       "status": ""
     },
     {
-      "path": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-integrate-427b340f",
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-integrate-427b340f",
       "head": "bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a",
       "status": ""
     }
   ],
   "patches": [
     {
-      "originalWorkspace": "/Users/ihaelam/project/.haeram-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-563069b9",
+      "originalWorkspace": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/fi09-finance-views-563069b9",
       "base": "a48adec65d18a6a06b080bf6125ca95e15d21b48",
       "file": "unintegrated/fi09-finance-views-563069b9.patch",
       "sha256": "c63f2a77820c0b4e808a51ba05464c1e75c6e1bf7c22ed7f71bb30c8a09341e7",

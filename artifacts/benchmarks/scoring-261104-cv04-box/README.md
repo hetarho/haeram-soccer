@@ -77,8 +77,8 @@ Unmet; no scoring source is committed. The box-entry diagnostic places `B`'s 32 
 
 ## Next
 
-1. The box-entry volume is the attacking phase's, not the defending block's: MATCH-16's choices in front of the box — the xT-driven carry heading and pass gain that make an entry the best option from 70–88.5 m, re-entries after a recycle — and the possession count behind them (73 against 85–105). It is T411's planning question (an entry worth the chance it leads to) for update-ssot on MATCH-16/30 before any implementation; no further structural switch of the defending shape is indicated.
-2. As cv04-sym's and cv04-ori's Next: before any commit, update-ssot of every rule `B` changes (MATCH-11/12/16/17/18/33/35), then a prospective model revision (SAVE-23) measured at a resolving size on both partitions and the season read.
+1. The box-entry volume is the attacking phase's, not the defending block's: MATCH-16's choices in front of the box — the xT-driven carry heading and pass gain that make an entry the best option from 70–88.5 m, re-entries after a recycle — and the possession count behind them (73 against 85–105). It is T411's planning question (an entry worth the chance it leads to) for gusta-update-ssot on MATCH-16/30 before any implementation; no further structural switch of the defending shape is indicated.
+2. As cv04-sym's and cv04-ori's Next: before any commit, gusta-update-ssot of every rule `B` changes (MATCH-11/12/16/17/18/33/35), then a prospective model revision (SAVE-23) measured at a resolving size on both partitions and the season read.
 
 ## Limits
 

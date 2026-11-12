@@ -67,7 +67,7 @@
     "/tmp/ec10-integration-retry-check.json": {
       "sha256": "371611ad8dd80e7e5a9bd0ea78637d25734ad75128d5fb0bbad98d2e2bae6deb"
     },
-    "/home/deep/haeram/haeram-soccor/.git/haeram/v1/logs/check-877643b1-d495-49d8-8b76-cc627219d338.log": {
+    "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-877643b1-d495-49d8-8b76-cc627219d338.log": {
       "sha256": "b85af3bba02e6dd887dbbe9c4f09f52457a163d5fd8a8be1693c0291b977b02c"
     },
     "/tmp/ec10-resume-final-gate.mjs": {
@@ -83,7 +83,7 @@
   },
   "exactRetry": {
     "command": "pnpm exec vitest run --project integration apps/web/src/adapters/persistence.long-career.test.ts --maxWorkers 1 --reporter=default --reporter=json --outputFile=/tmp/ec10-final-verification/integration-retry.json",
-    "commandEvidence": ".git/haeram/v1/checks.json entry with log /home/deep/haeram/haeram-soccor/.git/haeram/v1/logs/check-877643b1-d495-49d8-8b76-cc627219d338.log",
+    "commandEvidence": ".git/gusta/v1/checks.json entry with log /home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-877643b1-d495-49d8-8b76-cc627219d338.log",
     "sourceTestTimeoutMs": 600000,
     "sourceTestUnchangedFromRelease44": true,
     "conditions": "Same frozen source/index/config/inputs/assertions/skips/timeout. Worker concurrency reduced to one; no test source or retry policy changes.",

@@ -162,7 +162,7 @@ Unmet; no scoring source is committed. The best held-out reads hold goals (2.7�
 
 1. MATCH-29 with the narrowing relieved: press's high line must stop conceding the extra chances — the come-out by situation (`set`, `corridor`) at other values, the keeper's narrowing kept for 1v1s only (relief only where a defender stands between), or press's line and offside trap; read with `--only tactics` beside the control.
 2. Hat-tricks against the share: the arrivals spread the goals but raise the goal-area share to 19% and hat-tricks to 0.056–0.069; the situational come-out brings hat-tricks inside and the share back to 32%. Their combination (`sit` with `ar12f50` and a `set` between 0.2 and 0.5) is the next read, on held-out seeds and the stress case.
-3. Before any commit: update-ssot of MATCH-12 (keeper's release), MATCH-35 (come-out by situation), MATCH-16 (alone clause within 12 m, if kept) and MATCH-17/33 (arrivals), then a prospective model revision (SAVE-23) with the chosen values, re-measured on both partitions, the stress case and MATCH-28/29 at a resolving size.
+3. Before any commit: gusta-update-ssot of MATCH-12 (keeper's release), MATCH-35 (come-out by situation), MATCH-16 (alone clause within 12 m, if kept) and MATCH-17/33 (arrivals), then a prospective model revision (SAVE-23) with the chosen values, re-measured on both partitions, the stress case and MATCH-28/29 at a resolving size.
 
 ## Limits
 

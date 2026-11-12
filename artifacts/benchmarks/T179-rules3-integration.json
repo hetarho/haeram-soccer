@@ -39,7 +39,7 @@
   "localVerification": {
     "node": "v24.12.0",
     "applicationSourceUnchanged": true,
-    "command": "CI=1 npx haeram-spec-creator vibe check --heavy -- pnpm run verify",
+    "command": "CI=1 npx @haeram/gusta vibe check --heavy -- pnpm run verify",
     "passedStages": [
       "typecheck",
       "lint",
@@ -50,7 +50,7 @@
       "build"
     ],
     "initialBrowserFailure": "Existing listener on default 4173 prevented preview startup; no application/test failure occurred.",
-    "browserContinuation": "CI=1 BROWSER_TEST_PORT=4289 npx haeram-spec-creator vibe check --heavy -- pnpm run test:e2e",
+    "browserContinuation": "CI=1 BROWSER_TEST_PORT=4289 npx @haeram/gusta vibe check --heavy -- pnpm run test:e2e",
     "browserResult": {
       "passed": 545,
       "skipped": 4,

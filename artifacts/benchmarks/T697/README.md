@@ -68,7 +68,7 @@ Hosting costs stay outside the books. League matches add nothing.
 Competition money is 4–11% of the three strongest top-flight clubs' income in every country and decade, almost all of
 it home gates: prizes with result bonuses are 0.0–0.4% of income (largest in the 2000s–2010s). That is the finding
 the task foresaw for EURO-7/ECON-31: on each club's own broadcasting index the continental prizes read tiny beside a
-league's distribution; a later update-ssot may price them on UEFA's published distributions.
+league's distribution; a later gusta-update-ssot may price them on UEFA's published distributions.
 
 One step, at T696's table: the money would release about half the top-flight holds in every country with holds (GER
 15 of 29, POR 300 of 616, NED 332 of 671, BEL 351 of 869, FRA 97 of 149), above the quarter needed to go on.

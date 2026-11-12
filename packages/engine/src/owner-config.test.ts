@@ -18,7 +18,7 @@ import {
 
 /**
  * The SSOT's numbers (OWNER r2, ECON r43, CLUB r51) and T686's measured retune of the tier
- * multiples and the living rate, recorded for its update-ssot; any other retune changes the SSOT first.
+ * multiples and the living rate, recorded for its gusta-update-ssot; any other retune changes the SSOT first.
  */
 describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
   it('sizes six tiers, richest first, as multiples of their anchor (→OWNER-3)', () => {

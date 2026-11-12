@@ -2,7 +2,7 @@ import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * Every number of the owner and the takeover (→OWNER, ECON-36–38, CLUB-1) as named settings, the
  * SSOT's values. Engine and UI code read them by name, never as literals; T668's measurement retunes
- * them here through an update-ssot. A leaf: it imports only contracts, so any layer may read it.
+ * them here through a gusta-update-ssot. A leaf: it imports only contracts, so any layer may read it.
  */
 import {
   DIVIDEND_SHARES,

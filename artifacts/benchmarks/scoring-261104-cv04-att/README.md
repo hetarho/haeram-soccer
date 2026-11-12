@@ -120,7 +120,7 @@ Unmet; no scoring source is committed. MATCH r50's entry choice, implemented as 
 
 1. Fewer entries take goals with them and concentrate the rest: the scoring per entry is the gap — the rest of the box's conversion (3.5% on `B`, about a third of cf04's reference, cv04-ori) and big chances (0.69–0.77 a team), not the entry count. A rule for what makes a box chance (MATCH-11/35: the bodies, the keeper's narrowing, the receiver's control under a goal-side defender) is the planning question before more measurement.
 2. The passes to a teammate already past the line (the decision's `through` kind, 7.3 entries a team on `e8p8fa`, while MATCH-13's through balls are 0.79 attempted) are a MATCH-16/18 question: whether the carrier plays to a receiver standing offside, whom MATCH-18's draw lets stand, and how often attackers stand there (MATCH-17/33).
-3. As before: before any commit, update-ssot of every rule `B` changes (MATCH-11/12/16/17/18/32/33/34/35), then a prospective model revision (SAVE-23) measured at a resolving size on both partitions and the season read.
+3. As before: before any commit, gusta-update-ssot of every rule `B` changes (MATCH-11/12/16/17/18/32/33/34/35), then a prospective model revision (SAVE-23) measured at a resolving size on both partitions and the season read.
 
 ## Limits
 

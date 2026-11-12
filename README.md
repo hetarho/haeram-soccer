@@ -65,6 +65,6 @@ reports are written under `artifacts/benchmarks/`.
 The installed spec-management skills are project files, not an application dependency:
 
 ```sh
-npx -y haeram-spec-creator check
-npx -y haeram-spec-creator lint
+npx -y @haeram/gusta check
+npx -y @haeram/gusta lint
 ```
