@@ -863,6 +863,8 @@
 - 261110 parked review/game-runtime-speed-261110 T775 T776 T777 T778: pf10's speed-ups are integrated on local main (verified at 0e514e46) but not pushed — origin/main moved during the gate and the re-gate of the merge did not finish by the owner's 18:00 deadline; tv10's sync, gate and push to main release them with T779–T787
 - 261110 decided review/match-engine-split-261110 T791: how the owner's adopted engine-redesign direction (facts from a probabilistic script, the picture staged from it) is planned → an isolated prototype chain T791–T800 under `scripts/match-proto/`, importing nothing from `packages/` or `apps/`, as detailed review-sourced tasks; no SSOT change until the owner has watched T800's ten minutes (alt: ideation → MATCH SSOT first, which would write a throwaway into the rules | a new workspace package, which changes ARCH-3 | prototyping inside `packages/engine/src/grid`, entangled with the revision gates) mp10
 - 261111 decided T800 review/match-engine-split-261110: when to stop tuning inside the 2 h box once the sum reached 96/105 at 34 min and further single-value screens and staging rules gave nothing more → stop and deliver, recording why each remaining failure stays (`shape.spacing` from scripted teammate pairs, `shape.swarm` at wide final-third overloads, `role.poacher.shoulder` averaging his on-ball frames) for the owner; values the unit tests pin (`shape.oop.depth`, width, lateral, press standoff, `cutSlack`, `shoulderGap`) were not pushed past them (alt: spend the rest of the box on more screens of the same levers | edit the pinned tests or `PROTO_CONFIG.limits`, the owner's call) mp11
+- 261111 decided MATCH-16 MATCH-38 T827 T848: how revision 11's attribution keeps every record playable, now that one of T825's sixty pairs a tackle across a substitution → MATCH r60 (MATCH-16✎): an action naming two men (a ball won and its loser, a loose ball in the high-turnover zone and its passer, an offside's passer and the man caught, an unbooked foul's two men) draws the second among the men on the pitch with the first, his minutes in the base weight replaced by the minutes they share in the period; the winners are refitted to the unplaced expected totals on one sub-group per loser line (`pairGroups` beside T824's unchanged `fitPlaced`), the trace names every pair (`wonPairs`, `recoveredPairs`, foul `pairs`) and the detail lays rows out from them, so `settlePairs` goes and an unmet pair becomes a `detailIssues` line — T848, dep T826, before T827's sample item (alt: keep `settlePairs` beside the pairs as a safety net, which hides an attribution bug behind a trade | pair only balls won and leave offsides and fouls to trades | mask each group's winners by their period minutes inside T827, outside its touches and against `fitPlaced`'s totals) sm11
+- 261111 decided MATCH-38 T827 T848: what becomes of T827 while T848 runs → T827 back to todo with dep T848 and base MATCH@60, its committed writer, validator, count and detail settling kept (59 of 60 exact); it resumes at acceptance 2 (`script/sample.test.ts` un-skipped, run once by hand, means pasted) and corrects its result's settling line, since T848 removes `settlePairs` (alt: close T827 now without its sample item, moving acceptance 2 into T848, which would make an aggregate task read the script's cost line | keep T827 blocked until T848 is done, leaving the loop no runnable task between) sm11
 
 ## ideation
 | id | st |
@@ -894,7 +896,7 @@
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 67 | 67 | - | 0 |
-| MATCH | 59 | 59 | - | 0 |
+| MATCH | 60 | 60 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 41 | 41 | - | 0 |
 | ECON | 54 | 54 | - | 0 |
@@ -949,6 +951,7 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
+| T848 | revision 11's attribution pairs the two men of an action among men on the pitch together | MATCH ARCH | T826 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
