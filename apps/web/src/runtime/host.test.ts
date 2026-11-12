@@ -442,7 +442,11 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
     expect(inspected.upgraded).toBeUndefined();
     expect(canonical(inspected.candidate)).toBe(canonical(legacy));
     const metadata = await h.handle(req('meta', -1, { type: 'inspect', raw, metadataOnly: true }));
-    expect(metadata.worldMetadata).toEqual({ id: legacy.id, revision: legacy.revision });
+    expect(metadata.worldMetadata).toEqual({
+      id: legacy.id,
+      revision: legacy.revision,
+      matchModel: legacy.matchModel,
+    });
     expect(
       (await h.handle(req('upgrade-only', -1, { type: 'inspect', raw, upgrade: true }))).ok,
     ).toBe(false);
@@ -1071,9 +1075,10 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
       ...rest
     } = w;
     void [_facts, _news, _reads, _model, _season, _revision];
-    const { revision: _old, ...before } = source;
-    void _old;
+    const { revision: _old, matchModel: _oldModel, npcSeason: _oldSeason, ...before } = source;
+    void [_old, _oldModel, _oldSeason];
     expect(canonical(rest)).toBe(canonical(before));
+    expect(canonical(w.npcSeason)).toBe(canonical(source.npcSeason));
     expect(w.ownMatches.every((m) => m.managerTenure === undefined)).toBe(true);
     expect((await decode(reply.raw!)).envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     // New results are attributed; the heavy facts never travel in a view.

@@ -9,14 +9,14 @@ import { measurementIdentity } from './lib/measurement-identity';
  *   pnpm exec tsx scripts/match-parity.ts --report [--partition calibration|validation]
  *     [--round N] [--scale S] [--only core,tactics,gap,tier,fatigue,era,knockout,rare]
  *     [--conditions id,…] [--rare-scale S] [--seasons N] [--jobs N] [--out FILE] [--patch JSON]
- *     [--sizes id=N,…] [--setting flat|spread]
+ *     [--sizes id=N,…] [--setting flat|spread] [--smoke]
  *   default: calibration partition, round 0, scale 1, every match family, output
  *   artifacts/benchmarks/aggregate-model-calibration.json; `--seasons N` also plays N founded
  *   worlds one season each through ordinary settlement (season:league-20; `--only season` plays
  *   only them); `--stress N` plays N core fixtures with the red-card settlement forced to its
  *   fallback; `--patch` overrides the result path's configs in this process and its workers
  *   (lib/config-patch.ts); `--sizes` plays the named conditions at their own sizes (T401's pilot
- *   sizes)
+ *   sizes); `--smoke` plays every condition at its smoke size, which proves nothing
  *
  *   pnpm exec tsx scripts/match-parity.ts --tactics [--partition …] [--round N] [--matches N]
  *     [--out FILE]
@@ -822,6 +822,8 @@ const text = (name: string, fallback: string) => {
   return i >= 0 ? args[i + 1]! : fallback;
 };
 const option = (name: string, fallback: number) => Number(text(name, String(fallback)));
+/** `--smoke`: every condition at CORPUS_CONFIG.smokePerCondition, which exercises the reports only. */
+const smoke = args.includes('--smoke');
 
 function reportJobs(): Job[] {
   const partition = text('partition', 'calibration') as Partition;
@@ -849,7 +851,11 @@ function reportJobs(): Job[] {
     )
     .map((c) => {
       const scale = c.rare ? option('rare-scale', option('scale', 1)) : option('scale', 1);
-      const count = sizes.get(c.id) ?? Math.max(30, Math.round(calibrationSize(c) * scale));
+      const count =
+        sizes.get(c.id) ??
+        (smoke
+          ? CORPUS_CONFIG.smokePerCondition
+          : Math.max(30, Math.round(calibrationSize(c) * scale)));
       return {
         condition: c.id,
         count,
@@ -991,6 +997,7 @@ async function runReport() {
         partition: text('partition', 'calibration'),
         round: option('round', 0),
         scale: option('scale', 1),
+        smoke,
         rareScale: option('rare-scale', option('scale', 1)),
         seasons: seasonCount,
         workers,

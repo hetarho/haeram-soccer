@@ -209,12 +209,10 @@ function sampleMemory() {
 /** Exact checks; null when the run had nothing to compare. */
 const checks: {
   repeatsIdentical: boolean | null;
-  observedMatchesUnobserved: boolean | null;
   /** The stage-by-stage replay settles each fixture's own `simulateAggregate` record. */
   candidateStagesMatchWhole: boolean | null;
 } = {
   repeatsIdentical: settings.repetitions > 1 ? true : null,
-  observedMatchesUnobserved: null,
   candidateStagesMatchWhole: null,
 };
 /** A record without the post-match material, for comparing settled results. */
