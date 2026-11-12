@@ -21,7 +21,7 @@ describe('the manager picks the XI (→CLUB-6)', () => {
   it('plays his automatic XI as the match actors and records', () => {
     const w = careerWorld(input),
       ids = startingSquad(w, clubOf(w)).map((player) => player.id);
-    const match = simulateMatch(w, nextOwnFixture(w)!, false, true),
+    const match = simulateMatch(w, nextOwnFixture(w)!, false),
       side = match.record.home === w.playerClub ? 0 : 1;
     // The matchday roster is the XI in slot order, then the bench; the record's own lines open
     // with the same XI.

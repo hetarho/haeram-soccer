@@ -43,7 +43,7 @@ describe('tactical roster tradeoffs', () => {
     const { w, fixture } = scenario(baseline, 'press');
     for (const tactic of TACTICS) {
       w.tactic = tactic;
-      const fast = simulateMatch(w, fixture, false, true);
+      const fast = simulateMatch(w, fixture, false);
       const observed = simulateMatch(w, fixture, true);
       expect(canonical(observed.record)).toBe(canonical(fast.record));
       expect(observed.squads[0].slice(0, 11).map((player) => player.id)).toEqual(
@@ -56,7 +56,7 @@ describe('tactical roster tradeoffs', () => {
   it('settles recorded tactic fatigue and leaves past match facts unchanged by later builds', () => {
     const { w, fixture } = scenario(baseline, 'balanced');
     w.tactic = 'press';
-    const match = simulateMatch(w, fixture, false, true);
+    const match = simulateMatch(w, fixture, false);
     w.tactic = 'balanced';
     const first = match.squads[0][0];
     const cost = fatigueCost(first, 'press');
@@ -68,7 +68,7 @@ describe('tactical roster tradeoffs', () => {
       player.attrs.passing = 95;
       player.attrs.tackling = 95;
     });
-    simulateMatch(w, { ...fixture, id: 'later-build' }, false, true);
+    simulateMatch(w, { ...fixture, id: 'later-build' }, false);
     expect(canonical(w.ownMatches[0])).toBe(saved);
   });
 });

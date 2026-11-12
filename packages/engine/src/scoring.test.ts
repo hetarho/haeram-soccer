@@ -75,7 +75,7 @@ describe('actual league scorer standings', () => {
     )!;
     const settled = new Map(w.clubs.map((club) => [club.id, club.cohesion]));
     for (const club of w.clubs) club.cohesion = cohesion.get(club.id);
-    const replay = simulateMatch(w, fixture, false, true);
+    const replay = simulateMatch(w, fixture, false);
     for (const club of w.clubs) club.cohesion = settled.get(club.id);
     expect(replay.record.score).toEqual(fixture.score);
     expect(replay.record.highlights.filter((h) => h.action === '골').length).toBe(

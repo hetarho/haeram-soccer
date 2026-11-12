@@ -72,7 +72,7 @@ describe('earned, auditable club finances', () => {
   it('pays no league result bonus, keeps cup bonuses and the main sponsor’s league bonus, home and away', () => {
     const w = world();
     const fixture = w.fixtures.find((f) => f.home === w.playerClub)!;
-    const record = simulateMatch(w, fixture, false, true).record;
+    const record = simulateMatch(w, fixture, false).record;
     // The shirt-front slot opens in 1979 (→ECON-8); this 1950 club holds a contract as if it had.
     const offer = sponsorOffers(w, 'shirt').find((o) => o.kind === 'performance')!;
     w.sponsors = [
@@ -148,7 +148,7 @@ describe('earned, auditable club finances', () => {
       gateProjection(w).attendanceHigh,
     );
     const homeFixture = w.fixtures.find((fixture) => fixture.home === w.playerClub)!;
-    const record = simulateMatch(w, homeFixture, false, true).record;
+    const record = simulateMatch(w, homeFixture, false).record;
     const winning = structuredClone(w);
     const losing = structuredClone(w);
     winning.ownMatches = [{ ...record, score: { home: 2, away: 0 } }];

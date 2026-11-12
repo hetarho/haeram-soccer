@@ -2,7 +2,7 @@ import type { MatchPlayback, World } from '../../packages/contracts/src/types';
 import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
 import { motionStateLabel } from '../../apps/web/src/features/match-viewer/lib/motionState';
 import { metresApart, stagedCorners } from './corner-scene';
-import { advanceRound, fullStatsRead, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
+import { advanceRound, fullStatsRead } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
 import {
@@ -175,8 +175,8 @@ export function continuityCareer(): ContinuityCareer {
     return {
       world,
       activated,
-      imported: MATCH_MODEL_RELEASE.enabled ? world : activated,
-      buildActivates: MATCH_MODEL_RELEASE.enabled,
+      imported: world,
+      buildActivates: true,
       coverage: coverage.text,
       from: coverage.text.split(' · ')[0]!,
       untracked: coverage.untracked,

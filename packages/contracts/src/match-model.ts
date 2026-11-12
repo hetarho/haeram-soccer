@@ -56,6 +56,8 @@ import {
  * careers on revisions 1–9 take it the same way.
  * Revision 11 settles every fixture on the joint aggregate path and writes the own match script
  * and material from that result; watching stages its picture without settling again (T838).
+ * Earlier revisions have no code since T845: their ids stay so a settled record's label stays
+ * readable, and a career on one moves to the released revision at its writer load (→SAVE-23).
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
@@ -78,9 +80,6 @@ export const isMatchModelRevision = (value: unknown): value is MatchModelRevisio
 /** A revision's number: 1 for the first. */
 export const matchModelNumber = (revision: MatchModelRevision) =>
   MATCH_MODEL_REVISIONS.indexOf(revision) + 1;
-/** The result-and-script model, declared before it activates in careers (T824, T838). */
-export const isScriptedModel = (revision: MatchModelRevision | undefined) =>
-  revision !== undefined && matchModelNumber(revision) >= 11;
 
 /** The first fixture day and round a set of newly available counters covers (→HIST-17). */
 export interface TrackingBoundary {

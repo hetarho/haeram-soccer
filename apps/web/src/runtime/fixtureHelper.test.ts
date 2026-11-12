@@ -29,7 +29,7 @@ describe('served fixture replica', () => {
         worldRevision: 0,
         base: encoded.base,
         ...(encoded.base ? { patch: encoded.patch } : { copy: encoded.snapshot() }),
-        jobs: [{ fixture: { id: 'f' }, keep: false }],
+        jobs: [{ fixture: { id: 'f' } }],
       } as HelperJob;
     };
     expect(answer(send(1)).results).toHaveLength(1);

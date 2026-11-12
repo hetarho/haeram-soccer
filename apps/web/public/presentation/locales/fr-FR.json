@@ -5230,6 +5230,7 @@
     "copy.managerMarket.11434d85c4": "Les directeurs {p0} et {p1} licenciés",
     "copy.managerMarket.e35226e9f4": "{p0} · OVR {p1} · Répertorié en tant que manager d'agent libre",
     "copy.match_model.04c48f5e27": "Écart d'enregistrement de correspondance {p0} : {p1}",
+    "copy.match.7c4e1d0a52": "Aucun match ne peut être joué avec le modèle de match {p0}. Rechargez la sauvegarde pour la faire passer au modèle publié {p1}.",
     "copy.match.35ef500e6b": "{p0} gagne aux tirs au but",
     "copy.mediation.2508939fdb": "Demande de {p1} du réalisateur {p0}",
     "copy.mediation.8ef75211ff": "Il n'y a actuellement aucun candidat disponible pour cette demande, ou les négociations ont déjà commencé. Je ne juge pas en fonction d’un conflit financier.",

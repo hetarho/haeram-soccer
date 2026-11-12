@@ -14,7 +14,7 @@ import {
 
 const w = careerWorld({ country: 'ENG', seed: 'moments' });
 // A released own match carries its script, not frames: the picture is its staging (→MATCH-39).
-const { record, frames } = stagedPlayback(simulateMatch(w, nextOwnFixture(w)!, true, true));
+const { record, frames } = stagedPlayback(simulateMatch(w, nextOwnFixture(w)!, true));
 const samples = frames.flatMap((frame, i) => (frame.motion || [frame]).map(() => ({ frame: i })));
 
 it('orders recorded goals, keeps penalty decisions distinct and maps actual samples', () => {

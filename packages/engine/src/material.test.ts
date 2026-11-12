@@ -44,8 +44,7 @@ describe('post-match material', () => {
       (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
     );
     const npcFixture = { ...w.fixtures[0]!, id: 'npc', home: home!.id, away: away!.id };
-    const play = (f: typeof ownFixture, observe: boolean) =>
-      simulateMatch(w, f, observe, true).record;
+    const play = (f: typeof ownFixture, observe: boolean) => simulateMatch(w, f, observe).record;
 
     const own = play(ownFixture, false);
     expect(play(npcFixture, false).material).toBeUndefined();

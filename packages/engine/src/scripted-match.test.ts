@@ -106,7 +106,7 @@ describe('revision 11 own matches on the result path', () => {
     let found: MatchPlayback | undefined;
     for (let i = 0; i < 200; i++) {
       const f: Fixture = { ...base, id: `own-cup-833:${i}`, kind: 'cup' };
-      const p = simulateMatch(w, f, true, true, { awayGoals: false });
+      const p = simulateMatch(w, f, true, { awayGoals: false });
       if (!p.record.shootout) continue;
       fullPlayback(p);
       const { detail } = detailFor(w, f);
@@ -116,7 +116,7 @@ describe('revision 11 own matches on the result path', () => {
       expect(p.script!.beats.some((b) => b.kind === 'shootoutKick')).toBe(true);
       expect(validateScript(detail, p.script!)).toEqual([]);
       expect(compareRecord(detail, countScript(p.script!, detail), p.record)).toEqual([]);
-      expect(simulateMatch(w, f, false, true, { awayGoals: false }).record).toEqual(p.record);
+      expect(simulateMatch(w, f, false, { awayGoals: false }).record).toEqual(p.record);
       found = p;
       break;
     }

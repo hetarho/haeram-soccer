@@ -4979,6 +4979,7 @@
     "copy.managerMarket.11434d85c4": "{p0}、{p1}監督硬質",
     "copy.managerMarket.e35226e9f4": "{p0}・OVR {p1}・フリー契約監督リストに上がりました",
     "copy.match_model.04c48f5e27": "試合記録の不一致 {p0}: {p1}",
+    "copy.match.7c4e1d0a52": "試合モデル {p0} では試合を行えません。セーブを読み込み直すと、公開済みのモデル {p1} に移行します。",
     "copy.match.35ef500e6b": "勝負次期{p0}勝利",
     "copy.mediation.2508939fdb": "{p0}監督の{p1}リクエスト",
     "copy.mediation.8ef75211ff": "現在の要求に合った入場可能な候補がないか、すでに交渉を進めています。財政的対立とは判断しない。",

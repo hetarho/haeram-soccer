@@ -5418,6 +5418,7 @@
     "copy.managerMarket.11434d85c4": "Licenziati i direttori {p0} e {p1}",
     "copy.managerMarket.e35226e9f4": "{p0} · OVR {p1} · Inserito come manager free agent",
     "copy.match_model.04c48f5e27": "Discrepanza nel record della partita {p0}: {p1}",
+    "copy.match.7c4e1d0a52": "Nessuna partita può essere giocata con il modello di partita {p0}. Ricarica il salvataggio per passarlo al modello pubblicato {p1}.",
     "copy.match.35ef500e6b": "{p0} vince ai calci di rigore",
     "copy.mediation.2508939fdb": "Richiesta di {p1} dal direttore {p0}",
     "copy.mediation.8ef75211ff": "Al momento non ci sono candidati disponibili per la richiesta, oppure le trattative sono già iniziate. Non giudico in base al conflitto finanziario.",

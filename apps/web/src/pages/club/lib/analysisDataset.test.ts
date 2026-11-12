@@ -4,7 +4,7 @@ import { careerWorld, CAREER_YEAR } from '../../../../../../packages/engine/src/
 import { analysisDataset } from './analysisDataset';
 it('exports only explicit owned periods and keeps original source identity and inactive scopes', () => {
   const w = careerWorld({ country: 'ENG', seed: 'csv' });
-  const record = simulateMatch(w, nextOwnFixture(w)!, false, true).record;
+  const record = simulateMatch(w, nextOwnFixture(w)!, false).record;
   const dataset = analysisDataset(
     w,
     'matches',

@@ -49,7 +49,7 @@ export function dependencyReport(root: string) {
   ]).filter((file) => file.endsWith('.test.ts'));
   const reaches = (entry: string) =>
     dependencies(graph, [entry]).map((file) => relative(root, file));
-  const shape = 'packages/engine/src/grid/shape.ts';
+  const shape = 'packages/engine/src/staging/shape.ts';
   const affected = tests.filter((file) => reaches(file).includes(shape));
   return {
     definition:
@@ -60,7 +60,7 @@ export function dependencyReport(root: string) {
     testsReachingShape: affected.length,
     webTestsReachingShape: affected.filter((file) => relative(root, file).startsWith('apps/web/'))
       .length,
-    gridExecution: reaches('packages/engine/src/grid/engine.ts'),
+    aggregateExecution: reaches('packages/engine/src/aggregate/engine.ts'),
     packing: reaches('apps/web/src/adapters/packing.ts'),
   };
 }

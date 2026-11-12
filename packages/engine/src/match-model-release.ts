@@ -1,20 +1,14 @@
-/** Release metadata is a leaf: importing flags never loads simulation. */
+/** Release metadata is a leaf: importing it never loads simulation. */
 import { MATCH_MODEL_REVISION, type MatchModelRevision } from '../../contracts/src/match-model';
 
-/** Which model a release activates and whether it activates at all. */
+/** Which model a release activates. */
 export interface MatchModelRelease {
   readonly revision: MatchModelRevision;
-  readonly enabled: boolean;
 }
 /**
- * The internal release switch, on since T286 measured the combined model's throughput, capacity
- * and continuity gates passing (→ARCH-31, SAVE-23; its accuracy is reported beside it, →MATCH-28):
- * a new career is tracked from its founding or takeover and a supported career (→SAVE-10) activates
- * at its next writer load. Its revision ships inside a game version. Tests and
- * measurements of the pre-feature path pass a disabled release explicitly, and no player control
- * or timing ever selects it.
+ * The released model (→ARCH-31, SAVE-23; its accuracy is reported beside it, →MATCH-28): a new
+ * career is tracked from its takeover and a supported career on an earlier revision or without a
+ * model (→SAVE-10) moves to it at its next writer load. Its revision ships inside a game version;
+ * there is no switch and no earlier model's code, so no player control or timing selects another.
  */
-export const MATCH_MODEL_RELEASE: MatchModelRelease = {
-  revision: MATCH_MODEL_REVISION,
-  enabled: true,
-};
+export const MATCH_MODEL_RELEASE: MatchModelRelease = { revision: MATCH_MODEL_REVISION };

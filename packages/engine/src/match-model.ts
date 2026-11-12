@@ -1,6 +1,6 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 /**
- * The full match model's release switch and the exact record check both result paths share
+ * The full match model's activation and the exact record check both result paths share
  * (→MATCH-13, MATCH-27, SAVE-23; spec/ssot/MATCH.md).
  */
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../contracts/src/detail';
@@ -22,13 +22,11 @@ export { MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model-relea
 import type { MatchModelRelease } from './match-model-release';
 
 /**
- * Whether `activateMatchModel` would record `release` on `w`: the release is on, the world plays
- * the current version (→SAVE-10/19/26; earlier rules never activate, and a supported label is
+ * Whether `activateMatchModel` would record `release` on `w`: the world plays the current version (→SAVE-10/19/26; earlier rules never activate, and a supported label is
  * rewritten by the writer's rules upgrade first) and either carries no model data yet or records an
  * earlier revision than the release's (→SAVE-23's later revision).
  */
 export const activatesMatchModel = (w: World, release: MatchModelRelease) =>
-  release.enabled &&
   w.engine === CURRENT_ENGINE_VERSION &&
   (w.matchModel
     ? matchModelNumber(w.matchModel.revision) < matchModelNumber(release.revision)
@@ -43,7 +41,7 @@ export const activatesMatchModel = (w: World, release: MatchModelRelease) =>
  * played use the model. A world on an earlier revision moves to the release's: its activation,
  * tracking boundary and coverage stay, the season's aggregates go on counting under the new
  * revision and every settled record keeps the revision that settled it. Returns whether it
- * activated; a disabled release, a world on the release's revision or later, or earlier rules
+ * activated; a world on the release's revision or later, or earlier rules
  * leave `w` untouched. Callers own the safe boundary and the revision.
  */
 export function activateMatchModel(w: World, release: MatchModelRelease): boolean {
@@ -70,7 +68,7 @@ const METRICS_SIZE = zeroMetrics().length;
 const MAX_SHOT_XG = 80;
 /**
  * How far a line's whole minutes may sit from his stamped interval: incident minutes are stamped
- * after the fact and added time reads as the period's last minute (grid/changes.test.ts).
+ * after the fact and added time reads as the period's last minute.
  */
 const MINUTE_ROUNDING = 2;
 /** Stamped minutes of half-time and the extra-time intervals, where a change uses no window. */

@@ -60,7 +60,7 @@ describe('recruitment build and budget previews', () => {
       )!;
     expect(lineupSummary(starters, w.tactic).strength).toBe(preview.afterStrength);
     expect(tacticalProfile(starters, w.tactic, npcTactic(opponent)).fit).toBe(preview.afterFit);
-    const match = simulateMatch(w, fixture, false, true);
+    const match = simulateMatch(w, fixture, false);
     expect(
       match.record.players.some(
         (player) => player.id === offer.player.id && player.metrics[10] === 90,

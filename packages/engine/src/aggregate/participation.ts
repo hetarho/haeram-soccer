@@ -457,7 +457,7 @@ class SidePlanner {
   /**
    * The minute in this period a line on the pitch since `from` gets hurt, from the period's draw
    * for him: CLUB-23's chance in proportion to his minutes, rising through the match as the
-   * detailed engine's hazard does (grid/changes.ts).
+   * removed detailed engine's hazard did (T845).
    */
   private scheduleInjury(line: number, from: number) {
     const chance = this.plan.candidates[line]!.injury;
@@ -600,7 +600,7 @@ class SidePlanner {
     return true;
   }
 
-  /** Puts the outfielder with the best 선방 in goal when nobody keeps it (grid/changes.ts). */
+  /** Puts the outfielder with the best 선방 in goal when nobody keeps it (→MATCH-20). */
   private coverGoal(at: number) {
     if (this.holder[0] !== undefined) return;
     const keeper = this.onPitch()
@@ -624,8 +624,8 @@ class SidePlanner {
   }
 
   /**
-   * The manager's changes at a stoppage, in the detailed engine's order (grid/changes.ts
-   * `planChanges`): injured players replaced, a red card answered, then his policy, within the
+   * The manager's changes at a stoppage, in the order `match/changes.ts`
+   * `planChanges` keeps: injured players replaced, a red card answered, then his policy, within the
    * era's substitutes and windows. The aggregate plan comes before the score exists, so the
    * score-led changes (protecting a lead, chasing a deficit) are not made, and the red-card
    * rebalance follows `decisions`, which the match settles against its score afterwards

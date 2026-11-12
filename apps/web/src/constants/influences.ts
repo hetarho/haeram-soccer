@@ -631,10 +631,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.0c78ef6341'),
           ),
         ],
-        [
-          ...src('match', 'simulateMatch', 'candidateMatch'),
-          ...src('aggregate/engine', 'simulateAggregate'),
-        ],
+        [...src('match', 'simulateMatch'), ...src('aggregate/engine', 'simulateAggregate')],
         [link('progression', sourceMessage('copy.influences.8a49f0362a'))],
         [sourceMessage('copy.influences.a342ed6ba3')],
       ),

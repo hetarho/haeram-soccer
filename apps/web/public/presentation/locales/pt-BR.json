@@ -5105,6 +5105,7 @@
     "copy.managerMarket.11434d85c4": "Diretor {p0} e {p1} demitidos",
     "copy.managerMarket.e35226e9f4": "{p0} · OVR {p1} · Listado como gerente de agente livre",
     "copy.match_model.04c48f5e27": "Discrepância de registro de correspondência {p0}: {p1}",
+    "copy.match.7c4e1d0a52": "Nenhuma partida pode ser disputada no modelo de partida {p0}. Carregue o jogo salvo novamente para passá-lo ao modelo lançado {p1}.",
     "copy.match.35ef500e6b": "{p0} vence na disputa de pênaltis",
     "copy.mediation.2508939fdb": "Solicitar {p1} do Diretor {p0}",
     "copy.mediation.8ef75211ff": "Atualmente não há candidatos disponíveis para o pedido ou as negociações já foram iniciadas. Não julgo com base em conflitos financeiros.",

@@ -11,7 +11,6 @@ export const ORCHESTRATION = [
   'packages/engine/src/world.ts',
   'packages/engine/src/season.ts',
   'packages/engine/src/match.ts',
-  'packages/engine/src/grid/engine.ts',
 ];
 /** The feature-sliced web layers, highest first (→ARCH-3/4). */
 export const UI_LAYERS = [

@@ -52,7 +52,7 @@ it('the staging imports no world, season or match orchestration', () => {
   }
 });
 
-it('the script imports only leaves and nothing of the grid', () => {
+it('the script imports only leaves', () => {
   const root = process.cwd();
   const script = 'packages/engine/src/script/';
   const files = sourceFiles(root, [script]).filter(
@@ -65,13 +65,6 @@ it('the script imports only leaves and nothing of the grid', () => {
       runtimeImports(readFileSync(file, 'utf8'), file).filter((name) => !name.startsWith('.')),
       relative(root, file),
     ).toEqual([]);
-    for (const imported of graph.files.get(resolve(file)) ?? []) {
-      const path = relative(root, imported);
-      expect(
-        path.startsWith('packages/engine/src/grid/'),
-        `${relative(root, file)} imports ${path}`,
-      ).toBe(false);
-    }
     for (const imported of dependencies(graph, [file])) {
       const path = relative(root, imported);
       expect(

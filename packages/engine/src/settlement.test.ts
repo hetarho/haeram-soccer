@@ -24,7 +24,7 @@ describe('gate ledger detail', () => {
   it('gate() writes a detail readGateDetail reads', () => {
     const w = careerWorld({ seed: 'gate-detail' });
     const fixture = w.fixtures.find((match) => match.home === w.playerClub)!,
-      match = simulateMatch(w, fixture, false, true).record,
+      match = simulateMatch(w, fixture, false).record,
       scale = gateProjection(w, match.id, match.away).leagueFactor,
       before = w.events.length;
     gate(w, match);

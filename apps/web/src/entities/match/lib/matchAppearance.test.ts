@@ -258,7 +258,6 @@ describe('the actual keeper in each sample (→KIT-8)', () => {
       w,
       w.fixtures.find((f) => f.home === w.playerClub)!,
       true,
-      true,
     );
     const samples: PresentedSample[] = playback.frames.flatMap((frame, i) =>
       frame.motion?.length

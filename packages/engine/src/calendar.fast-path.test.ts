@@ -26,7 +26,7 @@ describe('persistent season calendar', () => {
     expect(skipped?.record.players.length).toBeGreaterThan(0);
     expect(canonical(fast)).toBe(canonical(observed));
     // A few rounds, not a whole observed season: observing is the same rule match by match, which
-    // grid/throughput.test's observed league fixture keeps in three eras (→MATCH-7), and
+    // scripted-match.test keeps for watched and skipped own fixtures (→MATCH-7), and
     // calendar.progression-eng keeps the fast path through a season close.
     while (observed.round < ROUNDS) advanceRound(observed);
     while (fast.round < ROUNDS) advanceRound(fast, undefined, false);

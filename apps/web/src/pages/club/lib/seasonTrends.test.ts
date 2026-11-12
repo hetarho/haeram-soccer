@@ -5,7 +5,7 @@ import { fixtureDay } from '../../../../../../packages/engine/src/calendar';
 import { matchSplit, seasonProgress } from './seasonTrends';
 it('uses the own perspective, weighted denominators and the season built up in playing order', () => {
   const w = careerWorld({ country: 'ENG', seed: 'season-analysis' });
-  const record = simulateMatch(w, nextOwnFixture(w)!, false, true).record;
+  const record = simulateMatch(w, nextOwnFixture(w)!, false).record;
   const home = {
     ...record,
     home: w.playerClub,

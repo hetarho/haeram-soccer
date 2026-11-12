@@ -2,7 +2,7 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
 /**
  * The aggregate ledger's checks and derivations (→MATCH-13, MATCH-26, MATCH-27): every team
  * counter is read off the same grouped flows, shots and fouls under the detailed engine's
- * definitions (grid/record.ts `Tally`), and a ledger that does not hold together is refused —
+ * definitions (the removed detailed engine's `Tally`, T845), and a ledger that does not hold together is refused —
  * nothing is zero-filled or clamped until it fits.
  */
 import { TD, TEAM_DETAIL_SIZE } from '../../../contracts/src/detail';

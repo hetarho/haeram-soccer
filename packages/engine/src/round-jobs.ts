@@ -1,6 +1,5 @@
 import type { Fixture, MatchPlayback, MatchRecord, Player, World } from '../../contracts/src/types';
 import { simulateMatch } from './match';
-import { isScoringFixture } from './scoring';
 import { findClub, squad } from './world';
 import type { FixtureReadCopy } from './fixture-copy';
 export {
@@ -13,8 +12,6 @@ export {
 /** One other-club league fixture of the round, to compute from a read copy. */
 export interface RoundJob {
   fixture: Fixture;
-  /** Keep every player line: the fixture counts for the own competition's scorer table. */
-  keep: boolean;
 }
 /** A computed job: its record and both matchday rosters as player IDs, in roster order. */
 export interface RoundJobResult {
@@ -36,13 +33,11 @@ export function ownFixture(w: World, f: Fixture) {
 }
 /** The fixtures without the own club, in fixture order. */
 export function roundJobs(w: World, fixtures: readonly Fixture[]): RoundJob[] {
-  return fixtures
-    .filter((f) => !ownFixture(w, f))
-    .map((fixture) => ({ fixture, keep: isScoringFixture(w, fixture) }));
+  return fixtures.filter((f) => !ownFixture(w, f)).map((fixture) => ({ fixture }));
 }
 /** What a helper runs: the job's match exactly as the engine thread would play it on the world. */
 export function simulateRoundJob(copy: FixtureReadCopy, job: RoundJob): RoundJobResult {
-  const p = simulateMatch(copy as World, job.fixture, false, job.keep);
+  const p = simulateMatch(copy as World, job.fixture, false);
   const ids = (players: Player[]) => players.map((player) => player.id);
   return { record: p.record, squads: [ids(p.squads[0]), ids(p.squads[1])] };
 }

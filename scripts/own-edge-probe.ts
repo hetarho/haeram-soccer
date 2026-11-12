@@ -203,7 +203,7 @@ function read(label: string, w: World) {
     const home = f.home === own;
     const [raw, eff] = preparedGap(w, f);
     for (let seed = 0; seed < SEEDS; seed++) {
-      const { score } = withSeed(w, seed, () => simulateMatch(w, f, false, true).record);
+      const { score } = withSeed(w, seed, () => simulateMatch(w, f, false).record);
       samples.own.push({
         gap: home ? raw : -raw,
         effective: home ? eff : -eff,

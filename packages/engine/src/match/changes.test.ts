@@ -5,7 +5,7 @@ import { subPolicyFor } from './changes';
 /** Only the school, trait and interim status are read (→STAFF-45). */
 const manager = (patch: Partial<Manager>) => ({ interim: false, ...patch }) as Manager;
 
-/** The manager's substitution policy (moved from grid/changes.test.ts, T842). */
+/** The manager's substitution policy (moved from the detailed engine's tests, T842). */
 describe('substitution policy', () => {
   it('lets a gegenpress or rotation manager change tired pressers from the 55th minute', () => {
     expect(subPolicyFor(manager({ style: 'gegenpress' }))).toMatchObject({

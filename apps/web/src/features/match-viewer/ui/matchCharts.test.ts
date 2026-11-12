@@ -19,7 +19,6 @@ const playback = stagedPlayback(
     w,
     w.fixtures.find((f) => f.home === w.playerClub)!,
     true,
-    true,
   ),
 );
 

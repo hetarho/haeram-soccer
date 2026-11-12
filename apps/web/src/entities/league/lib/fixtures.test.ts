@@ -6,7 +6,7 @@ import { ownSeasonFixtures } from './fixtures';
 it('merges settled records once, excludes other clubs/seasons and keeps real calendar ordering', () => {
   const w = careerWorld({ country: 'ENG', seed: 'fixtures' });
   const next = nextOwnFixture(w)!;
-  const record = simulateMatch(w, next, false, true).record;
+  const record = simulateMatch(w, next, false).record;
   const initial = ownSeasonFixtures(w).length;
   w.ownMatches = [
     record,

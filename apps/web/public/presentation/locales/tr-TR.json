@@ -5414,6 +5414,7 @@
     "copy.managerMarket.11434d85c4": "Direktör {p0} ve {p1} görevden alındı",
     "copy.managerMarket.e35226e9f4": "{p0} · OVR {p1} · Ücretsiz temsilci yöneticisi olarak listelendi",
     "copy.match_model.04c48f5e27": "Maç kaydı tutarsızlığı {p0}: {p1}",
+    "copy.match.7c4e1d0a52": "{p0} maç modeliyle hiçbir maç oynanamaz. Kaydı yayımlanan {p1} modeline taşımak için yeniden yükleyin.",
     "copy.match.35ef500e6b": "{p0} penaltı atışlarında kazandı",
     "copy.mediation.2508939fdb": "Yönetmen {p0}'den {p1} talebi",
     "copy.mediation.8ef75211ff": "Şu anda talep için uygun aday yok veya müzakereler zaten başladı. Finansal çatışmaya göre karar vermiyorum.",

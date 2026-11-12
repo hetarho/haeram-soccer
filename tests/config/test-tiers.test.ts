@@ -47,7 +47,7 @@ it('keeps host, replay, long-career and full-match checks out of the task unit p
     'packages/engine/src/feature-replay.retained.test.ts',
     'apps/web/src/runtime/host.test.ts',
     'apps/web/src/adapters/persistence.long-career.test.ts',
-    'packages/engine/src/grid/engine.test.ts',
+    'packages/engine/src/scripted-match.test.ts',
   ])
     expect(testTier(file)).toBe('integration');
   expect(testTier('scripts/lib/source-graph.test.ts')).toBe('unit');
@@ -56,7 +56,6 @@ it('keeps host, replay, long-career and full-match checks out of the task unit p
 
 it('keeps full match and progression operations, including helper callbacks, out of unit', () => {
   const operations = new Set([
-    'playGrid',
     'playAggregate',
     'simulateAggregate',
     'simulateMatch',

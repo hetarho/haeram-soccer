@@ -105,7 +105,7 @@ export function playFixture(
 ) {
   if (f.score) return undefined;
   const own = f.home === w.playerClub || f.away === w.playerClub;
-  const p = simulateMatch(w, f, observe && !!settlement && own, own, decide);
+  const p = simulateMatch(w, f, observe && !!settlement && own, decide);
   f.score = p.record.score;
   if (p.record.shootout) f.shootout = p.record.shootout;
   recordMatch(w, p);

@@ -89,8 +89,7 @@ function treeOf(spec, name) {
     }
   }
   mkdirSync(join(dir, 'scripts/perf'), { recursive: true });
-  for (const file of ['workloads.ts', 'digest.ts'])
-    cpSync(join(here, file), join(dir, 'scripts/perf', file));
+  cpSync(join(here, 'workloads.ts'), join(dir, 'scripts/perf', 'workloads.ts'));
   return dir;
 }
 

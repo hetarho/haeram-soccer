@@ -5509,6 +5509,7 @@
     "copy.managerMarket.11434d85c4": "Direktur {p0} dan {p1} diberhentikan",
     "copy.managerMarket.e35226e9f4": "{p0} · OVR {p1} · Terdaftar sebagai manajer agen gratis",
     "copy.match_model.04c48f5e27": "Perbedaan rekor pertandingan {p0}: {p1}",
+    "copy.match.7c4e1d0a52": "Tidak ada pertandingan yang dapat dimainkan dengan model pertandingan {p0}. Muat ulang simpanan untuk memindahkannya ke model rilis {p1}.",
     "copy.match.35ef500e6b": "{p0} menang di adu penalti",
     "copy.mediation.2508939fdb": "Permintaan {p1} dari direktur {p0}",
     "copy.mediation.8ef75211ff": "Saat ini tidak ada kandidat yang tersedia untuk permintaan tersebut, atau negosiasi telah dimulai. Saya tidak menilai berdasarkan konflik finansial.",

@@ -38,7 +38,7 @@ describe('knockout ties (→MATCH-6)', () => {
     let found = 0;
     for (let i = 0; i < 300 && found < 3; i++) {
       const f: Fixture = { ...base, id: `pens:${i}`, kind: 'cup', groupKey: 'ENG:cup' };
-      const { record } = simulateMatch(w, f, false, false, { awayGoals: false });
+      const { record } = simulateMatch(w, f, false, { awayGoals: false });
       if (!record.shootout) continue;
       found++;
       expect(record.regulation).toEqual(record.score);

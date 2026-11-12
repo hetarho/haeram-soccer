@@ -107,7 +107,6 @@ import {
 import {
   archivedScorers,
   ensureScorers,
-  isScoringFixture,
   prepareScorers,
   recordScorers,
   snapshotScorers,
@@ -319,9 +318,8 @@ function injuriesFromMatch(w: World, m: MatchRecord) {
 export function resolveTie(w: World, f: Fixture) {
   const existing = w.ownMatches.find((m) => m.id === f.id);
   if (existing) return winnerOf(f, existing);
-  const own = f.home === w.playerClub || f.away === w.playerClub;
   // A single match that must produce a winner: extra time, then a shoot-out (→MATCH-6).
-  const p = simulateMatch(w, f, false, own, { awayGoals: false });
+  const p = simulateMatch(w, f, false, { awayGoals: false });
   recordMatch(w, p);
   return winnerOf(f, p.record);
 }
@@ -923,7 +921,7 @@ interface RoundPhase {
 }
 function playFixture(w: World, f: Fixture, observe: boolean) {
   const own = ownFixture(w, f);
-  return simulateMatch(w, f, own && observe, own || isScoringFixture(w, f));
+  return simulateMatch(w, f, own && observe);
 }
 /** A round's unplayed fixtures; `sequential` when a club appears in two of them. */
 function roundFixtures(w: World, round: number) {

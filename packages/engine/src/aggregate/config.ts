@@ -1,8 +1,8 @@
 /**
  * The aggregate kernel's one tuning surface (→MATCH-22, MATCH-23). These are starting values
  * aimed at MATCH-23's bands for equal top-tier sides, built on the 40-cell reference tables
- * (grid/baselines.json, spec/ssot/MATCH.md); T284 calibrates them against held-out detailed
- * play and the intended targets. Rates are per action of the kind named, never per minute.
+ * (match/baselines.json, spec/ssot/MATCH.md); T284 calibrated them against held-out detailed
+ * play, and later calibrations against the intended targets. Rates are per action of the kind named, never per minute.
  */
 import type { Tactic } from '../../../contracts/src/types';
 
@@ -295,7 +295,7 @@ export const AGGREGATE_CONFIG = {
 /**
  * The participation plan's rates (→MATCH-19/20/21, CLUB-23, MATCH-23): cards a side, per 90
  * minutes on the pitch, and how the manager's stoppages fall. Injury chances are CLUB-23's own
- * (careers.ts `injuryChance`) and the injury hazard's rise through the match grid/changes.ts's.
+ * (careers.ts `injuryChance`) and the injury hazard's rise through the match the removed detailed engine's (T845).
  */
 export const AGGREGATE_PARTICIPATION_CONFIG = {
   discipline: {

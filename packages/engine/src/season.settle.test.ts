@@ -19,7 +19,7 @@ import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { careerWorld } from './career.testkit';
 
-/** The release-on probe's world: taken over in 1950 in ENG's lowest professional division. */
+/** A released career taken over in 1950 in ENG's lowest professional division. */
 function world(release: MatchModelRelease) {
   return careerWorld({ seed: 'settle-match' }, release);
 }
@@ -39,7 +39,7 @@ const ownFixtures = (w: World) =>
  * off or injured leaves the pitch a minute before the stamp.
  */
 function played(w: World, f: Fixture, x: Incident) {
-  const playback = simulateMatch(w, f, false, true);
+  const playback = simulateMatch(w, f, false);
   const r = playback.record;
   const at = r.incidents!.findIndex((y) => y.minute > x.minute);
   r.incidents!.splice(at < 0 ? r.incidents!.length : at, 0, x);
@@ -59,7 +59,7 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
     const w = modern();
     const f = ownFixtures(w)[0];
     const side = sideOf(w, f);
-    const playback = simulateMatch(w, f, false, true);
+    const playback = simulateMatch(w, f, false);
     const xi = playback.squads[side].slice(0, 11);
     // The manager's first change of a starter: the substitute takes that starter's slot.
     const change = playback.record.incidents!.find(
@@ -82,7 +82,7 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
     const w = modern();
     const f = ownFixtures(w)[0];
     const side = sideOf(w, f);
-    const playback = simulateMatch(w, f, false, true);
+    const playback = simulateMatch(w, f, false);
     // The own lines with the most and the fewest minutes, as the manager's changes left them.
     const lines = playback.record.players
       .filter((l) => player(w, l.id))
@@ -105,7 +105,7 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
     const w = world(ENABLED_RELEASE);
     const f = ownFixtures(w)[0];
     const side = sideOf(w, f);
-    const probe = simulateMatch(w, f, false, true);
+    const probe = simulateMatch(w, f, false);
     // An outfield starter with nothing recorded after the injury, so the record stays consistent
     // whatever the football revision plays (T548's revision 7 booked the third man at 76′).
     const hurt = probe.squads[side]
@@ -128,7 +128,7 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
     const f = ownFixtures(w)[0];
     const other = sideOf(w, f) === 0 ? 1 : 0;
     const club = other === 0 ? f.home : f.away;
-    const probe = simulateMatch(w, f, false, true);
+    const probe = simulateMatch(w, f, false);
     // A starter with no incident of his own in the match, so the injury is his only one. The fifth
     // starter, taken before, left an invalid record after T447's box zone depths (an injury at 78
     // named a substitute off the pitch).
@@ -152,7 +152,7 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
     const w = world(ENABLED_RELEASE);
     const [first, second] = ownFixtures(w);
     const side = sideOf(w, first);
-    const probe = simulateMatch(w, first, false, true);
+    const probe = simulateMatch(w, first, false);
     // A starter with no incident of his own in the match, so his red card is the only one.
     const sent = probe.squads[side]
       .slice(1)
@@ -168,7 +168,7 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
       { player: sent.id, club: w.playerClub, matches: 1, scope: 'domestic', reason: 'dogso' },
     ]);
     // Banned for the next fixture: he is not in its XI or on its bench, and it serves his ban.
-    const next = simulateMatch(w, second, false, true);
+    const next = simulateMatch(w, second, false);
     expect(next.squads[sideOf(w, second)].map((p) => p.id)).not.toContain(sent.id);
     recordMatch(w, next, true);
     expect(w.discipline!.bans.filter((b) => b.player === sent.id)).toEqual([]);
@@ -177,13 +177,12 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
 
 describe('settling an activated world (→MATCH-13, MATCH-26, MATCH-27)', () => {
   it('an activated world settles only valid full records', () => {
-    // The release-on probe's world: its own league's first two rounds and the national cup's first
-    // round, each with the own match on the grid and the others on the aggregate path, level ties
-    // going to extra time and a shoot-out.
+    // Its own league's first two rounds and the national cup's first round, every fixture on the
+    // aggregate path, the own match with its script, level ties going to extra time and a shoot-out.
     const w = world(ENABLED_RELEASE);
     const league: MatchRecord[] = [];
     for (const f of ownLeague(w).filter((f) => f.round <= 2)) {
-      const playback = simulateMatch(w, f, false, true);
+      const playback = simulateMatch(w, f, false);
       f.score = playback.record.score;
       recordMatch(w, playback, true);
       league.push(playback.record);
@@ -208,7 +207,7 @@ describe('settling an activated world (→MATCH-13, MATCH-26, MATCH-27)', () => 
     const round = ownLeague(w).filter((f) => f.round === 1);
     const saved = w.ownMatches.length;
     for (const f of [round.find((f) => isOwn(w, f))!, round.find((f) => !isOwn(w, f))!]) {
-      const playback = simulateMatch(w, f, false, true);
+      const playback = simulateMatch(w, f, false);
       playback.record.metrics[0][M.goals]++;
       expect(() => recordMatch(w, playback, true)).toThrow(/경기 기록 불일치/);
     }

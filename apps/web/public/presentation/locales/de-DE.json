@@ -5571,6 +5571,7 @@
     "copy.managerMarket.11434d85c4": "Direktor {p0} und {p1} entlassen",
     "copy.managerMarket.e35226e9f4": "{p0} · OVR {p1} · Als Free Agent Manager gelistet",
     "copy.match_model.04c48f5e27": "Diskrepanz im Spielrekord {p0}: {p1}",
+    "copy.match.7c4e1d0a52": "Mit dem Spielmodell {p0} kann kein Spiel gespielt werden. Lade den Spielstand erneut, um ihn auf das veröffentlichte Modell {p1} umzustellen.",
     "copy.match.35ef500e6b": "{p0} gewinnt im Elfmeterschießen",
     "copy.mediation.2508939fdb": "Anfrage für {p1} vom Direktor {p0}",
     "copy.mediation.8ef75211ff": "Derzeit sind keine Kandidaten für die Anfrage verfügbar oder die Verhandlungen haben bereits begonnen. Ich urteile nicht aufgrund finanzieller Konflikte.",

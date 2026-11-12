@@ -12,7 +12,7 @@ import {
   type MatchModelRelease,
 } from '../packages/engine/src/match-model-release';
 // A preview audit only; T838 still gates production activation on capacity.
-const release: MatchModelRelease = { revision: 'scripted-aggregate-11', enabled: true };
+const release: MatchModelRelease = { revision: 'scripted-aggregate-11' };
 const git = (...args: string[]) => execFileSync('git', args, { encoding: 'utf8' }).trim();
 const output = process.argv[2] ?? '.tmp/scripted-release-audit.json';
 mkdirSync(dirname(output), { recursive: true });

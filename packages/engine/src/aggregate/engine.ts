@@ -6,12 +6,7 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
  * and the player lines are allocated from the team facts. The result is a full-model record with
  * empty observation frames, checked by the shared validator before anything settles it.
  */
-import {
-  activeMatchModel,
-  isScriptedModel,
-  MATCH_MODEL_REVISION,
-  type MatchModelRevision,
-} from '../../../contracts/src/match-model';
+import { MATCH_MODEL_REVISION, type MatchModelRevision } from '../../../contracts/src/match-model';
 import type {
   Club,
   Fixture,
@@ -203,11 +198,11 @@ export function aggregatePlan(
         actionWeight(slots[slot]!.role, candidates[line]!.traits, action),
     };
   };
-  return { era, placed: isScriptedModel(activeMatchModel(w)), sides: [side(0), side(1)] };
+  return { era, placed: true, sides: [side(0), side(1)] };
 }
 
 /**
- * A level tie's shoot-out (→MATCH-6), the detailed engine's rule (grid/shootout.ts): the players
+ * A level tie's shoot-out (→MATCH-6), the removed detailed engine's rule (T845): the players
  * on the pitch at the end kick, best 0.6 슈팅 + 0.4 침착성 first and the keeper last, the home side
  * first, five each until one side cannot be caught, then sudden death in pairs with the takers
  * coming round again; each kick goes in at the in-match penalty chance against the keeper's 선방.
@@ -489,6 +484,9 @@ export function simulateAggregate(w: World, f: Fixture, decide?: DecideRule): Ma
   const prepared = prepareMatch(w, f);
   const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
   const match = playAggregate(w, f, prepared, rosters, decide);
-  const model = activeMatchModel(w) ?? MATCH_MODEL_REVISION;
-  return { record: aggregateRecord(f, rosters, match, model), frames: [], squads: rosters };
+  return {
+    record: aggregateRecord(f, rosters, match, MATCH_MODEL_REVISION),
+    frames: [],
+    squads: rosters,
+  };
 }

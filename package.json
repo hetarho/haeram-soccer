@@ -16,7 +16,6 @@
     "format": "prettier --write apps packages scripts tests *.json *.ts *.mjs .github",
     "format:check": "prettier --check --cache --cache-strategy content --cache-location .tmp/prettier-cache apps packages scripts tests *.json *.ts *.mjs .github",
     "test:unit": "vitest run --project unit",
-    "test:unit:release-on": "vitest run --config vitest.release-on.config.ts --project unit",
     "test:contract": "vitest run --project contract",
     "validate:catalogs": "tsx scripts/validate-catalogs.ts",
     "validate:presentation": "tsx scripts/validate-presentation.ts",
@@ -29,7 +28,6 @@
     "verify": "node scripts/verify.mjs",
     "benchmark:browser": "node scripts/first-play.mjs",
     "test:integration": "vitest run --project integration",
-    "test:integration:release-on": "vitest run --config vitest.release-on.config.ts --project integration",
     "verify:batch": "node scripts/verify.mjs --batch"
   },
   "dependencies": {

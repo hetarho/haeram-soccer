@@ -121,8 +121,8 @@ describe('world progression', () => {
     const w = simulatedWorld(input),
       f = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
     // A released own match is pictured by staging its script (→MATCH-39, T838).
-    const fast = simulateMatch(w, f, false, true),
-      observed = stagedPlayback(simulateMatch(w, f, true, true));
+    const fast = simulateMatch(w, f, false),
+      observed = stagedPlayback(simulateMatch(w, f, true));
     expect(fast.record).toEqual(observed.record);
     expect(observed.frames.at(-1)!.score).toEqual(observed.record.score);
     // One frame a minute, the added minutes of each half included.
@@ -163,7 +163,7 @@ describe('world progression', () => {
     const w = simulatedWorld(input);
     clubOf(w).fans = 5000000;
     const f = w.fixtures.find((f) => f.home === w.playerClub)!;
-    const p = simulateMatch(w, f, false, true);
+    const p = simulateMatch(w, f, false);
     recordMatch(w, p, true);
     const snapshot = canonical(w);
     recordMatch(w, p, true);
@@ -185,7 +185,7 @@ it('never assigns the single goal scorer an assist for the same goal', () => {
   for (let n = 0; n < 24; n++) {
     const w = simulatedWorld({ ...input, seed: `assist-rule-${n}` });
     const f = w.fixtures.find((f) => f.home === w.playerClub)!;
-    const p = simulateMatch(w, f, false, true);
+    const p = simulateMatch(w, f, false);
     for (const [side, score] of [
       [0, p.record.score.home],
       [1, p.record.score.away],

@@ -894,7 +894,7 @@
     {
       "name": "AGGREGATE_PARTICIPATION_CONFIG",
       "file": "packages/engine/src/aggregate/config.ts",
-      "comment": "The participation plan's rates (→MATCH-19/20/21, CLUB-23, MATCH-23): cards a side, per 90 minutes on the pitch, and how the manager's stoppages fall. Injury chances are CLUB-23's own (careers.ts `injuryChance`) and the injury hazard's rise through the match grid/changes.ts's.",
+      "comment": "The participation plan's rates (→MATCH-19/20/21, CLUB-23, MATCH-23): cards a side, per 90 minutes on the pitch, and how the manager's stoppages fall. Injury chances are CLUB-23's own (careers.ts `injuryChance`) and the injury hazard's rise through the match the removed detailed engine's (T845).",
       "leaves": [
         {
           "path": "AGGREGATE_PARTICIPATION_CONFIG.discipline.yellows",

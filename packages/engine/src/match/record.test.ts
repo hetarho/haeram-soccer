@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { BAND_EDGES, cellOf } from './pitch';
 import { COUNTER_ZONES, inBoxCell, isCutBack, mirrorBand, possessionShare } from './record';
 
-/** The zone rules every path counts by, apart from the grid's tally (grid/record.test.ts plays them). */
+/** The zone rules every path counts by (→MATCH-13/14). */
 describe('shared counting rules (→MATCH-3, MATCH-13, MATCH-14)', () => {
   it("counts a cut-back only from MATCH-14's zone into the box", () => {
     // The goal-area band's half-spaces are the zone; the box is where it goes.

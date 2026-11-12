@@ -223,7 +223,7 @@ export function countPlayerFacts(
 
 /**
  * Added minutes of each period played (→MATCH-1): the time its goals, substitutions, injuries,
- * cards and penalties took, at the detailed engine's credits and bounds (grid/engine.ts).
+ * cards and penalties took, at the credits and bounds the removed detailed engine used (T845).
  */
 export function aggregateAddedTime(
   facts: AggregateTeamFacts,

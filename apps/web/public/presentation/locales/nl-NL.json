@@ -5420,6 +5420,7 @@
     "copy.managerMarket.11434d85c4": "Directeur {p0} en {p1} ontslagen",
     "copy.managerMarket.e35226e9f4": "{p0} · ALG {p1} · Vermeld als gratis agentmanager",
     "copy.match_model.04c48f5e27": "Verschil in wedstrijdrecord {p0}: {p1}",
+    "copy.match.7c4e1d0a52": "Met wedstrijdmodel {p0} kan geen wedstrijd worden gespeeld. Laad de opslag opnieuw om die naar het uitgebrachte model {p1} te zetten.",
     "copy.match.35ef500e6b": "{p0} wint na strafschoppen",
     "copy.mediation.2508939fdb": "Verzoek om {p1} van directeur {p0}",
     "copy.mediation.8ef75211ff": "Er zijn momenteel geen beschikbare kandidaten voor het verzoek, of de onderhandelingen zijn al begonnen. Ik oordeel niet op basis van financiële conflicten.",

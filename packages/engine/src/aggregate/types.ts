@@ -308,6 +308,10 @@ export interface AggregateSidePlan {
 /** What the participation plan is conditioned on beyond the kernel input. */
 export interface AggregatePlan {
   era: EraRules;
+  /**
+   * Whether attribution weighs each player's place (→MATCH-16): every fixture does; only a test
+   * measuring the rule's effect turns it off.
+   */
   placed: boolean;
   sides: readonly [AggregateSidePlan, AggregateSidePlan];
 }

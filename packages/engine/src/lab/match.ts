@@ -72,7 +72,7 @@ export function labSetup(
   const ordered = leftAtHome(index) ? sides : ([sides[1], sides[0]] as const);
   const rosters = ordered.map((s) => [...s.players]) as [LabSide['players'], LabSide['players']];
   const f = labFixture(lab, runSeed, index);
-  const prepared = prepareMatch(lab.w, f, undefined, LAB_MODEL, {
+  const prepared = prepareMatch(lab.w, f, undefined, {
     xis: [rosters[0].slice(0, 11), rosters[1].slice(0, 11)],
     tactics: [ordered[0].tactic, ordered[1].tactic],
   });

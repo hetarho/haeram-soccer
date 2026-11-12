@@ -37,7 +37,7 @@ describe('squad morale', () => {
 
   it('rises after wins, falls after defeats, more for wide margins', () => {
     const w = world();
-    const record = simulateMatch(w, nextOwnFixture(w)!, false, true).record;
+    const record = simulateMatch(w, nextOwnFixture(w)!, false).record;
     const home = record.home === w.playerClub;
     const result = (own: number, other: number) => ({
       ...record,

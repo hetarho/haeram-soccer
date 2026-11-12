@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { advanceRound, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
+import { advanceRound } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { canonical } from '../../packages/contracts/src/index';
 import { cachedWorld } from './cached-world';
@@ -35,21 +35,5 @@ describe('shared test worlds', () => {
 
   it('simulatedWorld pins the release it is given', () => {
     expect(simulatedWorld(input, {}, ENABLED_RELEASE).matchModel?.coverage).toBe('founding');
-  });
-
-  it('the world cache separates the default release', () => {
-    // Flips the switch both ways within this case, the way the release-on probe turns it on for a
-    // whole run, so one run shows a state built under one setting is not served under the other.
-    const release = MATCH_MODEL_RELEASE as { enabled: boolean };
-    const initial = release.enabled;
-    try {
-      for (const enabled of [initial, !initial, initial]) {
-        release.enabled = enabled;
-        const founded = cachedWorld('default-release', () => careerWorld(input));
-        expect(founded.matchModel !== undefined).toBe(enabled);
-      }
-    } finally {
-      release.enabled = initial;
-    }
   });
 });

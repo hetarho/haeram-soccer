@@ -8,7 +8,7 @@ import {
 import { canonical } from '../../contracts/src/index';
 import type { MatchRecord, World } from '../../contracts/src/types';
 import { CURRENT_ENGINE_VERSION, upgradeWorldRules } from '../../contracts/src/versions';
-import { declaredRelease, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { onPreviousRevision, PREVIOUS_REVISION } from '../../../tests/fixtures/earlier-saves';
 import { currentDay } from './calendar';
@@ -95,10 +95,8 @@ function fullRecord(): FullMatchRecord {
 
 describe('the full match record (→MATCH-13, MATCH-27)', () => {
   it('releases the full model to new and supported careers (T286)', () => {
-    // The switch as the source declares it, which the release-on probe keeps before setting it.
-    expect(declaredRelease()).toEqual({ revision: MATCH_MODEL_REVISION, enabled: true });
-    expect(MATCH_MODEL_RELEASE).toEqual({ revision: MATCH_MODEL_REVISION, enabled: true });
-    // A world without model data still plays the pre-feature model, with no metadata.
+    expect(MATCH_MODEL_RELEASE).toEqual({ revision: MATCH_MODEL_REVISION });
+    // A world without model data names none until its writer load activates the release.
     expect(activeMatchModel({})).toBeUndefined();
     expect(validateFullMatchRecord(fullRecord())).toEqual([]);
     expect(() => assertFullMatchRecord(fullRecord())).not.toThrow();
@@ -312,7 +310,7 @@ describe('a career on an earlier revision (→SAVE-23)', () => {
     expected.npcSeason!.model = MATCH_MODEL_REVISION;
     expect(canonical(career)).toBe(canonical(expected));
     // Once there it stays, and an earlier release never moves it back.
-    expect(activateMatchModel(career, { revision: PREVIOUS_REVISION, enabled: true })).toBe(false);
+    expect(activateMatchModel(career, { revision: PREVIOUS_REVISION })).toBe(false);
     for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
     // Archived records are what a replay draws (→WEB-23): every settled one is as it was.
     expect(canonical(career.ownMatches.slice(0, before.ownMatches.length))).toBe(

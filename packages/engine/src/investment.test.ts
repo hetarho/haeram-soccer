@@ -123,7 +123,7 @@ describe('shared club investment forecasts', () => {
       const w = holdRows(world(), { ticket: price }),
         projection = gateProjection(w);
       const fixture = w.fixtures.find((match) => match.home === w.playerClub)!,
-        match = simulateMatch(w, fixture, false, true);
+        match = simulateMatch(w, fixture, false);
       recordMatch(w, match);
       const income = w.events.find((event) => event.kind === 'gate')!,
         cost = w.events.find((event) => event.kind === 'match-cost')!,

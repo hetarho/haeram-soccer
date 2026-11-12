@@ -335,7 +335,7 @@ let stageRetries = 0;
   const ownPlaybacks = measure(
     'fixture.own-candidate',
     ownSet,
-    (f) => simulateMatch(world, f, false, true),
+    (f) => simulateMatch(world, f, false),
     playbackRecord,
   );
   // Every record settles once, on a copy, ledger included (→MATCH-27).

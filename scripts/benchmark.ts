@@ -705,12 +705,8 @@ async function secondHalf(variant: Variant): Promise<ProfileData> {
 }
 
 type ModelEvidence = ReturnType<typeof modelEvidence>;
-/**
- * A century checkpoint's full-model data: complete from the founding when the switch is released,
- * otherwise read as it is (the pre-feature path).
- */
-const centuryModel = (w: World) =>
-  MATCH_MODEL_RELEASE.enabled ? assertCompleteModel(w, 'founding') : modelEvidence(w);
+/** A century checkpoint's full-model data, complete from the founding. */
+const centuryModel = (w: World) => assertCompleteModel(w, 'founding');
 interface CheckpointData {
   centuryCheckpointSha256?: string;
   manager: { century: ManagerEvidence; round23: ManagerEvidence };
@@ -793,7 +789,6 @@ async function activation() {
   withoutMatchModel(legacy);
   const before = retainedFacts(legacy);
   const { raw: legacyRaw } = await measure(legacy, 'activation pre-release career mid-season');
-  if (!MATCH_MODEL_RELEASE.enabled) return { released: false, legacy: modelEvidence(legacy) };
   const t = performance.now();
   const loaded = await writerLoad(legacyRaw);
   const loadMs = Math.round(performance.now() - t);
@@ -1030,7 +1025,7 @@ function report() {
     losslessRoundtrip: true,
     resumedSeasonReplay: true,
     managerHistoryRoundTrip: true,
-    completeModelFromTakeover: MATCH_MODEL_RELEASE.enabled,
+    completeModelFromTakeover: true,
     passed: true,
     scope: `Two representative ${SEASONS}-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design adopted at an active season start whenever 팬 민심 is at least ${REDESIGN_MOOD} (${identityEvidence.edits} edits; a −20 adoption every season forces the owner out, →OWNER-13) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate ${CAREER_YEAR}–${ERA_END} era probe. In both centuries and the era probe the owner stakes his whole fortune in his business from the takeover (→OWNER-7), since one who moves no money is bankrupt in his thirties of seasons (→OWNER-8). Both careers track their own managers from the takeover; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
   };

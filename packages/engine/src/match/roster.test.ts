@@ -10,7 +10,7 @@ import { SPOTS } from './spots';
 
 const w = careerWorld({ seed: 'grid-setup' });
 
-/** The matchday rules and picks every result path reads (moved from grid/setup.test.ts, T842). */
+/** The matchday rules and picks every result path reads (moved from the detailed engine's tests, T842). */
 describe('matchday roster', () => {
   it('follows the era substitute table', () => {
     const rows: [number, number, number, boolean, number | undefined][] = [

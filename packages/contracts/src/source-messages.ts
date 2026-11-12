@@ -5738,6 +5738,8 @@ export const sourceMessages = {
   'copy.managerMarket.11434d85c4': '{p0}, {p1} 감독 경질',
   'copy.managerMarket.e35226e9f4': '{p0} · OVR {p1} · 자유계약 감독 명단에 올랐어요',
   'copy.match_model.04c48f5e27': '경기 기록 불일치 {p0}: {p1}',
+  'copy.match.7c4e1d0a52':
+    '경기 모델 {p0}로는 경기를 치를 수 없습니다. 저장을 다시 불러오면 출시된 모델 {p1}(으)로 옮겨집니다.',
   'copy.match.35ef500e6b': '승부차기 {p0} 승리',
   'copy.mediation.2508939fdb': '{p0} 감독의 {p1} 요청',
   'copy.mediation.8ef75211ff':

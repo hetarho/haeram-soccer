@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
-import {
-  isScriptedModel,
-  MATCH_MODEL_REVISION,
-  MATCH_MODEL_REVISIONS,
-} from '../../../contracts/src/match-model';
+import { MATCH_MODEL_REVISION, MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
 import { BAND_EDGES, LANE_EDGES, toEngine } from '../match/pitch';
 import { MATCH_MODEL_RELEASE } from '../match-model-release';
 import { FORMATIONS } from '../player';
@@ -54,11 +50,7 @@ describe('placed attribution primitives', () => {
     expect(MATCH_MODEL_REVISIONS.at(-1)).toBe('scripted-aggregate-11');
     expect(MATCH_MODEL_REVISION).toBe('scripted-aggregate-11');
     expect(MATCH_MODEL_RELEASE.revision).toBe(MATCH_MODEL_REVISION);
-    expect(MATCH_MODEL_RELEASE).toEqual({ revision: 'scripted-aggregate-11', enabled: true });
-    expect(isScriptedModel(undefined)).toBe(false);
-    for (const revision of MATCH_MODEL_REVISIONS.slice(0, 10))
-      expect(isScriptedModel(revision)).toBe(false);
-    expect(isScriptedModel(MATCH_MODEL_RELEASE.revision)).toBe(true);
+    expect(MATCH_MODEL_RELEASE).toEqual({ revision: 'scripted-aggregate-11' });
   });
 
   it('measures both sides in metres and mirrors the lane with the band', () => {

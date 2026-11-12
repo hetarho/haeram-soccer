@@ -18,7 +18,6 @@ import {
   slotOvr,
 } from '../../packages/engine/src/index';
 import { careerWorld, type CareerInput } from '../../packages/engine/src/career.testkit';
-import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import { npcMatchContext } from '../../packages/engine/src/match';
 import { FORMATIONS } from '../../packages/engine/src/player';
 import { type DecideRule } from '../../packages/engine/src/match/rules';
@@ -198,9 +197,7 @@ export function rosterRating(club: Club, xi: readonly Player[], tactic: Tactic):
 }
 /** The candidate's NPC context and home advantage, before form (MATCH-2). */
 export const contextGap = (w: World, clubs: readonly [Club, Club]) =>
-  3 +
-  npcMatchContext(w, clubs[0], MATCH_MODEL_REVISION) -
-  npcMatchContext(w, clubs[1], MATCH_MODEL_REVISION);
+  3 + npcMatchContext(w, clubs[0]) - npcMatchContext(w, clubs[1]);
 
 /** A fixture's prepared strength gap, before diminishing returns and form. */
 export const fixtureGap = (w: World, clubs: readonly [Club, Club], f: Fixture) =>

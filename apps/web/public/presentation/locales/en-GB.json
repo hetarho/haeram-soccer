@@ -5130,6 +5130,7 @@
     "copy.managerMarket.11434d85c4": "Director {p0} and {p1} dismissed",
     "copy.managerMarket.e35226e9f4": "{p0} · OVR {p1} · Listed as a free agent manager",
     "copy.match_model.04c48f5e27": "Match record discrepancy {p0}: {p1}",
+    "copy.match.7c4e1d0a52": "No fixture can be played on match model {p0}. Load the save again to move it to the released model {p1}.",
     "copy.match.35ef500e6b": "{p0} wins in penalty shootout",
     "copy.mediation.2508939fdb": "Request {p1} from Director {p0}",
     "copy.mediation.8ef75211ff": "There are currently no available candidates for the request, or negotiations have already begun. I don’t judge based on financial conflict.",

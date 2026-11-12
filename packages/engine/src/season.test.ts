@@ -10,7 +10,7 @@ import { nextOwnFixture } from './calendar';
 import { type DecideRule } from './match/rules';
 import { closeSeason, eloOf, ownLeagueClubs, simulateSeason } from './index';
 import { playFixture, tieRule } from './knockout';
-import { OWN_LEAGUE_ENGINE, setOwnLeagueEngine, simulateMatch } from './match';
+import { simulateMatch } from './match';
 import { appearanceForFixture } from './match-appearance';
 import { validateFullMatchRecord } from './match-model';
 import { npcCompetition, playerTotals } from './npc-stats';
@@ -185,18 +185,11 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
     for (const [f, decide] of others) {
       const expected = simulateAggregate(w, f, decide).record;
       expect(validateFullMatchRecord(expected)).toEqual([]);
-      // Watching, the lines asked for and the measurement switch never change the path.
-      for (const observe of [false, true])
-        for (const keep of [false, true]) {
-          const p = simulateMatch(w, f, observe, keep, decide);
-          expect(p.record).toEqual(expected);
-          expect(p.frames).toEqual([]);
-        }
-      setOwnLeagueEngine('grid');
-      try {
-        expect(simulateMatch(w, f, true, true, decide).record).toEqual(expected);
-      } finally {
-        setOwnLeagueEngine(OWN_LEAGUE_ENGINE);
+      // Watching and the lines asked for never change the path.
+      for (const observe of [false, true]) {
+        const p = simulateMatch(w, f, observe, decide);
+        expect(p.record).toEqual(expected);
+        expect(p.frames).toEqual([]);
       }
     }
     const ownCup = (w.cups ?? []).flatMap((c) => c.fixtures).find((f) => isOwn(w, f))!;
@@ -208,8 +201,8 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       // The released revision 11 settles it on the result path and writes its script and material
       // whether watched or not; watching adds the script and staging inputs, never frames
       // (→MATCH-7, MATCH-22, MATCH-38, T838).
-      const quiet = simulateMatch(w, f, false, false, decide);
-      const watched = simulateMatch(w, f, true, true, decide);
+      const quiet = simulateMatch(w, f, false, decide);
+      const watched = simulateMatch(w, f, true, decide);
       expect(watched.record).toEqual(quiet.record);
       expect(quiet.record.model).toBe(MATCH_MODEL_REVISION);
       expect(quiet.record.material).toBeDefined();
