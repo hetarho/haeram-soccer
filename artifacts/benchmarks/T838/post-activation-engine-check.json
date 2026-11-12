@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "commit": "4e3d88fbe7aef5d883fc03033541f2bbbb67e507",
+    "tree": "ade47297d7283a10f67d1f9c6793778f23d268e7",
+    "dirty": false
+  },
+  "command": "pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/rs12/released-engine-tests.json",
+  "cutoff": "2026-11-12T09:26:00+09:00",
+  "receipt": "check-281aeba0-c391-4c54-9b17-59dd69647ebb",
+  "exitCode": 1,
+  "timedOut": true,
+  "stale": false,
+  "elapsedMs": 444811,
+  "completed": false,
+  "failureSetComplete": false,
+  "observedFailureCount": 13,
+  "failures": [
+    {
+      "file": "packages/engine/src/calendar.fast-path.test.ts",
+      "title": "retains identical match, player and season facts over a few rounds when the fast path skips motion"
+    },
+    {
+      "file": "packages/engine/src/season.test.ts",
+      "title": "captures the own league result, observed or not, and nothing for other matches"
+    },
+    {
+      "file": "packages/engine/src/season.test.ts",
+      "title": "dispatches every non-own competition to aggregate"
+    },
+    {
+      "file": "packages/engine/src/season.test.ts",
+      "title": "settles a fixture once"
+    },
+    {
+      "file": "apps/web/src/runtime/client.test.ts",
+      "title": "keeps a revealed playback of this career across a reload that holds its match"
+    },
+    {
+      "file": "packages/engine/src/world.test.ts",
+      "title": "observed and fast outcomes agree and all metric totals are event-backed"
+    },
+    {
+      "file": "scripts/export-settled.test.ts",
+      "title": "the engine's detail equals the exported files"
+    },
+    {
+      "file": "apps/web/src/features/match-viewer/ui/matchCharts.test.ts",
+      "title": "reveals data only up to the presented frame"
+    },
+    {
+      "file": "apps/web/src/features/match-viewer/ui/matchCharts.test.ts",
+      "title": "splits rolling possession between the sides"
+    },
+    {
+      "file": "apps/web/src/features/match-viewer/ui/matchCharts.test.ts",
+      "title": "counts recorded shots cumulatively"
+    },
+    {
+      "file": "apps/web/src/features/match-viewer/ui/matchCharts.test.ts",
+      "title": "draws the away series dashed and names each side by its worn shirt swatch"
+    },
+    {
+      "file": "apps/web/src/features/match-viewer/lib/moments.test.ts",
+      "title": "orders recorded goals, keeps penalty decisions distinct and maps actual samples"
+    },
+    {
+      "file": "apps/web/src/features/match-viewer/lib/moments.test.ts",
+      "title": "lists red cards and substitutions with their labels"
+    }
+  ],
+  "output": "post-activation-engine-output.txt"
+}

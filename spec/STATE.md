@@ -16,7 +16,6 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| rs12 | ihaelam-ui-MacBookPro | autopilot | 2026-11-11T23:08Z | 2026-11-12T00:04Z | T838 |
 
 ## inbox
 - 261112 decided T849 ARCH-21: the 300-fixture expected-total check fits every numerical marginal within 9.72e-9, but its 88 pointwise 95% comparisons reject seven rows → keep the same 300 fixtures and 3% margin, use simultaneous paired 95% confidence with Bonferroni and the existing normalQuantile, and add a 100-case exact-marginal property check (alt: tune simulation or seeds to fit this sample, rejected). No football parameter or game output changes for this statistical test correction.
@@ -950,7 +949,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T838 | release: the scripted match model becomes the game's | MATCH SAVE HIST ARCH | T837 | doing@261112.rs12 |
+| T838 | release: the scripted match model becomes the game's | MATCH SAVE HIST ARCH | T837 | todo |
 | T839 | web on the scripted model: browser journeys, goal scenes, the influence map and the glossary | MATCH WEB LAB PLAYER ARCH | T838 | todo |
 | T840 | the released model's verdict: the own club on the same curve, the script's invention, the picture's limits | MATCH ARCH | T839 | todo |
 | T841 | remove the match prototype | ARCH | T840 | todo |
@@ -988,6 +987,7 @@
 - implement-task T838
 
 ## log
+- 261112 T838 checkpoint: revision 11 candidate/default and activation regressions, explicit historical grid pins, refreshed result digests and all prepared packs; 1756 affected units/static/build and final-source 200-fixture audit pass. Broader engine run cut off at 09:26 with 13 observed failures, incomplete; capacity/final throughput remain. Handoff requested by 09:30, todo for remote pickup, main unchanged. rs12
 - 261112 T849 done: fixed-touch livelock, booked departure and recorded kickoff incidents repaired; joint confidence corrected without retuning football. Full batch at 64d30c26 passes 4476 tests plus 334 Chromium journeys and all static/build stages; checkpoint pushed to handoff, T838–T845 remain. rs12
 - 261112 T848 done: entrant-safe fixed chains, booked departure boundary, explicit prefix counters with settled guards retained, converged place marginals and corrected tackle cell; lab defaults refreshed, 1,485 affected unit tests/type/lint/format/i18n/build pass, original integration acceptance pending host batch, no push cc12
 - 261112 T837 done: 2 h throughput exploration, eight writer/two shape cuts kept and five noise trials reverted; own CPU ×0.2735, raw motion diagnostic ×0.2389, sampled hashes unchanged, 1,568 affected unit tests/type/lint/format/i18n pass; full staging baseline prefix-ledger failure explicitly open for T838, raw evidence/report retained, no push cc12
@@ -1007,4 +1007,3 @@
 - 261111 T826 done
 - 261111 T825 done: integer detail rows and exact ledger/attribution recount, stints/incidents, penalty links and optional shoot-out trace; exporter consumes detail; six legacy hashes unchanged, 141 affected unit files/1,317 tests and type/lint/format/i18n pass; 60-fixture and ten-file byte-identity integration gates written but not run, deferred to the host cc12
 - 261111 T824 done: revision 11 declared but inactive; aggregate place weights fitted by class/period, mirrored ball wins and different-passer offside pairs; six pre-change attribution+trace hashes unchanged, 168 affected unit files/1,577 tests and 7 focused cases pass, type/lint/format/i18n pass; two statistical integration acceptance items remain open for the host batch, no measured locality claim cc12
-- 261111 T823 done: retained staging shape leaf completed with explicit role defaults and 18 isolated tests; 5,720 prototype positions agree within 1e-9, all 40 cells across 16 tactic pairings agree through placeFor; the new 4-2-3-1 fits its attacking depth inside the onside line so its central slots stay distinct; type/lint/format/i18n and changed unit checks pass, final batch deferred to the host cc12
