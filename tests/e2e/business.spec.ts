@@ -1,4 +1,4 @@
-import { watchNext } from './watch';
+import { STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { importLegacyDirection } from './legacy-direction';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -66,7 +66,10 @@ async function playNext(page: Page) {
   // over the investment controls while their export/navigation is in flight (CI Firefox).
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+  // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+    timeout: STAGING_TIMEOUT_MS,
+  });
 }
 
 test('older office and operations addresses open where their work lives now', async ({ page }) => {

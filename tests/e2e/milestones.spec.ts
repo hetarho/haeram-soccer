@@ -1,5 +1,5 @@
 import { clubhouseTab } from './competition-navigation';
-import { watchNext } from './watch';
+import { STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { delegateSales, dismissMatchReport } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -137,7 +137,10 @@ for (const viewport of [
 
     await watchNext(page, { manual: true });
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+    // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+      timeout: STAGING_TIMEOUT_MS,
+    });
     await clubhouseTab(page).click();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();

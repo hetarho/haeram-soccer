@@ -86,6 +86,11 @@ for (const viewport of VIEWPORTS)
 
     // Manual mode: leaving the match never resumes the calendar, so the saved career stays put.
     await watchNext(page, { manual: true });
+    // The board reads — : — until the worker delivers the first staged frame (→MATCH-39); the
+    // presented scores start at that kick-off.
+    await expect(page.getByTestId('match-score').locator('strong')).toHaveText('0 : 0', {
+      timeout: STAGING_TIMEOUT_MS,
+    });
     // Scores, cues and ownership the page presents, each as it changes.
     await page.evaluate(() => {
       const score = document.querySelector('[data-testid="match-score"]')!;

@@ -73,7 +73,7 @@ import { ALL_DELEGATED, configureResponsibilities } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { areaPage, leaveOffice } from './office';
 import { fundClub, startFlow } from './start';
-import { closeMatchDetails, openMatchDetails } from './watch';
+import { closeMatchDetails, openMatchDetails, STAGING_TIMEOUT_MS } from './watch';
 
 /**
  * KIT-9/12/15, WEB-86/87/108, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played
@@ -187,7 +187,10 @@ test.describe(() => {
       await expectWorn(visiblePitch(page), worn, unworn);
       await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
       await page.getByTestId('match-next-action').click();
-      await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+      // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+      await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+        timeout: STAGING_TIMEOUT_MS,
+      });
 
       // A designer's draft is adopted; the already recorded appearance remains frozen (→KIT-9/12).
       // No figure, crest or keeper of that match wears a commissioned colour.

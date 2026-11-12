@@ -278,9 +278,10 @@ test('synthetic two playing-coach years plus full-time service excludes unemploy
 test('playing retirement retains the unexpired coach job at the real season close', async ({
   page,
 }) => {
-  // Nearly three seasons are lived first; with the own league on the grid engine (T218) they take
-  // about 30 s before the page opens when the world cache is cold.
-  test.setTimeout(180000);
+  // Nearly three seasons are lived first; on the released model they take about 76 s locally
+  // before the page opens when the world cache is cold, and about three times that on a CI runner,
+  // where 180 s ran out while the page was still loading (WebKit, run 43278670820).
+  test.setTimeout(420_000);
   const { retiringCombinedCareer, exportedCareer } = await import('./career-fixtures');
   const { importResponsibilityCareer } = await import('./responsibility-fixtures');
   const { finishSeason } = await import('./season-progression');

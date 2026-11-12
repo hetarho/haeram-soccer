@@ -4,6 +4,8 @@ import { CAREER_YEAR } from './career.testkit';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { assertCapacities, input } from './world.testkit';
 describe('world progression', () => {
+  // Four seasons on the released model from a cold world cache take about 105 s locally and ran past
+  // the integration tier's 300 s on a CI runner (run 43278670820), so the case allows 600 s.
   it('conserves league capacities across promotions and retains records', () => {
     // The world after each of four seasons (checks only read it, so one chain plays them all), on
     // the released model: league capacities, not the match model, are the subject.
@@ -30,5 +32,5 @@ describe('world progression', () => {
     }
     expect(w.year).toBe(CAREER_YEAR + 4);
     expect(w.history[0].year).toBe(CAREER_YEAR);
-  });
+  }, 600_000);
 });

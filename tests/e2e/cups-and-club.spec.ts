@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
 import { chooseOption } from './select';
 import { horizontalOverflow } from './layout';
-import { watchNext } from './watch';
+import { STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { startCareer, type CareerStart } from './start';
 
 /** Takes a club over on `seed`; returns its name. */
@@ -175,7 +175,10 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     // a match is played our own sheet names its opponent (→WEB-58).
     await watchNext(page, { manual: true });
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+    // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+      timeout: STAGING_TIMEOUT_MS,
+    });
     await page.getByRole('button', { name: '홈으로', exact: true }).click();
     await openLeague(page);
     await page
