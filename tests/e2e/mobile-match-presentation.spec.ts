@@ -306,12 +306,18 @@ for (const viewport of [
     expect(boardBox.x).toBeGreaterThanOrEqual(0);
     expect(boardBox.x + boardBox.width).toBeLessThanOrEqual(viewport.width);
     const cue = page.getByTestId('goal-cue');
-    await expect(cue).toBeVisible({
-      timeout: (openingGoal!.minute * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000,
-    });
     // The hold lasts one real second, less than the steps below take on a slow runner (CI
     // 41524887826 measured a cue already gone): read the opening goal's cue as the page saw it.
-    await expect.poll(async () => (await cues.looks()).length).toBeGreaterThan(0);
+    // It comes at the goal's minute at the default speed; on CI a frame advances the clock at most
+    // FRAME_STEP_LIMIT_MS, and WebKit drew the 1280 pitch at about three frames a second there, so
+    // its clock reached only 2′ 16 s after the first staged frame (CI 43288257211): CI waits three
+    // times as long, as playwright.config scales every project's budget.
+    const cueWait = (openingGoal!.minute * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000;
+    await expect
+      .poll(async () => (await cues.looks()).length, {
+        timeout: process.env.CI ? 3 * cueWait : cueWait,
+      })
+      .toBeGreaterThan(0);
     const [opening] = await cues.looks();
     expect(opening!.shown).toBe(true);
     expect(opening!.text).toContain('GOAL');

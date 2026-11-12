@@ -20,6 +20,8 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261113 decided ARCH-23 ARCH-30 MATCH-39 T858: scripted-match.spec still missed its 10 s CI watch-to-playing-pitch wait in all three WebKit attempts of CI run 43288257211 (Chromium and Firefox passed), the trace showing the canvas only 8.1 s after the watch click while the engine worker settled the match day (1.4 s in local Node) and the staging worker chunk loaded at +7.9 s; the 1280 goal cue missed its wall-clock wait as WebKit drew the pitch at about three frames a second, each frame advancing the clock at most `FRAME_STEP_LIMIT_MS` → CI waits follow playwright.config's rule that a CI wait never fails a journey for time: 30 s for the pitch to play and for its first running minute, three times the goal cue's nominal wait, the local 3 s/9 s budgets unchanged (alt: 10 s kept and the WebKit settlement made faster, a product speed-up outside a CI fix with no browser profile behind it | coalesce the staging worker's publications, which acts only after the 8 s settlement); the scoreboard read caught inside a recolour is taken again n813
+- 261113 suggest MATCH-39 WEB-32 T858: every staging reply (two minutes) publishes a new playback, and `Pitch` recomputes `presentationSamples`, `deadBallBeats`, `goalInstants`, `figureActionWindows` and `gaitDistances` over all frames staged so far, so main-thread work grows with the square of the match (Node, scripted-journey's 103 frames of about 300 KB each: 0.34 s of recompute and 0.15 s of cloning over the 52 publications, against 0.03 s publishing at each doubling); a presentation task could coalesce publications in `PlaybackStaging` or make those reads incremental, WebKit on CI being where it shows n813
 - 261113 decided ARCH-23 ARCH-30 MATCH-39 T857: scripted-match.spec missed its 3 s watch-to-playing-pitch budget in every browser of CI run 43278670820 (shared runners stage the first minutes slower; the continuity journey on the same runners saw its first staged frame within 10 s), while T834 set 3 s on the batch's local Chromium → keep 3 s off CI and allow 10 s on CI (`PLAYING_BUDGET_MS`), as playwright.config already scales its expect timeout for CI (alt: keep 3 s everywhere, failing every CI run on runner speed | drop the latency check, losing the staged-ahead guard); the other failures were journeys missing the shared `STAGING_TIMEOUT_MS` at the final whistle, the continuity journey recording the — : — preparing board, and cold-cache world builds past their case timeouts n813
 - 261113 suggest MATCH-39 MATCH-38 T854: seed set-piece-defence-10's own match (ENG, every responsibility delegated, scripted-aggregate-11, 0 : 0) cannot be staged — `cornerScene` → `keeperOf` (packages/engine/src/staging/participants.ts) throws `집계 원장 불일치: staging:input` with no defending keeper present at a corner, so watching such a match stops on a staging error; a fix task should find which script leaves the keeper slot empty at that corner (repro: `careerWorld({ country: 'ENG', seed: 'set-piece-defence-10' })`, all delegated, `stagedPlayback(advanceToNextMatch(w))`)
 - 261113 decided STAFF-51 ARCH-21 T851: how `staff.test`'s basic-staff and no-staff seasons compare once a vacant post acts 안정 지향 and basic volunteers carry their own temperaments and names in the 단장's reports → hold the basic 단장 and youth director 안정 지향 and compare the two seasons with the basic delegates' names read as 공석, so only what STAFF-51 states differs (alt: make an absent staff list read as basic volunteers in `staffMember`, an engine change for saves no new career writes | drop the equality, losing the check that nothing else differs) n813
@@ -980,12 +982,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T858 | Fix CI failure | ARCH | - | todo |
 
 ## next
-- gusta-implement-task T858
+- no runnable task: plan next with gusta-sketch
 
 ## log
+- 261112 T858 done
 - 261112 T857 done
 - 261112 T856 done
 - 261112 T855 done
@@ -1005,4 +1007,3 @@
 - 261112 gusta-update-ssot ARCH r40 (ARCH-30✎ project-only branch, batch-lock, work-group and CI-wait rules→gusta default tiers; flow✎ Planning, Verification)
 - 261112 settings: land main, push true, plan follows land (next retired); this machine continues from the hf12 hand-off
 - 261112 hf12 handed off to origin/wip/hf12 at 21:00 KST: T838–T844 done (release, browser migration, verdict, prototype removed, leaves out of grid/, tests and scripts off the earlier models); T845 and T848 todo; no final gate or main push yet hf12
-- 261112 T844 done

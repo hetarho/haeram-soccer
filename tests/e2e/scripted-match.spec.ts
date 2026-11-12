@@ -8,11 +8,15 @@ import { openWatchAction, openMatchDetails, closeMatchDetails, presentedMinute }
 import { exportWorld } from './club-identity-helpers';
 
 /**
- * Watch to a playing pitch: 3 s on the batch's local Chromium run (T834). Shared CI runners stage
- * the first minutes slower in every browser (all three missed 3 s in run 43278670820, while the
- * continuity journey's first staged frame came within its 10 s wait), so CI allows that 10 s.
+ * Watch to a playing pitch: 3 s on the batch's local Chromium run (T834), which guards the latency.
+ * On shared CI runners the journey only checks that the pitch plays, by playwright.config's CI rule
+ * that a wait never fails a journey for time: all three browsers missed 3 s (CI 43278670820), and
+ * WebKit missed 10 s in all three attempts (CI 43288257211), its canvas appearing only 8.1 s after
+ * the watch click while the engine worker settled the match day (1.4 s in local Node).
  */
-const PLAYING_BUDGET_MS = process.env.CI ? 10_000 : 3000;
+const PLAYING_BUDGET_MS = process.env.CI ? 30_000 : 3000;
+/** The running minute played below within 9 s locally; CI waits by the same rule as above. */
+const MINUTE_BUDGET_MS = process.env.CI ? 30_000 : 9000;
 
 /** Actual worker/Canvas/save integration; authored here, run only by the coordinator's batch. */
 test('stages a scripted own match ahead of its theatre and retains the Node result', async ({
@@ -47,7 +51,7 @@ test('stages a scripted own match ahead of its theatre and retains the Node resu
   const minute = await presentedMinute(page),
     before = await seconds();
   // One minute at 2x is six real seconds; dead-ball beats may shorten it, a goal adds its hold.
-  await expect.poll(seconds, { timeout: 9000 }).toBeGreaterThanOrEqual(before + 60);
+  await expect.poll(seconds, { timeout: MINUTE_BUDGET_MS }).toBeGreaterThanOrEqual(before + 60);
   expect(await presentedMinute(page)).not.toBe(minute);
 
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();

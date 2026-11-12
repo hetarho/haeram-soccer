@@ -143,6 +143,14 @@ export async function expectViewFits(page: Page) {
  * ball both halves wear one colour, and recolouring the board never moves it or the pitch.
  */
 export async function expectBallSideScoreboard(page: Page) {
+  // WebKit once read the away half partway through its recolour after finding nothing moving
+  // (pixel at 1280, CI 43288257211: rgb(168, 175, 188), between its navy and white, beside a white
+  // home half), so a reading caught inside a recolour is taken again; the halves must still come
+  // to one colour, and the board must still hold still when recoloured.
+  await expect(async () => readBallSideScoreboard(page)).toPass({ timeout: 10_000 });
+}
+
+async function readBallSideScoreboard(page: Page) {
   const board = await page.getByTestId('match-score').evaluate(async (scoreboard) => {
     const canvas = scoreboard.parentElement!.querySelector('canvas')!;
     // Read a still board and pitch: WebKit resamples a page's entrance still sliding them in when
