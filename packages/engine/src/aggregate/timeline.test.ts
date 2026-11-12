@@ -14,7 +14,7 @@ import { deriveTeamFacts } from './ledger';
 import { attributePlayerFacts } from './players';
 import { attributionFixture } from './players.testkit';
 import { aggregateStreams } from './team';
-import { commonSpan, pairParticipants } from './timeline';
+import { commonSpan, pairParticipants, playingSpan } from './timeline';
 import type { AggregateAttributionTrace, AggregateSide, AggregateStreams } from './types';
 
 /** Hand-built actions and changing XIs only: no world, team draw or calendar progression. */
@@ -247,4 +247,108 @@ describe('joint participation before the record exists', () => {
       expect(a.draws).toBe(b.draws);
     },
   );
+});
+
+/** A deterministic `choose` that records its weights: the heaviest line, -1 when none weighs. */
+function heaviest(calls: number[][]) {
+  return (weights: readonly number[]) => {
+    calls.push([...weights]);
+    let best = -1;
+    weights.forEach((w, line) => {
+      if (w > 0 && (best < 0 || w > weights[best]!)) best = line;
+    });
+    return best;
+  };
+}
+const refuse = () => {
+  throw new Error('a matchable draw must not draw');
+};
+
+describe('common playing time at its edges (→MATCH-16, MATCH-27)', () => {
+  const full = { from: 0, to: 90 };
+
+  it('overlapping spells share their intersection; slot changes keep one spell', () => {
+    expect(commonSpan({ from: 0, to: 62 }, { from: 45, to: 90 })).toEqual({ from: 45, to: 62 });
+    expect(commonSpan(full, { from: 10, to: 80 }, { from: 30, to: 120 })).toEqual({
+      from: 30,
+      to: 80,
+    });
+    const moved = playingSpan([
+      { from: 0, to: 40 },
+      { from: 40, to: 105 },
+    ]);
+    expect(moved).toEqual({ from: 0, to: 105 });
+    // A period's bounds clip a spell; a man who never played in it has no span there.
+    expect(commonSpan({ from: 90, to: 120 }, moved)).toEqual({ from: 90, to: 105 });
+    const none = commonSpan({ from: 90, to: 120 }, playingSpan([]));
+    expect(none.to - none.from).toBeLessThan(0);
+  });
+
+  it('the man leaving at 79 and the man coming on at 79 share none and are never paired', () => {
+    const leaving = { from: 0, to: 79 },
+      coming = { from: 79, to: 90 };
+    const span = commonSpan(leaving, coming);
+    expect(span.to - span.from).toBe(0);
+    // Both drawn on each side: the matching crosses over, never leaving with coming.
+    expect(
+      pairParticipants([1, 1], [1, 1], [leaving, full], [coming, full], [1, 1], refuse),
+    ).toEqual([
+      { actor: 0, other: 1 },
+      { actor: 1, other: 0 },
+    ]);
+    // Only the incoming drawn: the leaving man's partner is drawn again, never the incoming.
+    const calls: number[][] = [];
+    expect(
+      pairParticipants([1], [0, 1], [leaving], [full, coming], [1, 1], heaviest(calls)),
+    ).toEqual([{ actor: 0, other: 0 }]);
+    expect(calls).toEqual([[79 / 90, 0]]);
+  });
+
+  it('a matchable draw keeps every count and draws nothing, even when a match is reassigned', () => {
+    // The first actor meets either winner, the second only the first: taken in order, the first
+    // actor's early match would strand the second; the augmenting path moves it.
+    const pairs = pairParticipants(
+      [2, 1],
+      [1, 2],
+      [full, { from: 0, to: 40 }],
+      [
+        { from: 0, to: 40 },
+        { from: 50, to: 90 },
+      ],
+      [1, 1],
+      refuse,
+    );
+    expect(pairs).toEqual([
+      { actor: 0, other: 1 },
+      { actor: 0, other: 1 },
+      { actor: 1, other: 0 },
+    ]);
+  });
+
+  it("an unmatched second man is drawn only among men sharing the first's spell", () => {
+    const actor = { from: 0, to: 62 };
+    const recipients = [full, { from: 62, to: 90 }, { from: 30, to: 90 }];
+    // The drawn winner came on at 62: each other man weighs his weight × the share of his own
+    // spell he has in common with the actor; the man who came on weighs nothing.
+    const calls: number[][] = [];
+    expect(
+      pairParticipants([1], [0, 1, 0], [actor], recipients, [1, 50, 3], heaviest(calls)),
+    ).toEqual([{ actor: 0, other: 2 }]);
+    expect(calls).toHaveLength(1);
+    [62 / 90, 0, (3 * 32) / 60].forEach((w, line) => expect(calls[0]![line]).toBeCloseTo(w, 12));
+    // No positive role weight among them: shared minutes alone, still only among them.
+    const fallback: number[][] = [];
+    expect(
+      pairParticipants([1], [0, 1, 0], [actor], recipients, [0, 50, 0], heaviest(fallback)),
+    ).toEqual([{ actor: 0, other: 0 }]);
+    expect(fallback).toEqual([
+      [0, 0, 0],
+      [62, 0, 32],
+    ]);
+    // Nobody shares his time, or the counts differ: no pair is made.
+    expect(() =>
+      pairParticipants([1], [1], [{ from: 0, to: 10 }], [{ from: 20, to: 90 }], [1], heaviest([])),
+    ).toThrow();
+    expect(() => pairParticipants([2], [1], [full], [full], [1], heaviest([]))).toThrow();
+  });
 });

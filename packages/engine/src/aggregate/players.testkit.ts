@@ -1,9 +1,30 @@
-import type { Tactic } from '../../../contracts/src/types';
-import { DEFAULT_SUB_POLICY, eraRules } from '../match/rules';
+import type { Fixture, Tactic, World } from '../../../contracts/src/types';
+import { prepareMatch } from '../match';
+import { DEFAULT_SUB_POLICY, eraRules, type DecideRule } from '../match/rules';
 import { FORMATIONS } from '../player';
+import { matchdayRosters, playAggregate } from './engine';
 import { buildAggregateInput, fullParticipation } from './input';
 import { deriveTeamFacts } from './ledger';
-import type { AggregateLedger, AggregateMove, AggregatePlan, AggregateSide } from './types';
+import type {
+  AggregateAttributionTrace,
+  AggregateLedger,
+  AggregateMove,
+  AggregatePlan,
+  AggregateSide,
+} from './types';
+
+/**
+ * One world fixture played on the aggregate path with its attribution traced: the trace of the
+ * settled players' facts themselves (tracing draws nothing, T833). `decide` makes it a knockout
+ * tie, so a level one plays extra time.
+ */
+export function tracedAggregate(w: World, f: Fixture, decide?: DecideRule) {
+  const prepared = prepareMatch(w, f);
+  const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+  const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
+  const match = playAggregate(w, f, prepared, rosters, decide, undefined, trace);
+  return { match, trace };
+}
 
 /** Small synthetic attribution-only fixture: no world, team kernel or participation draw. */
 export function attributionFixture(index = 0) {
