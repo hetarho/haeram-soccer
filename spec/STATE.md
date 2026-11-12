@@ -978,9 +978,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T854 | Fix the match-scene journeys the final gate failed | ARCH | - | todo |
 
 ## next
-- no runnable task: plan next with gusta-sketch
+- gusta-implement-task T854
 
 ## log
 - 261112 T853 done
