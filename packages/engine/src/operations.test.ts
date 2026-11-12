@@ -94,14 +94,18 @@ describe('club decisions', () => {
     });
   /**
    * An older campaign three of its four rounds in, with the commands' revision before it started:
-   * the rounds before its settling one only lead there. `busy` read and changed settings first.
+   * the rounds before its settling one only lead there. `busy` read and changed settings first:
+   * its observation stops, not who decides, since a delegation change moves money by design (the
+   * 단장 plans a delegated work's money and settings, →ECON-39/40).
    */
   const campaignEve = (busy: boolean) =>
     cachedWorld(`campaign-eve:${busy}`, () => {
       const w = world();
       if (busy) {
+        const settings = staffAuthority(2);
+        settings.observations = { matchEve: false, windowOpen: true };
         operate(w, { type: 'read-inbox' });
-        operate(w, { type: 'settings', settings: staffAuthority(1) });
+        operate(w, { type: 'settings', settings });
         operate(w, { type: 'read-inbox' });
       }
       const revision = w.revision;
@@ -115,7 +119,7 @@ describe('club decisions', () => {
     expect(w.campaigns).toHaveLength(0);
     expect(w.events.some((e) => e.kind === 'campaign-result')).toBe(true);
   });
-  it('settles an older campaign by its round and kind, so earlier commands do not change its result', () => {
+  it('settles an older campaign by its round and kind, so earlier commands that keep who decides do not change its result (→ECON-40)', () => {
     const quiet = campaignEve(false),
       eager = campaignEve(true);
     expect(eager.revision).toBe(quiet.revision + 3);

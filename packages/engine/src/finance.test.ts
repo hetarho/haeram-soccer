@@ -34,6 +34,7 @@ import {
   sponsorOffers,
 } from './index';
 import { holdRows, sellPlayer, staffAuthority, startWork } from './testing';
+import { coachWage } from './staff';
 import { addEvent } from './events';
 import { advanceEconomy } from './economy';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -234,15 +235,18 @@ describe('earned, auditable club finances', () => {
     const w = lastRoundWorld();
     w.cash = '999999999';
     w.settings = staffAuthority(4);
-    // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
-    // is 3 better), the other no longer meets 코치 기조 최고 수준 and is replaced.
-    w.direction = { coaches: 'elite' };
+    // Paid coaches whose contracts end at this close. The 단장 sets 코치 기조 while staff
+    // appointments are delegated (→ECON-39): at the default request, 표준 (ability 55+, the
+    // cheapest first), whatever his temperament. The one the staff keep meets it with no room to
+    // grow, so his going wage stays within 10% of the cheapest candidate's; the other is below 55
+    // and is replaced.
     w.staff = w.staff!.map((member) =>
       member.role === 'attack'
         ? {
             ...member,
-            ability: 90,
-            wage: quote(clubOf(w).country, w.year, 90),
+            ability: 56,
+            potential: 56,
+            wage: coachWage(w, 56),
             until: w.year + 1,
           }
         : member.role === 'defense'

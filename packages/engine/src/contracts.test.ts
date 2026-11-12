@@ -70,6 +70,7 @@ import {
 } from './index';
 import { buyOffer, handTo, holdRows, staffAuthority } from './testing';
 import { financeProjection } from './projection';
+import { delegatePlan } from './delegation';
 import { askingMultiplier } from './world-market';
 import { locateOffer } from './scout-search';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -397,31 +398,40 @@ describe('contract talks (→CLUB-26)', () => {
     expect(tight.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
   });
 
-  it('declines a raise that takes the wage bill past 65% of the last 12 months’ revenue', () => {
-    /** Half a founding season played with `income` booked, so its year reads as twice that. */
-    const verdict = (income: (bill: bigint, raise: bigint) => bigint) => {
+  it('declines a raise that does not fit the squad share of the planned income (→CLUB-26, →ECON-33)', () => {
+    // The retired 65%-of-12-months ceiling is gone (CLUB-26 r68): the 단장 lets a raise through
+    // when it fits the room the squad share of this season's planned income leaves above the
+    // players' wage bill.
+    /** The talk answered with this season's plan resting on `revenue(bill, raise, share)`. */
+    const verdict = (revenue: (bill: bigint, raise: bigint, share: bigint) => bigint) => {
       const { w, p } = talking(80);
       holdRows(w, { direction: { renewal: 'keepAll' } });
       const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage),
-        bill = BigInt(wageBill(w));
-      w.income = income(bill, raise).toString();
-      expect(recentRevenue(w)).toBe((BigInt(w.income) * 2n).toString());
+        bill = BigInt(operatingCosts(w).playerWages),
+        share = BigInt(delegatePlan(w, 'contracts').share);
+      expect(raise).toBeGreaterThan(0n);
+      w.budgetPlan = { year: w.year, revenue: revenue(bill, raise, share).toString(), sales: '0' };
+      const plan = delegatePlan(w, 'contracts');
       newYear(w);
-      return { w, p, item: talkItems(w, p.id)[0] };
+      return { w, p, raise, plan, item: talkItems(w, p.id)[0] };
     };
-    // The bill after the raise, staff included, is just within 65% of the year: signed.
-    const within = verdict((bill, raise) => ((bill + raise) * 100n) / 65n / 2n + 1n);
+    // The squad share just covers the wage bill with the raise: signed.
+    const within = verdict((bill, raise, share) => ((bill + raise) * 10000n + share - 1n) / share);
+    expect(BigInt(within.plan.left)).toBeGreaterThanOrEqual(within.raise);
     expect(within.item.title).toContain('받아들였어요');
-    // A little less revenue and the staff decline, saying why.
-    const past = verdict((bill, raise) => ((bill + raise) * 100n) / 65n / 2n - 1000n);
+    // A little less planned income and the room is short of the raise: the 단장 declines, saying why.
+    const past = verdict((bill, raise, share) => ((bill + raise) * 10000n) / share - 10n);
+    expect(BigInt(past.plan.left)).toBeLessThan(past.raise);
     expect(past.item.title).toContain('거절했어요');
-    expect(past.item.detail).toContain('최근 12개월 수입');
-    expect(past.item.detail).toContain('65%');
+    expect(past.item.detail).toContain('이번 시즌 수입 예상');
+    expect(past.item.detail).toContain(`${past.plan.share / 100}%`);
     expect(past.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
-    // Staff wages count in the bill.
-    const costs = operatingCosts(past.w);
+    // Only the players' wages fill the squad share; the staff's are not part of it.
+    expect(past.plan.committed).toBe(operatingCosts(past.w).playerWages);
     expect(BigInt(wageBill(past.w))).toBe(
-      BigInt(costs.playerWages) + BigInt(costs.managerWage) + BigInt(costs.staffWages),
+      BigInt(operatingCosts(past.w).playerWages) +
+        BigInt(operatingCosts(past.w).managerWage) +
+        BigInt(operatingCosts(past.w).staffWages),
     );
     // Player trading is not revenue a wage bill rests on.
     const { w } = talking(80);

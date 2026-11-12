@@ -169,9 +169,10 @@ describe('the world before the takeover (→WORLD-13)', () => {
 });
 
 describe('a career that reaches the 1938/39 close', () => {
-  it('crosses the war: the season after it is 1946/47 and contracts stand still', () => {
+  it('crosses the war: the season after it is 1946/47 and contracts stand still, the restart window re-signing by the plan (→CLUB-26, →ECON-33)', () => {
     const w = toLastRound(founded(WARTIME.last));
-    const until = new Map(w.players.map((p) => [p.id, p.until]));
+    const until = new Map(w.players.map((p) => [p.id, p.until])),
+      wage = new Map(w.players.map((p) => [p.id, p.wage]));
     const manager = w.manager.until;
     vi.mocked(evolveClubs).mockClear();
     vi.mocked(ownerSettleGap).mockClear();
@@ -179,8 +180,20 @@ describe('a career that reaches the 1938/39 close', () => {
     expect([w.year, currentDay(w)]).toEqual([WARTIME.restart, 0]);
     expect(w.history.at(-1)!.year).toBe(WARTIME.last);
     expect(w.manager.until).toBe(manager + 7);
+    // Every contract moves on by the seven seasons not played. The restart opens the summer
+    // window, where the delegated 단장 may agree a talk the season's planned income has room for
+    // (CLUB-26 r68 retired the last-12-months ceiling, which read no revenue across the war): such
+    // a contract is new, signed at the restart, and never ends before the one it replaces.
     for (const p of w.players.filter((one) => one.status === 'active' && until.has(one.id)))
-      expect(p.until).toBe(until.get(p.id)! + 7);
+      if (p.wage === wage.get(p.id)) expect(p.until).toBe(until.get(p.id)! + 7);
+      else {
+        expect(p.until).toBeGreaterThanOrEqual(until.get(p.id)! + 7);
+        expect(
+          w.events.some(
+            (e) => e.year === WARTIME.restart && e.kind === 'contract' && e.title.includes(p.name),
+          ),
+        ).toBe(true);
+      }
     expect(evolveClubs).toHaveBeenCalledTimes(1);
     expect(ownerSettleGap).toHaveBeenCalledExactlyOnceWith(
       w,

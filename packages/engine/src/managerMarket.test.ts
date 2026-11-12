@@ -230,7 +230,7 @@ function delegated(seed: string, manager = 'standard', school = 'any') {
 }
 
 describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
-  it("choose the candidates the staff appoint, in the option's order", () => {
+  it("choose the candidates the staff appoint, in the option's order, within the plain cash stop (→ECON-41)", () => {
     const w = delegated('criteria-filter');
     withAgents(w, [
       { style: 'developer', ovr: 70, potential: 84, flexibility: 60, pride: 40, youth: 85 },
@@ -264,27 +264,29 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
         '감독 기조에 맞는 감독이 없어요 · 데이터 헤드코치 학파의 후보가 없어요 · 임시 감독 체제로 기다려요',
     });
 
-    // Only those the club can afford: cash after the fee still keeps the 단장's cutoff (12 rounds
-    // for a balanced one, 23 for a cautious one) with his wage in place of the current manager's.
+    // Only those the club can afford (→STAFF-18, →ECON-41): cash after the fee still covers 4
+    // rounds of fixed costs with his wage in place of the current manager's. The retired 재정 기조
+    // cutoffs (12 rounds for a balanced 단장, 23 for a cautious one) are gone: one plain stop,
+    // whatever his temperament.
     row(w, 'school', 'any');
     holdTemperament(w, 'director', 'balanced');
     const best = managerCandidates(w).find((m) => m.id === 'agent-1')!;
     const runway = (wage: string, rounds: bigint) =>
       ((BigInt(operatingCosts(w).annual) + BigInt(wage) - BigInt(w.manager.wage)) / 46n) * rounds;
-    w.cash = (BigInt(best.fee) + runway(best.wage, 12n)).toString();
+    w.cash = (BigInt(best.fee) + runway(best.wage, 4n)).toString();
     expect(ids(w)[0]).toBe('agent-1');
-    w.cash = (BigInt(best.fee) + runway(best.wage, 12n) - 1n).toString();
+    w.cash = (BigInt(best.fee) + runway(best.wage, 4n) - 1n).toString();
     expect(ids(w)[0]).toBe('agent-3');
-    w.cash = (BigInt(best.fee) + runway(best.wage, 12n)).toString();
+    w.cash = (BigInt(best.fee) + runway(best.wage, 4n)).toString();
     holdTemperament(w, 'director', 'cautious');
-    expect(ids(w)[0]).not.toBe('agent-1');
+    expect(ids(w)[0]).toBe('agent-1');
     holdTemperament(w, 'director', 'balanced');
     w.cash = '0';
     expect(ids(w)).toEqual([]);
     expect(managerPickPreview(w).reason).toContain('자금 여력에 맞는 후보가 없어요');
   });
 
-  it("검증된 승부사 poaches other clubs' managers, counting their compensation", () => {
+  it("검증된 승부사 poaches other clubs' managers, counting their compensation in the plain cash stop (→ECON-41)", () => {
     const w = delegated('criteria-poach');
     withAgents(w, [{ style: 'organizer', ovr: 40 }]);
     expect(managerMatches(w).every((m) => m.source === 'free')).toBe(true);
@@ -292,10 +294,11 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     const target = managerMatches(w)[0];
     expect(target.source).toBe('club');
     const club = w.clubs.find((c) => c.id === target.club)!;
-    // His compensation counts toward what the club must afford.
+    // His compensation counts toward what the club must afford: cash after it covers 4 rounds of
+    // fixed costs with his wage in place of the current one (→ECON-41).
     const runway =
       ((BigInt(operatingCosts(w).annual) + BigInt(target.wage) - BigInt(w.manager.wage)) / 46n) *
-      13n;
+      4n;
     const cost = BigInt(target.fee) + BigInt(target.compensation!);
     w.cash = (cost + runway - 1n).toString();
     expect(managerMatches(w).some((m) => m.id === target.id)).toBe(false);

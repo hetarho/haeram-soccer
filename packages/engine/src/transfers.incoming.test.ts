@@ -124,7 +124,7 @@ describe('incoming bids', () => {
     expect(() => respondBid(w, minimum.id, true)).toThrow(CLOSED);
   });
 
-  it('sets the staff sale bar from age, contract, cash and prospect status', () => {
+  it('sets the staff sale bar from age, contract, a cash crisis, the sales line and prospect status (→CLUB-18, →ECON-33, →ECON-41)', () => {
     const w = world('sale-bar');
     const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
     const reset = () => {
@@ -151,10 +151,30 @@ describe('incoming bids', () => {
     p.until = w.year + 2;
     expect(saleBar(w, p).percent).toBe(120);
     reset();
-    // Twenty rounds of fixed costs: above the warning, short of comfortable.
+    // The retired 재정 기조 runway steps are gone (CLUB-18 r68): only a cash crisis, a fixed-cost
+    // runway under 4 rounds (→ECON-41), cuts the bar for cash.
     const annual = BigInt(operatingCosts(w).annual);
-    w.cash = ((annual * 20n) / 46n).toString();
+    w.cash = ((annual * 4n + 45n) / 46n).toString();
+    expect(saleBar(w, p)).toMatchObject({ percent: 130, cuts: [] });
+    w.cash = ((annual * 4n) / 46n - 1n).toString();
+    expect(saleBar(w, p)).toMatchObject({ percent: 110 });
+    reset();
+    // The players' wage bill above the 단장's sales line (60% of the planned income at 균형,
+    // →ECON-33) cuts 10 points, more than 10 points above it 20.
+    const wages = BigInt(operatingCosts(w).playerWages),
+      plan = (percent: bigint) =>
+        (w.budgetPlan = {
+          year: w.year,
+          revenue: ((wages * 100n) / percent).toString(),
+          sales: '0',
+        });
+    plan(55n);
+    expect(saleBar(w, p)).toMatchObject({ percent: 130, cuts: [] });
+    plan(65n);
     expect(saleBar(w, p)).toMatchObject({ percent: 120 });
+    plan(75n);
+    expect(saleBar(w, p)).toMatchObject({ percent: 110 });
+    delete w.budgetPlan;
     reset();
     p.born = w.year - 19;
     p.potential = overall(p) + 20;

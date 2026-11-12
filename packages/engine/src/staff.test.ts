@@ -37,6 +37,9 @@ import {
   STYLE_INFO,
 } from './index';
 import { lastRound, world } from './staff.testkit';
+import { holdTemperament } from './delegation.testkit';
+import { staffMember } from './staff-info';
+import { message } from '../../contracts/src/messages';
 import { scoutReach } from './scout-search';
 import { handTo } from './testing';
 
@@ -103,10 +106,15 @@ describe('coaching staff', () => {
     expect(Object.is(staffEffects(coach(world(), 'fitness', 45)).recoveryBonus, 0)).toBe(true);
   });
 
-  it('plays a season identically with basic staff and with no staff at all (older saves)', () => {
-    // Before delegation existed the owner decided everything.
-    const basic = cachedWorld('neutral-season:basic', () => {
+  it('plays a season identically with basic staff and with no staff at all (older saves), whose vacant posts act 안정 지향 (→STAFF-51)', () => {
+    // Without staff the 단장's and the youth director's posts are vacant, and a vacant post acts
+    // 안정 지향 in the plans (→STAFF-51). Basic volunteers carry their own temperaments, so the basic
+    // 단장 and youth director are held 안정 지향 too; each is then named in his reports, where a
+    // vacant post reads 공석, and nothing else differs.
+    const basic = cachedWorld('neutral-season:basic-cautious', () => {
         const w = world('neutral-season');
+        holdTemperament(w, 'director', 'cautious');
+        holdTemperament(w, 'youth', 'cautious');
         return lastRound(w);
       }),
       old = cachedWorld('neutral-season:old', () => {
@@ -118,7 +126,10 @@ describe('coaching staff', () => {
     simulateSeason(old);
     expect(basic.staff).toHaveLength(8);
     expect(old.staff).toBeUndefined();
-    expect(canonical({ ...basic, staff: undefined })).toBe(canonical(old));
+    let read = canonical({ ...basic, staff: undefined });
+    for (const post of ['director', 'youth'] as const)
+      read = read.replaceAll(staffMember(basic, post)!.name, message('team.vacant'));
+    expect(read).toBe(canonical(old));
     validateWorld(basic);
     validateWorld(old);
   });

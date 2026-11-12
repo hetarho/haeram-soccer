@@ -92,7 +92,10 @@ describe('operating expenses (→ECON-30)', () => {
     expect(BigInt(warned.cost.payments.expenses)).toBeGreaterThan(0n);
     warned.settle(perRound * 13n - 1n);
     expect(warned.w.events.some((e) => e.kind === 'cash-warning')).toBe(true);
-    expect(warned.w.inbox!.at(-1)!.detail).toContain(moneyLabel(warned.w, warned.cost.nextRound));
+    // The warning is the round's finance item; the 단장's first plan of the season may report
+    // after it in the same settled round (→ECON-40).
+    const warning = warned.w.inbox!.findLast((item) => item.kind === 'finance');
+    expect(warning!.detail).toContain(moneyLabel(warned.w, warned.cost.nextRound));
     // Debt within half a year of every fixed cost, expenses included, is not yet bankruptcy.
     const annual = BigInt(warned.cost.annual),
       without = annual - BigInt(warned.cost.expenses);
@@ -113,7 +116,9 @@ describe('operating expenses (→ECON-30)', () => {
     ).toBe(false);
     generous.settle(perRound * 13n);
     expect(generous.w.events.some((e) => e.kind === 'cash-warning')).toBe(true);
-    expect(generous.w.inbox!.at(-1)!.detail).toContain(moneyLabel(generous.w, dearer.toString()));
+    expect(generous.w.inbox!.findLast((item) => item.kind === 'finance')!.detail).toContain(
+      moneyLabel(generous.w, dearer.toString()),
+    );
     expect(BigInt(generous.cost.annual) / 2n).toBeGreaterThan(annual / 2n + 1n);
     expect(start(5).settle(-(annual / 2n + 1n)).bankrupt).toBeUndefined();
   });

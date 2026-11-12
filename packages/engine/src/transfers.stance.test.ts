@@ -2,7 +2,7 @@ import { lineOf } from './player';
 import { staffAuthority } from './testing';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
-import type { World } from '../../contracts/src/types';
+import type { InboxItem, World } from '../../contracts/src/types';
 import {
   activePlayers,
   advanceDays,
@@ -55,12 +55,24 @@ describe('transfer stance', () => {
       (p) => lineOf(p.position) === 'MF' || lineOf(p.position) === 'FW',
     );
     for (const p of listed) operate(w, { type: 'transfer-stance', id: p.id, stance: 'listed' });
-    const bids = season(w).filter(({ bid }) => bid.id.includes(':list:'));
+    // The inbox keeps its newest items (→`INBOX_LIMIT`), and a delegated 단장's plan reports
+    // through a whole season (→ECON-40) push the summer's sale reports out of it, so each day's
+    // items are read as they arrive.
+    const seen = new Map<string, InboxItem>();
+    for (let n = 0; n < seasonLength(w) - 1 && w.year === CAREER_YEAR; n++) {
+      advanceDays(w, 1);
+      for (const item of w.inbox ?? []) if (item.ref) seen.set(`${item.ref}:${item.id}`, item);
+    }
+    const bids = inBids(w)
+      .map((bid) => ({ bid, player: w.players.find((p) => p.id === bid.playerId)! }))
+      .filter(({ bid }) => bid.id.includes(':list:'));
     expect(bids.length).toBeGreaterThan(0);
     for (const { bid, player } of bids) {
       expect(bid.status).toBe('completed');
       expect(player.status).toBe('sold');
-      expect(w.inbox!.find((i) => i.ref === bid.id)).toMatchObject({ kind: 'staff-report' });
+      expect([...seen.values()].find((i) => i.ref === bid.id)).toMatchObject({
+        kind: 'staff-report',
+      });
     }
     expect(activePlayers(w).length).toBeGreaterThanOrEqual(14);
   });
@@ -95,7 +107,7 @@ describe('transfer stance', () => {
     }
   });
 
-  it('lets delegated staff and the manager weigh big offers by market card, cash and the XI', () => {
+  it('lets delegated staff and the manager weigh big offers by market card, the sales line, a cash crisis and the XI (→CLUB-24, →ECON-33, →ECON-41)', () => {
     const w = world('stance-verdict');
     expect(untouchableVerdict(w, 199, false).accept).toBe(false);
     expect(untouchableVerdict(w, 200, false).accept).toBe(true);
@@ -108,11 +120,26 @@ describe('transfer stance', () => {
     expect(untouchableVerdict(w, 224, false).accept).toBe(false);
     w.build = { market: 'hold' };
     expect(untouchableVerdict(w, 400, false).accept).toBe(false);
-    // Twenty weeks of fixed costs: tight, so the price drops 25 points.
+    // The retired 재정 기조 runway step is gone (CLUB-24 r68): twenty weeks of fixed costs move
+    // nothing; a players' wage bill more than 10 points above the 단장's sales line (60% of the
+    // planned income at 균형, →ECON-33) lowers the price 25 points.
     w.build = {};
     const annual = BigInt(operatingCosts(w).annual);
     w.cash = ((annual * 20n) / 46n).toString();
+    expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: false });
+    const wages = BigInt(operatingCosts(w).playerWages),
+      plan = (percent: bigint) =>
+        (w.budgetPlan = {
+          year: w.year,
+          revenue: ((wages * 100n) / percent).toString(),
+          sales: '0',
+        });
+    plan(65n);
+    expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: false });
+    plan(75n);
     expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: true });
+    expect(untouchableVerdict(w, 174, false)).toMatchObject({ accept: false });
+    delete w.budgetPlan;
     // A cash crisis sells, whatever the card.
     w.build = { market: 'hold' };
     w.cash = '0';
