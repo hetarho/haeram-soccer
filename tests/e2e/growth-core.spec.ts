@@ -1,4 +1,4 @@
-import { watchNext } from './watch';
+import { STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { expect, test, type Locator } from '@playwright/test';
 import { expectHomeBounds, settle, viewGeometry } from './layout';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
@@ -68,6 +68,8 @@ for (const viewport of [
   test(`growing club fits ${viewport.width}x${viewport.height} and opens real play and details`, async ({
     page,
   }) => {
+    // The page stages the watched match ahead (→MATCH-39) before its final whistle shows.
+    test.slow();
     await page.setViewportSize(viewport);
     await page.goto('/');
     // The club's home with its first checkpoint saved.
@@ -158,7 +160,10 @@ for (const viewport of [
     ).toBeVisible();
     await expect(page.getByLabel('22명의 선수와 공으로 표현하는 경기')).toBeVisible();
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+    // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+      timeout: STAGING_TIMEOUT_MS,
+    });
     await expect(page.getByTestId('match-result-summary')).toBeVisible();
     // The standing after the match shows once it ends, without opening its details (→WEB-50).
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();

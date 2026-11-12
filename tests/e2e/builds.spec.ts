@@ -1,4 +1,4 @@
-import { openMatchDetails, watchNext } from './watch';
+import { openMatchDetails, STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { expect, test } from '@playwright/test';
 import { nextOwnFixture, npcTactic, tacticLabel } from '../../packages/engine/src/index';
 import { generateHistory } from '../../packages/engine/src/history';
@@ -59,7 +59,10 @@ test("reports the manager's tactic and the opponent's before an actual seeded ma
       : `${tacticLabel[opponentTactic]} vs ${applied}`;
   await expect(match.getByText(matchup, { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await expect(match.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+  // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+  await expect(match.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+    timeout: STAGING_TIMEOUT_MS,
+  });
   const details = await openMatchDetails(page);
   const stats = details.locator('[class*="matchStats"]');
   await expect(stats.getByText('점유율', { exact: true })).toBeVisible();
