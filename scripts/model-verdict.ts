@@ -433,13 +433,138 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
   const metrics = stagingMetrics(staged.frames, staged.events, script, sides);
   const fit = fitLines(staged.frames, staged.events, script, detail);
   const rates = clockRates(script, { ...staged, added: record.added });
+  // Contested events by kind: how many, how many needed the lunge, and how many ended with the
+  // scripted man beyond `limits.contest` of the ball in the event's frame.
+  const contests: Record<string, [number, number, number]> = {};
+  let fi = 0;
+  for (const e of staged.events) {
+    if (!['intercept', 'tackle', 'foul', 'loose', 'block', 'save'].includes(e.kind)) continue;
+    while (fi + 1 < staged.frames.length && staged.frames[fi + 1]!.t <= e.t + 1e-9) fi++;
+    const c = (contests[e.kind] ??= [0, 0, 0]);
+    c[0]++;
+    if (e.stretch) c[1]++;
+    const at = e.other && staged.frames[fi]!.p.find((q) => q.player.side === e.other!.side && q.player.line === e.other!.line);
+    if (at && e.at && dist2(at.at, e.at) > STAGING_CONFIG.limits.contest) c[2]++;
+  }
   const [lo, hi] = STAGING_CONFIG.limits.clockRate;
   const rateList = rates.map((r) => r.rate);
+  // Scenes to look at: each kind's worst instance, with its scripted minute and players.
+  const nameOf = (side: 0 | 1, line: number) => {
+    const id = detail.sides[side].lines[line]?.id;
+    return rosters[side].find((x) => x.id === id)?.name ?? `${side}:${line}`;
+  };
+  const minuteAt = (t: number) => {
+    const f = staged.frames.find((x) => x.t >= t - 1e-9) ?? staged.frames.at(-1)!;
+    return f.clock === undefined ? null : Math.floor(f.clock / 60) + 1;
+  };
+  const worstContest = (kind: 'block' | 'save') => {
+    let best: { metres: number; minute: number | null; actor: string; other: string } | null =
+      null;
+    fi = 0;
+    for (const e of staged.events) {
+      if (e.kind !== kind || !e.other || !e.actor) continue;
+      while (fi + 1 < staged.frames.length && staged.frames[fi + 1]!.t <= e.t + 1e-9) fi++;
+      const at = staged.frames[fi]!.p.find(
+        (q) => q.player.side === e.other!.side && q.player.line === e.other!.line,
+      );
+      if (!at) continue;
+      const metres = dist2(at.at, e.at);
+      if (!best || metres > best.metres)
+        best = {
+          metres: r2(metres),
+          minute: minuteAt(e.t),
+          actor: nameOf(e.actor.side, e.actor.line),
+          other: nameOf(e.other.side, e.other.line),
+        };
+    }
+    return best;
+  };
+  // Teammates within the huddle distance in open play outside the boxes, run by run.
+  const huddleRuns = new Map<string, { start: number; last: number }>();
+  const episodes: { side: 0 | 1; a: number; b: number; start: number; seconds: number; own: boolean }[] =
+    [];
+  const H = STAGING_CONFIG.limits.huddle;
+  const inBox = (v: readonly [number, number]) => (v[0] <= 16.5 || v[0] >= 88.5) && v[1] >= 13.84 && v[1] <= 54.16;
+  staged.frames.forEach((f, k) => {
+    if (!f.live || f.phase === 'setPiece') return;
+    for (const side of [0, 1] as const) {
+      const team = f.p.filter((q) => q.player.side === side && q.slot !== 0);
+      for (let x = 0; x < team.length; x++)
+        for (let y = x + 1; y < team.length; y++) {
+          const a = team[x]!,
+            b = team[y]!;
+          if (dist2(a.at, b.at) >= H.distance) continue;
+          if (inBox(a.at) && inBox(b.at) && a.at[0] < 52.5 === b.at[0] < 52.5) continue;
+          const key = `${side}:${a.player.line}:${b.player.line}`;
+          const run = huddleRuns.get(key);
+          if (run && run.last === k - 1) run.last = k;
+          else {
+            if (run)
+              episodes.push({ side, a: a.player.line, b: b.player.line, start: run.start, seconds: (run.last - run.start + 1) * STAGING_CONFIG.tick, own: staged.frames[run.start]!.team === side });
+            huddleRuns.set(key, { start: k, last: k });
+          }
+        }
+    }
+  });
+  for (const [key, run] of huddleRuns) {
+    const [side, a, b] = key.split(':').map(Number) as [0 | 1, number, number];
+    episodes.push({ side, a, b, start: run.start, seconds: (run.last - run.start + 1) * STAGING_CONFIG.tick, own: staged.frames[run.start]!.team === side });
+  }
+  const long = episodes.filter((e) => e.seconds > H.seconds);
+  const lineOf = (side: 0 | 1, line: number) => detail.sides[side].lines[line]?.role ?? '?';
+  const longest = long.sort((x, y) => y.seconds - x.seconds)[0];
+  const huddles = {
+    long: long.length,
+    inPossession: long.filter((e) => e.own).length,
+    pairs: Object.entries(
+      long.reduce<Record<string, number>>((o, e) => {
+        const k = [lineOf(e.side, e.a), lineOf(e.side, e.b)].sort().join('+');
+        o[k] = (o[k] ?? 0) + 1;
+        return o;
+      }, {}),
+    )
+      .sort((x, y) => y[1] - x[1])
+      .slice(0, 5),
+    longest: longest && {
+      seconds: r2(longest.seconds),
+      minute: minuteAt(staged.frames[longest.start]!.t),
+      players: [nameOf(longest.side, longest.a), nameOf(longest.side, longest.b)],
+      roles: [lineOf(longest.side, longest.a), lineOf(longest.side, longest.b)],
+      inPossession: longest.own,
+    },
+  };
+  const longStretches = rates.filter((r) => r.to - r.from >= 10);
+  const worstRate = longStretches.sort(
+    (x, y) => Math.abs(Math.log(y.rate)) - Math.abs(Math.log(x.rate)),
+  )[0];
+  const scenes = {
+    block: worstContest('block'),
+    save: worstContest('save'),
+    huddle: huddles.longest,
+    clock: worstRate && {
+      rate: r3(worstRate.rate),
+      period: worstRate.period,
+      fromMinute: r2(worstRate.startSeconds / 60),
+      toMinute: r2(worstRate.endSeconds / 60),
+      stagedSeconds: r2(worstRate.to - worstRate.from),
+      beats: [
+        ...new Set(
+          staged.frames.filter((f) => f.t >= worstRate.from && f.t <= worstRate.to).map((f) => f.beat),
+        ),
+      ]
+        .map((i) => script.beats.find((b) => b.index === i))
+        .filter((b) => b !== undefined)
+        .map((b) => `${b!.kind}/${b!.move}${b!.incidents?.length ? '+' + b!.incidents.map((x) => x.kind).join('+') : ''}`),
+    },
+  };
   return {
     ...base,
     problems,
     validateScript: validateScript(detail, script).length,
+    huddles,
+    scenes,
     invention: scriptCost(script, detail),
+    contests,
     sequences: sequenceRows(script),
     metrics: metrics.map((m) => ({ id: m.id, value: m.value, limit: m.limit, pass: m.pass })),
     failing: metrics.filter((m) => !m.pass).map((m) => m.id),
