@@ -976,15 +976,15 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T848 | revision 11's pairs are men on the pitch together, held over whole matches | MATCH ARCH | T833 | todo |
 | T851 | the adopted money rules hold in the integration tier | ECON CLUB STAFF SAVE ARCH | - | todo |
 | T852 | a refused change to a delegated setting names the person who sets it | ECON WEB | - | todo |
 
 ## next
-- gusta-implement-task T848 T851 T852
+- gusta-implement-task T851 T852
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261112 T848 done
 - 261112 T845 done
 - 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
 - 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
@@ -1004,4 +1004,3 @@
 - 261112 T838 done: revision 11 released; capacity gate passed on the staking workload (worst checkpoint 4,367,776 of 6,291,456 bytes, portable file 6,551,024 of 8,388,608), every century own match a full revision-11 record from the takeover, era probe to 2025 passed; season 1.4–1.8× revision 10 reported, not a gate; no push hf12
 - 261112 gusta-create-task MATCH r62: T848 refreshed as a guard (every traced pair on the pitch together over 8 placed 2008 fixtures, pairs add up to the trace's counts, `commonSpan`/`pairParticipants` edge cases), dep T833, base MATCH@62 hf12
 - 261112 gusta-update-ssot MATCH r62 (MATCH-16✎ two-man actions: both men on their own weights matched over shared playing time, only an unmatched second man redrawn) hf12
-- 261112 hf12: owner's 맡김 to finish the cc12 handoff on latest main; main merged into the handoff, handoff MATCH r60→r61 and T848 (gate fix)→T850 renumbered after next's own r60/T848 hf12
