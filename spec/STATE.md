@@ -13,11 +13,11 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| n813 | ihaelam-ui-MacBookPro | autopilot | 2026-11-12T15:44Z | 2026-11-12T15:44Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| n813 | ihaelam-ui-MacBookPro | autopilot | 2026-11-12T16:59Z | 2026-11-12T16:59Z | - |
 
 ## inbox
 - 261113 decided STAFF-51 ARCH-21 T851: how `staff.test`'s basic-staff and no-staff seasons compare once a vacant post acts 안정 지향 and basic volunteers carry their own temperaments and names in the 단장's reports → hold the basic 단장 and youth director 안정 지향 and compare the two seasons with the basic delegates' names read as 공석, so only what STAFF-51 states differs (alt: make an absent staff list read as basic volunteers in `staffMember`, an engine change for saves no new career writes | drop the equality, losing the check that nothing else differs) n813
@@ -978,12 +978,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T853 | Fix final gate failure | ARCH | - | todo |
 
 ## next
-- gusta-implement-task T853
+- no runnable task: plan next with gusta-sketch
 
 ## log
+- 261112 T853 done
 - 261112 T852 done
 - 261112 T851 done
 - 261112 T848 done
@@ -1003,4 +1003,3 @@
 - 261112 T841 done
 - 261112 T840 done
 - 261112 T839 done
-- 261112 T838 done: revision 11 released; capacity gate passed on the staking workload (worst checkpoint 4,367,776 of 6,291,456 bytes, portable file 6,551,024 of 8,388,608), every century own match a full revision-11 record from the takeover, era probe to 2025 passed; season 1.4–1.8× revision 10 reported, not a gate; no push hf12
