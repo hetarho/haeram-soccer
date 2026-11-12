@@ -978,9 +978,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T853 | Fix final gate failure | ARCH | - | todo |
 
 ## next
-- owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
+- gusta-implement-task T853
 
 ## log
 - 261112 T852 done
