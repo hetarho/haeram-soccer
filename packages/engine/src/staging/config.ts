@@ -59,7 +59,7 @@ export const STAGING_CONFIG = {
       pokeFor: 0.6,
       poke: 0.7,
     },
-    mark: { radius: 10, keep: 3, goalSide: 1.5, blend: { DF: 0.6, MF: 0.6, FW: 0.3 }, lag: 0.3 },
+    mark: { radius: 10, keep: 3, goalSide: 1.5, blend: { DF: 0.8, MF: 0.8, FW: 0.3 }, lag: 0.3 },
     unmark: { radius: 4, step: 2.5 },
   },
   motion: {
@@ -99,14 +99,14 @@ export const STAGING_CONFIG = {
       hold: 0.2,
       minSpeed: 0.8,
       /** Seconds of inputs kept for the delay: at least the longest delay, `delay.base + delay.perAnticipation + (delay.perMetre + turn.delayPerMetre) * farCap`. */
-      memory: 2.2,
+      memory: 2.9,
     },
     /** After the ball changes sides in live play (stage/mind.ts). */
     turn: {
       /** Seconds a turnover shapes how free players move. */
       window: 6,
       /** A settled turnover is believed this many seconds later per metre from the ball (up to `own.farCap`). */
-      delayPerMetre: 0.026,
+      delayPerMetre: 0.04,
       /** The place's time constant inside the window: at least `settled` after a settled turnover, at most `counter` after a counter; the back line keeps `own.lag.line`. */
       lag: { settled: 2, counter: 0.5 },
       /** Inside the window after a counter a free player runs to a place farther than `runBeyond` metres and sprints to one farther than `sprintBeyond`. */
@@ -183,7 +183,7 @@ export const STAGING_CONFIG = {
     lunge: 2,
     jockey: 2.5,
     tackleAfter: 0.3,
-    tackleRange: 1.2,
+    tackleRange: 1.5,
     tackleGrace: 2.5,
     tackleExtra: 2,
     /** A heavy touch (`carry:loose`) leaves the ball loose this far toward the named opponent (m). */
@@ -194,7 +194,7 @@ export const STAGING_CONFIG = {
     /** How far outside the lines a target may lie, and where the boards stop a player. */
     boards: 2,
     /** How far a free outfield player keeps his target from every outfield teammate (0 = off). */
-    separation: 3,
+    separation: 4,
     /** How far a free outfield player of the side in possession keeps his target from the man on the ball and from teammates under an order. */
     ownerRoom: 4,
     scene: {
