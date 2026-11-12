@@ -978,13 +978,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T852 | a refused change to a delegated setting names the person who sets it | ECON WEB | - | todo |
 
 ## next
-- gusta-implement-task T852
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261112 T852 done
 - 261112 T851 done
 - 261112 T848 done
 - 261112 T845 done
@@ -1004,4 +1003,3 @@
 - 261112 T840 done
 - 261112 T839 done
 - 261112 T838 done: revision 11 released; capacity gate passed on the staking workload (worst checkpoint 4,367,776 of 6,291,456 bytes, portable file 6,551,024 of 8,388,608), every century own match a full revision-11 record from the takeover, era probe to 2025 passed; season 1.4–1.8× revision 10 reported, not a gate; no push hf12
-- 261112 gusta-create-task MATCH r62: T848 refreshed as a guard (every traced pair on the pitch together over 8 placed 2008 fixtures, pairs add up to the trace's counts, `commonSpan`/`pairParticipants` edge cases), dep T833, base MATCH@62 hf12
