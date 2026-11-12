@@ -979,9 +979,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T856 | Fix final gate failure | ARCH | - | todo |
 
 ## next
-- no runnable task: plan next with gusta-sketch
+- gusta-implement-task T856
 
 ## log
 - 261112 T855 done
