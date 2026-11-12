@@ -73,16 +73,15 @@ import { buyOffer, handTo, holdRows, staffAuthority } from './testing';
 import { askingMultiplier } from './world-market';
 import { locateOffer } from './scout-search';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 // The constants (MARKET_CONFIG) follow the career calibration (→ECON-29), so these tests hold the
 // CLUB-25 targets, not the constants.
 const founding = { country: 'ENG' as const, seed: 'market-wages' };
-/** The club on the pre-feature path: contracts, not the match model, are the subject. */
+/** The club on the released model: contracts, not the match model, are the subject. */
 function world(country: 'ENG' | 'ESP' = 'ENG') {
-  const w = simulatedWorld({ ...founding, country }, {}, DISABLED_RELEASE);
+  const w = simulatedWorld({ ...founding, country });
   w.settings = staffAuthority(2); // This suite explicitly exercises delegated contract policy.
   return w;
 }
@@ -108,7 +107,7 @@ const professionalSeason = () => {
 /** A third-division club's first season at its last round: the lowest division that relegates. */
 const thirdDivisionSeason = () =>
   cachedWorld('third-division-season', () => {
-    const w = simulatedWorld({ ...founding, club: 'ENG:2:0:0' }, {}, DISABLED_RELEASE);
+    const w = simulatedWorld({ ...founding, club: 'ENG:2:0:0' });
     w.settings = staffAuthority(2);
     while (w.round < 46) advanceRound(w, undefined, false);
     return w;
@@ -455,7 +454,7 @@ describe('contract talks (→CLUB-26)', () => {
       return { w, p, floor, market, item: talkItems(w, p.id)[0] };
     };
     // 표준 is 110% of the market wage, no minimum OVR and no age limit.
-    expect(talkRuleOf(simulatedWorld(founding, {}, DISABLED_RELEASE))).toEqual(TALK_RULE_DEFAULT);
+    expect(talkRuleOf(simulatedWorld(founding))).toEqual(TALK_RULE_DEFAULT);
     expect(TALK_RULE_DEFAULT).toEqual({ maxPay: 1.1, minOvr: 0 });
     expect(answer('standard').item.title).toContain('받아들였어요');
     const kept = answer('keepAll');

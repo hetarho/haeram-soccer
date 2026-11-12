@@ -19,16 +19,15 @@ import {
   transferOffers,
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { LINES } from '../../contracts/src/player';
 import { lineOfPlayer } from './player-state';
 import { scoutReach } from './scout-search';
 
-/** The club on the pre-feature path: its bases, not the match model, are the subject. */
+/** The club on the released model: its bases, not the match model, are the subject. */
 function world(policy?: Partial<ClubPolicy>) {
-  const w = simulatedWorld({ country: 'ENG', seed: 'club-bases' }, {}, DISABLED_RELEASE);
+  const w = simulatedWorld({ country: 'ENG', seed: 'club-bases' });
   w.cash = '999999999';
   if (policy) w.policy = { ...POLICY_DEFAULTS, ...policy };
   return w;

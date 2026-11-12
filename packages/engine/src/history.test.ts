@@ -12,7 +12,7 @@ import { evolveClubs } from './dynamics';
 import { ownerSettleGap } from './owner';
 import { openEmployment } from './person-careers';
 import { founded, toLastRound } from './season.testkit';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulateMatch } from './match';
 import { simulateAggregate } from './aggregate/engine';
 import { resultsOnlyMatch } from './results-only';
@@ -29,12 +29,12 @@ vi.mock('./dynamics', async (importOriginal) => {
 });
 
 /**
- * An ownerless world on the first day of `year`'s season. Every fixture is results-only whatever
- * the model (→MATCH-22); `release` decides only whether the season's aggregates and with them the
- * Ballon d'Or are kept (→SAVE-23, PLAYER-27), as `generateHistory`'s released model keeps them.
+ * An ownerless world on the first day of `year`'s season on the released model, whose season's
+ * aggregates keep the Ballon d'Or (→SAVE-23, PLAYER-27) as `generateHistory` keeps them; every
+ * fixture is results-only (→MATCH-22).
  */
-function worldFrom(seed: string, year: number = HISTORY_START, release = DISABLED_RELEASE) {
-  const w = historyWorld(seed, release);
+function worldFrom(seed: string, year: number = HISTORY_START) {
+  const w = historyWorld(seed);
   if (year === w.year) return w;
   w.year = year;
   prepareSeason(w);
@@ -75,11 +75,9 @@ describe('the world before the takeover (→WORLD-13)', () => {
 
   it('makes the same world from the same seed, season by season', () => {
     const progress: number[] = [];
-    const a = liveHistory(worldFrom('history-same', 1930, ENABLED_RELEASE), 1932, (season) =>
-      progress.push(season),
-    );
-    const b = liveHistory(worldFrom('history-same', 1930, ENABLED_RELEASE), 1932);
-    const other = liveHistory(worldFrom('history-other', 1930, ENABLED_RELEASE), 1932);
+    const a = liveHistory(worldFrom('history-same', 1930), 1932, (season) => progress.push(season));
+    const b = liveHistory(worldFrom('history-same', 1930), 1932);
+    const other = liveHistory(worldFrom('history-other', 1930), 1932);
     expect(progress).toEqual([1931, 1932]);
     expect([a.year, currentDay(a)]).toEqual([1932, 0]);
     expect(archiveHash(a)).toBe(archiveHash(b));
@@ -125,7 +123,7 @@ describe('the world before the takeover (→WORLD-13)', () => {
   });
 
   it('archives what HIST-2 keeps for every season played, and nothing of an own club', () => {
-    const w = liveHistory(worldFrom('history-archive', 1954, ENABLED_RELEASE), 1956);
+    const w = liveHistory(worldFrom('history-archive', 1954), 1956);
     const [first, season] = w.history;
     expect([first!.year, season!.year]).toEqual([1954, 1955]);
     for (const h of w.history) {
@@ -172,7 +170,7 @@ describe('the world before the takeover (→WORLD-13)', () => {
 
 describe('a career that reaches the 1938/39 close', () => {
   it('crosses the war: the season after it is 1946/47 and contracts stand still', () => {
-    const w = toLastRound(founded(WARTIME.last, DISABLED_RELEASE));
+    const w = toLastRound(founded(WARTIME.last));
     const until = new Map(w.players.map((p) => [p.id, p.until]));
     const manager = w.manager.until;
     vi.mocked(evolveClubs).mockClear();
@@ -193,12 +191,10 @@ describe('a career that reaches the 1938/39 close', () => {
 });
 
 describe('the results-only path before the takeover (→MATCH-22)', () => {
-  it('plays every fixture of a world nobody owns, whatever its model', () => {
-    for (const release of [ENABLED_RELEASE, DISABLED_RELEASE]) {
-      const w = historyWorld('results-only', release);
-      for (const f of w.fixtures.slice(0, 20))
-        expect(simulateMatch(w, f)).toEqual(resultsOnlyMatch(w, f));
-    }
+  it('plays every fixture of a world nobody owns', () => {
+    const w = historyWorld('results-only', ENABLED_RELEASE);
+    for (const f of w.fixtures.slice(0, 20))
+      expect(simulateMatch(w, f)).toEqual(resultsOnlyMatch(w, f));
   });
 
   it("holds the aggregate path's means for equal sides, on the same meetings", () => {

@@ -1,15 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { TD } from '../../contracts/src/detail';
 import type { MatchMaterial, MatchRecord } from '../../contracts/src/types';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { CAREER } from './finance.testkit';
-import { playGrid } from './grid/engine';
 import { cellOf } from './match/pitch';
 import { MaterialTally } from './match/record';
-import { buildGridSetup } from './grid/setup';
 import { country } from '../../catalogs/src/index';
-import { closeSeason } from './index';
+import { closeSeason, simulateMatch } from './index';
 import { careerWorld } from './career.testkit';
 import { ranked } from './season';
 import { clubOf } from './world';
@@ -47,7 +45,7 @@ describe('post-match material', () => {
     );
     const npcFixture = { ...w.fixtures[0]!, id: 'npc', home: home!.id, away: away!.id };
     const play = (f: typeof ownFixture, observe: boolean) =>
-      playGrid(buildGridSetup(w, f, { observe, recordPlayers: true })).record;
+      simulateMatch(w, f, observe, true).record;
 
     const own = play(ownFixture, false);
     expect(play(npcFixture, false).material).toBeUndefined();
@@ -139,9 +137,9 @@ describe('post-match material', () => {
   });
 
   it('reduces material to season heat maps at the close', () => {
-    // The pre-feature season, whatever the switch: this club plays no playoff on it, so the league
-    // season is all its material (the candidate's playoff is the next case).
-    const w = simulatedWorld(CAREER, { rounds: 46 }, DISABLED_RELEASE);
+    // The finance club's first season to its last round: this club plays no playoff in it, so the
+    // league season is all its material (a playoff is the next case).
+    const w = simulatedWorld(CAREER, { rounds: 46 });
     const season = w.ownMatches.filter((m) => m.year === w.year);
     expect(season.length).toBeGreaterThan(0);
     // The saved own record keeps only the own lines and its material.

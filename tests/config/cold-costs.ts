@@ -1,7 +1,9 @@
 /**
  * Seconds the costliest test files took in a cold gate (fresh worktree and world cache, 11 workers:
- * nx10's `verify:batch` on 60538381, 261110), so a run without vitest's own duration history still
- * starts them first (`sequencer.ts`). Plain data: a missing or renamed file is ignored.
+ * nx10's `verify:batch` on 60538381, 261110; the files T843 moved onto the released model from the
+ * cold run of its 128 affected files, 12 CPUs at load about 15, 261112), so a run without vitest's
+ * own duration history still starts them first (`sequencer.ts`). Plain data: a missing or renamed
+ * file is ignored.
  * Refresh: each file's `endTime - startTime` of 30 s or more in a cold gate's tier reports.
  */
 export const WARMED: readonly string[] = [
@@ -11,20 +13,26 @@ export const WARMED: readonly string[] = [
 ];
 
 export const COLD_COSTS: Readonly<Record<string, number>> = {
+  'packages/engine/src/transfers.incoming.test.ts': 599,
+  'packages/engine/src/feature-replay.retained.test.ts': 483,
+  'packages/engine/src/sponsors.test.ts': 468,
+  'packages/engine/src/world.capacities.test.ts': 442,
   'apps/web/src/runtime/host.test.ts': 345,
+  'packages/engine/src/business.renewal.test.ts': 304,
   'apps/web/src/adapters/persistence.test.ts': 298,
   'packages/engine/src/calendar.progression-eng.test.ts': 234,
-  'packages/engine/src/grid-throughput.test.ts': 209,
+  'packages/engine/src/grid/throughput.test.ts': 209,
   'apps/web/src/runtime/fixtureHelpers.integration.test.ts': 201,
+  'packages/engine/src/calendar.test.ts': 197,
   'apps/web/src/runtime/host.archive.test.ts': 193,
   'packages/engine/src/grid/engine.test.ts': 170,
   'apps/web/src/adapters/packing.test.ts': 166,
   'packages/engine/src/grid/resolve.test.ts': 155,
   'packages/engine/src/grid/bands.test.ts': 152,
-  'packages/engine/src/feature-replay.retained.test.ts': 150,
   'packages/engine/src/season.test.ts': 149,
   'packages/engine/src/calendar.fast-path.test.ts': 148,
   'packages/engine/src/world.test.ts': 144,
+  'packages/engine/src/manager-history-capture.test.ts': 139,
   'packages/engine/src/detail.test.ts': 137,
   'apps/web/src/runtime/client.test.ts': 133,
   'packages/engine/src/takeover.season.test.ts': 122,
@@ -34,30 +42,23 @@ export const COLD_COSTS: Readonly<Record<string, number>> = {
   'packages/engine/src/build.tradeoffs.test.ts': 96,
   'packages/engine/src/grid/playback.test.ts': 94,
   'packages/engine/src/build.test.ts': 93,
+  'packages/engine/src/feature-replay.test.ts': 82,
+  'packages/engine/src/calibration.test.ts': 78,
   'packages/engine/src/stages.test.ts': 77,
   'packages/engine/src/transfers.stance.test.ts': 77,
-  'packages/engine/src/sponsors.test.ts': 71,
-  'packages/engine/src/feature-replay.test.ts': 70,
   'packages/engine/src/build.pressing.test.ts': 69,
-  'packages/engine/src/world.capacities.test.ts': 69,
   'packages/engine/src/staff.test.ts': 68,
   'tests/fixtures/identity-workload.test.ts': 68,
   'packages/engine/src/transfers.test.ts': 67,
-  'packages/engine/src/calendar.test.ts': 64,
   'packages/engine/src/contracts.test.ts': 64,
   'packages/engine/src/scoring.test.ts': 64,
   'packages/engine/src/season.brackets.test.ts': 64,
   'packages/engine/src/strategy.test.ts': 63,
-  'packages/engine/src/calibration.grid-favourite.test.ts': 62,
   'packages/engine/src/finance.operating.test.ts': 62,
   'packages/engine/src/grid/shape.test.ts': 61,
-  'packages/engine/src/calibration.grid-equal.test.ts': 59,
-  'packages/engine/src/calibration.grid-giant.test.ts': 57,
-  'packages/engine/src/business.renewal.test.ts': 55,
   'packages/engine/src/managers.test.ts': 55,
   'apps/web/src/adapters/persistence.history.test.ts': 54,
   'packages/engine/src/history.test.ts': 54,
-  'packages/engine/src/transfers.incoming.test.ts': 51,
   'packages/engine/src/academy.test.ts': 49,
   'apps/web/src/entities/league/lib/scouting.test.ts': 48,
   'packages/engine/src/projection.test.ts': 46,
@@ -72,7 +73,6 @@ export const COLD_COSTS: Readonly<Record<string, number>> = {
   'packages/engine/src/identity-operations.test.ts': 40,
   'packages/engine/src/managerMarket.test.ts': 39,
   'packages/engine/src/academy.season-close.test.ts': 38,
-  'packages/engine/src/manager-history-capture.test.ts': 38,
   'packages/engine/src/business.reminder.test.ts': 37,
   'packages/engine/src/europe.test.ts': 37,
   'packages/engine/src/sponsors.migration.test.ts': 37,

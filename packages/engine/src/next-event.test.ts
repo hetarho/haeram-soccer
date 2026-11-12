@@ -14,12 +14,11 @@ import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { pendingDecisions, stoppingReasons } from './stopping';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { careerWorld } from './career.testkit';
-/** Founded on the pre-feature path: the calendar's next event, not the match model, is the subject. */
+/** Founded on the released model: the calendar's next event, not the match model, is the subject. */
 function world() {
-  return manual(careerWorld({ seed: 'next-event' }, DISABLED_RELEASE));
+  return manual(careerWorld({ seed: 'next-event' }));
 }
 /** `w` rich and played in manual mode, every responsibility delegated to the staff. */
 function manual(w: World) {

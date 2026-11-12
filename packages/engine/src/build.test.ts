@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import { fatigueCost, ownStarters, recordMatch, simulateMatch, TACTICS } from './index';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { baseline, sample, scenario } from './build.testkit';
 
-// Tactical builds on the pre-feature path, as build.tradeoffs guards them (T419).
+// Tactical builds on the released model, as build.tradeoffs guards them (T419).
 describe('tactical roster tradeoffs', () => {
   it('turns midfield passing into actual possession and pass completion', () => {
-    const weak = scenario({ ...baseline, passing: 20 }, 'balanced', DISABLED_RELEASE);
-    const strong = scenario({ ...baseline, passing: 95 }, 'balanced', DISABLED_RELEASE);
+    const weak = scenario({ ...baseline, passing: 20 }, 'balanced');
+    const strong = scenario({ ...baseline, passing: 95 }, 'balanced');
     const low = sample(weak.w, weak.fixture, 'possession');
     const high = sample(strong.w, strong.fixture, 'possession');
     expect(high.possession).toBeGreaterThan(low.possession);
@@ -16,8 +15,8 @@ describe('tactical roster tradeoffs', () => {
   });
 
   it('uses defender quality to suppress actual opposing shot creation', () => {
-    const weak = scenario({ ...baseline, defense: 20 }, 'balanced', DISABLED_RELEASE);
-    const strong = scenario({ ...baseline, defense: 95 }, 'balanced', DISABLED_RELEASE);
+    const weak = scenario({ ...baseline, defense: 20 }, 'balanced');
+    const strong = scenario({ ...baseline, defense: 95 }, 'balanced');
     expect(sample(strong.w, strong.fixture, 'balanced').concededShots).toBeLessThan(
       sample(weak.w, weak.fixture, 'balanced').concededShots,
     );
@@ -41,7 +40,7 @@ describe('tactical roster tradeoffs', () => {
   });
 
   it('keeps seeded football facts identical with observation', () => {
-    const { w, fixture } = scenario(baseline, 'press', DISABLED_RELEASE);
+    const { w, fixture } = scenario(baseline, 'press');
     for (const tactic of TACTICS) {
       w.tactic = tactic;
       const fast = simulateMatch(w, fixture, false, true);
@@ -55,7 +54,7 @@ describe('tactical roster tradeoffs', () => {
   });
 
   it('settles recorded tactic fatigue and leaves past match facts unchanged by later builds', () => {
-    const { w, fixture } = scenario(baseline, 'balanced', DISABLED_RELEASE);
+    const { w, fixture } = scenario(baseline, 'balanced');
     w.tactic = 'press';
     const match = simulateMatch(w, fixture, false, true);
     w.tactic = 'balanced';

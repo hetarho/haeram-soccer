@@ -5,12 +5,11 @@ import { operate } from './operations';
 import { advanceDays, advanceRound, prepareRound } from './season';
 import { assertNextEvent } from './next-event';
 import { careerEnded, ENDED_MESSAGE } from './owner';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 /** A founded career stepped manually, so the next-event step is open to it. */
 const world = () => {
-  const w = careerWorld({ seed: 'owner-foundation' }, DISABLED_RELEASE);
+  const w = careerWorld({ seed: 'owner-foundation' });
   w.settings = { ...w.settings!, mode: 'manual' };
   return w;
 };

@@ -11,7 +11,7 @@ import {
   type MatchModelRelease,
 } from '../../packages/engine/src/index';
 import { careerWorld, type CareerInput } from '../../packages/engine/src/career.testkit';
-import { DISABLED_RELEASE } from './releases';
+import { withoutMatchModel } from './earlier-saves';
 import { simulatedWorld, withoutManagerHistory } from './worlds';
 
 /**
@@ -65,13 +65,15 @@ export function delegatedCareer(seed: string) {
 
 export const LEGACY_CAREER: CareerInput = { country: 'ENG', seed: 'identity-legacy' };
 /**
- * A current-rules career as it was saved before club identities: taken over and played two rounds
- * on the pre-feature match model, as every career before the full model's release was (→SAVE-23),
- * then every identity, recorded appearance and pending kit choice taken away, and the manager
- * history that came later still (→SAVE-24).
+ * A current-rules career as it was saved before club identities: taken over and played two rounds,
+ * then saved without the full model's data, as every career before its release was (→SAVE-23),
+ * every identity, recorded appearance and pending kit choice taken away, and the manager history
+ * that came later still (→SAVE-24).
  */
 export function preIdentityCareer(): World {
-  const w = withoutManagerHistory(simulatedWorld(LEGACY_CAREER, { rounds: 2 }, DISABLED_RELEASE));
+  const w = withoutMatchModel(
+    withoutManagerHistory(structuredClone(simulatedWorld(LEGACY_CAREER, { rounds: 2 }))),
+  );
   for (const club of w.clubs) delete club.identity;
   for (const match of w.ownMatches) delete match.appearance;
   delete w.kitChoice;

@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import { advanceRound, cupKey, legsOf, tieAggregate } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { archiveLastRound, closedSeason, founded, toLastRound } from './season.testkit';
 import { associationCoefficients } from './europe-coefficients';
 import { performanceAssociations } from './europe-access';
@@ -10,7 +9,7 @@ import { performanceAssociations } from './europe-access';
 describe('closed season archive', () => {
   it('captures the completed association coefficients before allocating the following season', () => {
     const lastRound = cachedWorld('association-coefficients-2023-last-round', () => {
-      const w = founded(2023, DISABLED_RELEASE);
+      const w = founded(2023);
       w.cash = '1000000000000000'; // This fixture checks the close, independently of funding.
       return toLastRound(w);
     });
@@ -80,7 +79,7 @@ describe('closed season archive', () => {
   it('keeps no partial scorer table or rank series from a season tracked midway', () => {
     const w = cachedWorld('tracked-midway-last-round', () => {
       // The archive's records, not the match model, are the subject.
-      const w = founded(undefined, DISABLED_RELEASE);
+      const w = founded();
       advanceRound(w, undefined, false);
       advanceRound(w, undefined, false);
       // An older save starts both records at the next round.

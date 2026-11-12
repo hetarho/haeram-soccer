@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { PD, TD } from '../../../contracts/src/detail';
-import { isScriptedModel } from '../../../contracts/src/match-model';
 import type { Line } from '../../../contracts/src/player';
 import { DEFAULT_SUB_POLICY, eraRules } from '../match/rules';
 import { M } from '../match/record';
@@ -187,23 +186,6 @@ describe('aggregate player attribution (→MATCH-11, MATCH-13, MATCH-27)', () =>
     return { ...m, traced: players, trace };
   };
   const total = (xs: readonly number[]) => xs.reduce((n, x) => n + x, 0);
-
-  it('revision 10 attribution is untouched by the place rule', () => {
-    for (const fixture of fixtures(6, 'revision-10-place')) {
-      const m = traced(fixture);
-      const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
-      const players = attributePlayerFacts(
-        m.input,
-        { ...m.plan, placed: isScriptedModel('continuous-aggregate-10') },
-        m.participation,
-        m.facts,
-        aggregateStreams('synthetic', fixture),
-        trace,
-      );
-      expect(players).toEqual(m.players);
-      expect(trace).toEqual(m.trace);
-    }
-  });
 
   it('a trace changes no fact', () => {
     for (const fixture of fixtures(8, 'trace-same')) {

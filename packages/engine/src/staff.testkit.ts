@@ -1,12 +1,11 @@
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { staffAuthority } from './testing';
 import type { World } from '../../contracts/src/types';
 import { advanceRound } from './index';
 import { careerWorld } from './career.testkit';
 
-/** The test club, on the pre-feature path: staff, not the match model, is the subject. */
+/** The test club, on the released model: staff, not the match model, is the subject. */
 export function world(seed = 'coaching-staff') {
-  const w = careerWorld({ seed }, DISABLED_RELEASE);
+  const w = careerWorld({ seed });
   w.settings = staffAuthority(2);
   w.cash = '999999999';
   return w;

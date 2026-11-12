@@ -9,7 +9,6 @@ import { TRAINING_INJURY, trainingInjuryChance } from './careers';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { requestSchema } from '../../../apps/web/src/runtime/protocol';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import {
   activePlayers,
   advanceDays,
@@ -39,9 +38,9 @@ function world(focus: TrainingFocus = 'balanced') {
   return w;
 }
 
-/** The club on the pre-feature path: training, not the match model, is the subject. */
+/** The club on the released model: training, not the match model, is the subject. */
 function founded() {
-  const w = careerWorld({ seed: 'training-progress' }, DISABLED_RELEASE);
+  const w = careerWorld({ seed: 'training-progress' });
   w.settings = staffAuthority(2);
   w.cash = '999999999';
   w.manager.youth = 60;

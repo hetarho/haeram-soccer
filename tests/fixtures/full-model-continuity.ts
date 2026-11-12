@@ -18,16 +18,17 @@ import {
   leagueStatsScope,
 } from '../../apps/web/src/entities/league/lib/fullStatsView';
 import { writerActivation } from './full-model-workload';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
+import { withoutMatchModel } from './earlier-saves';
+import { ENABLED_RELEASE } from './releases';
 
 /**
  * Marked synthetic fixture for the full-model continuity journey (T402, T286; →SAVE-22/23, HIST-17,
- * WEB-89/94/95, KIT-12). A supported career taken over before the full model's release (taken over
- * here, so it carries the current game version and no stored label)
- * plays its first rounds on the pre-feature model and is saved without model data. With the
- * release switch on (since T286) the build imports it as it is and its writer load
- * (`Host.adoptModel`) records the full model mid-season at the next unplayed day; with the switch
- * off the activation is done in Node with an explicit enabled release and imported (T402).
+ * WEB-89/94/95, KIT-12). A supported career saved before the full model's release (taken over
+ * here, so it carries the current game version and no stored label): its first rounds are played
+ * and it is saved without model data (`withoutMatchModel`). With the release switch on (since T286)
+ * the build imports it as it is and its writer load (`Host.adoptModel`) records the full model
+ * mid-season at the next unplayed day; with the switch off the activation is done in Node with an
+ * explicit enabled release and imported (T402).
  * `activated` is that activation the host's way (`writerActivation`, checked against the host in
  * full-model-workload.test.ts), so the journey knows what the build must hold either way. Every
  * result is real football; every responsibility is delegated so nothing holds the watch.
@@ -97,14 +98,14 @@ export interface ContinuityCareer {
 }
 
 function career(seed: string): World {
-  const w = careerWorld({ country: 'ENG', seed }, DISABLED_RELEASE);
+  const w = careerWorld({ country: 'ENG', seed });
   const settings = w.settings!;
   for (const key of Object.keys(
     settings.responsibilities,
   ) as (keyof typeof settings.responsibilities)[])
     settings.responsibilities[key] = 'delegated';
   for (let n = 0; n < ROUNDS_BEFORE; n++) advanceRound(w, undefined, false);
-  return w;
+  return withoutMatchModel(w);
 }
 
 /**

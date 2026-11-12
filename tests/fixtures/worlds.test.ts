@@ -3,7 +3,7 @@ import { advanceRound, MATCH_MODEL_RELEASE } from '../../packages/engine/src/ind
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { canonical } from '../../packages/contracts/src/index';
 import { cachedWorld } from './cached-world';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
+import { ENABLED_RELEASE } from './releases';
 import { simulatedWorld } from './worlds';
 
 const input = { country: 'ENG', seed: 'cached-world' } as const;
@@ -34,7 +34,6 @@ describe('shared test worlds', () => {
   });
 
   it('simulatedWorld pins the release it is given', () => {
-    expect(simulatedWorld(input, {}, DISABLED_RELEASE).matchModel).toBeUndefined();
     expect(simulatedWorld(input, {}, ENABLED_RELEASE).matchModel?.coverage).toBe('founding');
   });
 

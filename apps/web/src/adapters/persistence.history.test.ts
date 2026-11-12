@@ -16,7 +16,7 @@ import {
   simulateSeason,
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
-import { preFeatureTransferredScorer } from '../../../../tests/fixtures/transferred-scorer';
+import { sharedTransferredScorer } from '../../../../tests/fixtures/transferred-scorer';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
@@ -53,13 +53,13 @@ it('preserves first and second European phases and global standings in a histori
 });
 
 it('roundtrips one transferred league scorer with both real club contributions', async () => {
-  const { w, playerId } = preFeatureTransferredScorer();
+  const { w, playerId } = sharedTransferredScorer();
   const raw = await encode(w, 1, 0),
     loaded = await decode(raw);
   expect(canonical(loaded.world)).toBe(canonical(w));
   expect(loaded.world.scorerSeason!.players.find((p) => p.id === playerId)!.clubs).toHaveLength(2);
   const closed = cachedWorld('transferred scorer season', () => {
-    const { w } = preFeatureTransferredScorer();
+    const { w } = sharedTransferredScorer();
     simulateSeason(w);
     return w;
   });

@@ -171,7 +171,8 @@ const facts = (w: World) => ({
 // T838 releases revision 11: aggregate records gain its label/place attribution, and own rounds
 // now settle on that same result path with retained script material instead of the grid. Recorded
 // on the activation candidate; revision-10 digests were 1777e46a55e11535 / c1dae39d1b1fc9a9.
-// The separate grid and pre-feature portable goldens remain unchanged.
+// The grid's own digests stay with it (grid/throughput.test.ts); the portable golden plays
+// revision 11 since T843.
 const BEFORE = {
   aggregateRecords: '9ad7a73f17eb42d4',
   candidateRounds: '6829def1e75ea8f9',

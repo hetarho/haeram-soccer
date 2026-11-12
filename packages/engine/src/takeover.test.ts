@@ -39,7 +39,6 @@ import { scaleBy, zeroMetrics } from './primitives';
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
 import { historyWorld } from './history';
 import { settleNpcBooks } from './books';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
 const choice = (tier: WealthTier, traits: OwnerTrait[] = []) => ({ tier, traits });
 /** The club at `place` of a division of England. */
@@ -61,7 +60,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     const { w, club } = setup();
     club.cohesion = 0.62;
     const fielded = squad(w, club).map((p) => p.id);
-    takeOver(w, club.id, choice('industrial'), undefined, DISABLED_RELEASE);
+    takeOver(w, club.id, choice('industrial'));
     expect(w.playerClub).toBe(club.id);
     const ids = w.players.map((p) => p.id);
     expect(ids).toEqual(expect.arrayContaining(fielded));
@@ -86,7 +85,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     const { w, club } = setup();
     const identity = structuredClone(club.identity);
     const stage = facilityStage(w, club);
-    takeOver(w, club.id, choice('industrial'), undefined, DISABLED_RELEASE);
+    takeOver(w, club.id, choice('industrial'));
     const manager = clubManager(w, club);
     expect(w.manager).toEqual(manager);
     expect(w.manager.style).toBeDefined();
@@ -117,7 +116,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
       clubs: { [club.id]: [0, 1946] },
       serial: 2,
     };
-    takeOver(w, club.id, choice('industrial'), undefined, DISABLED_RELEASE);
+    takeOver(w, club.id, choice('industrial'));
     const offered = managerOffers(w).map(({ fee: _fee, ...manager }) => (void _fee, manager));
     expect(offered.length).toBeGreaterThanOrEqual(4);
     expect(w.managerMarket).toEqual({
@@ -132,7 +131,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
 
   it('puts the direction chosen at the takeover in force', () => {
     const { w, club } = setup();
-    takeOver(w, club.id, choice('industrial'), 'youth-academy', DISABLED_RELEASE);
+    takeOver(w, club.id, choice('industrial'), 'youth-academy');
     const board = presetBoard(presetById('youth-academy')!);
     expect(w.build).toEqual(board.build);
     expect(w.ticket).toBe(board.ticket);
@@ -143,13 +142,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     const { w, club } = setup();
     const price = clubValue(w, club),
       fortune = fromPounds('ENG', w.year, tierFortune(w, 'industrial'));
-    takeOver(
-      w,
-      club.id,
-      choice('industrial', ['businessman', 'fansFriend']),
-      undefined,
-      DISABLED_RELEASE,
-    );
+    takeOver(w, club.id, choice('industrial', ['businessman', 'fansFriend']));
     expect(w.cash).toBe('480000');
     expect(w.operatingExpenses).toBe(takeoverExpenses(w, club, '2600000'));
     expect(w.loan).toEqual(takeoverLoan('1200000'));
@@ -186,7 +179,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
   });
 
   it('starts a 1930 takeover with the club’s half-season opening cash', () => {
-    const w = historyWorld('takeover-opening', DISABLED_RELEASE);
+    const w = historyWorld('takeover-opening');
     const club = atPlace(w, 1, 3);
     const cash = club.books!.cash;
     const copy = structuredClone(w);
@@ -196,7 +189,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     ).seasons[0]!;
     expect(cash).toBe(scaleBy(closed.income, CLUB_BOOKS.opening, 1000n));
     expect(BigInt(cash)).toBeGreaterThan(0n);
-    takeOver(w, club.id, choice('oil'), undefined, DISABLED_RELEASE);
+    takeOver(w, club.id, choice('oil'));
     expect(w.cash).toBe(cash);
     expect(w.loan).toBeUndefined();
   });
@@ -204,7 +197,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
   it('takes no loan over a club without debt, and no cash over one without books', () => {
     const w = ownerlessWorld('takeover-clean');
     const club = atPlace(w, 2, 1);
-    takeOver(w, club.id, choice('midsize'), undefined, DISABLED_RELEASE);
+    takeOver(w, club.id, choice('midsize'));
     expect(w.cash).toBe('0');
     expect(w.loan).toBeUndefined();
     expect(w.owner?.takeover.debt).toBe('0');
@@ -249,7 +242,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     // Read while nobody owns a club: his wage is in his club's money (→WORLD-13).
     const before = clubManager(w, foreign);
     expect(before.wage).toBe(staffQuote(w, 120 + before.ability, 'ESP'));
-    takeOver(w, atPlace(w, 1, 2).id, choice('oil'), undefined, DISABLED_RELEASE);
+    takeOver(w, atPlace(w, 1, 2).id, choice('oil'));
     const after = clubManager(w, foreign);
     expect(after.id).toBe(before.id);
     expect(after.wage).toBe(staffQuote(w, 120 + after.ability));
@@ -260,16 +253,12 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     const ids = (['industrial', 'oil'] as const).flatMap((tier) =>
       [atPlace, atPlace].map((_, place) => {
         const w = ownerlessWorld('takeover-ids');
-        return takeOver(w, atPlace(w, 1, place + 2).id, choice(tier), undefined, DISABLED_RELEASE)
-          .id;
+        return takeOver(w, atPlace(w, 1, place + 2).id, choice(tier)).id;
       }),
     );
     expect(new Set(ids).size).toBe(4);
     const again = ownerlessWorld('takeover-ids');
-    expect(
-      takeOver(again, atPlace(again, 1, 2).id, choice('industrial'), undefined, DISABLED_RELEASE)
-        .id,
-    ).toBe(ids[0]);
+    expect(takeOver(again, atPlace(again, 1, 2).id, choice('industrial')).id).toBe(ids[0]);
   });
 
   it('refuses what a takeover cannot be', () => {
@@ -303,7 +292,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
       '구단 인수는 시즌 첫날에만 할 수 있어요.',
     );
     w.calendar = { day: 0 };
-    takeOver(w, club.id, choice('oil'), undefined, DISABLED_RELEASE);
+    takeOver(w, club.id, choice('oil'));
     expect(() => takeOver(w, atPlace(w, 1, 4).id, choice('oil'))).toThrow(
       '이미 주인이 있는 세계입니다.',
     );
@@ -395,7 +384,7 @@ describe('the world’s seasons before the takeover (→HIST-2, WORLD-13)', () =
     const club = atPlace(w, 1, 5);
     const division = (c: Club) => (c === club && cameDown ? 0 : c.tier);
     w.history = [1947, 1948, 1949].map((year) => worldArchive(w, year, division, club.id));
-    takeOver(w, club.id, choice('oil'), undefined, DISABLED_RELEASE);
+    takeOver(w, club.id, choice('oil'));
     return { w, club };
   }
 
@@ -456,7 +445,7 @@ describe('the revenue over the last 12 months in the season of a takeover (→CL
   /** `setup`'s club with its books' last season, bought on the season's first day. */
   function bought(seed: string) {
     const { w, club } = setup(seed);
-    takeOver(w, club.id, choice('industrial'), undefined, DISABLED_RELEASE);
+    takeOver(w, club.id, choice('industrial'));
     return { w, club };
   }
 

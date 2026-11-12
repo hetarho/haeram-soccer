@@ -12,7 +12,6 @@ import { ATTRIBUTES } from '../../packages/contracts/src/player';
 import type { World } from '../../packages/contracts/src/types';
 import { fileURLToPath } from 'node:url';
 import { cachedWorld } from './cached-world';
-import { DISABLED_RELEASE } from './releases';
 
 const SELF = fileURLToPath(import.meta.url);
 
@@ -25,7 +24,7 @@ export function transferredScorerWorld(
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
 ) {
   // A seed where the summary-path own league (T224) still leaves him a top-ten scorer of the
-  // takeover's 24-club division: 6th with seed d on the pre-feature path (T683), where c left him
+  // takeover's 24-club division: 6th with seed d on the released model (T683), where c left him
   // 15th once careers became takeovers.
   const w = careerWorld({ country: 'ENG', seed: 'transferred-scorer-d' }, release);
   prepare?.(w);
@@ -55,13 +54,11 @@ export function transferredScorerWorld(
 }
 
 /**
- * The sale on the pre-feature path, unprepared: built once for every file whose subject is the
+ * The sale on the released model, unprepared: built once for every file whose subject is the
  * transferred scorer's ledger rather than the match model.
  */
-export function preFeatureTransferredScorer() {
-  return cachedWorld(
-    'transferred scorer',
-    () => transferredScorerWorld(undefined, DISABLED_RELEASE),
-    { dependencies: [SELF] },
-  );
+export function sharedTransferredScorer() {
+  return cachedWorld('transferred scorer', () => transferredScorerWorld(), {
+    dependencies: [SELF],
+  });
 }

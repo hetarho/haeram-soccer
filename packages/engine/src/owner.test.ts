@@ -31,11 +31,10 @@ import {
   fanMoodTransfer,
 } from './fan-mood';
 import { withOwner } from './testing';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 /** A career taken over; its owner state is the takeover's until a test sets its own. */
-const world = () => careerWorld({ seed: 'owner-foundation' }, DISABLED_RELEASE);
+const world = () => careerWorld({ seed: 'owner-foundation' });
 /** A career with no owner state, as a hand-built world holds it: every owner rule stands aside. */
 const unowned = () => {
   const w = world();
@@ -335,7 +334,7 @@ describe('FFP (→OWNER-10)', () => {
     withOwner(w, { fortune: '1000000000000' });
     return w;
   };
-  const spain = () => careerWorld({ country: 'ESP', seed: 'owner-ffp' }, DISABLED_RELEASE);
+  const spain = () => careerWorld({ country: 'ESP', seed: 'owner-ffp' });
   it('applies from 2011/12 in the top flight only', () => {
     expect(ffpRoom(topFlight(FFP.start - 1))).toBeUndefined();
     expect(ffpRoom(topFlight(FFP.start))).toBeDefined();

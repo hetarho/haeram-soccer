@@ -15,7 +15,6 @@ import {
 } from './owner-traits';
 import { matchForm, npcMatchContext, prepareMatch } from './match';
 import { effectiveGap } from './match-rules';
-import { buildGridSetup } from './grid/setup';
 import { findClub, ratingOf, squad } from './world';
 import { talkTerms } from './contracts';
 import { transferOffers } from './scout-search';
@@ -29,11 +28,10 @@ import { coachingGrade } from './aptitude';
 import { sponsorOffers } from './sponsors';
 import { activePlayers, overall } from './player-state';
 import { withOwner } from './testing';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 /** A career taken over by an owner without traits: every trait standing aside. */
-const FOUNDED = careerWorld({ seed: 'owner-traits' }, DISABLED_RELEASE);
+const FOUNDED = careerWorld({ seed: 'owner-traits' });
 const world = () => structuredClone(FOUNDED);
 /** The same career with an owner holding `traits`. */
 function owned(...traits: OwnerTrait[]) {
@@ -141,12 +139,12 @@ describe('승리의 부적 (→OWNER-6)', () => {
     },
   );
 
-  it('moves the grid engine through the same setup', () => {
+  it("moves every player's skills through the prepared match", () => {
     const plain = world(),
       lucky = owned('talisman'),
       f = fixtureAt(plain, true);
-    const before = buildGridSetup(plain, f, { observe: false, recordPlayers: false }),
-      after = buildGridSetup(lucky, f, { observe: false, recordPlayers: false });
+    const before = prepareMatch(plain, f),
+      after = prepareMatch(lucky, f);
     // Half the gap to each side's skills (→MATCH-2): ours up, theirs down by as much.
     expect(after.shift[0]).toBeGreaterThan(before.shift[0]);
     expect(after.shift[1]).toBeLessThan(before.shift[1]);
@@ -193,8 +191,7 @@ describe('마당발', () => {
   const { candidates, ability } = OWNER_TRAITS.networker;
   const boosted = (base: number) => Math.min(99, base + ability);
   /** The career taken over by an owner with 마당발: the takeover opens the manager market. */
-  const networked = () =>
-    careerWorld({ seed: 'owner-traits', traits: ['networker'] }, DISABLED_RELEASE);
+  const networked = () => careerWorld({ seed: 'owner-traits', traits: ['networker'] });
 
   it('lists one more free-agent manager, each drawn abler at the same wage (→STAFF-17)', () => {
     const plain = world(),

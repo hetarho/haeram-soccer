@@ -37,11 +37,10 @@ import {
 import { CUP_PRIZE_CONFIG, cupTiePrize, cupTitlePrize } from './cups';
 import { EUROPE_PRIZE_CONFIG, europeMatchPrize, europeTiePrize, europeTitlePrize } from './europe';
 import { broadcastQuote } from './quotes';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
 /** An ownerless world on its first season's first day, its tables as they stand (all level). */
-const world = (seed = 'npc-books') => historyWorld(seed, DISABLED_RELEASE);
+const world = (seed = 'npc-books') => historyWorld(seed);
 const club = (w: World, country: string, tier: number) =>
   w.clubs.find((c) => c.country === country && c.tier === tier && !c.representative)!;
 const amount = (value: string) => BigInt(value);
@@ -180,7 +179,7 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     const kept = w.clubs.filter((c: Club) => c.books);
     expect(kept.length).toBe(w.clubs.filter((c) => !c.representative).length);
     expect(kept.every((c) => !c.id.startsWith('euro:'))).toBe(true);
-    const career = careerWorld({ seed: 'npc-books' }, DISABLED_RELEASE);
+    const career = careerWorld({ seed: 'npc-books' });
     const unowned = structuredClone(career);
     delete unowned.owner;
     for (const c of unowned.clubs) delete c.books;

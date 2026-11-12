@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { PD, TD } from '../../contracts/src/detail';
 import type { NpcCompetitionStats } from '../../contracts/src/match-model';
 import type { Fixture, MatchPlayback, MatchRecord, Player, World } from '../../contracts/src/types';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { withCandidateModel } from '../../../tests/fixtures/worlds';
+import { withoutMatchModel } from '../../../tests/fixtures/earlier-saves';
 import { fixtureDay } from './calendar';
 import { M } from './match/record';
 import { simulateMatch } from './match';
@@ -11,11 +11,8 @@ import { fullStatsRead, npcCompetition, playerTotals, settleNpcSeason } from './
 import { recordMatch } from './season';
 import { founded } from './season.testkit';
 
-/**
- * A 2024 world (substitutes, cups, Europe) on the candidate model from its first day: founded with
- * the release off and activated once its year is 2024, whatever the switch.
- */
-const candidate = () => withCandidateModel(founded(2024, DISABLED_RELEASE));
+/** A 2024 world (substitutes, cups, Europe) on the released model from its takeover. */
+const candidate = () => withCandidateModel(founded(2024));
 /** One league group of clubs nobody owns, its fixtures in round order. */
 function groupFixtures(w: World) {
   const own = (f: Fixture) => f.home === w.playerClub || f.away === w.playerClub;
@@ -202,14 +199,16 @@ describe('complete current-season aggregates (→HIST-3, HIST-13, HIST-17)', () 
   });
 
   it('reads a competition from its tracking boundary', () => {
-    // A pre-feature world plays its first round, then records the model from the next day.
-    const w = founded(2024, DISABLED_RELEASE);
+    // A world plays its first round and is saved as a game before the release would hold it, then
+    // records the model from the next day.
+    const w = founded(2024);
     const fixtures = groupFixtures(w);
     const scope = { kind: 'league', groupKey: fixtures[0]!.groupKey } as const;
     const before = fixtures.filter((f) => f.round === fixtures[0]!.round);
     for (const f of before) settle(w, f);
     w.round = before[0]!.round;
     w.calendar = { day: fixtureDay(before[0]!) };
+    withoutMatchModel(w);
     // No ledger for the season: unavailable, not a season of zeros.
     expect(fullStatsRead(w, scope)).toBeUndefined();
     withCandidateModel(w, 'activation');

@@ -18,11 +18,10 @@ import {
   moraleStrength,
   settleMorale,
 } from './morale';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
-/** The club on the pre-feature path: morale, not the match model, is the subject. */
-const world = () => careerWorld({ seed: 'morale' }, DISABLED_RELEASE);
+/** The club on the released model: morale, not the match model, is the subject. */
+const world = () => careerWorld({ seed: 'morale' });
 
 describe('squad morale', () => {
   it('starts neutral for new clubs and is exactly neutral when absent', () => {

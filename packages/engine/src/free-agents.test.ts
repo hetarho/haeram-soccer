@@ -3,7 +3,6 @@ import type { Club, FreeAgent, Player, Position, World } from '../../contracts/s
 import { ATTRIBUTES, FREE_AGENT_CAP } from '../../contracts/src/player';
 import { validateWorld } from '../../contracts/src/schema';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import {
   closeFreeAgents,
   FREE_AGENT_CONFIG,
@@ -101,7 +100,7 @@ describe('free agents at a world start (→CLUB-49)', () => {
     }
   });
   it('makes every new world with a full pool from its first day', () => {
-    const w = historyWorld('free-agents', DISABLED_RELEASE, 1950);
+    const w = historyWorld('free-agents', undefined, 1950);
     expect(w.freeAgents).toHaveLength(FREE_AGENT_CAP);
     // The cap keeps the ablest of everyone let go.
     const letGo = lettingGo({ ...w, freeAgents: [] }, w.year, w.year)
@@ -172,7 +171,7 @@ describe('free agents at the close (→CLUB-49)', () => {
 
 describe('free agents at each refresh (→CLUB-49)', () => {
   const world = () => {
-    const w = historyWorld('free-agents', DISABLED_RELEASE, 1950);
+    const w = historyWorld('free-agents', undefined, 1950);
     w.round = 4;
     return w;
   };

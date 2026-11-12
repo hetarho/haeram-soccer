@@ -7,11 +7,6 @@
  * (`portable-math.ts`), a few exact properties, and the match binding its table once.
  */
 import { describe, expect, it } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
-import { buildGridSetup } from './grid/setup';
-import { createState } from './grid/state';
-import { gridKit } from './grid/testkit';
 import {
   atan2,
   cos,
@@ -444,19 +439,8 @@ describe('portable math (T358)', () => {
     expect(powInt(1.6, 3)).toBe(1.6 * 1.6 * 1.6);
   });
 
-  it('is bound once per match: portable on every model, the pre-feature one included (T713)', () => {
+  it('is one table of portable functions (T713)', () => {
     const table: MatchMath = { exp, log, tanh, sin, cos, atan2, hypot, powInt };
     expect(PORTABLE_MATH).toEqual(table);
-    // The pre-feature model read the host's Math.* until T713; its sin's last bit differed
-    // between darwin-arm64 and linux-x64 and moved a whole season.
-    const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
-    expect(kit.setup.model).toBeUndefined();
-    expect(kit.state.math).toBe(PORTABLE_MATH);
-    const candidate = buildGridSetup(kit.w, kit.f, {
-      observe: false,
-      recordPlayers: false,
-      model: MATCH_MODEL_REVISION,
-    });
-    expect(createState(candidate).math).toBe(PORTABLE_MATH);
   });
 });

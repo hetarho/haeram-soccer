@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { activePlayers, makePlayer, npcSquad, clubOf, formationOf } from './index';
 import { callUpFor, SQUAD_TARGET } from './squad-target';
@@ -12,8 +11,8 @@ import { shortLines, SIGNING_CONFIG } from './signings';
 import { promotionAge } from './academy';
 
 const CAREER = { country: 'ENG', seed: 'squad-target' } as const;
-/** The club on the pre-feature path: the squad target, not the match model, is the subject. */
-const world = (rounds = 0) => simulatedWorld(CAREER, { rounds }, DISABLED_RELEASE);
+/** The club on the released model: the squad target, not the match model, is the subject. */
+const world = (rounds = 0) => simulatedWorld(CAREER, { rounds });
 function prospect(w: World, id: string, position: Position, age = 18, skill = 1) {
   const p = makePlayer(
     'ENG',

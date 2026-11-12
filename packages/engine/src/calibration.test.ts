@@ -2,74 +2,11 @@ import { describe, expect, it } from 'vitest';
 import type { Club, Fixture } from '../../contracts/src/types';
 import { M } from './match/record';
 import { effectiveGap, matchForm, MATCH_DUEL_CONFIG, rating, simulateAggregate } from './index';
-import {
-  type Path,
-  favourite,
-  giant,
-  level,
-  minnow,
-  rival,
-  sample,
-  SLOW,
-  underdog,
-  w,
-} from './calibration.testkit';
-
-describe.each<[string, Path]>([['summary', 'summary']])('%s: calibrated outcomes', (_, path) => {
-  it(
-    'lets a +20 favourite win most matches but still lose some',
-    () => {
-      const s = sample(favourite, underdog, path);
-      expect(s.gap).toBeGreaterThan(17);
-      expect(s.gap).toBeLessThan(23);
-      expect(s.win).toBeGreaterThan(0.7);
-      expect(s.win).toBeLessThan(0.85);
-      expect(s.loss).toBeGreaterThan(0.03);
-      expect(s.loss).toBeLessThan(0.1);
-    },
-    SLOW,
-  );
-
-  // T216: equal grid sides draw about 21% (1,600 fixtures), as press beats every other tactic
-  // (artifacts/benchmarks/calibration-results.json, 격자 엔진 전력 곡선); run it for the grid once the tactics are balanced.
-  it.skipIf(path === 'grid')(
-    'gives equal sides real football’s share of draws',
-    () => {
-      const s = sample(level, rival, path);
-      expect(s.draw).toBeGreaterThan(0.22);
-      expect(s.draw).toBeLessThan(0.32);
-    },
-    SLOW,
-  );
-
-  it(
-    'keeps equal sides close, with real football’s goals and shots',
-    () => {
-      const s = sample(level, rival, path);
-      expect(s.win).toBeGreaterThan(s.loss);
-      expect(s.goals).toBeGreaterThan(2.4);
-      expect(s.goals).toBeLessThan(3.1);
-      expect(s.shots).toBeGreaterThan(10);
-      expect(s.shots).toBeLessThan(16);
-    },
-    SLOW,
-  );
-
-  it(
-    'never makes a massive favourite unbeatable',
-    () => {
-      const s = sample(giant, minnow, path);
-      expect(s.gap).toBeGreaterThan(30);
-      expect(s.win).toBeLessThan(0.96);
-      expect(s.loss).toBeGreaterThan(0.01);
-      expect(s.goals).toBeLessThan(4);
-    },
-    SLOW,
-  );
-});
+import { favourite, giant, level, minnow, rival, SLOW, underdog, w } from './calibration.testkit';
 
 /**
- * The candidate aggregate path on the same guard clubs (T284, artifacts/benchmarks/calibration-results.json 집계 경로 보정):
+ * The aggregate path, which settles every fixture of the released model, on the guard clubs (T284,
+ * artifacts/benchmarks/calibration-results.json 집계 경로 보정):
  * coarse regression bounds on its strength curve, draws and goals, never the release evidence the
  * corpus report (scripts/match-parity.ts --report) holds.
  */

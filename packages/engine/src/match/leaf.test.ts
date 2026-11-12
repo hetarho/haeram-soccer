@@ -14,20 +14,11 @@ const DISPATCH = 'packages/engine/src/match.ts';
 const SCOPES = ['packages', 'apps/web/src', 'scripts', 'tests'];
 
 /**
- * Files outside `grid/` that still import it, each removed by a planned task: the engine's tests
- * of the earlier models (T843) and the scripts that run or measure the grid (T844). The list only
- * shrinks: a new importer fails, and so does a listed file that no longer imports the grid.
+ * Files outside `grid/` that still import it, each removed by a planned task: the scripts that run
+ * or measure the grid (T844). The engine's tests left it in T843. The list only shrinks: a new
+ * importer fails, and so does a listed file that no longer imports the grid.
  */
 const LEAVING = [
-  // T843: engine tests built on the earlier models.
-  'packages/engine/src/calibration.testkit.ts',
-  'packages/engine/src/discipline.test.ts',
-  'packages/engine/src/grid-throughput.test.ts',
-  'packages/engine/src/match-model.test.ts',
-  'packages/engine/src/material.test.ts',
-  'packages/engine/src/owner-traits.test.ts',
-  'packages/engine/src/portable-math.test.ts',
-  'packages/engine/src/season.test.ts',
   // T844: scripts that play, tune or compare the grid.
   'scripts/calibrate.ts',
   'scripts/gameplay-read.ts',

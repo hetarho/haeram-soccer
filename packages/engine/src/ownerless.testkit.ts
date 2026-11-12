@@ -1,6 +1,5 @@
 import type { Club, ClubBooks, World } from '../../contracts/src/types';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
-import type { MatchModelRelease } from './match-model';
+import { MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model-release';
 import { historyWorld } from './history';
 import { CAREER_YEAR } from './career.testkit';
 
@@ -12,7 +11,7 @@ import { CAREER_YEAR } from './career.testkit';
  */
 export function ownerlessWorld(
   seed = 'ownerless',
-  release: MatchModelRelease = DISABLED_RELEASE,
+  release: MatchModelRelease = MATCH_MODEL_RELEASE,
 ): World {
   const w = historyWorld(seed, release, CAREER_YEAR);
   // Most value/listing units supply their own books; keep that synthetic baseline empty.

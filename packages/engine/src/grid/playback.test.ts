@@ -766,7 +766,7 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
       deliveries(match('set-piece-2')).map((d) => d.window),
     );
     // The pre-feature path keeps its own set pieces: no intentions are traced there (its settled
-    // facts are guarded by grid-throughput's pre-feature digests).
+    // facts are guarded by grid/throughput.test's pre-feature digests).
     expect(result.trace!.some((x) => x.action === 'corner')).toBe(true);
     expect(result.trace!.every((x) => x.intentions === undefined)).toBe(true);
   });

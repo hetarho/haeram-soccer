@@ -8,10 +8,11 @@ import type { Body } from '../../../apps/web/src/runtime/protocol';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
-import { currentDay, advanceDays, fixtureDay, fullStatsRead } from './index';
+import { currentDay, advanceDays } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { onPreviousRevision } from '../../../tests/fixtures/earlier-saves';
 import { command, facts, readAndReload } from './feature-replay.testkit';
 import { careerWorld } from './career.testkit';
 
@@ -78,7 +79,7 @@ for (const retained of [false])
     retained ? 480000 : undefined,
   );
 
-describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
+describe("a career on the revision before today's (→SAVE-23, HIST-17)", () => {
   const founding = { country: 'ENG' as const, seed: 'feature-replay' };
   let serial = 0;
   async function send(host: Host, body: Body) {
@@ -97,13 +98,13 @@ describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
   const load = (host: Host, raw: string) =>
     send(host, { type: 'inspect', raw, activate: true, upgrade: true });
   /**
-   * A supported career three rounds in that never activated (taken over with the release off), then
-   * activated by its writer and played to an own result.
+   * A supported career three rounds in, saved by the game before this one (its labels name the
+   * revision before today's, →SAVE-23), then moved on by its writer and played to an own result.
    */
   let built: Promise<{ before: World; at: World; host: Host }> | undefined;
   const activated = () =>
     (built ??= (async () => {
-      const before = simulatedWorld(founding, { rounds: 3 }, DISABLED_RELEASE);
+      const before = onPreviousRevision(structuredClone(simulatedWorld(founding, { rounds: 3 })));
       const host = new Host(undefined, { release: ENABLED_RELEASE });
       await load(host, await encode(before));
       const at = structuredClone(host.world!);
@@ -111,40 +112,6 @@ describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
         await send(host, { type: 'command', command: { type: 'advance', rounds: 1 } });
       return { before, at, host };
     })());
-
-  it('never backfills old statistics', async () => {
-    const { before, at, host } = await activated();
-    const own = before.fixtures.find(
-      (f) => f.home === before.playerClub || f.away === before.playerClub,
-    )!;
-    const scope = { kind: own.kind as 'league', groupKey: own.groupKey };
-    const played = (w: World) =>
-      w.fixtures.filter((f) => f.kind === own.kind && f.groupKey === own.groupKey && f.score);
-    const earlier = played(before);
-    expect(earlier.length).toBeGreaterThan(0);
-    // At activation the ledger starts empty at the boundary; earlier fixtures are untracked, not 0.
-    expect(fullStatsRead(at, scope)).toEqual({
-      year: at.year,
-      trackedFrom: at.matchModel!.trackedFrom,
-      untracked: earlier.length,
-      competition: { ...scope, clubs: [], players: [] },
-    });
-    // The settled past stays as it was: own records, tables and history.
-    expect(at.matchModel!.coverage).toBe('activation');
-    expect(canonical(at.ownMatches)).toBe(canonical(before.ownMatches));
-    expect(canonical(at.tables)).toBe(canonical(before.tables));
-    expect(canonical(at.history)).toBe(canonical(before.history));
-    // Played on, only the fixtures from the boundary count.
-    const w = host.world!;
-    const later = played(w).filter((f) => fixtureDay(f) >= at.matchModel!.trackedFrom.day);
-    expect(later.length).toBeGreaterThan(0);
-    const read = fullStatsRead(w, scope)!;
-    expect(read.untracked).toBe(earlier.length);
-    expect(read.competition.clubs.reduce((n, club) => n + club.matches, 0)).toBe(2 * later.length);
-    expect(canonical(w.ownMatches.slice(0, before.ownMatches.length))).toBe(
-      canonical(before.ownMatches),
-    );
-  });
 
   it('reload and import preserve full aggregates and appearances', async () => {
     const { before, host } = await activated();

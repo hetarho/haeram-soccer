@@ -20,14 +20,14 @@
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { MATCH_MODEL_REVISIONS, type MatchModelRevision } from '../../contracts/src/match-model';
-import type { Fixture, World } from '../../contracts/src/types';
-import { playGrid } from './grid/engine';
-import { buildFrames } from './grid/playback';
-import { buildGridSetup } from './grid/setup';
-import { type DecideRule } from './match/rules';
-import { founded } from './season.testkit';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { MATCH_MODEL_REVISIONS, type MatchModelRevision } from '../../../contracts/src/match-model';
+import type { Fixture, World } from '../../../contracts/src/types';
+import { playGrid } from './engine';
+import { buildFrames } from './playback';
+import { buildGridSetup } from './setup';
+import { type DecideRule } from '../match/rules';
+import { founded } from '../season.testkit';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 
 const digest = (value: unknown) =>
   createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
