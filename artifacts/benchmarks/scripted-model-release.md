@@ -1,4 +1,6 @@
-# Scripted model release — partial preparation (T838)
+# Scripted model release (T838)
+
+The sections up to "Activation candidate and deadline handoff" are the preparation on the source named below; the released source's figures and the capacity verdict are in "Final source on the pinned toolchain (hf12, 261112)".
 
 Source: db16b8f2a595a8a8289f7956d9d35f3ad5bc6c72, clean tree 40e63f52c537b731902d7a0ac9fef7d19b455208. Machine: Apple M1 Max, darwin arm64, Node v26.8.1. These measurements precede production activation; they are not a completed release or capacity verdict.
 
@@ -84,6 +86,32 @@ A third fault ended every long career on revision 11: an owner who moves no mone
 | fixture (one aggregate fixture) | 11.86 / 12.00 | 32.57 / 32.26 | 96 | 1.0659 [0.9600, 1.1706] | 20.9–23.4 |
 | staging (full production `stageAll`, the whole match) | 13350.36 / 13728.39 | 20997.96 / 22857.55 | 24 | 1.0242 [0.9866, 1.0803] | 16.6–35.9 |
 
-### Capacity, partial (→SAVE-4, ARCH-31)
+### Capacity (→SAVE-4, ARCH-31)
 
-`pnpm run benchmark --phase <name>`, its five independent phase chains side by side (`retained`, `activation`, `baseline-1 → -2 → -checkpoints`, `active-management-1 → -2 → -checkpoints`, `era-1 → era-2`), on the staking workload at ffd270b5 (state `.tmp/benchmark/38f7f2b7f5794756`, started 04:20 UTC; the earlier run on state `029821328bb12dd4` is superseded by the workload fix above). Finished when this section was written: `retained` (361 s, worst checkpoint 837,206 bytes, "marked synthetic retained career and cross-season promise") and `activation` (447 s, a pre-release career taken over in 1950 and activated by the worker host's writer load mid-season after ten seasons, worst 1,284,556 bytes two seasons later), both within the 6 MiB checkpoint and 8 MiB portable limits, the era probe (`era-1` 3,251 s for 1950–1988, `era-2` 4,093 s to 2025, 75 seasons, its 2024 archival gate passed) and both centuries' first halves (`baseline-1` 4,424 s, 9,511 retained people at the 50th season; `active-management-1` 4,625 s, 9,613 and 18 tenures). At 06:23 UTC both second halves had passed their 70th season (baseline 12,412 retained people, active-management 12,493 and 26 tenures), well beyond the old failure window. The second halves, the two checkpoint phases and the report were still running (17–20 minutes per ten seasons); **no capacity verdict is claimed**. Once every chain has ended, `pnpm run benchmark --phase report` assembles them.
+`pnpm run benchmark --phase <name>`, its ten phases as five chains side by side (`retained`, `activation`, `baseline-1 → -2 → -checkpoints`, `active-management-1 → -2 → -checkpoints`, `era-1 → era-2`, 04:20–07:22 UTC, every chain `EXIT 0`), then `pnpm run benchmark --phase report` (07:22:32 UTC), on the staking workload above (state `.tmp/benchmark/38f7f2b7f5794756`; the run on state `029821328bb12dd4` is superseded by the workload fix). The phases ran at ffd270b5 through 68bc03b6 under one computation fingerprint, `10ea2b9e…` (301 files; only `spec/` and `artifacts/` changed between those heads), Node v24.22.1, source fingerprint `d4bfba36…` (2,582 files), tree clean. The report, [T286-full-model-storage.json](T286-full-model-storage.json), ends **`passed: true`**.
+
+| Checkpoint | Year, round | Checkpoint bytes | Portable file bytes |
+|---|---|---:|---:|
+| retained, marked synthetic career and cross-season promise | 1953 r21 | 837,206 | 1,255,169 |
+| retained, after its season close | 1954 r0 | 342,266 | 512,759 |
+| activation, pre-release career mid-season | 1960 r23 | 635,868 | 953,162 |
+| activation, writer load mid-season | 1960 r23 | 719,898 | 1,079,207 |
+| activation, two seasons later | 1963 r23 | 1,284,556 | 1,926,194 |
+| baseline founding | 1950 r0 | 113,340 | 169,372 |
+| baseline mid-career active round | 2000 r23 | 2,439,618 | 3,658,789 |
+| baseline century | 2050 r0 | 3,516,496 | 5,274,106 |
+| baseline century round 23 | 2050 r23 | 4,236,384 | 6,353,938 |
+| active-management founding | 1950 r0 | 115,840 | 173,120 |
+| active-management mid-career active round | 2000 r23 | 2,510,376 | 3,764,924 |
+| active-management century | 2050 r0 | 3,652,082 | 5,477,483 |
+| **active-management century active round 23** (worst) | 2050 r23 | **4,367,776** | **6,551,024** |
+| limit | | 6,291,456 (6 MiB) | 8,388,608 (8 MiB) |
+
+The worst checkpoint uses 69.4% of the IndexedDB checkpoint limit and the worst portable file 78.1% of its limit; its largest stream is `matchDetail.players` (1,255,168 bytes, 444,225 brotli). Every checkpoint round-trips the complete canonical world (`losslessRoundtrip`), the mid-career and century round-23 checkpoints each resume their season exactly as the uninterrupted engine plays it (`resumedSeasonReplay`), and every manager tenure, outcome source and record link round-trips at the century and the round after it (`managerHistoryRoundTrip`).
+
+- Centuries: 100 seasons each; 4,791 (baseline) and 4,795 (active-management) own matches by round 23 after the century, **every one a full revision-11 record from the takeover** (at the century 4,766 / 4,771 full, 0 pre-feature, 0 incomplete); 16,885 / 16,870 retained people; 2 / 35 manager tenures; the active profile adopted 57 designs, hired 10 managers and made 4 same-day reappointments, and its pending kit choice was worn and used up on both resumed paths.
+- Era probe: 75 seasons from 1950 to 2025, its 2024 archival gate passed.
+- Activation: a career taken over in 1950 on the earlier model, activated by the worker host's writer load mid-1960 (3,316 ms), keeps its 500 earlier records as pre-feature records and holds 142 full revision-11 records two seasons later; its resumed season is exact.
+- Peak observed heap 3,143,912,648 bytes. Simulation 103.4 s (baseline) and 104.1 s (active-management) a season, beside the other chains and the superseded runs' processes on this 12-CPU host (load about 3.5–5 at the end): context, not a throughput figure (→ARCH-34).
+
+The benchmark checks the IndexedDB checkpoint and portable-file limits and decodes every checkpoint through the save codec; it prints no separate decompressed-size line. Capacity holds for these workloads, not every seed or action (the benchmark's scope).
