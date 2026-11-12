@@ -1,5 +1,5 @@
 import type { MatchPlayback, PlayerMotion, World } from '../../packages/contracts/src/types';
-import { advanceToNextMatch } from '../../packages/engine/src/testing';
+import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
 import { advanceRound, fullStatsRead, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
@@ -138,12 +138,16 @@ export function continuityCareer(): ContinuityCareer {
     const world = career(seed);
     // What the build holds after the import, whichever side activates it.
     const activated = writerActivation(world, ENABLED_RELEASE);
-    const playback = advanceToNextMatch(structuredClone(activated));
-    if (!playback) continue;
-    const record = playback.record;
+    const settled = advanceToNextMatch(structuredClone(activated));
+    if (!settled) continue;
+    const record = settled.record;
     const goals = record.highlights.filter((h) => h.action === '골');
+    if (!goals.length) continue;
+    // The scripted model's frames are staged as the browser stages them; only a match with a goal
+    // is staged, since staging is what costs the time here.
+    const playback = stagedPlayback(settled);
     const scene = setPieceShot(playback);
-    if (!goals.length || !scene) continue;
+    if (!scene) continue;
     const running = [0, 0];
     const scores = goals.map((goal) => {
       running[goal.side]!++;

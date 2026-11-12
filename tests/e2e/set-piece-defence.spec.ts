@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { advanceToNextMatch } from '../../packages/engine/src/testing';
+import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
 import type { PlayerMotion, World } from '../../packages/contracts/src/types';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { presentationSamples } from '../../apps/web/src/entities/match/lib/presentationClock';
@@ -57,7 +57,7 @@ const placed = (p: PlayerMotion | undefined) =>
  * never held while a set piece's jobs are, so they never count here.
  */
 function recordedScene(seed: string) {
-  const playback = advanceToNextMatch(career(seed))!;
+  const playback = stagedPlayback(advanceToNextMatch(career(seed))!);
   const { samples } = presentationSamples(playback.frames);
   // Each sample's recorded match second, in the same order.
   const elapsedOf = playback.frames.flatMap((f) =>

@@ -1,5 +1,5 @@
 import { watchNext } from './watch';
-import { advanceToNextMatch } from '../../packages/engine/src/testing';
+import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
 import { expect, test, type Page } from '@playwright/test';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -159,12 +159,13 @@ test('mobile result-only continuation preserves the exiting card position', asyn
 
 /** An early home goal for presentation checks; later goals follow the current model. */
 function goalWorld() {
-  // The club taken over from goal-feedback-61 opens 2′ home, then scores at 18′, 24′, 26′ and 35′
-  // and concedes at 45′ and 86′ (found by scripts/find-goal-seeds.ts once T805's per-club age
-  // ladder moved goal-feedback-25's opener, 4′ home in T687, to 38′; goal-feedback-2 on a founded
-  // career until T687; goal-feedback-28 on revision 9 with T580's pass side; goal-feedback-15 on
-  // revision 8, T561; goal-feedback-14 on revision 7, T548; goal-feedback-8 on revision 6, T542).
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-61' });
+  // The club taken over from goal-feedback-6 opens 2′ home, concedes at 22′, scores at 37′ and
+  // concedes at 56′, each goal with its full staged build-up (found by scripts/find-goal-seeds.ts
+  // on the scripted model, T839; goal-feedback-61 on revision 10 after T805's per-club age ladder;
+  // goal-feedback-25 in T687; goal-feedback-2 on a founded career until T687; goal-feedback-28 on
+  // revision 9 with T580's pass side; goal-feedback-15 on revision 8, T561; goal-feedback-14 on
+  // revision 7, T548; goal-feedback-8 on revision 6, T542).
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-6' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }
@@ -267,7 +268,7 @@ for (const viewport of [
         ),
       );
     const world = goalWorld();
-    const playback = advanceToNextMatch(structuredClone(world))!;
+    const playback = stagedPlayback(advanceToNextMatch(structuredClone(world))!);
     const expected = playback.record;
     const openingGoal = expected.highlights[0];
     expect(openingGoal).toMatchObject({ side: 0 });

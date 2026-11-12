@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { MatchScript } from '../../../contracts/src/match-script';
 import { frameTimeIssues } from '../../../contracts/src/match-model';
+import { message as sourceMessage } from '../../../contracts/src/messages';
 import { M } from '../grid/record';
 import { sampleDetail, smallDetail } from '../../../../tests/fixtures/match-script';
 import { writeScript } from '../script/write';
@@ -193,6 +194,30 @@ describe('staged match frames', () => {
       expect(e.to.every(Number.isFinite)).toBe(true);
     }
     expect(input.record.score).toEqual({ home: 0, away: 0 });
+  });
+
+  it('no narrated line states an unrecorded tag', () => {
+    // Pressure, body orientation and relational spaces are not recorded (→MATCH-15), so no event
+    // line names a man between the lines, run in behind or receiving with his back to goal
+    // (→MATCH-24); the script's phase is recorded and may lead a line (역습).
+    const unrecorded = (
+      [
+        'copy.commentary.467e39fddc',
+        'copy.commentary.ae52c3c521',
+        'copy.commentary.1a8ff2b431',
+      ] as const
+    ).map((id) => sourceMessage(id, { p0: '' }).trim());
+    const countered = structuredClone(hand);
+    countered.beats.forEach((b) => (b.phase = 'counter'));
+    const args = frameTestInputs(countered);
+    const staged = [...frames, ...stageAll(countered, args.sides, args.record, args.squads)];
+    const lines = staged.flatMap((f) => f.events!.map((e) => e.text));
+    expect(lines.length).toBeGreaterThan(10);
+    for (const line of lines)
+      for (const phrase of unrecorded) expect(line, line).not.toContain(phrase);
+    expect(lines.some((line) => line.includes(sourceMessage('copy.commentary.3aec14091d')))).toBe(
+      true,
+    );
   });
 
   it('a frame is one match minute and carries its label through all four periods and added time', () => {

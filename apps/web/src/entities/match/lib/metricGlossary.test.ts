@@ -47,7 +47,7 @@ describe('metrics glossary', () => {
       'offside',
       'set-piece',
       'pitch-zones',
-      'touch-tags',
+      'action-record',
     ])
       expect(glossaryEntry(id), id).toBeDefined();
     expect(new Set(GLOSSARY.map((entry) => entry.id)).size).toBe(GLOSSARY.length);
@@ -88,20 +88,25 @@ describe('metrics glossary', () => {
     for (const name of ['수비 지역', '우리 진영 중원', '박스 앞', '박스 안', '골 에어리어'])
       expect(zones.here).toContain(name);
 
-    const tags = glossaryEntry('touch-tags')!;
-    const words = `${tags.standard} ${tags.here}`;
-    for (const tag of [
-      '라인 사이',
-      '라인 사이의 빈 공간(포켓)',
-      '뒷공간',
-      '채널',
-      '압박',
-      '등지고 받기',
-      '수적 우위',
-      '역습',
-      '게겐프레싱',
-    ])
-      expect(words, tag).toContain(tag);
+    // The recorded facts and the script's phases (→MATCH-15), never an unrecorded tag.
+    const recorded = glossaryEntry('action-record')!;
+    for (const fact of ['40칸', '세트피스', '라인을 깨뜨렸는지', '공을 따냈는지'])
+      expect(recorded.here, fact).toContain(fact);
+    for (const phase of ['빌드업', '전진', '파이널 서드', '역습', '세트피스'])
+      expect(recorded.here, phase).toContain(phase);
+    expect(glossaryEntry('touch-tags')).toBeUndefined();
+    for (const entry of GLOSSARY)
+      for (const text of [entry.term, entry.standard, entry.here, entry.read])
+        // A through ball's space in behind is MATCH-13's own definition, so it is not listed here.
+        for (const unrecorded of [
+          '라인 사이',
+          '채널',
+          '압박 강도',
+          '등지고',
+          '수적 우위',
+          '게겐프레싱',
+        ])
+          expect(text, `${entry.id}: ${unrecorded}`).not.toContain(unrecorded);
     // MATCH-18's offside rule and its restart.
     expect(glossaryEntry('offside')!.here).toContain('뒤에서 두 번째 상대');
     expect(glossaryEntry('offside')!.here).toContain('간접 프리킥');

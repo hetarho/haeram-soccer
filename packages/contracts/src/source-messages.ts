@@ -4782,6 +4782,13 @@ export const sourceMessages = {
   'copy.fullStatsView.abc2d9a4a3': 'xG 차',
   'copy.fullStatsView.3cef0459ef': '태클+인터셉트',
   'copy.fullStatsView.543d84eb22': '세부 기록을 불러오지 못했어요.',
+  'glossary.actionRecord.term': '기록된 플레이',
+  'glossary.actionRecord.standard':
+    '이벤트 데이터는 공을 다룬 플레이마다 위치, 종류, 결과와 관여한 선수를 기록하고, 분석가는 그 플레이가 놓인 국면(빌드업, 전진, 파이널 서드, 역습, 세트피스)으로 흐름을 읽어요(Opta, StatsBomb).',
+  'glossary.actionRecord.here':
+    '경기 기록은 플레이마다 시작과 끝 칸(40칸), 종류(패스·운반·돌파·크로스·슈팅·태클·인터셉트·파울·오프사이드), 세트피스 여부, 결과, 라인을 깨뜨렸는지, 누가 했고 누가 공을 따냈는지를 담아요. 경기 스크립트는 여기에 그 플레이의 국면인 빌드업, 전진, 파이널 서드, 역습, 세트피스를 더해요.',
+  'glossary.actionRecord.read':
+    '해설과 통계는 이 기록만 읽어요. 칸 이름, 결과, 라인 브레이킹은 기록 그대로이고, 해설 앞에 "역습"이 붙으면 그 플레이의 국면이 역습이에요.',
   'copy.glossaryEntries.7087773f6a': '왼쪽 측면',
   'copy.glossaryEntries.e6042799eb': '왼쪽 하프스페이스',
   'copy.glossaryEntries.25c630c275': '중앙',
@@ -4991,13 +4998,6 @@ export const sourceMessages = {
   'copy.glossaryEntries.a21e31075d':
     '아래 표는 위쪽이 상대 골문이에요. 칸에 띠 이름만 있으면 그 열의 레인 이름을 앞에 붙여 읽어요. 상대 골문에 가까운 중앙 칸일수록 위협도(xT)가 높아요.',
   'copy.glossaryEntries.c93350ead2': '공격 방향 기준 40칸 (위쪽이 상대 골문)',
-  'copy.glossaryEntries.fa3a35e10f': '터치 상황 태그',
-  'copy.glossaryEntries.a5e32a8767':
-    "분석가와 해설은 공을 받는 순간의 상황을 상대 위치로 설명해요. 라인 사이(상대 미드필드 줄과 수비 줄 사이), 뒷공간(가장 깊은 수비수 뒤), 채널(센터백과 풀백 사이), 압박(StatsBomb은 약 4.6m 안의 상대), 등지고 받기, 수적 우위, 그리고 국면으로 역습과 게겐프레싱(공을 잃은 직후 바로 되찾으려는 압박)을 써요(FIFA EFI, Spielverlagerung, Coaches' Voice).",
-  'copy.glossaryEntries.40a048d5c0':
-    '공을 다룰 때마다 선수들 위치로 다시 계산해요. 라인 사이: 상대 미드필드 줄과 수비 줄의 평균 위치 사이, 하프스페이스·중앙 레인. 라인 사이의 빈 공간(포켓): 라인 사이이면서 가장 가까운 상대가 6m 이상 떨어짐. 뒷공간: 뒤에서 두 번째 상대보다 앞. 채널: 하프스페이스에서 상대 수비 줄과 6m 안, 그쪽 센터백과 풀백 사이. 압박: 4.6m 안의 상대 수(골문 쪽 상대는 1, 뒤쪽 상대는 0.5). 등지고 받기: 뒤로 온 패스를 받았는데 3m 안 골문 쪽에 상대가 있음. 수적 우위: 공 주변 15m 안 우리 선수가 상대보다 많음. 역습: 공을 되찾고 8초 안, 공보다 골문 쪽 상대가 5명 이하. 게겐프레싱: 공을 잃고 5초 동안 전술에 따라 압박 반경이 넓어짐.',
-  'copy.glossaryEntries.daffa517b8':
-    '해설에 "라인 사이에서 받은", "뒷공간으로", "등지고 받은", "역습"이 나오면 이 태그예요. 압박이 1 이상이면 패스 성공률이 떨어지고 드리블 돌파나 걷어내기가 늘어나요.',
   'copy.identityPreview.2f41a055e8': '어웨이',
   'copy.identityPreview.ec9b859e8d': '세컨',
   'copy.identityPreview.6b01b2385d': '밝은 상대 예시',
