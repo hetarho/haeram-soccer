@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r39 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r40 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -206,16 +206,10 @@
   - every record carries its owner, a stable ID and an updated time; an account adapter adopts device records on first sign-in and merges by ID and updated time.
   - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
 - ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow
-  - task, before each task's done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests`.
-  - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.
-  - an acceptance item naming `tests/e2e` specs is confirmed by the batch run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the batch run in `- limits:`.
-  - `GUSTA_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.
-  - batch, once on the final integration candidate before `vibe push` lands finished work on spec/SETTINGS.md's `land` branch (`main`, pushed, which deploys), by the coordinator or loop host alone and through `vibe check --tier batch`, whose host lock queues every other session's batch: `pnpm run verify:batch`. It covers unit, integration, contract, catalogs, presentation, build and every journey on Chromium; the candidate first merges the land branch in, and what fails is fixed before landing. Task commits, WIP checkpoints and unit sessions never run it. ← sessions running full suites and browser journeys side by side overloaded the shared host, and each landing deploys; one locked gate before each landing is enough
-  - planning commits (`spec/` only) go at once to spec/SETTINGS.md's `plan` branch, `next`, through `vibe plan-sync` and `vibe plan-push`, with no batch; `next` numbers task IDs and SSOT revs and holds no code waiting for a release. ← gusta 0.12.0 lands finished work by spec/SETTINGS.md (`land: main`, `push: true`), so code gathered on `next` waited for a release nobody owned
-  - browser specs run only in the batch run; a failing spec there stops the landing until it is fixed.
-  - CI, after a push to `main` (planning pushes to `next` start none): ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.
-  - a work group collecting local commits maps task → `--task-verify`, quick checks → `--verify`, and the complete batch → `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.
-  - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).
+  - task, before each done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests`.
+  - a task changing UI, browser-journey, storage or worker code also runs `pnpm run build`. Browser specs (`playwright`, `tests/e2e`) run only in batch: an acceptance item naming them is checked `- [v]` once the build passes, and the specs go to batch through `- limits:`.
+  - batch, before code push or final completion: `pnpm run verify:batch`. It covers unit, integration, contract, catalogs, presentation, build and every journey on Chromium.
+  - CI, after code push: the GitHub Actions run of →ARCH-23, every browser. A push touching only `spec/`, `artifacts/` or Markdown starts none.
 
 - ARCH-31 [o] A match-model release has a capacity gate (→SAVE-23); its throughput (→!ARCH-34) and accuracy (→MATCH-28) are measured and reported with the release, not gates. ← the model ships first and its football is calibrated on the released model
   - record a pre-change baseline and final source fingerprint on the same pinned toolchain, machine and fixed worlds. Measure isolated fixture processing, complete season engine time, record settlement, codecs and observation separately; record warm-up, repetitions, medians, samples and memory.
@@ -249,12 +243,12 @@
   - a result names the machine, its load, the interval and the hashes; a figure from another machine is context only.
 
 ## flow
-- Planning: ARCH → gameplay domain SSOTs → gusta-create-task → implementation.
+- Planning: ARCH → gameplay domain SSOTs → tasks → implementation.
 - Local play: UI command → validated bridge → engine worker → domain facts/projections → UI statistics/Canvas.
 - Presentation: locale/theme registry → selected validated JSON pack → shared presentation consumers; a preference change loads resources without issuing a game command.
 - Save: safe game boundary → background candidate envelope/codec/checksum → validated checkpoint commit (→SAVE-3) → committed acknowledgment.
 - Recovery: startup → capability check → save validation → load(current|previous compatible|export/recovery) → worker initialization.
-- Verification: task checks per task → planning straight to `next` → the locked batch on the final candidate → `vibe push` lands it on `main` (deploy) → CI on every browser (→ARCH-30).
+- Verification: task checks per task → batch once on the final candidate before a code push → CI after the push (→ARCH-30).
 - Release: locked install → verification → static build → preview smoke checks → stable production deployment → compatible rollback path.
 - Future mobile: portable contracts/catalogs/fixtures → Dart engine parity → Flutter views/persistence → commercial-release validation.
 
@@ -267,6 +261,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r40 261112 ARCH-30✎ project-only rules (planning on `next`, host-locked batch before `vibe push` to `main`, work-group flag map, CI-wait and `verify` stand-in rules)→gusta's default tiers: task · batch before code push or final completion · CI after code push · flow✎ Planning names no skill, Verification no `next` or `vibe push`
 - r39 261111 ARCH-3✎ `grid/` and `aggregate/` compute matches→`aggregate/` settles, `script/` and `staging/` write and stage an own match · ARCH-4✎ grid-execution orchestration→match orchestration (settlement, script writing, staging) · ARCH-6✎ +a watched match staged by a worker of its own in bounded steps · ARCH-9✎ +the script writer's platform-stable arithmetic, the staging exempt · ARCH-31✎ the continuous-match and full probabilistic-result release→a match-model release; +own-match settlement and watched cost measured apart · ARCH-33✎ the grid kernel→the script writer and the staging as leaves · ARCH-34✎ workload hashes grid, aggregate, day→own match, aggregate, staging, day
 - r38 261110 ARCH-21✎ world cache `node_modules/.cache/haeram-worlds` per worktree→one clone-wide store under the Git common directory locally (CI keeps the per-job path); a fresh worktree's gate or task check reuses worlds of the same fingerprint (warm vitest phase 531 s against 822 s cold)
 - r37 261110 ARCH-30✎ code gathered on `next`, quick batch per push, the last session releasing `next` into `main` after verify:batch→planning only on `next` (plan-push), finished work landed on SETTINGS `land` (`main`) by `vibe push` after one locked `pnpm run verify:batch` on the final candidate (gusta 0.12.0)

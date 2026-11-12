@@ -934,7 +934,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 39 | 39 | - | 2 |
+| ARCH | 40 | 40 | - | 2 |
 | WEB | 216 | 216 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 11 | 11 | - | 0 |
@@ -981,6 +981,9 @@
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261112 ARCH r40..r40 no-op (no code impact)
+- 261112 gusta-update-ssot ARCH r40 (ARCH-30✎ project-only branch, batch-lock, work-group and CI-wait rules→gusta default tiers; flow✎ Planning, Verification)
+- 261112 settings: land main, push true, plan follows land (next retired); this machine continues from the hf12 hand-off
 - 261112 hf12 handed off to origin/wip/hf12 at 21:00 KST: T838–T844 done (release, browser migration, verdict, prototype removed, leaves out of grid/, tests and scripts off the earlier models); T845 and T848 todo; no final gate or main push yet hf12
 - 261112 T844 done
 - 261112 T843 done
@@ -998,6 +1001,3 @@
 - 261112 T837 done: 2 h throughput exploration, eight writer/two shape cuts kept and five noise trials reverted; own CPU ×0.2735, raw motion diagnostic ×0.2389, sampled hashes unchanged, 1,568 affected unit tests/type/lint/format/i18n pass; full staging baseline prefix-ledger failure explicitly open for T838, raw evidence/report retained, no push cc12
 - 261112 T836 done: result-path lab and scripted/staged watch, five groups/622 numeric leaves and localized descriptions, isolated frozen overrides, complete target rows with unavailable sequence/point readings; 133 affected unit tests and type/lint/format/i18n/build pass, updated lab browser journey deferred to host; revision 11 preview only, no push cc12
 - 261112 T835 done: completed-pass circles, stable numbers, bidirectional-width links and played-direction arrows; recorded kit/contrast ink, touch/keyboard/locale selection and busiest-five text; 43 isolated affected tests and type/lint/format/i18n/build pass, phone browser assertions written for host batch; no push cc12
-- 261112 T834 done: independent two-minute staging worker/timer fallback, immutable ordered frames, lifecycle cancellation, frontier wait, immediate result/analysis and staged moment/clip guards; 183 affected unit tests, final component/static/i18n/build checks pass; prepared revision-11 eve and scripted-match.spec.ts written, browser assertions deferred to host batch, no push cc12
-- 261112 T833 done: joint temporal attribution, causal penalty clocks and own aggregate/script/material path; 98 isolated tests and fast checks pass, 20/20 measured fixtures valid; integration acceptance remains open for the host gate cc12
-- 261112 gusta-create-task MATCH r61: refreshed T833 at MATCH@61, same T832 dependency and original acceptance; joint action participation and penalty cause clocks precede own dispatch; todo and runnable, source sketch withdrawn, one planning slice cc12
