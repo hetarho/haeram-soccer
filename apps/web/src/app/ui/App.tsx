@@ -771,6 +771,7 @@ export function App() {
       setController(progression);
       setSlots(library);
       void c.start();
+      if (import.meta.env.DEV) void import('../../ab-demo/boot').then((m) => m.boot(c, setScreen)); // ab-demo scaffold
       return () => {
         document.removeEventListener('visibilitychange', visibility);
         window.removeEventListener('pagehide', leave);
