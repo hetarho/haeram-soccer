@@ -26,7 +26,7 @@
           "pnpm run typecheck",
           "pnpm run lint",
           "pnpm run format:check",
-          "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+          "pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
         ],
         "batch": [
           "pnpm run test:unit",
@@ -60,7 +60,7 @@
           "- ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow",
           "  - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.",
           "  - an acceptance item naming `tests/e2e` specs is confirmed by the release run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the release run in `- limits:`.",
-          "  - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
+          "  - `GUSTA_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
           "  - release, once, by the last session still working (no other live session with a task in progress): merge `main` into `next`, run `pnpm run verify:batch` (unit, integration, contract, catalogs, presentation, build and every journey on Chromium) through `vibe check --tier batch`, fix what fails, then merge `next` into `main` and push `main`, which deploys. Every other session only gathers its work on `next`. ← sessions running full suites and browser journeys side by side overloaded the shared host; one gate before each deploy is enough",
           "  - browser specs run only in the release run; a failing spec there stops the release until it is fixed.",
           "  - CI, after a push to `main` (pushes to `next` start none): ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.",
@@ -76,9 +76,9 @@
       "batchVerify": [
         "pnpm run verify:batch"
       ],
-      "directory": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04",
-      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/STOP",
-      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/loop.json",
+      "directory": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04",
+      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/STOP",
+      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/loop.json",
       "freshSessionPerUnit": true,
       "pushEachUnit": false,
       "ok": false,
@@ -109,7 +109,7 @@
           "pnpm run typecheck",
           "pnpm run lint",
           "pnpm run format:check",
-          "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+          "pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
         ],
         "batch": [
           "pnpm run test:unit",
@@ -143,7 +143,7 @@
           "- ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow",
           "  - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.",
           "  - an acceptance item naming `tests/e2e` specs is confirmed by the release run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the release run in `- limits:`.",
-          "  - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
+          "  - `GUSTA_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
           "  - release, once, by the last session still working (no other live session with a task in progress): merge `main` into `next`, run `pnpm run verify:batch` (unit, integration, contract, catalogs, presentation, build and every journey on Chromium) through `vibe check --tier batch`, fix what fails, then merge `next` into `main` and push `main`, which deploys. Every other session only gathers its work on `next`. ← sessions running full suites and browser journeys side by side overloaded the shared host; one gate before each deploy is enough",
           "  - browser specs run only in the release run; a failing spec there stops the release until it is fixed.",
           "  - CI, after a push to `main` (pushes to `next` start none): ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.",
@@ -159,9 +159,9 @@
       "batchVerify": [
         "pnpm run verify:batch"
       ],
-      "directory": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04",
-      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/STOP",
-      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/loop.json",
+      "directory": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04",
+      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/STOP",
+      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/loop.json",
       "freshSessionPerUnit": true,
       "pushEachUnit": false,
       "ok": true,
@@ -192,7 +192,7 @@
           "pnpm run typecheck",
           "pnpm run lint",
           "pnpm run format:check",
-          "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+          "pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
         ],
         "batch": [
           "pnpm run test:unit",
@@ -226,7 +226,7 @@
           "- ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow",
           "  - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.",
           "  - an acceptance item naming `tests/e2e` specs is confirmed by the release run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the release run in `- limits:`.",
-          "  - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
+          "  - `GUSTA_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
           "  - release, once, by the last session still working (no other live session with a task in progress): merge `main` into `next`, run `pnpm run verify:batch` (unit, integration, contract, catalogs, presentation, build and every journey on Chromium) through `vibe check --tier batch`, fix what fails, then merge `next` into `main` and push `main`, which deploys. Every other session only gathers its work on `next`. ← sessions running full suites and browser journeys side by side overloaded the shared host; one gate before each deploy is enough",
           "  - browser specs run only in the release run; a failing spec there stops the release until it is fixed.",
           "  - CI, after a push to `main` (pushes to `next` start none): ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.",
@@ -242,9 +242,9 @@
       "batchVerify": [
         "pnpm run verify:batch"
       ],
-      "directory": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04",
-      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/STOP",
-      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/loop.json",
+      "directory": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04",
+      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/STOP",
+      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/loop.json",
       "freshSessionPerUnit": true,
       "pushEachUnit": false,
       "ok": true,
@@ -275,7 +275,7 @@
           "pnpm run typecheck",
           "pnpm run lint",
           "pnpm run format:check",
-          "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+          "pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
         ],
         "batch": [
           "pnpm run test:unit",
@@ -309,7 +309,7 @@
           "- ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow",
           "  - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.",
           "  - an acceptance item naming `tests/e2e` specs is confirmed by the release run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the release run in `- limits:`.",
-          "  - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
+          "  - `GUSTA_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
           "  - release, once, by the last session still working (no other live session with a task in progress): merge `main` into `next`, run `pnpm run verify:batch` (unit, integration, contract, catalogs, presentation, build and every journey on Chromium) through `vibe check --tier batch`, fix what fails, then merge `next` into `main` and push `main`, which deploys. Every other session only gathers its work on `next`. ← sessions running full suites and browser journeys side by side overloaded the shared host; one gate before each deploy is enough",
           "  - browser specs run only in the release run; a failing spec there stops the release until it is fixed.",
           "  - CI, after a push to `main` (pushes to `next` start none): ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.",
@@ -325,9 +325,9 @@
       "batchVerify": [
         "pnpm run verify:batch"
       ],
-      "directory": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04",
-      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/STOP",
-      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/loop.json",
+      "directory": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04",
+      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/STOP",
+      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/loop.json",
       "freshSessionPerUnit": true,
       "pushEachUnit": false,
       "ok": false,
@@ -507,10 +507,10 @@
         "id": "release-gate-4651893a",
         "outcome": "completed",
         "pushed": false,
-        "next": "Host reruns verify:batch on f44d30ba (match-core 360x740 and recruitment poor-ui journeys were not run in this unit); then implement-task T686, T678, T679."
+        "next": "Host reruns verify:batch on f44d30ba (match-core 360x740 and recruitment poor-ui journeys were not run in this unit); then gusta-implement-task T686, T678, T679."
       },
       "session": "41498cdf-3c10-4aea-b36a-bca6c728141a",
-      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/bb307f8d-ada9-4d1c-a536-c0900cadea77.log",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/loops/nv04/bb307f8d-ada9-4d1c-a536-c0900cadea77.log",
       "before": "4651893ae02b511e9725862d9946aee0e70976bb",
       "after": "f44d30ba33ccf40ae824485a50619b58baf68676"
     }

@@ -150,7 +150,7 @@
           "at": "2026-11-10T15:28:33.208Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T15:27:42.418Z",
               "finishedAt": "2026-11-10T15:28:32.684Z"
             }
@@ -159,7 +159,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T15:27:42.418Z",
           "finishedAt": "2026-11-10T15:28:32.684Z"
         }
@@ -240,7 +240,7 @@
           "at": "2026-11-10T16:19:25.510Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T16:17:50.491Z",
               "finishedAt": "2026-11-10T16:19:25.024Z"
             }
@@ -249,7 +249,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T16:17:50.491Z",
           "finishedAt": "2026-11-10T16:19:25.024Z"
         }
@@ -342,7 +342,7 @@
           "at": "2026-11-10T15:27:24.281Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T15:25:35.034Z",
               "finishedAt": "2026-11-10T15:27:23.575Z"
             }
@@ -354,7 +354,7 @@
           "at": "2026-11-10T16:30:10.797Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T16:27:21.302Z",
               "finishedAt": "2026-11-10T16:30:09.935Z"
             }
@@ -366,7 +366,7 @@
           "at": "2026-11-10T16:56:28.215Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T16:55:20.416Z",
               "finishedAt": "2026-11-10T16:56:27.709Z"
             }
@@ -375,7 +375,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T16:55:20.416Z",
           "finishedAt": "2026-11-10T16:56:27.709Z"
         }
@@ -461,7 +461,7 @@
           "at": "2026-11-10T16:10:36.492Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T16:08:39.797Z",
               "finishedAt": "2026-11-10T16:10:35.840Z"
             }
@@ -470,7 +470,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T16:08:39.797Z",
           "finishedAt": "2026-11-10T16:10:35.840Z"
         }
@@ -561,7 +561,7 @@
           "at": "2026-11-10T17:40:50.900Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T17:40:07.917Z",
               "finishedAt": "2026-11-10T17:40:49.769Z"
             }
@@ -570,7 +570,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T17:40:07.917Z",
           "finishedAt": "2026-11-10T17:40:49.769Z"
         }
@@ -651,7 +651,7 @@
           "at": "2026-11-10T17:42:17.044Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T17:41:14.569Z",
               "finishedAt": "2026-11-10T17:42:15.922Z"
             }
@@ -660,7 +660,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T17:41:14.569Z",
           "finishedAt": "2026-11-10T17:42:15.922Z"
         }
@@ -741,7 +741,7 @@
           "at": "2026-11-10T17:55:36.026Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T17:55:12.989Z",
               "finishedAt": "2026-11-10T17:55:35.616Z"
             }
@@ -750,7 +750,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T17:55:12.989Z",
           "finishedAt": "2026-11-10T17:55:35.616Z"
         }
@@ -837,7 +837,7 @@
           "at": "2026-11-10T18:41:38.701Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
               "startedAt": "2026-11-10T18:41:15.429Z",
               "finishedAt": "2026-11-10T18:41:38.279Z"
             }
@@ -846,7 +846,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T18:41:15.429Z",
           "finishedAt": "2026-11-10T18:41:38.279Z"
         }
@@ -1422,7 +1422,7 @@
             "at": "2026-11-10T15:27:24.281Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T15:25:35.034Z",
                 "finishedAt": "2026-11-10T15:27:23.575Z"
               }
@@ -1457,7 +1457,7 @@
           "startedAt": "2026-11-10T15:01:21.499Z",
           "finishedAt": "2026-11-10T15:27:24.353Z",
           "error": null,
-          "summary": "T805 is done: each club now has its own age ladder, and all the task-tier checks pass. One thing needs a reviewer: I edited seven test files outside the task's touches, and the runner will flag that.\n\n**Engine change**\n- `world.ts` gains `ageLadder(seed, club)`. It draws a start point (0–17) and an order for the 18 places from a stream keyed on the seed and club id.\n- `squadPlaceAge(...)` gives each place's age and cohort using the task's formula.\n- `npcSquad` and `replacement` both use the helper; no copy of the old formula is left in the repo.\n- Player ids keep the `${club.id}:p:${i}:${cohort}` shape. The surname key is now the year the player turned 18, so a season's 18 surnames stay distinct.\n- 7 unit cases are in `names.test.ts`, covering each acceptance case including retained people keeping their stored id and facts. I put them there because it is unit-tier; `world.test.ts` and `npc-continuity.test.ts` are integration files.\n\n**Refreshed with their own scripts**\n- `tests/fixtures/portable-v1.json` (`update-golden.ts`, then Prettier). The diff is player ids, names and wages, match facts, events, fans and cash. No club strength, reputation or tier line changed.\n- `tests/fixtures/prepared/manager-journey.json` and `manager-activation.json` (`prepare-manager-fixtures.ts`). They keep the same seeds, own club and 26 manager tenures.\n- The catalog fingerprint is unchanged (no catalog data moved), so I did not rewrite it.\n\n**Recorded digests that moved**\n- `full-model-throughput`: both digests moved, and the reason is written in the file. Scores changed too, not just names, because players aged 21 or younger carry −5 판단력/침착성 and per-player random draws keyed on their ids. The task's impl note says ratings don't depend on age yet; that holds for OVR and club strength, but not for match results.\n- `grid-throughput`: I re-recorded every digest and rescanned the extra-time and shoot-out ties.\n- The three named equivalence tests pass after the re-record.\n\n**Test files edited outside touches**\nThese seven pass on the base engine and failed with the new ladder:\n- `full-model-throughput.test.ts`, `grid-throughput.test.ts`: digest re-records.\n- `results-only.test.ts`: two goal lines re-recorded; the scores are unchanged.\n- `grid/decide.test.ts`: the striker is now 18, so the case reads him with an adult's judgement.\n- `world-market.test.ts`: the bid's player is now young enough for recruitment level 1, so the case uses 해외 스카우트망 1 to drop him from the list instead.\n- `playing-coach.test.ts`: the 36-year-old is put on his market wage, since his drawn wage refused the renewal cap.\n- `mediation-resolution.test.ts`: seed changed to `resolution-1`, because `resolution` now offers no cheaper midfielder.\n\n**Checks run**\n- typecheck, lint, format:check and validate:i18n pass.\n- Unit tests changed since the base: 132 files, 1261 tests pass. I wrote the base SHA out in the command because this session blocks `$HAERAM_DIFF_BASE`.\n- Integration: the three equivalence files, `npc-continuity`, `world` and `grid-throughput` pass.\n- The portable contract test and `prepared-world.test.ts` pass.\n\n**Left for the batch gate**\n- The rest of the integration tier was not run; other files that pin generated players may need the same re-recording.\n- No browser journeys were run. The refreshed `manager-journey` world is loaded by the personnel, personnel-hubs, team-directory, resource-skins and beta-mark specs.\n- The prepared worlds record `source.dirty: true` at aa70afdb. If you want clean provenance, rerun `prepare-manager-fixtures.ts` on the committed tree."
+          "summary": "T805 is done: each club now has its own age ladder, and all the task-tier checks pass. One thing needs a reviewer: I edited seven test files outside the task's touches, and the runner will flag that.\n\n**Engine change**\n- `world.ts` gains `ageLadder(seed, club)`. It draws a start point (0–17) and an order for the 18 places from a stream keyed on the seed and club id.\n- `squadPlaceAge(...)` gives each place's age and cohort using the task's formula.\n- `npcSquad` and `replacement` both use the helper; no copy of the old formula is left in the repo.\n- Player ids keep the `${club.id}:p:${i}:${cohort}` shape. The surname key is now the year the player turned 18, so a season's 18 surnames stay distinct.\n- 7 unit cases are in `names.test.ts`, covering each acceptance case including retained people keeping their stored id and facts. I put them there because it is unit-tier; `world.test.ts` and `npc-continuity.test.ts` are integration files.\n\n**Refreshed with their own scripts**\n- `tests/fixtures/portable-v1.json` (`update-golden.ts`, then Prettier). The diff is player ids, names and wages, match facts, events, fans and cash. No club strength, reputation or tier line changed.\n- `tests/fixtures/prepared/manager-journey.json` and `manager-activation.json` (`prepare-manager-fixtures.ts`). They keep the same seeds, own club and 26 manager tenures.\n- The catalog fingerprint is unchanged (no catalog data moved), so I did not rewrite it.\n\n**Recorded digests that moved**\n- `full-model-throughput`: both digests moved, and the reason is written in the file. Scores changed too, not just names, because players aged 21 or younger carry −5 판단력/침착성 and per-player random draws keyed on their ids. The task's impl note says ratings don't depend on age yet; that holds for OVR and club strength, but not for match results.\n- `grid-throughput`: I re-recorded every digest and rescanned the extra-time and shoot-out ties.\n- The three named equivalence tests pass after the re-record.\n\n**Test files edited outside touches**\nThese seven pass on the base engine and failed with the new ladder:\n- `full-model-throughput.test.ts`, `grid-throughput.test.ts`: digest re-records.\n- `results-only.test.ts`: two goal lines re-recorded; the scores are unchanged.\n- `grid/decide.test.ts`: the striker is now 18, so the case reads him with an adult's judgement.\n- `world-market.test.ts`: the bid's player is now young enough for recruitment level 1, so the case uses 해외 스카우트망 1 to drop him from the list instead.\n- `playing-coach.test.ts`: the 36-year-old is put on his market wage, since his drawn wage refused the renewal cap.\n- `mediation-resolution.test.ts`: seed changed to `resolution-1`, because `resolution` now offers no cheaper midfielder.\n\n**Checks run**\n- typecheck, lint, format:check and validate:i18n pass.\n- Unit tests changed since the base: 132 files, 1261 tests pass. I wrote the base SHA out in the command because this session blocks `$GUSTA_DIFF_BASE`.\n- Integration: the three equivalence files, `npc-continuity`, `world` and `grid-throughput` pass.\n- The portable contract test and `prepared-world.test.ts` pass.\n\n**Left for the batch gate**\n- The rest of the integration tier was not run; other files that pin generated players may need the same re-recording.\n- No browser journeys were run. The refreshed `manager-journey` world is loaded by the personnel, personnel-hubs, team-directory, resource-skins and beta-mark specs.\n- The prepared worlds record `source.dirty: true` at aa70afdb. If you want clean provenance, rerun `prepare-manager-fixtures.ts` on the committed tree."
         }
       }
     },
@@ -1621,7 +1621,7 @@
             "at": "2026-11-10T15:28:33.208Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T15:27:42.418Z",
                 "finishedAt": "2026-11-10T15:28:32.684Z"
               }
@@ -1630,7 +1630,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
             "startedAt": "2026-11-10T15:27:42.418Z",
             "finishedAt": "2026-11-10T15:28:32.684Z"
           }
@@ -2026,7 +2026,7 @@
             "at": "2026-11-10T16:10:36.492Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T16:08:39.797Z",
                 "finishedAt": "2026-11-10T16:10:35.840Z"
               }
@@ -2035,7 +2035,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
             "startedAt": "2026-11-10T16:08:39.797Z",
             "finishedAt": "2026-11-10T16:10:35.840Z"
           }
@@ -2264,7 +2264,7 @@
       "status": "blocked",
       "changes": {
         "status": "blocked",
-        "reason": "기획 브랜치를 워커 공간에 합치지 못했습니다: ation-f9332a51 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/state.gitattributes -c merge.haeram-state.name=haeram STATE sections -c merge.haeram-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/si/rl10"
+        "reason": "기획 브랜치를 워커 공간에 합치지 못했습니다: ation-f9332a51 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/state.gitattributes -c merge.gusta-state.name=gusta STATE sections -c merge.gusta-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/gusta/bin/gusta.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/si/rl10"
       }
     },
     {
@@ -2568,7 +2568,7 @@
             "at": "2026-11-10T16:19:25.510Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T16:17:50.491Z",
                 "finishedAt": "2026-11-10T16:19:25.024Z"
               }
@@ -2577,7 +2577,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
             "startedAt": "2026-11-10T16:17:50.491Z",
             "finishedAt": "2026-11-10T16:19:25.024Z"
           }
@@ -2916,7 +2916,7 @@
             "at": "2026-11-10T15:27:24.281Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T15:25:35.034Z",
                 "finishedAt": "2026-11-10T15:27:23.575Z"
               }
@@ -2928,7 +2928,7 @@
             "at": "2026-11-10T16:30:10.797Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T16:27:21.302Z",
                 "finishedAt": "2026-11-10T16:30:09.935Z"
               }
@@ -2963,7 +2963,7 @@
           "startedAt": "2026-11-10T16:19:26.255Z",
           "finishedAt": "2026-11-10T16:30:10.881Z",
           "error": null,
-          "summary": "T806 is done: the cost item is checked under the coordinator's restated wording, and the squad cost ratio is recorded per strength and era. The values stay at bench 3 and a triangular class of ±6.\n\n**Measurement.** Spread squad cost ÷ flat squad cost (`squadCostAt`), 40 clubs × ENG and ESP at tier 0. The four years cover the star-spread eras:\n\n| strength | 1950 | 1980 | 1995 | 2015 |\n|---|---|---|---|---|\n| 50 | 0.957 | 0.960 | 0.965 | 0.968 |\n| 60 | 0.957 | 0.960 | 0.965 | 0.968 |\n| 70 | 0.961 | 0.965 | 0.970 | 0.972 |\n| 80 | 0.883 | 0.913 | 0.956 | 1.005 |\n| 85 | 0.971 | 0.977 | 0.999 | 1.031 |\n| 90 | 0.967 | 0.962 | 0.965 | 0.980 |\n| 95 | 0.959 | 0.946 | 0.921 | 0.901 |\n\nThe largest deviation is 0.117, at strength 80 in 1950.\n\n**Why bench 3 and class ±6.**\n- Any bench above 3 pulls every ratio further down.\n- A uniform class does worse than a triangular one (worst cell 0.126).\n- Narrower classes cut the worst cell only slightly: ±3 gives 0.105, ±4 0.109, ±5 0.113. But they drop the fielded eleven's OVR SD below acceptance 5's 2.5 at strength 90. I tried ±5 in code: the unit case failed with 2.39 for a possession side. So ±6 is the narrowest class that keeps both items.\n- The remaining ~10% gap comes from the rules themselves, not the chosen values:\n  - The age term lowers young and old players.\n  - Before 2008, starters lifted above OVR 80 earn little more under CLUB-48's star pay spread.\n  - At 95 the attribute ceiling holds the starters while the bench must still sit 3 below.\n\n**Code:** the class value is unchanged; only the comment on `SQUAD_SPREAD_CONFIG` in `world.ts` now explains these reasons.\n\n**Checks**, all passing on the merged lane tree (c58950c5):\n- typecheck, lint, format:check and validate:i18n.\n- Changed unit tests since 0de98060: 149 files, 1414 tests. I wrote the base commit out in the command because this session blocks `$HAERAM_DIFF_BASE`.\n- `squad-spread.test.ts`: 7 tests.\n- The equivalence trio (`calendar.progression-eng`, `season`, `full-model-throughput`): 10 tests.\n\n**Not done here:** no other integration suites and no career or world runs; those belong to the batch gate and T808. T807 is untouched and is left for the runner's next dispatch."
+          "summary": "T806 is done: the cost item is checked under the coordinator's restated wording, and the squad cost ratio is recorded per strength and era. The values stay at bench 3 and a triangular class of ±6.\n\n**Measurement.** Spread squad cost ÷ flat squad cost (`squadCostAt`), 40 clubs × ENG and ESP at tier 0. The four years cover the star-spread eras:\n\n| strength | 1950 | 1980 | 1995 | 2015 |\n|---|---|---|---|---|\n| 50 | 0.957 | 0.960 | 0.965 | 0.968 |\n| 60 | 0.957 | 0.960 | 0.965 | 0.968 |\n| 70 | 0.961 | 0.965 | 0.970 | 0.972 |\n| 80 | 0.883 | 0.913 | 0.956 | 1.005 |\n| 85 | 0.971 | 0.977 | 0.999 | 1.031 |\n| 90 | 0.967 | 0.962 | 0.965 | 0.980 |\n| 95 | 0.959 | 0.946 | 0.921 | 0.901 |\n\nThe largest deviation is 0.117, at strength 80 in 1950.\n\n**Why bench 3 and class ±6.**\n- Any bench above 3 pulls every ratio further down.\n- A uniform class does worse than a triangular one (worst cell 0.126).\n- Narrower classes cut the worst cell only slightly: ±3 gives 0.105, ±4 0.109, ±5 0.113. But they drop the fielded eleven's OVR SD below acceptance 5's 2.5 at strength 90. I tried ±5 in code: the unit case failed with 2.39 for a possession side. So ±6 is the narrowest class that keeps both items.\n- The remaining ~10% gap comes from the rules themselves, not the chosen values:\n  - The age term lowers young and old players.\n  - Before 2008, starters lifted above OVR 80 earn little more under CLUB-48's star pay spread.\n  - At 95 the attribute ceiling holds the starters while the bench must still sit 3 below.\n\n**Code:** the class value is unchanged; only the comment on `SQUAD_SPREAD_CONFIG` in `world.ts` now explains these reasons.\n\n**Checks**, all passing on the merged lane tree (c58950c5):\n- typecheck, lint, format:check and validate:i18n.\n- Changed unit tests since 0de98060: 149 files, 1414 tests. I wrote the base commit out in the command because this session blocks `$GUSTA_DIFF_BASE`.\n- `squad-spread.test.ts`: 7 tests.\n- The equivalence trio (`calendar.progression-eng`, `season`, `full-model-throughput`): 10 tests.\n\n**Not done here:** no other integration suites and no career or world runs; those belong to the batch gate and T808. T807 is untouched and is left for the runner's next dispatch."
         }
       }
     },
@@ -3098,7 +3098,7 @@
             "at": "2026-11-10T15:27:24.281Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T15:25:35.034Z",
                 "finishedAt": "2026-11-10T15:27:23.575Z"
               }
@@ -3110,7 +3110,7 @@
             "at": "2026-11-10T16:30:10.797Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T16:27:21.302Z",
                 "finishedAt": "2026-11-10T16:30:09.935Z"
               }
@@ -3122,7 +3122,7 @@
             "at": "2026-11-10T16:56:28.215Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T16:55:20.416Z",
                 "finishedAt": "2026-11-10T16:56:27.709Z"
               }
@@ -3136,7 +3136,7 @@
         "risk": null,
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
             "startedAt": "2026-11-10T16:55:20.416Z",
             "finishedAt": "2026-11-10T16:56:27.709Z"
           }
@@ -3577,7 +3577,7 @@
             {
               "attempt": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
               "role": "worker",
-              "error": "기획 브랜치를 워커 공간에 합치지 못했습니다: ation-f9332a51 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/state.gitattributes -c merge.haeram-state.name=haeram STATE sections -c merge.haeram-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/si/rl10"
+              "error": "기획 브랜치를 워커 공간에 합치지 못했습니다: ation-f9332a51 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/state.gitattributes -c merge.gusta-state.name=gusta STATE sections -c merge.gusta-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/gusta/bin/gusta.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/si/rl10"
             },
             {
               "role": "finish",
@@ -3944,7 +3944,7 @@
             "at": "2026-11-10T17:40:50.900Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T17:40:07.917Z",
                 "finishedAt": "2026-11-10T17:40:49.769Z"
               }
@@ -3953,7 +3953,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
             "startedAt": "2026-11-10T17:40:07.917Z",
             "finishedAt": "2026-11-10T17:40:49.769Z"
           }
@@ -4157,7 +4157,7 @@
             "at": "2026-11-10T17:42:17.044Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T17:41:14.569Z",
                 "finishedAt": "2026-11-10T17:42:15.922Z"
               }
@@ -4166,7 +4166,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
             "startedAt": "2026-11-10T17:41:14.569Z",
             "finishedAt": "2026-11-10T17:42:15.922Z"
           }
@@ -4638,7 +4638,7 @@
             "at": "2026-11-10T17:55:36.026Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T17:55:12.989Z",
                 "finishedAt": "2026-11-10T17:55:35.616Z"
               }
@@ -4647,7 +4647,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
             "startedAt": "2026-11-10T17:55:12.989Z",
             "finishedAt": "2026-11-10T17:55:35.616Z"
           }
@@ -5402,7 +5402,7 @@
             "at": "2026-11-10T18:41:38.701Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
                 "startedAt": "2026-11-10T18:41:15.429Z",
                 "finishedAt": "2026-11-10T18:41:38.279Z"
               }
@@ -5411,7 +5411,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
             "startedAt": "2026-11-10T18:41:15.429Z",
             "finishedAt": "2026-11-10T18:41:38.279Z"
           }

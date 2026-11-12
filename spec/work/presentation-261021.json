@@ -230,7 +230,7 @@
           "at": "2026-10-21T05:18:24.173Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T05:15:53.701Z",
               "finishedAt": "2026-10-21T05:18:23.925Z"
             }
@@ -239,7 +239,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T05:15:53.701Z",
           "finishedAt": "2026-10-21T05:18:23.925Z"
         }
@@ -658,7 +658,7 @@
             "at": "2026-10-21T05:11:42.661Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T05:10:38.065Z",
                 "finishedAt": "2026-10-21T05:11:42.417Z"
               }
@@ -667,7 +667,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T05:10:38.065Z",
             "finishedAt": "2026-10-21T05:11:42.417Z"
           }
@@ -813,7 +813,7 @@
             "at": "2026-10-21T05:18:24.173Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T05:15:53.701Z",
                 "finishedAt": "2026-10-21T05:18:23.925Z"
               }
@@ -822,7 +822,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T05:15:53.701Z",
             "finishedAt": "2026-10-21T05:18:23.925Z"
           }
@@ -1081,7 +1081,7 @@
       "status": "blocked",
       "changes": {
         "status": "blocked",
-        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
       }
     },
     {

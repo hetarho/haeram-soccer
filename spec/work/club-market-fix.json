@@ -16,7 +16,7 @@
       "commit": "27feb538ff8bdba6cd2354fc09c689f9aa58da0a",
       "checks": [
         {
-          "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+          "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install gusta lint",
           "startedAt": "2026-10-28T20:43:30.651Z",
           "finishedAt": "2026-10-28T20:43:31.087Z"
         }
@@ -125,7 +125,7 @@
           "at": "2026-10-28T17:29:43.901Z",
           "verification": [
             {
-              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
               "startedAt": "2026-10-28T17:26:53.891Z",
               "finishedAt": "2026-10-28T17:29:43.458Z"
             }
@@ -134,7 +134,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T17:26:53.891Z",
           "finishedAt": "2026-10-28T17:29:43.458Z"
         }
@@ -700,7 +700,7 @@
             "at": "2026-10-28T17:29:43.901Z",
             "verification": [
               {
-                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T17:26:53.891Z",
                 "finishedAt": "2026-10-28T17:29:43.458Z"
               }
@@ -709,7 +709,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T17:26:53.891Z",
             "finishedAt": "2026-10-28T17:29:43.458Z"
           }
@@ -889,7 +889,7 @@
           "commit": "27feb538ff8bdba6cd2354fc09c689f9aa58da0a",
           "checks": [
             {
-              "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+              "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install gusta lint",
               "startedAt": "2026-10-28T20:43:30.651Z",
               "finishedAt": "2026-10-28T20:43:31.087Z"
             }

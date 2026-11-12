@@ -2,7 +2,7 @@
 > st:converted@261109 | scope:packages/engine/src scripts | at:60c5d4ba | base:ARCH@34
 
 ## summary
-- The owner explicitly delegates realistic club income, spending and transfer-fee calibration through self-improve-local. Independent read-only scouts scout_cash and scout_transfer inspected the released rules. The coordinator adopts two bounded mechanisms under this explicit behavior-change authorization; saved contracts, save schemas, deterministic progression and existing financial safeguards are preserved.
+- The owner explicitly delegates realistic club income, spending and transfer-fee calibration through gusta-self-improve. Independent read-only scouts scout_cash and scout_transfer inspected the released rules. The coordinator adopts two bounded mechanisms under this explicit behavior-change authorization; saved contracts, save schemas, deterministic progression and existing financial safeguards are preserved.
 - Existing ECON-29 evidence already misses its bands: production reference wages/revenue 39.8%, operating surplus 23.2%, sales 6.3%, net cash surplus 29.5% (261104). Neither raising fees nor spending more alone proves realistic cash flow.
 
 ## findings

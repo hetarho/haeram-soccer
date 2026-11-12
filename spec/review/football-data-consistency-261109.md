@@ -2,7 +2,7 @@
 > st:converted@261110 | scope:apps/web/src packages/engine/src/finance-read.ts packages/engine/src/finance.ts | at:3a8cf727 | base:ARCH@35
 
 ## summary
-- The owner's direct eight-hour self-improve-local invocation delegates bounded local adoption for football figures, club finances/transfers and conventional football-data UI. Nineteen product corrections and two required verification repairs are approved; existing simulation rules, economic policy and canonical saved facts remain unchanged.
+- The owner's direct eight-hour gusta-self-improve invocation delegates bounded local adoption for football figures, club finances/transfers and conventional football-data UI. Nineteen product corrections and two required verification repairs are approved; existing simulation rules, economic policy and canonical saved facts remain unchanged.
 
 ## findings
 - F1 [o] P2 apps/web/src/entities/office/lib/ownerFigures.ts:249-311: bug: injection and dividend previews use different turnover bases from actual fan-mood settlement ← owner capital, sales and currency changes make disclosed effects disagree with existing rules →T747

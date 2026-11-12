@@ -138,7 +138,7 @@
           "at": "2026-10-26T13:27:53.147Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-10-26T13:27:16.732Z",
               "finishedAt": "2026-10-26T13:27:52.855Z"
             }
@@ -150,7 +150,7 @@
           "at": "2026-10-26T13:34:12.192Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-10-26T13:33:36.578Z",
               "finishedAt": "2026-10-26T13:34:11.916Z"
             }
@@ -159,7 +159,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-26T13:33:36.578Z",
           "finishedAt": "2026-10-26T13:34:11.916Z"
         }
@@ -236,7 +236,7 @@
           "at": "2026-10-26T13:25:16.676Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-10-26T13:24:10.128Z",
               "finishedAt": "2026-10-26T13:25:16.349Z"
             }
@@ -245,7 +245,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-26T13:24:10.128Z",
           "finishedAt": "2026-10-26T13:25:16.349Z"
         }
@@ -327,7 +327,7 @@
           "at": "2026-10-26T13:22:45.062Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-10-26T13:22:00.578Z",
               "finishedAt": "2026-10-26T13:22:44.751Z"
             }
@@ -336,7 +336,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-26T13:22:00.578Z",
           "finishedAt": "2026-10-26T13:22:44.751Z"
         }
@@ -754,7 +754,7 @@
             "at": "2026-10-26T13:22:45.062Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-10-26T13:22:00.578Z",
                 "finishedAt": "2026-10-26T13:22:44.751Z"
               }
@@ -763,7 +763,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-10-26T13:22:00.578Z",
             "finishedAt": "2026-10-26T13:22:44.751Z"
           }
@@ -932,7 +932,7 @@
             "at": "2026-10-26T13:25:16.676Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-10-26T13:24:10.128Z",
                 "finishedAt": "2026-10-26T13:25:16.349Z"
               }
@@ -941,7 +941,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-10-26T13:24:10.128Z",
             "finishedAt": "2026-10-26T13:25:16.349Z"
           }
@@ -1218,7 +1218,7 @@
             "at": "2026-10-26T13:27:53.147Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-10-26T13:27:16.732Z",
                 "finishedAt": "2026-10-26T13:27:52.855Z"
               }
@@ -1252,7 +1252,7 @@
           "startedAt": "2026-10-26T13:18:23.209Z",
           "finishedAt": "2026-10-26T13:27:53.187Z",
           "error": null,
-          "summary": "T473 is done: host.ts, protocol.ts and slots.ts no longer import any ui/ module. The task checks passed, but I ran no integration, browser or full suite; those go to your final gate.\n\n**What moved**\n- `apps/web/src/runtime/playerTallies.ts` now owns the tally code and its types (perOwnMatches, cardCounts, leagueReds, appearanceCounts, tallies, and the Cards/Appearances/PlayerTally/Tallies types). The code moved unchanged; `tallies` now asks only for the four World fields it reads.\n- `apps/web/src/presentation/competitionLabels.ts` owns kindLabel, divisionName and competitionLabel.\n- `apps/web/src/presentation/crests.ts` owns Crest, crestMap, crestOf and the fallback crest, using the existing engine identity-legacy code.\n- The old UI files (discipline, playerAnalysis, careerRecords, league, format, crests) re-export the old names and keep only their UI helpers.\n- host.ts and slots.ts import the new owners directly. protocol.ts takes Tallies from playerTallies, and its transferOffers/sponsorSlots import is now type-only. I'm not claiming any speedup from that.\n\n**One small difference:** there were two copies of `divisionName`, in ui/league and ui/careerRecords. They gave the same label for every catalog country. For an unknown country code the careerRecords copy threw, while the league copy returned \"아마추어 리그\". The single shared version keeps the league behaviour. Every caller of the old careerRecords copy passes the own club's country, which is always in the catalog.\n\n**Tests added**\n- `apps/web/src/runtime/playerTallies.test.ts` uses small hand-built data, no generated world. It checks appearances, substitutes, cards, that only league reds count, and season heat. It also checks that the cached result is reused across revisions and rebuilt after a reload, a new own match and a season change.\n- `scripts/lib/architecture.test.ts` now checks host, protocol and slots for direct ui/ imports (type-only ones included) and for ui/, React or Zustand anywhere they reach at runtime. Engine use in host is still allowed. The three shared modules may only reach contracts, catalogs and leaf engine modules, not world/season/match code. I put ui/ imports back into protocol.ts and slots.ts temporarily and the guard failed on both, then restored them.\n\n**Checks run**\n- `pnpm run typecheck`, `pnpm run lint` and `git diff --check` passed.\n- `pnpm run format:check` failed once on discipline.ts; I fixed it with prettier and the check then passed.\n- Unit tests changed since a3b0cdd2: 26 files, 187 tests passed. The affected unit files run directly: 9 files, 57 tests passed.\n- `pnpm run build` passed.\n\n**Left for your final gate:** `pnpm run test:unit`, `pnpm run test:integration`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. The integration tier covers host.test, host.archive.test, client.test, next-event.test, personCareer.test and ui/league.test. The browser run includes `tests/e2e/club-identity-preparation.spec.ts`, which imports competitionLabel through ui/format.\n\nSpec lint through the haeram CLI was blocked by the sandbox, so it did not run. All edits stay within the task's file list plus the task's own acceptance/result. I did not touch T469 files or make any commits. T475 has not been started."
+          "summary": "T473 is done: host.ts, protocol.ts and slots.ts no longer import any ui/ module. The task checks passed, but I ran no integration, browser or full suite; those go to your final gate.\n\n**What moved**\n- `apps/web/src/runtime/playerTallies.ts` now owns the tally code and its types (perOwnMatches, cardCounts, leagueReds, appearanceCounts, tallies, and the Cards/Appearances/PlayerTally/Tallies types). The code moved unchanged; `tallies` now asks only for the four World fields it reads.\n- `apps/web/src/presentation/competitionLabels.ts` owns kindLabel, divisionName and competitionLabel.\n- `apps/web/src/presentation/crests.ts` owns Crest, crestMap, crestOf and the fallback crest, using the existing engine identity-legacy code.\n- The old UI files (discipline, playerAnalysis, careerRecords, league, format, crests) re-export the old names and keep only their UI helpers.\n- host.ts and slots.ts import the new owners directly. protocol.ts takes Tallies from playerTallies, and its transferOffers/sponsorSlots import is now type-only. I'm not claiming any speedup from that.\n\n**One small difference:** there were two copies of `divisionName`, in ui/league and ui/careerRecords. They gave the same label for every catalog country. For an unknown country code the careerRecords copy threw, while the league copy returned \"아마추어 리그\". The single shared version keeps the league behaviour. Every caller of the old careerRecords copy passes the own club's country, which is always in the catalog.\n\n**Tests added**\n- `apps/web/src/runtime/playerTallies.test.ts` uses small hand-built data, no generated world. It checks appearances, substitutes, cards, that only league reds count, and season heat. It also checks that the cached result is reused across revisions and rebuilt after a reload, a new own match and a season change.\n- `scripts/lib/architecture.test.ts` now checks host, protocol and slots for direct ui/ imports (type-only ones included) and for ui/, React or Zustand anywhere they reach at runtime. Engine use in host is still allowed. The three shared modules may only reach contracts, catalogs and leaf engine modules, not world/season/match code. I put ui/ imports back into protocol.ts and slots.ts temporarily and the guard failed on both, then restored them.\n\n**Checks run**\n- `pnpm run typecheck`, `pnpm run lint` and `git diff --check` passed.\n- `pnpm run format:check` failed once on discipline.ts; I fixed it with prettier and the check then passed.\n- Unit tests changed since a3b0cdd2: 26 files, 187 tests passed. The affected unit files run directly: 9 files, 57 tests passed.\n- `pnpm run build` passed.\n\n**Left for your final gate:** `pnpm run test:unit`, `pnpm run test:integration`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. The integration tier covers host.test, host.archive.test, client.test, next-event.test, personCareer.test and ui/league.test. The browser run includes `tests/e2e/club-identity-preparation.spec.ts`, which imports competitionLabel through ui/format.\n\nSpec lint through the gusta CLI was blocked by the sandbox, so it did not run. All edits stay within the task's file list plus the task's own acceptance/result. I did not touch T469 files or make any commits. T475 has not been started."
         }
       }
     },
@@ -1479,7 +1479,7 @@
             "at": "2026-10-26T13:27:53.147Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-10-26T13:27:16.732Z",
                 "finishedAt": "2026-10-26T13:27:52.855Z"
               }
@@ -1491,7 +1491,7 @@
             "at": "2026-10-26T13:34:12.192Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-10-26T13:33:36.578Z",
                 "finishedAt": "2026-10-26T13:34:11.916Z"
               }
@@ -1513,7 +1513,7 @@
         },
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-10-26T13:33:36.578Z",
             "finishedAt": "2026-10-26T13:34:11.916Z"
           }
@@ -1545,7 +1545,7 @@
           "startedAt": "2026-10-26T13:27:53.283Z",
           "finishedAt": "2026-10-26T13:34:12.265Z",
           "error": null,
-          "summary": "T475 is done: view publication now lives in its own module, and host.ts only builds the View and hands it over. The task checks passed; integration, browser and full suites were not run and are left for your final gate.\n\n**What changed**\n- New `apps/web/src/runtime/viewPublisher.ts` holds the existing publication code, moved from host.ts unchanged. A `ViewPublisher` class keeps the last published views (their sequence numbers, world IDs and part JSON) and the view counter, and chooses between a whole view and a patch.\n- The one difference is that `publish(view, base)` now receives the View instead of building it. With no View it still returns `{}` without using up a sequence number.\n- Each Host has its own `ViewPublisher`. Host's private `publish(base)` is now one line that delegates, so its two reply paths, public API and the `VIEW_PATCH` export (re-exported for `host.test.ts`) are unchanged.\n- `PUBLISHED_VIEWS`, the View/delta types and `applyViewDelta` stay in `protocol.ts`, which needed no edit.\n- No diff package, no wire-schema change. Command dispatch, activation and manager-history conversion stay in host.ts.\n\n**Tests added**\n- `viewPublisher.test.ts`: 6 cases on small prepared Views. Each delta is applied with `applyViewDelta` to a copy of the held view and must match the new view. They cover:\n  - the first view sent whole, and numbering per publisher\n  - unchanged, changed, new and dropped parts and world keys\n  - comparison against the JSON as published, even when a live object is changed in place afterwards\n  - a value JSON can't serialise (BigInt) is always re-sent\n  - nested object and array patches\n  - small parts, or ones whose patch would be too large, sent whole\n  - a whole view when the base is unknown, evicted or from another world\n- `scripts/lib/architecture.test.ts`: the publisher may reach only `protocol.ts` and itself in `apps/`, and no engine, React or Zustand code.\n\n**Checks run**\n- `pnpm run typecheck`, `pnpm run lint` and `git diff --check` passed.\n- `pnpm run format:check` failed once on `viewPublisher.test.ts`; I fixed it with prettier and the check then passed.\n- Unit tests changed since `ea790447`: 2 files, 19 tests passed. Protocol, store, publisher and architecture tests run directly: 4 files, 37 tests passed.\n- `pnpm run build` passed.\n\n**Left for your final gate:** `pnpm run test:unit`, `pnpm run test:integration`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. That covers the T470 assertions in `host.test.ts` and `client.test.ts`, the other host and manager-history integration tests, and the browser Worker journeys. None of them were run or re-recorded here.\n\nSpec lint through the haeram CLI is still blocked by the sandbox, so it did not run. Edits stay within the task's file list plus the task's own acceptance/result, and nothing was committed."
+          "summary": "T475 is done: view publication now lives in its own module, and host.ts only builds the View and hands it over. The task checks passed; integration, browser and full suites were not run and are left for your final gate.\n\n**What changed**\n- New `apps/web/src/runtime/viewPublisher.ts` holds the existing publication code, moved from host.ts unchanged. A `ViewPublisher` class keeps the last published views (their sequence numbers, world IDs and part JSON) and the view counter, and chooses between a whole view and a patch.\n- The one difference is that `publish(view, base)` now receives the View instead of building it. With no View it still returns `{}` without using up a sequence number.\n- Each Host has its own `ViewPublisher`. Host's private `publish(base)` is now one line that delegates, so its two reply paths, public API and the `VIEW_PATCH` export (re-exported for `host.test.ts`) are unchanged.\n- `PUBLISHED_VIEWS`, the View/delta types and `applyViewDelta` stay in `protocol.ts`, which needed no edit.\n- No diff package, no wire-schema change. Command dispatch, activation and manager-history conversion stay in host.ts.\n\n**Tests added**\n- `viewPublisher.test.ts`: 6 cases on small prepared Views. Each delta is applied with `applyViewDelta` to a copy of the held view and must match the new view. They cover:\n  - the first view sent whole, and numbering per publisher\n  - unchanged, changed, new and dropped parts and world keys\n  - comparison against the JSON as published, even when a live object is changed in place afterwards\n  - a value JSON can't serialise (BigInt) is always re-sent\n  - nested object and array patches\n  - small parts, or ones whose patch would be too large, sent whole\n  - a whole view when the base is unknown, evicted or from another world\n- `scripts/lib/architecture.test.ts`: the publisher may reach only `protocol.ts` and itself in `apps/`, and no engine, React or Zustand code.\n\n**Checks run**\n- `pnpm run typecheck`, `pnpm run lint` and `git diff --check` passed.\n- `pnpm run format:check` failed once on `viewPublisher.test.ts`; I fixed it with prettier and the check then passed.\n- Unit tests changed since `ea790447`: 2 files, 19 tests passed. Protocol, store, publisher and architecture tests run directly: 4 files, 37 tests passed.\n- `pnpm run build` passed.\n\n**Left for your final gate:** `pnpm run test:unit`, `pnpm run test:integration`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. That covers the T470 assertions in `host.test.ts` and `client.test.ts`, the other host and manager-history integration tests, and the browser Worker journeys. None of them were run or re-recorded here.\n\nSpec lint through the gusta CLI is still blocked by the sandbox, so it did not run. Edits stay within the task's file list plus the task's own acceptance/result, and nothing was committed."
         }
       }
     },

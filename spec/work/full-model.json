@@ -296,7 +296,7 @@
           "at": "2026-10-21T01:45:04.959Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T01:36:37.790Z",
               "finishedAt": "2026-10-21T01:45:03.402Z"
             }
@@ -305,7 +305,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T01:36:37.790Z",
           "finishedAt": "2026-10-21T01:45:03.402Z"
         }
@@ -398,7 +398,7 @@
           "at": "2026-10-21T03:39:46.049Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T03:30:42.948Z",
               "finishedAt": "2026-10-21T03:39:45.534Z"
             }
@@ -407,7 +407,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T03:30:42.948Z",
           "finishedAt": "2026-10-21T03:39:45.534Z"
         }
@@ -495,7 +495,7 @@
           {
             "priority": "P3",
             "where": "attempt 77014d95 step verification for 4626954",
-            "message": "T279: the recorded task check for this commit ran `vitest run --changed $HAERAM_DIFF_BASE` and exited with 'No test files found', so it did not run the aggregate tests. The code is identical to 58e3499, whose run passed. I reran packages/engine/src/aggregate/*.test.ts in isolation and all 17 passed. The full integration verify should still cover them."
+            "message": "T279: the recorded task check for this commit ran `vitest run --changed $GUSTA_DIFF_BASE` and exited with 'No test files found', so it did not run the aggregate tests. The code is identical to 58e3499, whose run passed. I reran packages/engine/src/aggregate/*.test.ts in isolation and all 17 passed. The full integration verify should still cover them."
           }
         ],
         "commit": "462695405005e36aa5bc5bbfa3838c6c5e0f1001",
@@ -623,7 +623,7 @@
           "at": "2026-10-21T06:12:47.497Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T06:11:43.745Z",
               "finishedAt": "2026-10-21T06:12:47.223Z"
             }
@@ -632,7 +632,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T06:11:43.745Z",
           "finishedAt": "2026-10-21T06:12:47.223Z"
         }
@@ -752,7 +752,7 @@
           "at": "2026-10-21T03:46:08.317Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T03:43:59.766Z",
               "finishedAt": "2026-10-21T03:46:08.025Z"
             }
@@ -761,7 +761,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T03:43:59.766Z",
           "finishedAt": "2026-10-21T03:46:08.025Z"
         }
@@ -955,7 +955,7 @@
           "at": "2026-10-21T07:10:35.551Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T07:05:02.203Z",
               "finishedAt": "2026-10-21T07:10:35.195Z"
             }
@@ -964,7 +964,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T07:05:02.203Z",
           "finishedAt": "2026-10-21T07:10:35.195Z"
         }
@@ -1059,7 +1059,7 @@
           "at": "2026-10-21T06:50:33.601Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T06:48:57.555Z",
               "finishedAt": "2026-10-21T06:50:33.264Z"
             }
@@ -1068,7 +1068,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T06:48:57.555Z",
           "finishedAt": "2026-10-21T06:50:33.264Z"
         }
@@ -1161,7 +1161,7 @@
             {
               "priority": "P2",
               "where": "packages/engine/src/aggregate/participation.ts:651",
-              "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+              "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (gusta-update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
             },
             {
               "priority": "P3",
@@ -1197,7 +1197,7 @@
             {
               "priority": "P2",
               "where": "packages/engine/src/aggregate/engine.ts:302",
-              "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+              "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (gusta-update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
             },
             {
               "priority": "P3",
@@ -1273,7 +1273,7 @@
           "at": "2026-10-21T11:12:47.785Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T11:11:16.955Z",
               "finishedAt": "2026-10-21T11:12:47.405Z"
             }
@@ -1282,7 +1282,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T11:11:16.955Z",
           "finishedAt": "2026-10-21T11:12:47.405Z"
         }
@@ -1349,7 +1349,7 @@
           "at": "2026-10-21T08:14:25.769Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T08:13:11.682Z",
               "finishedAt": "2026-10-21T08:14:25.436Z"
             }
@@ -1358,7 +1358,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T08:13:11.682Z",
           "finishedAt": "2026-10-21T08:14:25.436Z"
         }
@@ -1444,7 +1444,7 @@
           "at": "2026-10-21T09:54:26.970Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T09:48:19.487Z",
               "finishedAt": "2026-10-21T09:54:25.360Z"
             }
@@ -1453,7 +1453,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T09:48:19.487Z",
           "finishedAt": "2026-10-21T09:54:25.360Z"
         }
@@ -1526,7 +1526,7 @@
           "at": "2026-10-21T10:20:36.281Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-21T10:13:30.098Z",
               "finishedAt": "2026-10-21T10:20:35.891Z"
             }
@@ -1535,7 +1535,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-21T10:13:30.098Z",
           "finishedAt": "2026-10-21T10:20:35.891Z"
         }
@@ -1860,7 +1860,7 @@
             "at": "2026-10-21T01:14:59.156Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T01:06:10.523Z",
                 "finishedAt": "2026-10-21T01:14:58.899Z"
               }
@@ -1869,7 +1869,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T01:06:10.523Z",
             "finishedAt": "2026-10-21T01:14:58.899Z"
           }
@@ -2316,7 +2316,7 @@
             "at": "2026-10-21T01:45:04.959Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T01:36:37.790Z",
                 "finishedAt": "2026-10-21T01:45:03.402Z"
               }
@@ -2325,7 +2325,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T01:36:37.790Z",
             "finishedAt": "2026-10-21T01:45:03.402Z"
           }
@@ -2762,7 +2762,7 @@
             "at": "2026-10-21T03:22:03.726Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T03:10:50.073Z",
                 "finishedAt": "2026-10-21T03:22:03.368Z"
               }
@@ -2771,7 +2771,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T03:10:50.073Z",
             "finishedAt": "2026-10-21T03:22:03.368Z"
           }
@@ -2826,7 +2826,7 @@
           "startedAt": "2026-10-21T02:24:10.019Z",
           "finishedAt": "2026-10-21T03:23:53.093Z",
           "error": "T274: 태스크 result에 verified 기록이 필요합니다.",
-          "summary": "T274 is done. The candidate model now gives every ball route and player move real match time, restarts included. When there is no model metadata, the old path runs unchanged.\n\n- **Movement**: `grid/movement.ts` adds `GRID_MOVEMENT_CONFIG` and `GRID_BALL_CONFIG` using the contract defaults, plus a shared scheduler (`stepToward`, `reachSeconds`, `advance`, `prepareRestart`). Top speed is still `speedOf` (pace and fatigue).\n- **Actions**: an action lasts the longest of three things: its drawn duration, the ball's flight, and the new owner's run to the ball. Receivers, interceptors, tackling players, loose-ball winners and carriers now move there instead of being placed.\n- **Restarts**: the ball is carried back from where it went dead and set down while the taker and the set-piece group (or the kick-off line-up after a goal) walk to their spots. Dead time is the nominal value or the time this actually takes, whichever is longer, never both. `playRestart` gets this through a `RestartPreparer` hook; the old behaviour is kept as `placeAtOnce`.\n- **Transitions**: players are placed directly only at a period's start. Substitutes come on from halfway on the touchline.\n- **One clock**: added-time credits are now the dead seconds actually charged.\n- **Minutes (the 991 > 990 case)**: `lineMinutes` in `record.ts` rounds each entry and exit once, in the order they happened. Candidate records also always carry `model` and `incidents`.\n- **Trace**: entries gain `knots` (retrieval, placement, kick, reception and so on) and `transition` (period, entry, exit). Observed and unobserved runs settle identical records.\n- **Docs**: both docs are updated.\n\n**Checks run**:\n- typecheck, lint and format:check passed.\n- `vitest run --changed f396ac9` passed in full: 194 files, 1,320 tests. I ran it in 6 shards to stay under the 10-minute command limit.\n- In ad-hoc measurements, 0 of 600 modern fixtures and 0 of 240 mixed-era/cup fixtures failed `validateFullMatchRecord`. The old path still had 2 sides over 990 in the same 600.\n\n**Drift for T278** (bands not changed):\n\n| measure | band | before | after |\n|---|---|---|---|\n| ball in play (min) | 54–58 | 57.3 | 58.5 |\n| goals | 2.6–2.9 | 2.75 | 2.94 |\n| throw-ins | 17–23 | 17.9 | 17.0 |\n\nBall in play and goals are now slightly above their bands; throw-ins sit at the lower edge. Fixture time went from 98 to 189 ms (about 1.9×); T285 should look at this.\n\n**Not done / limits**:\n- Browser specs and the batch gate were not run.\n- `buildFrames` (T275) still paces candidate traces the old way.\n- Change-of-intention knots wait for T276.\n- `changes.ts` is outside my file list, so it still copies the outgoing player's position to the substitute. `engine.ts` then moves him to the touchline on the candidate path.\n\nI couldn't read the spec format via the haeram CLI (permission was denied), so I copied T273's `- [v]` notation for the acceptance checks."
+          "summary": "T274 is done. The candidate model now gives every ball route and player move real match time, restarts included. When there is no model metadata, the old path runs unchanged.\n\n- **Movement**: `grid/movement.ts` adds `GRID_MOVEMENT_CONFIG` and `GRID_BALL_CONFIG` using the contract defaults, plus a shared scheduler (`stepToward`, `reachSeconds`, `advance`, `prepareRestart`). Top speed is still `speedOf` (pace and fatigue).\n- **Actions**: an action lasts the longest of three things: its drawn duration, the ball's flight, and the new owner's run to the ball. Receivers, interceptors, tackling players, loose-ball winners and carriers now move there instead of being placed.\n- **Restarts**: the ball is carried back from where it went dead and set down while the taker and the set-piece group (or the kick-off line-up after a goal) walk to their spots. Dead time is the nominal value or the time this actually takes, whichever is longer, never both. `playRestart` gets this through a `RestartPreparer` hook; the old behaviour is kept as `placeAtOnce`.\n- **Transitions**: players are placed directly only at a period's start. Substitutes come on from halfway on the touchline.\n- **One clock**: added-time credits are now the dead seconds actually charged.\n- **Minutes (the 991 > 990 case)**: `lineMinutes` in `record.ts` rounds each entry and exit once, in the order they happened. Candidate records also always carry `model` and `incidents`.\n- **Trace**: entries gain `knots` (retrieval, placement, kick, reception and so on) and `transition` (period, entry, exit). Observed and unobserved runs settle identical records.\n- **Docs**: both docs are updated.\n\n**Checks run**:\n- typecheck, lint and format:check passed.\n- `vitest run --changed f396ac9` passed in full: 194 files, 1,320 tests. I ran it in 6 shards to stay under the 10-minute command limit.\n- In ad-hoc measurements, 0 of 600 modern fixtures and 0 of 240 mixed-era/cup fixtures failed `validateFullMatchRecord`. The old path still had 2 sides over 990 in the same 600.\n\n**Drift for T278** (bands not changed):\n\n| measure | band | before | after |\n|---|---|---|---|\n| ball in play (min) | 54–58 | 57.3 | 58.5 |\n| goals | 2.6–2.9 | 2.75 | 2.94 |\n| throw-ins | 17–23 | 17.9 | 17.0 |\n\nBall in play and goals are now slightly above their bands; throw-ins sit at the lower edge. Fixture time went from 98 to 189 ms (about 1.9×); T285 should look at this.\n\n**Not done / limits**:\n- Browser specs and the batch gate were not run.\n- `buildFrames` (T275) still paces candidate traces the old way.\n- Change-of-intention knots wait for T276.\n- `changes.ts` is outside my file list, so it still copies the outgoing player's position to the substitute. `engine.ts` then moves him to the touchline on the candidate path.\n\nI couldn't read the spec format via the gusta CLI (permission was denied), so I copied T273's `- [v]` notation for the acceptance checks."
         }
       }
     },
@@ -3106,7 +3106,7 @@
             "at": "2026-10-21T03:39:46.049Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T03:30:42.948Z",
                 "finishedAt": "2026-10-21T03:39:45.534Z"
               }
@@ -3115,7 +3115,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T03:30:42.948Z",
             "finishedAt": "2026-10-21T03:39:45.534Z"
           }
@@ -3194,7 +3194,7 @@
             "at": "2026-10-21T03:46:08.317Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T03:43:59.766Z",
                 "finishedAt": "2026-10-21T03:46:08.025Z"
               }
@@ -3203,7 +3203,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T03:43:59.766Z",
             "finishedAt": "2026-10-21T03:46:08.025Z"
           }
@@ -3746,7 +3746,7 @@
             "at": "2026-10-21T04:46:14.796Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T04:45:02.465Z",
                 "finishedAt": "2026-10-21T04:46:14.531Z"
               }
@@ -3755,7 +3755,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T04:45:02.465Z",
             "finishedAt": "2026-10-21T04:46:14.531Z"
           }
@@ -3947,7 +3947,7 @@
             "at": "2026-10-21T05:18:21.550Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T05:12:58.885Z",
                 "finishedAt": "2026-10-21T05:18:21.281Z"
               }
@@ -3956,7 +3956,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T05:12:58.885Z",
             "finishedAt": "2026-10-21T05:18:21.281Z"
           }
@@ -4466,7 +4466,7 @@
             "at": "2026-10-21T05:46:19.629Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T05:31:35.873Z",
                 "finishedAt": "2026-10-21T05:46:19.264Z"
               }
@@ -4475,7 +4475,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T05:31:35.873Z",
             "finishedAt": "2026-10-21T05:46:19.264Z"
           }
@@ -4528,7 +4528,7 @@
             "at": "2026-10-21T05:58:49.012Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T05:46:22.808Z",
                 "finishedAt": "2026-10-21T05:58:48.606Z"
               }
@@ -4537,7 +4537,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T05:46:22.808Z",
             "finishedAt": "2026-10-21T05:58:48.606Z"
           }
@@ -5314,7 +5314,7 @@
             "at": "2026-10-21T06:11:41.917Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T06:10:34.183Z",
                 "finishedAt": "2026-10-21T06:11:41.638Z"
               }
@@ -5323,7 +5323,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T06:10:34.183Z",
             "finishedAt": "2026-10-21T06:11:41.638Z"
           }
@@ -5480,7 +5480,7 @@
             "at": "2026-10-21T06:12:47.497Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T06:11:43.745Z",
                 "finishedAt": "2026-10-21T06:12:47.223Z"
               }
@@ -5489,7 +5489,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T06:11:43.745Z",
             "finishedAt": "2026-10-21T06:12:47.223Z"
           }
@@ -6025,7 +6025,7 @@
             {
               "priority": "P3",
               "where": "attempt 77014d95 step verification for 4626954",
-              "message": "T279: the recorded task check for this commit ran `vitest run --changed $HAERAM_DIFF_BASE` and exited with 'No test files found', so it did not run the aggregate tests. The code is identical to 58e3499, whose run passed. I reran packages/engine/src/aggregate/*.test.ts in isolation and all 17 passed. The full integration verify should still cover them."
+              "message": "T279: the recorded task check for this commit ran `vitest run --changed $GUSTA_DIFF_BASE` and exited with 'No test files found', so it did not run the aggregate tests. The code is identical to 58e3499, whose run passed. I reran packages/engine/src/aggregate/*.test.ts in isolation and all 17 passed. The full integration verify should still cover them."
             }
           ],
           "commit": "462695405005e36aa5bc5bbfa3838c6c5e0f1001",
@@ -6199,7 +6199,7 @@
             "at": "2026-10-21T06:50:33.601Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T06:48:57.555Z",
                 "finishedAt": "2026-10-21T06:50:33.264Z"
               }
@@ -6208,7 +6208,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T06:48:57.555Z",
             "finishedAt": "2026-10-21T06:50:33.264Z"
           }
@@ -6373,7 +6373,7 @@
             "at": "2026-10-21T07:10:35.551Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T07:05:02.203Z",
                 "finishedAt": "2026-10-21T07:10:35.195Z"
               }
@@ -6382,7 +6382,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T07:05:02.203Z",
             "finishedAt": "2026-10-21T07:10:35.195Z"
           }
@@ -6742,7 +6742,7 @@
             "at": "2026-10-21T08:14:25.769Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T08:13:11.682Z",
                 "finishedAt": "2026-10-21T08:14:25.436Z"
               }
@@ -6751,7 +6751,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T08:13:11.682Z",
             "finishedAt": "2026-10-21T08:14:25.436Z"
           }
@@ -6965,7 +6965,7 @@
             "at": "2026-10-21T09:02:45.077Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T09:00:40.401Z",
                 "finishedAt": "2026-10-21T09:02:44.658Z"
               }
@@ -6974,7 +6974,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T09:00:40.401Z",
             "finishedAt": "2026-10-21T09:02:44.658Z"
           }
@@ -7025,7 +7025,7 @@
             {
               "priority": "P2",
               "where": "packages/engine/src/aggregate/participation.ts:651",
-              "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+              "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (gusta-update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
             },
             {
               "priority": "P3",
@@ -7131,7 +7131,7 @@
               {
                 "priority": "P2",
                 "where": "packages/engine/src/aggregate/participation.ts:651",
-                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (gusta-update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
               },
               {
                 "priority": "P3",
@@ -7546,7 +7546,7 @@
             "at": "2026-10-21T09:48:46.892Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T09:43:01.611Z",
                 "finishedAt": "2026-10-21T09:48:46.520Z"
               }
@@ -7555,7 +7555,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T09:43:01.611Z",
             "finishedAt": "2026-10-21T09:48:46.520Z"
           }
@@ -7686,7 +7686,7 @@
             "at": "2026-10-21T09:54:26.970Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T09:48:19.487Z",
                 "finishedAt": "2026-10-21T09:54:25.360Z"
               }
@@ -7695,7 +7695,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T09:48:19.487Z",
             "finishedAt": "2026-10-21T09:54:25.360Z"
           }
@@ -7724,7 +7724,7 @@
             {
               "priority": "P2",
               "where": "packages/engine/src/aggregate/engine.ts:302",
-              "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+              "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (gusta-update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
             },
             {
               "priority": "P3",
@@ -7789,7 +7789,7 @@
               {
                 "priority": "P2",
                 "where": "packages/engine/src/aggregate/participation.ts:651",
-                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (gusta-update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
               },
               {
                 "priority": "P3",
@@ -7825,7 +7825,7 @@
               {
                 "priority": "P2",
                 "where": "packages/engine/src/aggregate/engine.ts:302",
-                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (gusta-update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
               },
               {
                 "priority": "P3",
@@ -8074,7 +8074,7 @@
             "at": "2026-10-21T10:20:36.281Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T10:13:30.098Z",
                 "finishedAt": "2026-10-21T10:20:35.891Z"
               }
@@ -8083,7 +8083,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T10:13:30.098Z",
             "finishedAt": "2026-10-21T10:20:35.891Z"
           }
@@ -8239,7 +8239,7 @@
             "at": "2026-10-21T10:32:19.510Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T10:31:01.525Z",
                 "finishedAt": "2026-10-21T10:32:19.163Z"
               }
@@ -8248,7 +8248,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T10:31:01.525Z",
             "finishedAt": "2026-10-21T10:32:19.163Z"
           }
@@ -8392,7 +8392,7 @@
               {
                 "priority": "P2",
                 "where": "packages/engine/src/aggregate/participation.ts:651",
-                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (gusta-update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
               },
               {
                 "priority": "P3",
@@ -8428,7 +8428,7 @@
               {
                 "priority": "P2",
                 "where": "packages/engine/src/aggregate/engine.ts:302",
-                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (gusta-update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
               },
               {
                 "priority": "P3",
@@ -8587,7 +8587,7 @@
             "at": "2026-10-21T11:01:47.858Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T11:00:23.749Z",
                 "finishedAt": "2026-10-21T11:01:47.526Z"
               }
@@ -8596,7 +8596,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T11:00:23.749Z",
             "finishedAt": "2026-10-21T11:01:47.526Z"
           }
@@ -8795,7 +8795,7 @@
               {
                 "priority": "P2",
                 "where": "packages/engine/src/aggregate/participation.ts:651",
-                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
+                "message": "T280 / MATCH-20, STAFF-45: STAFF-45 says a red card makes ANY manager (NPC default included) rebalance only 'when the side is down to ten and level or ahead', and grid/changes.ts:184 gates it on `score >= 0`. SidePlanner.decide rebalances unconditionally because the plan precedes the score (worker limit 3), so a side that is trailing with ten men still swaps its forward for a DF/MF in a settled record — a per-fixture rule violation (MATCH-27 'follow MATCH-20'), not a statistical tolerance. NPC sides use DEFAULT_SUB_POLICY so protect/chase are moot; this rebalance is the only score-led rule the aggregate path breaks. Fix: condition the rebalance on the score at that stoppage (e.g. produce facts up to the rebalance stoppage, or re-play with the rebalance dropped when the side trails at that minute, deterministically on the same streams), with a test where a trailing ten-man side makes no rebalance. If that is judged out of scope, the gap needs a planning decision (gusta-update-ssot/inbox allowing score-free aggregate rebalancing), not a silent limit."
               },
               {
                 "priority": "P3",
@@ -8831,7 +8831,7 @@
               {
                 "priority": "P2",
                 "where": "packages/engine/src/aggregate/engine.ts:302",
-                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
+                "message": "T280 / STAFF-45, MATCH-20, MATCH-27: STAFF-45 says a red card makes any manager rebalance at the next stoppage when the side is down to ten and level or ahead, so the change is required, not just allowed. settleParticipation adds every red that trailed in some replay to `withheld` and never takes it back. But generateTeamFacts draws whole-period facts from sideUnits over [0,90), so withholding the change at minute m moves the goals before m as well. How it was reproduced: an isolated copy at 3bc2a92b, simulateAggregate on 3,000 founding-world fixtures from the engine.test.ts `others()` pool with year 2024. For each withheld key, re-plan without that key to find its stoppage minute, then check scoreBefore on the settled facts. Result: 93 withheld keys, 149 rebalances kept, and in 20 cases the settled record shows the side level or ahead at that very stoppage (e.g. '1:1 m=87 score +2', '0:2 m=67 level') with no rebalance. A settled record should not break STAFF-45 in either direction. The task result's limit (0) reports 14 of these but treats a missing rebalance as acceptable. Fix options: (a) make the score before a stoppage independent of the decision taken at it, e.g. generate facts causally up to the stoppage as the previous review suggested, or at least re-admit a withheld rebalance whose settled score is level or ahead; (b) if no consistent fixed point exists on the same streams, settle it with a deterministic, documented tie-break. Either way, extend 'makes no red-card rebalance while trailing' (participation.test.ts:169) to check that every withheld red trails at its stoppage in the settled facts. Run that check on world fixtures (simulateAggregate with year 2024), because the synthetic 2008 fixtures never trigger the case. If this residual is judged acceptable, it needs a planning decision (gusta-update-ssot or a STATE inbox entry recording that the aggregate path may leave a level or ahead rebalance unmade). It should not stay only as a worker limit."
               },
               {
                 "priority": "P3",
@@ -9016,7 +9016,7 @@
             "at": "2026-10-21T11:12:47.785Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-21T11:11:16.955Z",
                 "finishedAt": "2026-10-21T11:12:47.405Z"
               }
@@ -9025,7 +9025,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-21T11:11:16.955Z",
             "finishedAt": "2026-10-21T11:12:47.405Z"
           }

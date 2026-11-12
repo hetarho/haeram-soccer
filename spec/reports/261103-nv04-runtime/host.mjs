@@ -3,10 +3,10 @@ import { promisify } from 'node:util';
 import { mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { vibeLoop, executeVibeUnit } from '/Users/ihaelam/project/haeram-spec-creator/src/vibe-loop.mjs';
-import { vibePreflight, vibeStatus, vibePush, vibeCheckpoint } from '/Users/ihaelam/project/haeram-spec-creator/src/vibe.mjs';
-import { runVibeCheck } from '/Users/ihaelam/project/haeram-spec-creator/src/vibe-check.mjs';
-import { vibeCIWait } from '/Users/ihaelam/project/haeram-spec-creator/src/vibe-ci.mjs';
+import { vibeLoop, executeVibeUnit } from '/Users/ihaelam/project/gusta/src/vibe-loop.mjs';
+import { vibePreflight, vibeStatus, vibePush, vibeCheckpoint } from '/Users/ihaelam/project/gusta/src/vibe.mjs';
+import { runVibeCheck } from '/Users/ihaelam/project/gusta/src/vibe-check.mjs';
+import { vibeCIWait } from '/Users/ihaelam/project/gusta/src/vibe-ci.mjs';
 
 const exec = promisify(execFile);
 const control = path.dirname(fileURLToPath(import.meta.url));
@@ -19,11 +19,11 @@ const snapshotAt = Date.parse('2026-11-04T09:20:00+09:00');
 const finalSnapshotAt = Date.parse('2026-11-04T09:28:00+09:00');
 const hardDeadline = Date.parse('2026-11-04T09:30:00+09:00');
 const adapter = path.join(control, 'adapter.json');
-const runtime = path.join(root, '.git/haeram/v1/loops', tag);
+const runtime = path.join(root, '.git/gusta/v1/loops', tag);
 const report = 'spec/reports/261103-nv04.md';
 const attachment = path.join(workspace, 'spec/reports/261103-nv04-runtime');
 const common = { targetRoot: workspace, tag, provider: 'claude', permissionMode: 'acceptEdits', adapter,
-  allowTool: ['Bash(git *)', 'Bash(node *)', `Bash(${process.execPath} /Users/ihaelam/project/haeram-spec-creator/bin/haeram-spec-creator.mjs *)`, 'Bash(pnpm *)', 'Bash(npx haeram-spec-creator *)', 'Bash(rg *)', 'Bash(sed *)', 'Bash(cat *)', 'Bash(tail *)', 'Bash(head *)', 'Bash(wc *)', 'Bash(ls *)', 'Bash(mkdir *)', 'Bash(env *)', 'Bash(PREVIEW_BUILD=1 pnpm *)'],
+  allowTool: ['Bash(git *)', 'Bash(node *)', `Bash(${process.execPath} /Users/ihaelam/project/gusta/bin/gusta.mjs *)`, 'Bash(pnpm *)', 'Bash(npx @haeram/gusta *)', 'Bash(rg *)', 'Bash(sed *)', 'Bash(cat *)', 'Bash(tail *)', 'Bash(head *)', 'Bash(wc *)', 'Bash(ls *)', 'Bash(mkdir *)', 'Bash(env *)', 'Bash(PREVIEW_BUILD=1 pnpm *)'],
   probe: 'git status --porcelain', probeTimeoutMs: 120000,
   verify: ['pnpm run verify:batch'], timeoutMs: 16200000,
   env: { ...process.env, BROWSER_TEST_PORT: '4634' } };
@@ -85,9 +85,9 @@ async function repair(failure) {
   const before = await git('rev-parse', 'HEAD');
   const status = await vibeStatus({ ...common, fetch: false });
   const job = { schemaVersion: 1, role: 'unit', mode: 'autopilot', workspaceMode: 'single', workspace, tag, report,
-    status, brief: null, cliCommand: [process.execPath, '/Users/ihaelam/project/haeram-spec-creator/bin/haeram-spec-creator.mjs'],
+    status, brief: null, cliCommand: [process.execPath, '/Users/ihaelam/project/gusta/bin/gusta.mjs'],
     allowTools: common.allowTool, permissionMode: 'acceptEdits', diffBase: before, hostManaged: true, gateRepair: true,
-    coordinatorDirective: 'Prioritize this concrete release/CI failure over the remaining feature queue. Read releaseFailure and its full log/JSON reports. Complete exactly one scoped lightweight fix if it meets start-vibe limits; otherwise create one concrete repair task with create-task and make it STATE next, then return planning. Preserve every acceptance assertion and all validation scopes. Do not run the release/integration/browser gate; the host reruns it after your changes. Commit related changes and preserve partial findings. Do not park because reversible technical decisions are needed.' };
+    coordinatorDirective: 'Prioritize this concrete release/CI failure over the remaining feature queue. Read releaseFailure and its full log/JSON reports. Complete exactly one scoped lightweight fix if it meets gusta-start limits; otherwise create one concrete repair task with gusta-create-task and make it STATE next, then return planning. Preserve every acceptance assertion and all validation scopes. Do not run the release/integration/browser gate; the host reruns it after your changes. Commit related changes and preserve partial findings. Do not park because reversible technical decisions are needed.' };
   const receipt = await executeVibeUnit(common, job, runtime, { stopFile: path.join(runtime, 'STOP'), deadline: implementationEnd, timeoutMs: Math.min(3600000, implementationEnd - Date.now()) });
   const after = await git('rev-parse', 'HEAD');
   repairNoProgress = before === after ? repairNoProgress + 1 : 0;

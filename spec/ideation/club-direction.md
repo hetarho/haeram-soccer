@@ -83,7 +83,7 @@
 - [x] Today's table with signings added at level 4 ← level 3, "transfers only", would still stop for coach renewals and sponsors
 - [o] The owner starts every building project himself at every level; when the next project is affordable the staff post a reminder that does not stop the clock, so idle play does not build. ← owner 261014; building stays the owner's must-choose
 - [x] A build plan the owner orders and the staff start when 재정 기조 allows ← the owner chose to keep every start in his own hands
-- [o] Build in slices, each one update-ssot → create-task → implement → verified and pushed before the next; the first slice unifies the UI and the entities with no rule change (order in shape). ← owner 261014; earlier large changes kept drifting
+- [o] Build in slices, each one gusta-update-ssot → gusta-create-task → implement → verified and pushed before the next; the first slice unifies the UI and the entities with no rule change (order in shape). ← owner 261014; earlier large changes kept drifting
 - [x] One vertical youth slice first ← the other areas would keep the old look for a while
 - [x] Staff criteria replaced by directions first ← needs recalibration before the owner's main complaint is fixed
 - [o] 지역 기반 and 글로벌 인지도 are axes of their own beside reputation and multiply its effects: results build reputation, investment builds the bases; 지역 기반 raises home gate demand, local sponsors and 성골 유스 intake, 글로벌 인지도 the following reputation commands (→ECON-23) and global sponsors. ← owner 261014; money cannot buy reputation

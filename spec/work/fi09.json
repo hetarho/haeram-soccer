@@ -199,7 +199,7 @@
           "at": "2026-11-09T15:04:19.239Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T15:03:50.462Z",
               "finishedAt": "2026-11-09T15:04:18.800Z"
             }
@@ -211,7 +211,7 @@
           "at": "2026-11-09T15:04:19.239Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T15:03:50.462Z",
               "finishedAt": "2026-11-09T15:04:18.800Z"
             }
@@ -223,7 +223,7 @@
           "at": "2026-11-09T15:04:19.239Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T15:03:50.462Z",
               "finishedAt": "2026-11-09T15:04:18.800Z"
             }
@@ -235,7 +235,7 @@
           "at": "2026-11-09T15:04:19.239Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T15:03:50.462Z",
               "finishedAt": "2026-11-09T15:04:18.800Z"
             }
@@ -244,7 +244,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T15:03:50.462Z",
           "finishedAt": "2026-11-09T15:04:18.800Z"
         }
@@ -303,7 +303,7 @@
           "at": "2026-11-09T14:53:15.021Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T14:51:40.365Z",
               "finishedAt": "2026-11-09T14:53:14.497Z"
             }
@@ -315,7 +315,7 @@
           "at": "2026-11-09T14:53:15.021Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T14:51:40.365Z",
               "finishedAt": "2026-11-09T14:53:14.497Z"
             }
@@ -327,7 +327,7 @@
           "at": "2026-11-09T14:53:15.021Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T14:51:40.365Z",
               "finishedAt": "2026-11-09T14:53:14.497Z"
             }
@@ -336,7 +336,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T14:51:40.365Z",
           "finishedAt": "2026-11-09T14:53:14.497Z"
         }
@@ -410,7 +410,7 @@
           "at": "2026-11-09T15:31:10.699Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T15:29:55.049Z",
               "finishedAt": "2026-11-09T15:31:10.129Z"
             }
@@ -419,7 +419,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T15:29:55.049Z",
           "finishedAt": "2026-11-09T15:31:10.129Z"
         }
@@ -476,7 +476,7 @@
           "at": "2026-11-09T15:43:30.602Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T15:43:03.179Z",
               "finishedAt": "2026-11-09T15:43:30.143Z"
             }
@@ -485,7 +485,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T15:43:03.179Z",
           "finishedAt": "2026-11-09T15:43:30.143Z"
         }
@@ -542,7 +542,7 @@
           "at": "2026-11-09T15:42:57.604Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T15:41:54.520Z",
               "finishedAt": "2026-11-09T15:42:57.168Z"
             }
@@ -551,7 +551,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T15:41:54.520Z",
           "finishedAt": "2026-11-09T15:42:57.168Z"
         }
@@ -608,7 +608,7 @@
           "at": "2026-11-09T16:05:20.205Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T16:03:56.639Z",
               "finishedAt": "2026-11-09T16:05:19.487Z"
             }
@@ -617,7 +617,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T16:03:56.639Z",
           "finishedAt": "2026-11-09T16:05:19.487Z"
         }
@@ -676,7 +676,7 @@
           "at": "2026-11-09T16:10:06.312Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T16:09:27.802Z",
               "finishedAt": "2026-11-09T16:10:05.712Z"
             }
@@ -688,7 +688,7 @@
           "at": "2026-11-09T16:10:06.312Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T16:09:27.802Z",
               "finishedAt": "2026-11-09T16:10:05.712Z"
             }
@@ -700,7 +700,7 @@
           "at": "2026-11-09T16:10:06.312Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T16:09:27.802Z",
               "finishedAt": "2026-11-09T16:10:05.712Z"
             }
@@ -709,7 +709,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T16:09:27.802Z",
           "finishedAt": "2026-11-09T16:10:05.712Z"
         }
@@ -785,7 +785,7 @@
           "at": "2026-11-09T16:20:11.475Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-11-09T16:19:26.627Z",
               "finishedAt": "2026-11-09T16:20:10.921Z"
             }
@@ -794,7 +794,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T16:19:26.627Z",
           "finishedAt": "2026-11-09T16:20:10.921Z"
         }
@@ -867,7 +867,7 @@
           "at": "2026-11-09T17:21:28.810Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
               "startedAt": "2026-11-09T17:21:25.605Z",
               "finishedAt": "2026-11-09T17:21:25.605Z",
               "cached": "2026-11-09T16:37:05.840Z"
@@ -877,7 +877,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
           "startedAt": "2026-11-09T17:21:25.605Z",
           "finishedAt": "2026-11-09T17:21:25.605Z",
           "cached": "2026-11-09T16:37:05.840Z"
@@ -937,7 +937,7 @@
           "at": "2026-11-09T16:38:50.950Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
               "startedAt": "2026-11-09T16:38:08.819Z",
               "finishedAt": "2026-11-09T16:38:50.432Z"
             }
@@ -946,7 +946,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
           "startedAt": "2026-11-09T16:38:08.819Z",
           "finishedAt": "2026-11-09T16:38:50.432Z"
         }
@@ -1072,7 +1072,7 @@
           "at": "2026-11-09T20:27:51.709Z",
           "verification": [
             {
-              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
               "startedAt": "2026-11-09T20:27:36.706Z",
               "finishedAt": "2026-11-09T20:27:39.875Z"
             }
@@ -1084,7 +1084,7 @@
           "at": "2026-11-09T20:27:51.709Z",
           "verification": [
             {
-              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
               "startedAt": "2026-11-09T20:27:36.706Z",
               "finishedAt": "2026-11-09T20:27:39.875Z"
             }
@@ -1096,7 +1096,7 @@
           "at": "2026-11-09T20:27:51.709Z",
           "verification": [
             {
-              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
               "startedAt": "2026-11-09T20:27:36.706Z",
               "finishedAt": "2026-11-09T20:27:39.875Z"
             }
@@ -1108,7 +1108,7 @@
           "at": "2026-11-09T20:27:51.709Z",
           "verification": [
             {
-              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
               "startedAt": "2026-11-09T20:27:36.706Z",
               "finishedAt": "2026-11-09T20:27:39.875Z"
             }
@@ -1120,7 +1120,7 @@
           "at": "2026-11-09T20:27:51.709Z",
           "verification": [
             {
-              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
               "startedAt": "2026-11-09T20:27:36.706Z",
               "finishedAt": "2026-11-09T20:27:39.875Z"
             }
@@ -1129,14 +1129,14 @@
       ],
       "verification": [
         {
-          "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+          "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
           "startedAt": "2026-11-09T20:27:36.706Z",
           "finishedAt": "2026-11-09T20:27:39.875Z"
         }
       ],
       "integrationVerification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
           "startedAt": "2026-11-09T20:39:07.918Z",
           "finishedAt": "2026-11-09T20:40:06.109Z"
         }
@@ -1183,7 +1183,7 @@
           "at": "2026-11-09T21:52:58.814Z",
           "verification": [
             {
-              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-t768-evidence.mjs",
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-t768-evidence.mjs",
               "startedAt": "2026-11-09T21:52:51.394Z",
               "finishedAt": "2026-11-09T21:52:53.512Z"
             }
@@ -1192,7 +1192,7 @@
       ],
       "verification": [
         {
-          "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-t768-evidence.mjs",
+          "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-t768-evidence.mjs",
           "startedAt": "2026-11-09T21:52:51.394Z",
           "finishedAt": "2026-11-09T21:52:53.512Z"
         }
@@ -1663,7 +1663,7 @@
       "status": "blocked",
       "changes": {
         "status": "blocked",
-        "reason": "검증 실패: pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build"
+        "reason": "검증 실패: pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build"
       }
     },
     {
@@ -1820,7 +1820,7 @@
             "at": "2026-11-09T14:53:15.021Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T14:51:40.365Z",
                 "finishedAt": "2026-11-09T14:53:14.497Z"
               }
@@ -1832,7 +1832,7 @@
             "at": "2026-11-09T14:53:15.021Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T14:51:40.365Z",
                 "finishedAt": "2026-11-09T14:53:14.497Z"
               }
@@ -1844,7 +1844,7 @@
             "at": "2026-11-09T14:53:15.021Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T14:51:40.365Z",
                 "finishedAt": "2026-11-09T14:53:14.497Z"
               }
@@ -1853,7 +1853,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-11-09T14:51:40.365Z",
             "finishedAt": "2026-11-09T14:53:14.497Z"
           }
@@ -2048,7 +2048,7 @@
             "at": "2026-11-09T15:04:19.239Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T15:03:50.462Z",
                 "finishedAt": "2026-11-09T15:04:18.800Z"
               }
@@ -2060,7 +2060,7 @@
             "at": "2026-11-09T15:04:19.239Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T15:03:50.462Z",
                 "finishedAt": "2026-11-09T15:04:18.800Z"
               }
@@ -2072,7 +2072,7 @@
             "at": "2026-11-09T15:04:19.239Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T15:03:50.462Z",
                 "finishedAt": "2026-11-09T15:04:18.800Z"
               }
@@ -2084,7 +2084,7 @@
             "at": "2026-11-09T15:04:19.239Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T15:03:50.462Z",
                 "finishedAt": "2026-11-09T15:04:18.800Z"
               }
@@ -2093,7 +2093,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-11-09T15:03:50.462Z",
             "finishedAt": "2026-11-09T15:04:18.800Z"
           }
@@ -2413,7 +2413,7 @@
             "at": "2026-11-09T15:31:10.699Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T15:29:55.049Z",
                 "finishedAt": "2026-11-09T15:31:10.129Z"
               }
@@ -2422,7 +2422,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-11-09T15:29:55.049Z",
             "finishedAt": "2026-11-09T15:31:10.129Z"
           }
@@ -2553,7 +2553,7 @@
             "at": "2026-11-09T15:42:57.604Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T15:41:54.520Z",
                 "finishedAt": "2026-11-09T15:42:57.168Z"
               }
@@ -2562,7 +2562,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-11-09T15:41:54.520Z",
             "finishedAt": "2026-11-09T15:42:57.168Z"
           }
@@ -2606,7 +2606,7 @@
             "at": "2026-11-09T15:43:30.602Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T15:43:03.179Z",
                 "finishedAt": "2026-11-09T15:43:30.143Z"
               }
@@ -2615,7 +2615,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-11-09T15:43:03.179Z",
             "finishedAt": "2026-11-09T15:43:30.143Z"
           }
@@ -3189,7 +3189,7 @@
             "at": "2026-11-09T16:05:20.205Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T16:03:56.639Z",
                 "finishedAt": "2026-11-09T16:05:19.487Z"
               }
@@ -3198,7 +3198,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-11-09T16:03:56.639Z",
             "finishedAt": "2026-11-09T16:05:19.487Z"
           }
@@ -3439,7 +3439,7 @@
             "at": "2026-11-09T16:10:06.312Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T16:09:27.802Z",
                 "finishedAt": "2026-11-09T16:10:05.712Z"
               }
@@ -3451,7 +3451,7 @@
             "at": "2026-11-09T16:10:06.312Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T16:09:27.802Z",
                 "finishedAt": "2026-11-09T16:10:05.712Z"
               }
@@ -3463,7 +3463,7 @@
             "at": "2026-11-09T16:10:06.312Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T16:09:27.802Z",
                 "finishedAt": "2026-11-09T16:10:05.712Z"
               }
@@ -3472,7 +3472,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-11-09T16:09:27.802Z",
             "finishedAt": "2026-11-09T16:10:05.712Z"
           }
@@ -3722,7 +3722,7 @@
             "at": "2026-11-09T16:20:11.475Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-11-09T16:19:26.627Z",
                 "finishedAt": "2026-11-09T16:20:10.921Z"
               }
@@ -3731,7 +3731,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-11-09T16:19:26.627Z",
             "finishedAt": "2026-11-09T16:20:10.921Z"
           }
@@ -3894,7 +3894,7 @@
       "status": "blocked",
       "changes": {
         "status": "blocked",
-        "reason": "검증 실패: pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build"
+        "reason": "검증 실패: pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build"
       }
     },
     {
@@ -3981,7 +3981,7 @@
             "at": "2026-11-09T16:37:06.248Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
                 "startedAt": "2026-11-09T16:32:42.749Z",
                 "finishedAt": "2026-11-09T16:37:05.716Z"
               }
@@ -3990,7 +3990,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
             "startedAt": "2026-11-09T16:32:42.749Z",
             "finishedAt": "2026-11-09T16:37:05.716Z"
           }
@@ -4095,7 +4095,7 @@
             "at": "2026-11-09T16:38:50.950Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
                 "startedAt": "2026-11-09T16:38:08.819Z",
                 "finishedAt": "2026-11-09T16:38:50.432Z"
               }
@@ -4104,7 +4104,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
             "startedAt": "2026-11-09T16:38:08.819Z",
             "finishedAt": "2026-11-09T16:38:50.432Z"
           }
@@ -4559,7 +4559,7 @@
             "at": "2026-11-09T17:21:28.810Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
                 "startedAt": "2026-11-09T17:21:25.605Z",
                 "finishedAt": "2026-11-09T17:21:25.605Z",
                 "cached": "2026-11-09T16:37:05.840Z"
@@ -4569,7 +4569,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
             "startedAt": "2026-11-09T17:21:25.605Z",
             "finishedAt": "2026-11-09T17:21:25.605Z",
             "cached": "2026-11-09T16:37:05.840Z"
@@ -5109,7 +5109,7 @@
             "at": "2026-11-09T20:27:51.709Z",
             "verification": [
               {
-                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
                 "startedAt": "2026-11-09T20:27:36.706Z",
                 "finishedAt": "2026-11-09T20:27:39.875Z"
               }
@@ -5121,7 +5121,7 @@
             "at": "2026-11-09T20:27:51.709Z",
             "verification": [
               {
-                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
                 "startedAt": "2026-11-09T20:27:36.706Z",
                 "finishedAt": "2026-11-09T20:27:39.875Z"
               }
@@ -5133,7 +5133,7 @@
             "at": "2026-11-09T20:27:51.709Z",
             "verification": [
               {
-                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
                 "startedAt": "2026-11-09T20:27:36.706Z",
                 "finishedAt": "2026-11-09T20:27:39.875Z"
               }
@@ -5145,7 +5145,7 @@
             "at": "2026-11-09T20:27:51.709Z",
             "verification": [
               {
-                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
                 "startedAt": "2026-11-09T20:27:36.706Z",
                 "finishedAt": "2026-11-09T20:27:39.875Z"
               }
@@ -5157,7 +5157,7 @@
             "at": "2026-11-09T20:27:51.709Z",
             "verification": [
               {
-                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
                 "startedAt": "2026-11-09T20:27:36.706Z",
                 "finishedAt": "2026-11-09T20:27:39.875Z"
               }
@@ -5166,7 +5166,7 @@
         ],
         "verification": [
           {
-            "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+            "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
             "startedAt": "2026-11-09T20:27:36.706Z",
             "finishedAt": "2026-11-09T20:27:39.875Z"
           }
@@ -5274,7 +5274,7 @@
       "changes": {
         "integrationVerification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-lane-checks.mjs",
             "startedAt": "2026-11-09T20:39:07.918Z",
             "finishedAt": "2026-11-09T20:40:06.109Z"
           }
@@ -5504,7 +5504,7 @@
             "at": "2026-11-09T21:52:58.814Z",
             "verification": [
               {
-                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-t768-evidence.mjs",
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-t768-evidence.mjs",
                 "startedAt": "2026-11-09T21:52:51.394Z",
                 "finishedAt": "2026-11-09T21:52:53.512Z"
               }
@@ -5513,7 +5513,7 @@
         ],
         "verification": [
           {
-            "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-t768-evidence.mjs",
+            "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/gusta-self-improve-261109-fi09/assert-t768-evidence.mjs",
             "startedAt": "2026-11-09T21:52:51.394Z",
             "finishedAt": "2026-11-09T21:52:53.512Z"
           }

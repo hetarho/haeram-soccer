@@ -16,7 +16,7 @@
       "commit": "4378f10562fde88e7b15b8ded580ddbed339beed",
       "checks": [
         {
-          "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+          "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install gusta lint",
           "startedAt": "2026-10-28T20:39:31.098Z",
           "finishedAt": "2026-10-28T20:39:31.644Z"
         }
@@ -147,7 +147,7 @@
           "at": "2026-10-28T19:18:53.683Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
               "startedAt": "2026-10-28T19:18:20.448Z",
               "finishedAt": "2026-10-28T19:18:53.288Z"
             }
@@ -156,7 +156,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T19:18:20.448Z",
           "finishedAt": "2026-10-28T19:18:53.288Z"
         }
@@ -225,7 +225,7 @@
           "at": "2026-10-28T19:11:49.321Z",
           "verification": [
             {
-              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
               "startedAt": "2026-10-28T19:11:06.458Z",
               "finishedAt": "2026-10-28T19:11:48.943Z"
             }
@@ -234,7 +234,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T19:11:06.458Z",
           "finishedAt": "2026-10-28T19:11:48.943Z"
         }
@@ -303,7 +303,7 @@
           "at": "2026-10-28T19:20:11.257Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
               "startedAt": "2026-10-28T19:19:36.649Z",
               "finishedAt": "2026-10-28T19:20:10.836Z"
             }
@@ -312,7 +312,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T19:19:36.649Z",
           "finishedAt": "2026-10-28T19:20:10.836Z"
         }
@@ -381,7 +381,7 @@
           "at": "2026-10-28T19:20:12.936Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
               "startedAt": "2026-10-28T19:19:38.302Z",
               "finishedAt": "2026-10-28T19:20:12.558Z"
             }
@@ -390,7 +390,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T19:19:38.302Z",
           "finishedAt": "2026-10-28T19:20:12.558Z"
         }
@@ -483,7 +483,7 @@
           "at": "2026-10-28T19:35:04.444Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
               "startedAt": "2026-10-28T19:34:30.199Z",
               "finishedAt": "2026-10-28T19:35:04.089Z"
             }
@@ -492,7 +492,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T19:34:30.199Z",
           "finishedAt": "2026-10-28T19:35:04.089Z"
         }
@@ -561,7 +561,7 @@
           "at": "2026-10-28T19:28:33.691Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
               "startedAt": "2026-10-28T19:28:00.737Z",
               "finishedAt": "2026-10-28T19:28:33.323Z"
             }
@@ -570,7 +570,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T19:28:00.737Z",
           "finishedAt": "2026-10-28T19:28:33.323Z"
         }
@@ -639,7 +639,7 @@
           "at": "2026-10-28T19:32:49.339Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
               "startedAt": "2026-10-28T19:32:15.367Z",
               "finishedAt": "2026-10-28T19:32:48.974Z"
             }
@@ -648,7 +648,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T19:32:15.367Z",
           "finishedAt": "2026-10-28T19:32:48.974Z"
         }
@@ -865,7 +865,7 @@
       "status": "blocked",
       "changes": {
         "status": "blocked",
-        "reason": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+        "reason": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
       }
     },
     {
@@ -888,7 +888,7 @@
           "status": "finished",
           "startedAt": "2026-10-28T18:59:26.301Z",
           "finishedAt": "2026-10-28T19:03:40.537Z",
-          "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "summary": "T562 테스트 코드와 acceptance/result를 수정했습니다. 관련 단위 테스트 49개, typecheck·lint·format·build·spec lint가 통과했습니다. 브라우저·통합·전체 검사는 조정자 최종 관문으로 이관했습니다."
         }
       }
@@ -1039,7 +1039,7 @@
             "at": "2026-10-28T19:07:07.996Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:06:15.942Z",
                 "finishedAt": "2026-10-28T19:07:07.558Z"
               }
@@ -1048,7 +1048,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:06:15.942Z",
             "finishedAt": "2026-10-28T19:07:07.558Z"
           }
@@ -1211,7 +1211,7 @@
             "at": "2026-10-28T19:11:49.321Z",
             "verification": [
               {
-                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:11:06.458Z",
                 "finishedAt": "2026-10-28T19:11:48.943Z"
               }
@@ -1220,7 +1220,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:11:06.458Z",
             "finishedAt": "2026-10-28T19:11:48.943Z"
           }
@@ -1593,7 +1593,7 @@
       "status": "blocked",
       "changes": {
         "status": "blocked",
-        "reason": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+        "reason": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
       }
     },
     {
@@ -1616,7 +1616,7 @@
           "status": "finished",
           "startedAt": "2026-10-28T19:11:49.561Z",
           "finishedAt": "2026-10-28T19:14:10.382Z",
-          "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "summary": "review193efb0e의 두 단계 경기 복귀 경로를 수정하고 기존 검증을 유지했습니다. 관련 단위 테스트 31개와 typecheck·lint·format·build·spec lint가 통과했습니다. 브라우저 검증은 조정자에게 이관했습니다."
         }
       }
@@ -1847,12 +1847,12 @@
             {
               "attempt": "8eec463d-0fce-40bc-a290-19e0b97911f6",
               "role": "worker",
-              "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+              "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
             },
             {
               "attempt": "8eec463d-0fce-40bc-a290-19e0b97911f6",
               "role": "worker",
-              "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+              "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
             },
             {
               "attempt": "c7d6a299-1790-4b01-9196-92fd3cc22696",
@@ -1932,7 +1932,7 @@
             "at": "2026-10-28T19:18:53.683Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:18:20.448Z",
                 "finishedAt": "2026-10-28T19:18:53.288Z"
               }
@@ -1941,7 +1941,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:18:20.448Z",
             "finishedAt": "2026-10-28T19:18:53.288Z"
           }
@@ -1999,7 +1999,7 @@
             "at": "2026-10-28T19:20:11.257Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:19:36.649Z",
                 "finishedAt": "2026-10-28T19:20:10.836Z"
               }
@@ -2008,7 +2008,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:19:36.649Z",
             "finishedAt": "2026-10-28T19:20:10.836Z"
           }
@@ -2039,7 +2039,7 @@
             "at": "2026-10-28T19:20:12.936Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:19:38.302Z",
                 "finishedAt": "2026-10-28T19:20:12.558Z"
               }
@@ -2048,7 +2048,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:19:38.302Z",
             "finishedAt": "2026-10-28T19:20:12.558Z"
           }
@@ -2837,7 +2837,7 @@
             "at": "2026-10-28T19:27:59.022Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:27:25.013Z",
                 "finishedAt": "2026-10-28T19:27:58.654Z"
               }
@@ -2846,7 +2846,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:27:25.013Z",
             "finishedAt": "2026-10-28T19:27:58.654Z"
           }
@@ -2940,7 +2940,7 @@
             "at": "2026-10-28T19:28:33.691Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:28:00.737Z",
                 "finishedAt": "2026-10-28T19:28:33.323Z"
               }
@@ -2949,7 +2949,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:28:00.737Z",
             "finishedAt": "2026-10-28T19:28:33.323Z"
           }
@@ -3404,7 +3404,7 @@
             "at": "2026-10-28T19:32:49.339Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:32:15.367Z",
                 "finishedAt": "2026-10-28T19:32:48.974Z"
               }
@@ -3413,7 +3413,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:32:15.367Z",
             "finishedAt": "2026-10-28T19:32:48.974Z"
           }
@@ -3670,7 +3670,7 @@
             "at": "2026-10-28T19:35:04.444Z",
             "verification": [
               {
-                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
                 "startedAt": "2026-10-28T19:34:30.199Z",
                 "finishedAt": "2026-10-28T19:35:04.089Z"
               }
@@ -3679,7 +3679,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
             "startedAt": "2026-10-28T19:34:30.199Z",
             "finishedAt": "2026-10-28T19:35:04.089Z"
           }
@@ -4027,7 +4027,7 @@
           "commit": "4378f10562fde88e7b15b8ded580ddbed339beed",
           "checks": [
             {
-              "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+              "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install gusta lint",
               "startedAt": "2026-10-28T20:39:31.098Z",
               "finishedAt": "2026-10-28T20:39:31.644Z"
             }

@@ -269,7 +269,7 @@
           "at": "2026-10-24T10:15:07.273Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T10:13:38.215Z",
               "finishedAt": "2026-10-24T10:15:06.892Z"
             }
@@ -278,7 +278,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T10:13:38.215Z",
           "finishedAt": "2026-10-24T10:15:06.892Z"
         }
@@ -353,7 +353,7 @@
           },
           {
             "priority": "P3",
-            "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off, for manage-work)",
+            "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off, for gusta-manage-work)",
             "message": "The result still records two autopilot decisions that need the owner. (a) The kick is read from the taker's take or the on-spot restart sample, not from the restart event's own time as the impl note literally says. (b) Measured match lengths are about 14.2–15.9 min at 1x and 8.0–8.6 min at 2x, against WEB-32's 'about 13–14 / 7'. The worker cannot write STATE, so whoever integrates should carry both into the STATE inbox for the owner's in-play review of SET_PIECE_PREPARATION_MS (ideation/match-viewing-pace-and-freedom). Leave the constant unchanged."
           }
         ],
@@ -418,7 +418,7 @@
           "at": "2026-10-24T11:32:31.699Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T11:31:59.726Z",
               "finishedAt": "2026-10-24T11:32:31.361Z"
             }
@@ -430,7 +430,7 @@
           "at": "2026-10-24T12:11:13.380Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T12:10:41.978Z",
               "finishedAt": "2026-10-24T12:11:13.029Z"
             }
@@ -439,7 +439,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T12:10:41.978Z",
           "finishedAt": "2026-10-24T12:11:13.029Z"
         }
@@ -547,7 +547,7 @@
           "at": "2026-10-24T12:08:27.473Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T12:07:35.941Z",
               "finishedAt": "2026-10-24T12:08:27.130Z"
             }
@@ -556,7 +556,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T12:07:35.941Z",
           "finishedAt": "2026-10-24T12:08:27.130Z"
         }
@@ -644,7 +644,7 @@
           "at": "2026-10-24T10:47:47.438Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T10:46:48.423Z",
               "finishedAt": "2026-10-24T10:47:47.094Z"
             }
@@ -653,7 +653,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T10:46:48.423Z",
           "finishedAt": "2026-10-24T10:47:47.094Z"
         }
@@ -736,7 +736,7 @@
           "at": "2026-10-24T11:09:12.747Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T11:08:15.792Z",
               "finishedAt": "2026-10-24T11:09:12.396Z"
             }
@@ -745,7 +745,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T11:08:15.792Z",
           "finishedAt": "2026-10-24T11:09:12.396Z"
         }
@@ -838,7 +838,7 @@
           "at": "2026-10-24T11:11:04.306Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T11:09:50.306Z",
               "finishedAt": "2026-10-24T11:11:03.949Z"
             }
@@ -847,7 +847,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T11:09:50.306Z",
           "finishedAt": "2026-10-24T11:11:03.949Z"
         }
@@ -915,7 +915,7 @@
           {
             "priority": "P3",
             "where": "packages/engine/src/season.ts:737 (T420 limits 1, handed over from T419)",
-            "message": "Planner handoff, not a worker fix. I confirmed the order in the code: `closeSeason` calls `reduceSeasonMaterial` (line 737) before `promote` plays the lower-promotion playoff (line 743). On the candidate model, an own club in the playoff keeps that match's material past the close, which breaks MATCH-5. The failing case: material.test's FOUNDING club, `1950:lower-promotion:0:0` and `:1:0`. T420's impl note says this must become a fix task ahead of T286, but the worker could not create one. No such task exists on the base, and T286's deps do not list one. manage-work or the planner should create it with this case and add it to T286's deps before the switch flips. Otherwise T286 ships the defect, because material.test stays pinned off."
+            "message": "Planner handoff, not a worker fix. I confirmed the order in the code: `closeSeason` calls `reduceSeasonMaterial` (line 737) before `promote` plays the lower-promotion playoff (line 743). On the candidate model, an own club in the playoff keeps that match's material past the close, which breaks MATCH-5. The failing case: material.test's FOUNDING club, `1950:lower-promotion:0:0` and `:1:0`. T420's impl note says this must become a fix task ahead of T286, but the worker could not create one. No such task exists on the base, and T286's deps do not list one. gusta-manage-work or the planner should create it with this case and add it to T286's deps before the switch flips. Otherwise T286 ships the defect, because material.test stays pinned off."
           },
           {
             "priority": "P3",
@@ -946,7 +946,7 @@
           "at": "2026-10-24T14:25:27.538Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T14:23:21.845Z",
               "finishedAt": "2026-10-24T14:25:27.184Z"
             }
@@ -955,7 +955,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T14:23:21.845Z",
           "finishedAt": "2026-10-24T14:25:27.184Z"
         }
@@ -1067,7 +1067,7 @@
           "at": "2026-10-24T17:22:59.370Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T17:16:07.455Z",
               "finishedAt": "2026-10-24T17:22:58.931Z"
             }
@@ -1076,7 +1076,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T17:16:07.455Z",
           "finishedAt": "2026-10-24T17:22:58.931Z"
         }
@@ -1153,7 +1153,7 @@
           "at": "2026-10-24T15:40:58.757Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T15:38:25.870Z",
               "finishedAt": "2026-10-24T15:40:58.368Z"
             }
@@ -1162,7 +1162,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T15:38:25.870Z",
           "finishedAt": "2026-10-24T15:40:58.368Z"
         }
@@ -1229,7 +1229,7 @@
           "at": "2026-10-24T16:27:36.131Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T16:24:42.764Z",
               "finishedAt": "2026-10-24T16:27:35.678Z"
             }
@@ -1238,7 +1238,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T16:24:42.764Z",
           "finishedAt": "2026-10-24T16:27:35.678Z"
         }
@@ -1331,7 +1331,7 @@
           "at": "2026-10-24T18:17:15.018Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T18:13:19.472Z",
               "finishedAt": "2026-10-24T18:17:14.583Z"
             }
@@ -1340,7 +1340,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T18:13:19.472Z",
           "finishedAt": "2026-10-24T18:17:14.583Z"
         }
@@ -1479,7 +1479,7 @@
           "at": "2026-10-24T20:03:13.770Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T20:00:46.900Z",
               "finishedAt": "2026-10-24T20:03:13.385Z"
             }
@@ -1488,7 +1488,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T20:00:46.900Z",
           "finishedAt": "2026-10-24T20:03:13.385Z"
         }
@@ -1583,7 +1583,7 @@
           "at": "2026-10-24T21:48:55.660Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-24T21:46:26.401Z",
               "finishedAt": "2026-10-24T21:48:55.313Z"
             }
@@ -1592,7 +1592,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-24T21:46:26.401Z",
           "finishedAt": "2026-10-24T21:48:55.313Z"
         }
@@ -1702,7 +1702,7 @@
             {
               "priority": "P3",
               "where": "packages/engine/src/grid/box.ts:47-48 (BOX_CONFIG.zones.nearPost), :261-264 (middle guard)",
-              "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
+              "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (gusta-update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
             },
             {
               "priority": "P3",
@@ -1760,7 +1760,7 @@
           "at": "2026-10-25T00:11:00.116Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-25T00:10:28.195Z",
               "finishedAt": "2026-10-25T00:10:59.757Z"
             }
@@ -1769,7 +1769,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-25T00:10:28.195Z",
           "finishedAt": "2026-10-25T00:10:59.757Z"
         }
@@ -1892,7 +1892,7 @@
           "at": "2026-10-25T02:22:56.522Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-25T02:20:22.162Z",
               "finishedAt": "2026-10-25T02:22:56.196Z"
             }
@@ -1901,7 +1901,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-25T02:20:22.162Z",
           "finishedAt": "2026-10-25T02:22:56.196Z"
         }
@@ -2044,7 +2044,7 @@
           "at": "2026-10-25T04:07:50.136Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-25T04:05:17.326Z",
               "finishedAt": "2026-10-25T04:07:49.797Z"
             }
@@ -2053,7 +2053,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-25T04:05:17.326Z",
           "finishedAt": "2026-10-25T04:07:49.797Z"
         }
@@ -2389,7 +2389,7 @@
             "at": "2026-10-24T10:15:07.273Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T10:13:38.215Z",
                 "finishedAt": "2026-10-24T10:15:06.892Z"
               }
@@ -2398,7 +2398,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T10:13:38.215Z",
             "finishedAt": "2026-10-24T10:15:06.892Z"
           }
@@ -3059,7 +3059,7 @@
             "at": "2026-10-24T10:47:47.438Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T10:46:48.423Z",
                 "finishedAt": "2026-10-24T10:47:47.094Z"
               }
@@ -3068,7 +3068,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T10:46:48.423Z",
             "finishedAt": "2026-10-24T10:47:47.094Z"
           }
@@ -3336,7 +3336,7 @@
           "startedAt": "2026-10-24T10:35:44.105Z",
           "finishedAt": "2026-10-24T10:48:19.779Z",
           "error": null,
-          "summary": "I fixed `season.settle.test.ts` and added the new case, but I'm returning blocked on one point. Acceptance item 1 asks for a case that \"fails on the unfixed source\", and that can't hold: no engine path writes an invalid record in an activated world.\n\n**What the probe actually hit.** I reran the file with the release switch on and got the same 5 failures. Every one threw in `recordMatch` (`season.ts:290`) on fixture 1950:ENG:4:0:0:0. Each record had already passed the same check in `simulateMatch` (`match.ts:553`) before the test changed it. The test's own edits broke the records:\n- Replacing the incidents dropped the grid's two cautions (\"cards ≠ incidents\").\n- Injury and red incidents left the player on 90 minutes.\n- The substitute case added a line built from `zeroMetrics()` with no advanced counters (\"advanced counters missing\"), in 1950, when no substitutes are allowed.\n- The fatigue case set 45 minutes with no exit.\n\nEvery activated path checks its record where it is written, and `recordMatch` checks again. Two whole activated seasons settled with no error:\n- **1950 world, release on:** 46 rounds plus the close, 31 own matches, 12.0 s, every own record carrying the model and per-player counters.\n- **2024 world, release on:** league, cups, Europe and playoff, 20.4 s. I ran this as a temporary test file and deleted it.\n\nI changed no engine code, and the validator is untouched. It reads 1950 cautions correctly.\n\n**Changes in the test file:**\n- Every world now takes an explicit release.\n- New case \"an activated world settles only valid full records\": the 1950 world with the release on settles its league's first two rounds (own match in the detailed engine, the rest on the aggregate path) and the English cup's first round. Every record passes `validateFullMatchRecord`, including at least one extra-time record and one shoot-out.\n- The injury, NPC injury and ban cases now run with the release on. Their helper adds one incident and keeps the record consistent: incidents stay in minute order, a red card counts on the player and team, and the player's minutes stop at the incident. The grid's own incidents are kept. The ban case now checks that the sent-off player's ban was served, instead of clearing the next match's incidents.\n- The substitute and fatigue cases moved to a 2024 world on the new model and read real substitutions and real minutes. No case needed the disabled release.\n\n**Checks:**\n- The settle file passes under both configs: 6 of 6 each, against 5 failures before with the release on.\n- typecheck, lint and format:check pass, and `vitest run --changed` against base 2737e84a passes (1 file, 6 tests).\n- Not run here: the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate. The whole release-on unit tier is T420's job.\n\nItem 1 is left unchecked; items 2–4 are checked. The result section of the task file has the full evidence. Two shell commands were refused by the permission check and not retried: the haeram CLI's `vibe format` read and one command using a shell variable. I re-ran the checks without the variable."
+          "summary": "I fixed `season.settle.test.ts` and added the new case, but I'm returning blocked on one point. Acceptance item 1 asks for a case that \"fails on the unfixed source\", and that can't hold: no engine path writes an invalid record in an activated world.\n\n**What the probe actually hit.** I reran the file with the release switch on and got the same 5 failures. Every one threw in `recordMatch` (`season.ts:290`) on fixture 1950:ENG:4:0:0:0. Each record had already passed the same check in `simulateMatch` (`match.ts:553`) before the test changed it. The test's own edits broke the records:\n- Replacing the incidents dropped the grid's two cautions (\"cards ≠ incidents\").\n- Injury and red incidents left the player on 90 minutes.\n- The substitute case added a line built from `zeroMetrics()` with no advanced counters (\"advanced counters missing\"), in 1950, when no substitutes are allowed.\n- The fatigue case set 45 minutes with no exit.\n\nEvery activated path checks its record where it is written, and `recordMatch` checks again. Two whole activated seasons settled with no error:\n- **1950 world, release on:** 46 rounds plus the close, 31 own matches, 12.0 s, every own record carrying the model and per-player counters.\n- **2024 world, release on:** league, cups, Europe and playoff, 20.4 s. I ran this as a temporary test file and deleted it.\n\nI changed no engine code, and the validator is untouched. It reads 1950 cautions correctly.\n\n**Changes in the test file:**\n- Every world now takes an explicit release.\n- New case \"an activated world settles only valid full records\": the 1950 world with the release on settles its league's first two rounds (own match in the detailed engine, the rest on the aggregate path) and the English cup's first round. Every record passes `validateFullMatchRecord`, including at least one extra-time record and one shoot-out.\n- The injury, NPC injury and ban cases now run with the release on. Their helper adds one incident and keeps the record consistent: incidents stay in minute order, a red card counts on the player and team, and the player's minutes stop at the incident. The grid's own incidents are kept. The ban case now checks that the sent-off player's ban was served, instead of clearing the next match's incidents.\n- The substitute and fatigue cases moved to a 2024 world on the new model and read real substitutions and real minutes. No case needed the disabled release.\n\n**Checks:**\n- The settle file passes under both configs: 6 of 6 each, against 5 failures before with the release on.\n- typecheck, lint and format:check pass, and `vitest run --changed` against base 2737e84a passes (1 file, 6 tests).\n- Not run here: the batch tier (`test:unit`, `test:contract`, `validate:catalogs`, `build`, Chromium playwright) is left to the unit gate. The whole release-on unit tier is T420's job.\n\nItem 1 is left unchecked; items 2–4 are checked. The result section of the task file has the full evidence. Two shell commands were refused by the permission check and not retried: the gusta CLI's `vibe format` read and one command using a shell variable. I re-ran the checks without the variable."
         }
       }
     },
@@ -3550,7 +3550,7 @@
             "at": "2026-10-24T11:09:12.747Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T11:08:15.792Z",
                 "finishedAt": "2026-10-24T11:09:12.396Z"
               }
@@ -3559,7 +3559,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T11:08:15.792Z",
             "finishedAt": "2026-10-24T11:09:12.396Z"
           }
@@ -3602,7 +3602,7 @@
       "status": "blocked",
       "changes": {
         "status": "blocked",
-        "reason": "기획 브랜치를 워커 공간에 합치지 못했습니다: 4011 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/state.gitattributes -c merge.haeram-state.name=haeram STATE sections -c merge.haeram-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/work/v9n4-release"
+        "reason": "기획 브랜치를 워커 공간에 합치지 못했습니다: 4011 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/state.gitattributes -c merge.gusta-state.name=gusta STATE sections -c merge.gusta-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/gusta/bin/gusta.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/work/v9n4-release"
       }
     },
     {
@@ -3742,7 +3742,7 @@
             "at": "2026-10-24T11:11:04.306Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T11:09:50.306Z",
                 "finishedAt": "2026-10-24T11:11:03.949Z"
               }
@@ -3751,7 +3751,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T11:09:50.306Z",
             "finishedAt": "2026-10-24T11:11:03.949Z"
           }
@@ -4249,7 +4249,7 @@
             "at": "2026-10-24T11:32:31.699Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T11:31:59.726Z",
                 "finishedAt": "2026-10-24T11:32:31.361Z"
               }
@@ -4261,7 +4261,7 @@
             "at": "2026-10-24T11:32:31.699Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T11:31:59.726Z",
                 "finishedAt": "2026-10-24T11:32:31.361Z"
               }
@@ -4270,7 +4270,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T11:31:59.726Z",
             "finishedAt": "2026-10-24T11:32:31.361Z"
           }
@@ -4375,7 +4375,7 @@
             "at": "2026-10-24T11:34:59.000Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T11:34:25.358Z",
                 "finishedAt": "2026-10-24T11:34:58.642Z"
               }
@@ -4384,7 +4384,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T11:34:25.358Z",
             "finishedAt": "2026-10-24T11:34:58.642Z"
           }
@@ -5148,7 +5148,7 @@
             "at": "2026-10-24T12:08:27.473Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T12:07:35.941Z",
                 "finishedAt": "2026-10-24T12:08:27.130Z"
               }
@@ -5157,7 +5157,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T12:07:35.941Z",
             "finishedAt": "2026-10-24T12:08:27.130Z"
           }
@@ -5344,7 +5344,7 @@
             "at": "2026-10-24T11:32:31.699Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T11:31:59.726Z",
                 "finishedAt": "2026-10-24T11:32:31.361Z"
               }
@@ -5356,7 +5356,7 @@
             "at": "2026-10-24T12:11:13.380Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T12:10:41.978Z",
                 "finishedAt": "2026-10-24T12:11:13.029Z"
               }
@@ -5365,7 +5365,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T12:10:41.978Z",
             "finishedAt": "2026-10-24T12:11:13.029Z"
           }
@@ -5712,7 +5712,7 @@
             },
             {
               "priority": "P3",
-              "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off, for manage-work)",
+              "where": "spec/tasks/T422.set-piece-preparation-pace.md result (owner hand-off, for gusta-manage-work)",
               "message": "The result still records two autopilot decisions that need the owner. (a) The kick is read from the taker's take or the on-spot restart sample, not from the restart event's own time as the impl note literally says. (b) Measured match lengths are about 14.2–15.9 min at 1x and 8.0–8.6 min at 2x, against WEB-32's 'about 13–14 / 7'. The worker cannot write STATE, so whoever integrates should carry both into the STATE inbox for the owner's in-play review of SET_PIECE_PREPARATION_MS (ideation/match-viewing-pace-and-freedom). Leave the constant unchanged."
             }
           ],
@@ -5996,7 +5996,7 @@
             "at": "2026-10-24T14:25:27.538Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T14:23:21.845Z",
                 "finishedAt": "2026-10-24T14:25:27.184Z"
               }
@@ -6005,7 +6005,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T14:23:21.845Z",
             "finishedAt": "2026-10-24T14:25:27.184Z"
           }
@@ -6124,7 +6124,7 @@
             {
               "priority": "P3",
               "where": "packages/engine/src/season.ts:737 (T420 limits 1, handed over from T419)",
-              "message": "Planner handoff, not a worker fix. I confirmed the order in the code: `closeSeason` calls `reduceSeasonMaterial` (line 737) before `promote` plays the lower-promotion playoff (line 743). On the candidate model, an own club in the playoff keeps that match's material past the close, which breaks MATCH-5. The failing case: material.test's FOUNDING club, `1950:lower-promotion:0:0` and `:1:0`. T420's impl note says this must become a fix task ahead of T286, but the worker could not create one. No such task exists on the base, and T286's deps do not list one. manage-work or the planner should create it with this case and add it to T286's deps before the switch flips. Otherwise T286 ships the defect, because material.test stays pinned off."
+              "message": "Planner handoff, not a worker fix. I confirmed the order in the code: `closeSeason` calls `reduceSeasonMaterial` (line 737) before `promote` plays the lower-promotion playoff (line 743). On the candidate model, an own club in the playoff keeps that match's material past the close, which breaks MATCH-5. The failing case: material.test's FOUNDING club, `1950:lower-promotion:0:0` and `:1:0`. T420's impl note says this must become a fix task ahead of T286, but the worker could not create one. No such task exists on the base, and T286's deps do not list one. gusta-manage-work or the planner should create it with this case and add it to T286's deps before the switch flips. Otherwise T286 ships the defect, because material.test stays pinned off."
             },
             {
               "priority": "P3",
@@ -6622,7 +6622,7 @@
             "at": "2026-10-24T15:40:58.757Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T15:38:25.870Z",
                 "finishedAt": "2026-10-24T15:40:58.368Z"
               }
@@ -6631,7 +6631,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T15:38:25.870Z",
             "finishedAt": "2026-10-24T15:40:58.368Z"
           }
@@ -6984,7 +6984,7 @@
             "at": "2026-10-24T16:27:36.131Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T16:24:42.764Z",
                 "finishedAt": "2026-10-24T16:27:35.678Z"
               }
@@ -6993,7 +6993,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T16:24:42.764Z",
             "finishedAt": "2026-10-24T16:27:35.678Z"
           }
@@ -7233,7 +7233,7 @@
             {
               "attempt": "cb8f4011-c362-4baa-9208-b06e471ca337",
               "role": "worker",
-              "error": "기획 브랜치를 워커 공간에 합치지 못했습니다: 4011 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/state.gitattributes -c merge.haeram-state.name=haeram STATE sections -c merge.haeram-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/work/v9n4-release"
+              "error": "기획 브랜치를 워커 공간에 합치지 못했습니다: 4011 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/state.gitattributes -c merge.gusta-state.name=gusta STATE sections -c merge.gusta-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/gusta/bin/gusta.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/work/v9n4-release"
             },
             {
               "attempt": "3a125fec-eb81-49f4-8796-14688f5ff1d1",
@@ -7818,7 +7818,7 @@
             "at": "2026-10-24T17:22:59.370Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T17:16:07.455Z",
                 "finishedAt": "2026-10-24T17:22:58.931Z"
               }
@@ -7827,7 +7827,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T17:16:07.455Z",
             "finishedAt": "2026-10-24T17:22:58.931Z"
           }
@@ -8224,7 +8224,7 @@
             "at": "2026-10-24T18:17:15.018Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T18:13:19.472Z",
                 "finishedAt": "2026-10-24T18:17:14.583Z"
               }
@@ -8233,7 +8233,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T18:13:19.472Z",
             "finishedAt": "2026-10-24T18:17:14.583Z"
           }
@@ -8644,7 +8644,7 @@
             "at": "2026-10-24T19:17:07.713Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T19:14:40.075Z",
                 "finishedAt": "2026-10-24T19:17:07.327Z"
               }
@@ -8653,7 +8653,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T19:14:40.075Z",
             "finishedAt": "2026-10-24T19:17:07.327Z"
           }
@@ -8681,7 +8681,7 @@
           "startedAt": "2026-10-24T18:17:17.329Z",
           "finishedAt": "2026-10-24T19:17:07.778Z",
           "error": null,
-          "summary": "T441 is done on the candidate model. A pass is now cut out only by an opponent who can reach its path before the ball passes. The pre-feature path is unchanged: its three digests pass as before (1975 a2e559aea64a91e7, 1995 0c7e06efbc8fd981, 2024 a0e4479b22d2cfa6).\n\n**What changed**\n- **New `grid/lanes.ts`** (no `resolve.ts` import), with `LANE_CONFIG` and `reachOnPath(s, side, from, to, kickAt)`. For each opponent it finds the first point on the path he can get within 1.2 m of (or 2.2 m at full stretch) before the ball, at 20 m/s. He keeps his velocity until T324's read, then runs in closed form within the acceleration rules and his top speed with fatigue. Only the part of the path he could reach at top speed is scanned. It returns the opponent the ball meets first, his spare time (the most time in hand from that point on) and the summed weights of everyone who reaches the path.\n- **`resolvePass`**:\n  - The marker is now the first reacher, on his 위치선정 (60 when nobody reaches), as MATCH-11 r28's pass row says.\n  - The lane term is `LANE_CONFIG.risk` × the summed weights.\n  - On failure, the existing intercept draw (the tactic's build-up share) now needs a reacher instead of the nearest man to the line. That is how I read \"the build-up shares now split only failures that have a reaching opponent\". The reacher wins it at his reach point with ≥ 0.25 s to spare, or deflects it loose there. With nobody reaching it, the ball is lost at the receiver or goes out.\n- **`passOptions`/`choosePass`** use the same reach weight as their risk term, so better 판단력 avoids reached lanes more surely.\n- **`playGrid`** passes the kick time: 0 after an in-stride carry, otherwise the wind-up. It also records `diagnostics.passLosses` (failed open-play passes by where they ended).\n- `LANE_CONFIG.risk` is set to 0.033, which keeps completion at its frame (77.3% → 77.4%).\n\n**Calibration round 69** (core condition, 120 observed matches, same fixtures, per team; reported, not gated):\n\n| measure | before | after |\n|---|---|---|\n| passes | 407.2 | 407.0 |\n| completion | 77.3% | 77.4% |\n| interceptions | 13.6 | 7.5 |\n| tackles + interceptions | 27.9 | 21.3 |\n| failed open-play passes won in the lane | 12.6% | 5.4% |\n| … deflected | – | 4.7% |\n| … lost at the receiver | 73.1% | 75.7% |\n| … out | 12.5% | 12.6% |\n| PPDA | 14.5 | 18.2 |\n| high turnovers | 7.4 | 6.0 |\n| final-third passes | 141 | 137 |\n| box entries | 33.8 | 32.0 |\n| shots | 14.5 | 13.8 |\n| xG | 1.82 | 1.73 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions dropped below MATCH-23's 22–30 band, and PPDA moved further above MATCH-30's 12–14. Both are left for T437 to tune. The candidate's observed-match time went 158.9 → 166.3 ms (+4.4%), measured paired on the same matches on this machine. bands.test's coarse guards pass as written (3.46 and 3.33 goals), so none was widened.\n\n**Tests**: all the tests the acceptance names are added, and every record they play validates. Candidate digests were re-recorded with the measured change in the comment, and the knockout ties were rescanned to 13/8, 3/0 and 18/0.\n\n**Checks run**: typecheck, lint and format:check pass. `vitest run --changed 83a36bb5` passes in 8 shards (219 files, 1704 tests, 4 skipped). The base went in as an argument because the `HAERAM_DIFF_BASE=` prefix is denied here. The touched unit files pass under both the default and release-on configs (99 of 99 each).\n\n**Limits** (details in the task result):\n- I edited one file outside touches: `material.test.ts`. Its playoff test assumed the club reaches a promotion-playoff place in its simulated season, and the new lanes moved it out. The test now places the club there itself.\n- Restart passes still read reach as if kicked at once, because restarts.ts is outside touches.\n- The fixture-level interception test passes on the old rule too: the engine stretches the action until the new owner arrives, and the trace has no velocities. The unit tests are what fail the old rule.\n- docs/CALIBRATION.md does not record round 69's use.\n- Not run: the batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e), CI, and ARCH-31's benchmarks on the reference machine."
+          "summary": "T441 is done on the candidate model. A pass is now cut out only by an opponent who can reach its path before the ball passes. The pre-feature path is unchanged: its three digests pass as before (1975 a2e559aea64a91e7, 1995 0c7e06efbc8fd981, 2024 a0e4479b22d2cfa6).\n\n**What changed**\n- **New `grid/lanes.ts`** (no `resolve.ts` import), with `LANE_CONFIG` and `reachOnPath(s, side, from, to, kickAt)`. For each opponent it finds the first point on the path he can get within 1.2 m of (or 2.2 m at full stretch) before the ball, at 20 m/s. He keeps his velocity until T324's read, then runs in closed form within the acceleration rules and his top speed with fatigue. Only the part of the path he could reach at top speed is scanned. It returns the opponent the ball meets first, his spare time (the most time in hand from that point on) and the summed weights of everyone who reaches the path.\n- **`resolvePass`**:\n  - The marker is now the first reacher, on his 위치선정 (60 when nobody reaches), as MATCH-11 r28's pass row says.\n  - The lane term is `LANE_CONFIG.risk` × the summed weights.\n  - On failure, the existing intercept draw (the tactic's build-up share) now needs a reacher instead of the nearest man to the line. That is how I read \"the build-up shares now split only failures that have a reaching opponent\". The reacher wins it at his reach point with ≥ 0.25 s to spare, or deflects it loose there. With nobody reaching it, the ball is lost at the receiver or goes out.\n- **`passOptions`/`choosePass`** use the same reach weight as their risk term, so better 판단력 avoids reached lanes more surely.\n- **`playGrid`** passes the kick time: 0 after an in-stride carry, otherwise the wind-up. It also records `diagnostics.passLosses` (failed open-play passes by where they ended).\n- `LANE_CONFIG.risk` is set to 0.033, which keeps completion at its frame (77.3% → 77.4%).\n\n**Calibration round 69** (core condition, 120 observed matches, same fixtures, per team; reported, not gated):\n\n| measure | before | after |\n|---|---|---|\n| passes | 407.2 | 407.0 |\n| completion | 77.3% | 77.4% |\n| interceptions | 13.6 | 7.5 |\n| tackles + interceptions | 27.9 | 21.3 |\n| failed open-play passes won in the lane | 12.6% | 5.4% |\n| … deflected | – | 4.7% |\n| … lost at the receiver | 73.1% | 75.7% |\n| … out | 12.5% | 12.6% |\n| PPDA | 14.5 | 18.2 |\n| high turnovers | 7.4 | 6.0 |\n| final-third passes | 141 | 137 |\n| box entries | 33.8 | 32.0 |\n| shots | 14.5 | 13.8 |\n| xG | 1.82 | 1.73 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions dropped below MATCH-23's 22–30 band, and PPDA moved further above MATCH-30's 12–14. Both are left for T437 to tune. The candidate's observed-match time went 158.9 → 166.3 ms (+4.4%), measured paired on the same matches on this machine. bands.test's coarse guards pass as written (3.46 and 3.33 goals), so none was widened.\n\n**Tests**: all the tests the acceptance names are added, and every record they play validates. Candidate digests were re-recorded with the measured change in the comment, and the knockout ties were rescanned to 13/8, 3/0 and 18/0.\n\n**Checks run**: typecheck, lint and format:check pass. `vitest run --changed 83a36bb5` passes in 8 shards (219 files, 1704 tests, 4 skipped). The base went in as an argument because the `GUSTA_DIFF_BASE=` prefix is denied here. The touched unit files pass under both the default and release-on configs (99 of 99 each).\n\n**Limits** (details in the task result):\n- I edited one file outside touches: `material.test.ts`. Its playoff test assumed the club reaches a promotion-playoff place in its simulated season, and the new lanes moved it out. The test now places the club there itself.\n- Restart passes still read reach as if kicked at once, because restarts.ts is outside touches.\n- The fixture-level interception test passes on the old rule too: the engine stretches the action until the new owner arrives, and the trace has no velocities. The unit tests are what fail the old rule.\n- docs/CALIBRATION.md does not record round 69's use.\n- Not run: the batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e), CI, and ARCH-31's benchmarks on the reference machine."
         }
       }
     },
@@ -9235,7 +9235,7 @@
             "at": "2026-10-24T20:03:13.770Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T20:00:46.900Z",
                 "finishedAt": "2026-10-24T20:03:13.385Z"
               }
@@ -9244,7 +9244,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T20:00:46.900Z",
             "finishedAt": "2026-10-24T20:03:13.385Z"
           }
@@ -9273,7 +9273,7 @@
           "startedAt": "2026-10-24T19:47:31.505Z",
           "finishedAt": "2026-10-24T20:03:13.840Z",
           "error": null,
-          "summary": "I removed the keeper special case as the coordinator asked, and all task checks pass on the merged tree (MATCH r29 and T431 included).\n\n**What changed**\n- **`resolve.ts`:** the nearest-lane marker for keeper distributions and its doc comment are gone. On the candidate, every pass, a keeper's included, now plays against the first opponent who reaches its path, on his 위치선정, or an even 60 when nobody does. The pre-feature path is unchanged, and its digests pass as before.\n- **Keeper test (`resolve.test.ts`):** it now checks the r29 rule. A keeper's or outfielder's ball 10 m from the only defender plays against nobody: identical completion whatever his 위치선정. When he stands in the lane, completion drops as his 위치선정 rises.\n- **Digests:** candidate play is back to the first submission's, so those digests are restored. grid-throughput knockout ties are 13/8, 3/0 and 18/0 (1995 extra time `c5a91f8d1170e536`, 2024 `e1aef5ff1c701e4f` / `cf2e018cdfce0754`); full-model-throughput candidate rounds `5c21d584c8efd809`.\n- **`playback.test.ts`:** last round's two edits there only followed from the keeper change, so the file is back to its first-submission text and passes. The only edit outside touches left is `material.test.ts`.\n- **Kept from the review round:** the stronger \"nobody cuts out a pass he could not reach\" test (it fails under the old nearest-man rule), the `passLosses` check against the trace, `laneWeight`/`runSeconds` no longer exported, and the T437 hand-off notes.\n- The `LANE_CONFIG.risk` comment, both digest comments, `docs/MATCH-ENGINE-DESIGN.md` and the task result carry the re-measured figures. The header is untouched (MATCH@29) and all acceptance items are marked done.\n\n**Round 69, re-run on the merged tree** (identical to the first submission's):\n\n| per team | before | after |\n|---|---|---|\n| completion | 77.32% | 77.43% |\n| interceptions | 13.6 | 7.5 |\n| tackles + interceptions | 27.9 | 21.3 |\n| PPDA | 14.5 | 18.2 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions now sit below MATCH-23's 22–30 band and PPDA further above MATCH-30's 12–14; both are left for T437. bands.test's coarse guards pass without widening: 3.46 goals on the candidate guard and 3.33 on the real-football guard run on the candidate.\n\n**Checks run:**\n- typecheck, lint and format:check pass.\n- `vitest run --changed 83a36bb5` passes in 8 shards: 220 files, 1719 tests passed, 4 skipped. The base is passed as an argument because the `HAERAM_DIFF_BASE=` prefix is denied here.\n- The 9 touched files pass 100/100 under `vitest.release-on.config.ts`.\n\n**Not run:** the batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e), CI, and ARCH-31's reference-machine benchmarks.\n\nI did not commit."
+          "summary": "I removed the keeper special case as the coordinator asked, and all task checks pass on the merged tree (MATCH r29 and T431 included).\n\n**What changed**\n- **`resolve.ts`:** the nearest-lane marker for keeper distributions and its doc comment are gone. On the candidate, every pass, a keeper's included, now plays against the first opponent who reaches its path, on his 위치선정, or an even 60 when nobody does. The pre-feature path is unchanged, and its digests pass as before.\n- **Keeper test (`resolve.test.ts`):** it now checks the r29 rule. A keeper's or outfielder's ball 10 m from the only defender plays against nobody: identical completion whatever his 위치선정. When he stands in the lane, completion drops as his 위치선정 rises.\n- **Digests:** candidate play is back to the first submission's, so those digests are restored. grid-throughput knockout ties are 13/8, 3/0 and 18/0 (1995 extra time `c5a91f8d1170e536`, 2024 `e1aef5ff1c701e4f` / `cf2e018cdfce0754`); full-model-throughput candidate rounds `5c21d584c8efd809`.\n- **`playback.test.ts`:** last round's two edits there only followed from the keeper change, so the file is back to its first-submission text and passes. The only edit outside touches left is `material.test.ts`.\n- **Kept from the review round:** the stronger \"nobody cuts out a pass he could not reach\" test (it fails under the old nearest-man rule), the `passLosses` check against the trace, `laneWeight`/`runSeconds` no longer exported, and the T437 hand-off notes.\n- The `LANE_CONFIG.risk` comment, both digest comments, `docs/MATCH-ENGINE-DESIGN.md` and the task result carry the re-measured figures. The header is untouched (MATCH@29) and all acceptance items are marked done.\n\n**Round 69, re-run on the merged tree** (identical to the first submission's):\n\n| per team | before | after |\n|---|---|---|\n| completion | 77.32% | 77.43% |\n| interceptions | 13.6 | 7.5 |\n| tackles + interceptions | 27.9 | 21.3 |\n| PPDA | 14.5 | 18.2 |\n| goals (a match) | 3.46 | 3.49 |\n\nTackles + interceptions now sit below MATCH-23's 22–30 band and PPDA further above MATCH-30's 12–14; both are left for T437. bands.test's coarse guards pass without widening: 3.46 goals on the candidate guard and 3.33 on the real-football guard run on the candidate.\n\n**Checks run:**\n- typecheck, lint and format:check pass.\n- `vitest run --changed 83a36bb5` passes in 8 shards: 220 files, 1719 tests passed, 4 skipped. The base is passed as an argument because the `GUSTA_DIFF_BASE=` prefix is denied here.\n- The 9 touched files pass 100/100 under `vitest.release-on.config.ts`.\n\n**Not run:** the batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e), CI, and ARCH-31's reference-machine benchmarks.\n\nI did not commit."
         }
       }
     },
@@ -9725,7 +9725,7 @@
             "at": "2026-10-24T21:48:55.660Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T21:46:26.401Z",
                 "finishedAt": "2026-10-24T21:48:55.313Z"
               }
@@ -9734,7 +9734,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T21:46:26.401Z",
             "finishedAt": "2026-10-24T21:48:55.313Z"
           }
@@ -10117,7 +10117,7 @@
             "at": "2026-10-24T23:08:42.910Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-24T23:04:36.135Z",
                 "finishedAt": "2026-10-24T23:08:42.545Z"
               }
@@ -10126,7 +10126,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-24T23:04:36.135Z",
             "finishedAt": "2026-10-24T23:08:42.545Z"
           }
@@ -10245,7 +10245,7 @@
             {
               "priority": "P3",
               "where": "packages/engine/src/grid/box.ts:47-48 (BOX_CONFIG.zones.nearPost), :261-264 (middle guard)",
-              "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
+              "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (gusta-update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
             },
             {
               "priority": "P3",
@@ -10451,7 +10451,7 @@
               {
                 "priority": "P3",
                 "where": "packages/engine/src/grid/box.ts:47-48 (BOX_CONFIG.zones.nearPost), :261-264 (middle guard)",
-                "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
+                "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (gusta-update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
               },
               {
                 "priority": "P3",
@@ -10510,7 +10510,7 @@
               {
                 "priority": "P3",
                 "where": "packages/engine/src/grid/box.ts:47-48 (BOX_CONFIG.zones.nearPost), :261-264 (middle guard)",
-                "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
+                "message": "T443: Read literally, \"3 m inside the near post\" puts the near-post zone 0.66 m from the goal's middle (34 ± 0.66). The 'middle' guard (midway between the posts' zones) then stands 2.0 m toward the far side. So the three goal-line guards sit at +0.66, −2.0 and −4.66 m (ball side positive), and no runner or guard holds the ball-side half of the goal (the real near post at 3.66 m and the six-yard corner). This is consistent and matches the acceptance's literal text, and the worker flagged it in limits (2). But T444 will aim its 'driven to the near post' deliveries at this point. Handoff to the planner (gusta-update-ssot or a T444 note): confirm the near-post zone's y before T444 starts. Nothing is required from this submission."
               },
               {
                 "priority": "P3",
@@ -10731,7 +10731,7 @@
             "at": "2026-10-25T00:11:00.116Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-25T00:10:28.195Z",
                 "finishedAt": "2026-10-25T00:10:59.757Z"
               }
@@ -10740,7 +10740,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-25T00:10:28.195Z",
             "finishedAt": "2026-10-25T00:10:59.757Z"
           }
@@ -11230,7 +11230,7 @@
             "at": "2026-10-25T01:43:54.929Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-25T01:41:24.137Z",
                 "finishedAt": "2026-10-25T01:43:54.585Z"
               }
@@ -11239,7 +11239,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-25T01:41:24.137Z",
             "finishedAt": "2026-10-25T01:43:54.585Z"
           }
@@ -11267,7 +11267,7 @@
           "startedAt": "2026-10-25T01:38:47.803Z",
           "finishedAt": "2026-10-25T01:43:55.005Z",
           "error": null,
-          "summary": "T444 is done: on the candidate model, open-play crosses and cut-backs now go into a zone a teammate attacks, never blind. Goals rise 3.73 → 4.31 a match, and near-post balls almost never reach their runner (1.8%). Both are left to T437.\n\nWhat changed:\n- **Zones and runners:** `BOX_CONFIG.delivery` sets the kinds by zone: driven low to the near post, lofted to the far post, pulled back to the spot or edge, or squared low across the goal area (only from the byline band). The runner is drawn with the carrier's temperature, scored on whether he is free, how the ball suits him (head for a lofted ball, feet for a low one) and the zone's xT.\n- **No blind delivery:** with nobody attacking a zone for that action, its cross or cut-back weight is zero and he carries, passes or shoots instead.\n- **Resolution:**\n  - The ball is played into the zone point. An opponent who cleanly reaches its path wins it first, cutting it out or heading it clear (T441's clean-interception rule). For a low ball the same holds for the zone itself.\n  - A lofted ball that gets through goes to the keeper's claim and the aerial duel.\n  - Otherwise the crosser's delivery chance (크로스) decides. A good low ball becomes the runner's first-time shot, flagged as a cut-back chance when pulled back or squared.\n- The two neutral T398 settings (`arriving`, `crossArriving`) are removed with comments.\n\n**How I read the contest:** the most literal reading (any opponent who reaches the path always wins) gave 0% at the posts, and the crosser's 크로스 never counted. So I graded it as MATCH-31 and MATCH-11 describe. The result lists the five variants I measured on the same 600 matches, with goals and arrival rates, so the planner or T437 can pick another reading.\n\n**Round 72 (core, 600 matches, source 02d6355a → final, per team a match; reported, not gated):**\n\n| measure | before → after |\n|---|---|\n| crosses (completion) | 22.57 (23.4%) → 14.34 (16.7%) |\n| cut-backs | 0.29 → 0.31 |\n| key passes | 12.03 → 12.71 |\n| big chances | 1.32 → 1.68 |\n| box shots | 9.30 → 10.14 |\n| shot place: goal area / rest of box / outside | 13.0 / 52.0 / 35.0% → 14.7 / 51.1 / 34.2% |\n| xG per shot | 0.134 → 0.142 |\n| headed goals | 15.2 → 10.8% |\n| shots / xG | 14.29 / 1.91 → 15.40 / 2.19 |\n| goals (a match) | 3.73 → 4.31 |\n\nOpen-play deliveries per team, with the share reaching the runner: near 3.80 (1.8%), far 2.84 (7.7%), back 0.47 (32.6%), square 0.20 (15.3%). No record failed `validateFullMatchRecord`. Crosses moved into MATCH-23's count band. Headed goals and cross completion moved out of theirs, and goal-area shots, already outside, rose further.\n\n**Tests and digests:** the six named tests are added, and the T397 cut-back-share case now places runners (the new rule otherwise zeroes it). Candidate digests and the full-model candidate-rounds digest are re-recorded, and the knockout ties rescanned. The pre-feature digests pass untouched.\n\n**Coarse-guard widening:** bands.test ceilings are widened to the measured levels, with the evidence in the comments, for T437 to restore to 3.6:\n- the candidate guard to 4.52 (measured 4.5125, was 4.0)\n- the first guard under the release-on config to 3.7\n\n**Outside touches:** `playback.test.ts` now uses `candidate-et-11`, since `candidate-et-1` no longer reaches extra time.\n\n**Checks that ran on the final tree:**\n- typecheck, lint and format:check pass.\n- `vitest run --changed 02d6355a` passes all 220 files in 8 shards. Shard 2 first failed on that playback case and passed in full after the fix.\n- The 7 touched unit files pass under `vitest.release-on.config.ts`. bands.test passed there after the widening.\n\n**Not run here:** test:unit, test:contract, validate:catalogs, build, the Chromium playwright run and CI are left to the batch gate. Two e2e specs search for box and cross scenes and may land elsewhere now: `set-piece-defence.spec.ts` and `full-model-continuity.spec.ts`. The spec lint was not run because the haeram CLI is outside the allow list. `docs/CALIBRATION.md` (outside touches) does not record round 72; the figures are in the result and in `docs/MATCH-ENGINE-DESIGN.md` §4.8. The probes and their outputs are in this session's scratchpad."
+          "summary": "T444 is done: on the candidate model, open-play crosses and cut-backs now go into a zone a teammate attacks, never blind. Goals rise 3.73 → 4.31 a match, and near-post balls almost never reach their runner (1.8%). Both are left to T437.\n\nWhat changed:\n- **Zones and runners:** `BOX_CONFIG.delivery` sets the kinds by zone: driven low to the near post, lofted to the far post, pulled back to the spot or edge, or squared low across the goal area (only from the byline band). The runner is drawn with the carrier's temperature, scored on whether he is free, how the ball suits him (head for a lofted ball, feet for a low one) and the zone's xT.\n- **No blind delivery:** with nobody attacking a zone for that action, its cross or cut-back weight is zero and he carries, passes or shoots instead.\n- **Resolution:**\n  - The ball is played into the zone point. An opponent who cleanly reaches its path wins it first, cutting it out or heading it clear (T441's clean-interception rule). For a low ball the same holds for the zone itself.\n  - A lofted ball that gets through goes to the keeper's claim and the aerial duel.\n  - Otherwise the crosser's delivery chance (크로스) decides. A good low ball becomes the runner's first-time shot, flagged as a cut-back chance when pulled back or squared.\n- The two neutral T398 settings (`arriving`, `crossArriving`) are removed with comments.\n\n**How I read the contest:** the most literal reading (any opponent who reaches the path always wins) gave 0% at the posts, and the crosser's 크로스 never counted. So I graded it as MATCH-31 and MATCH-11 describe. The result lists the five variants I measured on the same 600 matches, with goals and arrival rates, so the planner or T437 can pick another reading.\n\n**Round 72 (core, 600 matches, source 02d6355a → final, per team a match; reported, not gated):**\n\n| measure | before → after |\n|---|---|\n| crosses (completion) | 22.57 (23.4%) → 14.34 (16.7%) |\n| cut-backs | 0.29 → 0.31 |\n| key passes | 12.03 → 12.71 |\n| big chances | 1.32 → 1.68 |\n| box shots | 9.30 → 10.14 |\n| shot place: goal area / rest of box / outside | 13.0 / 52.0 / 35.0% → 14.7 / 51.1 / 34.2% |\n| xG per shot | 0.134 → 0.142 |\n| headed goals | 15.2 → 10.8% |\n| shots / xG | 14.29 / 1.91 → 15.40 / 2.19 |\n| goals (a match) | 3.73 → 4.31 |\n\nOpen-play deliveries per team, with the share reaching the runner: near 3.80 (1.8%), far 2.84 (7.7%), back 0.47 (32.6%), square 0.20 (15.3%). No record failed `validateFullMatchRecord`. Crosses moved into MATCH-23's count band. Headed goals and cross completion moved out of theirs, and goal-area shots, already outside, rose further.\n\n**Tests and digests:** the six named tests are added, and the T397 cut-back-share case now places runners (the new rule otherwise zeroes it). Candidate digests and the full-model candidate-rounds digest are re-recorded, and the knockout ties rescanned. The pre-feature digests pass untouched.\n\n**Coarse-guard widening:** bands.test ceilings are widened to the measured levels, with the evidence in the comments, for T437 to restore to 3.6:\n- the candidate guard to 4.52 (measured 4.5125, was 4.0)\n- the first guard under the release-on config to 3.7\n\n**Outside touches:** `playback.test.ts` now uses `candidate-et-11`, since `candidate-et-1` no longer reaches extra time.\n\n**Checks that ran on the final tree:**\n- typecheck, lint and format:check pass.\n- `vitest run --changed 02d6355a` passes all 220 files in 8 shards. Shard 2 first failed on that playback case and passed in full after the fix.\n- The 7 touched unit files pass under `vitest.release-on.config.ts`. bands.test passed there after the widening.\n\n**Not run here:** test:unit, test:contract, validate:catalogs, build, the Chromium playwright run and CI are left to the batch gate. Two e2e specs search for box and cross scenes and may land elsewhere now: `set-piece-defence.spec.ts` and `full-model-continuity.spec.ts`. The spec lint was not run because the gusta CLI is outside the allow list. `docs/CALIBRATION.md` (outside touches) does not record round 72; the figures are in the result and in `docs/MATCH-ENGINE-DESIGN.md` §4.8. The probes and their outputs are in this session's scratchpad."
         }
       }
     },
@@ -11589,7 +11589,7 @@
             "at": "2026-10-25T02:22:56.522Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-25T02:20:22.162Z",
                 "finishedAt": "2026-10-25T02:22:56.196Z"
               }
@@ -11598,7 +11598,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-25T02:20:22.162Z",
             "finishedAt": "2026-10-25T02:22:56.196Z"
           }
@@ -11627,7 +11627,7 @@
           "startedAt": "2026-10-25T01:50:53.234Z",
           "finishedAt": "2026-10-25T02:22:56.598Z",
           "error": null,
-          "summary": "I fixed the three P2 findings from review a23c9e88 and the task checks pass, but with the corrected contest almost no post delivery reaches its runner. Near post 1.5%, far post 0.03%, square 3.1%, cut-back 28.6% on round 72. That is the P3 question the reviewer asked to hand to the planner, and it is written up in the result's limits (2).\n\n**The three fixes:**\n- **P2-1 (stretched reacher):** a bad ball that a man only just reaches is now deflected loose where he meets it, as a 50/50 there. He no longer wins it outright. This matches MATCH-31 and T441's `resolvePass`.\n- **P2-2 (hidden clean reacher):** the contest now reads the first opponent who cleanly reaches the path, even if a stretched man got there earlier. For a lofted ball, the path is read only up to the zone's edge, and opponents standing in the zone are left to the keeper's claim and the aerial duel. A guard on the far post now meets the ball in the air instead of cutting it out on the ground.\n- **P2-3 (shot place):** a ball that gets through is now a reception at the zone, and the action lasts until the runner gets there. His header or foot shot is his next action, struck from the zone at once with no carry or wind-up, so the shot's place, xG, pressure, record and playback all match where the ball went. Set-piece headers still resolve immediately, with the same draws in the same order.\n\n**Edits outside this task's touches (in limits):**\n- `lanes.ts`: `reachOnPath` now also returns the first clean reacher and takes an optional filter to leave chosen opponents out. Its existing outputs are unchanged.\n- `playback.test.ts`: the extra-time fixture is now `candidate-et-4`, and the old-trace case takes the first corner after running play. The first corner now follows a throw-in that went out.\n\n**Tests:** I rewrote the T444 resolve tests and added two:\n- The defender test now also checks that a stretched man in front of a clean defender lets nothing through. It also checks that a man reaching only at full stretch is beaten as often as an open ball, and that a bad ball becomes a loose ball at his reach point.\n- New: a lofted ball onto a guarded far post meets the claim and the duel.\n- New: over 32 observed matches, a delivery that arrives lands at its zone with the runner there, and his finish is struck from that spot at once.\n- The low-ball test now has the runner 4 m short of the zone.\n\n**Digests and guards:**\n- Candidate digests and knockout ties are re-recorded (1975 5/2, 1995 0/3, 2024 13/1). The full-model candidate rounds digest is now b6a3fb4600202334.\n- The pre-feature digests and the aggregate records digest are unchanged.\n- bands.test re-measured exactly as before (4.5125, and 3.7 under release-on), confirmed with a separate script, so the ceilings stay at 4.52 and 3.7.\n\n**Round 72** (600 core matches, before → after the correction; reported, not gated):\n- Goals: 3.73 → 4.18 a match.\n- Crosses: 22.6 → 14.2 a team, completion 23.4% → 14.5%.\n- Headed goals: 15.2% → 10.5%.\n- Most of the extra goals come from the no-blind rule itself. A reading where no post delivery arrives at all gave 4.07.\n\n**Planner question (P3), recorded in limits (2), not a blocker for this task:**\n- Lofted balls: their ground path is cut out cleanly almost every time, because the reach model reads no flight height.\n- The draw: the delivery score follows the acceptance (free + suit + xT) and ignores lane risk, though MATCH-31 says the carrier's choice reads the lanes. So carriers keep choosing near-post balls (3.83 a team a match) that rarely arrive.\n- My recommendation: a small SSOT read and task before T437. Make a lofted ball reachable only near its ends, and have the delivery draw subtract the path's reach weight as passes do. T437 can only tune, not change this structure.\n\n**Checks run on the corrected tree:** typecheck, lint and format:check pass. `vitest run --changed 02d6355a` passes all 220 files in 8 shards. The 8 touched or affected unit files (92 tests) pass under the release-on config.\n\n**Not run here:** the batch gate (test:unit, test:contract, validate:catalogs, build, Chromium playwright), CI and the spec lint (the haeram CLI is not allowed in this session). Watch `set-piece-defence.spec.ts` and `full-model-continuity.spec.ts` in the batch run. `docs/CALIBRATION.md` still does not record round 72."
+          "summary": "I fixed the three P2 findings from review a23c9e88 and the task checks pass, but with the corrected contest almost no post delivery reaches its runner. Near post 1.5%, far post 0.03%, square 3.1%, cut-back 28.6% on round 72. That is the P3 question the reviewer asked to hand to the planner, and it is written up in the result's limits (2).\n\n**The three fixes:**\n- **P2-1 (stretched reacher):** a bad ball that a man only just reaches is now deflected loose where he meets it, as a 50/50 there. He no longer wins it outright. This matches MATCH-31 and T441's `resolvePass`.\n- **P2-2 (hidden clean reacher):** the contest now reads the first opponent who cleanly reaches the path, even if a stretched man got there earlier. For a lofted ball, the path is read only up to the zone's edge, and opponents standing in the zone are left to the keeper's claim and the aerial duel. A guard on the far post now meets the ball in the air instead of cutting it out on the ground.\n- **P2-3 (shot place):** a ball that gets through is now a reception at the zone, and the action lasts until the runner gets there. His header or foot shot is his next action, struck from the zone at once with no carry or wind-up, so the shot's place, xG, pressure, record and playback all match where the ball went. Set-piece headers still resolve immediately, with the same draws in the same order.\n\n**Edits outside this task's touches (in limits):**\n- `lanes.ts`: `reachOnPath` now also returns the first clean reacher and takes an optional filter to leave chosen opponents out. Its existing outputs are unchanged.\n- `playback.test.ts`: the extra-time fixture is now `candidate-et-4`, and the old-trace case takes the first corner after running play. The first corner now follows a throw-in that went out.\n\n**Tests:** I rewrote the T444 resolve tests and added two:\n- The defender test now also checks that a stretched man in front of a clean defender lets nothing through. It also checks that a man reaching only at full stretch is beaten as often as an open ball, and that a bad ball becomes a loose ball at his reach point.\n- New: a lofted ball onto a guarded far post meets the claim and the duel.\n- New: over 32 observed matches, a delivery that arrives lands at its zone with the runner there, and his finish is struck from that spot at once.\n- The low-ball test now has the runner 4 m short of the zone.\n\n**Digests and guards:**\n- Candidate digests and knockout ties are re-recorded (1975 5/2, 1995 0/3, 2024 13/1). The full-model candidate rounds digest is now b6a3fb4600202334.\n- The pre-feature digests and the aggregate records digest are unchanged.\n- bands.test re-measured exactly as before (4.5125, and 3.7 under release-on), confirmed with a separate script, so the ceilings stay at 4.52 and 3.7.\n\n**Round 72** (600 core matches, before → after the correction; reported, not gated):\n- Goals: 3.73 → 4.18 a match.\n- Crosses: 22.6 → 14.2 a team, completion 23.4% → 14.5%.\n- Headed goals: 15.2% → 10.5%.\n- Most of the extra goals come from the no-blind rule itself. A reading where no post delivery arrives at all gave 4.07.\n\n**Planner question (P3), recorded in limits (2), not a blocker for this task:**\n- Lofted balls: their ground path is cut out cleanly almost every time, because the reach model reads no flight height.\n- The draw: the delivery score follows the acceptance (free + suit + xT) and ignores lane risk, though MATCH-31 says the carrier's choice reads the lanes. So carriers keep choosing near-post balls (3.83 a team a match) that rarely arrive.\n- My recommendation: a small SSOT read and task before T437. Make a lofted ball reachable only near its ends, and have the delivery draw subtract the path's reach weight as passes do. T437 can only tune, not change this structure.\n\n**Checks run on the corrected tree:** typecheck, lint and format:check pass. `vitest run --changed 02d6355a` passes all 220 files in 8 shards. The 8 touched or affected unit files (92 tests) pass under the release-on config.\n\n**Not run here:** the batch gate (test:unit, test:contract, validate:catalogs, build, Chromium playwright), CI and the spec lint (the gusta CLI is not allowed in this session). Watch `set-piece-defence.spec.ts` and `full-model-continuity.spec.ts` in the batch run. `docs/CALIBRATION.md` still does not record round 72."
         }
       }
     },
@@ -12074,7 +12074,7 @@
             "at": "2026-10-25T03:22:49.815Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-25T03:20:18.294Z",
                 "finishedAt": "2026-10-25T03:22:49.472Z"
               }
@@ -12083,7 +12083,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-25T03:20:18.294Z",
             "finishedAt": "2026-10-25T03:22:49.472Z"
           }
@@ -12111,7 +12111,7 @@
           "startedAt": "2026-10-25T02:31:06.909Z",
           "finishedAt": "2026-10-25T03:22:49.892Z",
           "error": null,
-          "summary": "T445 is implemented on the candidate model, and the pre-feature path is unchanged: its digests pass as they were. Task checks all pass: typecheck, lint, format:check, `vitest --changed` against the base in 8 shards (220 files), and the touched files plus playback.test under the release-on config. The batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e) and CI were not run here.\n\n**What changed in play**\n- **Blocks before the keeper:** every outfield opponent ahead of the ball and within 1.5 m of the triangle from the ball to the two posts may block the shot. His chance is 0.35 × nearness (1 at the shooter down to 0.4 at the goal line) × his 위치선정 factor. The draws go nearest the shooter first, and only a shot nobody blocks meets the keeper. This replaces the old miss-then-block order.\n- **xG:** the shot's xG is the chance's xG × the chance nobody blocks it, so recorded xG still equals the average player's goal probability. The keeper's part reads the xG without the bodies, so nothing counts twice. In the box the decision's shot weight reads the same share, raised to 1/temperature, so a sharper head passes up a blocked view more often.\n- **Second balls:** a loose block falls 4–9 m back toward the shooter; a parry falls 5–10 m out from the keeper, wide on the shot's side. Whoever of either side `reachOnPath` finds first on that path wins it where it meets him; penalties' parries work the same way. An attacker who wins it in the box decides as usual, and a shot he draws is struck first time, with no carry.\n\n**Calibration round 73** (600 core matches, before → after, reported not gated): goals 4.09 → 2.96 a match, blocked share 27.5 → 36.1%, on target 36.7 → 24.4%, xG per shot 0.140 → 0.099, rebound shots 0.43 → 0.62 a team. All 600 records were valid.\n\n**Tests and digests**\n- The six named tests are added in box, resolve and engine tests.\n- Candidate digests are re-recorded with this evidence in the comments: grid-throughput (knockout ties rescanned) and full-model-throughput (candidate rounds b6a3fb46 → 5ba3d490). The aggregate records digest did not move.\n- Both coarse goal guards in bands.test are back at their original 3.6 ceiling, because goals now measure below it (3.19 and 2.89).\n\n**Limits**\n1. **Edit outside the touch list:** `playback.test.ts`, whose extra-time case now uses `candidate-et-2`, the first tie that still reaches extra time.\n2. **Headers, for the planner or T437:** headers are now blocked 64% of the time (36% before), so headed goals fall from 11.6% to 5.6%, against MATCH-23's 14–20%. My recommendation is a header-specific block scale in `BOX_CONFIG.shot` that T437 can fit.\n3. **Left to T437:** on-target share (24.4%, band 30–37%) and blocked share (36%, real 24–29%) are now outside real football.\n4. **Not recorded:** docs/CALIBRATION.md (outside touches) does not record round 73's use; the figures are in the task result and docs/MATCH-ENGINE-DESIGN.md §7.4.\n5. **Not run here:** the spec lint (the haeram CLI is outside this session's allow list). `printenv` was also denied, so I passed the brief's base commit 9c16eb1a to `--changed` explicitly.\n\nThe probe scripts are in /private/tmp/claude-501/-Users-ihaelam-project--haeram-worktrees-haeram-soccer-7b6c81df-v9n4-release-T445-800de184/fa4d37df-f3e0-4091-bb9d-c3b608f9e9b5/scratchpad/."
+          "summary": "T445 is implemented on the candidate model, and the pre-feature path is unchanged: its digests pass as they were. Task checks all pass: typecheck, lint, format:check, `vitest --changed` against the base in 8 shards (220 files), and the touched files plus playback.test under the release-on config. The batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e) and CI were not run here.\n\n**What changed in play**\n- **Blocks before the keeper:** every outfield opponent ahead of the ball and within 1.5 m of the triangle from the ball to the two posts may block the shot. His chance is 0.35 × nearness (1 at the shooter down to 0.4 at the goal line) × his 위치선정 factor. The draws go nearest the shooter first, and only a shot nobody blocks meets the keeper. This replaces the old miss-then-block order.\n- **xG:** the shot's xG is the chance's xG × the chance nobody blocks it, so recorded xG still equals the average player's goal probability. The keeper's part reads the xG without the bodies, so nothing counts twice. In the box the decision's shot weight reads the same share, raised to 1/temperature, so a sharper head passes up a blocked view more often.\n- **Second balls:** a loose block falls 4–9 m back toward the shooter; a parry falls 5–10 m out from the keeper, wide on the shot's side. Whoever of either side `reachOnPath` finds first on that path wins it where it meets him; penalties' parries work the same way. An attacker who wins it in the box decides as usual, and a shot he draws is struck first time, with no carry.\n\n**Calibration round 73** (600 core matches, before → after, reported not gated): goals 4.09 → 2.96 a match, blocked share 27.5 → 36.1%, on target 36.7 → 24.4%, xG per shot 0.140 → 0.099, rebound shots 0.43 → 0.62 a team. All 600 records were valid.\n\n**Tests and digests**\n- The six named tests are added in box, resolve and engine tests.\n- Candidate digests are re-recorded with this evidence in the comments: grid-throughput (knockout ties rescanned) and full-model-throughput (candidate rounds b6a3fb46 → 5ba3d490). The aggregate records digest did not move.\n- Both coarse goal guards in bands.test are back at their original 3.6 ceiling, because goals now measure below it (3.19 and 2.89).\n\n**Limits**\n1. **Edit outside the touch list:** `playback.test.ts`, whose extra-time case now uses `candidate-et-2`, the first tie that still reaches extra time.\n2. **Headers, for the planner or T437:** headers are now blocked 64% of the time (36% before), so headed goals fall from 11.6% to 5.6%, against MATCH-23's 14–20%. My recommendation is a header-specific block scale in `BOX_CONFIG.shot` that T437 can fit.\n3. **Left to T437:** on-target share (24.4%, band 30–37%) and blocked share (36%, real 24–29%) are now outside real football.\n4. **Not recorded:** docs/CALIBRATION.md (outside touches) does not record round 73's use; the figures are in the task result and docs/MATCH-ENGINE-DESIGN.md §7.4.\n5. **Not run here:** the spec lint (the gusta CLI is outside this session's allow list). `printenv` was also denied, so I passed the brief's base commit 9c16eb1a to `--changed` explicitly.\n\nThe probe scripts are in /private/tmp/claude-501/-Users-ihaelam-project--gusta-worktrees-haeram-soccer-7b6c81df-v9n4-release-T445-800de184/fa4d37df-f3e0-4091-bb9d-c3b608f9e9b5/scratchpad/."
         }
       }
     },
@@ -12432,7 +12432,7 @@
             "at": "2026-10-25T04:07:50.136Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-25T04:05:17.326Z",
                 "finishedAt": "2026-10-25T04:07:49.797Z"
               }
@@ -12441,7 +12441,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-25T04:05:17.326Z",
             "finishedAt": "2026-10-25T04:07:49.797Z"
           }
@@ -12470,7 +12470,7 @@
           "startedAt": "2026-10-25T03:31:53.195Z",
           "finishedAt": "2026-10-25T04:07:50.217Z",
           "error": null,
-          "summary": "I fixed all five review findings for T445. The pre-feature path and aggregate digests are unchanged and the candidate digests are re-recorded. Task checks all pass: typecheck, lint, format:check, `vitest --changed` against 9c16eb1a in 8 shards (220 files), and the touched files plus material.test under the release-on config. The batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e) and CI were not run.\n\n**P2, the ball turning in open space at the touch.** The reviewer's fix alone (holding the blocker or keeper) was not enough. Playback draws every player except the one on the ball in a straight line between action snapshots. For a shot after an in-stride carry, that line starts before the carry, so the drawn position at the touch still missed. Two changes fix it:\n- The blocker or keeper now stands where `secondBall` read him for the whole shot, until the second ball is won.\n- An observed shot after a carry records every player's position at its kick, using the trace's existing `kick` snapshot. Playback already reads that snapshot for any entry, so `playback.ts` is unchanged, and observing still changes no facts.\n- Over 40 observed fixtures (182 second balls), the player is now drawn at the touch a median 0.000 m away, p90 0.02 m, at most 0.56 m. The submitted version was a median 1.28 m, p90 4.0 m, at most 16.8 m.\n- engine.test now asserts, for every block and parry left in play across its 16 fixtures (open play and restarts), that the touch is within `LANE_CONFIG.reach` of where playback draws the player.\n\n**P3 fixes:**\n- A penalty parry no longer always falls to one side: when the shot comes from the goal's middle line, one extra draw picks the side.\n- `secondBall` now breaks ties at the same point as its doc says: more time in hand, then the defending side. A test covers two equal players on one spot.\n- Set-piece headers, direct free kicks and penalties still time their second ball from the restart's kick (`kickAt` 0). This is now documented and left for T437.\n\n**Calibration round 73, re-measured on the corrected source:** goals 4.09 → 2.96 a match, blocked share 27.5 → 36.3%, on target 36.7 → 24.0%, xG per shot 0.140 → 0.098. These are within noise of the first submission. The bands.test ceilings stay at 3.6, measured at 3.16 and 2.97.\n\n**Edits outside the touch list:**\n- `playback.test.ts`: the restart-preparation case now reads only restart entries' kicks, and a comment is corrected.\n- `material.test.ts`: the promotion-playoff case now takes whichever playoff ties the own club played, since the changed football decides that.\n- `trace.ts`: one doc comment.\n\n**Still open, for the planner before T437/T286:** headers are blocked 66% of the time (headed goals 4.8% against a 14–20% band; set-piece goals 9.0% against 20–28%). My recommendation is a header-specific block scale that T437 can calibrate.\n\nThe spec lint was not run because the haeram CLI is outside this session's allow list."
+          "summary": "I fixed all five review findings for T445. The pre-feature path and aggregate digests are unchanged and the candidate digests are re-recorded. Task checks all pass: typecheck, lint, format:check, `vitest --changed` against 9c16eb1a in 8 shards (220 files), and the touched files plus material.test under the release-on config. The batch gate (test:unit, test:contract, validate:catalogs, build, Chromium e2e) and CI were not run.\n\n**P2, the ball turning in open space at the touch.** The reviewer's fix alone (holding the blocker or keeper) was not enough. Playback draws every player except the one on the ball in a straight line between action snapshots. For a shot after an in-stride carry, that line starts before the carry, so the drawn position at the touch still missed. Two changes fix it:\n- The blocker or keeper now stands where `secondBall` read him for the whole shot, until the second ball is won.\n- An observed shot after a carry records every player's position at its kick, using the trace's existing `kick` snapshot. Playback already reads that snapshot for any entry, so `playback.ts` is unchanged, and observing still changes no facts.\n- Over 40 observed fixtures (182 second balls), the player is now drawn at the touch a median 0.000 m away, p90 0.02 m, at most 0.56 m. The submitted version was a median 1.28 m, p90 4.0 m, at most 16.8 m.\n- engine.test now asserts, for every block and parry left in play across its 16 fixtures (open play and restarts), that the touch is within `LANE_CONFIG.reach` of where playback draws the player.\n\n**P3 fixes:**\n- A penalty parry no longer always falls to one side: when the shot comes from the goal's middle line, one extra draw picks the side.\n- `secondBall` now breaks ties at the same point as its doc says: more time in hand, then the defending side. A test covers two equal players on one spot.\n- Set-piece headers, direct free kicks and penalties still time their second ball from the restart's kick (`kickAt` 0). This is now documented and left for T437.\n\n**Calibration round 73, re-measured on the corrected source:** goals 4.09 → 2.96 a match, blocked share 27.5 → 36.3%, on target 36.7 → 24.0%, xG per shot 0.140 → 0.098. These are within noise of the first submission. The bands.test ceilings stay at 3.6, measured at 3.16 and 2.97.\n\n**Edits outside the touch list:**\n- `playback.test.ts`: the restart-preparation case now reads only restart entries' kicks, and a comment is corrected.\n- `material.test.ts`: the promotion-playoff case now takes whichever playoff ties the own club played, since the changed football decides that.\n- `trace.ts`: one doc comment.\n\n**Still open, for the planner before T437/T286:** headers are blocked 66% of the time (headed goals 4.8% against a 14–20% band; set-piece goals 9.0% against 20–28%). My recommendation is a header-specific block scale that T437 can calibrate.\n\nThe spec lint was not run because the gusta CLI is outside this session's allow list."
         }
       }
     },

@@ -6,7 +6,7 @@
     "ok": true,
     "stale": false,
     "ms": 858847,
-    "log": ".git/haeram/v1/logs/check-5de65f6b-834a-43cc-b74c-c0254a0deff0.log"
+    "log": ".git/gusta/v1/logs/check-5de65f6b-834a-43cc-b74c-c0254a0deff0.log"
   },
   "files": {
     "analysis.json": "3bc445f744e56e2e5b6cf7e185d63f363c1b851c1ad4528cdbbb3b00e8db44ae",
@@ -36,7 +36,7 @@
     "ok": true,
     "stale": false,
     "ms": 107601,
-    "log": ".git/haeram/v1/logs/check-3385ad86-e966-43fe-b215-95707ee2a39c.log"
+    "log": ".git/gusta/v1/logs/check-3385ad86-e966-43fe-b215-95707ee2a39c.log"
   },
   "originalExportUnchanged": true
 }

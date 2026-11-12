@@ -189,7 +189,7 @@
           "at": "2026-10-27T08:16:34.618Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-27T08:12:59.594Z",
               "finishedAt": "2026-10-27T08:16:34.379Z"
             }
@@ -198,7 +198,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T08:12:59.594Z",
           "finishedAt": "2026-10-27T08:16:34.379Z"
         }
@@ -767,7 +767,7 @@
       "status": "blocked",
       "changes": {
         "status": "blocked",
-        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
       }
     },
     {
@@ -790,7 +790,7 @@
           "status": "finished",
           "startedAt": "2026-10-27T07:28:40.798Z",
           "finishedAt": "2026-10-27T07:59:57.373Z",
-          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "summary": "T510 작업을 끝냈습니다. 감독의 신뢰 바닥 경고 표시와 우리 구단 이적 기록을 world 계약에 넣었습니다.\n- types.ts: `Manager.trustWarned?: true`, 새 타입 `TransferFact`와 `TransferRecords { ledgerBefore, facts }`를 내보내고, `World.transfers?`를 추가했습니다.\n- schema.ts: 감독 스키마에 `trustWarned: z.literal(true).optional()`를 넣어 다른 값은 거부합니다. 이적 기록은 엄격한(strict) 스키마이고 기존 헬퍼(`amount`, `season`, `seasonDay`, `id`, `text`)를 다시 썼습니다. 필드가 없는 기존 world도 그대로 통과합니다.\n- 압축 패커(adapters/packing.ts)는 world 키를 하나씩 나열하지 않고 world를 통째로 펼쳐 담았다가 그대로 되돌립니다. 그래서 두 필드도 그대로 실려 가고, 어댑터 코드는 고칠 필요가 없었습니다.\n- 테스트: schema.contract.test.ts에 지정된 세 케이스를 추가했습니다. packing.test.ts에는 왕복 케이스(저장 → 압축 → 불러오기 후 내용이 완전히 같은지 확인)를 추가했습니다.\n- 실행한 검사: typecheck, lint, format:check 통과. 컨트랙트 테스트(schema.contract.test.ts) 17/17 통과, 새 세 케이스 포함. 이번 변경과 관련된 단위 테스트 72개 파일 551개 통과.\n- 실행하지 않은 것: packing.test.ts는 통합 테스트로 분류된 파일이라 새 왕복 케이스는 작성만 했고 돌리지 않았습니다. 묶음 최종 검사의 `pnpm run test:integration`에서 처음 실행됩니다. 100시즌 저장 용량 측정도 계획대로 그 단계로 넘겼습니다.\n- 결과와 한계는 태스크 문서의 result 칸에 적었습니다."
         }
       }
@@ -872,7 +872,7 @@
             {
               "attempt": "260a9add-40cc-4ca2-9738-daf63e3fc105",
               "role": "worker",
-              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
             },
             {
               "attempt": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
@@ -1129,7 +1129,7 @@
             "at": "2026-10-27T08:16:34.618Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-27T08:12:59.594Z",
                 "finishedAt": "2026-10-27T08:16:34.379Z"
               }
@@ -1138,7 +1138,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-27T08:12:59.594Z",
             "finishedAt": "2026-10-27T08:16:34.379Z"
           }

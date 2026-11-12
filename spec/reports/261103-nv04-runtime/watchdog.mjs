@@ -1,8 +1,8 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
-import { vibeLoop } from '/Users/ihaelam/project/haeram-spec-creator/src/vibe-loop.mjs';
-import { vibeCheckpoint } from '/Users/ihaelam/project/haeram-spec-creator/src/vibe.mjs';
+import { vibeLoop } from '/Users/ihaelam/project/gusta/src/vibe-loop.mjs';
+import { vibeCheckpoint } from '/Users/ihaelam/project/gusta/src/vibe.mjs';
 
 const exec = promisify(execFile);
 const workspace = '/Users/ihaelam/project/haeram-soccer/.tmp/nv04';

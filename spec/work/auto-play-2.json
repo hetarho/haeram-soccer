@@ -146,8 +146,8 @@
           },
           {
             "priority": "P3",
-            "where": "spec/ssot/WEB.md WEB-18/98 (T521 hand-off to the coordinator / update-ssot)",
-            "message": "Two decisions left in T521's result limits are not recorded in the SSOT yet. (1) Reads that skip the command queue are answered from the worker's head. These are head-to-head, club records, archives, person career, league fixtures and manager history. During play they can show one of our results up to RUN_AHEAD_DAYS before its day is shown. This is the deferred P3 from the last review. (2) Leaving play for the slot screen now shows held days at once (App.tsx openSlots → pause(true)). WEB-18/98 only name office entry and hiding for that. The worker cannot write STATE or SSOT, so the coordinator should carry both into the STATE inbox or an update-ssot so they are not lost after integration."
+            "where": "spec/ssot/WEB.md WEB-18/98 (T521 hand-off to the coordinator / gusta-update-ssot)",
+            "message": "Two decisions left in T521's result limits are not recorded in the SSOT yet. (1) Reads that skip the command queue are answered from the worker's head. These are head-to-head, club records, archives, person career, league fixtures and manager history. During play they can show one of our results up to RUN_AHEAD_DAYS before its day is shown. This is the deferred P3 from the last review. (2) Leaving play for the slot screen now shows held days at once (App.tsx openSlots → pause(true)). WEB-18/98 only name office entry and hiding for that. The worker cannot write STATE or SSOT, so the coordinator should carry both into the STATE inbox or a gusta-update-ssot so they are not lost after integration."
           }
         ],
         "commit": "e92d50854e8bd0224dfdedace63682998aaddfcf",
@@ -182,7 +182,7 @@
             {
               "priority": "P3",
               "where": "apps/web/src/runtime/progression.ts:824 (T521)",
-              "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (update-ssot)."
+              "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (gusta-update-ssot)."
             },
             {
               "priority": "P3",
@@ -206,7 +206,7 @@
           "at": "2026-10-27T13:26:21.759Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-27T13:25:47.377Z",
               "finishedAt": "2026-10-27T13:26:21.480Z"
             }
@@ -215,7 +215,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T13:25:47.377Z",
           "finishedAt": "2026-10-27T13:26:21.480Z"
         }
@@ -340,7 +340,7 @@
           "at": "2026-10-27T15:25:32.183Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-27T15:24:57.381Z",
               "finishedAt": "2026-10-27T15:25:31.922Z"
             }
@@ -349,7 +349,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T15:24:57.381Z",
           "finishedAt": "2026-10-27T15:25:31.922Z"
         }
@@ -431,7 +431,7 @@
           "at": "2026-10-27T16:08:21.444Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
               "startedAt": "2026-10-27T16:07:25.403Z",
               "finishedAt": "2026-10-27T16:08:21.175Z"
             }
@@ -440,7 +440,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T16:07:25.403Z",
           "finishedAt": "2026-10-27T16:08:21.175Z"
         }
@@ -676,7 +676,7 @@
             "at": "2026-10-27T13:05:02.654Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-27T13:04:28.846Z",
                 "finishedAt": "2026-10-27T13:05:02.378Z"
               }
@@ -685,7 +685,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-27T13:04:28.846Z",
             "finishedAt": "2026-10-27T13:05:02.378Z"
           }
@@ -820,7 +820,7 @@
             {
               "priority": "P3",
               "where": "apps/web/src/runtime/progression.ts:824 (T521)",
-              "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (update-ssot)."
+              "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (gusta-update-ssot)."
             },
             {
               "priority": "P3",
@@ -900,7 +900,7 @@
               {
                 "priority": "P3",
                 "where": "apps/web/src/runtime/progression.ts:824 (T521)",
-                "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (update-ssot)."
+                "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (gusta-update-ssot)."
               },
               {
                 "priority": "P3",
@@ -1033,7 +1033,7 @@
             "at": "2026-10-27T13:26:21.759Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-27T13:25:47.377Z",
                 "finishedAt": "2026-10-27T13:26:21.480Z"
               }
@@ -1042,7 +1042,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-27T13:25:47.377Z",
             "finishedAt": "2026-10-27T13:26:21.480Z"
           }
@@ -1171,8 +1171,8 @@
             },
             {
               "priority": "P3",
-              "where": "spec/ssot/WEB.md WEB-18/98 (T521 hand-off to the coordinator / update-ssot)",
-              "message": "Two decisions left in T521's result limits are not recorded in the SSOT yet. (1) Reads that skip the command queue are answered from the worker's head. These are head-to-head, club records, archives, person career, league fixtures and manager history. During play they can show one of our results up to RUN_AHEAD_DAYS before its day is shown. This is the deferred P3 from the last review. (2) Leaving play for the slot screen now shows held days at once (App.tsx openSlots → pause(true)). WEB-18/98 only name office entry and hiding for that. The worker cannot write STATE or SSOT, so the coordinator should carry both into the STATE inbox or an update-ssot so they are not lost after integration."
+              "where": "spec/ssot/WEB.md WEB-18/98 (T521 hand-off to the coordinator / gusta-update-ssot)",
+              "message": "Two decisions left in T521's result limits are not recorded in the SSOT yet. (1) Reads that skip the command queue are answered from the worker's head. These are head-to-head, club records, archives, person career, league fixtures and manager history. During play they can show one of our results up to RUN_AHEAD_DAYS before its day is shown. This is the deferred P3 from the last review. (2) Leaving play for the slot screen now shows held days at once (App.tsx openSlots → pause(true)). WEB-18/98 only name office entry and hiding for that. The worker cannot write STATE or SSOT, so the coordinator should carry both into the STATE inbox or a gusta-update-ssot so they are not lost after integration."
             }
           ],
           "commit": "e92d50854e8bd0224dfdedace63682998aaddfcf",
@@ -1707,7 +1707,7 @@
             "at": "2026-10-27T15:07:21.432Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-27T15:06:45.451Z",
                 "finishedAt": "2026-10-27T15:07:21.136Z"
               }
@@ -1716,7 +1716,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-27T15:06:45.451Z",
             "finishedAt": "2026-10-27T15:07:21.136Z"
           }
@@ -2052,7 +2052,7 @@
             "at": "2026-10-27T15:25:32.183Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-27T15:24:57.381Z",
                 "finishedAt": "2026-10-27T15:25:31.922Z"
               }
@@ -2061,7 +2061,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-27T15:24:57.381Z",
             "finishedAt": "2026-10-27T15:25:31.922Z"
           }
@@ -2512,7 +2512,7 @@
             "at": "2026-10-27T16:08:21.444Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
                 "startedAt": "2026-10-27T16:07:25.403Z",
                 "finishedAt": "2026-10-27T16:08:21.175Z"
               }
@@ -2521,7 +2521,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
             "startedAt": "2026-10-27T16:07:25.403Z",
             "finishedAt": "2026-10-27T16:08:21.175Z"
           }

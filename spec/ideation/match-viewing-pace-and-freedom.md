@@ -66,4 +66,4 @@
 - Beyond the set-piece walk-in: whether other dead time (ball retrieval, penalties, cards, injuries, substitutions) is compressed — the owner decides after seeing v1 in play.
 - 예측력 overlaps the 판단력 and 위치선정 attributes the engine already reads (defenders' early read of a ball in behind): how it differs, so nothing counts twice.
 - Post-match views: are the touch-based heat maps and pass-network positions enough, or are off-ball average positions added?
-- Which manager values carry "style" (flexibility, philosophy) and how far the freest player may go — rules for update-ssot.
+- Which manager values carry "style" (flexibility, philosophy) and how far the freest player may go — rules for gusta-update-ssot.

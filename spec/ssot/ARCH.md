@@ -13,7 +13,7 @@
   - CSS Modules and CSS design tokens; Canvas 2D for the simplified pitch; SVG for initial charts; semantic HTML for tables and controls.
   - Zustand holds UI selections and engine read models; Zod validates external/serialized boundaries.
   - The first web release requires neither sign-in nor a game backend. Supabase is not a runtime dependency of local play.
-  - `haeram-spec-creator` remains an npx tool, not an application dependency.
+  - `gusta` remains an npx tool, not an application dependency.
 - ARCH-3 [o] Repository structure separates domain code, contracts, data, browser adapters, and future platform code.
   | Path | Responsibility |
   |---|---|
@@ -206,12 +206,12 @@
   - every record carries its owner, a stable ID and an updated time; an account adapter adopts device records on first sign-in and merges by ID and updated time.
   - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
 - ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow
-  - task, before each task's done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --project unit --changed "$HAERAM_DIFF_BASE" --passWithNoTests`.
+  - task, before each task's done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests`.
   - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.
   - an acceptance item naming `tests/e2e` specs is confirmed by the batch run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the batch run in `- limits:`.
-  - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.
+  - `GUSTA_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.
   - batch, once on the final integration candidate before `vibe push` lands finished work on spec/SETTINGS.md's `land` branch (`main`, pushed, which deploys), by the coordinator or loop host alone and through `vibe check --tier batch`, whose host lock queues every other session's batch: `pnpm run verify:batch`. It covers unit, integration, contract, catalogs, presentation, build and every journey on Chromium; the candidate first merges the land branch in, and what fails is fixed before landing. Task commits, WIP checkpoints and unit sessions never run it. ← sessions running full suites and browser journeys side by side overloaded the shared host, and each landing deploys; one locked gate before each landing is enough
-  - planning commits (`spec/` only) go at once to spec/SETTINGS.md's `plan` branch, `next`, through `vibe plan-sync` and `vibe plan-push`, with no batch; `next` numbers task IDs and SSOT revs and holds no code waiting for a release. ← haeram-spec-creator 0.12.0 lands finished work by spec/SETTINGS.md (`land: main`, `push: true`), so code gathered on `next` waited for a release nobody owned
+  - planning commits (`spec/` only) go at once to spec/SETTINGS.md's `plan` branch, `next`, through `vibe plan-sync` and `vibe plan-push`, with no batch; `next` numbers task IDs and SSOT revs and holds no code waiting for a release. ← gusta 0.12.0 lands finished work by spec/SETTINGS.md (`land: main`, `push: true`), so code gathered on `next` waited for a release nobody owned
   - browser specs run only in the batch run; a failing spec there stops the landing until it is fixed.
   - CI, after a push to `main` (planning pushes to `next` start none): ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.
   - a work group collecting local commits maps task → `--task-verify`, quick checks → `--verify`, and the complete batch → `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.
@@ -249,7 +249,7 @@
   - a result names the machine, its load, the interval and the hashes; a figure from another machine is context only.
 
 ## flow
-- Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
+- Planning: ARCH → gameplay domain SSOTs → gusta-create-task → implementation.
 - Local play: UI command → validated bridge → engine worker → domain facts/projections → UI statistics/Canvas.
 - Presentation: locale/theme registry → selected validated JSON pack → shared presentation consumers; a preference change loads resources without issuing a game command.
 - Save: safe game boundary → background candidate envelope/codec/checksum → validated checkpoint commit (→SAVE-3) → committed acknowledgment.
@@ -269,7 +269,7 @@
 ## chg
 - r39 261111 ARCH-3✎ `grid/` and `aggregate/` compute matches→`aggregate/` settles, `script/` and `staging/` write and stage an own match · ARCH-4✎ grid-execution orchestration→match orchestration (settlement, script writing, staging) · ARCH-6✎ +a watched match staged by a worker of its own in bounded steps · ARCH-9✎ +the script writer's platform-stable arithmetic, the staging exempt · ARCH-31✎ the continuous-match and full probabilistic-result release→a match-model release; +own-match settlement and watched cost measured apart · ARCH-33✎ the grid kernel→the script writer and the staging as leaves · ARCH-34✎ workload hashes grid, aggregate, day→own match, aggregate, staging, day
 - r38 261110 ARCH-21✎ world cache `node_modules/.cache/haeram-worlds` per worktree→one clone-wide store under the Git common directory locally (CI keeps the per-job path); a fresh worktree's gate or task check reuses worlds of the same fingerprint (warm vitest phase 531 s against 822 s cold)
-- r37 261110 ARCH-30✎ code gathered on `next`, quick batch per push, the last session releasing `next` into `main` after verify:batch→planning only on `next` (plan-push), finished work landed on SETTINGS `land` (`main`) by `vibe push` after one locked `pnpm run verify:batch` on the final candidate (haeram-spec-creator 0.12.0)
+- r37 261110 ARCH-30✎ code gathered on `next`, quick batch per push, the last session releasing `next` into `main` after verify:batch→planning only on `next` (plan-push), finished work landed on SETTINGS `land` (`main`) by `vibe push` after one locked `pnpm run verify:batch` on the final candidate (gusta 0.12.0)
 - r36 261110 ARCH-23✎ every browser in two shards→Chromium and Firefox in three, WebKit in four; +browser jobs restore the simulated test worlds like the integration jobs (CI 42756627200: WebKit shards 39–41 min against Chromium 22–28 min)
 - r35 261109 ARCH-4✎ code outside a slice imports only its `index.ts`→its `index.ts` or `logic.ts`; +code run outside the Vite build loads no stylesheet, asset or slice index, reaching other slices only through their `logic.ts` (own `lib/` re-exports, re-exported whole by the index) or `@x` files, checked by an architecture closure test and ESLint
 - r34 261109 ARCH-4✎ lazy chunks kept split by dynamic `import()` of module files→also by building layer modules as free of import side effects; +a layer module never relies on a side-effect-only import

@@ -16,7 +16,7 @@ assert(report.stages.every(s => s.exitCode === 0));
 copyFileSync(file, '.tmp/hr05-batch-initial.json');
 const analysis = JSON.parse(readFileSync('.tmp/hr05-browser-660/analysis.json'));
 assert(analysis.parity.every(p => p.runs === 8 && p.allFactsEqual && p.allDatesEqual && p.allReloadDatesEqual));
-const log = readFileSync('.git/haeram/v1/logs/check-9f466888-fe78-4502-8438-3a4bb2d3745c.log', 'utf8').replace(/\x1b\[[0-9;]*m/g, '');
+const log = readFileSync('.git/gusta/v1/logs/check-9f466888-fe78-4502-8438-3a4bb2d3745c.log', 'utf8').replace(/\x1b\[[0-9;]*m/g, '');
 const passed = log.split('\n').flatMap(line => {
   const match = line.match(/^\s*✓\s+\d+\s+(\[chromium\] › .*) \([\d.]+(?:ms|s|m)\)$/);
   return match ? [match[1]] : [];

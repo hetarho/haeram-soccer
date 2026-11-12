@@ -180,7 +180,7 @@
           "at": "2026-10-28T14:47:41.112Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-10-28T14:45:56.912Z",
               "finishedAt": "2026-10-28T14:47:40.440Z"
             }
@@ -189,7 +189,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-28T14:45:56.912Z",
           "finishedAt": "2026-10-28T14:47:40.440Z"
         }
@@ -299,7 +299,7 @@
           "at": "2026-10-28T15:27:26.358Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
               "startedAt": "2026-10-28T15:25:52.247Z",
               "finishedAt": "2026-10-28T15:27:25.905Z"
             }
@@ -308,7 +308,7 @@
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-28T15:25:52.247Z",
           "finishedAt": "2026-10-28T15:27:25.905Z"
         }
@@ -515,7 +515,7 @@
           "startedAt": "2026-10-28T14:23:14.377Z",
           "finishedAt": "2026-10-28T14:42:30.990Z",
           "error": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
-          "summary": "T549 is done: the game now carries one version, 0.7.0, and rules-4.0.0 saves load as 0.7.0. The fast checks, the changed unit tests, the contract tests and the build all pass; the integration tests and the browser spec I edited were not run and are left to the batch gate.\n\n**What changed**\n- All five package.json files say 0.7.0, and `CURRENT_ENGINE_VERSION` is '0.7.0'. Its doc comment says 0.7.0 continues the 4.0.0 rules line as the beta's first numbered version.\n- The only accepted versions are 0.7.0 and the 4.0.0 alias (new constant `CONTINUED_ENGINE_VERSION`), with no older range.\n- The 4.0.0 → 0.7.0 rewrite happens in the existing pure `upgradeWorldRules` step. Checkpoint loads, imports and parked-slot switches all use it. Only the writer tab rewrites the label (plus the usual revision +1). A read-only tab keeps the save as 4.0.0 and writes nothing.\n- `isEarlierEngine` now just checks the released legacy list. Comparing version numbers broke once numbering restarted at 0.7.0: 1.x, 2.0.0 and 3.0.0 would have looked newer than the current version.\n- Legacy versions keep their reset, export-and-delete handling and their message. That message, the legacy-reset notice and the slot `continue` refusal now read \"게임 버전 0.7.0\".\n- Any other version (for example 9.0.0, 0.8.0, 1.9.9, 4.0.1) is refused with a new `NEWER_GAME_MESSAGE`. It keeps the \"지원하지 않는 저장\" prefix that the existing future-save e2e test matches.\n- `portable-v1.json` was re-recorded with `scripts/update-golden.ts --write` and prettier. Only the engine label line changed, so every recorded fact is identical. The frozen 3.0.0 legacy fixture and one engine test's 4.0.0 input are kept on purpose, each with a one-line reason. `full-model-continuity.ts` founds its career fresh, so it stores no old label.\n\n**Tests**\n- New unit file `packages/contracts/src/versions.test.ts`: package versions, the 4.0.0 upgrade with facts unchanged, legacy refusal and message, unknown versions refused.\n- One new contract case: a full 4.0.0 world validates and activates as 0.7.0.\n- New integration cases (not run): the 4.0.0 load-and-upgrade path and the newer-game message in `persistence.test.ts`; the writer commit and a read-only tab loading without writing in `client.test.ts`.\n- New browser journey (not run) in `save-upgrade.spec.ts`: a read-only tab leaves a 4.0.0 save untouched, then after the other tab closes the save exports as 0.7.0.\n- Test fixtures that used '4.0.0' to mean \"current\" now use 0.7.0.\n\n**Checks run**\n- `pnpm install --frozen-lockfile`: lockfile still accepted after the version bump.\n- typecheck, lint, format:check: pass.\n- Unit tests affected since the base commit (`--changed`): 92 files, 765 tests passed in 136 s.\n- `pnpm run test:contract`: 3 files, 48 tests passed.\n- `pnpm run build`: pass.\n\n**Not run (left to the batch gate)**\n- Integration files: `persistence.test.ts`, `legacyReset.test.ts`, `client.test.ts`, `packages/engine/src/match-model.test.ts`.\n- Browser spec: `tests/e2e/save-upgrade.spec.ts`.\n- Changing `versions.ts` invalidates the cached test worlds, so the batch run will rebuild them.\n- Spec lint: the haeram CLI isn't allowed in worker sessions.\n\n**Worth knowing**\n- On the slot screen, a slot whose version this game doesn't recognise still shows the \"이전 규칙 (x)\" card with export and delete only. Pressing continue now refuses it with the newer-game message. The card itself lives in `GameSlotScreen.tsx` and the locale strings, which are outside this task's files, and it only prints the slot's own stored version.\n- The WEB-101 `v0.7 BETA` mark is not part of this task.\n\nEverything is written up in the task file's result section."
+          "summary": "T549 is done: the game now carries one version, 0.7.0, and rules-4.0.0 saves load as 0.7.0. The fast checks, the changed unit tests, the contract tests and the build all pass; the integration tests and the browser spec I edited were not run and are left to the batch gate.\n\n**What changed**\n- All five package.json files say 0.7.0, and `CURRENT_ENGINE_VERSION` is '0.7.0'. Its doc comment says 0.7.0 continues the 4.0.0 rules line as the beta's first numbered version.\n- The only accepted versions are 0.7.0 and the 4.0.0 alias (new constant `CONTINUED_ENGINE_VERSION`), with no older range.\n- The 4.0.0 → 0.7.0 rewrite happens in the existing pure `upgradeWorldRules` step. Checkpoint loads, imports and parked-slot switches all use it. Only the writer tab rewrites the label (plus the usual revision +1). A read-only tab keeps the save as 4.0.0 and writes nothing.\n- `isEarlierEngine` now just checks the released legacy list. Comparing version numbers broke once numbering restarted at 0.7.0: 1.x, 2.0.0 and 3.0.0 would have looked newer than the current version.\n- Legacy versions keep their reset, export-and-delete handling and their message. That message, the legacy-reset notice and the slot `continue` refusal now read \"게임 버전 0.7.0\".\n- Any other version (for example 9.0.0, 0.8.0, 1.9.9, 4.0.1) is refused with a new `NEWER_GAME_MESSAGE`. It keeps the \"지원하지 않는 저장\" prefix that the existing future-save e2e test matches.\n- `portable-v1.json` was re-recorded with `scripts/update-golden.ts --write` and prettier. Only the engine label line changed, so every recorded fact is identical. The frozen 3.0.0 legacy fixture and one engine test's 4.0.0 input are kept on purpose, each with a one-line reason. `full-model-continuity.ts` founds its career fresh, so it stores no old label.\n\n**Tests**\n- New unit file `packages/contracts/src/versions.test.ts`: package versions, the 4.0.0 upgrade with facts unchanged, legacy refusal and message, unknown versions refused.\n- One new contract case: a full 4.0.0 world validates and activates as 0.7.0.\n- New integration cases (not run): the 4.0.0 load-and-upgrade path and the newer-game message in `persistence.test.ts`; the writer commit and a read-only tab loading without writing in `client.test.ts`.\n- New browser journey (not run) in `save-upgrade.spec.ts`: a read-only tab leaves a 4.0.0 save untouched, then after the other tab closes the save exports as 0.7.0.\n- Test fixtures that used '4.0.0' to mean \"current\" now use 0.7.0.\n\n**Checks run**\n- `pnpm install --frozen-lockfile`: lockfile still accepted after the version bump.\n- typecheck, lint, format:check: pass.\n- Unit tests affected since the base commit (`--changed`): 92 files, 765 tests passed in 136 s.\n- `pnpm run test:contract`: 3 files, 48 tests passed.\n- `pnpm run build`: pass.\n\n**Not run (left to the batch gate)**\n- Integration files: `persistence.test.ts`, `legacyReset.test.ts`, `client.test.ts`, `packages/engine/src/match-model.test.ts`.\n- Browser spec: `tests/e2e/save-upgrade.spec.ts`.\n- Changing `versions.ts` invalidates the cached test worlds, so the batch run will rebuild them.\n- Spec lint: the gusta CLI isn't allowed in worker sessions.\n\n**Worth knowing**\n- On the slot screen, a slot whose version this game doesn't recognise still shows the \"이전 규칙 (x)\" card with export and delete only. Pressing continue now refuses it with the newer-game message. The card itself lives in `GameSlotScreen.tsx` and the locale strings, which are outside this task's files, and it only prints the slot's own stored version.\n- The WEB-101 `v0.7 BETA` mark is not part of this task.\n\nEverything is written up in the task file's result section."
         }
       }
     },
@@ -624,7 +624,7 @@
             "at": "2026-10-28T14:47:41.112Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-10-28T14:45:56.912Z",
                 "finishedAt": "2026-10-28T14:47:40.440Z"
               }
@@ -633,7 +633,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-10-28T14:45:56.912Z",
             "finishedAt": "2026-10-28T14:47:40.440Z"
           }
@@ -1015,7 +1015,7 @@
             "at": "2026-10-28T15:12:44.211Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-10-28T15:11:31.693Z",
                 "finishedAt": "2026-10-28T15:12:43.763Z"
               }
@@ -1024,7 +1024,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-10-28T15:11:31.693Z",
             "finishedAt": "2026-10-28T15:12:43.763Z"
           }
@@ -1332,7 +1332,7 @@
             "at": "2026-10-28T15:27:26.358Z",
             "verification": [
               {
-                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
                 "startedAt": "2026-10-28T15:25:52.247Z",
                 "finishedAt": "2026-10-28T15:27:25.905Z"
               }
@@ -1341,7 +1341,7 @@
         ],
         "verification": [
           {
-            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests && pnpm run build",
             "startedAt": "2026-10-28T15:25:52.247Z",
             "finishedAt": "2026-10-28T15:27:25.905Z"
           }
@@ -1370,7 +1370,7 @@
           "startedAt": "2026-10-28T15:18:22.928Z",
           "finishedAt": "2026-10-28T15:27:26.461Z",
           "error": null,
-          "summary": "I fixed the review finding: the owner office bar now shows the BETA mark beside the place name. The fast checks and build pass. The new office step in the browser spec has not been run; it is left to the batch Chromium run.\n\n**What changed**\n- **Office bar** (`OfficeBar.tsx`): the shared `BetaMark` (plain `BETA`) now sits next to the place name in a centred group. It is outside the `<h2>`, so the office test helpers that read the heading's exact text (`officeTitle`) still work.\n- **Office bar layout** (`OfficeBar.module.css`): the bar's grid now keeps the back button and the cash at their full width. On a short row the place name shortens with an ellipsis instead of crowding them. When everything fits, the layout and centring look as before.\n- **Unit test** (`BetaMark.test.ts`): a new case checks that the office bar renders the mark after the heading and that the heading holds only the place name.\n- **Browser spec** (`tests/e2e/beta-mark.spec.ts`): after the play HUD, each run now enters the office from home and checks the bar:\n  - the mark's text, and that it sits beside the name and not inside a control\n  - contrast of at least 4.5\n  - the 나가기 button at least 44×44\n  - the cash at least 44 px wide\n  - no horizontal overflow\n\n  This runs at 360, 390 and 1280 px and in every registered theme. The seeded game is set to manual mode, as the resource-skins spec does.\n- **Task file:** acceptance 1 stays checked, now that the office is covered. I updated the result and removed the old \"office not covered\" limit.\n\n**Checks run, all passing:** typecheck, lint, format check, the changed unit tests (12 files, 79 tests), the two new unit test files (6 tests) and the build.\n\n**Not run:** `tests/e2e/beta-mark.spec.ts` in a browser. I checked the office bar's fit at 360 px only by reading the CSS: the back button needs about 75 px, crest, name and mark about 178 px, and the cash about 63–72 px. The batch run's overflow and touch-target checks will confirm it.\n\n**Unchanged from before:** the 12 locale packs (`apps/web/public/presentation/locales`, outside the task's file list, each with one `shell.beta` key) are as the reviewer already accepted them. Spec lint was not run; the haeram CLI is outside the worker allow list."
+          "summary": "I fixed the review finding: the owner office bar now shows the BETA mark beside the place name. The fast checks and build pass. The new office step in the browser spec has not been run; it is left to the batch Chromium run.\n\n**What changed**\n- **Office bar** (`OfficeBar.tsx`): the shared `BetaMark` (plain `BETA`) now sits next to the place name in a centred group. It is outside the `<h2>`, so the office test helpers that read the heading's exact text (`officeTitle`) still work.\n- **Office bar layout** (`OfficeBar.module.css`): the bar's grid now keeps the back button and the cash at their full width. On a short row the place name shortens with an ellipsis instead of crowding them. When everything fits, the layout and centring look as before.\n- **Unit test** (`BetaMark.test.ts`): a new case checks that the office bar renders the mark after the heading and that the heading holds only the place name.\n- **Browser spec** (`tests/e2e/beta-mark.spec.ts`): after the play HUD, each run now enters the office from home and checks the bar:\n  - the mark's text, and that it sits beside the name and not inside a control\n  - contrast of at least 4.5\n  - the 나가기 button at least 44×44\n  - the cash at least 44 px wide\n  - no horizontal overflow\n\n  This runs at 360, 390 and 1280 px and in every registered theme. The seeded game is set to manual mode, as the resource-skins spec does.\n- **Task file:** acceptance 1 stays checked, now that the office is covered. I updated the result and removed the old \"office not covered\" limit.\n\n**Checks run, all passing:** typecheck, lint, format check, the changed unit tests (12 files, 79 tests), the two new unit test files (6 tests) and the build.\n\n**Not run:** `tests/e2e/beta-mark.spec.ts` in a browser. I checked the office bar's fit at 360 px only by reading the CSS: the back button needs about 75 px, crest, name and mark about 178 px, and the cash about 63–72 px. The batch run's overflow and touch-target checks will confirm it.\n\n**Unchanged from before:** the 12 locale packs (`apps/web/public/presentation/locales`, outside the task's file list, each with one `shell.beta` key) are as the reviewer already accepted them. Spec lint was not run; the gusta CLI is outside the worker allow list."
         }
       }
     },

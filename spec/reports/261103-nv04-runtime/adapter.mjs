@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { executeAgentAdapter } from '/Users/ihaelam/project/haeram-spec-creator/src/agent-adapter.mjs';
+import { executeAgentAdapter } from '/Users/ihaelam/project/gusta/src/agent-adapter.mjs';
 
 let input = '';
 for await (const chunk of process.stdin) input += chunk;
