@@ -12,7 +12,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | T842 |
+| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -20,7 +20,7 @@
 
 ## inbox
 - 261112 decided ARCH-4 ARCH-33 T842: the match-prep panel read `benchFor` through `grid/setup.ts` (a listed UI→orchestration import), but `benchFor` names other clubs' squads through `world.ts`, so pointing the panel at a moved `benchFor` would add a new exception → the own club's pick goes to a read leaf `match/bench.ts` (`ownBench` beside `takersFor`), `match/roster.ts`' `benchFor` and `fixtureRosters` call it, and the panel reads `ownBench`; the panel's and `Pitch.tsx`' exceptions shrink (`grid/setup.ts`, `match.ts`) (alt: list `match/roster.ts` as a new exception, against the shrink-only list | inject `squad` into `benchFor`, changing an export's signature) hf12
-- 261112 decided ARCH-33 T842: what `match/leaf.test.ts` does with the engine tests and scripts still importing `grid/` until T843/T844 → a shrink-only list of those 29 files beside `match.ts`, failing on a new importer and on a listed file that no longer imports the grid; the aggregate test's two-path counting block, which plays the grid's `Tally`, moved to `grid/record.paths.test.ts` (integration, as before) (alt: forbid them now, pulling T843/T844's rewrites into this move | exempt every test file, letting new grid readers in) hf12
+- 261112 decided ARCH-33 T842: what `match/leaf.test.ts` does with the engine tests and scripts still importing `grid/` until T843/T844 → a shrink-only list of those 27 files beside `match.ts`, failing on a new importer and on a listed file that no longer imports the grid; the aggregate test's two-path counting block, which plays the grid's `Tally`, moved to `grid/record.paths.test.ts` (integration, as before) (alt: forbid them now, pulling T843/T844's rewrites into this move | exempt every test file, letting new grid readers in) hf12
 - 261112 decided ARCH-33 T841: the acceptance grep `git grep -n "match-proto\|export-settled" -- . ':!spec'` still names four historical measurement records (`artifacts/benchmarks/T826/script-costs-261111.json`, `T838/post-activation-engine-check.json`, `T838/post-activation-engine-output.txt`, `scripted-model-release.md`) → kept unchanged as ARCH-33 and `artifacts/README.md` keep historical measurements immutable, the README now saying old records may name the removed prototype; no source, exporter, fixture, delivered page or list names it (alt: rewrite those records to pass the literal grep, altering retained evidence | delete them, losing T826/T838's measurements) hf12
 - 261112 decided ARCH-21 MATCH-39 T841: where the prototype comparison of `staging/perform.fixtures.test.ts` goes and how `scripts/staging-read.ts` reads a fixture → the prototype's own pass counts read once at 195c900a (s01–s10: 21/20/20/20/22/21/20/19/21/20) held as constants with the same one-fewer bound, and the fixture's staging squads built by one `fixtureSides` in `tests/fixtures/match-script.ts` that the test and the script share (alt: drop the comparison, losing the bound | copy the squad builder into the script) hf12
 - 261112 suggest MATCH-38 MATCH-39 MATCH-12 MATCH-22 T840: planning from `artifacts/benchmarks/scripted-model-calibration/README.md` — (1) the writer keeps a minute open until every touch expiring in it is played, so a departing pair's deep touches become bursts of up to 328 beats in two minutes (clock rate 0.085, 49% of long stretches outside 0.8–1.25); pulling due touches forward evens the minutes but adds 2–7% linking metres, a writer rule to decide; (2) a blocked shot's blocker is the script's invention (`nearestBy` on nominal places), staged up to 26 m from the shot (events.contest, stretchRate); (3) outside shots placed anywhere in their 18.5 m cell give a 21.1 m mean distance and 27.5% from 30 m+; (4) drawing the aggregate path's flows as chains is what would cut the 5.0 km of linking carries further hf12
@@ -966,7 +966,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T842 | shared match leaves out of `grid/` | ARCH | T841 | doing@261112.hf12 |
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
@@ -998,10 +997,11 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- implement-task T842 T848
+- implement-task T843 T848
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261112 T842 done
 - 261112 T841 done
 - 261112 T840 done
 - 261112 T839 done
@@ -1021,4 +1021,3 @@
 - 261112 update-ssot MATCH r61: MATCH-27 common participation and one penalty/foul/card minute; T833 is the sole affected in-flight task, its uncommitted dispatch sketch withdrawn before create-task refresh cc12
 - 261112 update-ssot MATCH start: T833 measured incompatible participation pairs and penalty clocks; resolve the rule and refresh the assigned task in this planning unit cc12
 - 261112 T832 done: script-derived material, singleton pass pairs, exact touch heat/means, record shot points and 30 report slots; original ten fixtures 7,249 completed passes/305 singleton pairs/238 shots; 1,431 affected unit tests plus type/lint/format/i18n pass; aerial duels unsupported and missing writer counter tags handed to T839/T840; host batch deferred, no push cc12
-- 261112 T831 done: lazy 60-second staged frames, fixed-action clock fits/rate reports, live ball/holder/XI/target snapshots, source commentary and pose facts, prefix counters; 1,568 affected unit tests plus type/lint/format/i18n pass; three-record integration written/registered with unrun rate/equality evidence deferred to host; no push cc12
