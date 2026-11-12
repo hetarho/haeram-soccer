@@ -35,11 +35,11 @@ it('the staging imports no world, season or match orchestration', () => {
       expect(
         path.startsWith(staging) ||
           path.startsWith('packages/contracts/') ||
-          path === 'packages/engine/src/grid/pitch.ts' ||
-          path === 'packages/engine/src/grid/clock.ts' ||
-          path === 'packages/engine/src/grid/commentary.ts' ||
-          path === 'packages/engine/src/grid/playback.ts' ||
-          path === 'packages/engine/src/grid/record.ts' ||
+          path === 'packages/engine/src/match/pitch.ts' ||
+          path === 'packages/engine/src/match/clock.ts' ||
+          path === 'packages/engine/src/match/commentary.ts' ||
+          path === 'packages/engine/src/match/motion.ts' ||
+          path === 'packages/engine/src/match/record.ts' ||
           path === 'packages/engine/src/primitives.ts' ||
           path === 'packages/engine/src/script/count.ts' ||
           path === 'packages/engine/src/script/types.ts' ||
@@ -52,7 +52,7 @@ it('the staging imports no world, season or match orchestration', () => {
   }
 });
 
-it('the script imports only leaves, with pitch, record and rules as its grid boundary', () => {
+it('the script imports only leaves and nothing of the grid', () => {
   const root = process.cwd();
   const script = 'packages/engine/src/script/';
   const files = sourceFiles(root, [script]).filter(
@@ -67,13 +67,10 @@ it('the script imports only leaves, with pitch, record and rules as its grid bou
     ).toEqual([]);
     for (const imported of graph.files.get(resolve(file)) ?? []) {
       const path = relative(root, imported);
-      if (path.startsWith('packages/engine/src/grid/'))
-        expect(
-          ['pitch.ts', 'record.ts', 'rules.ts'].some(
-            (name) => path === `packages/engine/src/grid/${name}`,
-          ),
-          `${relative(root, file)} imports ${path}`,
-        ).toBe(true);
+      expect(
+        path.startsWith('packages/engine/src/grid/'),
+        `${relative(root, file)} imports ${path}`,
+      ).toBe(false);
     }
     for (const imported of dependencies(graph, [file])) {
       const path = relative(root, imported);

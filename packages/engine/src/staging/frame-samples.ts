@@ -1,7 +1,7 @@
 /** Sample the fitted picture; interpolation reads positions, never settles an action. */
 import type { MatchScript } from '../../../contracts/src/match-script';
 import type { FrameStoppage, MatchMotionSample, PlayerMotion } from '../../../contracts/src/types';
-import { MATCH_MOTION_CONFIG } from '../grid/playback';
+import { MATCH_MOTION_CONFIG } from '../match/motion';
 import { matchSecond, rateAt, type ClockRate } from './frame-clock';
 import { playerId, restartKind, units, type FrameIdentity } from './frame-events';
 import { STAGING_CONFIG } from './config';

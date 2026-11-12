@@ -17,7 +17,7 @@ import {
 } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { currentDay } from './calendar';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { advanceRound } from './index';
 import { careerWorld } from './career.testkit';
 import {

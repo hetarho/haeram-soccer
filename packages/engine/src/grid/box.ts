@@ -10,13 +10,13 @@
  */
 import type { Attribute, Position, RoleId } from '../../../contracts/src/player';
 import { lineOf } from '../player';
-import { CELL_BASELINES } from './baselines';
+import { CELL_BASELINES } from '../match/baselines';
 import { byId, COORDINATION_CONFIG, gap } from './coordination';
-import { attackFrame, BAND_EDGES, cellOf, clamp, laneOf, PITCH, toEngine } from './pitch';
-import type { Point } from './pitch';
+import { attackFrame, BAND_EDGES, cellOf, clamp, laneOf, PITCH, toEngine } from '../match/pitch';
+import type { Point } from '../match/pitch';
 import { reachOnPath, type LaneReach, type PathReach } from './lanes';
 import { BOX_ROLES, SHAPE_CONFIG } from './shape';
-import { SPOTS } from './spots';
+import { SPOTS } from '../match/spots';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 
 /** The zones the attack occupies, in the order a tie between equal distances takes them. */

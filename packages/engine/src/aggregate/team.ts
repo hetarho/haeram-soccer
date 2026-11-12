@@ -8,8 +8,8 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
  * action is stepped through; only actual shots and corners are visited one by one.
  */
 import { MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
-import { CELL_BASELINES } from '../grid/baselines';
-import { cellBand, cellLane } from '../grid/pitch';
+import { CELL_BASELINES } from '../match/baselines';
+import { cellBand, cellLane } from '../match/pitch';
 import { clamp, random } from '../primitives';
 import { cos, exp, log, tanh } from '../portable-math';
 import { AGGREGATE_CONFIG as C } from './config';
@@ -371,7 +371,7 @@ function completionTo(base: number, offset: number, from: number, to: number) {
  * The generator's pull-back flow (the `cutBack` move kind): a lateral pass from the byline areas
  * toward the centre into the box, which its chance model weights (`shots.kind`, `xg.kind`). It is
  * how the kernel plays, not the counter: MATCH-13's cut-back is read off the cells
- * (grid/record.ts `isCutBack`) by the ledger and the attribution alike, whatever the kind.
+ * (match/record.ts `isCutBack`) by the ledger and the attribution alike, whatever the kind.
  */
 const pullBack = (from: number, to: number) =>
   cellBand(from) >= 6 &&

@@ -10,7 +10,8 @@ import {
 import { activePlayers, ownLeagueClubs, ownStarters, startingSquad } from './index';
 import { matchdayRosters } from './aggregate/engine';
 import { currentDay } from './calendar';
-import { buildGridSetup, eraRules } from './grid/setup';
+import { buildGridSetup } from './grid/setup';
+import { eraRules } from './match/rules';
 import { prepareMatch, simulateMatch } from './match';
 import { lineOf } from './player';
 import { advanceRound } from './season';

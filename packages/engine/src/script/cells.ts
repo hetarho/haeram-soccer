@@ -1,6 +1,6 @@
 /** Portable cell geometry in pitch metres. */
 import { SCRIPT_CONFIG } from './config';
-import { BAND_EDGES, LANE_EDGES, PITCH, cellOf, attackFrame as toAttack } from '../grid/pitch';
+import { BAND_EDGES, LANE_EDGES, PITCH, cellOf, attackFrame as toAttack } from '../match/pitch';
 import { clamp } from '../primitives';
 import type { BeatKind, TeamId, Vec } from './types';
 export const CENTRE: Vec = [PITCH.length / 2, PITCH.width / 2];

@@ -17,12 +17,8 @@ import { tacticLabel } from '../../../../../../packages/engine/src/tactics';
 import { lineupSummary } from '../../../../../../packages/engine/src/strategy';
 import { nextOwnFixture } from '../../../../../../packages/engine/src/calendar';
 import { isUnavailable } from '../../../../../../packages/engine/src/discipline';
-import {
-  benchFor,
-  eraRules,
-  takersFor,
-  type EraRules,
-} from '../../../../../../packages/engine/src/grid/setup';
+import { ownBench, takersFor } from '../../../../../../packages/engine/src/match/bench';
+import { eraRules, type EraRules } from '../../../../../../packages/engine/src/match/rules';
 import { FORMATIONS, ROLE_LABEL } from '../../../../../../packages/engine/src/player';
 import { FormationPitch, LEVEL_LABEL } from '../../../entities/player';
 import type { GameClient } from '../../../runtime/client';
@@ -155,8 +151,8 @@ function MatchdaySquad({ w, xi }: { w: World; xi: Player[] }) {
   const next = nextOwnFixture(w);
   const era = eraRules(w.year);
   const bench = next
-    ? benchFor(w, clubOf(w), xi, era, (p) => isUnavailable(w, p, w.playerClub, next))
-    : benchFor(w, clubOf(w), xi, era);
+    ? ownBench(w, xi, era, (p) => isUnavailable(w, p, w.playerClub, next))
+    : ownBench(w, xi, era);
   const takers = xi.length ? takersFor(xi) : undefined;
   const bans = w.discipline?.bans ?? [];
   const out = activePlayers(w).flatMap((player) => {

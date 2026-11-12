@@ -4,9 +4,9 @@ import { NEUTRAL_FRAME_PACE } from '../../../contracts/src/match-model';
 import { message as sourceMessage } from '../../../contracts/src/messages';
 import type { MatchEvent, MatchFrame, MatchRecord, Player } from '../../../contracts/src/types';
 import { FORMATIONS } from '../formations';
-import { stampAt } from '../grid/clock';
-import { PLAYBACK_CONFIG } from '../grid/playback';
-import { M } from '../grid/record';
+import { stampAt } from '../match/clock';
+import { SAMPLING } from '../match/motion';
+import { M } from '../match/record';
 import { countScript } from '../script/count';
 import type { MatchDetail } from '../script/detail';
 import { invalidDetail } from '../script/failure';
@@ -172,8 +172,8 @@ export function* stageFrames(
               end,
               ...keep,
               ...Array.from(
-                { length: Math.ceil(60 / PLAYBACK_CONFIG.sampleSpacing) },
-                (_, i) => start + i * PLAYBACK_CONFIG.sampleSpacing,
+                { length: Math.ceil(60 / SAMPLING.spacing) },
+                (_, i) => start + i * SAMPLING.spacing,
               ),
             ]),
           ]

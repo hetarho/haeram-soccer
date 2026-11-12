@@ -1,4 +1,4 @@
-import type { Point } from '../grid/pitch';
+import type { Point } from '../match/pitch';
 
 /** A position or displacement in pitch metres. */
 export type Vec = Point;

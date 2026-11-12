@@ -9,7 +9,7 @@ import type { Tactic } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { finishing } from '../match';
 import { random } from '../primitives';
-import { CELL_BASELINES } from './baselines';
+import { CELL_BASELINES } from '../match/baselines';
 import {
   blockRebound,
   chanceXg,
@@ -36,7 +36,7 @@ import { playGrid } from './engine';
 import { LANE_CONFIG, reachOnPath } from './lanes';
 import { validateFullMatchRecord } from '../match-model';
 import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG } from './movement';
-import type { Point } from './pitch';
+import type { Point } from '../match/pitch';
 import { Tally } from './record';
 import { buildGridSetup } from './setup';
 import { speedOf } from './shape';

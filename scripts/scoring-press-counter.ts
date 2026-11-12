@@ -18,7 +18,7 @@ import { rating } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { FORMATIONS } from '../packages/engine/src/player';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { attackFrame } from '../packages/engine/src/grid/pitch';
+import { attackFrame } from '../packages/engine/src/match/pitch';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import type { TraceEntry } from '../packages/engine/src/grid/trace';
 

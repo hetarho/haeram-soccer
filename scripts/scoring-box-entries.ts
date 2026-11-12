@@ -21,7 +21,7 @@ import type { Club, Fixture, Tactic, World } from '../packages/contracts/src/typ
 import { rating } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { attackFrame, inBox, type Point } from '../packages/engine/src/grid/pitch';
+import { attackFrame, inBox, type Point } from '../packages/engine/src/match/pitch';
 import { Tally } from '../packages/engine/src/grid/record';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import type { GridState } from '../packages/engine/src/grid/state';

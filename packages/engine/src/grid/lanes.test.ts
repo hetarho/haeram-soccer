@@ -13,7 +13,7 @@ import {
   SHADOW_CONFIG,
   threatGain,
 } from './lanes';
-import type { Point } from './pitch';
+import type { Point } from '../match/pitch';
 import { gridKit } from './testkit';
 
 /**

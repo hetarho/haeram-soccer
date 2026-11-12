@@ -18,8 +18,8 @@ import type { Position } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { FORMATIONS } from '../player';
 import { random } from '../primitives';
-import { PITCH } from './pitch';
-import { SPOTS } from './spots';
+import { PITCH } from '../match/pitch';
+import { SPOTS } from '../match/spots';
 import { onPitch, other, regMinute, type GridState } from './state';
 
 /**

@@ -38,7 +38,7 @@ import { rating } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { actionMix, clearChance, DECISION_CONFIG } from '../packages/engine/src/grid/decide';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { attackFrame, goalDistance, inBox, type Point } from '../packages/engine/src/grid/pitch';
+import { attackFrame, goalDistance, inBox, type Point } from '../packages/engine/src/match/pitch';
 import { Tally } from '../packages/engine/src/grid/record';
 import { keeperNarrowing } from '../packages/engine/src/grid/resolve';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';

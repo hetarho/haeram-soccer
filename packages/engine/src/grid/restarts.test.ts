@@ -9,7 +9,7 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { random } from '../primitives';
 import { interruptAll, takeBall, updateIntentions, type IntentionReason } from './intentions';
 import { prepareOnClock, type MotionKnot } from './movement';
-import type { Point } from './pitch';
+import type { Point } from '../match/pitch';
 import {
   classifyOut,
   foulRestart,

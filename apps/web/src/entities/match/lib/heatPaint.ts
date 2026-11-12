@@ -3,7 +3,7 @@
  * the material pitch and coloured on one cold-to-hot ramp, scaled to the map's own maximum. Pure
  * arithmetic plus one `putImageData`, so the same cells always give the same pixels.
  */
-import { PITCH } from '../../../../../../packages/engine/src/grid/pitch';
+import { PITCH } from '../../../../../../packages/engine/src/match/pitch';
 import { VIEW, cellRect, px, py } from './materialView';
 
 type Rgb = readonly [number, number, number];

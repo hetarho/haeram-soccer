@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { TD, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import type { Incident, MatchRecord } from '../../../../packages/contracts/src/types';
-import { M } from '../../../../packages/engine/src/grid/record';
+import { M } from '../../../../packages/engine/src/match/record';
 import type { LabSample } from './protocol';
 import { estimate, summarizeRun } from './summary';
 

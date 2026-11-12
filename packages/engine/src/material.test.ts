@@ -5,8 +5,8 @@ import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/relea
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { CAREER } from './finance.testkit';
 import { playGrid } from './grid/engine';
-import { cellOf } from './grid/pitch';
-import { MaterialTally } from './grid/record';
+import { cellOf } from './match/pitch';
+import { MaterialTally } from './match/record';
 import { buildGridSetup } from './grid/setup';
 import { country } from '../../catalogs/src/index';
 import { closeSeason } from './index';

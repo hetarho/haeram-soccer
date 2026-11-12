@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { MatchScript } from '../../../contracts/src/match-script';
 import { frameTimeIssues } from '../../../contracts/src/match-model';
 import { message as sourceMessage } from '../../../contracts/src/messages';
-import { M } from '../grid/record';
+import { M } from '../match/record';
 import { sampleDetail, smallDetail } from '../../../../tests/fixtures/match-script';
 import { writeScript } from '../script/write';
 import { clockRates, stageAll, stageFrames } from './frames';

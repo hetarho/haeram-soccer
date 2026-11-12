@@ -4,7 +4,7 @@ import type { RoleId, Position } from '../../packages/contracts/src/player';
 import type { MatchDetail } from '../../packages/engine/src/script/detail';
 import type { StagingSide } from '../../packages/contracts/src/match-script';
 import { EVENT_RESULTS, EV } from '../../packages/engine/src/script/codes';
-import { cellBand, cellLane } from '../../packages/engine/src/grid/pitch';
+import { cellBand, cellLane } from '../../packages/engine/src/match/pitch';
 /** Prototype resources are data only; no runtime import of the prototype or world builder. */
 interface PrototypeDetail {
   id: string;

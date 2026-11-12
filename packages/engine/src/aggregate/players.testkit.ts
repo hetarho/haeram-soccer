@@ -1,5 +1,5 @@
 import type { Tactic } from '../../../contracts/src/types';
-import { DEFAULT_SUB_POLICY, eraRules } from '../grid/setup';
+import { DEFAULT_SUB_POLICY, eraRules } from '../match/rules';
 import { FORMATIONS } from '../player';
 import { buildAggregateInput, fullParticipation } from './input';
 import { deriveTeamFacts } from './ledger';

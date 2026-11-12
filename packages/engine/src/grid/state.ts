@@ -7,9 +7,10 @@ import { fatigueLoad, slotOvr, unhappyPenalty } from '../player-state';
 import { matchModelNumber } from '../../../contracts/src/match-model';
 import type { FreedomState } from './freedom';
 import type { EndedIntention, Intention } from './intentions';
-import { attackFrame, PITCH, type Point } from './pitch';
+import { attackFrame, PITCH, type Point } from '../match/pitch';
+import { STRENGTH_CONFIG } from '../match/config';
 import type { GridSetup } from './setup';
-import { SPOTS } from './spots';
+import { SPOTS } from '../match/spots';
 
 export interface GridPlayer {
   side: 0 | 1;
@@ -305,25 +306,7 @@ export function minutesOn(s: GridState, gp: GridPlayer): number {
   return (s.elapsed - gp.onAt) / 60;
 }
 
-/**
- * How the duels feel a skill point (→MATCH-2, MATCH-22, T216): a skill counts by its distance from the
- * match's level, spread by `skillScale` around `anchor` — the level T215 set the distributions at — so a
- * strength gap plays the same at every tier.
- */
-export const STRENGTH_CONFIG = {
-  skillScale: 1.8,
-  anchor: 76,
-  /**
-   * Candidate model only (T357, T365, →MATCH-2): its own `skillScale`, and the share of a side's
-   * distance from the match's level — its XI's mean 실효 OVR plus the day's shift (form, home,
-   * manager and morale points and the gap diminishing returns take away) — that reaches its
-   * players' skills (`side`). At 1, as on the pre-feature model, favourites won 4–7 points too
-   * often at every gap of 10 or more (curve error 3.09 on T357's rounds 21 and 22); 0.8 shrinks
-   * every source of a strength point alike, so a point still counts the same wherever it comes
-   * from, and leaves the spread inside a side as it was.
-   */
-  candidate: { skillScale: 1.8, side: 0.8 },
-} as const;
+export { STRENGTH_CONFIG } from '../match/config';
 
 /** A raw skill value on the duels' scale. */
 export const strengthScaled = (s: GridState, raw: number) =>

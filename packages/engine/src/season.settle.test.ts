@@ -7,7 +7,7 @@ import { settleRate } from './adaptation';
 import { INJURY } from './careers';
 import { dayCountedFrom } from './calendar';
 import { isUnavailable } from './discipline';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { simulateMatch } from './index';
 import { playFixture } from './knockout';
 import { type MatchModelRelease, validateFullMatchRecord } from './match-model';

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { GRID_MOVEMENT_CONFIG as C, stepToward } from './movement';
 import { cos, sin } from '../portable-math';
 import { random } from '../primitives';
-import { PITCH } from './pitch';
+import { PITCH } from '../match/pitch';
 import type { PackedMover } from './packed-movement';
 
 const turn = C.turn * (Math.PI / 180) * C.step,

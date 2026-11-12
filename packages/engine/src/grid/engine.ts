@@ -55,7 +55,7 @@ import {
   takeBall,
   updateIntentions,
 } from './intentions';
-import { attackFrame, cellOf, inBox, PITCH, toEngine } from './pitch';
+import { attackFrame, cellOf, inBox, PITCH, toEngine } from '../match/pitch';
 import {
   createState,
   kickOff,
@@ -69,7 +69,7 @@ import {
 import { lineOf } from '../player';
 import { applyChanges, coverGoal, drawInjury, leave, planChanges, sideFreshness } from './changes';
 import { shotEnd, Tracer, type TraceEntry } from './trace';
-import { stampAt } from './clock';
+import { stampAt } from '../match/clock';
 import {
   actionTiming,
   advance,

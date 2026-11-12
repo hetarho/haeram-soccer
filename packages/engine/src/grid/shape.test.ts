@@ -11,7 +11,7 @@ import { FORMATIONS, lineOf } from '../player';
 import { random } from '../primitives';
 import { defendSetPiece, restartTaken, takeBall, updateIntentions } from './intentions';
 import { advance } from './movement';
-import { attackFrame, inBox, PITCH, toEngine, type Point } from './pitch';
+import { attackFrame, inBox, PITCH, toEngine, type Point } from '../match/pitch';
 import { keeperNarrowing } from './resolve';
 import {
   goalSideMarks,
@@ -30,7 +30,7 @@ import {
   targetOf,
 } from './shape';
 import { createState, onPitch, type GridPlayer, type GridState } from './state';
-import { ROLE_SHIFT, SPOTS } from './spots';
+import { ROLE_SHIFT, SPOTS } from '../match/spots';
 import { gridKit } from './testkit';
 
 const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];

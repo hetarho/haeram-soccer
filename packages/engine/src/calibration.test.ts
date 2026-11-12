@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Club, Fixture } from '../../contracts/src/types';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { effectiveGap, matchForm, MATCH_DUEL_CONFIG, rating, simulateAggregate } from './index';
 import {
   type Path,

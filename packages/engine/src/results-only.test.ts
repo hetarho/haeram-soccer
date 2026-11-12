@@ -3,7 +3,7 @@ import type { MatchPlayback } from '../../contracts/src/types';
 import { historyWorld } from './history';
 import { RESULTS_LUCK, resultsOnlyMatch } from './results-only';
 import { equalSides } from './results-only.testkit';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { lineOf } from './player';
 import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 

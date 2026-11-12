@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { RoleId, Tactic } from '../../../contracts/src/types';
-import { BAND_EDGES, LANE_EDGES, PITCH, attackFrame, toEngine } from '../grid/pitch';
+import { BAND_EDGES, LANE_EDGES, PITCH, attackFrame, toEngine } from '../match/pitch';
 import { FORMATIONS, ROLES, lineOf } from '../player';
 import { STAGING_CONFIG } from './config';
 import {

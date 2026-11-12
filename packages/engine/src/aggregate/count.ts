@@ -1,11 +1,11 @@
 /** Counting only: the attribution draw and the detail recount use these same definitions. */
 import { PD, PLAYER_DETAIL_SIZE } from '../../../contracts/src/detail';
 import type { Incident } from '../../../contracts/src/types';
-import { cellBand } from '../grid/pitch';
-import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../grid/record';
+import { cellBand } from '../match/pitch';
+import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../match/record';
 import { zeroMetrics } from '../primitives';
 import { inBoxCell, isPassKind, moveKindIndex, xtGain } from './ledger';
-import { ADDED_CONFIG } from '../grid/rules';
+import { ADDED_CONFIG } from '../match/rules';
 import { AGGREGATE_CONFIG } from './config';
 import { AGGREGATE_MOVE_KINDS } from './types';
 import type {
@@ -34,7 +34,7 @@ export interface MoveTraits {
   fromBand: number;
   toBand: number;
   boxEntry: boolean;
-  /** MATCH-13's cut-back by its cells (grid/record.ts `isCutBack`), whatever the move's kind. */
+  /** MATCH-13's cut-back by its cells (match/record.ts `isCutBack`), whatever the move's kind. */
   cutBack: boolean;
   xt: number;
 }

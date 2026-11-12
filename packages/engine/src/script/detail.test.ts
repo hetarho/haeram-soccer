@@ -12,7 +12,7 @@ import type {
   AggregateParticipation,
   AggregateStint,
 } from '../aggregate/types';
-import { M } from '../grid/record';
+import { M } from '../match/record';
 import {
   matchDetail,
   recordOf,

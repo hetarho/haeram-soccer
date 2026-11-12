@@ -9,9 +9,9 @@
  */
 import { PD, PLAYER_DETAIL_SIZE } from '../../../contracts/src/detail';
 import type { Line } from '../../../contracts/src/player';
-import { cellBand } from '../grid/pitch';
-import { RESTART_CONFIG } from '../grid/restarts';
-import { COUNTER_ZONES, M, mirrorBand } from '../grid/record';
+import { cellBand } from '../match/pitch';
+import { OFFSIDE_CONFIG } from '../match/config';
+import { COUNTER_ZONES, M, mirrorBand } from '../match/record';
 import type { MatchAction } from '../match';
 import { zeroMetrics } from '../primitives';
 import { exp } from '../portable-math';
@@ -88,7 +88,7 @@ const byBand = (rows: Readonly<Record<Line, readonly number[]>>, band: number): 
  * Offsides go where the grid's call falls (→MATCH-18 r21, T384): a receiver weighs
  * e^(−(own 판단력 − pivot) / spread) with the candidate call's pivot and spread (restarts.ts).
  */
-const OFFSIDE_CALL = RESTART_CONFIG.offside.candidate;
+const OFFSIDE_CALL = OFFSIDE_CONFIG.candidate;
 const BANDS = Array.from({ length: LAST_BAND + 1 }, (_, band) => band);
 let roleCount = 0;
 /** A line's index in a role's `byLine`. */
@@ -187,7 +187,7 @@ function moveRole(move: AggregateMove): Role {
   }
 }
 
-/** Set-piece takers' keys (grid/setup.ts `takersFor`), read from effective skills at the minute. */
+/** Set-piece takers' keys (match/bench.ts `takersFor`), read from effective skills at the minute. */
 type TakerKey = 'penalty' | 'freeKick' | 'corner';
 const TAKER: Record<TakerKey, readonly (readonly [AggregateAttribute, number])[]> = {
   penalty: [

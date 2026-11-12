@@ -5,7 +5,8 @@ import { actionWeight } from '../match-weights';
 import { finishing, goalChance, targetChance } from '../match-rules';
 import { FORMATIONS, lineOf } from '../player';
 import { PORTABLE_MATH, type MatchMath } from '../portable-math';
-import { CELL_BASELINES } from './baselines';
+import { CELL_BASELINES } from '../match/baselines';
+import { PENALTY_CONFIG } from '../match/config';
 import {
   attackFrame,
   BAND_EDGES,
@@ -16,7 +17,7 @@ import {
   PITCH,
   toEngine,
   type Point,
-} from './pitch';
+} from '../match/pitch';
 import {
   onPitch,
   other,
@@ -255,7 +256,7 @@ export const SHOT_CONFIG = {
   block: { base: 0.4, perDefender: 0.06, skill: 1 / 300, min: 0.05, max: 0.6, lane: 2 },
   save: { hold: 0.3, corner: 0.5, loose: 0.2 },
   blockThen: { corner: 0.65 },
-  penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
+  penalty: PENALTY_CONFIG,
   maxXg: 0.8,
   /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
   candidate: { header: 0.42 },

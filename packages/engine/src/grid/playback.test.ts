@@ -11,7 +11,7 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { validateFullMatchRecord } from '../match-model';
 import { GRID_BALL_CONFIG } from './movement';
 import { playGrid } from './engine';
-import { attackFrame, PITCH, toUnits } from './pitch';
+import { attackFrame, PITCH, toUnits } from '../match/pitch';
 import { ballPath, buildFrames } from './playback';
 import { buildGridSetup, type DecideRule } from './setup';
 import { SHAPE_CONFIG } from './shape';

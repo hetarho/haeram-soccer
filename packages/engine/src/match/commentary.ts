@@ -4,7 +4,7 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
  * only the spatial terms spec/ssot/MATCH.md marks as verified in Korean football media.
  */
 import { attackFrame, cellBand, cellLane, cellName, cellOf, PITCH, type Point } from './pitch';
-import type { TraceEntry } from './trace';
+import type { PlayPhase } from './record';
 
 export interface CommentaryContext {
   /** Player names by side and roster index (the setup's rosters). */
@@ -13,28 +13,54 @@ export interface CommentaryContext {
   ballSide?: 'left' | 'right';
 }
 
-export type CommentaryEntry = Pick<
-  TraceEntry,
-  | 'period'
-  | 'side'
-  | 'idx'
-  | 'action'
-  | 'outcome'
-  | 'from'
-  | 'to'
-  | 'receiver'
-  | 'by'
-  | 'on'
-  | 'kind'
-  | 'lineBreaking'
-  | 'spot'
-  | 'shotAt'
-  | 'result'
-  | 'header'
-  | 'other'
-  | 'cell'
-  | 'tags'
->;
+type Ref = [0 | 1, number];
+
+/** The tags commentary reads (→MATCH-15). */
+export interface CommentaryTags {
+  phase: PlayPhase;
+  orientation: 'facing' | 'halfTurn' | 'backToGoal';
+  betweenLines: boolean;
+  pocket: boolean;
+  inBehind: boolean;
+  channel: boolean;
+  overload: number;
+}
+
+/** What one narrated action states: who did what, where and how it ended (engine frame). */
+export interface CommentaryEntry {
+  period: 1 | 2 | 3 | 4;
+  /** The side and roster index of the player acting. */
+  side: 0 | 1;
+  idx: number;
+  /** What he did (`pass`, `shot`, a restart kind or an incident) and how it ended. */
+  action: string;
+  outcome: string;
+  /** Where the actor stood when he acted; absent for restarts and incidents. */
+  from?: [number, number];
+  /** Where the ball ended. */
+  to?: [number, number];
+  /** A teammate who got the ball. */
+  receiver?: number;
+  /** The other player in the duel. */
+  by?: Ref;
+  /** The fouled player when he is not the actor. */
+  on?: Ref;
+  /** A pass's kind, or how a restart was played. */
+  kind?: string;
+  lineBreaking?: boolean;
+  /** A restart's spot. */
+  spot?: [number, number];
+  /** Where the receiver struck a shot he was set up for. */
+  shotAt?: [number, number];
+  /** A shot's result and whether it was headed. */
+  result?: 'goal' | 'save' | 'block' | 'miss';
+  header?: boolean;
+  /** An incident's other player (the substitute who came on). */
+  other?: number;
+  /** The actor's cell (his attack frame) and tags when he acted. */
+  cell?: number;
+  tags?: CommentaryTags;
+}
 
 /** 0 without a final consonant (or not Hangul), 8 for ㄹ, else another final. */
 function finalOf(word: string): number {

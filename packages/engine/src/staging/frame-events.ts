@@ -2,8 +2,8 @@
 import type { ScriptBeat } from '../../../contracts/src/match-script';
 import { message as sourceMessage } from '../../../contracts/src/messages';
 import type { MatchEvent } from '../../../contracts/src/types';
-import { describe, type CommentaryEntry } from '../grid/commentary';
-import { attackFrame, cellOf } from '../grid/pitch';
+import { describe, type CommentaryEntry } from '../match/commentary';
+import { attackFrame, cellOf } from '../match/pitch';
 import { isPassLike, isRestartKind } from '../script/types';
 import type { StageEvent, StagingId } from './staging';
 import type { Vec } from './types';

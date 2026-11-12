@@ -8,7 +8,7 @@
  *     [--rows]
  */
 import { readFileSync } from 'node:fs';
-import { M } from '../packages/engine/src/grid/record';
+import { M } from '../packages/engine/src/match/record';
 import {
   buildOutcomeTargetReport,
   buildTargetReport,

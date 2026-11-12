@@ -6,13 +6,13 @@ import {
 } from '../../../contracts/src/match-model';
 import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
-import { CELL_BASELINES } from './baselines';
+import { CELL_BASELINES } from '../match/baselines';
 import { random } from '../primitives';
 import { BOX_CONFIG, boxScene, boxSide, boxZones, deliveries, type Delivery } from './box';
 import { setIntention } from './intentions';
 import { LANE_CONFIG } from './lanes';
 import { actionTiming, flightSeconds, reachSeconds } from './movement';
-import { BAND_EDGES, cellOf, clamp, LANE_EDGES, toEngine, type Point } from './pitch';
+import { BAND_EDGES, cellOf, clamp, LANE_EDGES, toEngine, type Point } from '../match/pitch';
 import {
   blockedBehind,
   blockRebound,

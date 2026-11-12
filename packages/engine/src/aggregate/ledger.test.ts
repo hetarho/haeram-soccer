@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TD } from '../../../contracts/src/detail';
-import { M } from '../grid/record';
+import { M } from '../match/record';
 import { buildAggregateInput, fullParticipation } from './input';
 import {
   deriveTeamFacts,

@@ -6,9 +6,9 @@
  * velocities, and its distances are square roots of sums of squares, IEEE-754 basic operations that
  * give the same bits on every host (→ARCH-9).
  */
-import { CELL_BASELINES } from './baselines';
+import { CELL_BASELINES } from '../match/baselines';
 import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG, readAt } from './movement';
-import { attackFrame, cellOf, type Point } from './pitch';
+import { attackFrame, cellOf, type Point } from '../match/pitch';
 import { speedOf } from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
 

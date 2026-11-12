@@ -24,7 +24,8 @@ import { MATCH_MODEL_REVISIONS, type MatchModelRevision } from '../../contracts/
 import type { Fixture, World } from '../../contracts/src/types';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
-import { buildGridSetup, type DecideRule } from './grid/setup';
+import { buildGridSetup } from './grid/setup';
+import { type DecideRule } from './match/rules';
 import { founded } from './season.testkit';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 

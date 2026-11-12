@@ -1,6 +1,6 @@
 import { message as sourceMessage } from '../../../contracts/src/messages';
-import { stampAt, LENGTH } from './clock';
-export { stampAt } from './clock';
+import { stampAt, LENGTH } from '../match/clock';
+export { stampAt } from '../match/clock';
 /**
  * Playback frames from the grid trace (→MATCH-12, WEB-32): one frame per match
  * minute with the engine's own positions, the ball's flight between its recorded touches, events with
@@ -10,28 +10,26 @@ export { stampAt } from './clock';
 import { NEUTRAL_FRAME_PACE, type IntentionObservation } from '../../../contracts/src/match-model';
 import type {
   FrameStoppage,
-  Manager,
   MatchEvent,
   MatchFrame,
   MatchMotionSample,
   Metrics,
   PlayerMotion,
-  Tactic,
 } from '../../../contracts/src/types';
-import { FORMATIONS } from '../player';
 import { hypot } from '../portable-math';
 import { clamp, random } from '../primitives';
-import { describe } from './commentary';
+import { describe } from '../match/commentary';
 import type { GridResult } from './engine';
 import type { EndedIntention, Intention } from './intentions';
-import { attackFrame, bandOf, PITCH } from './pitch';
+import { attackFrame, bandOf, PITCH } from '../match/pitch';
 import { GRID_BALL_CONFIG } from './movement';
 import { M, RUNNING } from './record';
 import type { GridSetup } from './setup';
-import { SPOTS } from './spots';
 import type { TraceEntry, TraceKick } from './trace';
 
 import { MOTION_STATES, OBSERVATION_STATES, SAMPLING } from './observation';
+import { MATCH_MOTION_CONFIG, toUnits as units } from '../match/motion';
+export { MATCH_MOTION_CONFIG, teamMotionProfile } from '../match/motion';
 export { MOTION_STATES } from './observation';
 export const PLAYBACK_CONFIG = {
   /** Motion seconds a match minute takes at pace 1, and its regular ball track points. */
@@ -59,7 +57,7 @@ export const PLAYBACK_CONFIG = {
     /** Flights longer than this leave the ground; the peak grows with the extra distance. */
     loftFrom: 18,
     loftPerUnit: 0.17,
-    maxLoft: 9,
+    maxLoft: MATCH_MOTION_CONFIG.ball.maxLoft,
     /** Share of long balls driven low instead of lofted, and the height they keep. */
     drivenShare: 0.3,
     drivenLoft: 0.3,
@@ -212,10 +210,6 @@ const INCIDENT_LABEL: Record<string, string> = {
   injury: sourceMessage('copy.Pitch.0e9e3ce22b'),
 };
 
-const units = (p: readonly [number, number]): Units => [
-  (p[0] * 100) / PITCH.length,
-  (p[1] * 100) / PITCH.width,
-];
 const lerp = (a: Units, b: Units, f: number): Units => [
   a[0] + (b[0] - a[0]) * f,
   a[1] + (b[1] - a[1]) * f,
@@ -227,83 +221,6 @@ const lerp = (a: Units, b: Units, f: number): Units => [
 const gap = (a: Units, b: Units) => hypot(a[0] - b[0], a[1] - b[1]);
 const tenth = (n: number) => Math.round(n * 10) / 10;
 const hundredth = (n: number) => Math.round(n * 100) / 100;
-const unit = (n: number) => clamp(n, 0, 1);
-
-/**
- * What the UI draws beside the playback: each tactic's formation spots in pitch units (from
- * `SPOTS`, slot order, attacking left to right), the ball's peak height, and the implicit team
- * tendencies (`teamMotionProfile`); a player's own are `playerTendencies` (grid/tendencies.ts).
- */
-export const MATCH_MOTION_CONFIG = {
-  ball: { maxLoft: PLAYBACK_CONFIG.flight.maxLoft },
-  formations: {
-    balanced: SPOTS.balanced.map(units),
-    possession: SPOTS.possession.map(units),
-    counter: SPOTS.counter.map(units),
-    press: SPOTS.press.map(units),
-  } as Record<Tactic, readonly Units[]>,
-  manager: {
-    appliedTacticWeight: 0.55,
-    flexibilityWeight: 0.35,
-    abilityCohesion: 0.22,
-    flexibilityFreedom: 0.22,
-  },
-  tactics: {
-    balanced: {
-      formation: FORMATIONS.balanced.name,
-      cohesion: 0.65,
-      freedom: 0.5,
-      pressing: 0.5,
-      risk: 0.5,
-      line: 0,
-    },
-    possession: {
-      formation: FORMATIONS.possession.name,
-      cohesion: 0.76,
-      freedom: 0.56,
-      pressing: 0.46,
-      risk: 0.48,
-      line: 4,
-    },
-    counter: {
-      formation: FORMATIONS.counter.name,
-      cohesion: 0.84,
-      freedom: 0.36,
-      pressing: 0.23,
-      risk: 0.77,
-      line: -8,
-    },
-    press: {
-      formation: FORMATIONS.press.name,
-      cohesion: 0.61,
-      freedom: 0.66,
-      pressing: 0.95,
-      risk: 0.72,
-      line: 7,
-    },
-  },
-} as const;
-
-export function teamMotionProfile(
-  tactic: Tactic,
-  manager: Pick<Manager, 'philosophy' | 'ability' | 'flexibility'>,
-) {
-  const c = MATCH_MOTION_CONFIG.manager;
-  const applied = c.appliedTacticWeight + unit(manager.flexibility / 100) * c.flexibilityWeight;
-  const tacticProfile = MATCH_MOTION_CONFIG.tactics[tactic],
-    philosophy = MATCH_MOTION_CONFIG.tactics[manager.philosophy];
-  const mix = (key: 'cohesion' | 'freedom' | 'pressing' | 'risk' | 'line') =>
-    tacticProfile[key] * applied + philosophy[key] * (1 - applied);
-  return {
-    formation: tacticProfile.formation,
-    cohesion: unit(mix('cohesion') + (unit(manager.ability / 100) - 0.5) * c.abilityCohesion),
-    freedom: unit(mix('freedom') + (unit(manager.flexibility / 100) - 0.5) * c.flexibilityFreedom),
-    pressing: unit(mix('pressing')),
-    risk: unit(mix('risk')),
-    line: mix('line'),
-    ability: unit(manager.ability / 100),
-  };
-}
 
 /** The last index whose value is at most `v`, or -1. */
 function lastAt(values: readonly number[], v: number): number {

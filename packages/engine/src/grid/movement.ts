@@ -19,7 +19,7 @@ import {
   LANE_EDGES,
   PITCH,
   toEngine,
-} from './pitch';
+} from '../match/pitch';
 import type { Restart, RestartPreparer } from './restarts';
 import { modelAtLeast } from './rules';
 import { intentionTarget, newShapeCache, SHAPE_CONFIG, speedOf, targetOf } from './shape';

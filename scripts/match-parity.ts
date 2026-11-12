@@ -63,10 +63,11 @@ import {
 } from '../packages/engine/src/aggregate/engine';
 import { ledgerDiagnostics } from '../packages/engine/src/lab/diagnostics';
 export { ledgerDiagnostics } from '../packages/engine/src/lab/diagnostics';
-import { inMatchFatigue } from '../packages/engine/src/grid/changes';
+import { inMatchFatigue } from '../packages/engine/src/match/changes';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { M } from '../packages/engine/src/grid/record';
-import { buildGridSetup, eraRules, type DecideRule } from '../packages/engine/src/grid/setup';
+import { M } from '../packages/engine/src/match/record';
+import { buildGridSetup } from '../packages/engine/src/grid/setup';
+import { eraRules, type DecideRule } from '../packages/engine/src/match/rules';
 import { npcMatchContext, type Prepared } from '../packages/engine/src/match';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { lineOf } from '../packages/engine/src/player';

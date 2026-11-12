@@ -4,7 +4,7 @@ import { message as sourceMessage } from '../../../../packages/contracts/src/mes
  * each side's team stats a match, every value with its 95% interval.
  */
 import { TD } from '../../../../packages/contracts/src/detail';
-import { M } from '../../../../packages/engine/src/grid/record';
+import { M } from '../../../../packages/engine/src/match/record';
 import {
   buildTargetReport,
   TARGET_BANDS,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { REPORT_SLOTS } from '../../../../../../packages/engine/src/material';
-import { cellName, cellOf } from '../../../../../../packages/engine/src/grid/pitch';
+import { cellName, cellOf } from '../../../../../../packages/engine/src/match/pitch';
 import {
   dotRadius,
   heatCells,

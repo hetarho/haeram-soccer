@@ -4,7 +4,7 @@ import { ATTRIBUTES } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { levelFactor, FORMATIONS, lineOf } from '../player';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
-import { cellOf } from './pitch';
+import { cellOf } from '../match/pitch';
 import { buildGridSetup } from './setup';
 import { createState, enterSlot, minutesOn, skill, STRENGTH_CONFIG } from './state';
 import { careerWorld } from '../career.testkit';

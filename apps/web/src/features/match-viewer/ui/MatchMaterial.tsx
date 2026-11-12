@@ -3,7 +3,7 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useId, useMemo, useState, type CSSProperties } from 'react';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
-import { BAND_EDGES, LANE_EDGES, PITCH } from '../../../../../../packages/engine/src/grid/pitch';
+import { BAND_EDGES, LANE_EDGES, PITCH } from '../../../../../../packages/engine/src/match/pitch';
 import { FIELD, HeatPitch, MaterialPitch } from '../../../entities/match';
 import {
   heatChoices,

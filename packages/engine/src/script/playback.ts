@@ -1,6 +1,6 @@
 import type { ScriptSide, StagingSide } from '../../../contracts/src/match-script';
 import type { MatchPlayback, MatchRecord, Player } from '../../../contracts/src/types';
-import { playerTendencies, type TendencyManager } from '../grid/tendencies';
+import { playerTendencies, type TendencyManager } from '../match/tendencies';
 import type { MatchDetail } from './detail';
 import { countScript, compareRecord } from './count';
 import { invalidDetail } from './failure';

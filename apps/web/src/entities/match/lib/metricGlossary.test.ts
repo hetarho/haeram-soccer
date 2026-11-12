@@ -4,7 +4,7 @@ import {
   emptyPlayerDetail,
   emptyTeamDetail,
 } from '../../../../../../packages/contracts/src/detail';
-import { cellName } from '../../../../../../packages/engine/src/grid/pitch';
+import { cellName } from '../../../../../../packages/engine/src/match/pitch';
 import { matchComparison } from './advanced';
 import { GLOSSARY, glossaryEntry } from '../../../shared/ui/glossaryEntries';
 

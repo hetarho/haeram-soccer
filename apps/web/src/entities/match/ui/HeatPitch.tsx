@@ -7,7 +7,7 @@ import {
   LANE_EDGES,
   PITCH,
   cellName,
-} from '../../../../../../packages/engine/src/grid/pitch';
+} from '../../../../../../packages/engine/src/match/pitch';
 import { paintHeat } from '../lib/heatPaint';
 import { VIEW, cellAt, cellRect, heatCells, px, py } from '../lib/materialView';
 import s from '../../../shared/ui/styles/MatchMaterial.module.css';

@@ -5,7 +5,7 @@ import type { Fixture, MatchPlayback, MatchRecord, Player, World } from '../../c
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { withCandidateModel } from '../../../tests/fixtures/worlds';
 import { fixtureDay } from './calendar';
-import { M } from './grid/record';
+import { M } from './match/record';
 import { simulateMatch } from './match';
 import { fullStatsRead, npcCompetition, playerTotals, settleNpcSeason } from './npc-stats';
 import { recordMatch } from './season';

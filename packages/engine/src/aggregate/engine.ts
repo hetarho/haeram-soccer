@@ -23,19 +23,19 @@ import type {
   World,
 } from '../../../contracts/src/types';
 import { injuryChance } from '../careers';
-import { subPolicyFor } from '../grid/changes';
+import { subPolicyFor } from '../match/changes';
 import { aggregateAddedTime } from './count';
 export { aggregateAddedTime } from './count';
-import { SHOT_CONFIG } from '../grid/resolve';
+import { PENALTY_CONFIG } from '../match/config';
 import {
   DEFAULT_SUB_POLICY,
   eraRules,
-  fixtureRosters,
   isLevel,
   type DecideRule,
   type EraRules,
-} from '../grid/setup';
-import { STRENGTH_CONFIG } from '../grid/state';
+} from '../match/rules';
+import { fixtureRosters } from '../match/roster';
+import { STRENGTH_CONFIG } from '../match/config';
 import {
   actionWeight,
   drainPerMinute,
@@ -132,7 +132,7 @@ export function aggregateSkillAccess(
 }
 
 /**
- * Each side's matchday roster under the candidate model's one availability rule (grid/setup.ts
+ * Each side's matchday roster under the candidate model's one availability rule (match/roster.ts
  * `fixtureRosters`, which the detailed engine shares): the prepared XI with an unavailable starter
  * replaced by the best available substitute for his slot, then the era's named substitutes, none
  * of them injured or banned for this fixture. The aggregate plan needs eleven different starters.
@@ -237,7 +237,7 @@ export function aggregateShootout(
       .sort((a, b) => kicker(side, b) - kicker(side, a) || a - b);
     return [...outfield, keeper];
   });
-  const P = SHOT_CONFIG.penalty;
+  const P = PENALTY_CONFIG;
   const chance = (side: AggregateSide, line: number) => {
     const foe: AggregateSide = side === 0 ? 1 : 0;
     const margin =

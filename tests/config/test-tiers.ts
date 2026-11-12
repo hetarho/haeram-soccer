@@ -103,6 +103,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/grid/intentions.test.ts',
   'packages/engine/src/grid/movement.test.ts',
   'packages/engine/src/grid/playback.test.ts',
+  'packages/engine/src/grid/record.paths.test.ts',
   'packages/engine/src/grid/record.test.ts',
   'packages/engine/src/grid/resolve.test.ts',
   'packages/engine/src/grid/shootout.test.ts',
