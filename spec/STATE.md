@@ -984,6 +984,7 @@
 - gusta-implement-task T854
 
 ## log
+- 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
 - 261112 T853 done
 - 261112 T852 done
 - 261112 T851 done
@@ -1003,4 +1004,3 @@
 - 261112 T842 done
 - 261112 T841 done
 - 261112 T840 done
-- 261112 T839 done

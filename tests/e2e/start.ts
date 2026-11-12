@@ -138,7 +138,8 @@ export async function fundClub(page: Page) {
   const sheet = page.getByRole('dialog', { name: '자금 관리', exact: true });
   await sheet.getByRole('tab', { name: '내 자산', exact: true }).click();
   await sheet.getByRole('slider', { name: '자금 투입 금액', exact: true }).fill('25');
-  await sheet.getByRole('button', { name: /넣기$/ }).click();
+  // The amount button ("£2.44M 넣기"), not the 흐름 card's "구단에 넣기" jump to this tab.
+  await sheet.getByRole('button', { name: /\d\S* 넣기$/ }).click();
   await expect(sheet.getByTestId('owner-message')).toContainText('투입했어요');
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(sheet).toHaveCount(0);
