@@ -1997,22 +1997,22 @@
           "comment": "",
           "loadTime": false
         },
-        { "path": "STAGING_CONFIG.shape.mark.keep", "value": 3, "comment": "", "loadTime": false },
+        { "path": "STAGING_CONFIG.shape.mark.keep", "value": 5, "comment": "", "loadTime": false },
         {
           "path": "STAGING_CONFIG.shape.mark.goalSide",
-          "value": 1.5,
+          "value": 1,
           "comment": "",
           "loadTime": false
         },
         {
           "path": "STAGING_CONFIG.shape.mark.blend.DF",
-          "value": 0.6,
+          "value": 0.8,
           "comment": "",
           "loadTime": false
         },
         {
           "path": "STAGING_CONFIG.shape.mark.blend.MF",
-          "value": 0.6,
+          "value": 0.8,
           "comment": "",
           "loadTime": false
         },
@@ -2222,7 +2222,7 @@
         },
         {
           "path": "STAGING_CONFIG.motion.own.memory",
-          "value": 2.2,
+          "value": 2.9,
           "comment": "Seconds of inputs kept for the delay: at least the longest delay, `delay.base + delay.perAnticipation + (delay.perMetre + turn.delayPerMetre) * farCap`.",
           "loadTime": false
         },
@@ -2234,7 +2234,7 @@
         },
         {
           "path": "STAGING_CONFIG.motion.turn.delayPerMetre",
-          "value": 0.026,
+          "value": 0.04,
           "comment": "A settled turnover is believed this many seconds later per metre from the ball (up to `own.farCap`).",
           "loadTime": false
         },
@@ -2502,7 +2502,7 @@
         },
         {
           "path": "STAGING_CONFIG.stage.tackleRange",
-          "value": 1.2,
+          "value": 1.5,
           "comment": "",
           "loadTime": false
         },
@@ -2563,13 +2563,13 @@
         },
         {
           "path": "STAGING_CONFIG.stage.separation",
-          "value": 3,
+          "value": 8,
           "comment": "How far a free outfield player keeps his target from every outfield teammate (0 = off).",
           "loadTime": false
         },
         {
           "path": "STAGING_CONFIG.stage.ownerRoom",
-          "value": 4,
+          "value": 8,
           "comment": "How far a free outfield player of the side in possession keeps his target from the man on the ball and from teammates under an order.",
           "loadTime": false
         },

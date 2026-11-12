@@ -1,0 +1,555 @@
+{
+ "task": "T840",
+ "read": "a",
+ "model": {
+  "revision": "scripted-aggregate-11",
+  "activated": {
+   "year": 2024,
+   "day": 0,
+   "revision": 0
+  },
+  "trackedFrom": {
+   "year": 2024,
+   "day": 1,
+   "round": 1
+  },
+  "coverage": "founding"
+ },
+ "year": 2024,
+ "club": {
+  "id": "ENG:0:0:4",
+  "name": "Leeds Borough A5",
+  "tier": 0,
+  "rating": 74
+ },
+ "manager": {
+  "ability": 83,
+  "style": "counter"
+ },
+ "morale": 60,
+ "ownTactic": "counter",
+ "fixtures": {
+  "own": 38,
+  "reference": 342
+ },
+ "seeds": {
+  "own": 16,
+  "reference": 8
+ },
+ "ownMatches": 608,
+ "referenceSides": 5472,
+ "scriptProblems": 5,
+ "gaps": {
+  "own": [
+   -21.75,
+   12.5
+  ],
+  "ownMean": -2.5
+ },
+ "comparison": {
+  "ownSamples": 608,
+  "dropped": 0,
+  "rows": {
+   "win": {
+    "own": 0.363,
+    "reference": 0.329,
+    "diff": 0.035,
+    "ci": [
+     -0.006,
+     0.075
+    ],
+    "margin": 0.03,
+    "verdict": "insufficient"
+   },
+   "draw": {
+    "own": 0.204,
+    "reference": 0.245,
+    "diff": -0.041,
+    "ci": [
+     -0.075,
+     -0.006
+    ],
+    "margin": 0.03,
+    "verdict": "insufficient"
+   },
+   "loss": {
+    "own": 0.433,
+    "reference": 0.427,
+    "diff": 0.006,
+    "ci": [
+     -0.036,
+     0.048
+    ],
+    "margin": 0.03,
+    "verdict": "insufficient"
+   },
+   "points": {
+    "own": 1.294,
+    "reference": 1.231,
+    "diff": 0.064,
+    "ci": [
+     -0.049,
+     0.177
+    ],
+    "margin": 0.131,
+    "verdict": "insufficient"
+   },
+   "goalsFor": {
+    "own": 1.285,
+    "reference": 1.245,
+    "diff": 0.04,
+    "ci": [
+     -0.069,
+     0.148
+    ],
+    "margin": 0.127,
+    "verdict": "insufficient"
+   },
+   "goalsAgainst": {
+    "own": 1.465,
+    "reference": 1.518,
+    "diff": -0.053,
+    "ci": [
+     -0.17,
+     0.065
+    ],
+    "margin": 0.141,
+    "verdict": "insufficient"
+   },
+   "shots": {
+    "own": 12.025,
+    "reference": 11.746,
+    "diff": 0.278,
+    "ci": [
+     -0.177,
+     0.734
+    ],
+    "margin": 0.587,
+    "verdict": "insufficient"
+   },
+   "onTarget": {
+    "own": 4.281,
+    "reference": 4.234,
+    "diff": 0.047,
+    "ci": [
+     -0.165,
+     0.259
+    ],
+    "margin": 0.253,
+    "verdict": "insufficient"
+   },
+   "xg": {
+    "own": 1.315,
+    "reference": 1.302,
+    "diff": 0.012,
+    "ci": [
+     -0.051,
+     0.075
+    ],
+    "margin": 0.074,
+    "verdict": "insufficient"
+   },
+   "passes": {
+    "own": 341.322,
+    "reference": 453.774,
+    "diff": -112.452,
+    "ci": [
+     -119.328,
+     -105.576
+    ],
+    "margin": 22.689,
+    "verdict": "different"
+   },
+   "completed": {
+    "own": 262.674,
+    "reference": 362.516,
+    "diff": -99.842,
+    "ci": [
+     -106.281,
+     -93.403
+    ],
+    "margin": 18.126,
+    "verdict": "different"
+   },
+   "possessionShare": {
+    "own": 0.38,
+    "reference": 0.484,
+    "diff": -0.104,
+    "ci": [
+     -0.112,
+     -0.096
+    ],
+    "margin": 0.024,
+    "verdict": "different"
+   },
+   "crosses": {
+    "own": 13.196,
+    "reference": 16.2,
+    "diff": -3.004,
+    "ci": [
+     -3.426,
+     -2.582
+    ],
+    "margin": 0.81,
+    "verdict": "different"
+   },
+   "takeOns": {
+    "own": 12.939,
+    "reference": 17.713,
+    "diff": -4.774,
+    "ci": [
+     -5.214,
+     -4.334
+    ],
+    "margin": 0.886,
+    "verdict": "different"
+   },
+   "tacklesInterceptions": {
+    "own": 28.115,
+    "reference": 25.055,
+    "diff": 3.06,
+    "ci": [
+     2.516,
+     3.604
+    ],
+    "margin": 1.253,
+    "verdict": "different"
+   },
+   "throwIns": {
+    "own": 19.229,
+    "reference": 17.229,
+    "diff": 2,
+    "ci": [
+     1.54,
+     2.459
+    ],
+    "margin": 0.861,
+    "verdict": "different"
+   },
+   "corners": {
+    "own": 4.224,
+    "reference": 4.557,
+    "diff": -0.333,
+    "ci": [
+     -0.555,
+     -0.111
+    ],
+    "margin": 0.272,
+    "verdict": "insufficient"
+   },
+   "goalKicks": {
+    "own": 10.036,
+    "reference": 8.589,
+    "diff": 1.447,
+    "ci": [
+     1.152,
+     1.742
+    ],
+    "margin": 0.429,
+    "verdict": "different"
+   },
+   "fouls": {
+    "own": 10.895,
+    "reference": 11.205,
+    "diff": -0.311,
+    "ci": [
+     -0.59,
+     -0.032
+    ],
+    "margin": 0.56,
+    "verdict": "insufficient"
+   },
+   "offsides": {
+    "own": 1.878,
+    "reference": 1.717,
+    "diff": 0.161,
+    "ci": [
+     0.04,
+     0.283
+    ],
+    "margin": 0.132,
+    "verdict": "insufficient"
+   },
+   "yellow": {
+    "own": 1.72,
+    "reference": 1.861,
+    "diff": -0.14,
+    "ci": [
+     -0.251,
+     -0.03
+    ],
+    "margin": 0.139,
+    "verdict": "insufficient"
+   },
+   "red": {
+    "own": 0.046,
+    "reference": 0.054,
+    "diff": -0.008,
+    "ci": [
+     -0.026,
+     0.01
+    ],
+    "margin": 0.024,
+    "verdict": "insufficient"
+   }
+  }
+ },
+ "sameTactic": {
+  "ownSamples": 608,
+  "dropped": 0,
+  "rows": {
+   "win": {
+    "own": 0.363,
+    "reference": 0.354,
+    "diff": 0.01,
+    "ci": [
+     -0.038,
+     0.057
+    ],
+    "margin": 0.03,
+    "verdict": "insufficient"
+   },
+   "draw": {
+    "own": 0.204,
+    "reference": 0.234,
+    "diff": -0.03,
+    "ci": [
+     -0.071,
+     0.011
+    ],
+    "margin": 0.03,
+    "verdict": "insufficient"
+   },
+   "loss": {
+    "own": 0.433,
+    "reference": 0.412,
+    "diff": 0.021,
+    "ci": [
+     -0.028,
+     0.069
+    ],
+    "margin": 0.03,
+    "verdict": "insufficient"
+   },
+   "points": {
+    "own": 1.294,
+    "reference": 1.296,
+    "diff": -0.001,
+    "ci": [
+     -0.133,
+     0.131
+    ],
+    "margin": 0.131,
+    "verdict": "insufficient"
+   },
+   "goalsFor": {
+    "own": 1.285,
+    "reference": 1.333,
+    "diff": -0.048,
+    "ci": [
+     -0.174,
+     0.077
+    ],
+    "margin": 0.128,
+    "verdict": "insufficient"
+   },
+   "goalsAgainst": {
+    "own": 1.465,
+    "reference": 1.498,
+    "diff": -0.033,
+    "ci": [
+     -0.169,
+     0.104
+    ],
+    "margin": 0.147,
+    "verdict": "insufficient"
+   },
+   "shots": {
+    "own": 12.025,
+    "reference": 12.729,
+    "diff": -0.704,
+    "ci": [
+     -1.241,
+     -0.167
+    ],
+    "margin": 0.636,
+    "verdict": "insufficient"
+   },
+   "onTarget": {
+    "own": 4.281,
+    "reference": 4.522,
+    "diff": -0.241,
+    "ci": [
+     -0.488,
+     0.007
+    ],
+    "margin": 0.262,
+    "verdict": "insufficient"
+   },
+   "xg": {
+    "own": 1.315,
+    "reference": 1.351,
+    "diff": -0.036,
+    "ci": [
+     -0.108,
+     0.036
+    ],
+    "margin": 0.072,
+    "verdict": "insufficient"
+   },
+   "passes": {
+    "own": 341.322,
+    "reference": 356.175,
+    "diff": -14.852,
+    "ci": [
+     -22.173,
+     -7.532
+    ],
+    "margin": 17.809,
+    "verdict": "insufficient"
+   },
+   "completed": {
+    "own": 262.674,
+    "reference": 274.314,
+    "diff": -11.64,
+    "ci": [
+     -18.44,
+     -4.839
+    ],
+    "margin": 13.716,
+    "verdict": "insufficient"
+   },
+   "possessionShare": {
+    "own": 0.38,
+    "reference": 0.394,
+    "diff": -0.014,
+    "ci": [
+     -0.023,
+     -0.005
+    ],
+    "margin": 0.02,
+    "verdict": "insufficient"
+   },
+   "crosses": {
+    "own": 13.196,
+    "reference": 13.773,
+    "diff": -0.577,
+    "ci": [
+     -1.064,
+     -0.09
+    ],
+    "margin": 0.689,
+    "verdict": "insufficient"
+   },
+   "takeOns": {
+    "own": 12.939,
+    "reference": 13.698,
+    "diff": -0.759,
+    "ci": [
+     -1.253,
+     -0.265
+    ],
+    "margin": 0.685,
+    "verdict": "insufficient"
+   },
+   "tacklesInterceptions": {
+    "own": 28.115,
+    "reference": 26.637,
+    "diff": 1.478,
+    "ci": [
+     0.853,
+     2.102
+    ],
+    "margin": 1.332,
+    "verdict": "insufficient"
+   },
+   "throwIns": {
+    "own": 19.229,
+    "reference": 18.548,
+    "diff": 0.681,
+    "ci": [
+     0.159,
+     1.203
+    ],
+    "margin": 0.927,
+    "verdict": "insufficient"
+   },
+   "corners": {
+    "own": 4.224,
+    "reference": 4.519,
+    "diff": -0.296,
+    "ci": [
+     -0.559,
+     -0.033
+    ],
+    "margin": 0.268,
+    "verdict": "insufficient"
+   },
+   "goalKicks": {
+    "own": 10.036,
+    "reference": 9.499,
+    "diff": 0.537,
+    "ci": [
+     0.195,
+     0.88
+    ],
+    "margin": 0.475,
+    "verdict": "insufficient"
+   },
+   "fouls": {
+    "own": 10.895,
+    "reference": 10.943,
+    "diff": -0.048,
+    "ci": [
+     -0.372,
+     0.275
+    ],
+    "margin": 0.547,
+    "verdict": "equivalent"
+   },
+   "offsides": {
+    "own": 1.878,
+    "reference": 1.99,
+    "diff": -0.112,
+    "ci": [
+     -0.256,
+     0.032
+    ],
+    "margin": 0.141,
+    "verdict": "insufficient"
+   },
+   "yellow": {
+    "own": 1.72,
+    "reference": 1.767,
+    "diff": -0.047,
+    "ci": [
+     -0.176,
+     0.083
+    ],
+    "margin": 0.132,
+    "verdict": "insufficient"
+   },
+   "red": {
+    "own": 0.046,
+    "reference": 0.051,
+    "diff": -0.005,
+    "ci": [
+     -0.027,
+     0.017
+    ],
+    "margin": 0.024,
+    "verdict": "insufficient"
+   }
+  }
+ },
+ "referenceTactics": {
+  "possession": 1728,
+  "press": 1152,
+  "counter": 1440,
+  "balanced": 1152
+ },
+ "seconds": {
+  "own": 251.389,
+  "all": 296.874
+ }
+}

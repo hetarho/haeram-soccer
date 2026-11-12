@@ -580,7 +580,7 @@ function onsideRoom(
     if (mate.slot === 0 || mate.index === state.ball.owner) continue;
     const m = toAttack(team, snapshot[mate.index], period);
     const dx = cap - m[0];
-    if (Math.hypot(dx, y - m[1]) >= sep || Math.abs(dx) >= sep) continue;
+    if (dist([cap, y], m) >= sep || Math.abs(dx) >= sep) continue;
     const side = y !== m[1] ? Math.sign(y - m[1]) : m[1] < CENTRE[1] ? 1 : -1;
     y = m[1] + side * Math.sqrt(sep * sep - dx * dx);
   }

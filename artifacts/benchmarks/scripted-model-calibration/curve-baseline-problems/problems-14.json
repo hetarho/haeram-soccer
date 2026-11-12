@@ -1,0 +1,38 @@
+[
+ {
+  "seed": 14,
+  "fixture": "2024:ENG:0:0:1:4",
+  "problems": [
+   "incident:16:missingOrMinute",
+   "incident:17:missingOrMinute",
+   "incident:17:foul",
+   "beat:1688:lineup",
+   "beat:1689:lineup",
+   "beat:1691:lineup",
+   "beat:1692:lineup",
+   "beat:1693:lineup",
+   "beat:1695:lineup",
+   "beat:1696:lineup",
+   "beat:1697:lineup",
+   "event:731:missing"
+  ]
+ },
+ {
+  "seed": 15,
+  "fixture": "2024:ENG:0:0:9:4",
+  "problems": [
+   "incident:3:missingOrMinute",
+   "incident:4:missingOrMinute",
+   "beat:1464:lineup",
+   "beat:1465:lineup",
+   "beat:1481:lineup",
+   "beat:1486:lineup",
+   "beat:1492:lineup",
+   "beat:1498:lineup",
+   "beat:1520:lineup",
+   "beat:1521:lineup",
+   "beat:1522:lineup",
+   "beat:1532:lineup"
+  ]
+ }
+]

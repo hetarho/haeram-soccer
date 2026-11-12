@@ -22,6 +22,7 @@
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { TD } from '../packages/contracts/src/detail';
+import { activeMatchModel } from '../packages/contracts/src/match-model';
 import type { MatchScript, ScriptBeat } from '../packages/contracts/src/match-script';
 import type { Fixture, MatchRecord, Tactic, World } from '../packages/contracts/src/types';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC } from '../packages/engine/src/aggregate/config';
@@ -263,7 +264,10 @@ function curve() {
     referenceSides: refSamples.length,
     scriptProblems,
     gaps: {
-      own: [r2(Math.min(...ownSamples.map((s) => s.gap))), r2(Math.max(...ownSamples.map((s) => s.gap)))],
+      own: [
+        r2(Math.min(...ownSamples.map((s) => s.gap))),
+        r2(Math.max(...ownSamples.map((s) => s.gap))),
+      ],
       ownMean: r2(mean(ownSamples.map((s) => s.gap))),
     },
     comparison: compare(ownSamples, refSamples),
@@ -350,7 +354,13 @@ function placeDistances(match: ReturnType<typeof playAggregate>, trace: Aggregat
     facts.ledger.sides[side].moves.forEach((move, index) => {
       const t = trace.moves[side][index];
       if (!t) return;
-      const add = (counts: readonly number[], owner: 0 | 1, cell: number, ip: boolean, into: number[]) =>
+      const add = (
+        counts: readonly number[],
+        owner: 0 | 1,
+        cell: number,
+        ip: boolean,
+        into: number[],
+      ) =>
         counts.forEach((count, line) => {
           if (!count) return;
           const spans = participation.stints[owner]
@@ -366,12 +376,20 @@ function placeDistances(match: ReturnType<typeof playAggregate>, trace: Aggregat
           const minutes = spans.reduce((n, x) => n + x.minutes, 0);
           if (minutes <= 0) return;
           const d =
-            spans.reduce((n, x) => n + x.minutes * placeDistance(shapes, owner, x.slot, cell, ip), 0) /
-            minutes;
+            spans.reduce(
+              (n, x) => n + x.minutes * placeDistance(shapes, owner, x.slot, cell, ip),
+              0,
+            ) / minutes;
           for (let k = 0; k < count; k++) into.push(Math.round(10 * d) / 10);
         });
       add(t.attempts, side, move.from, true, attempts);
-      add(t.won, side === 0 ? 1 : 0, opposingCell(isPassKind(move.kind) ? move.to : move.from), false, winners);
+      add(
+        t.won,
+        side === 0 ? 1 : 0,
+        opposingCell(isPassKind(move.kind) ? move.to : move.from),
+        false,
+        winners,
+      );
     });
   return { attempts, winners };
 }
@@ -403,7 +421,7 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
   const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
   const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
   const match = playAggregate(w, f, prepared, rosters, undefined, undefined, trace);
-  const record = aggregateRecord(f, rosters, match, w.matchModel!);
+  const record = aggregateRecord(f, rosters, match, activeMatchModel(w)!);
   const managers = prepared.teams.map((club) =>
     club.id === w.playerClub ? w.manager : clubManager(w, club),
   );
@@ -443,7 +461,11 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
     const c = (contests[e.kind] ??= [0, 0, 0]);
     c[0]++;
     if (e.stretch) c[1]++;
-    const at = e.other && staged.frames[fi]!.p.find((q) => q.player.side === e.other!.side && q.player.line === e.other!.line);
+    const at =
+      e.other &&
+      staged.frames[fi]!.p.find(
+        (q) => q.player.side === e.other!.side && q.player.line === e.other!.line,
+      );
     if (at && e.at && dist2(at.at, e.at) > STAGING_CONFIG.limits.contest) c[2]++;
   }
   const [lo, hi] = STAGING_CONFIG.limits.clockRate;
@@ -458,8 +480,7 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
     return f.clock === undefined ? null : Math.floor(f.clock / 60) + 1;
   };
   const worstContest = (kind: 'block' | 'save') => {
-    let best: { metres: number; minute: number | null; actor: string; other: string } | null =
-      null;
+    let best: { metres: number; minute: number | null; actor: string; other: string } | null = null;
     fi = 0;
     for (const e of staged.events) {
       if (e.kind !== kind || !e.other || !e.actor) continue;
@@ -481,10 +502,17 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
   };
   // Teammates within the huddle distance in open play outside the boxes, run by run.
   const huddleRuns = new Map<string, { start: number; last: number }>();
-  const episodes: { side: 0 | 1; a: number; b: number; start: number; seconds: number; own: boolean }[] =
-    [];
+  const episodes: {
+    side: 0 | 1;
+    a: number;
+    b: number;
+    start: number;
+    seconds: number;
+    own: boolean;
+  }[] = [];
   const H = STAGING_CONFIG.limits.huddle;
-  const inBox = (v: readonly [number, number]) => (v[0] <= 16.5 || v[0] >= 88.5) && v[1] >= 13.84 && v[1] <= 54.16;
+  const inBox = (v: readonly [number, number]) =>
+    (v[0] <= 16.5 || v[0] >= 88.5) && v[1] >= 13.84 && v[1] <= 54.16;
   staged.frames.forEach((f, k) => {
     if (!f.live || f.phase === 'setPiece') return;
     for (const side of [0, 1] as const) {
@@ -500,7 +528,14 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
           if (run && run.last === k - 1) run.last = k;
           else {
             if (run)
-              episodes.push({ side, a: a.player.line, b: b.player.line, start: run.start, seconds: (run.last - run.start + 1) * STAGING_CONFIG.tick, own: staged.frames[run.start]!.team === side });
+              episodes.push({
+                side,
+                a: a.player.line,
+                b: b.player.line,
+                start: run.start,
+                seconds: (run.last - run.start + 1) * STAGING_CONFIG.tick,
+                own: staged.frames[run.start]!.team === side,
+              });
             huddleRuns.set(key, { start: k, last: k });
           }
         }
@@ -508,7 +543,14 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
   });
   for (const [key, run] of huddleRuns) {
     const [side, a, b] = key.split(':').map(Number) as [0 | 1, number, number];
-    episodes.push({ side, a, b, start: run.start, seconds: (run.last - run.start + 1) * STAGING_CONFIG.tick, own: staged.frames[run.start]!.team === side });
+    episodes.push({
+      side,
+      a,
+      b,
+      start: run.start,
+      seconds: (run.last - run.start + 1) * STAGING_CONFIG.tick,
+      own: staged.frames[run.start]!.team === side,
+    });
   }
   const long = episodes.filter((e) => e.seconds > H.seconds);
   const lineOf = (side: 0 | 1, line: number) => detail.sides[side].lines[line]?.role ?? '?';
@@ -549,12 +591,17 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
       stagedSeconds: r2(worstRate.to - worstRate.from),
       beats: [
         ...new Set(
-          staged.frames.filter((f) => f.t >= worstRate.from && f.t <= worstRate.to).map((f) => f.beat),
+          staged.frames
+            .filter((f) => f.t >= worstRate.from && f.t <= worstRate.to)
+            .map((f) => f.beat),
         ),
       ]
         .map((i) => script.beats.find((b) => b.index === i))
         .filter((b) => b !== undefined)
-        .map((b) => `${b!.kind}/${b!.move}${b!.incidents?.length ? '+' + b!.incidents.map((x) => x.kind).join('+') : ''}`),
+        .map(
+          (b) =>
+            `${b!.kind}/${b!.move}${b!.incidents?.length ? '+' + b!.incidents.map((x) => x.kind).join('+') : ''}`,
+        ),
     },
   };
   return {
@@ -578,8 +625,19 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
       worst: rates
         .filter((r) => r.rate < lo || r.rate > hi)
         .slice(0, 6)
-        .map((r) => ({ period: r.period, from: r3(r.startSeconds / 60), to: r3(r.endSeconds / 60), rate: r3(r.rate) })),
-      all: rates.map((r) => [r.period, r2(r.startSeconds), r2(r.endSeconds), r2(r.to - r.from), r3(r.rate)]),
+        .map((r) => ({
+          period: r.period,
+          from: r3(r.startSeconds / 60),
+          to: r3(r.endSeconds / 60),
+          rate: r3(r.rate),
+        })),
+      all: rates.map((r) => [
+        r.period,
+        r2(r.startSeconds),
+        r2(r.endSeconds),
+        r2(r.to - r.from),
+        r3(r.rate),
+      ]),
     },
     seconds: (Date.now() - t0) / 1000,
   };
@@ -603,14 +661,19 @@ function stage() {
     const fixtures = new Map(plans.map((p) => [p.index, pick(p)]));
     for (const plan of chosen.filter((p) => p.year === year)) {
       const row = stageOne(w, fixtures.get(plan.index)!, plan);
-      const r = row as { failing?: string[]; fit?: { id: string; value: number }[]; seconds?: number };
+      const r = row as {
+        failing?: string[];
+        fit?: { id: string; value: number }[];
+        seconds?: number;
+      };
       console.log(
         `#${plan.index} ${year} ${plan.pairing} ${row.fixture} ${JSON.stringify(row.score)} problems ${row.problems.length} failing ${r.failing?.length ?? '-'} ${JSON.stringify(r.fit?.slice(0, 3).map((m) => m.value))} ${r.seconds}s`,
       );
       out.push(row);
     }
   }
-  if (OUT) writeFileSync(OUT, `${JSON.stringify({ task: 'T840', read: 'c', set, matches: out })}\n`);
+  if (OUT)
+    writeFileSync(OUT, `${JSON.stringify({ task: 'T840', read: 'c', set, matches: out })}\n`);
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -656,7 +719,8 @@ function summarise(rows: readonly StageRow[]) {
   );
   const attempts = rows.flatMap((r) => r.place.attempts),
     winners = rows.flatMap((r) => r.place.winners);
-  const seq = (k: keyof ReturnType<typeof sequenceRows>) => r3(mean(ok.map((r) => r.sequences![k])));
+  const seq = (k: keyof ReturnType<typeof sequenceRows>) =>
+    r3(mean(ok.map((r) => r.sequences![k])));
   const shots = ok.reduce((n, r) => n + r.sequences!.shots, 0);
   return {
     matches: rows.length,
@@ -686,10 +750,9 @@ function summarise(rows: readonly StageRow[]) {
       shotsPerTeam: r2(shots / ok.length / 2),
     },
     fit: Object.fromEntries(
-      ['fit.stretch', 'fit.late', 'fit.orphans', 'fit.stagedSeconds', 'fit.clockRatio'].map((id) => [
-        id,
-        r3(mean(ok.map((r) => fitOf(r, id)))),
-      ]),
+      ['fit.stretch', 'fit.late', 'fit.orphans', 'fit.stagedSeconds', 'fit.clockRatio'].map(
+        (id) => [id, r3(mean(ok.map((r) => fitOf(r, id))))],
+      ),
     ),
     clock: {
       stretches: ok.reduce((n, r) => n + r.clock!.stretches, 0),
@@ -712,7 +775,9 @@ function summarise(rows: readonly StageRow[]) {
 
 function sum() {
   const files = argv.slice(1).filter((a, i, all) => a !== '--out' && all[i - 1] !== '--out');
-  const rows = files.flatMap((f) => (JSON.parse(readFileSync(f, 'utf8')) as { matches: StageRow[] }).matches);
+  const rows = files.flatMap(
+    (f) => (JSON.parse(readFileSync(f, 'utf8')) as { matches: StageRow[] }).matches,
+  );
   rows.sort((a, b) => a.index - b.index);
   const result = {
     task: 'T840',
@@ -739,7 +804,13 @@ function sum() {
       },
     })),
   };
-  console.log(JSON.stringify({ all: { ...result.all, metrics: undefined }, tune: { ...result.tune, metrics: undefined } }, null, 1));
+  console.log(
+    JSON.stringify(
+      { all: { ...result.all, metrics: undefined }, tune: { ...result.tune, metrics: undefined } },
+      null,
+      1,
+    ),
+  );
   if (OUT) writeFileSync(OUT, `${JSON.stringify(result, null, 1)}\n`);
 }
 

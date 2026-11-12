@@ -1,0 +1,1355 @@
+{
+ "task": "T840",
+ "read": "c+d",
+ "all": {
+  "matches": 20,
+  "staged": 20,
+  "scriptFailures": 0,
+  "exactness": {
+   "exact": 0,
+   "performed": 0,
+   "recast": 0,
+   "validateScript": 0
+  },
+  "failingLimits": 132,
+  "invention": {
+   "links": 419.9,
+   "linkMetres": 4993,
+   "miscontrols": 30.35,
+   "connectiveRestarts": 15.65
+  },
+  "sequences": {
+   "possessionsPerTeam": 88.125,
+   "medianPasses": 4,
+   "possessionShotShare": 0.129,
+   "meanShotDistance": 21.608,
+   "shotsFrom30Share": 0.3,
+   "shotsPerTeam": 11.18
+  },
+  "fit": {
+   "fit.stretch": 0.075,
+   "fit.late": 14.3,
+   "fit.orphans": 8.65,
+   "fit.stagedSeconds": 6844.715,
+   "fit.clockRatio": 1.003
+  },
+  "clock": {
+   "stretches": 1077,
+   "outside": 621,
+   "matchesOutside": 20,
+   "min": 0.063,
+   "median": 0.807,
+   "max": 6000
+  },
+  "place": {
+   "median": 12.5,
+   "far": 0.149,
+   "winnersFar": 0.249,
+   "target": {
+    "median": 13,
+    "far": 0.2,
+    "winnersFar": 0.25
+   }
+  },
+  "metrics": {
+   "duration": {
+    "limit": ">= 599.5",
+    "matches": 20,
+    "failing": 0,
+    "mean": 6844.715,
+    "worst": 7723.4,
+    "best": 6322.9
+   },
+   "kinematics.maxStep": {
+    "limit": "<= 11",
+    "matches": 20,
+    "failing": 0,
+    "mean": 10.544,
+    "worst": 10.885,
+    "best": 9.904
+   },
+   "kinematics.outside": {
+    "limit": "= 0",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0,
+    "worst": 0,
+    "best": 0
+   },
+   "ball.maxSpeed": {
+    "limit": "= 0",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0,
+    "worst": 0,
+    "best": 0
+   },
+   "ball.ownerDistance": {
+    "limit": ">= 0.99",
+    "matches": 20,
+    "failing": 0,
+    "mean": 1,
+    "worst": 1,
+    "best": 1
+   },
+   "events.reception": {
+    "limit": ">= 0.98",
+    "matches": 20,
+    "failing": 0,
+    "mean": 1,
+    "worst": 1,
+    "best": 1
+   },
+   "events.contest": {
+    "limit": ">= 0.95",
+    "matches": 20,
+    "failing": 17,
+    "mean": 0.915,
+    "worst": 0.98,
+    "best": 0.833
+   },
+   "events.recastRate": {
+    "limit": "<= 0.25",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0,
+    "worst": 0,
+    "best": 0
+   },
+   "events.stretchRate": {
+    "limit": "<= 0.1",
+    "matches": 20,
+    "failing": 20,
+    "mean": 0.2,
+    "worst": 0.283,
+    "best": 0.108
+   },
+   "offside.consistency": {
+    "limit": "= 0",
+    "matches": 20,
+    "failing": 13,
+    "mean": 1.45,
+    "worst": 5,
+    "best": 0
+   },
+   "shape.swarm": {
+    "limit": "<= 0.02",
+    "matches": 20,
+    "failing": 4,
+    "mean": 0.012,
+    "worst": 0.025,
+    "best": 0.002
+   },
+   "shape.teamLength.H": {
+    "limit": "22..52",
+    "matches": 20,
+    "failing": 0,
+    "mean": 31.645,
+    "worst": 34.18,
+    "best": 29.845
+   },
+   "shape.teamLength.A": {
+    "limit": "22..52",
+    "matches": 20,
+    "failing": 0,
+    "mean": 31.704,
+    "worst": 35.42,
+    "best": 28.93
+   },
+   "shape.spacing": {
+    "limit": "<= 0.03",
+    "matches": 20,
+    "failing": 1,
+    "mean": 0.023,
+    "worst": 0.033,
+    "best": 0.017
+   },
+   "role.invertedFullBack.inside": {
+    "limit": ">= 8",
+    "matches": 8,
+    "failing": 0,
+    "mean": 10.257,
+    "worst": 11.339,
+    "best": 9.302
+   },
+   "role.invertedFullBack.pivot": {
+    "limit": "<= 8",
+    "matches": 8,
+    "failing": 0,
+    "mean": 3.594,
+    "worst": 4.169,
+    "best": 3.109
+   },
+   "role.falseNine.drop": {
+    "limit": ">= 5",
+    "matches": 8,
+    "failing": 1,
+    "mean": 7.172,
+    "worst": 10.458,
+    "best": 4.506
+   },
+   "script.backPassReason": {
+    "limit": "= 0",
+    "matches": 20,
+    "failing": 20,
+    "mean": 29.4,
+    "worst": 46,
+    "best": 20
+   },
+   "stage.pressVisible": {
+    "limit": ">= 0.9",
+    "matches": 20,
+    "failing": 0,
+    "mean": 1,
+    "worst": 1,
+    "best": 1
+   },
+   "score.consistent": {
+    "limit": "= score",
+    "matches": 20,
+    "failing": 0,
+    "mean": 2.2,
+    "worst": 8,
+    "best": 0
+   },
+   "events.shortKick": {
+    "limit": "<= 0.05",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.027,
+    "worst": 0.039,
+    "best": 0.015
+   },
+   "shape.huddle": {
+    "limit": "<= 0.6",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.348,
+    "worst": 0.561,
+    "best": 0.147
+   },
+   "shape.huddleLongest": {
+    "limit": "<= 4",
+    "matches": 20,
+    "failing": 18,
+    "mean": 6.4,
+    "worst": 12.9,
+    "best": 3.2
+   },
+   "motion.restarts": {
+    "limit": "<= 4",
+    "matches": 20,
+    "failing": 3,
+    "mean": 3.782,
+    "worst": 4.233,
+    "best": 3.462
+   },
+   "motion.startSync": {
+    "limit": "<= 0.2",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.119,
+    "worst": 0.173,
+    "best": 0.036
+   },
+   "motion.speedSync": {
+    "limit": "<= 0.3",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.209,
+    "worst": 0.291,
+    "best": 0.139
+   },
+   "turn.reverse": {
+    "limit": "<= 0.3",
+    "matches": 20,
+    "failing": 18,
+    "mean": 0.352,
+    "worst": 0.43,
+    "best": 0.259
+   },
+   "turn.run": {
+    "limit": "<= 0.4",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.223,
+    "worst": 0.3,
+    "best": 0.15
+   },
+   "turn.counterRun": {
+    "limit": ">= 0.5",
+    "matches": 20,
+    "failing": 0,
+    "mean": 1,
+    "worst": 1,
+    "best": 1
+   },
+   "mark.near": {
+    "limit": ">= 0.5",
+    "matches": 20,
+    "failing": 11,
+    "mean": 0.478,
+    "worst": 0.61,
+    "best": 0.4
+   },
+   "role.poacher.shoulder": {
+    "limit": "<= 3.5",
+    "matches": 14,
+    "failing": 6,
+    "mean": 3.457,
+    "worst": 4.53,
+    "best": 2.7
+   }
+  },
+  "seconds": 45.87
+ },
+ "tune": {
+  "matches": 20,
+  "staged": 20,
+  "scriptFailures": 0,
+  "exactness": {
+   "exact": 0,
+   "performed": 0,
+   "recast": 0,
+   "validateScript": 0
+  },
+  "failingLimits": 132,
+  "invention": {
+   "links": 419.9,
+   "linkMetres": 4993,
+   "miscontrols": 30.35,
+   "connectiveRestarts": 15.65
+  },
+  "sequences": {
+   "possessionsPerTeam": 88.125,
+   "medianPasses": 4,
+   "possessionShotShare": 0.129,
+   "meanShotDistance": 21.608,
+   "shotsFrom30Share": 0.3,
+   "shotsPerTeam": 11.18
+  },
+  "fit": {
+   "fit.stretch": 0.075,
+   "fit.late": 14.3,
+   "fit.orphans": 8.65,
+   "fit.stagedSeconds": 6844.715,
+   "fit.clockRatio": 1.003
+  },
+  "clock": {
+   "stretches": 1077,
+   "outside": 621,
+   "matchesOutside": 20,
+   "min": 0.063,
+   "median": 0.807,
+   "max": 6000
+  },
+  "place": {
+   "median": 12.5,
+   "far": 0.149,
+   "winnersFar": 0.249,
+   "target": {
+    "median": 13,
+    "far": 0.2,
+    "winnersFar": 0.25
+   }
+  },
+  "metrics": {
+   "duration": {
+    "limit": ">= 599.5",
+    "matches": 20,
+    "failing": 0,
+    "mean": 6844.715,
+    "worst": 7723.4,
+    "best": 6322.9
+   },
+   "kinematics.maxStep": {
+    "limit": "<= 11",
+    "matches": 20,
+    "failing": 0,
+    "mean": 10.544,
+    "worst": 10.885,
+    "best": 9.904
+   },
+   "kinematics.outside": {
+    "limit": "= 0",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0,
+    "worst": 0,
+    "best": 0
+   },
+   "ball.maxSpeed": {
+    "limit": "= 0",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0,
+    "worst": 0,
+    "best": 0
+   },
+   "ball.ownerDistance": {
+    "limit": ">= 0.99",
+    "matches": 20,
+    "failing": 0,
+    "mean": 1,
+    "worst": 1,
+    "best": 1
+   },
+   "events.reception": {
+    "limit": ">= 0.98",
+    "matches": 20,
+    "failing": 0,
+    "mean": 1,
+    "worst": 1,
+    "best": 1
+   },
+   "events.contest": {
+    "limit": ">= 0.95",
+    "matches": 20,
+    "failing": 17,
+    "mean": 0.915,
+    "worst": 0.98,
+    "best": 0.833
+   },
+   "events.recastRate": {
+    "limit": "<= 0.25",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0,
+    "worst": 0,
+    "best": 0
+   },
+   "events.stretchRate": {
+    "limit": "<= 0.1",
+    "matches": 20,
+    "failing": 20,
+    "mean": 0.2,
+    "worst": 0.283,
+    "best": 0.108
+   },
+   "offside.consistency": {
+    "limit": "= 0",
+    "matches": 20,
+    "failing": 13,
+    "mean": 1.45,
+    "worst": 5,
+    "best": 0
+   },
+   "shape.swarm": {
+    "limit": "<= 0.02",
+    "matches": 20,
+    "failing": 4,
+    "mean": 0.012,
+    "worst": 0.025,
+    "best": 0.002
+   },
+   "shape.teamLength.H": {
+    "limit": "22..52",
+    "matches": 20,
+    "failing": 0,
+    "mean": 31.645,
+    "worst": 34.18,
+    "best": 29.845
+   },
+   "shape.teamLength.A": {
+    "limit": "22..52",
+    "matches": 20,
+    "failing": 0,
+    "mean": 31.704,
+    "worst": 35.42,
+    "best": 28.93
+   },
+   "shape.spacing": {
+    "limit": "<= 0.03",
+    "matches": 20,
+    "failing": 1,
+    "mean": 0.023,
+    "worst": 0.033,
+    "best": 0.017
+   },
+   "role.invertedFullBack.inside": {
+    "limit": ">= 8",
+    "matches": 8,
+    "failing": 0,
+    "mean": 10.257,
+    "worst": 11.339,
+    "best": 9.302
+   },
+   "role.invertedFullBack.pivot": {
+    "limit": "<= 8",
+    "matches": 8,
+    "failing": 0,
+    "mean": 3.594,
+    "worst": 4.169,
+    "best": 3.109
+   },
+   "role.falseNine.drop": {
+    "limit": ">= 5",
+    "matches": 8,
+    "failing": 1,
+    "mean": 7.172,
+    "worst": 10.458,
+    "best": 4.506
+   },
+   "script.backPassReason": {
+    "limit": "= 0",
+    "matches": 20,
+    "failing": 20,
+    "mean": 29.4,
+    "worst": 46,
+    "best": 20
+   },
+   "stage.pressVisible": {
+    "limit": ">= 0.9",
+    "matches": 20,
+    "failing": 0,
+    "mean": 1,
+    "worst": 1,
+    "best": 1
+   },
+   "score.consistent": {
+    "limit": "= score",
+    "matches": 20,
+    "failing": 0,
+    "mean": 2.2,
+    "worst": 8,
+    "best": 0
+   },
+   "events.shortKick": {
+    "limit": "<= 0.05",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.027,
+    "worst": 0.039,
+    "best": 0.015
+   },
+   "shape.huddle": {
+    "limit": "<= 0.6",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.348,
+    "worst": 0.561,
+    "best": 0.147
+   },
+   "shape.huddleLongest": {
+    "limit": "<= 4",
+    "matches": 20,
+    "failing": 18,
+    "mean": 6.4,
+    "worst": 12.9,
+    "best": 3.2
+   },
+   "motion.restarts": {
+    "limit": "<= 4",
+    "matches": 20,
+    "failing": 3,
+    "mean": 3.782,
+    "worst": 4.233,
+    "best": 3.462
+   },
+   "motion.startSync": {
+    "limit": "<= 0.2",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.119,
+    "worst": 0.173,
+    "best": 0.036
+   },
+   "motion.speedSync": {
+    "limit": "<= 0.3",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.209,
+    "worst": 0.291,
+    "best": 0.139
+   },
+   "turn.reverse": {
+    "limit": "<= 0.3",
+    "matches": 20,
+    "failing": 18,
+    "mean": 0.352,
+    "worst": 0.43,
+    "best": 0.259
+   },
+   "turn.run": {
+    "limit": "<= 0.4",
+    "matches": 20,
+    "failing": 0,
+    "mean": 0.223,
+    "worst": 0.3,
+    "best": 0.15
+   },
+   "turn.counterRun": {
+    "limit": ">= 0.5",
+    "matches": 20,
+    "failing": 0,
+    "mean": 1,
+    "worst": 1,
+    "best": 1
+   },
+   "mark.near": {
+    "limit": ">= 0.5",
+    "matches": 20,
+    "failing": 11,
+    "mean": 0.478,
+    "worst": 0.61,
+    "best": 0.4
+   },
+   "role.poacher.shoulder": {
+    "limit": "<= 3.5",
+    "matches": 14,
+    "failing": 6,
+    "mean": 3.457,
+    "worst": 4.53,
+    "best": 2.7
+   }
+  },
+  "seconds": 45.87
+ },
+ "held": {
+  "matches": 0,
+  "staged": 0,
+  "scriptFailures": 0,
+  "exactness": {
+   "exact": 0,
+   "performed": 0,
+   "recast": 0,
+   "validateScript": 0
+  },
+  "failingLimits": 0,
+  "invention": {
+   "links": 0,
+   "linkMetres": 0,
+   "miscontrols": 0,
+   "connectiveRestarts": 0
+  },
+  "sequences": {
+   "possessionsPerTeam": 0,
+   "medianPasses": 0,
+   "possessionShotShare": 0,
+   "meanShotDistance": null,
+   "shotsFrom30Share": null,
+   "shotsPerTeam": null
+  },
+  "fit": {
+   "fit.stretch": 0,
+   "fit.late": 0,
+   "fit.orphans": 0,
+   "fit.stagedSeconds": 0,
+   "fit.clockRatio": 0
+  },
+  "clock": {
+   "stretches": 0,
+   "outside": 0,
+   "matchesOutside": 0,
+   "min": null,
+   "median": 0,
+   "max": null
+  },
+  "place": {
+   "median": 0,
+   "far": null,
+   "winnersFar": null,
+   "target": {
+    "median": 13,
+    "far": 0.2,
+    "winnersFar": 0.25
+   }
+  },
+  "metrics": {},
+  "seconds": 0
+ },
+ "perMatch": [
+  {
+   "index": 0,
+   "year": 1975,
+   "pairing": "possession/possession",
+   "fixture": "1975:ENG:0:0:3:9",
+   "ownSide": 0,
+   "score": [
+    1,
+    0
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.072,
+    8
+   ],
+   "clockOutside": 36,
+   "invention": {
+    "links": 399,
+    "linkMetres": 4691,
+    "miscontrols": 13,
+    "connectiveRestarts": 18
+   }
+  },
+  {
+   "index": 2,
+   "year": 1975,
+   "pairing": "possession/press",
+   "fixture": "1975:ENG:0:0:2:9",
+   "ownSide": 0,
+   "score": [
+    1,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.stretchRate",
+    "offside.consistency",
+    "shape.swarm",
+    "role.falseNine.drop",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.038,
+    19
+   ],
+   "clockOutside": 25,
+   "invention": {
+    "links": 390,
+    "linkMetres": 4533,
+    "miscontrols": 36,
+    "connectiveRestarts": 11
+   }
+  },
+  {
+   "index": 4,
+   "year": 1975,
+   "pairing": "possession/counter",
+   "fixture": "1975:ENG:0:0:0:7",
+   "ownSide": 0,
+   "score": [
+    0,
+    2
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "role.poacher.shoulder",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.084,
+    9
+   ],
+   "clockOutside": 41,
+   "invention": {
+    "links": 411,
+    "linkMetres": 5042,
+    "miscontrols": 44,
+    "connectiveRestarts": 24
+   }
+  },
+  {
+   "index": 6,
+   "year": 1975,
+   "pairing": "possession/balanced",
+   "fixture": "1975:ENG:0:0:11:1",
+   "ownSide": 0,
+   "score": [
+    2,
+    0
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "script.backPassReason",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.077,
+    12
+   ],
+   "clockOutside": 21,
+   "invention": {
+    "links": 384,
+    "linkMetres": 4320,
+    "miscontrols": 34,
+    "connectiveRestarts": 14
+   }
+  },
+  {
+   "index": 8,
+   "year": 1975,
+   "pairing": "press/press",
+   "fixture": "1975:ENG:0:0:7:5",
+   "ownSide": 0,
+   "score": [
+    0,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "shape.swarm",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.087,
+    20
+   ],
+   "clockOutside": 26,
+   "invention": {
+    "links": 395,
+    "linkMetres": 4236,
+    "miscontrols": 11,
+    "connectiveRestarts": 15
+   }
+  },
+  {
+   "index": 10,
+   "year": 1975,
+   "pairing": "press/counter",
+   "fixture": "1975:ENG:0:0:14:2",
+   "ownSide": 0,
+   "score": [
+    0,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.stretchRate",
+    "offside.consistency",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.046,
+    10
+   ],
+   "clockOutside": 22,
+   "invention": {
+    "links": 422,
+    "linkMetres": 5110,
+    "miscontrols": 30,
+    "connectiveRestarts": 18
+   }
+  },
+  {
+   "index": 12,
+   "year": 1975,
+   "pairing": "press/balanced",
+   "fixture": "1975:ENG:0:0:16:4",
+   "ownSide": 0,
+   "score": [
+    6,
+    2
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "shape.swarm",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.077,
+    19
+   ],
+   "clockOutside": 46,
+   "invention": {
+    "links": 428,
+    "linkMetres": 4799,
+    "miscontrols": 58,
+    "connectiveRestarts": 13
+   }
+  },
+  {
+   "index": 14,
+   "year": 1975,
+   "pairing": "counter/counter",
+   "fixture": "1975:ENG:0:0:29:2",
+   "ownSide": 0,
+   "score": [
+    1,
+    2
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "role.poacher.shoulder",
+    "script.backPassReason",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.071,
+    14
+   ],
+   "clockOutside": 31,
+   "invention": {
+    "links": 405,
+    "linkMetres": 4958,
+    "miscontrols": 30,
+    "connectiveRestarts": 19
+   }
+  },
+  {
+   "index": 16,
+   "year": 1975,
+   "pairing": "counter/balanced",
+   "fixture": "1975:ENG:0:0:18:6",
+   "ownSide": 0,
+   "score": [
+    0,
+    0
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.041,
+    8
+   ],
+   "clockOutside": 16,
+   "invention": {
+    "links": 369,
+    "linkMetres": 4105,
+    "miscontrols": 29,
+    "connectiveRestarts": 18
+   }
+  },
+  {
+   "index": 18,
+   "year": 1975,
+   "pairing": "balanced/balanced",
+   "fixture": "1975:ENG:0:0:31:0",
+   "ownSide": 0,
+   "score": [
+    0,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "role.poacher.shoulder",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "motion.restarts",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.064,
+    12
+   ],
+   "clockOutside": 19,
+   "invention": {
+    "links": 388,
+    "linkMetres": 4560,
+    "miscontrols": 26,
+    "connectiveRestarts": 9
+   }
+  },
+  {
+   "index": 20,
+   "year": 2024,
+   "pairing": "possession/possession",
+   "fixture": "2024:ENG:0:0:1:7",
+   "ownSide": 0,
+   "score": [
+    0,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.095,
+    17
+   ],
+   "clockOutside": 25,
+   "invention": {
+    "links": 477,
+    "linkMetres": 5826,
+    "miscontrols": 30,
+    "connectiveRestarts": 25
+   }
+  },
+  {
+   "index": 22,
+   "year": 2024,
+   "pairing": "possession/press",
+   "fixture": "2024:ENG:0:0:5:3",
+   "ownSide": 0,
+   "score": [
+    1,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.088,
+    20
+   ],
+   "clockOutside": 40,
+   "invention": {
+    "links": 467,
+    "linkMetres": 5432,
+    "miscontrols": 24,
+    "connectiveRestarts": 15
+   }
+  },
+  {
+   "index": 24,
+   "year": 2024,
+   "pairing": "possession/counter",
+   "fixture": "2024:ENG:0:0:10:2",
+   "ownSide": 0,
+   "score": [
+    1,
+    2
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "role.poacher.shoulder",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.085,
+    12
+   ],
+   "clockOutside": 32,
+   "invention": {
+    "links": 438,
+    "linkMetres": 5452,
+    "miscontrols": 41,
+    "connectiveRestarts": 12
+   }
+  },
+  {
+   "index": 26,
+   "year": 2024,
+   "pairing": "possession/balanced",
+   "fixture": "2024:ENG:0:0:14:6",
+   "ownSide": 0,
+   "score": [
+    2,
+    4
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.077,
+    17
+   ],
+   "clockOutside": 24,
+   "invention": {
+    "links": 428,
+    "linkMetres": 4850,
+    "miscontrols": 34,
+    "connectiveRestarts": 4
+   }
+  },
+  {
+   "index": 28,
+   "year": 2024,
+   "pairing": "press/press",
+   "fixture": "2024:ENG:0:0:7:1",
+   "ownSide": 0,
+   "score": [
+    1,
+    0
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "shape.swarm",
+    "shape.spacing",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.1,
+    29
+   ],
+   "clockOutside": 45,
+   "invention": {
+    "links": 505,
+    "linkMetres": 6136,
+    "miscontrols": 47,
+    "connectiveRestarts": 22
+   }
+  },
+  {
+   "index": 30,
+   "year": 2024,
+   "pairing": "press/counter",
+   "fixture": "2024:ENG:0:0:12:4",
+   "ownSide": 0,
+   "score": [
+    2,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse",
+    "mark.near"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.092,
+    21
+   ],
+   "clockOutside": 46,
+   "invention": {
+    "links": 467,
+    "linkMetres": 5698,
+    "miscontrols": 18,
+    "connectiveRestarts": 7
+   }
+  },
+  {
+   "index": 32,
+   "year": 2024,
+   "pairing": "press/balanced",
+   "fixture": "2024:ENG:0:0:16:8",
+   "ownSide": 0,
+   "score": [
+    0,
+    2
+   ],
+   "problems": [],
+   "failing": [
+    "events.stretchRate",
+    "offside.consistency",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "motion.restarts",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.067,
+    12
+   ],
+   "clockOutside": 26,
+   "invention": {
+    "links": 377,
+    "linkMetres": 4501,
+    "miscontrols": 22,
+    "connectiveRestarts": 18
+   }
+  },
+  {
+   "index": 34,
+   "year": 2024,
+   "pairing": "counter/counter",
+   "fixture": "2024:ENG:0:0:34:7",
+   "ownSide": 0,
+   "score": [
+    1,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "role.poacher.shoulder",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.099,
+    9
+   ],
+   "clockOutside": 37,
+   "invention": {
+    "links": 383,
+    "linkMetres": 5316,
+    "miscontrols": 28,
+    "connectiveRestarts": 11
+   }
+  },
+  {
+   "index": 36,
+   "year": 2024,
+   "pairing": "counter/balanced",
+   "fixture": "2024:ENG:0:0:27:0",
+   "ownSide": 0,
+   "score": [
+    0,
+    2
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "offside.consistency",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.078,
+    9
+   ],
+   "clockOutside": 34,
+   "invention": {
+    "links": 426,
+    "linkMetres": 5289,
+    "miscontrols": 37,
+    "connectiveRestarts": 20
+   }
+  },
+  {
+   "index": 38,
+   "year": 2024,
+   "pairing": "balanced/balanced",
+   "fixture": "2024:ENG:0:0:28:1",
+   "ownSide": 0,
+   "score": [
+    0,
+    1
+   ],
+   "problems": [],
+   "failing": [
+    "events.contest",
+    "events.stretchRate",
+    "role.poacher.shoulder",
+    "script.backPassReason",
+    "shape.huddleLongest",
+    "motion.restarts",
+    "turn.reverse"
+   ],
+   "fit": [
+    0,
+    0,
+    0,
+    0.061,
+    9
+   ],
+   "clockOutside": 29,
+   "invention": {
+    "links": 439,
+    "linkMetres": 5006,
+    "miscontrols": 15,
+    "connectiveRestarts": 20
+   }
+  }
+ ]
+}
