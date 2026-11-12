@@ -19,6 +19,8 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261113 suggest SAVE-30 T851: a career whose direction still carries the retired 재정 기조 row is refused as incompatible; the game's UI never wrote it, but a preset, script-made or imported career could — dropping the row on load is one line in the load path if such careers matter
+- 261113 suggest WEB-44 WEB-118: the adopted money-spend variant took the fixed-cost runway out of 구단 예산; it still shows in the HUD warning, the red band and the overview — keep it out, or bring it back to the dialog
 - 261112 decided ARCH-30 T845 T848: the owner set 21:00 KST as the hand-off time if the chain was not finished → the loop was cancelled at the unit boundary after T844 (no gate, no main push) and everything went to `origin/wip/hf12` for another machine; T845 and T848 remain todo, then the one final gate and the main push (alt: let the loop's closing flush gate and push main with T845 open, releasing the detailed engine's removal half done). hf12
 - 261112 decided MATCH-28 MATCH-23 T844: what of the two-engine comparison the one-path registry keeps → `buildEquivalenceReport` stays as MATCH-28's comparison of a result-model change against the released model's samples (generic reference/candidate inputs, its tests kept), while `tacticPairingParity` (aggregate − detailed paired by fixture), the parity report's reference side, `match-parity.ts --reference`/`--reference-cache` and the detailed artifact diff go; MATCH-23's six rows that read ball positions or possession sequences are `script-only` (`SCRIPT_ONLY_REASON`, read on own matches' scripts →MATCH-38) instead of `detailed-only`, the lab's summary following (alt: delete the equivalence builder with its tests, leaving no MATCH-28 model-change comparator | keep `detailed-only`, naming an engine that no longer plays) hf12
 - 261112 decided ARCH-31 ARCH-34 T844: where the grid scripts' shared parts and the absolute budgets go → the corpus condition fixtures move from `grid-bands.ts` to `scripts/lib/match-conditions.ts` (no grid import), `--patch` to `scripts/lib/config-patch.ts` over the result path's configs only, `PERFORMANCE_CONFIG` v4 drops `release` and the grid/summary components and `comparePerformance` pairs a run with the previous release's (npc and own fixture, seasons), `match-parity.ts --smoke` plays every condition at `smokePerCondition`; host.test's two cases whose subject was a host with the release off are removed for T845, which removes the switch (alt: keep `grid-bands.ts` as a fixture module, a grid importer | keep the cases on `DISABLED_RELEASE`, against the acceptance grep) hf12
@@ -935,18 +937,18 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 40 | 40 | - | 2 |
-| WEB | 216 | 216 | - | 0 |
+| WEB | 217 | 217 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 67 | 67 | - | 0 |
+| CLUB | 68 | 68 | - | 0 |
 | MATCH | 62 | 62 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
-| STAFF | 41 | 41 | - | 0 |
-| ECON | 54 | 54 | - | 0 |
+| STAFF | 42 | 42 | - | 0 |
+| ECON | 55 | 55 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 25 | 25 | - | 0 |
-| SAVE | 67 | 67 | - | 0 |
+| SAVE | 68 | 68 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
 | PLAYER | 17 | 17 | - | 0 |
 
@@ -974,13 +976,19 @@
 |---|---|---|---|---|
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
 | T848 | revision 11's pairs are men on the pitch together, held over whole matches | MATCH ARCH | T833 | todo |
+| T851 | the adopted money rules hold in the integration tier | ECON CLUB STAFF SAVE ARCH | - | todo |
+| T852 | a refused change to a delegated setting names the person who sets it | ECON WEB | - | todo |
 
 ## next
-- hf12 handed off at 21:00 KST 261112 (owner's deadline): fetch `origin/wip/hf12`, branch from it (e.g. `git worktree add -b work/<tag> .tmp/<tag> origin/wip/hf12`), merge origin/main, then `vibe loop --tasks 'T845 T848' --verify "pnpm run verify:batch"`. T838–T844 are done but unverified as a whole: the final `pnpm run verify:batch` (browser journeys included, T839's specs among them) and the main push are still to run; main is unchanged at 9673816c plus the owner's unpushed local commits, which this branch contains
-- gusta-implement-task T845 T848
+- main continues the hf12 hand-off (261113) with gusta 0.15.1 and the adopted ab money-delegation/a and money-spend/a: `/gusta-start` runs T845 T848 T851 T852 and gates once with `pnpm run verify:batch` before its push; T851 restores the integration tier the variants left failing
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
+- 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
+- 261113 ab money-spend: adopt a — the 단장 budgets every delegated spend on this season's income by the owner's five-step request
+- 261113 ab money-delegation: adopt a — delegation split from strategy: a spending request per delegated decision, acted on by the delegate's temperament
+- 261113 main continues from origin/wip/hf12 with the gusta migration redone on top; the batch on 1451c371 failed 14 integration cases (→T851)
 - 261112 ARCH r40..r40 no-op (no code impact)
 - 261112 gusta-update-ssot ARCH r40 (ARCH-30✎ project-only branch, batch-lock, work-group and CI-wait rules→gusta default tiers; flow✎ Planning, Verification)
 - 261112 settings: land main, push true, plan follows land (next retired); this machine continues from the hf12 hand-off
@@ -996,8 +1004,3 @@
 - 261112 gusta-update-ssot MATCH r62 (MATCH-16✎ two-man actions: both men on their own weights matched over shared playing time, only an unmatched second man redrawn) hf12
 - 261112 hf12: owner's 맡김 to finish the cc12 handoff on latest main; main merged into the handoff, handoff MATCH r60→r61 and T848 (gate fix)→T850 renumbered after next's own r60/T848 hf12
 - 261112 T838 checkpoint: revision 11 candidate/default and activation regressions, explicit historical grid pins, refreshed result digests and all prepared packs; 1756 affected units/static/build and final-source 200-fixture audit pass. Broader engine run cut off at 09:26 with 13 observed failures, incomplete; capacity/final throughput remain. Handoff requested by 09:30, todo for remote pickup, main unchanged. rs12
-- 261112 T849 done: fixed-touch livelock, booked departure and recorded kickoff incidents repaired; joint confidence corrected without retuning football. Full batch at 64d30c26 passes 4476 tests plus 334 Chromium journeys and all static/build stages; checkpoint pushed to handoff, T838–T845 remain. rs12
-- 261112 T850 done: entrant-safe fixed chains, booked departure boundary, explicit prefix counters with settled guards retained, converged place marginals and corrected tackle cell; lab defaults refreshed, 1,485 affected unit tests/type/lint/format/i18n/build pass, original integration acceptance pending host batch, no push cc12
-- 261112 T837 done: 2 h throughput exploration, eight writer/two shape cuts kept and five noise trials reverted; own CPU ×0.2735, raw motion diagnostic ×0.2389, sampled hashes unchanged, 1,568 affected unit tests/type/lint/format/i18n pass; full staging baseline prefix-ledger failure explicitly open for T838, raw evidence/report retained, no push cc12
-- 261112 T836 done: result-path lab and scripted/staged watch, five groups/622 numeric leaves and localized descriptions, isolated frozen overrides, complete target rows with unavailable sequence/point readings; 133 affected unit tests and type/lint/format/i18n/build pass, updated lab browser journey deferred to host; revision 11 preview only, no push cc12
-- 261112 T835 done: completed-pass circles, stable numbers, bidirectional-width links and played-direction arrows; recorded kit/contrast ink, touch/keyboard/locale selection and busiest-five text; 43 isolated affected tests and type/lint/format/i18n/build pass, phone browser assertions written for host batch; no push cc12

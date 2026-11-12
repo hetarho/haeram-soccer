@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r54 | Define the browser-demo rules for historical club economy.
+> r55 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -66,7 +66,7 @@
 
 - ECON-15 [o] An active marketing campaign shows its paid cost, actual current cash and remaining settlement rounds. A hypothetical second debit is never labelled as its current or post-start cash; new-campaign forecasts remain separate from already committed spend.
 
-- ECON-16 [o] Club operating policy has ordered settings, the dials (→ECON-25); each holds its level — the founding direction's for a new club (→ECON-22) — until the owner chooses another in 구단 운영 or 결재 설정 (→WEB-14, →WEB-79), from the next decision or settlement, recorded as a club event; no staff rule changes a dial. Absent saves and absent keys resolve to the defaults, which reproduce pre-policy settlement exactly; a saved key not listed here has no effect.
+- ECON-16 [o] Club operating policy has ordered settings, the dials (→ECON-25); each holds its level — the founding direction's for a new club (→ECON-22) — until the owner chooses another on its investment area's page (→WEB-14), from the next decision or settlement, recorded as a club event. While 선수 영입 or 유소년 운영 is delegated the 단장 sets 영입 기조 or 유소년 투자 and the owner's change is refused (→ECON-39); no other staff rule changes a dial. Absent saves and absent keys resolve to the defaults, which reproduce pre-policy settlement exactly; a saved key not listed here has no effect.
   | key | default | effect by level 1→5 |
   |---|---|---|
   | support | 3 | contract talks: goodwill −5/0/+5/+10/+15% (→CLUB-26) · round development ×0.8/0.9/1/1.12/1.25 · round fatigue recovery −2/−1/0/+1/+2 · operating expenses ×0.9/0.95/1/1.1/1.2 (→ECON-30) |
@@ -89,19 +89,20 @@
 - ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left. It is a status, never a stop: the HUD cash and a red band show it (→WEB-56).
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever an open sponsor slot (→ECON-8) is empty the commercial staff sign its best guaranteed offer at once and report it. Without delegation a slot left empty at a season's start, or a contract in its final season on 1 April, posts a sponsor reminder (→WEB-42).
 
-- ECON-22 [o] The club build — shown to the owner as the club's direction (방향) — is six slots — 유입 방식, 스카우팅, 매각 기조, 수익 모델, 지역 관계 방식, 라커룸 문화 — each holding one card: the standard card or one of four others. New takeovers start with all standard cards (→WEB-15); existing saved builds remain in force; the owner changes a slot's card in 구단 운영 or 결재 설정 (→WEB-14, →WEB-79), from the next decision or settlement, leaving signed contracts as signed, and no staff rule changes them; every rule that reads a card uses the build in force.
+- ECON-22 [o] The club build — shown to the owner as the club's direction (방향) — is six slots — 유입 방식, 스카우팅, 매각 기조, 수익 모델, 지역 관계 방식, 라커룸 문화 — each holding one card: the standard card or one of four others. New takeovers start with all standard cards (→WEB-15); existing saved builds remain in force; the owner changes a slot's card on the investment area page that shows it (→WEB-14), from the next decision or settlement, leaving signed contracts as signed, and no staff rule changes them; every rule that reads a card uses the build in force.
   - Every card has at least one gain and one cost, except that 구단주 투자 keeps only its cost while the owner has no capital action (→ECON-11); additions add and multipliers multiply across slots.
   - the direction in force carries its name: the founding preset's or 기본 방향; a build event recorded earlier keeps its name (맞춤 방향, a saved direction's), and one recorded as 기본 전략 or 맞춤 전략 reads 기본 방향 or 맞춤 방향.
   - legacy founding presets fill every row (→ECON-25), the cards and the other rows alike; new takeovers choose none; a row it does not name stays at its default; each has one identity and lights or aims at a synergy:
     | preset | cards (others standard) | other rows (others at their default) | aim |
     |---|---|---|---|
-    | 유스 순혈주의 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | 주변 투자 지역 상권 투자, 티켓 가격 저렴, 재계약 기조 모두 붙잡기, 육성 목표 1군 공급, 재정 기조 신중 | lights 우리 동네 아이들 |
+    | 유스 순혈주의 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | 주변 투자 지역 상권 투자, 티켓 가격 저렴, 재계약 기조 모두 붙잡기, 육성 목표 1군 공급, 위임 요청 아껴서 | lights 우리 동네 아이들 |
     | 유스 명가 | 엘리트 선발, 철저한 경쟁 | 유소년 투자 엘리트 아카데미, 육성 목표 1군 공급, 데뷔 시점 빠른 데뷔, 영입 기조 유망주 발굴, 재계약 기조 젊은 선수 우선, 선호 학파 육성형, 감독 기조 육성가, 코치 기조 최고 수준 | 유스 파이프라인 with a developer or 70+ youth director |
     | 트레이딩 머신 | 데이터 스카우팅, 셀링 클럽, 철저한 경쟁 | 영입 기조 젊은 선수 위주, 육성 목표 판매용 육성, 데뷔 시점 빠른 데뷔, 재계약 기조 젊은 선수 우선 | lights 트레이딩 머신; 머니볼 with a spotter chief scout or a negotiator 단장 |
-    | 상업 제국 | 광역 네트워크, 상업 확장, 스타 대우 | 해외 마케팅 해외 광고, 해외 투어 짧은 투어, 티켓 가격 비싸게, 재정 기조 적극 | 상업 제국 with 해외 마케팅 4+ and a stadium of 30,000+ |
+    | 상업 제국 | 광역 네트워크, 상업 확장, 스타 대우 | 해외 마케팅 해외 광고, 해외 투어 짧은 투어, 티켓 가격 비싸게, 위임 요청 넉넉히 | 상업 제국 with 해외 마케팅 4+ and a stadium of 30,000+ |
     | 세계로 | 해외 유스 스카우트, 광역 네트워크, 쇼케이스 | 해외 스카우트망 지역 스카우트, 해외 마케팅 해외 홍보, 해외 투어 짧은 투어, 영입 기조 젊은 선수 위주 | 글로벌 스카우팅 with a spotter or 65+ chief scout |
-    | 승격 올인 | 즉시 전력, 핵심 지키기, 구단주 투자, 홈 요새, 베테랑 리더십 | 선수단 투자 후한 지원, 영입 기조 즉시 전력, 재계약 기조 핵심만 붙잡기, 감독 기조 검증된 승부사, 육성 목표 최소 운영, 재정 기조 공격적 | home strength now, youth growth given up |
-    | 알뜰 생존 | 유소년 클럽 제휴, 지역 인재 우선, 강경 협상, 긴축 재정, 가족 관중, 베테랑 리더십 | 선수단 투자 절약, 재계약 기조 짠물, 감독 기조 저비용, 코치 기조 저비용, 재정 기조 안정적 | player wages ×0.91 with morale held level, for small starts |
+    | 승격 올인 | 즉시 전력, 핵심 지키기, 구단주 투자, 홈 요새, 베테랑 리더십 | 선수단 투자 후한 지원, 영입 기조 즉시 전력, 재계약 기조 핵심만 붙잡기, 감독 기조 검증된 승부사, 육성 목표 최소 운영, 위임 요청 아낌없이 | home strength now, youth growth given up |
+    | 알뜰 생존 | 유소년 클럽 제휴, 지역 인재 우선, 강경 협상, 긴축 재정, 가족 관중, 베테랑 리더십 | 선수단 투자 절약, 재계약 기조 짠물, 감독 기조 저비용, 코치 기조 저비용, 위임 요청 최소한만 | player wages ×0.91 with morale held level, for small starts |
+  - a preset's 위임 요청 goes to every decision that spends money (→ECON-33), 선수 매각 included, where 최소한만 reads 적극 매각 and 아낌없이 끝까지 지키기.
   - a new takeover starts with 기본 방향 (every row at its default), without a preset choice (→WEB-15).
   | slot | card | effects |
   |---|---|---|
@@ -140,7 +141,7 @@
   - the first round in debt posts a "파산 위기" inbox item; play goes on, except that a running automatic clock stops once on it behind a warning (→WEB-56); the HUD cash and a red band count the rounds left (→WEB-56)
   - a bankrupt club advances nothing and refuses every command but reading the inbox; the app shows the game-over page on home and keeps the other views readable (→WEB-56)
   - the owner's bankruptcy (→OWNER-14) and 구단주 퇴진 (→OWNER-13) end a career too; all three share the end of →OWNER-16 and the game-over page (→WEB-56).
-- ECON-25 [o] Direction areas group the club's direction rows by the decisions they steer (→ECON-22, →ECON-16, →ECON-17, →ECON-33): every row is a choice of named options of one kind, defaulted at a new takeover, preserved from existing saves and changed afterwards only by the owner (→WEB-14, →WEB-79), never by a staff rule; the delegated staff decide by them:
+- ECON-25 [o] Direction areas group the club's direction rows by the decisions they steer (→ECON-22, →ECON-16, →ECON-17, →ECON-33): every row is a choice of named options of one kind, defaulted at a new takeover and preserved from existing saves; afterwards the owner changes a row on its investment area page (→WEB-14) while the decision it steers is his, and its delegate sets it while that decision is delegated (→ECON-39); no other staff rule changes a row. The delegated staff decide by them:
   | area | card row | other rows | the delegated staff decide by them |
   |---|---|---|---|
   | 선수단 | 라커룸 문화 | - | squad culture in 감독 사무실 |
@@ -148,7 +149,7 @@
   | 매각 | 매각 기조 | - | answers to offers (→CLUB-18, →CLUB-24) |
   | 유소년 | 유입 방식 | 육성 목표, 데뷔 시점 (→CLUB-32), 유소년 투자 | academy promotion, release and listing; the youth director's focus (→CLUB-31) |
   | 스태프 | - | 선호 학파, 감독 기조 (→STAFF-18), 코치 기조 (→STAFF-15) | the manager post, the coaching departments |
-  | 재정 | 수익 모델 | 재정 기조 (→ECON-33), 선수단 투자, 재계약 기조 (→CLUB-26) | sponsors (→ECON-21), contract talks; 재정 기조 bounds every delegated spend |
+  | 재정 | 수익 모델 | 선수단 투자, 재계약 기조 (→CLUB-26) | sponsors (→ECON-21), contract talks |
   | 지역 | 지역 관계 방식 | 주변 투자, 티켓 가격 | - (builds 지역 기반 →ECON-34) |
   | 글로벌 | - | 해외 마케팅, 해외 스카우트망, 해외 투어 | - (builds 글로벌 인지도 →ECON-34) |
   - a card row says how the club goes about an area, a dial how much it puts in, a staff row how the staff choose; a founding preset fills every row (→ECON-22), a row it does not name at its default, and rows absent from a save keep their baseline defaults. Director/manager support defaults to 균형 (→STAFF-26).
@@ -165,7 +166,7 @@
 - ECON-29 [o] The economy is calibrated against real football on 50-season runs of a reference club, and the measured results are recorded here. ← balance is judged on whole careers, not single seasons
   - wage/income recalibration reports exact settled player payroll, manager/coaching payroll, their modeled total, operating expenses, central distribution, purchases and sales separately; a pre-round wage sample is not cash paid. NPC book wages are players only, with other staff in operating expenses (→ECON-30), whereas the owned-club wage bill includes its modeled manager/coaches. Real all-employee ratios are context and never silently substituted for player-only payroll.
   - test new wage quotes and the English package separately and together on matched worlds, read contract-transition and mature years separately, then validate the selected candidate on worlds lived under its rules and held-out seeds/countries. Preserve signed contracts and the existing career, books, champions and solvency gates; a short screening experiment does not replace the50-season reference gate. Central commercial money inside the league package remains in the distribution category and is not club sponsorship; state that definition when comparing real broadcast-only income shares.
-  - revenue is competition money, matchday and commercial income; player trading is reported beside the bands: the delegated staff sell, and sign only to fill short roles or upgrade by 재정 기조 (→CLUB-33), so the reference club stays a net seller with a youth-heavy wage bill. ← net results including those sales measured 10–17% on every constant set that kept every career solvent
+  - revenue is competition money, matchday and commercial income; player trading is reported beside the bands: the delegated staff sell, and sign only to fill short roles or upgrade by the 단장's plan (→CLUB-33), so the reference club stays a net seller with a youth-heavy wage bill; the measurements below were taken under the retired 재정 기조, before the spending request (→ECON-33). ← net results including those sales measured 10–17% on every constant set that kept every career solvent
   - the reference club is a takeover in 1950 at 중견 사업가's reach (→OWNER-3) with no traits and no owner money moved (stake 0%, no injection, dividend 0%); it has every delegation on and starts the cheapest next facility work of the three parts (→ECON-32) whenever cash after it still covers 13 rounds of fixed costs; its operating result counts that construction, since building is how it spends a surplus, and the result before construction is reported beside; the wage targets (→CLUB-25) are measured on it too, the attendance targets on clubs established in their division (→ECON-9), with the reference club's crowds in at least its third straight season in a division beside.
   | target | band | measured 261015 on founding careers (rules 2.0.0, the player model: default careers at 기본 방향 and every difficulty level, the 단장 signing at level 4; 160 careers: ENG ESP FRA GER × four levels × 10 seeds, 1950–2009) |
   |---|---|---|
@@ -186,18 +187,34 @@
   - each round's payment is multiplied by the squad investment's factor in force that round (→ECON-16); the default level's ×1 leaves ECON-29's reference club as calibrated.
 - ECON-31 [o] A broadcasting index per country and year scales league distributions (→ECON-28) and cup and continental prizes with their result bonuses (→LEAGUE-5, →EURO-7): flat with prices until television paid the league, growing with each country's rights deals and, through the broadcasting boom of the 1990s–2010s, far faster than the football index. ← the 1950s game lived on the gate and the 2000s game on television; one index for distributions and tickets could not give both income mixes (measured 261013: 1950s matchday 21–35% whenever the 2000s top-flight mix held)
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
-- ECON-33 [o] 재정 기조, a row of the 재정 area (→ECON-25), is the money rule of every delegated spend — contract talks (→CLUB-26), signings (→CLUB-33), academy promotions (→STAFF-13), coach and manager hires and renewals (→STAFF-15, →STAFF-18) — and sets the runway at which the staff sell harder (→CLUB-18, →CLUB-24); the owner's own decisions are never bounded by it. ← fixed checks spread over each staff rule could not say how boldly the owner wants the club run
-  | option | runway kept after a spend | wage bill ceiling | promotions wait below | sell harder below | a signing's fee at most |
+- ECON-33 [o] Every delegated decision that spends money — 감독 인사, 스태프 인사, 선수 계약, 선수 영입, 선수 매각 and 유소년 운영 (→WEB-45) — carries the owner's spending request (위임 요청), one of five steps: 최소한만, 아껴서, 적당히 (default), 넉넉히, 아낌없이; for 선수 매각 how readily to sell: 적극 매각, 팔 만하면 팔기, 균형 (default), 웬만하면 지키기, 끝까지 지키기. The 단장 plans the money of every such decision on this season's income, never on the cash in the bank: he acts on the request at the step his temperament gives it (→STAFF-51) and gives each decision its share of the income he plans on. 스폰서 계약 takes no request; the owner's own decisions are never bounded by it. ← clubs budget on income, not on the bank balance: UEFA's squad-cost rule caps squad cost at 70% of revenue and prudent clubs aim at 50–60%
+  - the income he plans on: this season's turnover so far (no player sales or owner money, →ECON-30) plus the rest of the season at the middle of the cash projection's income lines — gate, league share and merit payment, parachute, sponsor contracts and their bonuses (→ECON-18); before this season's league fixtures exist, last season's turnover, or in a takeover season the bought club's last season income (→ECON-38). Each plan fixes it until the next (→ECON-40).
+  | step acted on | squad share (players' wages + the season's fees) | sales reinvested in signings | youth share (academy investment + youth director's pay) | academy aim | sales line (players' wage bill / income) |
   |---|---|---|---|---|---|
-  | 공격적 | 6 rounds | 75% | a quarter of a year's operating costs | 6 rounds (−20), 14 rounds (−10) | all the cash above the runway |
-  | 적극 | 9 rounds | 70% | half a year's | 9, 20 | 75% of it |
-  | 표준 (default) | 13 rounds (the cash warning) | 65% | a year's | 13, 30 | 50% |
-  | 신중 | 20 rounds | 60% | one and a half years' | 20, 45 | 35% |
-  | 안정적 | 30 rounds | 55% | two years' | 30, 65 | 25% |
-  - runway kept: cash after the spend covers that many rounds of fixed costs with the new wage in place of the old (→ECON-20), and the season's cash projection with it (→ECON-18) still ends the season covering them.
-  - wage bill ceiling: the yearly wage bill after a raise, staff included, against the club's revenue over the last 12 months (→CLUB-26).
-  - each delegated decision — the manager post, staff, player contracts, signings, sales and academy promotions — may carry its own 재정 기조, set by the owner in 결재 설정 (→WEB-79); a decision without one follows the club's row.
-  - the owner may also set a per-person annual wage cap for the manager post, staff, player contracts, signings and academy promotions: a delegated hire, renewal, contract talk, signing or promotion whose wage is above it does not happen. No cap set means no monetary cap; a cap of zero admits only unpaid posts. A cap or 기조 change applies to later automatic decisions, never to signed contracts.
+  | 1 | 45% | 10% | 0.5% | 기본 운영 | 45% |
+  | 2 | 55% | 25% | 1% | 육성 강화 | 52% |
+  | 3 | 62% | 40% | 1.6% | 집중 투자 | 60% |
+  | 4 | 70% | 55% | 2.4% | 엘리트 아카데미 | 68% |
+  | 5 | 80% | 70% | 3.5% | 최고 수준 아카데미 | 80% |
+  - signings: the season's money for them is the squad share less the players' wage bill (never below zero), plus the reinvested share of this season's player sales, less this season's fees and the 단장's open bids (never below zero). A signing passes when, with his wage, the players' wage bill stays within the squad share and the fee plus a year of his wage fit that money; a short line filled with a free agent reads only →ECON-41.
+  - renewals and improved contracts: a raise passes when it fits the room the squad share leaves above the players' wage bill.
+  - youth: the youth director's pay comes first, a new one at most the whole youth share; the academy runs at the aim or the highest level the rest pays for (→ECON-39).
+  - sales: a players' wage bill above the sales line, or more than 10 points above it, makes the staff sell harder (→CLUB-18, →CLUB-24).
+  - by the 선수 영입 step: no upgrades at 1–2, margin 5 and 1 a window at 3, margin 3 and 2 at 4, margin 2 and 3 at 5 (→CLUB-33); +10 points to every bid at 5 (→CLUB-41).
+  - the manager's and the coaches' posts have no share: their pay follows the rows the 단장 sets (→ECON-39), checked only by →ECON-41.
+  - there is no per-person wage cap; a request applies to later automatic decisions, never to signed contracts.
+- ECON-39 [o] While a decision is delegated its settings are set at each plan (→ECON-40) — by the 단장 from the step he acts on (→ECON-33), his temperament and his plan's money, and for the academy's football rows by the youth director — and the owner reads them on their area pages (→WEB-14); his change is refused, naming whose they are: the youth director's for 육성 목표 and 데뷔 시점, the 단장's for the rest. Taken back, they stay as they were left until the owner changes them. Build cards, the ticket price, 선수단 투자 and the other dials stay the owner's. ← whoever runs a work chooses how it runs; two hands on one setting leave neither answerable
+  | decision | settings set while delegated |
+  |---|---|
+  | 감독 인사 | 감독 기조: 저비용 at steps 1–2, 검증된 승부사 at 5, else 표준; 선호 학파 any |
+  | 스태프 인사 | 코치 기조: 저비용 at 1–2, 최고 수준 at 5, else 표준 |
+  | 선수 계약 | 재계약 기조: 짠물 at 1 or while the players' wage bill is above the squad share, 핵심만 붙잡기 at 2, 모두 붙잡기 at 5, else 표준 |
+  | 선수 영입 | 영입 기조 at the step (유망주 발굴, 젊은 선수 위주, 균형, 경험 위주, 즉시 전력); director/manager support by the 단장's temperament: 단장 우선 for 안정 지향, 감독 우선 for 공격형, else 균형 |
+  | 선수 매각 | - |
+  | 유소년 운영 | the 단장: 유소년 투자 from the youth share (→ECON-33); the youth director: 육성 목표 1군 공급 if he is a developer, else 표준, and 데뷔 시점 by his temperament: 빠른 데뷔 for 공격형, 준비된 뒤 for 안정 지향 or a vacant post, else 표준 |
+- ECON-40 [o] The 단장 plans the delegated decisions when the owner delegates a decision or sends one a request (that decision alone), at each season's start once the year's operating expenses and sponsor terms are set, at each transfer window's opening before the shortlist is drawn, and after a settled league round in which this season's income has moved by a tenth or more of the income he planned on, or player sales of a twentieth of it have come in since his plan; with no plan for this season he plans at the next settled round as at a season's start. Each plan fixes this season's income the plans read until the next (→ECON-33). ← fixed moments keep settings still between them, and a cup run, a fall down the table or a big sale still moves the budget
+  - each setting changed is a club event; the 단장 reports to the inbox, without asking for attention, when the owner just delegated or asked, when a setting changed, for 선수 영입 at every window opening, and for 선수 계약, 선수 영입 and 유소년 운영 after a re-plan on a moved income or a sale: the request, the step he acts on and why, the income and the work's money.
+- ECON-41 [o] Whatever the plan allows, a delegated spend stops when it would run the club out of cash: cash after it must cover 4 rounds of fixed costs with its yearly wage added (→ECON-12), and for signings and raises the cautious end of the season-end cash projection (→ECON-18), less the spend and the wage for the league rounds left, must stay at or above zero. Manager and coach hires and renewals and academy promotions read the cash test only; with sales delegated a fixed-cost runway under 4 rounds is a cash crisis (→CLUB-18, →CLUB-24). ← the plan reads income, not cash, so one plain stop keeps it from emptying the bank
 
 - ECON-34 [o] Two bases, 지역 기반 and 글로벌 인지도 (0–100, new clubs 0), grow while the club invests in its town or abroad and fade when it stops; results build reputation, investment builds the bases, and no base raises reputation. ← a club's ties to its town and its name abroad take years to build and to lose
   - each settled league round a base moves toward the target its area's investment rows set (→ECON-16; 지역 기반's from 주변 투자 alone, 글로벌 인지도's two rows' targets added, at most 100): 2% of the gap while rising (3% with the 지역 상생 card for 지역 기반), 1% while falling; a 해외 투어 adds its 글로벌 인지도 at once.
@@ -223,6 +240,7 @@
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
 
 ## chg
+- r55 261113 ECON-33✎ 재정 기조 and per-person wage caps→5-step spending request, the 단장's plan on season income (squad 45–80%, reinvest 10–70%, youth 0.5–3.5%, sell line 45–80%); ECON-39+ delegate's settings; ECON-40+ plan moments; ECON-41+ 4-round insolvency stop; ECON-16/22/25✎ owner via 결재 설정→area pages, delegate while delegated, presets 재정 기조→위임 요청; ECON-29✎ 재정 기조→단장's plan
 - r54 261110 ECON-16✎ recruitment's ability ceiling fixed per level (65/75/85/88/92)→never below our starting eleven's mean slot value + 5 (a strong club's 단장 listed nobody who could upgrade it)
 - r53 261110 ECON-24✎ first round in debt a status, not a stop→also stops a running automatic clock once behind a warning; game-over page in place of every view→on home, other views readable
 - r52 261109 ECON-28✎ provisional ENG package normalization→withdrawn after standalone lived-books gate failure; original distribution/valuation/parachute retained. ECON-29 exact payroll and unchanged acceptance criteria remain

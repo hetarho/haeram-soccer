@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r41 | Define the browser-demo rules for manager demands and personality.
+> r42 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -21,14 +21,14 @@
   - each post's candidates are its free agents and other clubs' holders of the post (→!STAFF-49).
   - new clubs start with unpaid ability-50 volunteers; hired coaches cost a wage fixed for a term of 1–5 seasons the owner chooses (delegated staff: 코치 기조's term, →STAFF-15) plus a signing fee; replacing or releasing a paid coach or manager pays 25% of the annual wage for each season left on his contract
 - STAFF-12 [o] Hired managers may carry a selection trait: youth (+4 selection value for age ≤ 21), rotation (fatigue weighs double) or stable (fatigue weighs half). The founding manager has none; a developer style (→STAFF-14) selects like the youth trait, so a developer never draws it, a firefighter's youth draw becomes stable and a gegenpress coach's stable draw becomes rotation.
-- STAFF-13 [o] Business decisions follow the seven independent responsibilities in →WEB-45. A delegated category follows its direction rows (→ECON-25) and existing financial checks (→ECON-33), and reports its decisions.
-  - the director handles delegated player contracts, recruitment, sale responses and manager appointments; the youth director handles delegated academy promotion/release; commercial staff handle delegated sponsors; staff handle delegated staff appointments, including the director and scout.
+- STAFF-13 [o] Business decisions follow the seven independent responsibilities in →WEB-45. A delegated category's settings are set by its delegate (→ECON-39), its money follows the 단장's plan for the owner's request (→ECON-33), and it reports its decisions and plans (→ECON-40).
+  - the director handles delegated player contracts, recruitment, sale responses and manager appointments, and plans the money of every delegated category, 유소년 운영's included (유소년 투자 and the youth director's pay); the youth director sets 육성 목표 and 데뷔 시점 and handles delegated academy promotion/release; commercial staff handle delegated sponsors; staff handle delegated staff appointments, including the director and scout.
   - recruitment and sales are separate authorities. Recruitment-owned mediation follows →CLUB-34; a direct category is never auto-decided merely because time progression is automatic.
   - new-game responsibility defaults are owned by →WEB-45. Training focus remains the coaches' decision at every configuration (→CLUB-13/31); the owner has no training control.
   - the owner may still promote/release a prospect, answer an available contract talk or bid, sign a sponsor, and hire/renew/release staff. Such an action never silently changes the category's responsibility; a delegated staff post can be refilled under 코치 기조.
   - a delegated youth director promotes a prospect of promotion age (→CLUB-16) who is ready by 데뷔 시점 (→CLUB-32), while the squad and line have room (→PLAYER-3), and releases by 육성 목표. Keep the rest in U-21 until ready or 21.
-  - he promotes nobody below the 재정 기조 promotion floor (→ECON-33; a year of operating costs at 표준), and reports a deferral. ← every promotion adds a first-team wage
-  - a window-close call-up (→CLUB-43) is the exception: it skips 데뷔 시점 readiness and the promotion floor.
+  - he promotes nobody while the insolvency stop's cash test holds with every ready prospect's wage added (→ECON-41), and reports a deferral. ← every promotion adds a first-team wage
+  - a window-close call-up (→CLUB-43) is the exception: it skips 데뷔 시점 readiness and that stop.
 
 - STAFF-14 [o] Every hire candidate belongs to a school of football; new free agents (→STAFF-17) take their schools in turn from a seeded order of all eight per season, drawn from their own stream so the other attributes stay put. ← choosing a manager is choosing how the club plays and grows, with a clear price
   | style | tactic | effects |
@@ -47,14 +47,14 @@
   - the founding manager and an interim have no style and are exactly neutral; effects apply to the own club only, in the same profile the pre-match laboratory reads (→MATCH-9).
   - a style's effects act on the result path through its side's profile (→MATCH-9): pass and possession points on its completion and share of the ball, shots points on its shot volume, opponent build-up, final-third and chance points against the opponent's passes and shot creation; they are re-measured with →MATCH-2's calibration.
 
-- STAFF-15 [o] The coaching departments are run by the owner or, when staff appointments are delegated (→WEB-45), by the staff under 코치 기조, a row of the 스태프 area (→ECON-25) that keeps the value in force; the owner does not edit it.
+- STAFF-15 [o] The coaching departments are run by the owner or, when staff appointments are delegated (→WEB-45), by the staff under 코치 기조, a row of the 스태프 area (→ECON-25), set by the owner on 코치진 while staff appointments are his and by the 단장 while they are delegated (→ECON-39).
   | 코치 기조 | the staff hire |
   |---|---|
   | 자원봉사 | an unpaid ability-50 volunteer in every post |
   | 저비용 | ability 45+, the cheapest first, for 2 seasons |
   | 표준 (default) | ability 55+, the cheapest first, for 2 seasons |
   | 최고 수준 | ability 65+, the ablest first, for 3 seasons |
-  - a candidate (→STAFF-49: the post's free agents and other clubs' holders; former-player coaching entry is →STAFF-23/25/27) matches when he meets the option and the club can afford him: cash after his fee and any compensation keeps the 재정 기조 runway (→ECON-33) with his wage in place of the one he replaces; at equal standing a free agent comes before another club's holder.
+  - a candidate (→STAFF-49: the post's free agents and other clubs' holders; former-player coaching entry is →STAFF-23/25/27) matches when he meets the option and the club can afford him: his fee and any compensation, with his wage in place of the one he replaces, pass the insolvency stop's cash test (→ECON-41), and while 유소년 운영 is delegated a youth director's pay stays within the youth share (→ECON-33); at equal standing a free agent comes before another club's holder.
   - delegated, a vacancy or a volunteer's post is filled at once by the first match in the option's order, unless 자원봉사; with no match a volunteer holds it, the staff report it once and look again daily and when the post's candidates change.
   - delegated, at the season boundary an expiring paid coach who meets the option and is affordable is renewed (going wage, 10% fee, the option's term) unless a match beats him clearly: 3+ ability (the ablest first) or a wage 10%+ lower (the cheapest first). One who no longer meets it is replaced by the first match, renewed when there is none and he is affordable, else a volunteer takes the post; under 자원봉사 a volunteer takes it.
   - not delegated: on 1 April a renewal-season inbox item (kind staff-renewal; owner-held staff appointments wait in the 결재함 →WEB-45, →STAFF-48) lists coaches whose contracts end at the close; the owner renews (going wage fixed for a term of 1–5 seasons, 10% fee) or replaces. Unrenewed coaches leave at the close with a staff-renewal vacancy item.
@@ -78,7 +78,7 @@
   - the manager the owner hires leaves the pool; the manager he replaces (not an interim) joins it; a hired candidate never shows as a candidate again while he is in charge.
   - the manager's 교체 action opens the market (→WEB-43): free agents first, then other clubs' managers with club, OVR/POT, school, wage, compensation and total, and says when the list next changes.
 
-- STAFF-18 [o] With manager appointments delegated independently (→WEB-45) the 단장 (→STAFF-20) appoints and renews managers by two rows of the 스태프 area (→ECON-25), and reports every appointment, renewal and search that found nobody. ← owners who leave the club to run itself still need a manager in charge, of the kind they chose
+- STAFF-18 [o] With manager appointments delegated independently (→WEB-45) the 단장 (→STAFF-20) appoints and renews managers by two rows of the 스태프 area (→ECON-25), which he sets while manager appointments are delegated (→ECON-39), and reports every appointment, renewal and search that found nobody. ← owners who leave the club to run itself still need a manager in charge, of the kind they chose
   - 선호 학파: any (default) or one of the eight schools (→STAFF-14); a candidate of another school never matches.
   | 감독 기조 | the staff look for | order | term | other clubs' managers | with no match |
   |---|---|---|---|---|---|
@@ -88,7 +88,7 @@
   | 젊은 감독 | anyone | potential first | 3 seasons | no | the best affordable free agent |
   | 저비용 | anyone | the lowest wage first | 2 seasons | no | the best affordable free agent |
   - a term never runs past the manager's 70th year, and the firefighter signs for 1 (→STAFF-14).
-  - a candidate matches when he meets both rows and the club can afford him: cash after his fee and any compensation keeps the 재정 기조 runway (→ECON-33) with his wage in place of the current one (as →STAFF-15).
+  - a candidate matches when he meets both rows and the club can afford him: his fee and any compensation, with his wage in place of the current one, pass the insolvency stop's cash test (→ECON-41).
   - a vacancy (resignation, retirement, an unrenewed contract, the firefighter leaving) is filled at once by the first match; with none, 표준 waits — the interim stays in charge without stopping the clock while the staff look again daily (the market moves every 4 league rounds →STAFF-17) — and the other options take the best affordable free agent in their order.
   - on 1 April an expiring manager who meets both rows is renewed unless a match beats him clearly in the option's order: 3+ OVR, 3+ 육성, 3+ potential or a wage 10%+ lower. One who does not meet them leaves at the close when a match exists and is renewed when none does.
   - 사람's 감독 tab shows who holds the manager-appointment responsibility, the two rows as they stand (read-only) and whom the staff would appoint today (→WEB-43).
@@ -98,7 +98,7 @@
 - STAFF-20 [o] The 단장 runs the club's player and manager business between the owner and the manager: when their separate responsibilities are delegated (→WEB-45) he takes contract talks (→CLUB-26), the manager post (→STAFF-18) and transfers — offers (→CLUB-18), stances (→CLUB-22) and signings (→CLUB-33) — and his reports name him. ← as at clubs with a sporting director, the head coach asks for players and the director decides; our manager picks and trains the team and never buys
   - he is hired, renewed and released like a coach (→STAFF-11, →STAFF-15, →STAFF-16), from the 단장 market (→STAFF-49); a new club starts with an unpaid ability-50 volunteer, and with the coaching departments delegated the staff fill his post by 코치 기조.
   - he carries the transfer negotiation the chief scout carried before: a selling club's acceptance (→CLUB-18) + (ability − 50)/250, and as a negotiator +0.1 more and asking fees ×0.9; a vacant post −0.05. His trait is negotiator, closer or none, and it sets how he bids (→CLUB-41).
-  - a decision its responsibility keeps with the owner is never his; he sets no direction row.
+  - a decision its responsibility keeps with the owner is never his; while one is delegated he sets its settings (→ECON-39), and he plans the money of every delegated decision (→ECON-33).
   - 사람's 코치진 shows his card first, with the responsibilities currently delegated to him (→WEB-43).
 
 - STAFF-21 [o] Each school of football prefers attributes and play traits, and a player who has them adapts to its manager faster (→PLAYER-12). ← a gegenpressing coach settles runners first, a positional coach passers
@@ -154,8 +154,8 @@
 
 - STAFF-26 [o] The recruitment department has a standing director/manager support policy: 단장 우선, 균형 or 감독 우선, with 균형 selected for a new game.
   - automatic mediation follows that policy; direct mediation can choose differently for the current case without silently changing the standing policy.
-  - the policy decides whose reasoning receives greater weight; financial permissions and spending checks remain owned by →ECON-33.
-  - the policy is a recruitment row of the direction (→ECON-25) and keeps the value in force; the owner does not edit it. Detailed resolution rules are →CLUB-39; numerical reactions are →CLUB-36.
+  - the policy decides whose reasoning receives greater weight; financial permissions and spending checks remain owned by →ECON-33/41.
+  - the policy is a recruitment row of the direction (→ECON-25): the owner sets it on 스카우팅 while 선수 영입 is his; while it is delegated the 단장 sets it by his temperament (→ECON-39). Detailed resolution rules are →CLUB-39; numerical reactions are →CLUB-36.
 
 - STAFF-27 [o] Qualified/willing former-player coaching candidates join their assigned department's free agents (→STAFF-49, →STAFF-15/25/38/40).
   - unemployed candidates remain available as the same retained people across the market's refreshes and count toward the pool's size; never reroll their identity, actual age, specialty, learned ability or coaching service. Initial coaching values remain →STAFF-41.
@@ -272,12 +272,14 @@
   - a hired candidate never shows as a candidate again while he holds a post with us.
 - STAFF-50 [o] A coach's, chief scout's or 단장's career is recorded only when he moves: hired or released by us, joining or leaving a free-agent pool, placed under →STAFF-43. A club's derived holder has no record until then; his time there reads from the season his holder count started. ← every club's backroom costs nothing until someone moves or looks
   - his tenures' club results, the league finish of each season he held a post (→LEAGUE-1), are read from the archived standings when his career is opened, and are never stored.
+- STAFF-51 [o] Every staff member has a temperament (성향), fixed for his career and drawn from his identity: 안정 지향 3 in 10, 균형형 4 in 10, 공격형 3 in 10; a vacant post acts as 안정 지향. The 단장's sets the step he acts on for the owner's spending request (→ECON-33) — 안정 지향 one step below a request of 넉넉히 or 아낌없이, 공격형 적당히 when asked 아껴서, 균형형 the request — and says why in his plan; the youth director's sets 데뷔 시점 while 유소년 운영 is delegated (→ECON-39). ← the same request plays out differently under different people, so who holds the post matters
 
 ## flow
 
 - Second career: active-player aptitude evaluation → retirement announcement → playing-coach appointment or retirement/coaching candidacy → actual coaching employment for at least three cumulative years → management candidacy only with managerial aptitude → direct/delegated appointment.
 
 ## chg
+- r42 261113 STAFF-13✎ rows and 재정 기조, promotion floor→delegate's settings, 단장 plans all money, promotions held by the insolvency stop; STAFF-15/18✎ 재정 기조 runway→insolvency stop (+youth pay ≤ youth share), 코치 기조 not owner-edited→owner's while direct, 단장's while delegated; STAFF-20✎ no direction row→sets delegated settings; STAFF-26✎ not owner-edited→owner's or the 단장's; STAFF-51+ temperament
 - r41 261111 STAFF-14✎ a style's effects bend the grid engine's decision tables and duels→act on the result path through the side's profile
 - r40 261104 STAFF-11✎ three seeded candidates a season per department (마당발 four, +5)→the post's free agents and other clubs' holders; chief scout market size and potential→how far the shortlist looks and how exactly others read; spotter higher potential found→young players ranked by potential; STAFF-15✎ the season's three generated candidates→the post's market, compensation in the money check, free agents first at equal standing; STAFF-20✎ 단장 from three candidates a season→the 단장 market; STAFF-27✎ in addition to three generated candidates→among the department's free agents; STAFF-43✎ a vacant training post at another club→a post of a club nobody owns, replacing its holder; STAFF-49+ every club's 단장, chief scout and coaches derived and poachable for one annual wage, free-agent pools of 3–6 per post; STAFF-50+ careers recorded only on a move, tenure results read from archived standings
 - r39 261103 STAFF-11✎ three candidates a season→+four with 마당발 (top band, +5 ability, drawn wage); STAFF-17✎ free-agent pool 4–8→+5–9 with 마당발, drawn free agents +5 ability

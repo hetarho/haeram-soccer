@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r67 | Define the browser-demo rules for browser persistence and protocol.
+> r68 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -52,7 +52,7 @@
   - until the feature boundary in →SAVE-18, earlier rules cause compatibility failure (→SAVE-11): the slot lists 이전 규칙 with export and delete only, imports name the rules they need, and nothing overwrites the career.
   - Historical release-reset behavior is retired (→!SAVE-29).
   - the 100-season profiles of SAVE-13 are measured again on the new model and must still fit SAVE-4.
-- SAVE-17 [o] A game's persisted career includes its seven business responsibilities, progression mode and observation triggers; the waiting days of each owner-held approval (→STAFF-48), absent in older saves, which start counting at 0; its standing director/manager support policy; aptitude/person continuity and staff-career facts; and outstanding/resolved mediation promises (→WEB-45/5, →STAFF-26, →HIST-14/15).
+- SAVE-17 [o] A game's persisted career includes its seven business responsibilities, progression mode and observation triggers; the waiting days of each owner-held approval (→STAFF-48), absent in older saves, which start counting at 0; its standing director/manager support policy; the owner's spending request per delegated decision that spends money, absent at 적당히 (→ECON-33); the 단장's season plan — its season, the income it rests on and the season's player sales when made — which, absent or from another season, is made at the next settled league round (→ECON-40); aptitude/person continuity and staff-career facts; and outstanding/resolved mediation promises (→WEB-45/5, →STAFF-26, →HIST-14/15).
   - save/export/import preserve outstanding commitments and the linked person's actual age/history, without duplicate fulfilment, appointments or payments on reload.
   - retain existing corruption/compatibility protection and 100-season lossless budgets (→SAVE-4/11/13). Feature activation and compatibility for existing careers require →SAVE-18.
 
@@ -108,7 +108,10 @@
   - Current device preferences, notification/read markers, game index and the commit manifest may still use localStorage; they are current metadata, never game-checkpoint payloads.
   - IndexedDB checkpoints retain generation ordering, verified previous-copy recovery, unsupported-save protection and explicit deletion (→!SAVE-3/5/6/11). This policy supersedes historical release-reset clauses, without changing simulation rules or pruning career facts.
 
+- SAVE-30 [o] A supported career saved with per-decision 재정 기조 or per-person wage caps opens with every other fact kept: those are dropped on load and every delegated decision runs at 적당히 (→ECON-33). A career whose direction still carries the retired club 재정 기조 row, which the game's UI never wrote, is refused as incompatible, failing safe (→ARCH-16, →SAVE-5); it is never converted. ← removing an owner control must not end a career, and no shim is kept for a row no UI wrote
+
 ## chg
+- r68 261113 SAVE-17✎ per-decision 재정 기조 and wage caps→the owner's spending request per delegated decision (absent = 적당히) and the 단장's season plan (season, planned income, sales at the plan); SAVE-30+ per-decision 재정 기조 and wage caps dropped on load, a retired 재정 기조 direction row refused as incompatible
 - r67 261111 SAVE-23✎ the continuous-match and complete aggregate-result model→a match model; a settled match replays under its revision→keeps the revision as a label and replays from its record alone, earlier revisions' match code not kept
 - r66 261110 SAVE-28✎ every unsupported summary refused→recognized obsolete career-card cache omitted and reconstructed once; obsolete-content compatibility not required, current validation and unknown/future rejection preserved
 - r65 261103 SAVE-2/3/4/5/10/11/14/16/18/19/25/26✎ retire localStorage checkpoint compatibility, fallback and startup cleanup; SAVE-29+ beta IndexedDB-only checkpoints, current device metadata retained

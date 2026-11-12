@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r67 | Define the browser-demo rules for squad and growth.
+> r68 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its generated squad becomes its own players, filled to 20 with players generated at its level (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -59,7 +59,7 @@
   - another club's offer is at least one whole currency unit, so no offer reads 0 (→WEB-67).
   - bar by the 매각 기조 card (→ECON-22), of value and for a prospect (aged 22 or under with potential at least 8 above ability): 셀링 클럽 110%/160%, 쇼케이스 120%/180%, standard 130%/200%, 강경 협상 150%/230%, 핵심 지키기 150%/250%
   - age 30–32 −15 points, 33+ −30; contract in its final season −20, one season after this −10
-  - fixed-cost runway under the first 재정 기조 step (→ECON-33; 13 rounds at 표준) −20, under the second (30 rounds at 표준) −10; never below 80%
+  - a cash crisis, a fixed-cost runway under 4 rounds (→ECON-41), −20; otherwise the players' wage bill above the 단장's sales line (→ECON-33; 60% of the season's planned income at 균형) −10, more than 10 points above it −20; never below 80%
 
 - CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin; a motivator manager takes 2 off a defeat), drifts 15% per settled round toward a baseline of 58 + 4 per squad-investment level above standard + (manager trust − 50)/10 + the manager style, build and synergy terms + 1 for each 리더 in the last starting XI (at most 3, →PLAYER-9), within 30–80, falls 2 more per round while starters average fatigue ≥ 40, 1 more in each settled round from the squad's third 하드 round in a row (→CLUB-11), and 1 more in each settled round for each overdue owner approval, at most 3 (→STAFF-48). Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
@@ -97,7 +97,7 @@
   | 12% | 36–90 | 발목 인대, 중족골 골절 |
   | 3% | 120–240 | 전방 십자인대 파열, 아킬레스건 |
   - injured players are left out of the lineup while eleven fit players exist; the medical report is an inbox item and an event; healed injuries clear.
-- CLUB-24 [o] With player sales delegated, a bid of 150%+ for an untouchable player is decided by the staff with the manager: the build's market card sets the price (셀링 클럽 150%, 쇼케이스 175%, standard 200%, 강경 협상 225%, 핵심 지키기 never), a runway under the second 재정 기조 step (→ECON-33; 30 rounds at 표준) lowers it 25 points, a starter without a bench player who plays his slot within 3 of his 실효 OVR there raises it 25, and a runway under its first step (13 rounds at 표준) sells. The report states the price and each step. ← the owner's club identity and cash, not a fixed number, decide when a star is let go
+- CLUB-24 [o] With player sales delegated, a bid of 150%+ for an untouchable player is decided by the staff with the manager: the build's market card sets the price (셀링 클럽 150%, 쇼케이스 175%, standard 200%, 강경 협상 225%, 핵심 지키기 never), a players' wage bill more than 10 points above the 단장's sales line (→ECON-33) lowers it 25 points, a starter without a bench player who plays his slot within 3 of his 실효 OVR there raises it 25, and a fixed-cost runway under 4 rounds (→ECON-41) sells. The report states the price and each step. ← the owner's club identity and the wage bill it carries, not a fixed number, decide when a star is let go
 
 - CLUB-25 [o] Every player has a market wage from his OVR (→PLAYER-6), age and potential, the division he is paid on and the football index (→ECON-26); it rises steeply with OVR, so a star earns many times a squad player. ← players are paid what the market says they are worth
   - the estimated wage-era pilot (1992:1, 2005:1.5, 2025:2.5) was withdrawn after its lived books failed the every-nonproject-club solvency condition (measured261109). No additional wage-era factor is in production; player quotes retain the released curve and era star spread. The failed candidate and exact payroll observations are retained in the economy calibration artifacts. ← increasing wages across every club created a new2010 German book paying159.38% of its income
@@ -125,8 +125,7 @@
   - Ballon d'Or premium (→PLAYER-27): ×2 for a winner in one of the last three closed seasons, plus 0.4 for each additional win in that window (two wins ×2.4, three ×2.8); ×1.4 for a second or third place there without a win; otherwise ×1. This multiplies the ability-based market wage, raised to the era's star pay spread (→!CLUB-48). The improved-contract test and 재계약 기조's caps measure against market wage × this premium. ← a winner's next contract is priced on the award as well as his ability, and a delegated club does not lose him to its own cap
   - goodwill: squad investment (→ECON-16) −5/0/+5/+10/+15%; the completed training ground +1 to +5% by level (→ECON-32); the 라커룸 문화 card: 가족 같은 클럽 +5, 스타 대우 +10 for players rated 70+, 철저한 경쟁 −5; 긴축 재정 −5; (morale − 60)/4 %; within −10 to +30%.
   - the owner offers the floor or more with a term, or declines; the talk shows demand, floor, the contract's clauses (→CLUB-29), yearly cost and runway before the choice (→WEB-68).
-  - delegated (→STAFF-13): the 단장 (→STAFF-20) offers the floor for 2 seasons past this one (1 from age 32), never ending before the running contract, when 재계약 기조 keeps the player at that floor and 재정 기조 allows the raise (→ECON-33): cash after it keeps the runway, the wage bill after it stays at or below the ceiling of the club's revenue over the last 12 months, and the season's cash projection with it still ends the season keeping the runway; otherwise he declines and says why (→CLUB-27). ← the cash checks alone let a promoted club's staff agree raises its income could not carry
-  - revenue over the last 12 months: this season's turnover so far (competition, matchday and commercial income; player trading and owner capital excluded, →ECON-30) plus last season's for the league rounds not yet played; a club bought this season reads last season from the books it was bought with (→ECON-38); a club without a completed season counts its season so far at its pace over a whole season. ← a 2000 takeover read £0 over the last 12 months on its first owned day, so the wage-bill ceiling refused every signing of its first season (measured 261110)
+  - delegated (→STAFF-13): the 단장 (→STAFF-20) offers the floor for 2 seasons past this one (1 from age 32), never ending before the running contract, when 재계약 기조 keeps the player at that floor and the 단장's plan allows the raise (→ECON-33): the raise fits the room the squad share of the season's planned income leaves above the players' wage bill, and the insolvency stop lets it through (→ECON-41); otherwise he declines and says why (→CLUB-27). ← the cash checks alone let a promoted club's staff agree raises its income could not carry
   - 재계약 기조, whose area is defined in →ECON-25, says whom the staff keep and how far they go:
     | option | keeps | floor at most |
     |---|---|---|
@@ -160,7 +159,7 @@
   | 기본기 집중 | ×1.3 | ×0.9 | ×0.9 |
   | 1군 준비 | ×0.9 | ×1.15 | ×1.25 |
   - his rule: 1군 준비 when a U-19 or U-21 prospect is within 5 OVR of being ready (→STAFF-13; within 10 under 데뷔 시점 빠른 데뷔, and only U-21 under 늦게 →CLUB-32); else 기본기 집중 when U-17 holds more prospects than U-19 and U-21 together; else 균형.
-- CLUB-32 [o] Two rows of the 유소년 area (→ECON-25) say what the academy is for and how early its prospects go up; the delegated youth director promotes, releases and the staff list by them (→STAFF-13, →CLUB-22), and 데뷔 시점 also sets the coaches' focus rules (→CLUB-13, →CLUB-31). ← the owner's idea of his academy, not a fixed rule, decides what becomes of its boys
+- CLUB-32 [o] Two rows of the 유소년 area (→ECON-25) say what the academy is for and how early its prospects go up — set by the owner on the 유소년 page while 유소년 운영 is his and by the youth director while it is delegated (→ECON-39); the delegated youth director promotes, releases and the staff list by them (→STAFF-13, →CLUB-22), and 데뷔 시점 also sets the coaches' focus rules (→CLUB-13, →CLUB-31). ← what the academy is for is the call of whoever runs it: the owner, or the youth director he hands it to
   | 육성 목표 | the youth director |
   |---|---|
   | 표준 (default) | releases a prospect of 19+ whose potential is below the weakest first-teamer of his line |
@@ -174,21 +173,21 @@
   | 준비된 뒤 | at the starters' level of his line | - |
   | 늦게 | as 표준, but not before 19 | U-21 growth ×1.15 |
 
-- CLUB-33 [o] Signings run through three people: the chief scout keeps a shortlist all season, the manager asks for lines and slots and names his pick from it, and whoever holds player recruitment decides — the owner, or with recruitment delegated (→STAFF-13) the 단장 (→STAFF-20) within 재정 기조 (→ECON-33); the owner's own bids are never the 단장's to answer. ← the list is ready before a window opens, and a manager's wishes cost something when nobody meets them
+- CLUB-33 [o] Signings run through three people: the chief scout keeps a shortlist all season, the manager asks for lines and slots and names his pick from it, and whoever holds player recruitment decides — the owner, or with recruitment delegated (→STAFF-13) the 단장 (→STAFF-20) within his plan for the owner's request (→ECON-33); the owner's own bids are never the 단장's to answer. ← the list is ready before a window opens, and a manager's wishes cost something when nobody meets them
   - shortlist (스카우트 명단): on a season's first day, on each window's opening day and after every 4th league round, the chief scout lists candidates per line (→PLAYER-3) found within his reach (→!CLUB-51) as 영입's rows shape it (→CLUB-14): by the configured sporting measures (ability then potential, or potential first), free agents first only when those measures tie, then id. A listed player who joins us or another club, retires or falls outside the reach drops off; 사람's 이적시장 shows the list, the day it was drawn and the next draw (→WEB-43).
   - requests (감독 요청), drawn with the shortlist: every short line (fewer than 2 GK, 6 DF, 6 MF or 4 FW, or under 20 players →CLUB-40), then the slot of his formation (→STAFF-22) whose starter a shortlisted candidate who plays its position at 준수 or better beats by the most at that slot (OVR there × level, adaptation left out), when by 5 or more; at most three. For each the manager names a pick among the shortlisted who fit it: the ablest, then potential; a 육성형 manager (→STAFF-14) or one with the youth trait (→STAFF-12) the highest potential among those aged 23 or under first. An interim asks for nothing.
   - at a window's close, a manager whose requests at its opening saw no player join in the window who fits one (of the short line, or playing the requested slot's position at 준수 or better) loses 3 trust, whoever held recruitment; a met request gains nothing.
   - the close is judged the day after the window's last day, so a deadline-day signing counts; a loan joining counts as joining; a manager appointed after the opening is not judged on his predecessor's requests; a club's founding day is its first summer window's opening.
   - with player recruitment delegated the 단장 looks on the window's opening day and every 7th day after it, and every day while a replacement need is open (→CLUB-42); a look makes at most one move, and none while one of his bids is pending.
-  - needs, first met first: a short line, then a replacement (→CLUB-42), then an upgrade: a candidate who beats a slot's starter at that slot (as a request does) by the margin of 재정 기조 (표준 5, 적극 3, 공격적 2), while the squad has 24 players or fewer; 안정적 and 신중 never upgrade. Requests come before the others.
+  - needs, first met first: a short line, then a replacement (→CLUB-42), then an upgrade: a candidate who beats a slot's starter at that slot (as a request does) by the margin of the 선수 영입 step he acts on (적당히 5, 넉넉히 3, 아낌없이 2, →ECON-33), while the squad has 24 players or fewer; at 최소한만 and 아껴서 he never upgrades. Requests come before the others.
     - a player who joined in this window and plays the slot's position stands as its measure when he beats its starter there, each such player for one slot only, so a signing still settling in (→PLAYER-11) closes the slot he was bought for. ← measured on the starter alone the slot stayed open and the 단장 bought for it again in the same window (measured 261110: fee signings 20 → 16 and 11 → 10 on two reference careers)
-  - upgrades per window: 표준 1, 적극 2, 공격적 3; a short line has no cap.
+  - upgrades per window: 적당히 1, 넉넉히 2, 아낌없이 3; a short line has no cap.
   - the candidate who fits the need: the manager's pick, then the rest of the shortlist, then the players within the scout's reach (→CLUB-51); within each band by ability, then potential, free agents first only when both tie, then id; never a player he bid for in this window before (a negotiator's raised bid excepted, →CLUB-41), never on loan. A candidate who fails the money checks is passed over for the next affordable fit. ← available cash buys a sporting improvement rather than automatically preferring every free player
   - for a request with an actual mediation decision, its support outcome in →CLUB-39 governs whether to defer or prioritize a qualifying alternative/the manager's pick. Ordinary recruitment timing, suitability, limits and money checks still apply.
   - he signs a free agent at once and bids for anyone else as his trait bids (→CLUB-41).
-  - money: the fee is at most the 재정 기조 share of the cash above its runway, and with his wage the runway, the wage bill ceiling and the season's cash projection still hold, as for a raise (→ECON-33).
+  - money: with his wage the players' wage bill stays within the squad share and the fee plus a year of his wage fit the season's money for signings (→ECON-33), and the insolvency stop lets it through (→ECON-41); a short line filled with a free agent needs the stop alone.
   - each move and each answer reaches the inbox as a 단장 report naming the need, the manager's request when it is one, the row behind it and the money check.
-  - targets for delegated recruitment, measured on reference careers: one selling club supplies at most two of a window's signings and at most a quarter of the club's fee signings over any five seasons; a top-flight club recruiting under 공격적 with the cash to pay (owner funding included, →OWNER-3) pays at least 0.5× the British record then standing (→CLUB-46) for its dearest signing within its first three such seasons, as Chelsea (2003–06) and Manchester City (2008) did. ← the owner's 2000s–2020s career, told to spend without limit, took 5 of its 10 dearest signings from one club (four in 2025/26) and 3 from another in 2008/09, and its dearest stayed near a quarter of the record (£7.7m in 2006/07, £32.3m in 2026/27)
+  - targets for delegated recruitment, measured on reference careers: one selling club supplies at most two of a window's signings and at most a quarter of the club's fee signings over any five seasons; a top-flight club recruiting at 아낌없이 (measured under the retired 재정 기조 공격적) with the cash to pay (owner funding included, →OWNER-3) pays at least 0.5× the British record then standing (→CLUB-46) for its dearest signing within its first three such seasons, as Chelsea (2003–06) and Manchester City (2008) did. ← the owner's 2000s–2020s career, told to spend without limit, took 5 of its 10 dearest signings from one club (four in 2025/26) and 3 from another in 2008/09, and its dearest stayed near a quarter of the record (£7.7m in 2006/07, £32.3m in 2026/27)
 
 - CLUB-34 [o] Actual financial opposition by the director to an unmet manager reinforcement request produces a mediation event under →CLUB-38, with each person's actual explanation.
   - mediation belongs to player recruitment (→WEB-45): owner-held recruitment waits in the 결재함 for mediation without stopping either progression mode (→STAFF-48); delegated recruitment resolves it under →STAFF-26 and reports the result.
@@ -238,7 +237,7 @@
   | no trait | 100% | the next candidate | accepts when it passes the money checks, else the next candidate |
   | 속전속결 | 110% | the next candidate | accepts when it passes the money checks, else the next candidate |
   - in a window's last 7 days a negotiator bids at least 100% and answers a counter as the others do. ← the deadline ends haggling
-  - 재정 기조 공격적 adds 10 points to every bid; every bid and every acceptance passes →CLUB-33's money checks; the asking fee is the one he faces, a negotiator's ×0.9 included (→STAFF-20), and bids are answered as →CLUB-18.
+  - a 단장 acting on 아낌없이 for 선수 영입 adds 10 points to every bid (→ECON-33); every bid and every acceptance passes →CLUB-33's money checks; the asking fee is the one he faces, a negotiator's ×0.9 included (→STAFF-20), and bids are answered as →CLUB-18.
 - CLUB-42 [o] A departure opens a replacement need for the leaving player's line (→PLAYER-3) when he was in the starting XI as home shows it (→WEB-58) or the squad is under 20 after it (→CLUB-40), whoever decided it. ← a club that loses a starter or thins its squad buys again in the same window
   - departures: a sale (→CLUB-22), and at the close a contract run out (→CLUB-28) or a retirement (→CLUB-3); the close's top-up comes first, so after the close only a departed starter opens a need.
   - with player recruitment delegated the 단장 looks the day after it opens and every day after while it is open (→CLUB-33); candidates of the line come in →CLUB-33's order, and one the money checks rule out is passed over for the next, cheaper one.
@@ -246,7 +245,7 @@
   - with recruitment held by the owner, the departure's report names the open need and the owner buys.
 - CLUB-43 [o] At a window's close, judged the day after its last day (→CLUB-33), each replacement need still open and then each player the squad lacks below 20 is called up from the academy. ← an academy, not an empty bench, covers a failed window
   - with academy promotion delegated the youth director (→STAFF-13) calls up the ablest prospect of the need's line from the promotion age (→CLUB-16), else the ablest prospect of any line, else a generated 18-year-old as at the close (→CLUB-3); for a player the squad lacks, the line the formation lacks most.
-  - a call-up ignores 데뷔 시점 readiness (→CLUB-32) and the promotion cash floor (→ECON-33), signs the first professional contract a promotion signs, and is reported.
+  - a call-up ignores 데뷔 시점 readiness (→CLUB-32) and the insolvency stop that holds promotions (→ECON-41), signs the first professional contract a promotion signs, and is reported.
   - with academy promotion held by the owner, the youth director's report recommends the same prospects and the owner promotes; no generated player joins before the close's top-up.
   - never above the registration limit (→CLUB-44).
 
@@ -311,12 +310,12 @@
     |---|---|---|
     | A | 즉시 주전 | gap ≥ 10, twice the request margin |
     | B | 주전 보강 | gap ≥ 5, the request margin: the manager would ask for him |
-    | C | 경쟁 보강 | gap ≥ 2 (공격적's upgrade margin, the smallest the 단장 acts on), his line is short (→CLUB-33), or he is 23 or under, the slot is his main position and his potential is at least 5 above the starter's value there |
+    | C | 경쟁 보강 | gap ≥ 2 (아낌없이's upgrade margin, the smallest the 단장 acts on), his line is short (→CLUB-33), or he is 23 or under, the slot is his main position and his potential is at least 5 above the starter's value there |
     | D | 백업 | gap above −5 |
     | E | 보강 효과 없음 | otherwise |
   - the verdict names its slot, his value there and the starter's; its reasons add what the gap does not say, each a fact of the current world, at most two for and two against, in this order:
     - for: the manager's pick for an open request · he meets an open request · his line is short · growth room (potential − OVR) of 5 or more at 23 or under · a free agent, no fee · tactical fit up (→CLUB-14)
-    - against: on arrival 3 or more below settled (→PLAYER-11) · 29 or older, pace and stamina falling each season (→PLAYER-17) · outside 재정 기조's money check for a signing (→ECON-33), with its reason
+    - against: on arrival 3 or more below settled (→PLAYER-11) · 29 or older, pace and stamina falling each season (→PLAYER-17) · outside the 단장's money checks for a signing (→CLUB-33), with its reason
   - the verdict reads exact facts (→PLAYER-18) whoever holds the chief scout post, as the shortlist is drawn; it changes nothing in the world and never gates an approach (→WEB-43).
 
 - CLUB-49 [o] Free agents (자유계약 선수) are players the world holds without a club; nobody becomes one because a list is read. ← a free signing is someone football let go, not a name made up for the owner
@@ -342,6 +341,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r68 261113 CLUB-18/24✎ sell cuts at 재정 기조 runway steps→wage bill over the 단장's sales line, runway <4 rounds a crisis; CLUB-26✎ raise checks runway/12-month ceiling/projection→squad-share room + insolvency stop, 12-month revenue removed; CLUB-33/41/47✎ 재정 기조 options→request steps, fee share→squad money + stop; CLUB-32✎ +youth director while delegated; CLUB-43✎ promotion floor→insolvency stop
 - r67 261110 CLUB-26✎ revenue over the last 12 months of a club bought this season read from this season's turnover alone (£0 on its first owned day)→last season from the books it was bought with
 - r66 261110 CLUB-33✎ an upgrade measured against the slot's starter alone→a player who joined in this window and plays its position stands as its measure when he beats the starter, each for one slot
 - r65 261110 CLUB-33✎ delegated recruitment without targets→targets: one seller ≤2 of a window's signings and ≤¼ of fee signings over 5 seasons; a funded 공격적 top-flight club's dearest signing ≥0.5× the standing British record within 3 seasons; rules unchanged until measured
