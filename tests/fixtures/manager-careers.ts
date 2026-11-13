@@ -7,6 +7,7 @@ import { ensureManagerHistory } from '../../packages/engine/src/manager-history-
 import { MATCH_MODEL_RELEASE } from '../../packages/engine/src/match-model-release';
 import { preparedWorld } from './prepared-world';
 import { Host } from '../../apps/web/src/runtime/host';
+import { adoptSquads } from '../../apps/web/src/runtime/squadActivation';
 import {
   managerRowView,
   type ManagerLegacyView,
@@ -76,9 +77,12 @@ export async function managerJourneyCareer(): Promise<ManagerJourneyCareer> {
   const stored = preparedWorld('manager-journey');
   // Prepared on rules 4.0.0 and an earlier match-model revision: the build's writer rewrites the
   // rules label (→SAVE-10, upgradeWorldRules) and moves it to the released model (→SAVE-23,
-  // Host.adoptModel) in one revision at load, so the journey imports and compares it as held.
-  const w = upgradeWorldRules(stored, CURRENT_CATALOG);
-  if (activateMatchModel(w, MATCH_MODEL_RELEASE) && w === stored) w.revision++;
+  // Host.adoptModel), then adopts persisted squads and player links, in one revision at load.
+  // Expected views and complete canonical facts must start after that same writer boundary.
+  const rules = upgradeWorldRules(stored, CURRENT_CATALOG);
+  const modelChanged = activateMatchModel(rules, MATCH_MODEL_RELEASE);
+  if (modelChanged && rules === stored) rules.revision++;
+  const w = adoptSquads(rules, rules !== stored || modelChanged);
   const { pages, views } = await managerHistoryRead(w);
   const tenures = tenureViews(views),
     facts = w.managerHistory!.tenures;

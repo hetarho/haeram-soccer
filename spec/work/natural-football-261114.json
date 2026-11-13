@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T20:54:00.913Z",
-  "sourceCommit": "c093073805f15024c7f8e993ff9539eba86e5af2",
+  "snapshotAt": "2026-11-13T21:07:50.123Z",
+  "sourceCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -79,12 +79,12 @@
   },
   "summary": {
     "total": 30,
-    "completed": 24,
-    "remaining": 6,
-    "running": 2,
-    "review": 2,
+    "completed": 25,
+    "remaining": 5,
+    "running": 1,
+    "review": 3,
     "blocked": 0,
-    "unassigned": 2
+    "unassigned": 1
   },
   "tasks": [
     {
@@ -103,15 +103,6 @@
         "T885"
       ],
       "lane": "current-browser-scenes",
-      "status": "reviewing"
-    },
-    {
-      "id": "T907",
-      "title": "Normalize prepared manager careers at the writer boundary",
-      "dep": [
-        "T893"
-      ],
-      "lane": "manager-browser-adoption",
       "status": "doing"
     },
     {
@@ -122,7 +113,7 @@
         "T889"
       ],
       "lane": "throughput-contract-provenance",
-      "status": "todo"
+      "status": "ready"
     },
     {
       "id": "T910",
@@ -140,7 +131,7 @@
         "T885"
       ],
       "lane": "expiry-contract-boundaries",
-      "status": "doing"
+      "status": "reviewing"
     }
   ],
   "attempts": [
@@ -1762,24 +1753,31 @@
       "contributors": [
         "nf14-codex-browser-current"
       ],
-      "status": "reviewing",
+      "status": "doing",
       "reason": null,
       "createdAt": "2026-11-13T20:33:34.366Z",
       "startCommit": "e434933fb0e41b636c1d62fad481ed951e17a31b",
-      "verifiedCommit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
       "submittedBase": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
       "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
       "submittedAt": "2026-11-13T20:48:47.475Z",
       "risk": null,
-      "review": {
-        "id": "5c8fd682-ddc0-42d1-83d9-97d6c8169d1d",
-        "owner": "pr14-independent-browser-scenes",
-        "status": "reviewing",
-        "commit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
-        "baseCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
-        "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
-        "createdAt": "2026-11-13T20:52:32.309Z"
-      },
+      "reviewHistory": [
+        {
+          "id": "5c8fd682-ddc0-42d1-83d9-97d6c8169d1d",
+          "owner": "pr14-independent-browser-scenes",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed frozen T906 submission 0e88658d against base 187a9c22 and the complete primary ARCH-21/WEB-42/WEB-59/CLUB-49/WORLD-16 blocks. The seven scoped journeys retain original user operations, timeouts, full-season and eight-public-loan workloads. CSV checks retain BOM, complete schema and exact exported IDs/births/count; roster checks use exact actual active counts rather than a loose matcher. The private release helper uses existing enrollment/release/offer APIs, preserves actual player data and verifies scout reach plus eligibility/affordability without changing attributes or production settings. Independent minimal three-club checks on the frozen source passed both an existing-employment release (same ID/birth/attrs/cash, one closed job and one pool row) and a full-40-player rejection with deep-equal unchanged input; repeated no-candidate calls also preserve state. Evidence: /Users/ihaelam/project/haeram-soccer/.tmp/pb14-final-review/.tmp/t906-independent-probe.mts and .json. Initial direct execution lacked review-checkout dependencies; the successful isolated transpilation used existing workspace dependencies with browser packages external, without installing or changing the review tree. Reviewed the original-constructor clock proof (0.820 s): the two actual Spanish MF moves produce exactly one natural day2 offer, fee1978685/due7, pending through day6, with validateWorld success; no deadline/seed/attribute override. Existing six affected unit passes and source-equivalent type/lint/format/12-locale receipts were inspected; bc0f8f6e and the submission have identical test source. All original birth/person, promotion/career, cap/no-mutation and clock observations remain. No P1/P2 finding. Fresh browser/application-build/integration/full-suite verification remains with the coordinator; none ran in this review.",
+          "findings": [],
+          "commit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+          "baseCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
+          "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
+          "createdAt": "2026-11-13T20:52:32.309Z",
+          "finishedAt": "2026-11-13T20:59:53.019Z",
+          "invalidatedAt": "2026-11-13T21:06:55.024Z",
+          "invalidationReason": "worker resumed or blocked"
+        }
+      ],
       "steps": [
         {
           "taskId": "T906",
@@ -1822,6 +1820,8 @@
       "submittedBase": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
       "submissionId": "324f580a-f7f0-4822-8217-f02e4c4c4443",
       "submittedAt": "2026-11-13T20:44:52.871Z",
+      "integratedCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+      "integratedAt": "2026-11-13T20:54:35.148Z",
       "risk": null,
       "review": {
         "id": "769f1103-e1fd-4e84-8190-fdff857edc8b",
@@ -1855,6 +1855,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T20:44:09.350Z",
           "finishedAt": "2026-11-13T20:44:52.652Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:54:01.258Z",
+          "finishedAt": "2026-11-13T20:54:34.749Z"
         }
       ]
     },
@@ -1913,9 +1920,49 @@
       "contributors": [
         "nf14-codex-manager-writer-fixture"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-13T20:51:32.686Z",
-      "startCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45"
+      "startCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
+      "verifiedCommit": "4504f1ff86dc075f212e0e35e43275bb1ed683bd",
+      "submittedBase": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+      "submissionId": "298630ce-f941-46cc-bd10-aba684dfbf60",
+      "submittedAt": "2026-11-13T20:57:37.410Z",
+      "risk": null,
+      "review": {
+        "id": "9007dcd7-a072-4289-a033-fdaed96ad94e",
+        "owner": "pr14-independent-writer-fixture",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Reviewed frozen T907 submission 4504f1ff against base c5a6650f. The implementation is confined to managerJourneyCareer fixture preparation and reuses the production writer adoptSquads helper after existing rules/model activation, before expected views or canonical facts. The revised flag matches Host writer chaining: rules/model/squad adoption advances revision exactly once; an already adopted world remains idempotent. Production Host/read behavior, raw managerActivationCareer, prepared bytes/builders and every desktop/mobile browser assertion, canonical field and240000 ms limit are unchanged. Inspected the complete SAVE-19 block and the previously reviewed ARCH-21/WORLD-16/WEB-59 contracts, production activation ordering, independent-copy fixture loader and existing adoption units. Source at5ec64a4b equals submitted test source; five affected cases in two files and type/lint/format/12-locale receipts pass. Inspected supplied provenance code and output: raw508 becomes509 once,450 squads and358 people are added, existing shared people/records are unchanged; initializeReadModels accounts for the prior18 records, so the exact boundary delta is18 to174 (+156). Both valid writer-step orders compare as complete canonical worlds, adoption is idempotent, and fresh raw loads plus prepared bytes stay unchanged. Prepared SHA0dfb0bc85045e23effeec2e07a434ff39f7faffdf6e8cfc3ed915777335b6f06 and source/dependency manifest are retained. No P1/P2 finding. I did not rerun a Host/codec/world-progression/browser/application-build/full-suite command; existing evidence was sufficient for this bounded fixture correction. The unchanged desktop/mobile manager-history journeys and complete final gate remain coordinator-owned.",
+        "findings": [],
+        "commit": "4504f1ff86dc075f212e0e35e43275bb1ed683bd",
+        "baseCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+        "submissionId": "298630ce-f941-46cc-bd10-aba684dfbf60",
+        "createdAt": "2026-11-13T21:01:48.761Z",
+        "finishedAt": "2026-11-13T21:05:10.480Z"
+      },
+      "steps": [
+        {
+          "taskId": "T907",
+          "commit": "4504f1ff86dc075f212e0e35e43275bb1ed683bd",
+          "at": "2026-11-13T20:57:37.399Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T20:57:16.986Z",
+              "finishedAt": "2026-11-13T20:57:37.218Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:57:16.986Z",
+          "finishedAt": "2026-11-13T20:57:37.218Z"
+        }
+      ]
     },
     {
       "id": "53554d7c-e4ee-4118-81db-ce00f7aa3d9a",
@@ -1929,9 +1976,88 @@
       "contributors": [
         "nf14-codex-expiry-contract"
       ],
-      "status": "doing",
+      "status": "reviewing",
+      "reason": null,
       "createdAt": "2026-11-13T20:52:59.407Z",
-      "startCommit": "c093073805f15024c7f8e993ff9539eba86e5af2"
+      "startCommit": "c093073805f15024c7f8e993ff9539eba86e5af2",
+      "verifiedCommit": "f69e1fd2d8cdcbe5e008b4efb2f7a2f6004d1d9f",
+      "submittedBase": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+      "submissionId": "97bb9670-7b92-4452-89b9-0ba85aaffb1c",
+      "submittedAt": "2026-11-13T20:58:11.645Z",
+      "risk": null,
+      "review": {
+        "id": "509a501d-ae0c-4ec4-893f-666321391a15",
+        "owner": "pr14-independent-expiry-rehire",
+        "status": "reviewing",
+        "commit": "f69e1fd2d8cdcbe5e008b4efb2f7a2f6004d1d9f",
+        "baseCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+        "submissionId": "97bb9670-7b92-4452-89b9-0ba85aaffb1c",
+        "createdAt": "2026-11-13T21:07:25.858Z"
+      },
+      "steps": [
+        {
+          "taskId": "T911",
+          "commit": "f69e1fd2d8cdcbe5e008b4efb2f7a2f6004d1d9f",
+          "at": "2026-11-13T20:58:11.634Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T20:57:53.290Z",
+              "finishedAt": "2026-11-13T20:58:11.453Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:57:53.290Z",
+          "finishedAt": "2026-11-13T20:58:11.453Z"
+        }
+      ]
+    },
+    {
+      "id": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
+      "group": "natural-football-261114",
+      "taskId": "T908",
+      "tasks": [
+        "T908"
+      ],
+      "lane": "throughput-contract-provenance",
+      "owner": "nf14-codex-throughput-provenance",
+      "contributors": [
+        "nf14-codex-throughput-provenance"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-11-13T20:58:52.769Z",
+      "startCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+      "verifiedCommit": "eef2c56a575a4809ef541dcae0afb1c3eef654e6",
+      "submittedBase": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+      "submissionId": "bcf6b122-1fae-453c-b02c-6ba37fa5aef3",
+      "submittedAt": "2026-11-13T21:05:25.055Z",
+      "risk": null,
+      "steps": [
+        {
+          "taskId": "T908",
+          "commit": "eef2c56a575a4809ef541dcae0afb1c3eef654e6",
+          "at": "2026-11-13T21:05:25.045Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T21:05:06.752Z",
+              "finishedAt": "2026-11-13T21:05:24.873Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T21:05:06.752Z",
+          "finishedAt": "2026-11-13T21:05:24.873Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -8849,6 +8975,379 @@
       "group": "natural-football-261114",
       "attemptId": "256e818d-7251-4507-af39-c5f575bd2f2c",
       "taskId": "T909",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 316,
+      "at": "2026-11-13T20:54:34.898Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "256e818d-7251-4507-af39-c5f575bd2f2c",
+      "taskId": "T909",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:54:01.258Z",
+            "finishedAt": "2026-11-13T20:54:34.749Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 317,
+      "at": "2026-11-13T20:54:35.148Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "256e818d-7251-4507-af39-c5f575bd2f2c",
+      "taskId": "T909",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+        "integratedAt": "2026-11-13T20:54:35.148Z"
+      }
+    },
+    {
+      "sequence": 318,
+      "at": "2026-11-13T20:57:16.764Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+      "taskId": "T907",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 319,
+      "at": "2026-11-13T20:57:37.410Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+      "taskId": "T907",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "4504f1ff86dc075f212e0e35e43275bb1ed683bd",
+        "submittedBase": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+        "submissionId": "298630ce-f941-46cc-bd10-aba684dfbf60",
+        "submittedAt": "2026-11-13T20:57:37.410Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T907",
+            "commit": "4504f1ff86dc075f212e0e35e43275bb1ed683bd",
+            "at": "2026-11-13T20:57:37.399Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T20:57:16.986Z",
+                "finishedAt": "2026-11-13T20:57:37.218Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:57:16.986Z",
+            "finishedAt": "2026-11-13T20:57:37.218Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 320,
+      "at": "2026-11-13T20:57:53.138Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "53554d7c-e4ee-4118-81db-ce00f7aa3d9a",
+      "taskId": "T911",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 321,
+      "at": "2026-11-13T20:58:11.645Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "53554d7c-e4ee-4118-81db-ce00f7aa3d9a",
+      "taskId": "T911",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "f69e1fd2d8cdcbe5e008b4efb2f7a2f6004d1d9f",
+        "submittedBase": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+        "submissionId": "97bb9670-7b92-4452-89b9-0ba85aaffb1c",
+        "submittedAt": "2026-11-13T20:58:11.645Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T911",
+            "commit": "f69e1fd2d8cdcbe5e008b4efb2f7a2f6004d1d9f",
+            "at": "2026-11-13T20:58:11.634Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T20:57:53.290Z",
+                "finishedAt": "2026-11-13T20:58:11.453Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:57:53.290Z",
+            "finishedAt": "2026-11-13T20:58:11.453Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 322,
+      "at": "2026-11-13T20:58:52.769Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
+      "taskId": "T908",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
+        "group": "natural-football-261114",
+        "taskId": "T908",
+        "tasks": [
+          "T908"
+        ],
+        "lane": "throughput-contract-provenance",
+        "owner": "nf14-codex-throughput-provenance",
+        "contributors": [
+          "nf14-codex-throughput-provenance"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T20:58:52.769Z",
+        "startCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45"
+      }
+    },
+    {
+      "sequence": 323,
+      "at": "2026-11-13T20:58:54.708Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
+      "taskId": "T908",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 324,
+      "at": "2026-11-13T20:59:53.019Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2d068bd1-01ec-4681-a901-aeb826e4d14a",
+      "taskId": "T906",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "5c8fd682-ddc0-42d1-83d9-97d6c8169d1d",
+          "owner": "pr14-independent-browser-scenes",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed frozen T906 submission 0e88658d against base 187a9c22 and the complete primary ARCH-21/WEB-42/WEB-59/CLUB-49/WORLD-16 blocks. The seven scoped journeys retain original user operations, timeouts, full-season and eight-public-loan workloads. CSV checks retain BOM, complete schema and exact exported IDs/births/count; roster checks use exact actual active counts rather than a loose matcher. The private release helper uses existing enrollment/release/offer APIs, preserves actual player data and verifies scout reach plus eligibility/affordability without changing attributes or production settings. Independent minimal three-club checks on the frozen source passed both an existing-employment release (same ID/birth/attrs/cash, one closed job and one pool row) and a full-40-player rejection with deep-equal unchanged input; repeated no-candidate calls also preserve state. Evidence: /Users/ihaelam/project/haeram-soccer/.tmp/pb14-final-review/.tmp/t906-independent-probe.mts and .json. Initial direct execution lacked review-checkout dependencies; the successful isolated transpilation used existing workspace dependencies with browser packages external, without installing or changing the review tree. Reviewed the original-constructor clock proof (0.820 s): the two actual Spanish MF moves produce exactly one natural day2 offer, fee1978685/due7, pending through day6, with validateWorld success; no deadline/seed/attribute override. Existing six affected unit passes and source-equivalent type/lint/format/12-locale receipts were inspected; bc0f8f6e and the submission have identical test source. All original birth/person, promotion/career, cap/no-mutation and clock observations remain. No P1/P2 finding. Fresh browser/application-build/integration/full-suite verification remains with the coordinator; none ran in this review.",
+          "findings": [],
+          "commit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+          "baseCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
+          "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
+          "createdAt": "2026-11-13T20:52:32.309Z",
+          "finishedAt": "2026-11-13T20:59:53.019Z"
+        }
+      }
+    },
+    {
+      "sequence": 325,
+      "at": "2026-11-13T21:01:48.761Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+      "taskId": "T907",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9007dcd7-a072-4289-a033-fdaed96ad94e",
+          "owner": "pr14-independent-writer-fixture",
+          "status": "reviewing",
+          "commit": "4504f1ff86dc075f212e0e35e43275bb1ed683bd",
+          "baseCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+          "submissionId": "298630ce-f941-46cc-bd10-aba684dfbf60",
+          "createdAt": "2026-11-13T21:01:48.761Z"
+        }
+      }
+    },
+    {
+      "sequence": 326,
+      "at": "2026-11-13T21:05:06.599Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
+      "taskId": "T908",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 327,
+      "at": "2026-11-13T21:05:10.480Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+      "taskId": "T907",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9007dcd7-a072-4289-a033-fdaed96ad94e",
+          "owner": "pr14-independent-writer-fixture",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed frozen T907 submission 4504f1ff against base c5a6650f. The implementation is confined to managerJourneyCareer fixture preparation and reuses the production writer adoptSquads helper after existing rules/model activation, before expected views or canonical facts. The revised flag matches Host writer chaining: rules/model/squad adoption advances revision exactly once; an already adopted world remains idempotent. Production Host/read behavior, raw managerActivationCareer, prepared bytes/builders and every desktop/mobile browser assertion, canonical field and240000 ms limit are unchanged. Inspected the complete SAVE-19 block and the previously reviewed ARCH-21/WORLD-16/WEB-59 contracts, production activation ordering, independent-copy fixture loader and existing adoption units. Source at5ec64a4b equals submitted test source; five affected cases in two files and type/lint/format/12-locale receipts pass. Inspected supplied provenance code and output: raw508 becomes509 once,450 squads and358 people are added, existing shared people/records are unchanged; initializeReadModels accounts for the prior18 records, so the exact boundary delta is18 to174 (+156). Both valid writer-step orders compare as complete canonical worlds, adoption is idempotent, and fresh raw loads plus prepared bytes stay unchanged. Prepared SHA0dfb0bc85045e23effeec2e07a434ff39f7faffdf6e8cfc3ed915777335b6f06 and source/dependency manifest are retained. No P1/P2 finding. I did not rerun a Host/codec/world-progression/browser/application-build/full-suite command; existing evidence was sufficient for this bounded fixture correction. The unchanged desktop/mobile manager-history journeys and complete final gate remain coordinator-owned.",
+          "findings": [],
+          "commit": "4504f1ff86dc075f212e0e35e43275bb1ed683bd",
+          "baseCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+          "submissionId": "298630ce-f941-46cc-bd10-aba684dfbf60",
+          "createdAt": "2026-11-13T21:01:48.761Z",
+          "finishedAt": "2026-11-13T21:05:10.480Z"
+        }
+      }
+    },
+    {
+      "sequence": 328,
+      "at": "2026-11-13T21:05:25.055Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
+      "taskId": "T908",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "eef2c56a575a4809ef541dcae0afb1c3eef654e6",
+        "submittedBase": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+        "submissionId": "bcf6b122-1fae-453c-b02c-6ba37fa5aef3",
+        "submittedAt": "2026-11-13T21:05:25.055Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T908",
+            "commit": "eef2c56a575a4809ef541dcae0afb1c3eef654e6",
+            "at": "2026-11-13T21:05:25.045Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T21:05:06.752Z",
+                "finishedAt": "2026-11-13T21:05:24.873Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T21:05:06.752Z",
+            "finishedAt": "2026-11-13T21:05:24.873Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 329,
+      "at": "2026-11-13T21:06:55.025Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2d068bd1-01ec-4681-a901-aeb826e4d14a",
+      "taskId": "T906",
+      "previousStatus": "approved",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "5c8fd682-ddc0-42d1-83d9-97d6c8169d1d",
+            "owner": "pr14-independent-browser-scenes",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Reviewed frozen T906 submission 0e88658d against base 187a9c22 and the complete primary ARCH-21/WEB-42/WEB-59/CLUB-49/WORLD-16 blocks. The seven scoped journeys retain original user operations, timeouts, full-season and eight-public-loan workloads. CSV checks retain BOM, complete schema and exact exported IDs/births/count; roster checks use exact actual active counts rather than a loose matcher. The private release helper uses existing enrollment/release/offer APIs, preserves actual player data and verifies scout reach plus eligibility/affordability without changing attributes or production settings. Independent minimal three-club checks on the frozen source passed both an existing-employment release (same ID/birth/attrs/cash, one closed job and one pool row) and a full-40-player rejection with deep-equal unchanged input; repeated no-candidate calls also preserve state. Evidence: /Users/ihaelam/project/haeram-soccer/.tmp/pb14-final-review/.tmp/t906-independent-probe.mts and .json. Initial direct execution lacked review-checkout dependencies; the successful isolated transpilation used existing workspace dependencies with browser packages external, without installing or changing the review tree. Reviewed the original-constructor clock proof (0.820 s): the two actual Spanish MF moves produce exactly one natural day2 offer, fee1978685/due7, pending through day6, with validateWorld success; no deadline/seed/attribute override. Existing six affected unit passes and source-equivalent type/lint/format/12-locale receipts were inspected; bc0f8f6e and the submission have identical test source. All original birth/person, promotion/career, cap/no-mutation and clock observations remain. No P1/P2 finding. Fresh browser/application-build/integration/full-suite verification remains with the coordinator; none ran in this review.",
+            "findings": [],
+            "commit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+            "baseCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
+            "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
+            "createdAt": "2026-11-13T20:52:32.309Z",
+            "finishedAt": "2026-11-13T20:59:53.019Z",
+            "invalidatedAt": "2026-11-13T21:06:55.024Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 330,
+      "at": "2026-11-13T21:07:25.858Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "53554d7c-e4ee-4118-81db-ce00f7aa3d9a",
+      "taskId": "T911",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "509a501d-ae0c-4ec4-893f-666321391a15",
+          "owner": "pr14-independent-expiry-rehire",
+          "status": "reviewing",
+          "commit": "f69e1fd2d8cdcbe5e008b4efb2f7a2f6004d1d9f",
+          "baseCommit": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+          "submissionId": "97bb9670-7b92-4452-89b9-0ba85aaffb1c",
+          "createdAt": "2026-11-13T21:07:25.858Z"
+        }
+      }
+    },
+    {
+      "sequence": 331,
+      "at": "2026-11-13T21:07:48.049Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+      "taskId": "T907",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
