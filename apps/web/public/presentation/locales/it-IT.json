@@ -6663,7 +6663,7 @@
     "delegation.plan.signingLeft": "Cartellini spesi {spent} · disponibile per acquisti {left}",
     "delegation.plan.wageCap": "Tetto stipendi {share}% delle entrate {budget} · ora {committed} · margine per aumenti {left}",
     "delegation.plan.youth": "Quota giovanili {share}% delle entrate {budget} · stipendio responsabile giovanili {pay} · investimento giovanili {level} ({cost} l’anno)",
-    "delegation.plan.sellLine": "Vendere più facilmente quando gli ingaggi superano il {first}% e il {second}% dei ricavi più il capitale disponibile (ora {now}%).",
+    "delegation.plan.sellLine": "Abbassa l’asticella delle offerte di 10 punti quando gli stipendi superano il {first}% delle entrate, di 20 oltre il {second}% (ora {now}%)",
     "delegation.report.revenue": "Ripianificato perché la previsione delle entrate è cambiata ({before} → {after})",
     "delegation.report.sale": "Ripianificato dopo l’incasso di cessioni (+{sales})",
     "delegation.stop.cash": "Fermato per non restare senza cassa: dopo la cassa scenderebbe sotto {weeks} settimane di costi fissi ({floor})",
@@ -6847,10 +6847,11 @@
     "delegation.plan.capital": "Si conservano {years} anni di costi fissi e si aggiungono {capital} dalla cassa al budget. Entro questo margine gli investimenti possono superare i ricavi.",
     "delegation.flow.capital": "Investimento dalla cassa",
     "delegation.flow.reserve": "Riserva di {years} anni di costi fissi.",
-    "finance.debt.ended": "Nel {season} il debito ha superato un anno di costi fissi e il club ha chiuso. È rimasto indebitato per {rounds} giornate. {kept}",
+    "finance.debt.ended": "Nel {season}, il club è fallito e ha chiuso. Ha registrato {rounds} giornate in debito. {kept}",
     "delegation.plan.fundedBudget": "Budget con cassa {budget} · impegnato {committed} · margine di investimento {left}",
     "delegation.flow.budget": "Budget con cassa",
     "delegation.verdict.fundedWages": "Il monte ingaggi di {bill} supera il budget con cassa di {budget}",
-    "delegation.verdict.fundedRaise": "Aumento rifiutato: il monte ingaggi di {bill} supererebbe il budget con cassa di {budget} ({plan})."
+    "delegation.verdict.fundedRaise": "Aumento rifiutato: il monte ingaggi di {bill} supererebbe il budget con cassa di {budget} ({plan}).",
+    "delegation.plan.fundedSellLine": "Vendere più facilmente quando gli ingaggi superano il {first}% e il {second}% dei ricavi più il capitale disponibile (ora {now}%)."
   }
 }

@@ -6660,7 +6660,7 @@
     "delegation.plan.signingLeft": "Ablösen ausgegeben {spent} · für Transfers übrig {left}",
     "delegation.plan.wageCap": "Gehaltsgrenze {share} % der Einnahmen {budget} · jetzt {committed} · Spielraum für Erhöhungen {left}",
     "delegation.plan.youth": "Jugendanteil {share} % der Einnahmen {budget} · Gehalt Jugendleiter {pay} · Jugendinvestition {level} ({cost} pro Jahr)",
-    "delegation.plan.sellLine": "Leichter verkaufen, wenn Spielergehälter {first}% und {second}% der Einnahmen plus verfügbarem Kapital übersteigen (aktuell {now}%).",
+    "delegation.plan.sellLine": "Senkt die Hürde für Angebote um 10 Punkte, sobald die Spielergehälter {first} % der Einnahmen übersteigen, um 20 über {second} % (jetzt {now} %)",
     "delegation.report.revenue": "Neu geplant, weil sich die Einnahmeprognose verschoben hat ({before} → {after})",
     "delegation.report.sale": "Neu geplant, nachdem Spielerverkäufe eingegangen sind (+{sales})",
     "delegation.stop.cash": "Gestoppt, damit das Geld nicht ausgeht: danach läge die Kasse unter {weeks} Wochen Fixkosten ({floor})",
@@ -6844,10 +6844,11 @@
     "delegation.plan.capital": "{years} Jahre Fixkosten bleiben als Reserve; {capital} aus dem Guthaben kommen zum Budget hinzu. In diesem Rahmen dürfen Investitionen die Einnahmen übersteigen.",
     "delegation.flow.capital": "Investition aus Guthaben",
     "delegation.flow.reserve": "{years} Jahre Fixkosten als Reserve.",
-    "finance.debt.ended": "In {season} überstiegen die Schulden ein Jahr Fixkosten und der Verein schloss. Er war {rounds} Spieltage verschuldet. {kept}",
+    "finance.debt.ended": "In {season} wurde der Verein insolvent und geschlossen. Er verzeichnete {rounds} Spieltage mit Schulden. {kept}",
     "delegation.plan.fundedBudget": "Budget mit Guthaben {budget} · gebunden {committed} · Investitionsspielraum {left}",
     "delegation.flow.budget": "Budget mit Guthaben",
     "delegation.verdict.fundedWages": "Die Spielergehälter von {bill} übersteigen das Budget mit Guthaben von {budget}",
-    "delegation.verdict.fundedRaise": "Erhöhung abgelehnt: Die Spielergehälter von {bill} würden das Budget mit Guthaben von {budget} übersteigen ({plan})."
+    "delegation.verdict.fundedRaise": "Erhöhung abgelehnt: Die Spielergehälter von {bill} würden das Budget mit Guthaben von {budget} übersteigen ({plan}).",
+    "delegation.plan.fundedSellLine": "Leichter verkaufen, wenn Spielergehälter {first}% und {second}% der Einnahmen plus verfügbarem Kapital übersteigen (aktuell {now}%)."
   }
 }

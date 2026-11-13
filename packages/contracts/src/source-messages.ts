@@ -7226,7 +7226,7 @@ export const sourceMessages = {
   'delegation.plan.youth':
     '유소년 몫 수입의 {share}% {budget} · 유스 디렉터 급여 {pay} · 유소년 투자 {level}(연 {cost})',
   'delegation.plan.sellLine':
-    '선수 연봉이 수입과 투자 가능 자금 합계의 {first}%와 {second}%를 넘으면 매각을 늘려요(지금 {now}%).',
+    '선수 연봉이 수입의 {first}%를 넘으면 제안 기준을 10%p, {second}%를 넘으면 20%p 낮춰요(지금 {now}%)',
   'delegation.report.revenue': '수입 예상이 바뀌어 다시 계획했어요({before} → {after})',
   'delegation.report.sale': '선수 판매 수입이 들어와 다시 계획했어요(+{sales})',
   'delegation.stop.cash':
@@ -7346,7 +7346,7 @@ export const sourceMessages = {
   'delegation.flow.capital': '보유 자금에서 투자',
   'delegation.flow.reserve': '고정지출 {years}년분을 남겨요.',
   'finance.debt.ended':
-    '{season} 시즌, 부채가 연간 고정지출 1년분을 넘어 구단이 문을 닫았어요. 적자 기간 {rounds}라운드. {kept}',
+    '{season} 시즌, 구단이 파산해 문을 닫았어요. 적자 기록은 {rounds}라운드예요. {kept}',
   'delegation.plan.fundedBudget':
     '보유 자금을 포함한 예산 {budget} · 현재 부담 {committed} · 추가 투자 여력 {left}',
   'delegation.flow.budget': '보유 자금을 포함한 예산',
@@ -7354,4 +7354,6 @@ export const sourceMessages = {
     '선수 연봉 총액 {bill}이 보유 자금을 포함한 예산 {budget}을 넘어요',
   'delegation.verdict.fundedRaise':
     '인상 후 선수 연봉 총액 {bill}이 보유 자금을 포함한 예산 {budget}을 넘어 거절했어요({plan}).',
+  'delegation.plan.fundedSellLine':
+    '선수 연봉이 수입과 투자 가능 자금 합계의 {first}%와 {second}%를 넘으면 매각을 늘려요(지금 {now}%).',
 } as const;

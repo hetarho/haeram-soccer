@@ -1266,7 +1266,7 @@ const worldSchema: z.ZodType<World> = z.object({
   europe: z.array(tournament).max(10),
   lastChampions: champions,
   critical: text.optional(),
-  insolvent: z.number().int().min(1).max(46).optional(),
+  insolvent: z.number().int().min(1).optional(),
   bankrupt: z
     .strictObject({
       year: z.number().int(),

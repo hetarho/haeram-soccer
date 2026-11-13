@@ -6660,7 +6660,7 @@
     "delegation.plan.signingLeft": "Transfersommen besteed {spent} · over voor aankopen {left}",
     "delegation.plan.wageCap": "Salarisplafond {share}% van de inkomsten {budget} · nu {committed} · ruimte voor verhogingen {left}",
     "delegation.plan.youth": "Jeugdaandeel {share}% van de inkomsten {budget} · salaris hoofd jeugdopleiding {pay} · jeugdinvestering {level} ({cost} per jaar)",
-    "delegation.plan.sellLine": "Verkoop makkelijker als de lonen {first}% en {second}% van inkomsten plus beschikbaar kapitaal overschrijden (nu {now}%).",
+    "delegation.plan.sellLine": "Verlaagt de lat voor biedingen met 10 punten zodra spelerssalarissen boven {first}% van de inkomsten komen, met 20 boven {second}% (nu {now}%)",
     "delegation.report.revenue": "Opnieuw gepland omdat de inkomstenprognose veranderde ({before} → {after})",
     "delegation.report.sale": "Opnieuw gepland na inkomsten uit spelersverkopen (+{sales})",
     "delegation.stop.cash": "Gestopt zodat de kas niet leegraakt: daarna zou de kas onder {weeks} weken vaste kosten komen ({floor})",
@@ -6844,10 +6844,11 @@
     "delegation.plan.capital": "Er blijven {years} jaar vaste lasten als reserve; {capital} uit kas komt bij het budget. Binnen deze ruimte mogen investeringen hoger zijn dan de inkomsten.",
     "delegation.flow.capital": "Investering uit kas",
     "delegation.flow.reserve": "Reserve van {years} jaar vaste lasten.",
-    "finance.debt.ended": "In {season} werd de schuld groter dan één jaar vaste lasten en sloot de club. De club had {rounds} speelronden schuld. {kept}",
+    "finance.debt.ended": "In {season} ging de club failliet en sloot. Er zijn {rounds} speelronden met schuld vastgelegd. {kept}",
     "delegation.plan.fundedBudget": "Budget met kasgeld {budget} · vastgelegd {committed} · investeringsruimte {left}",
     "delegation.flow.budget": "Budget met kasgeld",
     "delegation.verdict.fundedWages": "De spelersloonsom van {bill} overschrijdt het budget met kasgeld van {budget}",
-    "delegation.verdict.fundedRaise": "Verhoging geweigerd: de spelersloonsom van {bill} zou het budget met kasgeld van {budget} overschrijden ({plan})."
+    "delegation.verdict.fundedRaise": "Verhoging geweigerd: de spelersloonsom van {bill} zou het budget met kasgeld van {budget} overschrijden ({plan}).",
+    "delegation.plan.fundedSellLine": "Verkoop makkelijker als de lonen {first}% en {second}% van inkomsten plus beschikbaar kapitaal overschrijden (nu {now}%)."
   }
 }

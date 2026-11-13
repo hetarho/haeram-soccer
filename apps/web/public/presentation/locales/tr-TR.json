@@ -6660,7 +6660,7 @@
     "delegation.plan.signingLeft": "Harcanan bonservis {spent} · transfer için kalan {left}",
     "delegation.plan.wageCap": "Oyuncu maaş tavanı gelirin %{share} kadarı {budget} · şu an {committed} · zam payı {left}",
     "delegation.plan.youth": "Altyapı payı gelirin %{share} kadarı {budget} · altyapı direktörü maaşı {pay} · altyapı yatırımı {level} (yılda {cost})",
-    "delegation.plan.sellLine": "Oyuncu maaşları gelir ve kullanılabilir sermaye toplamının %{first} ve %{second} sınırlarını aşınca daha kolay satılır (şimdi %{now}).",
+    "delegation.plan.sellLine": "Oyuncu maaşları gelirin %{first} oranını geçince teklif çıtasını 10 puan, %{second} oranını geçince 20 puan düşürür (şu an %{now})",
     "delegation.report.revenue": "Gelir tahmini değiştiği için yeniden planlandı ({before} → {after})",
     "delegation.report.sale": "Oyuncu satış geliri geldiği için yeniden planlandı (+{sales})",
     "delegation.stop.cash": "Kasa tükenmesin diye durduruldu: sonrasında kasa {weeks} haftalık sabit giderin ({floor}) altına iner",
@@ -6844,10 +6844,11 @@
     "delegation.plan.capital": "{years} yıllık sabit gider ayrılır ve kasadan bütçeye {capital} eklenir. Bu sınır içinde yatırım geliri aşabilir.",
     "delegation.flow.capital": "Kasadan yatırım",
     "delegation.flow.reserve": "{years} yıllık sabit gider ayrılır.",
-    "finance.debt.ended": "{season} sezonunda borç bir yıllık sabit gideri aştı ve kulüp kapandı. {rounds} tur borçlu kaldı. {kept}",
+    "finance.debt.ended": "{season} sezonunda kulüp iflas edip kapandı. {rounds} turluk borç kaydı var. {kept}",
     "delegation.plan.fundedBudget": "Kasa dahil bütçe {budget} · bağlı tutar {committed} · yatırım payı {left}",
     "delegation.flow.budget": "Kasa dahil bütçe",
     "delegation.verdict.fundedWages": "{bill} oyuncu maaş yükü, kasa dahil {budget} bütçeyi aşıyor",
-    "delegation.verdict.fundedRaise": "Zam reddedildi: {bill} oyuncu maaş yükü, kasa dahil {budget} bütçeyi aşacaktı ({plan})."
+    "delegation.verdict.fundedRaise": "Zam reddedildi: {bill} oyuncu maaş yükü, kasa dahil {budget} bütçeyi aşacaktı ({plan}).",
+    "delegation.plan.fundedSellLine": "Oyuncu maaşları gelir ve kullanılabilir sermaye toplamının %{first} ve %{second} sınırlarını aşınca daha kolay satılır (şimdi %{now})."
   }
 }
