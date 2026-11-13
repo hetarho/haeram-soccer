@@ -57,8 +57,14 @@ test('stages a scripted own match ahead of its theatre and retains the Node resu
   // One minute at 16x is 3.75 real seconds (a minute at the opening 2x would be 30); dead-ball
   // beats may shorten it, a goal adds its hold.
   await speeds.getByRole('radio', { name: '16×', exact: true }).click();
-  await expect.poll(seconds, { timeout: MINUTE_BUDGET_MS }).toBeGreaterThanOrEqual(before + 60);
-  expect(await presentedMinute(page)).not.toBe(minute);
+  await expect
+    .poll(
+      async () => (await seconds()) >= before + 60 && (await presentedMinute(page)) !== minute,
+      {
+        timeout: MINUTE_BUDGET_MS,
+      },
+    )
+    .toBe(true);
 
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(page.getByTestId('match-score').locator('strong')).toHaveText(

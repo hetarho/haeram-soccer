@@ -59,12 +59,11 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 34 | 33 | 1 | 1 | 0 | 0 | 2026-11-13T22:51:07.416Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks

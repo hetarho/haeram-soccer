@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T22:51:07.416Z",
-  "sourceCommit": "5f85092e61fa1a594be811e78ddac47e1a2b4813",
+  "snapshotAt": "2026-11-13T22:53:51.463Z",
+  "sourceCommit": "6f0b027037c9bb51ef6141bebc78fd32ea68e606",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -83,24 +83,14 @@
   },
   "summary": {
     "total": 34,
-    "completed": 33,
-    "remaining": 1,
-    "running": 1,
+    "completed": 34,
+    "remaining": 0,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T915",
-      "title": "Synchronize scripted-minute observations within the original deadline",
-      "dep": [
-        "T888"
-      ],
-      "lane": "scripted-minute-render-synchronization",
-      "status": "verifying"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
@@ -2373,6 +2363,8 @@
       "submittedBase": "beb9f6ae9977df2148144af55ffd609dec8d29d6",
       "submissionId": "4e763e2b-71a6-481c-b8c1-068215502473",
       "submittedAt": "2026-11-13T22:34:27.668Z",
+      "integratedCommit": "6f0b027037c9bb51ef6141bebc78fd32ea68e606",
+      "integratedAt": "2026-11-13T22:51:41.588Z",
       "risk": null,
       "review": {
         "id": "41da13cf-8247-49f9-bb92-ac2196f4790b",
@@ -2407,6 +2399,13 @@
           "startedAt": "2026-11-13T22:33:53.181Z",
           "finishedAt": "2026-11-13T22:34:27.384Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T22:51:07.622Z",
+          "finishedAt": "2026-11-13T22:51:41.209Z"
+        }
       ]
     },
     {
@@ -2421,9 +2420,49 @@
       "contributors": [
         "nf14-codex-scripted-minute-sync"
       ],
-      "status": "verifying",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-13T22:49:40.096Z",
-      "startCommit": "5f85092e61fa1a594be811e78ddac47e1a2b4813"
+      "startCommit": "5f85092e61fa1a594be811e78ddac47e1a2b4813",
+      "verifiedCommit": "2f6c2e9d60d0e060e410bb84edb420bc5c85e035",
+      "submittedBase": "6f0b027037c9bb51ef6141bebc78fd32ea68e606",
+      "submissionId": "bb91800d-6459-40f5-b2f8-736b358a4206",
+      "submittedAt": "2026-11-13T22:51:52.798Z",
+      "risk": null,
+      "review": {
+        "id": "46098a7a-4250-4557-b107-427f23186193",
+        "owner": "nf14-codex-independent-scripted-minute",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T9152f6c2e9d60d0e060e410bb84edb420bc5c85e035 approved for the narrow render-observation correction. Reviewed authored delta from5f85092e, not unrelated native-base6f0b0270/T914 branch divergence. Independent exact reverse-block audit proves every other scripted-match.spec.ts byte unchanged: both original seconds>=before+60 and displayedMinute!=previous predicates are now required together by ONE original MINUTE_BUDGET_MS poll. Local3splaying/5.625sminute, CI values, intervals/speed, same prepared goal fixture, Node/script/material/replay/full-save/calendar assertions all remain exact. Proof /tmp/nf14-t915-review-proof.json. Actual trace supports asynchronous Canvas/React label publication race; no production clock/cadence change is introduced. No P1/P2, timeout relaxation, extra wait budget, fixture/golden/field omission or workload change. No browser/build/engine/cache/test executed by reviewer; zero affected units is not coverage evidence. Root must preserve concurrentT914 material changes on integration and run the complete original browser journey including downstream assertions. Known1946model red and prior333case Chromium race are not reported green by this source review.",
+        "findings": [],
+        "commit": "2f6c2e9d60d0e060e410bb84edb420bc5c85e035",
+        "baseCommit": "6f0b027037c9bb51ef6141bebc78fd32ea68e606",
+        "submissionId": "bb91800d-6459-40f5-b2f8-736b358a4206",
+        "createdAt": "2026-11-13T22:52:20.029Z",
+        "finishedAt": "2026-11-13T22:53:33.707Z"
+      },
+      "steps": [
+        {
+          "taskId": "T915",
+          "commit": "2f6c2e9d60d0e060e410bb84edb420bc5c85e035",
+          "at": "2026-11-13T22:51:52.787Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T22:50:54.009Z",
+              "finishedAt": "2026-11-13T22:51:52.607Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T22:50:54.009Z",
+          "finishedAt": "2026-11-13T22:51:52.607Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -11403,6 +11442,141 @@
       "group": "natural-football-261114",
       "attemptId": "8cdd0ee4-ef08-4bd7-bd94-9fbd66226b2e",
       "taskId": "T914",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 402,
+      "at": "2026-11-13T22:51:41.348Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "8cdd0ee4-ef08-4bd7-bd94-9fbd66226b2e",
+      "taskId": "T914",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T22:51:07.622Z",
+            "finishedAt": "2026-11-13T22:51:41.209Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 403,
+      "at": "2026-11-13T22:51:41.588Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "8cdd0ee4-ef08-4bd7-bd94-9fbd66226b2e",
+      "taskId": "T914",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "6f0b027037c9bb51ef6141bebc78fd32ea68e606",
+        "integratedAt": "2026-11-13T22:51:41.588Z"
+      }
+    },
+    {
+      "sequence": 404,
+      "at": "2026-11-13T22:51:52.798Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3df90108-f7c9-4391-8224-294dc50de016",
+      "taskId": "T915",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "2f6c2e9d60d0e060e410bb84edb420bc5c85e035",
+        "submittedBase": "6f0b027037c9bb51ef6141bebc78fd32ea68e606",
+        "submissionId": "bb91800d-6459-40f5-b2f8-736b358a4206",
+        "submittedAt": "2026-11-13T22:51:52.798Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T915",
+            "commit": "2f6c2e9d60d0e060e410bb84edb420bc5c85e035",
+            "at": "2026-11-13T22:51:52.787Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T22:50:54.009Z",
+                "finishedAt": "2026-11-13T22:51:52.607Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T22:50:54.009Z",
+            "finishedAt": "2026-11-13T22:51:52.607Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 405,
+      "at": "2026-11-13T22:52:20.029Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3df90108-f7c9-4391-8224-294dc50de016",
+      "taskId": "T915",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "46098a7a-4250-4557-b107-427f23186193",
+          "owner": "nf14-codex-independent-scripted-minute",
+          "status": "reviewing",
+          "commit": "2f6c2e9d60d0e060e410bb84edb420bc5c85e035",
+          "baseCommit": "6f0b027037c9bb51ef6141bebc78fd32ea68e606",
+          "submissionId": "bb91800d-6459-40f5-b2f8-736b358a4206",
+          "createdAt": "2026-11-13T22:52:20.029Z"
+        }
+      }
+    },
+    {
+      "sequence": 406,
+      "at": "2026-11-13T22:53:33.707Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3df90108-f7c9-4391-8224-294dc50de016",
+      "taskId": "T915",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "46098a7a-4250-4557-b107-427f23186193",
+          "owner": "nf14-codex-independent-scripted-minute",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T9152f6c2e9d60d0e060e410bb84edb420bc5c85e035 approved for the narrow render-observation correction. Reviewed authored delta from5f85092e, not unrelated native-base6f0b0270/T914 branch divergence. Independent exact reverse-block audit proves every other scripted-match.spec.ts byte unchanged: both original seconds>=before+60 and displayedMinute!=previous predicates are now required together by ONE original MINUTE_BUDGET_MS poll. Local3splaying/5.625sminute, CI values, intervals/speed, same prepared goal fixture, Node/script/material/replay/full-save/calendar assertions all remain exact. Proof /tmp/nf14-t915-review-proof.json. Actual trace supports asynchronous Canvas/React label publication race; no production clock/cadence change is introduced. No P1/P2, timeout relaxation, extra wait budget, fixture/golden/field omission or workload change. No browser/build/engine/cache/test executed by reviewer; zero affected units is not coverage evidence. Root must preserve concurrentT914 material changes on integration and run the complete original browser journey including downstream assertions. Known1946model red and prior333case Chromium race are not reported green by this source review.",
+          "findings": [],
+          "commit": "2f6c2e9d60d0e060e410bb84edb420bc5c85e035",
+          "baseCommit": "6f0b027037c9bb51ef6141bebc78fd32ea68e606",
+          "submissionId": "bb91800d-6459-40f5-b2f8-736b358a4206",
+          "createdAt": "2026-11-13T22:52:20.029Z",
+          "finishedAt": "2026-11-13T22:53:33.707Z"
+        }
+      }
+    },
+    {
+      "sequence": 407,
+      "at": "2026-11-13T22:53:49.198Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3df90108-f7c9-4391-8224-294dc50de016",
+      "taskId": "T915",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
