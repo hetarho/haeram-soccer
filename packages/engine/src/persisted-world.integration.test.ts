@@ -70,8 +70,17 @@ describe('the persisted world from 1930 to 1970', () => {
       const released = world.people?.[id]?.employment.some(
         (job) => job.role === 'player' && job.club === move.from,
       );
-      expect(held || released, `${id}:${move.from}`).toBe(true);
-      expect(world.squads?.[move.to]?.some((p) => p.id === id)).not.toBe(true);
+      const arrived = world.squads?.[move.to]?.filter((p) => p.id === id) ?? [];
+      if (arrived.length) {
+        // A free signing registers the destination before movePerson records the known prior
+        // affiliation. Paid market moves are observed before their squad move instead.
+        expect(move.fee, `${id}:${move.from}:${move.to}`).toBe('0');
+        expect(held).not.toBe(true);
+        expect(released || last?.to === move.from, `${id}:${move.from}`).toBe(true);
+        expect(arrived).toHaveLength(1);
+      } else {
+        expect(held || released, `${id}:${move.from}`).toBe(true);
+      }
     };
     const overAtClose = new Set<string>();
     NPC_WAGE_DECISIONS.observe = (club, bill, limit, allowed, fee) => {
