@@ -25,7 +25,7 @@
 | WORLD | 13 | 13 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 70 | 70 | - | 0 |
-| MATCH | 65 | 65 | - | 0 |
+| MATCH | 66 | 66 | - | 0 |
 | LEAGUE | 20 | 20 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
 | ECON | 57 | 57 | - | 0 |
@@ -58,13 +58,11 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-
 | T873 | Restore connected build-up and pressure reactions | MATCH ARCH | - | todo |
-
 | T874 | Wait onside before a free-kick delivery | MATCH ARCH | T873 | todo |
-
 | T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
+| T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
 
 ## next
-- Complete natural-football improvements T873 → T874 and paired comparison T875, then independently review, verify and land on main.
+- Complete natural-football improvements T873 → T874 → T876 and paired comparison T875, then independently review, verify and land on main.
 - Preserve the baseline from 9b701adf; record iterative measurements and remaining football limitations in reports/261114-nf14.md.
