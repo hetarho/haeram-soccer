@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r66 | Define one complete, calibrated probabilistic result for every match and, for the own club's matches, a script and a staged picture drawn from that result.
+> r67 | Define one complete, calibrated probabilistic result for every match and, for the own club's matches, a script and a staged picture drawn from that result.
 
 ## decisions
 - MATCH-1 [o] Every match is settled once, as one joint probabilistic draw of its whole record (→!MATCH-22/26/27): two halves of 45 minutes plus added time, and extra time and a shoot-out where →MATCH-6 calls for them. The record is the only source of match facts; an own match's script and picture (→!MATCH-38/39) are made from it and never change it. ← one way of settling a match for every club, and a picture that cannot disagree with the record
@@ -125,6 +125,7 @@
   - he acts on his own moment: he reads a pass or a turnover after his own delay and follows his place at his own pace, so players neither start, stop nor turn as one. A settled turnover re-forms a side gradually; a counter-attack turns it at once.
   - teammates coordinate: a receiver shows while another opens a lane, one defender presses while another covers, each defender out of possession takes one man and stays goal-side of him, and an attacker steps off his marker.
   - in build-up and progression a free supporting outfielder steps laterally out of an opponent's passing-lane screen when a bounded nearby angle opens the lane; he retains his tactical depth, onside margin and explicit action orders. An open lane keeps the original support target; this movement never changes a recorded pass or receiver.
+  - the nearest eligible free defender remains the presser. Among the remaining same eligible defenders, the one closest to the goal-side cover point covers; a distance tie retains ball-distance then player-index order. Explicit orders/cues, beaten recovery, press zones and the existing cover distance remain authoritative. ← keep already occupied central cover instead of making two defenders exchange it unnecessarily
   - after being beaten by a successful take-on or forward carry, the beaten defender recovers toward his side's shape and does not immediately press the same carrier again for 3 s; another defender may engage while the beaten man recovers.
   - with the ball, supporting players spread and nobody piles onto it: the man on the ball has room around him, a showing teammate offers at a passing distance (about 10–15 m), two players do not stand on each other for seconds, and an opponent beside the man on the ball engages him rather than standing by. Seven or more outfielders within 10 m of the ball are a set piece or a goal-mouth scramble, rarely open play. ← players swarming or sticking together read as playground football, not as a side with a shape
   - the tendencies act in movement (→PLAYER-26): 규율 holds his place, 압박 성향 sets how readily he presses, 예측력 how early he reacts; his positional freedom (→STAFF-46) sets how far his role's habit takes him from his slot. They shape the picture only: the record does not read them.
@@ -353,6 +354,7 @@
 - A career on an earlier match model moves to this one prospectively at its next safe boundary (→SAVE-23); its settled matches keep their records.
 
 ## chg
+- r67 261114 MATCH-17✎ second-nearest-to-ball cover assignment→nearest eligible defender to the existing goal-side cover point; nearest presser and existing eligibility/distance rules retained
 - r66 261114 MATCH-17✎ free support avoids only a nearby marker→also opens a bounded lateral angle around a passing-lane screen during build-up and progression
 - r65 261114 MATCH-12✎ per-tick shielding→committed escape or bounded pressure release; MATCH-17✎ immediate re-press→3 s recovery; MATCH-18✎ free-kick receiver unguarded→live onside waiting; MATCH-38✎ independently placed touches→distributed connected touches; MATCH-40+ paired standalone comparison
 - r64 261113 MATCH-12✎ 1x 18→60 real s per 60 match seconds, real time (→WEB-32)
