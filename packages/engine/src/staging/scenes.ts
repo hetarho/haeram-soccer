@@ -7,6 +7,7 @@ import { CENTRE, clampToPitch, ownGoal, toAttack } from './pitch';
 import type { Beat, StageEvent, TeamId, Vec } from './types';
 import { RESTART_KINDS, presentPlayers } from './types';
 import { keeperOf } from './participants';
+import { receiverHold } from './pass';
 import { invalidDetail } from '../script/failure';
 import { runSpotScene } from './spot-kick';
 import { add, clamp, dist, norm, scale, sub } from './vec';
@@ -78,7 +79,12 @@ const takerPlace = (state: StageState, kind: RestartKind, team: TeamId, spot: Ve
   return add(spot, scale(norm(away), RESTART.takerOffset));
 };
 
-type PlaceOrder = (index: number, place: Vec, pace: Order['pace'], within: number) => void;
+type PlaceOrder = (
+  index: number,
+  place: Order['target'],
+  pace: Order['pace'],
+  within: number,
+) => void;
 
 /**
  * Both sides' places at a corner. The taking side: the receiver at his run-up point, the others
@@ -174,7 +180,7 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
   else delete state.keepOut;
 
   state.orders.clear();
-  const places = new Map<number, { place: Vec; within: number }>();
+  const places = new Map<number, { place: Order['target']; within: number }>();
   const order: PlaceOrder = (index, place, pace, within) => {
     state.orders.set(index, { target: place, pace });
     places.set(index, { place, within });
@@ -188,7 +194,12 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
   } else if (kind === 'corner') {
     cornerScene(state, beat, spot, order);
   } else if (beat.receiver !== undefined) {
-    order(beat.receiver, clampToPitch(beat.to, 0.5), 'jog', RESTART.receiverReady);
+    const landing = clampToPitch(beat.to, 0.5);
+    // A free-kick receiver waits against the live line throughout preparation instead of
+    // running to the landing point behind the defence and having to return before the kick.
+    const held =
+      kind === 'freeKick' ? receiverHold(state, beat, beat.receiver, landing) : undefined;
+    order(beat.receiver, held?.order?.target ?? landing, 'jog', RESTART.receiverReady);
   }
   // The restart pass's scripted interceptor waits on its lane, as `cueNext` sends one in open play,
   // outside the distance his side keeps.
@@ -212,7 +223,8 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
     if (state.t - start < delay - 1e-9) return false;
     if (dist(ball.pos, spot) > 0.1) return false;
     for (const [index, { place, within }] of places) {
-      if (dist(state.bodies[index].pos, place) > within) return false;
+      if (dist(state.bodies[index].pos, typeof place === 'function' ? place() : place) > within)
+        return false;
     }
     return true;
   };

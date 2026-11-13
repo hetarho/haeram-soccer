@@ -319,19 +319,25 @@ export function* holdForPass(
 const lineNow = (state: StageState, team: TeamId): number =>
   offsideLineX(state.fixture, positionsOf(state), team);
 
-/** `p` (world) with its attack x capped `shape.onsideGap` inside `team`'s offside line. */
+/** The receiver may be level with the ball, halfway or the second-last opponent. */
+const onsideLimit = (state: StageState, team: TeamId): number =>
+  Math.max(lineNow(state, team), toAttack(team, state.ball.pos, state.fixture.period)[0], HALFWAY);
+
+/** `p` (world) with its attack x capped `shape.onsideGap` inside the current legal limit. */
 const onsideCap = (state: StageState, team: TeamId, p: Vec): Vec => {
   const a = toAttack(team, p, state.fixture.period);
-  const cap = lineNow(state, team) - SHAPE.onsideGap;
+  const cap = onsideLimit(state, team) - SHAPE.onsideGap;
   return a[0] > cap ? toAttack(team, [cap, a[1]], state.fixture.period) : p;
 };
 
-/** An ordinary pass (kind `pass`, not a through ball) is never played to a man offside. */
-const guarded = (beat: Beat): boolean => beat.kind === 'pass' && !beat.through;
+/** Through balls have their own run timing; free-kick deliveries also wait onside before the kick. */
+const guarded = (beat: Beat): boolean =>
+  (beat.kind === 'pass' && !beat.through) ||
+  (beat.kind === 'freeKick' && beat.outcome !== 'offside');
 
 /**
  * How the receiver holds while the ball is not yet played, and what else the kick waits for: a
- * lofted delivery into the box has him wait at his run-up point; an ordinary pass keeps him onside
+ * lofted delivery into the box has him wait at his run-up point; a pass or free kick keeps him onside
  * (sprinting back while he stands beyond the line) and waits until he is onside or not ahead of the ball.
  */
 export function receiverHold(
@@ -356,18 +362,19 @@ export function receiverHold(
     order: {
       target: () => onsideCap(state, team, base),
       get pace() {
-        return rx() > lineNow(state, team) ? 'sprint' : 'run';
+        return rx() > onsideLimit(state, team) ? 'sprint' : 'run';
       },
     },
     onside: () =>
       rx() <= lineNow(state, team) - 0.05 ||
-      rx() <= toAttack(team, state.ball.pos, state.fixture.period)[0],
+      rx() <= toAttack(team, state.ball.pos, state.fixture.period)[0] ||
+      rx() <= HALFWAY,
   };
 }
 
 /** At the kick an ordinary pass's aim in the opponents' half is kept onside too. */
 const kickAim = (state: StageState, beat: Beat, R: Vec): Vec =>
-  guarded(beat) && toAttack(beat.team, R, state.fixture.period)[0] > HALFWAY
+  beat.kind === 'pass' && !beat.through && toAttack(beat.team, R, state.fixture.period)[0] > HALFWAY
     ? onsideCap(state, beat.team, R)
     : R;
 
