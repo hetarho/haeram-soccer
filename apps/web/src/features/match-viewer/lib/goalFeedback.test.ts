@@ -79,13 +79,16 @@ const starts = frames.map((_, i) => i * 60);
 const goals = goalInstants(rec, frames, starts);
 const length = runningLength(frames.length);
 
-/** Runs the clock in display updates of `stepMs` until `until` holds or `limitMs` of real time. */
+/**
+ * Runs the clock in display updates of `stepMs` until `until` holds or `limitMs` of real time (by
+ * default twice the whole match at 1x).
+ */
 function run(
   state: GoalFeedbackState,
   speed: number,
   stepMs: number,
   until: (state: GoalFeedbackState) => boolean,
-  limitMs = 120_000,
+  limitMs = 2 * presentationMs(0, length, 1),
   list: readonly GoalInstant[] = goals,
 ) {
   for (let spent = 0; spent < limitMs && !until(state); spent += stepMs)
@@ -268,7 +271,7 @@ describe('goal feedback', () => {
   });
 
   it('a dead-ball rush before a goal is drawn faster and the hold stays real time', () => {
-    // A 120 s rush from 10 s to 130 s ahead of the 2′ 30 s goal: 1.5 s instead of 24 s at 1x.
+    // A 120 s rush from 10 s to 130 s ahead of the 2′ 30 s goal: 1.5 s instead of 120 s at 1x.
     const preparations = [{ from: 10, to: 130, factor: 2, ms: 1500 }];
     const toGoal = presentationMs(0, 150, 1, preparations);
     expect(toGoal).toBeCloseTo(10 / runningRate(1) + 1500 + 20 / runningRate(1), 6);

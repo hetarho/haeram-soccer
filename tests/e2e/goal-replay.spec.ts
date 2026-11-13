@@ -126,10 +126,12 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   const options = picker.getByTestId('goal-replay-option');
   const speed = (value: number) => page.getByRole('radio', { name: `${value}×`, exact: true });
 
-  // Nothing is on offer before a goal has been presented, nor while its cue still shows.
-  await expect(cue).toBeVisible({
-    timeout: (playback.record.highlights[0]!.minute * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000,
-  });
+  // Nothing is on offer before a goal has been presented, nor while its cue still shows. With 1x
+  // in real time (→WEB-32) the match plays on to its 2′ goal at 16x, 7.5 s rather than a minute at
+  // the default speed; CI waits three times as long, as playwright.config scales its budgets.
+  await speed(16).click();
+  const cueWait = (playback.record.highlights[0]!.minute * WATCH_MINUTE_MS) / 16 + 3000;
+  await expect(cue).toBeVisible({ timeout: process.env.CI ? 3 * cueWait : cueWait });
   await expect(open).toHaveCount(0);
   await expect(cue).toHaveCount(0, { timeout: GOAL_FEEDBACK_CONFIG.holdMs + 2000 });
   await expect(open).toBeVisible();
@@ -170,6 +172,8 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   await open.click();
   const trail = await presentedTrail(canvas);
   await options.first().click();
+  // The clip opens at 1x, its 15 s build-up as long in real time; 16x plays it in about a second.
+  await speed(16).click();
   await expect(cue).toBeVisible({ timeout: clipMs });
   await expect(state).toHaveCount(0, { timeout: GOAL_FEEDBACK_CONFIG.holdMs + 3000 });
   const shown = await trail();
@@ -206,6 +210,7 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   await options.last().click();
   await expect(state).toBeVisible();
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
+  await speed(16).click();
   await expect(state).toHaveCount(0, { timeout: clipMs + GOAL_FEEDBACK_CONFIG.holdMs });
   await expect(score).toHaveText(`${playback.record.score.home} : ${playback.record.score.away}`);
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
@@ -239,6 +244,8 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   const stateBox = (await state.boundingBox())!;
   expect(stateBox.height).toBeGreaterThanOrEqual(44);
   expect(stateBox.x + stateBox.width).toBeLessThanOrEqual(canvasBox.x + canvasBox.width);
+  // Its opening speed read, the clip's build-up plays at 16x; the return restores the original's.
+  await speed(16).click();
   await expect(cue).toBeVisible({ timeout: clipMs });
   await expect(score).toHaveText('1 : 0');
   await expect(state).toHaveCount(0, { timeout: GOAL_FEEDBACK_CONFIG.holdMs + 3000 });

@@ -9,8 +9,8 @@ import type {
 export const WATCH_SPEEDS = [1, 2, 4, 8, 16] as const;
 /** The speed every match presentation opens at, live or archived (→WEB-32). */
 export const WATCH_DEFAULT_SPEED = 2;
-/** Real ms one match minute of running playback lasts at 1x (→WEB-32, MATCH-12). */
-export const WATCH_MINUTE_MS = 12000;
+/** Real ms one match minute of running playback lasts at 1x, real time (→WEB-32, MATCH-12). */
+export const WATCH_MINUTE_MS = 60000;
 /**
  * The most real ms one drawn frame advances the presentation. Slow but continuous frames keep the
  * wall-clock mapping (→WEB-32): WebKit on CI draws some pitch frames past 100 ms, and a 60 ms

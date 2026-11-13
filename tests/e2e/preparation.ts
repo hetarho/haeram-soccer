@@ -7,6 +7,7 @@ import {
   presentationMs,
   presentationSamples,
   type Preparation,
+  WATCH_MINUTE_MS,
 } from '../../apps/web/src/entities/match/lib/presentationClock';
 
 /** One stoppage's dead-ball beat (→WEB-32): its rush and still beat, from the ball going dead to the kick. */
@@ -35,9 +36,9 @@ const LEAD_SECONDS = 3;
 const RECORD_SLACK_MS = 2000;
 /**
  * Real ms of running play at 1x a stoppage must exceed for its rush and beat to read as plainly
- * quicker (`expectCompressedPreparation`): 20 s of match time.
+ * quicker (`expectCompressedPreparation`): 20 s of match time, whatever a minute lasts at 1x.
  */
-const PLAIN_RUNNING_MS = 4000;
+const PLAIN_RUNNING_MS = (20 * WATCH_MINUTE_MS) / 60;
 
 /** Whether a stoppage lasts long enough at 1x for `expectCompressedPreparation` to read it. */
 export const showsCompression = ({ from, to }: { from: number; to: number }) =>
@@ -119,7 +120,7 @@ export async function expectCompressedPreparation(
   const enteredAt = records.findLastIndex(([, seconds]) => seconds <= from);
   const kickedAt = records.findIndex(([, seconds]) => seconds >= to);
   expect(kickedAt, 'the clock reached the kick').toBeGreaterThan(enteredAt);
-  // Drawn in its rush and beat (at most 1.5 s and the kind's beat at 1x), against more than 4 s
+  // Drawn in its rush and beat (at most 1.5 s and the kind's beat at 1x), against more than 20 s
   // of running play at 1x.
   const drawnMs = records[kickedAt]![0] - records[enteredAt]![0];
   const runningMs = presentationMs(from, to, 1);

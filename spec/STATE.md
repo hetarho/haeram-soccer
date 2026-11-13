@@ -13,7 +13,6 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T03:57Z | 2026-11-13T03:57Z | T859 |
 
 ## inbox
 - 261113 parked SAVE-4 SAVE-13 HIST-23 T867 T865: the persisted world may not fit a century save — the worst century profile has about 1.07 MB of compressed payload left (6,551,024 of 8,388,608 portable bytes, artifacts/benchmarks/T286-full-model-storage.json), 9,922 persisted players are 0.62–0.93 MiB gzipped before any packer, and every opponent of an own match stays as a kept retiree with his profile; T867 and T865 read their shares (500,000 and 450,000 bytes) early, and when one is over the owner chooses: a tighter packer | a smaller NPC_SQUAD.size | the kept profile only for podium, news and transfer links | a higher SAVE-4 portable limit rv13
@@ -63,12 +62,12 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 42 | 42 | - | 2 |
-| WEB | 219 | 219 | - | 0 |
+| WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 13 | 13 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 70 | 70 | - | 0 |
-| MATCH | 62 | 62 | - | 0 |
+| MATCH | 64 | 64 | - | 0 |
 | LEAGUE | 20 | 20 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
 | ECON | 57 | 57 | - | 0 |
@@ -100,7 +99,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | doing@261113.fin3 |
 | T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 T869 T870 | doing@261113.pw86 |
 
 ## next
@@ -123,9 +121,9 @@
 - 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
 - 261113 docs cleanup: NARRATIVE.md removed (stale since ARCH@3; regenerate with gusta-create-narrative), README and design docs updated, misplaced root reports moved, finished handoff artifacts/handoffs/261110-fi09 removed
 - 261113 ideation archived to done/ as converted@261113: 15 docs reflected in or superseded by current SSOTs (calibration-pass, club-direction, club-history-reboot, club-identity-and-kits, difficulty-and-adaptation, expert-proposal-review, manager-achievements, match-continuity-and-performance, match-day-progress, match-engine-rebuild, match-viewing-pace-and-freedom, navigation-and-records, own-club-match-edge, save-storage-and-fast-pace, set-piece-defence-and-goal-feedback)
-- 261113 ARCH r41..r41 no-op (no code impact)
-- 261113 gusta-update-ssot ARCH r41 (ARCH-1✎ and constraints✎: no current-rule path to archived ideation or NARRATIVE)
-- 261113 inbox cleanup by the owner: 803 decided lines confirmed and removed (reports keep them), 63 parked/suggest lines removed as resolved or obsolete, stale active rows k2d7 f5j2 ot03 ba04 removed
-- 261112 T858 done
-- 261112 T857 done
-- 261112 T856 done
+- 261113 T859 done: user stopped repeated gates; source merged and pushed as 16d91626; no complete final batch success; overrun report artifacts/reports/261113-fin3-test-overrun.ko.md fin3
+- 261113 T871 done
+- 261113 gusta-create-task WEB MATCH: T871 consumes WEB@221 MATCH@64 sx2
+- 261113 gusta-update-ssot WEB MATCH: WEB-32✎ MATCH-12✎ 1x 18→60 real s per 60 match seconds (real time) sx2
+- 261113 T868 done
+- 261113 gusta-create-task WEB MATCH: T868 consumes WEB@220 MATCH@63 sx1
