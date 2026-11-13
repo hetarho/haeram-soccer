@@ -50,6 +50,7 @@ Restore and verify the remote natural-football work, then repair free-kick recei
 
 - F37 [o] P2 browser helper placement widened worlds computation dependencies250 versus222, adding24web/browser files. Restore releases.ts leaf and isolate browser helpers. →T906
 - F38 [o] P1 canonical owned-loan return clears markers before the existing owner event loop; actual public return succeeds without the required notification at both ages22/35. Restore exactly one existing event at the shared actual return. →T912
+- F39 [o] P2 historical division observer reads match-day rating including cohesion/fatigue, contradicting LEAGUE-10's raw XI strength. Correct the scalar and check actual derived strength while retaining every existing strict country/tier/year comparison and all historical assertions. This is not approval to waive genuine raw-order/calibration failures. →T913
 
 ## notes
 - Planning collision: another owner published T899.cache-market-ratings before this run's two new proposals. The unpublished, unclaimed free-signing witness task is renumbered T901; T900 attribution reuse is unchanged. Foreign T899 remains outside this work scope. Existing attempted/integrated history is retained; no runtime files are manually rewritten.

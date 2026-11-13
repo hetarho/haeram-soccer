@@ -90,6 +90,7 @@
 | T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T906 | todo |
 | T911 | Observe contract expiry before genuine mandatory rehires | ARCH CLUB WORLD HIST | T885 | todo |
 | T912 | Restore the ordinary owned-loan return notification | ARCH CLUB WORLD HIST | T909 | todo |
+| T913 | Read the specified raw XI strength in the historical division observer | ARCH LEAGUE WORLD | T901 | todo |
 
 ## next
 - gusta-implement-task T873 T875 T884
