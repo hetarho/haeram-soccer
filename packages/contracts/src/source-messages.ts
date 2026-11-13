@@ -7206,7 +7206,7 @@ export const sourceMessages = {
   'budget.forecast.note': '지금 계약과 투자 수준으로 1년을 보낼 때 나가는 돈이에요.',
   'budget.plans.title': '단장의 이번 시즌 계획',
   'budget.plans.lead':
-    '단장은 은행 잔고가 아니라 이번 시즌 수입 예상으로 예산을 짜요. 바꾸려면 위임 설정에서 요청을 보내세요.',
+    '단장은 시즌 수입과 성향·투자 요청에 따라 꺼내 쓸 보유 자금으로 예산을 짜요. 위임 설정에서 요청을 바꿀 수 있어요.',
   'budget.plans.direct': '구단주 직접',
   'budget.plans.delegated': '{post} 위임 · 요청 {request}',
   'budget.plans.signings': '선수단 몫 {budget} · 영입에 쓸 돈 {left}',
@@ -7226,7 +7226,7 @@ export const sourceMessages = {
   'delegation.plan.youth':
     '유소년 몫 수입의 {share}% {budget} · 유스 디렉터 급여 {pay} · 유소년 투자 {level}(연 {cost})',
   'delegation.plan.sellLine':
-    '선수 연봉이 수입의 {first}%를 넘으면 제안 기준을 10%p, {second}%를 넘으면 20%p 낮춰요(지금 {now}%)',
+    '선수 연봉이 수입과 투자 가능 자금 합계의 {first}%와 {second}%를 넘으면 매각을 늘려요(지금 {now}%).',
   'delegation.report.revenue': '수입 예상이 바뀌어 다시 계획했어요({before} → {after})',
   'delegation.report.sale': '선수 판매 수입이 들어와 다시 계획했어요(+{sales})',
   'delegation.stop.cash':
@@ -7334,4 +7334,24 @@ export const sourceMessages = {
     '사무실의 스카우팅 환경과 1군 페이지의 매각 기조가 작용합니다. 영입 기조 자체는 이적료를 할증·할인하지 않습니다.',
   'copy.ConstantsPage.e0551567c1':
     '현재 구현을 설명합니다. {p0}하고, 직접 선택할 수 있는 행동과 자동 변화·현재 변경 불가 기준을 표시했습니다. 상시 투자·시설·구단 효과와 세부 방침은 각 업무 페이지에서, 위임할지와 위임 요청은 위임 설정에서 바꿀 수 있습니다.',
+  'finance.cash.warning':
+    '라운드마다 고정지출 {fixed}가 나가요. 잔고가 {limit} 미만으로 내려가면 구단이 파산해요.',
+  'finance.debt.title': '파산 위기 · 구단 부채',
+  'finance.debt.warning':
+    '잔고가 {cash}예요. 연간 고정지출 1년분을 빚으로 버틸 수 있으며, 잔고가 {limit} 미만으로 내려가면 구단이 파산해요. 적자가 이어지는 기간만으로는 파산하지 않아요.',
+  'finance.debt.alarm': '{title} 잔고 {cash} · 파산 기준: 잔고 {limit} 미만',
+  'finance.cash.alarm': '{title} 고정지출 {weeks}주분 남음 · 파산 기준: 잔고 {limit} 미만',
+  'delegation.plan.capital':
+    '고정지출 {years}년분을 남기고 보유 자금에서 {capital}를 예산에 더해요. 이 범위에서는 수입보다 많이 투자할 수 있어요.',
+  'delegation.flow.capital': '보유 자금에서 투자',
+  'delegation.flow.reserve': '고정지출 {years}년분을 남겨요.',
+  'finance.debt.ended':
+    '{season} 시즌, 부채가 연간 고정지출 1년분을 넘어 구단이 문을 닫았어요. 적자 기간 {rounds}라운드. {kept}',
+  'delegation.plan.fundedBudget':
+    '보유 자금을 포함한 예산 {budget} · 현재 부담 {committed} · 추가 투자 여력 {left}',
+  'delegation.flow.budget': '보유 자금을 포함한 예산',
+  'delegation.verdict.fundedWages':
+    '선수 연봉 총액 {bill}이 보유 자금을 포함한 예산 {budget}을 넘어요',
+  'delegation.verdict.fundedRaise':
+    '인상 후 선수 연봉 총액 {bill}이 보유 자금을 포함한 예산 {budget}을 넘어 거절했어요({plan}).',
 } as const;

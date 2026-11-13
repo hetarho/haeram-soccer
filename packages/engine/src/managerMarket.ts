@@ -394,6 +394,8 @@ function affordableManager(w: World, m: ManagerCandidate) {
     BigInt(m.wage) -
       BigInt(w.manager.wage) -
       BigInt((m.person && w.staff?.find((member) => member.person === m.person)?.wage) || '0'),
+    undefined,
+    'manager',
   );
 }
 /** Free agents, and other clubs' managers too when the criteria allow poaching. */

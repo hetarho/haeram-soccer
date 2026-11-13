@@ -18,7 +18,7 @@ import { investmentCommand } from './ops-investment';
 export { sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
 export { transferOffers } from './scout-search';
 export { MANAGER_GONE, managerRenewal } from './ops-staff';
-export { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from './settlement';
+export { CASH_WARNING_ROUNDS } from './settlement';
 
 export { operatingCost, credit, debit } from './transactions';
 /** Refusal for a bankrupt club: the career is over, only its records remain. */

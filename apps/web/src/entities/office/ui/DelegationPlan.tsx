@@ -85,6 +85,11 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
         ? sourceMessage('delegation.flow.revenueLast', { amount: money(plan.lastRevenue) })
         : undefined,
     },
+    capital: FlowStep = {
+      label: sourceMessage('delegation.flow.capital'),
+      value: amount(plan.capital),
+      note: sourceMessage('delegation.flow.reserve', { years: plan.reserveYears }),
+    },
     wages: FlowStep = {
       label: sourceMessage('delegation.flow.wages'),
       value: amount(plan.committed),
@@ -97,8 +102,9 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
     case 'recruitment':
       return [
         revenue,
+        capital,
         {
-          label: sourceMessage('delegation.flow.squad', { share }),
+          label: sourceMessage('delegation.flow.budget'),
           value: amount(plan.budget),
           note: sourceMessage('delegation.flow.squadNote'),
         },
@@ -116,8 +122,9 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
     case 'contracts':
       return [
         revenue,
+        capital,
         {
-          label: sourceMessage('delegation.flow.wageCap', { share }),
+          label: sourceMessage('delegation.flow.budget'),
           value: amount(plan.budget),
         },
         wages,
@@ -131,8 +138,9 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
       const youth = plan.youth!;
       return [
         revenue,
+        capital,
         {
-          label: sourceMessage('delegation.flow.youth', { share }),
+          label: sourceMessage('delegation.flow.budget'),
           value: amount(plan.budget),
         },
         {
@@ -152,6 +160,7 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
     case 'sales':
       return [
         revenue,
+        capital,
         {
           label: sourceMessage('delegation.flow.sellLine', { share }),
           value: amount(plan.budget),
@@ -167,7 +176,17 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
 /** The plan in one or two plain sentences under its steps. */
 function planSentence(w: World, plan: DelegatePlan): ReactNode {
   const share = sharePercent(plan.share),
-    now = shareOf(plan.committed, plan.revenue);
+    now = shareOf(
+      plan.committed,
+      (BigInt(plan.revenue) + (plan.key === 'sales' ? BigInt(plan.capital) : 0n)).toString(),
+    );
+  if ((plan.key === 'recruitment' || plan.key === 'contracts') && BigInt(plan.capital) > 0n) {
+    const code = clubOf(w).country;
+    return richMessage('delegation.plan.capital', {
+      years: plan.reserveYears,
+      capital: compactMoney(plan.capital, code, w.year),
+    });
+  }
   switch (plan.key) {
     case 'recruitment':
       return plan.over
@@ -190,9 +209,7 @@ function planSentence(w: World, plan: DelegatePlan): ReactNode {
       );
     case 'sales': {
       const [first, second] = plan.stance.sellAbove;
-      return now > first
-        ? richMessage('delegation.flow.salesPressed', { now, points: now > second ? 20 : 10 })
-        : richMessage('delegation.flow.salesCalm', { now });
+      return richMessage('delegation.plan.sellLine', { first, second, now });
     }
     default:
       return undefined;

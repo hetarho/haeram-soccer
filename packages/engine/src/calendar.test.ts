@@ -142,7 +142,7 @@ describe('persistent season calendar', () => {
 
   it('stops a multi-day advance exactly when the club goes bankrupt', () => {
     const w = world();
-    // Debt deeper than half a season's fixed costs ends the career at the next settlement.
+    // Debt deeper than a season's fixed costs ends the career at the next settlement.
     w.cash = '-999999999';
     advanceDays(w, 10);
     expect(currentDay(w)).toBe(7);

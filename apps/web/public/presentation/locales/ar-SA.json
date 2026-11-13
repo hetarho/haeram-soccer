@@ -6631,7 +6631,7 @@
     "budget.forecast.title": "التكاليف الثابتة المتوقعة لهذا العام",
     "budget.forecast.note": "تكلفة عام بالعقود ومستويات الاستثمار الحالية.",
     "budget.plans.title": "خطة المدير الرياضي هذا الموسم",
-    "budget.plans.lead": "يضع المدير الرياضي الميزانية من الإيرادات المتوقعة هذا الموسم لا من المال في البنك. لتغييرها أرسل طلبًا في التفويض.",
+    "budget.plans.lead": "يخطط المدير بالاعتماد على دخل الموسم والنقد المتاح وفق طباعه وطلبك للإنفاق. يمكنك تغيير الطلب في إعدادات التفويض.",
     "budget.plans.direct": "أنت",
     "budget.plans.delegated": "{post} · الطلب: {request}",
     "budget.plans.signings": "حصة الفريق {budget} · المتبقي للتعاقدات {left}",
@@ -6672,7 +6672,7 @@
     "delegation.plan.signingLeft": "رسوم انتقالات مدفوعة {spent} · المتبقي للتعاقدات {left}",
     "delegation.plan.wageCap": "سقف رواتب اللاعبين {share}% من الإيرادات {budget} · الآن {committed} · هامش الزيادات {left}",
     "delegation.plan.youth": "حصة الناشئين {share}% من الإيرادات {budget} · راتب مدير الناشئين {pay} · استثمار الناشئين {level} ({cost} سنويًا)",
-    "delegation.plan.sellLine": "يخفض حد العروض 10 نقاط عندما تتجاوز رواتب اللاعبين {first}% من الإيرادات و20 نقطة فوق {second}% (الآن {now}%)",
+    "delegation.plan.sellLine": "تزداد الرغبة في البيع عندما تتجاوز الرواتب {first}% و{second}% من الدخل ورأس المال المتاح معًا (حاليًا {now}%).",
     "delegation.report.revenue": "أُعيد التخطيط لتغير توقع الإيرادات ({before} ← {after})",
     "delegation.report.sale": "أُعيد التخطيط بعد دخول عائدات بيع لاعبين (+{sales})",
     "delegation.stop.cash": "توقف حتى لا ينفد النقد: بعد ذلك سيقل النقد عن تكاليف ثابتة لمدة {weeks} أسابيع ({floor})",
@@ -6847,6 +6847,19 @@
     "lab.tunable.limit": "تقييم مدى الصورة أو تباعدها أو شكلها أو تجمعها أو تزامنها",
     "lab.tunable.rule.normalizer": "معامل تطبيع مشترك بنقاط المهارة لـ{control}. يغير جميع الأوزان بالتساوي، لذا لا يغير رفعه أو خفضه التوزيع النسبي.",
     "lab.tunable.rule.exponent": "أس {control} (بلا وحدة). رفعه يركز التوزيع على المهارات الأعلى وخفضه يضعف فروق المهارة.",
-    "lab.tunable.pitchMargin": "الهامش داخل حدود الملعب"
+    "lab.tunable.pitchMargin": "الهامش داخل حدود الملعب",
+    "finance.cash.warning": "تُدفع تكاليف ثابتة قدرها {fixed} كل جولة. يفلس النادي إذا انخفض الرصيد عن {limit}.",
+    "finance.debt.title": "خطر الإفلاس · ديون النادي",
+    "finance.debt.warning": "الرصيد {cash}. يُسمح بدين يعادل سنة من التكاليف الثابتة؛ ويفلس النادي إذا انخفض الرصيد عن {limit}. مدة الدين وحدها لا تسبب الإفلاس.",
+    "finance.debt.alarm": "{title} الرصيد {cash} · الإفلاس دون {limit}",
+    "finance.cash.alarm": "{title} يتبقى {weeks} أسبوعًا من التكاليف الثابتة · الإفلاس دون {limit}",
+    "delegation.plan.capital": "يُحتفظ بتكاليف ثابتة لمدة {years} سنة وتُضاف {capital} من النقد إلى الميزانية. يمكن أن يتجاوز الاستثمار الدخل ضمن هذا الحد.",
+    "delegation.flow.capital": "استثمار من النقد",
+    "delegation.flow.reserve": "احتياطي يغطي {years} سنة من التكاليف الثابتة.",
+    "finance.debt.ended": "في موسم {season} تجاوز الدين سنة من التكاليف الثابتة وأُغلق النادي. بقي مدينًا {rounds} جولة. {kept}",
+    "delegation.plan.fundedBudget": "الميزانية مع النقد {budget} · الملتزم به {committed} · مجال الاستثمار {left}",
+    "delegation.flow.budget": "الميزانية مع النقد",
+    "delegation.verdict.fundedWages": "رواتب اللاعبين البالغة {bill} تتجاوز الميزانية الممولة بالنقد البالغة {budget}",
+    "delegation.verdict.fundedRaise": "رُفضت الزيادة: رواتب اللاعبين البالغة {bill} ستتجاوز الميزانية الممولة بالنقد البالغة {budget} ({plan})."
   }
 }

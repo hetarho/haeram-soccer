@@ -6619,7 +6619,7 @@
     "budget.forecast.title": "This year's fixed costs",
     "budget.forecast.note": "What a year costs with today's contracts and investment levels.",
     "budget.plans.title": "The director's plan this season",
-    "budget.plans.lead": "The director budgets from this season's projected income, not from the cash in the bank. To change it, send a request in delegation.",
+    "budget.plans.lead": "The director budgets on season income and cash released according to temperament and your spending request. Change the request in delegation settings.",
     "budget.plans.direct": "You",
     "budget.plans.delegated": "{post} · request: {request}",
     "budget.plans.signings": "Squad share {budget} · left for signings {left}",
@@ -6660,7 +6660,7 @@
     "delegation.plan.signingLeft": "Fees spent {spent} · left for signings {left}",
     "delegation.plan.wageCap": "Player wage cap {share}% of income {budget} · now {committed} · room for raises {left}",
     "delegation.plan.youth": "Youth share {share}% of income {budget} · youth director pay {pay} · youth investment {level} ({cost} a year)",
-    "delegation.plan.sellLine": "Lowers the bar for offers by 10 points once player wages pass {first}% of income, by 20 past {second}% (now {now}%)",
+    "delegation.plan.sellLine": "Sell more readily when player wages exceed {first}% and {second}% of income plus available capital (now {now}%).",
     "delegation.report.revenue": "Re-planned because the income projection moved ({before} → {after})",
     "delegation.report.sale": "Re-planned after player sales came in (+{sales})",
     "delegation.stop.cash": "Stopped so the cash does not run out: afterwards cash would be below {weeks} weeks of fixed costs ({floor})",
@@ -6835,6 +6835,19 @@
     "lab.tunable.limit": "picture reach, spacing, shape, swarm or synchrony judgement",
     "lab.tunable.rule.normalizer": "Common skill-point normalizer for {control}. It scales every candidate weight equally, so raising or lowering it leaves relative allocation unchanged.",
     "lab.tunable.rule.exponent": "Exponent for {control} (unitless). Higher concentrates allocation on greater skills; lower weakens skill differences.",
-    "lab.tunable.pitchMargin": "inset from pitch boundaries"
+    "lab.tunable.pitchMargin": "inset from pitch boundaries",
+    "finance.cash.warning": "Fixed costs of {fixed} leave each round. The club goes bankrupt if cash falls below {limit}.",
+    "finance.debt.title": "Bankruptcy risk · club debt",
+    "finance.debt.warning": "Cash is {cash}. Debt up to one year of fixed costs is allowed; the club goes bankrupt below {limit}. Time spent in debt alone does not cause bankruptcy.",
+    "finance.debt.alarm": "{title} Cash {cash} · bankruptcy below {limit}",
+    "finance.cash.alarm": "{title} {weeks} weeks of fixed costs left · bankruptcy below {limit}",
+    "delegation.plan.capital": "Keep {years} years of fixed costs and add {capital} from cash to the budget. Investment may exceed income within this allowance.",
+    "delegation.flow.capital": "Investment from cash",
+    "delegation.flow.reserve": "Keep {years} years of fixed costs.",
+    "finance.debt.ended": "In {season}, debt exceeded one year of fixed costs and the club closed. It spent {rounds} rounds in debt. {kept}",
+    "delegation.plan.fundedBudget": "Budget including cash {budget} · committed {committed} · investment room {left}",
+    "delegation.flow.budget": "Budget including cash",
+    "delegation.verdict.fundedWages": "The player wage bill of {bill} exceeds the cash-funded budget of {budget}",
+    "delegation.verdict.fundedRaise": "The raise was refused: the player wage bill of {bill} would exceed the cash-funded budget of {budget} ({plan})."
   }
 }

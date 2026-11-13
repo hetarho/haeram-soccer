@@ -578,10 +578,10 @@ export function gameOverFacts(w: World): GameOverFacts {
   const kept = sourceMessage('copy.ownerFigures.bb36ff7e9c');
   const line =
     cause === 'club'
-      ? sourceMessage('copy.ownerFigures.628dfc9d8f', {
-          p0: seasonName(season),
-          p1: w.insolvent ?? 0,
-          p2: kept,
+      ? sourceMessage('finance.debt.ended', {
+          season: seasonName(season),
+          rounds: w.insolvent ?? 0,
+          kept,
         })
       : cause === 'owner'
         ? sourceMessage('copy.ownerFigures.b2200caa15', {

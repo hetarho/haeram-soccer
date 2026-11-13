@@ -115,7 +115,7 @@ describe('the club’s bankruptcy (→ECON-24, OWNER-16)', () => {
     for (const owned of [true, false]) {
       const w = world(owned);
       w.round = 1;
-      w.cash = (-BigInt(operatingCosts(w).annual)).toString();
+      w.cash = (-BigInt(operatingCosts(w).annual) * 2n).toString();
       settleRound(w);
       expect(w.bankrupt).toBeDefined();
       expect(w.ended).toBe(owned ? 'club' : undefined);

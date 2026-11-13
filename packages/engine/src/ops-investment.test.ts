@@ -67,17 +67,19 @@ describe('owner office instructions and investment', () => {
   it("bounds a delegated signing by what is left of the 단장's season budget", () => {
     const w = world();
     w.round = 1;
-    w.income = w.cash;
+    // Keep this income-budget boundary case below even the most generous reserve.
+    w.cash = (BigInt(operatingCosts(w).annual) * 4n).toString();
+    w.income = operatingCosts(w).annual;
     holdTemperament(w, 'director', 'balanced');
     operate(w, { type: 'delegation-request', responsibility: 'recruitment', level: 1 });
-    const offer = transferOffers(w)[0],
+    const candidate = { ...transferOffers(w)[0].player, wage: '0' },
       fee = (BigInt(delegatePlan(w, 'recruitment').left) + 1n).toString();
-    expect(signingVerdict(w, offer.player, fee)).toMatchObject({
+    expect(signingVerdict(w, candidate, fee)).toMatchObject({
       ok: false,
       reason: expect.stringContaining('영입에 쓸 돈'),
     });
     operate(w, { type: 'delegation-request', responsibility: 'recruitment', level: 5 });
-    expect(signingVerdict(w, offer.player, fee)).toMatchObject({ ok: true });
+    expect(signingVerdict(w, candidate, fee)).toMatchObject({ ok: true });
     // A renewal is not bounded by the signing budget.
     const player = w.players.find((person) => person.status === 'active')!;
     player.talk = { kind: 'renew', demand: '1', floor: '1', year: w.year, day: 0 };

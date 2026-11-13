@@ -6616,7 +6616,7 @@
     "budget.forecast.title": "今年の固定費の見込み",
     "budget.forecast.note": "今の契約と投資水準で1年を過ごすときに出るお金です。",
     "budget.plans.title": "スポーツディレクターの今季の計画",
-    "budget.plans.lead": "スポーツディレクターは銀行の残高ではなく今季の収入見込みで予算を組みます。変えるには委任設定で要望を送ってください。",
+    "budget.plans.lead": "ディレクターはシーズン収入と、性向・投資要望に応じて使える手元資金から予算を立てます。要望は委任設定で変更できます。",
     "budget.plans.direct": "オーナーが直接",
     "budget.plans.delegated": "{post}に委任 · 要望 {request}",
     "budget.plans.signings": "選手団の取り分 {budget}・補強に使えるお金 {left}",
@@ -6657,7 +6657,7 @@
     "delegation.plan.signingLeft": "移籍金 {spent} 使用・補強に使えるお金 {left}",
     "delegation.plan.wageCap": "選手年俸の上限 収入の{share}% {budget}・現在 {committed}・昇給の余地 {left}",
     "delegation.plan.youth": "ユースの取り分 収入の{share}% {budget}・育成責任者の給与 {pay}・ユース投資 {level}（年 {cost}）",
-    "delegation.plan.sellLine": "選手年俸が収入の{first}%を超えるとオファーの基準を10ポイント、{second}%を超えると20ポイント下げます（現在 {now}%）",
+    "delegation.plan.sellLine": "選手年俸が収入と投資可能資金の合計の{first}%と{second}%を超えると売却を増やします（現在{now}%）。",
     "delegation.report.revenue": "収入見込みが変わったので計画し直しました（{before} → {after}）",
     "delegation.report.sale": "選手売却の収入が入ったので計画し直しました（+{sales}）",
     "delegation.stop.cash": "資金が尽きないよう止めました。使うと現金が固定費{weeks}週分（{floor}）を下回ります",
@@ -6832,6 +6832,19 @@
     "lab.tunable.limit": "映像の到達・間隔・陣形・群集・同期運動の判定",
     "lab.tunable.rule.normalizer": "{control}の共通正規化分母（能力点）。全候補の重みが同じ倍率で変わるため、上げ下げしても相対配分は変わりません。",
     "lab.tunable.rule.exponent": "{control}の指数（無単位）。上げると高い能力への配分が集中し、下げると能力差の影響が弱まります。",
-    "lab.tunable.pitchMargin": "ピッチ境界の内側余白"
+    "lab.tunable.pitchMargin": "ピッチ境界の内側余白",
+    "finance.cash.warning": "各ラウンドで固定費{fixed}がかかります。残高が{limit}未満になるとクラブは破産します。",
+    "finance.debt.title": "破産の危機・クラブの債務",
+    "finance.debt.warning": "残高は{cash}です。年間固定費1年分までの債務は許容され、残高が{limit}未満になると破産します。赤字の期間だけでは破産しません。",
+    "finance.debt.alarm": "{title} 残高{cash}・破産基準：{limit}未満",
+    "finance.cash.alarm": "{title} 固定費{weeks}週間分の余力・破産基準：{limit}未満",
+    "delegation.plan.capital": "固定費{years}年分を残し、手元資金から{capital}を予算に加えます。この範囲では収入を超えて投資できます。",
+    "delegation.flow.capital": "手元資金からの投資",
+    "delegation.flow.reserve": "固定費{years}年分を残します。",
+    "finance.debt.ended": "{season}シーズン、債務が年間固定費1年分を超えてクラブは閉鎖しました。赤字期間は{rounds}ラウンドでした。{kept}",
+    "delegation.plan.fundedBudget": "手元資金を含む予算{budget}・既存負担{committed}・投資余力{left}",
+    "delegation.flow.budget": "手元資金を含む予算",
+    "delegation.verdict.fundedWages": "選手年俸総額{bill}が手元資金を含む予算{budget}を超えます",
+    "delegation.verdict.fundedRaise": "増額後の選手年俸総額{bill}が手元資金を含む予算{budget}を超えるため拒否しました（{plan}）。"
   }
 }

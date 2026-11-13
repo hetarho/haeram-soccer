@@ -6622,7 +6622,7 @@
     "budget.forecast.title": "Gastos fijos previstos del año",
     "budget.forecast.note": "Lo que cuesta un año con los contratos y niveles de inversión actuales.",
     "budget.plans.title": "Plan del director deportivo esta temporada",
-    "budget.plans.lead": "El director deportivo presupuesta con los ingresos previstos de esta temporada, no con el dinero en el banco. Para cambiarlo, envía una petición en la delegación.",
+    "budget.plans.lead": "El director presupuesta con los ingresos de la temporada y la caja disponible según su carácter y tu petición de gasto. Puedes cambiarla en los ajustes de delegación.",
     "budget.plans.direct": "Tú",
     "budget.plans.delegated": "{post} · petición: {request}",
     "budget.plans.signings": "Parte de la plantilla {budget} · disponible para fichajes {left}",
@@ -6663,7 +6663,7 @@
     "delegation.plan.signingLeft": "Traspasos gastados {spent} · disponible para fichajes {left}",
     "delegation.plan.wageCap": "Tope salarial {share} % de los ingresos {budget} · ahora {committed} · margen para subidas {left}",
     "delegation.plan.youth": "Parte de cantera {share} % de los ingresos {budget} · sueldo del director de cantera {pay} · inversión en cantera {level} ({cost} al año)",
-    "delegation.plan.sellLine": "Baja el listón de las ofertas 10 puntos cuando los salarios superan el {first} % de los ingresos y 20 por encima del {second} % (ahora {now} %)",
+    "delegation.plan.sellLine": "Se vende con más facilidad cuando los salarios superan el {first}% y el {second}% de los ingresos más el capital disponible (ahora {now}%).",
     "delegation.report.revenue": "Replanificado porque cambió la previsión de ingresos ({before} → {after})",
     "delegation.report.sale": "Replanificado tras entrar ingresos por ventas de jugadores (+{sales})",
     "delegation.stop.cash": "Detenido para no quedarse sin caja: después la caja quedaría por debajo de {weeks} semanas de gastos fijos ({floor})",
@@ -6838,6 +6838,19 @@
     "lab.tunable.limit": "evaluación de alcance, espacio, forma, agrupación o sincronía",
     "lab.tunable.rule.normalizer": "Normalizador común en puntos de habilidad de {control}. Escala todos los pesos por igual; subirlo o bajarlo no cambia el reparto relativo.",
     "lab.tunable.rule.exponent": "Exponente de {control} (sin unidad). Subirlo concentra el reparto en habilidades altas; bajarlo reduce la diferencia.",
-    "lab.tunable.pitchMargin": "margen interior del campo"
+    "lab.tunable.pitchMargin": "margen interior del campo",
+    "finance.cash.warning": "Cada jornada salen {fixed} en costes fijos. El club quiebra si el saldo baja de {limit}.",
+    "finance.debt.title": "Riesgo de quiebra · deuda del club",
+    "finance.debt.warning": "El saldo es {cash}. Se admite una deuda de hasta un año de costes fijos; el club quiebra por debajo de {limit}. La duración de la deuda por sí sola no provoca la quiebra.",
+    "finance.debt.alarm": "{title} Saldo {cash} · quiebra por debajo de {limit}",
+    "finance.cash.alarm": "{title} Quedan {weeks} semanas de costes fijos · quiebra por debajo de {limit}",
+    "delegation.plan.capital": "Se reservan {years} años de costes fijos y se añaden {capital} de caja al presupuesto. Dentro de este margen se puede invertir más de lo que se ingresa.",
+    "delegation.flow.capital": "Inversión desde caja",
+    "delegation.flow.reserve": "Reserva de {years} años de costes fijos.",
+    "finance.debt.ended": "En {season}, la deuda superó un año de costes fijos y el club cerró. Pasó {rounds} jornadas endeudado. {kept}",
+    "delegation.plan.fundedBudget": "Presupuesto con caja {budget} · comprometido {committed} · margen de inversión {left}",
+    "delegation.flow.budget": "Presupuesto con caja",
+    "delegation.verdict.fundedWages": "La masa salarial de {bill} supera el presupuesto con caja de {budget}",
+    "delegation.verdict.fundedRaise": "Aumento rechazado: la masa salarial de {bill} superaría el presupuesto con caja de {budget} ({plan})."
   }
 }

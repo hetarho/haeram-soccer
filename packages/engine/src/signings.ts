@@ -31,7 +31,13 @@ import {
 } from './player-state';
 import { addEvent } from './events';
 import { joinClub, ownStarters } from './world';
-import { delegatePlan, insolvencyStop, planLabel, spendingStance } from './delegation';
+import {
+  delegatePlan,
+  insolvencyStop,
+  planLabel,
+  planRoomAfterWage,
+  spendingStance,
+} from './delegation';
 import { sharePercent } from './delegation-info';
 import { moneyLabel } from './finance';
 import { pushInbox } from './inbox';
@@ -152,8 +158,16 @@ export function shortLines(w: World): ShortNeed[] {
  * cannot field (`need` short) is filled with a free agent whatever the plan's ratio, as any
  * director must put out a side: only the insolvency stop reads that one.
  */
-export function signingVerdict(w: World, player: Player, fee: string, need?: SigningNeed['kind']) {
-  const plan = delegatePlan(w, 'recruitment'),
+export function signingVerdict(
+  w: World,
+  player: Player,
+  fee: string,
+  need?: SigningNeed['kind'],
+  bidId?: string,
+) {
+  // A bid being settled replaces its own reservation; other live bids still tie up cash.
+  const planning = bidId ? { ...w, bids: w.bids?.filter((bid) => bid.id !== bidId) } : w;
+  const plan = delegatePlan(planning, 'recruitment'),
     label = planLabel(w, 'recruitment'),
     wage = BigInt(player.wage),
     share = sharePercent(plan.share);
@@ -162,7 +176,7 @@ export function signingVerdict(w: World, player: Player, fee: string, need?: Sig
     reason: sourceMessage('delegation.verdict.wrap', { reason, plan: label }),
   });
   if (need === 'short' && BigInt(fee) === 0n) {
-    const stop = insolvencyStop(w, 0n, wage);
+    const stop = insolvencyStop(planning, 0n, wage);
     return stop
       ? no(stop)
       : {
@@ -173,13 +187,12 @@ export function signingVerdict(w: World, player: Player, fee: string, need?: Sig
   const bill = BigInt(plan.committed) + wage;
   if (wage > 0n && bill > BigInt(plan.budget))
     return no(
-      sourceMessage('delegation.verdict.wageBill', {
+      sourceMessage('delegation.verdict.fundedWages', {
         bill: moneyLabel(w, bill.toString()),
-        revenue: moneyLabel(w, plan.revenue),
-        share,
+        budget: moneyLabel(w, plan.budget),
       }),
     );
-  if (BigInt(fee) + wage > BigInt(plan.left))
+  if (BigInt(fee) + wage > planRoomAfterWage(planning, plan, wage))
     return no(
       sourceMessage('delegation.verdict.squadBudget', {
         fee: moneyLabel(w, fee),
@@ -187,7 +200,7 @@ export function signingVerdict(w: World, player: Player, fee: string, need?: Sig
         left: moneyLabel(w, plan.left),
       }),
     );
-  const stop = insolvencyStop(w, BigInt(fee), wage);
+  const stop = insolvencyStop(planning, BigInt(fee), wage);
   if (stop) return no(stop);
   return {
     ok: true as const,

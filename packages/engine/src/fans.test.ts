@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import {
-  BANKRUPTCY_ROUNDS,
   BANKRUPT_MESSAGE,
   catchment,
   clubOf,
@@ -122,22 +121,23 @@ describe('facility parts (→ECON-32)', () => {
 });
 
 describe('bankruptcy', () => {
-  it('counts rounds in debt and ends the career after eight, refusing every action', () => {
+  it('allows prolonged shallow debt, then ends the career below its debt limit, refusing every action', () => {
     const w = world('going-under');
-    const perRound = BigInt(operatingCosts(w).annual) / 46n;
-    // Shallow debt: under half a season's costs, so only the count can end it.
-    w.cash = (-perRound).toString();
-    for (let round = 1; round < BANKRUPTCY_ROUNDS; round++) {
+    const annual = BigInt(operatingCosts(w).annual);
+    for (let round = 1; round <= 12; round++) {
       w.round = round;
+      // Force a shallow post-settlement debt without accumulating a twelve-round loss.
+      w.cash = (-annual / 10n).toString();
       settleRound(w);
       expect(w.insolvent).toBe(round);
       expect(w.bankrupt).toBeUndefined();
       expect(w.critical).toBeUndefined();
     }
     expect(w.inbox?.filter((item) => item.title.startsWith('파산 위기'))).toHaveLength(1);
-    w.round = BANKRUPTCY_ROUNDS;
+    w.round = 13;
+    w.cash = (-annual * 2n).toString();
     settleRound(w);
-    expect(w.bankrupt).toMatchObject({ year: w.year, round: BANKRUPTCY_ROUNDS });
+    expect(w.bankrupt).toMatchObject({ year: w.year, round: 13 });
     expect(w.events.at(-1)).toMatchObject({ kind: 'bankruptcy' });
     expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow(
       BANKRUPT_MESSAGE,

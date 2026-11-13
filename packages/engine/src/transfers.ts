@@ -507,7 +507,7 @@ function decideOutgoing(w: World, bid: TransferBid) {
     chance = acceptanceChance(w, bid.fee, asking),
     feeShare = feeRatio(bid.fee, asking);
   if (roll < chance) {
-    const financial = bid.staff ? signingVerdict(w, p, bid.fee) : undefined;
+    const financial = bid.staff ? signingVerdict(w, p, bid.fee, undefined, bid.id) : undefined;
     const blocker =
       financial && !financial.ok ? financial.reason : signingBlocker(w, offer, bid.fee, bid.loan);
     // The 단장's bids are his to follow up; their answers only report (→CLUB-33).
@@ -588,7 +588,7 @@ function decideOutgoing(w: World, bid: TransferBid) {
 function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, asking: string) {
   const p = offer.player,
     fee = bid.counterFee!,
-    verdict = signingVerdict(w, p, fee),
+    verdict = signingVerdict(w, p, fee, undefined, bid.id),
     blocker = signingBlocker(w, offer, fee, bid.loan),
     belowCeiling = BigInt(bid.fee) < BigInt(ratio(asking, BigInt(bidCeiling(w)), 100n)),
     bargaining = haggling(w) && belowCeiling,

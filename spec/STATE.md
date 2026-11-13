@@ -97,7 +97,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | todo |
+| T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | doing@261113.fin3 |
 
 ## next
 - main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
@@ -124,5 +124,3 @@
 - 261112 T845 done
 - 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
 - 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
-- 261113 ab money-spend: adopt a — the 단장 budgets every delegated spend on this season's income by the owner's five-step request
-- 261113 ab money-delegation: adopt a — delegation split from strategy: a spending request per delegated decision, acted on by the delegate's temperament

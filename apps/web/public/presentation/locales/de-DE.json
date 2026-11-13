@@ -6619,7 +6619,7 @@
     "budget.forecast.title": "Erwartete Fixkosten des Jahres",
     "budget.forecast.note": "Was ein Jahr mit den heutigen Verträgen und Investitionsstufen kostet.",
     "budget.plans.title": "Plan des Sportdirektors für diese Saison",
-    "budget.plans.lead": "Der Sportdirektor plant nach den erwarteten Einnahmen dieser Saison, nicht nach dem Kontostand. Zum Ändern einen Wunsch in der Delegation senden.",
+    "budget.plans.lead": "Der Direktor plant mit Saisoneinnahmen und Guthaben, das sein Temperament und dein Ausgabenwunsch freigeben. Ändere den Wunsch in den Delegationseinstellungen.",
     "budget.plans.direct": "Sie selbst",
     "budget.plans.delegated": "{post} · Wunsch: {request}",
     "budget.plans.signings": "Kaderanteil {budget} · für Transfers übrig {left}",
@@ -6660,7 +6660,7 @@
     "delegation.plan.signingLeft": "Ablösen ausgegeben {spent} · für Transfers übrig {left}",
     "delegation.plan.wageCap": "Gehaltsgrenze {share} % der Einnahmen {budget} · jetzt {committed} · Spielraum für Erhöhungen {left}",
     "delegation.plan.youth": "Jugendanteil {share} % der Einnahmen {budget} · Gehalt Jugendleiter {pay} · Jugendinvestition {level} ({cost} pro Jahr)",
-    "delegation.plan.sellLine": "Senkt die Hürde für Angebote um 10 Punkte, sobald die Spielergehälter {first} % der Einnahmen übersteigen, um 20 über {second} % (jetzt {now} %)",
+    "delegation.plan.sellLine": "Leichter verkaufen, wenn Spielergehälter {first}% und {second}% der Einnahmen plus verfügbarem Kapital übersteigen (aktuell {now}%).",
     "delegation.report.revenue": "Neu geplant, weil sich die Einnahmeprognose verschoben hat ({before} → {after})",
     "delegation.report.sale": "Neu geplant, nachdem Spielerverkäufe eingegangen sind (+{sales})",
     "delegation.stop.cash": "Gestoppt, damit das Geld nicht ausgeht: danach läge die Kasse unter {weeks} Wochen Fixkosten ({floor})",
@@ -6835,6 +6835,19 @@
     "lab.tunable.limit": "Bildbewertung von Reichweite, Abstand, Form, Häufung oder Gleichlauf",
     "lab.tunable.rule.normalizer": "Gemeinsamer Normalisierer in Fähigkeitspunkten für {control}. Er skaliert alle Gewichte gleich; Erhöhen oder Senken ändert die relative Verteilung nicht.",
     "lab.tunable.rule.exponent": "Exponent für {control} (einheitenlos). Höher konzentriert auf höhere Fähigkeiten, niedriger schwächt Fähigkeitsunterschiede.",
-    "lab.tunable.pitchMargin": "Abstand innerhalb der Spielfeldgrenze"
+    "lab.tunable.pitchMargin": "Abstand innerhalb der Spielfeldgrenze",
+    "finance.cash.warning": "Pro Spieltag fallen Fixkosten von {fixed} an. Der Verein wird insolvent, wenn der Kontostand unter {limit} fällt.",
+    "finance.debt.title": "Insolvenzgefahr · Vereinsschulden",
+    "finance.debt.warning": "Der Kontostand beträgt {cash}. Schulden bis zu einem Jahr Fixkosten sind erlaubt; unter {limit} wird der Verein insolvent. Die Dauer der Verschuldung allein führt nicht zur Insolvenz.",
+    "finance.debt.alarm": "{title} Kontostand {cash} · Insolvenz unter {limit}",
+    "finance.cash.alarm": "{title} Noch {weeks} Wochen Fixkosten · Insolvenz unter {limit}",
+    "delegation.plan.capital": "{years} Jahre Fixkosten bleiben als Reserve; {capital} aus dem Guthaben kommen zum Budget hinzu. In diesem Rahmen dürfen Investitionen die Einnahmen übersteigen.",
+    "delegation.flow.capital": "Investition aus Guthaben",
+    "delegation.flow.reserve": "{years} Jahre Fixkosten als Reserve.",
+    "finance.debt.ended": "In {season} überstiegen die Schulden ein Jahr Fixkosten und der Verein schloss. Er war {rounds} Spieltage verschuldet. {kept}",
+    "delegation.plan.fundedBudget": "Budget mit Guthaben {budget} · gebunden {committed} · Investitionsspielraum {left}",
+    "delegation.flow.budget": "Budget mit Guthaben",
+    "delegation.verdict.fundedWages": "Die Spielergehälter von {bill} übersteigen das Budget mit Guthaben von {budget}",
+    "delegation.verdict.fundedRaise": "Erhöhung abgelehnt: Die Spielergehälter von {bill} würden das Budget mit Guthaben von {budget} übersteigen ({plan})."
   }
 }

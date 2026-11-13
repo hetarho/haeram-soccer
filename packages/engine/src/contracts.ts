@@ -44,8 +44,7 @@ import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
 import { moneyLabel } from './finance';
 import { directionOption } from './direction';
-import { delegatePlan, insolvencyStop, planLabel } from './delegation';
-import { sharePercent } from './delegation-info';
+import { delegatePlan, insolvencyStop, planLabel, planRoomAfterWage } from './delegation';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom } from './calendar';
 import { credit } from './transactions';
@@ -677,18 +676,17 @@ export function staffTalkVerdict(w: World, p: Player) {
     };
   if (raise > 0n) {
     const plan = delegatePlan(w, 'contracts');
-    if (raise > BigInt(plan.left))
+    if (raise > planRoomAfterWage(w, plan, raise))
       return {
         accept: false as const,
-        reason: sourceMessage('delegation.verdict.raiseWageBill', {
+        reason: sourceMessage('delegation.verdict.fundedRaise', {
           bill: moneyLabel(w, (BigInt(plan.committed) + raise).toString()),
-          revenue: moneyLabel(w, plan.revenue),
-          share: sharePercent(plan.share),
+          budget: moneyLabel(w, plan.budget),
           plan: finance,
         }),
       };
   }
-  const stop = insolvencyStop(w, 0n, raise > 0n ? raise : 0n);
+  const stop = insolvencyStop(w, 0n, raise > 0n ? raise : 0n, false, 'contracts');
   if (stop)
     return {
       accept: false as const,

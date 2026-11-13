@@ -318,7 +318,9 @@ describe('the global progression clock', () => {
     expect(crisisTitle(broke, 'owner')).toBe('구단주 파산 위기');
     expect(crisisTitle(debt, 'club')).toBe(debt.owner ? '구단 파산 위기' : '파산 위기');
     // The warning states the club's crisis in its inbox item's words: eight rounds in debt end it.
-    expect(clubCrisisDetail(debt)).toMatch(/^잔고가 .+예요\. 적자인 채로 8라운드가 정산되거나/);
+    expect(clubCrisisDetail(debt)).toMatch(
+      /^잔고가 .+예요\. 연간 고정지출 1년분을 빚으로 버틸 수 있으며/,
+    );
   });
   it('stops a running clock once behind a warning when a 파산 위기 begins, and only the owner restarts it (→WEB-56)', async () => {
     const s = setup();

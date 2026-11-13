@@ -19,8 +19,7 @@ import {
 } from '../../../../packages/engine/src/approvals';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
-import { BANKRUPTCY_ROUNDS } from '../../../../packages/engine/src/settlement';
-import { moneyLabel } from '../../../../packages/engine/src/finance';
+import { bankruptcyCashThreshold, moneyLabel } from '../../../../packages/engine/src/finance';
 import type { GameClient } from './client';
 import { gameStore } from './store';
 import { unfinishedPlayback, useMatchView } from './matchView';
@@ -64,9 +63,9 @@ export function crisisTitle(w: World, crisis: Crisis) {
 }
 /** What the club's 파산 위기 warning states, in its inbox item's words (→ECON-24, WEB-56). */
 export function clubCrisisDetail(w: World) {
-  return sourceMessage('copy.settlement.c67c099969', {
-    p0: moneyLabel(w, w.cash),
-    p1: BANKRUPTCY_ROUNDS,
+  return sourceMessage('finance.debt.warning', {
+    cash: moneyLabel(w, w.cash),
+    limit: moneyLabel(w, bankruptcyCashThreshold(w)),
   });
 }
 /** How long the 경기 결과 알림 notice stays once our fixture's day is shown (→WEB-18). */

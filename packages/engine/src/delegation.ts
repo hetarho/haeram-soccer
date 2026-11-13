@@ -1,17 +1,7 @@
 /**
- * How the 단장 turns the owner's request into his own plan: a revenue-linked budget, the way a
- * well-run club plans. He projects this season's income (`seasonRevenue`) and gives each work its
- * share of it — never a share of the cash in the bank. Squad cost (the players' wages and the
- * season's transfer fees) may take the share the request asks for (`SQUAD_SHARE`); what the wages
- * already take is committed, the rest is the season's transfer money, and a share of this season's
- * player sales goes back into signings. Youth money (the academy investment and the youth director's
- * pay) is a share of the same income. The request is not an order: his temperament decides how much
- * of it he follows, and he says why. The plan sets the numbers the engine uses — the checks of every
- * delegated decision, the signing search (`spendingStance`) and the settings he sets himself
- * (`DELEGATE_CONTROLS`) — and is made when the owner delegates or sends a request, when a season
- * starts, when a transfer window opens and when the income projection or this season's sales move
- * a lot (`replanIfMoved`). Apart from the plan, one plain stop keeps any delegated spend from
- * running the club out of cash (`insolvencyStop`).
+ * The director plans income-based budgets plus live capital above temperament/request reserves.
+ * Cash spent and open bids reduce that capital; new wages raise the reserve requirement.
+ * Existing plan moments hold revenue still, while cash funding always reads the live balance.
  */
 import { message as sourceMessage } from '../../contracts/src/messages';
 import type {
@@ -41,7 +31,8 @@ import {
   RESPONSIBILITY_NAMES,
   requestLabel,
   requestOf,
-  SAFETY_ROUNDS,
+  RESERVE_YEARS,
+  safetyRounds,
   SELL_LINE,
   SELL_STEP,
   sharePercent,
@@ -107,6 +98,10 @@ export interface DelegatePlan {
    */
   share: number;
   budget: string;
+  /** Income share before capital funding, live cash released, and reserve years. */
+  incomeBudget: string;
+  capital: string;
+  reserveYears: number;
   /**
    * What the share already pays a year: the players' wages; the academy investment and the youth
    * director's pay; the manager's or the staff's wages for their posts.
@@ -132,6 +127,31 @@ export interface DelegatePlan {
   youth?: { level: PolicyLevel; cost: string; pay: string; payCap: string };
   stance: SpendingStance;
   choices: PlanChoice[];
+}
+
+/** Cash committed to live delegated bids, including bids carried across a season boundary. */
+function pendingFees(w: World): bigint {
+  return (w.bids ?? []).reduce(
+    (total, bid) =>
+      total +
+      (bid.direction === 'out' &&
+      bid.staff &&
+      (bid.status === 'pending' || bid.status === 'countered')
+        ? BigInt(bid.fee)
+        : 0n),
+    0n,
+  );
+}
+/** Live capital after protecting the chosen reserve and any added yearly wage. */
+export function availableCapital(w: World, reserveYears: number, wage = 0n): bigint {
+  return above(
+    BigInt(w.cash) - pendingFees(w),
+    (BigInt(operatingCosts(w).annual) + wage) * BigInt(reserveYears),
+  );
+}
+/** A plan's remaining money after the new wage raises its reserve requirement. */
+export function planRoomAfterWage(w: World, plan: DelegatePlan, wage: bigint): bigint {
+  return BigInt(plan.left) - (BigInt(plan.capital) - availableCapital(w, plan.reserveYears, wage));
 }
 
 /** This season's transfer fees: completed signings and the 단장's open bids. */
@@ -308,7 +328,9 @@ export function delegatePlan(
     level = actedLevel(request, delegate.temperament),
     revenue = BigInt(income),
     costs = operatingCosts(w),
-    wages = BigInt(costs.playerWages);
+    wages = BigInt(costs.playerWages),
+    reserveYears = RESERVE_YEARS[delegate.temperament][level],
+    capital = availableCapital(w, reserveYears);
   let share = 0,
     committed = 0n,
     reinvestShare = 0,
@@ -327,7 +349,7 @@ export function delegatePlan(
       break;
     case 'academy': {
       share = YOUTH_SHARE[level];
-      const split = youthSplit(w, part(revenue, share), level);
+      const split = youthSplit(w, part(revenue, share) + part(capital, share), level);
       youth = {
         level: split.level,
         cost: split.cost.toString(),
@@ -344,14 +366,18 @@ export function delegatePlan(
       committed = BigInt(costs.staffWages);
       break;
   }
-  const budget = part(revenue, share),
+  const incomeBudget = part(revenue, share),
+    funding = key === 'academy' ? part(capital, share) : share > 0 ? capital : 0n,
+    budget = key === 'sales' ? part(revenue + capital, share) : incomeBudget + funding,
     over = share > 0 && committed > budget;
   let left = key === 'sales' || share === 0 ? 0n : above(budget, committed);
   if (key === 'recruitment') {
     reinvestShare = REINVEST_SHARE[level];
     sales = seasonSales(w);
     spent = signingSpend(w);
-    left = above(left + (sales * BigInt(reinvestShare)) / 100n, spent);
+    left =
+      above(above(incomeBudget, committed) + (sales * BigInt(reinvestShare)) / 100n, spent) +
+      above(capital, above(committed, incomeBudget));
   }
   const plan = { over, youth };
   return {
@@ -370,6 +396,9 @@ export function delegatePlan(
     lastRevenue: lastSeasonTurnover(w),
     share,
     budget: budget.toString(),
+    incomeBudget: incomeBudget.toString(),
+    capital: funding.toString(),
+    reserveYears,
     committed: committed.toString(),
     over,
     sales: sales.toString(),
@@ -383,9 +412,12 @@ export function delegatePlan(
   };
 }
 
-/** The wage bill's share of the planned income, in basis points (0 without income). */
+/** Wage pressure against planned income plus drawable cash, in basis points. */
 export function wageShareOf(w: World, wages = BigInt(operatingCosts(w).playerWages)) {
-  const revenue = BigInt(planRevenue(w));
+  const delegate = delegateOf(w),
+    level = actedLevel(requestOf(w, 'sales'), delegate.temperament),
+    revenue =
+      BigInt(planRevenue(w)) + availableCapital(w, RESERVE_YEARS[delegate.temperament][level]);
   return revenue > 0n ? Number((wages * 10000n) / revenue) : wages > 0n ? 99999 : 0;
 }
 /**
@@ -403,21 +435,29 @@ export function wagePressure(w: World) {
 
 /**
  * The plain stop against running out of cash, whatever the plan says (→ECON-24): a delegated spend
- * of `spend` now that adds `wage` a year must leave a month of fixed costs in cash and, unless
+ * of `spend` now that adds `wage` a year keeps the decision's cash buffer (zero for bold/freely) and, unless
  * `quick`, the season's cash projection above zero. The reason when it stops, else undefined.
  */
-export function insolvencyStop(w: World, spend: bigint, wage: bigint, quick = false) {
+export function insolvencyStop(
+  w: World,
+  spend: bigint,
+  wage: bigint,
+  quick = false,
+  key: BudgetResponsibility = 'recruitment',
+) {
   const perRound = (BigInt(operatingCosts(w).annual) + wage) / BigInt(SEASON_ROUNDS),
-    floor = perRound * BigInt(SAFETY_ROUNDS);
-  if (BigInt(w.cash) - spend < floor)
+    weeks = safetyRounds(w, key),
+    floor = perRound * BigInt(weeks);
+  if (BigInt(w.cash) - pendingFees(w) - spend < floor)
     return sourceMessage('delegation.stop.cash', {
-      weeks: SAFETY_ROUNDS,
+      weeks,
       floor: moneyLabel(w, floor.toString()),
     });
   if (quick) return undefined;
   const played = Math.min(w.round, SEASON_ROUNDS),
     end =
       BigInt(financeProjection(w).seasonEnd.low) -
+      pendingFees(w) -
       spend -
       (wage * BigInt(SEASON_ROUNDS - played)) / BigInt(SEASON_ROUNDS);
   if (end < 0n)
@@ -449,13 +489,20 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
           })
         : sourceMessage('delegation.plan.revenue', { revenue: money(plan.revenue) }),
     );
+  if (plan.share > 0)
+    lines.push(
+      sourceMessage('delegation.plan.capital', {
+        years: plan.reserveYears,
+        capital: money(plan.capital),
+      }),
+    );
   switch (plan.key) {
     case 'recruitment':
       lines.push(
-        sourceMessage('delegation.plan.squad', {
-          share,
+        sourceMessage('delegation.plan.fundedBudget', {
           budget: money(plan.budget),
           committed: money(plan.committed),
+          left: money(plan.left),
         }),
         sourceMessage('delegation.plan.reinvest', {
           share: plan.reinvestShare,
@@ -470,8 +517,7 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
       break;
     case 'contracts':
       lines.push(
-        sourceMessage('delegation.plan.wageCap', {
-          share,
+        sourceMessage('delegation.plan.fundedBudget', {
           budget: money(plan.budget),
           committed: money(plan.committed),
           left: money(plan.left),
@@ -482,7 +528,7 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
       lines.push(
         sourceMessage('delegation.plan.youth', {
           share,
-          budget: money(plan.budget),
+          budget: money(plan.incomeBudget),
           pay: money(plan.youth!.pay),
           level: POLICY_INFO.academy.levels[plan.youth!.level - 1].name,
           cost: money(plan.youth!.cost),

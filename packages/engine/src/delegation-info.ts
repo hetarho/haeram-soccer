@@ -22,7 +22,7 @@ import { staffMember, STAFF_INFO } from './staff-info';
 
 export const SPEND_REQUESTS: readonly SpendRequest[] = [1, 2, 3, 4, 5];
 /**
- * The 단장's plan rests on the season's income, never on the cash in the bank (→`delegation.ts`).
+ * The 단장's base plan rests on the season's income; reserve capital supplements it (→`delegation.ts`).
  * Each table gives, by the level he acts on (최소한만 … 아낌없이), a share of that income in basis
  * points (1/100 of a percent). Squad cost — the players' wages and the season's transfer fees —
  * may take `SQUAD` of it, the way UEFA's squad-cost rule caps it at 70 % and prudent clubs aim at
@@ -78,6 +78,20 @@ export const SELL_LINE: Readonly<Record<SpendRequest, number>> = {
 export const SELL_STEP = 1000;
 /** Rounds of fixed costs the plain insolvency stop keeps in cash after any delegated spend. */
 export const SAFETY_ROUNDS = 4;
+/** Years of fixed costs kept before drawing capital, indexed by the step acted on (→ECON-33). */
+export const RESERVE_YEARS: Readonly<Record<Temperament, Readonly<Record<SpendRequest, number>>>> =
+  {
+    cautious: { 1: 50, 2: 40, 3: 30, 4: 20, 5: 10 },
+    balanced: { 1: 40, 2: 30, 3: 20, 4: 10, 5: 5 },
+    bold: { 1: 30, 2: 20, 3: 10, 4: 5, 5: 0 },
+  };
+/** The cash buffer is waived only for the bold director's most expansive request. */
+export function safetyRounds(w: World, key: BudgetResponsibility): number {
+  const temperament = delegateOf(w).temperament;
+  return temperament === 'bold' && actedLevel(requestOf(w, key), temperament) === 5
+    ? 0
+    : SAFETY_ROUNDS;
+}
 /** A share in basis points as a percent with at most one decimal: 6200 → 62, 55 → 0.6. */
 export const sharePercent = (basisPoints: number) => Math.round(basisPoints / 10) / 10;
 /** A responsibility without a request is asked to spend 적당히, the club as it ran before. */

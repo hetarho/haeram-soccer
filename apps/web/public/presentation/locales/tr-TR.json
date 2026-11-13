@@ -6619,7 +6619,7 @@
     "budget.forecast.title": "Bu yılın beklenen sabit giderleri",
     "budget.forecast.note": "Bugünkü sözleşmeler ve yatırım düzeyleriyle bir yılın maliyeti.",
     "budget.plans.title": "Sportif direktörün bu sezonki planı",
-    "budget.plans.lead": "Sportif direktör bütçeyi bankadaki paraya değil, bu sezon beklenen gelire göre yapar. Değiştirmek için devretme ayarlarından istek gönderin.",
+    "budget.plans.lead": "Direktör bütçeyi sezon geliri ve mizacına, harcama isteğine göre kullanabileceği kasa tutarıyla planlar. İsteği yetki devri ayarlarında değiştir.",
     "budget.plans.direct": "Siz",
     "budget.plans.delegated": "{post} · istek: {request}",
     "budget.plans.signings": "Kadro payı {budget} · transfer için kalan {left}",
@@ -6660,7 +6660,7 @@
     "delegation.plan.signingLeft": "Harcanan bonservis {spent} · transfer için kalan {left}",
     "delegation.plan.wageCap": "Oyuncu maaş tavanı gelirin %{share} kadarı {budget} · şu an {committed} · zam payı {left}",
     "delegation.plan.youth": "Altyapı payı gelirin %{share} kadarı {budget} · altyapı direktörü maaşı {pay} · altyapı yatırımı {level} (yılda {cost})",
-    "delegation.plan.sellLine": "Oyuncu maaşları gelirin %{first} oranını geçince teklif çıtasını 10 puan, %{second} oranını geçince 20 puan düşürür (şu an %{now})",
+    "delegation.plan.sellLine": "Oyuncu maaşları gelir ve kullanılabilir sermaye toplamının %{first} ve %{second} sınırlarını aşınca daha kolay satılır (şimdi %{now}).",
     "delegation.report.revenue": "Gelir tahmini değiştiği için yeniden planlandı ({before} → {after})",
     "delegation.report.sale": "Oyuncu satış geliri geldiği için yeniden planlandı (+{sales})",
     "delegation.stop.cash": "Kasa tükenmesin diye durduruldu: sonrasında kasa {weeks} haftalık sabit giderin ({floor}) altına iner",
@@ -6835,6 +6835,19 @@
     "lab.tunable.limit": "görüntü erişim, aralık, şekil, yığılma veya eşzamanlılık değerlendirmesi",
     "lab.tunable.rule.normalizer": "{control} için ortak beceri puanı normalleştiricisi. Tüm ağırlıkları eşit ölçekler; artırmak veya azaltmak göreli dağılımı değiştirmez.",
     "lab.tunable.rule.exponent": "{control} üssü (birimsiz). Artırmak yüksek becerilere yoğunlaştırır, azaltmak beceri farklarını zayıflatır.",
-    "lab.tunable.pitchMargin": "saha sınırından iç boşluk"
+    "lab.tunable.pitchMargin": "saha sınırından iç boşluk",
+    "finance.cash.warning": "Her turda {fixed} sabit gider ödenir. Bakiye {limit} altına düşerse kulüp iflas eder.",
+    "finance.debt.title": "İflas riski · kulüp borcu",
+    "finance.debt.warning": "Bakiye {cash}. Bir yıllık sabit gider kadar borca izin verilir; kulüp {limit} altında iflas eder. Yalnızca borçlu kalınan süre iflasa yol açmaz.",
+    "finance.debt.alarm": "{title} Bakiye {cash} · {limit} altında iflas",
+    "finance.cash.alarm": "{title} {weeks} haftalık sabit gider kaldı · {limit} altında iflas",
+    "delegation.plan.capital": "{years} yıllık sabit gider ayrılır ve kasadan bütçeye {capital} eklenir. Bu sınır içinde yatırım geliri aşabilir.",
+    "delegation.flow.capital": "Kasadan yatırım",
+    "delegation.flow.reserve": "{years} yıllık sabit gider ayrılır.",
+    "finance.debt.ended": "{season} sezonunda borç bir yıllık sabit gideri aştı ve kulüp kapandı. {rounds} tur borçlu kaldı. {kept}",
+    "delegation.plan.fundedBudget": "Kasa dahil bütçe {budget} · bağlı tutar {committed} · yatırım payı {left}",
+    "delegation.flow.budget": "Kasa dahil bütçe",
+    "delegation.verdict.fundedWages": "{bill} oyuncu maaş yükü, kasa dahil {budget} bütçeyi aşıyor",
+    "delegation.verdict.fundedRaise": "Zam reddedildi: {bill} oyuncu maaş yükü, kasa dahil {budget} bütçeyi aşacaktı ({plan})."
   }
 }

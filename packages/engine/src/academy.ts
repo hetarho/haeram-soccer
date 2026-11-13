@@ -458,6 +458,7 @@ export function seasonAcademy(w: World): void {
           0n,
           ready.reduce((all, player) => all + BigInt(player.wage), 0n),
           true,
+          'academy',
         )
       : undefined,
     affordable = !stop;

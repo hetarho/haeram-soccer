@@ -6616,7 +6616,7 @@
     "budget.forecast.title": "올해 고정지출 예상",
     "budget.forecast.note": "지금 계약과 투자 수준으로 1년을 보낼 때 나가는 돈이에요.",
     "budget.plans.title": "단장의 이번 시즌 계획",
-    "budget.plans.lead": "단장은 은행 잔고가 아니라 이번 시즌 수입 예상으로 예산을 짜요. 바꾸려면 위임 설정에서 요청을 보내세요.",
+    "budget.plans.lead": "단장은 시즌 수입과 성향·투자 요청에 따라 꺼내 쓸 보유 자금으로 예산을 짜요. 위임 설정에서 요청을 바꿀 수 있어요.",
     "budget.plans.direct": "구단주 직접",
     "budget.plans.delegated": "{post} 위임 · 요청 {request}",
     "budget.plans.signings": "선수단 몫 {budget} · 영입에 쓸 돈 {left}",
@@ -6657,7 +6657,7 @@
     "delegation.plan.signingLeft": "이적료 {spent} 사용 · 영입에 쓸 돈 {left}",
     "delegation.plan.wageCap": "선수 연봉 상한 수입의 {share}% {budget} · 지금 {committed} · 인상 여유 {left}",
     "delegation.plan.youth": "유소년 몫 수입의 {share}% {budget} · 유스 디렉터 급여 {pay} · 유소년 투자 {level}(연 {cost})",
-    "delegation.plan.sellLine": "선수 연봉이 수입의 {first}%를 넘으면 제안 기준을 10%p, {second}%를 넘으면 20%p 낮춰요(지금 {now}%)",
+    "delegation.plan.sellLine": "선수 연봉이 수입과 투자 가능 자금 합계의 {first}%와 {second}%를 넘으면 매각을 늘려요(지금 {now}%).",
     "delegation.report.revenue": "수입 예상이 바뀌어 다시 계획했어요({before} → {after})",
     "delegation.report.sale": "선수 판매 수입이 들어와 다시 계획했어요(+{sales})",
     "delegation.stop.cash": "현금이 바닥나지 않게 멈췄어요. 쓰고 나면 현금이 고정지출 {weeks}주분({floor})보다 적어요",
@@ -6832,6 +6832,19 @@
     "lab.tunable.limit": "그림의 도달·간격·대형·군집·동시 움직임 판정",
     "lab.tunable.rule.normalizer": "{control}의 공통 정규화 분모(능력치 점)입니다. 모든 후보 가중치에 같은 배수가 붙으므로 높이거나 낮춰도 상대 배분은 변하지 않습니다.",
     "lab.tunable.rule.exponent": "{control}의 지수(무단위)입니다. 높이면 능력이 높은 선수에게 더 집중되고, 낮추면 능력 차이의 영향이 약해집니다.",
-    "lab.tunable.pitchMargin": "경기장 경계 안쪽 여백"
+    "lab.tunable.pitchMargin": "경기장 경계 안쪽 여백",
+    "finance.cash.warning": "라운드마다 고정지출 {fixed}가 나가요. 잔고가 {limit} 미만으로 내려가면 구단이 파산해요.",
+    "finance.debt.title": "파산 위기 · 구단 부채",
+    "finance.debt.warning": "잔고가 {cash}예요. 연간 고정지출 1년분을 빚으로 버틸 수 있으며, 잔고가 {limit} 미만으로 내려가면 구단이 파산해요. 적자가 이어지는 기간만으로는 파산하지 않아요.",
+    "finance.debt.alarm": "{title} 잔고 {cash} · 파산 기준: 잔고 {limit} 미만",
+    "finance.cash.alarm": "{title} 고정지출 {weeks}주분 남음 · 파산 기준: 잔고 {limit} 미만",
+    "delegation.plan.capital": "고정지출 {years}년분을 남기고 보유 자금에서 {capital}를 예산에 더해요. 이 범위에서는 수입보다 많이 투자할 수 있어요.",
+    "delegation.flow.capital": "보유 자금에서 투자",
+    "delegation.flow.reserve": "고정지출 {years}년분을 남겨요.",
+    "finance.debt.ended": "{season} 시즌, 부채가 연간 고정지출 1년분을 넘어 구단이 문을 닫았어요. 적자 기간 {rounds}라운드. {kept}",
+    "delegation.plan.fundedBudget": "보유 자금을 포함한 예산 {budget} · 현재 부담 {committed} · 추가 투자 여력 {left}",
+    "delegation.flow.budget": "보유 자금을 포함한 예산",
+    "delegation.verdict.fundedWages": "선수 연봉 총액 {bill}이 보유 자금을 포함한 예산 {budget}을 넘어요",
+    "delegation.verdict.fundedRaise": "인상 후 선수 연봉 총액 {bill}이 보유 자금을 포함한 예산 {budget}을 넘어 거절했어요({plan})."
   }
 }

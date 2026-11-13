@@ -497,7 +497,7 @@ describe('the game-over page (→WEB-56, OWNER-16)', () => {
     expect(endCause(w)).toBe('club');
     const club = gameOverFacts(w);
     expect(club.title).toBe(`${own(w).name} 파산`);
-    expect(club.line).toContain('적자를 8라운드 동안');
+    expect(club.line).toContain('부채가 연간 고정지출 1년분을 넘어');
     expect(club.club).toBeUndefined();
     w.ended = 'club';
     expect(endCause(w)).toBe('club');

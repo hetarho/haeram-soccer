@@ -6622,7 +6622,7 @@
     "budget.forecast.title": "Charges fixes prévues de l'année",
     "budget.forecast.note": "Ce que coûte une année avec les contrats et niveaux d'investissement actuels.",
     "budget.plans.title": "Le plan du directeur sportif cette saison",
-    "budget.plans.lead": "Le directeur sportif budgète à partir des recettes prévues cette saison, pas de l'argent en banque. Pour changer, envoyez une demande dans la délégation.",
+    "budget.plans.lead": "Le directeur établit le budget avec les revenus de la saison et la trésorerie mobilisable selon son tempérament et votre demande de dépenses. Modifiez la demande dans les réglages de délégation.",
     "budget.plans.direct": "Vous",
     "budget.plans.delegated": "{post} · demande : {request}",
     "budget.plans.signings": "Part de l'effectif {budget} · reste pour les recrues {left}",
@@ -6663,7 +6663,7 @@
     "delegation.plan.signingLeft": "Indemnités dépensées {spent} · reste pour les recrues {left}",
     "delegation.plan.wageCap": "Plafond salarial {share} % des recettes {budget} · actuellement {committed} · marge pour hausses {left}",
     "delegation.plan.youth": "Part de la formation {share} % des recettes {budget} · salaire du directeur de formation {pay} · investissement formation {level} ({cost} par an)",
-    "delegation.plan.sellLine": "Abaisse la barre des offres de 10 points quand les salaires dépassent {first} % des recettes, de 20 au-delà de {second} % (actuellement {now} %)",
+    "delegation.plan.sellLine": "Vendre davantage lorsque les salaires dépassent {first}% et {second}% des revenus plus le capital disponible (actuellement {now}%).",
     "delegation.report.revenue": "Replanifié car la prévision de recettes a changé ({before} → {after})",
     "delegation.report.sale": "Replanifié après des ventes de joueurs (+{sales})",
     "delegation.stop.cash": "Arrêté pour ne pas vider la caisse : ensuite la trésorerie passerait sous {weeks} semaines de charges fixes ({floor})",
@@ -6838,6 +6838,19 @@
     "lab.tunable.limit": "jugement de portée, espacement, forme, regroupement ou synchronie",
     "lab.tunable.rule.normalizer": "Normalisateur commun en points de compétence de {control}. Il multiplie tous les poids pareillement ; sa variation ne change pas la répartition relative.",
     "lab.tunable.rule.exponent": "Exposant de {control} (sans unité). Une hausse concentre l’attribution sur les meilleurs ; une baisse atténue les écarts.",
-    "lab.tunable.pitchMargin": "marge intérieure du terrain"
+    "lab.tunable.pitchMargin": "marge intérieure du terrain",
+    "finance.cash.warning": "Les charges fixes coûtent {fixed} par journée. Le club fait faillite si sa trésorerie descend sous {limit}.",
+    "finance.debt.title": "Risque de faillite · dette du club",
+    "finance.debt.warning": "La trésorerie est de {cash}. Une dette équivalant à un an de charges fixes est autorisée ; le club fait faillite sous {limit}. La durée de la dette seule ne provoque pas la faillite.",
+    "finance.debt.alarm": "{title} Trésorerie {cash} · faillite sous {limit}",
+    "finance.cash.alarm": "{title} {weeks} semaines de charges fixes restantes · faillite sous {limit}",
+    "delegation.plan.capital": "On conserve {years} ans de charges fixes et ajoute {capital} de trésorerie au budget. Les investissements peuvent dépasser les revenus dans cette limite.",
+    "delegation.flow.capital": "Investissement sur trésorerie",
+    "delegation.flow.reserve": "Conserver {years} ans de charges fixes.",
+    "finance.debt.ended": "En {season}, la dette a dépassé un an de charges fixes et le club a fermé. Il est resté endetté pendant {rounds} journées. {kept}",
+    "delegation.plan.fundedBudget": "Budget avec trésorerie {budget} · engagé {committed} · marge d’investissement {left}",
+    "delegation.flow.budget": "Budget avec trésorerie",
+    "delegation.verdict.fundedWages": "La masse salariale de {bill} dépasse le budget avec trésorerie de {budget}",
+    "delegation.verdict.fundedRaise": "Hausse refusée : la masse salariale de {bill} dépasserait le budget avec trésorerie de {budget} ({plan})."
   }
 }

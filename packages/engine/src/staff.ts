@@ -525,8 +525,14 @@ export function volunteer(w: World, role: StaffRole): Staff {
  * money is delegated, his pay stays within the 단장's youth plan (→`youthPayCap`). The manager's
  * and the coaches' pay are otherwise set by the criteria the 단장 chose (→`DELEGATE_CONTROLS`).
  */
-export function affordable(w: World, spend: bigint, wage: bigint, role?: StaffRole) {
-  if (insolvencyStop(w, spend, wage, true)) return false;
+export function affordable(
+  w: World,
+  spend: bigint,
+  wage: bigint,
+  role?: StaffRole,
+  key: 'staff' | 'manager' = 'staff',
+) {
+  if (insolvencyStop(w, spend, wage, true, role === 'youth' ? 'academy' : key)) return false;
   if (role !== 'youth' || wage <= 0n) return true;
   const cap = youthPayCap(w);
   return cap === undefined || BigInt(staffMember(w, 'youth')?.wage ?? '0') + wage <= cap;

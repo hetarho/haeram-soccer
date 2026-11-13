@@ -24,11 +24,13 @@ import {
   type Temperament,
 } from './delegation-info';
 import {
+  availableCapital,
   applyDelegatePlans,
   delegatePlan,
   insolvencyStop,
   planLines,
   planRevenue,
+  planRoomAfterWage,
   replanIfMoved,
   spendingStance,
   wagePressure,
@@ -57,7 +59,7 @@ function club(seed: string, wagePercent = 52n) {
 }
 const share = (amount: string, of: string) => Number((BigInt(amount) * 1000n) / BigInt(of)) / 10;
 
-describe('the 단장 plans on the season’s income, not on the cash in the bank', () => {
+describe('the 단장 plans income and reserve-funded investment', () => {
   it('asked for the minimum he spends no fees on a demo-like club, asked to spend freely he spends a fifth of its income', () => {
     const w = club('delegation-demo'),
       little = delegatePlan(w, 'recruitment', 1),
@@ -86,7 +88,7 @@ describe('the 단장 plans on the season’s income, not on the cash in the bank
     );
   });
 
-  it('plans the same whatever the cash, which only the plain insolvency stop reads', () => {
+  it('keeps income budgets unchanged below reserves and stops unaffordable cash spending', () => {
     const w = club('delegation-cash'),
       rich = delegatePlan(w, 'recruitment', 5);
     w.cash = (BigInt(w.cash) / 20n).toString();
@@ -97,6 +99,93 @@ describe('the 단장 plans on the season’s income, not on the cash in the bank
     expect(signingVerdict(w, { ...w.players[0], id: 'x', wage: '1' }, '1').reason).toContain(
       '현금이 바닥나지 않게',
     );
+  });
+
+  it('draws cash above twenty years of fixed costs for a balanced moderate request, even beyond income', () => {
+    const w = club('delegation-reserves'),
+      annual = BigInt(operatingCosts(w).annual);
+    w.cash = (annual * 20n).toString();
+    const base = delegatePlan(w, 'recruitment', 3);
+    expect(base).toMatchObject({ reserveYears: 20, capital: '0' });
+    w.cash = (annual * 25n).toString();
+    const rich = delegatePlan(w, 'recruitment', 3);
+    expect(BigInt(rich.capital)).toBe(annual * 5n);
+    expect(BigInt(rich.left) - BigInt(base.left)).toBe(annual * 5n);
+    expect(BigInt(rich.left)).toBeGreaterThan(BigInt(rich.revenue));
+    expect(planLines(w, rich).join(' ')).toContain('고정지출 20년분');
+    // Current cash is the shared balance: a fee already paid is not taken from capital again.
+    const fee = annual;
+    w.cash = (BigInt(w.cash) - fee).toString();
+    addEvent(w, 'transfer-in', 'test signing', 'paid fee', fee.toString());
+    const after = delegatePlan(w, 'recruitment', 3);
+    expect(BigInt(after.capital)).toBe(annual * 4n);
+    expect(BigInt(after.left)).toBe(annual * 4n);
+    w.cash = (BigInt(w.cash) + annual * 2n).toString();
+    expect(BigInt(delegatePlan(w, 'recruitment', 3).capital)).toBe(annual * 6n);
+    // A year's new wages raises the twenty-year reserve, beyond the wage itself.
+    const plan = delegatePlan(w, 'contracts', 3);
+    expect(BigInt(plan.left) - planRoomAfterWage(w, plan, 100n)).toBe(2000n);
+  });
+
+  it('uses temperament and request reserves in order and lets bold freely spend to zero cash', () => {
+    const w = club('delegation-reserve-order'),
+      annual = BigInt(operatingCosts(w).annual);
+    w.cash = (annual * 60n).toString();
+    for (const temperament of ['cautious', 'balanced', 'bold'] as const) {
+      holdTemperament(w, 'director', temperament);
+      const capital = ([1, 2, 3, 4, 5] as const).map((request) =>
+        BigInt(delegatePlan(w, 'recruitment', request).capital),
+      );
+      expect(capital).toEqual([...capital].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)));
+    }
+    w.delegationRequests = { recruitment: 5, staff: 3 };
+    const plan = delegatePlan(w, 'recruitment');
+    expect(plan).toMatchObject({ reserveYears: 0, capital: w.cash });
+    expect(insolvencyStop(w, BigInt(w.cash), 0n, true)).toBeUndefined();
+    expect(insolvencyStop(w, BigInt(w.cash) + 1n, 0n, true)).toBeDefined();
+    expect(insolvencyStop(w, BigInt(w.cash), 0n, true, 'staff')).toBeDefined();
+    w.cash = '-1';
+    expect(availableCapital(w, 0)).toBe(0n);
+  });
+
+  it('allows a wealthy loss-making club to sign rather than enforcing a revenue-only wage cap', () => {
+    const w = club('delegation-deficit', 95n),
+      annual = BigInt(operatingCosts(w).annual),
+      candidate = { ...w.players[0], id: 'funded-signing', wage: '1' };
+    w.cash = (annual * 20n).toString();
+    expect(signingVerdict(w, candidate, annual.toString()).ok).toBe(false);
+    w.cash = (annual * 30n).toString();
+    expect(signingVerdict(w, candidate, annual.toString()).ok).toBe(true);
+    expect(wagePressure(w).level).toBe(0);
+    expect(BigInt(delegatePlan(w, 'academy').budget)).toBeGreaterThan(
+      BigInt(delegatePlan({ ...w, cash: '0' }, 'academy').budget),
+    );
+  });
+
+  it('reserves live bid fees once and releases the current bid reservation when settling it', () => {
+    const w = club('delegation-pending-capital'),
+      annual = BigInt(operatingCosts(w).annual),
+      candidate = { ...w.players[0], id: 'reserved-signing', wage: '0' },
+      fee = annual * 6n;
+    w.cash = (annual * 30n).toString();
+    w.bids = [
+      {
+        id: 'reserved-bid',
+        direction: 'out',
+        playerId: candidate.id,
+        fee: fee.toString(),
+        year: w.year,
+        day: 0,
+        due: 1,
+        status: 'pending',
+        staff: 'upgrade',
+      },
+    ];
+    expect(availableCapital(w, 20)).toBe(annual * 4n);
+    expect(signingVerdict(w, candidate, fee.toString()).ok).toBe(false);
+    expect(signingVerdict(w, candidate, fee.toString(), undefined, 'reserved-bid').ok).toBe(true);
+    w.bids[0].status = 'rejected';
+    expect(availableCapital(w, 20)).toBe(annual * 10n);
   });
 
   it('a cautious 단장 asked to spend freely settles a step lower and says why', () => {

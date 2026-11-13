@@ -626,3 +626,8 @@ export function parachutePayment(w: World): string {
   if (lost <= 0n) return '0';
   return scaleBy(lost.toString(), DISTRIBUTION_CONFIG.parachute, 1000n);
 }
+
+/** Bankruptcy cash boundary: a club may owe one year's current fixed costs (→ECON-24). */
+export function bankruptcyCashThreshold(w: World): string {
+  return (-BigInt(operatingCosts(w).annual)).toString();
+}

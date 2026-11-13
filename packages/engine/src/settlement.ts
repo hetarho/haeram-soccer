@@ -8,6 +8,7 @@ import { clubOf } from './player-state';
 import { footballQuote, quote } from './quotes';
 import { random, ratio } from './primitives';
 import {
+  bankruptcyCashThreshold,
   campaignEffectiveness,
   divisionLabel,
   EXPENSE_CONFIG,
@@ -196,9 +197,9 @@ function cashWarning(w: World, perRound: string) {
   pushInbox(w, {
     kind: 'finance',
     title: sourceMessage('copy.settlement.de51e84ed8', { p0: weeks }),
-    detail: sourceMessage('copy.settlement.b6f2edcb75', {
-      p0: moneyLabel(w, perRound),
-      p1: BANKRUPTCY_ROUNDS,
+    detail: sourceMessage('finance.cash.warning', {
+      fixed: moneyLabel(w, perRound),
+      limit: moneyLabel(w, bankruptcyCashThreshold(w)),
     }),
     // A status, not a stop: the HUD and the warning band show it in red (→ECON-24).
     attention: false,
@@ -339,20 +340,14 @@ export function settleRound(w: World) {
   // The 단장 plans again when the season's income or its sales moved a lot (→`replanIfMoved`).
   replanIfMoved(w);
 }
-/** League rounds in debt before the club goes bankrupt, or debt deeper than half a year's costs. */
-export const BANKRUPTCY_ROUNDS = 8;
-/**
- * Debt no longer freezes the club (→ECON-24): it plays on under a red warning, and after eight
- * settled rounds in a row below zero, or at once if the debt passes half a season's fixed costs,
- * it goes bankrupt and the career ends. Getting back above zero resets the count.
- */
+/** Debt duration is warning history only; bankruptcy depends on its amount (→ECON-24). */
 function insolvency(w: World, annual: string) {
   if (BigInt(w.cash) >= 0n) {
     delete w.insolvent;
     return;
   }
   w.insolvent = (w.insolvent ?? 0) + 1;
-  if (w.insolvent >= BANKRUPTCY_ROUNDS || BigInt(w.cash) * 2n < -BigInt(annual)) {
+  if (BigInt(w.cash) < -BigInt(annual)) {
     w.bankrupt = { year: w.year, round: w.round, day: currentDay(w) };
     // A taken-over club's bankruptcy ends the owner's career by its cause (→OWNER-16).
     if (w.owner) w.ended = 'club';
@@ -368,10 +363,10 @@ function insolvency(w: World, annual: string) {
   if (w.insolvent === 1)
     pushInbox(w, {
       kind: 'finance',
-      title: sourceMessage('copy.settlement.f40f997d11', { p0: BANKRUPTCY_ROUNDS }),
-      detail: sourceMessage('copy.settlement.c67c099969', {
-        p0: moneyLabel(w, w.cash),
-        p1: BANKRUPTCY_ROUNDS,
+      title: sourceMessage('finance.debt.title'),
+      detail: sourceMessage('finance.debt.warning', {
+        cash: moneyLabel(w, w.cash),
+        limit: moneyLabel(w, (-BigInt(annual)).toString()),
       }),
       attention: false,
     });
