@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FreeAgent, Position, World } from '../../contracts/src/types';
+import type { FreeAgent, Player, Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES, FREE_AGENT_CAP } from '../../contracts/src/player';
 import { validateWorld } from '../../contracts/src/schema';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
@@ -15,6 +15,7 @@ import { divisionStrength, topUpAtClose } from './season';
 import { lineOf } from './player';
 import { SQUAD_TARGET } from './squad-size';
 import { promotionAge } from './academy';
+import { twentyPlayerFixture } from './player-fixtures.testkit';
 
 /** A free agent of `age` rated `ability` at every attribute, free from `since`. */
 function agent(
@@ -62,8 +63,9 @@ describe('our expiring player no club signs (→CLUB-28, CLUB-49)', () => {
 
 describe("the close's top-up (→CLUB-3, CLUB-40)", () => {
   /** A career one player short of the target in the line it lacks most, the pool `pool`. */
-  function short(pool: (w: World, position: Position, level: number) => FreeAgent[]) {
+  function short(pool: (w: World, position: Position, level: number, gone: Player) => FreeAgent[]) {
     const w = careerWorld({ seed: 'free-agent-top-up' });
+    expect(twentyPlayerFixture(w)).toHaveLength(SQUAD_TARGET);
     w.academy = { players: [] };
     const line = lineOf(refillPosition(w));
     const gone = activePlayers(w)
@@ -71,10 +73,11 @@ describe("the close's top-up (→CLUB-3, CLUB-40)", () => {
       .at(-1)!;
     gone.status = 'sold';
     movePerson(w, gone, undefined, true);
+    expect(activePlayers(w)).toHaveLength(SQUAD_TARGET - 1);
     const position = refillPosition(w),
       level = Math.round(divisionStrength(w));
     expect(lineOf(position)).toBe(line);
-    w.freeAgents = pool(w, position, level);
+    w.freeAgents = pool(w, position, level, gone);
     return { w, level, gone };
   }
   const other = (position: Position): Position => (lineOf(position) === 'FW' ? 'CM' : 'ST');
@@ -133,8 +136,7 @@ describe("the close's top-up (→CLUB-3, CLUB-40)", () => {
     expect(w.freeAgents).toHaveLength(1);
   });
   it('keeps a former player of ours on his one row with his career', () => {
-    const { w, level, gone } = short((w, position, level) => {
-      const former = w.players.find((p) => p.status === 'sold')!;
+    const { w, level, gone } = short((w, position, level, former) => {
       return [
         {
           ...agent(w, former.id, level - 1, w.year, 25, position),
