@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T20:37:19.091Z",
-  "sourceCommit": "dbacf8e3d51ba5510f402e8453868c721cfe1d60",
+  "snapshotAt": "2026-11-13T20:37:57.090Z",
+  "sourceCommit": "215b0d7b579f7feec46a578e533bb2c1671293e8",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -77,10 +77,10 @@
   },
   "summary": {
     "total": 28,
-    "completed": 22,
-    "remaining": 6,
+    "completed": 23,
+    "remaining": 5,
     "running": 2,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 3
   },
@@ -93,15 +93,6 @@
       ],
       "lane": "free-signing-source-witness",
       "status": "todo"
-    },
-    {
-      "id": "T902",
-      "title": "Prepare a supported ten-season codec career through owner actions",
-      "dep": [
-        "T885"
-      ],
-      "lane": "viable-codec-career",
-      "status": "approved"
     },
     {
       "id": "T906",
@@ -1206,7 +1197,7 @@
       "contributors": [
         "nf14-codex-codec-support"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T19:42:46.380Z",
       "startCommit": "cc47cc2321c08bbfd577b1770f324ae17362a335",
@@ -1335,6 +1326,8 @@
       "submittedBase": "37d987956774171f41ddef4bee971e703c5f3e86",
       "submissionId": "e4c4a088-d04a-45e4-b409-3256e3bbd63c",
       "submittedAt": "2026-11-13T20:22:45.173Z",
+      "integratedCommit": "215b0d7b579f7feec46a578e533bb2c1671293e8",
+      "integratedAt": "2026-11-13T20:37:51.616Z",
       "risk": null,
       "review": {
         "id": "7c730924-0165-4bf9-8c69-35fab78f8bc2",
@@ -1385,6 +1378,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T20:22:24.390Z",
           "finishedAt": "2026-11-13T20:22:44.950Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:37:19.274Z",
+          "finishedAt": "2026-11-13T20:37:51.262Z"
         }
       ]
     },
@@ -8169,6 +8169,53 @@
       "group": "natural-football-261114",
       "attemptId": "515f7a9a-bb5f-438e-aa31-242743f788fd",
       "taskId": "T894",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 292,
+      "at": "2026-11-13T20:37:51.402Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "515f7a9a-bb5f-438e-aa31-242743f788fd",
+      "taskId": "T894",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:37:19.274Z",
+            "finishedAt": "2026-11-13T20:37:51.262Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 293,
+      "at": "2026-11-13T20:37:51.616Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "515f7a9a-bb5f-438e-aa31-242743f788fd",
+      "taskId": "T894",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "215b0d7b579f7feec46a578e533bb2c1671293e8",
+        "integratedAt": "2026-11-13T20:37:51.616Z"
+      }
+    },
+    {
+      "sequence": 294,
+      "at": "2026-11-13T20:37:54.503Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b93ad830-110f-41e1-a286-baef8caac1c3",
+      "taskId": "T902",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
