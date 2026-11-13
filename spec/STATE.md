@@ -85,6 +85,8 @@
 
 | T904 | Align checkpoint validation with explicit compatible patch releases | SAVE ARCH | T883 | todo |
 | T905 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
+| T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
+| T907 | Normalize prepared manager careers at the writer boundary | ARCH WORLD SAVE WEB | T893 | todo |
 
 ## next
 - gusta-implement-task T873 T875 T884
