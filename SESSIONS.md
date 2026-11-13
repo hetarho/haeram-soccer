@@ -75,6 +75,7 @@
 | T872 | pw86 | work/persisted-world-860 | 41c5bf2e826e | 2026-11-13T10:54Z |
 
 ## log
+- 261113 gusta-self-improve natural football start; clean main bb383c33 equals fetched origin/main; two read-only scouts; local integration plus synchronized baseline/candidate HTML; Codex workers and Claude review
 - 261113 gusta-create-task ARCH r42..r43 no-op (no code impact): operating conventions only; no active task contracts to rewrite
 - 261113 gusta-update-ssot ARCH r43: task builds and browser acceptance move to final batch; preserve full coverage, i18n and original publication restrictions
 - 261113 gusta-update-ssot ARCH start: align verification with approved gusta 0.17.1 defaults
@@ -94,4 +95,3 @@
 - 261113 T867 done
 - 261113 T861 done
 - 261113 T868 done
-- 261113 T860 done
