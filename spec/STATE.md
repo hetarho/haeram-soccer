@@ -16,6 +16,8 @@
 | fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T03:57Z | 2026-11-13T03:57Z | T859 |
 
 ## inbox
+- 261113 parked SAVE-4 SAVE-13 HIST-23 T867 T865: the persisted world may not fit a century save — the worst century profile has about 1.07 MB of compressed payload left (6,551,024 of 8,388,608 portable bytes, artifacts/benchmarks/T286-full-model-storage.json), 9,922 persisted players are 0.62–0.93 MiB gzipped before any packer, and every opponent of an own match stays as a kept retiree with his profile; T867 and T865 read their shares (500,000 and 450,000 bytes) early, and when one is over the owner chooses: a tighter packer | a smaller NPC_SQUAD.size | the kept profile only for podium, news and transfer links | a higher SAVE-4 portable limit rv13
+- 261113 suggest WEB-59 T860 T865: every age reads the current season's year − birth year, so a player who retired decades ago reads 80세 or 110세 on his sheet; an age at retirement for a retired player would be a WEB-59 change, if wanted rv13
 - 261113 decided ECON-24 ECON-33 ECON-41: unspecified reserve steps and debt amount → cautious 50/40/30/20/10, balanced 40/30/20/10/5, bold 30/20/10/5/0 years by acted request; bankruptcy only below minus one year of fixed costs, no duration trigger; bold/freely keeps zero cash buffer (alt: one universal reserve | fixed nominal debt limit). The requested anchors hold, and costs scale across eras and currencies. fin3
 - 261113 suggest MATCH-39 WEB-32 T858: every staging reply (two minutes) publishes a new playback, and `Pitch` recomputes `presentationSamples`, `deadBallBeats`, `goalInstants`, `figureActionWindows` and `gaitDistances` over all frames staged so far, so main-thread work grows with the square of the match (Node, scripted-journey's 103 frames of about 300 KB each: 0.34 s of recompute and 0.15 s of cloning over the 52 publications, against 0.03 s publishing at each doubling); a presentation task could coalesce publications in `PlaybackStaging` or make those reads incremental, WebKit on CI being where it shows n813
 - 261113 suggest MATCH-39 MATCH-38 T854: seed set-piece-defence-10's own match (ENG, every responsibility delegated, scripted-aggregate-11, 0 : 0) cannot be staged — `cornerScene` → `keeperOf` (packages/engine/src/staging/participants.ts) throws `집계 원장 불일치: staging:input` with no defending keeper present at a corner, so watching such a match stops on a staging error; a fix task should find which script leaves the keeper slot empty at that corner (repro: `careerWorld({ country: 'ENG', seed: 'set-piece-defence-10' })`, all delegated, `stagedPlayback(advanceToNextMatch(w))`)
@@ -63,15 +65,15 @@
 | ARCH | 41 | 41 | - | 2 |
 | WEB | 220 | 220 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
-| WORLD | 12 | 12 | - | 0 |
+| WORLD | 13 | 13 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 69 | 69 | - | 0 |
+| CLUB | 70 | 70 | - | 0 |
 | MATCH | 63 | 63 | - | 0 |
-| LEAGUE | 19 | 19 | - | 0 |
+| LEAGUE | 20 | 20 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
 | ECON | 57 | 57 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 26 | 26 | - | 0 |
+| HIST | 27 | 27 | - | 0 |
 | SAVE | 68 | 68 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
 | PLAYER | 18 | 18 | - | 0 |
@@ -100,15 +102,16 @@
 |---|---|---|---|---|
 | T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | doing@261113.fin3 |
 | T860 | Show every age as N세, never a birth year | WEB | - | todo |
-| T861 | Persist every playable-country club's players as people | WORLD PLAYER LEAGUE HIST | - | todo |
-| T862 | Persisted players develop, age, retire and are replaced by youth | WORLD PLAYER CLUB STAFF | T861 | todo |
+| T861 | Persist every playable-country club's players as people | WORLD PLAYER LEAGUE HIST CLUB | - | todo |
+| T862 | Persisted players develop, age, retire and are replaced by youth | WORLD PLAYER CLUB STAFF HIST ARCH | T867 | todo |
 | T863 | Club strength from its squad, wages from its books, contracts and free agents | LEAGUE WORLD ECON CLUB | T862 | todo |
-| T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON | T863 | todo |
-| T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB | T862 T864 | todo |
+| T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON HIST ARCH | T863 | todo |
+| T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB PLAYER SAVE ARCH | T862 T864 | todo |
 | T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 | todo |
+| T867 | Keep persisted squads off the UI thread, in the fixture helpers and in the save | WORLD SAVE HIST ARCH LEAGUE | T861 | todo |
 
 ## next
-- gusta-implement-task T860, then T861 → T866 in dep order (persisted world players, sketch persistent-world-players 261113)
+- gusta-implement-task T860, then T861 → T867 → T862 → T863 → T864 → T865 → T866 (persisted world players, sketch persistent-world-players 261113; plan reviewed 261113 rv13 — T867 is new, so a loop scoped T860–T866 stops before T862 until T867 is in its scope)
 - main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
@@ -116,6 +119,8 @@
 - 261113 T868 done
 - 261113 gusta-create-task WEB MATCH: T868 consumes WEB@220 MATCH@63 sx1
 - 261113 gusta-update-ssot WEB MATCH: WEB-32✎ MATCH-12✎ 1x 12→18 real s per 60 match seconds sx1
+- 261113 gusta-create-task WORLD LEAGUE CLUB HIST: T861–T866 revised to WORLD@13 LEAGUE@20 CLUB@70 HIST@27, T867 new (view, fixture helpers, schema, packing, size and time reads split from T861) rv13
+- 261113 gusta-update-ssot WORLD LEAGUE CLUB HIST: plan review of the persisted world — one live record a player, growth every 4 rounds, the summer's one order, sell-down above the wage limit, strength as the XI's mean, division band ±5, representative clubs' scripted strength kept, aggregates and lines from the first season rv13
 - 261113 fix watch: publish the first staged minute before filling the normal two-minute batches; preserve frame order, match results and the original 3 s browser latency guard fin3
 - 261113 sketch persistent-world-players end: T860–T866 from WORLD@12 LEAGUE@19 PLAYER@18 CLUB@69 ECON@57 HIST@26 WEB@219 pr13
 - 261113 gusta-create-task WORLD LEAGUE PLAYER CLUB ECON HIST WEB: T860–T866 pr13
@@ -131,5 +136,3 @@
 - 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
 - 261112 T853 done
 - 261112 T852 done
-- 261112 T851 done
-- 261112 T848 done
