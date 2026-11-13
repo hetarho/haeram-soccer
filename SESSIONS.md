@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
 | pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T18:17Z | - | work/performance-books-pb14 | f1aef0bcd58e |
-| nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T18:10Z | - | codex/natural-football-261114 | 59816a0e9b8a |
+| nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T18:28Z | - | codex/natural-football-261114 | e63f6616d7e1 |
 | pr14 | ihaelam-ui-MacBookPro | pair | 2026-11-13T18:19Z | 2026-11-13T18:19Z | T883 | fix/pb14-final-review | bb7707c73b5e |
 
 ## inbox
