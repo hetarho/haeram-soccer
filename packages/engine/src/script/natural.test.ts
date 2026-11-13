@@ -3,10 +3,9 @@
 // shows, and a carry recorded inside one cell moves the ball. Small fixtures: three prototype details, written once.
 import { describe, expect, it } from 'vitest';
 import { cellAt, toAttack, dist } from './cells';
-import { SCRIPT_CONFIG } from './config';
 import { isPassLike } from './types';
 import type { Beat, Script } from './types';
-import { writeScript } from './write';
+import { NATURAL, writeScript } from './write';
 import { fixtureSeed, loadDetail } from '../../../../tests/fixtures/match-script';
 
 const ids = ['s01', 's02', 's08'];
@@ -31,7 +30,7 @@ describe('natural play', () => {
 
   it.each(scripts)('%s: every open-play pass played back has a reason', (_, script) => {
     const back = script.beats.filter(
-      (b) => b.kind === 'pass' && x(b, b.to) <= x(b, b.from) - SCRIPT_CONFIG.backPass,
+      (b) => b.kind === 'pass' && x(b, b.to) <= x(b, b.from) - NATURAL.backPass,
     );
     expect(back.length).toBeGreaterThan(0);
     expect(back.filter((b) => b.reason === undefined)).toEqual([]);
@@ -63,7 +62,7 @@ describe('natural play', () => {
     );
     expect(inCell.length).toBeGreaterThan(0);
     // The cell's edges may stop one now and then; the man never stands on the spot as a rule.
-    const still = inCell.filter((b) => dist(b.from, b.to) < SCRIPT_CONFIG.cellCarry / 2);
+    const still = inCell.filter((b) => dist(b.from, b.to) < NATURAL.cellCarry / 2);
     expect(still.length).toBeLessThanOrEqual(inCell.length * 0.2);
   });
 

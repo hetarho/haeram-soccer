@@ -14,6 +14,7 @@ import { speedAt } from './motion';
 import { holdMove } from './pass';
 import { cueNext, jockeyPoint } from './contest';
 import { manInTheWay, releaseBeaten, slipPast } from './takeon';
+import { holdOver } from './release';
 import type { BeatContext } from './perform';
 import {
   ensureOwner,
@@ -35,7 +36,7 @@ export function* performCarry(state: StageState, ctx: BeatContext): Generator<vo
   const end = clampToPitch(beat.to, 0.5);
   const start = state.t;
   state.orders.set(actor, holdMove(state, actor, end, true, start + beat.hold));
-  yield* runUntil(state, () => state.t - start >= beat.hold - 1e-9, beat.hold);
+  yield* runUntil(state, holdOver(state, actor, start, beat.hold), beat.hold);
   // A carry through a man close ahead of it goes past him: he is beaten and trails the carrier.
   const man = manInTheWay(state, actor, end);
   if (man >= 0) yield* slipPast(state, actor, man, end);
@@ -73,7 +74,7 @@ export function* performCarryLost(state: StageState, ctx: BeatContext): Generato
     pace: 'run',
   });
   const holdStart = state.t;
-  yield* runUntil(state, () => state.t - holdStart >= beat.hold - 1e-9, beat.hold);
+  yield* runUntil(state, holdOver(state, actor, holdStart, beat.hold), beat.hold);
 
   const start: Vec = [actorPos()[0], actorPos()[1]];
   const E = clampToPitch(beat.to, 0.5);
@@ -164,7 +165,7 @@ export function* performMiscontrol(state: StageState, ctx: BeatContext): Generat
     state.orders.set(opponent, { target: () => state.ball.pos, pace: 'run' });
   }
   const start = state.t;
-  yield* runUntil(state, () => state.t - start >= beat.hold - 1e-9, beat.hold);
+  yield* runUntil(state, holdOver(state, actor, start, beat.hold), beat.hold);
   const ball = state.ball;
   const toward = opponent !== undefined ? state.bodies[opponent].pos : clampToPitch(beat.to, 0.5);
   const point = clampToPitch(approach(ball.pos, toward, STAGE.heavyTouch), 0.5);

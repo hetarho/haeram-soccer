@@ -1,6 +1,7 @@
 import type { ScriptSide, StagingSide } from '../../../contracts/src/match-script';
 import type { MatchPlayback, MatchRecord, Player } from '../../../contracts/src/types';
 import { playerTendencies, type TendencyManager } from '../match/tendencies';
+import { escapeOf } from '../staging/release';
 import type { MatchDetail } from './detail';
 import { countScript, compareRecord } from './count';
 import { invalidDetail } from './failure';
@@ -28,6 +29,7 @@ export function stagingSides(
         discipline: tendencies.discipline * 100,
         pressing: tendencies.pressing * 100,
         freedom: tendencies.freedom * 100,
+        escape: escapeOf(player.attrs),
       };
     }),
   })) as [StagingSide, StagingSide];

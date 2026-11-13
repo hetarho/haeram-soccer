@@ -9,6 +9,7 @@ import type { TeamId, Vec } from './types';
 import { add, approach, clamp, closestOnSegment, dist, lerp, norm, scale, sub } from './vec';
 import { flightTime, giveBall, startFlightTimed } from './ball';
 import { resolveCut } from './contest';
+import { holdOver } from './release';
 import { keeperOf } from './participants';
 import { speedAt, timeToReach } from './motion';
 import type { BeatContext } from './perform';
@@ -91,7 +92,7 @@ export function* performShot(state: StageState, ctx: BeatContext): Generator<voi
     state.orders.set(beat.opponent, { target: towardGoal(SHOT.blockDist), pace: 'sprint' });
   }
   const start = state.t;
-  if (!spotKick) yield* runUntil(state, () => state.t - start >= beat.hold - 1e-9, beat.hold);
+  if (!spotKick) yield* runUntil(state, holdOver(state, actor, start, beat.hold), beat.hold);
 
   const from: Vec = [state.ball.pos[0], state.ball.pos[1]];
   pushEvent(state, { kind: 'shot', actor, at: from, ...flags });

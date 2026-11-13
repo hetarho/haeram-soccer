@@ -3,7 +3,7 @@ import { invalidDetail } from '../script/failure';
 // the attacker steps past him on the side nearer his goal for the run while the beaten defender is
 // slow to turn, then accelerates away to the beat's end with the defender chasing behind. A carry
 // through an opponent close ahead of it goes past him the same way (`manInTheWay`, `slipPast`).
-// A man gone past is beaten (`StageState.beaten`): until `takeOn.beatenFor` seconds after the beat
+// A man gone past is beaten (`StageState.beaten`): until `GO_PAST.beatenFor` seconds after the beat
 // he neither presses nor holds the carrier up, so the carrier goes on instead of turning back.
 import { STAGING_CONFIG } from './config';
 import { clampToPitch, inPitch } from './pitch';
@@ -11,20 +11,27 @@ import type { Vec } from './types';
 import { add, dist, dot, norm, perp, scale, sub } from './vec';
 import { cueNext, jockeyPoint, nearestOpponent } from './contest';
 import { paceSpeed } from './motion';
+import { holdOver } from './release';
 import type { BeatContext } from './perform';
 import { ensureOwner, runUntil, setPossession, type StageState } from './world';
 
 const STAGE = STAGING_CONFIG.stage;
 const TAKE_ON = STAGE.takeOn;
+/**
+ * Going past a man (a completed take-on, or a carry through an opponent within `reach` metres
+ * ahead of it); the man is out of the press until `beatenFor` seconds after the beat. Module
+ * constants rather than lab tunables (the lab catalog lists only the config objects).
+ */
+export const GO_PAST = { reach: 4, beatenFor: 3 };
 
 /**
- * The opponent (not yet beaten, not a keeper) within `takeOn.reach` of the man on the ball who
+ * The opponent (not yet beaten, not a keeper) within `GO_PAST.reach` of the man on the ball who
  * stands in the way of his carry to `end`: ahead of him within 60° of its line, more than
  * `takeOn.side` short of its end; -1 when there is none.
  */
 export function manInTheWay(state: StageState, actor: number, end: Vec): number {
   const man = nearestOpponent(state, actor, true);
-  if (man.index < 0 || man.distance > TAKE_ON.reach) return -1;
+  if (man.index < 0 || man.distance > GO_PAST.reach) return -1;
   const pos = state.bodies[actor].pos;
   const line = norm(sub(end, pos));
   const at = sub(state.bodies[man.index].pos, pos);
@@ -64,10 +71,10 @@ export function* slipPast(
   yield* runUntil(state, () => dist(actorPos(), side) <= 0.8, TAKE_ON.beatenTime + 1);
 }
 
-/** The men beaten in this beat recover `takeOn.beatenFor` seconds from now. */
+/** The men beaten in this beat recover `GO_PAST.beatenFor` seconds from now. */
 export function releaseBeaten(state: StageState): void {
   for (const [index, until] of state.beaten) {
-    if (until === Infinity) state.beaten.set(index, state.t + TAKE_ON.beatenFor);
+    if (until === Infinity) state.beaten.set(index, state.t + GO_PAST.beatenFor);
   }
 }
 
@@ -87,7 +94,7 @@ export function* performTakeOn(state: StageState, ctx: BeatContext): Generator<v
     pace: 'run',
   });
   const holdStart = state.t;
-  yield* runUntil(state, () => state.t - holdStart >= beat.hold - 1e-9, beat.hold);
+  yield* runUntil(state, holdOver(state, actor, holdStart, beat.hold), beat.hold);
 
   const E = clampToPitch(beat.to, 0.5);
   yield* slipPast(state, actor, defender, E);

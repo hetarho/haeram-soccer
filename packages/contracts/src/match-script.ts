@@ -111,6 +111,8 @@ export interface StagingPlayer {
   discipline: number;
   pressing: number;
   freedom: number;
+  /** Press resistance 0–100 (드리블 twice, 침착성, 힘): from 78 he shields the ball when reached; absent is 0. */
+  escape?: number;
 }
 export interface StagingSide {
   tactic: Tactic;

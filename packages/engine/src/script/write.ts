@@ -5,6 +5,7 @@
 // tissue (link carries, miscontrols, restart deliveries no recorded pass makes). A pure function of
 // the settled match and the seed (-> ARCH-5).
 import { SCRIPT_CONFIG } from './config';
+import { BAND_EDGES } from '../match/pitch';
 import {
   PITCH,
   toAttack,
@@ -36,6 +37,25 @@ import { TouchSearch } from './search';
 const FIT = SCRIPT_CONFIG;
 const GRAMMAR = SCRIPT_CONFIG;
 const MIN_INDEXED_POOL = 32;
+/**
+ * Writer rules of the natural-football order, module constants rather than lab tunables (the lab
+ * catalog lists only the config objects): a player's floating touches spread over his window
+ * (`spread`: metres of pull per touch behind its share, at most `cap` touches); metres a recorded
+ * carry that starts and ends in one cell takes the ball (`cellCarry`); metres a pass lands behind
+ * its start for the writer to give it a reason (`backPass`, `passReason`); a shot from outside the
+ * box is struck within `shotDepth` metres of its cell's goal-side edge. A touch whose release goes
+ * back costs `reversal` per metre (between cell centres) its link would carry the ball forward first,
+ * so the man who drives forward does not then turn round and pass backward, and `backDelay` per metre
+ * back from the attacking half, so attacks go on before the ball is recycled (natural-football b).
+ */
+export const NATURAL = {
+  spread: { weight: 4, cap: 10 },
+  cellCarry: 5,
+  backPass: 5,
+  shotDepth: 10,
+  reversal: 1,
+  backDelay: 0,
+};
 const R = (name: (typeof EVENT_RESULTS)[number]) => EVENT_RESULTS.indexOf(name);
 const KIND = (code: number) => EVENT_KINDS[code]!;
 const other = (t: TeamId): TeamId => (t === 0 ? 1 : 0);
@@ -184,6 +204,15 @@ function writeFitted(settled: Settled, seed: string): Script {
     actorLeft[t.side]![t.actor]!++;
     if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!++;
   });
+  // Attack-frame metres between cell centres: how far a link carries forward and a release goes back.
+  const centreX = (cell: number) => cellCentre(0, Math.max(cell, 0))[0];
+  /** Metres touch `i`'s release goes back (a pass or a lost ball played backward; else 0). */
+  const releaseBack = touches.map((t) => {
+    const r = t.release;
+    if (r === undefined || !('event' in r)) return 0;
+    const e = settled.events[r.event]!;
+    return Math.max(0, centreX(e[EV.from]!) - centreX(e[EV.to]!));
+  });
   /** Whether touch `i` releases a pass the record flags as a corner's or free kick's delivery. */
   const setPiece = touches.map(
     (t) =>
@@ -212,7 +241,7 @@ function writeFitted(settled: Settled, seed: string): Script {
     spreadTotal[g]!++;
     spreadSpan[g] = [t.from, t.until];
   });
-  const spreadCap = Math.round(FIT.spread.weight * FIT.spread.cap * 100);
+  const spreadCap = Math.round(NATURAL.spread.weight * NATURAL.spread.cap * 100);
   /** How much cheaper touch `i` is for its group being behind its even share at `time`. */
   const spreadPull = (i: number, time: number): number => {
     const g = spreadGroup[i]!;
@@ -223,7 +252,9 @@ function writeFitted(settled: Settled, seed: string): Script {
     const share = Math.min(1, Math.max(0, (time - from) / Math.max(1, until - 1 - from)));
     const behind = share * spreadTotal[g]! - spreadPlayed[g]!;
     return Math.round(
-      Math.min(Math.max(behind, -FIT.spread.cap), FIT.spread.cap) * FIT.spread.weight * 100,
+      Math.min(Math.max(behind, -NATURAL.spread.cap), NATURAL.spread.cap) *
+        NATURAL.spread.weight *
+        100,
     );
   };
   const search = new TouchSearch(
@@ -346,6 +377,21 @@ function writeFitted(settled: Settled, seed: string): Script {
     minuteOf.push(minute);
     return beat;
   };
+  const shotRng = random(`${seed}:script:shot`);
+  /**
+   * Where a shot from `cell` outside the box is struck, the ball at `at` in it: no further from
+   * the cell's goal-side edge than a seeded share of `NATURAL.shotDepth`, so a shooter outside the box
+   * strikes from where real shots come (MATCH-23's distance rows), not from the cell's far side.
+   */
+  const shootingSpot = (cell: number, at: Vec): Vec => {
+    const a = toAttack(side, at);
+    const edge = BAND_EDGES[Math.floor(cell / 5) + 1]! - FIT.cellMargin;
+    const x = Math.max(a[0], edge - shotRng() * NATURAL.shotDepth);
+    return intoCell(side, cell, toAttack(side, [x, a[1]]));
+  };
+  /** Whether a shot struck from `cell` is one outside the box with the foot. */
+  const outsideShot = (shot: number, cell: number) =>
+    settled.shots[shot]![SH.header] !== 1 && Math.floor(cell / 5) < 6;
   /** A link carry by the holder to a point in `cell` of his side, when the ball is not there. */
   const linkTo = (cell: number) => {
     if (cellAt(side, ball) === cell) return;
@@ -483,6 +529,15 @@ function writeFitted(settled: Settled, seed: string): Script {
     terms: ReturnType<typeof costTerms>,
   ): number => {
     let cost = cellGap(startCell[i]!, cell) - spreadPull(i, terms.time);
+    const back = releaseBack[i]!;
+    if (back > 0) {
+      // Driving forward to a touch that then goes backward reads as a run that turns round.
+      const ahead = centreX(startCell[i]!) - centreX(cell);
+      if (ahead > 0) cost += Math.round(NATURAL.reversal * Math.min(ahead, back) * 100);
+      // In the attacking half the attack goes on first; the ball is recycled when it is spent.
+      if (centreX(startCell[i]!) > PITCH.length / 2)
+        cost += Math.round(NATURAL.backDelay * back * 100);
+    }
     const release = touches[i]!.release;
     // Prefer the minute's existing dead ball for its incidents over opening a keeper stoppage.
     if (
@@ -625,8 +680,18 @@ function writeFitted(settled: Settled, seed: string): Script {
     // Played to the touch he was chosen for, the ball meets him on the side of the recorded cell
     // nearest where that touch starts, so the carry linking them is as short as the cells allow.
     const spot = spotOf(receiver, p.from, p.side);
+    // A first-time shot off the pass from outside the box is struck where the pass finds him: on
+    // the goal side of its cell.
+    const shot = next >= 0 ? touches[next]!.release : undefined;
     const toward =
-      next >= 0 && startCell[next]! >= 0 ? intoCell(p.side, startCell[next]!, spot) : spot;
+      shot !== undefined &&
+      'shot' in shot &&
+      !touches[next]!.carries.length &&
+      outsideShot(shot.shot, e[EV.to]!)
+        ? shootingSpot(e[EV.to]!, intoCell(p.side, e[EV.to]!, spot))
+        : next >= 0 && startCell[next]! >= 0
+          ? intoCell(p.side, startCell[next]!, spot)
+          : spot;
     const to = pointAway(p.side, e[EV.to]!, toward, p.from, GRAMMAR.minPass);
     push({
       side: p.side,
@@ -674,7 +739,7 @@ function writeFitted(settled: Settled, seed: string): Script {
   ): Beat['reason'] => {
     if (KIND(move) === 'cutBack') return 'cutBack';
     const fx = toAttack(team, from)[0];
-    if (kind !== 'pass' || toAttack(team, to)[0] > fx - GRAMMAR.backPass) return undefined;
+    if (kind !== 'pass' || toAttack(team, to)[0] > fx - NATURAL.backPass) return undefined;
     const last = beats.at(-1);
     if (
       last !== undefined &&
@@ -879,7 +944,7 @@ function writeFitted(settled: Settled, seed: string): Script {
       // across, never up the pitch only to come back.
       if (e[EV.from] === e[EV.to]) {
         const a = toAttack(side, ball);
-        const step = FIT.cellCarry;
+        const step = NATURAL.cellCarry;
         const within = (p: Vec) => intoCell(side, e[EV.to]!, p);
         const moved = (p: Vec) => dist(p, ball) >= step / 2;
         to = ball;
@@ -943,7 +1008,26 @@ function writeFitted(settled: Settled, seed: string): Script {
       if (delivering === undefined) linkTo(settled.events[r.event]![EV.from]!);
       playPass(r.event, delivering?.kind ?? 'pass');
     } else if ('shot' in r) {
-      if (delivering === undefined) linkTo(settled.shots[r.shot]![SH.cell]!);
+      if (delivering === undefined) {
+        const cell = settled.shots[r.shot]![SH.cell]!;
+        linkTo(cell);
+        // From outside the box he steps into his shot: struck from the cell's goal side.
+        if (outsideShot(r.shot, cell)) {
+          const at = shootingSpot(cell, ball);
+          if (dist(at, ball) > 0.5) {
+            push({
+              side,
+              move: 'link',
+              kind: 'carry',
+              actor: holder,
+              from: ball,
+              to: at,
+              outcome: 'complete',
+            });
+            ball = at;
+          }
+        }
+      }
       playShot(r.shot, delivering?.kind ?? 'shot');
     } else {
       const f = settled.fouls[r.foul]!;
