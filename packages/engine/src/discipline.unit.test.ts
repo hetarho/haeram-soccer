@@ -76,7 +76,15 @@ describe('unavailable-state expiry at the existing season boundary', () => {
       { player: 'banned', club: 'foreign', matches: 3, scope: 'domestic', reason: 'serious' },
     ];
     w.discipline!.yellows = { booked: { league: 4, 'cup:fixture': 2 } };
-    w.events = [{ year: 1959, round: 46, kind: 'injury', title: 'Recorded injury' }];
+    w.events = [
+      {
+        year: 1959,
+        round: 46,
+        kind: 'injury',
+        title: 'Recorded injury',
+        detail: 'Original incident retained',
+      },
+    ];
     w.playerRecords = {
       historical: {
         moves: [{ year: 1958, day: 1, from: 'own', to: 'foreign', fee: '123' }],
@@ -85,12 +93,11 @@ describe('unavailable-state expiry at the existing season boundary', () => {
     };
     w.discipline!.out = [injury('recovered', 1950, 1), injury('active', 1960, 1)];
     const bans = w.discipline!.bans;
-    const { discipline: _before, ...before } = structuredClone(w);
+    const before = structuredClone(w);
     closeDisciplineSeason(w);
-    const { discipline: _after, ...after } = w;
-    expect(after).toEqual(before);
+    expect({ ...w, discipline: before.discipline }).toEqual(before);
     expect(w.discipline!.bans).toBe(bans);
-    expect(w.discipline!.bans).toEqual(_before!.bans);
+    expect(w.discipline!.bans).toEqual(before.discipline!.bans);
     expect(w.discipline!.yellows).toEqual({});
     expect(w.discipline!.year).toBe(w.year);
   });
