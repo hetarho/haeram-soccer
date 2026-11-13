@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r67 | Define one complete, calibrated probabilistic result for every match and, for the own club's matches, a script and a staged picture drawn from that result.
+> r68 | Define one complete, calibrated probabilistic result for every match and, for the own club's matches, a script and a staged picture drawn from that result.
 
 ## decisions
 - MATCH-1 [o] Every match is settled once, as one joint probabilistic draw of its whole record (→!MATCH-22/26/27): two halves of 45 minutes plus added time, and extra time and a shoot-out where →MATCH-6 calls for them. The record is the only source of match facts; an own match's script and picture (→!MATCH-38/39) are made from it and never change it. ← one way of settling a match for every club, and a picture that cannot disagree with the record
@@ -338,6 +338,7 @@
   - the same script always stages the same picture at every instant, however that instant is reached — speed, seeking, replay or tab visibility (→MATCH-37); beyond the script it draws only on its own motion stream.
   - it reads the players' roles, tendencies, pace and fatigue (→MATCH-17) and stages everything a record can hold: the four formations (→MATCH-8), substitutes coming on, a side a man short, injuries, penalties, extra time, the shoot-out and the change of ends.
   - it is staged ahead of the presentation in bounded steps, so watching starts without waiting for the whole match (→ARCH-6).
+  - an ordinary pass scripted as pressed may prepare visible pressure after its ordinary hold and receiver allowance, for at most the existing through-wait allowance (5 s). Complete, out, intercepted and loose outcomes share this preparation. The original holder pressure watch is not restarted: a due release with a legal ready receiver ends the wait immediately, and legal-receiver/offside checks still apply at the kick. The ordinary hold cap, pressure-release deadlines, movement limits and scripted facts remain unchanged; impossible pressure cannot create an unbounded wait.
   - its picture is judged by measured limits kept with the staging's code — receptions and contests won within reach, room on the ball, sticking pairs, players starting, stopping and turning as one, marking, shape and swarm, and the rate at which its seconds are fitted to the match clock — and each release reports them. A limit changes as a rule change, never to pass a measurement.
   - its positions are presentation, not facts: they are not saved (→ARCH-15) and need not match another platform's bit for bit.
 
@@ -354,6 +355,7 @@
 - A career on an earlier match model moves to this one prospectively at its next safe boundary (→SAVE-23); its settled matches keep their records.
 
 ## chg
+- r68 261114 MATCH-39✎ pressed pass may exhaust receiver allowance before pressure arrives→separately capped visible-pressure preparation reusing the same release watch and existing 5 s allowance
 - r67 261114 MATCH-17✎ second-nearest-to-ball cover assignment→nearest eligible defender to the existing goal-side cover point; nearest presser and existing eligibility/distance rules retained
 - r66 261114 MATCH-17✎ free support avoids only a nearby marker→also opens a bounded lateral angle around a passing-lane screen during build-up and progression
 - r65 261114 MATCH-12✎ per-tick shielding→committed escape or bounded pressure release; MATCH-17✎ immediate re-press→3 s recovery; MATCH-18✎ free-kick receiver unguarded→live onside waiting; MATCH-38✎ independently placed touches→distributed connected touches; MATCH-40+ paired standalone comparison
