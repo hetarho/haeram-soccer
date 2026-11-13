@@ -36,7 +36,7 @@ Restore and verify the remote natural-football work, then repair free-kick recei
 - F26 [o] P2 match-core.spec.ts:358: filling an already-zero scrubber does not perform the intended60s seek; the35s cue timer instead starts at kickoff. Establish a real paused seek and assert its canvas time, preserving all goal/timing/skip assertions. →T903
 - F27 [o] P2 mediation.spec.ts:140: cold fixture preparation consumes26.9s of the30s browser journey before navigation. Give fixture preparation its existing bounded setup phase and preserve the unchanged timed UI journey and all factual preconditions. →T903
 - F28 [o] P2 manager-history-capture.test.ts:151-163: uncontrolled opponents exhaust the cup-win scene. One fixed original seed with actual controlled opponent attributes preserves ordinary full cup progression and exact title attribution. →T897
-- F29 [o] P1 discipline.ts:276: unavailable rows are retained after recovery;40724 obsolete rows among40808 make a completed ten-season world exceed the unchanged20000 save bound. Reuse the existing expiry predicate at rollover, preserving84 future rows and all history. →T904
+- F29 [o] P1 discipline.ts:276: unavailable rows are retained after recovery;40724 obsolete rows among40808 make a completed ten-season world exceed the unchanged20000 save bound. Reuse the existing expiry predicate at rollover, preserving84 future rows and all history. →T905
 
 ## notes
 - Planning collision: another owner published T899.cache-market-ratings before this run's two new proposals. The unpublished, unclaimed free-signing witness task is renumbered T901; T900 attribution reuse is unchanged. Foreign T899 remains outside this work scope. Existing attempted/integrated history is retained; no runtime files are manually rewritten.
