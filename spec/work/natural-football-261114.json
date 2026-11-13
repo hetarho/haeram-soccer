@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T16:48:18.796Z",
-  "sourceCommit": "84304fc15ea0fd658682b9a4dfcce92b0925c13f",
+  "snapshotAt": "2026-11-13T17:07:57.450Z",
+  "sourceCommit": "4073083adf9288380c94274cb6ef078415084b05",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -53,36 +53,20 @@
   },
   "summary": {
     "total": 4,
-    "completed": 0,
-    "remaining": 4,
+    "completed": 2,
+    "remaining": 2,
     "running": 0,
-    "review": 3,
+    "review": 1,
     "blocked": 0,
     "unassigned": 1
   },
   "tasks": [
     {
-      "id": "T873",
-      "title": "Restore connected build-up and pressure reactions",
-      "dep": [],
-      "lane": "natural-football-engine",
-      "status": "ready"
-    },
-    {
-      "id": "T874",
-      "title": "Wait onside before a free-kick delivery",
-      "dep": [
-        "T873"
-      ],
-      "lane": "natural-football-engine",
-      "status": "ready"
-    },
-    {
       "id": "T875",
       "title": "Build a localized synchronized two-pitch HTML comparison",
       "dep": [],
       "lane": "natural-football-viewer",
-      "status": "ready"
+      "status": "approved"
     },
     {
       "id": "T876",
@@ -108,14 +92,14 @@
       "contributors": [
         "nf14-codex-engine"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T16:34:08.384Z",
       "startCommit": "a7b16c9a728910d0ed7e488d4504cc4b403de524",
-      "verifiedCommit": "ba8feee4040365e332c21d8eeb09476080ec6327",
-      "submittedBase": "7dda79ff6f1e353caaa277153cc0041ad5ecdb55",
-      "submissionId": "5c32608e-029e-43d5-8208-931d242385bb",
-      "submittedAt": "2026-11-13T16:43:04.494Z",
+      "verifiedCommit": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+      "submittedBase": "4073083adf9288380c94274cb6ef078415084b05",
+      "submissionId": "8cc0efd7-8fad-4c48-986a-fec838d8952f",
+      "submittedAt": "2026-11-13T17:02:43.373Z",
       "risk": null,
       "dispatch": {
         "id": "8fa5eac6-818f-45e9-bc4a-12c201c41f96",
@@ -130,6 +114,19 @@
         "error": "usage-limit: You've hit your weekly limit · resets Nov 15 at 4pm (Asia/Seoul) seven_day",
         "summary": null
       },
+      "review": {
+        "id": "6e0e2cb8-122c-4f7a-a68d-4e7072122c42",
+        "owner": "nf14-codex-independent-engine-recheck",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Fresh review of 7e80480c: the T873 through-pass pressure gap is corrected with the shared latched hold watch, and legal runners prepare before release without bypassing the receiver gate. Independent handler reproduction confirmed normal release at 0.4 s, press-resistant release at 2.5 s, and a recorded offside kicked at 1.6 s with receiver70.7 beyond both line70 and ball45. Evidence: /tmp/nf14-engine-through-fresh-repro.json. The four new handler regressions cover ready release, legality waiting and called-offside/movement bounds; supplied 40-file/322-test and static receipts cover the unchanged port. No remaining P1/P2 found. Final paired metrics and full integration verification remain coordinator gates.",
+        "findings": [],
+        "commit": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+        "baseCommit": "4073083adf9288380c94274cb6ef078415084b05",
+        "submissionId": "8cc0efd7-8fad-4c48-986a-fec838d8952f",
+        "createdAt": "2026-11-13T17:03:07.611Z",
+        "finishedAt": "2026-11-13T17:04:15.447Z"
+      },
       "reviewHistory": [
         {
           "id": "f77a4895-12c6-4c03-be83-0b57e2ffeb29",
@@ -141,6 +138,27 @@
           "createdAt": "2026-11-13T16:44:04.287Z",
           "invalidatedAt": "2026-11-13T16:44:10.131Z",
           "invalidationReason": "usage-limit: You've hit your weekly limit · resets Nov 15 at 4pm (Asia/Seoul) seven_day"
+        },
+        {
+          "id": "8ce73563-e2a5-46b8-af31-e20bbd6a0bab",
+          "owner": "nf14-codex-independent-engine",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T874 free-kick timing and its observer are coherent with the stated offside rules, and the bounded T873 port preserves recorded facts in the supplied evidence. One T873 pressure-release contract gap remains: through passes bypass the new release watch and still hold for their full scripted duration under continuous close pressure.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "T873 packages/engine/src/staging/pass.ts:425; packages/engine/src/staging/through.ts:73-87",
+              "message": "The new MATCH-12 close-pressure release rule is not applied to through passes. performPass immediately delegates beat.through to performThrough, whose kickReady() unconditionally waits until left() <= 0 and never consults pressedOff/holdOver. A focused valid stage with ordinary escape=0, actor 5 at [45,30], receiver 8 initially onside at [68,30], hold=8, target [90,30], and defender 17 tracking 1.5 m from the carrier kicks only at t=8.0 s; the opponent stays within 1.590 m for all 8 s. Raw reproduction: /tmp/nf14-engine-through-repro.json on ba8feee4. Apply the shared pressure-release policy to legal through-pass timing while preserving receiver legality, bounded travel and recorded offside outcomes. Add a fast handler-level regression for the normal 0.4 s reaction and press-resistant 2.5 s case, with the existing through/offside tests retained."
+            }
+          ],
+          "commit": "ba8feee4040365e332c21d8eeb09476080ec6327",
+          "baseCommit": "a3a5e07d282acf8a424007ac874acd437c89667c",
+          "submissionId": "5c32608e-029e-43d5-8208-931d242385bb",
+          "createdAt": "2026-11-13T16:56:08.210Z",
+          "finishedAt": "2026-11-13T16:59:02.258Z",
+          "invalidatedAt": "2026-11-13T16:59:28.190Z",
+          "invalidationReason": "worker resumed or blocked"
         }
       ],
       "steps": [
@@ -158,13 +176,13 @@
         },
         {
           "taskId": "T874",
-          "commit": "ba8feee4040365e332c21d8eeb09476080ec6327",
-          "at": "2026-11-13T16:43:04.443Z",
+          "commit": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+          "at": "2026-11-13T17:02:43.360Z",
           "verification": [
             {
               "command": "pnpm run typecheck && pnpm run validate:i18n",
-              "startedAt": "2026-11-13T16:42:49.739Z",
-              "finishedAt": "2026-11-13T16:43:04.074Z"
+              "startedAt": "2026-11-13T17:02:36.270Z",
+              "finishedAt": "2026-11-13T17:02:43.075Z"
             }
           ]
         }
@@ -172,8 +190,8 @@
       "verification": [
         {
           "command": "pnpm run typecheck && pnpm run validate:i18n",
-          "startedAt": "2026-11-13T16:42:49.739Z",
-          "finishedAt": "2026-11-13T16:43:04.074Z"
+          "startedAt": "2026-11-13T17:02:36.270Z",
+          "finishedAt": "2026-11-13T17:02:43.075Z"
         }
       ]
     },
@@ -189,25 +207,61 @@
       "contributors": [
         "nf14-codex-viewer"
       ],
-      "status": "ready",
+      "status": "approved",
       "reason": null,
       "createdAt": "2026-11-13T16:34:11.879Z",
       "startCommit": "a7b16c9a728910d0ed7e488d4504cc4b403de524",
-      "verifiedCommit": "55a4f847902bb7af59ff2c98a2d183b756eff5f4",
-      "submittedBase": "40f90ef030c8124b07fd6f8952df1deec0867d9a",
-      "submissionId": "73120f9c-09f5-464b-b9f1-9c20194f6c68",
-      "submittedAt": "2026-11-13T16:46:41.902Z",
+      "verifiedCommit": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+      "submittedBase": "4073083adf9288380c94274cb6ef078415084b05",
+      "submissionId": "49403687-5e64-494e-9b01-5485e6cae133",
+      "submittedAt": "2026-11-13T17:04:03.704Z",
       "risk": null,
+      "review": {
+        "id": "d748d56b-c5f0-4061-bd62-478d1417a475",
+        "owner": "nf14-codex-independent-viewer-recheck",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Fresh review of ffc79d52 confirms the strict-comparison gap is fixed: canonical actual settled records (excluding only documented script-derived material) and every frozen squad value are compared in addition to provenance metadata. Object key normalization preserves array/value semantics. Independent reproduction using the real baseline now rejects stale-hash score and squad-attribute mutations, while accepting material/key-order and engine-SHA differences with equal facts; evidence /tmp/nf14-viewer-record-fresh-repro.json. The four new regressions also cover changed player counters and permitted frame differences. Renderer, clock, resources and exporter are unchanged from the prior full review; no remaining P1/P2 found. Final paired HTML/browser/full verification remain coordinator gates.",
+        "findings": [],
+        "commit": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+        "baseCommit": "4073083adf9288380c94274cb6ef078415084b05",
+        "submissionId": "49403687-5e64-494e-9b01-5485e6cae133",
+        "createdAt": "2026-11-13T17:04:47.231Z",
+        "finishedAt": "2026-11-13T17:05:38.776Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "265b6a7f-b8ce-4d9a-8004-84b3933d1665",
+          "owner": "nf14-codex-independent-viewer",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "The offline two-pitch implementation uses shared presentation helpers, resource-backed copy and verbatim identity parameters, with consistent browser-smoke evidence. The strict input/fact comparison guard is incomplete: it compares claimed metadata digests without validating the actual record and squads carried by each export.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "T875 scripts/natural-football/data.ts:28-59; scripts/natural-football/build.ts:28-30",
+              "message": "readExport() checks only the format of the claimed SHA fields, and assertComparable() compares those metadata strings but never validates or compares the actual playback.record or squads. The explicit MATCH-40/acceptance rule requires differing settled records or fixture inputs to fail the comparison build. Reproduction from the real delivery baseline: structuredClone the parsed export, change playback.record.score.home from 1 to 2 while leaving its metadata in place, then assertComparable(original, readExport(changed)); it succeeds and the page can claim the same facts while carrying different actual results. Evidence: /tmp/nf14-viewer-record-repro.json on 55a4f847. Validate the actual content against its digests and/or compare canonical actual records (excluding only documented script-derived material) and frozen squads/input fields before accepting the pair. Add focused stale-hash/changed-record and changed-squad regressions; retain acceptance of different staged frames and engine SHAs with equal facts."
+            }
+          ],
+          "commit": "55a4f847902bb7af59ff2c98a2d183b756eff5f4",
+          "baseCommit": "8d318b68c9682571e8565d87571bfb346f56c192",
+          "submissionId": "73120f9c-09f5-464b-b9f1-9c20194f6c68",
+          "createdAt": "2026-11-13T16:59:28.725Z",
+          "finishedAt": "2026-11-13T17:02:03.025Z",
+          "invalidatedAt": "2026-11-13T17:02:24.839Z",
+          "invalidationReason": "worker resumed or blocked"
+        }
+      ],
       "steps": [
         {
           "taskId": "T875",
-          "commit": "55a4f847902bb7af59ff2c98a2d183b756eff5f4",
-          "at": "2026-11-13T16:46:41.879Z",
+          "commit": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+          "at": "2026-11-13T17:04:03.681Z",
           "verification": [
             {
               "command": "pnpm run typecheck && pnpm run validate:i18n",
-              "startedAt": "2026-11-13T16:46:34.059Z",
-              "finishedAt": "2026-11-13T16:46:41.635Z"
+              "startedAt": "2026-11-13T17:03:50.427Z",
+              "finishedAt": "2026-11-13T17:04:03.225Z"
             }
           ]
         }
@@ -215,8 +269,8 @@
       "verification": [
         {
           "command": "pnpm run typecheck && pnpm run validate:i18n",
-          "startedAt": "2026-11-13T16:46:34.059Z",
-          "finishedAt": "2026-11-13T16:46:41.635Z"
+          "startedAt": "2026-11-13T17:03:50.427Z",
+          "finishedAt": "2026-11-13T17:04:03.225Z"
         }
       ]
     }
@@ -901,6 +955,495 @@
             "finishedAt": "2026-11-13T16:46:41.635Z"
           }
         ]
+      }
+    },
+    {
+      "sequence": 29,
+      "at": "2026-11-13T16:56:08.210Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "8ce73563-e2a5-46b8-af31-e20bbd6a0bab",
+          "owner": "nf14-codex-independent-engine",
+          "status": "reviewing",
+          "commit": "ba8feee4040365e332c21d8eeb09476080ec6327",
+          "baseCommit": "a3a5e07d282acf8a424007ac874acd437c89667c",
+          "submissionId": "5c32608e-029e-43d5-8208-931d242385bb",
+          "createdAt": "2026-11-13T16:56:08.210Z"
+        }
+      }
+    },
+    {
+      "sequence": 30,
+      "at": "2026-11-13T16:59:02.258Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T874 free-kick timing and its observer are coherent with the stated offside rules, and the bounded T873 port preserves recorded facts in the supplied evidence. One T873 pressure-release contract gap remains: through passes bypass the new release watch and still hold for their full scripted duration under continuous close pressure.",
+        "review": {
+          "id": "8ce73563-e2a5-46b8-af31-e20bbd6a0bab",
+          "owner": "nf14-codex-independent-engine",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T874 free-kick timing and its observer are coherent with the stated offside rules, and the bounded T873 port preserves recorded facts in the supplied evidence. One T873 pressure-release contract gap remains: through passes bypass the new release watch and still hold for their full scripted duration under continuous close pressure.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "T873 packages/engine/src/staging/pass.ts:425; packages/engine/src/staging/through.ts:73-87",
+              "message": "The new MATCH-12 close-pressure release rule is not applied to through passes. performPass immediately delegates beat.through to performThrough, whose kickReady() unconditionally waits until left() <= 0 and never consults pressedOff/holdOver. A focused valid stage with ordinary escape=0, actor 5 at [45,30], receiver 8 initially onside at [68,30], hold=8, target [90,30], and defender 17 tracking 1.5 m from the carrier kicks only at t=8.0 s; the opponent stays within 1.590 m for all 8 s. Raw reproduction: /tmp/nf14-engine-through-repro.json on ba8feee4. Apply the shared pressure-release policy to legal through-pass timing while preserving receiver legality, bounded travel and recorded offside outcomes. Add a fast handler-level regression for the normal 0.4 s reaction and press-resistant 2.5 s case, with the existing through/offside tests retained."
+            }
+          ],
+          "commit": "ba8feee4040365e332c21d8eeb09476080ec6327",
+          "baseCommit": "a3a5e07d282acf8a424007ac874acd437c89667c",
+          "submissionId": "5c32608e-029e-43d5-8208-931d242385bb",
+          "createdAt": "2026-11-13T16:56:08.210Z",
+          "finishedAt": "2026-11-13T16:59:02.258Z"
+        }
+      }
+    },
+    {
+      "sequence": 31,
+      "at": "2026-11-13T16:59:28.190Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "f77a4895-12c6-4c03-be83-0b57e2ffeb29",
+            "owner": "5932b97a-14a6-4d61-a8b9-f4397341625d/reviewer-1",
+            "status": "reviewing",
+            "commit": "ba8feee4040365e332c21d8eeb09476080ec6327",
+            "baseCommit": "40f90ef030c8124b07fd6f8952df1deec0867d9a",
+            "submissionId": "5c32608e-029e-43d5-8208-931d242385bb",
+            "createdAt": "2026-11-13T16:44:04.287Z",
+            "invalidatedAt": "2026-11-13T16:44:10.131Z",
+            "invalidationReason": "usage-limit: You've hit your weekly limit · resets Nov 15 at 4pm (Asia/Seoul) seven_day"
+          },
+          {
+            "id": "8ce73563-e2a5-46b8-af31-e20bbd6a0bab",
+            "owner": "nf14-codex-independent-engine",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T874 free-kick timing and its observer are coherent with the stated offside rules, and the bounded T873 port preserves recorded facts in the supplied evidence. One T873 pressure-release contract gap remains: through passes bypass the new release watch and still hold for their full scripted duration under continuous close pressure.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "T873 packages/engine/src/staging/pass.ts:425; packages/engine/src/staging/through.ts:73-87",
+                "message": "The new MATCH-12 close-pressure release rule is not applied to through passes. performPass immediately delegates beat.through to performThrough, whose kickReady() unconditionally waits until left() <= 0 and never consults pressedOff/holdOver. A focused valid stage with ordinary escape=0, actor 5 at [45,30], receiver 8 initially onside at [68,30], hold=8, target [90,30], and defender 17 tracking 1.5 m from the carrier kicks only at t=8.0 s; the opponent stays within 1.590 m for all 8 s. Raw reproduction: /tmp/nf14-engine-through-repro.json on ba8feee4. Apply the shared pressure-release policy to legal through-pass timing while preserving receiver legality, bounded travel and recorded offside outcomes. Add a fast handler-level regression for the normal 0.4 s reaction and press-resistant 2.5 s case, with the existing through/offside tests retained."
+              }
+            ],
+            "commit": "ba8feee4040365e332c21d8eeb09476080ec6327",
+            "baseCommit": "a3a5e07d282acf8a424007ac874acd437c89667c",
+            "submissionId": "5c32608e-029e-43d5-8208-931d242385bb",
+            "createdAt": "2026-11-13T16:56:08.210Z",
+            "finishedAt": "2026-11-13T16:59:02.258Z",
+            "invalidatedAt": "2026-11-13T16:59:28.190Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 32,
+      "at": "2026-11-13T16:59:28.725Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "265b6a7f-b8ce-4d9a-8004-84b3933d1665",
+          "owner": "nf14-codex-independent-viewer",
+          "status": "reviewing",
+          "commit": "55a4f847902bb7af59ff2c98a2d183b756eff5f4",
+          "baseCommit": "8d318b68c9682571e8565d87571bfb346f56c192",
+          "submissionId": "73120f9c-09f5-464b-b9f1-9c20194f6c68",
+          "createdAt": "2026-11-13T16:59:28.725Z"
+        }
+      }
+    },
+    {
+      "sequence": 33,
+      "at": "2026-11-13T17:02:03.025Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "The offline two-pitch implementation uses shared presentation helpers, resource-backed copy and verbatim identity parameters, with consistent browser-smoke evidence. The strict input/fact comparison guard is incomplete: it compares claimed metadata digests without validating the actual record and squads carried by each export.",
+        "review": {
+          "id": "265b6a7f-b8ce-4d9a-8004-84b3933d1665",
+          "owner": "nf14-codex-independent-viewer",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "The offline two-pitch implementation uses shared presentation helpers, resource-backed copy and verbatim identity parameters, with consistent browser-smoke evidence. The strict input/fact comparison guard is incomplete: it compares claimed metadata digests without validating the actual record and squads carried by each export.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "T875 scripts/natural-football/data.ts:28-59; scripts/natural-football/build.ts:28-30",
+              "message": "readExport() checks only the format of the claimed SHA fields, and assertComparable() compares those metadata strings but never validates or compares the actual playback.record or squads. The explicit MATCH-40/acceptance rule requires differing settled records or fixture inputs to fail the comparison build. Reproduction from the real delivery baseline: structuredClone the parsed export, change playback.record.score.home from 1 to 2 while leaving its metadata in place, then assertComparable(original, readExport(changed)); it succeeds and the page can claim the same facts while carrying different actual results. Evidence: /tmp/nf14-viewer-record-repro.json on 55a4f847. Validate the actual content against its digests and/or compare canonical actual records (excluding only documented script-derived material) and frozen squads/input fields before accepting the pair. Add focused stale-hash/changed-record and changed-squad regressions; retain acceptance of different staged frames and engine SHAs with equal facts."
+            }
+          ],
+          "commit": "55a4f847902bb7af59ff2c98a2d183b756eff5f4",
+          "baseCommit": "8d318b68c9682571e8565d87571bfb346f56c192",
+          "submissionId": "73120f9c-09f5-464b-b9f1-9c20194f6c68",
+          "createdAt": "2026-11-13T16:59:28.725Z",
+          "finishedAt": "2026-11-13T17:02:03.025Z"
+        }
+      }
+    },
+    {
+      "sequence": 34,
+      "at": "2026-11-13T17:02:24.839Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "265b6a7f-b8ce-4d9a-8004-84b3933d1665",
+            "owner": "nf14-codex-independent-viewer",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The offline two-pitch implementation uses shared presentation helpers, resource-backed copy and verbatim identity parameters, with consistent browser-smoke evidence. The strict input/fact comparison guard is incomplete: it compares claimed metadata digests without validating the actual record and squads carried by each export.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "T875 scripts/natural-football/data.ts:28-59; scripts/natural-football/build.ts:28-30",
+                "message": "readExport() checks only the format of the claimed SHA fields, and assertComparable() compares those metadata strings but never validates or compares the actual playback.record or squads. The explicit MATCH-40/acceptance rule requires differing settled records or fixture inputs to fail the comparison build. Reproduction from the real delivery baseline: structuredClone the parsed export, change playback.record.score.home from 1 to 2 while leaving its metadata in place, then assertComparable(original, readExport(changed)); it succeeds and the page can claim the same facts while carrying different actual results. Evidence: /tmp/nf14-viewer-record-repro.json on 55a4f847. Validate the actual content against its digests and/or compare canonical actual records (excluding only documented script-derived material) and frozen squads/input fields before accepting the pair. Add focused stale-hash/changed-record and changed-squad regressions; retain acceptance of different staged frames and engine SHAs with equal facts."
+              }
+            ],
+            "commit": "55a4f847902bb7af59ff2c98a2d183b756eff5f4",
+            "baseCommit": "8d318b68c9682571e8565d87571bfb346f56c192",
+            "submissionId": "73120f9c-09f5-464b-b9f1-9c20194f6c68",
+            "createdAt": "2026-11-13T16:59:28.725Z",
+            "finishedAt": "2026-11-13T17:02:03.025Z",
+            "invalidatedAt": "2026-11-13T17:02:24.839Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 35,
+      "at": "2026-11-13T17:02:35.902Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 36,
+      "at": "2026-11-13T17:02:43.373Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "4073083adf9288380c94274cb6ef078415084b05",
+        "submissionId": "8cc0efd7-8fad-4c48-986a-fec838d8952f",
+        "submittedAt": "2026-11-13T17:02:43.373Z",
+        "steps": [
+          {
+            "taskId": "T873",
+            "commit": "ba8feee4040365e332c21d8eeb09476080ec6327",
+            "at": "2026-11-13T16:43:04.443Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T16:42:49.739Z",
+                "finishedAt": "2026-11-13T16:43:04.074Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T874",
+            "commit": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+            "at": "2026-11-13T17:02:43.360Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T17:02:36.270Z",
+                "finishedAt": "2026-11-13T17:02:43.075Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T17:02:36.270Z",
+            "finishedAt": "2026-11-13T17:02:43.075Z"
+          }
+        ],
+        "verifiedCommit": "7e80480ccabe30e6ffc18243af39b06e21a861bf"
+      }
+    },
+    {
+      "sequence": 37,
+      "at": "2026-11-13T17:03:07.611Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "6e0e2cb8-122c-4f7a-a68d-4e7072122c42",
+          "owner": "nf14-codex-independent-engine-recheck",
+          "status": "reviewing",
+          "commit": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+          "baseCommit": "4073083adf9288380c94274cb6ef078415084b05",
+          "submissionId": "8cc0efd7-8fad-4c48-986a-fec838d8952f",
+          "createdAt": "2026-11-13T17:03:07.611Z"
+        }
+      }
+    },
+    {
+      "sequence": 38,
+      "at": "2026-11-13T17:03:50.045Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 39,
+      "at": "2026-11-13T17:04:03.704Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "4073083adf9288380c94274cb6ef078415084b05",
+        "submissionId": "49403687-5e64-494e-9b01-5485e6cae133",
+        "submittedAt": "2026-11-13T17:04:03.704Z",
+        "steps": [
+          {
+            "taskId": "T875",
+            "commit": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+            "at": "2026-11-13T17:04:03.681Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T17:03:50.427Z",
+                "finishedAt": "2026-11-13T17:04:03.225Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T17:03:50.427Z",
+            "finishedAt": "2026-11-13T17:04:03.225Z"
+          }
+        ],
+        "verifiedCommit": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b"
+      }
+    },
+    {
+      "sequence": 40,
+      "at": "2026-11-13T17:04:15.448Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "6e0e2cb8-122c-4f7a-a68d-4e7072122c42",
+          "owner": "nf14-codex-independent-engine-recheck",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh review of 7e80480c: the T873 through-pass pressure gap is corrected with the shared latched hold watch, and legal runners prepare before release without bypassing the receiver gate. Independent handler reproduction confirmed normal release at 0.4 s, press-resistant release at 2.5 s, and a recorded offside kicked at 1.6 s with receiver70.7 beyond both line70 and ball45. Evidence: /tmp/nf14-engine-through-fresh-repro.json. The four new handler regressions cover ready release, legality waiting and called-offside/movement bounds; supplied 40-file/322-test and static receipts cover the unchanged port. No remaining P1/P2 found. Final paired metrics and full integration verification remain coordinator gates.",
+          "findings": [],
+          "commit": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+          "baseCommit": "4073083adf9288380c94274cb6ef078415084b05",
+          "submissionId": "8cc0efd7-8fad-4c48-986a-fec838d8952f",
+          "createdAt": "2026-11-13T17:03:07.611Z",
+          "finishedAt": "2026-11-13T17:04:15.447Z"
+        }
+      }
+    },
+    {
+      "sequence": 41,
+      "at": "2026-11-13T17:04:47.232Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "d748d56b-c5f0-4061-bd62-478d1417a475",
+          "owner": "nf14-codex-independent-viewer-recheck",
+          "status": "reviewing",
+          "commit": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+          "baseCommit": "4073083adf9288380c94274cb6ef078415084b05",
+          "submissionId": "49403687-5e64-494e-9b01-5485e6cae133",
+          "createdAt": "2026-11-13T17:04:47.231Z"
+        }
+      }
+    },
+    {
+      "sequence": 42,
+      "at": "2026-11-13T17:04:56.279Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 43,
+      "at": "2026-11-13T17:05:38.776Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "d748d56b-c5f0-4061-bd62-478d1417a475",
+          "owner": "nf14-codex-independent-viewer-recheck",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh review of ffc79d52 confirms the strict-comparison gap is fixed: canonical actual settled records (excluding only documented script-derived material) and every frozen squad value are compared in addition to provenance metadata. Object key normalization preserves array/value semantics. Independent reproduction using the real baseline now rejects stale-hash score and squad-attribute mutations, while accepting material/key-order and engine-SHA differences with equal facts; evidence /tmp/nf14-viewer-record-fresh-repro.json. The four new regressions also cover changed player counters and permitted frame differences. Renderer, clock, resources and exporter are unchanged from the prior full review; no remaining P1/P2 found. Final paired HTML/browser/full verification remain coordinator gates.",
+          "findings": [],
+          "commit": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+          "baseCommit": "4073083adf9288380c94274cb6ef078415084b05",
+          "submissionId": "49403687-5e64-494e-9b01-5485e6cae133",
+          "createdAt": "2026-11-13T17:04:47.231Z",
+          "finishedAt": "2026-11-13T17:05:38.776Z"
+        }
+      }
+    },
+    {
+      "sequence": 44,
+      "at": "2026-11-13T17:07:32.128Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm run typecheck && pnpm run validate:i18n"
+      }
+    },
+    {
+      "sequence": 45,
+      "at": "2026-11-13T17:07:53.332Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
+      "taskId": "T874",
+      "tasks": [
+        "T873",
+        "T874"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

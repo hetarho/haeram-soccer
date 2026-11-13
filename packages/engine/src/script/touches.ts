@@ -6,7 +6,7 @@ import { random, integer } from '../primitives';
 import { EV, EVENT_KINDS, EVENT_RESULTS, FO, SH, SHOT_KINDS } from './codes';
 import type { MatchDetail as Settled } from './detail';
 import type { TeamId } from './types';
-import { cellDistance } from './cells';
+import { cellCentre, cellDistance } from './cells';
 import { touchWindow, minuteIndex } from './windows';
 import { invalidDetail } from './failure';
 export { minuteIndex } from './windows';
@@ -102,6 +102,23 @@ export function firstCell(settled: Settled, touch: Touch): number {
   if ('shot' in r) return settled.shots[r.shot]![SH.cell]!;
   return settled.fouls[r.foul]![FO.cell]!;
 }
+
+/** Attack-frame metres from cell `from`'s centre forward to cell `to`'s (negative when backward). */
+const advance = (from: number, to: number): number => cellCentre(0, to)[0] - cellCentre(0, from)[0];
+
+/**
+ * Centimetres it costs to run a carry from `from` to `to` into `touch`: a carry forward into a
+ * release that goes back reads as a run that turns round (one centimetre per centimetre of the
+ * shorter of the two, as the writer prices a link into such a release).
+ */
+const turnRound = (settled: Settled, from: number, to: number, touch: Touch): number => {
+  const r = touch.release;
+  if (r === undefined || !('event' in r)) return 0;
+  const e = settled.events[r.event]!;
+  const forward = advance(from, to);
+  const back = -advance(e[EV.from]!, e[EV.to]!);
+  return forward > 0 && back > 0 ? Math.round(Math.min(forward, back) * 100) : 0;
+};
 
 /** The cell a touch's release starts in (its first cell when it has none). */
 const releaseCell = (settled: Settled, touch: Touch): number =>
@@ -277,7 +294,9 @@ export function buildTouches(
         )
           return;
         const cost =
-          cellDistance(firstCell(settled, t), e[EV.to]!) + (t.minute === FLOATING ? 0 : 50);
+          cellDistance(firstCell(settled, t), e[EV.to]!) +
+          (t.minute === FLOATING ? 0 : 50) +
+          turnRound(settled, e[EV.from]!, e[EV.to]!, t);
         if (cost < bestCost) [best, bestCost] = [i, cost];
       });
       // Too far from every release of his, it is a touch of its own the writer plays where it starts.

@@ -321,7 +321,7 @@ function offsideConsistency(c: Context): Metric {
     const offside = inOffsidePosition(c, c.frameAt(e), beat.team, beat.receiver);
     if (beat.outcome === 'offside') {
       if (!offside) onsideCalls += 1;
-    } else if (beat.kind === 'pass' && offside) {
+    } else if ((beat.kind === 'pass' || beat.kind === 'freeKick') && offside) {
       missedCalls += 1;
     }
   }

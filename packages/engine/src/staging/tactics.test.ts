@@ -95,9 +95,12 @@ describe('the four staged tactics', () => {
         { kind: 'carry', actor: 9, to: [80, 35], hold: 70, phase: 'finalThird' },
       ]),
     );
+    // The long hold keeps play going until a presser reaches the carrier, who then plays on
+    // (stage/release.ts); the shape is read over whatever that leaves.
     const staged = advance(createStaging(script, sides), 60);
-    expect(staged.frames.at(-1)?.t).toBe(60);
-    expect(staged.frames).toHaveLength(601);
+    const last = staged.frames.at(-1)!.t;
+    expect(last).toBeGreaterThan(15);
+    expect(staged.frames).toHaveLength(Math.round(last * 10) + 1);
     expect(staged.frames.every((f) => f.p.every((p) => inPitch(p.at)))).toBe(true);
     const end = staged.frames.at(-1)!;
     for (const side of [0, 1]) {

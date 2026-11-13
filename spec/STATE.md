@@ -58,8 +58,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T873 | Restore connected build-up and pressure reactions | MATCH ARCH | - | todo |
-| T874 | Wait onside before a free-kick delivery | MATCH ARCH | T873 | todo |
 | T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
 | T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
 | T877 | Index free-agent settlement facts | ARCH WORLD CLUB | - | todo |
@@ -71,8 +69,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 4 | 0 | 4 | 0 | 3 | 0 | 2026-11-13T16:48:18.796Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 4 | 2 | 2 | 0 | 1 | 0 | 2026-11-13T17:07:57.450Z | [history](work/natural-football-261114.json) |
 
 ## next
-- gusta-start scope T877 T878 T879 T880 T881: free-agent and NPC-market optimization, then funded NPC books and financing diagnostics; preserve other live natural-football assignments.
-- Local unit-only validation remains; owner-authorized main publication and normal CI follow one final candidate. Capacity is not a blocker for this request.
+- inspect work board for remaining tasks
