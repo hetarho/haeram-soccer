@@ -23,11 +23,9 @@ import {
 
 /** The mobile presentation journey's fixture: an early home goal, then more on the current model. */
 function goalWorld() {
-  // As tests/e2e/mobile-match-presentation.spec.ts: the club taken over from goal-feedback-6 opens
-  // 2′ home, concedes at 22′, scores at 37′ and concedes at 56′ on the scripted model (found by
-  // scripts/find-goal-seeds.ts, T839; goal-feedback-61 on revision 10). The second goal stays
-  // minutes after the clip below returns, so the cue count it reads is the clip's own.
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-6' });
+  // The current seeded record opens with a home goal at 3′, then home goals at 69′ and 87′.
+  // scripts/find-goal-seeds.ts verifies all footage, full build-ups and space before the second cue.
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-53' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }
@@ -127,8 +125,8 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   const speed = (value: number) => page.getByRole('radio', { name: `${value}×`, exact: true });
 
   // Nothing is on offer before a goal has been presented, nor while its cue still shows. With 1x
-  // in real time (→WEB-32) the match plays on to its 2′ goal at 16x, 7.5 s rather than a minute at
-  // the default speed; CI waits three times as long, as playwright.config scales its budgets.
+  // in real time (→WEB-32), 16x reaches the early goal within its recorded-minute wait below;
+  // CI waits three times as long, as playwright.config scales its budgets.
   await speed(16).click();
   const cueWait = (playback.record.highlights[0]!.minute * WATCH_MINUTE_MS) / 16 + 3000;
   await expect(cue).toBeVisible({ timeout: process.env.CI ? 3 * cueWait : cueWait });
