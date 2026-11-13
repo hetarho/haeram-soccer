@@ -59,6 +59,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T914 | Prepare a genuine no-playoff season for exact heat-map reduction | ARCH MATCH HIST LEAGUE | T885 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
