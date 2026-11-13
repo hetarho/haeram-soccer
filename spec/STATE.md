@@ -72,7 +72,6 @@
 | T905 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
 | T904 | Align checkpoint validation with explicit compatible patch releases | SAVE ARCH | T883 | todo |
 
-
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
