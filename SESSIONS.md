@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T07:55Z | T865 | work/persisted-world-860 | 8ad611b278a7 |
+| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T08:18Z | - | work/persisted-world-860 | 2d8f77e7118c |
 | fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:06Z | 2026-11-13T07:53Z | - | work/fin3-final | 892eb45f64de |
 
 ## inbox
@@ -21,8 +21,10 @@
 | T862 | pw86 | work/persisted-world-860 | 0fde410bab7d | 2026-11-13T07:06Z |
 | T863 | pw86 | work/persisted-world-860 | 4afa1fa1bad7 | 2026-11-13T07:28Z |
 | T864 | pw86 | work/persisted-world-860 | 935a91df96fb | 2026-11-13T07:53Z |
+| T865 | pw86 | work/persisted-world-860 | 2d8f77e7118c | 2026-11-13T08:18Z |
 
 ## log
+- 261113 T865 done
 - 261113 T864 done
 - 261113 T863 done
 - 261113 T862 done
