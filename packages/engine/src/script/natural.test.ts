@@ -1,8 +1,8 @@
 // The writer's natural-play rules (variant d of natural-football): touches spread over each
-// player's window so no minute bursts, and every pass played back carries the reason the staging
-// shows. Small fixtures: three prototype details, written once.
+// player's window so no minute bursts, every pass played back carries the reason the staging
+// shows, and a carry recorded inside one cell moves the ball. Small fixtures: three prototype details, written once.
 import { describe, expect, it } from 'vitest';
-import { toAttack, dist } from './cells';
+import { cellAt, toAttack, dist } from './cells';
 import { SCRIPT_CONFIG } from './config';
 import { isPassLike } from './types';
 import type { Beat, Script } from './types';
@@ -51,6 +51,20 @@ describe('natural play', () => {
       } else if (b.reason === 'pressed') expect(x(b, b.from)).toBeGreaterThanOrEqual(52.5);
       else expect(b.reason === 'reset' && x(b, b.from) < 52.5).toBe(true);
     });
+  });
+
+  it.each(scripts)('%s: a recorded carry inside one cell still carries the ball', (_, script) => {
+    const inCell = script.beats.filter(
+      (b) =>
+        b.move !== 'link' &&
+        b.outcome === 'complete' &&
+        (b.kind === 'carry' || b.kind === 'takeOn') &&
+        cellAt(b.side, b.from) === cellAt(b.side, b.to),
+    );
+    expect(inCell.length).toBeGreaterThan(0);
+    // The cell's edges may stop one now and then; the man never stands on the spot as a rule.
+    const still = inCell.filter((b) => dist(b.from, b.to) < SCRIPT_CONFIG.cellCarry / 2);
+    expect(still.length).toBeLessThanOrEqual(inCell.length * 0.2);
   });
 
   it('a received pass meets its receiver on the side nearest his next touch', () => {

@@ -147,8 +147,11 @@ export const STAGING_CONFIG = {
      * away from an opponent within `avoid` metres (by up to `shy` of his heading) and from a
      * teammate within `mates` metres (the huddle distance and a little more), keeps `room`
      * metres beyond `kickGap` from a pass's reception point and `edge` metres off the lines, and
-     * turns from the line he arrived on toward the attack, a half turn taking `turn` seconds; in a
-     * pressed beat he shields at `pressed` and keeps his line; `lead` is how far ahead his target sits.
+     * turns from the line he arrived on toward the attack, a half turn taking `turn` seconds; `lead`
+     * is how far ahead his target sits. Held up (an opponent he has not gone past within `press`
+     * metres, until that one is `release` metres off) he keeps one line at `pressed`: across the
+     * opponent, never back toward his own goal, or straight on to a carry's end clear of him; he
+     * stands on the ball where that line is blocked or the carry goes past the man.
      */
     holdMove: {
       speed: 2.6,
@@ -156,6 +159,7 @@ export const STAGING_CONFIG = {
       slow: 1.3,
       pressed: 1.5,
       press: 3,
+      release: 4.5,
       avoid: 7,
       shy: 1.2,
       mates: 5,
@@ -189,7 +193,13 @@ export const STAGING_CONFIG = {
     /** A heavy touch (`carry:loose`) leaves the ball loose this far toward the named opponent (m). */
     heavyTouch: 3,
     foulFreeze: 1,
-    takeOn: { side: 2, speed: 4.5, beatenSpeed: 2, beatenTime: 0.9 },
+    /**
+     * Going past a man (a completed take-on, or a carry through an opponent within `reach` metres
+     * ahead of it): he steps `side` metres to the man's side at `speed` while the man turns slowly
+     * (`beatenSpeed`, `beatenTime`); the man then trails him and is out of the press until
+     * `beatenFor` seconds after the beat.
+     */
+    takeOn: { side: 2, speed: 4.5, beatenSpeed: 2, beatenTime: 0.9, reach: 4, beatenFor: 3 },
     pressVisible: 3,
     /** How far outside the lines a target may lie, and where the boards stop a player. */
     boards: 2,

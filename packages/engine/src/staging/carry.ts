@@ -1,6 +1,7 @@
 import { invalidDetail } from '../script/failure';
 // Carries. A completed carry: the carrier holds the ball for the beat's hold, then dribbles to the
-// carry's end at a dribbling pace; the ball stays at his feet through `updateBall`. A carry (or a
+// carry's end at a dribbling pace; the ball stays at his feet through `updateBall`. A man close
+// ahead of the carry is gone past on the way (`slipPast`) and trails him, beaten. A carry (or a
 // take-on) that is tackled or fouled: the scripted opponent jockeys goal-side while the carrier
 // holds, then chases him as he runs, and wins the ball (or fouls him) once he is close enough; if he
 // cannot get there, the scripted opponent lunges and the carrier waits for him.
@@ -12,6 +13,7 @@ import { giveBall } from './ball';
 import { speedAt } from './motion';
 import { holdMove } from './pass';
 import { cueNext, jockeyPoint } from './contest';
+import { manInTheWay, releaseBeaten, slipPast } from './takeon';
 import type { BeatContext } from './perform';
 import {
   ensureOwner,
@@ -31,17 +33,24 @@ export function* performCarry(state: StageState, ctx: BeatContext): Generator<vo
   setPossession(state, beat);
   yield* ensureOwner(state, actor);
   const end = clampToPitch(beat.to, 0.5);
-  state.orders.set(actor, holdMove(state, actor, end, true));
   const start = state.t;
+  state.orders.set(actor, holdMove(state, actor, end, true, start + beat.hold));
   yield* runUntil(state, () => state.t - start >= beat.hold - 1e-9, beat.hold);
+  // A carry through a man close ahead of it goes past him: he is beaten and trails the carrier.
+  const man = manInTheWay(state, actor, end);
+  if (man >= 0) yield* slipPast(state, actor, man, end);
   const d = dist(state.bodies[actor].pos, end);
   state.orders.set(actor, { target: end, pace: 'sprint', speedCap: STAGE.dribbleSpeed });
   cueNext(state, ctx, end);
+  // He trails the carrier unless the next beat already sends him to contest the ball.
+  if (man >= 0 && !state.cues.has(man))
+    state.orders.set(man, { target: () => state.bodies[actor].pos, pace: 'jog' });
   yield* runUntil(
     state,
     () => dist(state.bodies[actor].pos, end) <= STAGE.arrive,
     (d / speedAt(state, actor, 'sprint', STAGE.dribbleSpeed)) * 1.5 + 2,
   );
+  releaseBeaten(state);
   state.orders.clear();
 }
 
@@ -55,7 +64,10 @@ export function* performCarryLost(state: StageState, ctx: BeatContext): Generato
   yield* ensureOwner(state, actor);
   const team = state.fixture.players[scripted].team;
   const actorPos = (): Vec => state.bodies[actor].pos;
-  state.orders.set(actor, holdMove(state, actor, clampToPitch(beat.to, 0.5), true));
+  state.orders.set(
+    actor,
+    holdMove(state, actor, clampToPitch(beat.to, 0.5), true, state.t + beat.hold),
+  );
   state.orders.set(scripted, {
     target: () => jockeyPoint(team, actorPos(), state.fixture.period),
     pace: 'run',

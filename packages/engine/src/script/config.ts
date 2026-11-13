@@ -26,6 +26,8 @@ export const SCRIPT_CONFIG = {
   spread: { weight: 4, cap: 10 },
   phaseX: { progression: 38, finalThird: 72 },
   speeds: { ground: 16, loft: 19, carry: 5, shot: 28 },
+  /** Metres a recorded carry that starts and ends in one cell takes the ball (`writeFitted`). */
+  cellCarry: 5,
   minPass: 7,
   /** Metres a pass lands behind its start for the writer to give it a reason (`passReason`). */
   backPass: 5,

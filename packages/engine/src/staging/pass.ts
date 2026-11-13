@@ -76,14 +76,24 @@ function offTheLines(pos: Vec, dir: Vec, edge: number): Vec {
 }
 
 /**
- * The order of the man on the ball while he holds it (`stage.holdMove`): he never stands still.
+ * The order of the man on the ball while he holds it (`stage.holdMove`).
  * He carries on in the line he arrived on, turning toward the attack over `turn` seconds, bends away
  * from a near opponent and keeps off the lines; with a pass to come he never closes on its reception
  * point `to` inside `kickGap` + `room` (the complaint of passes between men standing on each other),
- * while a carry's holder (`toward`) heads for `to`. His speed is `speed` for the first `carry`
- * metres and `slow` after, `pressed` with an opponent within `press` metres.
+ * while a carry's holder (`toward`) takes it to `to` by `until` (`carryStep`). His speed is `speed`
+ * for the first `carry` metres and `slow` after, `pressed` in a pressed beat.
+ *
+ * Held up (`heldLine`): an opponent he has not gone past within `press` metres fixes one line for
+ * as long as that man stays within `release` metres, so a carrier faced off never circles round
+ * the man stuck to him; he stands on the ball where that line is blocked.
  */
-export function holdMove(state: StageState, actor: number, to: Vec, toward = false): Order {
+export function holdMove(
+  state: StageState,
+  actor: number,
+  to: Vec,
+  toward = false,
+  until = state.t,
+): Order {
   const HM = STAGE.holdMove;
   const body = state.bodies[actor];
   const team = state.fixture.players[actor].team;
@@ -95,6 +105,8 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
   let lastT = state.t;
   let carried = 0;
   let cap: number = HM.speed;
+  let held: { by: number; line: Vec } | undefined;
+  const standing = (pos: Vec): Vec => [pos[0], pos[1]];
   return {
     pace: 'jog',
     get speedCap() {
@@ -106,22 +118,33 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
       last = [pos[0], pos[1]];
       const dt = Math.max(0, state.t - lastT);
       lastT = state.t;
-      const opp = nearestOpponent(state, actor);
-      // A pressed beat (`state.tight`): he shields at the pressed speed, moving across the presser's
-      // line on the side nearer his heading, so the presser stays on him.
-      const shielding = state.tight;
-      let want: Vec;
       if (toward) {
-        want = norm(sub(to, pos));
-      } else if (shielding && opp.index >= 0) {
-        const side = perp(norm(sub(state.bodies[opp.index].pos, pos)));
-        want = dot(side, heading) >= 0 ? side : scale(side, -1);
-      } else {
-        want = forward;
-        if (!shielding && opp.index >= 0 && opp.distance < HM.avoid) {
-          const away = norm(sub(pos, state.bodies[opp.index].pos));
-          want = add(want, scale(away, ((HM.avoid - opp.distance) / HM.avoid) * HM.shy));
+        const step = carryStep(state, actor, to, until);
+        cap = step.speed;
+        return step.target;
+      }
+      if (held && dist(pos, state.bodies[held.by].pos) > HM.release) held = undefined;
+      if (!held) {
+        const man = nearestOpponent(state, actor, true);
+        if (man.index >= 0 && man.distance <= HM.press) {
+          held = {
+            by: man.index,
+            line: heldLine(pos, state.bodies[man.index].pos, to, heading, forward),
+          };
         }
+      }
+      if (held) {
+        cap = HM.pressed;
+        const line = offTheLines(pos, held.line, HM.edge);
+        if (len(line) < 1e-3 || lineBlocked(state, actor, pos, line, to)) return standing(pos);
+        heading = norm(line);
+        return add(pos, scale(heading, HM.lead));
+      }
+      const opp = nearestOpponent(state, actor);
+      let want: Vec = forward;
+      if (opp.index >= 0 && opp.distance < HM.avoid) {
+        const away = norm(sub(pos, state.bodies[opp.index].pos));
+        want = add(want, scale(away, ((HM.avoid - opp.distance) / HM.avoid) * HM.shy));
       }
       // He never carries onto a teammate: one within `mates` metres pushes his line away.
       for (const mate of presentPlayers(state.fixture, team)) {
@@ -133,25 +156,71 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
       }
       if (len(want) > 1e-3) heading = turnToward(heading, norm(want), (Math.PI * dt) / HM.turn);
       let dir: Vec = heading;
-      if (!toward) {
-        const u = norm(sub(to, pos));
-        const closing = dot(dir, u);
-        if (dist(pos, to) < STAGE.kickGap + HM.room && closing > 0)
-          dir = sub(dir, scale(u, closing));
-      }
+      const u = norm(sub(to, pos));
+      const closing = dot(dir, u);
+      if (dist(pos, to) < STAGE.kickGap + HM.room && closing > 0) dir = sub(dir, scale(u, closing));
       dir = offTheLines(pos, dir, HM.edge);
       if (len(dir) < 1e-3) dir = offTheLines(pos, perp(norm(sub(to, pos))), HM.edge);
       if (len(dir) < 1e-3) dir = offTheLines(pos, forward, HM.edge);
       if (len(dir) < 1e-3) dir = scale(forward, -1);
-      cap =
-        shielding || opp.distance <= HM.press
-          ? HM.pressed
-          : carried < HM.carry
-            ? HM.speed
-            : HM.slow;
+      cap = state.tight ? HM.pressed : carried < HM.carry ? HM.speed : HM.slow;
       return add(pos, scale(norm(dir), HM.lead));
     },
   };
+}
+
+/**
+ * The one line a held-up man with a pass to come keeps (unit, or zero to stand on the ball): across
+ * the man on the side of his pass (`heading` when it is on him), away from him only where that is
+ * up the pitch, and never toward his own goal: a man faced off stands his ground.
+ */
+export function heldLine(pos: Vec, man: Vec, to: Vec, heading: Vec, forward: Vec): Vec {
+  const away = norm(sub(pos, man));
+  const across = perp(away);
+  const aim = dist(pos, to) > 1e-3 ? norm(sub(to, pos)) : heading;
+  const side = dot(across, aim) > 0 || (dot(across, aim) === 0 && dot(across, heading) >= 0);
+  const line = add(side ? across : scale(across, -1), scale(away, Math.max(0, dot(away, forward))));
+  const back = dot(line, forward);
+  return norm(back < 0 ? sub(line, scale(forward, back)) : line);
+}
+
+/**
+ * A carry's holder before the carry: he takes the ball straight toward its end `to`, paced to be
+ * there when his hold ends at `until` (never faster than `holdMove.speed`, `pressed` when pressed),
+ * so he never runs past the end and turns back to it; with an opponent he has not gone past within
+ * `holdMove.press` metres in the carry's way he stands on the ball facing him until the carry takes
+ * him past (`performCarry`).
+ */
+function carryStep(
+  state: StageState,
+  actor: number,
+  to: Vec,
+  until: number,
+): { target: Vec; speed: number } {
+  const HM = STAGE.holdMove;
+  const pos = state.bodies[actor].pos;
+  const man = nearestOpponent(state, actor, true);
+  const pressed = state.tight || man.distance <= HM.press;
+  if (man.distance <= HM.press) {
+    const at = sub(state.bodies[man.index].pos, pos);
+    if (dot(norm(sub(to, pos)), norm(at)) > 0.5 && dist(pos, to) > len(at))
+      return { target: [pos[0], pos[1]], speed: 0 };
+  }
+  const left = Math.max(STAGING_CONFIG.tick, until - state.t);
+  return { target: to, speed: Math.min(pressed ? HM.pressed : HM.speed, dist(pos, to) / left) };
+}
+
+/** A held-up man's `line` runs onto a teammate within `holdMove.mates` metres ahead, or closes on his pass's reception point inside `kickGap` + `room`. */
+function lineBlocked(state: StageState, actor: number, pos: Vec, line: Vec, to: Vec): boolean {
+  const HM = STAGE.holdMove;
+  if (dist(pos, to) < STAGE.kickGap + HM.room && dot(line, sub(to, pos)) > 0) return true;
+  const team = state.fixture.players[actor].team;
+  for (const mate of presentPlayers(state.fixture, team)) {
+    if (mate.index === actor) continue;
+    const gap = sub(state.bodies[mate.index].pos, pos);
+    if (len(gap) < HM.mates && dot(norm(gap), norm(line)) > 0.5) return true;
+  }
+  return false;
 }
 
 /** `to` moved straight away from the ball until it is `stage.kickGap` from it; unchanged when it is already that far. */

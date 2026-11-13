@@ -91,6 +91,11 @@ export interface StageState {
   tight: boolean;
   /** The presser engaged with the man on the ball, and since when (set each tick by `trackPress`). */
   pressing?: { index: number; owner: number; since: number };
+  /**
+   * Defenders the man on the ball has gone past (a take-on or a carry by them), and until when: a
+   * beaten man neither presses nor holds the carrier up again in that time (`isBeaten`).
+   */
+  beaten: Map<number, number>;
   /** Dead-ball scenes: shapes read this point instead of the ball. */
   shapeBall?: Vec;
   /** Dead-ball scenes: a dead ball is brought toward this point at `ball.retrieval` m/s. */
@@ -268,6 +273,7 @@ export function createStage(script: Script): StageState {
     turnedAt: -Infinity,
     marks: new Map(),
     tight: false,
+    beaten: new Map(),
     orders: new Map(),
     cues: new Map(),
     score: [0, 0],
@@ -288,6 +294,10 @@ export function createStage(script: Script): StageState {
 export function positionsOf(state: StageState): Vec[] {
   return state.bodies.map((b): Vec => [b.pos[0], b.pos[1]]);
 }
+
+/** Whether player `index` is a defender the man on the ball went past and has not yet recovered. */
+export const isBeaten = (state: StageState, index: number): boolean =>
+  (state.beaten.get(index) ?? -Infinity) > state.t;
 
 /** Presser and cover of a defending team for one snapshot (one tick). */
 interface PressRoles {
@@ -310,7 +320,13 @@ const pressRoles = (
   const cached = byTeam.get(d);
   if (cached) return cached;
   const free = presentPlayers(state.fixture, d)
-    .filter((p) => p.slot !== 0 && !state.orders.has(p.index) && !state.cues.has(p.index))
+    .filter(
+      (p) =>
+        p.slot !== 0 &&
+        !state.orders.has(p.index) &&
+        !state.cues.has(p.index) &&
+        !isBeaten(state, p.index),
+    )
     .map((p) => ({ index: p.index, d: dist(snapshot[p.index], ref) }))
     .filter(({ index, d: metres }) => {
       const spec = state.fixture.players[index];
@@ -728,6 +744,7 @@ export function pushEvent(
 export function setPossession(state: StageState, beat: Beat): void {
   state.cues.clear();
   if (beat.team !== state.team) {
+    state.beaten.clear();
     state.turnedAt = state.t;
     state.lostBy = state.live ? state.team : undefined;
     if (state.live) state.turn = { at: state.t, counter: beat.phase === 'counter' };

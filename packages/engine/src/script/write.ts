@@ -218,7 +218,9 @@ function writeFitted(settled: Settled, seed: string): Script {
     const g = spreadGroup[i]!;
     if (g < 0 || spreadCap === 0) return 0;
     const [from, until] = spreadSpan[g]!;
-    const share = Math.min(1, Math.max(0, (time - from) / Math.max(1, until - from)));
+    // The share is due by the start of the window's last minute, so a departing man has played
+    // his touches before the dead ball his substitution waits for.
+    const share = Math.min(1, Math.max(0, (time - from) / Math.max(1, until - 1 - from)));
     const behind = share * spreadTotal[g]! - spreadPlayed[g]!;
     return Math.round(
       Math.min(Math.max(behind, -FIT.spread.cap), FIT.spread.cap) * FIT.spread.weight * 100,
@@ -851,10 +853,54 @@ function writeFitted(settled: Settled, seed: string): Script {
     done[t.side]!++;
     if (ends[i]) endsDone[t.side]!++;
     nextOwed = t.next ?? -1;
-    for (const c of t.carries) {
+    // Where the touch's next action starts: the next carry's cell, else its release's.
+    const r0 = t.release;
+    const releaseCell =
+      r0 === undefined
+        ? -1
+        : 'event' in r0
+          ? settled.events[r0.event]![EV.from]!
+          : 'shot' in r0
+            ? settled.shots[r0.shot]![SH.cell]!
+            : settled.fouls[r0.foul]![FO.cell]!;
+    let across = 0;
+    for (const [k, c] of t.carries.entries()) {
       const e = settled.events[c]!;
       linkTo(e[EV.from]!);
-      const to = intoCell(side, e[EV.to]!, spotOf(holder));
+      const next =
+        k + 1 < t.carries.length ? settled.events[t.carries[k + 1]!]![EV.from]! : releaseCell;
+      // Where the next action starts elsewhere, the carry ends as near it as its cell allows, so the
+      // carry linking them is short and he does not carry the ball away only to bring it back.
+      const ahead = next >= 0 && next !== e[EV.to] ? intoCell(side, next, ball) : undefined;
+      let to = intoCell(side, e[EV.to]!, ahead ?? spotOf(holder));
+      // A carry inside one cell still carries the ball, never on the spot it starts: toward that
+      // next action, else (no next action elsewhere) on up the pitch, else across the cell, one
+      // way for the whole touch. With the next action behind him and no room toward it he goes
+      // across, never up the pitch only to come back.
+      if (e[EV.from] === e[EV.to]) {
+        const a = toAttack(side, ball);
+        const step = FIT.cellCarry;
+        const within = (p: Vec) => intoCell(side, e[EV.to]!, p);
+        const moved = (p: Vec) => dist(p, ball) >= step / 2;
+        to = ball;
+        if (ahead && dist(ahead, ball) > 0) {
+          const k = step / dist(ahead, ball);
+          to = within([ball[0] + (ahead[0] - ball[0]) * k, ball[1] + (ahead[1] - ball[1]) * k]);
+        } else to = within(toAttack(side, [a[0] + step, a[1]]));
+        if (!moved(to)) {
+          if (across === 0) {
+            const centre = toAttack(side, cellCentre(side, e[EV.to]!))[1];
+            across = a[1] <= centre ? 1 : -1;
+          }
+          const lead = ahead ? 0 : step / 2;
+          const aside = () => within(toAttack(side, [a[0] + lead, a[1] + across * step]));
+          to = aside();
+          if (!moved(to)) {
+            across = -across;
+            to = aside();
+          }
+        }
+      }
       const takeOn = KIND(e[EV.kind]!) === 'takeOn';
       if (e[EV.result] === R('complete')) {
         push({
