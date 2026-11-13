@@ -1,0 +1,98 @@
+[
+  {
+    "schemaVersion": 1,
+    "ok": true,
+    "added": true,
+    "id": "a32ca639",
+    "line": "- 261113 suggest T866 LEAGUE-10 WORLD-15: Four completed persisted-world seeds miss every one of 588 observed division/decade/seed cells from1950 (±5); 2010 across-seed division deltas range +7.94 to +25.28. Named-config alternatives only have partial failing evidence. Review founding potential versus age and the growth/facility balance before changing WORLD-6 or its gate; preserve flat founding and current controls until an adequately measured replacement exists.",
+    "coordination": {
+      "branch": "gusta",
+      "changed": true,
+      "push": {
+        "pushed": true
+      },
+      "lost": [],
+      "unpublished": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "ok": true,
+    "added": true,
+    "id": "4b0e8926",
+    "line": "- 261113 suggest T866 LEAGUE-10: Four completed seeds have32/32 country/champion windows outside the1980–2009 target: different champions are10–17 depending on country/seed versus4–9, with most titles3–9 versus7–17. Review structural squad/stature persistence alongside the division inflation, rather than inserting scripted winners. Fifth-core attempt is separate and not yet complete.",
+    "coordination": {
+      "branch": "gusta",
+      "changed": true,
+      "push": {
+        "pushed": true
+      },
+      "lost": [],
+      "unpublished": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "ok": true,
+    "added": true,
+    "id": "01f7a5ee",
+    "line": "- 261113 suggest T866 WORLD-6: Four completed seeds show2010 per-division mean XI spans14.32–48.99 against the estimate8–12. Review persisted squad age/ability classes and youth entry together with league levels. Outfield annual peak cohorts are observed; goalkeeper/all-player populations are only measured by the newer fifth observer, so no complete all-player five-seed gate is claimed.",
+    "coordination": {
+      "branch": "gusta",
+      "changed": true,
+      "push": {
+        "pushed": true
+      },
+      "lost": [],
+      "unpublished": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "ok": true,
+    "added": true,
+    "id": "0d2cae43",
+    "line": "- 261113 suggest T866 CLUB-46 CLUB-48: Four completed core worlds have10748/131692 observed closed club-seasons with wages above revenue and47223 after-summer wage-limit breaches. ENG mean-value/average-fee ratios are2.36 in1993 and2.56 in2003 (target0.6–1.4);The2025 extension across-seed mean is1.6114. Review growth-driven wage/value inflation and affordability order with fresh evidence; do not change budgets or silently adopt a partial fit.",
+    "coordination": {
+      "branch": "gusta",
+      "changed": true,
+      "push": {
+        "pushed": true
+      },
+      "lost": [],
+      "unpublished": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "ok": true,
+    "added": true,
+    "id": "6ebec794",
+    "line": "- 261113 suggest T866 SAVE-4 SAVE-13: Pre-T872 ten-played-season owned probe measures996226 compressed squad bytes versus500000. Records diagnostic only completed5/20 seasons; its linear century estimate is not actual century evidence. Baseline/active/retained measurements failed their original XI/archive/duplicate-ID assertions. Re-measure consumed closures after academy/takeover fixes, then plan lossless representation/cost work if gaps remain; retain every history fact and original6/8MiB limits.",
+    "coordination": {
+      "branch": "gusta",
+      "changed": true,
+      "push": {
+        "pushed": true
+      },
+      "lost": [],
+      "unpublished": false
+    }
+  },
+  {
+    "schemaVersion": 1,
+    "ok": true,
+    "added": true,
+    "id": "84ac63b0",
+    "line": "- 261113 suggest T866 ARCH-28 ARCH-34: Pre-T872 final paired five-season CPU ratio is37.876 (95%34.7735–41.6456) versus pre-T861, above2.10 cumulative allowance. Historical profiles identify growth and repeated free-agent need/affordability reads; they are not final repaired-source profiles. Plan measured result-identical batching/caching while preserving cadence, held XI and all transfers. Browser generation budget is unmeasured under owner unit-only policy; no budget increase or unrun pass is authorized.",
+    "coordination": {
+      "branch": "gusta",
+      "changed": true,
+      "push": {
+        "pushed": true
+      },
+      "lost": [],
+      "unpublished": false
+    }
+  }
+]
