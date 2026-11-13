@@ -106,7 +106,6 @@
 | T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON | T863 | todo |
 | T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB | T862 T864 | todo |
 | T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 | todo |
-| T869 | Play 1x in real time and keep the watching journeys within their limits | WEB MATCH | T868 | todo |
 
 ## next
 - gusta-implement-task T860, then T861 → T866 in dep order (persisted world players, sketch persistent-world-players 261113)
@@ -114,6 +113,7 @@
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261113 T869 done
 - 261113 gusta-create-task WEB MATCH: T869 consumes WEB@221 MATCH@64 sx2
 - 261113 gusta-update-ssot WEB MATCH: WEB-32✎ MATCH-12✎ 1x 18→60 real s per 60 match seconds (real time) sx2
 - 261113 T868 done
@@ -133,4 +133,3 @@
 - 261112 T854 done
 - 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
 - 261112 T853 done
-- 261112 T852 done

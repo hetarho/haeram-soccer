@@ -139,10 +139,11 @@ for (const viewport of VIEWPORTS)
       timeout: 10_000,
     });
 
-    // At 16x every running minute lasts 1125 ms; only a goal's hold (→WEB-94) takes time out. The
-    // whole match at that speed is the slowest part of this journey. The pitch advances its clock
-    // by each frame's real time up to `FRAME_STEP_LIMIT_MS` (WebKit's frames on CI run past
-    // 100 ms); the budget leaves room for a browser slower still.
+    // At 16x every running minute lasts 3.75 s (1x being real time); only a goal's hold (→WEB-94)
+    // takes time out. The whole match at that speed, about five minutes, is the slowest part of
+    // this journey, and no faster speed or seek keeps every goal cued in one forward watch. The
+    // pitch advances its clock by each frame's real time up to `FRAME_STEP_LIMIT_MS` (WebKit's
+    // frames on CI run past 100 ms); the budget leaves room for a browser slower still.
     const watchBudgetMs = 3 * next.watchMs;
     test.info().setTimeout(test.info().timeout + watchBudgetMs);
     const speeds = page.getByRole('radiogroup', { name: '관전 속도', exact: true });

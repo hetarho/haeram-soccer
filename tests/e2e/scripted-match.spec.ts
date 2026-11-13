@@ -6,10 +6,7 @@ import { MATCH_MODEL_RELEASE } from '../../packages/engine/src/match-model-relea
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { openWatchAction, openMatchDetails, closeMatchDetails, presentedMinute } from './watch';
 import { exportWorld } from './club-identity-helpers';
-import {
-  WATCH_DEFAULT_SPEED,
-  WATCH_MINUTE_MS,
-} from '../../apps/web/src/entities/match/lib/presentationClock';
+import { WATCH_MINUTE_MS } from '../../apps/web/src/entities/match/lib/presentationClock';
 
 /**
  * Watch to a playing pitch: 3 s on the batch's local Chromium run (T834), which guards the latency.
@@ -20,10 +17,10 @@ import {
  */
 const PLAYING_BUDGET_MS = process.env.CI ? 30_000 : 3000;
 /**
- * The running minute played below within one and a half times its length at the opening speed
- * locally (13.5 s); CI waits by the same rule as above.
+ * The running minute played below at 16x within one and a half times its length there locally
+ * (5.6 s, 1x being real time); CI waits by the same rule as above.
  */
-const MINUTE_BUDGET_MS = process.env.CI ? 30_000 : (1.5 * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED;
+const MINUTE_BUDGET_MS = process.env.CI ? 30_000 : (1.5 * WATCH_MINUTE_MS) / 16;
 
 /** Actual worker/Canvas/save integration; authored here, run only by the coordinator's batch. */
 test('stages a scripted own match ahead of its theatre and retains the Node result', async ({
@@ -57,7 +54,9 @@ test('stages a scripted own match ahead of its theatre and retains the Node resu
   );
   const minute = await presentedMinute(page),
     before = await seconds();
-  // One minute at 2x is nine real seconds; dead-ball beats may shorten it, a goal adds its hold.
+  // One minute at 16x is 3.75 real seconds (a minute at the opening 2x would be 30); dead-ball
+  // beats may shorten it, a goal adds its hold.
+  await speeds.getByRole('radio', { name: '16×', exact: true }).click();
   await expect.poll(seconds, { timeout: MINUTE_BUDGET_MS }).toBeGreaterThanOrEqual(before + 60);
   expect(await presentedMinute(page)).not.toBe(minute);
 

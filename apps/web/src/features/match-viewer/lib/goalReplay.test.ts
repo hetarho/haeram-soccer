@@ -23,7 +23,7 @@ import {
   startGoalReplay,
   type ReplayOrigin,
 } from './goalReplay';
-import { runningLength, WATCH_SPEEDS } from '../../../entities/match/logic';
+import { runningLength, runningRate, WATCH_SPEEDS } from '../../../entities/match/logic';
 
 const goalEvent = (t: number, side: 0 | 1): MatchEvent => ({
   t,
@@ -180,10 +180,10 @@ describe('goal-scene replay', () => {
       expect(state.seconds).toBeLessThan(goals[2]!.seconds);
       expect(clip.from).toBeLessThan(goals[1]!.seconds);
     }
-    // At 1x the clip lasts its 15 s of match time at 18 s a minute plus the goal's hold.
+    // At 1x the clip lasts its 15 s of match time in real time plus the goal's hold.
     const { spent } = play(1);
-    expect(spent).toBeGreaterThanOrEqual(4500 + GOAL_FEEDBACK_CONFIG.holdMs - 32);
-    expect(spent).toBeLessThanOrEqual(4500 + GOAL_FEEDBACK_CONFIG.holdMs + 32);
+    expect(spent).toBeGreaterThanOrEqual(15000 + GOAL_FEEDBACK_CONFIG.holdMs - 32);
+    expect(spent).toBeLessThanOrEqual(15000 + GOAL_FEEDBACK_CONFIG.holdMs + 32);
   });
 
   it('has no clip where scoring footage was not retained', () => {
@@ -234,7 +234,8 @@ describe('goal-scene replay', () => {
     const advance = (state: GoalFeedbackState, elapsedMs: number, running = true) =>
       advanceGoalFeedback(state, closingGoals, { elapsedMs, speed: 16, length: end, running });
     // The earlier goal has been seen; the live clock reaches the last at the final sample.
-    const live = advance({ seconds: end - 0.5, next: 1 }, 16);
+    // Half a 16 ms frame at 16x before it, so that frame reaches it.
+    const live = advance({ seconds: end - (16 * runningRate(16)) / 2, next: 1 }, 16);
     const hold = { goal: 1, remainingMs: GOAL_FEEDBACK_CONFIG.holdMs };
     expect(live).toEqual({ seconds: end, next: 2, cue: hold });
     const [earlier] = replayGoals(closingGoals, closing, goalsSeen(live));

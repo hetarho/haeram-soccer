@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { closeMatchDetails, openMatchDetails } from './watch';
 import { startFlow } from './start';
+import { WATCH_MINUTE_MS } from '../../apps/web/src/entities/match/lib/presentationClock';
 
 /** Runs the current settings and waits for the run to finish. */
 async function simulate(page: Page, count: string) {
@@ -53,11 +54,12 @@ test('the lab watches a match in the game’s match view and replays it with edi
   // Pausing works as in the game's live view: 경기 상세 holds the instant a seek in it moves to,
   // and the match plays on from there once it closes, at the speed chosen next. It opens once the
   // match is into its second minute, past its first recorded sample, so the instant it holds lies
-  // after the timeline's start and Home is a real seek back; 8× gets there in under two seconds.
+  // after the timeline's start and Home is a real seek back; 16× gets there in under four seconds
+  // (1x being real time), waited for up to two match minutes at that speed (7.5 s).
   const canvas = theatre.getByLabel('22명의 선수와 공으로 표현하는 경기');
   const seconds = async () => Number(await canvas.getAttribute('data-seconds'));
-  await page.getByRole('radio', { name: '8×', exact: true }).click();
-  await expect.poll(seconds).toBeGreaterThan(60);
+  await page.getByRole('radio', { name: '16×', exact: true }).click();
+  await expect.poll(seconds, { timeout: (2 * WATCH_MINUTE_MS) / 16 }).toBeGreaterThan(60);
   const details = await openMatchDetails(page);
   const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
   await expect.poll(async () => Number(await timeline.inputValue())).toBeGreaterThan(0);
@@ -69,7 +71,7 @@ test('the lab watches a match in the game’s match view and replays it with edi
   await expect(timeline).toHaveValue(sought);
   expect(await seconds()).toBe(at);
   await closeMatchDetails(page);
-  await page.getByRole('radio', { name: '16×', exact: true }).click();
+  await page.getByRole('radio', { name: '8×', exact: true }).click();
   await expect.poll(seconds).toBeGreaterThan(at);
 
   // 다시 보기 plays the same seed again with the edited value: a new playback from the start.

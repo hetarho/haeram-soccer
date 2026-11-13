@@ -193,7 +193,7 @@ for (const viewport of [
       '슈팅',
     ]);
     // Speed changes keep the presented minute, and 16x runs every minute, restarts included, in
-    // 1125 ms (→WEB-32): four of them cover several minutes without slowing at a dead ball.
+    // 3.75 s (→WEB-32): four of them cover several minutes without slowing at a dead ball.
     const minuteNow = async () => Number((await presentedMinute(page)).match(/\d+/)?.[0] ?? 0);
     const before = await minuteNow();
     await page.getByRole('radio', { name: '16×', exact: true }).click();
@@ -358,10 +358,12 @@ for (const viewport of [
 test('an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes', async ({
   page,
 }) => {
-  // Two goal crossings at the speed the archived replay opens at: two minutes of the clock (18 s
-  // at 2x), then one after a seek (9 s); the replay has no speed chips to raise it.
+  // Two goal crossings at the speed the archived replay opens at, each from a seek to the minute
+  // before it: one minute of the clock each (30 s at 2x, 1x being real time →WEB-32). The replay
+  // has no speed chips to raise it, so the budget grows by them.
   test.slow();
   const replayMinuteMs = WATCH_MINUTE_MS / WATCH_DEFAULT_SPEED;
+  test.info().setTimeout(test.info().timeout + 2 * replayMinuteMs);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
   // A settled own match is replayed from the records room as its record alone, not staged: one
@@ -405,7 +407,17 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
       undefined,
       { polling: 'raf', timeout },
     );
-  await pauseOnCue(2 * replayMinuteMs + 5000);
+  // The replay opens playing from kick-off; paused and sought to the minute before the 2′ goal, it
+  // crosses that goal once played again (the details hold it while open and leave it paused).
+  await replay.getByRole('button', { name: '일시정지', exact: true }).click();
+  await replay.getByRole('button', { name: '경기 상세', exact: true }).click();
+  const scrubber = matchDetails(page).getByRole('slider', { name: '경기 시간', exact: true });
+  await expect(scrubber).toHaveAttribute('max', String(samples.length - 1));
+  await scrubber.fill(String(scoredAt(first!) - 1));
+  await expect(score).toHaveText('0 : 0');
+  await closeMatchDetails(page);
+  await replay.getByRole('button', { name: '재생', exact: true }).click();
+  await pauseOnCue(replayMinuteMs + 5000);
   await expect(cue).toContainText(played.highlights[0]!.player);
   await expect(score).toHaveText(running(first!));
   // A pause during the hold keeps the cue until playback resumes.
@@ -419,8 +431,6 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   // of the last sample, since a replay at its end has finished and offers 다시 보기, not 재생.
   await replay.getByRole('button', { name: '일시정지', exact: true }).click();
   await replay.getByRole('button', { name: '경기 상세', exact: true }).click();
-  const scrubber = matchDetails(page).getByRole('slider', { name: '경기 시간', exact: true });
-  await expect(scrubber).toHaveAttribute('max', String(samples.length - 1));
   await scrubber.fill(String(samples.length - 2));
   await expect(score).toHaveText(`${played.score.home} : ${played.score.away}`);
   await expect(cue).toHaveCount(0);

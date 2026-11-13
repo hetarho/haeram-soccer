@@ -11,7 +11,6 @@ import {
   deadBallBeats,
   presentationMs,
   runningLength,
-  WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
 } from '../../apps/web/src/entities/match/lib/presentationClock';
 import { textContrast } from './contrast';
@@ -308,11 +307,13 @@ for (const viewport of [
     const cue = page.getByTestId('goal-cue');
     // The hold lasts one real second, less than the steps below take on a slow runner (CI
     // 41524887826 measured a cue already gone): read the opening goal's cue as the page saw it.
-    // It comes at the goal's minute at the default speed; on CI a frame advances the clock at most
-    // FRAME_STEP_LIMIT_MS, and WebKit drew the 1280 pitch at about three frames a second there, so
-    // its clock reached only 2′ 16 s after the first staged frame (CI 43288257211): CI waits three
-    // times as long, as playwright.config scales every project's budget.
-    const cueWait = (openingGoal!.minute * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000;
+    // With 1x in real time (→WEB-32) the match plays on to it at 16x, a 2′ goal 7.5 s away rather
+    // than a minute at the default speed; on CI a frame advances the clock at most
+    // FRAME_STEP_LIMIT_MS, and WebKit drew the 1280 pitch at about three frames a second there
+    // (CI 43288257211): CI waits three times as long, as playwright.config scales every project's
+    // budget.
+    await page.getByRole('radio', { name: '16×', exact: true }).click();
+    const cueWait = (openingGoal!.minute * WATCH_MINUTE_MS) / 16 + 3000;
     await expect
       .poll(async () => (await cues.looks()).length, {
         timeout: process.env.CI ? 3 * cueWait : cueWait,
