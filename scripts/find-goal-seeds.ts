@@ -5,7 +5,7 @@
  * fixture helpers the specs use (`careerWorld`, `advanceToNextMatch` and `stagedPlayback`, the
  * released scripted model's own match staged as the browser stages it) and read with their goal
  * readers (`goalInstants`, `replayGoals`, the presentation clock), plays the first own match that
- * spec needs. Every scene's goals each have a staged build-up of `GOAL_REPLAY_CONFIG.leadSeconds`
+ * spec needs. The watched opening scene's goals each have a staged build-up of `GOAL_REPLAY_CONFIG.leadSeconds`
  * (a clip never starts at a period's kick-off or the goal before it), and its goals fall in both
  * halves:
  *
@@ -14,8 +14,8 @@
  *   sooner than one clock minute after kick-off, and holds at least three goals, all of them
  *   highlights with their footage retained; the paused seek between the first two goals lands on a
  *   sample before the second, and the second leaves the clip room to return first.
- * - `archived`: tests/e2e/match-core.spec.ts's archived replay of a settled own match, staged from
- *   its script. Three goals or more, the first crossed within the replay's first two clock minutes
+ * - `archived`: tests/e2e/match-core.spec.ts's record-only archivePlayback of a settled own match.
+ *   At least four distinct goal minutes, the first crossed within the replay's first two clock minutes
  *   at the speed it opens at, the second within one clock minute of the seek sample just before it;
  *   the spec reads the running scores from the reference and seeks past the rest to the end.
  *
@@ -32,15 +32,21 @@
  * every required scene asked for is found.
  *
  *   pnpm exec tsx scripts/find-goal-seeds.ts [--start 1] [--count 1000] [--scene opening|archived]
- *   pnpm exec tsx scripts/find-goal-seeds.ts --check
+ *   pnpm exec tsx scripts/find-goal-seeds.ts --check [--out .tmp/goal-scenes.jsonl]
+ *   pnpm exec tsx scripts/find-goal-seeds.ts --self-test
  */
-import { readFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import assert from 'node:assert/strict';
 import { fileURLToPath } from 'node:url';
 import { message as sourceMessage } from '../packages/contracts/src/messages';
 import type { MatchFrame, MatchPlayback, MatchRecord } from '../packages/contracts/src/types';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { advanceToNextMatch, stagedPlayback } from '../packages/engine/src/testing';
 import {
+  archivePlayback,
   deadBallBeats,
   presentationMs,
   presentationSamples,
@@ -86,7 +92,7 @@ const OPENING = {
 /** The `archived` scene's bounds, as match-core.spec.ts reads it. */
 const ARCHIVED = {
   /** Goals the match holds at least: the first, and later ones a seek to the end passes. */
-  goals: 3,
+  goals: 4,
   /** Clock minutes at the opening speed within which the first goal is crossed. */
   firstMinutes: 2,
   /** Clock minutes from the seek sample within which the second goal is crossed. */
@@ -146,7 +152,7 @@ function stagedGoals(playback: MatchPlayback) {
   return { record, frames, samples, goals, picks, clipOf, beats: deadBallBeats(frames) };
 }
 
-/** What every scene asks of its goals: footage, a full staged build-up and goals in both halves. */
+/** Watched scenes need footage and a full staged build-up; minute-only archives have no clips. */
 function commonMisses(staged: ReturnType<typeof stagedGoals>) {
   const misses: string[] = [];
   if (!staged.picks.every((pick) => pick.footage)) misses.push('a goal without footage');
@@ -213,13 +219,15 @@ function archivedScene(seed: string, playback: MatchPlayback | undefined): Verdi
   const played = playback.record;
   const minutes = played.highlights.map((goal) => goal.minute);
   const misses = recordMisses(played);
-  if (played.highlights.length < ARCHIVED.goals) misses.push(`fewer than ${ARCHIVED.goals} goals`);
+  if (new Set(minutes).size < ARCHIVED.goals) misses.push(`fewer than ${ARCHIVED.goals} goals`);
   if ((played.highlights[0]?.minute ?? 99) > ARCHIVED.firstMinutes + 1)
     misses.push(`first goal after ${ARCHIVED.firstMinutes + 1}′`);
   if (misses.length) return { seed, misses, goals: listed(played), minutes };
-  const staged = stagedGoals(playback);
-  const { goals, samples, beats } = staged;
-  misses.push(...commonMisses(staged));
+  // The browser's records room has minute-only archival data, not watched/staged footage.
+  const { frames } = archivePlayback(played);
+  const { samples, starts } = frameStarts(frames);
+  const goals = goalInstants(played, frames, starts);
+  const beats = deadBallBeats(frames);
   if (goals.length !== played.highlights.length) misses.push('goals on the clock ≠ highlights');
   const shown = (time: number) => goals.filter((goal) => goal.seconds <= time).length;
   let seek: number | undefined;
@@ -232,9 +240,14 @@ function archivedScene(seed: string, playback: MatchPlayback | undefined): Verdi
     firstCue = presentationMs(0, one.seconds, WATCH_DEFAULT_SPEED, beats);
     if (firstCue > ARCHIVED.firstMinutes * clockMinuteMs)
       misses.push(`first goal after ${ARCHIVED.firstMinutes} clock minutes`);
-    // The sample before the second goal's.
-    const at = samples.findIndex((sample) => sample.time >= two.seconds);
-    seek = at - 1;
+    // Exactly match match-core's scoredAt() and its scrubber seeks.
+    const scoredAt = (goal: GoalInstant) =>
+      samples.findIndex(({ frame }) => {
+        const score = frames[frame].score;
+        return score.home === goal.home && score.away === goal.away;
+      });
+    if (scoredAt(one) - 1 < 0) misses.push('no sample between the first two goals');
+    seek = scoredAt(two) - 1;
     const from = samples[seek]?.time ?? -1;
     if (seek < 0 || shown(from) !== 1) misses.push('no sample between the first two goals');
     else if (
@@ -301,7 +314,11 @@ function named(file: string) {
   return {
     seed: distinct.length === 1 ? distinct[0] : undefined,
     minutes: minutes?.split(',').map((m) => Number(m.trim())),
-    seek: seek === undefined ? undefined : Number(seek),
+    seek: /scrubber\.fill\(String\(scoredAt\(second!\) - 1\)\)/.test(text)
+      ? ('scoredAt(second)-1' as const)
+      : seek === undefined
+        ? undefined
+        : Number(seek),
   };
 }
 
@@ -314,12 +331,15 @@ function check() {
       failed = true;
       continue;
     }
-    const verdict = SCENES[scene](spec.seed, settled(spec.seed));
+    const playback = settled(spec.seed);
+    const verdict = SCENES[scene](spec.seed, playback);
+    evidence({ event: 'scene-check', file, scene, record: playback?.record, verdict });
     const misses = [...verdict.misses];
     if (scene === 'archived') {
       if (JSON.stringify(spec.minutes) !== JSON.stringify(verdict.minutes))
         misses.push(`spec asserts minutes [${spec.minutes?.join(', ')}]`);
-      if (spec.seek !== verdict.seek) misses.push(`spec seeks to sample ${spec.seek}`);
+      if (spec.seek !== 'scoredAt(second)-1' && spec.seek !== verdict.seek)
+        misses.push(`spec seeks to sample ${spec.seek}`);
     }
     failed ||= misses.length > 0;
     console.log(
@@ -345,14 +365,17 @@ function scan(start: number, count: number, scenes: Scene[]) {
     // One settled match a seed, read by every scene still looked for.
     const seed = `${SEED_PREFIX}${n}`;
     const playback = settled(seed);
+    const verdicts: Partial<Record<Scene, Verdict>> = {};
     for (const scene of scenes) {
       if (found.has(scene)) continue;
       const verdict = SCENES[scene](seed, playback);
+      verdicts[scene] = verdict;
       if (!verdict.misses.length) {
         found.set(scene, verdict);
         console.log(`${scene}: ${describe(verdict)} (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
       }
     }
+    evidence({ event: 'scene-attempt', seed, record: playback?.record, verdicts });
     // Optional scenes do not hold the scan open once every required one is found.
     if (required.length && required.every((scene) => found.has(scene))) break;
   }
@@ -364,12 +387,128 @@ function scan(start: number, count: number, scenes: Scene[]) {
   console.log(`${scanned} seeds scanned in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
 }
 
+function selfTest() {
+  const goal = (minute: number, side: 0 | 1, player: string) => ({
+    minute,
+    side,
+    player,
+    action: GOAL,
+  });
+  const record = {
+    id: 'archive-scene',
+    home: 'home',
+    away: 'away',
+    score: { home: 2, away: 2 },
+    metrics: [[], []],
+    players: [],
+    highlights: [goal(2, 0, 'one'), goal(22, 1, 'two'), goal(37, 0, 'three'), goal(56, 1, 'four')],
+  } as unknown as MatchRecord;
+  const playback = { record, frames: [], squads: [[], []] } as MatchPlayback;
+  const verdict = archivedScene('synthetic', playback);
+  assert.deepEqual(verdict.misses, []);
+  const archive = archivePlayback(record),
+    { samples, starts } = frameStarts(archive.frames);
+  const goals = goalInstants(record, archive.frames, starts);
+  const second = goals[1];
+  const scoredAt = samples.findIndex(
+    ({ frame }) =>
+      archive.frames[frame].score.home === second.home &&
+      archive.frames[frame].score.away === second.away,
+  );
+  assert.equal(verdict.seek, scoredAt - 1);
+  assert.equal(verdict.firstCue, 2 * clockMinuteMs);
+  assert.equal(
+    archive.frames.some((frame) => !!frame.motion?.length),
+    false,
+  );
+  assert.equal(
+    replayGoals(goals, archive.frames, goals.length).some((pick) => pick.footage),
+    false,
+  );
+  assert.notEqual(
+    archivedScene('synthetic', {
+      ...playback,
+      record: {
+        ...record,
+        highlights: [
+          goal(3, 0, 'one'),
+          goal(22, 1, 'two'),
+          goal(37, 0, 'three'),
+          goal(56, 1, 'four'),
+        ],
+      },
+    }).misses.length,
+    0,
+  );
+  assert.notEqual(
+    archivedScene('synthetic', {
+      ...playback,
+      record: {
+        ...record,
+        highlights: [
+          goal(1, 0, 'one'),
+          goal(22, 1, 'two'),
+          goal(37, 0, 'three'),
+          goal(56, 1, 'four'),
+        ],
+      },
+    }).misses.length,
+    0,
+  );
+  assert.notEqual(
+    archivedScene('synthetic', {
+      ...playback,
+      record: {
+        ...record,
+        score: { home: 2, away: 1 },
+        highlights: [goal(2, 0, 'one'), goal(22, 0, 'two'), goal(56, 1, 'three')],
+      },
+    }).misses.length,
+    0,
+  );
+  assert.notEqual(
+    archivedScene('synthetic', {
+      ...playback,
+      record: {
+        ...record,
+        highlights: [
+          goal(2, 0, 'one'),
+          goal(22, 1, 'two'),
+          goal(22, 0, 'three'),
+          goal(56, 1, 'four'),
+        ],
+      },
+    }).misses.length,
+    0,
+  );
+  assert.equal(named('tests/e2e/match-core.spec.ts').seek, 'scoredAt(second)-1');
+  console.log(JSON.stringify({ event: 'scene-self-test', passed: true, cases: 9 }));
+}
+
 const args = process.argv.slice(2);
 const opt = (name: string) => {
   const i = args.indexOf(`--${name}`);
   return i >= 0 ? args[i + 1] : undefined;
 };
-if (args.includes('--check')) check();
+const evidencePath = opt('out');
+function evidence(entry: unknown) {
+  if (evidencePath) appendFileSync(resolve(evidencePath), JSON.stringify(entry) + '\n');
+}
+if (evidencePath) {
+  mkdirSync(dirname(resolve(evidencePath)), { recursive: true });
+  evidence({
+    event: 'scene-run',
+    command: process.argv.slice(1),
+    head: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+    finderSha256: createHash('sha256')
+      .update(readFileSync(fileURLToPath(import.meta.url)))
+      .digest('hex'),
+    opening: OPENING,
+    archived: ARCHIVED,
+  });
+}
+if (args.includes('--self-test')) selfTest();
+else if (args.includes('--check')) check();
 else {
   const scene = opt('scene') as Scene | undefined;
   if (scene && !(scene in SCENES)) throw new Error(`--scene is one of ${Object.keys(SCENES)}`);

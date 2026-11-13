@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T18:43:36.114Z",
-  "sourceCommit": "0ee12d890253f1389fb6ce2bdc3ba302a33a220d",
+  "snapshotAt": "2026-11-13T18:52:29.442Z",
+  "sourceCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -63,12 +63,12 @@
   },
   "summary": {
     "total": 14,
-    "completed": 6,
-    "remaining": 8,
+    "completed": 7,
+    "remaining": 7,
     "running": 2,
     "review": 0,
     "blocked": 0,
-    "unassigned": 6
+    "unassigned": 5
   },
   "tasks": [
     {
@@ -87,13 +87,6 @@
         "T885"
       ],
       "lane": "promise-browser-scenes",
-      "status": "todo"
-    },
-    {
-      "id": "T888",
-      "title": "Find goal scenes through the actual replay adapters",
-      "dep": [],
-      "lane": "goal-browser-scenes",
       "status": "doing"
     },
     {
@@ -441,6 +434,8 @@
       "submittedBase": "0ee12d890253f1389fb6ce2bdc3ba302a33a220d",
       "submissionId": "0e00546c-cc67-4bda-a30b-cdf3ccfaa9d0",
       "submittedAt": "2026-11-13T18:41:01.719Z",
+      "integratedCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
+      "integratedAt": "2026-11-13T18:44:37.740Z",
       "risk": null,
       "review": {
         "id": "afa7940a-4a5b-4488-835c-e5a2899dd6c3",
@@ -497,6 +492,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T18:40:27.970Z",
           "finishedAt": "2026-11-13T18:41:01.366Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T18:43:36.491Z",
+          "finishedAt": "2026-11-13T18:44:37.198Z"
         }
       ]
     },
@@ -577,9 +579,49 @@
       "contributors": [
         "nf14-codex-goal-scenes"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-13T18:34:01.312Z",
-      "startCommit": "6c418538190abbe69f8f1383538a8e564ad9d647"
+      "startCommit": "6c418538190abbe69f8f1383538a8e564ad9d647",
+      "verifiedCommit": "10ef8e6a5f4465cdaced40df3c8cbc782858f391",
+      "submittedBase": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
+      "submissionId": "667dcec1-4d41-4ca1-9cda-a407adcdc6c2",
+      "submittedAt": "2026-11-13T18:48:42.860Z",
+      "risk": null,
+      "review": {
+        "id": "05b5eda8-d8ab-4cd4-9d8f-b990054b24f6",
+        "owner": "nf14-codex-independent-goal-scenes",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T888 matches archive discovery to the actual record-only archivePlayback, presentation samples, goalInstants and scoredAt(second)-1 scrubber logic used by match-core. It strengthens archive selection to four distinct goal minutes and retains both-half record checks, scorer identity, first-cue timing and the sample between goals; watched opening selection retains early-home, three-goal, full-footage/build-up and replay-return room requirements. The three browser diffs change only seeds, verified minute expectations and comments: existing assertions, counts, pause/seek behavior and timeout expressions remain. Independently ran --self-test (nine cases) and --check for all three named specs on fixed commit10ef8e6a: opening goal-feedback-53 gives 3/69/87 home goals with first cue62.6 s at2x; archive goal-feedback-56 gives2/4/43/61, first cue60 s and seek sample2. Logs and full records/source fingerprints: /tmp/nf14-t888-review-self-test.log, /tmp/nf14-t888-review-check.log, /tmp/nf14-t888-review-scenes.jsonl. Chosen records contain only home goals; no new away-side browser coverage is claimed, and existing helper units retain explicit away-goal coverage. No P1/P2 finding. Actual Chromium journeys and the final batch remain coordinator-owned.",
+        "findings": [],
+        "commit": "10ef8e6a5f4465cdaced40df3c8cbc782858f391",
+        "baseCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
+        "submissionId": "667dcec1-4d41-4ca1-9cda-a407adcdc6c2",
+        "createdAt": "2026-11-13T18:49:03.881Z",
+        "finishedAt": "2026-11-13T18:51:00.666Z"
+      },
+      "steps": [
+        {
+          "taskId": "T888",
+          "commit": "10ef8e6a5f4465cdaced40df3c8cbc782858f391",
+          "at": "2026-11-13T18:48:42.849Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T18:48:11.669Z",
+              "finishedAt": "2026-11-13T18:48:42.667Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T18:48:11.669Z",
+          "finishedAt": "2026-11-13T18:48:42.667Z"
+        }
+      ]
     },
     {
       "id": "f1b55503-fdcd-4859-8a21-c0437b6979e5",
@@ -596,6 +638,22 @@
       "status": "doing",
       "createdAt": "2026-11-13T18:41:14.064Z",
       "startCommit": "0ee12d890253f1389fb6ce2bdc3ba302a33a220d"
+    },
+    {
+      "id": "9ccc8ded-158f-4a20-8e3f-824b1042a659",
+      "group": "natural-football-261114",
+      "taskId": "T887",
+      "tasks": [
+        "T887"
+      ],
+      "lane": "promise-browser-scenes",
+      "owner": "nf14-codex-promise-fixtures",
+      "contributors": [
+        "nf14-codex-promise-fixtures"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-13T18:49:05.162Z",
+      "startCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710"
     }
   ],
   "history": [
@@ -2676,6 +2734,193 @@
       "group": "natural-football-261114",
       "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
       "taskId": "T884",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 88,
+      "at": "2026-11-13T18:44:37.340Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T18:43:36.491Z",
+            "finishedAt": "2026-11-13T18:44:37.198Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 89,
+      "at": "2026-11-13T18:44:37.740Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
+        "integratedAt": "2026-11-13T18:44:37.740Z"
+      }
+    },
+    {
+      "sequence": 90,
+      "at": "2026-11-13T18:48:11.486Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+      "taskId": "T888",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 91,
+      "at": "2026-11-13T18:48:42.860Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+      "taskId": "T888",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "10ef8e6a5f4465cdaced40df3c8cbc782858f391",
+        "submittedBase": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
+        "submissionId": "667dcec1-4d41-4ca1-9cda-a407adcdc6c2",
+        "submittedAt": "2026-11-13T18:48:42.860Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T888",
+            "commit": "10ef8e6a5f4465cdaced40df3c8cbc782858f391",
+            "at": "2026-11-13T18:48:42.849Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T18:48:11.669Z",
+                "finishedAt": "2026-11-13T18:48:42.667Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T18:48:11.669Z",
+            "finishedAt": "2026-11-13T18:48:42.667Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 92,
+      "at": "2026-11-13T18:49:03.882Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+      "taskId": "T888",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "05b5eda8-d8ab-4cd4-9d8f-b990054b24f6",
+          "owner": "nf14-codex-independent-goal-scenes",
+          "status": "reviewing",
+          "commit": "10ef8e6a5f4465cdaced40df3c8cbc782858f391",
+          "baseCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
+          "submissionId": "667dcec1-4d41-4ca1-9cda-a407adcdc6c2",
+          "createdAt": "2026-11-13T18:49:03.881Z"
+        }
+      }
+    },
+    {
+      "sequence": 93,
+      "at": "2026-11-13T18:49:05.162Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "9ccc8ded-158f-4a20-8e3f-824b1042a659",
+      "taskId": "T887",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "9ccc8ded-158f-4a20-8e3f-824b1042a659",
+        "group": "natural-football-261114",
+        "taskId": "T887",
+        "tasks": [
+          "T887"
+        ],
+        "lane": "promise-browser-scenes",
+        "owner": "nf14-codex-promise-fixtures",
+        "contributors": [
+          "nf14-codex-promise-fixtures"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T18:49:05.162Z",
+        "startCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710"
+      }
+    },
+    {
+      "sequence": 94,
+      "at": "2026-11-13T18:49:08.816Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "9ccc8ded-158f-4a20-8e3f-824b1042a659",
+      "taskId": "T887",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 95,
+      "at": "2026-11-13T18:51:00.666Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+      "taskId": "T888",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "05b5eda8-d8ab-4cd4-9d8f-b990054b24f6",
+          "owner": "nf14-codex-independent-goal-scenes",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T888 matches archive discovery to the actual record-only archivePlayback, presentation samples, goalInstants and scoredAt(second)-1 scrubber logic used by match-core. It strengthens archive selection to four distinct goal minutes and retains both-half record checks, scorer identity, first-cue timing and the sample between goals; watched opening selection retains early-home, three-goal, full-footage/build-up and replay-return room requirements. The three browser diffs change only seeds, verified minute expectations and comments: existing assertions, counts, pause/seek behavior and timeout expressions remain. Independently ran --self-test (nine cases) and --check for all three named specs on fixed commit10ef8e6a: opening goal-feedback-53 gives 3/69/87 home goals with first cue62.6 s at2x; archive goal-feedback-56 gives2/4/43/61, first cue60 s and seek sample2. Logs and full records/source fingerprints: /tmp/nf14-t888-review-self-test.log, /tmp/nf14-t888-review-check.log, /tmp/nf14-t888-review-scenes.jsonl. Chosen records contain only home goals; no new away-side browser coverage is claimed, and existing helper units retain explicit away-goal coverage. No P1/P2 finding. Actual Chromium journeys and the final batch remain coordinator-owned.",
+          "findings": [],
+          "commit": "10ef8e6a5f4465cdaced40df3c8cbc782858f391",
+          "baseCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
+          "submissionId": "667dcec1-4d41-4ca1-9cda-a407adcdc6c2",
+          "createdAt": "2026-11-13T18:49:03.881Z",
+          "finishedAt": "2026-11-13T18:51:00.666Z"
+        }
+      }
+    },
+    {
+      "sequence": 96,
+      "at": "2026-11-13T18:52:26.543Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+      "taskId": "T888",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
