@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T19:50:39.659Z",
-  "sourceCommit": "4618c03f80602ba8cc9ff245d24be44d8dcf5e8d",
+  "snapshotAt": "2026-11-13T19:51:22.585Z",
+  "sourceCommit": "24d042b1e6ad00b628083f06d07c43fcc3183ac5",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -72,9 +72,9 @@
   },
   "summary": {
     "total": 23,
-    "completed": 12,
-    "remaining": 11,
-    "running": 2,
+    "completed": 13,
+    "remaining": 10,
+    "running": 1,
     "review": 3,
     "blocked": 0,
     "unassigned": 6
@@ -88,15 +88,6 @@
       ],
       "lane": "market-consumer-fixtures",
       "status": "ready"
-    },
-    {
-      "id": "T892",
-      "title": "Prepare explicit founding, employment and legacy identity fixtures",
-      "dep": [
-        "T885"
-      ],
-      "lane": "identity-lifecycle-fixtures",
-      "status": "approved"
     },
     {
       "id": "T894",
@@ -168,7 +159,7 @@
         "T885"
       ],
       "lane": "viable-codec-career",
-      "status": "doing"
+      "status": "ready"
     },
     {
       "id": "T903",
@@ -1014,6 +1005,8 @@
       "submittedBase": "5041c2ce2bfebfbed49d13f169bd3be6615c84b2",
       "submissionId": "b88e1dcb-650e-4636-87dc-0d1c9ac85526",
       "submittedAt": "2026-11-13T19:31:27.579Z",
+      "integratedCommit": "24d042b1e6ad00b628083f06d07c43fcc3183ac5",
+      "integratedAt": "2026-11-13T19:51:17.792Z",
       "risk": null,
       "review": {
         "id": "94f2dd48-c4f4-4c65-a174-fb145eeda995",
@@ -1047,6 +1040,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T19:31:08.630Z",
           "finishedAt": "2026-11-13T19:31:27.402Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T19:50:39.841Z",
+          "finishedAt": "2026-11-13T19:51:17.448Z"
         }
       ]
     },
@@ -1105,7 +1105,7 @@
       "contributors": [
         "nf14-codex-lifecycle-fixtures"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T19:33:45.546Z",
       "startCommit": "5041c2ce2bfebfbed49d13f169bd3be6615c84b2",
@@ -1161,9 +1161,36 @@
       "contributors": [
         "nf14-codex-codec-support"
       ],
-      "status": "doing",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-11-13T19:42:46.380Z",
-      "startCommit": "cc47cc2321c08bbfd577b1770f324ae17362a335"
+      "startCommit": "cc47cc2321c08bbfd577b1770f324ae17362a335",
+      "verifiedCommit": "93d371dc5244f249e9bfd146679b06886b330855",
+      "submittedBase": "4618c03f80602ba8cc9ff245d24be44d8dcf5e8d",
+      "submissionId": "a1c4ed71-20ac-421e-84c2-1379ed477735",
+      "submittedAt": "2026-11-13T19:51:16.814Z",
+      "risk": null,
+      "steps": [
+        {
+          "taskId": "T902",
+          "commit": "93d371dc5244f249e9bfd146679b06886b330855",
+          "at": "2026-11-13T19:51:16.804Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T19:50:57.180Z",
+              "finishedAt": "2026-11-13T19:51:16.623Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T19:50:57.180Z",
+          "finishedAt": "2026-11-13T19:51:16.623Z"
+        }
+      ]
     },
     {
       "id": "d87773a2-eff4-43d6-b35c-654a9c55efd0",
@@ -5048,6 +5075,106 @@
       "group": "natural-football-261114",
       "attemptId": "28fa7482-34e6-4d12-b426-3c8014e30d5c",
       "taskId": "T893",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 172,
+      "at": "2026-11-13T19:50:57.015Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b93ad830-110f-41e1-a286-baef8caac1c3",
+      "taskId": "T902",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 173,
+      "at": "2026-11-13T19:51:16.814Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b93ad830-110f-41e1-a286-baef8caac1c3",
+      "taskId": "T902",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "93d371dc5244f249e9bfd146679b06886b330855",
+        "submittedBase": "4618c03f80602ba8cc9ff245d24be44d8dcf5e8d",
+        "submissionId": "a1c4ed71-20ac-421e-84c2-1379ed477735",
+        "submittedAt": "2026-11-13T19:51:16.814Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T902",
+            "commit": "93d371dc5244f249e9bfd146679b06886b330855",
+            "at": "2026-11-13T19:51:16.804Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T19:50:57.180Z",
+                "finishedAt": "2026-11-13T19:51:16.623Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T19:50:57.180Z",
+            "finishedAt": "2026-11-13T19:51:16.623Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 174,
+      "at": "2026-11-13T19:51:17.578Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "28fa7482-34e6-4d12-b426-3c8014e30d5c",
+      "taskId": "T893",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T19:50:39.841Z",
+            "finishedAt": "2026-11-13T19:51:17.448Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 175,
+      "at": "2026-11-13T19:51:17.792Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "28fa7482-34e6-4d12-b426-3c8014e30d5c",
+      "taskId": "T893",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "24d042b1e6ad00b628083f06d07c43fcc3183ac5",
+        "integratedAt": "2026-11-13T19:51:17.792Z"
+      }
+    },
+    {
+      "sequence": 176,
+      "at": "2026-11-13T19:51:20.143Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "a427700e-b6ae-49c7-a080-5de643e5dbc6",
+      "taskId": "T892",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
