@@ -1,5 +1,5 @@
 # WORLD Fictional world and catalogs
-> r12 | Define the browser-demo rules for fictional world and catalogs.
+> r13 | Define the browser-demo rules for fictional world and catalogs.
 
 ## decisions
 - WORLD-1 [o] Playable associations: ENG ESP GER ITA FRA POR NED BEL. Other UEFA associations appear as representative clubs only.
@@ -33,7 +33,8 @@
 - WORLD-11 [o] A persisted player keeps one continuing identity across clubs, roles and seasons (→WORLD-6/16).
   - retain name, birth year, fixed qualities, current club/career status and actual recorded career events; the same person can retire, enter coaching and later qualify for management (→STAFF-25/30/38/39). Coaching eligibility follows his aptitude wherever he played; a low-aptitude former own player remains recognisable without gaining it.
   - age and retirement follow →CLUB-3's age/chance rules and →STAFF-34's accepted playing-coach deferral for every persisted player.
-  - a recorded signing, sale, release, loan or return updates his affiliation/status, never his identity, age or history. Reappearance in a squad, candidate pool or staff role resolves the same person; never create a duplicate across clubs or roles (→WORLD-10).
+  - a recorded signing, sale, release, loan or return updates his affiliation/status, never his identity, age, attributes or history: he plays for his new club as the player he was. Reappearance in a squad, candidate pool or staff role resolves the same person; never create a duplicate across clubs or roles (→WORLD-10).
+  - he is held in one place at a time: the owner's squad, one club's squad or the free agents (→CLUB-49). The row a departed player of ours leaves with us is his record with the club (→WEB-59), never a second player.
   - actual playing retirement ends active-player availability while retaining real career facts (→HIST-14, →HIST-23); a playing coach remains active only until his deferred retirement date (→STAFF-34). Keep existing lossless career/storage requirements (→SAVE-13/17).
 
 - WORLD-12 [o] A generated person — player, prospect, coach or manager — is named one given name and one surname of his country, each drawn evenly from the catalog's pools of at least 100 given names and 200 surnames per country, written in the country's own spelling with its accents. ← 6–8 of each gave 315 distinct names to 13,178 players and repeated full names inside 2,300 squads (measured 261102); 20,000+ combinations per country keep a repeat rare
@@ -48,16 +49,23 @@
 - WORLD-15 [o] A club's founding strength in 1930 — the level its founding squad is drawn at (→WORLD-6) — is its division's level (professional tier t: 77−11t) + its stature (→LEAGUE-10) ± 3, within 15–92; from then on its strength is its squad's (→LEAGUE-10).
 
 - WORLD-16 [o] Every persisted player lives one career, as the owner's players do: he enters through a founding squad (→WORLD-6) or a youth intake, develops and ages, plays on a contract, moves in the transfer windows and retires (→CLUB-3). ← the world's players are people with careers, not squads redrawn from a club's level each summer
-  - youth: each summer every club nobody owns takes in youngsters from its own stream, more and better with its academy level (→WORLD-17); chance alone makes a golden generation.
+  - youth: each summer every club nobody owns takes in youngsters from its own stream, more and better with its academy level (→WORLD-17) and never fewer than bring its squad back to its standing size (NPC_SQUAD.size); chance alone makes a golden generation.
   - development and ageing: the own players' rules (→PLAYER-15/16/17), with the club's training ground and coaching levels (→WORLD-17) in place of the owner's facilities, staff and squad investment, its manager's youth work and the default training focus.
+    - round growth (→PLAYER-15/16) settles every 4 league rounds and at the close, each settlement carrying the rounds since the last; the season's own development and ageing (→PLAYER-15/17) once at the close. ← settled for every club each round, growth and the XI choice it forces cost 4.5 times a whole season's time (measured 261113, one shared host: 9,922 players of 451 clubs, 28 ms a growth pass and 106 ms an XI pass, 46 rounds, against a 1.36 s season)
   - contracts: each player has a wage (→CLUB-25/48) and an end season as own players do (→CLUB-26); at the close a club nobody owns renews whom it still needs and lets the rest join the free agents (→CLUB-49).
   - transfers: in the windows of →CLUB-17 clubs nobody owns buy, sell and loan among themselves, settled at once without negotiation, at market value (→CLUB-46) within their books (→WORLD-17) and for squad need; their bids for our players come from the same need (→CLUB-22). Every completed move is recorded with its clubs, fee and date.
   - a player two clubs want joins the one of higher stature (→LEAGUE-10), then the higher wage.
-  - squads keep →CLUB-5's minimum, the registration limit (→CLUB-44) and a goalkeeper; every club's XI and bench follow →CLUB-6.
-  - the war gap's skipped summers (→WORLD-14) each age, develop and retire players and bring youth, with no window.
+  - squads keep →CLUB-5's minimum, the registration limit (→CLUB-44) and a goalkeeper, and open every season at their standing size or more; every club's XI and bench follow →CLUB-6, chosen again when its players change, on a season's first day and at each window's close, an unavailable player giving way for his fixture alone (→LEAGUE-15).
+  - the summer runs in one order for every club nobody owns, in a world with or without an owner:
+    - 1 April: each player's retirement decision (→CLUB-3), one decision a player a season.
+    - the close, in this order: season lines (→HIST-23), books (→ECON-36), promotion and relegation, the season's development and ageing, retirements, contracts renewed or ended, free agents signed for need, youth intake; the free agents' cap (→CLUB-49) applies after those signings.
+    - the summer window (→CLUB-17); on its last day a club still below →CLUB-5's minimum or without a goalkeeper takes generated youth.
+  - the war gap's skipped summers (→WORLD-14) each age, develop and retire players and bring youth, with no window; a running contract keeps the seasons it had left.
 
 - WORLD-17 [o] A club nobody owns runs on its books and its stature; no scripted event raises or lowers it. ← clubs rise and fall from money, standing and chance, as the owner's club does; a rise rare in history still happens by luck
-  - money: its wages and fees come from its books (→ECON-36): its wage bill is its players' contracts, and it signs no player whose wage would take the bill above its last closed season's income less operating expenses (→ECON-30).
+  - money: its wages and fees come from its books (→ECON-36): its wage bill is its players' contracts, and it signs no player whose wage would take the bill above its last closed season's income less operating expenses (→ECON-30); before its first close the limit reads its opening books' season income.
+    - a club whose bill already stands above the limit lists its highest-paid players in the next window until it fits, keeping →CLUB-5's minimum and a goalkeeper. ← a limit on signings alone leaves a relegated club paying a top-flight squad on written-off debt for as long as its contracts run, outside →CLUB-48's books gate
+    - a stored wage follows its country's money: at a currency change it converts as the books' cash does (→ECON-6).
   - stature (→LEAGUE-10) adds nothing to its strength: it raises its gate and commercial income (→ECON-8/9) and wins a contested player (→WORLD-16).
   - its academy, training ground and coaching levels start at its division's and stature's level in 1930, rise when its books spend cash on the club (→ECON-36) and fall slowly when they do not.
   - no project, takeover or crisis changes a club nobody owns; a rare rise comes from chance in its youth, its results and the market.
@@ -67,6 +75,7 @@
 - Player career: founding squad or youth intake → development and ageing → contracts and transfer windows → retirement → kept when a record links him (→HIST-23), or coaching → the same person in staff/manager candidacy → linked actual career facts.
 
 ## chg
+- r13 261113 WORLD-11✎ a move never changes identity, age or history→nor attributes, and a player is held in one place at a time (a departed own row is a record, not a second player); WORLD-16✎ youth by academy level→and never fewer than bring the squad to its standing size; growth cadence unstated→round growth every 4 league rounds and the close, annual development and ageing at the close; XI and bench by CLUB-6→chosen again on a change of players, a season's first day and each window's close; summer order unstated→1 April decisions, the close's fixed order, the window, last-day youth for a short squad; war gap→+a running contract keeps its seasons left; WORLD-17✎ wage limit stops signings only→a club above it lists its highest-paid players until it fits; +limit before the first close from the opening books; +stored wages convert at a currency change
 - r12 261113 WORLD-6✎ NPC squads reproducible each season from club/seed/cohorts→every playable-country player persisted from 1930, generated squads only for founding and representative clubs; WORLD-11✎ continuity only for coaching prospects and former own players, no persistent NPC lifetimes→every persisted player one continuing identity; WORLD-12✎ an NPC club's season 18 and founding squad share no surname→a generated squad's 18; WORLD-14✎ clubs rise or fall once through the war→each skipped summer ages, develops, retires and brings youth, no window; WORLD-15✎ a generated club's strength→its founding strength, then its squad's; WORLD-16+ persisted player lifecycle (youth, development, contracts, two windows, retirement); WORLD-17+ clubs nobody owns run on books and stature, no scripted rise or fall
 - r11 261110 WORLD-6✎ one shared age ladder (18 + (year + place) mod 18)→each club's own start and order; a sold place refilled at the club's strength and the departed's age, a new person each season→2–6 below at an age within 4, the same person to his cohort's end; every place drawn at the club's strength→players carry their own class and an age term, starters' mean at the club's strength, bench below, headroom narrowing with age, in production on its MATCH-2/23 CLUB-46/48 LEAGUE-10 gate
 - r10 261109 WORLD-14✎ the owner's business settles through the war gap each quarter→on its monthly dates (→OWNER-7)

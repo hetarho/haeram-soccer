@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r219 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r221 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -128,7 +128,7 @@
 - WEB-31 [o] Background automatic progression keeps preparation controls stable across day calculations, with calendar-wide edit protection under →WEB-97.
   - Preparation remains inspectable during automatic play and initializes from the settled current roster without pausing the clock. Its local previews remain separate from applying changes.
   - Manual observation stops automatic progress, waits for the current serialized operation to settle, and queues exactly one match (→WEB-18 for resuming). Foreground work, real save/worker errors, read-only ownership and critical club alerts remain explicit blockers.
-- WEB-32 [o] Match presentation opens at 2x; 1x is exactly 12 real seconds per 60 match seconds of running playback (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole running timeline, including added time and extra time. No situation-based acceleration or slowdown is applied within running play; the dead-ball beat and the goal-feedback hold (→WEB-94) are explicit presentation transitions. Speed changes preserve the current match-time position and never change settled outcomes or the game calendar. ← 1x is for close reading (about 13–14 minutes a match), 2x for ordinary watching (about 7)
+- WEB-32 [o] Match presentation opens at 2x; 1x is real time, exactly 60 real seconds per 60 match seconds of running playback (→MATCH-12). Offer exactly 1x, 2x, 4x, 8x and 16x; the chosen multiplier applies to the whole running timeline, including added time and extra time. No situation-based acceleration or slowdown is applied within running play; the dead-ball beat and the goal-feedback hold (→WEB-94) are explicit presentation transitions. Speed changes preserve the current match-time position and never change settled outcomes or the game calendar. ← 1x is real time (about 80–85 minutes a match, the dead-ball beats included; measured 261113 on three seeded own matches), 2x for ordinary watching (about 40), 16x for a quick look (about 5)
   - Dead-ball beat: every stoppage — throw-in, goal kick, corner, free kick (an offside's included), kick-off after a goal, penalty and drop ball, with the cards, injuries and substitutions recorded in it — is drawn from the moment the ball goes dead as a rush, a still beat and the restart. In the rush the ball is brought back and the players travel to their places at least twice the running rate, faster when needed so the rush lasts at most 1.5 real seconds at 1x; then they stand still for the kind's beat; then the kick and delivery play at the selected speed. ← a crawl at a dead ball reads as a bug, and the owner's time belongs where the football is
   - The rush and the beat scale with the selected speed (half as long at 2x), and a stoppage is never drawn slower than running speed. Starting beats at 1x, reviewed by the owner in play:
     | stoppage | still beat at 1x |
@@ -620,6 +620,8 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r221 261113 WEB-32✎ 1x 18→60 real s per 60 match seconds of running playback (real time), every speed of the 1x–16x ladder 10/3× slower (about 20→80–85 minutes a match at 1x, 10→40 at 2x, about 5 at 16x); the dead-ball beats, the 1.5 s rush cap at 1x and →WEB-94's hold unchanged
+- r220 261113 WEB-32✎ 1x 12→18 real s per 60 match seconds of running playback, so every speed of the 1x–16x ladder 1.5× slower (about 13–14→20 minutes a match at 1x, 7→10 at 2x); the dead-ball beats, the 1.5 s rush cap at 1x and →WEB-94's hold unchanged
 - r219 261113 WEB-59✎ another club's player sheet only while he plays in a first team→every player link opens a sheet (club, 자유계약, 은퇴 with last profile, representative) with his season-and-club record; former players' ages as birth years→N세 everywhere; WEB-111✎ podium names open a sheet when the identity is retained→every podium player opens his sheet
 - r218 261113 WEB-56✎ bankruptcy countdown→cash debt limit; WEB-79/118✎ income-only plan→reserve years and available capital beside income.
 - r217 261113 WEB-10/18/39✎ 결재 설정→위임 설정; WEB-79✎ per-decision dial/rows/cards/재정 기조/wage cap→5-step spending request with the 단장's plan; WEB-14✎ 재정 · 사업→구단 예산, +운영 방침 rows, delegation notes, read-only delegated controls; WEB-45/100✎ 유소년 승격·방출 (유스 디렉터)→유소년 운영 (단장); WEB-71✎ +request, row homes; WEB-114✎ 구단주 sheet→money dialog; WEB-44✎ sheet runway→none; WEB-116✎ 결재 설정 rule→area row; WEB-118+ 구단 예산

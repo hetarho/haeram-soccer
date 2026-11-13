@@ -13,9 +13,10 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T03:57Z | 2026-11-13T03:57Z | T859 |
 
 ## inbox
+- 261113 parked SAVE-4 SAVE-13 HIST-23 T867 T865: the persisted world may not fit a century save — the worst century profile has about 1.07 MB of compressed payload left (6,551,024 of 8,388,608 portable bytes, artifacts/benchmarks/T286-full-model-storage.json), 9,922 persisted players are 0.62–0.93 MiB gzipped before any packer, and every opponent of an own match stays as a kept retiree with his profile; T867 and T865 read their shares (500,000 and 450,000 bytes) early, and when one is over the owner chooses: a tighter packer | a smaller NPC_SQUAD.size | the kept profile only for podium, news and transfer links | a higher SAVE-4 portable limit rv13
+- 261113 suggest WEB-59 T860 T865: every age reads the current season's year − birth year, so a player who retired decades ago reads 80세 or 110세 on his sheet; an age at retirement for a retired player would be a WEB-59 change, if wanted rv13
 - 261113 decided ECON-24 ECON-33 ECON-41: unspecified reserve steps and debt amount → cautious 50/40/30/20/10, balanced 40/30/20/10/5, bold 30/20/10/5/0 years by acted request; bankruptcy only below minus one year of fixed costs, no duration trigger; bold/freely keeps zero cash buffer (alt: one universal reserve | fixed nominal debt limit). The requested anchors hold, and costs scale across eras and currencies. fin3
 - 261113 suggest MATCH-39 WEB-32 T858: every staging reply (two minutes) publishes a new playback, and `Pitch` recomputes `presentationSamples`, `deadBallBeats`, `goalInstants`, `figureActionWindows` and `gaitDistances` over all frames staged so far, so main-thread work grows with the square of the match (Node, scripted-journey's 103 frames of about 300 KB each: 0.34 s of recompute and 0.15 s of cloning over the 52 publications, against 0.03 s publishing at each doubling); a presentation task could coalesce publications in `PlaybackStaging` or make those reads incremental, WebKit on CI being where it shows n813
 - 261113 suggest MATCH-39 MATCH-38 T854: seed set-piece-defence-10's own match (ENG, every responsibility delegated, scripted-aggregate-11, 0 : 0) cannot be staged — `cornerScene` → `keeperOf` (packages/engine/src/staging/participants.ts) throws `집계 원장 불일치: staging:input` with no defending keeper present at a corner, so watching such a match stops on a staging error; a fix task should find which script leaves the keeper slot empty at that corner (repro: `careerWorld({ country: 'ENG', seed: 'set-piece-defence-10' })`, all delegated, `stagedPlayback(advanceToNextMatch(w))`)
@@ -28,7 +29,6 @@
 - 261110 parked review/football-data-consistency-261109: F18 general nominal GBP/EUR staff compensation needs an explicit rate/inverse-rounding policy; country price quotes vary even for sharedEUR and one-way FFP averaging is not a generic converter. Apply only already-defined fixed-period parity in T759 fi09
 - 261109 suggest WEB-93 T729: the club hub's entrance animation (`.hub > *` `rise`, ClubHub.module.css) still plays when the browser asks for reduced motion (resource-skins runs with `reducedMotion: 'reduce'` and saw it); honouring `prefers-reduced-motion` there would be a small accessibility fix of its own fs09
 - 261109 parked review/gusta-self-improve-261109 ARCH-3: F11 — the club page's lazy records area (21 files, 5.8k lines) shares no file with the rest of `pages/club`; recommended `pages/records` with the app shell routing to it and the club page's loading fallback replaced, which changes ARCH-3's page list and is not a pure move, so it waits for the owner (alt: `widgets/records`, against ARCH-3's "shown on several screens" | leave it inside `pages/club`) fs09
-- 261113 parked review/gusta-self-improve-261109: F6 — the owner confirmed every decided line on 261113 and they were removed (reports keep them); what remains is the brief size: STATE cfg `brief: cited` and a narrower `always` (T713 brief 457→75 KB)
 - 261108 suggest ARCH-9 T713: a portable `pow` for `**` with a non-integer exponent (wages, prices, Elo, fans, sponsors, kit luminance): on `modern-european-season` 18,343 of 1.46 M `**` calls differ in the last bit between darwin-arm64 and an unfused fdlibm `pow` port; a task that adds the port with pinned vectors and confirms on CI that linux-x64 gives the same bits before routing them. mt08
 - 261108 suggest CLUB-51 CLUB-25 LEAGUE-13 T712: next gusta-update-ssot + gusta-create-task slice on supply, not price — at the ability-fit wage the 단장 still signs players suiting a higher division (OVR 81–85, paid their ability's wage, 재정 기조 refusing 2–8 a tier) because the scout's list offers a lower-tier club nothing else (OVR 82–83, every one above its division); CLUB-51's reach above the club's division (who would join a club below the division his ability suits) screened on the same calibration careers with the fit on and off (`artifacts/benchmarks/T712`). mt08
 - 261103 suggest WEB-50 WEB-95: after the 6c0d6b12 match view a player's sheet opens only by tapping the canvas (no keyboard path) and the side on the ball shows by scoreboard colour alone (no accessible text); a later accessibility pass could add both.
@@ -50,6 +50,7 @@
 - 261105 suggest WEB-116: gusta-update-ssot its values sentence — "the transfer shortlist's size, potential, ability and fee" → the scout's list per line, the countries searched abroad, the ability band's shift and the fee — as rs01's merge of main implements it. rs01
 - 261105 suggest CLUB-49 CLUB-3 T702: the cap keeps the ablest 200 of about 900 let-go a close, so the pool is top-flight cast-offs (OVR 75–92, median 80, in a 1950 generation-reference world) and a top-up below the top flight rarely finds one at or under its division's average; a gusta-update-ssot could keep the cap per division or prefer the least able, if lower-league owners should sign free agents. rs01
 - 261105 suggest CLUB-21 ECON-22 T702: gusta-update-ssot to reword 머니볼/트레이딩 머신/글로벌 스카우팅's bonuses and 긴축 재정/스타 대우's "candidate ability" as the code now reads them (a search band shift, no candidate potential). rs01
+- 261113 parked review/gusta-self-improve-261109: F6 — the owner confirmed every decided line on 261113 and they were removed (reports keep them); what remains is the brief size: STATE cfg `brief: cited` and a narrower `always` (T713 brief 457→75 KB)
 
 ## ideation
 | id | st |
@@ -60,18 +61,18 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 41 | 41 | - | 2 |
-| WEB | 219 | 219 | - | 0 |
+| ARCH | 42 | 42 | - | 2 |
+| WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
-| WORLD | 12 | 12 | - | 0 |
+| WORLD | 13 | 13 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 69 | 69 | - | 0 |
-| MATCH | 62 | 62 | - | 0 |
-| LEAGUE | 19 | 19 | - | 0 |
+| CLUB | 70 | 70 | - | 0 |
+| MATCH | 64 | 64 | - | 0 |
+| LEAGUE | 20 | 20 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
 | ECON | 57 | 57 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 26 | 26 | - | 0 |
+| HIST | 27 | 27 | - | 0 |
 | SAVE | 68 | 68 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
 | PLAYER | 18 | 18 | - | 0 |
@@ -98,21 +99,34 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | doing@261113.fin3 |
 | T860 | Show every age as N세, never a birth year | WEB | - | todo |
-| T861 | Persist every playable-country club's players as people | WORLD PLAYER LEAGUE HIST | - | todo |
-| T862 | Persisted players develop, age, retire and are replaced by youth | WORLD PLAYER CLUB STAFF | T861 | todo |
+| T861 | Persist every playable-country club's players as people | WORLD PLAYER LEAGUE HIST CLUB | - | todo |
+| T862 | Persisted players develop, age, retire and are replaced by youth | WORLD PLAYER CLUB STAFF HIST ARCH | T867 | todo |
 | T863 | Club strength from its squad, wages from its books, contracts and free agents | LEAGUE WORLD ECON CLUB | T862 | todo |
-| T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON | T863 | todo |
-| T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB | T862 T864 | todo |
-| T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 | todo |
+| T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON HIST ARCH | T863 | todo |
+| T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB PLAYER SAVE ARCH | T862 T864 | todo |
+| T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 T869 T870 | todo |
+| T867 | Keep persisted squads off the UI thread, in the fixture helpers and in the save | WORLD SAVE HIST ARCH LEAGUE | T861 | todo |
+| T869 | Retain retired news resources for supported saved reports | ARCH | T863 T865 | todo |
+| T870 | Repair integrated static checks before calibration | ARCH | T865 T869 | todo |
 
 ## next
-- gusta-implement-task T860, then T861 → T866 in dep order (persisted world players, sketch persistent-world-players 261113)
+- gusta-implement-task T860, then T861 → T867 → T862 → T863 → T864 → T865 → T866 (persisted world players, sketch persistent-world-players 261113; plan reviewed 261113 rv13 — T867 is new, so a loop scoped T860–T866 stops before T862 until T867 is in its scope)
 - main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
+- gusta-implement-task T869, then T866 for final calibration and the integrated pre-main-push gate
+- gusta-implement-task T870, then T866
 
 ## log
+- 261113 T859 done: user stopped repeated gates; source merged and pushed as 16d91626; no complete final batch success; overrun report artifacts/reports/261113-fin3-test-overrun.ko.md fin3
+- 261113 T871 done
+- 261113 gusta-create-task WEB MATCH: T871 consumes WEB@221 MATCH@64 sx2
+- 261113 gusta-update-ssot WEB MATCH: WEB-32✎ MATCH-12✎ 1x 18→60 real s per 60 match seconds (real time) sx2
+- 261113 T868 done
+- 261113 gusta-create-task WEB MATCH: T868 consumes WEB@220 MATCH@63 sx1
+- 261113 gusta-update-ssot WEB MATCH: WEB-32✎ MATCH-12✎ 1x 12→18 real s per 60 match seconds sx1
+- 261113 gusta-create-task WORLD LEAGUE CLUB HIST: T861–T866 revised to WORLD@13 LEAGUE@20 CLUB@70 HIST@27, T867 new (view, fixture helpers, schema, packing, size and time reads split from T861) rv13
+- 261113 gusta-update-ssot WORLD LEAGUE CLUB HIST: plan review of the persisted world — one live record a player, growth every 4 rounds, the summer's one order, sell-down above the wage limit, strength as the XI's mean, division band ±5, representative clubs' scripted strength kept, aggregates and lines from the first season rv13
 - 261113 fix watch: publish the first staged minute before filling the normal two-minute batches; preserve frame order, match results and the original 3 s browser latency guard fin3
 - 261113 sketch persistent-world-players end: T860–T866 from WORLD@12 LEAGUE@19 PLAYER@18 CLUB@69 ECON@57 HIST@26 WEB@219 pr13
 - 261113 gusta-create-task WORLD LEAGUE PLAYER CLUB ECON HIST WEB: T860–T866 pr13
@@ -120,16 +134,7 @@
 - 261113 sketch persistent-world-players start pr13
 - 261113 gusta-create-task ECON WEB: T859 consumes ECON@56 WEB@218 fin3
 - 261113 gusta-update-ssot ECON WEB start: reserve-funded delegated investment and amount-based bankruptcy fin3
-- 261112 T858 done
-- 261112 T857 done
-- 261112 T856 done
-- 261112 T855 done
-- 261112 T854 done
 - 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
-- 261112 T853 done
-- 261112 T852 done
-- 261112 T851 done
-- 261112 T848 done
-- 261112 T845 done
 - 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
-- 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
+- 261113 docs cleanup: NARRATIVE.md removed (stale since ARCH@3; regenerate with gusta-create-narrative), README and design docs updated, misplaced root reports moved, finished handoff artifacts/handoffs/261110-fi09 removed
+- 261113 ideation archived to done/ as converted@261113: 15 docs reflected in or superseded by current SSOTs (calibration-pass, club-direction, club-history-reboot, club-identity-and-kits, difficulty-and-adaptation, expert-proposal-review, manager-achievements, match-continuity-and-performance, match-day-progress, match-engine-rebuild, match-viewing-pace-and-freedom, navigation-and-records, own-club-match-edge, save-storage-and-fast-pace, set-piece-defence-and-goal-feedback)

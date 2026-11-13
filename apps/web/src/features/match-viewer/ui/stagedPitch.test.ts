@@ -13,8 +13,13 @@ import { validateRegistry } from '../../../presentation/registry';
 import type { LocalePack } from '../../../presentation/contracts';
 import registry from '../../../../public/presentation/locales/index.json';
 import korean from '../../../../public/presentation/locales/ko-KR.json';
-import { deadBallBeats, presentationSamples } from '../../../entities/match/logic';
-import { goalInstants } from '../lib/goalFeedback';
+import {
+  deadBallBeats,
+  presentationMs,
+  presentationSamples,
+  runningRate,
+} from '../../../entities/match/logic';
+import { GOAL_FEEDBACK_CONFIG, goalInstants } from '../lib/goalFeedback';
 import { momentReady } from '../lib/moments';
 import { replayGoals } from '../lib/goalReplay';
 import { Pitch } from './Pitch';
@@ -144,6 +149,11 @@ async function tick(ms = 100) {
 async function ticks(count: number) {
   for (let i = 0; i < count; i++) await tick();
 }
+/** The 100 ms frames at 16x that present `frames` from running second `from` to `to`, and one more. */
+const framesAt16 = (frames: MatchFrame[], from: number, to: number) =>
+  Math.ceil(presentationMs(from, to, 16, deadBallBeats(frames)) / 100) + 1;
+/** The 100 ms frames a goal's hold lasts. */
+const HOLD_FRAMES = GOAL_FEEDBACK_CONFIG.holdMs / 100;
 async function click(label: string) {
   const button = [...document.querySelectorAll('button')].find(
     (b) => b.textContent === label || b.getAttribute('aria-label') === label,
@@ -186,7 +196,7 @@ describe('a theatre receiving staged frames', () => {
     await draw({ ...p, frames: [frame(0)] }, finish);
     await click('16×');
     await tick();
-    await ticks(20);
+    await ticks(framesAt16([frame(0)], 0, 60));
     expect(seconds()).toBe(60);
     expect(container.textContent).toContain('장면 준비 중…');
     await ticks(20);
@@ -194,7 +204,8 @@ describe('a theatre receiving staged frames', () => {
     await draw({ ...p, frames: [frame(0), { ...frame(1), stoppages: [] }] }, finish);
     expect(seconds()).toBe(60);
     await tick();
-    expect(seconds()).toBeCloseTo(68);
+    // One 100 ms frame of running play at 16x past the frontier, no catch-up.
+    expect(seconds()).toBeCloseTo(60 + 100 * runningRate(16));
     expect(finish).not.toHaveBeenCalled();
   });
   it('결과 보기 shows the result at once and reaches the final whistle when it is staged', async () => {
@@ -243,7 +254,8 @@ describe('a theatre receiving staged frames', () => {
     expect(container.querySelector('[data-testid="goal-replay-open"]')).toBeNull();
     await click('16×');
     await tick();
-    await ticks(35);
+    // Past the 2′ 30 s goal and its hold.
+    await ticks(framesAt16(frames, 0, 150) + HOLD_FRAMES);
     expect(container.querySelector('[data-testid="goal-replay-open"]')).not.toBeNull();
     expect(replayGoals(goals, frames, 1)).toMatchObject([
       { footage: true, goal: { seconds: 150 } },
@@ -256,11 +268,12 @@ describe('a theatre receiving staged frames', () => {
     await draw({ ...p, frames }, finish);
     await click('16×');
     await tick();
-    await ticks(20);
+    // Onto the 2′ 30 s goal, inside its hold.
+    await ticks(framesAt16(frames, 0, 150));
     expect(container.querySelector('[data-testid="goal-cue"]')).not.toBeNull();
     await draw({ ...p, frames, staged: { done: true } }, finish);
     expect(finish).not.toHaveBeenCalled();
-    await ticks(20);
+    await ticks(HOLD_FRAMES + framesAt16(frames, 150, 180));
     expect(finish).toHaveBeenCalledOnce();
     await draw({ ...p, frames, staged: { done: true } }, finish);
     expect(finish).toHaveBeenCalledOnce();
@@ -272,7 +285,8 @@ describe('a theatre receiving staged frames', () => {
     await draw({ ...p, frames }, finish);
     await click('16×');
     await tick();
-    await ticks(35);
+    // Past the 2′ 30 s goal and its hold.
+    await ticks(framesAt16(frames, 0, 150) + HOLD_FRAMES);
     await act(async () =>
       container.querySelector<HTMLButtonElement>('[data-testid="goal-replay-open"]')!.click(),
     );

@@ -1,0 +1,438 @@
+{
+  "measured_at_kst": "2026-11-13T17:58:47+09:00",
+  "session_start_kst": "2026-11-13T11:07:58+09:00",
+  "rows": [
+    {
+      "attempt": 1,
+      "start_kst": "2026-11-13T11:19:54+09:00",
+      "end_kst": "2026-11-13T11:50:53+09:00",
+      "seconds": 1859.2,
+      "minutes": 30.99,
+      "receipt_ms": 1859197,
+      "stale": false,
+      "stages": [
+        {
+          "name": "validate:catalogs",
+          "seconds": 1.6,
+          "exit": 0
+        },
+        {
+          "name": "validate:presentation",
+          "seconds": 2.5,
+          "exit": 0
+        },
+        {
+          "name": "validate:i18n",
+          "seconds": 5.6,
+          "exit": 0
+        },
+        {
+          "name": "build",
+          "seconds": 7.0,
+          "exit": 0
+        },
+        {
+          "name": "format:check",
+          "seconds": 14.0,
+          "exit": 0
+        },
+        {
+          "name": "lint",
+          "seconds": 26.5,
+          "exit": 0
+        },
+        {
+          "name": "typecheck",
+          "seconds": 76.9,
+          "exit": 0
+        },
+        {
+          "name": "warm-worlds",
+          "seconds": 1060.9,
+          "exit": 0
+        },
+        {
+          "name": "test:unit+integration+contract",
+          "seconds": 1781.2,
+          "exit": 1
+        }
+      ],
+      "browser_pass_lines": 0,
+      "log": ".git/gusta/v1/logs/check-153c5ca7-433b-4fe6-887c-214f7226c50e.log"
+    },
+    {
+      "attempt": 2,
+      "start_kst": "2026-11-13T12:01:44+09:00",
+      "end_kst": "2026-11-13T12:13:32+09:00",
+      "seconds": 708.1,
+      "minutes": 11.8,
+      "receipt_ms": 708134,
+      "stale": false,
+      "stages": [
+        {
+          "name": "validate:catalogs",
+          "seconds": 1.1,
+          "exit": 0
+        },
+        {
+          "name": "validate:presentation",
+          "seconds": 1.8,
+          "exit": 0
+        },
+        {
+          "name": "validate:i18n",
+          "seconds": 4.5,
+          "exit": 0
+        },
+        {
+          "name": "build",
+          "seconds": 6.7,
+          "exit": 0
+        },
+        {
+          "name": "typecheck",
+          "seconds": 8.2,
+          "exit": 0
+        },
+        {
+          "name": "format:check",
+          "seconds": 12.6,
+          "exit": 0
+        },
+        {
+          "name": "lint",
+          "seconds": 25.5,
+          "exit": 0
+        },
+        {
+          "name": "warm-worlds",
+          "seconds": 1.1,
+          "exit": 0
+        },
+        {
+          "name": "test:unit+integration+contract",
+          "seconds": 681.6,
+          "exit": 1
+        }
+      ],
+      "browser_pass_lines": 0,
+      "log": ".git/gusta/v1/logs/check-fd804753-a3e6-4656-8337-a0a9b893d435.log"
+    },
+    {
+      "attempt": 3,
+      "start_kst": "2026-11-13T12:18:17+09:00",
+      "end_kst": "2026-11-13T13:03:50+09:00",
+      "seconds": 2733.0,
+      "minutes": 45.55,
+      "receipt_ms": 2732951,
+      "stale": false,
+      "stages": [
+        {
+          "name": "validate:catalogs",
+          "seconds": 1.1,
+          "exit": 0
+        },
+        {
+          "name": "validate:presentation",
+          "seconds": 2.1,
+          "exit": 0
+        },
+        {
+          "name": "validate:i18n",
+          "seconds": 5.0,
+          "exit": 0
+        },
+        {
+          "name": "typecheck",
+          "seconds": 8.2,
+          "exit": 0
+        },
+        {
+          "name": "build",
+          "seconds": 9.5,
+          "exit": 0
+        },
+        {
+          "name": "format:check",
+          "seconds": 13.2,
+          "exit": 0
+        },
+        {
+          "name": "lint",
+          "seconds": 25.5,
+          "exit": 0
+        },
+        {
+          "name": "warm-worlds",
+          "seconds": 1.1,
+          "exit": 0
+        },
+        {
+          "name": "test:unit+integration+contract",
+          "seconds": 1301.8,
+          "exit": 0
+        },
+        {
+          "name": "test:e2e",
+          "seconds": 1404.5,
+          "exit": 1
+        }
+      ],
+      "browser_pass_lines": 332,
+      "log": ".git/gusta/v1/logs/check-05ee1f61-1661-4db0-9df0-ed5fc25227d9.log"
+    },
+    {
+      "attempt": 4,
+      "start_kst": "2026-11-13T13:17:02+09:00",
+      "end_kst": "2026-11-13T14:47:52+09:00",
+      "seconds": 5450.5,
+      "minutes": 90.84,
+      "receipt_ms": 5450453,
+      "stale": false,
+      "stages": [
+        {
+          "name": "validate:catalogs",
+          "seconds": 1.7,
+          "exit": 0
+        },
+        {
+          "name": "validate:presentation",
+          "seconds": 2.9,
+          "exit": 0
+        },
+        {
+          "name": "validate:i18n",
+          "seconds": 7.9,
+          "exit": 0
+        },
+        {
+          "name": "build",
+          "seconds": 14.0,
+          "exit": 0
+        },
+        {
+          "name": "typecheck",
+          "seconds": 15.9,
+          "exit": 0
+        },
+        {
+          "name": "format:check",
+          "seconds": 22.6,
+          "exit": 0
+        },
+        {
+          "name": "lint",
+          "seconds": 36.4,
+          "exit": 0
+        },
+        {
+          "name": "warm-worlds",
+          "seconds": 755.5,
+          "exit": 0
+        },
+        {
+          "name": "test:unit+integration+contract",
+          "seconds": 3358.4,
+          "exit": 0
+        },
+        {
+          "name": "test:e2e",
+          "seconds": 2054.1,
+          "exit": 1
+        }
+      ],
+      "browser_pass_lines": 332,
+      "log": ".git/gusta/v1/logs/check-ee9ef1bd-7c5c-480d-8f55-ee9fdc8fa0d2.log"
+    },
+    {
+      "attempt": 5,
+      "start_kst": "2026-11-13T14:48:08+09:00",
+      "end_kst": "2026-11-13T15:11:51+09:00",
+      "seconds": 1422.3,
+      "minutes": 23.71,
+      "receipt_ms": 1422322,
+      "stale": true,
+      "stages": [
+        {
+          "name": "validate:catalogs",
+          "seconds": 1.1,
+          "exit": 0
+        },
+        {
+          "name": "validate:presentation",
+          "seconds": 1.9,
+          "exit": 0
+        },
+        {
+          "name": "validate:i18n",
+          "seconds": 5.5,
+          "exit": 0
+        },
+        {
+          "name": "build",
+          "seconds": 8.7,
+          "exit": 0
+        },
+        {
+          "name": "typecheck",
+          "seconds": 8.7,
+          "exit": 0
+        },
+        {
+          "name": "format:check",
+          "seconds": 13.2,
+          "exit": 0
+        },
+        {
+          "name": "lint",
+          "seconds": 25.4,
+          "exit": 0
+        },
+        {
+          "name": "warm-worlds",
+          "seconds": 1.1,
+          "exit": 0
+        },
+        {
+          "name": "test:unit+integration+contract",
+          "seconds": 1395.7,
+          "exit": 1
+        }
+      ],
+      "browser_pass_lines": 0,
+      "log": ".git/gusta/v1/logs/check-ed4d452a-6651-4e43-90d6-612e6b542e86.log"
+    },
+    {
+      "attempt": 6,
+      "start_kst": "2026-11-13T15:15:05+09:00",
+      "end_kst": "2026-11-13T16:36:46+09:00",
+      "seconds": 4901.4,
+      "minutes": 81.69,
+      "receipt_ms": 4901441,
+      "stale": false,
+      "stages": [
+        {
+          "name": "validate:catalogs",
+          "seconds": 1.8,
+          "exit": 0
+        },
+        {
+          "name": "validate:presentation",
+          "seconds": 2.6,
+          "exit": 0
+        },
+        {
+          "name": "validate:i18n",
+          "seconds": 6.5,
+          "exit": 0
+        },
+        {
+          "name": "build",
+          "seconds": 10.8,
+          "exit": 0
+        },
+        {
+          "name": "lint",
+          "seconds": 31.0,
+          "exit": 0
+        },
+        {
+          "name": "format:check",
+          "seconds": 56.1,
+          "exit": 0
+        },
+        {
+          "name": "typecheck",
+          "seconds": 87.0,
+          "exit": 0
+        },
+        {
+          "name": "warm-worlds",
+          "seconds": 2.9,
+          "exit": 0
+        },
+        {
+          "name": "test:unit+integration+contract",
+          "seconds": 1432.6,
+          "exit": 0
+        }
+      ],
+      "browser_pass_lines": 179,
+      "log": ".git/gusta/v1/logs/check-44b6a316-ab23-4414-8c30-493ff78e7e48.log"
+    },
+    {
+      "attempt": 7,
+      "start_kst": "2026-11-13T16:40:44+09:00",
+      "end_kst": "2026-11-13T17:46:25+09:00",
+      "seconds": 3941.2,
+      "minutes": 65.69,
+      "receipt_ms": null,
+      "stale": null,
+      "stages": [
+        {
+          "name": "validate:catalogs",
+          "seconds": 1.4,
+          "exit": 0
+        },
+        {
+          "name": "validate:presentation",
+          "seconds": 2.4,
+          "exit": 0
+        },
+        {
+          "name": "validate:i18n",
+          "seconds": 6.4,
+          "exit": 0
+        },
+        {
+          "name": "build",
+          "seconds": 8.6,
+          "exit": 0
+        },
+        {
+          "name": "typecheck",
+          "seconds": 10.2,
+          "exit": 0
+        },
+        {
+          "name": "format:check",
+          "seconds": 16.3,
+          "exit": 0
+        },
+        {
+          "name": "lint",
+          "seconds": 29.2,
+          "exit": 0
+        },
+        {
+          "name": "warm-worlds",
+          "seconds": 1.4,
+          "exit": 0
+        },
+        {
+          "name": "test:unit+integration+contract",
+          "seconds": 1322.9,
+          "exit": 0
+        }
+      ],
+      "browser_pass_lines": 140,
+      "log": ".git/gusta/v1/logs/check-9f44a3e5-6fb0-4fbf-b454-c959039f3961.log"
+    }
+  ],
+  "gate_total_minutes": 350.26,
+  "after_first_gate_minutes": 319.27,
+  "unit_total_minutes": 187.9,
+  "test_gate_total_is_lower_bound": true,
+  "unit_file_executions": 3318,
+  "browser_passed_scenario_executions": 983,
+  "browser_failed_completed_executions": 2,
+  "browser_completed_executions": 985,
+  "clearly_avoidable_lower_bound_minutes": 89.39,
+  "stop_confirmation_kst": "2026-11-13T17:52:18+09:00",
+  "elapsed_to_stop_confirmation_seconds": 24260.0,
+  "source_pushed_commit": "16d91626d66770eeb5dcd3f49f781484d5d6e484",
+  "gate_total_seconds": 21015.698,
+  "after_first_gate_seconds": 19156.501,
+  "unit_total_seconds": 11274.2,
+  "clearly_avoidable_lower_bound_seconds": 5363.522
+}
