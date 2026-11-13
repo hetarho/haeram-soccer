@@ -7,10 +7,11 @@ import { seasonFrom, WARTIME } from './wartime';
 import { closeSeason, prepareSeason } from './season';
 import { currentDay, SEASON_END_DAY } from './calendar';
 import { clamp } from './primitives';
-import { stature, tierLevel } from './world';
+import { generateClubs, stature, tierLevel, xiRating } from './world';
+import { clubStyle } from './tactics';
 import { evolveClubs } from './dynamics';
 import { ownerSettleGap } from './owner';
-import { openEmployment } from './person-careers';
+import { openEmployment, retainStaffPerson } from './person-careers';
 import { founded, toLastRound } from './season.testkit';
 import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulateMatch } from './match';
@@ -47,6 +48,8 @@ const archiveHash = (w: World) =>
 
 describe('the world before the takeover (→WORLD-13)', () => {
   it('is made in 1930 of professional clubs nobody owns, each at its division and stature', () => {
+    // Founding bands describe generation, before persisted players materialize the live XI.
+    const generated = generateClubs('history-made');
     const w = generateHistory('history-made', 1930);
     expect([w.year, currentDay(w), w.round, w.playerClub]).toEqual([1930, 0, 0, '']);
     expect(w.history).toEqual([]);
@@ -61,12 +64,17 @@ describe('the world before the takeover (→WORLD-13)', () => {
     expect(w.clubs.filter((c) => c.representative).every((c) => c.id.startsWith('euro:'))).toBe(
       true,
     );
-    for (const club of clubs) {
+    for (const club of generated.filter((c) => !c.id.startsWith('euro:'))) {
       expect(club.tier).toBeLessThan(country(club.country).groups.length);
       const base = tierLevel(club.tier) + stature('history-made', club.id);
       expect(tierLevel(club.tier)).toBe(77 - 11 * club.tier);
       expect(club.strength).toBeGreaterThanOrEqual(clamp(Math.round(base - 3), 15, 92));
       expect(club.strength).toBeLessThanOrEqual(clamp(Math.round(base + 3), 15, 92));
+    }
+    for (const club of clubs) {
+      const xi = w.squads![club.id]!.slice(0, 11);
+      expect(xi).toHaveLength(11);
+      expect(club.strength).toBe(xiRating(xi, clubStyle(club)));
       expect(club.identity).toBeDefined();
     }
     expect(w.fixtures.every((f) => f.year === 1930 && f.kind === 'league')).toBe(true);
@@ -96,10 +104,18 @@ describe('the world before the takeover (→WORLD-13)', () => {
     const w = worldFrom('history-war', WARTIME.last);
     const person = Object.values(w.people ?? {}).find((p) => p.playing === 'active')!;
     // A coach of a club nobody owns, his contract running past the close.
-    const coach = Object.values(w.people ?? {}).find((p) => p.id !== person.id)!;
-    coach.playing = 'retired';
+    const coach = retainStaffPerson(w, {
+      id: 'history-war:assistant',
+      name: 'Historical Assistant',
+      born: 1900,
+      role: 'assistant',
+      since: 1937,
+    });
+    expect(coach.playing).toBe('retired');
+    expect(coach.employment).toEqual([]);
     const job = openEmployment(w, coach.id, 'assistant', w.clubs[0]!.id, { year: 1937, day: 0 });
     job.contractUntil = { year: 1940, day: 30 };
+    expect(coach.employment.filter((job) => !job.to)).toEqual([job]);
     const born = person.born;
     vi.mocked(evolveClubs).mockClear();
     vi.mocked(ownerSettleGap).mockClear();
