@@ -1,5 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
-import type { Player, World } from '../../contracts/src/types';
+import type { Club, Player, World } from '../../contracts/src/types';
 import { registrationRule, type RegistrationRule } from '../../catalogs/src/index';
 import { activePlayers, clubOf } from './player-state';
 type Registrant = Pick<Player, 'born' | 'position' | 'loanUntil' | 'graduate' | 'joined'>;
@@ -18,14 +18,16 @@ export function registrationExempt(rule: RegistrationRule, year: number, player:
   );
 }
 export function registration(w: World) {
-  const club = clubOf(w),
-    rule = registrationRule(club.country, club.tier, w.year),
-    players = activePlayers(w);
-  const countedPlayers = players.filter((p) => !registrationExempt(rule, w.year, p)),
+  return clubRegistration(clubOf(w), w.year, activePlayers(w));
+}
+/** One registration rule for any club's roster, including NPC youth intake. */
+export function clubRegistration(club: Club, year: number, players: readonly Registrant[]) {
+  const rule = registrationRule(club.country, club.tier, year);
+  const countedPlayers = players.filter((p) => !registrationExempt(rule, year, p)),
     counted = countedPlayers.length;
   const veterans = rule.bandiera
     ? countedPlayers.filter(
-        (p) => p.joined !== undefined && w.year - p.joined >= rule.bandiera!.seasons,
+        (p) => p.joined !== undefined && year - p.joined >= rule.bandiera!.seasons,
       ).length
     : 0;
   const allowed = rule.max + (rule.bandiera ? Math.min(rule.bandiera.extra, veterans) : 0);

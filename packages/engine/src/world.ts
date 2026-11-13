@@ -329,6 +329,7 @@ export function generateClubs(seed: string): Club[] {
   return clubs;
 }
 const npcCaches = new WeakMap<World, { year: number; clubs: Map<string, Player[]> }>();
+const npcReadVersions = new WeakMap<World, number>();
 /** Standing size, including the founding places beyond the matchday eighteen (→WORLD-16). */
 export const NPC_SQUAD = { size: 22 };
 /** All live players at a club; market and scouting reads also include those outside its eighteen. */
@@ -352,6 +353,7 @@ export function squad(w: World, c: Club): Player[] {
 /** Drop transient slices after a read-copy change, preserving each stored matchday choice. */
 export function invalidateNpcSquads(w: World) {
   npcCaches.delete(w);
+  npcReadVersions.set(w, (npcReadVersions.get(w) ?? 0) + 1);
 }
 /** Choose at a simulation boundary; the stored order also carries the choice across a load/helper. */
 export function refreshNpcSquads(w: World) {
@@ -707,10 +709,9 @@ export const tacticOf = (w: World, c: Club) => (c.id === w.playerClub ? w.tactic
  * for unhappy players.
  */
 /**
- * Another club's XI at its slots before its 조직력: its squad is fixed for the season and carries
- * no unhappiness, so it is summed once per cached lineup.
+ * Another club's XI before its 조직력, summed once per attribute revision of its cached lineup.
  */
-const npcBase = new WeakMap<Player[], { ovr: number; load: number }>();
+const npcBase = new WeakMap<Player[], { ovr: number; load: number; version: number }>();
 export function rating(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
   return ratingOf(w, c, startingSquad(w, c, f));
 }
@@ -723,8 +724,9 @@ export function ratingOf(w: World, c: Club, xi: Player[]) {
   const slots = formationOf(tacticOf(w, c));
   if (!own) {
     let base = npcBase.get(xi);
-    if (!base) {
-      base = { ovr: 0, load: 0 };
+    const version = npcReadVersions.get(w) ?? 0;
+    if (!base || base.version !== version) {
+      base = { ovr: 0, load: 0, version };
       xi.forEach((p, i) => {
         base!.ovr += slotOvr(p, slots[i]!);
         base!.load += fatigueLoad(p.fatigue) / 6;

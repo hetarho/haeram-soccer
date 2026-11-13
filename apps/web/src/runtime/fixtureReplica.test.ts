@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { makePlayer } from '../../../../packages/engine/src/world';
+import { worldMarketFixture } from '../../../../packages/engine/src/world-market.testkit';
+import { foundSquads } from '../../../../packages/engine/src/persisted-squads';
+import { settleNpcGrowth } from '../../../../packages/engine/src/npc-careers';
 import type { Club, PersonCareer } from '../../../../packages/contracts/src/types';
 import {
   fixtureRosterKey,
+  readCopy,
   type FixtureReadCopy,
 } from '../../../../packages/engine/src/fixture-copy';
 import {
@@ -67,7 +71,8 @@ describe('ordered fixture replicas', () => {
     const edited = packet(writer, source, 2);
     const delta = JSON.parse(edited.patch!);
     expect(delta.state).not.toHaveProperty('squads');
-    expect(delta.squads.put.map(([id]: [string]) => id)).toEqual(['a']);
+    expect(delta.squads.put).toEqual([]);
+    expect(delta.attributes.map(([id]: [string]) => id)).toEqual(['a']);
     const after = reader.apply(edited);
     expect(after.rosterChanged).toBe(true);
     expect(fixtureRosterKey(source)).not.toBe(key);
@@ -82,6 +87,31 @@ describe('ordered fixture replicas', () => {
     expect(reader.apply(removed).copy.squads).toEqual({ b: source.squads.b });
     delete source.squads;
     expect(reader.apply(packet(writer, source, 5)).copy.squads).toBeUndefined();
+  });
+  it('replicates a real growth settlement using attribute columns alone', () => {
+    const w = worldMarketFixture(),
+      writer = new FixtureReplicaWriter(),
+      reader = new FixtureReplicaReader();
+    w.clubs[2]!.representative = true;
+    foundSquads(w);
+    const c = w.clubs[1]!;
+    w.squads![c.id]!.forEach((p) => {
+      p.born = w.year - 18;
+      p.potential = 99;
+    });
+    reader.apply(packet(writer, readCopy(w), 1));
+    w.round = 4;
+    settleNpcGrowth(w);
+    const update = packet(writer, readCopy(w), 2);
+    const patch = JSON.parse(update.patch!);
+    expect(patch.squads.put).toEqual([]);
+    expect(patch.attributes).toHaveLength(1);
+    expect(JSON.stringify(patch.attributes)).not.toContain('personality');
+    expect(JSON.stringify(patch.attributes)).not.toContain('potential');
+    expect(reader.apply(update).copy.squads).toEqual(w.squads);
+    const duplicate = packet(writer, readCopy(w), 3);
+    expect(JSON.parse(duplicate.patch!).attributes).toEqual([]);
+    expect(reader.apply(duplicate).copy.squads).toEqual(w.squads);
   });
   it('requires a snapshot when a helper missed a squad patch', () => {
     const source = copy(),
@@ -104,6 +134,29 @@ describe('ordered fixture replicas', () => {
     });
     expect(recovered.copy.squads).toEqual(source.squads);
   });
+  it.each(['unknown', 'width', 'range', 'duplicate'] as const)(
+    'rejects a malformed attribute column: %s',
+    (kind) => {
+      const source = copy(),
+        writer = new FixtureReplicaWriter(),
+        reader = new FixtureReplicaReader();
+      source.squads = { a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)] };
+      reader.apply(packet(writer, source, 1));
+      source.squads.a![0]!.attrs.passing++;
+      const update = packet(writer, source, 2);
+      const patch = JSON.parse(update.patch!) as {
+        attributes: [string, [string, number[], number | null][]][];
+      };
+      const row = patch.attributes[0]![1][0]!;
+      if (kind === 'unknown') row[0] = 'missing';
+      if (kind === 'width') row[1].pop();
+      if (kind === 'range') row[1][0] = 100;
+      if (kind === 'duplicate') patch.attributes[0]![1].push(row);
+      update.patch = JSON.stringify(patch);
+      expect(() => reader.apply(update)).toThrow();
+      expect(reader.revision).toBe(0);
+    },
+  );
   it('replicates changed and removed fields, preserving clubs but refreshing edited person indexes', () => {
     const source = copy(),
       writer = new FixtureReplicaWriter(),

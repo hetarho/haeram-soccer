@@ -156,6 +156,13 @@ const club = z.object({
   cohesion: z.number().finite().min(0.3).max(1).optional(),
   identity: clubIdentitySchema.optional(),
   books: clubBooks.optional(),
+  levels: z
+    .strictObject({
+      academy: z.number().int().min(0).max(5),
+      ground: z.number().int().min(0).max(5),
+      coaching: z.number().int().min(0).max(5),
+    })
+    .optional(),
 });
 /** Whole percent of the wage (→CLUB-29): a promotion rise, a relegation cut, a Ballon d'Or bonus. */
 const clauses = z.strictObject({
@@ -1086,6 +1093,9 @@ const worldSchema: z.ZodType<World> = z.object({
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
   squads: z.record(id, z.array(player).max(20000)).optional(),
+  npcGrowthAt: z.strictObject({ year: season, round: z.number().int().min(0).max(46) }).optional(),
+  npcRetirementAt: season.optional(),
+  npcSummerAt: season.optional(),
   hardStreak: z.number().int().nonnegative().optional(),
   trainingAt: z
     .string()

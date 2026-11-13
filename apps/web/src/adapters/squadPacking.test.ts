@@ -14,12 +14,20 @@ function founded() {
 describe('persisted squad columns on a small isolated fixture', () => {
   it('preserves every founded player through the actual world packer', () => {
     const w = founded();
+    w.npcGrowthAt = { year: w.year, round: 4 };
+    w.npcRetirementAt = w.year;
+    w.npcSummerAt = w.year - 1;
     const packed = plain(pack(w));
     expect(packed.world).not.toHaveProperty('squads');
     expect(packed.squads!.columns.map((c) => c.key)).toEqual(
       expect.arrayContaining(['id', 'name', 'position', 'positions', 'wage', 'until']),
     );
-    expect(unpack(packed).squads).toEqual(w.squads);
+    const loaded = unpack(packed);
+    expect(loaded.squads).toEqual(w.squads);
+    expect(loaded.clubs.map((c) => c.levels)).toEqual(w.clubs.map((c) => c.levels));
+    expect(loaded.npcGrowthAt).toEqual(w.npcGrowthAt);
+    expect(loaded.npcRetirementAt).toBe(w.npcRetirementAt);
+    expect(loaded.npcSummerAt).toBe(w.npcSummerAt);
   });
   it('retains hundredths, higher precision, optional contracts and registry order exactly', () => {
     const w = founded(),

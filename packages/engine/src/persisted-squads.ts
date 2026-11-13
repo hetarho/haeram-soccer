@@ -4,6 +4,7 @@ import { coachingGrade } from './aptitude';
 import { clubManager } from './managerMarket';
 import { openEmployment, retainPerson } from './person-careers';
 import { compareIds, integer, random, zeroMetrics } from './primitives';
+import { facilityStage } from './club-value';
 import { lineOf } from './player';
 import { formationOf } from './player-state';
 import { clubStyle } from './tactics';
@@ -17,10 +18,15 @@ import {
   squadPlaceAge,
   squadPlaces,
 } from './world';
-import { RETIREMENT, retirePerson } from './careers';
 import { message } from '../../contracts/src/messages';
 
-function enroll(w: World, c: Club, p: Player) {
+/** Initial levels depend on division and the fixed founding stature, never current results. */
+export const CLUB_LEVELS = {
+  founding: facilityStage,
+  coachingAbility: [30, 40, 50, 60, 70, 80],
+} as const;
+
+export function enrollSquadPlayer(w: World, c: Club, p: Player) {
   if ((coachingGrade(p) ?? 0) < 4) return;
   retainPerson(w, p, c.id);
   openEmployment(w, p.id, 'player', c.id);
@@ -28,6 +34,15 @@ function enroll(w: World, c: Club, p: Player) {
 
 /** Founds only an absent registry, on this world's first day, including later-year test worlds. */
 export function foundSquads(w: World) {
+  for (const c of w.clubs) {
+    if (c.representative || c.id === w.playerClub || c.levels) continue;
+    const stage = CLUB_LEVELS.founding(w, c);
+    c.levels = {
+      academy: stage.academyFacility,
+      ground: stage.trainingGround,
+      coaching: stage.trainingGround,
+    };
+  }
   if (w.squads !== undefined) return;
   w.squads = {};
   for (const c of w.clubs) {
@@ -56,7 +71,7 @@ export function foundSquads(w: World) {
     }
     for (const p of players) {
       p.until = w.year + integer(random(`${w.seed}:${p.id}:contract`), 1, 5);
-      enroll(w, c, p);
+      enrollSquadPlayer(w, c, p);
     }
     w.squads[c.id] = players;
     invalidateNpcSquad(w, c.id);
@@ -124,7 +139,7 @@ export function moveSquadPlayer(w: World, p: Player, club?: string) {
       live.career = zeroMetrics();
       live.season = zeroMetrics();
       w.squads[club] = [...w.squads[club], live];
-      if (!w.people?.[live.id]) enroll(w, w.clubs.find((c) => c.id === club)!, live);
+      if (!w.people?.[live.id]) enrollSquadPlayer(w, w.clubs.find((c) => c.id === club)!, live);
       invalidateNpcSquad(w, club);
     }
   }
@@ -133,39 +148,5 @@ export function moveSquadPlayer(w: World, p: Player, club?: string) {
   if (club && w.discipline) {
     w.discipline.bans = w.discipline.bans.map((b) => (b.player === p.id ? { ...b, club } : b));
     w.discipline.out = w.discipline.out.map((o) => (o.player === p.id ? { ...o, club } : o));
-  }
-}
-
-/** Interim until T862: a retirement leaves a new eighteen-year-old in the same position. */
-export function closeSquads(w: World, closed = w.year) {
-  for (const [id, players] of Object.entries(w.squads ?? {})) {
-    const c = w.clubs.find((club) => club.id === id);
-    if (!c) continue;
-    let changed = false;
-    const next = players.map((p, slot) => {
-      if (closed + 1 - p.born < RETIREMENT.lastAge && w.people?.[p.id]?.playing !== 'retired')
-        return p;
-      const person = w.people?.[p.id];
-      if (person) retirePerson(w, person);
-      changed = true;
-      const youth = generatedPlayer(
-        c.country,
-        w.seed,
-        `${c.id}:successor:${closed + 1}:${slot}`,
-        closed + 1,
-        c.strength,
-        p.position,
-        18,
-        c.tier,
-      );
-      youth.fatigue = p.fatigue;
-      youth.until = closed + 1 + integer(random(`${w.seed}:${youth.id}:contract`), 1, 5);
-      enroll(w, c, youth);
-      return youth;
-    });
-    if (changed) {
-      w.squads![id] = next;
-      invalidateNpcSquad(w, id);
-    }
   }
 }

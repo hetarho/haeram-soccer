@@ -3,7 +3,10 @@ import { COUNTRIES, CATALOG_HASH, CATALOG_VERSION } from '../../catalogs/src/ind
 import type { Club, Player, TransferBid, World } from '../../contracts/src/types';
 import { validateWorld } from '../../contracts/src/schema';
 import { worldMarketFixture } from './world-market.testkit';
-import { closeSquads, foundSquads } from './persisted-squads';
+import { foundSquads } from './persisted-squads';
+import { closeNpcSummer, NPC_YOUTH } from './npc-careers';
+import { developAnnually } from './training';
+import { TRAINING_GROUND } from './facility-model';
 import {
   clubPlayers,
   clubStyle,
@@ -14,6 +17,7 @@ import {
   npcSquad,
   rating,
   refreshNpcSquads,
+  refillPlace,
   squad,
   squadPlaces,
   startingSquad,
@@ -372,13 +376,18 @@ describe('persisted playable squads', () => {
     const person = w.people![p.id]!,
       before = structuredClone(person);
     retirePerson(w, person);
-    closeSquads(w);
-    expect(w.squads![c.id]).toHaveLength(NPC_SQUAD.size);
+    let survivors = 0;
+    closeNpcSummer(w, () => {
+      survivors = w.squads![c.id]!.length;
+    });
+    expect(w.squads![c.id]).toHaveLength(
+      Math.max(NPC_SQUAD.size, survivors + NPC_YOUTH.byAcademy[c.levels!.academy]!.count),
+    );
     expect(w.squads![c.id]!.some((q) => q.id === p.id)).toBe(false);
     expect(person).toMatchObject({ name: before.name, born: before.born, playing: 'retired' });
   });
 
-  it('replaces only retirees with unique eighteen-year-olds and freezes contract seasons through war', () => {
+  it('replaces retirees with academy youth and freezes running contract seasons through war', () => {
     const w = fixture(1938),
       c = w.clubs[1]!,
       p = w.squads![c.id]![0]!,
@@ -388,13 +397,27 @@ describe('persisted playable squads', () => {
     if (person) person.born = p.born;
     const contract = other.until,
       before = structuredClone(other);
-    closeSquads(w);
-    expect(w.squads![c.id]).toHaveLength(NPC_SQUAD.size);
-    const youth = w.squads![c.id]!.find((q) => q.id.startsWith(`${c.id}:successor:1939:`))!;
+    developAnnually(w, before, {
+      year: w.year + 1,
+      youth: clubManager(w, c).youth,
+      ground: TRAINING_GROUND[c.levels!.ground]!.growth,
+      adaptation: c.cohesion ?? 0.8,
+      report: false,
+    });
+    let survivors = 0;
+    let firstPlace: Player['position'] | undefined;
+    closeNpcSummer(w, () => {
+      survivors = w.squads![c.id]!.length;
+      firstPlace = refillPlace(clubStyle(c), w.squads![c.id]!);
+    });
+    expect(w.squads![c.id]).toHaveLength(
+      Math.max(NPC_SQUAD.size, survivors + NPC_YOUTH.byAcademy[c.levels!.academy]!.count),
+    );
+    const youth = w.squads![c.id]!.find((q) => q.id === `${c.id}:y:1939:0`)!;
     expect(youth.id).not.toBe(p.id);
     expect(youth.id.startsWith(c.id)).toBe(true);
-    expect(1939 - youth.born).toBe(18);
-    expect(youth.position).toBe(p.position);
+    expect([17, 18]).toContain(1939 - youth.born);
+    expect(youth.position).toBe(firstPlace);
     expect(other).toEqual(before);
     other.loanUntil = 1940;
     movePerson(w, other, c.id);
@@ -411,6 +434,12 @@ describe('persisted playable squads', () => {
     const w = fixture();
     const loaded = validateWorld(JSON.parse(JSON.stringify(w)));
     expect(loaded.squads).toEqual(w.squads);
+    expect(loaded.clubs.map((c) => c.levels)).toEqual(w.clubs.map((c) => c.levels));
+    for (const value of [-1, 6, 1.5]) {
+      const malformed = structuredClone(w);
+      malformed.clubs[1]!.levels!.ground = value;
+      expect(() => validateWorld(malformed)).toThrow();
+    }
     const c = w.clubs[1]!;
     const missing = structuredClone(w);
     delete missing.squads![c.id];

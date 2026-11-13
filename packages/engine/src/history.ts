@@ -88,7 +88,7 @@ export function historyWorld(
   };
   installMissingIdentities(w);
   // Fixtures are results-only while nobody owns a club (→MATCH-22); the released model keeps the
-  // season's aggregates the Ballon d'Or reads (→SAVE-23, PLAYER-27) and is the takeover's model.
+  // season's aggregates for player careers and, from 1955, the Ballon d'Or (→HIST-23, PLAYER-27).
   activateMatchModel(w, release);
   return w;
 }

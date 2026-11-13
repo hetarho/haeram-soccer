@@ -1,4 +1,5 @@
 import type { Club, Player } from '../../../../packages/contracts/src/types';
+import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
 import {
   FIXTURE_READ_KEYS,
   fixtureRosterKey,
@@ -7,7 +8,7 @@ import {
 } from '../../../../packages/engine/src/fixture-copy';
 import type { RoundJob, RoundJobResult } from '../../../../packages/engine/src/round-jobs';
 
-export const FIXTURE_HELPER_PROTOCOL = 2;
+export const FIXTURE_HELPER_PROTOCOL = 3;
 export interface HelperJob {
   protocol: number;
   session: string;
@@ -38,6 +39,8 @@ interface Patch {
   clubs: Changes<Club>;
   people: Changes<FixtureReadPerson>;
   squads: Changes<Player[]>;
+  /** Attribute columns alone for growth: no squad/profile retransmission or selection. */
+  attributes: [string, [string, number[], number | null][]][];
   hasSquads: boolean;
   hasPeople: boolean;
   rosterChanged: boolean;
@@ -69,6 +72,8 @@ export class FixtureReplicaWriter {
     clubs: Map<string, string>;
     people: Map<string, string>;
     squads: Map<string, string>;
+    profiles: Map<string, string>;
+    attributes: Map<string, Map<string, string>>;
   };
   reset() {
     this.previous = undefined;
@@ -84,8 +89,43 @@ export class FixtureReplicaWriter {
     const key = identity(copy),
       roster = fixtureRosterKey(copy);
     const previous = this.previous?.identity === key ? this.previous : undefined;
+    const profiles = new Map<string, string>();
+    const attributeTexts = new Map<string, Map<string, string>>();
+    for (const [id, players] of squads) {
+      if (previous && squadTexts.get(id) === previous.squads.get(id)) {
+        profiles.set(id, previous.profiles.get(id)!);
+        attributeTexts.set(id, previous.attributes.get(id)!);
+        continue;
+      }
+      profiles.set(
+        id,
+        JSON.stringify(
+          players.map(({ attrs, developed, ...profile }) => {
+            void attrs;
+            void developed;
+            return profile;
+          }),
+        ),
+      );
+      attributeTexts.set(
+        id,
+        textsOf(
+          players.map((p): [string, unknown] => [
+            p.id,
+            [ATTRIBUTES.map((a) => p.attrs[a]), p.developed ?? null],
+          ]),
+        ),
+      );
+    }
     let patch: string | undefined;
     if (previous) {
+      const squadChanges = changes(squads, squadTexts, previous.squads);
+      const columns = new Set(
+        squadChanges.put
+          .filter(([id]) => profiles.get(id) === previous.profiles.get(id))
+          .map(([id]) => id),
+      );
+      squadChanges.put = squadChanges.put.filter(([id]) => !columns.has(id));
       const { clubs: _clubs, people: _people, squads: _squads, ...state } = copy;
       void _clubs;
       void _people;
@@ -95,7 +135,18 @@ export class FixtureReplicaWriter {
         clubs: changes(clubs, clubTexts, previous.clubs),
         people: changes(people, peopleTexts, previous.people),
         hasPeople: copy.people !== undefined,
-        squads: changes(squads, squadTexts, previous.squads),
+        squads: squadChanges,
+        attributes: squads
+          .filter(([id]) => columns.has(id))
+          .map(([id, players]) => [
+            id,
+            players
+              .filter(
+                (p) =>
+                  attributeTexts.get(id)!.get(p.id) !== previous.attributes.get(id)?.get(p.id),
+              )
+              .map((p) => [p.id, ATTRIBUTES.map((a) => p.attrs[a]), p.developed ?? null]),
+          ]),
         hasSquads: copy.squads !== undefined,
         rosterChanged: previous.roster !== roster,
       } satisfies Patch);
@@ -107,6 +158,8 @@ export class FixtureReplicaWriter {
       clubs: clubTexts,
       people: peopleTexts,
       squads: squadTexts,
+      profiles,
+      attributes: attributeTexts,
     };
     let snapshot: string | undefined;
     return {
@@ -120,6 +173,7 @@ export class FixtureReplicaWriter {
 function object(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
+const invalidRecords = () => new Error('Invalid fixture-copy records');
 function assertState(state: unknown): asserts state is Dynamic {
   if (
     !object(state) ||
@@ -148,7 +202,7 @@ function assertRows<T>(rows: unknown, squads = false): asserts rows is Changes<T
     (rows.order !== undefined &&
       (!Array.isArray(rows.order) || rows.order.some((id) => typeof id !== 'string')))
   )
-    throw new Error('Invalid fixture-copy records');
+    throw invalidRecords();
   const put = rows.put as [string, T][];
   if (
     new Set(put.map(([id]) => id)).size !== put.length ||
@@ -197,6 +251,50 @@ function applyRegistry<T>(current: Record<string, T> | undefined, rows: Changes<
   )
     throw new Error('Missing people order');
   return Object.fromEntries((rows.order ?? [...records.keys()]).map((id) => [id, records.get(id)!]));
+}
+
+function applyAttributeColumns(copy: FixtureReadCopy, patch: Patch) {
+  const changed = new Set<string>();
+  for (const row of patch.attributes) {
+    if (
+      !Array.isArray(row) ||
+      row.length !== 2 ||
+      typeof row[0] !== 'string' ||
+      changed.has(row[0]) ||
+      !Array.isArray(row[1]) ||
+      patch.squads.put.some(([id]) => id === row[0])
+    )
+      throw invalidRecords();
+    changed.add(row[0]);
+    const players = copy.squads?.[row[0]];
+    if (!players) throw invalidRecords();
+    const ids = new Set<string>();
+    for (const column of row[1]) {
+      if (
+        !Array.isArray(column) ||
+        column.length !== 3 ||
+        typeof column[0] !== 'string' ||
+        ids.has(column[0]) ||
+        !Array.isArray(column[1]) ||
+        column[1].length !== ATTRIBUTES.length ||
+        column[1].some((n) => typeof n !== 'number' || !Number.isFinite(n) || n < 5 || n > 99) ||
+        (column[2] !== null &&
+          (typeof column[2] !== 'number' ||
+            !Number.isFinite(column[2]) ||
+            column[2] < 0 ||
+            column[2] > 500))
+      )
+        throw invalidRecords();
+      const p = players.find((p) => p.id === column[0]);
+      if (!p) throw invalidRecords();
+      ids.add(p.id);
+      ATTRIBUTES.forEach((a, i) => {
+        p.attrs[a] = column[1][i]!;
+      });
+      if (column[2] === null) delete p.developed;
+      else p.developed = column[2];
+    }
+  }
 }
 
 /** One reader per served channel. Errors discard the replica; the active world is never touched. */
@@ -268,6 +366,7 @@ export class FixtureReplicaReader {
         )
           throw new Error('Invalid patch identity');
         assertRows<Player[]>(parsed.squads, true);
+        if (!Array.isArray(parsed.attributes)) throw invalidRecords();
         assertRows<Club>(parsed.clubs);
         assertRows<FixtureReadPerson>(parsed.people);
         const patch = parsed as unknown as Patch;
@@ -296,6 +395,7 @@ export class FixtureReplicaReader {
           throw new Error('Missing club order');
         copy.people = applyRegistry(copy.people, patch.people, patch.hasPeople);
         copy.squads = applyRegistry(copy.squads, patch.squads, patch.hasSquads);
+        applyAttributeColumns(copy, patch);
         if (!patch.hasPeople) delete copy.people;
         if (!patch.hasSquads) delete copy.squads;
         rosterChanged = patch.rosterChanged;

@@ -342,6 +342,8 @@ export interface Club {
   identity?: ClubIdentity;
   /** Season books while nobody owns it (→ECON-36); absent in a founded career. */
   books?: ClubBooks;
+  /** Persisted facilities of a club nobody owns (→WORLD-17), each at level 0–5. */
+  levels?: { academy: number; ground: number; coaching: number };
 }
 export interface Player {
   id: string;
@@ -1268,6 +1270,10 @@ export interface World {
   hardStreak?: number;
   /** Last settled training boundary, preventing repeated development/recovery. */
   trainingAt?: string;
+  /** Last settled NPC round-growth boundary and annual lifecycle (→WORLD-16). */
+  npcGrowthAt?: { year: number; round: number };
+  npcRetirementAt?: number;
+  npcSummerAt?: number;
   /** Club operating policy; absent means POLICY_DEFAULTS. */
   policy?: SavedPolicy;
   /** Coaching staff below the manager. Absent in older saves, whose effects stay neutral. */
