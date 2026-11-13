@@ -15,7 +15,7 @@ function waiting(team: TeamId, period: 1 | 2 = 1) {
   state.team = team;
   const actor = team * 11 + 5;
   const receiver = team * 11 + 9;
-  const point = (x: number, y = 34): Vec => toAttack(team, [x, y], period);
+  const point = (x: number, y = 34): [number, number] => [...toAttack(team, [x, y], period)];
   state.ball.pos = point(35);
   state.fixture.teams[team === 0 ? 1 : 0].players.forEach((p, i) => {
     state.bodies[p.index].pos = point(p.slot === 0 ? 100 : 65 - i, 4 + i * 5);
