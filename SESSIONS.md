@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T16:51Z | T878 | work/performance-books-pb14 | 0cd4fb216686 |
+| pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T17:08Z | - | work/performance-books-pb14 | 0cd4fb216686 |
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T16:56Z | - | codex/natural-football-261114 | a3a5e07d282a |
 
 ## inbox
@@ -66,8 +66,10 @@
 | id | tag | branch | commit | at |
 |---|---|---|---|---|
 | T877 | pb14 | work/performance-books-pb14 | 0a2d63f8acd0 | 2026-11-13T16:51Z |
+| T878 | pb14 | work/performance-books-pb14 | 0cd4fb216686 | 2026-11-13T17:08Z |
 
 ## log
+- 261113 T878 done
 - 261113 Owner approved independent Codex review and permanent quota-aware provider fallback; AGENTS.md pushed main6fecb6de. Fresh code review resumed.
 - 261113 T877 done
 - 261113 Full persisted-world implementation published to main at 3d002a0b, version 0.9.0; current main also includes independent nf14 planning 0a2cefd3. Storage included, capacity not an integration blocker. Avoided a second implementation writer in the nf14-owned checkout; read-only scout evidence handed to T873/T874/T875 through inbox.
@@ -87,4 +89,3 @@
 - 261113 gusta-create-task ARCH: T869 for retained saved-report resources; T866 follows it, ARCH r42 consumed. T859 cites ARCH-32 but financial behavior is unchanged and fin3 reports no active task.
 - 261113 gusta-update-ssot ARCH start: retain message resources for supported saved prose
 - 261113 T865 done
-- 261113 T864 done
