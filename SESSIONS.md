@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T19:55Z | - | codex/natural-football-261114 | 729a7095cdc4 |
-| pr14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T18:19Z | 2026-11-13T20:08Z | T904 | fix/pb14-final-review | 14d4f86cb7d1 |
+| pr14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T18:19Z | 2026-11-13T20:10Z | - | fix/pb14-final-review | 6e6898df |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -105,8 +105,10 @@
 | T886 | work | codex/natural-football-261114 | 4618c03f8060 | 2026-11-13T19:50Z |
 | T893 | work | codex/natural-football-261114 | 24d042b1e6ad | 2026-11-13T19:51Z |
 | T892 | work | codex/natural-football-261114 | 729a7095cdc4 | 2026-11-13T19:51Z |
+| T904 | pr14 | fix/pb14-final-review | 6e6898df | 2026-11-13T20:10Z |
 
 ## log
+- 261113 T904 done
 - 261113 T892 integrated
 - 261113 T893 integrated
 - 261113 T886 integrated
@@ -126,4 +128,3 @@
 - 261113 fix pb14 schema: 7ca7b44d reuses the production book schema for 30 malformed amount cases and the incomplete component case, retaining whole-world roundtrips; isolated review checkout, 85 affected units and static/i18n checks passed.
 - 261113 T882 done
 - 261113 T881 done
-- 261113 T876 integrated
