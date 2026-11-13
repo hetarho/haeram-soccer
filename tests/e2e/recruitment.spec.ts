@@ -1,5 +1,5 @@
 import { registrationRoom } from '../../packages/engine/src/registration';
-import { releasedMarketPlayer, importPreparedCareer } from '../fixtures/releases';
+import { releasedMarketPlayer, importPreparedCareer } from '../fixtures/browser-career';
 import { message } from '../../packages/contracts/src/messages';
 import { openPersonnel } from './personnel-navigation';
 import { marketRows, marketFilters, marketInfo, marketCandidate, closeMarketPanel } from './market';

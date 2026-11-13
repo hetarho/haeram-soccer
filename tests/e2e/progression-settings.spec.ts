@@ -1,5 +1,5 @@
 import { exportWorld } from './club-identity-helpers';
-import { importPreparedCareer } from '../fixtures/releases';
+import { importPreparedCareer } from '../fixtures/browser-career';
 import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
 import { movePerson } from '../../packages/engine/src/npc-continuity';
 import { npcOffer } from '../../packages/engine/src/npc-market';

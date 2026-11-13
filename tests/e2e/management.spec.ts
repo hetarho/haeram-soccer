@@ -1,4 +1,4 @@
-import { releasedMarketPlayer, importPreparedCareer } from '../fixtures/releases';
+import { releasedMarketPlayer, importPreparedCareer } from '../fixtures/browser-career';
 import { exportWorld } from './club-identity-helpers';
 import { message } from '../../packages/contracts/src/messages';
 import { openPersonnel } from './personnel-navigation';
