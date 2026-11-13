@@ -16,7 +16,9 @@ export function runStaging(
     if (stopped) return;
     try {
       const batch = [];
-      for (let n = 0; n < STAGING_BATCH_MINUTES; n++) {
+      // Publish the first playable minute promptly, then fill the theatre in normal batches.
+      const size = request.from === 0 && from === 0 ? 1 : STAGING_BATCH_MINUTES;
+      for (let n = 0; n < size; n++) {
         const frame = frames.next();
         if (frame.done) {
           if (batch.length) send({ id: request.id, from: from - batch.length, frames: batch });

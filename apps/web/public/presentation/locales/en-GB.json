@@ -6660,7 +6660,7 @@
     "delegation.plan.signingLeft": "Fees spent {spent} · left for signings {left}",
     "delegation.plan.wageCap": "Player wage cap {share}% of income {budget} · now {committed} · room for raises {left}",
     "delegation.plan.youth": "Youth share {share}% of income {budget} · youth director pay {pay} · youth investment {level} ({cost} a year)",
-    "delegation.plan.sellLine": "Sell more readily when player wages exceed {first}% and {second}% of income plus available capital (now {now}%).",
+    "delegation.plan.sellLine": "Lowers the bar for offers by 10 points once player wages pass {first}% of income, by 20 past {second}% (now {now}%)",
     "delegation.report.revenue": "Re-planned because the income projection moved ({before} → {after})",
     "delegation.report.sale": "Re-planned after player sales came in (+{sales})",
     "delegation.stop.cash": "Stopped so the cash does not run out: afterwards cash would be below {weeks} weeks of fixed costs ({floor})",
@@ -6844,10 +6844,11 @@
     "delegation.plan.capital": "Keep {years} years of fixed costs and add {capital} from cash to the budget. Investment may exceed income within this allowance.",
     "delegation.flow.capital": "Investment from cash",
     "delegation.flow.reserve": "Keep {years} years of fixed costs.",
-    "finance.debt.ended": "In {season}, debt exceeded one year of fixed costs and the club closed. It spent {rounds} rounds in debt. {kept}",
+    "finance.debt.ended": "In {season}, the club went bankrupt and closed. It recorded {rounds} rounds in debt. {kept}",
     "delegation.plan.fundedBudget": "Budget including cash {budget} · committed {committed} · investment room {left}",
     "delegation.flow.budget": "Budget including cash",
     "delegation.verdict.fundedWages": "The player wage bill of {bill} exceeds the cash-funded budget of {budget}",
-    "delegation.verdict.fundedRaise": "The raise was refused: the player wage bill of {bill} would exceed the cash-funded budget of {budget} ({plan})."
+    "delegation.verdict.fundedRaise": "The raise was refused: the player wage bill of {bill} would exceed the cash-funded budget of {budget} ({plan}).",
+    "delegation.plan.fundedSellLine": "Sell more readily when player wages exceed {first}% and {second}% of income plus available capital (now {now}%)."
   }
 }

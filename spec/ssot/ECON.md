@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r56 | Define the browser-demo rules for historical club economy.
+> r57 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -229,12 +229,12 @@
   - before 1949 the inter-war and war years' rates are not followed: a country's amounts there are estimated (→ECON-3).
   - a foreign player's fee and wage are quoted in the buyer's money from the same units as a home player's (→CLUB-25), so no country's level makes a player cheaper abroad.
 
-- ECON-36 [o] Every club nobody owns keeps season books from the world's first season: income (league distribution →ECON-28, gate on its division and reputation →ECON-9, commercial income on its following →ECON-8), a wage bill on its strength and division (→CLUB-25), operating expenses (→ECON-30), the result, its cash and its debt. ← a club's value, and how much it spends, must exist before anyone buys it
+- ECON-36 [o] Every club nobody owns keeps season books from the world's first season: income (league distribution →ECON-28, gate on its division and reputation →ECON-9, commercial income on its following →ECON-8), a wage bill of its players' contracts (→CLUB-25, →WORLD-17), transfer fees paid and received, operating expenses (→ECON-30), the result, its cash and its debt. ← a club's value, and how much it spends, must exist before anyone buys it
   - books settle once at each season close from the same income and cost scales the owner's club uses, summed over the season, not round by round.
   - competition money: its domestic cup and continental matches (→LEAGUE-5, →EURO-7) count in its income as the owner's club is paid for them — each tie and title prize and each result bonus on the broadcasting index (→ECON-31), and each home match's gate at its division and reputation without the league-match scaling (→ECON-9); league matches add nothing to it. ← the owner's club is paid for every cup and European night it plays, so a book without them reads a cup or European club's income short; its home gates, not its prizes, are most of that money while the gate carries the game
-  - competition money is in force together with CLUB-48's table and LEAGUE-10's means level, which passed CLUB-48's gate with it (measured 261104), never alone (→!CLUB-48). ← at s = 1 without the means level a book moves no club's strength, only the takeover's price, cash and first-season expenses that LEAGUE-13's and OWNER-8's bounds were measured on without it
-  - cash below zero is debt; a club nobody owns never goes bankrupt, and a takeover or project of →LEAGUE-10 clears its debt.
-  - a club nobody owns lives within its means: in the world's first season its books open with CLUB_BOOKS.opening (half a season) of its income in cash; at each close cash above CLUB_BOOKS.cashSeasons (1) season of its income is spent on the club and leaves the books, and debt beyond CLUB_BOOKS.debtSeasons (1.5) seasons of its income is written off. ← unbounded books left 38 of 40 top clubs owing 3.8–15 seasons of income in 1950 while lower clubs held four seasons of turnover, and a 1930 takeover started with nothing
+  - competition money is in force together with CLUB-48's table and WORLD-17's wage limit, never alone (→!CLUB-48).
+  - cash below zero is debt; a club nobody owns never goes bankrupt.
+  - a club nobody owns lives within its means: in the world's first season its books open with CLUB_BOOKS.opening (half a season) of its income in cash; at each close cash above CLUB_BOOKS.cashSeasons (1) season of its income is spent on the club, raising its academy, training ground and coaching levels (→WORLD-17), and leaves the books, and debt beyond CLUB_BOOKS.debtSeasons (1.5) seasons of its income is written off. ← unbounded books left 38 of 40 top clubs owing 3.8–15 seasons of income in 1950 while lower clubs held four seasons of turnover, and a 1930 takeover started with nothing
   - measured against the owner's club: a club taken over earns in its first owned season within ±25% of its books' last season income.
   - the books keep the current and the last closed season; earlier seasons are not retained.
 - ECON-37 [o] A club's price is its value (구단 가치): its players' transfer values (→CLUB-46), its stadium and facilities at their stage costs on the football index (→ECON-32), its following at CLUB_VALUE.following per supporter, its league place at CLUB_VALUE.placeSeasons (3) seasons of its division's distribution (→ECON-28), plus its cash, less its debt; never below CLUB_VALUE.floor (one season of its division's distribution). ← a big club can be cheap when it carries debt, and a dear one can still lose money
@@ -242,6 +242,7 @@
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
 
 ## chg
+- r57 261113 ECON-36✎ wage bill on strength and division→its players' contracts with transfer fees; competition money in force with LEAGUE-10's means level→with WORLD-17's wage limit; a takeover or project clears debt→removed; cash spent on the club→raises its academy, training ground and coaching levels
 - r56 261113 ECON-11/24✎ 8 negative rounds or debt over half-year costs→debt strictly over one year of fixed costs only; ECON-33✎ income only→income plus live capital above temperament/request reserves (balanced/default 20 years, bold/freely zero); ECON-41✎ four-round buffer→zero for bold/freely.
 - r55 261113 ECON-33✎ 재정 기조 and per-person wage caps→5-step spending request, the 단장's plan on season income (squad 45–80%, reinvest 10–70%, youth 0.5–3.5%, sell line 45–80%); ECON-39+ delegate's settings; ECON-40+ plan moments; ECON-41+ 4-round insolvency stop; ECON-16/22/25✎ owner via 결재 설정→area pages, delegate while delegated, presets 재정 기조→위임 요청; ECON-29✎ 재정 기조→단장's plan
 - r54 261110 ECON-16✎ recruitment's ability ceiling fixed per level (65/75/85/88/92)→never below our starting eleven's mean slot value + 5 (a strong club's 단장 listed nobody who could upgrade it)

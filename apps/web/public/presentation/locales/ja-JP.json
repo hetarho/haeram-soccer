@@ -6657,7 +6657,7 @@
     "delegation.plan.signingLeft": "移籍金 {spent} 使用・補強に使えるお金 {left}",
     "delegation.plan.wageCap": "選手年俸の上限 収入の{share}% {budget}・現在 {committed}・昇給の余地 {left}",
     "delegation.plan.youth": "ユースの取り分 収入の{share}% {budget}・育成責任者の給与 {pay}・ユース投資 {level}（年 {cost}）",
-    "delegation.plan.sellLine": "選手年俸が収入と投資可能資金の合計の{first}%と{second}%を超えると売却を増やします（現在{now}%）。",
+    "delegation.plan.sellLine": "選手年俸が収入の{first}%を超えるとオファーの基準を10ポイント、{second}%を超えると20ポイント下げます（現在 {now}%）",
     "delegation.report.revenue": "収入見込みが変わったので計画し直しました（{before} → {after}）",
     "delegation.report.sale": "選手売却の収入が入ったので計画し直しました（+{sales}）",
     "delegation.stop.cash": "資金が尽きないよう止めました。使うと現金が固定費{weeks}週分（{floor}）を下回ります",
@@ -6841,10 +6841,11 @@
     "delegation.plan.capital": "固定費{years}年分を残し、手元資金から{capital}を予算に加えます。この範囲では収入を超えて投資できます。",
     "delegation.flow.capital": "手元資金からの投資",
     "delegation.flow.reserve": "固定費{years}年分を残します。",
-    "finance.debt.ended": "{season}シーズン、債務が年間固定費1年分を超えてクラブは閉鎖しました。赤字期間は{rounds}ラウンドでした。{kept}",
+    "finance.debt.ended": "{season}シーズンにクラブは破産し、閉鎖しました。赤字の記録は{rounds}ラウンドです。{kept}",
     "delegation.plan.fundedBudget": "手元資金を含む予算{budget}・既存負担{committed}・投資余力{left}",
     "delegation.flow.budget": "手元資金を含む予算",
     "delegation.verdict.fundedWages": "選手年俸総額{bill}が手元資金を含む予算{budget}を超えます",
-    "delegation.verdict.fundedRaise": "増額後の選手年俸総額{bill}が手元資金を含む予算{budget}を超えるため拒否しました（{plan}）。"
+    "delegation.verdict.fundedRaise": "増額後の選手年俸総額{bill}が手元資金を含む予算{budget}を超えるため拒否しました（{plan}）。",
+    "delegation.plan.fundedSellLine": "選手年俸が収入と投資可能資金の合計の{first}%と{second}%を超えると売却を増やします（現在{now}%）。"
   }
 }

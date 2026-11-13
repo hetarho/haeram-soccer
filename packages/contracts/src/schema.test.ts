@@ -324,3 +324,24 @@ describe('optional career-read format boundary', () => {
     );
   });
 });
+
+describe('club debt history (→ECON-24)', () => {
+  it('round-trips a negative balance with debt history longer than one season', () => {
+    const w = world();
+    for (const rounds of [47, 92]) {
+      const saved = { ...structuredClone(w), cash: '-1', insolvent: rounds };
+      const loaded = validateWorld(JSON.parse(JSON.stringify(saved)), LOAD_CATALOG);
+      expect(loaded.insolvent).toBe(rounds);
+      expect(loaded.cash).toBe('-1');
+      expect(loaded.bankrupt).toBeUndefined();
+    }
+  });
+
+  it('still rejects non-positive, fractional and unsafe debt counters', () => {
+    const w = world();
+    for (const rounds of [0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])
+      expect(() => validateWorld({ ...w, cash: '-1', insolvent: rounds }, LOAD_CATALOG)).toThrow(
+        ZodError,
+      );
+  });
+});

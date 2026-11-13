@@ -6663,7 +6663,7 @@
     "delegation.plan.signingLeft": "Taxas gastas {spent} · disponível para contratações {left}",
     "delegation.plan.wageCap": "Teto salarial {share}% da receita {budget} · agora {committed} · margem para aumentos {left}",
     "delegation.plan.youth": "Parte da base {share}% da receita {budget} · salário do diretor da base {pay} · investimento na base {level} ({cost} por ano)",
-    "delegation.plan.sellLine": "Venda com mais facilidade quando os salários superarem {first}% e {second}% da receita mais o capital disponível (agora {now}%).",
+    "delegation.plan.sellLine": "Baixa a régua das ofertas em 10 pontos quando os salários passam de {first}% da receita, em 20 acima de {second}% (agora {now}%)",
     "delegation.report.revenue": "Replanejado porque a previsão de receita mudou ({before} → {after})",
     "delegation.report.sale": "Replanejado após a entrada de vendas de jogadores (+{sales})",
     "delegation.stop.cash": "Parado para o caixa não acabar: depois o caixa ficaria abaixo de {weeks} semanas de custos fixos ({floor})",
@@ -6847,10 +6847,11 @@
     "delegation.plan.capital": "Reservam-se {years} anos de custos fixos e acrescentam-se {capital} do caixa ao orçamento. Nesse limite, o investimento pode superar a receita.",
     "delegation.flow.capital": "Investimento do caixa",
     "delegation.flow.reserve": "Reserva de {years} anos de custos fixos.",
-    "finance.debt.ended": "Em {season}, a dívida superou um ano de custos fixos e o clube fechou. Foram {rounds} rodadas em dívida. {kept}",
+    "finance.debt.ended": "Em {season}, o clube faliu e fechou. Foram registradas {rounds} rodadas em dívida. {kept}",
     "delegation.plan.fundedBudget": "Orçamento com caixa {budget} · comprometido {committed} · margem de investimento {left}",
     "delegation.flow.budget": "Orçamento com caixa",
     "delegation.verdict.fundedWages": "A folha salarial de {bill} supera o orçamento com caixa de {budget}",
-    "delegation.verdict.fundedRaise": "Aumento recusado: a folha salarial de {bill} superaria o orçamento com caixa de {budget} ({plan})."
+    "delegation.verdict.fundedRaise": "Aumento recusado: a folha salarial de {bill} superaria o orçamento com caixa de {budget} ({plan}).",
+    "delegation.plan.fundedSellLine": "Venda com mais facilidade quando os salários superarem {first}% e {second}% da receita mais o capital disponível (agora {now}%)."
   }
 }

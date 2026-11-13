@@ -6657,7 +6657,7 @@
     "delegation.plan.signingLeft": "Biaya transfer terpakai {spent} · sisa untuk rekrutan {left}",
     "delegation.plan.wageCap": "Batas gaji pemain {share}% pendapatan {budget} · kini {committed} · ruang kenaikan {left}",
     "delegation.plan.youth": "Porsi akademi {share}% pendapatan {budget} · gaji direktur akademi {pay} · investasi akademi {level} ({cost} per tahun)",
-    "delegation.plan.sellLine": "Lebih mudah menjual saat gaji pemain melebihi {first}% dan {second}% dari pendapatan ditambah modal tersedia (kini {now}%).",
+    "delegation.plan.sellLine": "Menurunkan batas tawaran 10 poin saat gaji pemain melewati {first}% pendapatan, 20 poin di atas {second}% (kini {now}%)",
     "delegation.report.revenue": "Direncanakan ulang karena perkiraan pendapatan berubah ({before} → {after})",
     "delegation.report.sale": "Direncanakan ulang setelah pemasukan penjualan pemain (+{sales})",
     "delegation.stop.cash": "Dihentikan agar kas tidak habis: sesudahnya kas akan di bawah {weeks} minggu biaya tetap ({floor})",
@@ -6841,10 +6841,11 @@
     "delegation.plan.capital": "Sisihkan biaya tetap {years} tahun dan tambahkan {capital} dari kas ke anggaran. Investasi boleh melebihi pendapatan dalam batas ini.",
     "delegation.flow.capital": "Investasi dari kas",
     "delegation.flow.reserve": "Cadangan biaya tetap {years} tahun.",
-    "finance.debt.ended": "Pada {season}, utang melebihi biaya tetap satu tahun dan klub tutup. Klub berutang selama {rounds} putaran. {kept}",
+    "finance.debt.ended": "Pada {season}, klub bangkrut dan tutup. Tercatat {rounds} putaran berutang. {kept}",
     "delegation.plan.fundedBudget": "Anggaran termasuk kas {budget} · terikat {committed} · ruang investasi {left}",
     "delegation.flow.budget": "Anggaran termasuk kas",
     "delegation.verdict.fundedWages": "Total gaji pemain {bill} melebihi anggaran termasuk kas {budget}",
-    "delegation.verdict.fundedRaise": "Kenaikan ditolak: total gaji pemain {bill} akan melebihi anggaran termasuk kas {budget} ({plan})."
+    "delegation.verdict.fundedRaise": "Kenaikan ditolak: total gaji pemain {bill} akan melebihi anggaran termasuk kas {budget} ({plan}).",
+    "delegation.plan.fundedSellLine": "Lebih mudah menjual saat gaji pemain melebihi {first}% dan {second}% dari pendapatan ditambah modal tersedia (kini {now}%)."
   }
 }

@@ -537,7 +537,7 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
       break;
     case 'sales':
       lines.push(
-        sourceMessage('delegation.plan.sellLine', {
+        sourceMessage('delegation.plan.fundedSellLine', {
           first: plan.stance.sellAbove[0],
           second: plan.stance.sellAbove[1],
           now: sharePercent(wageShareOf(w, BigInt(plan.committed))),

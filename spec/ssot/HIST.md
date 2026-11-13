@@ -1,10 +1,10 @@
 # HIST Durable metrics and history
-> r25 | Define the browser-demo rules for durable metrics and history.
+> r26 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
 - HIST-2 [o] Always retain all implemented-country season standings/champions/cup outcomes and European standings/honors. NPC past per-frame/per-action traces and full individual match-stat archives are not collected.
-- HIST-3 [o] Complete NPC current-season team/player aggregates from settled fixtures and the reproducible current roster support comparison (→HIST-17). Career/season summaries, not duplicated object graphs, represent older NPC history.
+- HIST-3 [o] Complete NPC current-season team/player aggregates from settled fixtures and the reproducible current roster support comparison (→HIST-17). Each persisted player's season lines (→HIST-23), not duplicated object graphs, represent older NPC history.
 - HIST-4 [o] Archive compact IDs and numeric aggregates; UI pagination or chart sampling never deletes source records.
 - HIST-5 [o] The takeover is the first history entry of the owner's era; promotion, relegation, manager resignation, recruitment, retirement, campaigns, sponsors and currency changes append facts; facts already recorded stay.
 - HIST-6 [o] Metric scopes separate domestic, European, current season and own career; ratios expose denominators and sample size.
@@ -87,12 +87,19 @@
   - repeated settlement, viewing, saving, reloading and importing never count a fact twice. Existing contributions, competition scopes and denominators stay unchanged.
   - source matches, events and season archives remain retained under →!HIST-1/2/8; writer activation reconstructs missing or recognized obsolete summaries once under →=SAVE-28. Current summaries remain incremental across normal updates and reloads.
 
+- HIST-23 [o] Every persisted player (→WORLD-16) keeps his playing record: for each season and club his appearances, goals and assists — a goalkeeper's saves and clean sheets too — and his honours (→HIST-13). ← fans follow a player's career across clubs and decades, not only his current season
+  - season lines are written at each close from the season's settled aggregates (→HIST-17), one per club after a move; no other counter is kept for a player of a club nobody owns (the own club's are →HIST-16).
+  - at retirement he is kept — his last profile as his club fielded him (→PLAYER-1), his season lines, honours, last club and retirement season — when any retained record links him by identity: a Ballon d'Or podium, a news item, an own match's record or a transfer fact. A player no retained record links is removed at retirement; his lines are not a retained fact under →HIST-8. Own players (→HIST-1) and people with a later career (→HIST-14) are kept by their own rules. ← every player the owner can open stays openable, and a century of unseen players would outgrow the save
+  - a record written after a player is removed never links him; news of a retirement names only a player kept by another link.
+  - kept players stay within →SAVE-4/13's century limits without pruning.
+
 ## flow
 
 - Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
 
 ## chg
+- r26 261113 HIST-3✎ career/season summaries represent older NPC history→each persisted player's season lines; HIST-23+ persisted players' season lines (appearances, goals, assists, keeper saves and clean sheets) and honours, kept at retirement with the last profile when a retained record links them, removed otherwise
 - r25 261111 HIST-17✎ results on either engine path→every settled match's result (one result path, →MATCH-22)
 - r24 261110 HIST-16✎ implicit own-card contribution scope→recorded match-side attribution; HIST-22✎ missing-only reconstruction→missing or recognized obsolete summaries once, current reloads stay incremental
 - r23 261109 HIST-21✎ pre-owner seasons kept apart from the owner's era→marked off from it by the takeover (one season list, →WEB-54)

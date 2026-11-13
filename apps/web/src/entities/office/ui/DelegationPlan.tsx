@@ -209,7 +209,7 @@ function planSentence(w: World, plan: DelegatePlan): ReactNode {
       );
     case 'sales': {
       const [first, second] = plan.stance.sellAbove;
-      return richMessage('delegation.plan.sellLine', { first, second, now });
+      return richMessage('delegation.plan.fundedSellLine', { first, second, now });
     }
     default:
       return undefined;

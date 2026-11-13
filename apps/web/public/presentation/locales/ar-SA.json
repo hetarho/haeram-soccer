@@ -6672,7 +6672,7 @@
     "delegation.plan.signingLeft": "رسوم انتقالات مدفوعة {spent} · المتبقي للتعاقدات {left}",
     "delegation.plan.wageCap": "سقف رواتب اللاعبين {share}% من الإيرادات {budget} · الآن {committed} · هامش الزيادات {left}",
     "delegation.plan.youth": "حصة الناشئين {share}% من الإيرادات {budget} · راتب مدير الناشئين {pay} · استثمار الناشئين {level} ({cost} سنويًا)",
-    "delegation.plan.sellLine": "تزداد الرغبة في البيع عندما تتجاوز الرواتب {first}% و{second}% من الدخل ورأس المال المتاح معًا (حاليًا {now}%).",
+    "delegation.plan.sellLine": "يخفض حد العروض 10 نقاط عندما تتجاوز رواتب اللاعبين {first}% من الإيرادات و20 نقطة فوق {second}% (الآن {now}%)",
     "delegation.report.revenue": "أُعيد التخطيط لتغير توقع الإيرادات ({before} ← {after})",
     "delegation.report.sale": "أُعيد التخطيط بعد دخول عائدات بيع لاعبين (+{sales})",
     "delegation.stop.cash": "توقف حتى لا ينفد النقد: بعد ذلك سيقل النقد عن تكاليف ثابتة لمدة {weeks} أسابيع ({floor})",
@@ -6856,10 +6856,11 @@
     "delegation.plan.capital": "يُحتفظ بتكاليف ثابتة لمدة {years} سنة وتُضاف {capital} من النقد إلى الميزانية. يمكن أن يتجاوز الاستثمار الدخل ضمن هذا الحد.",
     "delegation.flow.capital": "استثمار من النقد",
     "delegation.flow.reserve": "احتياطي يغطي {years} سنة من التكاليف الثابتة.",
-    "finance.debt.ended": "في موسم {season} تجاوز الدين سنة من التكاليف الثابتة وأُغلق النادي. بقي مدينًا {rounds} جولة. {kept}",
+    "finance.debt.ended": "في موسم {season} أفلس النادي وأُغلق. سُجلت {rounds} جولة من الدين. {kept}",
     "delegation.plan.fundedBudget": "الميزانية مع النقد {budget} · الملتزم به {committed} · مجال الاستثمار {left}",
     "delegation.flow.budget": "الميزانية مع النقد",
     "delegation.verdict.fundedWages": "رواتب اللاعبين البالغة {bill} تتجاوز الميزانية الممولة بالنقد البالغة {budget}",
-    "delegation.verdict.fundedRaise": "رُفضت الزيادة: رواتب اللاعبين البالغة {bill} ستتجاوز الميزانية الممولة بالنقد البالغة {budget} ({plan})."
+    "delegation.verdict.fundedRaise": "رُفضت الزيادة: رواتب اللاعبين البالغة {bill} ستتجاوز الميزانية الممولة بالنقد البالغة {budget} ({plan}).",
+    "delegation.plan.fundedSellLine": "تزداد الرغبة في البيع عندما تتجاوز الرواتب {first}% و{second}% من الدخل ورأس المال المتاح معًا (حاليًا {now}%)."
   }
 }

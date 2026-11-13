@@ -6663,7 +6663,7 @@
     "delegation.plan.signingLeft": "Traspasos gastados {spent} · disponible para fichajes {left}",
     "delegation.plan.wageCap": "Tope salarial {share} % de los ingresos {budget} · ahora {committed} · margen para subidas {left}",
     "delegation.plan.youth": "Parte de cantera {share} % de los ingresos {budget} · sueldo del director de cantera {pay} · inversión en cantera {level} ({cost} al año)",
-    "delegation.plan.sellLine": "Se vende con más facilidad cuando los salarios superan el {first}% y el {second}% de los ingresos más el capital disponible (ahora {now}%).",
+    "delegation.plan.sellLine": "Baja el listón de las ofertas 10 puntos cuando los salarios superan el {first} % de los ingresos y 20 por encima del {second} % (ahora {now} %)",
     "delegation.report.revenue": "Replanificado porque cambió la previsión de ingresos ({before} → {after})",
     "delegation.report.sale": "Replanificado tras entrar ingresos por ventas de jugadores (+{sales})",
     "delegation.stop.cash": "Detenido para no quedarse sin caja: después la caja quedaría por debajo de {weeks} semanas de gastos fijos ({floor})",
@@ -6847,10 +6847,11 @@
     "delegation.plan.capital": "Se reservan {years} años de costes fijos y se añaden {capital} de caja al presupuesto. Dentro de este margen se puede invertir más de lo que se ingresa.",
     "delegation.flow.capital": "Inversión desde caja",
     "delegation.flow.reserve": "Reserva de {years} años de costes fijos.",
-    "finance.debt.ended": "En {season}, la deuda superó un año de costes fijos y el club cerró. Pasó {rounds} jornadas endeudado. {kept}",
+    "finance.debt.ended": "En {season}, el club quebró y cerró. Constan {rounds} jornadas endeudado. {kept}",
     "delegation.plan.fundedBudget": "Presupuesto con caja {budget} · comprometido {committed} · margen de inversión {left}",
     "delegation.flow.budget": "Presupuesto con caja",
     "delegation.verdict.fundedWages": "La masa salarial de {bill} supera el presupuesto con caja de {budget}",
-    "delegation.verdict.fundedRaise": "Aumento rechazado: la masa salarial de {bill} superaría el presupuesto con caja de {budget} ({plan})."
+    "delegation.verdict.fundedRaise": "Aumento rechazado: la masa salarial de {bill} superaría el presupuesto con caja de {budget} ({plan}).",
+    "delegation.plan.fundedSellLine": "Se vende con más facilidad cuando los salarios superan el {first}% y el {second}% de los ingresos más el capital disponible (ahora {now}%)."
   }
 }
