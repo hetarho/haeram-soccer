@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { MatchFrame } from '../../packages/contracts/src/types';
+import type { MatchFrame, MatchMaterial, Player } from '../../packages/contracts/src/types';
 import { presentationAdvance, deadBallBeats } from '../../apps/web/src/entities/match/logic';
 import { assertComparable, readExport, type ComparisonExport } from './data';
 import { ownSeconds, periodsOf, sharedPreparations, sharedTimeline } from './model';
@@ -19,7 +19,11 @@ const exported = () =>
       inputHash: 'b'.repeat(64),
       recordHash: 'c'.repeat(64),
     },
-    playback: { frames: frames(1, 2), squads: [[], []], record: {} },
+    playback: {
+      frames: frames(1, 2),
+      squads: [[{ id: 'home-player', attrs: { pace: 70 } }], []],
+      record: { score: { home: 1, away: 0 }, players: [{ id: 'home-player', metrics: [1, 2] }] },
+    },
   }) as unknown as ComparisonExport;
 
 describe('standalone comparison input contracts', () => {
@@ -39,6 +43,35 @@ describe('standalone comparison input contracts', () => {
       expect(() => assertComparable(a, b)).toThrow();
     },
   );
+  it('rejects changed actual scores despite unchanged claimed hashes', () => {
+    const a = exported(),
+      b = structuredClone(a);
+    b.playback.record.score.home = 2;
+    expect(() => assertComparable(a, readExport(b))).toThrow();
+  });
+  it('rejects changed player counters despite unchanged claimed hashes', () => {
+    const a = exported(),
+      b = structuredClone(a);
+    b.playback.record.players[0].metrics[0] = 99;
+    expect(() => assertComparable(a, readExport(b))).toThrow();
+  });
+  it('rejects changed frozen player inputs despite unchanged claimed hashes', () => {
+    const a = exported(),
+      b = structuredClone(a);
+    b.playback.squads[0][0].attrs.pace = 90;
+    expect(() => assertComparable(a, readExport(b))).toThrow();
+  });
+  it('ignores only script-derived material and object key order', () => {
+    const a = exported(),
+      b = structuredClone(a);
+    a.playback.record.material = { side: 'baseline' } as unknown as MatchMaterial;
+    b.playback.record.material = { side: 'candidate' } as unknown as MatchMaterial;
+    b.playback.record.score = { away: 0, home: 1 };
+    b.playback.squads[0][0] = { attrs: { pace: 70 }, id: 'home-player' } as unknown as Player;
+    b.playback.frames = frames(1, 1, 2);
+    b.meta.head = 'd'.repeat(40);
+    expect(() => assertComparable(readExport(a), readExport(b))).not.toThrow();
+  });
   it('rejects missing frames and malformed provenance', () => {
     expect(() => readExport({})).toThrow();
     const a = exported();
