@@ -1,0 +1,66 @@
+{
+  "task": "T866",
+  "tag": "pw86",
+  "diffBase": "3c07ec2d8a46e9d868a9864750c892aa5b86ca22",
+  "startedAt": "2026-11-13T08:52:43.827Z",
+  "exploreDeadline": "2026-11-13T12:00:00.000Z",
+  "hostCutAt": "2026-11-13T12:15:00.000Z",
+  "performanceBaseline": "b41b8978774506a0344aafd100bf4237ce70046d",
+  "seedPlan": [
+    "persisted-world-viability",
+    "persisted-world-1",
+    "persisted-world-2",
+    "persisted-world-3",
+    "persisted-world-4"
+  ],
+  "scope": {
+    "associations": [
+      "ENG",
+      "ESP",
+      "ITA",
+      "GER",
+      "FRA",
+      "NED",
+      "POR",
+      "BEL"
+    ],
+    "from": 1930,
+    "until": 2010,
+    "valueExtension": 2025,
+    "ownerless": true,
+    "referenceCareersRemeasured": false
+  },
+  "hostOwns": [
+    "heavy-lock",
+    "verify:batch",
+    "browser-suite",
+    "main-publication",
+    "CI",
+    "report"
+  ],
+  "originalLimits": {
+    "checkpointUtf16Bytes": 6291456,
+    "portableUtf8Bytes": 8388608,
+    "decompressedJsonBytes": 33554432,
+    "squadsCompressedBytes": 500000,
+    "recordsCompressedBytes": 450000,
+    "generationMsPerSeason": 5000
+  },
+  "originalExploreDeadline": "2026-11-13T12:52:43.827Z",
+  "originalHostCutAt": "2026-11-13T13:22:43.827Z",
+  "publicationDeadline": "2026-11-13T13:00:00.000Z",
+  "testPolicy": "unit-only",
+  "deferredByOwner": [
+    "browser-generation-budget",
+    "activation-host-integration",
+    "integration-tests",
+    "contract-tests",
+    "e2e",
+    "verify:batch",
+    "CI"
+  ],
+  "productionConfigSelection": {
+    "changed": false,
+    "reason": "Alternative early division residuals still fail; retain current named configs and flat founding while preserving measured trial artifacts."
+  }
+}

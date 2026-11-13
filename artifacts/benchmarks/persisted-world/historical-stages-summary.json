@@ -1,0 +1,292 @@
+[
+  {
+    "ownerStage": "T867",
+    "candidate": "affbd6c6846cb29418b923daf354244557fbb503",
+    "allowance": 1.25,
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 4598.541499999999,
+          "wall": 4616.453194
+        },
+        "cand": {
+          "cpu": 4304.6355,
+          "wall": 4315.607100499999
+        }
+      },
+      "cpu": {
+        "ratio": 0.9121,
+        "lo": 0.8119,
+        "hi": 0.9985,
+        "call": "faster"
+      },
+      "wall": {
+        "ratio": 0.911,
+        "lo": 0.8106,
+        "hi": 0.9977,
+        "call": "faster"
+      }
+    },
+    "bundles": {
+      "base": "395630af332d7b0f",
+      "cand": "aa7d2aa2c42887c0"
+    },
+    "hashes": {
+      "base": [
+        "9e00a049bf6b781b"
+      ],
+      "cand": [
+        "ef9fb5c00eb3f1f6"
+      ]
+    },
+    "machine": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "v24.22.1",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "cores": 12
+    },
+    "load1": [
+      2.77,
+      2.81,
+      2.76,
+      2.73,
+      2.69
+    ],
+    "artifactSha256": "f62ff0cbfeaac3d67c704fe3d7063ca4fb192eb0f94b6af26cf74277bbcfbdb6",
+    "cliReceiptAvailable": true
+  },
+  {
+    "ownerStage": "T862",
+    "candidate": "4afa1fa1bad788ddcea2548d2409e9754333dcfb",
+    "allowance": 1.6,
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 5305.6224999999995,
+          "wall": 6814.170760499999
+        },
+        "cand": {
+          "cpu": 18307.953999999998,
+          "wall": 21439.291698
+        }
+      },
+      "cpu": {
+        "ratio": 3.4404,
+        "lo": 3.14,
+        "hi": 3.8058,
+        "call": "slower"
+      },
+      "wall": {
+        "ratio": 3.3839,
+        "lo": 2.8009,
+        "hi": 4.3996,
+        "call": "slower"
+      }
+    },
+    "bundles": {
+      "base": "395630af332d7b0f",
+      "cand": "c09e9501413575f6"
+    },
+    "hashes": {
+      "base": [
+        "9e00a049bf6b781b"
+      ],
+      "cand": [
+        "d294e86c0475ae89"
+      ]
+    },
+    "machine": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "v24.22.1",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "cores": 12
+    },
+    "load1": [
+      3.51,
+      8.81,
+      14.96,
+      14.5,
+      11.95
+    ],
+    "artifactSha256": "7006a7cbcd223b0d402df9a7886e07cdadd955b20f4c96a0673d499b8d019a92",
+    "cliReceiptAvailable": true
+  },
+  {
+    "ownerStage": "T863",
+    "candidate": "935a91df96fb7c90c60a85c3504e77c7d5758894",
+    "allowance": 1.6,
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 5096.461999999996,
+          "wall": 5146.291861500003
+        },
+        "cand": {
+          "cpu": 67592.253,
+          "wall": 67707.258191
+        }
+      },
+      "cpu": {
+        "ratio": 13.438,
+        "lo": 12.6768,
+        "hi": 14.5468,
+        "call": "slower"
+      },
+      "wall": {
+        "ratio": 13.3642,
+        "lo": 11.9328,
+        "hi": 15.4062,
+        "call": "slower"
+      }
+    },
+    "bundles": {
+      "base": "395630af332d7b0f",
+      "cand": "6a05ef4790600be2"
+    },
+    "hashes": {
+      "base": [
+        "9e00a049bf6b781b"
+      ],
+      "cand": [
+        "b9ca13ac48f25cec"
+      ]
+    },
+    "machine": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "v24.22.1",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "cores": 12
+    },
+    "load1": [
+      10.21,
+      6.29,
+      12.87,
+      7.23,
+      5.98
+    ],
+    "artifactSha256": "cf4def76bcbeeae0b523e9e89806e1271f7bda1d8f3bee3a5ed48d74b6745a0d",
+    "cliReceiptAvailable": true
+  },
+  {
+    "ownerStage": "T864",
+    "candidate": "a85d3b99ab76d0d5fa6dcb4d7e71e8cb081cd42d",
+    "allowance": 1.9,
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 6204.093499999998,
+          "wall": 7731.798047499996
+        },
+        "cand": {
+          "cpu": 194287.25900000002,
+          "wall": 215294.977684
+        }
+      },
+      "cpu": {
+        "ratio": 31.1927,
+        "lo": 28.4459,
+        "hi": 33.191,
+        "call": "slower"
+      },
+      "wall": {
+        "ratio": 30.1685,
+        "lo": 24.5222,
+        "hi": 35.6383,
+        "call": "slower"
+      }
+    },
+    "bundles": {
+      "base": "395630af332d7b0f",
+      "cand": "f5aa76562bfed9f6"
+    },
+    "hashes": {
+      "base": [
+        "9e00a049bf6b781b"
+      ],
+      "cand": [
+        "60ed7cb0fff6c5b3"
+      ]
+    },
+    "machine": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "v24.22.1",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "cores": 12
+    },
+    "load1": [
+      5.91,
+      9.25,
+      11.54,
+      21.38,
+      12.72
+    ],
+    "artifactSha256": "587a065b175153818ce34f719f7be8cfb71066aee9c7f4080b5e60028e4b578c",
+    "cliReceiptAvailable": true
+  },
+  {
+    "ownerStage": "T865",
+    "candidate": "2d8f77e7118c091bcd7d57367e3c75a11406ea22",
+    "allowance": 2.1,
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 5086.2820000000065,
+          "wall": 5657.891390999997
+        },
+        "cand": {
+          "cpu": 200066.4645,
+          "wall": 200477.97580900003
+        }
+      },
+      "cpu": {
+        "ratio": 38.5731,
+        "lo": 34.5776,
+        "hi": 43.0303,
+        "call": "slower"
+      },
+      "wall": {
+        "ratio": 35.7651,
+        "lo": 29.895,
+        "hi": 42.7877,
+        "call": "slower"
+      }
+    },
+    "bundles": {
+      "base": "395630af332d7b0f",
+      "cand": "ffa269ab63996239"
+    },
+    "hashes": {
+      "base": [
+        "9e00a049bf6b781b"
+      ],
+      "cand": [
+        "fb79799121517000"
+      ]
+    },
+    "machine": {
+      "platform": "linux",
+      "arch": "x64",
+      "node": "v24.22.1",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "cores": 12
+    },
+    "load1": [
+      11.12,
+      8.98,
+      6.03,
+      5.61,
+      9.01
+    ],
+    "artifactSha256": "2c75ce0fa18a5196450ca224b08ffa0f78e5c39071dc4a5cea5dba8ac413af09",
+    "cliReceiptAvailable": false
+  }
+]

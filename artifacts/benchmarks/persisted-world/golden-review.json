@@ -1,0 +1,87 @@
+{
+  "kind": "static-fact-diff",
+  "engine": [
+    "0.8.0",
+    "0.8.0"
+  ],
+  "catalog": [
+    "2026-demo-5",
+    "2026-demo-5"
+  ],
+  "definitions": [
+    {
+      "name": "takeover-and-commercial-decisions",
+      "definitionUnchanged": false,
+      "changedExpectedFields": [
+        "cash",
+        "club",
+        "events",
+        "expense",
+        "income",
+        "matches",
+        "players"
+      ]
+    },
+    {
+      "name": "french-redenomination",
+      "definitionUnchanged": true,
+      "changedExpectedFields": [
+        "cash",
+        "club",
+        "euro",
+        "events",
+        "history",
+        "matches",
+        "players"
+      ]
+    },
+    {
+      "name": "modern-european-season",
+      "definitionUnchanged": true,
+      "changedExpectedFields": [
+        "cash",
+        "club",
+        "euro",
+        "events",
+        "history",
+        "matches",
+        "players"
+      ]
+    },
+    {
+      "name": "current-responsibilities-and-manual-events",
+      "definitionUnchanged": true,
+      "changedExpectedFields": [
+        "careers",
+        "cash",
+        "club",
+        "direction",
+        "events",
+        "expense",
+        "matches",
+        "players",
+        "recruitmentArrivals"
+      ]
+    },
+    {
+      "name": "staff-proposed-combined-contract",
+      "definitionUnchanged": true,
+      "changedExpectedFields": [
+        "careers",
+        "events",
+        "players",
+        "playingCoachProposals"
+      ]
+    },
+    {
+      "name": "financial-mediation-fixed-reinforcement-promise",
+      "definitionUnchanged": true,
+      "changedExpectedFields": [
+        "careers",
+        "events",
+        "mediations",
+        "players"
+      ]
+    }
+  ]
+}

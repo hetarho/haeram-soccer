@@ -1,0 +1,108 @@
+{
+  "measuredAt": "2026-11-13T09:43:34.431Z",
+  "configs": {
+    "NPC_SQUAD": {
+      "size": 22
+    },
+    "NPC_YOUTH": {
+      "ages": [
+        17,
+        18
+      ],
+      "byAcademy": [
+        {
+          "count": 2,
+          "potential": [
+            44,
+            65
+          ]
+        },
+        {
+          "count": 2,
+          "potential": [
+            54,
+            75
+          ]
+        },
+        {
+          "count": 3,
+          "potential": [
+            64,
+            85
+          ]
+        },
+        {
+          "count": 3,
+          "potential": [
+            74,
+            95
+          ]
+        },
+        {
+          "count": 4,
+          "potential": [
+            78,
+            99
+          ]
+        },
+        {
+          "count": 5,
+          "potential": [
+            83,
+            99
+          ]
+        }
+      ],
+      "headroom": [
+        12,
+        24
+      ]
+    },
+    "NPC_MARKET": {
+      "days": [
+        0,
+        0.5,
+        1
+      ],
+      "upgrade": 4,
+      "blocked": 4,
+      "loanAge": 23,
+      "moves": 3,
+      "minimum": 18,
+      "termAge": 27
+    },
+    "CLUB_LEVELS": {
+      "investment": 0.5,
+      "decay": 0.05,
+      "coachingAbility": [
+        30,
+        40,
+        50,
+        60,
+        70,
+        80
+      ]
+    },
+    "SQUAD_SPREAD": {
+      "inForce": "flat"
+    }
+  },
+  "simulation": {
+    "algorithm": "sha256",
+    "sha256": "beb83c3631baefcebb0567668e4d14d3bf291d3292609a823fd2b64c41998efc",
+    "files": 206,
+    "entry": "packages/engine/src/history.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "machine": {
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "logicalCpus": 12,
+    "memoryBytes": 33577496576,
+    "load": [
+      12.49,
+      10.01,
+      9.97
+    ],
+    "node": "v24.22.1"
+  }
+}

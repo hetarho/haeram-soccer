@@ -24,7 +24,7 @@ interface Run {
   computation: { sha256: string };
   configs: unknown;
   rows: { country: string; year: number; divisions: Division[] }[];
-  champions: {
+  champions?: {
     country: string;
     different: number;
     most: number;
@@ -115,13 +115,16 @@ const divisions = COUNTRIES.flatMap(({ code, groups }) =>
 );
 const champions = COUNTRIES.map(({ code }) => {
   const observed = runs.flatMap((r) => {
-    const row = r.champions.find((c) => c.country === code);
+    const row = r.champions?.find((c) => c.country === code);
     return row ? [{ seed: r.seed, ...row, complete: completeChampions(row.seasons) }] : [];
   });
   const cells = observed.filter((c) => c.complete);
   return {
     country: code,
     completeSeeds: cells.length,
+    missingSeeds: runs
+      .filter((r) => !r.champions?.some((c) => c.country === code))
+      .map((r) => r.seed),
     incompleteSeeds: observed
       .filter((c) => !c.complete)
       .map((c) => ({
@@ -186,13 +189,16 @@ const result = {
     complete: run.complete === true || (run.measured === true && run.until === coreEnd),
     observedFirstYear: Math.min(...run.rows.map((row) => row.year)),
     observedLastYear: Math.max(...run.rows.map((row) => row.year)),
+    missingFields: ['configs', 'playedSeasons', 'champions', 'peakAges'].filter(
+      (key) => !(key in run),
+    ),
   })),
   divisions,
   champions,
   books,
   values,
   affiliations: runs.map((r) => ({ seed: r.seed, rows: r.affiliations })),
-  peakAges: runs.map((r) => ({ seed: r.seed, rows: r.peakAges })),
+  peakAges: runs.map((r) => ({ seed: r.seed, rows: r.peakAges ?? [] })),
   divisionFailures: divisions.reduce((n, d) => n + (d.outOfBand ?? 0), 0),
   championFailures: champions.reduce((n, c) => n + c.outOfBand, 0),
 };

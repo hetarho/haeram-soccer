@@ -1,0 +1,20 @@
+{
+  "source": "438592699e72f3553546fb231511562328057079",
+  "previousSource": "af821030cfeb79ce5e1bc734ecf141011db5aea4",
+  "packageTree": "0212c08e4b21729615c906a8bf024cd4576f05ab",
+  "previousPackageTree": "0212c08e4b21729615c906a8bf024cd4576f05ab",
+  "sameProductionPackages": true,
+  "portableGolden": {
+    "file": "tests/fixtures/portable-v1.json",
+    "sha256": "711d428d457b087b00bb81c13d0096c43851af7a0e9b0441a276d67725bf96f5",
+    "definitions": 6,
+    "generationReceiptRecovered": false,
+    "generationCompleted": true,
+    "generationLog": "golden-generation.log",
+    "generationLogFinishedAt": "2026-11-13T09:28:50.607902+00:00"
+  },
+  "historicalArtifact": {
+    "file": "T286-before.json",
+    "sha256": "a0512495234a966671a6e1db9e5b98b15e7ad2eaef6089dde1b7e84e0c5232cb"
+  }
+}
