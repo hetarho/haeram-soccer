@@ -8,8 +8,16 @@ const sample = (elapsedSeconds: number, near = true): MatchMotionSample => ({
   phase: 'possession',
   ownerId: 'a',
   players: [
-    [{ id: 'a', position: [50, 50], velocity: [0, 0], state: 'carry' }],
-    [{ id: 'b', position: [near ? 51 : 60, 50], velocity: [0, 0], state: 'press' }],
+    [{ id: 'a', position: [50, 50], velocity: [0, 0], state: 'carry', intent: [50, 50] }],
+    [
+      {
+        id: 'b',
+        position: [near ? 51 : 60, 50],
+        velocity: [0, 0],
+        state: 'press',
+        intent: [50, 50],
+      },
+    ],
   ],
 });
 it('counts the longest consecutive run once per possession interval, with no gap bridged', () => {

@@ -114,12 +114,24 @@ function compactFrames(frames: MatchPlayback['frames']): MatchPlayback['frames']
     ...frame,
     metrics: [[], []],
     players: frame.players?.map((side) =>
-      side.map(({ id, position, velocity, state }) => ({ id, position, velocity, state })),
+      side.map(({ id, position, velocity, state, intent }) => ({
+        id,
+        position,
+        velocity,
+        state,
+        intent,
+      })),
     ) as typeof frame.players,
     motion: frame.motion?.map((sample) => ({
       ...sample,
       players: sample.players.map((side) =>
-        side.map(({ id, position, velocity, state }) => ({ id, position, velocity, state })),
+        side.map(({ id, position, velocity, state, intent }) => ({
+          id,
+          position,
+          velocity,
+          state,
+          intent,
+        })),
       ) as typeof sample.players,
     })),
   }));
