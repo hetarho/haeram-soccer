@@ -14,6 +14,8 @@ import { CLUB_LEVELS } from './persisted-squads';
 import { CLUB_BOOKS } from './owner-config';
 import { scaleBy } from './primitives';
 import { marketWageAt } from './market-prices';
+import { stature } from './world';
+import { operatingExpensesAt } from './finance';
 
 describe('NPC contract books on an isolated squad', () => {
   it('pays all stored contracts, including players outside the eighteen, without repricing', () => {
@@ -31,26 +33,37 @@ describe('NPC contract books on an isolated squad', () => {
     expect(BigInt(book.result)).toBe(BigInt(book.income) - wages - BigInt(book.costs));
   });
 
-  it('uses opening income before the first close, and last income less costs thereafter', () => {
+  it('uses opening income and cash before the first close, then the previous operating book', () => {
     const { w, c } = npcBooksFixture();
     booksOpen(w);
     const opening = c.books!;
-    expect(npcWageLimit(w, c)).toBe(BigInt(opening.openingIncome!));
+    const initial = npcWageLimit(w, c)!;
+    expect(initial).toBeGreaterThanOrEqual(
+      BigInt(opening.openingIncome!) +
+        BigInt(opening.cash) -
+        BigInt(operatingExpensesAt(c.country, w.year, c.tier)),
+    );
     expect(opening.cash).toBe(scaleBy(opening.openingIncome!, CLUB_BOOKS.opening, 1000n));
     settleNpcBooks(w, c);
     const last = c.books!.seasons[0]!;
-    expect(npcWageLimit(w, c)).toBe(BigInt(last.income) - BigInt(last.costs));
+    expect(npcWageLimit(w, c)).toBeGreaterThanOrEqual(
+      BigInt(last.income) -
+        BigInt(operatingExpensesAt(c.country, w.year, c.tier)) +
+        BigInt(c.books!.cash) -
+        BigInt(c.books!.debt),
+    );
   });
 
   it('counts the proposed wage once for a renewal, refuses one unit over, and permits equality', () => {
     const { w, c, players } = npcBooksFixture();
     for (const p of players) p.wage = '10';
-    c.books = { seasons: [], cash: '0', debt: '0', openingIncome: '220' };
+    const costs = BigInt(operatingExpensesAt(c.country, w.year, c.tier));
+    c.books = { seasons: [], cash: (220n + costs).toString(), debt: '0', openingIncome: '0' };
     expect(npcCanPay(w, c, '0')).toBe(true);
     expect(npcCanPay(w, c, '1')).toBe(false);
     expect(npcCanPay(w, c, '10', players[0]!.id)).toBe(true);
     expect(npcCanPay(w, c, '11', players[0]!.id)).toBe(false);
-    c.books.openingIncome = '100';
+    c.books.cash = (100n + costs).toString();
     expect(npcCanPay(w, c, '0')).toBe(false);
   });
 
@@ -141,12 +154,98 @@ describe('NPC contract books on an isolated squad', () => {
     const change = currencyChange('FRA', 1998, 1999)!;
     expect(book.wages).toBe(bill.toString());
     expect(players.map((p) => p.wage)).toEqual(old.map(change));
-    expect(npcWageLimit(w, c, 1999)).toBe(
-      BigInt(change((BigInt(book.income) - BigInt(book.costs)).toString())),
+    const limit = npcWageLimit(w, c, 1999)!;
+    const income = BigInt(change(book.income));
+    expect(limit).toBe(
+      income +
+        (income * 150n) / 1000n -
+        BigInt(operatingExpensesAt(c.country, 1999, c.tier)) +
+        BigInt(c.books!.cash) -
+        BigInt(c.books!.debt),
     );
     w.year = 1999;
+    expect(npcWageLimit(w, c)).toBe(limit);
     const converted = players.map((p) => p.wage);
     settleNpcBooks(w, c);
     expect(players.map((p) => p.wage)).toEqual(converted);
+  });
+
+  it.each([
+    [9, 1000n],
+    [4, 500n],
+    [-1, 150n],
+    [-5, 0n],
+  ] as const)('funds stature %i by its bounded share', (minimum, share) => {
+    const { w, c } = npcBooksFixture();
+    const id = Array.from({ length: 92 }, (_, n) => `ENG:0:0:${n}`).find((candidate) => {
+      const value = stature(w.seed, candidate);
+      return minimum === -5
+        ? value < -1
+        : value >= minimum && (minimum === 9 || value < (minimum === 4 ? 9 : 4));
+    })!;
+    c.id = id;
+    c.country = 'ENG';
+    c.books = {
+      seasons: [],
+      cash: '20',
+      debt: '10',
+      openingIncome: '1000',
+      transfersPaid: '40',
+      transfersReceived: '30',
+    };
+    const limit = npcWageLimit(w, c)!;
+    expect(limit).toBe(1000n + share - BigInt(operatingExpensesAt(c.country, w.year, c.tier)));
+    expect(npcWageLimit(w, c)).toBe(limit);
+    expect(c.books.cash).toBe('20');
+  });
+
+  it('draws only the closing shortfall once, keeps income components separate, and expires unused support', () => {
+    const { w, c } = npcBooksFixture();
+    const id = Array.from({ length: 20 }, (_, n) => `ENG:0:0:${n}`).find(
+      (candidate) => stature(w.seed, candidate) >= 9,
+    )!;
+    c.id = id;
+    c.country = 'ENG';
+    c.books = { seasons: [], cash: '0', debt: '0', openingIncome: '1000' };
+    const probe = structuredClone(w);
+    const estimate = settleNpcBooks(probe, probe.clubs[1]!).seasons[0]!;
+    const desiredShortfall = 400n;
+    const start = -desiredShortfall - BigInt(estimate.result);
+    c.books.cash = start > 0n ? start.toString() : '0';
+    c.books.debt = start < 0n ? (-start).toString() : '0';
+    const result = settleNpcBooks(w, c);
+    const book = result.seasons[0]!;
+    expect(book.ownerCapital).toBe('400');
+    expect(BigInt(book.income)).toBe(
+      Object.values(book.incomeComponents!).reduce((a, v) => a + BigInt(v), 0n),
+    );
+    expect([result.cash, result.debt]).toEqual(['0', '0']);
+    const snapshot = structuredClone(result);
+    expect(settleNpcBooks(w, c)).toEqual(snapshot);
+    expect(c.books).toEqual(snapshot);
+    w.playerClub = c.id;
+    w.year++;
+    expect(settleNpcBooks(w, c).seasons[0]!.ownerCapital).toBe('0');
+  });
+
+  it('permits wages above turnover only within the funded envelope and caps a large deficit', () => {
+    const { w, c, players } = npcBooksFixture();
+    const id = Array.from({ length: 20 }, (_, n) => `ENG:0:0:${n}`).find(
+      (candidate) => stature(w.seed, candidate) >= 9,
+    )!;
+    w.squads![id] = players;
+    c.id = id;
+    c.country = 'ENG';
+    players.forEach((p) => {
+      p.wage = '0';
+    });
+    const costs = BigInt(operatingExpensesAt(c.country, w.year, c.tier));
+    c.books = { seasons: [], cash: costs.toString(), debt: '0', openingIncome: '1000' };
+    expect(npcCanPay(w, c, '2000')).toBe(true);
+    expect(npcCanPay(w, c, '2001')).toBe(false);
+    c.books.debt = '999999999999999';
+    const book = settleNpcBooks(w, c).seasons[0]!;
+    expect(book.ownerCapital).toBe('1000');
+    expect(BigInt(c.books!.debt)).toBeGreaterThan(0n);
   });
 });

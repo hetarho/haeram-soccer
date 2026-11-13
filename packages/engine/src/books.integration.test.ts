@@ -81,7 +81,7 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
       expect(amount(book!.result)).toBe(
         amount(book!.income) - amount(book!.wages) - amount(book!.costs),
       );
-      const result = amount(book!.result),
+      const result = amount(book!.result) + amount(book!.ownerCapital!),
         ceiling = amount(scaleBy(book!.income, CLUB_BOOKS.cashSeasons, 1000n)),
         floor = -amount(scaleBy(book!.income, CLUB_BOOKS.debtSeasons, 1000n));
       expect(amount(books.cash) - amount(books.debt)).toBe(
@@ -124,6 +124,7 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
       seasons: [],
       cash: start > 0n ? start.toString() : '0',
       debt: start < 0n ? (-start).toString() : '0',
+      openingIncome: '0',
     };
     const books = settleNpcBooks(w, target);
     expect(amount(books.cash) - amount(books.debt)).toBe(end);

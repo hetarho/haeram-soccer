@@ -26,6 +26,7 @@ import {
 import { marketWageAt } from './market-prices';
 import { NPC_WAGE_DECISIONS, npcWageBill } from './books';
 import { lineOf } from './player';
+import { operatingExpensesAt } from './finance';
 import {
   FREE_AGENT_FLOW as REFERENCE_FLOW,
   refreshFreeAgents as referenceRefresh,
@@ -152,9 +153,15 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     p.until = w.year;
     const wage = marketWageAt(c.country, 1951, c.tier, p);
     const budget = npcWageBill(w, c) - BigInt(p.wage) + BigInt(wage);
-    c.books = { seasons: [], cash: '0', debt: '0', openingIncome: (budget - 1n).toString() };
+    const costs = BigInt(operatingExpensesAt(c.country, 1951, c.tier));
+    c.books = {
+      seasons: [],
+      cash: (budget + costs - 1n).toString(),
+      debt: '0',
+      openingIncome: '0',
+    };
     const allowed = structuredClone(w);
-    allowed.clubs[1]!.books!.openingIncome = budget.toString();
+    allowed.clubs[1]!.books!.cash = (budget + costs).toString();
     renewNpcContracts(w, c);
     expect(w.freeAgents!.some((q) => q.id === p.id)).toBe(true);
     const other = allowed.clubs[1]!;
@@ -194,15 +201,21 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     const wage = marketWageAt(c.country, w.year, c.tier, cheap);
     c.books = {
       seasons: [],
-      cash: '0',
+      cash: (
+        npcWageBill(w, c) +
+        BigInt(wage) +
+        BigInt(operatingExpensesAt(c.country, w.year, c.tier))
+      ).toString(),
       debt: '0',
-      openingIncome: (npcWageBill(w, c) + BigInt(wage)).toString(),
+      openingIncome: '0',
     };
     w.freeAgents = [dear, cheap];
     refreshFreeAgents(w);
     expect(clubPlayers(w, c).some((p) => p.id === cheap.id)).toBe(true);
     expect(w.freeAgents!.map((p) => p.id)).toEqual([dear.id]);
-    expect(npcWageBill(w, c)).toBe(BigInt(c.books.openingIncome!));
+    expect(npcWageBill(w, c)).toBe(
+      BigInt(c.books.cash) - BigInt(operatingExpensesAt(c.country, w.year, c.tier)),
+    );
   });
 
   it('does not sign beyond standing size when every line has cover', () => {

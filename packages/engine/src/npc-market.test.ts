@@ -26,6 +26,7 @@ import { coachingGrade } from './aptitude';
 import { crossWar } from './wartime';
 import { suitorFor } from './transfers';
 import { expireContracts } from './contracts';
+import { operatingExpensesAt } from './finance';
 
 /** Three tiny synthetic NPC squads; no fixture simulation, world generation or time progression. */
 function fixture(year = 1950) {
@@ -59,6 +60,11 @@ function fixture(year = 1950) {
     };
     invalidateNpcSquad(w, c.id);
   }
+  const other = w.clubs[3]!;
+  other.books!.openingIncome = '0';
+  other.books!.cash = (
+    npcWageBill(w, other) + BigInt(operatingExpensesAt(other.country, w.year, other.tier))
+  ).toString();
   return { w, seller: w.clubs[1]!, buyer: w.clubs[2]!, other: w.clubs[3]! };
 }
 function listedKeeper(w: World, seller: Club, age = 24) {
@@ -89,6 +95,13 @@ describe('isolated NPC transfer windows', () => {
       untouched = w.squads![other.id];
     missingKeeper(w, buyer);
     const fee = marketValueAt('ENG', w.year, seller.tier, p);
+    buyer.books!.openingIncome = '0';
+    buyer.books!.cash = (
+      npcWageBill(w, buyer) +
+      BigInt(marketWageAt('ENG', w.year, buyer.tier, p)) +
+      BigInt(fee) +
+      BigInt(operatingExpensesAt(buyer.country, w.year, buyer.tier))
+    ).toString();
     npcMarket(w);
     expect(locations(w, p.id)).toEqual([buyer.id]);
     const live = w.squads![buyer.id]!.find((q) => q.id === p.id)!;
@@ -109,7 +122,10 @@ describe('isolated NPC transfer windows', () => {
   it('an over-limit club cannot buy and lists its highest wage first without selling below eighteen', () => {
     const { w, seller, buyer } = fixture();
     const p = listedKeeper(w, seller);
-    seller.books!.openingIncome = npcWageBill(w, seller).toString();
+    seller.books!.openingIncome = '0';
+    seller.books!.cash = (
+      npcWageBill(w, seller) + BigInt(operatingExpensesAt(seller.country, w.year, seller.tier))
+    ).toString();
     p.wage = (BigInt(p.wage) * 100n).toString();
     missingKeeper(w, buyer);
     expect(npcOffer(w, seller, w.squads![buyer.id]![0]!, buyer, '1')).toBeUndefined();
@@ -134,11 +150,40 @@ describe('isolated NPC transfer windows', () => {
     expect(npcCanSell(w, seller, keepers[0]!)).toBe(false);
   });
 
+  it('stops forced sales when the first fee and wage relief restore the envelope', () => {
+    const { w, seller, buyer } = fixture();
+    const first = listedKeeper(w, seller);
+    const second = structuredClone(first);
+    second.id = 'second-forced-keeper';
+    first.wage = (BigInt(first.wage) * 100n).toString();
+    second.wage = (BigInt(first.wage) / 2n).toString();
+    for (const a of ATTRIBUTES) second.attrs[a] = 74;
+    w.squads![seller.id]!.push(second);
+    const bill = npcWageBill(w, seller);
+    seller.books = {
+      seasons: [],
+      openingIncome: '0',
+      cash: (
+        bill -
+        BigInt(first.wage) -
+        1n +
+        BigInt(operatingExpensesAt(seller.country, w.year, seller.tier))
+      ).toString(),
+      debt: '0',
+    };
+    missingKeeper(w, buyer);
+    npcMarket(w);
+    expect(locations(w, first.id)).toEqual([buyer.id]);
+    expect(locations(w, second.id)).toEqual([seller.id]);
+    expect(npcWageBill(w, seller)).toBeLessThanOrEqual(npcWageLimit(w, seller)!);
+  });
+
   it('awards a contested player by stature even when the stronger club appears later', () => {
     const { w, seller, buyer, other } = fixture();
     const p = listedKeeper(w, seller);
     missingKeeper(w, buyer);
     missingKeeper(w, other);
+    other.books!.cash = '999999999999';
     const expected = stature(w.seed, buyer.id) > stature(w.seed, other.id) ? buyer : other;
     expect(stature(w.seed, buyer.id)).not.toBe(stature(w.seed, other.id));
     w.clubs.reverse();
@@ -170,6 +215,7 @@ describe('isolated NPC transfer windows', () => {
   it('uses the higher offered wage when stature is equal', () => {
     const { w, seller, buyer, other } = fixture();
     const p = listedKeeper(w, seller);
+    other.books!.cash = '999999999999';
     for (const [c, id] of [
       [buyer, 'bidder-a'],
       [other, 'bidder-b'],
@@ -249,8 +295,12 @@ describe('isolated NPC transfer windows', () => {
         }
         buyer.books!.openingIncome = '999999999999999';
       } else {
-        buyer.books!.openingIncome = (
-          npcWageBill(w, buyer) + BigInt(marketWageAt('ENG', w.year, buyer.tier, first))
+        buyer.books!.openingIncome = '0';
+        buyer.books!.cash = (
+          npcWageBill(w, buyer) +
+          BigInt(marketWageAt('ENG', w.year, buyer.tier, first)) +
+          BigInt(marketValueAt('ENG', w.year, seller.tier, first)) +
+          BigInt(operatingExpensesAt(buyer.country, w.year, buyer.tier))
         ).toString();
       }
       const replay = structuredClone(w);
@@ -261,6 +311,31 @@ describe('isolated NPC transfer windows', () => {
       expect(locations(w, second.id)).toEqual([seller.id]);
       expect(npcOffer(w, buyer, second, seller, '1')).toBeUndefined();
     }
+  });
+
+  it('shares one exact envelope between existing wages, a fee and a new wage', () => {
+    const { w, seller, buyer } = fixture();
+    const p = listedKeeper(w, seller);
+    missingKeeper(w, buyer);
+    const wage = BigInt(marketWageAt('ENG', w.year, buyer.tier, p));
+    const bill = npcWageBill(w, buyer);
+    buyer.books = {
+      seasons: [],
+      cash: (
+        bill +
+        wage +
+        10n +
+        BigInt(operatingExpensesAt(buyer.country, w.year, buyer.tier))
+      ).toString(),
+      debt: '0',
+      openingIncome: '0',
+    };
+    expect(npcOffer(w, buyer, p, seller, '10')).toBeDefined();
+    expect(npcOffer(w, buyer, p, seller, '11')).toBeUndefined();
+    buyer.books.transfersPaid = '1';
+    expect(npcOffer(w, buyer, p, seller, '10')).toBeUndefined();
+    buyer.books.transfersReceived = '1';
+    expect(npcOffer(w, buyer, p, seller, '10')).toBeDefined();
   });
 
   it('reserves registration room at a loan parent until the player returns', () => {
@@ -478,10 +553,12 @@ describe('isolated NPC transfer windows', () => {
     expect(record.loan).toBeDefined();
     const until = record.loan!.until,
       contract = record.loan!.contractUntil;
+    const books = structuredClone(w.clubs.map((club) => club.books));
     w.year = 1946;
     crossWar(w, 1938);
     expect(record.loan!.until).toBe(until + 7);
     expect(record.loan!.contractUntil).toBe(contract + 7);
     expect(record.moves).toHaveLength(1);
+    expect(w.clubs.map((club) => club.books)).toEqual(books);
   });
 });

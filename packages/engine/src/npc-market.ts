@@ -16,8 +16,7 @@ import { movePerson } from './npc-continuity';
 import { moveSquadPlayer } from './persisted-squads';
 import { formationOf, slotOvr } from './player-state';
 import { LINE_MINIMUM, lineOf, mainOvr, type Slot } from './player';
-import { compareIds, random, ratio, scaleBy } from './primitives';
-import { CLUB_BOOKS } from './owner-config';
+import { compareIds, random, ratio } from './primitives';
 import { clubRegistration, registrationExempt } from './registration';
 import { SQUAD_MINIMUM } from './squad-size';
 import { clubById, clubPlayers, clubStyle, NPC_SQUAD, refillPlace, stature } from './world';
@@ -45,7 +44,7 @@ export function npcMarketDays(year: number) {
 }
 
 type Need = { line: Line; slot?: Slot; best: number; rank: number };
-type Listing = { club: Club; player: Player; loan: boolean };
+type Listing = { club: Club; player: Player; loan: boolean; sellDown: boolean };
 const lines = Object.keys(LINE_MINIMUM) as Line[];
 const compareMoney = (a: bigint, b: bigint) => (a > b ? -1 : a < b ? 1 : 0);
 type ClubFacts = {
@@ -76,20 +75,6 @@ function reservedReturns(w: World, club: string, settlement?: Settlement) {
 }
 const convertFee = (w: World, from: Club, to: Club, fee: string) =>
   fromPounds(to.country, w.year, inPounds(from.country, w.year, fee));
-
-/** Fee commitments settle with the books; count them now so no two purchases spend the same cash. */
-function canPayFee(w: World, c: Club, fee: string) {
-  const b = c.books;
-  if (!b) return false;
-  const income = b.seasons[0]?.income ?? b.openingIncome ?? '0';
-  const room =
-    BigInt(b.cash) -
-    BigInt(b.debt) +
-    BigInt(b.transfersReceived ?? '0') -
-    BigInt(b.transfersPaid ?? '0') +
-    BigInt(scaleBy(income, CLUB_BOOKS.debtSeasons, 1000n));
-  return BigInt(fee) <= room;
-}
 
 /** The level an ordinary place can carry, on the same wage curve as an actual signing. */
 function affordableLevel(w: World, c: Club, players: Player[]) {
@@ -177,6 +162,7 @@ export function npcOffer(
     !/^\d{1,80}$/.test(fee) ||
     buyer.id === w.playerClub ||
     buyer.representative ||
+    !buyer.books ||
     !w.squads?.[buyer.id] ||
     buyer.id === seller.id ||
     !wanted.some((n) => fills(p, n)) ||
@@ -187,7 +173,7 @@ export function npcOffer(
   if (facts.limit !== undefined && facts.bill > facts.limit) return undefined;
   const wage = marketWageAt(buyer.country, w.year, buyer.tier, p);
   const paid = convertFee(w, seller, buyer, fee);
-  if (!npcCanPay(w, buyer, wage, undefined, w.year, facts) || !canPayFee(w, buyer, paid))
+  if (!npcCanPay(w, buyer, (BigInt(wage) + BigInt(paid)).toString(), undefined, w.year, facts))
     return undefined;
   return { club: buyer, wage, paid, pounds: BigInt(inPounds(buyer.country, w.year, wage)) };
 }
@@ -317,6 +303,7 @@ function listings(w: World, clubs: Club[]) {
         club: c,
         player: p,
         loan: !sellDown && (blocked || surplus > 0) && w.year - p.born <= NPC_MARKET.loanAge,
+        sellDown,
       });
       if (sellDown) {
         remaining.splice(remaining.indexOf(p), 1);
@@ -382,6 +369,7 @@ export function npcMarket(w: World) {
         for (const listing of pool) {
           const { limit, bill } = clubFacts(w, listing.club, settlement);
           const sellingDown = limit !== undefined && bill > limit;
+          if (listing.sellDown && !sellingDown) continue;
           if (!sellingDown && (counts.get(listing.club.id) ?? 0) >= NPC_MARKET.moves) continue;
           const value = marketValueAt(
             listing.club.country,
