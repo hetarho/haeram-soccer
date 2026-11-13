@@ -58,7 +58,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T884 | Retain live verification stages and full failure logs | ARCH | T883 | todo |
+| T884 | Retain live verification stages and full failure logs | ARCH | - | todo |
 | T885 | Prepare coherent persisted-player integration fixtures | ARCH CLUB WORLD | - | todo |
 | T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
 | T887 | Prepare real post-close free agents for promise journeys | ARCH CLUB | T885 | todo |
