@@ -74,4 +74,5 @@
 ## next
 - Continue authorized natural-football improvement and baseline repairs until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
 - Complete approved CI foundation, fixture and scene repairs, then proceed through one measured football hypothesis at a time.
-- gusta-implement-task T883
+- Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
+- T883 coherent compatible release is owned by pr14; merge its result before final release preparation.
