@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
+import { canonical } from '../../contracts/src/index';
 import { COUNTRIES, CATALOG_HASH, CATALOG_VERSION } from '../../catalogs/src/index';
 import type { Club, Player, TransferBid, World } from '../../contracts/src/types';
 import { validateWorld } from '../../contracts/src/schema';
@@ -42,6 +44,7 @@ import { staffAuthority } from './testing';
 import { retirePerson } from './careers';
 import { readCopy } from './fixture-copy';
 import { academyIntakeDay, academyIntakeSize, promoteYouth, runAcademyIntake } from './academy';
+import { playerRecord } from './player-records';
 
 /** Ten small synthetic clubs, no world generation, fixture settlement or season simulation. */
 function fixture(year = 1950, owner = true): World {
@@ -172,6 +175,86 @@ describe('persisted playable squads', () => {
     expect(w.squads).toEqual(before);
     liveIds(w);
   });
+
+  it('keeps collision-free founding profiles and random draws unchanged', () => {
+    const w = worldMarketFixture();
+    w.clubs[2].representative = true;
+    foundSquads(w);
+    // Complete foreign roster captured before the adoption identity repair, including contracts.
+    expect(createHash('sha256').update(canonical(w.squads!.foreign)).digest('hex')).toBe(
+      '24d910ac22c903edcf094ad738be6ac1e3a2af5605a856e99cde6bf25b722bd5',
+    );
+  });
+
+  it('never regenerates a retained founding extra already restored among the eighteen', () => {
+    const w = worldMarketFixture(),
+      c = w.clubs[1];
+    w.clubs[2].representative = true;
+    const existing = {
+      ...continuousSquad(w, c)[6]!,
+      id: `${c.id}:founding:${w.year}:2`,
+      name: 'Retained founding player',
+    };
+    const person = retainPerson(w, existing, c.id);
+    openEmployment(w, person.id, 'player', c.id);
+    const expected = continuousSquad(w, c);
+    expect(expected).toHaveLength(18);
+    expect(expected.some((p) => p.id === existing.id)).toBe(true);
+    const original = structuredClone(w);
+    const adopted = adoptSquads(w, false);
+    expect(w).toEqual(original);
+    expect(adopted.squads![c.id].slice(0, expected.length)).toEqual(expected);
+    expect(adopted.squads![c.id].filter((p) => p.id === existing.id)).toHaveLength(1);
+    expect(adopted.people![existing.id]).toEqual(person);
+    expect(adopted.players).toEqual(original.players);
+    expect(adopted.revision).toBe(original.revision + 1);
+    liveIds(adopted);
+    expect(adoptSquads(w, false)).toEqual(adopted);
+    expect(adoptSquads(adopted, false)).toBe(adopted);
+  });
+
+  it.each(['own', 'free', 'other', 'retired', 'academy', 'record'] as const)(
+    'reserves a founding candidate already held in %s without altering its identity',
+    (held) => {
+      const w = worldMarketFixture(),
+        c = w.clubs[1],
+        other = w.clubs[2],
+        id = `${c.id}:founding:${w.year}:0`,
+        p = makePlayer('ESP', w.seed, id, w.year, 50, 'CM', 25);
+      other.country = 'ENG';
+      w.people = {};
+      if (held === 'own') w.players.push(p);
+      else if (held === 'free') w.freeAgents = [{ ...p, freeSince: w.year }];
+      else if (held === 'academy') w.academy = { players: [p] };
+      else if (held === 'record') playerRecord(w, id);
+      else {
+        if (held === 'retired') p.status = 'retired';
+        const person = retainPerson(w, p, held === 'other' ? other.id : undefined);
+        if (held === 'other') openEmployment(w, person.id, 'player', other.id);
+      }
+      const expected = continuousSquad(w, c),
+        original = structuredClone(w),
+        adopted = adoptSquads(w, false);
+      expect(w).toEqual(original);
+      expect(adopted.squads![c.id].slice(0, expected.length)).toEqual(expected);
+      expect(adopted.squads![c.id].some((player) => player.id === id)).toBe(false);
+      expect(adopted.squads![c.id].slice(expected.length).map((player) => player.id)).toEqual(
+        [1, 2, 3, 4].map((suffix) => `${c.id}:founding:${w.year}:${suffix}`),
+      );
+      expect(adopted.players).toEqual(original.players);
+      expect(adopted.freeAgents).toEqual(original.freeAgents);
+      expect(adopted.academy).toEqual(original.academy);
+      for (const [key, person] of Object.entries(original.people ?? {}))
+        expect(adopted.people![key]).toEqual(person);
+      if (held === 'record')
+        expect(adopted.playerRecords![id]).toEqual(original.playerRecords![id]);
+      if (held === 'other')
+        expect(adopted.squads![other.id].some((one) => one.id === id)).toBe(true);
+      liveIds(adopted);
+      expect(adoptSquads(w, false)).toEqual(adopted);
+      expect(adoptSquads(adopted, false)).toBe(adopted);
+    },
+  );
 
   it.each([false, true])('adopts legacy current affiliations once (loan=%s)', (loan) => {
     const w = worldMarketFixture(),
