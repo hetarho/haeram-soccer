@@ -7,11 +7,12 @@ import { LINE_MINIMUM, NPC_SQUAD, rating } from './world';
 import { lineOf } from './player';
 import { advanceDays, advanceRound } from './season';
 import { NPC_WAGE_DECISIONS, npcWageBill, npcWageLimit } from './books';
-import { FREE_AGENT_CONFIG } from './free-agents';
+import { FREE_AGENT_CONFIG, FREE_AGENT_FLOW } from './free-agents';
 import { npcMarketDays, PLAYER_MOVE_FLOW } from './npc-market';
 import { transferWindowDays } from './transfer-window';
 import { SEASON_END_DAY } from './calendar';
 import { SQUAD_MINIMUM } from './squad-size';
+import { freeSigningSourceWitness } from './free-signing-source.testkit';
 
 /** Full lived-world regression: the coordinator runs this only at the integrated batch gate. */
 function firstDay(w: World) {
@@ -59,6 +60,13 @@ describe('the persisted world from 1930 to 1970', () => {
     let decisions = 0;
     const previous = NPC_WAGE_DECISIONS.observe;
     const previousMove = PLAYER_MOVE_FLOW.observe;
+    const previousFree = FREE_AGENT_FLOW.observe;
+    const freeSource = freeSigningSourceWitness();
+    FREE_AGENT_FLOW.observe = (kind, player, club) => {
+      if (kind === 'release') freeSource.release(w, player.id);
+      else freeSource.consume(player.id);
+      previousFree?.(kind, player, club);
+    };
     let moves = 0;
     PLAYER_MOVE_FLOW.observe = (world, id, move) => {
       moves++;
@@ -76,10 +84,12 @@ describe('the persisted world from 1930 to 1970', () => {
         // affiliation. Paid market moves are observed before their squad move instead.
         expect(move.fee, `${id}:${move.from}:${move.to}`).toBe('0');
         expect(held).not.toBe(true);
-        expect(released || last?.to === move.from, `${id}:${move.from}`).toBe(true);
+        expect(released || freeSource.accepts(world, id, move), `${id}:${move.from}`).toBe(true);
         expect(arrived).toHaveLength(1);
       } else {
-        expect(held || released, `${id}:${move.from}`).toBe(true);
+        expect(held || released || freeSource.accepts(world, id, move), `${id}:${move.from}`).toBe(
+          true,
+        );
       }
     };
     const overAtClose = new Set<string>();
@@ -175,6 +185,7 @@ describe('the persisted world from 1930 to 1970', () => {
     } finally {
       NPC_WAGE_DECISIONS.observe = previous;
       PLAYER_MOVE_FLOW.observe = previousMove;
+      FREE_AGENT_FLOW.observe = previousFree;
     }
     expect(decisions).toBeGreaterThan(0);
     expect(moves).toBeGreaterThan(0);
