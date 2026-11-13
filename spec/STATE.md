@@ -59,7 +59,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T894 | Prepare exact contract, expiry and refill scenes | ARCH CLUB WORLD ECON | T890 | todo |
 | T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
 | T902 | Prepare a supported ten-season codec career through owner actions | ARCH SAVE OWNER | T885 | todo |
 | T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
@@ -70,7 +69,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 28 | 21 | 7 | 2 | 2 | 0 | 2026-11-13T20:36:41.127Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 28 | 22 | 6 | 2 | 1 | 0 | 2026-11-13T20:37:19.091Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
