@@ -68,6 +68,11 @@
 | T880 | Permit finite cash-backed NPC operating deficits | ARCH WORLD ECON CLUB SAVE | T879 | todo |
 | T881 | Report funded deficits separately from funding failures | ARCH ECON CLUB | T880 | todo |
 
+## work
+| id | workers | total | done | remaining | running | review | blocked | updated | history |
+|---|---|---|---|---|---|---|---|---|---|
+| natural-football-261114 | 2 | 4 | 0 | 4 | 0 | 3 | 0 | 2026-11-13T16:48:18.796Z | [history](work/natural-football-261114.json) |
+
 ## next
 - gusta-start scope T877 T878 T879 T880 T881: free-agent and NPC-market optimization, then funded NPC books and financing diagnostics; preserve other live natural-football assignments.
 - Local unit-only validation remains; owner-authorized main publication and normal CI follow one final candidate. Capacity is not a blocker for this request.
