@@ -130,7 +130,7 @@ export function aggregateFreshness(match: AggregateMatch): [number, number] {
 
 /** What a measurement changes about a fixture between clubs nobody owns. */
 export interface Conditioning {
-  /** Both tactics, instead of the clubs' own, each club's squad built for its forced formation (T321). */
+  /** A different tactic pair builds both squads for the forced formations (T321); the existing pair keeps actual players. */
   tactics?: readonly [Tactic, Tactic];
   /** Every matchday player's pre-match fatigue on both sides. */
   fatigue?: number;
@@ -152,11 +152,14 @@ export function conditionedMatch(w: World, f: Fixture, conditioning: Conditionin
   const prepared = prepareMatch(w, f);
   let rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
   const { tactics, fatigue } = conditioning;
+  const changedTactics = tactics !== undefined && tactics.some((t, i) => t !== prepared.tactics[i]);
+  if ((tactics !== undefined || fatigue !== undefined) && prepared.ownSide !== undefined)
+    throw new Error('conditioning is for clubs nobody owns');
   const context = [
     3 + npcMatchContext(w, prepared.teams[0]),
     npcMatchContext(w, prepared.teams[1]),
   ];
-  if (tactics === undefined && fatigue === undefined)
+  if (!changedTactics && fatigue === undefined)
     return {
       prepared,
       rosters,
@@ -166,8 +169,7 @@ export function conditionedMatch(w: World, f: Fixture, conditioning: Conditionin
         rating(w, prepared.teams[1], f) -
         context[1]!,
     };
-  if (prepared.ownSide !== undefined) throw new Error('conditioning is for clubs nobody owns');
-  if (tactics !== undefined)
+  if (changedTactics)
     rosters = forcedRosters(
       w,
       f,
