@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T10:47Z | T872 | work/persisted-world-860 | 41c5bf2e826e |
+| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T10:54Z | - | work/persisted-world-860 | 41c5bf2e826e |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -27,8 +27,10 @@
 | T869 | pw86 | work/persisted-world-860 | 8419467d3984 | 2026-11-13T08:27Z |
 | T870 | pw86 | work/persisted-world-860 | 7b7f16add993 | 2026-11-13T08:44Z |
 | T859 | fin3 | main | 892eb45f64de | 2026-11-13T09:04Z |
+| T872 | pw86 | work/persisted-world-860 | 41c5bf2e826e | 2026-11-13T10:54Z |
 
 ## log
+- 261113 T872 done
 - 261113 pw86: completed T860-T865/T867/T869/T870 source is remote on work/persisted-world-860 at af821030; T866 numeric measurements continue under unit-test-only steering, work cutoff 12:00 UTC and publication deadline 13:00 UTC.
 - 261113 T859 done
 - 261113 T870 done
