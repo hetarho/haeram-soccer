@@ -83,6 +83,15 @@
       "originalLog": "check-07b4dbe3-7d16-48dc-8845-986ef8914590.log",
       "log": "artifacts/benchmarks/persisted-world/publication-spec-lint-final.log",
       "logSha256": "ece2852c22bed1886c63d9eb3757796817e77e304509f765489685b6c26cd896"
+    },
+    {
+      "name": "spec-final-handoff",
+      "command": "gusta lint",
+      "exitCode": 0,
+      "checkedAt": "2026-11-13T12:51:31Z",
+      "log": "artifacts/benchmarks/persisted-world/publication-spec-final.log",
+      "logSha256": "ece2852c22bed1886c63d9eb3757796817e77e304509f765489685b6c26cd896",
+      "scope": "Zero errors, one pre-existing warning, 76 editorial hints."
     }
   ],
   "reuse": "After 9ee755eb only whitespace in two test-helper files changed before c0768c7e; reviewed exact hunks. Type/lint/i18n results remain applicable. Later report/artifact-only commits do not change tested source.",
@@ -94,5 +103,12 @@
     "build",
     "verify:batch",
     "CI"
-  ]
+  ],
+  "reportingFollowUp": {
+    "sourceCommit": "535200c740c4e8be93493db3cd613ed62b7f781f",
+    "checks": "reporting-window-checks.json",
+    "evidence": "reporting-window-evidence.json",
+    "globalRunRelabeled": false,
+    "applicationUnchangedFromVerifiedSource": true
+  }
 }
