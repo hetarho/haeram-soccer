@@ -71,6 +71,8 @@
 | T903 | Establish an actual archive seek and bounded promise setup | ARCH MATCH CLUB | T887 T888 | todo |
 | T905 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
 | T904 | Align checkpoint validation with explicit compatible patch releases | SAVE ARCH | T883 | todo |
+| T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
+| T907 | Normalize prepared manager careers at the writer boundary | ARCH WORLD SAVE WEB | T893 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
