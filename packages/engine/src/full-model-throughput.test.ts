@@ -178,6 +178,7 @@ const facts = (w: World) => ({
 // clean sheets and reviewed football staging changed retained material. The final scoped capture
 // confirms these full-field signatures. Neither material nor cleanSheets is excluded here, and
 // changed results establish no throughput speed claim.
+// The evidence audit expands every missing array tail; scalar leaves and array lengths are separate.
 const BEFORE = {
   aggregateRecords: 'd01e8b16487872a4',
   candidateRounds: 'aef5e3c0618eb5f2',

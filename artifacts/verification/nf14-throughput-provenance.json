@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "task": "T908",
   "scope": "Historical exact-result provenance; no gameplay policy or performance claim.",
   "workload": {
@@ -199,12 +199,17 @@
     }
   ],
   "changedFactCategories": {
-    "/npcSeason/competitions/*/players/*/clubs/*/cleanSheets": 540,
-    "/ownMatches/*/material/heat/*": 441,
-    "/ownMatches/*/material/network/length": 2,
-    "/ownMatches/*/material/network/*": 466,
-    "/ownMatches/*/material/report/*": 20,
-    "/ownMatches/*/material/shots/*": 31
+    "scalarLeaves": {
+      "/npcSeason/competitions/*/players/*/clubs/*/cleanSheets": 540,
+      "/ownMatches/*/material/heat/*": 441,
+      "/ownMatches/*/material/network/*": 526,
+      "/ownMatches/*/material/report/*": 20,
+      "/ownMatches/*/material/shots/*": 31
+    },
+    "arrayLengths": {
+      "/ownMatches/*/material/network": 2
+    },
+    "containerPresence": {}
   },
   "causes": [
     {
@@ -235,8 +240,11 @@
   "evidence": {
     "coordinatorDirectory": ".tmp/nf14-evidence/remaining-diagnosis/throughput-history",
     "provenanceSha256": "eb7d44710e44d40ef38eb4fe05057218b0d97d0328c980049528508110ca917a",
-    "exhaustiveChangedFactNodes": 1500,
-    "changedFactDiffSha256": "7768026f6dc17bee625d6822147430d31ef9a4afe092cdd6cb0fa7c6e4a3007a"
+    "changedFactDiffSha256": "7768026f6dc17bee625d6822147430d31ef9a4afe092cdd6cb0fa7c6e4a3007a",
+    "legacyNonExhaustiveChangedNodes": 1500,
+    "exhaustiveFactDiffFile": ".tmp/t908/exhaustive-fact-diff.json",
+    "exhaustiveFactDiffSha256": "3f8da6fd9419b7254123cbc994ae52d33ba12215b27ca7fd15ea259e524b4a9f",
+    "auditScriptSha256": "66097fa6fd7a792e921815f7b84ae1445cf15dd20111799b5dbc2c3d448e9283"
   },
   "finalScopedConfirmation": {
     "source": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
@@ -260,5 +268,88 @@
     "Diagnostic exclusion isolates causes only and MUST NOT be applied to the production assertion.",
     "Worker revalidated captured bytes without executing a match, round, season or integration.",
     "Final scoped capture and unchanged complete integration gate are coordinator-owned."
-  ]
+  ],
+  "historicalCountCorrection": {
+    "previousSubmittedCommit": "eef2c56a575a4809ef541dcae0afb1c3eef654e6",
+    "previousClaimedChangedNodes": 1500,
+    "previousCategories": {
+      "/npcSeason/competitions/*/players/*/clubs/*/cleanSheets": 540,
+      "/ownMatches/*/material/heat/*": 441,
+      "/ownMatches/*/material/network/length": 2,
+      "/ownMatches/*/material/network/*": 466,
+      "/ownMatches/*/material/report/*": 20,
+      "/ownMatches/*/material/shots/*": 31
+    },
+    "status": "Previous1500-node report is NOT exhaustive and is superseded; it omitted array-tail nested leaves and mixed length events with scalar changes.",
+    "review": "d6184dab-7047-46e1-b9bd-981d7546113b",
+    "cause": "Old diagnostic used zip/common-prefix array traversal. Preserved capture bytes and full stripped-facts equality were valid; count completeness was false."
+  },
+  "exhaustiveAuditMethod": {
+    "definition": "Scalar leaf differences compare every JSON value with explicit MISSING sentinel. Arrays use max(old.length,new.length); objects use union of all keys. Added/removed containers recursively enumerate EVERY scalar leaf. Empty-container presence and container retypes are retained as separate structural events. Array length changes count ONLY two present arrays with unequal lengths; they are NOT scalar leaves.",
+    "javascriptSourceLines": [
+      "function audit(oldValue, newValue) {",
+      "  const MISSING = Symbol('MISSING');",
+      "  const leaves = [], arrayLengths = [], containers = [], types = [];",
+      "  function kind(v) { return v === MISSING ? 'missing' : Array.isArray(v) ? 'array' : v !== null && typeof v === 'object' ? 'object' : 'scalar'; }",
+      "  function encoded(v) { return v === MISSING ? { state: 'missing' } : { state: 'value', value: v }; }",
+      "  function pointer(parts, pattern = false) { return parts.length === 0 ? '' : '/' + parts.map(p => pattern && p.index ? '*' : String(p.key).replaceAll('~', '~0').replaceAll('/', '~1')).join('/'); }",
+      "  function row(parts, before, after) { return { path: pointer(parts), pattern: pointer(parts, true), before: encoded(before), after: encoded(after) }; }",
+      "  function expand(value, parts, added) {",
+      "    const k = kind(value);",
+      "    if (k === 'array' || k === 'object') {",
+      "      containers.push({ path: pointer(parts), pattern: pointer(parts, true), kind: k, change: added ? 'added' : 'removed', empty: Object.keys(value).length === 0 });",
+      "      if (k === 'array') { for (let i = 0; i < value.length; i++) if (Object.hasOwn(value, i)) expand(value[i], [...parts, { key: i, index: true }], added); }",
+      "      else for (const key of Object.keys(value).sort()) expand(value[key], [...parts, { key, index: false }], added);",
+      "    } else leaves.push(row(parts, added ? MISSING : value, added ? value : MISSING));",
+      "  }",
+      "  function walk(a, b, parts) {",
+      "    const ka = kind(a), kb = kind(b);",
+      "    if (ka === 'array' && kb === 'array') {",
+      "      if (a.length !== b.length) arrayLengths.push(row(parts, a.length, b.length));",
+      "      for (let i = 0; i < Math.max(a.length, b.length); i++) walk(Object.hasOwn(a, i) ? a[i] : MISSING, Object.hasOwn(b, i) ? b[i] : MISSING, [...parts, { key: i, index: true }]);",
+      "    } else if (ka === 'object' && kb === 'object') {",
+      "      for (const key of [...new Set([...Object.keys(a), ...Object.keys(b)])].sort()) walk(Object.hasOwn(a, key) ? a[key] : MISSING, Object.hasOwn(b, key) ? b[key] : MISSING, [...parts, { key, index: false }]);",
+      "    } else if (ka === 'array' || ka === 'object' || kb === 'array' || kb === 'object') {",
+      "      if (ka !== 'missing' && kb !== 'missing') types.push({ path: pointer(parts), pattern: pointer(parts, true), before: ka, after: kb });",
+      "      if (ka !== 'missing') expand(a, parts, false);",
+      "      if (kb !== 'missing') expand(b, parts, true);",
+      "    } else if (ka !== kb || a !== b) leaves.push(row(parts, a, b));",
+      "  }",
+      "  walk(oldValue, newValue, []);",
+      "  return { leaves, arrayLengths, containers, types };",
+      "}"
+    ],
+    "javascriptSha256": "db71c3c9f1e9994791221e89e7281f4425416263451ff8ceeca3c58f6cce0180",
+    "selfTestCases": [
+      "added nested tail retains every scalar",
+      "removed nested tail retains every scalar",
+      "all object keys including additions and deletions",
+      "MISSING is distinct from null",
+      "false is distinct from zero",
+      "nested array tail deletion",
+      "empty containers retain structural presence",
+      "equal values and reordered object keys",
+      "container type replacement expands both old and new leaves",
+      "JSON pointer escapes keys"
+    ],
+    "scalarAndStructureCountsAreSeparate": true
+  },
+  "exhaustiveFactAudit": {
+    "scalarLeafChanges": 1558,
+    "arrayLengthChanges": 2,
+    "containerPresenceChanges": 0,
+    "typeChanges": 0,
+    "independentlyCheckedNetworkTailValues": 60,
+    "scalarLeafChangesByPathPattern": {
+      "/npcSeason/competitions/*/players/*/clubs/*/cleanSheets": 540,
+      "/ownMatches/*/material/heat/*": 441,
+      "/ownMatches/*/material/network/*": 526,
+      "/ownMatches/*/material/report/*": 20,
+      "/ownMatches/*/material/shots/*": 31
+    },
+    "arrayLengthChangesByPathPattern": {
+      "/ownMatches/*/material/network": 2
+    },
+    "containerPresenceChangesByPathPattern": {}
+  }
 }
