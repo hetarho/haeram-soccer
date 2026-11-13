@@ -64,6 +64,9 @@
 | T887 | Prepare real post-close free agents for promise journeys | ARCH CLUB | T885 | todo |
 | T888 | Find goal scenes through the actual replay adapters | ARCH MATCH | - | todo |
 | T889 | Keep the best-placed defender in central cover | MATCH ARCH | T885 | todo |
+| T890 | Prepare exact replacement and top-up scenarios | ARCH CLUB WORLD | T885 | todo |
+| T891 | Prepare real market candidates and exact registration caps | ARCH CLUB WORLD | T885 | todo |
+| T892 | Prepare explicit founding, employment and legacy identity fixtures | ARCH WORLD SAVE | T885 | todo |
 | T883 | Prepare one coherent compatible game release | SAVE ARCH | T882 | todo |
 
 ## work
