@@ -15,3 +15,14 @@ Run `pnpm run validate:i18n` and `pnpm run lint`. Hardcoded Korean literals, raw
 message keys, incomplete packs and mismatched parameters are errors. Do not add a baseline,
 production-file exception or lint-disable to bypass them. Tests, comments and type-only domain
 facts may contain source-language examples. See [web guidance](apps/web/AGENTS.md) and ARCH-32.
+
+<!-- gusta:begin managed by gusta: do not edit inside this block (gusta-update rewrites it with "gusta agent-block"); write project rules outside it -->
+## GUSTA
+
+This project is built spec-first with GUSTA. `spec/` is the source of truth and code follows it.
+
+- Plan a change with the `gusta-sketch` skill; run planned work or a one-line change request with the `gusta-start` skill.
+- Do not change behavior covered by a `spec/ssot/` decision without updating the spec first.
+- Branch, push, deploy and version behavior comes from `spec/SETTINGS.md` (the `gusta-preference` skill); never assume branch names.
+
+<!-- gusta:end -->
