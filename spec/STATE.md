@@ -63,7 +63,6 @@
 | T895 | Prepare valid buyers and remaining market participants | ARCH CLUB WORLD | T890 | todo |
 | T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
 | T902 | Prepare a supported ten-season codec career through owner actions | ARCH SAVE OWNER | T885 | todo |
-| T905 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
 | T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
 | T907 | Normalize prepared manager careers at the writer boundary | ARCH WORLD SAVE WEB | T893 | todo |
 | T908 | Reconcile throughput signatures with proven founding changes | ARCH WORLD MATCH HIST | T885 T889 | todo |
@@ -72,7 +71,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 28 | 19 | 9 | 2 | 4 | 0 | 2026-11-13T20:35:21.682Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 28 | 20 | 8 | 2 | 3 | 0 | 2026-11-13T20:35:59.536Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
