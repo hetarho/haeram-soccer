@@ -97,7 +97,6 @@ export function uncoveredSlots(players: readonly Player[], slots: readonly Slot[
  */
 function takenSquad(w: World, club: Club, roster: Player[], manager: Manager): Player[] {
   const players = [...roster];
-  if (players.length >= CLUB_TAKEOVER.squad) return players;
   let serial = 0;
   const add = (position: Position, role?: Slot['role']) =>
     players.push(

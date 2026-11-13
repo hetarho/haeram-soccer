@@ -10,10 +10,12 @@ import type {
   InboxItem,
   MatchPlayback,
   OwnerState,
+  Player,
   TransferBid,
   World,
 } from '../../contracts/src/types';
 import { clubOf } from './player-state';
+import { lineOf } from './player';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { invalidateNpcSquad } from './world';
 import { advanceDays } from './season';
@@ -100,10 +102,28 @@ export function stagePlayingCoach(w: World, id: string, years: 1 | 2, term: Cont
   return submitPlayingCoachProposal(w, quote);
 }
 
+/** A synthetic buyer missing this player's line, with explicit fee and wage room. */
+export function prepareSaleBuyer(w: World, p: Player) {
+  const club = w.clubs.find(
+    (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
+  )!;
+  w.squads![club.id] = w.squads![club.id]!.filter(
+    (player) => lineOf(player.position) !== lineOf(p.position),
+  );
+  club.books = {
+    seasons: [],
+    cash: '999999999999',
+    debt: '0',
+    openingIncome: '999999999999',
+  };
+  invalidateNpcSquad(w, club.id);
+  return club;
+}
+
 /** Another club's accepted offer for one of our players at his value (window must be open). */
 export function sellPlayer(w: World, id: string) {
   const p = w.players.find((player) => player.id === id)!;
-  const club = w.clubs.find((c) => c.id !== w.playerClub && !c.representative)!;
+  const club = prepareSaleBuyer(w, p);
   const day = currentDay(w);
   const bid: TransferBid = {
     id: `in:test:${w.year}:${day}:${id}`,

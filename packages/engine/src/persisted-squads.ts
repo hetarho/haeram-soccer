@@ -114,6 +114,8 @@ export function matchdaySquad(w: World, c: Club, players: Player[]): Player[] {
 /** Move the live record; the owner's departed row remains only his history with the club. */
 export function moveSquadPlayer(w: World, p: Player, club?: string, source?: string) {
   if (!w.squads) return;
+  // Academy enrollment records the club affiliation without promoting the prospect.
+  if (club === w.playerClub && w.academy?.players.some((q) => q.id === p.id)) return;
   const live = structuredClone(p);
   live.status = 'active';
   // A market settlement already knows the source; avoid scanning every other club for each move.

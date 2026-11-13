@@ -28,6 +28,7 @@ const world = () => careerWorld({ seed: 'approval-waits' });
 function asking(n = 1) {
   const w = world();
   w.calendar = { day: seasonDayOf(w.year, 1, 1) };
+  for (const p of activePlayers(w)) p.until = w.year + 3;
   for (const p of activePlayers(w).slice(0, n)) p.until = w.year + 1;
   contractTalks(w);
   return w;

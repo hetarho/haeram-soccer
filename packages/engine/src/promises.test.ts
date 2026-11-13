@@ -14,6 +14,7 @@ import { lineOf } from './player';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { careerWorld } from './career.testkit';
 import { buyOffer } from './testing';
+import { marketCandidate } from './world-market.testkit';
 function fixture(winter = false, line: 'MF' | 'GK' = 'MF') {
   const w = careerWorld({ seed: 'promise' });
   if (winter) {
@@ -67,10 +68,19 @@ describe('fixed-deadline reinforcement commitments', () => {
       const { w, promise } = fixture(false, kind === 'free' ? 'GK' : 'MF');
       w.calendar = { day: promise.deadline.day };
       w.cash = '999999999999';
+      const seller = w.clubs.find(
+        (c) => c.id !== w.playerClub && c.country === 'ENG' && c.tier === 3,
+      )!;
+      const prepared = marketCandidate(
+        w,
+        kind === 'free' ? undefined : seller,
+        kind === 'free' ? 'GK' : 'CM',
+      );
       const offers = transferOffers(w);
       const index = offers.findIndex(
         (o) =>
           o.available &&
+          o.player.id === prepared.id &&
           lineOf(o.player.position) === promise.target.line &&
           (kind === 'free' ? o.freeAgent : !o.freeAgent),
       );

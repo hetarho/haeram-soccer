@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import { footballIndex } from '../../catalogs/src/index';
+import { CATALOG_HASH, CATALOG_VERSION, footballIndex } from '../../catalogs/src/index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import type {
   ContractTerm,
@@ -42,24 +42,57 @@ import {
 } from './index';
 import { handTo, holdRows, staffAuthority } from './testing';
 import { world } from './staff.testkit';
+import { worldMarketFixture } from './world-market.testkit';
+import { basicStaff } from './staff';
 
 describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   const coachOf = (w: World, role: StaffRole) => w.staff!.find((member) => member.role === role);
   const byWage = (a: { wage: string }, b: { wage: string }) =>
     BigInt(a.wage) < BigInt(b.wage) ? -1 : BigInt(a.wage) > BigInt(b.wage) ? 1 : 0;
   const coaches = (w: World, option: string) => holdRows(w, { direction: { coaches: option } });
-  /** The first test seed whose attack candidates satisfy `fits`, so a case never hangs on luck. */
-  const seedWhere = (prefix: string, fits: (abilities: number[]) => boolean) =>
-    cachedWorld(`seed:${prefix}:${fits}`, () => {
-      for (let i = 0; i < 200; i++) {
-        const seed = `${prefix}-${i}`;
-        if (fits(staffCandidates(world(seed), 'attack').map((offer) => offer.ability))) return seed;
-      }
-      throw new Error(`no seed for ${prefix}`);
-    });
+  /** One playable club and three explicit free candidates per post; no world generation. */
+  function hiringWorld(seed: string, abilities = [55, 60, 72]) {
+    const w = worldMarketFixture();
+    w.seed = seed;
+    w.catalog = CATALOG_VERSION;
+    w.catalogHash = CATALOG_HASH;
+    // Saves require ten clubs; the other nine are representatives, outside the hiring market.
+    w.clubs = [
+      w.clubs[0],
+      ...Array.from({ length: 9 }, (_, i) => ({
+        ...w.clubs[1],
+        id: `representative:${i}`,
+        representative: true,
+      })),
+    ];
+    w.calendar = { day: 0 };
+    w.staff = basicStaff(w);
+    w.settings = staffAuthority(2);
+    w.cash = '999999999';
+    w.staffMarket = {
+      year: w.year,
+      round: 0,
+      clubs: {},
+      free: Object.fromEntries(
+        STAFF_ROLES.map((role) => [
+          role,
+          abilities.map((ability, i): Staff => ({
+            id: `${seed}:${role}:${i}`,
+            role,
+            name: `Candidate ${i}`,
+            ability,
+            wage: coachWage(w, ability),
+            since: w.year,
+            until: w.year + 3,
+          })),
+        ]),
+      ),
+    };
+    return w;
+  }
   /** A paid coach whose contract ended with the season just closed, the coaches delegated. */
-  function expiring(seed: string, ability: number, option: string) {
-    const w = world(seed);
+  function expiring(seed: string, ability: number, option: string, abilities?: number[]) {
+    const w = hiringWorld(seed, abilities);
     const veteran: Staff = {
       id: `${seed}:veteran`,
       role: 'attack',
@@ -76,7 +109,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   }
 
   it('the delegated staff hire the first match of 코치 기조 in every department', () => {
-    const w = world('criteria-first');
+    const w = hiringWorld('criteria-first');
     // 표준: ability 55 or more, the cheapest first, for two seasons.
     const cheapest = staffCandidates(w, 'attack')
       .filter((offer) => offer.ability >= 55)
@@ -94,8 +127,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     expect(coachPickPreview(w, 'scout').reason).toContain('계약이 끝날 때 코치 기조로');
 
     // 최고 수준: ability 65 or more, the ablest first, for three seasons.
-    const seed = seedWhere('criteria-elite', (abilities) => abilities.some((a) => a >= 65));
-    const elite = world(seed);
+    const elite = hiringWorld('criteria-elite');
     coaches(elite, 'elite');
     const ablest = [...staffCandidates(elite, 'attack')].sort((a, b) => b.ability - a.ability)[0];
     handTo(elite, 3);
@@ -104,7 +136,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   });
 
   it('with no match a volunteer holds the post and the staff report it once a season', () => {
-    const w = world(seedWhere('criteria-none', (abilities) => abilities.every((a) => a < 65)));
+    const w = hiringWorld('criteria-none', [45, 55, 64]);
     coaches(w, 'elite');
     handTo(w, 3);
     expect(coachOf(w, 'attack')).toMatchObject({ wage: '0', ability: 50 });
@@ -134,7 +166,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     if (matchNext) expect(coachOf(w, 'attack')!.wage).not.toBe('0');
     else expect(reports()).toHaveLength(2);
     // Nobody affordable is a reason of its own.
-    const broke = world('criteria-broke');
+    const broke = hiringWorld('criteria-broke');
     broke.cash = '0';
     coaches(broke, 'cheap');
     handTo(broke, 3);
@@ -144,7 +176,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
 
   it('renews an expiring coach who meets 코치 기조 unless a match beats him by 3 ability or a 10% lower wage', () => {
     // 최고 수준 (the ablest first): the ablest match must be 3 better.
-    const seed = seedWhere('renew-ability', (abilities) => Math.max(...abilities) >= 68);
+    const seed = 'renew-ability';
     const probe = expiring(seed, 50, 'elite');
     const ablest = coachMatches(probe.w, 'attack', probe.veteran)[0];
     const kept = expiring(seed, ablest.ability - COACH_RENEWAL_MARGIN + 1, 'elite');
@@ -189,11 +221,10 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     const match = coachMatches(below.w, 'attack', below.veteran)[0];
     seasonStaff(below.w);
     expect(coachOf(below.w, 'attack')!.id).toBe(match.id);
-    const none = seedWhere('renew-alone', (abilities) => abilities.every((a) => a < 65));
-    const alone = expiring(none, 60, 'elite');
+    const alone = expiring('renew-alone', 60, 'elite', [45, 55, 64]);
     seasonStaff(alone.w);
     expect(coachOf(alone.w, 'attack')!.id).toBe(alone.veteran.id);
-    const broke = expiring(none, 60, 'elite');
+    const broke = expiring('renew-alone', 60, 'elite', [45, 55, 64]);
     broke.w.cash = '0';
     seasonStaff(broke.w);
     expect(coachOf(broke.w, 'attack')).toMatchObject({ wage: '0', ability: 50 });
@@ -202,7 +233,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   });
 
   it('코치 기조 자원봉사 keeps volunteers', () => {
-    const w = world('criteria-volunteer');
+    const w = hiringWorld('criteria-volunteer');
     coaches(w, 'volunteer');
     handTo(w, 3);
     const volunteer = coachOf(w, 'scout')!;
@@ -223,8 +254,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   });
 
   it("the daily look fills a volunteer post by 코치 기조 while a contracted coach waits for his contract's end", () => {
-    // The known matching seed avoids generating 86 full worlds on a cold test cache.
-    const w = world('criteria-change-85');
+    const w = hiringWorld('criteria-change', [45, 55, 64]);
     expect(staffCandidates(w, 'attack').every((offer) => offer.ability < 65)).toBe(true);
     w.settings = staffAuthority(3);
     w.direction = { coaches: 'elite' };
@@ -244,7 +274,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   });
 
   it('releasing a coach leaves delegation as set, so the staff refill the post', () => {
-    const w = world('criteria-release');
+    const w = hiringWorld('criteria-release');
     handTo(w, 4);
     const fitness = coachOf(w, 'fitness')!;
     operate(w, { type: 'release-staff', role: 'attack' });

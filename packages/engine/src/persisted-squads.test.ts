@@ -15,6 +15,7 @@ import {
   invalidateNpcSquad,
   invalidateNpcSquads,
   lineup,
+  makePlayer,
   NPC_SQUAD,
   npcSquad,
   rating,
@@ -40,6 +41,7 @@ import { takeOver } from './takeover';
 import { staffAuthority } from './testing';
 import { retirePerson } from './careers';
 import { readCopy } from './fixture-copy';
+import { academyIntakeDay, academyIntakeSize, promoteYouth, runAcademyIntake } from './academy';
 
 /** Ten small synthetic clubs, no world generation, fixture settlement or season simulation. */
 function fixture(year = 1950, owner = true): World {
@@ -102,6 +104,45 @@ function bid(w: World, p: Player, club: string, direction: TransferBid['directio
 }
 
 describe('persisted playable squads', () => {
+  it('enrolls an actual academy intake without adding first-team players or wages', () => {
+    const w = worldMarketFixture();
+    w.squads = {};
+    const firstTeam = structuredClone(w.players);
+    w.calendar = { day: academyIntakeDay(w) };
+    runAcademyIntake(w);
+    const prospects = structuredClone(w.academy!.players);
+    expect(prospects).toHaveLength(academyIntakeSize(w));
+    expect(w.players).toEqual(firstTeam);
+    for (const p of prospects) {
+      expect(p.wage).toBe('0');
+      expect(w.people![p.id]).toMatchObject({ club: w.playerClub, playing: 'active' });
+      expect(w.players.some((player) => player.id === p.id)).toBe(false);
+    }
+    runAcademyIntake(w);
+    expect(w.academy!.players).toEqual(prospects);
+    expect(w.players).toEqual(firstTeam);
+  });
+
+  it('keeps an enrolled academy prospect out of the first team until his actual promotion', () => {
+    const w = worldMarketFixture();
+    w.squads = {};
+    const p = makePlayer('ENG', w.seed, 'academy:enrolled', w.year, 30, 'CM', 18);
+    p.wage = '0';
+    w.academy = { players: [p] };
+    const firstTeam = structuredClone(w.players);
+    movePerson(w, p, w.playerClub, true);
+    movePerson(w, p, w.playerClub, true);
+    expect(w.players).toEqual(firstTeam);
+    expect(w.academy.players).toEqual([p]);
+    expect(w.people![p.id]).toMatchObject({ club: w.playerClub, playing: 'active' });
+    expect(w.people![p.id]!.employment.filter((job) => !job.to)).toHaveLength(1);
+    promoteYouth(w, p.id);
+    expect(w.academy.players).toEqual([]);
+    expect(w.players.filter((player) => player.id === p.id)).toEqual([p]);
+    expect(w.players.slice(0, firstTeam.length)).toEqual(firstTeam);
+    expect(p.graduate).toBe(true);
+  });
+
   it.each([1930, 1980])('founds all eight associations exactly once in %i', (year) => {
     const w = fixture(year, false),
       before = structuredClone(w.squads);

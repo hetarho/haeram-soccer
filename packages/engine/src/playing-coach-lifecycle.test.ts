@@ -16,7 +16,9 @@ import { releaseStaff, seasonStaff, staffMember } from './staff';
 import { pendingDecisions } from './stopping';
 import { handoverSales, respondBid } from './transfers';
 import type { TransferBid } from '../../contracts/src/types';
-import { stagePlayingCoach } from './testing';
+import { prepareSaleBuyer, stagePlayingCoach } from './testing';
+import { npcOffer } from './npc-market';
+import { clubOf } from './player-state';
 import { careerWorld } from './career.testkit';
 function world(years: 1 | 2 = 2, term: 1 | 2 | 3 | 4 | 5 = 5) {
   const w = careerWorld({ seed: 'dual-life' });
@@ -46,17 +48,20 @@ function bidFor(w: ReturnType<typeof careerWorld>, id: string) {
   w.year++;
   w.round = 0;
   w.calendar = { day: 0 };
+  const player = w.players.find((p) => p.id === id)!;
+  const buyer = prepareSaleBuyer(w, player);
   const bid: TransferBid = {
     id: 'dual-sale',
     direction: 'in',
     playerId: id,
-    club: w.clubs[0].id,
+    club: buyer.id,
     fee: '9999999',
     year: w.year,
     day: 0,
     due: 5,
     status: 'pending',
   };
+  expect(npcOffer(w, buyer, player, clubOf(w), bid.fee)).toBeDefined();
   (w.bids ??= []).push(bid);
   return bid;
 }

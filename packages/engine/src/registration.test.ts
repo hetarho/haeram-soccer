@@ -9,6 +9,7 @@ import { country, currency, priceIndex } from '../../catalogs/src/index';
 import { prepareSeason } from './season';
 import type { CountryCode, Player } from '../../contracts/src/types';
 import { careerWorld } from './career.testkit';
+import { marketCandidate } from './world-market.testkit';
 function fixture(code: CountryCode, year: number, tier: number, count: number) {
   const w = careerWorld({ country: code, seed: 'registration' });
   const own = clubOf(w);
@@ -90,16 +91,26 @@ describe('season-specific squad registration', () => {
   it('checks the loan exemption at bid creation and again before accepting a counter', () => {
     const full = fixture('ENG', 2021, 1, 25);
     full.cash = '999999999999';
+    const prepare = (w: typeof full) =>
+      marketCandidate(
+        w,
+        w.clubs.find((c) => c.country === 'ENG' && c.id !== w.playerClub && c.tier === 1)!,
+        'CM',
+        19,
+      );
+    const young = prepare(full);
     const offers = transferOffers(full),
-      index = offers.findIndex((o) => !o.freeAgent && full.year - o.player.born <= 21);
+      index = offers.findIndex((o) => o.player.id === young.id && !o.freeAgent);
     expect(index).toBeGreaterThanOrEqual(0);
     expect(() => placeBid(full, index, offers[index].fee, true)).toThrow('임대 선수');
     placeBid(full, index, offers[index].fee, false);
     expect(full.bids!.at(-1)!.status).toBe('pending');
     const w = fixture('ENG', 2021, 1, 24);
     w.cash = '999999999999';
+    const nextYoung = prepare(w);
     const market = transferOffers(w),
-      candidateIndex = market.findIndex((o) => !o.freeAgent && w.year - o.player.born <= 21);
+      candidateIndex = market.findIndex((o) => o.player.id === nextYoung.id && !o.freeAgent);
+    expect(candidateIndex).toBeGreaterThanOrEqual(0);
     placeBid(w, candidateIndex, market[candidateIndex].fee, true);
     const bid = w.bids!.at(-1)!;
     bid.status = 'countered';

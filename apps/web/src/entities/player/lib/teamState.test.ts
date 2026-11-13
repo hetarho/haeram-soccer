@@ -128,6 +128,7 @@ describe('registration-aware squad state', () => {
   });
   it('uses counted and exempt players for an observed modern rule and discloses fallback estimation', () => {
     const w = world();
+    w.players = w.players.slice(0, 20);
     expect(squadRegistration(w).detail).toContain('등록 한도 40명 · 추정');
     w.year = 2011;
     w.clubs.find((c) => c.id === w.playerClub)!.tier = 0;

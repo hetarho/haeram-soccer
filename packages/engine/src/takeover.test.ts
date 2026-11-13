@@ -59,7 +59,15 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
   it('makes the club as it stands the owner’s, its squad his players at the club’s 조직력', () => {
     const { w, club } = setup();
     club.cohesion = 0.62;
-    const fielded = clubPlayers(w, club).map((p) => p.id);
+    const roster = clubPlayers(w, club);
+    const inherited = roster.map(({ id, name, born, attrs, positions, wage, until }) =>
+      structuredClone({ id, name, born, attrs, positions, wage, until }),
+    );
+    const fielded = roster.map((p) => p.id);
+    expect(roster.length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
+    expect(
+      uncoveredSlots(roster, formationOf(clubManager(w, club).philosophy)).length,
+    ).toBeGreaterThan(0);
     takeOver(w, club.id, choice('industrial'));
     expect(w.playerClub).toBe(club.id);
     const ids = w.players.map((p) => p.id);
@@ -69,6 +77,8 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
       CLUB_TAKEOVER.goalkeepers,
     );
     expect(uncoveredSlots(w.players, formationOf(w.tactic))).toEqual([]);
+    for (const player of inherited)
+      expect(w.players.find((p) => p.id === player.id)).toMatchObject(player);
     for (const p of w.players) {
       expect(p).toMatchObject({ status: 'active', fatigue: 0, adaptation: 0.62, joined: w.year });
       expect(p.clauses).toBeDefined();

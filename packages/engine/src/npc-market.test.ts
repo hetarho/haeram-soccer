@@ -328,20 +328,27 @@ describe('isolated NPC transfer windows', () => {
       const metrics = zeroMetrics();
       metrics[M.minutes] = 90;
       metrics[M.goals] = 1;
-      const playback = {
+      const playback: MatchPlayback = {
         record: {
+          id: `synthetic-winter:${club.id}`,
           year: w.year,
+          round: w.round,
           kind: 'league',
+          country: club.country,
           groupKey: 'synthetic',
           home: club.id,
           away: 'own',
+          score: { home: 1, away: 0 },
           incidents: [],
           lineCounts: [1, 0],
           players: [{ id: p.id, metrics }],
           metrics: [metrics, zeroMetrics()],
+          tactics: ['balanced', 'balanced'],
+          highlights: [],
         },
+        frames: [],
         squads: [[p], []],
-      } as unknown as MatchPlayback;
+      };
       settleNpcSeason(w, playback, true);
     };
     settle(seller);
@@ -351,6 +358,7 @@ describe('isolated NPC transfer windows', () => {
     const row = w.npcSeason.competitions[0]!.players.find((row) => row.id === p.id)!;
     expect(row.clubs.map((part) => part.club)).toEqual([seller.id, buyer.id]);
     expect(row.clubs.map((part) => part.metrics[M.goals])).toEqual([1, 1]);
+    expect(row.clubs.map((part) => part.cleanSheets)).toEqual([1, 1]);
     expect(playerTotals(row).metrics[M.goals]).toBe(2);
   });
 
