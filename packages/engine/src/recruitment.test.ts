@@ -23,6 +23,8 @@ import {
 } from './index';
 import { careerWorld } from './career.testkit';
 import { buyOffer } from './testing';
+import { releaseFixturePlayers } from './player-fixtures.testkit';
+import { movePerson } from './npc-continuity';
 
 function world(strong = false) {
   const w = careerWorld({ seed: 'recruitment-preview' });
@@ -32,6 +34,7 @@ function world(strong = false) {
     for (const a of ATTRIBUTES) player.attrs[a] = strong ? 95 : 25;
     player.fatigue = 0;
   }
+  releaseFixturePlayers(w);
   return w;
 }
 /** The first of another club's players on the scout's list, and the first free agent. */
@@ -43,7 +46,9 @@ const freeIndex = (w: ReturnType<typeof world>) =>
 describe('recruitment build and budget previews', () => {
   it('matches real automatic starters, match actors and the exact post-recruitment ledger', () => {
     const w = world(),
-      index = clubIndex(w),
+      index = transferOffers(w).findIndex(
+        (one) => !one.freeAgent && recruitmentPreview(w, one).fitDelta > 0,
+      ),
       offer = transferOffers(w)[index]!,
       before = canonical(w),
       preview = recruitmentPreview(w, offer);
@@ -132,8 +137,11 @@ describe('recruitment build and budget previews', () => {
     const w = world(),
       index = clubIndex(w),
       offer = transferOffers(w)[index]!;
-    for (let index = 0; index < 20; index++)
-      w.players.push(makePlayer('ENG', w.seed, `full-roster:${index}`, w.year, 40, 'CB'));
+    const missing = 40 - activePlayers(w).length;
+    for (let index = 0; index < missing; index++) {
+      const p = makePlayer('ENG', w.seed, `full-roster:${index}`, w.year, 40, 'CB');
+      movePerson(w, p, w.playerClub, true);
+    }
     expect(activePlayers(w)).toHaveLength(40);
     const before = canonical(w),
       full = recruitmentPreview(w, offer);

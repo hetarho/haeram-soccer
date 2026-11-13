@@ -52,6 +52,8 @@ import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixture
 import { input, playOn, req, startedHost, startedWorld } from './host.testkit';
 import { HelperPool, type HelperJob, type HelperPort } from './helperPool';
 import { createFixtureHelper, serve as serveHelper } from './fixtureHelper';
+import { persistedFixturePlayer } from '../../../../packages/engine/src/player-fixtures.testkit';
+import { joinFreeAgents } from '../../../../packages/engine/src/free-agents';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
   const jobs: CodecJob[] = [];
@@ -692,6 +694,8 @@ describe('durable milestone projection', () => {
 describe('career view projection', () => {
   it('omits lifetime registry in views, preserves canonical export and leaves revision and draws unchanged', async () => {
     const { host: h, reply: started } = await startedHost();
+    const held = persistedFixturePlayer(h.world!)!;
+    expect(joinFreeAgents(h.world!, held.player, h.world!.year)).toBe(true);
     expect(started.view!.world.people).toBeUndefined();
     // The free-agent pool stays on the worker too (→CLUB-49), and in the save.
     expect(h.world!.freeAgents!.length).toBeGreaterThan(0);
@@ -700,6 +704,7 @@ describe('career view projection', () => {
       revision = h.world!.revision;
     const exported = await h.handle(req('career-export', revision, { type: 'export' }));
     expect(exported.view!.world.people).toBeUndefined();
+    expect(exported.view!.world).not.toHaveProperty('freeAgents');
     expect(canonical(h.world!)).toBe(before);
     const saved = await decode(exported.raw!);
     expect(Object.keys(saved.world.people!).sort()).toEqual(Object.keys(h.world!.people!).sort());
