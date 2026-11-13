@@ -403,8 +403,12 @@ describe('contract talks (→CLUB-26)', () => {
     // when it fits the room the squad share of this season's planned income leaves above the
     // players' wage bill.
     /** The talk answered with this season's plan resting on `revenue(bill, raise, share)`. */
-    const verdict = (revenue: (bill: bigint, raise: bigint, share: bigint) => bigint) => {
+    const verdict = (
+      revenue: (bill: bigint, raise: bigint, share: bigint) => bigint,
+      cashYears = 2n,
+    ) => {
       const { w, p } = talking(80);
+      w.cash = (BigInt(operatingCosts(w).annual) * cashYears).toString();
       holdRows(w, { direction: { renewal: 'keepAll' } });
       const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage),
         bill = BigInt(operatingCosts(w).playerWages),
@@ -423,9 +427,13 @@ describe('contract talks (→CLUB-26)', () => {
     const past = verdict((bill, raise, share) => ((bill + raise) * 10000n) / share - 10n);
     expect(BigInt(past.plan.left)).toBeLessThan(past.raise);
     expect(past.item.title).toContain('거절했어요');
-    expect(past.item.detail).toContain('이번 시즌 수입 예상');
-    expect(past.item.detail).toContain(`${past.plan.share / 100}%`);
+    expect(past.plan.capital).toBe('0');
+    expect(past.item.detail).toContain('보유 자금을 포함한 예산');
     expect(past.w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
+    // The same income shortfall is allowed when surplus reserves fund the raise.
+    const funded = verdict((bill, raise, share) => ((bill + raise) * 10000n) / share - 10n, 40n);
+    expect(BigInt(funded.plan.capital)).toBeGreaterThan(0n);
+    expect(funded.item.title).toContain('받아들였어요');
     // Only the players' wages fill the squad share; the staff's are not part of it.
     expect(past.plan.committed).toBe(operatingCosts(past.w).playerWages);
     expect(BigInt(wageBill(past.w))).toBe(

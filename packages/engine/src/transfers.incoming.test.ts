@@ -159,6 +159,8 @@ describe('incoming bids', () => {
     w.cash = ((annual * 4n) / 46n - 1n).toString();
     expect(saleBar(w, p)).toMatchObject({ percent: 110 });
     reset();
+    // Test income pressure without capital available above the reserve.
+    w.cash = annual.toString();
     // The players' wage bill above the 단장's sales line (60% of the planned income at 균형,
     // →ECON-33) cuts 10 points, more than 10 points above it 20.
     const wages = BigInt(operatingCosts(w).playerWages),
@@ -174,6 +176,9 @@ describe('incoming bids', () => {
     expect(saleBar(w, p)).toMatchObject({ percent: 120 });
     plan(75n);
     expect(saleBar(w, p)).toMatchObject({ percent: 110 });
+    // A wealthy club can fund that bill from cash without being pressed to sell.
+    w.cash = '999999999999';
+    expect(saleBar(w, p)).toMatchObject({ percent: 130, cuts: [] });
     delete w.budgetPlan;
     reset();
     p.born = w.year - 19;

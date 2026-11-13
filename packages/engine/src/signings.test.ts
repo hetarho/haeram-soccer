@@ -160,6 +160,9 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     const wages = BigInt(operatingCosts(w).playerWages),
       cost = BigInt(offer.fee) + BigInt(offer.player.wage),
       planned = { year: w.year, revenue: (((cost + wages) * 10n) / 7n).toString(), sales: '0' };
+    // Keep cash below the reserve while covering the fee and actual obligations.
+    w.operatingExpenses = cost.toString();
+    w.cash = (cost * 3n).toString();
     w.budgetPlan = planned;
     const standard = signingVerdict(w, offer.player, offer.fee);
     expect(standard.ok).toBe(false);
@@ -171,11 +174,16 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('현금이 바닥나지');
     // Without income the wage bill has no room.
     const poor = club();
+    poor.cash = operatingCosts(poor).annual;
     poor.budgetPlan = { ...planned, revenue: '0' };
     expect(signingVerdict(poor, offer.player, offer.fee).reason).toContain('연봉 총액');
     passFree(poor);
     staffSignings(poor);
     expect(staffBids(poor)).toEqual([]);
+    // Zero planned income is not a refusal when surplus cash funds the commitment.
+    const funded = club();
+    funded.budgetPlan = { ...planned, revenue: '0' };
+    expect(signingVerdict(funded, offer.player, offer.fee).ok).toBe(true);
   });
 
   it("answers its own counters, never the owner's", () => {
