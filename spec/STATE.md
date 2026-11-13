@@ -72,6 +72,8 @@
 | T905 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
 | T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
 | T907 | Normalize prepared manager careers at the writer boundary | ARCH WORLD SAVE WEB | T893 | todo |
+| T908 | Reconcile throughput signatures with proven founding changes | ARCH WORLD MATCH HIST | T885 T889 | todo |
+| T909 | Skip already ineligible sellers before market pool work | ARCH WORLD CLUB | T885 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
