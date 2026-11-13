@@ -11,6 +11,7 @@
 - 261113 decided T864: 시장 초기값 선택: 첫날·중간날·마지막 날 3회 정산, 개선 폭 4, 임대 23세 이하, 일반 이동 창구당 3회를 채택했습니다. 대안은 매일 정산 또는 더 큰 이동 한도였으나 T864의 제한된 정산과 T866 보정을 유지했습니다. 강제 매각은 급여 한도와 인원·라인 최소를 우선하고, 개막 0일 이동은 개막 상태를 남긴 뒤 첫 진행에서 정산합니다. 성장만으로 XI를 다시 고르지 않는 기존 계약을 복구했습니다.
 - 261113 decided ARCH-32 T869: Resource lifetime after producer removal → retain canonical IDs, templates and every registered translation while supported saves can contain the prose (alt: a separate legacy resource catalog | rewriting saved prose). Existing source reports and the retained verbatim identity mapping need recognition at the display boundary. Canonical resource retention preserves facts, names and translations without restoring scripted events. T869 repairs the two removed project-report resources; T866 waits for that compile/presentation prerequisite. T868 remains reserved by sx1.
 - 261113 decided T866: Shortened calibration window and final measurement closure selection → retain the current named production configs and flat founding draw; preserve the lower-investment trials separately, since their measured 1950 division residuals still fail and no full alternative gate is available (alternatives: ship a partial fit or start algorithm changes). Keep the exact residuals and missing measurements for the owner.
+- 261113 decided T866: 전력·용량 잔차 후속 보정 선택 → 제품 계수는 동결하고 같은 시드에서 낮은 유소년 잠재력·인원 및 느린 시설 투자의 시안 하나만 추가 측정한다. 대안은 기본값 유지 또는 알고리즘 수리였으며, 실제 초기 전력 초과와 선수단 496226바이트 초과를 근거로 승인된 계수만 시험한다. 통과나 제품 반영을 주장하지 않는다.
 
 ## unlanded
 | id | tag | branch | commit | at |
