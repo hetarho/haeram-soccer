@@ -1,0 +1,39 @@
+{
+  "years": [
+    1930,
+    1931,
+    1932,
+    1933,
+    1934,
+    1935,
+    1936,
+    1937,
+    1938,
+    1946,
+    1947,
+    1948,
+    1949
+  ],
+  "playedSeasons": 13,
+  "clubSeasons": 5863,
+  "wagesAboveTurnover": 62,
+  "negativeResults": 1103,
+  "capitalDraws": 68,
+  "exhausted": 10,
+  "unsupportedShortfalls": 10,
+  "debtBooks": 10,
+  "reconciliationFailures": 0,
+  "afterSummerCommitments": 5863,
+  "unsupportedSummerCommitments": 0,
+  "elapsedMs": 219783,
+  "source": "21f8a88d0af56ccd11cd9205b4f060a059d1dc70",
+  "computation": {
+    "algorithm": "sha256",
+    "sha256": "120720786e669c765cb2cc58d05ce0a08dae037a0875f07f44b7eb7c5e51a93e",
+    "files": 211,
+    "entry": "scripts/persisted-world-read.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "bytes": 9107299,
+  "sha256": "d293ff355b81020380ee30cad1aa0bff69752ffaf859c2d8a83e958028899861"
+}
