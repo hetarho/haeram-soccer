@@ -59,7 +59,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T891 | Prepare real market candidates and exact registration caps | ARCH CLUB WORLD | T885 | todo |
 | T894 | Prepare exact contract, expiry and refill scenes | ARCH CLUB WORLD ECON | T890 | todo |
 | T895 | Prepare valid buyers and remaining market participants | ARCH CLUB WORLD | T890 | todo |
 | T896 | Prepare affordable academy, pending-decision and discipline scenes | ARCH CLUB WORLD MATCH | T885 | todo |
@@ -78,7 +77,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 23 | 13 | 10 | 1 | 3 | 0 | 2026-11-13T19:51:22.585Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 28 | 14 | 14 | 0 | 9 | 0 | 2026-11-13T20:31:31.065Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
