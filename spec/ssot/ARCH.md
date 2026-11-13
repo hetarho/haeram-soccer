@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r42 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r43 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -206,10 +206,13 @@
   - every record carries its owner, a stable ID and an updated time; an account adapter adopts device records on first sign-in and merges by ID and updated time.
   - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
 - ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow
-  - task, before each done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests`.
-  - a task changing UI, browser-journey, storage or worker code also runs `pnpm run build`. Browser specs (`playwright`, `tests/e2e`) run only in batch: an acceptance item naming them is checked `- [v]` once the build passes, and the specs go to batch through `- limits:`.
+  - task, once before each done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm run validate:i18n`, `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests`.
+  - Run task commands through `vibe check --tier task`; task acceptance names task-tier checks only. Maintain affected integration and browser tests with the implementation and hand off their commands/specs in result limits; unexecuted checks never count as passed.
   - batch, before code push or final completion: `pnpm run verify:batch`. It covers unit, integration, contract, catalogs, presentation, build and every journey on Chromium.
+  - Builds, integration, browser specs and full suites belong to the initiating coordinator's final batch gate, including changes to UI, browser journeys, storage and workers.
   - CI, after code push: the GitHub Actions run of →ARCH-23, every browser. A push touching only `spec/`, `artifacts/` or Markdown starts none.
+  - Reuse successful checks only with unchanged definitions, inputs, environment and scope; recovery checks failed, affected or unrun items. An external script is one check unless an explicit verification plan declares its parts; never infer stage-level reuse from a partial script run.
+  - A session permits at most three failed batch/group gate rounds cumulatively. After the second failure, another repair requires a strictly smaller complete failure set for the same plan. Keep the original session, deadline and unit limits across recovery; cancellation, timeout and unfinished coverage are not passes.
 
 - ARCH-31 [o] A match-model release has a capacity gate (→SAVE-23); its throughput (→!ARCH-34) and accuracy (→MATCH-28) are measured and reported with the release, not gates. ← the model ships first and its football is calibrated on the released model
   - record a pre-change baseline and final source fingerprint on the same pinned toolchain, machine and fixed worlds. Measure isolated fixture processing, complete season engine time, record settlement, codecs and observation separately; record warm-up, repetitions, medians, samples and memory.
@@ -262,6 +265,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r43 261114 ARCH-30✎ per-task build and browser acceptance after build→coordinator batch build and task-tier acceptance with handoff; task execution and i18n guidance→once through `vibe check` with mandatory i18n; recovery unspecified→input-valid success reuse and three cumulative failed gates
 - r42 261113 ARCH-32✎ stored-prose recognition without a resource-lifetime rule→retain source IDs, templates and every registered translation while supported saves can contain their prose, even after producer removal
 - r41 261113 ARCH-1✎ product SSOTs derived from `ideation/club-history-reboot.md`→the product SSOTs · constraints✎ product background `spec/ideation/club-history-reboot.md` and project overview `spec/NARRATIVE.md`→rules in `spec/ssot/` only, archived ideation is background (NARRATIVE removed, club-history-reboot archived)
 - r40 261112 ARCH-30✎ project-only rules (planning on `next`, host-locked batch before `vibe push` to `main`, work-group flag map, CI-wait and `verify` stand-in rules)→gusta's default tiers: task · batch before code push or final completion · CI after code push · flow✎ Planning names no skill, Verification no `next` or `vibe push`
