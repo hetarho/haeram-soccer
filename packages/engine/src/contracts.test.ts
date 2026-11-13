@@ -76,6 +76,7 @@ import { releaseFixturePlayers, twentyPlayerFixture } from './player-fixtures.te
 import { joinFreeAgents } from './free-agents';
 import { movePerson } from './npc-continuity';
 import { lineOf } from './player';
+import { SQUAD_MINIMUM } from './squad-size';
 import { locateOffer } from './scout-search';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
@@ -299,31 +300,50 @@ function talksOn(w: World, day: number) {
 }
 const talkItems = (w: World, id: string) =>
   (w.inbox || []).filter((item) => item.kind === 'contract-talk' && item.ref === id);
-/** A real affordable suitor, preparing one canonical vacancy only when needed. */
+/** A real affordable suitor, preparing only the canonical departures needed for a vacancy. */
 function prepareSuitor(w: World, p: Player, fee: string) {
   const existing = suitorFor(w, p, () => 0, fee);
   if (existing) return existing;
-  const vacancy = w.clubs
-    .filter((c) => c.id !== w.playerClub && !c.representative)
-    .map((club) => ({
-      club,
-      departing: w.squads?.[club.id]?.find((q) => lineOf(q.position) === lineOf(p.position)),
-    }))
-    .find(({ club, departing }) => {
-      if (!departing) return false;
+  const vacancy = (() => {
+    for (const club of w.clubs) {
+      if (club.id === w.playerClub || club.representative) continue;
       const trial = structuredClone(w);
-      if (
-        !joinFreeAgents(
-          trial,
-          trial.squads![club.id].find((q) => q.id === departing.id)!,
-          w.year,
+      const departing: string[] = [];
+      for (const player of (w.squads?.[club.id] ?? []).filter(
+        (q) => lineOf(q.position) === lineOf(p.position),
+      )) {
+        const squad = trial.squads![club.id];
+        if (squad.length <= SQUAD_MINIMUM) break;
+        if (
+          player.position === 'GK' &&
+          !squad.some((q) => q.id !== player.id && q.position === 'GK')
         )
-      )
-        return false;
-      return suitorFor(trial, p, () => 0, fee)?.id === club.id;
-    });
+          continue;
+        if (
+          !joinFreeAgents(
+            trial,
+            squad.find((q) => q.id === player.id)!,
+            w.year,
+          )
+        )
+          continue;
+        departing.push(player.id);
+        if (suitorFor(trial, p, () => 0, fee)?.id === club.id) return { club, departing };
+      }
+    }
+    return undefined;
+  })();
   expect(vacancy).toBeDefined();
-  expect(joinFreeAgents(w, vacancy!.departing!, w.year)).toBe(true);
+  for (const id of vacancy!.departing)
+    expect(
+      joinFreeAgents(
+        w,
+        w.squads![vacancy!.club.id].find((q) => q.id === id)!,
+        w.year,
+      ),
+    ).toBe(true);
+  expect(w.squads![vacancy!.club.id].length).toBeGreaterThanOrEqual(SQUAD_MINIMUM);
+  expect(w.squads![vacancy!.club.id].some((q) => q.position === 'GK')).toBe(true);
   const buyer = suitorFor(w, p, () => 0, fee);
   expect(buyer).toBeDefined();
   return buyer!;
@@ -448,6 +468,12 @@ describe('contract talks (→CLUB-26)', () => {
       cashYears = 2n,
     ) => {
       const { w, p } = talking(80);
+      // Only this player's raise is being decided against the exact pre-talk wage bill.
+      for (const other of activePlayers(w)) {
+        if (other.id === p.id) continue;
+        other.until = w.year + TALK_CONFIG.improveSeasons + 1;
+        delete other.talk;
+      }
       w.cash = (BigInt(operatingCosts(w).annual) * cashYears).toString();
       holdRows(w, { direction: { renewal: 'keepAll' } });
       const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage),
