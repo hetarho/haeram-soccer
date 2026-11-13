@@ -22,16 +22,16 @@
 | ARCH | 43 | 43 | - | 2 |
 | WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
-| WORLD | 13 | 13 | - | 0 |
+| WORLD | 14 | 14 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 70 | 70 | - | 0 |
+| CLUB | 71 | 71 | - | 0 |
 | MATCH | 66 | 66 | - | 0 |
 | LEAGUE | 20 | 20 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
-| ECON | 57 | 57 | - | 0 |
+| ECON | 58 | 58 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
-| SAVE | 68 | 68 | - | 0 |
+| SAVE | 69 | 69 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
 | PLAYER | 18 | 18 | - | 0 |
 
@@ -62,7 +62,12 @@
 | T874 | Wait onside before a free-kick delivery | MATCH ARCH | T873 | todo |
 | T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
 | T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
+| T877 | Index free-agent settlement facts | ARCH WORLD CLUB | - | todo |
+| T878 | Reuse NPC market settlement contexts | ARCH WORLD CLUB | T877 | todo |
+| T879 | Persist optional owner capital and income components | ARCH ECON SAVE | T878 | todo |
+| T880 | Permit finite cash-backed NPC operating deficits | ARCH WORLD ECON CLUB SAVE | T879 | todo |
+| T881 | Report funded deficits separately from funding failures | ARCH ECON CLUB | T880 | todo |
 
 ## next
-- Complete natural-football improvements T873 → T874 → T876 and paired comparison T875, then independently review, verify and land on main.
-- Preserve the baseline from 9b701adf; record iterative measurements and remaining football limitations in reports/261114-nf14.md.
+- gusta-start scope T877 T878 T879 T880 T881: free-agent and NPC-market optimization, then funded NPC books and financing diagnostics; preserve other live natural-football assignments.
+- Local unit-only validation remains; owner-authorized main publication and normal CI follow one final candidate. Capacity is not a blocker for this request.
