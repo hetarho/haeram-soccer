@@ -66,6 +66,7 @@
 | T890 | Prepare exact replacement and top-up scenarios | ARCH CLUB WORLD | T885 | todo |
 | T891 | Prepare real market candidates and exact registration caps | ARCH CLUB WORLD | T885 | todo |
 | T892 | Prepare explicit founding, employment and legacy identity fixtures | ARCH WORLD SAVE | T885 | todo |
+| T893 | Avoid new identity collisions during supported squad adoption | ARCH WORLD SAVE | T885 | todo |
 | T883 | Prepare one coherent compatible game release | SAVE ARCH | T882 | todo |
 
 ## work
