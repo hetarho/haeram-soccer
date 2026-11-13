@@ -88,13 +88,11 @@
 | T874 | work | codex/natural-football-261114 | 7602032a9501 | 2026-11-13T17:08Z |
 | T875 | work | codex/natural-football-261114 | 88820aeb00e4 | 2026-11-13T17:10Z |
 | T876 | work | codex/natural-football-261114 | 15ec0ba65b84 | 2026-11-13T17:23Z |
-| T883 | pr14 | fix/pb14-final-review | a05839f3d0b1 | 2026-11-13T18:28Z |
 | T885 | work | codex/natural-football-261114 | 488d14e9ec73 | 2026-11-13T18:38Z |
 | T884 | work | codex/natural-football-261114 | 548dae09df9c | 2026-11-13T18:44Z |
 | T888 | work | codex/natural-football-261114 | 55ed6375239b | 2026-11-13T18:53Z |
 | T889 | work | codex/natural-football-261114 | 42ad99267a65 | 2026-11-13T19:09Z |
 | T887 | work | codex/natural-football-261114 | 45db3d7e9f7c | 2026-11-13T19:13Z |
-| T899 | pr14 | fix/pb14-final-review | d595fcf9 | 2026-11-13T19:30Z |
 
 ## log
 - 261113 T899 done
