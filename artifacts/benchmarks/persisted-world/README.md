@@ -1,6 +1,6 @@
 # Persisted-world calibration (T866)
 
-Measurement in progress. The original four-hour window began 2026-11-13T08:52:43.827Z, with its original end at 12:52:43.827Z. Latest owner steering shortens measurement work to 12:00 UTC and finalization to 12:15 UTC, preserving the original start. Publication belongs to the host by 13:00 UTC. The host holds the clone-wide heavy lock. No target is claimed passing until its measured evidence is recorded here.
+Measurement in progress. The original four-hour window began 2026-11-13T08:52:43.827Z, with its original end at 12:52:43.827Z. The owner deadline is 13:00 UTC. The host initially reserved the period from 12:00 UTC for finalization. Once all unit/static checks and completed-work publication finished early, inbox 31641f13 reallocates that reserve to one existing residual candidate through 1980 after the fifth control finishes, with an absolute 12:45 UTC cutoff before the original four-hour end. The original start is preserved. Publication belongs to the host by 13:00 UTC. The host holds the clone-wide heavy lock. No target is claimed passing until its measured evidence is recorded here.
 
 The immutable comparison is `T286-before.json`, copied before any century phase. Historical throughput uses pre-T861 `b41b8978774506a0344aafd100bf4237ce70046d`, the owner's specified stage commits and ARCH-34's paired main-thread CPU estimator. Historical T863 evidence includes its subsequently corrected growth/XI-reselection behavior; it is not evidence for the final growth contract.
 
@@ -147,3 +147,24 @@ Both bundles were built once before any pair. Their exact compressed runnable fi
 ## Preserved diagnostic states
 
 The exact ten-season takeover world and five-season records life are also archived as `squads-10.world.json.gz` and `records-20-diagnostic.world.json.gz`. These are gzip-compressed complete diagnostic World JSON snapshots, with original JSON and gzip hashes in `diagnostic-worlds.json`; no field was pruned or rewritten. They preserve the original pre-T872 state for analysis without repeating the simulation. They are separate from the production portable save format and do not constitute a successful load or century measurement. The records state retains the actual year1955 fans ending.
+
+
+## Final reserve reallocation (inbox 31641f13)
+
+Completed source and all unit/static evidence are already remote. After the fifth default core ends, the host runs only the existing `residual-trial.config.json` candidate through 1980 under the remaining original task clock. `run-final-residual.mjs` is a local coordinator: it acquires the shared heavy lock with a five-minute maximum wait and bounds the numerical command by the absolute 12:45 UTC cutoff; it never starts after that cutoff. The trial is one seed and a 1980 horizon, so even a completed command is not the 2010/five-seed gate. There is no source, production-control, test-tier, budget or algorithm change, no new exploration window, and no non-unit test suite or CI. Publication remains due before 13:00 UTC.
+
+
+## Final default panel: four complete worlds and the fifth timeout
+
+The fifth control command ended at its fixed 3200000 ms timeout (3200273 ms wrapper, timedOut true, exit 1). Its last retained marker is the 2000 boundary, 63 played seasons from 1930 after the war gap; progress after that marker is not invented. Its exact receipt/log are `publication-seed-5-core-check.json` and `publication-seed-5-core.log`. `fifth-prefix-comparison.json` records unchanged controls and exact equality of every common observed rows/books/summers/values/affiliations prefix against the older same-seed 1990 partial. Peak/champion aggregates and source/timestamps are explicitly excluded from that prefix comparison.
+
+The canonical `summary.json`, `world-facts.md` and CSVs now use exactly the four complete initial files and this one fifth partial, with no duplicated seed. Completed worlds remain **4/5**. Observed division/decade/seed misses are **714**, including a fifth 2000s cell with one annual observation; no complete 2000s decade is inferred. All **32/32 completed** champion windows fail, with the fifth's eight country windows incomplete. The observed panel has **12849/160105** closed club-seasons with wages above revenue and **57174** after-summer breaches. Complete/partial windows, each seed's annual count, source identity, configurations and file hashes remain explicit. These totals supersede the earlier four-world-only totals without turning the unfinished fifth command into a pass.
+
+The existing residual candidate through 1980 started at 11:59:31Z. Its requested horizon remains 1980 and its absolute cutoff 12:45Z; a completed request would still be a one-seed, shortened-horizon read, not the 2010/five-seed gate. Its data is analyzed separately and is never added as another control seed to the canonical default panel.
+
+
+## Early snapshot diagnosis of XI spread
+
+A separate numerical read of the complete archived 1947 snapshot advances no season or fixture. It uses the same `formationOf(clubStyle(c))`, selected XI and `slotOvr` as the observer, and additionally reads intrinsic `overall` and full-roster position coverage. Input hash, method, club rows and twenty widest examples are in `squad-shape-diagnostic.json`; its exact command/log are adjacent. It is not a test pass or a full WORLD-6 gate.
+
+Of 450 NPC clubs (owner excluded), 445 can cover every formation position at proficiency 2+. Those 445 still have mean slot-OVR span 23.99 and intrinsic-OVR span 22.95. The 421 selected XIs with every player proficient in his actual slot have mean spans 22.96/22.11 respectively. The 5 clubs with a full-roster coverage gap have mean slot span 51.70, and 29 selected XIs containing an unfamiliar position have mean 43.68. Thus position mismatch accompanies some extremes, but it does not explain all observed spread in this one early snapshot; intrinsic age/ability distribution also needs inspection in later observations. This is an inference from a historical snapshot, not an isolated causal experiment or a change to selection policy.
