@@ -369,13 +369,14 @@ export function npcMarket(w: World) {
     while ((counts.get(buyer.id) ?? 0) < NPC_MARKET.moves) {
       let completed = false;
       for (const need of wanted.get(buyer.id)!) {
-        const pool = (byLine.get(need.line) ?? []).filter(
-          (l) =>
-            l.club !== buyer &&
-            !moved.has(l.player.id) &&
-            npcCanSell(w, l.club, l.player) &&
-            fills(l.player, need, settlement),
-        );
+        const pool = (byLine.get(need.line) ?? []).filter((l) => {
+          if (l.club === buyer || moved.has(l.player.id)) return false;
+          const { limit, bill } = clubFacts(w, l.club, settlement);
+          const sellingDown = limit !== undefined && bill > limit;
+          if (l.sellDown && !sellingDown) return false;
+          if (!sellingDown && (counts.get(l.club.id) ?? 0) >= NPC_MARKET.moves) return false;
+          return npcCanSell(w, l.club, l.player) && fills(l.player, need, settlement);
+        });
         pool.sort(
           (a, b) =>
             rating(b.player, settlement, need.slot) - rating(a.player, settlement, need.slot) ||

@@ -63,14 +63,13 @@
 | T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
 | T907 | Normalize prepared manager careers at the writer boundary | ARCH WORLD SAVE WEB | T893 | todo |
 | T908 | Reconcile throughput signatures with proven founding changes | ARCH WORLD MATCH HIST | T885 T889 | todo |
-| T909 | Skip already ineligible sellers before market pool work | ARCH WORLD CLUB | T885 | todo |
 | T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T906 | todo |
 | T911 | Observe contract expiry before genuine mandatory rehires | ARCH CLUB WORLD HIST | T885 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 28 | 23 | 5 | 2 | 0 | 0 | 2026-11-13T20:37:57.090Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 30 | 24 | 6 | 2 | 2 | 0 | 2026-11-13T20:54:00.913Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T20:37:57.090Z",
-  "sourceCommit": "215b0d7b579f7feec46a578e533bb2c1671293e8",
+  "snapshotAt": "2026-11-13T20:54:00.913Z",
+  "sourceCommit": "c093073805f15024c7f8e993ff9539eba86e5af2",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -42,7 +42,9 @@
       "T906",
       "T907",
       "T908",
-      "T909"
+      "T909",
+      "T910",
+      "T911"
     ],
     "lastRun": {
       "id": "5932b97a-14a6-4d61-a8b9-f4397341625d",
@@ -76,13 +78,13 @@
     }
   },
   "summary": {
-    "total": 28,
-    "completed": 23,
-    "remaining": 5,
+    "total": 30,
+    "completed": 24,
+    "remaining": 6,
     "running": 2,
-    "review": 0,
+    "review": 2,
     "blocked": 0,
-    "unassigned": 3
+    "unassigned": 2
   },
   "tasks": [
     {
@@ -92,7 +94,7 @@
         "T885"
       ],
       "lane": "free-signing-source-witness",
-      "status": "todo"
+      "status": "ready"
     },
     {
       "id": "T906",
@@ -101,7 +103,7 @@
         "T885"
       ],
       "lane": "current-browser-scenes",
-      "status": "doing"
+      "status": "reviewing"
     },
     {
       "id": "T907",
@@ -110,7 +112,7 @@
         "T893"
       ],
       "lane": "manager-browser-adoption",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T908",
@@ -123,12 +125,21 @@
       "status": "todo"
     },
     {
-      "id": "T909",
-      "title": "Skip already ineligible sellers before market pool work",
+      "id": "T910",
+      "title": "Prepare genuine combined-role departure offers",
+      "dep": [
+        "T906"
+      ],
+      "lane": "combined-sale-scenes",
+      "status": "todo"
+    },
+    {
+      "id": "T911",
+      "title": "Observe contract expiry before genuine mandatory rehires",
       "dep": [
         "T885"
       ],
-      "lane": "early-market-seller-filter",
+      "lane": "expiry-contract-boundaries",
       "status": "doing"
     }
   ],
@@ -1205,6 +1216,8 @@
       "submittedBase": "4618c03f80602ba8cc9ff245d24be44d8dcf5e8d",
       "submissionId": "a1c4ed71-20ac-421e-84c2-1379ed477735",
       "submittedAt": "2026-11-13T19:51:16.814Z",
+      "integratedCommit": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+      "integratedAt": "2026-11-13T20:38:33.769Z",
       "risk": null,
       "review": {
         "id": "47f39e2a-6e0f-42fe-bc44-2eac60170938",
@@ -1238,6 +1251,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T19:50:57.180Z",
           "finishedAt": "2026-11-13T19:51:16.623Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:37:57.281Z",
+          "finishedAt": "2026-11-13T20:38:33.433Z"
         }
       ]
     },
@@ -1742,9 +1762,45 @@
       "contributors": [
         "nf14-codex-browser-current"
       ],
-      "status": "doing",
+      "status": "reviewing",
+      "reason": null,
       "createdAt": "2026-11-13T20:33:34.366Z",
-      "startCommit": "e434933fb0e41b636c1d62fad481ed951e17a31b"
+      "startCommit": "e434933fb0e41b636c1d62fad481ed951e17a31b",
+      "verifiedCommit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+      "submittedBase": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+      "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
+      "submittedAt": "2026-11-13T20:48:47.475Z",
+      "risk": null,
+      "review": {
+        "id": "5c8fd682-ddc0-42d1-83d9-97d6c8169d1d",
+        "owner": "pr14-independent-browser-scenes",
+        "status": "reviewing",
+        "commit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+        "baseCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
+        "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
+        "createdAt": "2026-11-13T20:52:32.309Z"
+      },
+      "steps": [
+        {
+          "taskId": "T906",
+          "commit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+          "at": "2026-11-13T20:48:47.463Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T20:48:28.012Z",
+              "finishedAt": "2026-11-13T20:48:47.271Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:48:28.012Z",
+          "finishedAt": "2026-11-13T20:48:47.271Z"
+        }
+      ]
     },
     {
       "id": "256e818d-7251-4507-af39-c5f575bd2f2c",
@@ -1758,9 +1814,124 @@
       "contributors": [
         "nf14-codex-early-market"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-13T20:33:36.323Z",
-      "startCommit": "e434933fb0e41b636c1d62fad481ed951e17a31b"
+      "startCommit": "e434933fb0e41b636c1d62fad481ed951e17a31b",
+      "verifiedCommit": "50ccdd7ddbe0e1b7181e75d76daf5142165524c3",
+      "submittedBase": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+      "submissionId": "324f580a-f7f0-4822-8217-f02e4c4c4443",
+      "submittedAt": "2026-11-13T20:44:52.871Z",
+      "risk": null,
+      "review": {
+        "id": "769f1103-e1fd-4e84-8190-fdff857edc8b",
+        "owner": "nf14-codex-independent-market-filter",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T90950ccdd7ddbe0e1b7181e75d76daf5142165524c3 source correctness approved; production npc-market.ts is byte-exact measuredac8f7186. Reviewed complete diff, WORLD-16/17 and guard/cache lifecycle: the two existing late guards move ahead of pure sellability/fill/sort work against the same atomic settlement facts/counts; original late defenses, precomputed tie draws, observer order, overspending exception, post-move seller/winner invalidation and T899 ratings cache are unchanged. No state can change between early filtering and late selection without an actual move that exits/rebuilds the pool. Independently23tiny units in2files pass1.20s (/tmp/nf14-t909-review-unit.log). Raw baseline/candidate three complete world+ordered move+every named draw objects are exactly equal:0/6/1moves,1/62/2draws. Independently compared all4 retained real-settlement worlds and ordered431move arrays exactly; every rep shares same input/world/move hashes. Recomputed mean CPU ratios0.907633/0.905505 and wall0.900943/0.911851 in opposite run orders; proof /tmp/nf14-t909-review-proof.json. These are bounded real-settlement observations, not a whole-history/browser/retained-replay gate, formal bootstrap or universal speed/memory conclusion. Original budgets/timers/workloads and every value remain intact; representative9season/history and original browser180s/final gates remain coordinator-owned pending, with retention conditional as planned. No P1/P2 findings; no heavy tests/performance runs repeated by reviewer.",
+        "findings": [],
+        "commit": "50ccdd7ddbe0e1b7181e75d76daf5142165524c3",
+        "baseCommit": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+        "submissionId": "324f580a-f7f0-4822-8217-f02e4c4c4443",
+        "createdAt": "2026-11-13T20:46:55.908Z",
+        "finishedAt": "2026-11-13T20:48:44.422Z"
+      },
+      "steps": [
+        {
+          "taskId": "T909",
+          "commit": "50ccdd7ddbe0e1b7181e75d76daf5142165524c3",
+          "at": "2026-11-13T20:44:52.856Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T20:44:09.350Z",
+              "finishedAt": "2026-11-13T20:44:52.652Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:44:09.350Z",
+          "finishedAt": "2026-11-13T20:44:52.652Z"
+        }
+      ]
+    },
+    {
+      "id": "48318982-1efb-4740-9288-f74256d29b24",
+      "group": "natural-football-261114",
+      "taskId": "T901",
+      "tasks": [
+        "T901"
+      ],
+      "lane": "free-signing-source-witness",
+      "owner": "nf14-codex-free-source-witness",
+      "contributors": [
+        "nf14-codex-free-source-witness"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-11-13T20:45:05.183Z",
+      "startCommit": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+      "verifiedCommit": "d0ecb9fe64e4c9839a272b00ab9604aa443b1494",
+      "submittedBase": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
+      "submissionId": "114b48c9-3fcf-4a5c-8154-5db73b9b0f0b",
+      "submittedAt": "2026-11-13T20:51:01.100Z",
+      "risk": null,
+      "steps": [
+        {
+          "taskId": "T901",
+          "commit": "d0ecb9fe64e4c9839a272b00ab9604aa443b1494",
+          "at": "2026-11-13T20:51:01.089Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T20:50:42.007Z",
+              "finishedAt": "2026-11-13T20:51:00.909Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:50:42.007Z",
+          "finishedAt": "2026-11-13T20:51:00.909Z"
+        }
+      ]
+    },
+    {
+      "id": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+      "group": "natural-football-261114",
+      "taskId": "T907",
+      "tasks": [
+        "T907"
+      ],
+      "lane": "manager-browser-adoption",
+      "owner": "nf14-codex-manager-writer-fixture",
+      "contributors": [
+        "nf14-codex-manager-writer-fixture"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-13T20:51:32.686Z",
+      "startCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45"
+    },
+    {
+      "id": "53554d7c-e4ee-4118-81db-ce00f7aa3d9a",
+      "group": "natural-football-261114",
+      "taskId": "T911",
+      "tasks": [
+        "T911"
+      ],
+      "lane": "expiry-contract-boundaries",
+      "owner": "nf14-codex-expiry-contract",
+      "contributors": [
+        "nf14-codex-expiry-contract"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-13T20:52:59.407Z",
+      "startCommit": "c093073805f15024c7f8e993ff9539eba86e5af2"
     }
   ],
   "history": [
@@ -8216,6 +8387,468 @@
       "group": "natural-football-261114",
       "attemptId": "b93ad830-110f-41e1-a286-baef8caac1c3",
       "taskId": "T902",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 295,
+      "at": "2026-11-13T20:38:33.559Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b93ad830-110f-41e1-a286-baef8caac1c3",
+      "taskId": "T902",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:37:57.281Z",
+            "finishedAt": "2026-11-13T20:38:33.433Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 296,
+      "at": "2026-11-13T20:38:33.769Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b93ad830-110f-41e1-a286-baef8caac1c3",
+      "taskId": "T902",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+        "integratedAt": "2026-11-13T20:38:33.769Z"
+      }
+    },
+    {
+      "sequence": 297,
+      "at": "2026-11-13T20:44:09.184Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "256e818d-7251-4507-af39-c5f575bd2f2c",
+      "taskId": "T909",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 298,
+      "at": "2026-11-13T20:44:52.871Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "256e818d-7251-4507-af39-c5f575bd2f2c",
+      "taskId": "T909",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "50ccdd7ddbe0e1b7181e75d76daf5142165524c3",
+        "submittedBase": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+        "submissionId": "324f580a-f7f0-4822-8217-f02e4c4c4443",
+        "submittedAt": "2026-11-13T20:44:52.871Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T909",
+            "commit": "50ccdd7ddbe0e1b7181e75d76daf5142165524c3",
+            "at": "2026-11-13T20:44:52.856Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T20:44:09.350Z",
+                "finishedAt": "2026-11-13T20:44:52.652Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:44:09.350Z",
+            "finishedAt": "2026-11-13T20:44:52.652Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 299,
+      "at": "2026-11-13T20:45:05.183Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "48318982-1efb-4740-9288-f74256d29b24",
+      "taskId": "T901",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "48318982-1efb-4740-9288-f74256d29b24",
+        "group": "natural-football-261114",
+        "taskId": "T901",
+        "tasks": [
+          "T901"
+        ],
+        "lane": "free-signing-source-witness",
+        "owner": "nf14-codex-free-source-witness",
+        "contributors": [
+          "nf14-codex-free-source-witness"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T20:45:05.183Z",
+        "startCommit": "5793775f1c6d1fc6b63712c52c61dd2cec2364be"
+      }
+    },
+    {
+      "sequence": 300,
+      "at": "2026-11-13T20:45:07.164Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "48318982-1efb-4740-9288-f74256d29b24",
+      "taskId": "T901",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 301,
+      "at": "2026-11-13T20:46:55.908Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "256e818d-7251-4507-af39-c5f575bd2f2c",
+      "taskId": "T909",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "769f1103-e1fd-4e84-8190-fdff857edc8b",
+          "owner": "nf14-codex-independent-market-filter",
+          "status": "reviewing",
+          "commit": "50ccdd7ddbe0e1b7181e75d76daf5142165524c3",
+          "baseCommit": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+          "submissionId": "324f580a-f7f0-4822-8217-f02e4c4c4443",
+          "createdAt": "2026-11-13T20:46:55.908Z"
+        }
+      }
+    },
+    {
+      "sequence": 302,
+      "at": "2026-11-13T20:48:27.834Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2d068bd1-01ec-4681-a901-aeb826e4d14a",
+      "taskId": "T906",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 303,
+      "at": "2026-11-13T20:48:44.422Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "256e818d-7251-4507-af39-c5f575bd2f2c",
+      "taskId": "T909",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "769f1103-e1fd-4e84-8190-fdff857edc8b",
+          "owner": "nf14-codex-independent-market-filter",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T90950ccdd7ddbe0e1b7181e75d76daf5142165524c3 source correctness approved; production npc-market.ts is byte-exact measuredac8f7186. Reviewed complete diff, WORLD-16/17 and guard/cache lifecycle: the two existing late guards move ahead of pure sellability/fill/sort work against the same atomic settlement facts/counts; original late defenses, precomputed tie draws, observer order, overspending exception, post-move seller/winner invalidation and T899 ratings cache are unchanged. No state can change between early filtering and late selection without an actual move that exits/rebuilds the pool. Independently23tiny units in2files pass1.20s (/tmp/nf14-t909-review-unit.log). Raw baseline/candidate three complete world+ordered move+every named draw objects are exactly equal:0/6/1moves,1/62/2draws. Independently compared all4 retained real-settlement worlds and ordered431move arrays exactly; every rep shares same input/world/move hashes. Recomputed mean CPU ratios0.907633/0.905505 and wall0.900943/0.911851 in opposite run orders; proof /tmp/nf14-t909-review-proof.json. These are bounded real-settlement observations, not a whole-history/browser/retained-replay gate, formal bootstrap or universal speed/memory conclusion. Original budgets/timers/workloads and every value remain intact; representative9season/history and original browser180s/final gates remain coordinator-owned pending, with retention conditional as planned. No P1/P2 findings; no heavy tests/performance runs repeated by reviewer.",
+          "findings": [],
+          "commit": "50ccdd7ddbe0e1b7181e75d76daf5142165524c3",
+          "baseCommit": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+          "submissionId": "324f580a-f7f0-4822-8217-f02e4c4c4443",
+          "createdAt": "2026-11-13T20:46:55.908Z",
+          "finishedAt": "2026-11-13T20:48:44.422Z"
+        }
+      }
+    },
+    {
+      "sequence": 304,
+      "at": "2026-11-13T20:48:47.475Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2d068bd1-01ec-4681-a901-aeb826e4d14a",
+      "taskId": "T906",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+        "submittedBase": "5793775f1c6d1fc6b63712c52c61dd2cec2364be",
+        "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
+        "submittedAt": "2026-11-13T20:48:47.475Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T906",
+            "commit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+            "at": "2026-11-13T20:48:47.463Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T20:48:28.012Z",
+                "finishedAt": "2026-11-13T20:48:47.271Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:48:28.012Z",
+            "finishedAt": "2026-11-13T20:48:47.271Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 305,
+      "at": "2026-11-13T20:50:35.263Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "48318982-1efb-4740-9288-f74256d29b24",
+      "taskId": "T901",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 306,
+      "at": "2026-11-13T20:50:35.403Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "48318982-1efb-4740-9288-f74256d29b24",
+      "taskId": "T901",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T901: 태스크 result에 verified 기록이 필요합니다."
+      }
+    },
+    {
+      "sequence": 307,
+      "at": "2026-11-13T20:50:41.847Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "48318982-1efb-4740-9288-f74256d29b24",
+      "taskId": "T901",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 308,
+      "at": "2026-11-13T20:51:01.100Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "48318982-1efb-4740-9288-f74256d29b24",
+      "taskId": "T901",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "d0ecb9fe64e4c9839a272b00ab9604aa443b1494",
+        "submittedBase": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
+        "submissionId": "114b48c9-3fcf-4a5c-8154-5db73b9b0f0b",
+        "submittedAt": "2026-11-13T20:51:01.100Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T901",
+            "commit": "d0ecb9fe64e4c9839a272b00ab9604aa443b1494",
+            "at": "2026-11-13T20:51:01.089Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T20:50:42.007Z",
+                "finishedAt": "2026-11-13T20:51:00.909Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:50:42.007Z",
+            "finishedAt": "2026-11-13T20:51:00.909Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 309,
+      "at": "2026-11-13T20:51:32.686Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+      "taskId": "T907",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+        "group": "natural-football-261114",
+        "taskId": "T907",
+        "tasks": [
+          "T907"
+        ],
+        "lane": "manager-browser-adoption",
+        "owner": "nf14-codex-manager-writer-fixture",
+        "contributors": [
+          "nf14-codex-manager-writer-fixture"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T20:51:32.686Z",
+        "startCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45"
+      }
+    },
+    {
+      "sequence": 310,
+      "at": "2026-11-13T20:51:34.492Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e4b301b2-bdf2-4248-8b68-0e2812b97005",
+      "taskId": "T907",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 311,
+      "at": "2026-11-13T20:52:32.309Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2d068bd1-01ec-4681-a901-aeb826e4d14a",
+      "taskId": "T906",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "5c8fd682-ddc0-42d1-83d9-97d6c8169d1d",
+          "owner": "pr14-independent-browser-scenes",
+          "status": "reviewing",
+          "commit": "0e88658d74d4736b35dab08673360b29e4b92eb6",
+          "baseCommit": "187a9c225b4071f5679bb24b5abc6dbc3d66bf45",
+          "submissionId": "8fb18b02-bdde-40fe-b228-8b6f0c296ccd",
+          "createdAt": "2026-11-13T20:52:32.309Z"
+        }
+      }
+    },
+    {
+      "sequence": 312,
+      "at": "2026-11-13T20:52:40.374Z",
+      "type": "group",
+      "group": "natural-football-261114",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T873",
+          "T874",
+          "T875",
+          "T876",
+          "T884",
+          "T885",
+          "T886",
+          "T887",
+          "T888",
+          "T889",
+          "T890",
+          "T891",
+          "T892",
+          "T893",
+          "T894",
+          "T895",
+          "T896",
+          "T897",
+          "T898",
+          "T900",
+          "T901",
+          "T902",
+          "T903",
+          "T905",
+          "T906",
+          "T907",
+          "T908",
+          "T909",
+          "T910",
+          "T911"
+        ]
+      }
+    },
+    {
+      "sequence": 313,
+      "at": "2026-11-13T20:52:59.407Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "53554d7c-e4ee-4118-81db-ce00f7aa3d9a",
+      "taskId": "T911",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "53554d7c-e4ee-4118-81db-ce00f7aa3d9a",
+        "group": "natural-football-261114",
+        "taskId": "T911",
+        "tasks": [
+          "T911"
+        ],
+        "lane": "expiry-contract-boundaries",
+        "owner": "nf14-codex-expiry-contract",
+        "contributors": [
+          "nf14-codex-expiry-contract"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T20:52:59.407Z",
+        "startCommit": "c093073805f15024c7f8e993ff9539eba86e5af2"
+      }
+    },
+    {
+      "sequence": 314,
+      "at": "2026-11-13T20:53:01.396Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "53554d7c-e4ee-4118-81db-ce00f7aa3d9a",
+      "taskId": "T911",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 315,
+      "at": "2026-11-13T20:53:58.327Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "256e818d-7251-4507-af39-c5f575bd2f2c",
+      "taskId": "T909",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
