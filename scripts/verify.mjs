@@ -4,15 +4,29 @@
  * per tier by `testTier`) beside the world warm-up, then the browser specs; each phase starts only
  * after every stage of the last one passed.
  */
-import { execFileSync, spawn } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  writeFileSync,
+  appendFileSync,
+} from 'node:fs';
 import { cpus, platform, arch, totalmem } from 'node:os';
-import { relative } from 'node:path';
+import { relative, resolve } from 'node:path';
 import { testTier } from '../tests/config/test-tiers.ts';
+import { runVerificationStage } from './lib/verification-runner.ts';
 
 const batch = process.argv.includes('--batch');
 const directory = '.tmp/verification';
 mkdirSync(directory, { recursive: true });
+const runDirectory = resolve(
+  directory,
+  `${new Date().toISOString().replace(/[:.]/g, '-')}-${process.pid}`,
+);
+mkdirSync(runDirectory, { recursive: true });
 const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
 const report = {
   started: new Date().toISOString(),
@@ -85,55 +99,57 @@ const browsers = [
     inherit: true,
   },
 ];
-const planned = checks.length + tests.length + browsers.length;
+const plan = [...checks, ...tests, ...browsers];
+report.stages = plan.map(({ stage, command = 'pnpm', args }) => ({
+  stage,
+  command: [command, ...args].join(' '),
+  argv: [command, ...args],
+  status: 'pending',
+  exitCode: null,
+}));
+report.directory = runDirectory;
+const active = new Set();
+let interrupted;
 
+function persist() {
+  const terminal = report.stages.filter((stage) =>
+    ['passed', 'failed', 'cancelled', 'skipped'].includes(stage.status),
+  );
+  report.elapsedMs = Date.now() - Date.parse(report.started);
+  report.passed = report.stages.every((stage) => stage.status === 'passed' && stage.exitCode === 0);
+  report.status = interrupted
+    ? 'cancelled'
+    : report.stages.some((stage) => ['failed', 'cancelled'].includes(stage.status))
+      ? 'failed'
+      : report.passed
+        ? 'passed'
+        : 'running';
+  if (terminal.length === plan.length) report.finished = new Date().toISOString();
+  const json = JSON.stringify(report, null, 2) + '\n';
+  for (const path of [`${runDirectory}/report.json`, `${directory}/latest.json`]) {
+    writeFileSync(`${path}.tmp`, json);
+    renameSync(`${path}.tmp`, path);
+  }
+}
 function record(entry) {
-  report.stages.push(entry);
-  report.finished = entry.finished;
-  report.elapsedMs = Date.parse(entry.finished) - Date.parse(report.started);
-  report.passed =
-    report.stages.length === planned && report.stages.every((stage) => stage.exitCode === 0);
-  writeFileSync(`${directory}/latest.json`, JSON.stringify(report, null, 2) + '\n');
-  console.log(
-    `Recorded ${entry.stage}: ${(entry.elapsedMs / 1000).toFixed(1)} s (${entry.exitCode})`,
-  );
+  report.stages[report.stages.findIndex((stage) => stage.stage === entry.stage)] = entry;
+  persist();
+  const event = { event: 'verification-stage', ...entry };
+  appendFileSync(`${runDirectory}/events.jsonl`, JSON.stringify(event) + '\n');
+  console.log(JSON.stringify(event));
 }
-
-/**
- * One stage as `<command> <args>` (pnpm unless named); a piped stage replays its own output when it
- * ends, and `after` may fail a stage whose command passed.
- */
-function run({ stage, command = 'pnpm', args, inherit = false, after = (entry) => entry }) {
-  const started = new Date().toISOString();
-  const start = performance.now();
-  const output = [];
-  const child = spawn(command, args, {
-    stdio: inherit ? 'inherit' : ['ignore', 'pipe', 'pipe'],
-    env: process.env,
-  });
-  child.stdout?.on('data', (chunk) => output.push([process.stdout, chunk]));
-  child.stderr?.on('data', (chunk) => output.push([process.stderr, chunk]));
-  let error;
-  child.on('error', (failure) => (error = failure));
-  const done = new Promise((resolve) =>
-    child.on('close', (code, signal) => {
-      for (const [stream, chunk] of output) stream.write(chunk);
-      const entry = after({
-        stage,
-        command: [command, ...args].join(' '),
-        started,
-        finished: new Date().toISOString(),
-        elapsedMs: Math.round(performance.now() - start),
-        exitCode: code ?? 1,
-        signal: signal ?? undefined,
-        error: error?.message,
-      });
-      record(entry);
-      resolve(entry);
-    }),
-  );
-  return { child, done };
+function interrupt(signal) {
+  interrupted ??= { signal, at: new Date().toISOString() };
+  report.interrupted = interrupted;
+  persist();
+  for (const run of active) run.cancel(signal);
+  process.exitCode = interrupted.signal === 'SIGINT' ? 130 : 143;
 }
+const onTerm = () => interrupt('SIGTERM'),
+  onInt = () => interrupt('SIGINT');
+process.on('SIGTERM', onTerm);
+process.on('SIGINT', onInt);
+persist();
 
 /** Counts as vitest's JSON reporter derives them, for one tier's share of the combined run. */
 function counts(testResults) {
@@ -187,18 +203,42 @@ function splitTiers(entry) {
 // A phase's stages run together; the gate stops after a phase with its first failed stage's code.
 // When a phase's other stages have ended and one failed, its background stages are ended too.
 for (const report of [combined, ...TIERS.map(tierReport)]) rmSync(report, { force: true });
-for (const stages of [checks, tests, browsers]) {
-  const running = stages.map(run);
-  const foreground = running.filter((_, index) => !stages[index].background);
-  Promise.all(foreground.map(({ done }) => done)).then((entries) => {
-    if (entries.some((entry) => entry.exitCode))
-      for (const [index, { child }] of running.entries())
-        if (stages[index].background) child.kill();
-  });
-  const entries = await Promise.all(running.map(({ done }) => done));
-  const failed = entries.find((entry) => entry.exitCode);
-  if (failed) {
-    process.exitCode = failed.exitCode;
-    break;
+try {
+  for (const stages of [checks, tests, browsers]) {
+    if (interrupted) break;
+    const running = stages.map((stage) => {
+      const run = runVerificationStage(stage, { directory: runDirectory, onUpdate: record });
+      active.add(run);
+      run.done.then(() => active.delete(run));
+      return run;
+    });
+    const foreground = running.filter((_, index) => !stages[index].background);
+    Promise.all(foreground.map(({ done }) => done)).then((entries) => {
+      if (entries.some((entry) => entry.exitCode !== 0))
+        for (const [index, run] of running.entries()) if (stages[index].background) run.cancel();
+    });
+    const entries = await Promise.all(running.map(({ done }) => done));
+    const failed = entries.find((entry) => entry.exitCode !== 0);
+    if (failed) {
+      process.exitCode ||= failed.exitCode > 0 ? failed.exitCode : 1;
+      break;
+    }
   }
+} finally {
+  process.off('SIGTERM', onTerm);
+  process.off('SIGINT', onInt);
+  for (const entry of report.stages)
+    if (entry.status === 'pending') {
+      entry.status = 'skipped';
+      entry.reason = interrupted ? 'interrupted' : 'prior-stage-failure';
+    }
+  persist();
+  const event = {
+    event: 'verification-finished',
+    status: report.status,
+    passed: report.passed,
+    exitCode: process.exitCode ?? 0,
+    report: `${runDirectory}/report.json`,
+  };
+  (report.passed ? process.stdout : process.stderr).write(JSON.stringify(event) + '\n');
 }

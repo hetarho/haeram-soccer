@@ -58,7 +58,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T884 | Retain live verification stages and full failure logs | ARCH | - | todo |
 | T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
 | T887 | Prepare real post-close free agents for promise journeys | ARCH CLUB | T885 | todo |
 | T888 | Find goal scenes through the actual replay adapters | ARCH MATCH | - | todo |
@@ -72,7 +71,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 13 | 5 | 8 | 2 | 0 | 0 | 2026-11-13T18:37:38.319Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 14 | 6 | 8 | 2 | 0 | 0 | 2026-11-13T18:43:36.114Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
