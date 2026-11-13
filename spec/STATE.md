@@ -25,7 +25,7 @@
 | WORLD | 14 | 14 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 71 | 71 | - | 0 |
-| MATCH | 66 | 66 | - | 0 |
+| MATCH | 67 | 67 | - | 0 |
 | LEAGUE | 20 | 20 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
 | ECON | 58 | 58 | - | 0 |
@@ -63,7 +63,13 @@
 | T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
 | T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
 | T883 | Prepare one coherent compatible game release | SAVE ARCH | T882 | todo |
+| T884 | Retain live verification stages and full failure logs | ARCH | T883 | todo |
+| T885 | Prepare coherent persisted-player integration fixtures | ARCH CLUB WORLD | - | todo |
+| T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
+| T887 | Prepare real post-close free agents for promise journeys | ARCH CLUB | T885 | todo |
+| T888 | Find goal scenes through the actual replay adapters | ARCH MATCH | - | todo |
+| T889 | Keep the best-placed defender in central cover | MATCH ARCH | T885 | todo |
 
 ## next
-- gusta-implement-task T873 T875
-- gusta-implement-task T883
+- Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
+- T883 coherent compatible release is owned by pr14; merge its result before final release preparation.
