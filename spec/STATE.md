@@ -25,13 +25,13 @@
 | WORLD | 14 | 14 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 71 | 71 | - | 0 |
-| MATCH | 66 | 66 | - | 0 |
+| MATCH | 67 | 67 | - | 0 |
 | LEAGUE | 20 | 20 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
 | ECON | 58 | 58 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
-| SAVE | 69 | 69 | - | 0 |
+| SAVE | 70 | 70 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
 | PLAYER | 18 | 18 | - | 0 |
 
@@ -58,6 +58,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T883 | Preserve the current game version across publication | SAVE ARCH | - | todo |
+| T884 | Retain live verification stages and full failure logs | ARCH | T883 | todo |
+| T885 | Prepare coherent persisted-player integration fixtures | ARCH CLUB WORLD | - | todo |
+| T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
+| T887 | Prepare real post-close free agents for promise journeys | ARCH CLUB | T885 | todo |
+| T888 | Find goal scenes through the actual replay adapters | ARCH MATCH | - | todo |
+| T889 | Keep the best-placed defender in central cover | MATCH ARCH | T885 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -65,5 +72,5 @@
 | natural-football-261114 | 2 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-13T17:22:06.194Z | [history](work/natural-football-261114.json) |
 
 ## next
-- inspect work board for remaining tasks
-- gusta-implement-task T873 T875
+- Continue authorized natural-football improvement and baseline repairs until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
+- Complete approved CI foundation, fixture and scene repairs, then proceed through one measured football hypothesis at a time.
