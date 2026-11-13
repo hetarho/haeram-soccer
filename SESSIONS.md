@@ -133,6 +133,7 @@
 | T912 | work | codex/natural-football-261114 | 4ecd64fdd051 | 2026-11-13T21:59Z |
 
 ## log
+- 261113 gusta-create-task review/natural-football-261114 F39 -> T913; scalar correction only, original strict historical workload retained
 - 261113 T912 integrated
 - 261113 T908 integrated
 - 261113 T901 integrated
@@ -152,4 +153,3 @@
 - 261113 T904 done
 - 261113 T892 integrated
 - 261113 T893 integrated
-- 261113 T886 integrated
