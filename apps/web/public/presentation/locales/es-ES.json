@@ -6855,6 +6855,24 @@
     "player.record.representative": "Club representativo · {club}",
     "player.record.table": "Registro por temporada y club",
     "player.record.retirementNews": "{player} se retira como jugador",
-    "player.record.lastClub": "Último club: {club}"
+    "player.record.lastClub": "Último club: {club}",
+    "naturalFootball.title": "Comparación del movimiento futbolístico",
+    "naturalFootball.baseline": "Versión original",
+    "naturalFootball.improved": "Mejorada",
+    "naturalFootball.match": "{home} contra {away}",
+    "naturalFootball.provenance": "{seed} · {sha}",
+    "naturalFootball.help": "Espacio: reproducir/pausar · ← →: avanzar 5 segundos · 1× es tiempo real.",
+    "naturalFootball.clock": "{minute}′ {second}″",
+    "naturalFootball.pitch": "{version}: campo de {home} contra {away}",
+    "naturalFootball.pressure2": "Posesiones bajo presión cercana de 2 s o más: {count}",
+    "naturalFootball.pressure5": "Posesiones bajo presión cercana de 5 s o más: {count}",
+    "naturalFootball.sameFacts": "Se comparan los mismos jugadores y el mismo registro del partido.",
+    "naturalFootball.usage": "Uso: {command}",
+    "naturalFootball.invalid": "Datos de comparación de fútbol no válidos.",
+    "naturalFootball.mismatch": "Las condiciones de comparación difieren: {field}",
+    "naturalFootball.noMatch": "No se puede mostrar el primer partido de liga de la semilla {seed}.",
+    "naturalFootball.failed": "No se pudo preparar la comparación: {detail}",
+    "naturalFootball.step": "Desplazar {seconds} segundos",
+    "naturalFootball.loading": "Preparando la vista del partido."
   }
 }

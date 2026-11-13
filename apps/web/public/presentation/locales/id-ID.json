@@ -6849,6 +6849,24 @@
     "player.record.representative": "Klub perwakilan · {club}",
     "player.record.table": "Catatan per musim dan klub",
     "player.record.retirementNews": "{player} pensiun sebagai pemain",
-    "player.record.lastClub": "Klub terakhir: {club}"
+    "player.record.lastClub": "Klub terakhir: {club}",
+    "naturalFootball.title": "Perbandingan gerakan sepak bola",
+    "naturalFootball.baseline": "Versi awal",
+    "naturalFootball.improved": "Ditingkatkan",
+    "naturalFootball.match": "{home} melawan {away}",
+    "naturalFootball.provenance": "{seed} · {sha}",
+    "naturalFootball.help": "Spasi: putar/jeda · ← →: lompat 5 detik · 1× mengikuti waktu nyata.",
+    "naturalFootball.clock": "{minute}′ {second}″",
+    "naturalFootball.pitch": "{version}: lapangan {home} melawan {away}",
+    "naturalFootball.pressure2": "Penguasaan di bawah tekanan dekat selama 2+ detik: {count}",
+    "naturalFootball.pressure5": "Penguasaan di bawah tekanan dekat selama 5+ detik: {count}",
+    "naturalFootball.sameFacts": "Membandingkan pemain dan catatan pertandingan tetap yang sama.",
+    "naturalFootball.usage": "Penggunaan: {command}",
+    "naturalFootball.invalid": "Data perbandingan sepak bola tidak valid.",
+    "naturalFootball.mismatch": "Kondisi perbandingan berbeda antarversi: {field}",
+    "naturalFootball.noMatch": "Tidak dapat menampilkan pertandingan liga pertama untuk seed {seed}.",
+    "naturalFootball.failed": "Tidak dapat menyiapkan perbandingan: {detail}",
+    "naturalFootball.step": "Lompat {seconds} detik",
+    "naturalFootball.loading": "Menyiapkan tampilan pertandingan."
   }
 }

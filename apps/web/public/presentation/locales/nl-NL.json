@@ -6852,6 +6852,24 @@
     "player.record.representative": "Vertegenwoordigende club · {club}",
     "player.record.table": "Statistieken per seizoen en club",
     "player.record.retirementNews": "{player} stopt als speler",
-    "player.record.lastClub": "Laatste club: {club}"
+    "player.record.lastClub": "Laatste club: {club}",
+    "naturalFootball.title": "Vergelijking van voetbalbewegingen",
+    "naturalFootball.baseline": "Bestaande versie",
+    "naturalFootball.improved": "Verbeterd",
+    "naturalFootball.match": "{home} tegen {away}",
+    "naturalFootball.provenance": "{seed} · {sha}",
+    "naturalFootball.help": "Spatie: afspelen/pauzeren · ← →: 5 seconden springen · 1× is realtime.",
+    "naturalFootball.clock": "{minute}′ {second}″",
+    "naturalFootball.pitch": "{version}: veld van {home} tegen {away}",
+    "naturalFootball.pressure2": "Balbezit onder directe druk van minstens 2 s: {count}",
+    "naturalFootball.pressure5": "Balbezit onder directe druk van minstens 5 s: {count}",
+    "naturalFootball.sameFacts": "Dezelfde spelers en hetzelfde vastgestelde wedstrijdverslag worden vergeleken.",
+    "naturalFootball.usage": "Gebruik: {command}",
+    "naturalFootball.invalid": "Ongeldige gegevens voor de voetbalvergelijking.",
+    "naturalFootball.mismatch": "De vergelijkingsvoorwaarden verschillen tussen versies: {field}",
+    "naturalFootball.noMatch": "De eerste competitiewedstrijd voor seed {seed} kan niet worden getoond.",
+    "naturalFootball.failed": "De vergelijking kon niet worden voorbereid: {detail}",
+    "naturalFootball.step": "{seconds} seconden springen",
+    "naturalFootball.loading": "De wedstrijdweergave wordt voorbereid."
   }
 }

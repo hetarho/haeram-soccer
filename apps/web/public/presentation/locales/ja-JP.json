@@ -6849,6 +6849,24 @@
     "player.record.representative": "代表クラブ · {club}",
     "player.record.table": "シーズン・クラブ別成績",
     "player.record.retirementNews": "{player}が現役を引退",
-    "player.record.lastClub": "最終所属クラブ：{club}"
+    "player.record.lastClub": "最終所属クラブ：{club}",
+    "naturalFootball.title": "サッカーの動きの比較",
+    "naturalFootball.baseline": "従来版",
+    "naturalFootball.improved": "改善版",
+    "naturalFootball.match": "{home} 対 {away}",
+    "naturalFootball.provenance": "{seed} · {sha}",
+    "naturalFootball.help": "Space：再生・一時停止 · ← →：5秒移動 · 1倍速は実時間です。",
+    "naturalFootball.clock": "{minute}′ {second}″",
+    "naturalFootball.pitch": "{version}：{home} 対 {away}のピッチ",
+    "naturalFootball.pressure2": "近距離のプレッシャー下で2秒以上保持：{count}回",
+    "naturalFootball.pressure5": "近距離のプレッシャー下で5秒以上保持：{count}回",
+    "naturalFootball.sameFacts": "同じ選手と確定済みの試合記録を比較します。",
+    "naturalFootball.usage": "使い方：{command}",
+    "naturalFootball.invalid": "サッカー比較データが無効です。",
+    "naturalFootball.mismatch": "両バージョンの比較条件が異なります：{field}",
+    "naturalFootball.noMatch": "シード{seed}の最初のリーグ戦を表示できません。",
+    "naturalFootball.failed": "比較画面を準備できませんでした：{detail}",
+    "naturalFootball.step": "{seconds}秒移動",
+    "naturalFootball.loading": "試合画面を準備しています。"
   }
 }
