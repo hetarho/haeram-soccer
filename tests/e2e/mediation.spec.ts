@@ -2,7 +2,6 @@ import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { approvalTray, dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
-import { operate } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
 import { resolveMediation } from '../../packages/engine/src/mediation';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
