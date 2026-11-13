@@ -27,6 +27,7 @@ describe('closed season archive', () => {
     });
     const before = new Map(contracts);
     expect(before.size).toBe(22);
+    expect(contractsModule.EXPIRY_COMPENSATION).toBe(50);
     const oldJobs = new Map(
       w.players
         .filter((p) => before.has(p.id))
@@ -201,6 +202,11 @@ describe('closed season archive', () => {
         continue;
       }
       const arrival = arrivals.find(({ player }) => player.id === p.id)!;
+      expect(p).toMatchObject({
+        id: ended.player.id,
+        name: ended.player.name,
+        born: ended.player.born,
+      });
       expect(arrival.pool).toMatchObject({ id: p.id, born: p.born });
       expect(ended.free?.id).toBe(p.id);
       expect(arrival.previousJobs).toEqual(ended.person.employment);
