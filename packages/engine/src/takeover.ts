@@ -27,7 +27,7 @@ import { ensureManagerHistory } from './manager-history-capture';
 import { clubManager, openManagerMarket } from './managerMarket';
 import { openStaffMarket } from './club-staff';
 import { MORALE_START } from './morale';
-import { invalidateNpcSquads, joinClub, makePlayer, refillPlace, squad } from './world';
+import { clubPlayers, invalidateNpcSquad, joinClub, makePlayer, refillPlace } from './world';
 import {
   activeCoachingEmployment,
   closeEmployment,
@@ -97,6 +97,7 @@ export function uncoveredSlots(players: readonly Player[], slots: readonly Slot[
  */
 function takenSquad(w: World, club: Club, roster: Player[], manager: Manager): Player[] {
   const players = [...roster];
+  if (players.length >= CLUB_TAKEOVER.squad) return players;
   let serial = 0;
   const add = (position: Position, role?: Slot['role']) =>
     players.push(
@@ -189,10 +190,11 @@ export function takeOver(
     // Its last season's income in the money of the season taken over (→ECON-6): the turnover
     // the first season's expenses and 팬 민심 read until the owner's own season closes.
     lastIncome = last && (currencyChange(code, last.year, year)?.(last.income) ?? last.income),
-    roster = squad(w, club).map((p) => structuredClone(p));
+    roster = clubPlayers(w, club);
 
   w.playerClub = club.id;
-  invalidateNpcSquads(w);
+  if (w.squads) delete w.squads[club.id];
+  invalidateNpcSquad(w, club.id);
   // The manager stays with his school, style and level (→OWNER-4); his formation is the squad's.
   const manager: Manager = clubManager(w, club);
   w.manager = { ...manager };

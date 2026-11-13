@@ -1,5 +1,6 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { continuousSquad } from './npc-continuity';
+import { matchdaySquad } from './persisted-squads';
 import { generateQualities } from './aptitude';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import type {
@@ -328,6 +329,12 @@ export function generateClubs(seed: string): Club[] {
   return clubs;
 }
 const npcCaches = new WeakMap<World, { year: number; clubs: Map<string, Player[]> }>();
+/** Standing size, including the founding places beyond the matchday eighteen (→WORLD-16). */
+export const NPC_SQUAD = { size: 22 };
+/** All live players at a club; market and scouting reads also include those outside its eighteen. */
+export function clubPlayers(w: World, c: Club): Player[] {
+  return c.id === w.playerClub ? activePlayers(w) : (w.squads?.[c.id] ?? squad(w, c));
+}
 export function squad(w: World, c: Club): Player[] {
   if (c.id === w.playerClub) return activePlayers(w);
   let cache = npcCaches.get(w);
@@ -337,17 +344,31 @@ export function squad(w: World, c: Club): Player[] {
   }
   let players = cache.clubs.get(c.id);
   if (!players) {
-    players = continuousSquad(w, c);
+    players = w.squads?.[c.id] ? w.squads[c.id].slice(0, 18) : continuousSquad(w, c);
     cache.clubs.set(c.id, players);
   }
   return players;
 }
-/** Any recorded move/retirement invalidates derived rosters immediately. */
+/** Drop transient slices after a read-copy change, preserving each stored matchday choice. */
 export function invalidateNpcSquads(w: World) {
   npcCaches.delete(w);
 }
-/** One club's derived roster, when only its generated places changed (a free agent, →CLUB-49). */
+/** Choose at a simulation boundary; the stored order also carries the choice across a load/helper. */
+export function refreshNpcSquads(w: World) {
+  for (const club of Object.keys(w.squads ?? {})) invalidateNpcSquad(w, club);
+  invalidateNpcSquads(w);
+}
+/** Only the club whose players changed chooses its matchday squad again. */
 export function invalidateNpcSquad(w: World, club: string) {
+  const players = w.squads?.[club];
+  if (players) {
+    const c = clubById(w, club);
+    if (c) {
+      const chosen = matchdaySquad(w, c, players),
+        ids = new Set(chosen.map((p) => p.id));
+      w.squads![club] = [...chosen, ...players.filter((p) => !ids.has(p.id))];
+    }
+  }
   npcCaches.get(w)?.clubs.delete(club);
 }
 /**
@@ -723,9 +744,9 @@ export { addEvent } from './events';
 
 const npcLineups = new WeakMap<Player[], Player[]>();
 /**
- * A club's XI for a fixture. Another club's squad is made one player per formation slot first
- * (→WORLD-6): those eleven start, and one injured or banned for the fixture gives way to the best
- * available of places 11–17 of his line at that slot, else to any available place (→LEAGUE-15).
+ * A club's XI for a fixture: its cached eleven, with an unavailable starter replaced for this
+ * fixture by the best available bench player, then one outside the eighteen (→LEAGUE-15).
+ * Representatives keep their generated places and the bench's line-first cover.
  */
 export function startingSquad(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
   if (c.id === w.playerClub) return ownStarters(w, f);
@@ -735,7 +756,7 @@ export function startingSquad(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'gro
     cached = ps.slice(0, formationOf(clubStyle(c)).length);
     npcLineups.set(ps, cached);
   }
-  if (!f || !w.discipline) return cached;
+  if (!f) return cached;
   const out = (p: Player) => isUnavailable(w, p, c.id, f);
   if (!cached.some(out)) return cached;
   const slots = formationOf(clubStyle(c));
@@ -748,9 +769,12 @@ export function startingSquad(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'gro
         .filter((q) => !used.has(q) && !out(q))
         .sort((a, b) => slotOvr(b, slot) - slotOvr(a, slot) || compareIds(a.id, b.id))[0];
     const bench = ps.slice(cached.length, 18);
-    const replacement =
-      best(bench.filter((q) => lineOf(q.position) === lineOf(slot.position))) ||
-      best(ps.slice(cached.length));
+    const chosen = new Set(ps.map((q) => q.id));
+    const outside = (w.squads?.[c.id] ?? []).filter((q) => !chosen.has(q.id));
+    const replacement = w.squads?.[c.id]
+      ? best(bench) || best(outside)
+      : best(bench.filter((q) => lineOf(q.position) === lineOf(slot.position))) ||
+        best(ps.slice(cached.length));
     // Nobody left: the unavailable player's place stays as it was rather than leave a gap.
     if (!replacement) return p;
     used.add(replacement);

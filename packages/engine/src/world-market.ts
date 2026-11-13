@@ -12,7 +12,7 @@ import type {
 } from '../../contracts/src/types';
 import { WORLD_MARKET_PAGE_SIZE, worldMarketQuerySchema } from '../../contracts/src/schema';
 import { activePlayers, clubOf, overall } from './player-state';
-import { squad } from './world';
+import { clubPlayers } from './world';
 import { POSITIONS } from '../../contracts/src/player';
 import { lineOf } from './player';
 import { MARKET_CONFIG, marketValueAt, marketWageAt } from './contracts';
@@ -100,7 +100,7 @@ export function freeAgentTerms(w: World, agent: FreeAgent, graduates = graduateI
 
 /** A player at a club, if he really is there now: in its squad and, when recorded, active there. */
 export function clubPlayer(w: World, club: Club, id: string): Player | undefined {
-  const player = squad(w, club).find((p) => p.id === id);
+  const player = clubPlayers(w, club).find((p) => p.id === id);
   const person = player && w.people?.[id];
   if (person && (person.club !== club.id || person.playing !== 'active')) return undefined;
   return player;
@@ -226,7 +226,7 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
         q.league.group !== club.group)
     )
       continue;
-    for (const player of squad(w, club))
+    for (const player of clubPlayers(w, club))
       include(clubOffer(w, club, player, recommended, feeMultiplier, owned, graduates));
   }
   // The whole pool, whatever the chief scout's reach (→CLUB-51): the owner's search is not his.

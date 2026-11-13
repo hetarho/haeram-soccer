@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { makePlayer } from '../../../../packages/engine/src/world';
 import type { Club, PersonCareer } from '../../../../packages/contracts/src/types';
 import {
   fixtureRosterKey,
@@ -50,6 +51,22 @@ function packet(writer: FixtureReplicaWriter, value: FixtureReadCopy, id: number
 const plain = (x: unknown) => JSON.parse(JSON.stringify(x)) as unknown;
 
 describe('ordered fixture replicas', () => {
+  it('carries persisted squads whole through snapshots, edits and removals', () => {
+    const source = copy(),
+      writer = new FixtureReplicaWriter(),
+      reader = new FixtureReplicaReader();
+    source.squads = { a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)] };
+    const before = reader.apply(packet(writer, source, 1));
+    expect(before.copy.squads).toEqual(source.squads);
+    const key = fixtureRosterKey(source);
+    source.squads.a![0]!.attrs.passing++;
+    const after = reader.apply(packet(writer, source, 2));
+    expect(after.rosterChanged).toBe(true);
+    expect(fixtureRosterKey(source)).not.toBe(key);
+    expect(after.copy.squads).toEqual(source.squads);
+    delete source.squads;
+    expect(reader.apply(packet(writer, source, 3)).copy.squads).toBeUndefined();
+  });
   it('replicates changed and removed fields, preserving clubs but refreshing edited person indexes', () => {
     const source = copy(),
       writer = new FixtureReplicaWriter(),

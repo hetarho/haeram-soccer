@@ -1,10 +1,10 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The world's free agents (→CLUB-49): players football let go, held without a club. They join at
- * the close — our unsigned expiries and every club nobody owns's two least able players aged 21 or
- * older — and once at a world's start; at each market refresh some join a club nobody owns; one
- * unsigned through a whole season retires; above the cap the least able retire. They age and
- * decline as any player and never grow. `w.freeAgents` is replaced whole on every change, here.
+ * the close on release; at each market refresh some join a club nobody owns; one unsigned through
+ * a whole season retires; above the cap the least able retire. They age and decline as any player
+ * and never grow. `w.freeAgents` is replaced whole on every change, here. Persisted clubs'
+ * contract decisions follow in T863; older checkpoints keep their generated let-go path.
  */
 import type { Club, FreeAgent, Line, Player, World } from '../../contracts/src/types';
 import { ATTRIBUTES, FREE_AGENT_CAP } from '../../contracts/src/player';
@@ -24,6 +24,7 @@ import { registrationRoom } from './registration';
 import { isForeignCandidate } from './scout-search';
 import { addEvent } from './events';
 import { moneyLabel } from './finance';
+import { moveSquadPlayer } from './persisted-squads';
 
 export { isFreeAgent } from './npc-continuity';
 
@@ -49,7 +50,7 @@ export const freeAgentsOf = (w: World): readonly FreeAgent[] => w.freeAgents ?? 
 export function nationalityOf(w: World, id: string): string | undefined {
   return originClub(w, id)?.country;
 }
-/** The club a generated player's ID names: the one whose generated place he holds. */
+/** The first club a generated player's ID names, even after he moves. */
 export function originClub(w: World, id: string) {
   const parts = id.split(':');
   return clubById(w, parts.slice(0, 4).join(':')) ?? clubById(w, parts.slice(0, 2).join(':'));
@@ -57,7 +58,7 @@ export function originClub(w: World, id: string) {
 /** Leaving the pool frees only his old club's generated place. */
 function freePlace(w: World, id: string) {
   const club = originClub(w, id);
-  if (club) invalidateNpcSquad(w, club.id);
+  if (club && !w.squads?.[club.id]) invalidateNpcSquad(w, club.id);
 }
 
 /**
@@ -142,14 +143,21 @@ function admit(w: World, joining: readonly FreeAgent[]) {
   for (const p of admitted) {
     p.wage = freeAgentWage(w, p);
     // A registered player still at his club is released; the record keeps his career with us.
-    if (w.people?.[p.id]?.playing === 'active') closeEmployment(w, p.id, 'player');
+    const person = w.people?.[p.id];
+    if (person?.playing === 'active') {
+      const club = person.club;
+      closeEmployment(w, p.id, 'player');
+      if (club) invalidateNpcSquad(w, club);
+    }
+    moveSquadPlayer(w, p);
+    freePlace(w, p.id);
   }
   // Those already held keep their order; newcomers follow in the order they were let go.
   w.freeAgents = freeAgentsOf(w)
     .filter((p) => kept.has(p))
     .concat(admitted);
   for (const p of cut) if (held.has(p.id)) retireFreeAgent(w, p);
-  invalidateNpcSquads(w);
+  if (!w.squads) invalidateNpcSquads(w);
   return admitted;
 }
 
@@ -179,15 +187,16 @@ function staying(w: World, id: string) {
  */
 export function lettingGo(w: World, year: number, since: number): FreeAgent[] {
   return w.clubs
-    .filter((c) => c.id !== w.playerClub && !c.representative)
+    // Persisted clubs' contract decisions follow in T863; never release a generated copy of one.
+    .filter((c) => c.id !== w.playerClub && !c.representative && !w.squads?.[c.id])
     .flatMap((c) => letGo(w, c, year).map((p) => freeAgentOf(p, since)));
 }
 
 /**
- * A new world's pool (→CLUB-49): the players its clubs let go of its first season's squads by the
- * close's rule, free from that season. No season has closed, so nobody ages or retires.
+ * Legacy generated-world setup: persisted worlds start without free agents (→CLUB-49).
  */
 export function seedFreeAgents(w: World) {
+  if (w.squads) return;
   admit(w, lettingGo(w, w.year, w.year));
 }
 
@@ -200,10 +209,13 @@ export function seedFreeAgents(w: World) {
  */
 export function closeFreeAgents(w: World, closedYear: number, released: readonly FreeAgent[]) {
   const stayed = freeAgentsOf(w).filter((p) => p.freeSince > closedYear);
-  for (const p of freeAgentsOf(w)) if (p.freeSince <= closedYear) retireFreeAgent(w, p);
+  for (const p of freeAgentsOf(w))
+    if (p.freeSince <= closedYear) {
+      retireFreeAgent(w, p);
+      freePlace(w, p.id);
+    }
   if (stayed.length !== freeAgentsOf(w).length) {
     w.freeAgents = stayed;
-    invalidateNpcSquads(w);
   }
   const joining = released.filter((p) => {
     const chance = retirementChanceWithContext(closedYear, p.born, p.position);
@@ -238,8 +250,8 @@ export function joinFreeAgents(w: World, player: Player, since: number) {
 /**
  * A market refresh (→CLUB-49): every 4 league rounds and at the close, each free agent joins a
  * club nobody owns with `joinChance`, the club drawn as for an expiring contract (→CLUB-28), all
- * from his own stream. A registered player's move is recorded; another's old club, generating
- * him again, has him back.
+ * from his own stream. A persisted destination receives the actual player; a representative or
+ * legacy generated squad keeps its identity-based continuity.
  */
 export function refreshFreeAgents(w: World) {
   const pool = freeAgentsOf(w);
@@ -251,7 +263,14 @@ export function refreshFreeAgents(w: World) {
     if (!club) return true;
     left.push(p);
     // His move, recorded: he held no place anywhere, so only his new club's roster changes.
-    if (w.people?.[p.id]) {
+    if (w.squads?.[club.id]) {
+      const { freeSince: _since, ...player } = p;
+      void _since;
+      player.until = w.year + FREE_AGENT_CONFIG.term;
+      player.wage = marketWageAt(club.country, w.year, club.tier, player);
+      if (w.people?.[p.id]) movePerson(w, player, club.id);
+      else moveSquadPlayer(w, player, club.id);
+    } else if (w.people?.[p.id]) {
       openEmployment(w, p.id, 'player', club.id);
       invalidateNpcSquad(w, club.id);
     }

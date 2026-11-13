@@ -26,6 +26,11 @@ export function crossWar(w: World, closed: number) {
     if (p.loanUntil !== undefined) p.loanUntil += skipped;
   }
   for (const p of w.academy?.players ?? []) p.until += skipped;
+  for (const players of Object.values(w.squads ?? {}))
+    for (const p of players) {
+      p.until += skipped;
+      if (p.loanUntil !== undefined) p.loanUntil += skipped;
+    }
   if (hasOwner(w)) w.manager.until += skipped;
   for (const member of w.staff ?? []) member.until += skipped;
   for (const sponsor of w.sponsors ?? []) sponsor.until += skipped;

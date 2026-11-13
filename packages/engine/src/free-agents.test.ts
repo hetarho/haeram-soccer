@@ -16,7 +16,8 @@ import {
 } from './free-agents';
 import { historyWorld } from './history';
 import { careerWorld } from './career.testkit';
-import { makePlayer, npcSquad, refillPosition, squad } from './world';
+import { clubPlayers, makePlayer, npcSquad, refillPosition, squad } from './world';
+import { foundSquads } from './persisted-squads';
 import { activePlayers, overall } from './player-state';
 import { compareIds, random } from './primitives';
 import { suitorFor } from './transfers';
@@ -99,14 +100,10 @@ describe('free agents at a world start (→CLUB-49)', () => {
       expect(players.some((p) => isFreeAgent(w, p.id))).toBe(false);
     }
   });
-  it('makes every new world with a full pool from its first day', () => {
+  it('starts a persisted world without free agents and holds every founding player at his club', () => {
     const w = historyWorld('free-agents', undefined, 1950);
-    expect(w.freeAgents).toHaveLength(FREE_AGENT_CAP);
-    // The cap keeps the ablest of everyone let go.
-    const letGo = lettingGo({ ...w, freeAgents: [] }, w.year, w.year)
-      .map((p) => overall(p))
-      .sort((a, b) => b - a);
-    expect(Math.min(...w.freeAgents!.map(overall))).toBe(letGo[FREE_AGENT_CAP - 1]);
+    expect(w.freeAgents ?? []).toEqual([]);
+    expect(Object.keys(w.squads!)).toHaveLength(w.clubs.filter((c) => !c.representative).length);
   });
 });
 
@@ -171,7 +168,10 @@ describe('free agents at the close (→CLUB-49)', () => {
 
 describe('free agents at each refresh (→CLUB-49)', () => {
   const world = () => {
-    const w = historyWorld('free-agents', undefined, 1950);
+    const w = small(1950);
+    foundSquads(w);
+    for (const c of w.clubs)
+      for (const p of [...w.squads![c.id]!].slice(0, 2)) joinFreeAgents(w, p, w.year);
     w.round = 4;
     return w;
   };
@@ -183,25 +183,32 @@ describe('free agents at each refresh (→CLUB-49)', () => {
       return r() < FREE_AGENT_CONFIG.joinChance && suitorFor(w, p, r);
     });
     expect(leaving.length).toBeGreaterThan(0);
-    const { freeAgents: _pool, people: _people, ...rest } = w;
+    const { freeAgents: _pool, people: _people, squads: _squads, ...rest } = w;
     const others = JSON.stringify(rest);
     refreshFreeAgents(w);
     expect(ids(w.freeAgents!)).toEqual(ids(before.filter((p) => !leaving.includes(p))));
-    // Nothing else moves for anyone unregistered: the stream is the free agent's own.
-    const { freeAgents: _after, people: _peopleAfter, ...restAfter } = w;
+    // Only the pool, actual squads and career affiliations move, from each player's own stream.
+    const { freeAgents: _after, people: _peopleAfter, squads: _squadsAfter, ...restAfter } = w;
     expect(JSON.stringify(restAfter)).toBe(others);
-    void [_pool, _people, _after, _peopleAfter];
+    void [_pool, _people, _squads, _after, _peopleAfter, _squadsAfter];
     // A registered one's move is recorded and he plays for his new club.
     for (const p of leaving.filter((p) => w.people?.[p.id])) {
       const person = w.people![p.id]!;
       expect(person.playing).toBe('active');
       const club = w.clubs.find((c) => c.id === person.club)!;
-      expect(squad(w, club).some((q) => q.id === p.id)).toBe(true);
+      expect(clubPlayers(w, club).some((q) => q.id === p.id)).toBe(true);
     }
-    // An unregistered one is back in his old club's generated squad, the place no longer empty.
-    const back = leaving.find((p) => !w.people?.[p.id])!;
-    const old = w.clubs.find((c) => back.id.startsWith(`${c.id}:`))!;
-    expect(squad(w, old).some((q) => q.id === back.id)).toBe(true);
+    for (const p of leaving) {
+      const r = random(`${w.seed}:free-agent:${p.id}:${w.year}:${w.round}`);
+      r();
+      const destination = suitorFor(w, p, r)!;
+      expect(w.squads![destination.id]!.find((q) => q.id === p.id)).toMatchObject({
+        attrs: p.attrs,
+        potential: p.potential,
+        personality: p.personality,
+      });
+      expect(Object.values(w.squads!).flat().filter((q) => q.id === p.id)).toHaveLength(1);
+    }
   });
   it('is the same for the same world', () => {
     const a = world(),
@@ -346,6 +353,8 @@ describe("the close's top-up (→CLUB-3, CLUB-40)", () => {
 describe('the saved pool', () => {
   it('validates and round-trips, bounded by the cap and without duplicates', () => {
     const w = careerWorld({ seed: 'free-agent-save' });
+    const c = w.clubs.find((c) => c.id !== w.playerClub && !c.representative)!;
+    joinFreeAgents(w, w.squads![c.id]![0]!, w.year);
     expect(w.freeAgents!.length).toBeGreaterThan(0);
     const loaded = validateWorld(JSON.parse(JSON.stringify(w)), LOAD_CATALOG);
     expect(loaded.freeAgents).toEqual(w.freeAgents);

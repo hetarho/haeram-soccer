@@ -8,7 +8,7 @@ import {
   playingChanged,
   retainPerson,
 } from './person-careers';
-import { invalidateNpcSquads } from './world';
+import { invalidateNpcSquad } from './world';
 import type { PersonCareer, Player, Position, World } from '../../contracts/src/types';
 import { currentDay, dayCountedFrom, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, integer, random } from './primitives';
@@ -69,13 +69,14 @@ export function recordRetirementAnnouncement(w: World, person: PersonCareer, yea
 }
 export function retirePerson(w: World, person: PersonCareer) {
   if (person.playing === 'retired') return;
+  const club = person.club;
   recordRetirementAnnouncement(w, person);
   closeEmployment(w, person.id, 'player');
   person.playing = 'retired';
   playingChanged(w);
   person.retirement!.at = careerDate(w);
   initializeCoaching(w, person);
-  invalidateNpcSquads(w);
+  if (club) invalidateNpcSquad(w, club);
 }
 function announceNpcRetirements(w: World) {
   for (const person of peopleOf(w)) {

@@ -1237,6 +1237,8 @@ export interface World {
   catalogHash: string;
   id: string;
   seed: string;
+  /** Live players of playable clubs nobody owns, chosen eighteen first; ours stay in `players`. */
+  squads?: Record<string, Player[]>;
   year: number;
   round: number;
   revision: number;

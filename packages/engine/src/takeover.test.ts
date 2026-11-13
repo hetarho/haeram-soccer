@@ -13,7 +13,7 @@ import {
   TAKEOVER_DEBT,
 } from './owner-config';
 import { clubManager, managerOffers } from './managerMarket';
-import { makePlayer, squad } from './world';
+import { clubPlayers, makePlayer } from './world';
 import { formationOf, isOwnSeason, lastOwnSeason, ownSeasons } from './player-state';
 import { lineOf } from './player';
 import { fanFollowing } from './fans';
@@ -59,7 +59,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
   it('makes the club as it stands the owner’s, its squad his players at the club’s 조직력', () => {
     const { w, club } = setup();
     club.cohesion = 0.62;
-    const fielded = squad(w, club).map((p) => p.id);
+    const fielded = clubPlayers(w, club).map((p) => p.id);
     takeOver(w, club.id, choice('industrial'));
     expect(w.playerClub).toBe(club.id);
     const ids = w.players.map((p) => p.id);

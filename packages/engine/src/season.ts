@@ -3,6 +3,7 @@ import { refreshReadModels } from './read-models';
 import { applyDelegatePlans } from './delegation';
 import { openNeed } from './replacements';
 import { callUpFor, callUpProspects } from './squad-target';
+import { closeSquads, foundSquads } from './persisted-squads';
 import { SQUAD_TARGET } from './squad-size';
 import { isDelegated } from './responsibilities';
 import { countApprovalWaits } from './approvals';
@@ -48,7 +49,7 @@ import { COUNTRIES } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
 import { activePlayers, clubOf } from './player-state';
 import { addEvent } from './events';
-import { joinClub, makePlayer, ownStarters, refillPosition, rating } from './world';
+import { joinClub, makePlayer, ownStarters, refillPosition, rating, refreshNpcSquads } from './world';
 import { lineOf } from './player';
 import {
   applyClauses,
@@ -138,6 +139,8 @@ export function prepareSeason(w: World, continental = true, lifecycle = true) {
   w.calendar = { day: 0 };
   // The season turns here only on a lifecycle run; a save's fixture rebuild changes nothing.
   if (lifecycle) {
+    foundSquads(w);
+    refreshNpcSquads(w);
     closeDisciplineSeason(w);
     materializePeople(w);
     // An active model's complete aggregates start the new season empty and tracked whole.
@@ -651,6 +654,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // The clubs nobody owns let go of the season's least able (→CLUB-49).
   closeFreeAgents(w, w.year, released);
   retireAtClose(w);
+  closeSquads(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
   if (own.tier !== oldTier)
@@ -680,6 +684,10 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   w.year = seasonAfter(closed);
   w.calendar = { day: 0 };
   crossWar(w, closed);
+  if (w.year > closed + 1) closeSquads(w, w.year - 1);
+  for (const players of Object.values(w.squads ?? {}))
+    for (const p of players)
+      if (p.loanUntil !== undefined && p.loanUntil <= w.year) returnLoan(w, p);
   atCareerDate(w, { year: closed, day: SEASON_END_DAY + 1 }, () => {
     // The new season's books open before the close pays anything, so its renewals and hires are
     // booked where their events are (→ECON-10).
@@ -854,12 +862,17 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
   retainRecentResults(w);
   closeFreeAgents(w, w.year, released);
   retireAtClose(w);
+  closeSquads(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
   const closed = w.year;
   w.year = seasonAfter(closed);
   w.calendar = { day: 0 };
   crossWar(w, closed);
+  if (w.year > closed + 1) closeSquads(w, w.year - 1);
+  for (const players of Object.values(w.squads ?? {}))
+    for (const p of players)
+      if (p.loanUntil !== undefined && p.loanUntil <= w.year) returnLoan(w, p);
   atCareerDate(w, { year: closed, day: SEASON_END_DAY + 1 }, () => {
     settleNpcCoaching(w, true);
     refreshCoachingMarket(w);

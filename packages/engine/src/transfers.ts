@@ -6,6 +6,7 @@ import { bidCeiling, haggling } from './director-bidding';
 import { registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
+import { refreshNpcSquads } from './world';
 import type {
   Club,
   Player,
@@ -1189,6 +1190,8 @@ export function dailyMarket(w: World): void {
     // With transfers delegated the 단장 looks for players (→CLUB-33).
     staffSignings(w);
   }
+  const dates = transferWindowDays(w.year);
+  if (day === dates.summerClose || day === dates.winterClose) refreshNpcSquads(w);
   pruneBids(w);
 }
 

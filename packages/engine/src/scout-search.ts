@@ -9,7 +9,7 @@ import type { Club, FreeAgent, Line, Player, ScoutOffer, World } from '../../con
 import { BUILD_SLOTS } from '../../contracts/src/build';
 import { LINES } from '../../contracts/src/player';
 import { activePlayers, clubOf, formationOf, lineOfPlayer, overall, slotOvr } from './player-state';
-import { clubById, ownStarters, squad } from './world';
+import { clubById, clubPlayers, ownStarters } from './world';
 import { currentDay } from './calendar';
 import { compareIds } from './primitives';
 import { policyEffects, policyOf } from './policy';
@@ -236,7 +236,7 @@ function search(w: World, reach: ScoutReach): ScoutOffer[] {
     });
   };
   for (const club of reachClubs(w, reach)) {
-    const players = squad(w, club),
+    const players = clubPlayers(w, club),
       ovrs = abilities(players);
     players.forEach((player, i) => {
       if (!unavailableAtClub(w, player)) consider(player, ovrs[i]!, club, club.country);

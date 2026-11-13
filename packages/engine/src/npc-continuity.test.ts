@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { operate, transferOffers } from './index';
 import {
   clubStyle,
+  clubPlayers,
+  makePlayer,
   npcSquad,
   squad,
   SQUAD_SPREAD,
@@ -15,12 +17,13 @@ import { ovrAt } from './player';
 import { validateWorld } from '../../contracts/src/schema';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { careerWorld } from './career.testkit';
+import { joinFreeAgents } from './free-agents';
 const world = () => careerWorld({ seed: 'continuity' });
 describe('selected NPC continuity', () => {
-  it('enrolls prospects without inspection and preserves identity over cohort rollover with seasonal attributes', () => {
+  it('enrolls persisted prospects without inspection and preserves identity and attributes over a rollover', () => {
     const w = world();
     const person = Object.values(w.people!).find(
-      (p) => p.origin && w.clubs.find((c) => c.id === p.club)!.country === 'ENG',
+      (p) => p.club !== w.playerClub && w.squads?.[p.club ?? '']?.some((q) => q.id === p.id),
     )!;
     const c = w.clubs.find((c) => c.id === person.club)!;
     expect(person.ownCareer).toBeUndefined();
@@ -31,12 +34,13 @@ describe('selected NPC continuity', () => {
       }),
     ).toBeGreaterThanOrEqual(4);
     const before = structuredClone(person);
+    const player = structuredClone(clubPlayers(w, c).find((p) => p.id === person.id)!);
     delete w.scorerSeason;
     w.year += 18;
     materializePeople(w);
-    const p = squad(w, c).find((p) => p.id === person.id)!;
+    const p = clubPlayers(w, c).find((p) => p.id === person.id)!;
     expect(p).toMatchObject({ name: before.name, born: before.born, qualities: before.qualities });
-    expect(p.attrs).toEqual(npcSquad(w.seed, w.year, c)[person.origin!.slot].attrs);
+    expect(p.attrs).toEqual(player.attrs);
     expect(w.year - p.born).toBeGreaterThanOrEqual(36);
     expect(validateWorld(w).people?.[person.id].name).toBe(person.name);
   });
@@ -52,7 +56,7 @@ describe('selected NPC continuity', () => {
     expect(person.formerOwn).toBe(true);
     expect(person.employment.filter((job) => !job.to)).toHaveLength(1);
     expect(person.employment).toHaveLength(2);
-    expect(squad(w, c).filter((x) => x.id === p.id)).toHaveLength(1);
+    expect(clubPlayers(w, c).filter((x) => x.id === p.id)).toHaveLength(1);
     expect(
       squad(
         w,
@@ -65,22 +69,25 @@ describe('selected NPC continuity', () => {
   });
   it('loans and returns the same retained NPC person and never generates him at both clubs', () => {
     const w = world();
-    const person = Object.values(w.people!).find((p) => p.origin)!;
+    const person = Object.values(w.people!).find(
+      (p) => p.club !== w.playerClub && w.squads?.[p.club ?? '']?.some((q) => q.id === p.id),
+    )!;
     const parent = w.clubs.find((c) => c.id === person.club)!;
-    const p = structuredClone(squad(w, parent).find((p) => p.id === person.id)!);
+    const p = structuredClone(clubPlayers(w, parent).find((p) => p.id === person.id)!);
     movePerson(w, p, w.playerClub, true, w.year + 1);
     p.loanUntil = w.year + 1;
-    w.players.push(p);
     expect(squad(w, parent).some((x) => x.id === p.id)).toBe(false);
     expect(w.people![p.id].loan?.club).toBe(parent.id);
     returnLoan(w, p);
-    expect(squad(w, parent).filter((x) => x.id === p.id)).toHaveLength(1);
+    expect(clubPlayers(w, parent).filter((x) => x.id === p.id)).toHaveLength(1);
     expect(p.status).toBe('sold');
     expect(w.people![p.id].playing).toBe('active');
   });
   it('records external recruitment without inventing an old club or historical appearances', () => {
     const w = world();
     w.cash = '9999999999';
+    const free = makePlayer('ENG', w.seed, 'unretained:free', w.year, 38, 'CM', 25);
+    joinFreeAgents(w, free, w.year);
     // A free agent of the pool: no club to record as his seller.
     operate(w, { type: 'recruit', candidate: transferOffers(w).findIndex((o) => o.freeAgent) });
     const player = w.players.at(-1)!;

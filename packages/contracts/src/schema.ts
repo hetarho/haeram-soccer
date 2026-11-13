@@ -1085,6 +1085,7 @@ const worldSchema: z.ZodType<World> = z.object({
   playerClub: id,
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
+  squads: z.record(id, z.array(player).max(20000)).optional(),
   hardStreak: z.number().int().nonnegative().optional(),
   trainingAt: z
     .string()
@@ -1718,6 +1719,24 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   }
   const playerIds = new Set(w.players.map((p) => p.id));
   if (playerIds.size !== w.players.length) throw new Error(sourceMessage('copy.schema.7d0218ff22'));
+  if (w.squads) {
+    if (w.clubs.some((c) => !c.representative && c.id !== w.playerClub && !w.squads![c.id]))
+      throw new Error(sourceMessage('copy.schema.df9beb0eea'));
+    const live = new Set(w.players.filter((p) => p.status === 'active').map((p) => p.id));
+    for (const [club, players] of Object.entries(w.squads)) {
+      if (club === w.playerClub || !w.clubs.some((c) => c.id === club && !c.representative))
+        throw new Error(sourceMessage('copy.schema.df9beb0eea'));
+      for (const p of players) {
+        if (p.status !== 'active' || live.has(p.id))
+          throw new Error(sourceMessage('copy.schema.7d0218ff22'));
+        live.add(p.id);
+      }
+    }
+    for (const p of w.freeAgents ?? []) {
+      if (live.has(p.id)) throw new Error(sourceMessage('copy.schema.7d0218ff22'));
+      live.add(p.id);
+    }
+  }
   for (const f of [...w.fixtures, ...w.ownMatches, ...w.europe.flatMap((t) => t.fixtures)])
     if (!ids.has(f.home) || !ids.has(f.away) || f.home === f.away)
       throw new Error(sourceMessage('copy.schema.ec2c12eba2'));

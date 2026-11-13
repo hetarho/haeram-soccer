@@ -1,6 +1,6 @@
 import type { Fixture, MatchPlayback, MatchRecord, Player, World } from '../../contracts/src/types';
 import { simulateMatch } from './match';
-import { findClub, squad } from './world';
+import { clubPlayers, findClub } from './world';
 import type { FixtureReadCopy } from './fixture-copy';
 export {
   FIXTURE_READ_KEYS,
@@ -55,7 +55,7 @@ export function jobPlayback(
     return undefined;
   const squads: Player[][] = [];
   for (const [side, id] of [f.home, f.away].entries()) {
-    const pool = new Map(squad(w, findClub(w, id)).map((p) => [p.id, p]));
+    const pool = new Map(clubPlayers(w, findClub(w, id)).map((p) => [p.id, p]));
     const players: Player[] = [];
     for (const playerId of result.squads[side] ?? []) {
       const player = pool.get(playerId);
