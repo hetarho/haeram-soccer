@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r63 | Define one complete, calibrated probabilistic result for every match and, for the own club's matches, a script and a staged picture drawn from that result.
+> r64 | Define one complete, calibrated probabilistic result for every match and, for the own club's matches, a script and a staged picture drawn from that result.
 
 ## decisions
 - MATCH-1 [o] Every match is settled once, as one joint probabilistic draw of its whole record (→!MATCH-22/26/27): two halves of 45 minutes plus added time, and extra time and a shoot-out where →MATCH-6 calls for them. The record is the only source of match facts; an own match's script and picture (→!MATCH-38/39) are made from it and never change it. ← one way of settling a match for every club, and a picture that cannot disagree with the record
@@ -53,7 +53,7 @@
   - the last completed pass before the shot is the key pass and earns the assist when the shot scores; a chance its shooter made alone, a penalty and a direct free kick have none.
   - player contributions record the actual passer, receiver, winner of the ball, shooter, keeper, fouler, carded player and substitute.
 - MATCH-12 [o] Observed playback draws the staging of the match's script (→!MATCH-38/39): the ball flies along the scripted actions and players stand where the staging puts them. ← a ball that stops in open space and then jumps to an opponent reads as a bug, not football
-  - the selected speed applies uniformly to running play, through build-up, chances and every restart's kick and delivery; 1x maps every 60 match seconds to 18 real seconds (→WEB-32). Added time and extra time use the same mapping. The dead-ball beat (→WEB-32), goal-feedback holds (→WEB-94), seeking and the interval between periods are explicit presentation transitions outside running play; none changes a settled fact.
+  - the selected speed applies uniformly to running play, through build-up, chances and every restart's kick and delivery; 1x maps every 60 match seconds to 60 real seconds, real time (→WEB-32). Added time and extra time use the same mapping. The dead-ball beat (→WEB-32), goal-feedback holds (→WEB-94), seeking and the interval between periods are explicit presentation transitions outside running play; none changes a settled fact.
   - the minute shown is the record's: a goal, a shot, a card, an injury or a substitution is seen in the minute the record gives it. Between such moments the picture's own seconds are fitted to the match clock at one rate held near 1, so no passage is drawn visibly faster or slower than its neighbours (→!MATCH-39).
   - during dead time each player is drawn moving at his staged, movement-bounded pace until he reaches his place and then standing there; nobody glides across the whole dead interval on one straight line. ← players who hurry to their places and wait read as football; a crawl reads as a bug
   - the dead-ball beat shortens only its presentation time: the ball and players travel their staged routes in order, the rush scales their travel by one factor, the standing that follows is what the still beat shortens, and the staged dead time, added time and settled facts are unchanged.
@@ -343,6 +343,7 @@
 - A career on an earlier match model moves to this one prospectively at its next safe boundary (→SAVE-23); its settled matches keep their records.
 
 ## chg
+- r64 261113 MATCH-12✎ 1x 18→60 real s per 60 match seconds, real time (→WEB-32)
 - r63 261113 MATCH-12✎ 1x 12→18 real s per 60 match seconds (→WEB-32)
 - r62 261112 MATCH-16✎ the second man of a two-man action drawn on the minutes he shares with the first→both men drawn on their own weights and matched over the playing time they share; only a second man left without a partner drawn again, his weight scaled by the share of his spell in common
 - r61 261112 MATCH-27✎ individual on-pitch presence→common on-pitch interval for all participants of an action; penalty/foul/card minute linkage unstated→one minute fixed by the booked foul, otherwise the kick, with participants drawn there before settlement
