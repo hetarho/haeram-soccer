@@ -1,6 +1,6 @@
 # Natural football comparison
 
-The standalone comparison shows the same frozen fixture on two pitches: baseline main `9b701adf` and the reviewed natural-football candidate. The settled inputs and records match. Both pitches share one clock, real-time 1x, play/pause, speed and seek; Space toggles playback and the arrow keys move five seconds. The generated page embeds its data and opens offline.
+The standalone comparison shows the same frozen fixture on two pitches: latest-finance baseline `2fe2386d` and reviewed cover candidate `c1124ede`. The settled inputs and records match. Both pitches share one clock, real-time 1x, play/pause, speed and seek; Space toggles playback and the arrow keys move five seconds. The generated page embeds its data and opens offline.
 
 Local delivered page: `.tmp/natural-football/index.html`, served at `http://localhost:19610/`. Production tool sources are `scripts/natural-football/`; generated full-match datasets and raw receipts remain in `.tmp/nf14-evidence/` in the coordinator checkout. Small durable measurements are in [261114-measurements.json](261114-measurements.json).
 
@@ -8,7 +8,7 @@ Local delivered page: `.tmp/natural-football/index.html`, served at `http://loca
 
 ENG, 2024, club `ENG:0:0:0`, first own league fixture, seeds `viewer-2`, `viewer-3`, `viewer-4`. Baseline and candidate use identical inputs, squads and settled records; the support-only step also keeps the full actual record and script hashes identical to the preceding candidate. The builder compares actual normalized records and frozen squads as well as provenance hashes, so changed score/player facts cannot pass by retaining an old hash.
 
-| Proxy, per seed 2 / 3 / 4 | Baseline | Final support candidate |
+| Historical first epoch, per seed 2 / 3 / 4 | Original baseline9b701adf | Support candidate |
 |---|---|---|
 | Close-pressure holding spells of 2 s or longer | 96 / 99 / 97 | 38 / 38 / 29 |
 | Circling under pressure | 126 / 149 / 118 | 68 / 77 / 58 |
@@ -17,6 +17,12 @@ ENG, 2024, club `ENG:0:0:0`, first own league fixture, seeds `viewer-2`, `viewer
 | Opposing pairs within 3 m for at least 20 s | 31 / 38 / 42 | 21 / 15 / 33 |
 
 These are observational proxies on three fixed matches. They do not establish universal realism. The final support-angle step changes blocked support options from 3483/23096 (15.081%) to 3421/22923 (14.924%): two fixtures improve and one worsens. Some pressure, circling and sticking counts also worsen relative to the preceding repaired candidate; their full raw values are retained in the JSON. No production threshold was loosened. Pace and chained result flows remain separate work.
+
+## Latest defensive-cover experiment
+
+The currently delivered page uses baseline2fe2386d and independently reviewed c1124ede, integrated42ad9926. Compared with the preceding natural-football candidate, actual assigned-cover mean distances8.906/9.096/9.167 m become3.195/2.835/3.213; cover handovers1274/1500/1102 become286/223/238 and one-metre vacancy share0.910/0.911/0.907 becomes0.731/0.724/0.711. Inputs and complete settled record/script hashes remain equal on all three seeds. Role assignment follows the nearest existing legal cover point while retaining the closest presser and existing eligibility.
+
+Secondary observations are mixed: pressure-holding38/38/29 becomes34/43/34, circling68/77/58 becomes79/82/64, and sticking21/15/33 becomes22/16/30. Support-screen proxy rates also worsen; this is no pass-completion or universal realism claim. All exact raw evidence, source/review/integration IDs, observed tradeoffs and latest offline smoke are retained under latestExperiment in the JSON. The HTML is locally integrated; complete final batch and main publication are still pending.
 
 ## Rebuild
 
