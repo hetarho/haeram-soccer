@@ -80,6 +80,7 @@
 | T876 | work | codex/natural-football-261114 | 15ec0ba65b84 | 2026-11-13T17:23Z |
 
 ## log
+- 261113 gusta-create-task SAVE r70 start: coherent explicit release preparation and metadata-only compatible patch labels; retain the original pb14 deadline and gate ledger.
 - 261113 gusta-update-ssot SAVE start: pb14 root-only release recurrence; preserve rules-5 careers through an explicit compatible patch label, synchronize the one game version before publication.
 - 261113 fix pb14 diagnostics: 0c39493c replaces newly authored prose with a machine enum and asserts complete funding using the raw club ID; 12-locale validation and lint passed without new display copy.
 - 261113 fix pb14 wage observer: 1e3eef0e keeps the salary bill separate and exposes the proposed fee, with the isolated boundary unit and deferred integration invariant enforcing their combined envelope.
@@ -99,4 +100,3 @@
 - 261113 Owner authorized full main implementation merge and removed storage capacity as an integration blocker on 261114; the measured capacity and calibration residuals remain documented.
 - 261113 gusta-self-improve natural football start; clean main bb383c33 equals fetched origin/main; two read-only scouts; local integration plus synchronized baseline/candidate HTML; Codex workers and Claude review
 - 261113 gusta-create-task ARCH r42..r43 no-op (no code impact): operating conventions only; no active task contracts to rewrite
-- 261113 gusta-update-ssot ARCH r43: task builds and browser acceptance move to final batch; preserve full coverage, i18n and original publication restrictions
