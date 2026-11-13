@@ -945,20 +945,20 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 40 | 40 | - | 2 |
-| WEB | 218 | 218 | - | 0 |
+| WEB | 219 | 219 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
-| WORLD | 11 | 11 | - | 0 |
+| WORLD | 12 | 12 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 68 | 68 | - | 0 |
+| CLUB | 69 | 69 | - | 0 |
 | MATCH | 62 | 62 | - | 0 |
-| LEAGUE | 18 | 18 | - | 0 |
+| LEAGUE | 19 | 19 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
-| ECON | 56 | 56 | - | 0 |
+| ECON | 57 | 57 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 25 | 25 | - | 0 |
+| HIST | 26 | 26 | - | 0 |
 | SAVE | 68 | 68 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
-| PLAYER | 17 | 17 | - | 0 |
+| PLAYER | 18 | 18 | - | 0 |
 
 ## review
 | id | st |
@@ -983,12 +983,24 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | todo |
+| T860 | Show every age as N세, never a birth year | WEB | - | todo |
+| T861 | Persist every playable-country club's players as people | WORLD PLAYER LEAGUE HIST | - | todo |
+| T862 | Persisted players develop, age, retire and are replaced by youth | WORLD PLAYER CLUB STAFF | T861 | todo |
+| T863 | Club strength from its squad, wages from its books, contracts and free agents | LEAGUE WORLD ECON CLUB | T862 | todo |
+| T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON | T863 | todo |
+| T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB | T862 T864 | todo |
+| T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 | todo |
 
 ## next
+- gusta-implement-task T860, then T861 → T866 in dep order (persisted world players, sketch persistent-world-players 261113)
 - main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261113 sketch persistent-world-players end: T860–T866 from WORLD@12 LEAGUE@19 PLAYER@18 CLUB@69 ECON@57 HIST@26 WEB@219 pr13
+- 261113 gusta-create-task WORLD LEAGUE PLAYER CLUB ECON HIST WEB: T860–T866 pr13
+- 261113 gusta-update-ssot WORLD LEAGUE PLAYER CLUB ECON HIST WEB: persisted world players, squad strength, books and stature, player records, ages as N세 pr13
+- 261113 sketch persistent-world-players start pr13
 - 261113 gusta-create-task ECON WEB: T859 consumes ECON@56 WEB@218 fin3
 - 261113 gusta-update-ssot ECON WEB start: reserve-funded delegated investment and amount-based bankruptcy fin3
 - 261112 T858 done
@@ -1005,9 +1017,3 @@
 - 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
 - 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
 - 261113 ab money-spend: adopt a — the 단장 budgets every delegated spend on this season's income by the owner's five-step request
-- 261113 ab money-delegation: adopt a — delegation split from strategy: a spending request per delegated decision, acted on by the delegate's temperament
-- 261113 main continues from origin/wip/hf12 with the gusta migration redone on top; the batch on 1451c371 failed 14 integration cases (→T851)
-- 261112 ARCH r40..r40 no-op (no code impact)
-- 261112 gusta-update-ssot ARCH r40 (ARCH-30✎ project-only branch, batch-lock, work-group and CI-wait rules→gusta default tiers; flow✎ Planning, Verification)
-- 261112 settings: land main, push true, plan follows land (next retired); this machine continues from the hf12 hand-off
-- 261112 hf12 handed off to origin/wip/hf12 at 21:00 KST: T838–T844 done (release, browser migration, verdict, prototype removed, leaves out of grid/, tests and scripts off the earlier models); T845 and T848 todo; no final gate or main push yet hf12

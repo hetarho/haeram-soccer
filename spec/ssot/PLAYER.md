@@ -1,8 +1,8 @@
 # PLAYER Player model
-> r17 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r18 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
-- PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
+- PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Every player of a playable association's club is a persisted person who develops and ages by the rules below wherever he plays (→WORLD-16); only representative clubs field squads generated each season (→WORLD-6). A player of a club nobody owns plays at his club's 조직력 (→LEAGUE-12) in place of his own adaptation; cross-role person continuity and retirement eligibility are →WORLD-10/11. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
 
 - PLAYER-2 [o] A player has 16 attributes, 1–99, each feeding the match actions and choices it names (→MATCH-11, →MATCH-16); every player has all 16, an outfielder's goalkeeping three sit at 8–20. Generated attributes top out at 99. ← maps one-to-one onto the stats the game reports, and fits one card
   | group | attribute | what it decides |
@@ -198,6 +198,7 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r18 261113 PLAYER-1✎ other clubs' squads generated each season, development and ageing for own players only→every playable-country player persisted and developing by the same rules, generated squads for representative clubs only
 - r17 261111 PLAYER-5✎ phase movement and role tendencies implemented in `grid/shape.ts` and `grid/tendencies.ts`→a role's place is the staging's shape, its action weights the result path's
 - r16 261110 PLAYER-27✎ team honours and league place in full for every teammate→in full for a club's best player by individual points, ×0.55 the next, ×0.35 each other; existing podiums retained
 - r15 261103 PLAYER-18✎ scout ranges by the chief scout's ability→+halved on whole grades with 원석 감별사 (±2→±1, ±1→exact); reconciled with the independent r14 award change

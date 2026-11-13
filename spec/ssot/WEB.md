@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r218 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r219 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -316,6 +316,8 @@
 - WEB-59 [o] Every name of one of our players, past or present, opens his player sheet from one global host: the club career first (appearances, goals, assists, saves for goalkeepers, status 현역/이적/은퇴/임대 종료 and his all-time club places, shared when equal), then this season or the career in detail. Roster cards name the player as that link, and cards of players who left show their club totals. ← fans remember players by their club numbers
   - current players offer an available contract talk before the long profile; it closes the sheet and keeps player/task context.
   - his profile: the 16 attributes by group (정신 included), his positions with levels on a pitch, his best roles, personality and play traits (another club's personality as the scout's range →PLAYER-18), adaptation with its multiplier, OVR and his 실효 OVR at his slot (→PLAYER), his cards and any current ban, and his season heat maps (this season's from its matches, earlier ones as kept →MATCH-5).
+  - another club's player opens the same host with his age, position and club, then his profile (as the scout reads him, →PLAYER-18) and his playing record by season and club with his honours (→HIST-23). A free agent reads 자유계약 in place of a club; a retired player reads 은퇴 with his retirement season and last club over his last profile; a representative club's player (→WORLD-6) shows his current profile only. A player link never opens a sheet saying he cannot be found.
+  - every age reads as N세 (the season's year − birth year) — current, former and retired players and person careers alike; a birth year is never shown in its place.
 - WEB-60 [x] The owning club workflows expose scoped configuration editors for the club's direction: every strategy card (→ECON-22) and every dial (→ECON-16, →ECON-17) is a row of named options by area (→ECON-25), drawn and drafted the same way and applied at once, never called a build (빌드), a card row or a dial. ← a card row and a dial drawn and behaving differently in one area read as two kinds of control for one plan
 
 - WEB-61 [x] 방향 만들기 opens a composer: every area with its rows, drawn as the board's rows (→WEB-60) and starting from the direction in force, the combined effects and the synergies they light, a name of 1–20 characters, and save; a saved direction (내 방향) can be edited, deleted or applied as a draft.
@@ -592,7 +594,7 @@
 
 - WEB-111 [o] 클럽 기록실's 발롱도르 view shows the award season by season (→!PLAYER-27). ← fans follow who was the world's best each year, and whether one of ours ever was
   - a season stepper as →WEB-40's, over the closed seasons with an award, opens on the latest: its podium — place, player, club, position, goals, assists, appearances, team honours counted and points — with our club's players marked.
-  - below it every winner newest first, then most wins by player and by club, our club's row kept in view; a player opens his sheet when his identity is retained (→WEB-59), a club its team sheet (→WEB-58).
+  - below it every winner newest first, then most wins by player and by club, our club's row kept in view; every player opens his sheet (→WEB-59), a club its team sheet (→WEB-58).
   - before the first award the view says when the award begins or that no closed season was tracked whole; it never shows an empty podium.
   - player sheets show a player's Ballon d'Or wins and podium places with their seasons, derived from the archived podiums (→HIST-13).
 
@@ -618,6 +620,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r219 261113 WEB-59✎ another club's player sheet only while he plays in a first team→every player link opens a sheet (club, 자유계약, 은퇴 with last profile, representative) with his season-and-club record; former players' ages as birth years→N세 everywhere; WEB-111✎ podium names open a sheet when the identity is retained→every podium player opens his sheet
 - r218 261113 WEB-56✎ bankruptcy countdown→cash debt limit; WEB-79/118✎ income-only plan→reserve years and available capital beside income.
 - r217 261113 WEB-10/18/39✎ 결재 설정→위임 설정; WEB-79✎ per-decision dial/rows/cards/재정 기조/wage cap→5-step spending request with the 단장's plan; WEB-14✎ 재정 · 사업→구단 예산, +운영 방침 rows, delegation notes, read-only delegated controls; WEB-45/100✎ 유소년 승격·방출 (유스 디렉터)→유소년 운영 (단장); WEB-71✎ +request, row homes; WEB-114✎ 구단주 sheet→money dialog; WEB-44✎ sheet runway→none; WEB-116✎ 결재 설정 rule→area row; WEB-118+ 구단 예산
 - r216 261111 WEB-10✎ the office menu's home link leads back to the office from any investment detail→a detail a home area card opened leads back home; flow Office✎ home card → area→home card → area → back home
