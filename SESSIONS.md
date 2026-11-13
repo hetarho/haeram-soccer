@@ -4,7 +4,6 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:30Z | 2026-11-13T16:49Z | - | codex/natural-football-261114 | b7186455e701 |
 | pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T16:51Z | T878 | work/performance-books-pb14 | 0cd4fb216686 |
 
 ## inbox
