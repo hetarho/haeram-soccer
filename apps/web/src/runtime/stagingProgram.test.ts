@@ -20,14 +20,17 @@ afterEach(() => {
   vi.useRealTimers();
   vi.clearAllMocks();
 });
-it('yields between two-minute batches, finishes and skips frames already delivered on resume', async () => {
+it('publishes the first minute, batches the rest and skips delivered frames on resume', async () => {
   vi.useFakeTimers();
   const replies: StagingReply[] = [];
   runStaging({ id: 1, from: 0 } as StagingRequest, (r) => replies.push(r));
   expect(replies).toEqual([]);
   await vi.advanceTimersToNextTimerAsync();
-  expect(fake.next).toHaveBeenCalledTimes(STAGING_BATCH_MINUTES);
-  expect(replies).toEqual([{ id: 1, from: 0, frames: [{ minute: 1 }, { minute: 2 }] }]);
+  expect(fake.next).toHaveBeenCalledTimes(1);
+  expect(replies).toEqual([{ id: 1, from: 0, frames: [{ minute: 1 }] }]);
+  await vi.advanceTimersToNextTimerAsync();
+  expect(fake.next).toHaveBeenCalledTimes(1 + STAGING_BATCH_MINUTES);
+  expect(replies.at(-1)).toEqual({ id: 1, from: 1, frames: [{ minute: 2 }, { minute: 3 }] });
   await vi.runAllTimersAsync();
   expect(replies.at(-1)).toEqual({ id: 1, done: true });
   expect(

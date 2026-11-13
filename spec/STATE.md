@@ -113,6 +113,7 @@
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261113 fix watch: publish the first staged minute before filling the normal two-minute batches; preserve frame order, match results and the original 3 s browser latency guard fin3
 - 261113 sketch persistent-world-players end: T860–T866 from WORLD@12 LEAGUE@19 PLAYER@18 CLUB@69 ECON@57 HIST@26 WEB@219 pr13
 - 261113 gusta-create-task WORLD LEAGUE PLAYER CLUB ECON HIST WEB: T860–T866 pr13
 - 261113 gusta-update-ssot WORLD LEAGUE PLAYER CLUB ECON HIST WEB: persisted world players, squad strength, books and stature, player records, ages as N세 pr13
@@ -132,4 +133,3 @@
 - 261112 T845 done
 - 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
 - 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
-- 261113 ab money-spend: adopt a — the 단장 budgets every delegated spend on this season's income by the owner's five-step request
