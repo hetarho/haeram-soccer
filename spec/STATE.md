@@ -84,4 +84,4 @@
 ## next
 - gusta-implement-task T873 T875 T884
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
-- T883 coherent compatible release is owned by pr14; merge its result before final release preparation.
+- T883 and T899 are complete in the pr14 publication candidate; NF14 must include that result and prepare a coherent newer patch if its root version matches main.
