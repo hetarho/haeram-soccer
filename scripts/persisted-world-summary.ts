@@ -163,7 +163,7 @@ const books = COUNTRIES.map(({ code }) => {
   return {
     country: code,
     clubSeasons: cells.reduce((n, b) => n + b.clubSeasons, 0),
-    ratioMetricMeaning: 'diagnostic only; wages above turnover are not a funding failure',
+    ratioMetricMeaning: 'diagnostic' as const,
     breachedClubSeasons: cells.reduce((n, b) => n + b.breaches.length, 0),
     wageAboveTurnoverDiagnostic: cells.reduce((n, b) => n + b.breaches.length, 0),
     funding: {

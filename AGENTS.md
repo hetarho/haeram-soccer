@@ -27,6 +27,16 @@ This project is built spec-first with GUSTA. `spec/` is the source of truth and 
 
 <!-- gusta:end -->
 
+# Release preparation
+
+Before verifying and publishing a compatible patch, sync the latest main and run
+`pnpm run release:prepare`. This prepares one explicit patch version across the root, all workspace
+manifests and the engine, retaining the previous compatible rules label (SAVE-10). Include that
+version in the verified candidate before `vibe push`; a later main sync requires preparing and
+verifying the changed candidate again. The generic root-only automatic bump cannot prepare this
+project's shared game version. Incompatible or non-patch releases require their own planned rules
+boundary; this command does not infer one.
+
 # Orchestrated agent providers
 
 Default implementation workers to the provider running the orchestration session. Prefer another

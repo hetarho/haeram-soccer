@@ -4,7 +4,7 @@ import { BETA_MARK, isBetaVersion, shortVersion, versionLabel } from './versionL
 
 describe('the BETA mark and game version label (→WEB-101, SAVE-10)', () => {
   it('reads v0.8 BETA from the version constant', () => {
-    expect(CURRENT_ENGINE_VERSION).toBe('0.8.0');
+    expect(CURRENT_ENGINE_VERSION).toMatch(/^0\.8\.\d+$/);
     expect(versionLabel()).toBe('v0.8 BETA');
     expect(versionLabel()).toBe(`v${shortVersion(CURRENT_ENGINE_VERSION)} ${BETA_MARK}`);
     expect(BETA_MARK).toBe('BETA');
