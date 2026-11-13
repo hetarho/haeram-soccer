@@ -29,9 +29,14 @@ This project is built spec-first with GUSTA. `spec/` is the source of truth and 
 
 # Orchestrated agent providers
 
-Default implementation workers to the provider running the orchestration session. Use another
-enabled provider for independent review, relative to the provider that actually wrote the code.
+Default implementation workers to the provider running the orchestration session. Prefer another
+enabled provider for independent review only when it has sufficient token and usage headroom,
+relative to the provider that actually wrote the code. If the other provider is unavailable or
+usage-limited, continue with a separate independent review session on the implementation provider;
+no provider-exception approval is needed. The author must never review or approve their own work.
+
 `spec/SETTINGS.md` enables Codex and Claude; its fixed fallback order does not select the current
 orchestrator dynamically. For `gusta work run`, pass `--provider` for the orchestration provider
-and `--reviewer-provider` for the other provider explicitly. Apply the same choice when dispatching
-separate implementation and review sessions, and reselect the reviewer if the worker provider changes.
+and `--reviewer-provider` for the available reviewer provider explicitly. Apply the same rule when
+dispatching separate implementation and review sessions, and reselect the reviewer if the actual
+worker provider or reviewer availability changes.
