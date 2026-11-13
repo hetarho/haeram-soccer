@@ -229,6 +229,40 @@ describe('isolated NPC transfer windows', () => {
     expect(npcOffer(w, buyer, p, seller, '1')).toBeUndefined();
   });
 
+  it('rechecks the wage bill and registration after the first of two competing arrivals', () => {
+    for (const constraint of ['wage', 'registration'] as const) {
+      const { w, seller, buyer } = fixture(2024);
+      const first = listedKeeper(w, seller);
+      const second = structuredClone(first);
+      second.id = `second-keeper:${constraint}`;
+      for (const a of ATTRIBUTES) second.attrs[a] = 74;
+      w.squads![seller.id]!.push(second);
+      seller.books!.openingIncome = npcWageBill(w, seller).toString();
+      missingKeeper(w, buyer);
+      if (constraint === 'registration') {
+        const players = w.squads![buyer.id]!;
+        while (players.length < 24) {
+          const filler = structuredClone(players[0]!);
+          filler.id = `filler:${players.length}`;
+          filler.wage = '0';
+          players.push(filler);
+        }
+        buyer.books!.openingIncome = '999999999999999';
+      } else {
+        buyer.books!.openingIncome = (
+          npcWageBill(w, buyer) + BigInt(marketWageAt('ENG', w.year, buyer.tier, first))
+        ).toString();
+      }
+      const replay = structuredClone(w);
+      npcMarket(w);
+      npcMarket(replay);
+      expect(w).toEqual(replay);
+      expect(locations(w, first.id)).toEqual([buyer.id]);
+      expect(locations(w, second.id)).toEqual([seller.id]);
+      expect(npcOffer(w, buyer, second, seller, '1')).toBeUndefined();
+    }
+  });
+
   it('reserves registration room at a loan parent until the player returns', () => {
     const { w, seller, buyer, other } = fixture(2024);
     const p = listedKeeper(w, seller, 23);
@@ -246,6 +280,11 @@ describe('isolated NPC transfer windows', () => {
     }
     seller.books!.openingIncome = '999999999999999';
     const candidate = w.squads![other.id]!.find((p) => p.position === 'GK')!;
+    expect(npcOffer(w, seller, candidate, other, '1')).toBeUndefined();
+    const loan = w.playerRecords![p.id]!.loan!;
+    delete w.playerRecords![p.id]!.loan;
+    expect(npcOffer(w, seller, candidate, other, '1')).toBeDefined();
+    w.playerRecords![p.id]!.loan = loan;
     expect(npcOffer(w, seller, candidate, other, '1')).toBeUndefined();
     const withoutLoan = structuredClone(w);
     delete withoutLoan.playerRecords![p.id]!.loan;

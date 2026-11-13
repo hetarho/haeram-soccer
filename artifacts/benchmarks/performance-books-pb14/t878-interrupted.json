@@ -1,0 +1,73 @@
+{
+  "workload": "history",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "e4f6c203",
+  "cand": "/Users/ihaelam/project/haeram-soccer/.tmp/performance-books-pb14",
+  "procs": 8,
+  "jobs": 1,
+  "reps": 3,
+  "warm": 1,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "2b3da09d1133dfb0",
+    "cand": "f7e4268dcf284a71"
+  },
+  "completedProcesses": 1,
+  "completedProcessIndices": [
+    0
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 11667.238000000001,
+            "wall": 11841.140792
+          },
+          "b": {
+            "cpu": 8696.693,
+            "wall": 8817.403583
+          }
+        },
+        {
+          "label": "season",
+          "a": {
+            "cpu": 17271.074,
+            "wall": 17773.2405
+          },
+          "b": {
+            "cpu": 11415.865999999995,
+            "wall": 11644.569749999995
+          }
+        },
+        {
+          "label": "season",
+          "a": {
+            "cpu": 21242.710999999996,
+            "wall": 22417.02025
+          },
+          "b": {
+            "cpu": 14090.206999999995,
+            "wall": 14945.98070900001
+          }
+        }
+      ],
+      "hashes": [
+        "b32654ef9104fe83",
+        "b32654ef9104fe83"
+      ]
+    }
+  ],
+  "load1": [
+    13.69775390625,
+    7.3583984375
+  ],
+  "complete": false
+}
