@@ -152,6 +152,25 @@ describe('free-kick receiver timing', () => {
     });
   });
 
+  it('a recorded free-kick offside remains called', () => {
+    const p = performScript(
+      scriptOf(demoFixture(), [
+        { kind: 'kickOff', actor: 9, receiver: 5, to: [45, 30] },
+        {
+          kind: 'freeKick',
+          actor: 5,
+          receiver: 8,
+          to: [84, 16],
+          through: true,
+          outcome: 'offside',
+          hold: 1.4,
+        },
+      ]),
+    );
+    expect(p.events.filter((e) => e.kind === 'offside')).toHaveLength(1);
+    expect(consistency(p)).toMatchObject({ value: 0, pass: true });
+  });
+
   it('ordinary legal passes and recorded offside still follow their own outcomes', () => {
     expect(consistency(delivery(0, 'pass'))).toMatchObject({ value: 0, pass: true });
     const fixture = demoFixture();
