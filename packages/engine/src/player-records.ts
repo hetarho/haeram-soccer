@@ -20,6 +20,35 @@ export function linkOwnMatchPlayers(w: World, match: MatchRecord) {
   }
 }
 
+/** Own departed rows remain profiles under the own-career retention rule. */
+function heldProfileIds(w: World): Set<string> {
+  return new Set([
+    ...w.players.map((p) => p.id),
+    ...Object.values(w.squads ?? {}).flatMap((players) => players.map((p) => p.id)),
+    ...(w.freeAgents ?? []).map((p) => p.id),
+  ]);
+}
+
+/** Absent-registry writer adoption recovers links only for profiles the legacy world still holds. */
+export function restorePlayerLinks(w: World) {
+  const available = heldProfileIds(w);
+  const restore = (id: string | undefined) => {
+    if (id && available.has(id)) linkPlayer(w, id);
+  };
+  for (const season of w.history)
+    for (const place of season.ballonDor ?? []) restore(place.id);
+  for (const match of w.ownMatches) {
+    for (const line of match.players) if (line.metrics[M.minutes]! > 0) restore(line.id);
+    for (const incident of match.incidents ?? []) {
+      restore(incident.player);
+      restore(incident.other);
+    }
+  }
+  for (const fact of w.transfers?.facts ?? []) restore(fact.player);
+  for (const items of Object.values(w.newsJournal?.seasons ?? {}))
+    for (const item of items) for (const id of item.players ?? []) restore(id);
+}
+
 /** The season's settled competitions share one line per player and club, including winter moves. */
 export function closePlayerLines(w: World) {
   if (w.npcSeason?.year !== w.year) return;
@@ -73,11 +102,7 @@ export function retirePlayerRecord(w: World, p: Player, club?: string): boolean 
 
 /** T864 may have left unlinked move rows for someone already removed. Never invent his profile. */
 export function settleAbsentPlayerRecords(w: World) {
-  const live = new Set([
-    ...w.players.map((p) => p.id),
-    ...Object.values(w.squads ?? {}).flatMap((squad) => squad.map((p) => p.id)),
-    ...(w.freeAgents ?? []).map((p) => p.id),
-  ]);
+  const live = heldProfileIds(w);
   for (const [id, record] of Object.entries(w.playerRecords ?? {}))
     if (!live.has(id) && !record.retired && !record.linked) delete w.playerRecords![id];
 }

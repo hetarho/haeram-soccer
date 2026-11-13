@@ -154,12 +154,16 @@ describe('persisted playable squads', () => {
     const released = native[5]!;
     joinFreeAgents(w, released, w.year);
     const expected = continuousSquad(w, c);
+    // An already archived podium keeps a still-live profile when the registry is adopted.
+    w.history = [{ year: w.year - 1, ballonDor: [{ id: native[6]!.id }, { id: 'unavailable-old-profile' }] }] as World['history'];
     // The old raw founding would redraw this active own player's id at his origin.
     expect(npcSquad(w.seed, w.year, c).some((p) => p.id === purchased.id)).toBe(true);
     const original = structuredClone(w);
     const adopted = adoptSquads(w, false);
     expect(w).toEqual(original);
     expect(adopted.people![person.id]!.club).toBe(w.playerClub);
+    expect(adopted.playerRecords![native[6]!.id]!.linked).toBe(true);
+    expect(adopted.playerRecords!['unavailable-old-profile']).toBeUndefined();
     expect(adopted.players.find((p) => p.id === purchased.id)).toEqual(purchased);
     expect(adopted.freeAgents!.find((p) => p.id === released.id)).toEqual(w.freeAgents![0]);
     expect(adopted.squads![c.id]!.slice(0, expected.length)).toEqual(expected);
