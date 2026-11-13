@@ -304,7 +304,13 @@ export function npcBackingAllowance(w: World, club: Club): bigint | undefined {
 
 /** Observation only, for the lived-world wage invariant; never a gameplay setting. */
 export const NPC_WAGE_DECISIONS: {
-  observe?: (club: Club, bill: bigint, limit: bigint | undefined, allowed: boolean) => void;
+  observe?: (
+    club: Club,
+    bill: bigint,
+    limit: bigint | undefined,
+    allowed: boolean,
+    fee: bigint,
+  ) => void;
 } = {};
 
 /** One affordability rule for renewals and free/fee signings; replacement excludes the old wage. */
@@ -325,9 +331,10 @@ export function npcCanPay(
           (sum, p) => sum + (p.id === replacing ? 0n : BigInt(p.wage)),
           0n,
         );
-  const proposed = bill + BigInt(wage);
-  const allowed = limit === undefined || proposed + BigInt(fee) <= limit;
-  NPC_WAGE_DECISIONS.observe?.(club, proposed, limit, allowed);
+  const proposed = bill + BigInt(wage),
+    proposedFee = BigInt(fee);
+  const allowed = limit === undefined || proposed + proposedFee <= limit;
+  NPC_WAGE_DECISIONS.observe?.(club, proposed, limit, allowed, proposedFee);
   return allowed;
 }
 
