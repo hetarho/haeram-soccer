@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="__LANG__" dir="__DIR__">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>__TITLE__</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font:
+          15px/1.5 system-ui,
+          sans-serif;
+        background: #101a16;
+        color: #e7eee7;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+      }
+      main {
+        max-width: 1800px;
+        margin: auto;
+        padding: 24px;
+      }
+      h1 {
+        font-size: clamp(21px, 3vw, 32px);
+        margin: 0 0 6px;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+      }
+      p {
+        margin: 5px 0;
+      }
+      .muted {
+        color: #a7b8ac;
+      }
+      header {
+        padding-bottom: 20px;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 14px 0;
+        position: sticky;
+        top: 0;
+        background: #101a16ed;
+        z-index: 2;
+      }
+      button,
+      select {
+        font: inherit;
+        color: inherit;
+        background: #263b30;
+        border: 1px solid #55715f;
+        border-radius: 6px;
+        padding: 8px 14px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #34543f;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 3px solid #e4ce77;
+        outline-offset: 3px;
+      }
+      input[type='range'] {
+        flex: 1;
+        min-width: 150px;
+        accent-color: #dfca79;
+      }
+      .panels {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      article {
+        min-width: 0;
+        border: 1px solid #385140;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #18271f;
+      }
+      article header {
+        padding: 16px 18px 12px;
+        border-bottom: 1px solid #385140;
+      }
+      h2 {
+        font-size: 20px;
+        margin: 0;
+      }
+      .score {
+        font-size: 20px;
+        font-variant-numeric: tabular-nums;
+      }
+      .clock {
+        color: #e4ce77;
+        font-variant-numeric: tabular-nums;
+      }
+      canvas {
+        display: block;
+        width: 100%;
+        aspect-ratio: 105/68;
+      }
+      .metrics {
+        padding: 12px 18px;
+        color: #b6c9ba;
+        font-size: 13px;
+        border-top: 1px solid #385140;
+      }
+      .provenance {
+        font-size: 12px;
+        color: #9eb3a4;
+      }
+      .error {
+        color: #f6b5a7;
+      }
+      footer {
+        padding-top: 16px;
+        font-size: 13px;
+        color: #a7b8ac;
+      }
+      @media (max-width: 760px) {
+        main {
+          padding: 14px;
+        }
+        .panels {
+          grid-template-columns: 1fr;
+        }
+        .toolbar {
+          gap: 7px;
+        }
+        button,
+        select {
+          padding: 7px 11px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1 id="heading"></h1>
+        <p id="match" class="muted"></p>
+        <p id="same" class="muted"></p>
+      </header>
+      <div id="loading" role="status"></div>
+      <div class="toolbar" hidden id="controls">
+        <button id="toggle" type="button"></button><button id="back" type="button"></button
+        ><button id="forward" type="button"></button><label id="speed-label" for="speed"></label
+        ><select id="speed"></select
+        ><input id="seek" type="range" min="0" value="0" step="0.1" /><output
+          id="clock"
+          class="clock"
+        ></output>
+      </div>
+      <div class="panels" id="panels"></div>
+      <footer id="help"></footer>
+    </main>
+    <script type="application/json" id="config">
+      __CONFIG__
+    </script>
+    <script type="application/octet-stream" id="baseline-data">
+      __BASELINE__
+    </script>
+    <script type="application/octet-stream" id="candidate-data">
+      __CANDIDATE__
+    </script>
+    <script>
+      __BUNDLE__;
+    </script>
+  </body>
+</html>

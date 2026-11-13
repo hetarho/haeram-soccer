@@ -1,5 +1,11 @@
 /** Names and other identity parameters are always displayed verbatim. */
 export const verbatimParameters: Readonly<Record<string, readonly string[]>> = {
+  'naturalFootball.match': ['home', 'away'],
+  'naturalFootball.pitch': ['home', 'away'],
+  'naturalFootball.provenance': ['seed', 'sha'],
+  'naturalFootball.noMatch': ['seed'],
+  'naturalFootball.usage': ['command'],
+  'naturalFootball.mismatch': ['field'],
   'copy.Workbench.35e64f9ea2': ['p0'],
   'copy.LabPage.cf0cfa5890': ['p0'],
   'copy.LabPage.603fcd2e31': ['p0'],

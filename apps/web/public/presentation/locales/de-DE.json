@@ -6852,6 +6852,24 @@
     "player.record.representative": "Repräsentativer Verein · {club}",
     "player.record.table": "Bilanz nach Saison und Verein",
     "player.record.retirementNews": "{player} beendet seine Spielerkarriere",
-    "player.record.lastClub": "Letzter Verein: {club}"
+    "player.record.lastClub": "Letzter Verein: {club}",
+    "naturalFootball.title": "Vergleich der Fußballbewegungen",
+    "naturalFootball.baseline": "Ausgangsversion",
+    "naturalFootball.improved": "Verbessert",
+    "naturalFootball.match": "{home} gegen {away}",
+    "naturalFootball.provenance": "{seed} · {sha}",
+    "naturalFootball.help": "Leertaste: Wiedergabe/Pause · ← →: 5 Sekunden springen · 1× entspricht Echtzeit.",
+    "naturalFootball.clock": "{minute}′ {second}″",
+    "naturalFootball.pitch": "{version}: Spielfeld für {home} gegen {away}",
+    "naturalFootball.pressure2": "Ballbesitz unter engem Druck für mindestens 2 s: {count}",
+    "naturalFootball.pressure5": "Ballbesitz unter engem Druck für mindestens 5 s: {count}",
+    "naturalFootball.sameFacts": "Vergleich derselben Spieler und desselben feststehenden Spielberichts.",
+    "naturalFootball.usage": "Aufruf: {command}",
+    "naturalFootball.invalid": "Ungültige Daten für den Fußballvergleich.",
+    "naturalFootball.mismatch": "Die Vergleichsbedingungen unterscheiden sich: {field}",
+    "naturalFootball.noMatch": "Das erste Ligaspiel für Startwert {seed} kann nicht angezeigt werden.",
+    "naturalFootball.failed": "Der Vergleich konnte nicht vorbereitet werden: {detail}",
+    "naturalFootball.step": "Um {seconds} Sekunden springen",
+    "naturalFootball.loading": "Die Spielansicht wird vorbereitet."
   }
 }
