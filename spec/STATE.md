@@ -78,6 +78,8 @@
 | T896 | Prepare affordable academy, pending-decision and discipline scenes | ARCH CLUB WORLD MATCH | T885 | todo |
 | T897 | Preserve regulation facts and exact seeded replay inputs | ARCH MATCH WORLD | T885 | todo |
 | T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
+| T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
+| T900 | Reuse identical placed weights within one attribution | ARCH MATCH WORLD | T885 | todo |
 
 ## next
 - gusta-implement-task T873 T875 T884
