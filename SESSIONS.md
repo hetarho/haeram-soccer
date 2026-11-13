@@ -73,8 +73,10 @@
 | T875 | work | codex/natural-football-261114 | 88820aeb00e4 | 2026-11-13T17:10Z |
 | T879 | pb14 | work/performance-books-pb14 | 4c164ef5e69f | 2026-11-13T17:12Z |
 | T880 | pb14 | work/performance-books-pb14 | 0880bc593cfd | 2026-11-13T17:21Z |
+| T876 | work | codex/natural-football-261114 | 15ec0ba65b84 | 2026-11-13T17:23Z |
 
 ## log
+- 261113 T876 integrated
 - 261113 T880 done
 - 261113 T879 done
 - 261113 T875 integrated
@@ -94,4 +96,3 @@
 - 261113 T872 done
 - 261113 pw86: completed T860-T865/T867/T869/T870 source is remote on work/persisted-world-860 at af821030; T866 numeric measurements continue under unit-test-only steering, work cutoff 12:00 UTC and publication deadline 13:00 UTC.
 - 261113 T859 done
-- 261113 T870 done
