@@ -1,5 +1,7 @@
 import {
   SaveCompatibilityError,
+  CURRENT_ENGINE_VERSION,
+  COMPATIBLE_ENGINE_VERSIONS,
   SUPPORTED_ENGINE_VERSIONS,
   LEGACY_ENGINE_VERSIONS,
   upgradeWorldRules,
@@ -226,16 +228,32 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
   });
 });
 
-describe('game version 0.8.0 on the rules-5.0.0 line (→SAVE-10, →SAVE-16, →SAVE-26)', () => {
+describe('the current game version on the rules-5.0.0 line (→SAVE-10, →SAVE-16, →SAVE-26)', () => {
   it('refuses every recognized earlier gameplay version, the founded rules-4.0.0 line included', () => {
     const w = world();
-    expect(w.engine).toBe('0.8.0');
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual(['0.8.0']);
+    expect(w.engine).toBe(CURRENT_ENGINE_VERSION);
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([
+      CURRENT_ENGINE_VERSION,
+      ...COMPATIBLE_ENGINE_VERSIONS,
+    ]);
     expect(LEGACY_ENGINE_VERSIONS).toEqual(expect.arrayContaining(['4.0.0', '0.7.0']));
     for (const engine of LEGACY_ENGINE_VERSIONS)
       expect(() => upgradeWorldRules({ ...w, engine }, CURRENT_CATALOG)).toThrow(
         SaveCompatibilityError,
       );
+  });
+  it('validates a named compatible patch and normalizes only its writer metadata', () => {
+    const older = { ...world(), engine: '0.8.0' };
+    const loaded = validateWorld(older);
+    const before = structuredClone(loaded);
+    expect(upgradeWorldRules(loaded, CURRENT_CATALOG)).toEqual({
+      ...before,
+      engine: CURRENT_ENGINE_VERSION,
+      catalog: CURRENT_CATALOG.catalog,
+      catalogHash: CURRENT_CATALOG.catalogHash,
+      revision: before.revision + 1,
+    });
+    expect(loaded).toEqual(before);
   });
   it('refuses a player without his main position among his positions, or a trait twice', () => {
     const w = world();

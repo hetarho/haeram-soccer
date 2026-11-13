@@ -1,6 +1,6 @@
 {
   "name": "haeram-soccor",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.34.6",
@@ -8,6 +8,7 @@
     "node": ">=24.22.1"
   },
   "scripts": {
+    "release:prepare": "tsx scripts/release-version.ts",
     "dev": "vite --config apps/web/vite.config.ts",
     "build": "vite build --config apps/web/vite.config.ts",
     "preview": "node scripts/preview.mjs",

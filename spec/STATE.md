@@ -62,7 +62,7 @@
 | T874 | Wait onside before a free-kick delivery | MATCH ARCH | T873 | todo |
 | T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
 | T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
-| T883 | Prepare one coherent compatible game release | SAVE ARCH | T882 | todo |
+| T883 | Prepare one coherent compatible game release | SAVE ARCH | T882 | doing@261113.pr14 |
 
 ## next
 - gusta-implement-task T873 T875

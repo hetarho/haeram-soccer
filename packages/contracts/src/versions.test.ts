@@ -8,6 +8,7 @@ import { MATCH_MODEL_REVISION } from './match-model';
 import type { World } from './types';
 import {
   CURRENT_ENGINE_VERSION,
+  COMPATIBLE_ENGINE_VERSIONS,
   earlierRulesMessage,
   envelopeEngine,
   isEarlierEngine,
@@ -34,13 +35,37 @@ const career = (engine: string) =>
     matchModel: { revision: MATCH_MODEL_REVISION },
   }) as unknown as World;
 
-describe('game version 0.8.0 (→SAVE-10, SAVE-26)', () => {
+describe('the current game version (→SAVE-10, SAVE-26)', () => {
   it('is every package version and the rules a world plays', () => {
-    expect(CURRENT_ENGINE_VERSION).toBe('0.8.0');
+    expect(CURRENT_ENGINE_VERSION).toMatch(/^0\.\d+\.\d+$/);
     for (const pkg of [root, web, contracts, engine, catalogs])
       expect(pkg.version).toBe(CURRENT_ENGINE_VERSION);
-    // Only the current version, no older range or label.
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION]);
+    // Only the current release and explicitly listed compatible patches; never a range.
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([
+      CURRENT_ENGINE_VERSION,
+      ...COMPATIBLE_ENGINE_VERSIONS,
+    ]);
+    expect(COMPATIBLE_ENGINE_VERSIONS).toContain('0.8.0');
+    expect(new Set(SUPPORTED_ENGINE_VERSIONS).size).toBe(SUPPORTED_ENGINE_VERSIONS.length);
+  });
+
+  it('rewrites every explicit compatible patch label without changing retained facts or absence', () => {
+    for (const engine of COMPATIBLE_ENGINE_VERSIONS) {
+      expect(engine.split('.').slice(0, 2)).toEqual(CURRENT_ENGINE_VERSION.split('.').slice(0, 2));
+      expect(isEarlierEngine(engine)).toBe(false);
+      const stored = career(engine);
+      const before = structuredClone(stored);
+      const upgraded = upgradeWorldRules(stored, PIN);
+      expect(upgraded).toEqual({
+        ...before,
+        engine: CURRENT_ENGINE_VERSION,
+        revision: before.revision + 1,
+      });
+      expect(upgraded.ownMatches).toBe(stored.ownMatches);
+      expect(upgraded).not.toHaveProperty('owner');
+      expect(stored).toEqual(before);
+      expect(upgradeWorldRules(upgraded, PIN)).toBe(upgraded);
+    }
   });
 
   it('a current checkpoint moves only its catalog pin and revision on activation', () => {
@@ -66,7 +91,9 @@ describe('game version 0.8.0 (→SAVE-10, SAVE-26)', () => {
     }
     expect(envelopeEngine('{"schema":4,"engine":"0.7.0"}')).toBe('0.7.0');
     expect(earlierRulesMessage('0.7.0')).toBe(
-      '이 저장은 규칙 0.7.0 커리어입니다 — 게임 버전 0.8.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
+      '이 저장은 규칙 0.7.0 커리어입니다 — 게임 버전 ' +
+        CURRENT_ENGINE_VERSION +
+        ' 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
     );
   });
 
@@ -81,13 +108,18 @@ describe('game version 0.8.0 (→SAVE-10, SAVE-26)', () => {
       expect(() => upgradeWorldRules(career(legacy), PIN)).toThrow(SaveCompatibilityError);
     }
     expect(earlierRulesMessage('1.22.0')).toBe(
-      '이 저장은 규칙 1.22.0 커리어입니다 — 게임 버전 0.8.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
+      '이 저장은 규칙 1.22.0 커리어입니다 — 게임 버전 ' +
+        CURRENT_ENGINE_VERSION +
+        ' 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
     );
   });
 
   it('an unknown engine version is refused as from a newer game', () => {
     // Neither current nor a released earlier version, whatever its number.
+    const nextPatch = CURRENT_ENGINE_VERSION.split('.');
+    nextPatch[2] = String(Number(nextPatch[2]) + 1);
     for (const unknown of [
+      nextPatch.join('.'),
       '9.0.0',
       '0.9.0',
       '0.6.0',
@@ -104,6 +136,8 @@ describe('game version 0.8.0 (→SAVE-10, SAVE-26)', () => {
       expect(stored).toEqual(before);
     }
     expect(NEWER_GAME_MESSAGE).toContain('지원하지 않는 저장');
-    expect(NEWER_GAME_MESSAGE).toContain('게임 버전 0.8.0보다 새로운 게임');
+    expect(NEWER_GAME_MESSAGE).toContain(
+      '게임 버전 ' + CURRENT_ENGINE_VERSION + '보다 새로운 게임',
+    );
   });
 });

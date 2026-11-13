@@ -187,6 +187,7 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
 describe('owner and takeover (→SAVE-27)', () => {
   it('accepts and round-trips owner, loan and books', () => {
     const w = world();
+    w.engine = '0.8.0';
     withOwner(w, {
       tier: 'industrial',
       traits: ['businessman', 'fansFriend', 'politician'],
