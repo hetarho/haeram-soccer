@@ -89,8 +89,10 @@
 | T885 | work | codex/natural-football-261114 | 488d14e9ec73 | 2026-11-13T18:38Z |
 | T884 | work | codex/natural-football-261114 | 548dae09df9c | 2026-11-13T18:44Z |
 | T888 | work | codex/natural-football-261114 | 55ed6375239b | 2026-11-13T18:53Z |
+| T889 | work | codex/natural-football-261114 | 42ad99267a65 | 2026-11-13T19:09Z |
 
 ## log
+- 261113 T889 integrated
 - 261113 fix pb14 NPC move observation: a valid free signing is already registered at its destination when its known former affiliation is recorded. Preserve zero fee, unique arrival, source-history and paid-before-arrival checks. 56 related units and statics/i18n passed; full persisted-world integration remains deferred.
 - 261113 T888 integrated
 - 261113 T884 integrated
@@ -110,4 +112,3 @@
 - 261113 T873 T874 integrated
 - 261113 T878 done
 - 261113 Owner approved independent Codex review and permanent quota-aware provider fallback; AGENTS.md pushed main6fecb6de. Fresh code review resumed.
-- 261113 T877 done
