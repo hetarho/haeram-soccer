@@ -59,12 +59,11 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T913 | Read the specified raw XI strength in the historical division observer | ARCH LEAGUE WORLD | T901 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 32 | 31 | 1 | 0 | 1 | 0 | 2026-11-13T22:07:22.574Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 32 | 32 | 0 | 0 | 0 | 0 | 2026-11-13T22:08:37.348Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks

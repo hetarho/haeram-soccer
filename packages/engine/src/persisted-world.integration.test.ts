@@ -3,7 +3,7 @@ import { COUNTRIES } from '../../catalogs/src/index';
 import type { World } from '../../contracts/src/types';
 import { clubRegistration } from './registration';
 import { historyWorld } from './history';
-import { LINE_MINIMUM, NPC_SQUAD, rating } from './world';
+import { LINE_MINIMUM, NPC_SQUAD, clubStyle, xiRating } from './world';
 import { lineOf } from './player';
 import { advanceDays, advanceRound } from './season';
 import { NPC_WAGE_DECISIONS, npcWageBill, npcWageLimit } from './books';
@@ -20,6 +20,9 @@ function firstDay(w: World) {
   const live = new Set<string>();
   for (const c of w.clubs.filter((c) => !c.representative)) {
     const players = w.squads![c.id]!;
+    expect(c.strength, `${w.year}:${c.id}:strength`).toBe(
+      xiRating(players.slice(0, 11), clubStyle(c)),
+    );
     expect(players.length, `${w.year}:${c.id}`).toBeGreaterThanOrEqual(NPC_SQUAD.size);
     for (const line of Object.keys(LINE_MINIMUM) as (keyof typeof LINE_MINIMUM)[])
       expect(
@@ -42,7 +45,7 @@ function firstDay(w: World) {
   for (const cp of COUNTRIES) {
     const means = cp.groups.map((_, tier) => {
       const clubs = w.clubs.filter((c) => c.country === cp.code && c.tier === tier);
-      return clubs.reduce((n, c) => n + rating(w, c), 0) / clubs.length;
+      return clubs.reduce((n, c) => n + c.strength, 0) / clubs.length;
     });
     for (let tier = 1; tier < means.length; tier++)
       expect(means[tier]!, `${w.year}:${cp.code}:${tier}`).toBeLessThan(means[tier - 1]!);

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T22:07:22.574Z",
-  "sourceCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
+  "snapshotAt": "2026-11-13T22:08:37.348Z",
+  "sourceCommit": "932e835981455c300bf003af882606461326b36f",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -81,24 +81,14 @@
   },
   "summary": {
     "total": 32,
-    "completed": 31,
-    "remaining": 1,
+    "completed": 32,
+    "remaining": 0,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T913",
-      "title": "Read the specified raw XI strength in the historical division observer",
-      "dep": [
-        "T901"
-      ],
-      "lane": "raw-division-strength-observer",
-      "status": "reviewing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
@@ -2136,6 +2126,8 @@
       "submittedBase": "834271a276e67b2c216f18fcd6360f86731ba289",
       "submissionId": "7e80fc51-d4cf-4ebc-9078-6fe2e387157a",
       "submittedAt": "2026-11-13T22:03:24.516Z",
+      "integratedCommit": "932e835981455c300bf003af882606461326b36f",
+      "integratedAt": "2026-11-13T22:07:56.024Z",
       "risk": null,
       "review": {
         "id": "8bce8a76-2754-4cb5-ae9f-0ee3f826626d",
@@ -2209,6 +2201,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T22:03:06.331Z",
           "finishedAt": "2026-11-13T22:03:24.322Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T22:07:22.758Z",
+          "finishedAt": "2026-11-13T22:07:55.640Z"
         }
       ]
     },
@@ -2289,7 +2288,7 @@
       "contributors": [
         "nf14-codex-raw-strength-observer"
       ],
-      "status": "reviewing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T22:03:04.047Z",
       "startCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
@@ -2301,11 +2300,15 @@
       "review": {
         "id": "a82026a2-7dbe-464d-bda1-247823535acd",
         "owner": "nf14-codex-independent-raw-strength",
-        "status": "reviewing",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T913 de7d3fd413aefe13bd730b31dc7b96cea0890bb2 is a correct test-observer scalar repair, not a long-model fix. LEAGUE-10 defines pre-cohesion/pre-fatigue selected-XI strength; new equality checks every persisted club against canonical xiRating(first11,clubStyle), then division means use that verified stored value. Independent in-memory reversal of only the3approved observer edits reproduces every original file byte exactly, preserving every country/tier strict less-than, first-day boundary,1930–1970daily workload and all other identity/finance/movement/year/assertion/timeout logic. Proof /tmp/nf14-t913-review-proof.json. Independently frozen-offline installed and ran existing12tiny npc-careers units:12passed1.19s, /tmp/nf14-t913-review-unit.log. Existing different-seed cohesion-inversion witness establishes metric distinction only; it is not the actual failed-seed gate. Root actual failed-seed observation still has1946rawtier2mean79.375>tier1mean74.6667, so original strict historical model failure remains unresolved and must not be marked green. No production/policy/golden/threshold/tier/timer change or P1/P2 in this scoped measurement correction; full historical/final gate remains coordinator-owned, not rerun by reviewer.",
+        "findings": [],
         "commit": "de7d3fd413aefe13bd730b31dc7b96cea0890bb2",
         "baseCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
         "submissionId": "38e3a141-aace-4a4c-978b-e59323f6700a",
-        "createdAt": "2026-11-13T22:07:19.528Z"
+        "createdAt": "2026-11-13T22:07:19.528Z",
+        "finishedAt": "2026-11-13T22:08:21.984Z"
       },
       "steps": [
         {
@@ -10896,6 +10899,87 @@
         "T906",
         "T910"
       ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 384,
+      "at": "2026-11-13T22:07:55.775Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2ac44d36-027a-48e8-8dee-3a3a92ed741a",
+      "taskId": "T910",
+      "tasks": [
+        "T906",
+        "T910"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T22:07:22.758Z",
+            "finishedAt": "2026-11-13T22:07:55.640Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 385,
+      "at": "2026-11-13T22:07:56.024Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2ac44d36-027a-48e8-8dee-3a3a92ed741a",
+      "taskId": "T910",
+      "tasks": [
+        "T906",
+        "T910"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "932e835981455c300bf003af882606461326b36f",
+        "integratedAt": "2026-11-13T22:07:56.024Z"
+      }
+    },
+    {
+      "sequence": 386,
+      "at": "2026-11-13T22:08:21.984Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+      "taskId": "T913",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "a82026a2-7dbe-464d-bda1-247823535acd",
+          "owner": "nf14-codex-independent-raw-strength",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T913 de7d3fd413aefe13bd730b31dc7b96cea0890bb2 is a correct test-observer scalar repair, not a long-model fix. LEAGUE-10 defines pre-cohesion/pre-fatigue selected-XI strength; new equality checks every persisted club against canonical xiRating(first11,clubStyle), then division means use that verified stored value. Independent in-memory reversal of only the3approved observer edits reproduces every original file byte exactly, preserving every country/tier strict less-than, first-day boundary,1930–1970daily workload and all other identity/finance/movement/year/assertion/timeout logic. Proof /tmp/nf14-t913-review-proof.json. Independently frozen-offline installed and ran existing12tiny npc-careers units:12passed1.19s, /tmp/nf14-t913-review-unit.log. Existing different-seed cohesion-inversion witness establishes metric distinction only; it is not the actual failed-seed gate. Root actual failed-seed observation still has1946rawtier2mean79.375>tier1mean74.6667, so original strict historical model failure remains unresolved and must not be marked green. No production/policy/golden/threshold/tier/timer change or P1/P2 in this scoped measurement correction; full historical/final gate remains coordinator-owned, not rerun by reviewer.",
+          "findings": [],
+          "commit": "de7d3fd413aefe13bd730b31dc7b96cea0890bb2",
+          "baseCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
+          "submissionId": "38e3a141-aace-4a4c-978b-e59323f6700a",
+          "createdAt": "2026-11-13T22:07:19.528Z",
+          "finishedAt": "2026-11-13T22:08:21.984Z"
+        }
+      }
+    },
+    {
+      "sequence": 387,
+      "at": "2026-11-13T22:08:34.884Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+      "taskId": "T913",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
