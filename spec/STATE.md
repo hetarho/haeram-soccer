@@ -83,6 +83,8 @@
 | T902 | Prepare a supported ten-season codec career through owner actions | ARCH SAVE OWNER | T885 | todo |
 | T903 | Establish an actual archive seek and bounded promise setup | ARCH MATCH CLUB | T887 T888 | todo |
 
+| T904 | Align checkpoint validation with explicit compatible patch releases | SAVE ARCH | T883 | todo |
+
 ## next
 - gusta-implement-task T873 T875 T884
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
