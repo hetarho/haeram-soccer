@@ -1,0 +1,236 @@
+{
+  "scope": "Explicitly authorized full main merge; local checks remain unit-only plus static checks. This is not a complete mixed-suite or capacity pass.",
+  "mergeCommit": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
+  "sourceBranch": "origin/work/persisted-world-860",
+  "sourceCommit": "c70cf228ee7363fbf46190938175585a7ab6c02c",
+  "targetBase": "bb383c33aad0347152d3212887ebda7dc5045f77",
+  "entireImplementationIncluded": true,
+  "storageCodeIncluded": true,
+  "storageCapacityBlocksThisMerge": false,
+  "checks": [
+    {
+      "name": "i18n",
+      "command": "pnpm run validate:i18n",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "cancelled": false,
+      "stale": false,
+      "ms": 2065,
+      "scope": {
+        "TIER": "batch",
+        "DIFF_BASE": "bb383c33",
+        "TASK": "",
+        "TASKS": ""
+      },
+      "commit": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
+      "tree": "98165901064fd8be5b52f1950cf6079ad3e64011",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-430cb27e-8a94-4a00-9e8e-f119305583ca.log",
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 validate:i18n /Users/ihaelam/project/haeram-soccer",
+        "> tsx scripts/validate-i18n.ts",
+        "",
+        "{\"locales\":12,\"messages\":6833,\"references\":8370}"
+      ],
+      "failedTests": [],
+      "failureSetComplete": false,
+      "cleanup": {
+        "scope": "process-group",
+        "signalled": false,
+        "escalated": false
+      },
+      "gate": {
+        "key": "tag:ml14",
+        "attempts": 1,
+        "failures": 0,
+        "cap": 3,
+        "left": 3
+      },
+      "logSha256": "d470678ef9e4e85d3f1dccabc824c4b63bab1a8e1706390f0150815653ac1ced"
+    },
+    {
+      "name": "typecheck",
+      "command": "pnpm run typecheck",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "cancelled": false,
+      "stale": false,
+      "ms": 4559,
+      "scope": {
+        "TIER": "batch",
+        "DIFF_BASE": "bb383c33",
+        "TASK": "",
+        "TASKS": ""
+      },
+      "commit": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
+      "tree": "98165901064fd8be5b52f1950cf6079ad3e64011",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-7c502f87-aa89-4021-97eb-5db2818d8a88.log",
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 typecheck /Users/ihaelam/project/haeram-soccer",
+        "> tsc --noEmit --incremental --tsBuildInfoFile .tmp/tsc/tsbuildinfo"
+      ],
+      "failedTests": [],
+      "failureSetComplete": false,
+      "cleanup": {
+        "scope": "process-group",
+        "signalled": false,
+        "escalated": false
+      },
+      "gate": {
+        "key": "tag:ml14",
+        "attempts": 1,
+        "failures": 0,
+        "cap": 3,
+        "left": 3
+      },
+      "logSha256": "ba5461c7af0fe6e193335eeea5602190897bc29e3f69f52f79aa105935c364c3"
+    },
+    {
+      "name": "unit",
+      "command": "pnpm exec vitest run --project unit --maxWorkers 2 scripts/lib/persisted-world-facts.test.ts scripts/perf/stats.test.ts --reporter dot",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "cancelled": false,
+      "stale": false,
+      "ms": 957,
+      "scope": {
+        "TIER": "batch",
+        "DIFF_BASE": "bb383c33",
+        "TASK": "",
+        "TASKS": ""
+      },
+      "commit": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
+      "tree": "98165901064fd8be5b52f1950cf6079ad3e64011",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-41594e93-5b2e-40b7-a54e-68fd05a2903a.log",
+      "tail": [
+        " RUN  v5.0.3 /Users/ihaelam/project/haeram-soccer",
+        "",
+        "\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7\u00b7",
+        "",
+        " Test Files  2 passed (2)",
+        "      Tests  9 passed (9)",
+        "   Start at  01:31:59",
+        "   Duration  180ms (tests 54%, transform 31%, import 11%, worker 4%)"
+      ],
+      "failedTests": [],
+      "failureSetComplete": false,
+      "cleanup": {
+        "scope": "process-group",
+        "signalled": false,
+        "escalated": false
+      },
+      "gate": {
+        "key": "tag:ml14",
+        "attempts": 1,
+        "failures": 0,
+        "cap": 3,
+        "left": 3
+      },
+      "logSha256": "f593013649b92711725172ea6d52d5a120dda053c6dd09d672e3efec37f188b4"
+    },
+    {
+      "name": "lint",
+      "command": "pnpm run lint",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "cancelled": false,
+      "stale": false,
+      "ms": 9526,
+      "scope": {
+        "TIER": "batch",
+        "DIFF_BASE": "bb383c33",
+        "TASK": "",
+        "TASKS": ""
+      },
+      "commit": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
+      "tree": "98165901064fd8be5b52f1950cf6079ad3e64011",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-de962596-b795-407f-bc76-a60affbb9350.log",
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 lint /Users/ihaelam/project/haeram-soccer",
+        "> eslint apps packages scripts tests --no-warn-ignored"
+      ],
+      "failedTests": [],
+      "failureSetComplete": false,
+      "cleanup": {
+        "scope": "process-group",
+        "signalled": false,
+        "escalated": false
+      },
+      "gate": {
+        "key": "tag:ml14",
+        "attempts": 1,
+        "failures": 0,
+        "cap": 3,
+        "left": 3
+      },
+      "logSha256": "9a2685cda520efe0a8c5905b83aa1d649a9a5aea9eb6bb17d66a52ea50bca8da"
+    },
+    {
+      "name": "format",
+      "command": "pnpm run format:check",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "cancelled": false,
+      "stale": false,
+      "ms": 6364,
+      "scope": {
+        "TIER": "batch",
+        "DIFF_BASE": "bb383c33",
+        "TASK": "",
+        "TASKS": ""
+      },
+      "commit": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
+      "tree": "98165901064fd8be5b52f1950cf6079ad3e64011",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-c9f72962-c9c5-4036-ab18-c86fffbf066b.log",
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 format:check /Users/ihaelam/project/haeram-soccer",
+        "> prettier --check --cache --cache-strategy content --cache-location .tmp/prettier-cache apps packages scripts tests *.json *.ts *.mjs .github",
+        "",
+        "Checking formatting...",
+        "All matched files use Prettier code style!"
+      ],
+      "failedTests": [],
+      "failureSetComplete": false,
+      "cleanup": {
+        "scope": "process-group",
+        "signalled": false,
+        "escalated": false
+      },
+      "gate": {
+        "key": "tag:ml14",
+        "attempts": 1,
+        "failures": 0,
+        "cap": 3,
+        "left": 3
+      },
+      "logSha256": "119b5c7b0ceabfdcb3cd0c6f7fd0a8c64dd97d46b86f1206516667630a8ab7ff"
+    }
+  ],
+  "notRunLocally": [
+    "full-unit-suite",
+    "integration",
+    "contract",
+    "browser",
+    "build",
+    "verify:batch",
+    "capacity-benchmark"
+  ]
+}
