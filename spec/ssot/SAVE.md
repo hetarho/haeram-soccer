@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r68 | Define the browser-demo rules for browser persistence and protocol.
+> r69 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -97,6 +97,8 @@
 - SAVE-26 [o] The takeover start (→OWNER, →WORLD-13) begins new careers at an incompatible rules 5.0.0 boundary; earlier-rule careers are never converted, unsupported slots follow →!SAVE-11 without conversion or automatic reset and their export files stay. ← a career founded in an amateur league has no owner fortune, traits, books or pre-takeover past to convert into
 - SAVE-27 [o] A career saves the owner's tier, traits, fortune, stake, dividend share, 팬 민심 and both crisis counts, the FFP window's injections, the takeover's facts and loan, and every club's books (→ECON-36) within the storage budget (→SAVE-4); the seasons played before the takeover are kept as season archives (→HIST-2), never as match detail.
 
+  - New NPC closed books may retain operating-income components and owner capital (→!ECON-36/42). Both are optional in older checkpoints: preserve absence, validate present money as exact nonnegative integer strings, and preserve every amount through compact save/load. Support applies prospectively, never rewriting closed books.
+
 - SAVE-28 [o] Persist the fact-backed news journal and incremental read summaries (→!HIST-11/22) as optional, versioned save data.
   - supported worlds without them remain loadable; writer activation reconstructs missing summaries once from retained facts, while read-only inspection never upgrades disk state.
   - saved cursors and summary fields are bounded and validated.
@@ -111,6 +113,7 @@
 - SAVE-30 [o] A supported career saved with per-decision 재정 기조 or per-person wage caps opens with every other fact kept: those are dropped on load and every delegated decision runs at 적당히 (→ECON-33). A career whose direction still carries the retired club 재정 기조 row, which the game's UI never wrote, is refused as incompatible, failing safe (→ARCH-16, →SAVE-5); it is never converted. ← removing an owner control must not end a career, and no shim is kept for a row no UI wrote
 
 ## chg
+- r69 261114 SAVE-27✎ books without financing breakdown→optional lossless income components/owner capital, absent older facts preserved and prospective support
 - r68 261113 SAVE-17✎ per-decision 재정 기조 and wage caps→the owner's spending request per delegated decision (absent = 적당히) and the 단장's season plan (season, planned income, sales at the plan); SAVE-30+ per-decision 재정 기조 and wage caps dropped on load, a retired 재정 기조 direction row refused as incompatible
 - r67 261111 SAVE-23✎ the continuous-match and complete aggregate-result model→a match model; a settled match replays under its revision→keeps the revision as a label and replays from its record alone, earlier revisions' match code not kept
 - r66 261110 SAVE-28✎ every unsupported summary refused→recognized obsolete career-card cache omitted and reconstructed once; obsolete-content compatibility not required, current validation and unknown/future rejection preserved

@@ -1,5 +1,5 @@
 # WORLD Fictional world and catalogs
-> r13 | Define the browser-demo rules for fictional world and catalogs.
+> r14 | Define the browser-demo rules for fictional world and catalogs.
 
 ## decisions
 - WORLD-1 [o] Playable associations: ENG ESP GER ITA FRA POR NED BEL. Other UEFA associations appear as representative clubs only.
@@ -62,19 +62,20 @@
     - the summer window (→CLUB-17); on its last day a club still below →CLUB-5's minimum or without a goalkeeper takes generated youth.
   - the war gap's skipped summers (→WORLD-14) each age, develop and retire players and bring youth, with no window; a running contract keeps the seasons it had left.
 
-- WORLD-17 [o] A club nobody owns runs on its books and its stature; no scripted event raises or lowers it. ← clubs rise and fall from money, standing and chance, as the owner's club does; a rise rare in history still happens by luck
-  - money: its wages and fees come from its books (→ECON-36): its wage bill is its players' contracts, and it signs no player whose wage would take the bill above its last closed season's income less operating expenses (→ECON-30); before its first close the limit reads its opening books' season income.
-    - a club whose bill already stands above the limit lists its highest-paid players in the next window until it fits, keeping →CLUB-5's minimum and a goalkeeper. ← a limit on signings alone leaves a relegated club paying a top-flight squad on written-off debt for as long as its contracts run, outside →CLUB-48's books gate
-    - a stored wage follows its country's money: at a currency change it converts as the books' cash does (→ECON-6).
-  - stature (→LEAGUE-10) adds nothing to its strength: it raises its gate and commercial income (→ECON-8/9) and wins a contested player (→WORLD-16).
-  - its academy, training ground and coaching levels start at its division's and stature's level in 1930, rise when its books spend cash on the club (→ECON-36) and fall slowly when they do not.
-  - no project, takeover or crisis changes a club nobody owns; a rare rise comes from chance in its youth, its results and the market.
+- WORLD-17 [o] A club nobody owns runs on its books, finite private backing and stature; no scripted event raises or lowers its strength. ← funded operating losses need not force every high-wage club to sell
+  - money: new wage and fee commitments together must fit projected operating income less operating costs, existing cash less debt, net current-season transfer receipts and the finite support allowance (→!ECON-36/42). Before the first close use opening income. Read every live amount in the signing season's money (→!ECON-6).
+    - wages above turnover are allowed when those resources cover them. List highest-paid players only while commitments exceed that funded envelope, keeping squad/line minima and a goalkeeper (→!CLUB-5, →!WORLD-16); turnover alone never triggers sell-down.
+    - renewals, free-agent signings, NPC offers, fee signings and sell-down share one funding calculation. A fee and wage cannot spend the same headroom twice.
+  - stature (→LEAGUE-10) adds nothing directly to strength: it raises gate and commercial income (→ECON-8/9), sizes backing (→!ECON-42) and wins a contested player (→WORLD-16).
+  - academy, ground and coaching levels start at the division/stature level, rise through actual surplus investment (→!ECON-36) and decay slowly otherwise.
+  - no project, takeover or crisis changes a club nobody owns; a rare rise comes from youth, results, funded business and the market.
 
 ## flow
 
 - Player career: founding squad or youth intake → development and ageing → contracts and transfer windows → retirement → kept when a record links him (→HIST-23), or coaching → the same person in staff/manager candidacy → linked actual career facts.
 
 ## chg
+- r14 261114 WORLD-17✎ turnover-minus-cost wage cap and ratio-led sell-down→shared cash/debt, operating income, net fees and finite-backing envelope
 - r13 261113 WORLD-11✎ a move never changes identity, age or history→nor attributes, and a player is held in one place at a time (a departed own row is a record, not a second player); WORLD-16✎ youth by academy level→and never fewer than bring the squad to its standing size; growth cadence unstated→round growth every 4 league rounds and the close, annual development and ageing at the close; XI and bench by CLUB-6→chosen again on a change of players, a season's first day and each window's close; summer order unstated→1 April decisions, the close's fixed order, the window, last-day youth for a short squad; war gap→+a running contract keeps its seasons left; WORLD-17✎ wage limit stops signings only→a club above it lists its highest-paid players until it fits; +limit before the first close from the opening books; +stored wages convert at a currency change
 - r12 261113 WORLD-6✎ NPC squads reproducible each season from club/seed/cohorts→every playable-country player persisted from 1930, generated squads only for founding and representative clubs; WORLD-11✎ continuity only for coaching prospects and former own players, no persistent NPC lifetimes→every persisted player one continuing identity; WORLD-12✎ an NPC club's season 18 and founding squad share no surname→a generated squad's 18; WORLD-14✎ clubs rise or fall once through the war→each skipped summer ages, develops, retires and brings youth, no window; WORLD-15✎ a generated club's strength→its founding strength, then its squad's; WORLD-16+ persisted player lifecycle (youth, development, contracts, two windows, retirement); WORLD-17+ clubs nobody owns run on books and stature, no scripted rise or fall
 - r11 261110 WORLD-6✎ one shared age ladder (18 + (year + place) mod 18)→each club's own start and order; a sold place refilled at the club's strength and the departed's age, a new person each season→2–6 below at an age within 4, the same person to his cohort's end; every place drawn at the club's strength→players carry their own class and an age term, starters' mean at the club's strength, bench below, headroom narrowing with age, in production on its MATCH-2/23 CLUB-46/48 LEAGUE-10 gate
