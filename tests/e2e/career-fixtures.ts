@@ -151,6 +151,151 @@ function combinedCareer() {
   };
 }
 
+/** Exact combined-role sale scene: real full-price buyer, then ordinary settlement on a copy. */
+export async function combinedDepartureFixture(id: string) {
+  const { prepareSeason } = await import('../../packages/engine/src/season');
+  const { npcOffer } = await import('../../packages/engine/src/npc-market');
+  const { playerValue, suitorFor } = await import('../../packages/engine/src/transfers');
+  const { clubOf } = await import('../../packages/engine/src/player-state');
+  const { currency } = await import('../../packages/catalogs/src/index');
+  const { joinFreeAgents } = await import('../../packages/engine/src/free-agents');
+  const { retainPerson, openEmployment } = await import('../../packages/engine/src/person-careers');
+  const { lineOf, LINE_MINIMUM } = await import('../../packages/engine/src/player');
+  const { SQUAD_MINIMUM } = await import('../../packages/engine/src/squad-size');
+  const { clubRegistration } = await import('../../packages/engine/src/registration');
+  const { playingCoachDepartureCost } = await import('../../packages/engine/src/playing-coach');
+  const { canonical, validateWorld } = await import('../../packages/contracts/src/index');
+  const { message } = await import('../../packages/contracts/src/messages');
+  const fixture = await combinedCareerFixture();
+  const { w, player } = fixture;
+  w.year++;
+  prepareSeason(w);
+  const oldFee = '9999999',
+    quote = playerValue(w, player),
+    unit = currency(clubOf(w).country, w.year).units,
+    fullFee = BigInt(quote) < BigInt(unit) ? String(unit) : quote;
+  const buyerFor = (fee: string) => suitorFor(w, player, () => 0, fee);
+  const oldBuyer = buyerFor(oldFee);
+  let fee = oldBuyer ? oldFee : fullFee,
+    buyer = oldBuyer ?? buyerFor(fullFee);
+  const released: string[] = [];
+  if (!buyer) {
+    // The unchanged seed's smallest MF vacancy is two real departures, leaving20 and its GKs.
+    const club = w.clubs.find((c) => c.id === 'ENG:3:0:13')!;
+    const leaving = ['ENG:3:0:13:p:7:109', 'ENG:3:0:13:founding:1950:3'];
+    const squad = w.squads![club.id]!;
+    expect(
+      squad.filter((p) => lineOf(p.position) === lineOf(player.position)).length -
+        LINE_MINIMUM[lineOf(player.position)] +
+        1,
+    ).toBe(leaving.length);
+    expect(squad.length - leaving.length).toBeGreaterThanOrEqual(SQUAD_MINIMUM);
+    for (const playerId of leaving) {
+      const actual = w.squads![club.id]!.find((p) => p.id === playerId)!;
+      expect(lineOf(actual.position)).toBe(lineOf(player.position));
+      const profile = structuredClone(actual);
+      retainPerson(w, actual, club.id);
+      openEmployment(w, actual.id, 'player', club.id);
+      expect(joinFreeAgents(w, actual, w.year)).toBe(true);
+      expect(w.freeAgents!.find((p) => p.id === actual.id)).toMatchObject({
+        id: profile.id,
+        born: profile.born,
+        attrs: profile.attrs,
+      });
+      released.push(actual.id);
+    }
+    expect(w.squads![club.id]!.some((p) => p.position === 'GK')).toBe(true);
+    const registered = clubRegistration(club, w.year, w.squads![club.id]!);
+    expect(registered.total).toBeLessThanOrEqual(registered.ceiling);
+    expect(registered.counted).toBeLessThanOrEqual(registered.allowed);
+    // Retain the original price if this genuine preparation makes it affordable after all.
+    const atOldFee = buyerFor(oldFee);
+    fee = atOldFee ? oldFee : fullFee;
+    buyer = atOldFee ?? buyerFor(fullFee);
+  }
+  expect(buyer).toBeDefined();
+  const offer = npcOffer(w, buyer!, player, clubOf(w), fee);
+  expect(offer).toBeDefined();
+  const bid = {
+    id,
+    direction: 'in' as const,
+    playerId: player.id,
+    club: buyer!.id,
+    fee,
+    year: w.year,
+    day: 0,
+    due: 5,
+    status: 'pending' as const,
+  };
+  w.bids = [bid];
+  validateWorld(w);
+  const unchanged = canonical(w),
+    trial = structuredClone(w),
+    at = careerDate(trial),
+    owed = playingCoachDepartureCost(w, player.id),
+    oldPerson = structuredClone(w.people![player.id]!),
+    oldMoves = structuredClone(w.playerRecords?.[player.id]?.moves ?? []),
+    eventAt = trial.events.length;
+  const oldJobs = oldPerson.employment.filter((job) => !job.to);
+  expect(oldJobs).toHaveLength(2);
+  operate(trial, { type: 'respond-bid', id: bid.id, accept: true });
+  const person = trial.people![player.id]!;
+  expect(trial.bids!.find((b) => b.id === bid.id)!.status).toBe('completed');
+  expect(trial.players.find((p) => p.id === player.id)!.status).toBe('sold');
+  expect(person).toMatchObject({
+    id: player.id,
+    name: oldPerson.name,
+    born: oldPerson.born,
+    club: buyer!.id,
+  });
+  expect(person.employment).toEqual([
+    ...oldPerson.employment.map((job) => (job.to ? job : { ...job, to: at })),
+    { role: 'player', club: buyer!.id, from: at },
+  ]);
+  expect(trial.squads![buyer!.id]!.filter((p) => p.id === player.id)).toHaveLength(1);
+  expect(trial.staff!.some((member) => member.person === player.id)).toBe(false);
+  expect(BigInt(trial.cash)).toBe(BigInt(w.cash) + BigInt(fee) - BigInt(owed));
+  expect(trial.playerRecords![player.id]!.moves).toEqual([
+    ...oldMoves,
+    { ...at, from: w.playerClub, to: buyer!.id, fee },
+  ]);
+  const severance = trial.events.slice(eventAt).filter((event) => event.kind === 'staff-release');
+  expect(severance).toHaveLength(1);
+  expect(severance[0]!.amount).toBe(owed);
+  expect(playingCoachDepartureCost(trial, player.id)).toBe('0');
+  validateWorld(trial);
+  const completed = canonical(trial);
+  expect(() => operate(trial, { type: 'respond-bid', id: bid.id, accept: true })).toThrow(
+    message('copy.transfers.c5ab3adae5'),
+  );
+  expect(canonical(trial)).toBe(completed);
+  expect(canonical(w)).toBe(unchanged);
+  console.info(
+    JSON.stringify({
+      kind: 'combined-departure-scene',
+      id,
+      seed: w.seed,
+      year: w.year,
+      currency: w.currency,
+      unit,
+      oldFee,
+      oldBuyer: oldBuyer?.id ?? null,
+      quote,
+      fee,
+      buyer: buyer!.id,
+      wage: offer!.wage,
+      released,
+      compensation: owed,
+      settledCash: trial.cash,
+      jobs: person.employment,
+      move: trial.playerRecords![player.id]!.moves.at(-1),
+      originalUnchanged: true,
+      replayUnchanged: true,
+    }),
+  );
+  return { ...fixture, bid, compensation: owed };
+}
+
 /**
  * The accepted agreement two seasons and 45 rounds on, real lifecycle code throughout, as the
  * playing retirement reaches its season close. The player and the proposal are the agreement's

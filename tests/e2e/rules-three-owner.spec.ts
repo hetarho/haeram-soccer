@@ -80,24 +80,10 @@ test('rules three retains a joint career and promise through handover and portab
 test('the market discloses combined departure compensation before its approval', async ({
   page,
 }) => {
-  const { prepareSeason } = await import('../../packages/engine/src/season');
-  const { playingCoachDepartureCost } = await import('../../packages/engine/src/playing-coach');
-  const { w, player } = await combinedCareerFixture();
-  w.year++;
-  prepareSeason(w);
-  const bid = {
-    id: 'synthetic-market-combined-sale',
-    direction: 'in' as const,
-    playerId: player.id,
-    club: w.clubs.find((c) => c.id !== w.playerClub)!.id,
-    fee: '9999999',
-    year: w.year,
-    day: 0,
-    due: 5,
-    status: 'pending' as const,
-  };
-  w.bids = [bid];
-  const compensation = playingCoachDepartureCost(w, player.id);
+  const { combinedDepartureFixture } = await import('./career-fixtures');
+  const { w, player, bid, compensation } = await combinedDepartureFixture(
+    'synthetic-market-combined-sale',
+  );
   await page.setViewportSize({ width: 390, height: 844 });
   await importResponsibilityCareer(page, w);
   await openPersonnel(page, 'market');

@@ -317,27 +317,16 @@ test('playing retirement retains the unexpired coach job at the real season clos
 test('a disclosed player departure ends both jobs and charges coach compensation once', async ({
   page,
 }) => {
-  const { combinedCareerFixture, exportedCareer } = await import('./career-fixtures');
+  const { combinedDepartureFixture, exportedCareer } = await import('./career-fixtures');
   const { importResponsibilityCareer } = await import('./responsibility-fixtures');
-  const { prepareSeason } = await import('../../packages/engine/src/season');
   const { pushInbox } = await import('../../packages/engine/src/inbox');
-  const { playingCoachDepartureCost } = await import('../../packages/engine/src/playing-coach');
-  const { w, player } = await combinedCareerFixture();
-  w.year++;
-  prepareSeason(w);
-  const club = w.clubs.find((c) => c.id !== w.playerClub)!.id;
-  const bid = {
-    id: 'synthetic-dual-departure',
-    direction: 'in' as const,
-    playerId: player.id,
-    club,
-    fee: '9999999',
-    year: w.year,
-    day: 0,
-    due: 5,
-    status: 'pending' as const,
-  };
-  w.bids = [bid];
+  const {
+    w,
+    player,
+    bid,
+    compensation: owed,
+  } = await combinedDepartureFixture('synthetic-dual-departure');
+  const club = bid.club;
   pushInbox(w, {
     kind: 'incoming-bid',
     title: 'Synthetic combined departure',
@@ -345,7 +334,6 @@ test('a disclosed player departure ends both jobs and charges coach compensation
     attention: true,
     ref: bid.id,
   });
-  const owed = playingCoachDepartureCost(w, player.id);
   await importResponsibilityCareer(page, w);
   await reviewInOffice(page, '선수·코치 계약 종료 검토');
   await expect(approvalRequest(page)).toContainText('코치 계약도 함께 종료');
