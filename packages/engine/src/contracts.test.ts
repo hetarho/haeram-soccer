@@ -1257,8 +1257,11 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     // A squad left short at the close is refilled with players who sign their own clauses.
     const close = professionalSeason();
     expect(twentyPlayerFixture(close)).toHaveLength(20);
-    const destination = close.clubs.find((c) => c.id !== close.playerClub && !c.representative)!;
-    for (const p of activePlayers(close).slice(0, 4)) movePerson(close, p, destination.id, true);
+    const destinations = close.clubs
+      .filter((c) => c.id !== close.playerClub && !c.representative)
+      .slice(1, 5);
+    for (const [index, p] of activePlayers(close).slice(0, 4).entries())
+      movePerson(close, p, destinations[index]!.id, true);
     expect(activePlayers(close)).toHaveLength(16);
     const kept = new Set(activePlayers(close).map((p) => p.id));
     closeSeason(close);
