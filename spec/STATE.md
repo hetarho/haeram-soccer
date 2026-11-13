@@ -19,6 +19,7 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261113 decided ECON-24 ECON-33 ECON-41: unspecified reserve steps and debt amount → cautious 50/40/30/20/10, balanced 40/30/20/10/5, bold 30/20/10/5/0 years by acted request; bankruptcy only below minus one year of fixed costs, no duration trigger; bold/freely keeps zero cash buffer (alt: one universal reserve | fixed nominal debt limit). The requested anchors hold, and costs scale across eras and currencies. fin3
 - 261113 decided ARCH-23 ARCH-30 MATCH-39 T858: scripted-match.spec still missed its 10 s CI watch-to-playing-pitch wait in all three WebKit attempts of CI run 43288257211 (Chromium and Firefox passed), the trace showing the canvas only 8.1 s after the watch click while the engine worker settled the match day (1.4 s in local Node) and the staging worker chunk loaded at +7.9 s; the 1280 goal cue missed its wall-clock wait as WebKit drew the pitch at about three frames a second, each frame advancing the clock at most `FRAME_STEP_LIMIT_MS` → CI waits follow playwright.config's rule that a CI wait never fails a journey for time: 30 s for the pitch to play and for its first running minute, three times the goal cue's nominal wait, the local 3 s/9 s budgets unchanged (alt: 10 s kept and the WebKit settlement made faster, a product speed-up outside a CI fix with no browser profile behind it | coalesce the staging worker's publications, which acts only after the 8 s settlement); the scoreboard read caught inside a recolour is taken again n813
 - 261113 suggest MATCH-39 WEB-32 T858: every staging reply (two minutes) publishes a new playback, and `Pitch` recomputes `presentationSamples`, `deadBallBeats`, `goalInstants`, `figureActionWindows` and `gaitDistances` over all frames staged so far, so main-thread work grows with the square of the match (Node, scripted-journey's 103 frames of about 300 KB each: 0.34 s of recompute and 0.15 s of cloning over the 52 publications, against 0.03 s publishing at each doubling); a presentation task could coalesce publications in `PlaybackStaging` or make those reads incremental, WebKit on CI being where it shows n813
 - 261113 decided ARCH-23 ARCH-30 MATCH-39 T857: scripted-match.spec missed its 3 s watch-to-playing-pitch budget in every browser of CI run 43278670820 (shared runners stage the first minutes slower; the continuity journey on the same runners saw its first staged frame within 10 s), while T834 set 3 s on the batch's local Chromium → keep 3 s off CI and allow 10 s on CI (`PLAYING_BUDGET_MS`), as playwright.config already scales its expect timeout for CI (alt: keep 3 s everywhere, failing every CI run on runner speed | drop the latency check, losing the staged-ahead guard); the other failures were journeys missing the shared `STAGING_TIMEOUT_MS` at the final whistle, the continuity journey recording the — : — preparing board, and cold-cache world builds past their case timeouts n813
@@ -944,7 +945,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 40 | 40 | - | 2 |
-| WEB | 217 | 217 | - | 0 |
+| WEB | 218 | 218 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
@@ -952,7 +953,7 @@
 | MATCH | 62 | 62 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
-| ECON | 55 | 55 | - | 0 |
+| ECON | 56 | 56 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 25 | 25 | - | 0 |
 | SAVE | 68 | 68 | - | 0 |
@@ -981,12 +982,15 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | todo |
 
 ## next
 - main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261113 gusta-create-task ECON WEB: T859 consumes ECON@56 WEB@218 fin3
+- 261113 gusta-update-ssot ECON WEB start: reserve-funded delegated investment and amount-based bankruptcy fin3
 - 261112 T858 done
 - 261112 T857 done
 - 261112 T856 done
