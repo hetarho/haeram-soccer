@@ -1,0 +1,35 @@
+{
+  "base": "d28b04fd47bdaf918541b08756704beb8317f379",
+  "candidateHead": "263cfb5a109a8737c0ff2bfc9cd02411fa950d60",
+  "runtimeSha256": "2b2e7355660566aac80fdbc3bcf5eb8a5fd598ee90c8a2773387ac47df1470b2",
+  "runtimeDiffSha256": "781d77f110707bff8fc9d3ac544a3f0bc8668caecea9b294401cedac9efaadf6",
+  "runtimeDirty": true,
+  "startedAt": "2026-11-13T19:16:00.000Z",
+  "exitAt": "2026-11-13T20:01:00.000Z",
+  "measuredAt": "2026-11-13T19:23:48.214Z",
+  "measurementMs": 366222,
+  "closedAt": "2026-11-13T19:30:28.294682+00:00",
+  "verdict": "adopted",
+  "qualification": {
+    "processes": 8,
+    "pairs": 16,
+    "sameHash": true,
+    "hash": "029e70f627d44c85",
+    "cpuRatio": 0.6859,
+    "cpu95": [
+      0.6677,
+      0.7023
+    ],
+    "wallRatio": 0.6853,
+    "wall95": [
+      0.6619,
+      0.7019
+    ]
+  },
+  "artifacts": {
+    "t899-history-final.json": "2a7056281ce383b2e201a8463aa0fe5d38a86d26fff8e39c6baa80e3a88db13c",
+    "t899-runtime.patch": "781d77f110707bff8fc9d3ac544a3f0bc8668caecea9b294401cedac9efaadf6",
+    "t899-task-receipt.json": "870c0c50458a0f33dc41610d2c47ae483bcc3a5d224837f02c2dbcf8f7feb6a0",
+    "t899-benchmark-receipt.json": "d10345276c2e0f9b3f99a366252c0d8f6547b030fdb4355e4a85224be01fe87c"
+  }
+}

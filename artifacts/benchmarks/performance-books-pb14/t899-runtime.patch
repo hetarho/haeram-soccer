@@ -1,0 +1,160 @@
+diff --git a/packages/engine/src/npc-market.ts b/packages/engine/src/npc-market.ts
+index c8b5d19b..d7acff89 100644
+--- a/packages/engine/src/npc-market.ts
++++ b/packages/engine/src/npc-market.ts
+@@ -52,7 +52,24 @@ type ClubFacts = {
+   limit: bigint | undefined;
+   bill: bigint;
+ };
+-type Settlement = { clubs: Map<string, ClubFacts>; returns: Map<string, number> };
++type Settlement = {
++  clubs: Map<string, ClubFacts>;
++  returns: Map<string, number>;
++  ratings: Map<Player, Map<Slot | undefined, number>>;
++};
++
++/** A missing slot means main-position OVR. No ratings outlive this atomic settlement. */
++function rating(p: Player, settlement?: Settlement, slot?: Slot) {
++  let scores = settlement?.ratings.get(p);
++  const cached = scores?.get(slot);
++  if (cached !== undefined) return cached;
++  const value = slot ? slotOvr(p, slot) : mainOvr(p);
++  if (settlement) {
++    if (!scores) settlement.ratings.set(p, (scores = new Map()));
++    scores.set(slot, value);
++  }
++  return value;
++}
+ 
+ function clubFacts(w: World, club: Club, settlement?: Settlement): ClubFacts {
+   const cached = settlement?.clubs.get(club.id);
+@@ -92,7 +109,7 @@ function affordableLevel(w: World, c: Club, players: Player[]) {
+   return low;
+ }
+ 
+-function needs(w: World, c: Club): Need[] {
++function needs(w: World, c: Club, settlement?: Settlement): Need[] {
+   const players = w.squads?.[c.id] ?? [];
+   const result: Need[] = [];
+   for (const line of lines) {
+@@ -106,7 +123,7 @@ function needs(w: World, c: Club): Need[] {
+   }
+   const level = affordableLevel(w, c, players);
+   for (const slot of formationOf(clubStyle(c))) {
+-    const best = Math.max(0, ...players.map((p) => slotOvr(p, slot)));
++    const best = Math.max(0, ...players.map((p) => rating(p, settlement, slot)));
+     if (best <= level - NPC_MARKET.upgrade)
+       result.push({ line: lineOf(slot.position), slot, best, rank: 1 + best - level });
+   }
+@@ -114,9 +131,9 @@ function needs(w: World, c: Club): Need[] {
+   return result.sort((a, b) => Number(!!a.slot) - Number(!!b.slot) || a.rank - b.rank);
+ }
+ 
+-const fills = (p: Player, need: Need) =>
++const fills = (p: Player, need: Need, settlement?: Settlement) =>
+   lineOf(p.position) === need.line &&
+-  (!need.slot || slotOvr(p, need.slot) >= need.best + NPC_MARKET.upgrade);
++  (!need.slot || rating(p, settlement, need.slot) >= need.best + NPC_MARKET.upgrade);
+ 
+ /** One conservative departure gate, also used for the highest-paid sell-down. */
+ export function npcCanSell(w: World, c: Club, p: Player) {
+@@ -165,7 +182,7 @@ export function npcOffer(
+     !buyer.books ||
+     !w.squads?.[buyer.id] ||
+     buyer.id === seller.id ||
+-    !wanted.some((n) => fills(p, n)) ||
++    !wanted.some((n) => fills(p, n, settlement)) ||
+     !canRegister(w, buyer, p, loan, settlement)
+   )
+     return undefined;
+@@ -270,7 +287,7 @@ export function returnNpcLoans(w: World) {
+   }
+ }
+ 
+-function listings(w: World, clubs: Club[]) {
++function listings(w: World, clubs: Club[], settlement?: Settlement) {
+   const listed: Listing[] = [];
+   for (const c of clubs) {
+     const players = w.squads![c.id]!;
+@@ -280,7 +297,7 @@ function listings(w: World, clubs: Club[]) {
+     const ranked = [...players].sort((a, b) =>
+       sellDown
+         ? compareMoney(BigInt(a.wage), BigInt(b.wage)) || compareIds(a.id, b.id)
+-        : mainOvr(a) - mainOvr(b) || compareIds(a.id, b.id),
++        : rating(a, settlement) - rating(b, settlement) || compareIds(a.id, b.id),
+     );
+     const remaining = [...players];
+     let surplus = Math.max(0, players.length - NPC_SQUAD.size);
+@@ -295,7 +312,9 @@ function listings(w: World, clubs: Club[]) {
+         continue;
+       const blocked =
+         players.filter(
+-          (q) => lineOf(q.position) === line && mainOvr(q) >= mainOvr(p) + NPC_MARKET.blocked,
++          (q) =>
++            lineOf(q.position) === line &&
++            rating(q, settlement) >= rating(p, settlement) + NPC_MARKET.blocked,
+         ).length >= LINE_MINIMUM[line];
+       if (sellDown ? bill <= limit! : !(surplus > 0 || blocked || p.until <= w.year)) continue;
+       listed.push({
+@@ -323,7 +342,7 @@ export function npcMarket(w: World) {
+     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
+   );
+   const counts = new Map<string, number>();
+-  const settlement: Settlement = { clubs: new Map(), returns: new Map() };
++  const settlement: Settlement = { clubs: new Map(), returns: new Map(), ratings: new Map() };
+   for (const record of Object.values(w.playerRecords ?? {})) {
+     if (record.loan)
+       settlement.returns.set(record.loan.club, (settlement.returns.get(record.loan.club) ?? 0) + 1);
+@@ -331,7 +350,7 @@ export function npcMarket(w: World) {
+       if (move.year === w.year && move.day >= days[0]! && move.day <= days.at(-1)!)
+         for (const id of [move.from, move.to]) counts.set(id, (counts.get(id) ?? 0) + 1);
+   }
+-  const listed = listings(w, clubs);
++  const listed = listings(w, clubs, settlement);
+   const tie = new Map(
+     listed.map(({ player }) => [
+       player.id,
+@@ -344,7 +363,7 @@ export function npcMarket(w: World) {
+   const buyers = [...clubs].sort(
+     (a, b) => stature(w.seed, b.id) - stature(w.seed, a.id) || compareIds(a.id, b.id),
+   );
+-  const wanted = new Map(clubs.map((c) => [c.id, needs(w, c)]));
++  const wanted = new Map(clubs.map((c) => [c.id, needs(w, c, settlement)]));
+   const moved = new Set<string>();
+   for (const buyer of buyers) {
+     while ((counts.get(buyer.id) ?? 0) < NPC_MARKET.moves) {
+@@ -355,13 +374,11 @@ export function npcMarket(w: World) {
+             l.club !== buyer &&
+             !moved.has(l.player.id) &&
+             npcCanSell(w, l.club, l.player) &&
+-            fills(l.player, need),
++            fills(l.player, need, settlement),
+         );
+         pool.sort(
+           (a, b) =>
+-            (need.slot
+-              ? slotOvr(b.player, need.slot) - slotOvr(a.player, need.slot)
+-              : mainOvr(b.player) - mainOvr(a.player)) ||
++            rating(b.player, settlement, need.slot) - rating(a.player, settlement, need.slot) ||
+             tie.get(a.player.id)! - tie.get(b.player.id)! ||
+             compareIds(a.player.id, b.player.id),
+         );
+@@ -421,6 +438,7 @@ export function npcMarket(w: World) {
+           );
+           const winner = offers[0]!;
+           settleMove(w, listing, winner, fee);
++          settlement.ratings.delete(listing.player);
+           settlement.clubs.delete(listing.club.id);
+           settlement.clubs.delete(winner.club.id);
+           if (listing.loan)
+@@ -431,8 +449,8 @@ export function npcMarket(w: World) {
+           moved.add(listing.player.id);
+           for (const id of [listing.club.id, winner.club.id])
+             counts.set(id, (counts.get(id) ?? 0) + 1);
+-          wanted.set(listing.club.id, needs(w, listing.club));
+-          wanted.set(winner.club.id, needs(w, winner.club));
++          wanted.set(listing.club.id, needs(w, listing.club, settlement));
++          wanted.set(winner.club.id, needs(w, winner.club, settlement));
+           completed = true;
+           break;
+         }
