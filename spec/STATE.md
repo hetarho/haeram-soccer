@@ -58,7 +58,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T883 | Preserve the current game version across publication | SAVE ARCH | - | todo |
 | T884 | Retain live verification stages and full failure logs | ARCH | T883 | todo |
 | T885 | Prepare coherent persisted-player integration fixtures | ARCH CLUB WORLD | - | todo |
 | T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
