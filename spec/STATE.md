@@ -82,7 +82,6 @@
 | T900 | Reuse identical placed weights within one attribution | ARCH MATCH WORLD | T885 | todo |
 | T902 | Prepare a supported ten-season codec career through owner actions | ARCH SAVE OWNER | T885 | todo |
 | T903 | Establish an actual archive seek and bounded promise setup | ARCH MATCH CLUB | T887 T888 | todo |
-| T904 | Align checkpoint validation with explicit compatible patch releases | SAVE ARCH | T883 | doing@261113.pr14 |
 
 ## next
 - gusta-implement-task T873 T875 T884
