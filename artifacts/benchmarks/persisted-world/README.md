@@ -105,3 +105,45 @@ The retained workload failed validation at year1953/round21 with duplicate playe
 At 11:05 UTC, the host checked only this worktree's exact measurement commands. Creation1990 still ran; the old fifth-world and residual trial commands had ended without final artifacts. Their last partials are 1990 and 1950 respectively, with no completed gate or manufactured exit receipt. One final fifth-core attempt began 11:06 UTC on c0768c7e, seed persisted-world-viability, until2010 without a 2025 extension, under the shared heavy lock and a 3200000 ms timeout ending before12:00 UTC. Its output is `publication-seed-5-core.json`; it preserves the original task clock and is not a new exploration budget. The earlier interrupted partial is retained under its original name. No simultaneous duplicate world is launched.
 
 Distribution medians use the upper middle observation for even populations. The initial four complete observers retain outfield peak cohorts; the fifth observer separately reports outfield, goalkeeper and all-player populations. A keeper/all-player result is never inferred from the outfield-only files. Full per-run source and computation fingerprints remain in the summary.
+
+## Partial named-config comparison, same seed at 1950
+
+These are actual annual 1950 observations on persisted-world-viability, not decade averages or completed fits. The trials jointly change several controls; no isolated causal effect is inferred. Complete configurations and source fingerprints, where available, are retained in named-config-1950.json. The inherited stable partial lacks a full config snapshot and carries its original override file instead. No trial completed champions, books, storage or throughput gates.
+
+| Country | Tier | Production delta | Lower facilities/potential | Lower intake/potential | Last trial XI span |
+|---|---:|---:|---:|---:|
+| ENG | 0 | +10.65 | +1.25 | -2.65 | 27.90 |
+| ENG | 1 | +18.92 | +6.46 | +2.08 | 37.43 |
+| ENG | 2 | +28.58 | +13.58 | +4.71 | 38.29 |
+| ENG | 3 | +36.25 | +18.71 | +7.33 | 37.04 |
+| ESP | 0 | +8.20 | +0.05 | -2.90 | 25.22 |
+| ESP | 1 | +18.45 | +5.50 | -3.18 | 28.24 |
+| GER | 0 | +9.06 | +0.61 | -2.83 | 33.20 |
+| GER | 1 | +16.72 | +6.00 | +1.72 | 32.97 |
+| GER | 2 | +24.35 | +9.60 | -0.65 | 31.31 |
+| ITA | 0 | +8.50 | -0.85 | -1.95 | 27.05 |
+| ITA | 1 | +16.80 | +6.90 | +1.50 | 34.47 |
+| ITA | 2 | +23.95 | +11.12 | -0.13 | 33.39 |
+| FRA | 0 | +6.33 | -1.72 | -4.06 | 26.98 |
+| FRA | 1 | +18.22 | +7.89 | +0.17 | 35.66 |
+| FRA | 2 | +22.39 | +10.94 | +0.28 | 31.45 |
+| POR | 0 | +6.44 | -1.33 | -4.61 | 23.26 |
+| POR | 1 | +14.89 | +2.50 | -6.50 | 28.97 |
+| NED | 0 | +8.39 | -0.67 | -3.56 | 26.20 |
+| NED | 1 | +15.05 | +4.90 | -4.20 | 26.05 |
+| BEL | 0 | +6.44 | -1.22 | -3.83 | 23.97 |
+| BEL | 1 | +15.00 | +3.40 | -6.33 | 29.63 |
+
+Outside ±5 among the 21 observed country/division cells: production 21, lower-facility/potential 10, lower-intake/potential 3. Narrower level residuals alone do not justify a production change: the last trial's ENG mean XI spans are 27.90/37.43/38.29/37.04 across its four divisions, against the rough 8–12 estimate. Current production controls and flat founding remain unchanged.
+
+
+## Completed creation measurement at 11:21 UTC
+
+`final-creation.json` completed all four alternating pairs, two processes at a time, one repetition and no warm-up. The workload creates the full ownerless world through 1990. CPU ratio versus pre-T861 is **33.1119** (95% interval **31.1349–34.9483**); wall ratio **31.2642** (28.8730–32.9458). Candidate mean main-thread CPU is 2865063.89 ms and wall 2920695.47 ms. The machine is the recorded twelve-logical-CPU Xeon Silver 4214 with Node 24.22.1; load observations remain in the raw output. This is a numerical workload result, not the unrun browser 2000 generation-budget trace or a passing performance target.
+
+Both bundles were built once before any pair. Their exact compressed runnable files are retained; `final-creation-evidence.json` verifies the full SHA256 hashes against the raw output's bundle prefixes 395630af332d7b0f/653a6f9a8a650405. Original production package tree is 0212c08e4b21729615c906a8bf024cd4576f05ab, before T872. The interrupted controller left no recovered CLI receipt; four complete raw pairs prove measurement completion without inventing a wrapper exit result. This measurement is not relabeled as repaired-source performance.
+
+
+## Preserved diagnostic states
+
+The exact ten-season takeover world and five-season records life are also archived as `squads-10.world.json.gz` and `records-20-diagnostic.world.json.gz`. These are gzip-compressed complete diagnostic World JSON snapshots, with original JSON and gzip hashes in `diagnostic-worlds.json`; no field was pruned or rewritten. They preserve the original pre-T872 state for analysis without repeating the simulation. They are separate from the production portable save format and do not constitute a successful load or century measurement. The records state retains the actual year1955 fans ending.

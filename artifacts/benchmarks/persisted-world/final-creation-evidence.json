@@ -1,0 +1,35 @@
+{
+  "rawOutputSha256": "1da61ad0497b61d87563dc5655f9a128710364c058cd53bc4017afa308bf8d11",
+  "completedPairs": 4,
+  "requestedPairs": 4,
+  "rawMeasurementComplete": true,
+  "cliReceiptRecovered": false,
+  "interpretation": "Four frozen-bundle numerical pairs completed; ratio exceeds allowance. Original controller was interrupted, so this record does not invent a CLI exit receipt. Pre-T872 packages; not a post-repair capacity or performance pass.",
+  "bundlesBuiltOnceBeforePairs": true,
+  "bundles": [
+    {
+      "side": "base",
+      "file": "artifacts/benchmarks/persisted-world/final-creation-base-395630af332d7b0f.mjs.gz",
+      "uncompressedSha256": "395630af332d7b0fa956f987340a9b0346f9e293e98488c9cddb3cef2d6fcd8d",
+      "bytes": 8854381,
+      "gzipSha256": "954bbcff1a9c6f3e8d1160ded2d20b38e5aad2049a3a7216c2b86be0552732d8"
+    },
+    {
+      "side": "cand",
+      "file": "artifacts/benchmarks/persisted-world/final-creation-cand-653a6f9a8a650405.mjs.gz",
+      "uncompressedSha256": "653a6f9a8a650405c4e27062e3cbf88c09263c0662ad9120a401ec9bd44ba0c5",
+      "bytes": 8915109,
+      "gzipSha256": "1047eebe70f6e70fcb550c1e5fc8eec7a4340450625e845b765cd0f1be72e3f1"
+    }
+  ],
+  "log": {
+    "file": "artifacts/benchmarks/persisted-world/final-creation.log",
+    "sha256": "77c4d4994abe5e53858b112bda763a955341c36988971619ad121b9a87e909bd",
+    "originalLog": "check-ef6d2edc-899e-4968-828a-01630450e3fd.log"
+  },
+  "supersededPartial": {
+    "sha256": "0aa87f8984991a7df2261a208728835639d1825295d89deb87ceaa912e6b6690",
+    "everyRawPairRetainedInFinal": true,
+    "rawPairCount": 4
+  }
+}
