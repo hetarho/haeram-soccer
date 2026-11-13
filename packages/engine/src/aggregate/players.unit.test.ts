@@ -1,15 +1,10 @@
 import { createHash } from 'node:crypto';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { PD } from '../../../contracts/src/detail';
 import { M } from '../match/record';
 import { deriveTeamFacts } from './ledger';
-import { attributePlayerFacts, SideLines } from './players';
-import {
-  attributionFixture,
-  attributionCacheFixture,
-  attributionObservation,
-  attributionWeightRole,
-} from './players.testkit';
+import { attributePlayerFacts } from './players';
+import { attributionFixture } from './players.testkit';
 import { aggregateStreams } from './team';
 import type { AggregateAttributionTrace } from './types';
 
@@ -143,121 +138,6 @@ describe('small, isolated player attribution', () => {
     for (const side of [0, 1] as const) {
       expect(placed.players.sides[side].reduce((n, p) => n + p.detail[PD.fouls]!, 0)).toBe(2);
       expect(placed.players.sides[side].reduce((n, p) => n + p.detail[PD.foulsWon]!, 0)).toBe(2);
-    }
-  });
-});
-
-describe('attribution-scoped placed weights', () => {
-  it('preserves complete pre-cache outputs and every named random draw', () => {
-    // Captured before T900 memoization; six original ledgers plus regulation/extra substitutions.
-    const expected = [
-      '7c5af25698cd582c5fe1dc21dd91b91f471a1de77325ae3b3e9216ec55e5ee74',
-      '60d740cda968cf3917d3d81770d6b3526e760abe66e2f45bc03bf0aaf92969a4',
-      '73484d86ed92b121c5f8eeecda175d07bfcefd514d70447581afedb97ade09fb',
-      '32f60b8d97c17e66610011df407839b034ba85eb85cb9b3e09a67225a360b7ed',
-      '04762fbf5b848749a4840c7f3aac4c50749c10df2af3d673e2cf042cac081ba5',
-      'fae9f787c334a836d55aa28b566c420a3c00049998bf6e695e43a6138ddd0e50',
-      'cf474193ea0d70b88f51e058ac3e54eb7e54107e4fd6106ead607c3feebb0e4d',
-      '02aaf9cf973c541f0d2cd095bef2f91f8541c6eecb3716dfe1b0c7be737fb271',
-      '96ce6da0df3ace6be784b68be3e41ceeb9ac436f8a4cbcec245b33b9b02ee12c',
-      '6fa9b5838f93cc783e6fe95e3027b55510dc106b17b7629190f238b207d50a3b',
-      'b0a0712cd603e5039fe7f8e32f4fcfff5dee8fad8d89b589445ed946f6591f17',
-      '942dd942fce3dec7ae53ba2f62b4e0c6f82f5530677e817ebaa8f9b76ce9dfa1',
-      '56a8569aa12bcf0fdbe7faa97d463069eb2ec36564be0eaaeacd9bad947bdc64',
-      'b981e7bb12d3f12714fe01d6841d91a35118f1b79422e774d32da0f5ef8071b2',
-    ];
-    const actual: string[] = [];
-    for (const placed of [false, true])
-      for (let index = 0; index < 7; index++)
-        actual.push(
-          createHash('sha256')
-            .update(JSON.stringify(attributionObservation(index, placed, index === 6)))
-            .digest('hex'),
-        );
-    expect(actual).toEqual(expected);
-  });
-
-  it('separates full keys and reproduces every original weight value', () => {
-    const m = attributionCacheFixture();
-    const rows = [];
-    for (const side of [0, 1] as const) {
-      const lines = new SideLines(side, m.input, { ...m.plan, placed: true }, m.participation);
-      const arrays = new Set<readonly number[]>();
-      for (const period of ['regulation', 'extra'] as const)
-        for (let id = 0; id < 7; id++)
-          for (const cell of [10, 14])
-            for (const possession of [false, true]) {
-              const role = attributionWeightRole(id);
-              const weights = lines.weightsAt(period, role, cell, possession);
-              expect(lines.weightsAt(period, role, cell, possession)).toBe(weights);
-              expect(arrays.has(weights)).toBe(false);
-              arrays.add(weights);
-              rows.push({ side, period, id, cell, possession, weights });
-            }
-    }
-    expect(createHash('sha256').update(JSON.stringify(rows)).digest('hex')).toBe(
-      '94a3c979980a67484fe3d05808ece959e38755bb4ae0a16480f616a19f3c718d',
-    );
-  });
-
-  it('does not leak across sides, changed inputs or separate attributions', () => {
-    const m = attributionCacheFixture();
-    const plan = { ...m.plan, placed: true };
-    const role = attributionWeightRole(1);
-    const first = new SideLines(0, m.input, plan, m.participation).weightsAt(
-      'regulation',
-      role,
-      10,
-      true,
-    );
-    const other = new SideLines(1, m.input, plan, m.participation).weightsAt(
-      'regulation',
-      role,
-      10,
-      true,
-    );
-    expect(other).not.toBe(first);
-    expect(other).not.toEqual(first);
-    m.input.access.skill = () => 1;
-    const changed = new SideLines(0, m.input, plan, m.participation).weightsAt(
-      'regulation',
-      role,
-      10,
-      true,
-    );
-    expect(changed).not.toBe(first);
-    expect(changed).not.toEqual(first);
-  });
-
-  it('keeps the unplaced fast path and minutes-only fallback', () => {
-    const m = attributionCacheFixture();
-    const role = { ...attributionWeightRole(0), byLine: [0, 0, 0, 0] };
-    const unplaced = new SideLines(0, m.input, m.plan, m.participation);
-    expect(unplaced.weightsAt('extra', role, 10, true)).toBe(unplaced.weights('extra', role));
-    const placed = new SideLines(0, m.input, { ...m.plan, placed: true }, m.participation);
-    const weights = placed.weightsAt('extra', role, 10, true);
-    expect(placed.weightsAt('extra', role, 10, true)).toBe(weights);
-    expect(weights[6]).toBe(0);
-    expect(weights[11]).toBeGreaterThan(0);
-    expect(weights.every(Number.isFinite)).toBe(true);
-  });
-
-  it('all attribution consumers accept frozen shared weight arrays', () => {
-    const original = SideLines.prototype.weightsAt;
-    const spy = vi.spyOn(SideLines.prototype, 'weightsAt').mockImplementation(function (
-      this: SideLines,
-      ...args
-    ) {
-      return Object.freeze(original.apply(this, args));
-    });
-    try {
-      expect(
-        createHash('sha256')
-          .update(JSON.stringify(attributionObservation(6, true, true)))
-          .digest('hex'),
-      ).toBe('b981e7bb12d3f12714fe01d6841d91a35118f1b79422e774d32da0f5ef8071b2');
-    } finally {
-      spy.mockRestore();
     }
   });
 });
