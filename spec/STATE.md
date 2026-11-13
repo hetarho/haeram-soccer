@@ -39,6 +39,7 @@
 | id | st |
 |---|---|
 | natural-football-261114 | converted@261114 |
+| performance-books-261114 | converted@261114 |
 | game-realism-261110 | converted@261110 |
 | football-data-consistency-261109 | converted@261110 |
 | economy-transfers-261109 | converted@261109 |
@@ -70,6 +71,7 @@
 | T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
 | T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
 | T900 | Reuse identical placed weights within one attribution | ARCH MATCH WORLD | T885 | todo |
+| T899 | Trial settlement-local NPC market ratings | ARCH | T878 T880 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -78,3 +80,4 @@
 
 ## next
 - inspect work board for remaining tasks
+- T899 is the bounded pr14 rating-cache experiment under the original pb14 deadline; retain its actual exit verdict and final publication reserve.
