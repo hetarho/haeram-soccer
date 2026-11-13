@@ -92,6 +92,13 @@ export function* performance(state: StageState): Generator<void, void> {
     state.clockCap = periodEnds
       ? Math.max(state.clock, next.clock ?? state.clock)
       : (next?.clock ?? Infinity);
+    // A beat that carries the record's incidents (a card, a substitution) keeps the clock inside
+    // its own minute until they are staged: a long hold never shows the next minute first.
+    if (beat.original?.incidents?.length && beat.clock !== undefined)
+      state.clockCap = Math.min(
+        state.clockCap,
+        Math.max(state.clock, (Math.floor(beat.clock / 60) + 1) * 60 - 0.01),
+      );
     const before = state.tickCount;
     const ctx = { beat, next };
     const beforeAction = beat.kind === 'stoppage' || RESTART_KINDS.includes(beat.kind);
