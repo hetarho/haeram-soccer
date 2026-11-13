@@ -58,22 +58,6 @@
 - 261105 suggest CLUB-21 ECON-22 T702: gusta-update-ssot to reword 머니볼/트레이딩 머신/글로벌 스카우팅's bonuses and 긴축 재정/스타 대우's "candidate ability" as the code now reads them (a search band shift, no candidate potential). rs01
 - 261113 decided SAVE-4 SAVE-13 ARCH-30 T866: Owner explicitly requested the entire persisted-world branch be merged into main, including storage code, and said storage capacity must not block that merge. Preserve all source, facts, limits and measured failures; do not remove persistence or disable validation. This explicit main publication also authorizes the normal automatic main CI effect; retain the prior local unit-only test restriction rather than launch a local mixed suite.
 
-## unlanded
-| id | tag | branch | commit | at |
-|---|---|---|---|---|
-| T860 | pw86 | work/persisted-world-860 | 9573883064d3 | 2026-11-13T06:08Z |
-| T868 | sx1 | slow-1x | 311d6c71 | 2026-11-13T06:08Z |
-| T861 | pw86 | work/persisted-world-860 | b41b89787745 | 2026-11-13T06:31Z |
-| T867 | pw86 | work/persisted-world-860 | 6e483e5e7830 | 2026-11-13T06:46Z |
-| T862 | pw86 | work/persisted-world-860 | 0fde410bab7d | 2026-11-13T07:06Z |
-| T863 | pw86 | work/persisted-world-860 | 4afa1fa1bad7 | 2026-11-13T07:28Z |
-| T864 | pw86 | work/persisted-world-860 | 935a91df96fb | 2026-11-13T07:53Z |
-| T865 | pw86 | work/persisted-world-860 | 2d8f77e7118c | 2026-11-13T08:18Z |
-| T869 | pw86 | work/persisted-world-860 | 8419467d3984 | 2026-11-13T08:27Z |
-| T870 | pw86 | work/persisted-world-860 | 7b7f16add993 | 2026-11-13T08:44Z |
-| T859 | fin3 | main | 892eb45f64de | 2026-11-13T09:04Z |
-| T872 | pw86 | work/persisted-world-860 | 41c5bf2e826e | 2026-11-13T10:54Z |
-
 ## log
 - 261113 261114 main integration started from bb383c33 with full origin/work/persisted-world-860 c70cf228; only STATE conflict resolved while preserving Gusta 0.17.1 and ARCH@43. Storage is included and no capacity or calibration pass is claimed.
 - 261113 Owner authorized full main implementation merge and removed storage capacity as an integration blocker on 261114; the measured capacity and calibration residuals remain documented.
