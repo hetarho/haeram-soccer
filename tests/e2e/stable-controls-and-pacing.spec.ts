@@ -212,11 +212,11 @@ function paceCareer() {
   return world;
 }
 
-test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', async ({
+test('opens at 2x, one minute per 18 s at 1x, and provides five replay speeds', async ({
   page,
 }) => {
   // The page plays the reference run's recorded match, so the first minute's real length is known.
-  // That reference match is played in Node first, then about 20 s of timed playback follow; on the
+  // That reference match is played in Node first, then about 25 s of timed playback follow; on the
   // released model CI Firefox ran past 30 s on both attempts (40262705063), as the sibling below.
   test.slow();
   const playback = stagedPlayback(advanceToNextMatch(paceCareer())!);
@@ -228,7 +228,7 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
   ).toHaveAttribute('aria-checked', 'true');
   await expect(speeds.getByRole('radio')).toHaveText(['1×', '2×', '4×', '8×', '16×']);
   await expect(page.getByTestId('pitch-theatre')).toContainText('1′');
-  // Running play takes 12 s a minute at 1x (→WEB-32), so 6 s at the 2x the match opens at; only a
+  // Running play takes 18 s a minute at 1x (→WEB-32), so 9 s at the 2x the match opens at; only a
   // dead-ball beat inside it would draw the minute shorter. The first minute shows until
   // the second minute's first sample: still on after 60% of that and over by its end plus slack.
   const { samples } = presentationSamples(playback.frames);
@@ -258,8 +258,8 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
     expect(after).toBeGreaterThanOrEqual(before);
     expect(after).toBeLessThanOrEqual(before + Math.max(2, elapsedMinutes));
   }
-  // At 16x a minute of running play lasts 750 ms, restarts' kicks and chances alike, and each
-  // stoppage's dead-ball beat (→WEB-32 r156) is drawn faster: 6 s cover about 8 minutes, at most
+  // At 16x a minute of running play lasts 1125 ms, restarts' kicks and chances alike, and each
+  // stoppage's dead-ball beat (→WEB-32 r156) is drawn faster: 9 s cover about 8 minutes, at most
   // what the clock's own rule gives the busiest stretch of this match, never a skipped spell.
   // A goal's hold (→WEB-94) is real time outside running play: each one met takes its 1 s out.
   const fastMinuteMs = WATCH_MINUTE_MS / 16;

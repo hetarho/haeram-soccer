@@ -61,12 +61,12 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 41 | 41 | - | 2 |
-| WEB | 219 | 219 | - | 0 |
+| WEB | 220 | 220 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 12 | 12 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 69 | 69 | - | 0 |
-| MATCH | 62 | 62 | - | 0 |
+| MATCH | 63 | 63 | - | 0 |
 | LEAGUE | 19 | 19 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
 | ECON | 57 | 57 | - | 0 |
@@ -113,6 +113,9 @@
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261113 T868 done
+- 261113 gusta-create-task WEB MATCH: T868 consumes WEB@220 MATCH@63 sx1
+- 261113 gusta-update-ssot WEB MATCH: WEB-32✎ MATCH-12✎ 1x 12→18 real s per 60 match seconds sx1
 - 261113 fix watch: publish the first staged minute before filling the normal two-minute batches; preserve frame order, match results and the original 3 s browser latency guard fin3
 - 261113 sketch persistent-world-players end: T860–T866 from WORLD@12 LEAGUE@19 PLAYER@18 CLUB@69 ECON@57 HIST@26 WEB@219 pr13
 - 261113 gusta-create-task WORLD LEAGUE PLAYER CLUB ECON HIST WEB: T860–T866 pr13
@@ -130,6 +133,3 @@
 - 261112 T852 done
 - 261112 T851 done
 - 261112 T848 done
-- 261112 T845 done
-- 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
-- 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)

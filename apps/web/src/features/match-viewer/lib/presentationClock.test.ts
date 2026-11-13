@@ -55,20 +55,20 @@ function timedFrame(
 }
 
 describe('presentation clock (→WEB-32)', () => {
-  it('1x lasts 12 s a match minute', () => {
-    expect(WATCH_MINUTE_MS).toBe(12000);
+  it('1x lasts 18 s a match minute', () => {
+    expect(WATCH_MINUTE_MS).toBe(18000);
     expect(WATCH_SPEEDS).toEqual([1, 2, 4, 8, 16]);
-    // Every minute lasts 12 s at 1x, so any 60 match seconds take 12 s and 15 take 3 s.
+    // Every minute lasts 18 s at 1x, so any 60 match seconds take 18 s and 15 take 4.5 s.
     expect(runningLength(95)).toBe(95 * 60);
-    expect(presentationMs(0, runningLength(95), 1)).toBeCloseTo(95 * 12000, 6);
-    expect(presentationMs(0, 60, 1)).toBeCloseTo(12000, 9);
+    expect(presentationMs(0, runningLength(95), 1)).toBeCloseTo(95 * 18000, 6);
+    expect(presentationMs(0, 60, 1)).toBeCloseTo(18000, 9);
     for (const from of [0, 600, 2700, 5400])
-      expect(presentationMs(from, from + 15, 1)).toBeCloseTo(3000, 9);
-    // At each speed a minute takes 12000 / speed real ms, whatever happens in it.
+      expect(presentationMs(from, from + 15, 1)).toBeCloseTo(4500, 9);
+    // At each speed a minute takes 18000 / speed real ms, whatever happens in it.
     const length = runningLength(2);
     for (const speed of WATCH_SPEEDS) {
-      expect(runningRate(speed)).toBeCloseTo((speed * 60) / 12000, 12);
-      expect(presentationAdvance(0, 12000 / speed, speed, length)).toBeCloseTo(60, 9);
+      expect(runningRate(speed)).toBeCloseTo((speed * 60) / 18000, 12);
+      expect(presentationAdvance(0, 18000 / speed, speed, length)).toBeCloseTo(60, 9);
     }
     // Every speed reaches the final whistle and stays there; real time never runs it backwards.
     expect(presentationAdvance(length - 1, 100, 16, length)).toBe(length);
@@ -101,8 +101,8 @@ describe('presentation clock (→WEB-32)', () => {
   it('matches open at 2x', () => {
     expect(WATCH_DEFAULT_SPEED).toBe(2);
     expect(WATCH_SPEEDS).toContain(WATCH_DEFAULT_SPEED);
-    // At the opening speed a minute takes 6 real seconds: a 95-minute match about 9½ minutes.
-    expect(presentationAdvance(0, 6000, WATCH_DEFAULT_SPEED, runningLength(95))).toBeCloseTo(60, 9);
+    // At the opening speed a minute takes 9 real seconds: a 95-minute match about 14¼ minutes.
+    expect(presentationAdvance(0, 9000, WATCH_DEFAULT_SPEED, runningLength(95))).toBeCloseTo(60, 9);
   });
 
   it('changes speed without a time jump', () => {
@@ -113,9 +113,9 @@ describe('presentation clock (→WEB-32)', () => {
     for (const speed of WATCH_SPEEDS)
       expect(presentationAdvance(seconds, 0, speed, length)).toBe(seconds);
     seconds = presentationAdvance(seconds, 100, 16, length);
-    // 100 ms at 16x are 8 match seconds after the switch, not a restart.
+    // 100 ms at 16x are 5⅓ match seconds after the switch, not a restart.
     expect(seconds - before).toBeCloseTo(100 * runningRate(16), 9);
-    expect(seconds - before).toBeCloseTo(8, 9);
+    expect(seconds - before).toBeCloseTo(16 / 3, 9);
   });
 
   it('keeps dead-ball and open-play multipliers equal', () => {
@@ -149,9 +149,9 @@ describe('presentation clock (→WEB-32)', () => {
     const at = (i: number, t: number) => runningTime(i, frames[i]!, t, 0);
     const preparations = deadBallBeats(frames);
     expect(preparations).toEqual([]);
-    expect(presentationMs(at(0, 10), at(0, 40), 1, preparations)).toBeCloseTo(6000, 9);
-    expect(presentationMs(at(1, 70), at(1, 100), 1, preparations)).toBeCloseTo(6000, 9);
-    expect(presentationMs(at(0, 0), at(1, 60), 1, preparations)).toBeCloseTo(12000, 9);
+    expect(presentationMs(at(0, 10), at(0, 40), 1, preparations)).toBeCloseTo(9000, 9);
+    expect(presentationMs(at(1, 70), at(1, 100), 1, preparations)).toBeCloseTo(9000, 9);
+    expect(presentationMs(at(0, 0), at(1, 60), 1, preparations)).toBeCloseTo(18000, 9);
     const { times } = presentationSamples(frames);
     expect(times).toEqual([10, 40, 60, 70, 100, 120]);
   });
@@ -361,7 +361,7 @@ describe('dead-ball beat (→WEB-32, MATCH-12)', () => {
 
   it('a stoppage shorter than its beat plays at running speed', () => {
     const beats = deadBallBeats(stoppageFrames(1, [[0, stop('throwIn', 10, 10.5, 11)]]));
-    // Half a second of standing is 100 ms at running speed, under the 400 ms beat.
+    // Half a second of standing is 150 ms at running speed, under the 400 ms beat.
     expect(presentationMs(10.5, 11, 1, beats)).toBeCloseTo(0.5 / runningRate(1), 6);
     for (const speed of WATCH_SPEEDS)
       expect(presentationMs(10, 11, speed, beats)).toBeLessThanOrEqual(

@@ -193,7 +193,7 @@ for (const viewport of [
       '슈팅',
     ]);
     // Speed changes keep the presented minute, and 16x runs every minute, restarts included, in
-    // 750 ms (→WEB-32): four of them cover several minutes without slowing at a dead ball.
+    // 1125 ms (→WEB-32): four of them cover several minutes without slowing at a dead ball.
     const minuteNow = async () => Number((await presentedMinute(page)).match(/\d+/)?.[0] ?? 0);
     const before = await minuteNow();
     await page.getByRole('radio', { name: '16×', exact: true }).click();
@@ -358,8 +358,8 @@ for (const viewport of [
 test('an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes', async ({
   page,
 }) => {
-  // Two goal crossings at the speed the archived replay opens at: two minutes of the clock (12 s
-  // at 2x), then one after a seek (6 s); the replay has no speed chips to raise it.
+  // Two goal crossings at the speed the archived replay opens at: two minutes of the clock (18 s
+  // at 2x), then one after a seek (9 s); the replay has no speed chips to raise it.
   test.slow();
   const replayMinuteMs = WATCH_MINUTE_MS / WATCH_DEFAULT_SPEED;
   await page.emulateMedia({ reducedMotion: 'no-preference' });

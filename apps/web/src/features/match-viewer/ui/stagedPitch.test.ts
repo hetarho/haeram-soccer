@@ -13,7 +13,7 @@ import { validateRegistry } from '../../../presentation/registry';
 import type { LocalePack } from '../../../presentation/contracts';
 import registry from '../../../../public/presentation/locales/index.json';
 import korean from '../../../../public/presentation/locales/ko-KR.json';
-import { deadBallBeats, presentationSamples } from '../../../entities/match/logic';
+import { deadBallBeats, presentationSamples, runningRate } from '../../../entities/match/logic';
 import { goalInstants } from '../lib/goalFeedback';
 import { momentReady } from '../lib/moments';
 import { replayGoals } from '../lib/goalReplay';
@@ -194,7 +194,8 @@ describe('a theatre receiving staged frames', () => {
     await draw({ ...p, frames: [frame(0), { ...frame(1), stoppages: [] }] }, finish);
     expect(seconds()).toBe(60);
     await tick();
-    expect(seconds()).toBeCloseTo(68);
+    // One 100 ms frame of running play at 16x past the frontier, no catch-up.
+    expect(seconds()).toBeCloseTo(60 + 100 * runningRate(16));
     expect(finish).not.toHaveBeenCalled();
   });
   it('결과 보기 shows the result at once and reaches the final whistle when it is staged', async () => {
@@ -243,7 +244,7 @@ describe('a theatre receiving staged frames', () => {
     expect(container.querySelector('[data-testid="goal-replay-open"]')).toBeNull();
     await click('16×');
     await tick();
-    await ticks(35);
+    await ticks(45);
     expect(container.querySelector('[data-testid="goal-replay-open"]')).not.toBeNull();
     expect(replayGoals(goals, frames, 1)).toMatchObject([
       { footage: true, goal: { seconds: 150 } },
@@ -256,7 +257,7 @@ describe('a theatre receiving staged frames', () => {
     await draw({ ...p, frames }, finish);
     await click('16×');
     await tick();
-    await ticks(20);
+    await ticks(30);
     expect(container.querySelector('[data-testid="goal-cue"]')).not.toBeNull();
     await draw({ ...p, frames, staged: { done: true } }, finish);
     expect(finish).not.toHaveBeenCalled();
@@ -272,7 +273,7 @@ describe('a theatre receiving staged frames', () => {
     await draw({ ...p, frames }, finish);
     await click('16×');
     await tick();
-    await ticks(35);
+    await ticks(45);
     await act(async () =>
       container.querySelector<HTMLButtonElement>('[data-testid="goal-replay-open"]')!.click(),
     );
