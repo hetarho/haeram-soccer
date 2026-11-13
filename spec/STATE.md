@@ -59,25 +59,22 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
-| T890 | Prepare exact replacement and top-up scenarios | ARCH CLUB WORLD | T885 | todo |
 | T891 | Prepare real market candidates and exact registration caps | ARCH CLUB WORLD | T885 | todo |
-| T892 | Prepare explicit founding, employment and legacy identity fixtures | ARCH WORLD SAVE | T885 | todo |
-| T893 | Avoid new identity collisions during supported squad adoption | ARCH WORLD SAVE | T885 | todo |
 | T894 | Prepare exact contract, expiry and refill scenes | ARCH CLUB WORLD ECON | T890 | todo |
 | T895 | Prepare valid buyers and remaining market participants | ARCH CLUB WORLD | T890 | todo |
 | T896 | Prepare affordable academy, pending-decision and discipline scenes | ARCH CLUB WORLD MATCH | T885 | todo |
 | T897 | Preserve regulation facts and exact seeded replay inputs | ARCH MATCH WORLD | T885 | todo |
 | T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
 | T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
-| T900 | Reuse identical placed weights within one attribution | ARCH MATCH WORLD | T885 | todo |
-| T899 | Trial settlement-local NPC market ratings | ARCH | T878 T880 | todo |
+| T900 | Evaluate scoped attribution-weight reuse | ARCH MATCH WORLD | T885 | todo |
+| T902 | Prepare a supported ten-season codec career through owner actions | ARCH SAVE OWNER | T885 | todo |
+| T903 | Establish an actual archive seek and bounded promise setup | ARCH MATCH CLUB | T887 T888 | todo |
+| T904 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 19 | 9 | 10 | 2 | 0 | 0 | 2026-11-13T19:13:19.552Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 23 | 13 | 10 | 1 | 3 | 0 | 2026-11-13T19:51:22.585Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
-- T899 is the bounded pr14 rating-cache experiment under the original pb14 deadline; retain its actual exit verdict and final publication reserve.

@@ -88,6 +88,36 @@ const locations = (w: World, id: string) =>
     .map(([club]) => club);
 
 describe('isolated NPC transfer windows', () => {
+  it('refreshes ratings between settlements and between independent quote mutations', () => {
+    const { w, seller, buyer } = fixture();
+    const p = listedKeeper(w, seller);
+    const alternative = { ...structuredClone(p), id: 'alternative-keeper' };
+    for (const a of ATTRIBUTES) {
+      p.attrs[a] = 10;
+      alternative.attrs[a] = 80;
+      for (const keeper of w.squads![buyer.id]!.filter((q) => q.position === 'GK'))
+        keeper.attrs[a] = 85;
+    }
+    w.squads![seller.id]!.push(alternative);
+    seller.books!.openingIncome = npcWageBill(w, seller).toString();
+    npcMarket(w);
+    expect(locations(w, p.id)).toEqual([seller.id]);
+    expect(locations(w, alternative.id)).toEqual([seller.id]);
+    for (const a of ATTRIBUTES) {
+      p.attrs[a] = 90;
+      for (const keeper of w.squads![buyer.id]!.filter((q) => q.position === 'GK'))
+        keeper.attrs[a] = 65;
+    }
+    expect(npcOffer(w, buyer, p, seller, '0')).toBeDefined();
+    for (const a of ATTRIBUTES) p.attrs[a] = 10;
+    expect(npcOffer(w, buyer, p, seller, '0')).toBeUndefined();
+    for (const a of ATTRIBUTES) p.attrs[a] = 90;
+    w.calendar!.day = npcMarketDays(w.year)[0]![1]!;
+    npcMarket(w);
+    expect(locations(w, p.id)).toEqual([buyer.id]);
+    expect(locations(w, alternative.id)).toEqual([seller.id]);
+  });
+
   it('buys a needed keeper at market value, settles both books and preserves one live identity', () => {
     const { w, seller, buyer, other } = fixture();
     const p = listedKeeper(w, seller);

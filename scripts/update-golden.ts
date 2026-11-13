@@ -1,91 +1,80 @@
-import { writeFileSync } from 'node:fs';
-import { transferOffers } from '../packages/engine/src/scout-search';
-import { ENGINE_VERSION } from '../packages/engine/src/world';
-import { CATALOG_VERSION } from '../packages/catalogs/src/index';
-import { fixtureCareer, runFixture, type FixtureDefinition } from '../tests/fixtures/run';
-if (!process.argv.includes('--write'))
-  throw new Error('Use --write only after reviewing intentional engine/catalog changes');
-const input = { country: 'ENG' as const, seed: 'portable-release-1' };
-// The squad member the staff propose as a playing coach (`run.ts`'s staff-playing-coach setup).
-const playingCoach = fixtureCareer({ input }).players[6]!.id;
-// The scout's first club player (free agents list first and are never loaned, →CLUB-49/50); the
-// fixture's settings and policy leave the scout's list as the fresh career has it.
-const loanable = transferOffers(fixtureCareer({ input })).findIndex(
-  (offer) => offer.source.kind === 'club' && offer.available,
-);
-const definitions: FixtureDefinition[] = [
-  {
-    name: 'takeover-and-commercial-decisions',
-    input,
-    policy: { localInvest: 3 },
-    commands: [
-      { type: 'sign-sponsor', slot: 'local', offer: 0 },
-      { type: 'recruit', candidate: loanable, loan: true },
-      { type: 'advance', rounds: 5 },
-    ],
-  },
-  {
-    name: 'french-redenomination',
-    input: { ...input, country: 'FRA' },
-    year: 1959,
-    commands: [{ type: 'season', count: 1 }],
-  },
-  {
-    name: 'modern-european-season',
-    input: { ...input, country: 'FRA' },
-    year: 2024,
-    cupQualification: true,
-    commands: [{ type: 'season', count: 1 }],
-  },
-  {
-    name: 'current-responsibilities-and-manual-events',
-    input,
-    currentRules: true,
-    commands: [
-      {
-        type: 'settings',
-        settings: {
-          responsibilities: {
-            manager: 'delegated',
-            staff: 'delegated',
-            contracts: 'delegated',
-            recruitment: 'delegated',
-            sales: 'delegated',
-            academy: 'delegated',
-            sponsors: 'delegated',
-          },
-          mode: 'manual',
-          observations: { matchEve: true, windowOpen: false },
-        },
-      },
-      { type: 'next-event' },
-      { type: 'next-event' },
-    ],
-  },
-  {
-    name: 'staff-proposed-combined-contract',
-    input,
-    currentRules: true,
-    setup: 'staff-playing-coach',
-    commands: [{ type: 'answer-playing-coach', player: playingCoach, accept: true }],
-  },
-  {
-    name: 'financial-mediation-fixed-reinforcement-promise',
-    input,
-    currentRules: true,
-    setup: 'financial-conflict',
-    commands: [{ type: 'resolve-mediation', id: 'mediation:1950:0', support: 'manager' }],
-  },
-];
-for (const definition of definitions) definition.expected = runFixture(definition);
-writeFileSync(
-  'tests/fixtures/portable-v1.json',
-  JSON.stringify(
-    { synthetic: true, engine: ENGINE_VERSION, catalog: CATALOG_VERSION, definitions },
-    null,
-    2,
-  ) + '\n',
-);
+import { createHash } from 'node:crypto';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { gunzipSync } from 'node:zlib';
+import { format, resolveConfig } from 'prettier';
+import { canonical } from '../packages/contracts/src/index';
+import { invalidDetail } from '../packages/engine/src/script/failure';
+import { runFixture, type FixtureDefinition } from '../tests/fixtures/run';
+
+if (!process.argv.includes('--write')) throw invalidDetail('portable-fixtures:review-required');
+const path = 'tests/fixtures/portable-v1.json';
+const source = readFileSync(path, 'utf8');
+const fixture = JSON.parse(source) as { definitions: FixtureDefinition[] };
+const captureArgument = process.argv.indexOf('--captures');
+const captures = captureArgument >= 0 ? process.argv[captureArgument + 1] : undefined;
+if (captureArgument >= 0 && !captures) throw invalidDetail('portable-fixtures:capture-directory');
+
+/** Locate only the existing formatted definition values; all other source bytes are retained. */
+function expectedRanges(text: string): [number, number][] {
+  return [...text.matchAll(/^      "expected": /gm)].map<[number, number]>((match) => {
+    const start = match.index + match[0].length;
+    if (text[start] !== '{') throw invalidDetail('portable-fixtures:expected-object');
+    let depth = 0;
+    let quoted = false;
+    let escaped = false;
+    for (let end = start; end < text.length; end++) {
+      const char = text[end];
+      if (quoted) {
+        if (escaped) escaped = false;
+        else if (char === '\\') escaped = true;
+        else if (char === '"') quoted = false;
+      } else if (char === '"') quoted = true;
+      else if (char === '{' || char === '[') depth++;
+      else if ((char === '}' || char === ']') && --depth === 0) return [start, end + 1];
+    }
+    throw invalidDetail('portable-fixtures:expected-boundary');
+  });
+}
+
+const ranges = expectedRanges(source);
+if (ranges.length !== fixture.definitions.length)
+  throw invalidDetail('portable-fixtures:expected-count');
+const inputHash = createHash('sha256').update(source).digest('hex');
+let output = '';
+let cursor = 0;
+for (const [index, definition] of fixture.definitions.entries()) {
+  let expected: unknown;
+  if (captures) {
+    const capture = JSON.parse(
+      gunzipSync(readFileSync(join(captures, `${definition.name}.json.gz`))).toString('utf8'),
+    ) as { inputSha256: string; definition: Omit<FixtureDefinition, 'expected'>; facts: unknown };
+    const { expected: previous, ...input } = definition;
+    void previous;
+    if (capture.inputSha256 !== inputHash || canonical(capture.definition) !== canonical(input))
+      throw invalidDetail(`portable-fixtures:capture-input:${definition.name}`);
+    expected = capture.facts;
+  } else expected = runFixture(definition);
+  const [start, end] = ranges[index];
+  output +=
+    source.slice(cursor, start) + JSON.stringify(expected, null, 2).replaceAll('\n', '\n      ');
+  cursor = end;
+}
+output += source.slice(cursor);
+// Apply the repository's JSON style to expectation values only. Even formatting must not
+// rewrite the scenario inputs or the original top-level provenance.
+const formatted = await format(output, { ...(await resolveConfig(path)), filepath: path });
+const formattedRanges = expectedRanges(formatted);
+if (formattedRanges.length !== ranges.length)
+  throw invalidDetail('portable-fixtures:formatted-count');
+output = '';
+cursor = 0;
+for (const [index, [start, end]] of ranges.entries()) {
+  const [formattedStart, formattedEnd] = formattedRanges[index];
+  output += source.slice(cursor, start) + formatted.slice(formattedStart, formattedEnd);
+  cursor = end;
+}
+writeFileSync(path, output + source.slice(cursor));
 console.log(
-  `Wrote ${definitions.length} reviewed portable scenarios; CI only reads these expected facts.`,
+  JSON.stringify({ definitions: fixture.definitions.length, expectationsOnly: true, inputHash }),
 );
