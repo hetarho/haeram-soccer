@@ -61,7 +61,6 @@
 |---|---|---|---|---|
 | T894 | Prepare exact contract, expiry and refill scenes | ARCH CLUB WORLD ECON | T890 | todo |
 | T895 | Prepare valid buyers and remaining market participants | ARCH CLUB WORLD | T890 | todo |
-| T896 | Prepare affordable academy, pending-decision and discipline scenes | ARCH CLUB WORLD MATCH | T885 | todo |
 | T897 | Preserve regulation facts and exact seeded replay inputs | ARCH MATCH WORLD | T885 | todo |
 | T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
 | T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
@@ -76,7 +75,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 28 | 15 | 13 | 0 | 8 | 0 | 2026-11-13T20:32:14.360Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 28 | 16 | 12 | 0 | 7 | 0 | 2026-11-13T20:32:52.460Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
