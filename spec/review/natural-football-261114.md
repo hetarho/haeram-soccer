@@ -40,11 +40,13 @@ Restore and verify the remote natural-football work, then repair free-kick recei
 
 - F30 [o] P2 seven browser inputs assume old20-player/empty-pool/offer/birth-label scenes. Preserve exact current IDs/counts, actual free releases, one real waiting decision and WEB-59 age. →T906
 - F31 [o] P2 prepared manager browser careers omit ordinary writer adoption:450 squads,358 people,156 records added with zero shared changes and one revision. Normalize before expected capture; preserve full equality. →T907
-- F32 [?] P2 two combined-sale browser scenes lack a proven buyer for9999999 fee. Diagnose actual full-fee eligibility before any price/input change.
+- F32 [o] P2 two combined-sale browser scenes lack a proven buyer for9999999 fee. Explicitly prepare actual full quoted eligibility while preserving exact accounting and disclosure. →T910
 - F33 [?] P1 two live1950 history browser journeys time out at180000ms. Preserve real generation/timer; profile current source before proposing a bounded performance correction.
 
 - F34 [o] P2 two throughput digests still represent pre-persisted inputs. Five bounded historical captures reproduce both old constants and exhaustively explain current fields; refresh only with full hashes retained. →T908
 - F35 [o] P2 npc-market.ts late seller guards skip50301/100311 inspected candidates after expensive pure pool work. Lift only those existing guards, retain overspending exception, and require exact output/draw paired proof plus repeatable benefit. →T909
+
+- F36 [o] P2 season.contracts first full-close assertion confuses real old-contract expiry with13legitimate mandatory new signings. Observe every old term/job boundary and strictly prove new-job/signing facts in the same workload; never an unconditional rehire OR. →T911
 
 ## notes
 - Planning collision: another owner published T899.cache-market-ratings before this run's two new proposals. The unpublished, unclaimed free-signing witness task is renumbered T901; T900 attribution reuse is unchanged. Foreign T899 remains outside this work scope. Existing attempted/integrated history is retained; no runtime files are manually rewritten.
