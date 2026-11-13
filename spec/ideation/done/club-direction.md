@@ -1,5 +1,5 @@
 # IDEATION club-direction
-> st:ready@261026 | One place where the owner sets the club's direction, the delegated staff decide by it, and every choice of one kind looks and behaves the same.
+> st:converted@261113 | One place where the owner sets the club's direction, the delegated staff decide by it, and every choice of one kind looks and behaves the same.
 
 ## vision
 - Core value (owner): simple controls that branch into trillions of different clubs — few, uniform choices whose combinations decide the outcome.
@@ -125,6 +125,8 @@
   5. Delegated signings by 영입's rows within 재정 기조
   6. The founding preset row, a preset set redesigned over every row, synergies restated on the new rows
 - v1 (slice 1): the 방향 tab and one row component over today's cards and dials / not: new rows, staff rules, stocks, delegated signings, founding presets (slices 2–6)
+- Answered later: option effects and amounts per row → ECON-16/22/25; the preset list and its synergies → ECON-22 (legacy founding presets; new takeovers start at 기본 방향, WEB-15) and CLUB-21; 지역 기반 and 글로벌 인지도 → ECON-34; 엘리트 선발 → ECON-22 (intake potential +8, intake −2); delegated signings → CLUB-33; the 재정 name clash → WEB-14/110 (구단 운영 › 재정·투자) with the 재정 기조 row retired (ECON-33, SAVE-30).
+- Archived 261113: the direction rows and the two stocks live in ECON-22/25/34 and delegated signings in CLUB-33, while the 방향 board and composer were dropped (WEB-60/61 [x]), the intervention ladder gave way to per-category 보고받기/위임 (WEB-45) and 재정 기조 gave way to the 단장's spending request and plans (ECON-33/39/40, SAVE-30).
 
 ## domains
 - [o] WEB: the 방향 tab and its page tabs, one row component and draft behaviour, founding preset row, homes table (→WEB-10, →WEB-39, →WEB-43, →WEB-45, →WEB-60, →WEB-61, →WEB-70, →WEB-71) →WEB
@@ -134,9 +136,4 @@
 - [o] SAVE: today's cards, dials, criteria and campaigns loaded as rows →SAVE
 
 ## open
-- Every new row's option effects and amounts, calibrated on the ECON-29 bands (slices 2–5).
-- The preset list itself and what each fills; synergies restated where they name a card or dial that moved (상업 제국's marketing 4+, 트레이딩 머신's 1군 직행 경로) (slice 6).
-- How fast 지역 기반 and 글로벌 인지도 rise and decay, their scale, and whether home shows them (slice 4).
-- 엘리트 선발: fewer prospects of higher potential, or something else (slice 3).
-- Delegated signings in detail: roles, how many per window, loans, free agents first or not (slice 5).
-- The area 재정 (slice 2) shares its name with the page tab 재정 (cash and ledger); one of them needs another name.
+- -

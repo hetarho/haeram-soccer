@@ -1,5 +1,5 @@
 # IDEATION navigation-and-records
-> st:ready@261026 | Make owner decisions actionable across squad, development and operations; put club seasons first in records and standings first in leagues.
+> st:converted@261113 | Make owner decisions actionable across squad, development and operations; put club seasons first in records and standings first in leagues.
 
 ## vision
 - Problem: the owner cannot tell where to act in people, training and direction, in addition to the reported records/league confusion. The independent follow-up must examine complete management tasks rather than assume that separating topics creates a usable workflow.
@@ -45,7 +45,7 @@
 - [x] Keep the four-part summary and only remember its last selection ← that reduces repeated clicks but leaves the misleading category, duplicated season labels and cross-destination season journey intact.
 - [x] Remove trophies, Elo, season analysis or old records because their current placement is confusing ← the problem is where facts are presented, not their value or retention.
 - [x] Merge league, cups and records into one universal archive tab ← it would hide the distinction between a competition's field and the owner's club career.
-- [?] Confirm lower-priority naming with the owner before applying it: `구단 운영`, `명예·최고기록`, `감독 이력`, and `알림·결정` are working labels.
+- [o] Confirm lower-priority naming with the owner before applying it: `구단 운영`, `명예·최고기록`, `감독 이력`, and `알림·결정` are working labels. (→WEB-51, →WEB-54, →WEB-110)
 
 - [o] Independent management audit: prioritise the broken decision loop, not just menu names. Facts in the next table come from the exercised journeys or the linked source; the difficulty and proposed response are product judgements.
 
@@ -72,7 +72,7 @@
 - [x] Fix management discovery only by renaming `사람` or `방향` ← it leaves the buried action, lost selections, global authority effects and disconnected player detail unchanged.
 - [x] Put every policy editor and formula permanently on each work screen ← this recreates the same long reference wall. Show the current relevant value, responsible person and focused action; let detailed explanations expand when needed.
 - [x] Remove staff autonomy or make all policy selections immediate commands ← coach judgement and owner/staff tension are part of the game. Clarify the distinction between instruction, recurring investment and delegated decision criteria.
-- [?] Verify the proposed information order with an unfamiliar owner using the scenarios below. Task completion is the criterion; the walkthrough is evidence of the current structure, not proof that a proposed layout is already usable.
+- [x] Verify the proposed information order with an unfamiliar owner using the scenarios below. Task completion is the criterion; the walkthrough is evidence of the current structure, not proof that a proposed layout is already usable. ← not taken up; the management map it would validate was replaced by the six-entry navigation (WEB-10), the 팀 directory (WEB-112) and 구단 운영 (WEB-110)
 
 ## shape
 - Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
@@ -159,6 +159,9 @@
   - Choose another country/division and then player records: the chosen subject is maintained, or the narrower availability is stated before displaying own-league data.
   - Find archived cup progress and our historical scorers from the club season, with an explicit distinction between all competitions and league-only figures.
   - Inspect an early career and a long career, including promotions and seasons lacking older detailed archives. Do not claim player-wide preference or improved completion times without testing them.
+- Answered later: the working labels 구단 운영, 명예·최고기록, 감독 이력 and 알림·결정 were adopted (WEB-110, WEB-54, WEB-51); 명예·최고기록 stays one focused view among the records categories (WEB-54); a league lacking retained player or round detail shows an unavailable lens naming it with an optional own-league link (WEB-65); contextual policy access went with the direction board (WEB-60/61/77 [x]).
+- Not taken up at archiving: the first-team list/detail split, the development observation window, the club-season review's section order and validation with a long-career owner remained UI polish nobody asked for.
+- Archived 261113: season-first records and standings-first leagues are carried by WEB-47, WEB-54 and WEB-65 with labels in WEB-51/54, while the management map gave way to the six-entry navigation (WEB-10), the 팀 directory (WEB-112) and 구단 운영 (WEB-110), with the direction board, the focused policy sheet and the owner's training orders dropped (WEB-60/61/77 [x], STAFF-19 [x]).
 
 ## domains
 - [o] WEB: Legacy scope WEB →WEB; revise WEB-40/47/54 for league defaults, club-season ownership and records structure; WEB-10/11 for home briefing and progression-tool discovery; WEB-65/69 for consistent competition scope and view categories. Extend WEB-39/43/44/45/59/60/61/68/69/70/71 for management ordering, player actions, visible responsibility/timing, contextual policy access, retained drafts and return state. The current single-home policy rule needs explicit revision if focused editing is allowed from a work context. Existing SSOTs require gusta-update-ssot rather than a new domain.
@@ -166,11 +169,4 @@
 - [o] CLUB: Legacy scope CLUB / STAFF / ECON / PLAYER →CLUB →STAFF →ECON →PLAYER; retain the existing training duration and settlement, coach judgement, intervention-level delegation, recruitment requests, academy eligibility, investment and construction rules. Use these domains to verify explanation and outcome timing; reopen them only for an explicitly chosen rule change. A reorganisation must not silently create new owner powers or new drills.
 
 ## open
-- How much first-team player detail should be on the list versus the player detail? Recommended first pass: concise status/action rows, focused filters for attention/growth/adaptation, and full explanation in detail. Validate with a tired-player task before finalising the layout.
-- Should contextual policy changes use a focused setting view or an in-context sheet? Either must retain one applied setting, show authority/cost/timing, keep the unfinished task and preserve unapplied drafts. This is a presentation decision for WEB, not a requirement to change game rules.
-- Which development observation window is retained and can be shown honestly? Reuse existing accumulated growth and current fatigue/adaptation first; do not imply a recent-round trend that the game does not store.
-- Which depth of the combined club season review should lead: results/leaders first, with financial and detailed analytical sections below, or another ordering? Recommended default is football results and the season's story, then finance and advanced detail.
-- Should `명예·최고기록` stay one destination with clear subviews, or separate if its contents remain too long? Preserve the existing one-view-at-a-time benefit.
-- Exact fallback when another league lacks player/round detail: unavailable view with explanation or an explicitly named own-league lens. Do not silently change the subject.
-- Is the owner happy with the working operations/inbox labels? These remain proposals rather than prerequisites to the records/league changes.
-- Validate the new season journey with an actual long-career owner before claiming it solves every discovery problem. This audit confirms structure and the reported friction, not measured broad usage.
+- -

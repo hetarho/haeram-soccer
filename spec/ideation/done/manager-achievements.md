@@ -1,5 +1,5 @@
 # IDEATION manager-achievements
-> st:ready@261026 | Show what each manager achieved for our club alongside his tenure.
+> st:converted@261113 | Show what each manager achieved for our club alongside his tenure.
 
 ## vision
 - Problem: manager history tells the owner when managers served, but does not make their achievements visible.
@@ -24,6 +24,8 @@
 - v1: current/former/interim own-club tenures, dated honours/promotions, best league finishes, recorded match totals/runs and honest coverage states. Structured attribution survives save/export/import and the summary loads on demand.
 - Scope excludes broader other-club careers, subjective manager ratings, a deepest-cup-run ranking and new gameplay/reward mechanics.
 - delivery: T304 prepares pure fact/query modules and T305 prepares a props-driven view in new files alongside earlier work. T306 integrates engine/save changes after T286, then T307 connects worker/navigation and T308 proves browser/capacity continuity. This changes task boundaries, not the product rules.
+- No blocking questions for the scoped first-version tasks. Broader manager-career comparisons and deepest-cup-run rankings require separate planning.
+- Archived 261113: the per-tenure accomplishment summaries are carried by WEB-92, HIST-18/19 and SAVE-24; broader manager-career comparisons were never taken up.
 
 ## domains
 - [o] WEB: per-tenure accomplishment summaries, coverage states and contextual club-season navigation (WEB-92). →WEB
@@ -31,4 +33,4 @@
 - [o] SAVE: prospective activation and lossless retention of structured attribution within existing budgets (SAVE-24). →SAVE
 
 ## open
-- No blocking questions for the scoped first-version tasks. Broader manager-career comparisons and deepest-cup-run rankings require separate planning.
+- -

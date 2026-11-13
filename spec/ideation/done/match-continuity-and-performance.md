@@ -1,5 +1,5 @@
 # IDEATION match-continuity-and-performance
-> st:ready@261026 | Continuous playback, coordinated player intentions and complete probabilistic world results.
+> st:converted@261113 | Continuous playback, coordinated player intentions and complete probabilistic world results.
 
 ## vision
 The own club should play continuous, purposeful football without slow waiting followed by sudden ball/player movement. Every other fixture should produce the complete meaningful numerical records of a living football world at lower processing cost, calibrated from intended football targets and repeated measurement.
@@ -7,9 +7,11 @@ The own club should play continuous, purposeful football without slow waiting fo
 ## explored
 - [o] Keep completed and already assigned task contracts unchanged; add follow-up work for the new direction. Existing identity implementation is the prerequisite for shared code changes, not a task to rewrite.
 - [o] Uniform selected speed through open play and stoppages, keeping the current 1x duration at four real seconds per match minute. Preserve pause/seek and archived controls under their existing rules.
+  - Later replaced (WEB r140, r156): WEB-32's 1x is 12 real seconds per match minute, opening at 2x, and every stoppage is a dead-ball beat (MATCH-12).
 - [o] Continuous ball retrieval, restart preparation, player relocation, action departure/arrival and minute-boundary paths. Fixed speed alone is insufficient; movement and action timing must agree in the engine and renderer.
 - [o] Persistent role/trait-shaped player intentions and teammate reactions: receiving support, overlaps, coordinated pressing/cover and marking handovers within the existing four tactics and manager authority.
 - [o] The own club always uses detailed play; every other fixture uses aggregate probability without a detailed spatial simulation or per-minute chance loop.
+  - Later reversed (MATCH r59, T838–T845): every fixture, the own club's included, settles on one aggregate path (MATCH-22); an own match gets a script (MATCH-38) and a presentation-only staging (MATCH-39).
 - [o] Every new fixture generates the complete basic/advanced team/player numerical result, including xG/xA/xT, participation, discipline and knockout data. Shared facts and exact invariants keep scores, contributors, attempts, incidents and later world effects consistent.
 - [o] Start from intended football targets, measure both engines by comparable conditions and improve calibration iteratively. Check means, spread, tails, rare events, relationships and season outcomes with separate validation seeds; a detailed-engine defect is an error to fix rather than a target to copy.
 - [o] Statistical equivalence is the accepted comparison contract in MATCH-28. Reproducibility within each path is exact; matching every value of a fixture across two different algorithms is not promised.
@@ -24,6 +26,8 @@ The own club should play continuous, purposeful football without slow waiting fo
 - flow: post-identity baseline → versioned common contracts → continuous timing/movement and coordinated intentions → complete aggregate generation and exact accumulation → comparisons and measured calibration → paired speed/storage/browser gates → prospective activation.
 - v1: complete new numerical results, continuous own-match observation, coordinated intentions, current-season NPC comparisons and supported-career coverage metadata.
 - boundary: existing four tactics, manager control, supported identities and archive lifetimes remain; no invented past records or NPC per-frame archive.
+- Implementation note (open until archive): policy conversion was complete; implementation and timeboxed measurement were T272–T286, all done; unresolved measured errors were to become concrete follow-up work before activation, rather than a policy waiver.
+- Archived 261113: complete records, exact consistency and measured equivalence remain in MATCH-22/26/27/28, HIST-17 and SAVE-23, while the own club's detailed play was replaced by one aggregate path with a script and staging (MATCH-22/38/39) and the uniform 4 s minute by WEB-32's 12 s minute with a dead-ball beat.
 
 ## domains
 - [o] MATCH: Legacy scope MATCH →MATCH; r14 owns uniform continuity, intention coordination, deterministic dispatch, complete joint records, exact consistency and statistical equivalence.
@@ -33,4 +37,4 @@ The own club should play continuous, purposeful football without slow waiting fo
 - [o] HIST: Legacy scope HIST/SAVE/LEAGUE →HIST →SAVE →MATCH; HIST r16 adds complete current-season accumulation, SAVE r50 adds prospective versioned activation, and MATCH uses the existing league availability/settlement rules.
 
 ## open
-- Policy conversion is complete. Implementation and timeboxed measurement are T272–T286; unresolved measured errors must become concrete follow-up work before activation, rather than a policy waiver.
+- -

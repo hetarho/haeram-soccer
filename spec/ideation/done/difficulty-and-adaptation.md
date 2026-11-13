@@ -1,5 +1,5 @@
 # IDEATION difficulty-and-adaptation
-> st:ready@261026 | Difficulty set by the start alone, training the owner can act on, and players with real positions and attributes who adapt to their manager and grow at their own pace.
+> st:converted@261113 | Difficulty set by the start alone, training the owner can act on, and players with real positions and attributes who adapt to their manager and grow at their own pace.
 
 ## vision
 - Problem (owner, 261014): a delegated level-4 career at 기본 방향 takes about 40 years to win the top flight, then wins about half of the titles after that. Holding the top is too easy, not reaching it.
@@ -76,6 +76,8 @@
 - 훈련 tab: the team's 균형/회복/하드 and per-player exceptions, asked of the assistant as 제안 (stated chance) or 강행 (his cost); the focus in force, who set it and why
 - v1: four levels by the start only; 14 attributes, ~12 sided positions with per-player levels, football-named roles, personality and play traits, OVR per position; adaptation for own players and 조직력 for other clubs; per-player growth and adaptation rates, growth past potential on a flattening curve; training 균형/회복/하드 for the team and per player; 동네의 자부심 → 유스 순혈주의; balance bands measured on reference careers
 - not: sugar daddies; per-level coefficients or probabilities; the owner setting training directly; mental attributes beyond personality traits; converting old saves
+- Answered later: the next balance lever is tuning rules and constants for every wealth tier alike (LEAGUE-13), with owners at other clubs still out (OWNER-18); positions → PLAYER-3 (14, sided) with roles in PLAYER-5, and no preferred foot was taken up; trait lists → PLAYER-7/9; 야망 → PLAYER-8 with CLUB-27; schools → STAFF-21/22; adaptation rate → PLAYER-12; OVR weights → PLAYER-6; training injury and morale costs → CLUB-11; the synergy 우리 동네 아이들 keeps its name (CLUB-21) beside the renamed preset (ECON-22); feasibility → shipped as a model for new careers (PLAYER-20) within SAVE-4's 6 MiB checkpoint cap.
+- Archived 261113: the player model, adaptation and training are carried by PLAYER-3–12/20, STAFF-21/22 and CLUB-11, while the four difficulty levels gave way to the owner's wealth tier and traits (WEB-3 [x], OWNER-2/3) with bands per tier (LEAGUE-13), and the owner's 제안/강행 through coaches gave way to training as the coaches' call alone (STAFF-19 [x], CLUB-13).
 
 ## domains
 - [o] PLAYER: Legacy scope PLAYER (new) →PLAYER; 14 attributes, sided positions with per-player levels, roles, personality and play traits, OVR per position, adaptation (multiplier, starts, resets, growth by starts and training), growth and adaptation rates, growth past potential, what is shown and what the scout estimates — takes over CLUB-2 and CLUB-12
@@ -89,11 +91,4 @@
 - [o] SAVE: Legacy scope SAVE →SAVE; the new model starts new careers; older saves do not open in it
 
 ## open
-- If the bands are not met without sugar daddies, which lever comes next (the dropped sugar-daddy idea stays recorded above)
-- The ~12 positions (proposal: GK, CB, LB, RB, LWB, RWB, DM, CM, AM, LW, RW, ST) and the roles of each; whether a preferred foot explains side levels
-- The trait lists; how 야망 and a star's wish to leave work with CLUB-27's unhappiness
-- Each school's formation, slot roles and preferred attributes and traits; how fast adaptation grows by position fit and school preference
-- OVR weights per position and role
-- Training injury chance and morale cost sizes; the cost of 제안 and 강행 for a single player
-- Whether the synergy 우리 동네 아이들 (lit by the renamed preset) is renamed too
-- [?] feasibility: save size with 14 attributes and position levels over 100+ seasons (SAVE-4 caps, a 116-season save already failed); match-engine rework and its calibration test; the desktop benchmark already has no headroom (ARCH-28)
+- -
