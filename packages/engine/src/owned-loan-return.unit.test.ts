@@ -1,0 +1,211 @@
+import { createHash } from 'node:crypto';
+import { describe, expect, it, vi } from 'vitest';
+import { canonical } from '../../contracts/src/index';
+import { message as sourceMessage } from '../../contracts/src/messages';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import type { Club, World } from '../../contracts/src/types';
+import { currentDay, SEASON_END_DAY, SEASON_ROUNDS } from './calendar';
+import { npcWageBill } from './books';
+import { marketWageAt } from './market-prices';
+import { npcMarket, npcMarketDays, returnNpcLoans } from './npc-market';
+import { retainPerson, openEmployment } from './person-careers';
+import { foundSquads } from './persisted-squads';
+import { generatedPlayer, invalidateNpcSquad } from './world';
+import { worldMarketOffer } from './world-market';
+import { worldMarketFixture, marketCandidate } from './world-market.testkit';
+import { placeBid, respondBid } from './transfers';
+
+// BEGIN DRAW OBSERVATION
+const draws = vi.hoisted(() => [] as [string, number][]);
+vi.mock('./primitives', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./primitives')>();
+  return {
+    ...actual,
+    random(seed: string) {
+      const r = actual.random(seed);
+      return () => {
+        const value = r();
+        draws.push([seed, value]);
+        return value;
+      };
+    },
+  };
+});
+// END DRAW OBSERVATION
+
+/** The real owned bid/acceptance path, with a persisted parent and player employment. */
+function ownedLoan(age: number, missingParent = false) {
+  const w = worldMarketFixture();
+  const parent = w.clubs.find((c) => c.id === 'foreign')!;
+  parent.country = 'ENG';
+  const target = marketCandidate(w, parent, 'LW', age);
+  retainPerson(w, target, parent.id);
+  openEmployment(w, target.id, 'player', parent.id);
+  const offer = worldMarketOffer(w, {
+    world: w.id,
+    kind: 'club',
+    clubId: parent.id,
+    playerId: target.id,
+  })!;
+  placeBid(w, offer.target, offer.loanFee, true);
+  const bid = w.bids![0]!;
+  bid.status = 'countered';
+  bid.counterFee = bid.fee;
+  respondBid(w, bid.id, true);
+  if (missingParent) w.clubs = w.clubs.filter((c) => c.id !== parent.id);
+  return { w, id: target.id, parent: parent.id };
+}
+
+/** A blocked young keeper is genuinely loaned through the normal NPC settlement. */
+function npcLoan() {
+  const w = worldMarketFixture();
+  w.calendar = { day: npcMarketDays(w.year)[0]![0]! };
+  w.clubs = [
+    w.clubs[0]!,
+    ...[0, 1].map((n): Club => ({
+      ...w.clubs[1]!,
+      id: `ENG:0:0:${n}`,
+      country: 'ENG',
+      strength: 65,
+    })),
+  ];
+  foundSquads(w);
+  w.people = {};
+  for (const club of w.clubs.slice(1)) {
+    for (const p of w.squads![club.id]!) {
+      p.born = w.year - 24;
+      p.potential = 65;
+      p.until = w.year + 3;
+      for (const a of ATTRIBUTES) p.attrs[a] = 65;
+      p.wage = marketWageAt('ENG', w.year, club.tier, p);
+    }
+    club.books = {
+      seasons: [],
+      cash: '999999999999',
+      debt: '0',
+      openingIncome: npcWageBill(w, club).toString(),
+    };
+    invalidateNpcSquad(w, club.id);
+  }
+  const seller = w.clubs[1]!,
+    buyer = w.clubs[2]!;
+  const p = generatedPlayer('ENG', w.seed, 'listed-keeper', w.year, 75, 'GK', 19, 0);
+  for (const a of ATTRIBUTES) p.attrs[a] = 40;
+  p.potential = 75;
+  p.until = w.year + 4;
+  p.wage = marketWageAt('ENG', w.year, 0, p);
+  p.graduate = true;
+  p.joined = w.year - 2;
+  w.squads![seller.id]!.push(p);
+  seller.books!.openingIncome = npcWageBill(w, seller).toString();
+  w.squads![buyer.id] = w.squads![buyer.id]!.filter((q) => q.position !== 'GK');
+  invalidateNpcSquad(w, buyer.id);
+  npcMarket(w);
+  return { w, id: p.id, parent: seller.id };
+}
+function atReturn(w: World) {
+  w.round = SEASON_ROUNDS;
+  w.calendar = { day: SEASON_END_DAY + 1 };
+}
+function facts(w: World, eventAt: number) {
+  const copy = structuredClone(w);
+  // New notification only; retain every earlier event and every other world field.
+  copy.events.splice(eventAt);
+  // Compatible release labels do not change the fixture's game facts.
+  return { ...copy, engine: undefined };
+}
+const digest = (value: unknown) => createHash('sha256').update(canonical(value)).digest('hex');
+// BASELINE CAPTURES: unchanged 134ae45f, complete raw worlds retained in .tmp/t912.
+const BASELINE = {
+  'owned-22': '4ecc192b289da0a30c4cb7327118b6ef9772beb08156f28ad86577539fa438b9',
+  'owned-35': 'd475e4f8194652acaa99fc345bcc6594965e51ccf9181af453df31ae58064c24',
+  npc: '88aa44c98140a5de6dc2065506419ced216e6b0fffc043e844b2804155a8555a',
+  missing: '3acaf009713082f2837df58e8502a6e24df38e2cdf4708e44b856f1f9b228d96',
+};
+
+describe('canonical owned loan return notification', () => {
+  it.each([22, 35])(
+    'notifies one actual return at age %i without changing settled facts',
+    (age) => {
+      const { w, id, parent } = ownedLoan(age);
+      const p = w.players.find((q) => q.id === id)!;
+      const terms = structuredClone(w.playerRecords![id]!.loan!);
+      expect(p.loanUntil).toBe(w.year + 1);
+      expect(w.people![id]!.loan!.club).toBe(parent);
+      atReturn(w);
+      const eventAt = w.events.length;
+      const moveAt = w.playerRecords![id]!.moves.length;
+      draws.length = 0;
+      returnNpcLoans(w);
+      expect(draws).toEqual([]);
+      expect(w.events.slice(eventAt)).toEqual([
+        {
+          year: w.year,
+          round: SEASON_ROUNDS,
+          kind: 'loan-return',
+          title: sourceMessage('copy.careers.a1549f3110', { p0: p.name }),
+          detail: sourceMessage('copy.season.f3d7a85a92'),
+        },
+      ]);
+      expect(p.status).toBe('sold');
+      expect(p.loanUntil).toBeUndefined();
+      expect(w.people![id]!.loan).toBeUndefined();
+      expect(w.playerRecords![id]!.loan).toBeUndefined();
+      expect(w.people![id]!.club).toBe(parent);
+      expect(w.people![id]!.employment.filter((j) => j.role === 'player' && !j.to)).toEqual([
+        expect.objectContaining({ club: parent, from: { year: w.year, day: currentDay(w) } }),
+      ]);
+      const rows = w.squads![parent]!.filter((q) => q.id === id);
+      expect(rows).toHaveLength(1);
+      expect(rows[0]).toMatchObject({ wage: terms.wage, until: terms.contractUntil });
+      expect(rows[0]!.loanUntil).toBeUndefined();
+      expect(w.playerRecords![id]!.moves.slice(moveAt)).toEqual([
+        {
+          year: w.year,
+          day: currentDay(w),
+          from: w.playerClub,
+          to: parent,
+          fee: '0',
+        },
+      ]);
+      expect(digest(facts(w, eventAt))).toBe(BASELINE[`owned-${age}` as keyof typeof BASELINE]);
+      const once = structuredClone(w);
+      returnNpcLoans(w);
+      expect(w).toEqual(once);
+      expect(draws).toEqual([]);
+    },
+  );
+
+  it('keeps a genuine NPC-to-NPC loan return silent and idempotent', () => {
+    const { w, id, parent } = npcLoan();
+    expect(w.playerRecords![id]!.moves[0]!.loan).toBe(true);
+    expect(w.playerRecords![id]!.loan!.club).toBe(parent);
+    atReturn(w);
+    const eventAt = w.events.length;
+    draws.length = 0;
+    returnNpcLoans(w);
+    expect(w.events.slice(eventAt)).toEqual([]);
+    expect(draws).toEqual([]);
+    expect(w.squads![parent]!.filter((p) => p.id === id)).toHaveLength(1);
+    expect(w.playerRecords![id]!.loan).toBeUndefined();
+    expect(digest(facts(w, eventAt))).toBe(BASELINE.npc);
+    const once = structuredClone(w);
+    returnNpcLoans(w);
+    expect(w).toEqual(once);
+  });
+
+  it('preserves missing-parent behavior without announcing an unsuccessful return', () => {
+    const { w, id } = ownedLoan(22, true);
+    atReturn(w);
+    const eventAt = w.events.length;
+    const moves = structuredClone(w.playerRecords![id]!.moves);
+    draws.length = 0;
+    returnNpcLoans(w);
+    expect(w.events.slice(eventAt)).toEqual([]);
+    expect(draws).toEqual([]);
+    expect(w.playerRecords![id]!.moves).toEqual(moves);
+    expect(w.players.find((p) => p.id === id)!.status).toBe('active');
+    expect(w.playerRecords![id]!.loan).toBeUndefined();
+    expect(digest(facts(w, eventAt))).toBe(BASELINE.missing);
+  });
+});
