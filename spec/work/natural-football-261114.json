@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T21:45:41.683Z",
-  "sourceCommit": "55cd98746c734b4c0b900d0d42bc0927ac329769",
+  "snapshotAt": "2026-11-13T21:59:00.218Z",
+  "sourceCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -80,12 +80,12 @@
   },
   "summary": {
     "total": 31,
-    "completed": 28,
-    "remaining": 3,
+    "completed": 29,
+    "remaining": 2,
     "running": 2,
     "review": 0,
     "blocked": 0,
-    "unassigned": 1
+    "unassigned": 0
   },
   "tasks": [
     {
@@ -105,15 +105,6 @@
       ],
       "lane": "current-browser-scenes",
       "status": "doing"
-    },
-    {
-      "id": "T912",
-      "title": "Restore the ordinary owned-loan return notification",
-      "dep": [
-        "T909"
-      ],
-      "lane": "owned-loan-return-event",
-      "status": "todo"
     }
   ],
   "attempts": [
@@ -2064,6 +2055,8 @@
       "submittedBase": "55cd98746c734b4c0b900d0d42bc0927ac329769",
       "submissionId": "e8ae48d9-51d6-4cdd-bb49-66f837a891e1",
       "submittedAt": "2026-11-13T21:43:05.247Z",
+      "integratedCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+      "integratedAt": "2026-11-13T21:46:15.505Z",
       "risk": null,
       "review": {
         "id": "4d9384f9-8977-4e8a-86e3-0cec1677c8d9",
@@ -2120,6 +2113,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T21:42:19.182Z",
           "finishedAt": "2026-11-13T21:43:05.057Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T21:45:42.081Z",
+          "finishedAt": "2026-11-13T21:46:15.142Z"
         }
       ]
     },
@@ -2203,6 +2203,62 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T21:27:22.976Z",
           "finishedAt": "2026-11-13T21:27:43.626Z"
+        }
+      ]
+    },
+    {
+      "id": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "group": "natural-football-261114",
+      "taskId": "T912",
+      "tasks": [
+        "T912"
+      ],
+      "lane": "owned-loan-return-event",
+      "owner": "nf14-codex-owned-loan-return",
+      "contributors": [
+        "nf14-codex-owned-loan-return"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-13T21:49:12.033Z",
+      "startCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+      "verifiedCommit": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+      "submittedBase": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+      "submissionId": "731763c7-4c2b-4452-9123-a6590102cbbd",
+      "submittedAt": "2026-11-13T21:55:51.363Z",
+      "risk": null,
+      "review": {
+        "id": "b176e0b1-5081-4119-9572-3b0f259c3f6d",
+        "owner": "pr14-independent-owned-loan-return",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T912 fc5d4c26 reviewed independently against134ae45f: the production diff is only existing source-message/event imports and one notification after the successful canonical return when the captured borrower is the owned club. Shared return order, legacy fallback, player/person/record mutations and NPC/missing-parent paths are unchanged. No RNG, locale preference, display copy, schema or gameplay formula was added. All27tiny units in the existing receipt ran against source/test bytes exactly equal to this frozen submission (verified receipt tree6e3d3657), including ages22/35, exact existing event/date, parent terms/job/move, zero return draws, NPC silence, missing parent and repeated return/shared-close idempotence. Independently deep-compared all four raw baseline/candidate worlds: every before field equals; every after field including engine equals after removing only the single exact asserted owned notification; NPC/missing paths are fully unchanged. Final static/type/lint/format/12-locale evidence passed. No additional engine simulation, integration, browser or application build ran in this review. Coordinator must still run the unchanged full recruitment journey and complete final gate on the combined candidate; new runtime correctly invalidates normal world-cache identities.",
+        "findings": [],
+        "commit": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+        "baseCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+        "submissionId": "731763c7-4c2b-4452-9123-a6590102cbbd",
+        "createdAt": "2026-11-13T21:55:54.006Z",
+        "finishedAt": "2026-11-13T21:58:39.098Z"
+      },
+      "steps": [
+        {
+          "taskId": "T912",
+          "commit": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+          "at": "2026-11-13T21:55:51.352Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T21:55:32.794Z",
+              "finishedAt": "2026-11-13T21:55:51.176Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T21:55:32.794Z",
+          "finishedAt": "2026-11-13T21:55:51.176Z"
         }
       ]
     }
@@ -10250,6 +10306,193 @@
       "group": "natural-football-261114",
       "attemptId": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
       "taskId": "T908",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 362,
+      "at": "2026-11-13T21:46:15.269Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
+      "taskId": "T908",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T21:45:42.081Z",
+            "finishedAt": "2026-11-13T21:46:15.142Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 363,
+      "at": "2026-11-13T21:46:15.505Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "62e9c3c0-6991-42ec-bb32-4e8177cdaceb",
+      "taskId": "T908",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+        "integratedAt": "2026-11-13T21:46:15.505Z"
+      }
+    },
+    {
+      "sequence": 364,
+      "at": "2026-11-13T21:49:12.033Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+        "group": "natural-football-261114",
+        "taskId": "T912",
+        "tasks": [
+          "T912"
+        ],
+        "lane": "owned-loan-return-event",
+        "owner": "nf14-codex-owned-loan-return",
+        "contributors": [
+          "nf14-codex-owned-loan-return"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T21:49:12.033Z",
+        "startCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08"
+      }
+    },
+    {
+      "sequence": 365,
+      "at": "2026-11-13T21:49:13.864Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 366,
+      "at": "2026-11-13T21:55:32.641Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 367,
+      "at": "2026-11-13T21:55:51.363Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+        "submittedBase": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+        "submissionId": "731763c7-4c2b-4452-9123-a6590102cbbd",
+        "submittedAt": "2026-11-13T21:55:51.363Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T912",
+            "commit": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+            "at": "2026-11-13T21:55:51.352Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T21:55:32.794Z",
+                "finishedAt": "2026-11-13T21:55:51.176Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T21:55:32.794Z",
+            "finishedAt": "2026-11-13T21:55:51.176Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 368,
+      "at": "2026-11-13T21:55:54.006Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b176e0b1-5081-4119-9572-3b0f259c3f6d",
+          "owner": "pr14-independent-owned-loan-return",
+          "status": "reviewing",
+          "commit": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+          "baseCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+          "submissionId": "731763c7-4c2b-4452-9123-a6590102cbbd",
+          "createdAt": "2026-11-13T21:55:54.006Z"
+        }
+      }
+    },
+    {
+      "sequence": 369,
+      "at": "2026-11-13T21:58:39.098Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b176e0b1-5081-4119-9572-3b0f259c3f6d",
+          "owner": "pr14-independent-owned-loan-return",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T912 fc5d4c26 reviewed independently against134ae45f: the production diff is only existing source-message/event imports and one notification after the successful canonical return when the captured borrower is the owned club. Shared return order, legacy fallback, player/person/record mutations and NPC/missing-parent paths are unchanged. No RNG, locale preference, display copy, schema or gameplay formula was added. All27tiny units in the existing receipt ran against source/test bytes exactly equal to this frozen submission (verified receipt tree6e3d3657), including ages22/35, exact existing event/date, parent terms/job/move, zero return draws, NPC silence, missing parent and repeated return/shared-close idempotence. Independently deep-compared all four raw baseline/candidate worlds: every before field equals; every after field including engine equals after removing only the single exact asserted owned notification; NPC/missing paths are fully unchanged. Final static/type/lint/format/12-locale evidence passed. No additional engine simulation, integration, browser or application build ran in this review. Coordinator must still run the unchanged full recruitment journey and complete final gate on the combined candidate; new runtime correctly invalidates normal world-cache identities.",
+          "findings": [],
+          "commit": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+          "baseCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+          "submissionId": "731763c7-4c2b-4452-9123-a6590102cbbd",
+          "createdAt": "2026-11-13T21:55:54.006Z",
+          "finishedAt": "2026-11-13T21:58:39.098Z"
+        }
+      }
+    },
+    {
+      "sequence": 370,
+      "at": "2026-11-13T21:58:57.516Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
