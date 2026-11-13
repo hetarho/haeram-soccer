@@ -6,6 +6,7 @@
 |---|---|---|---|---|---|---|---|
 | pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T18:17Z | - | work/performance-books-pb14 | f1aef0bcd58e |
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T18:10Z | - | codex/natural-football-261114 | 59816a0e9b8a |
+| pr14 | ihaelam-ui-MacBookPro | pair | 2026-11-13T18:19Z | 2026-11-13T18:19Z | T883 | fix/pb14-final-review | bb7707c73b5e |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
