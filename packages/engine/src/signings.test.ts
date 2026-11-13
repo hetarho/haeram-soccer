@@ -20,6 +20,7 @@ import {
   noteSigning,
   ownStarters,
   judgeRequests,
+  makePlayer,
   nextShortlistDraw,
   openShortlistWindow,
   operate,
@@ -45,21 +46,70 @@ import { careerWorld } from './career.testkit';
 import { holdTemperament } from './delegation.testkit';
 import { scoutReach } from './scout-search';
 import { joinFreeAgents } from './free-agents';
+import { retainPerson, openEmployment } from './person-careers';
+import { movePerson } from './npc-continuity';
 
 /** Release the actual listed club player, keeping his identity and unchanged sporting quality. */
 function releaseListed(w: World, line?: Line) {
   const listed = transferOffers(w).find(
-    (offer) => !offer.freeAgent && (!line || lineOf(offer.player.position) === line),
+    (offer) =>
+      offer.available && !offer.freeAgent && (!line || lineOf(offer.player.position) === line),
   )!;
+  expect(listed).toBeDefined();
   expect(listed.source.kind).toBe('club');
   const origin = listed.source.kind === 'club' ? listed.source.club : '';
   const player = w.squads![origin].find((one) => one.id === listed.player.id)!;
-  expect(w.people![player.id].club).toBe(origin);
+  expect(player).toBeDefined();
+  // Persisted players below the coaching threshold need not yet have a retained person row.
+  const person = retainPerson(w, player, origin);
+  openEmployment(w, person.id, 'player', origin);
+  expect(person.club).toBe(origin);
   expect(joinFreeAgents(w, player, w.year)).toBe(true);
   const free = transferOffers(w).find(
     (offer) => offer.available && offer.freeAgent && offer.player.id === player.id,
   )!;
   expect(free).toBeDefined();
+  return free;
+}
+/** A distinct registered test person competes freely against an unchanged equal-quality paid row. */
+function equalQualityFree(w: World) {
+  const paid = transferOffers(w).find(
+    (offer) => offer.available && !offer.freeAgent && !offer.foreign,
+  )!;
+  expect(paid).toBeDefined();
+  expect(paid.source.kind).toBe('club');
+  const origin = paid.source.kind === 'club' ? paid.source.club : '';
+  const club = w.clubs.find((one) => one.id === origin)!;
+  const id = 'fixture:signings:equal-quality-free';
+  expect(w.people?.[id]).toBeUndefined();
+  const player = makePlayer(
+    club.country,
+    w.seed,
+    id,
+    w.year,
+    overall(paid.player),
+    paid.player.position,
+    w.year - paid.player.born,
+    club.tier,
+  );
+  player.attrs = { ...paid.player.attrs };
+  player.positions = { ...paid.player.positions };
+  player.potential = paid.player.potential;
+  movePerson(w, player, origin);
+  expect(w.people![id].origin).toBeUndefined();
+  expect(joinFreeAgents(w, player, w.year)).toBe(true);
+  const offers = transferOffers(w),
+    free = offers.find((offer) => offer.available && offer.freeAgent && offer.player.id === id)!;
+  expect(free).toBeDefined();
+  expect(
+    offers.find(
+      (offer) => offer.available && !offer.freeAgent && offer.player.id === paid.player.id,
+    ),
+  ).toBeDefined();
+  expect(free.player.id).not.toBe(paid.player.id);
+  expect(free.player.attrs).toEqual(paid.player.attrs);
+  expect(overall(free.player)).toBe(overall(paid.player));
+  expect(free.player.potential).toBe(paid.player.potential);
   return free;
 }
 /** A paid fixture purchase completes the real asking-fee bid before testing arrival effects. */
@@ -122,7 +172,7 @@ const clubIndex = (w: World) => transferOffers(w).findIndex((offer) => !offer.fr
 describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it('fills a short role with a free agent on equal sporting quality', () => {
     const w = club(2);
-    const free = releaseListed(w);
+    const free = equalQualityFree(w);
     expect(free.freeAgent).toBe(true);
     keep(w, lineOf(free.player.position), 1);
     expect(shortLines(w)[0]).toMatchObject({
