@@ -25,6 +25,7 @@
 | T865 | pw86 | work/persisted-world-860 | 2d8f77e7118c | 2026-11-13T08:18Z |
 
 ## log
+- 261113 gusta-create-task ARCH: T869 for retained saved-report resources; T866 follows it, ARCH r42 consumed. T859 cites ARCH-32 but financial behavior is unchanged and fin3 reports no active task.
 - 261113 gusta-update-ssot ARCH start: retain message resources for supported saved prose
 - 261113 T865 done
 - 261113 T864 done
