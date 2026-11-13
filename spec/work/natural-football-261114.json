@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T17:09:12.621Z",
-  "sourceCommit": "7602032a9501272017e9f44d70daf7277c1969c5",
+  "snapshotAt": "2026-11-13T17:22:06.194Z",
+  "sourceCommit": "5f8bdf24b0461d02b349694b2d716dda336b4561",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -53,24 +53,14 @@
   },
   "summary": {
     "total": 4,
-    "completed": 3,
-    "remaining": 1,
-    "running": 1,
+    "completed": 4,
+    "remaining": 0,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T876",
-      "title": "Open supporting passing angles around a defensive screen",
-      "dep": [
-        "T874"
-      ],
-      "lane": "natural-football-support",
-      "status": "doing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
@@ -217,6 +207,8 @@
       "submittedBase": "4073083adf9288380c94274cb6ef078415084b05",
       "submissionId": "49403687-5e64-494e-9b01-5485e6cae133",
       "submittedAt": "2026-11-13T17:04:03.704Z",
+      "integratedCommit": "88820aeb00e4c23b2b2960ec5766600f75126fc6",
+      "integratedAt": "2026-11-13T17:10:21.736Z",
       "risk": null,
       "review": {
         "id": "d748d56b-c5f0-4061-bd62-478d1417a475",
@@ -274,6 +266,13 @@
           "startedAt": "2026-11-13T17:03:50.427Z",
           "finishedAt": "2026-11-13T17:04:03.225Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T17:09:13.216Z",
+          "finishedAt": "2026-11-13T17:10:21.131Z"
+        }
       ]
     },
     {
@@ -288,9 +287,49 @@
       "contributors": [
         "nf14-codex-support"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-13T17:09:06.842Z",
-      "startCommit": "7602032a9501272017e9f44d70daf7277c1969c5"
+      "startCommit": "7602032a9501272017e9f44d70daf7277c1969c5",
+      "verifiedCommit": "f5b202eda53888711272df1d832acfb52d01f2db",
+      "submittedBase": "88820aeb00e4c23b2b2960ec5766600f75126fc6",
+      "submissionId": "d1da0d0d-278e-4261-b4aa-1a6f4edc4c62",
+      "submittedAt": "2026-11-13T17:18:44.835Z",
+      "risk": null,
+      "review": {
+        "id": "9f163989-0b3b-4323-b23e-4b1b3b23dcfd",
+        "owner": "nf14-codex-independent-support",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Independent review of f5b202ed (runtime881917b3) finds the bounded geometry and its single world integration consistent with T876/MATCH-17. The helper evaluates all opponent positions, preserves x and existing nearby-marker avoidance, chooses only strict improvements within unmark.step/pitch margins, and retains original targets for excluded participants/phases/orders/cues or no improvement. Direct on-shoulder/keeper movement and individual lag remain in the existing world flow. Independent geometry reproduction confirms the central screen improves, an open lane stays exact, an additional blocker selects the other side, and blocked alternatives retain the original; /tmp/nf14-support-repro.json. Runtime code draws no RNG and mutates no record/script. Measurement evidence names the correct predecessor7e80480c and candidate881917b3 with exact per-seed record/script equality; it honestly reports the small aggregate support proxy gain, viewer-4 worsening and pressure/circle/stick tradeoffs without threshold changes. No P1/P2 found. Final integrated browser/full checks remain coordinator gates.",
+        "findings": [],
+        "commit": "f5b202eda53888711272df1d832acfb52d01f2db",
+        "baseCommit": "5f8bdf24b0461d02b349694b2d716dda336b4561",
+        "submissionId": "d1da0d0d-278e-4261-b4aa-1a6f4edc4c62",
+        "createdAt": "2026-11-13T17:20:14.587Z",
+        "finishedAt": "2026-11-13T17:21:50.150Z"
+      },
+      "steps": [
+        {
+          "taskId": "T876",
+          "commit": "f5b202eda53888711272df1d832acfb52d01f2db",
+          "at": "2026-11-13T17:18:44.815Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T17:15:56.791Z",
+              "finishedAt": "2026-11-13T17:18:44.244Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T17:15:56.791Z",
+          "finishedAt": "2026-11-13T17:18:44.244Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -1553,6 +1592,154 @@
       "group": "natural-football-261114",
       "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
       "taskId": "T875",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 51,
+      "at": "2026-11-13T17:10:21.313Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T17:09:13.216Z",
+            "finishedAt": "2026-11-13T17:10:21.131Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 52,
+      "at": "2026-11-13T17:10:21.736Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "c000b045-9bf3-438e-8ef2-ed511eca62b9",
+      "taskId": "T875",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "88820aeb00e4c23b2b2960ec5766600f75126fc6",
+        "integratedAt": "2026-11-13T17:10:21.736Z"
+      }
+    },
+    {
+      "sequence": 53,
+      "at": "2026-11-13T17:15:56.361Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "701a2974-071d-4871-9354-42dc824e39b0",
+      "taskId": "T876",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 54,
+      "at": "2026-11-13T17:18:44.835Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "701a2974-071d-4871-9354-42dc824e39b0",
+      "taskId": "T876",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "f5b202eda53888711272df1d832acfb52d01f2db",
+        "submittedBase": "88820aeb00e4c23b2b2960ec5766600f75126fc6",
+        "submissionId": "d1da0d0d-278e-4261-b4aa-1a6f4edc4c62",
+        "submittedAt": "2026-11-13T17:18:44.835Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T876",
+            "commit": "f5b202eda53888711272df1d832acfb52d01f2db",
+            "at": "2026-11-13T17:18:44.815Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T17:15:56.791Z",
+                "finishedAt": "2026-11-13T17:18:44.244Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T17:15:56.791Z",
+            "finishedAt": "2026-11-13T17:18:44.244Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 55,
+      "at": "2026-11-13T17:20:14.587Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "701a2974-071d-4871-9354-42dc824e39b0",
+      "taskId": "T876",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9f163989-0b3b-4323-b23e-4b1b3b23dcfd",
+          "owner": "nf14-codex-independent-support",
+          "status": "reviewing",
+          "commit": "f5b202eda53888711272df1d832acfb52d01f2db",
+          "baseCommit": "5f8bdf24b0461d02b349694b2d716dda336b4561",
+          "submissionId": "d1da0d0d-278e-4261-b4aa-1a6f4edc4c62",
+          "createdAt": "2026-11-13T17:20:14.587Z"
+        }
+      }
+    },
+    {
+      "sequence": 56,
+      "at": "2026-11-13T17:21:50.150Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "701a2974-071d-4871-9354-42dc824e39b0",
+      "taskId": "T876",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9f163989-0b3b-4323-b23e-4b1b3b23dcfd",
+          "owner": "nf14-codex-independent-support",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Independent review of f5b202ed (runtime881917b3) finds the bounded geometry and its single world integration consistent with T876/MATCH-17. The helper evaluates all opponent positions, preserves x and existing nearby-marker avoidance, chooses only strict improvements within unmark.step/pitch margins, and retains original targets for excluded participants/phases/orders/cues or no improvement. Direct on-shoulder/keeper movement and individual lag remain in the existing world flow. Independent geometry reproduction confirms the central screen improves, an open lane stays exact, an additional blocker selects the other side, and blocked alternatives retain the original; /tmp/nf14-support-repro.json. Runtime code draws no RNG and mutates no record/script. Measurement evidence names the correct predecessor7e80480c and candidate881917b3 with exact per-seed record/script equality; it honestly reports the small aggregate support proxy gain, viewer-4 worsening and pressure/circle/stick tradeoffs without threshold changes. No P1/P2 found. Final integrated browser/full checks remain coordinator gates.",
+          "findings": [],
+          "commit": "f5b202eda53888711272df1d832acfb52d01f2db",
+          "baseCommit": "5f8bdf24b0461d02b349694b2d716dda336b4561",
+          "submissionId": "d1da0d0d-278e-4261-b4aa-1a6f4edc4c62",
+          "createdAt": "2026-11-13T17:20:14.587Z",
+          "finishedAt": "2026-11-13T17:21:50.150Z"
+        }
+      }
+    },
+    {
+      "sequence": 57,
+      "at": "2026-11-13T17:22:03.363Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "701a2974-071d-4871-9354-42dc824e39b0",
+      "taskId": "T876",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

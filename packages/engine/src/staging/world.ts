@@ -38,6 +38,7 @@ import {
 } from './mind';
 import { advanceBody, speedAt, type Body, type Pace } from './motion';
 import { pressingReach } from './tendency';
+import { supportTarget } from './support';
 
 export interface Order {
   target: Vec | (() => Vec);
@@ -388,7 +389,9 @@ export function defaultTarget(
   const free = (target: Vec): Want => ({ target, pace: generalPace(target), direct: false });
   // A free player who believes his side has the ball steps off a marker standing on his place.
   const open = (): Want =>
-    index === state.ball.owner ? free(base) : free(unmarked(state, index, base, snapshot));
+    index === state.ball.owner
+      ? free(base)
+      : free(supportTarget(state, index, unmarked(state, index, base, snapshot), snapshot));
   if (player.team === state.team) return view.team === player.team ? open() : free(base);
   const d = player.team;
   const goal = ownGoal(d, fixture.period);

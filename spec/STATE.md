@@ -58,7 +58,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
 | T877 | Index free-agent settlement facts | ARCH WORLD CLUB | - | todo |
 | T878 | Reuse NPC market settlement contexts | ARCH WORLD CLUB | T877 | todo |
 | T879 | Persist optional owner capital and income components | ARCH ECON SAVE | T878 | todo |
@@ -68,7 +67,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 4 | 3 | 1 | 1 | 0 | 0 | 2026-11-13T17:09:12.621Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-13T17:22:06.194Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
