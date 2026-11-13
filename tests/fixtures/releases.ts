@@ -17,30 +17,19 @@ export async function releasedMarketPlayer(w: import('../../packages/contracts/s
   const { retainPerson, openEmployment } = await import('../../packages/engine/src/person-careers');
   const { worldMarketOffer } = await import('../../packages/engine/src/world-market');
   const { recruitmentPreview } = await import('../../packages/engine/src/recruitment');
-  const { scoutReach, transferOffers } = await import('../../packages/engine/src/scout-search');
-  const { overall } = await import('../../packages/engine/src/player-state');
-  const reach = scoutReach(w);
+  const { transferOffers } = await import('../../packages/engine/src/scout-search');
   const ownCountry = w.clubs.find((c) => c.id === w.playerClub)!.country;
-  const candidates = Object.entries(w.squads ?? {})
-    .filter(
-      ([club]) =>
-        club !== w.playerClub &&
-        w.clubs.some((c) => c.id === club && !c.representative && c.country === ownCountry),
-    )
-    .flatMap(([club, players]) =>
-      players
-        .filter(
-          (p) =>
-            p.status === 'active' &&
-            !p.loanUntil &&
-            p.retiring === undefined &&
-            w.year - p.born >= reach.age[0] &&
-            w.year - p.born <= reach.age[1] &&
-            overall(p) >= reach.ability[0] &&
-            overall(p) <= reach.ability[1],
-        )
-        .map((player) => ({ club, player })),
-    )
+  // The same scout list required after release already identifies eligible sporting candidates.
+  // Trial its actual available club players rather than cloning the world for every domestic row.
+  const candidates = transferOffers(w)
+    .flatMap((offer) => {
+      if (!offer.available || offer.freeAgent || offer.source.kind !== 'club') return [];
+      const club = offer.source.club;
+      if (!w.clubs.some((c) => c.id === club && !c.representative && c.country === ownCountry))
+        return [];
+      const player = w.squads?.[club]?.find((p) => p.id === offer.player.id);
+      return player ? [{ club, player }] : [];
+    })
     .sort((a, b) =>
       BigInt(a.player.wage) < BigInt(b.player.wage)
         ? -1
