@@ -17,14 +17,21 @@ import {
   squad,
 } from '../packages/engine/src/world';
 import { formationOf, overall, slotOvr } from '../packages/engine/src/player-state';
-import { npcWageBill, npcWageLimit } from '../packages/engine/src/books';
+import {
+  currencyChange,
+  npcBackingAllowance,
+  npcWageBill,
+  npcWageLimit,
+} from '../packages/engine/src/books';
+import { CLUB_BOOKS, NPC_BACKING } from '../packages/engine/src/owner-config';
+import { scaleBy } from '../packages/engine/src/primitives';
 import { marketValueAt } from '../packages/engine/src/market-prices';
 import { transferWindowDays } from '../packages/engine/src/transfer-window';
 import { advanceDays } from '../packages/engine/src/season';
 import { currentDay, SEASON_END_DAY } from '../packages/engine/src/calendar';
 import { measurementIdentity } from './lib/measurement-identity';
 import { ANCHOR_YEARS, standingRecord } from './lib/transfer-reference';
-import { distribution, peakFacts } from './lib/persisted-world-facts';
+import { distribution, fundingFacts, peakFacts } from './lib/persisted-world-facts';
 
 const args = process.argv.slice(2);
 const option = (key: string, fallback: string) => {
@@ -103,6 +110,8 @@ const configs = () => ({
   },
   NPC_MARKET,
   SQUAD_SPREAD,
+  CLUB_BOOKS,
+  NPC_BACKING: NPC_BACKING.map((row) => ({ ...row, share: String(row.share) })),
 });
 const playerFact = (p: Player, c: Club) => ({
   id: p.id,
@@ -239,6 +248,18 @@ function annual() {
 function summer() {
   for (const { code } of COUNTRIES) {
     const selected = clubs().filter((c) => c.country === code);
+    const envelopes = selected.map((c) => {
+      const bill = npcWageBill(w, c),
+        limit = npcWageLimit(w, c);
+      return {
+        club: c.id,
+        tier: c.tier,
+        bill: String(bill),
+        limit: limit === undefined ? null : String(limit),
+        unsupportedCommitments:
+          limit === undefined ? null : String(bill > limit ? bill - limit : 0n),
+      };
+    });
     const breaches = selected.flatMap((c) => {
       const bill = npcWageBill(w, c),
         limit = npcWageLimit(w, c);
@@ -249,6 +270,7 @@ function summer() {
               tier: c.tier,
               bill: String(bill),
               limit: String(limit),
+              unsupportedCommitments: String(bill - limit),
               ratio: Number(bill) / Number(limit),
             },
           ]
@@ -260,18 +282,44 @@ function summer() {
       clubSeasons: selected.length,
       breaches: breaches.length,
       details: breaches,
+      envelopes,
     });
   }
 }
-function closed(before: Map<string, { tier: number; strength: number }>) {
+function closed(
+  before: Map<
+    string,
+    { tier: number; strength: number; cash: string; debt: string; allowance: string }
+  >,
+) {
   for (const { code } of COUNTRIES) {
     const selected = clubs().filter((c) => c.country === code);
-    const read = (c: Club) => ({
-      club: c.id,
-      ...before.get(c.id)!,
-      ...c.books!.seasons[0]!,
-      ratio: Number(c.books!.seasons[0]!.wages) / Number(c.books!.seasons[0]!.income),
-    });
+    const read = (c: Club) => {
+      const opening = before.get(c.id)!;
+      const book = c.books!.seasons[0]!;
+      const funding = fundingFacts(book, opening);
+      if (funding.status !== 'known') throw new Error(`Incomplete funding facts: ${c.id}`);
+      const raw = BigInt(funding.balanceBeforeBounds);
+      const ceiling = BigInt(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n));
+      const floor = -BigInt(scaleBy(book.income, CLUB_BOOKS.debtSeasons, 1000n));
+      const bounded = raw > ceiling ? ceiling : raw < floor ? floor : raw;
+      const carried =
+        currencyChange(c.country, book.year, w.year)?.(String(bounded)) ?? String(bounded);
+      return {
+        club: c.id,
+        ...opening,
+        ...book,
+        ratio: Number(book.wages) / Number(book.income),
+        funding: {
+          ...funding,
+          investment: String(raw > ceiling ? raw - ceiling : 0n),
+          debtWriteOff: String(raw < floor ? floor - raw : 0n),
+          cash: c.books!.cash,
+          debt: c.books!.debt,
+          balanceReconciles: BigInt(c.books!.cash) - BigInt(c.books!.debt) === BigInt(carried),
+        },
+      };
+    };
     const actual = selected.map(read);
     const strongest = selected
       .filter((c) => before.get(c.id)?.tier === 0)
@@ -286,6 +334,8 @@ function closed(before: Map<string, { tier: number; strength: number }>) {
       strongest,
       strongestMedian: distribution(strongest.map((r) => r.ratio)).median,
       breaches: actual.filter((r) => r.ratio > 1),
+      wageAboveTurnoverDiagnostic: actual.filter((r) => r.ratio > 1).length,
+      funding: actual,
       totals: actual.reduce(
         (a, r) => ({
           income: String(BigInt(a.income) + BigInt(r.income)),
@@ -323,7 +373,18 @@ try {
       summer();
     }
     advanceDays(w, SEASON_END_DAY - currentDay(w), undefined, false);
-    const before = new Map(clubs().map((c) => [c.id, { tier: c.tier, strength: c.strength }]));
+    const before = new Map(
+      clubs().map((c) => [
+        c.id,
+        {
+          tier: c.tier,
+          strength: c.strength,
+          cash: c.books!.cash,
+          debt: c.books!.debt,
+          allowance: String(npcBackingAllowance(w, c)!),
+        },
+      ]),
+    );
     liveHistory(w, year + 1);
     closed(before);
     if (w.year <= until) sample();

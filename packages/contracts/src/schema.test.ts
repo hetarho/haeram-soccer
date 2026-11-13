@@ -216,7 +216,20 @@ describe('owner and takeover (→SAVE-27)', () => {
     const other = w.clubs.find((club) => club.id !== w.playerClub)!;
     other.books = {
       seasons: [
-        { year: w.year, income: '500000', wages: '420000', costs: '150000', result: '-70000' },
+        {
+          year: w.year,
+          income: '500000',
+          incomeComponents: {
+            distribution: '100000',
+            gate: '200000',
+            commercial: '0',
+            competitions: '200000',
+          },
+          ownerCapital: '900719925474099312345',
+          wages: '420000',
+          costs: '150000',
+          result: '-70000',
+        },
         { year: w.year - 1, income: '480000', wages: '400000', costs: '140000', result: '-60000' },
       ],
       cash: '0',
@@ -227,6 +240,29 @@ describe('owner and takeover (→SAVE-27)', () => {
     expect(loaded.loan).toEqual(w.loan);
     expect(loaded.ended).toBe('owner');
     expect(loaded.clubs.find((club) => club.id === other.id)!.books).toEqual(other.books);
+    expect(loaded.clubs.find((club) => club.id === other.id)!.books!.seasons[1]).not.toHaveProperty(
+      'ownerCapital',
+    );
+    expect(loaded.clubs.find((club) => club.id === other.id)!.books!.seasons[1]).not.toHaveProperty(
+      'incomeComponents',
+    );
+    for (const invalid of ['-1', '1.5', '', '1e3', 1, null]) {
+      for (const field of ['ownerCapital', 'distribution', 'gate', 'commercial', 'competitions']) {
+        const broken = structuredClone(w);
+        const book = broken.clubs.find((club) => club.id === other.id)!.books!.seasons[0];
+        if (field === 'ownerCapital') Object.assign(book, { ownerCapital: invalid });
+        else Object.assign(book.incomeComponents!, { [field]: invalid });
+        expect(() => validateWorld(broken, LOAD_CATALOG)).toThrow();
+      }
+    }
+    const incomplete = structuredClone(w);
+    delete (
+      incomplete.clubs.find((club) => club.id === other.id)!.books!.seasons[0]
+        .incomeComponents as Partial<
+        NonNullable<(typeof other.books.seasons)[0]['incomeComponents']>
+      >
+    ).gate;
+    expect(() => validateWorld(incomplete, LOAD_CATALOG)).toThrow();
     // A save of it reads back the same world.
     expect(validateWorld(JSON.parse(JSON.stringify(loaded)), LOAD_CATALOG)).toEqual(loaded);
     // A save carrying none of it (an older one) validates as before.

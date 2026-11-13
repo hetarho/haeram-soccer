@@ -6,6 +6,7 @@ import {
   capFreeAgents,
   closeFreeAgents,
   FREE_AGENT_CONFIG,
+  FREE_AGENT_FLOW,
   joinFreeAgents,
   joinAtClose,
   npcContractTerm,
@@ -23,8 +24,13 @@ import {
   stature,
 } from './world';
 import { marketWageAt } from './market-prices';
-import { npcWageBill } from './books';
+import { NPC_WAGE_DECISIONS, npcWageBill } from './books';
 import { lineOf } from './player';
+import { operatingExpensesAt } from './finance';
+import {
+  FREE_AGENT_FLOW as REFERENCE_FLOW,
+  refreshFreeAgents as referenceRefresh,
+} from './free-agents-reference.testkit';
 
 function agent(id: string, ability = 50, position: Position = 'CB'): FreeAgent {
   const p = makePlayer('ESP', 'free-unit', id, 1950, ability, position, 24);
@@ -33,6 +39,59 @@ function agent(id: string, ability = 50, position: Position = 'CB'): FreeAgent {
 }
 
 describe('NPC contracts and need-based free agents on isolated squads', () => {
+  it.each([1951, 2020])(
+    'matches the pre-change settlement for sparse and dense squads in %i',
+    (year) => {
+      const { w, c } = npcBooksFixture(year);
+      const rival = { ...c, id: 'ENG:0:0:0', country: 'ENG', tier: 1, levels: undefined };
+      w.clubs = [w.clubs[0]!, c, rival];
+      delete w.squads;
+      foundSquads(w);
+      w.squads![c.id] = w.squads![c.id]!.filter((p) => p.position !== 'GK').slice(0, 15);
+      w.squads![rival.id] = w.squads![rival.id]!.filter((p) => p.position !== 'GK');
+      const pool = [
+        agent('keeper-a', 70, 'GK'),
+        agent('keeper-b', 50, 'GK'),
+        agent('mid', 55, 'CM'),
+        agent('forward', 40, 'ST'),
+        agent('retiree', 60, 'CB'),
+      ];
+      for (const p of pool) {
+        p.born = year - 24;
+        p.freeSince = year;
+      }
+      pool[4]!.born = year - 41;
+      w.freeAgents = pool;
+      c.books = {
+        seasons: [],
+        cash: '0',
+        debt: '0',
+        openingIncome: (
+          npcWageBill(w, c) + BigInt(marketWageAt(c.country, year, c.tier, pool[1]!))
+        ).toString(),
+      };
+      const candidate = structuredClone(w),
+        reference = structuredClone(w);
+      const run = (world: typeof w, referenceRun: boolean) => {
+        const events: unknown[] = [],
+          wages: unknown[] = [];
+        const flow = referenceRun ? REFERENCE_FLOW : FREE_AGENT_FLOW;
+        flow.observe = (kind, player, club) =>
+          events.push([kind, player.id, club, player.wage, player.until]);
+        NPC_WAGE_DECISIONS.observe = (club, bill, limit, allowed) =>
+          wages.push([club.id, bill, limit, allowed]);
+        try {
+          (referenceRun ? referenceRefresh : refreshFreeAgents)(world, year);
+        } finally {
+          delete flow.observe;
+          delete NPC_WAGE_DECISIONS.observe;
+        }
+        return { events, wages };
+      };
+      expect(run(candidate, false)).toEqual(run(reference, true));
+      expect(candidate).toEqual(reference);
+    },
+  );
   it('starts a persisted world with no fabricated free agents', () => {
     const { w } = npcBooksFixture();
     expect(w.freeAgents ?? []).toEqual([]);
@@ -94,9 +153,15 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     p.until = w.year;
     const wage = marketWageAt(c.country, 1951, c.tier, p);
     const budget = npcWageBill(w, c) - BigInt(p.wage) + BigInt(wage);
-    c.books = { seasons: [], cash: '0', debt: '0', openingIncome: (budget - 1n).toString() };
+    const costs = BigInt(operatingExpensesAt(c.country, 1951, c.tier));
+    c.books = {
+      seasons: [],
+      cash: (budget + costs - 1n).toString(),
+      debt: '0',
+      openingIncome: '0',
+    };
     const allowed = structuredClone(w);
-    allowed.clubs[1]!.books!.openingIncome = budget.toString();
+    allowed.clubs[1]!.books!.cash = (budget + costs).toString();
     renewNpcContracts(w, c);
     expect(w.freeAgents!.some((q) => q.id === p.id)).toBe(true);
     const other = allowed.clubs[1]!;
@@ -136,15 +201,21 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     const wage = marketWageAt(c.country, w.year, c.tier, cheap);
     c.books = {
       seasons: [],
-      cash: '0',
+      cash: (
+        npcWageBill(w, c) +
+        BigInt(wage) +
+        BigInt(operatingExpensesAt(c.country, w.year, c.tier))
+      ).toString(),
       debt: '0',
-      openingIncome: (npcWageBill(w, c) + BigInt(wage)).toString(),
+      openingIncome: '0',
     };
     w.freeAgents = [dear, cheap];
     refreshFreeAgents(w);
     expect(clubPlayers(w, c).some((p) => p.id === cheap.id)).toBe(true);
     expect(w.freeAgents!.map((p) => p.id)).toEqual([dear.id]);
-    expect(npcWageBill(w, c)).toBe(BigInt(c.books.openingIncome!));
+    expect(npcWageBill(w, c)).toBe(
+      BigInt(c.books.cash) - BigInt(operatingExpensesAt(c.country, w.year, c.tier)),
+    );
   });
 
   it('does not sign beyond standing size when every line has cover', () => {

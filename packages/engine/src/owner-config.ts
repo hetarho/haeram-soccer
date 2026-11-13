@@ -168,6 +168,13 @@ export const TAKEOVER_DEBT = { seasons: 10, rate: 0.05 } as const;
 /** Unowned books: opening cash, maximum cash and maximum debt in seasons of income (→ECON-36). */
 export const CLUB_BOOKS = { opening: 0.5, cashSeasons: 1, debtSeasons: 1.5 } as const;
 
+/** Estimated annual private backing as thousandths of operating income, by minimum stature. */
+export const NPC_BACKING = [
+  { stature: 9, share: 1000n },
+  { stature: 4, share: 500n },
+  { stature: -1, share: 150n },
+] as const;
+
 /**
  * The club as the owner takes it over (→CLUB-1): its squad filled to `squad` with players at its
  * level, `goalkeepers` of them keepers. Its facilities stand at the stage its division and stature

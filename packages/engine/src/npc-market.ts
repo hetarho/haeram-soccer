@@ -16,8 +16,7 @@ import { movePerson } from './npc-continuity';
 import { moveSquadPlayer } from './persisted-squads';
 import { formationOf, slotOvr } from './player-state';
 import { LINE_MINIMUM, lineOf, mainOvr, type Slot } from './player';
-import { compareIds, random, ratio, scaleBy } from './primitives';
-import { CLUB_BOOKS } from './owner-config';
+import { compareIds, random, ratio } from './primitives';
 import { clubRegistration, registrationExempt } from './registration';
 import { SQUAD_MINIMUM } from './squad-size';
 import { clubById, clubPlayers, clubStyle, NPC_SQUAD, refillPlace, stature } from './world';
@@ -45,40 +44,37 @@ export function npcMarketDays(year: number) {
 }
 
 type Need = { line: Line; slot?: Slot; best: number; rank: number };
-type Listing = { club: Club; player: Player; loan: boolean };
+type Listing = { club: Club; player: Player; loan: boolean; sellDown: boolean };
 const lines = Object.keys(LINE_MINIMUM) as Line[];
 const compareMoney = (a: bigint, b: bigint) => (a > b ? -1 : a < b ? 1 : 0);
-const loanReservations = new WeakMap<
-  World,
-  { records: World['playerRecords']; clubs: Map<string, number> }
->();
-function reservedReturns(w: World, club: string) {
-  let index = loanReservations.get(w);
-  if (!index || index.records !== w.playerRecords) {
-    const clubs = new Map<string, number>();
-    for (const record of Object.values(w.playerRecords ?? {}))
-      if (record.loan) clubs.set(record.loan.club, (clubs.get(record.loan.club) ?? 0) + 1);
-    index = { records: w.playerRecords, clubs };
-    loanReservations.set(w, index);
-  }
-  return index.clubs.get(club) ?? 0;
+type ClubFacts = {
+  registration: ReturnType<typeof clubRegistration>;
+  limit: bigint | undefined;
+  bill: bigint;
+};
+type Settlement = { clubs: Map<string, ClubFacts>; returns: Map<string, number> };
+
+function clubFacts(w: World, club: Club, settlement?: Settlement): ClubFacts {
+  const cached = settlement?.clubs.get(club.id);
+  if (cached) return cached;
+  const facts = {
+    registration: clubRegistration(club, w.year, w.squads?.[club.id] ?? []),
+    limit: npcWageLimit(w, club),
+    bill: npcWageBill(w, club),
+  };
+  settlement?.clubs.set(club.id, facts);
+  return facts;
+}
+
+function reservedReturns(w: World, club: string, settlement?: Settlement) {
+  if (settlement) return settlement.returns.get(club) ?? 0;
+  let count = 0;
+  for (const record of Object.values(w.playerRecords ?? {}))
+    if (record.loan?.club === club) count++;
+  return count;
 }
 const convertFee = (w: World, from: Club, to: Club, fee: string) =>
   fromPounds(to.country, w.year, inPounds(from.country, w.year, fee));
-
-/** Fee commitments settle with the books; count them now so no two purchases spend the same cash. */
-function canPayFee(w: World, c: Club, fee: string) {
-  const b = c.books;
-  if (!b) return false;
-  const income = b.seasons[0]?.income ?? b.openingIncome ?? '0';
-  const room =
-    BigInt(b.cash) -
-    BigInt(b.debt) +
-    BigInt(b.transfersReceived ?? '0') -
-    BigInt(b.transfersPaid ?? '0') +
-    BigInt(scaleBy(income, CLUB_BOOKS.debtSeasons, 1000n));
-  return BigInt(fee) <= room;
-}
 
 /** The level an ordinary place can carry, on the same wage curve as an actual signing. */
 function affordableLevel(w: World, c: Club, players: Player[]) {
@@ -134,10 +130,11 @@ export function npcCanSell(w: World, c: Club, p: Player) {
   );
 }
 
-function canRegister(w: World, c: Club, p: Player, loan: boolean) {
-  const players = w.squads?.[c.id] ?? [];
-  const state = clubRegistration(c, w.year, players);
-  const returning = reservedReturns(w, c.id);
+function canRegister(w: World, c: Club, p: Player, loan: boolean, settlement?: Settlement) {
+  const state = settlement
+    ? clubFacts(w, c, settlement).registration
+    : clubRegistration(c, w.year, w.squads?.[c.id] ?? []);
+  const returning = reservedReturns(w, c.id, settlement);
   const incoming = {
     ...p,
     graduate: undefined,
@@ -159,29 +156,30 @@ export function npcOffer(
   fee: string,
   loan = false,
   wanted = needs(w, buyer),
+  settlement?: Settlement,
 ) {
   if (
     !/^\d{1,80}$/.test(fee) ||
     buyer.id === w.playerClub ||
     buyer.representative ||
+    !buyer.books ||
     !w.squads?.[buyer.id] ||
     buyer.id === seller.id ||
     !wanted.some((n) => fills(p, n)) ||
-    !canRegister(w, buyer, p, loan)
+    !canRegister(w, buyer, p, loan, settlement)
   )
     return undefined;
-  const limit = npcWageLimit(w, buyer);
-  if (limit !== undefined && npcWageBill(w, buyer) > limit) return undefined;
+  const facts = clubFacts(w, buyer, settlement);
+  if (facts.limit !== undefined && facts.bill > facts.limit) return undefined;
   const wage = marketWageAt(buyer.country, w.year, buyer.tier, p);
   const paid = convertFee(w, seller, buyer, fee);
-  if (!npcCanPay(w, buyer, wage) || !canPayFee(w, buyer, paid)) return undefined;
+  if (!npcCanPay(w, buyer, wage, undefined, w.year, facts, paid)) return undefined;
   return { club: buyer, wage, paid, pounds: BigInt(inPounds(buyer.country, w.year, wage)) };
 }
 
 /** Observation only for the final lived-world gate; no observer changes settlement inputs. */
 export const PLAYER_MOVE_FLOW: { observe?: (w: World, id: string, move: PlayerMove) => void } = {};
 export function recordPlayerMove(w: World, id: string, move: PlayerMove) {
-  loanReservations.delete(w);
   PLAYER_MOVE_FLOW.observe?.(w, id, move);
   const record = playerRecord(w, id);
   if (record.loan?.club === move.to && !move.loan) delete record.loan;
@@ -233,7 +231,6 @@ function settleMove(
 
 /** The close returns the single live player before either side renews contracts. */
 export function returnNpcLoans(w: World) {
-  loanReservations.delete(w);
   const held = new Map<string, { club: Club; player: Player }>();
   for (const c of w.clubs) {
     const players =
@@ -305,6 +302,7 @@ function listings(w: World, clubs: Club[]) {
         club: c,
         player: p,
         loan: !sellDown && (blocked || surplus > 0) && w.year - p.born <= NPC_MARKET.loanAge,
+        sellDown,
       });
       if (sellDown) {
         remaining.splice(remaining.indexOf(p), 1);
@@ -325,10 +323,14 @@ export function npcMarket(w: World) {
     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
   );
   const counts = new Map<string, number>();
-  for (const record of Object.values(w.playerRecords ?? {}))
+  const settlement: Settlement = { clubs: new Map(), returns: new Map() };
+  for (const record of Object.values(w.playerRecords ?? {})) {
+    if (record.loan)
+      settlement.returns.set(record.loan.club, (settlement.returns.get(record.loan.club) ?? 0) + 1);
     for (const move of record.moves)
       if (move.year === w.year && move.day >= days[0]! && move.day <= days.at(-1)!)
         for (const id of [move.from, move.to]) counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
   const listed = listings(w, clubs);
   const tie = new Map(
     listed.map(({ player }) => [
@@ -364,8 +366,9 @@ export function npcMarket(w: World) {
             compareIds(a.player.id, b.player.id),
         );
         for (const listing of pool) {
-          const limit = npcWageLimit(w, listing.club);
-          const sellingDown = limit !== undefined && npcWageBill(w, listing.club) > limit;
+          const { limit, bill } = clubFacts(w, listing.club, settlement);
+          const sellingDown = limit !== undefined && bill > limit;
+          if (listing.sellDown && !sellingDown) continue;
           if (!sellingDown && (counts.get(listing.club.id) ?? 0) >= NPC_MARKET.moves) continue;
           const value = marketValueAt(
             listing.club.country,
@@ -384,6 +387,7 @@ export function npcMarket(w: World) {
             fee,
             listing.loan,
             wanted.get(buyer.id),
+            settlement,
           );
           if (!ownOffer) continue;
           // Equal-stature contenders compare their actual wages in one currency.
@@ -405,6 +409,7 @@ export function npcMarket(w: World) {
                       fee,
                       listing.loan,
                       wanted.get(c.id),
+                      settlement,
                     );
               return offer ? [offer] : [];
             });
@@ -416,6 +421,13 @@ export function npcMarket(w: World) {
           );
           const winner = offers[0]!;
           settleMove(w, listing, winner, fee);
+          settlement.clubs.delete(listing.club.id);
+          settlement.clubs.delete(winner.club.id);
+          if (listing.loan)
+            settlement.returns.set(
+              listing.club.id,
+              (settlement.returns.get(listing.club.id) ?? 0) + 1,
+            );
           moved.add(listing.player.id);
           for (const id of [listing.club.id, winner.club.id])
             counts.set(id, (counts.get(id) ?? 0) + 1);

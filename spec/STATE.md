@@ -58,11 +58,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T877 | Index free-agent settlement facts | ARCH WORLD CLUB | - | todo |
-| T878 | Reuse NPC market settlement contexts | ARCH WORLD CLUB | T877 | todo |
-| T879 | Persist optional owner capital and income components | ARCH ECON SAVE | T878 | todo |
-| T880 | Permit finite cash-backed NPC operating deficits | ARCH WORLD ECON CLUB SAVE | T879 | todo |
-| T881 | Report funded deficits separately from funding failures | ARCH ECON CLUB | T880 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -71,3 +66,4 @@
 
 ## next
 - inspect work board for remaining tasks
+- gusta-implement-task T873 T875

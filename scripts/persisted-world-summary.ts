@@ -41,6 +41,17 @@ interface Run {
     maxRatio: number;
     strongestMedian: number;
     breaches: unknown[];
+    funding?: {
+      funding: {
+        status: string;
+        incomeComponentsReconcile?: boolean;
+        resultReconciles?: boolean;
+        capitalReconciles?: boolean;
+        balanceReconciles?: boolean;
+        exhausted?: boolean;
+        unsupportedShortfall?: string;
+      };
+    }[];
   }[];
   summers: { year: number; country: string; clubSeasons: number; breaches: number }[];
   values: {
@@ -152,7 +163,44 @@ const books = COUNTRIES.map(({ code }) => {
   return {
     country: code,
     clubSeasons: cells.reduce((n, b) => n + b.clubSeasons, 0),
+    ratioMetricMeaning: 'diagnostic only; wages above turnover are not a funding failure',
     breachedClubSeasons: cells.reduce((n, b) => n + b.breaches.length, 0),
+    wageAboveTurnoverDiagnostic: cells.reduce((n, b) => n + b.breaches.length, 0),
+    funding: {
+      observed: cells.reduce((n, b) => n + (b.funding?.length ?? 0), 0),
+      unknown: cells.reduce(
+        (n, b) =>
+          n +
+          (b.funding
+            ? b.funding.filter((r) => r.funding.status !== 'known').length
+            : b.clubSeasons),
+        0,
+      ),
+      exhausted: cells.reduce(
+        (n, b) => n + (b.funding?.filter((r) => r.funding.exhausted).length ?? 0),
+        0,
+      ),
+      unsupported: cells.reduce(
+        (n, b) =>
+          n +
+          (b.funding?.filter((r) => BigInt(r.funding.unsupportedShortfall ?? '0') > 0n).length ??
+            0),
+        0,
+      ),
+      reconciliationFailures: cells.reduce(
+        (n, b) =>
+          n +
+          (b.funding?.filter(
+            (r) =>
+              r.funding.status === 'known' &&
+              (!r.funding.incomeComponentsReconcile ||
+                !r.funding.resultReconciles ||
+                !r.funding.capitalReconciles ||
+                !r.funding.balanceReconciles),
+          ).length ?? 0),
+        0,
+      ),
+    },
     maxRatio: Math.max(...cells.map((b) => b.maxRatio)),
     strongestMedian: range(cells.map((b) => b.strongestMedian)),
     above70: cells.filter((b) => b.strongestMedian > 0.7).length,
