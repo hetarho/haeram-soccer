@@ -1,3 +1,4 @@
+import { registrationRoom } from '../../packages/engine/src/registration';
 import { releasedMarketPlayer, importPreparedCareer } from '../fixtures/releases';
 import { message } from '../../packages/contracts/src/messages';
 import { openPersonnel } from './personnel-navigation';
@@ -6,7 +7,7 @@ import { makePlayer, joinClub, operate, advanceDays } from '../../packages/engin
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { movePerson } from '../../packages/engine/src/npc-continuity';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { worldMarketPage } from '../../packages/engine/src/world-market';
+import { worldMarketPage, worldMarketOffer } from '../../packages/engine/src/world-market';
 import {
   DEFAULT_MARKET_QUERY,
   marketLeagueKey,
@@ -521,8 +522,17 @@ test('reaches the forty-player ceiling with eight loans and prevents any further
   );
   await expect(await marketInfo(page)).toContainText('선수단 정원 40/40 · 자리가 가득 찼어요.');
   await closeMarketPanel(page, '영입 정보');
-  const free = transferOffers(current).find((offer) => offer.freeAgent && offer.available)!;
-  const blocked = await marketCandidate(page, free.player.id, free.player.name);
+  const free = worldMarketOffer(current, { ...released!.target, world: current.id });
+  expect(free?.player.id).toBe(released!.player.id);
+  expect(free?.freeAgent).toBe(true);
+  expect(free?.available).toBe(true);
+  expect(current.freeAgents!.filter((agent) => agent.id === released!.player.id)).toHaveLength(1);
+  const capReason = registrationRoom(current, { ...free!.player, joined: current.year });
+  expect(capReason).toBeTruthy();
+  const rejected = recruitmentPreview(current, free!);
+  expect(rejected.eligible).toBe(false);
+  expect(rejected.reason).toBe(capReason);
+  const blocked = await marketCandidate(page, free!.player.id, free!.player.name);
   await expect(blocked.getByRole('button', { name: '자유계약 영입', exact: true })).toBeDisabled();
   await expect(blocked.getByRole('button', { name: '1시즌 임대', exact: true })).toBeDisabled();
   await closeMarketPanel(page, '영입 후보 상세');

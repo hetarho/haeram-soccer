@@ -68,6 +68,7 @@ export async function importPreparedCareer(
 ) {
   const { encode } = await import('../../apps/web/src/adapters/persistence');
   const { openSaveMenu } = await import('../e2e/save-menu');
+  const { openClubhouse } = await import('../e2e/competition-navigation');
   const { expect } = await import('@playwright/test');
   const menu = await openSaveMenu(page);
   await menu
@@ -80,5 +81,7 @@ export async function importPreparedCareer(
     });
   await expect(page.getByRole('dialog', { name: '기록 가져오기 확인' })).toBeVisible();
   await page.getByRole('button', { name: '기록 교체하고 가져오기', exact: true }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page.getByRole('dialog', { name: '기록 가져오기 확인' })).toHaveCount(0);
+  await openClubhouse(page);
+  await expect(page.getByTestId('club-hub')).toHaveAttribute('data-home-active', 'true');
 }
