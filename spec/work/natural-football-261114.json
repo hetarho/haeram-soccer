@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T20:34:43.337Z",
-  "sourceCommit": "adcbd9c65fa6ff374a662c43c8f185503d8b4484",
+  "snapshotAt": "2026-11-13T20:35:21.682Z",
+  "sourceCommit": "f24de4511b79e2f1a892fb6f20c82a7f3346f723",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -77,10 +77,10 @@
   },
   "summary": {
     "total": 28,
-    "completed": 18,
-    "remaining": 10,
+    "completed": 19,
+    "remaining": 9,
     "running": 2,
-    "review": 5,
+    "review": 4,
     "blocked": 0,
     "unassigned": 3
   },
@@ -101,15 +101,6 @@
         "T890"
       ],
       "lane": "remaining-market-fixtures",
-      "status": "approved"
-    },
-    {
-      "id": "T900",
-      "title": "Evaluate scoped attribution-weight reuse",
-      "dep": [
-        "T885"
-      ],
-      "lane": "attribution-weight-reuse",
       "status": "approved"
     },
     {
@@ -946,7 +937,7 @@
       "contributors": [
         "nf14-codex-attribution-cache"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T19:24:43.840Z",
       "startCommit": "fc766b909f65c80390f784e482cd1cca0ddc6058",
@@ -1573,6 +1564,8 @@
       "submittedBase": "cb615f030cf32457767a6ddd457b990154debb29",
       "submissionId": "60df6bf5-4a34-49b3-865f-d6eb91b1cfed",
       "submittedAt": "2026-11-13T20:13:35.580Z",
+      "integratedCommit": "f24de4511b79e2f1a892fb6f20c82a7f3346f723",
+      "integratedAt": "2026-11-13T20:35:16.742Z",
       "risk": null,
       "review": {
         "id": "a47134c9-741a-4c98-95c5-0176ebb3fb50",
@@ -1606,6 +1599,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T20:13:15.289Z",
           "finishedAt": "2026-11-13T20:13:35.383Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:34:43.515Z",
+          "finishedAt": "2026-11-13T20:35:16.398Z"
         }
       ]
     },
@@ -7981,6 +7981,53 @@
       "group": "natural-football-261114",
       "attemptId": "51371f26-6b1d-417c-ba8d-e12f9d76ac59",
       "taskId": "T897",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 280,
+      "at": "2026-11-13T20:35:16.528Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "51371f26-6b1d-417c-ba8d-e12f9d76ac59",
+      "taskId": "T897",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:34:43.515Z",
+            "finishedAt": "2026-11-13T20:35:16.398Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 281,
+      "at": "2026-11-13T20:35:16.742Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "51371f26-6b1d-417c-ba8d-e12f9d76ac59",
+      "taskId": "T897",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "f24de4511b79e2f1a892fb6f20c82a7f3346f723",
+        "integratedAt": "2026-11-13T20:35:16.742Z"
+      }
+    },
+    {
+      "sequence": 282,
+      "at": "2026-11-13T20:35:19.325Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3df203ed-5789-49c5-8483-fb6110b4172a",
+      "taskId": "T900",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
