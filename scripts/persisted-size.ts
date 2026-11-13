@@ -5,7 +5,8 @@
  * The comparison removes only the selected registry from the same lived world, never retained facts
  * from the production save. Each sample posts one CodecJob over a real structured-clone port.
  */
-import { careerWorld } from '../packages/engine/src/career.testkit';
+import { careerClub, careerWorld } from '../packages/engine/src/career.testkit';
+import { takeOver } from '../packages/engine/src/takeover';
 import { operate } from '../packages/engine/src/operations';
 import { simulateSeason } from '../packages/engine/src/season';
 import { OWNER_BUSINESS } from '../packages/engine/src/owner-config';
@@ -26,6 +27,7 @@ import { ACTIVE, type Envelope } from '../apps/web/src/adapters/repository';
 import { message } from '../packages/contracts/src/messages';
 import { writeFileSync } from 'node:fs';
 import { measurementIdentity } from './lib/measurement-identity';
+import { careerEnded } from '../packages/contracts/src/owner';
 
 export const PERSISTED_BUDGET = { squads: 500_000, records: 450_000 } as const;
 
@@ -68,7 +70,7 @@ async function compressedStream(value: unknown) {
   };
 }
 /** Standalone record streams and whole-checkpoint increments are both reported: compression is not additive. */
-async function measureRecords(world: World, seasons: number, addedBytes: number) {
+async function measureRecords(world: World, seasons: number, addedBytes?: number) {
   const records = world.playerRecords ?? {};
   const compressed = (part: NonNullable<World['playerRecords']>) =>
     compressedStream(packPlayerRecords(part));
@@ -97,11 +99,13 @@ async function measureRecords(world: World, seasons: number, addedBytes: number)
     kept: Object.values(records).filter((record) => record.retired?.year === season.year).length,
   }));
   const kept = keptPerSeason.reduce((sum, season) => sum + season.kept, 0);
-  const linear100 = {
-    kept: (kept * 100) / seasons,
-    payloadBytes: (full.payloadBytes * 100) / seasons,
-    checkpointIncrementBytes: (addedBytes * 100) / seasons,
-  };
+  const linear100 = seasons
+    ? {
+        kept: (kept * 100) / seasons,
+        payloadBytes: (full.payloadBytes * 100) / seasons,
+        checkpointIncrementBytes: addedBytes === undefined ? null : (addedBytes * 100) / seasons,
+      }
+    : null;
   return {
     full,
     components,
@@ -109,7 +113,7 @@ async function measureRecords(world: World, seasons: number, addedBytes: number)
     kept,
     linear100,
     budget: PERSISTED_BUDGET.records,
-    gap100: Math.max(0, linear100.payloadBytes - PERSISTED_BUDGET.records),
+    gap100: linear100 ? Math.max(0, linear100.payloadBytes - PERSISTED_BUDGET.records) : null,
   };
 }
 async function main() {
@@ -118,18 +122,53 @@ async function main() {
     return at < 0 ? fallback : process.argv[at + 1]!;
   };
   const recordsMode = process.argv.includes('--records');
+  const out = arg('--out', '');
+  const worldOut = arg('--world-out', '');
+  // Capture the actual loaded runner before the simulation, rather than reading a later edit.
+  const computation = measurementIdentity('scripts/persisted-size.ts');
   const seasons = Number(arg('--seasons', recordsMode ? '20' : '10')),
     reps = Number(arg('--reps', '3'));
   if (!Number.isSafeInteger(seasons) || seasons < 1 || !Number.isSafeInteger(reps) || reps < 1)
     throw new Error(message('copy.packing.5ccd8ed532'));
   const seed = arg('--seed', recordsMode ? 'persisted-records-261113' : 'persisted-size-261113');
   const world = recordsMode ? careerWorld({ country: 'ENG', seed }) : historyWorld(seed);
+  const preservePartial = async (error: unknown) => {
+    if (worldOut) writeFileSync(worldOut, JSON.stringify(world));
+    const partial = {
+      complete: false,
+      measuredAt: new Date().toISOString(),
+      computation,
+      seed,
+      requestedSeasons: seasons,
+      completedSeasons: world.history.length,
+      year: world.year,
+      historyYears: world.history.map((h) => h.year),
+      careerEnded: careerEnded(world),
+      bankrupt: world.bankrupt,
+      ended: world.ended,
+      playerClub: world.playerClub,
+      cash: world.cash,
+      error: error instanceof Error ? error.message : String(error),
+      records: recordsMode ? await measureRecords(world, world.history.length) : undefined,
+      squads: await compressedStream(packSquads(world.squads ?? {})),
+    };
+    if (out) writeFileSync(out + '.partial.json', JSON.stringify(partial, null, 2) + '\n');
+    console.error(JSON.stringify(partial));
+  };
   if (recordsMode) operate(world, { type: 'owner-stake', percent: OWNER_BUSINESS.stake.max });
   for (let n = 0; n < seasons; n++) {
     if (recordsMode) simulateSeason(world);
     else liveHistory(world, world.year + 1);
-    if (world.history.length !== n + 1) throw new Error(message('copy.packing.5ccd8ed532'));
+    if (world.history.length !== n + 1) {
+      const error = new Error(message('copy.packing.5ccd8ed532'));
+      await preservePartial(error);
+      throw error;
+    }
   }
+  // A generated history is not an owned checkpoint. Use the real new-game boundary before
+  // measuring its save, retaining the lived NPC facts and moving the bought squad to players.
+  if (!recordsMode) takeOver(world, careerClub(), { tier: 'oil', traits: [] });
+  if (worldOut) writeFileSync(worldOut, JSON.stringify(world));
   const playerCount = Object.values(world.squads ?? {}).reduce((n, squad) => n + squad.length, 0);
   const without = { ...world };
   if (recordsMode) delete without.playerRecords;
@@ -137,16 +176,21 @@ async function main() {
   type Sample = Awaited<ReturnType<typeof sample>>;
   const rows: { before: Sample; after: Sample }[] = [];
   // Alternate order so compression warm-up and shared-machine load affect both sides.
-  for (let rep = 0; rep < reps; rep++) {
-    let before: Sample, after: Sample;
-    if (rep % 2) {
-      after = await sample(world);
-      before = await sample(without);
-    } else {
-      before = await sample(without);
-      after = await sample(world);
+  try {
+    for (let rep = 0; rep < reps; rep++) {
+      let before: Sample, after: Sample;
+      if (rep % 2) {
+        after = await sample(world);
+        before = await sample(without);
+      } else {
+        before = await sample(without);
+        after = await sample(world);
+      }
+      rows.push({ before, after });
     }
-    rows.push({ before, after });
+  } catch (error) {
+    await preservePartial(error);
+    throw error;
   }
   const addedBytes = rows[0]!.after.payloadBytes - rows[0]!.before.payloadBytes;
   const recordSizes = recordsMode ? await measureRecords(world, seasons, addedBytes) : undefined;
@@ -155,7 +199,7 @@ async function main() {
     : await compressedStream(packSquads(world.squads ?? {}));
   const result = {
     measuredAt: new Date().toISOString(),
-    computation: measurementIdentity('scripts/persisted-size.ts'),
+    computation,
     source: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
     machine: {
       platform: platform(),
@@ -166,6 +210,8 @@ async function main() {
       node: process.version,
     },
     seed: world.seed,
+    ownership: recordsMode ? 'owned-throughout' : 'takeover-after-ownerless-history',
+    complete: true,
     seasons,
     year: world.year,
     playerCount,
@@ -190,7 +236,6 @@ async function main() {
     rows,
   };
   const output = JSON.stringify(result, null, 2) + '\n';
-  const out = arg('--out', '');
   if (out) writeFileSync(out, output);
   console.log(output);
 }

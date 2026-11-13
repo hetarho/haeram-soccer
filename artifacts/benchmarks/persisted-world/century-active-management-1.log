@@ -1,0 +1,12 @@
+active-management founding: 631042 checkpoint bytes, 2098 people, 0 promises, 1 tenures
+/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:638
+    if (w.history.length !== n + 1) throw new Error('Missing completed season archive');
+                                          ^
+
+Error: Missing completed season archive
+    at playSeasons (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:638:43)
+    at firstHalf (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:666:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:1101:16)
+
+Node.js v24.22.1
