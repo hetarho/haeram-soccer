@@ -66,9 +66,11 @@
 | T897 | Preserve regulation facts and exact seeded replay inputs | ARCH MATCH WORLD | T885 | todo |
 | T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
 | T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
-| T900 | Reuse identical placed weights within one attribution | ARCH MATCH WORLD | T885 | todo |
+| T900 | Evaluate scoped attribution-weight reuse | ARCH MATCH WORLD | T885 | todo |
 | T902 | Prepare a supported ten-season codec career through owner actions | ARCH SAVE OWNER | T885 | todo |
 | T903 | Establish an actual archive seek and bounded promise setup | ARCH MATCH CLUB | T887 T888 | todo |
+| T905 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
+| T904 | Align checkpoint validation with explicit compatible patch releases | SAVE ARCH | T883 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
