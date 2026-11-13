@@ -109,7 +109,6 @@
 | T886 | work | codex/natural-football-261114 | 4618c03f8060 | 2026-11-13T19:50Z |
 | T893 | work | codex/natural-football-261114 | 24d042b1e6ad | 2026-11-13T19:51Z |
 | T892 | work | codex/natural-football-261114 | 729a7095cdc4 | 2026-11-13T19:51Z |
-| T904 | pr14 | fix/pb14-final-review | 6e6898df | 2026-11-13T20:10Z |
 
 ## log
 - 261113 T904 done
