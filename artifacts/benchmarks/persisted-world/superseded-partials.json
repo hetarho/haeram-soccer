@@ -1,0 +1,61 @@
+{
+  "reason": "Each completed file retains every array observation of its owned obsolete partial; exact prefix equality checked before removing duplicate temporary files.",
+  "inputs": [
+    {
+      "partial": "artifacts/benchmarks/persisted-world/initial-seed-1.json.partial.json",
+      "partialSha256": "92ed7370170897aeef45d95c2ea8f67d9398c94c772903a2a45289fe8469e960",
+      "completed": "artifacts/benchmarks/persisted-world/initial-seed-1.json",
+      "completedSha256": "119f895fce331b646664233554a0a05130c11958209d4414b273f4158201efe8",
+      "allPartialArrayFactsPreservedAsPrefix": {
+        "rows": 592,
+        "books": 664,
+        "summers": 664,
+        "values": 14,
+        "affiliations": 74
+      },
+      "lastPartialYear": 2020
+    },
+    {
+      "partial": "artifacts/benchmarks/persisted-world/initial-seed-2.json.partial.json",
+      "partialSha256": "8da498af5485bc7bc02be5292423b729e2cee41e5fbe4686e65e1f14ce0a6418",
+      "completed": "artifacts/benchmarks/persisted-world/initial-seed-2.json",
+      "completedSha256": "f32cffc593e9e6483dc59a3c09784598224cc08460d8d8c2a00e2e8fa2084b07",
+      "allPartialArrayFactsPreservedAsPrefix": {
+        "rows": 592,
+        "books": 664,
+        "summers": 664,
+        "values": 14,
+        "affiliations": 74
+      },
+      "lastPartialYear": 2020
+    },
+    {
+      "partial": "artifacts/benchmarks/persisted-world/initial-seed-3.json.partial.json",
+      "partialSha256": "4c4834c331aee311d5c2d4adfa65eed035aecc36a1b9fca5f7b0a7c9b6d437f3",
+      "completed": "artifacts/benchmarks/persisted-world/initial-seed-3.json",
+      "completedSha256": "16e48a383d5b456d72a7a5d0154dde3916d774cac435f4648f85b44a029f653d",
+      "allPartialArrayFactsPreservedAsPrefix": {
+        "rows": 592,
+        "books": 664,
+        "summers": 664,
+        "values": 14,
+        "affiliations": 74
+      },
+      "lastPartialYear": 2020
+    },
+    {
+      "partial": "artifacts/benchmarks/persisted-world/initial-seed-4.json.partial.json",
+      "partialSha256": "a0941e2593ddf7a295aea8fea17a39b4304157bb696e9d047ef082b2ffd2c78c",
+      "completed": "artifacts/benchmarks/persisted-world/initial-seed-4.json",
+      "completedSha256": "877c8cd48e45ce98769abda25d45e2c8301be323bf99b66b0f1224c532aa9d54",
+      "allPartialArrayFactsPreservedAsPrefix": {
+        "rows": 592,
+        "books": 664,
+        "summers": 664,
+        "values": 14,
+        "affiliations": 74
+      },
+      "lastPartialYear": 2020
+    }
+  ]
+}

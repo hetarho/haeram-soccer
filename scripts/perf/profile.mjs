@@ -48,7 +48,8 @@ const reps = Number(arg('--reps', d.reps)),
 
 const scratch = join(tmpdir(), 'haeram-perf-profile');
 mkdirSync(scratch, { recursive: true });
-const bundle = await bundleWorkloads(repo, join(scratch, `workloads-${process.pid}.mjs`));
+const tree = arg('--tree', repo);
+const bundle = await bundleWorkloads(tree, join(scratch, `workloads-${process.pid}.mjs`));
 
 // The child: the measured window's ends on the profiler's clock (both CLOCK_MONOTONIC, in µs).
 const CHILD = `

@@ -22,12 +22,12 @@
  * projection and publication and the posting clone, own match days and other days apart, hashing
  * every posted reply and the world. Each side's `apps/web/src` is bundled beside its `packages/`.
  */
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { cpSync, mkdirSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { tmpdir, loadavg } from 'node:os';
+import { tmpdir, loadavg, cpus } from 'node:os';
 import { bundleWorkloads } from './bundle.mjs';
 import { median, verdict } from './stats.ts';
 
@@ -49,10 +49,13 @@ const DEFAULTS = {
   view: { procs: 4, reps: 60, warm: 6 },
   // About 1.2 s a season (pf10 scout, 261110): 1930/31 warms up, the measured reps end in 1947/48.
   history: { procs: 4, reps: 10, warm: 1 },
+  'history-five': { procs: 4, reps: 1, warm: 0 },
+  'creation-1990': { procs: 4, reps: 1, warm: 0 },
 };
 const d = DEFAULTS[workload];
 if (!d) throw new Error(`unknown workload ${workload}`);
 const procs = Number(arg('--procs', d.procs)),
+  jobs = Number(arg('--jobs', '1')),
   reps = Number(arg('--reps', d.reps)),
   warm = Number(arg('--warm', d.warm)),
   seed = arg('--seed', 'perf-261027');
@@ -114,21 +117,72 @@ const timed = (x) => x.a.cpu >= MIN_MS || x.b.cpu >= MIN_MS;
 
 const loads = [loadavg()[0]];
 const runs = [];
-for (let p = 0; p < procs; p++) {
-  const r = spawnSync(
-    process.execPath,
-    [join(here, 'pair.mjs'), baseFile, candFile, workload, seed, reps, warm, p % 2 ? 'BA' : 'AB'],
-    { encoding: 'utf8', maxBuffer: 1 << 26 },
-  );
-  if (r.status !== 0) throw new Error(`pair.mjs failed:\n${r.stderr}`);
-  runs.push(JSON.parse(r.stdout.trim().split('\n').at(-1)));
+const out = arg('--json');
+const machine = {
+  platform: process.platform,
+  arch: process.arch,
+  node: process.version,
+  cpu: cpus()[0]?.model,
+  cores: cpus().length,
+};
+async function runPair(p) {
+  const result = await new Promise((resolve, reject) => {
+    const child = spawn(
+      process.execPath,
+      [join(here, 'pair.mjs'), baseFile, candFile, workload, seed, reps, warm, p % 2 ? 'BA' : 'AB'],
+      { stdio: ['ignore', 'pipe', 'pipe'] },
+    );
+    let stdout = '',
+      stderr = '';
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk;
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk;
+    });
+    child.on('error', reject);
+    child.on('close', (status) =>
+      status === 0
+        ? resolve(JSON.parse(stdout.trim().split('\n').at(-1)))
+        : reject(new Error(`pair.mjs failed:\n${stderr}`)),
+    );
+  });
+  runs[p] = result;
   loads.push(loadavg()[0]);
-  const logs = runs
-    .at(-1)
-    .pairs.filter(timed)
-    .map((x) => Math.log(x.b.cpu / x.a.cpu));
+  if (out)
+    writeFileSync(
+      out + '.partial.json',
+      JSON.stringify(
+        {
+          workload,
+          machine,
+          base: baseSpec,
+          cand: candSpec,
+          procs,
+          jobs,
+          reps,
+          warm,
+          seed,
+          bundles,
+          completedProcesses: runs.filter(Boolean).length,
+          completedProcessIndices: Object.keys(runs).map(Number),
+          runs: runs.filter(Boolean),
+          load1: loads,
+          complete: false,
+        },
+        null,
+        2,
+      ) + '\n',
+    );
+  const logs = result.pairs.filter(timed).map((x) => Math.log(x.b.cpu / x.a.cpu));
   console.error(`process ${p + 1}/${procs}: cpu ×${Math.exp(median(logs)).toFixed(3)}`);
 }
+let next = 0;
+await Promise.all(
+  Array.from({ length: Math.min(procs, Math.max(1, Math.floor(jobs) || 1)) }, async () => {
+    while (next < procs) await runPair(next++);
+  }),
+);
 
 const labels = [...new Set(runs.flatMap((r) => r.pairs.filter(timed).map((x) => x.label)))];
 const byLabel = Object.fromEntries(
@@ -159,9 +213,11 @@ const hashes = {
 };
 const summary = {
   workload,
+  machine,
   base: baseSpec,
   cand: candSpec,
   procs,
+  jobs,
   reps,
   warm,
   seed,
@@ -174,5 +230,4 @@ const summary = {
   load1: loads,
 };
 console.log(JSON.stringify(summary, null, 2));
-const out = arg('--json');
 if (out) writeFileSync(out, JSON.stringify({ ...summary, runs }, null, 2));

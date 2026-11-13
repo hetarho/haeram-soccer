@@ -154,7 +154,10 @@ export interface ClubSeasonBook {
   wages: string;
   /** Operating expenses (→ECON-30). */
   costs: string;
-  /** Income less wages and costs. */
+  /** Fees settled in this season's original money. Absent in older books. */
+  transfersPaid?: string;
+  transfersReceived?: string;
+  /** Income plus fees received, less wages, costs and fees paid. */
   result: string;
 }
 /**
@@ -163,6 +166,11 @@ export interface ClubSeasonBook {
  * change converts them, →ECON-6). Cash below zero is kept as debt.
  */
 export interface ClubBooks {
+  /** First season's forecast, before a closed season supplies the wage limit. */
+  openingIncome?: string;
+  /** Transfer fees accrued in the current season. */
+  transfersPaid?: string;
+  transfersReceived?: string;
   seasons: ClubSeasonBook[];
   cash: string;
   debt: string;

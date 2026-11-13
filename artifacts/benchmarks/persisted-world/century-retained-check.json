@@ -1,0 +1,66 @@
+{
+  "name": "century-retained",
+  "startedAt": "2026-11-13T10:14:31.343Z",
+  "finishedAt": "2026-11-13T10:22:07.791Z",
+  "classification": "non-browser numerical calibration",
+  "command": [
+    "/home/deep/.nvm/versions/node/v24.22.1/bin/node",
+    "/home/deep/.npm/_npx/c183f26c8545da3b/node_modules/@haeram/gusta/bin/gusta.mjs",
+    "vibe",
+    "check",
+    "--tier",
+    "task",
+    "--task",
+    "T866",
+    "--diff-base",
+    "3c07ec2d8a46e9d868a9864750c892aa5b86ca22",
+    "--timeout-ms",
+    "6328657",
+    "--",
+    "pnpm",
+    "exec",
+    "tsx",
+    "scripts/benchmark.ts",
+    "--phase",
+    "retained",
+    "--out",
+    "artifacts/benchmarks/persisted-world/century.json"
+  ],
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=8192"
+  },
+  "code": 1,
+  "result": {
+    "schemaVersion": 1,
+    "ok": false,
+    "exitCode": 1,
+    "cached": false,
+    "timedOut": false,
+    "stale": false,
+    "ms": 455932,
+    "scope": {
+      "TIER": "task",
+      "DIFF_BASE": "3c07ec2d8a46e9d868a9864750c892aa5b86ca22",
+      "TASK": "T866",
+      "TASKS": "T866"
+    },
+    "commit": "bae5614715c9682c4be36fd1107d0a131132d112",
+    "tree": "be43c90461ed3688001b6f6e4eefee64a33cb88d",
+    "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-569d3faa-1e63-4b6d-83b9-2b7943325a92.log",
+    "failedTests": [],
+    "failureSetComplete": false,
+    "tail": [
+      "    at retained (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:858:23)",
+      "    at run (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:908:14)",
+      "    at <anonymous> (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:1101:22)",
+      "    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)",
+      "    at async node:internal/modules/esm/loader:647:26",
+      "    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)",
+      "",
+      "Node.js v24.22.1"
+    ],
+    "slow": true,
+    "hint": "task check exceeded 5 min: run only the unit tests affected since GUSTA_DIFF_BASE; move integration/e2e/full suites to the batch gate."
+  },
+  "stderr": ""
+}

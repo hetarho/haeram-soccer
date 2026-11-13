@@ -1,6 +1,7 @@
+import { linkPlayer } from './player-records';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
-import type { Event, MatchRecord, World } from '../../contracts/src/types';
+import type { Event, MatchRecord, Player, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
 import { clubOf, lastOwnSeason } from './player-state';
@@ -900,10 +901,12 @@ function seasonHighs({ seasonBest }: NewsContext, { p, index, score, versus, add
 function playerNews(ctx: NewsContext, m: MatchNews) {
   const clubHasPlayed = ctx.appeared.size > 0;
   for (const line of m.p.m.players) {
+    const start = m.candidates.length;
     const debut = clubHasPlayed && !ctx.appeared.has(line.id);
     ctx.appeared.add(line.id);
     playerGoalNews(ctx, m, line, debut);
     playerPlayNews(ctx, m, line);
+    for (const item of m.candidates.slice(start)) item.players = [line.id];
   }
 }
 
@@ -1275,10 +1278,26 @@ function honours(w: World): NewsItem[] {
         title: sourceMessage('copy.news.313915a09d', { p0: name, p1: europe.name }),
       });
   const award = ballonDorNews(w, last);
-  if (award?.ours) items.push({ ...base('ballon-dor'), title: award.title, detail: award.detail });
+  if (award?.ours)
+    items.push({
+      ...base('ballon-dor'),
+      title: award.title,
+      detail: award.detail,
+      players: last.ballonDor!.map((p) => p.id),
+    });
   else if (award) {
     const { id, year, round, order, tag } = base('ballon-dor');
-    items.push({ id, year, round, order, tag, tone: 'neutral', weight: 'notable', ...award.text });
+    items.push({
+      id,
+      year,
+      round,
+      order,
+      tag,
+      tone: 'neutral',
+      weight: 'notable',
+      ...award.text,
+      players: last.ballonDor!.map((p) => p.id),
+    });
   }
   return items;
 }
@@ -1651,7 +1670,7 @@ export function newsTotal(w: World): number {
     ? (j.count ?? j.years.reduce((n, year) => n + j.seasons[year].length, 0))
     : deriveClubNews(w).length;
 }
-function appendHeadline(j: NewsJournal, item: NewsItem) {
+function appendHeadline(w: World, j: NewsJournal, item: NewsItem) {
   let bucket = j.seasons[item.year];
   if (!bucket) {
     bucket = j.seasons[item.year] = [];
@@ -1669,6 +1688,7 @@ function appendHeadline(j: NewsJournal, item: NewsItem) {
   numberJournal(j);
   ids.add(item.id);
   bucket.push({ ...item, sequence: ++j.count! });
+  for (const id of item.players ?? []) linkPlayer(w, id);
   // Only the affected season is sorted, never the complete career.
   bucket.sort((a, b) => b.order - a.order);
 }
@@ -1751,7 +1771,7 @@ export function refreshNewsJournal(w: World) {
     ctx.season.push(p.result);
     const match = matchNews(p, index);
     for (const build of MATCH_BUILDERS) build(ctx, match);
-    for (const item of keptNews(ctx, match)) appendHeadline(j, item);
+    for (const item of keptNews(ctx, match)) appendHeadline(w, j, item);
     j.peakUnbeaten = Math.max(j.peakUnbeaten, ctx.unbeaten);
     j.peakWinning = Math.max(j.peakWinning, ctx.winning);
     j.matches++;
@@ -1767,11 +1787,13 @@ export function refreshNewsJournal(w: World) {
       event,
       index,
     );
-    if (item) appendHeadline(j, item);
+    if (item) appendHeadline(w, j, item);
   }
   // These reads are bounded to the retained round window and the last season's honour row.
-  if (sources?.table !== table) for (const item of tableNews(w, ctx.name)) appendHeadline(j, item);
-  if (!sources || sources.honour !== honour) for (const item of honours(w)) appendHeadline(j, item);
+  if (sources?.table !== table)
+    for (const item of tableNews(w, ctx.name)) appendHeadline(w, j, item);
+  if (!sources || sources.honour !== honour)
+    for (const item of honours(w)) appendHeadline(w, j, item);
   journalSources.set(j, { table, honour });
   journalContexts.set(j, ctx);
   j.state = newsState(ctx);
@@ -1837,4 +1859,27 @@ export function newsBefore(w: World, before?: string, tag?: NewsTag): NewsItem[]
     offset = 0;
   }
   return result;
+}
+
+/** Retirement never creates its own eligibility link; its profile must already be retained. */
+export function recordRetirementNews(w: World, player: Player, club?: string) {
+  if (!w.newsJournal || !w.playerRecords?.[player.id]?.retired) return;
+  appendHeadline(w, w.newsJournal, {
+    id: `${w.year}:retirement:${player.id}`,
+    year: w.year,
+    round: w.round,
+    order: w.round * 1000 + 900,
+    tag: sourceMessage('team.column.player'),
+    tone: 'neutral',
+    weight: 'minor',
+    title: sourceMessage('player.record.retirementNews', { player: player.name }),
+    ...(club
+      ? {
+          detail: sourceMessage('player.record.lastClub', {
+            club: w.clubs.find((c) => c.id === club)?.name ?? club,
+          }),
+        }
+      : {}),
+    players: [player.id],
+  });
 }

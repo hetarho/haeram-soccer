@@ -12,6 +12,7 @@ import { LINES, POSITIONS } from '../../../../../../packages/contracts/src/playe
 import { worldMarketFixture } from '../../../../../../packages/engine/src/world-market.testkit';
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { initialClientState } from '../../../runtime/store';
+import { projectWorldFacts } from '../../../runtime/worldProjection';
 import korean from '../../../../public/presentation/locales/ko-KR.json';
 import { PositionBadge } from '../../../entities/player';
 import { useTaskMemory } from '../../../shared/routing/taskMemory';
@@ -810,7 +811,7 @@ async function mountedBid(initial = structuredClone(w)) {
       world = { ...world, ...patch };
       mountedClient.state.view = {
         ...mountedClient.state.view!,
-        world: { ...world, people: undefined },
+        world: projectWorldFacts(world),
       };
       await act(async () => draw());
     },
@@ -1033,7 +1034,7 @@ async function mountedSnapshot(values: Record<string, unknown> = {}) {
       world = { ...world, ...patch };
       mountedClient.state.view = {
         ...mountedClient.state.view!,
-        world: { ...world, people: undefined },
+        world: projectWorldFacts(world),
       };
       mountedClient.state.clockRunning = running;
       await act(async () => draw());

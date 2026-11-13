@@ -8,6 +8,10 @@ import {
   transferWindowDays,
 } from '../../../../../../packages/engine/src/index';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
+import {
+  marketCandidate,
+  worldMarketFixture,
+} from '../../../../../../packages/engine/src/world-market.testkit';
 import { lineOf } from '../../../../../../packages/engine/src/player';
 import {
   candidateOrigin,
@@ -132,12 +136,20 @@ describe('where a market candidate is (→CLUB-50, CLUB-51)', () => {
   });
 
   it('names where each shortlisted player is, free or at his club, those abroad marked', () => {
-    const w = club('shortlist-sources');
+    const w = worldMarketFixture();
+    w.clubs[2] = { ...w.clubs[0], id: 'ENG:0:0:domestic' };
+    w.squads = { [w.clubs[1].id]: [], [w.clubs[2].id]: [] };
     // 해외 스카우트망 3 looks at two top flights abroad and keeps a place per line for them.
     holdRows(w, { policy: { globalScouting: 3 } });
+    const abroad = marketCandidate(w, w.clubs[1], 'ST');
+    const domestic = marketCandidate(w, w.clubs[2], 'CM');
+    const free = marketCandidate(w, undefined, 'GK');
     openShortlistWindow(w);
     const entries = shortlistRows(w, transferOffers(w)).flatMap((row) => row.entries);
     expect(entries.length).toBeGreaterThan(0);
+    expect(entries.map(({ offer }) => offer.player.id)).toEqual(
+      expect.arrayContaining([abroad.id, domestic.id, free.id]),
+    );
     for (const { offer, origin } of entries) {
       expect(origin).toEqual(candidateOrigin(offer));
       expect(origin.kind).toBe(offer.source.kind);

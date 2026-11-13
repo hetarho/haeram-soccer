@@ -1,0 +1,72 @@
+{
+  "purpose": "Compare retained observations from the same seed before/after T872; not a complete run, passing calibration target, or identical performance assertion.",
+  "seed": "persisted-world-viability",
+  "old": {
+    "file": "artifacts/benchmarks/persisted-world/final-seed-viability.json.partial.json",
+    "sha256": "92f76e4e5e29c0f23743f96c1901c8e1240259e99207e6de2c207f48c513cb86",
+    "year": 1990,
+    "computation": {
+      "algorithm": "sha256",
+      "sha256": "2d1569e43b543c1fd3518e4d9597b38c140bafd8bf8c83c790cccb03c82a1155",
+      "files": 211,
+      "entry": "scripts/persisted-world-read.ts",
+      "scope": "runtime dependency closure and declared inputs"
+    }
+  },
+  "new": {
+    "file": "artifacts/benchmarks/persisted-world/publication-seed-5-core.json.partial.json",
+    "sha256": "8544de1dcfd29bd9a67f1a3f953d79f6fa13fce0e5136a8dda8af8de03c03e32",
+    "year": 2000,
+    "complete": false,
+    "computation": {
+      "algorithm": "sha256",
+      "sha256": "136379ca5b500113758d0c1ebc8560dcd92cb2a42f8aa3ff7ca461f44c7929bf",
+      "files": 211,
+      "entry": "scripts/persisted-world-read.ts",
+      "scope": "runtime dependency closure and declared inputs"
+    }
+  },
+  "configurationEqual": true,
+  "observations": [
+    {
+      "field": "rows",
+      "oldCount": 432,
+      "newCount": 512,
+      "commonPrefixCount": 432,
+      "equal": true
+    },
+    {
+      "field": "books",
+      "oldCount": 424,
+      "newCount": 504,
+      "commonPrefixCount": 424,
+      "equal": true
+    },
+    {
+      "field": "summers",
+      "oldCount": 424,
+      "newCount": 504,
+      "commonPrefixCount": 424,
+      "equal": true
+    },
+    {
+      "field": "values",
+      "oldCount": 8,
+      "newCount": 10,
+      "commonPrefixCount": 8,
+      "equal": true
+    },
+    {
+      "field": "affiliations",
+      "oldCount": 54,
+      "newCount": 64,
+      "commonPrefixCount": 54,
+      "equal": true
+    }
+  ],
+  "excluded": [
+    "peakAges: aggregates depend on the completed observation horizon",
+    "champions: the newer horizon can have an incomplete championship window",
+    "timestamps and source/computation identity"
+  ]
+}

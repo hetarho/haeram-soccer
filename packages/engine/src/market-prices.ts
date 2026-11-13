@@ -77,7 +77,7 @@ export const MARKET_CONFIG = {
  * potential, so at 0 every star earns an ordinary 80's wage of his age and promise and at 1 the star
  * terms count in full (CLUB-25, CLUB-26's Ballon d'Or premium); wages at 80 or below never move.
  *
- * In force (CLUB-48), together with LEAGUE-10's means level (`MEANS_LEVEL`, dynamics.ts) and the
+ * In force (CLUB-48), together with WORLD-17's contract wage limit and the
  * books' competition money (`BOOK_COMPETITIONS`, books.ts), never one alone: the shared s 0.28
  * through 1970, 0.61 at 1990 and 1 from 2008 (estimated), England's own 0 through 1960/61 (its
  * maximum wage, EFL's timeline). The table passed every part of CLUB-48 r58's gate on books

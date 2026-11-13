@@ -1,3 +1,4 @@
+import type { Club } from '../../../../packages/contracts/src/types';
 import { newsItemSchema } from '../../../../packages/contracts/src/news';
 import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { GenerationDigest, WorldMarketPage } from '../../../../packages/contracts/src/types';
@@ -15,6 +16,7 @@ z.config({ jitless: true });
 import type {
   World,
   Player,
+  PlayerProfileRead,
   Manager,
   Fixture,
   MatchPlayback,
@@ -341,9 +343,25 @@ export type Body = Request['body'];
  */
 export type ProjectedWorld = Omit<
   World,
-  'people' | 'npcSeason' | 'managerHistory' | 'newsJournal' | 'careerReads' | 'freeAgents'
+  | 'people'
+  | 'npcSeason'
+  | 'managerHistory'
+  | 'newsJournal'
+  | 'careerReads'
+  | 'freeAgents'
+  | 'squads'
+  | 'playerRecords'
+  | 'npcMarketAt'
+  | 'npcGrowthAt'
+  | 'npcRetirementAt'
+  | 'npcSummerAt'
+  | 'clubs'
 > & {
   people?: never;
+  squads?: never;
+  /** Always supplied by the worker; optional for earlier prepared views. */
+  clubs: (Club & { rating?: number })[];
+  disciplineNames?: Record<string, { name: string; club: string }>;
   /**
    * The next opponent's actual eligible XI and its manager, resolved on the worker: the person
    * registry names the XI, and the manager market (orchestration, →ARCH-4) names the manager.
@@ -539,7 +557,7 @@ export interface Reply {
   /** The generated world's clubs on sale and the chosen tier's fortune in pounds (→ECON-37). */
   start?: { listings: ClubListing[]; fortune: string };
   clubProfile?: ClubProfile;
-  playerProfile?: { player: Player; club: string };
+  playerProfile?: PlayerProfileRead;
   cancelled?: boolean;
   /** A save request handed this world revision to the codec worker; its checkpoint follows there. */
   saving?: { worldId: string; revision: number };

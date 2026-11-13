@@ -1,0 +1,4 @@
+
+> haeram-soccor@0.8.0 typecheck /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860
+> tsc --noEmit --incremental --tsBuildInfoFile .tmp/tsc/tsbuildinfo
+

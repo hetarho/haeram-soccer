@@ -11,7 +11,7 @@ import { LINES } from '../../contracts/src/player';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import type { ClubBuild } from '../../contracts/src/build';
 import { activePlayers, clubOf, lineOfPlayer, overall } from './player-state';
-import { clubById, ownStarters, squad } from './world';
+import { clubById, clubPlayers, ownStarters } from './world';
 import { associationAccessOrder } from './europe-access';
 import { dailyMarket, operate, placeBid } from './index';
 import { holdRows } from './testing';
@@ -168,7 +168,7 @@ describe('the chief scout reach (CLUB-51)', () => {
     const w = holdRows(base(), { build: { scouting: 'data' } });
     for (const offer of transferOffers(w))
       if (offer.source.kind === 'club') {
-        const held = squad(w, clubById(w, offer.source.club)!).find(
+        const held = clubPlayers(w, clubById(w, offer.source.club)!).find(
           (p) => p.id === offer.player.id,
         )!;
         expect(offer.player.potential).toBe(held.potential);
@@ -330,7 +330,7 @@ describe('found players (CLUB-50)', () => {
         expect(owned.has(offer.player.id)).toBe(false);
         if (offer.source.kind === 'club') {
           const club = clubById(w, offer.source.club)!;
-          expect(squad(w, club).some((p) => p.id === offer.player.id)).toBe(true);
+          expect(clubPlayers(w, club).some((p) => p.id === offer.player.id)).toBe(true);
           expect(offer.freeAgent).toBe(false);
           expect(BigInt(offer.fee)).toBeGreaterThan(0n);
           expect(offer.foreign).toBe(isForeignCandidate(w, offer.player.id, club.id));

@@ -336,12 +336,20 @@ export interface Club {
   elo?: number;
   /** How settled a club nobody owns is under its manager (조직력, →LEAGUE-12); absent is 0.80. */
   cohesion?: number;
-  /** Level a rare project (new owner, golden generation) adds, fading each summer (→LEAGUE-10). */
+  /** Level a representative club's rare project adds, fading each summer (→LEAGUE-10). */
   project?: number;
   /** Crest, representative colours and saved shirts (→KIT-1); absent in older saves. */
   identity?: ClubIdentity;
   /** Season books while nobody owns it (→ECON-36); absent in a founded career. */
   books?: ClubBooks;
+  /** Persisted facilities of a club nobody owns (→WORLD-17), each at level 0–5. */
+  levels?: {
+    academy: number;
+    ground: number;
+    coaching: number;
+    /** Fractional investment/decay carried until a whole level is reached. */
+    progress?: number;
+  };
 }
 export interface Player {
   id: string;
@@ -1229,6 +1237,51 @@ export interface TransferRecords {
   facts: TransferFact[];
 }
 
+/** A completed move; fees are in the selling club's money in the recorded season. */
+export interface PlayerMove {
+  year: number;
+  day: number;
+  from: string;
+  to: string;
+  fee: string;
+  loan?: boolean;
+}
+export interface PlayerSeasonLine {
+  year: number;
+  club: string;
+  appearances: number;
+  goals: number;
+  assists: number;
+  saves?: number;
+  cleanSheets?: number;
+}
+export interface PlayerRecord {
+  moves: PlayerMove[];
+  /** Absent on supported saves from before season records. */
+  lines?: PlayerSeasonLine[];
+  linked?: boolean;
+  retired?: { year: number; club?: string; profile: Player };
+  /** Parent terms retained while the single live player is at his borrowing club. */
+  loan?: {
+    club: string;
+    until: number;
+    wage: string;
+    contractUntil: number;
+    year: number;
+    graduate?: true;
+    joined?: number;
+  };
+}
+
+/** Bounded worker read, never the whole other-club player registry. */
+export interface PlayerProfileRead {
+  player: Player;
+  club?: string;
+  kind: 'own' | 'squad' | 'free' | 'retired' | 'representative';
+  lines: PlayerSeasonLine[];
+  retired?: { year: number; club?: string };
+}
+
 export interface World {
   schema: 1;
   /** The game version whose rules it plays (→SAVE-10, SAVE-26). */
@@ -1237,6 +1290,11 @@ export interface World {
   catalogHash: string;
   id: string;
   seed: string;
+  /** Live players of playable clubs nobody owns, chosen eighteen first; ours stay in `players`. */
+  squads?: Record<string, Player[]>;
+  playerRecords?: Record<string, PlayerRecord>;
+  /** Last settled market day, retained across checkpoint reloads. */
+  npcMarketAt?: { year: number; day: number };
   year: number;
   round: number;
   revision: number;
@@ -1266,6 +1324,10 @@ export interface World {
   hardStreak?: number;
   /** Last settled training boundary, preventing repeated development/recovery. */
   trainingAt?: string;
+  /** Last settled NPC round-growth boundary and annual lifecycle (→WORLD-16). */
+  npcGrowthAt?: { year: number; round: number };
+  npcRetirementAt?: number;
+  npcSummerAt?: number;
   /** Club operating policy; absent means POLICY_DEFAULTS. */
   policy?: SavedPolicy;
   /** Coaching staff below the manager. Absent in older saves, whose effects stay neutral. */

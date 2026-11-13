@@ -1,0 +1,140 @@
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.22.1",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "cores": 12
+  },
+  "base": "b41b8978774506a0344aafd100bf4237ce70046d",
+  "cand": "4afa1fa1bad788ddcea2548d2409e9754333dcfb",
+  "procs": 4,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "395630af332d7b0f",
+    "cand": "c09e9501413575f6"
+  },
+  "sameBundle": false,
+  "sameHash": false,
+  "hashes": {
+    "base": [
+      "9e00a049bf6b781b"
+    ],
+    "cand": [
+      "d294e86c0475ae89"
+    ]
+  },
+  "season": {
+    "pairs": 4,
+    "ms": {
+      "base": {
+        "cpu": 5305.6224999999995,
+        "wall": 6814.170760499999
+      },
+      "cand": {
+        "cpu": 18307.953999999998,
+        "wall": 21439.291698
+      }
+    },
+    "cpu": {
+      "ratio": 3.4404,
+      "lo": 3.14,
+      "hi": 3.8058,
+      "call": "slower"
+    },
+    "wall": {
+      "ratio": 3.3839,
+      "lo": 2.8009,
+      "hi": 4.3996,
+      "call": "slower"
+    }
+  },
+  "load1": [
+    3.51,
+    8.81,
+    14.96,
+    14.5,
+    11.95
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 4638.977,
+            "wall": 4654.340692
+          },
+          "b": {
+            "cpu": 18347.683,
+            "wall": 23073.732169000003
+          }
+        }
+      ],
+      "hashes": [
+        "9e00a049bf6b781b",
+        "d294e86c0475ae89"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 5223.509999999998,
+            "wall": 7505.554617999998
+          },
+          "b": {
+            "cpu": 17889.794,
+            "wall": 24132.070093
+          }
+        }
+      ],
+      "hashes": [
+        "9e00a049bf6b781b",
+        "d294e86c0475ae89"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 5387.735,
+            "wall": 7403.613349
+          },
+          "b": {
+            "cpu": 18268.225,
+            "wall": 19804.851227
+          }
+        }
+      ],
+      "hashes": [
+        "9e00a049bf6b781b",
+        "d294e86c0475ae89"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 6185.019,
+            "wall": 6224.728171999999
+          },
+          "b": {
+            "cpu": 18866.998,
+            "wall": 19142.437768
+          }
+        }
+      ],
+      "hashes": [
+        "9e00a049bf6b781b",
+        "d294e86c0475ae89"
+      ]
+    }
+  ]
+}

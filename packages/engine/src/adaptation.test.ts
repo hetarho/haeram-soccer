@@ -163,11 +163,11 @@ describe('adaptation moves with starts, managers and stays (→PLAYER-4, PLAYER-
     club.cohesion = 1;
     cohesionAfterManager(club, false);
     expect(club.cohesion).toBeCloseTo(0.85, 6);
-    cohesionAfterSummer(club, { investment: true, move: true });
-    expect(club.cohesion).toBeCloseTo(0.6, 6);
+    cohesionAfterSummer(club, { move: true });
+    expect(club.cohesion).toBeCloseTo(0.75, 6);
     club.cohesion = 0.35;
-    cohesionAfterSummer(club, { investment: true, move: false });
-    expect(club.cohesion).toBe(0.3);
+    cohesionAfterSummer(club, { move: false });
+    expect(club.cohesion).toBe(0.35);
     validateWorld(w);
   });
 });

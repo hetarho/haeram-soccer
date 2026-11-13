@@ -1,0 +1,66 @@
+process 1/4: cpu ×0.934
+process 2/4: cpu ×0.939
+process 3/4: cpu ×0.774
+process 4/4: cpu ×1.021
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.22.1",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "cores": 12
+  },
+  "base": "b41b8978774506a0344aafd100bf4237ce70046d",
+  "cand": "affbd6c6846cb29418b923daf354244557fbb503",
+  "procs": 4,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "395630af332d7b0f",
+    "cand": "aa7d2aa2c42887c0"
+  },
+  "sameBundle": false,
+  "sameHash": false,
+  "hashes": {
+    "base": [
+      "9e00a049bf6b781b"
+    ],
+    "cand": [
+      "ef9fb5c00eb3f1f6"
+    ]
+  },
+  "season": {
+    "pairs": 4,
+    "ms": {
+      "base": {
+        "cpu": 4598.541499999999,
+        "wall": 4616.453194
+      },
+      "cand": {
+        "cpu": 4304.6355,
+        "wall": 4315.607100499999
+      }
+    },
+    "cpu": {
+      "ratio": 0.9121,
+      "lo": 0.8119,
+      "hi": 0.9985,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.911,
+      "lo": 0.8106,
+      "hi": 0.9977,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    2.77,
+    2.81,
+    2.76,
+    2.73,
+    2.69
+  ]
+}

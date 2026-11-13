@@ -1,0 +1,95 @@
+{
+  "scope": "Reporting eligibility only; application code and existing peak calculation/simulation unchanged. Nine focused unit cases pass (five facts, four statistics), including two new regressions. Global2941 unit result remains evidence for the unchanged application and earlier source; it is not relabeled as a new full run.",
+  "sourceFiles": {
+    "scripts/lib/persisted-world-facts.ts": "33b4f545c3aee841950bec162abc734ab05a90934a23b5d7efcb2a9c33ca9550",
+    "scripts/lib/persisted-world-facts.test.ts": "13d08a3fd95f87d0341bcfc03edd0d74b0356a819649f21ff977a09792c04b9a",
+    "scripts/persisted-world-summary.ts": "0495df7a7458b25cad451883b3c66292e259e12a4b5895fc97d09300ea9e3965"
+  },
+  "checks": [
+    {
+      "name": "unit",
+      "command": "pnpm exec vitest run --project unit --maxWorkers 2 scripts/lib/persisted-world-facts.test.ts scripts/perf/stats.test.ts --reporter dot",
+      "commit": "6626fea832c91ae3482d686a447a6e9bd7eecb49",
+      "workingTree": "3be46ff27aa6fff65da87f871dea7ea2733f803b",
+      "milliseconds": 1837,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "log": "artifacts/benchmarks/persisted-world/reporting-window-unit.log",
+      "logSha256": "c5f07b21be6e3982497e41b5cf654a9c3ddd98d38dbf7a1f31deae701617156c"
+    },
+    {
+      "name": "typecheck",
+      "command": "pnpm run typecheck",
+      "commit": "6626fea832c91ae3482d686a447a6e9bd7eecb49",
+      "workingTree": "3be46ff27aa6fff65da87f871dea7ea2733f803b",
+      "milliseconds": 7171,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "log": "artifacts/benchmarks/persisted-world/reporting-window-typecheck.log",
+      "logSha256": "1c71d1441c14e7d1c15cb13059a4cbb9aa97e02de0e1a8a4066ecef0d3c27c7a"
+    },
+    {
+      "name": "lint",
+      "command": "pnpm run lint",
+      "commit": "6626fea832c91ae3482d686a447a6e9bd7eecb49",
+      "workingTree": "1c6e22ecf3e27b5fd5e7aae5cee75eabf0157b50",
+      "milliseconds": 23967,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "log": "artifacts/benchmarks/persisted-world/reporting-window-lint.log",
+      "logSha256": "1967a1279e9d0f208bd6784377fabd2acbc21d24a676cdbca7812044f572bea0"
+    },
+    {
+      "name": "i18n",
+      "command": "pnpm run validate:i18n",
+      "commit": "6626fea832c91ae3482d686a447a6e9bd7eecb49",
+      "workingTree": "1c6e22ecf3e27b5fd5e7aae5cee75eabf0157b50",
+      "milliseconds": 4793,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "log": "artifacts/benchmarks/persisted-world/reporting-window-i18n.log",
+      "logSha256": "abf96a5c99bb865584856c498ffd13414176b257d02b6180fc9ec38ca416fcdf"
+    },
+    {
+      "name": "format",
+      "command": "pnpm run format:check",
+      "commit": "6626fea832c91ae3482d686a447a6e9bd7eecb49",
+      "workingTree": "1c6e22ecf3e27b5fd5e7aae5cee75eabf0157b50",
+      "milliseconds": 12618,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "log": "artifacts/benchmarks/persisted-world/reporting-window-format.log",
+      "logSha256": "b1bfb51b62716caff43f071fac5a9db24ecacad978cf15e338078bbb57f0eac0"
+    },
+    {
+      "name": "test-lint",
+      "command": "pnpm exec eslint scripts/lib/persisted-world-facts.test.ts --no-warn-ignored",
+      "commit": "6626fea832c91ae3482d686a447a6e9bd7eecb49",
+      "workingTree": "3be46ff27aa6fff65da87f871dea7ea2733f803b",
+      "milliseconds": 1857,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "log": "artifacts/benchmarks/persisted-world/reporting-window-test-lint.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "test-format",
+      "command": "pnpm exec prettier --check scripts/lib/persisted-world-facts.test.ts",
+      "commit": "6626fea832c91ae3482d686a447a6e9bd7eecb49",
+      "workingTree": "3be46ff27aa6fff65da87f871dea7ea2733f803b",
+      "milliseconds": 1207,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "log": "artifacts/benchmarks/persisted-world/reporting-window-test-format.log",
+      "logSha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    }
+  ],
+  "reuse": "After full lint/format/i18n only the test gained an independent structuredClone expectation; focused lint/format, typecheck and all nine relevant units passed afterward. No display resource/reference changed."
+}

@@ -1,0 +1,47 @@
+
+ RUN  v5.0.3 /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860
+
+·································································································································································································································································································································································································································································································································································································································································································································································································stderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 11
+Encountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+···stderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 12
+Encountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+·········stderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness
+[presentation:locale] Missing message "navigation.league" (en-US); using the registered default (ko-KR). {
+  code: 'missing-message',
+  locale: 'en-US',
+  messageId: 'navigation.league',
+  message: 'Missing message "navigation.league" (en-US); using the registered default (ko-KR).'
+}
+
+··········································································································································································································································································································································································stderr | apps/web/src/presentation/text.test.ts > source prose and display translation > translates exact source labels and recognized historical templates without mutating data
+[presentation:locale] Missing message "budget.part.line" (en-GB); using the registered default (ko-KR). {
+  code: 'missing-message',
+  locale: 'en-GB',
+  messageId: 'budget.part.line',
+  message: 'Missing message "budget.part.line" (en-GB); using the registered default (ko-KR).'
+}
+[presentation:locale] Missing message "budget.part.line" (en-GB); using the registered default (ko-KR). {
+  code: 'missing-message',
+  locale: 'en-GB',
+  messageId: 'budget.part.line',
+  message: 'Missing message "budget.part.line" (en-GB); using the registered default (ko-KR).'
+}
+[presentation:locale] Missing message "budget.part.line" (en-GB); using the registered default (ko-KR). {
+  code: 'missing-message',
+  locale: 'en-GB',
+  messageId: 'budget.part.line',
+  message: 'Missing message "budget.part.line" (en-GB); using the registered default (ko-KR).'
+}
+
+··························································································································stdout | packages/engine/src/staging/tendencies.test.ts
+T829 tendencies {"firstStepSeconds":[0.7,0.4],"meanPlaceMetres":[4.581032737775992,3.7643993060807],"pressingAt18Metres":[{"presses":false,"closed":2.557693872320087},{"presses":true,"closed":3.0249999999999844}],"roleMetresFromAnchor":[0,17.262674647921738,22.441477042298263],"run65MetresSeconds":[12.5,7.4],"carry6Seconds":[{"speed":5,"distance":27.973715555555565},{"speed":4.6000000000000005,"distance":25.90000000000004}]}
+
+············································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································
+
+ Test Files  344 passed (344)
+      Tests  2941 passed (2941)
+   Start at  19:57:12
+   Duration  467.28s (tests 83%, import 14%, transform 2%, environment 1%)
+

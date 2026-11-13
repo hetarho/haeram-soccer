@@ -1,0 +1,16 @@
+/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/apps/web/src/adapters/careerColumns.ts:39
+const failure = () => new Error(sourceMessage('copy.careerColumns.1a9ac09859'));
+                      ^
+
+Error: 인물 이력 압축 참조 또는 차원 손상
+    at failure (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/apps/web/src/adapters/careerColumns.ts:39:23)
+    at poolNames (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/apps/web/src/adapters/careerColumns.ts:277:11)
+    at packCareerColumns (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/apps/web/src/adapters/careerColumns.ts:347:16)
+    at packCareers (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/apps/web/src/adapters/careerPacking.ts:102:18)
+    at pack (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/apps/web/src/adapters/packing.ts:515:9)
+    at encode (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/apps/web/src/adapters/persistence.ts:55:52)
+    at sample (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/persisted-size.ts:46:23)
+    at async main (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/persisted-size.ts:146:16)
+    at async <anonymous> (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/persisted-size.ts:197:85)
+
+Node.js v24.22.1

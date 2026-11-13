@@ -1,0 +1,141 @@
+{
+  "workload": "creation-1990",
+  "machine": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.22.1",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "cores": 12
+  },
+  "base": "b41b8978774506a0344aafd100bf4237ce70046d",
+  "cand": "/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860",
+  "procs": 4,
+  "jobs": 2,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "395630af332d7b0f",
+    "cand": "653a6f9a8a650405"
+  },
+  "sameBundle": false,
+  "sameHash": false,
+  "hashes": {
+    "base": [
+      "0d5c95fdccf00eda"
+    ],
+    "cand": [
+      "5740b7d9580144db"
+    ]
+  },
+  "creation": {
+    "pairs": 4,
+    "ms": {
+      "base": {
+        "cpu": 86730.769,
+        "wall": 96526.54625800003
+      },
+      "cand": {
+        "cpu": 2865063.8865,
+        "wall": 2920695.4741735
+      }
+    },
+    "cpu": {
+      "ratio": 33.1119,
+      "lo": 31.1349,
+      "hi": 34.9483,
+      "call": "slower"
+    },
+    "wall": {
+      "ratio": 31.2642,
+      "lo": 28.873,
+      "hi": 32.9458,
+      "call": "slower"
+    }
+  },
+  "load1": [
+    7.03,
+    10.28,
+    10.22,
+    5.14,
+    4.56
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "creation",
+          "a": {
+            "cpu": 84259.531,
+            "wall": 96719.31156199999
+          },
+          "b": {
+            "cpu": 2995217.255,
+            "wall": 3094422.041465
+          }
+        }
+      ],
+      "hashes": [
+        "0d5c95fdccf00eda",
+        "5740b7d9580144db"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "creation",
+          "a": {
+            "cpu": 89621.13899999997,
+            "wall": 96333.78095400007
+          },
+          "b": {
+            "cpu": 3003915.728,
+            "wall": 3107501.3618030003
+          }
+        }
+      ],
+      "hashes": [
+        "0d5c95fdccf00eda",
+        "5740b7d9580144db"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "creation",
+          "a": {
+            "cpu": 89202.007,
+            "wall": 97694.724099
+          },
+          "b": {
+            "cpu": 2709848.4930000002,
+            "wall": 2718421.834426
+          }
+        }
+      ],
+      "hashes": [
+        "0d5c95fdccf00eda",
+        "5740b7d9580144db"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "creation",
+          "a": {
+            "cpu": 82350.34199999971,
+            "wall": 82567.37686200021
+          },
+          "b": {
+            "cpu": 2734910.518,
+            "wall": 2746968.906882
+          }
+        }
+      ],
+      "hashes": [
+        "0d5c95fdccf00eda",
+        "5740b7d9580144db"
+      ]
+    }
+  ]
+}

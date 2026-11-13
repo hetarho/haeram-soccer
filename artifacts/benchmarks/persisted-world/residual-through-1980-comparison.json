@@ -1,0 +1,2081 @@
+{
+  "scope": "One existing joint named-config candidate, not a five-seed fit. Compare only identical observed annual years; partial decades show their actual count. Raw inputs and source identities are retained. No capacity, browser generation, full title-window or fresh performance gate is claimed.",
+  "baseline": {
+    "file": "artifacts/benchmarks/persisted-world/publication-seed-5-core.json.partial.json",
+    "sha256": "8544de1dcfd29bd9a67f1a3f953d79f6fa13fce0e5136a8dda8af8de03c03e32",
+    "computation": {
+      "algorithm": "sha256",
+      "sha256": "136379ca5b500113758d0c1ebc8560dcd92cb2a42f8aa3ff7ca461f44c7929bf",
+      "files": 211,
+      "entry": "scripts/persisted-world-read.ts",
+      "scope": "runtime dependency closure and declared inputs"
+    }
+  },
+  "candidate": {
+    "file": "artifacts/benchmarks/persisted-world/residual-through-1980.json",
+    "sha256": "38afe896dcb6ea43f75abb9dee7242b4666301264be529655f0e1a886751bf0a",
+    "until": 1980,
+    "complete": true,
+    "measured": true,
+    "lastRetainedBoundary": 1980,
+    "playedSeasons": 43,
+    "configs": {
+      "NPC_SQUAD": {
+        "size": 22
+      },
+      "NPC_YOUTH": {
+        "ages": [
+          17,
+          18
+        ],
+        "byAcademy": [
+          {
+            "count": 1,
+            "potential": [
+              28,
+              49
+            ]
+          },
+          {
+            "count": 1,
+            "potential": [
+              40,
+              61
+            ]
+          },
+          {
+            "count": 2,
+            "potential": [
+              52,
+              73
+            ]
+          },
+          {
+            "count": 2,
+            "potential": [
+              64,
+              85
+            ]
+          },
+          {
+            "count": 3,
+            "potential": [
+              76,
+              96
+            ]
+          },
+          {
+            "count": 3,
+            "potential": [
+              82,
+              99
+            ]
+          }
+        ],
+        "headroom": [
+          12,
+          24
+        ]
+      },
+      "CLUB_LEVELS": {
+        "investment": 0.02,
+        "decay": 0.005,
+        "coachingAbility": [
+          30,
+          40,
+          50,
+          60,
+          70,
+          80
+        ]
+      },
+      "NPC_MARKET": {
+        "days": [
+          0,
+          0.5,
+          1
+        ],
+        "upgrade": 4,
+        "blocked": 4,
+        "loanAge": 23,
+        "moves": 3,
+        "minimum": 18,
+        "termAge": 27
+      },
+      "SQUAD_SPREAD": {
+        "inForce": "flat"
+      }
+    },
+    "computation": {
+      "algorithm": "sha256",
+      "sha256": "136379ca5b500113758d0c1ebc8560dcd92cb2a42f8aa3ff7ca461f44c7929bf",
+      "files": 211,
+      "entry": "scripts/persisted-world-read.ts",
+      "scope": "runtime dependency closure and declared inputs"
+    }
+  },
+  "full2010FiveSeedGateClaimed": false,
+  "divisionRows": [
+    {
+      "country": "BEL",
+      "tier": 0,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 7.672222222222229,
+      "candidateChange": -3.6111111111111027,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 19.623925563315407,
+      "candidateXiSpan": 27.77757429417296
+    },
+    {
+      "country": "BEL",
+      "tier": 0,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 8.83333333333334,
+      "candidateChange": -4.022222222222217,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 23.568343551581137,
+      "candidateXiSpan": 32.88375186435296
+    },
+    {
+      "country": "BEL",
+      "tier": 0,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 9.638888888888895,
+      "candidateChange": -3.7611111111111057,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 21.57461616717596,
+      "candidateXiSpan": 33.009527861982605
+    },
+    {
+      "country": "BEL",
+      "tier": 0,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 10.333333333333343,
+      "candidateChange": -2.944444444444443,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 21.33732601241352,
+      "candidateXiSpan": 32.77341003932161
+    },
+    {
+      "country": "BEL",
+      "tier": 1,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 15.266666666666662,
+      "candidateChange": -5.840000000000005,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 28.03098446849708,
+      "candidateXiSpan": 30.1519210349202
+    },
+    {
+      "country": "BEL",
+      "tier": 1,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 15.286666666666662,
+      "candidateChange": -5.313333333333337,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 32.52616955820432,
+      "candidateXiSpan": 34.12997500741524
+    },
+    {
+      "country": "BEL",
+      "tier": 1,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 15.35333333333333,
+      "candidateChange": -6.193333333333337,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 35.600359022453794,
+      "candidateXiSpan": 34.311159802343624
+    },
+    {
+      "country": "BEL",
+      "tier": 1,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 14.86666666666666,
+      "candidateChange": -6.466666666666669,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 34.70304483696042,
+      "candidateXiSpan": 32.73600788457729
+    },
+    {
+      "country": "ENG",
+      "tier": 0,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 11.269999999999996,
+      "candidateChange": -1.7000000000000057,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 13.874141277826094,
+      "candidateXiSpan": 28.85494461322354
+    },
+    {
+      "country": "ENG",
+      "tier": 0,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 12.114999999999993,
+      "candidateChange": -1.470000000000003,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 14.024821392368091,
+      "candidateXiSpan": 32.86806511812958
+    },
+    {
+      "country": "ENG",
+      "tier": 0,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 11.989999999999991,
+      "candidateChange": -1.945000000000006,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 13.766123432347067,
+      "candidateXiSpan": 33.75859475522941
+    },
+    {
+      "country": "ENG",
+      "tier": 0,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 12.049999999999997,
+      "candidateChange": -1.6500000000000057,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 12.605136029016737,
+      "candidateXiSpan": 32.16567126552859
+    },
+    {
+      "country": "ENG",
+      "tier": 1,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 22.083333333333336,
+      "candidateChange": 3.170833333333337,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 19.567872542363272,
+      "candidateXiSpan": 36.89027270315496
+    },
+    {
+      "country": "ENG",
+      "tier": 1,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 23.21666666666668,
+      "candidateChange": 3.0916666666666712,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 21.85727843313005,
+      "candidateXiSpan": 41.73092461721761
+    },
+    {
+      "country": "ENG",
+      "tier": 1,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 22.858333333333338,
+      "candidateChange": 2.5333333333333385,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 23.207345485934276,
+      "candidateXiSpan": 40.98967637279646
+    },
+    {
+      "country": "ENG",
+      "tier": 1,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 21.875,
+      "candidateChange": 1.5833333333333428,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 26.01857354040975,
+      "candidateXiSpan": 40.748662808283775
+    },
+    {
+      "country": "ENG",
+      "tier": 2,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 31.816666666666663,
+      "candidateChange": 6.033333333333334,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 29.354805816211297,
+      "candidateXiSpan": 34.51541073274139
+    },
+    {
+      "country": "ENG",
+      "tier": 2,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 32.10416666666667,
+      "candidateChange": 6.470833333333334,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 31.487800433005038,
+      "candidateXiSpan": 37.64222755700725
+    },
+    {
+      "country": "ENG",
+      "tier": 2,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 29.883333333333333,
+      "candidateChange": 6.2124999999999995,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 34.673564322043426,
+      "candidateXiSpan": 38.22732986386177
+    },
+    {
+      "country": "ENG",
+      "tier": 2,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 28.16666666666667,
+      "candidateChange": 5.125,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 36.46502179220561,
+      "candidateXiSpan": 37.85307552559096
+    },
+    {
+      "country": "ENG",
+      "tier": 3,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 40.329166666666666,
+      "candidateChange": 6.879166666666668,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 35.758878173666616,
+      "candidateXiSpan": 35.02348139518297
+    },
+    {
+      "country": "ENG",
+      "tier": 3,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 39.25416666666667,
+      "candidateChange": 7.908333333333337,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 40.57204391914989,
+      "candidateXiSpan": 37.72720789041936
+    },
+    {
+      "country": "ENG",
+      "tier": 3,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 36.925,
+      "candidateChange": 7.670833333333337,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 42.22963771314552,
+      "candidateXiSpan": 37.8026645427345
+    },
+    {
+      "country": "ENG",
+      "tier": 3,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 33.041666666666664,
+      "candidateChange": 7.666666666666671,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 47.21482195208523,
+      "candidateXiSpan": 37.90773519087803
+    },
+    {
+      "country": "ESP",
+      "tier": 0,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 9.625,
+      "candidateChange": -2.8,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 15.01937881290458,
+      "candidateXiSpan": 26.97728636993268
+    },
+    {
+      "country": "ESP",
+      "tier": 0,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 11.895,
+      "candidateChange": -2.9900000000000007,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 15.329285871340096,
+      "candidateXiSpan": 31.26506835345112
+    },
+    {
+      "country": "ESP",
+      "tier": 0,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 11.879999999999999,
+      "candidateChange": -3.2699999999999987,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 15.413958610281876,
+      "candidateXiSpan": 30.49547468338981
+    },
+    {
+      "country": "ESP",
+      "tier": 0,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 11.849999999999994,
+      "candidateChange": -3.5,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 16.618416778262592,
+      "candidateXiSpan": 30.488614910971375
+    },
+    {
+      "country": "ESP",
+      "tier": 1,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 20.263636363636365,
+      "candidateChange": -3.804545454545457,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 21.11250717244995,
+      "candidateXiSpan": 31.476942020529236
+    },
+    {
+      "country": "ESP",
+      "tier": 1,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 22.786363636363635,
+      "candidateChange": -4.090909090909093,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 24.965985226512196,
+      "candidateXiSpan": 34.857561695899015
+    },
+    {
+      "country": "ESP",
+      "tier": 1,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 21.904545454545453,
+      "candidateChange": -4.1318181818181845,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 25.303088092158283,
+      "candidateXiSpan": 35.07009878776912
+    },
+    {
+      "country": "ESP",
+      "tier": 1,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 21.590909090909086,
+      "candidateChange": -5.227272727272727,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 28.018959567571468,
+      "candidateXiSpan": 36.56196278892676
+    },
+    {
+      "country": "FRA",
+      "tier": 0,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 8.19444444444444,
+      "candidateChange": -3.6111111111111143,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 18.044312512664355,
+      "candidateXiSpan": 29.995482274934034
+    },
+    {
+      "country": "FRA",
+      "tier": 0,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 10.649999999999995,
+      "candidateChange": -3.8444444444444485,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 18.776236991277607,
+      "candidateXiSpan": 33.124567966956796
+    },
+    {
+      "country": "FRA",
+      "tier": 0,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 10.738888888888885,
+      "candidateChange": -4.2388888888888925,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 18.83616267302795,
+      "candidateXiSpan": 33.93325394822589
+    },
+    {
+      "country": "FRA",
+      "tier": 0,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 10.333333333333329,
+      "candidateChange": -5.555555555555557,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 17.81121353270005,
+      "candidateXiSpan": 32.42784556726861
+    },
+    {
+      "country": "FRA",
+      "tier": 1,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 18.6,
+      "candidateChange": 1.616666666666665,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 28.15866763310038,
+      "candidateXiSpan": 32.02474047982446
+    },
+    {
+      "country": "FRA",
+      "tier": 1,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 19.244444444444444,
+      "candidateChange": 1.744444444444443,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 32.352371262184434,
+      "candidateXiSpan": 36.51813889251544
+    },
+    {
+      "country": "FRA",
+      "tier": 1,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 19.3,
+      "candidateChange": 0.8666666666666636,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 29.945085541571178,
+      "candidateXiSpan": 36.41086849291976
+    },
+    {
+      "country": "FRA",
+      "tier": 1,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 17.888888888888886,
+      "candidateChange": 0.055555555555557135,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 38.03431224820931,
+      "candidateXiSpan": 36.358278912200724
+    },
+    {
+      "country": "FRA",
+      "tier": 2,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 24.744444444444444,
+      "candidateChange": 0.7611111111111114,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 36.05017492206776,
+      "candidateXiSpan": 32.85531350271189
+    },
+    {
+      "country": "FRA",
+      "tier": 2,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 26.51111111111111,
+      "candidateChange": 1.2222222222222237,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 38.25655877757954,
+      "candidateXiSpan": 35.73667370963912
+    },
+    {
+      "country": "FRA",
+      "tier": 2,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 23.738888888888887,
+      "candidateChange": 1.7277777777777785,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 41.594633409329596,
+      "candidateXiSpan": 37.27908232894303
+    },
+    {
+      "country": "FRA",
+      "tier": 2,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 22.44444444444445,
+      "candidateChange": 1.2222222222222214,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 44.64309191762304,
+      "candidateXiSpan": 38.657410220688895
+    },
+    {
+      "country": "GER",
+      "tier": 0,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 10.327777777777783,
+      "candidateChange": -1.5277777777777715,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 15.836554678588476,
+      "candidateXiSpan": 31.807074518427108
+    },
+    {
+      "country": "GER",
+      "tier": 0,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 12.5888888888889,
+      "candidateChange": -1.1222222222222158,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 16.705944533491923,
+      "candidateXiSpan": 32.692655091004674
+    },
+    {
+      "country": "GER",
+      "tier": 0,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 13.383333333333336,
+      "candidateChange": -0.49999999999999434,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 14.555892650145605,
+      "candidateXiSpan": 31.69000596278902
+    },
+    {
+      "country": "GER",
+      "tier": 0,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 13.555555555555557,
+      "candidateChange": -0.8333333333333286,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 13.196246151959881,
+      "candidateXiSpan": 34.32754178157536
+    },
+    {
+      "country": "GER",
+      "tier": 1,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 18.677777777777774,
+      "candidateChange": 2.0611111111111073,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 25.855618326337428,
+      "candidateXiSpan": 33.03957976048588
+    },
+    {
+      "country": "GER",
+      "tier": 1,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 20.111111111111107,
+      "candidateChange": 1.3444444444444428,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 28.886632707958704,
+      "candidateXiSpan": 37.672702775043035
+    },
+    {
+      "country": "GER",
+      "tier": 1,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 19.27222222222222,
+      "candidateChange": 0.016666666666664297,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 31.151899760785874,
+      "candidateXiSpan": 39.31875574077194
+    },
+    {
+      "country": "GER",
+      "tier": 1,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 19.722222222222214,
+      "candidateChange": -0.7222222222222285,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 26.245076617173677,
+      "candidateXiSpan": 37.76691610886027
+    },
+    {
+      "country": "GER",
+      "tier": 2,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 26.060000000000002,
+      "candidateChange": 0.18000000000000327,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 32.19896719184982,
+      "candidateXiSpan": 31.31569406919192
+    },
+    {
+      "country": "GER",
+      "tier": 2,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 25.51,
+      "candidateChange": -0.44999999999999785,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 38.58539785219421,
+      "candidateXiSpan": 35.612187692924714
+    },
+    {
+      "country": "GER",
+      "tier": 2,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 24.635,
+      "candidateChange": -0.2849999999999966,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 41.20047533385765,
+      "candidateXiSpan": 36.40156948621215
+    },
+    {
+      "country": "GER",
+      "tier": 2,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 20.549999999999997,
+      "candidateChange": -1.3499999999999943,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 46.81013885514811,
+      "candidateXiSpan": 36.939722906848054
+    },
+    {
+      "country": "ITA",
+      "tier": 0,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 9.710000000000004,
+      "candidateChange": -2.0649999999999977,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 15.083981160020533,
+      "candidateXiSpan": 30.593471665895542
+    },
+    {
+      "country": "ITA",
+      "tier": 0,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 11.700000000000005,
+      "candidateChange": -2.2949999999999973,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 17.198092074245686,
+      "candidateXiSpan": 33.83782526753214
+    },
+    {
+      "country": "ITA",
+      "tier": 0,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 11.625000000000004,
+      "candidateChange": -3.1549999999999967,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 16.2418016700445,
+      "candidateXiSpan": 33.372116505366854
+    },
+    {
+      "country": "ITA",
+      "tier": 0,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 12.049999999999997,
+      "candidateChange": -1.9500000000000028,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 15.8109185446498,
+      "candidateXiSpan": 32.337285883699636
+    },
+    {
+      "country": "ITA",
+      "tier": 1,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 19.175,
+      "candidateChange": 2.185000000000005,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 27.26974026440912,
+      "candidateXiSpan": 35.10724863511081
+    },
+    {
+      "country": "ITA",
+      "tier": 1,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 21.480000000000004,
+      "candidateChange": 2.415000000000002,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 28.21566601581376,
+      "candidateXiSpan": 36.001592516133215
+    },
+    {
+      "country": "ITA",
+      "tier": 1,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 20.660000000000007,
+      "candidateChange": 1.8450000000000046,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 30.646538684549434,
+      "candidateXiSpan": 38.38141102603083
+    },
+    {
+      "country": "ITA",
+      "tier": 1,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 19.299999999999997,
+      "candidateChange": 1.4000000000000057,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 33.062135692705986,
+      "candidateXiSpan": 38.56814920637369
+    },
+    {
+      "country": "ITA",
+      "tier": 2,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 26.375,
+      "candidateChange": 0.7033333333333325,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 33.94214368337539,
+      "candidateXiSpan": 33.666749305410114
+    },
+    {
+      "country": "ITA",
+      "tier": 2,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 27.21,
+      "candidateChange": 1.0766666666666638,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 39.86680072476003,
+      "candidateXiSpan": 37.613312402542014
+    },
+    {
+      "country": "ITA",
+      "tier": 2,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 25.336666666666666,
+      "candidateChange": 0.7349999999999988,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 41.96919938672711,
+      "candidateXiSpan": 38.50365512905031
+    },
+    {
+      "country": "ITA",
+      "tier": 2,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 23.566666666666663,
+      "candidateChange": 0.6499999999999986,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 44.39728462046667,
+      "candidateXiSpan": 38.168968657276295
+    },
+    {
+      "country": "NED",
+      "tier": 0,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 9.511111111111115,
+      "candidateChange": -3.411111111111107,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 17.375356790473326,
+      "candidateXiSpan": 28.30442383595018
+    },
+    {
+      "country": "NED",
+      "tier": 0,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 10.311111111111114,
+      "candidateChange": -3.5166666666666644,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 19.852300203710417,
+      "candidateXiSpan": 30.350240771432635
+    },
+    {
+      "country": "NED",
+      "tier": 0,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 11.038888888888891,
+      "candidateChange": -3.4888888888888845,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 18.22482264278931,
+      "candidateXiSpan": 30.955368605169163
+    },
+    {
+      "country": "NED",
+      "tier": 0,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 12.444444444444443,
+      "candidateChange": -2.7777777777777715,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 13.854647044476947,
+      "candidateXiSpan": 32.31395054099133
+    },
+    {
+      "country": "NED",
+      "tier": 1,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 16.450000000000006,
+      "candidateChange": -3.1899999999999977,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 24.00734204206366,
+      "candidateXiSpan": 28.294629931953835
+    },
+    {
+      "country": "NED",
+      "tier": 1,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 17.12,
+      "candidateChange": -3.6299999999999977,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 29.819564325547002,
+      "candidateXiSpan": 34.610665254546426
+    },
+    {
+      "country": "NED",
+      "tier": 1,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 17.125000000000004,
+      "candidateChange": -4.129999999999997,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 29.847049894707418,
+      "candidateXiSpan": 34.16789351837427
+    },
+    {
+      "country": "NED",
+      "tier": 1,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 17.35000000000001,
+      "candidateChange": -4.949999999999996,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 30.349797361168235,
+      "candidateXiSpan": 35.071512552447544
+    },
+    {
+      "country": "POR",
+      "tier": 0,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 7.944444444444448,
+      "candidateChange": -4.761111111111106,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": false,
+      "defaultXiSpan": 18.666262326020025,
+      "candidateXiSpan": 26.819199642268586
+    },
+    {
+      "country": "POR",
+      "tier": 0,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 9.51666666666667,
+      "candidateChange": -5.4166666666666625,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 21.207542237526457,
+      "candidateXiSpan": 31.31350794934205
+    },
+    {
+      "country": "POR",
+      "tier": 0,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 10.372222222222227,
+      "candidateChange": -6.466666666666663,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 20.102787522043137,
+      "candidateXiSpan": 30.634317332590975
+    },
+    {
+      "country": "POR",
+      "tier": 0,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 10.5,
+      "candidateChange": -5.388888888888886,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 19.398943926090244,
+      "candidateXiSpan": 32.59515097334583
+    },
+    {
+      "country": "POR",
+      "tier": 1,
+      "decade": 1950,
+      "annualYears": [
+        1950,
+        1951,
+        1952,
+        1953,
+        1954,
+        1955,
+        1956,
+        1957,
+        1958,
+        1959
+      ],
+      "count": 10,
+      "defaultChange": 16.477777777777778,
+      "candidateChange": -5.905555555555556,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 22.482354379925994,
+      "candidateXiSpan": 28.72895019771169
+    },
+    {
+      "country": "POR",
+      "tier": 1,
+      "decade": 1960,
+      "annualYears": [
+        1960,
+        1961,
+        1962,
+        1963,
+        1964,
+        1965,
+        1966,
+        1967,
+        1968,
+        1969
+      ],
+      "count": 10,
+      "defaultChange": 17.06111111111111,
+      "candidateChange": -5.68888888888889,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 32.08547128590002,
+      "candidateXiSpan": 32.71709846695643
+    },
+    {
+      "country": "POR",
+      "tier": 1,
+      "decade": 1970,
+      "annualYears": [
+        1970,
+        1971,
+        1972,
+        1973,
+        1974,
+        1975,
+        1976,
+        1977,
+        1978,
+        1979
+      ],
+      "count": 10,
+      "defaultChange": 17.77777777777778,
+      "candidateChange": -6.05,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 29.276669522554425,
+      "candidateXiSpan": 33.98253869834704
+    },
+    {
+      "country": "POR",
+      "tier": 1,
+      "decade": 1980,
+      "annualYears": [
+        1980
+      ],
+      "count": 1,
+      "defaultChange": 17.611111111111114,
+      "candidateChange": -7.055555555555557,
+      "defaultOutsideFive": true,
+      "candidateOutsideFive": true,
+      "defaultXiSpan": 30.79138807208587,
+      "candidateXiSpan": 32.41809293649342
+    }
+  ],
+  "defaultObservedMisses": 84,
+  "candidateObservedMisses": 21,
+  "defaultBooks": {
+    "clubSeasons": 19393,
+    "wagesAboveRevenue": 1125,
+    "summerClubSeasons": 19393,
+    "summerBreaches": 5504,
+    "closedYears": [
+      1930,
+      1931,
+      1932,
+      1933,
+      1934,
+      1935,
+      1936,
+      1937,
+      1938,
+      1946,
+      1947,
+      1948,
+      1949,
+      1950,
+      1951,
+      1952,
+      1953,
+      1954,
+      1955,
+      1956,
+      1957,
+      1958,
+      1959,
+      1960,
+      1961,
+      1962,
+      1963,
+      1964,
+      1965,
+      1966,
+      1967,
+      1968,
+      1969,
+      1970,
+      1971,
+      1972,
+      1973,
+      1974,
+      1975,
+      1976,
+      1977,
+      1978,
+      1979
+    ]
+  },
+  "candidateBooks": {
+    "clubSeasons": 19393,
+    "wagesAboveRevenue": 23,
+    "summerClubSeasons": 19393,
+    "summerBreaches": 0,
+    "closedYears": [
+      1930,
+      1931,
+      1932,
+      1933,
+      1934,
+      1935,
+      1936,
+      1937,
+      1938,
+      1946,
+      1947,
+      1948,
+      1949,
+      1950,
+      1951,
+      1952,
+      1953,
+      1954,
+      1955,
+      1956,
+      1957,
+      1958,
+      1959,
+      1960,
+      1961,
+      1962,
+      1963,
+      1964,
+      1965,
+      1966,
+      1967,
+      1968,
+      1969,
+      1970,
+      1971,
+      1972,
+      1973,
+      1974,
+      1975,
+      1976,
+      1977,
+      1978,
+      1979
+    ]
+  },
+  "old1950CandidatePrefix": [
+    {
+      "field": "rows",
+      "commonCount": 112,
+      "equal": true
+    },
+    {
+      "field": "books",
+      "commonCount": 104,
+      "equal": true
+    },
+    {
+      "field": "summers",
+      "commonCount": 104,
+      "equal": true
+    },
+    {
+      "field": "values",
+      "commonCount": 0,
+      "equal": true
+    },
+    {
+      "field": "affiliations",
+      "commonCount": 14,
+      "equal": true
+    }
+  ],
+  "oldCandidateConfigEqual": true,
+  "peakComparisonIncluded": false,
+  "peakReason": "Default control window is incomplete; no completed-cohort peak comparison is inferred from partial aggregates."
+}

@@ -1,0 +1,38 @@
+{
+  "receivedAt": "2026-11-13T11:59:29.684Z",
+  "originalTaskStart": "2026-11-13T08:52:43.827Z",
+  "requestedHorizon": 2010,
+  "classification": "non-browser numerical calibration",
+  "exitCode": 1,
+  "receipt": {
+    "schemaVersion": 1,
+    "ok": false,
+    "exitCode": 1,
+    "cached": false,
+    "timedOut": true,
+    "stale": false,
+    "ms": 3200273,
+    "scope": {
+      "TIER": "task",
+      "DIFF_BASE": "3c07ec2d8a46e9d868a9864750c892aa5b86ca22",
+      "TASK": "T866",
+      "TASKS": "T866"
+    },
+    "commit": "c0768c7ec900fa8f1efb2b3789741514b27cfd26",
+    "tree": "1391ec501eef6a85c4ee709e78a7d509c7086d8d",
+    "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-dd012cd2-53f9-49a6-ba09-952c50718181.log",
+    "failedTests": [],
+    "failureSetComplete": false,
+    "tail": [
+      "{\"seed\":\"persisted-world-viability\",\"year\":1950,\"elapsedMs\":607453}",
+      "{\"seed\":\"persisted-world-viability\",\"year\":1960,\"elapsedMs\":1049639}",
+      "{\"seed\":\"persisted-world-viability\",\"year\":1970,\"elapsedMs\":1456736}",
+      "{\"seed\":\"persisted-world-viability\",\"year\":1980,\"elapsedMs\":1905896}",
+      "{\"seed\":\"persisted-world-viability\",\"year\":1990,\"elapsedMs\":2423512}",
+      "{\"seed\":\"persisted-world-viability\",\"year\":2000,\"elapsedMs\":3011071}"
+    ],
+    "slow": true,
+    "hint": "task check exceeded 5 min: run only the unit tests affected since GUSTA_DIFF_BASE; move integration/e2e/full suites to the batch gate."
+  },
+  "rawOutput": "{\"schemaVersion\":1,\"ok\":false,\"exitCode\":1,\"cached\":false,\"timedOut\":true,\"stale\":false,\"ms\":3200273,\"scope\":{\"TIER\":\"task\",\"DIFF_BASE\":\"3c07ec2d8a46e9d868a9864750c892aa5b86ca22\",\"TASK\":\"T866\",\"TASKS\":\"T866\"},\"commit\":\"c0768c7ec900fa8f1efb2b3789741514b27cfd26\",\"tree\":\"1391ec501eef6a85c4ee709e78a7d509c7086d8d\",\"log\":\"/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-dd012cd2-53f9-49a6-ba09-952c50718181.log\",\"failedTests\":[],\"failureSetComplete\":false,\"tail\":[\"{\\\"seed\\\":\\\"persisted-world-viability\\\",\\\"year\\\":1950,\\\"elapsedMs\\\":607453}\",\"{\\\"seed\\\":\\\"persisted-world-viability\\\",\\\"year\\\":1960,\\\"elapsedMs\\\":1049639}\",\"{\\\"seed\\\":\\\"persisted-world-viability\\\",\\\"year\\\":1970,\\\"elapsedMs\\\":1456736}\",\"{\\\"seed\\\":\\\"persisted-world-viability\\\",\\\"year\\\":1980,\\\"elapsedMs\\\":1905896}\",\"{\\\"seed\\\":\\\"persisted-world-viability\\\",\\\"year\\\":1990,\\\"elapsedMs\\\":2423512}\",\"{\\\"seed\\\":\\\"persisted-world-viability\\\",\\\"year\\\":2000,\\\"elapsedMs\\\":3011071}\"],\"slow\":true,\"hint\":\"task check exceeded 5 min: run only the unit tests affected since GUSTA_DIFF_BASE; move integration/e2e/full suites to the batch gate.\"}\n"
+}

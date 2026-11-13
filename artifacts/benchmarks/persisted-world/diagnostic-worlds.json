@@ -1,0 +1,37 @@
+{
+  "purpose": "Retain the exact complete generated states from the short numerical attempts for future analysis without another simulation; no fields pruned or rewritten.",
+  "worlds": [
+    {
+      "name": "squads-10",
+      "file": "artifacts/benchmarks/persisted-world/squads-10.world.json.gz",
+      "jsonSha256": "ae4ad05478bf0d26ac19be2a572c2d1505dcebca490c69335db36dd8ec2478b1",
+      "gzipSha256": "821b16083751b63c274f9364f796aee06882b5ef4eeaab0a488ae8fd3ea34776",
+      "jsonBytes": 24432479,
+      "gzipBytes": 2771172,
+      "year": 1947,
+      "round": 0,
+      "historySeasons": 10,
+      "careerEnded": null,
+      "ended": null,
+      "format": "gzip of the complete diagnostic World JSON, not the production portable save format",
+      "source": "before T872 academy/takeover repair; original numerical receipt and computation provenance apply",
+      "validationClaimed": false
+    },
+    {
+      "name": "records-20-diagnostic",
+      "file": "artifacts/benchmarks/persisted-world/records-20-diagnostic.world.json.gz",
+      "jsonSha256": "a0b0fad9097471e30b06bc697535409a84f88ec90aedd7b6806f38b79e9877e1",
+      "gzipSha256": "638b975cf301578d7b9acf5cab9aaeeb16137e2a03d536ca4ca2380d6a688b86",
+      "jsonBytes": 23172525,
+      "gzipBytes": 2878906,
+      "year": 1955,
+      "round": 8,
+      "historySeasons": 5,
+      "careerEnded": null,
+      "ended": "fans",
+      "format": "gzip of the complete diagnostic World JSON, not the production portable save format",
+      "source": "before T872 academy/takeover repair; original numerical receipt and computation provenance apply",
+      "validationClaimed": false
+    }
+  ]
+}

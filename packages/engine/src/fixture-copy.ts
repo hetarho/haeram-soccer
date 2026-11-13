@@ -2,8 +2,8 @@ import type { CareerEmployment, PersonCareer, World } from '../../contracts/src/
 
 /**
  * The read-only inputs an unowned fixture consumes (ARCH-6); no campaign execution imports.
- * Fixtures draw their own streams and read disjoint clubs in a round. NPC squads are rebuilt
- * from retained people through the helper's generated-roster cache, rather than shipped.
+ * Fixtures draw their own streams and read disjoint clubs in a round. Persisted squads are
+ * replicated per club by the runtime channel.
  */
 export const FIXTURE_READ_KEYS = [
   'calendar',
@@ -15,6 +15,7 @@ export const FIXTURE_READ_KEYS = [
   'people',
   'playerClub',
   'seed',
+  'squads',
   'year',
 ] as const satisfies readonly (keyof World)[];
 export type FixtureReadKey = (typeof FIXTURE_READ_KEYS)[number];
@@ -76,14 +77,15 @@ export function readCopy(w: World): FixtureReadCopy {
 }
 
 /**
- * Inputs of world.ts npcSquad and npc-continuity.ts continuousSquad, in registry order.
- * Changes to those builders must update this signature and its parity cases. A career counter,
- * fee or cohesion edit still replicates, but does not discard an unchanged generated squad.
+ * Inputs of stored matchday selection and representative squad generation, in registry order.
+ * Changes to those builders must update this signature and its parity cases. Stored player
+ * changes require a fresh matchday choice.
  */
 export function fixtureRosterKey(copy: FixtureReadCopy): string {
   return JSON.stringify([
     copy.seed,
     copy.year,
+    copy.squads,
     copy.clubs.map((c) => [c.id, c.country, c.strength, c.tier]),
     Object.values(copy.people ?? {}).map((p) =>
       p.playing === 'active'

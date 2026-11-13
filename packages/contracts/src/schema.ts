@@ -125,6 +125,9 @@ export const budgetResponsibilitySchema = z.enum([
 export const spendRequestSchema = z.literal([1, 2, 3, 4, 5]);
 /** A club's books while nobody owns it (→ECON-36): the current and the last closed season. */
 const clubBooks = z.strictObject({
+  openingIncome: amount.optional(),
+  transfersPaid: amount.optional(),
+  transfersReceived: amount.optional(),
   seasons: z
     .array(
       z.strictObject({
@@ -132,6 +135,8 @@ const clubBooks = z.strictObject({
         income: amount,
         wages: amount,
         costs: amount,
+        transfersPaid: amount.optional(),
+        transfersReceived: amount.optional(),
         result: money,
       }),
     )
@@ -156,6 +161,14 @@ const club = z.object({
   cohesion: z.number().finite().min(0.3).max(1).optional(),
   identity: clubIdentitySchema.optional(),
   books: clubBooks.optional(),
+  levels: z
+    .strictObject({
+      academy: z.number().int().min(0).max(5),
+      ground: z.number().int().min(0).max(5),
+      coaching: z.number().int().min(0).max(5),
+      progress: z.number().finite().min(-1).max(1).optional(),
+    })
+    .optional(),
 });
 /** Whole percent of the wage (→CLUB-29): a promotion rise, a relegation cut, a Ballon d'Or bonus. */
 const clauses = z.strictObject({
@@ -436,10 +449,15 @@ const npcSeasonSchema = z.strictObject({
                       appearances: z.number().int().nonnegative().max(1000),
                       // Appearances are starts plus substitute appearances (→HIST-13).
                       starts: z.number().int().nonnegative().max(1000),
+                      cleanSheets: z.number().int().nonnegative().max(1000).optional(),
                       metrics,
                       detail: playerDetail,
                     })
-                    .refine((part) => part.starts <= part.appearances),
+                    .refine(
+                      (part) =>
+                        part.starts <= part.appearances &&
+                        (part.cleanSheets === undefined || part.cleanSheets <= part.starts),
+                    ),
                 )
                 .min(1)
                 .max(50),
@@ -1085,6 +1103,55 @@ const worldSchema: z.ZodType<World> = z.object({
   playerClub: id,
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
+  squads: z.record(id, z.array(player).max(20000)).optional(),
+  playerRecords: z
+    .record(
+      id,
+      z.strictObject({
+        moves: z.array(
+          z.strictObject({
+            year: season,
+            day: seasonDay,
+            from: id,
+            to: id,
+            fee: amount,
+            loan: z.boolean().optional(),
+          }),
+        ),
+        lines: z
+          .array(
+            z.strictObject({
+              year: season,
+              club: id,
+              appearances: z.number().int().positive().max(10000),
+              goals: z.number().int().nonnegative(),
+              assists: z.number().int().nonnegative(),
+              saves: z.number().int().nonnegative().optional(),
+              cleanSheets: z.number().int().nonnegative().optional(),
+            }),
+          )
+          .max(100000)
+          .optional(),
+        linked: z.boolean().optional(),
+        retired: z.strictObject({ year: season, club: id.optional(), profile: player }).optional(),
+        loan: z
+          .strictObject({
+            club: id,
+            until: season,
+            wage: amount,
+            contractUntil: season,
+            year: season,
+            graduate: z.literal(true).optional(),
+            joined: season.optional(),
+          })
+          .optional(),
+      }),
+    )
+    .optional(),
+  npcMarketAt: careerDate.optional(),
+  npcGrowthAt: z.strictObject({ year: season, round: z.number().int().min(0).max(46) }).optional(),
+  npcRetirementAt: season.optional(),
+  npcSummerAt: season.optional(),
   hardStreak: z.number().int().nonnegative().optional(),
   trainingAt: z
     .string()
@@ -1431,6 +1498,48 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   for (const person of Object.values(w.people ?? {}))
     if (person.intention) delete (person.intention as { encouraged?: unknown }).encouraged;
   const ids = new Set(w.clubs.map((c) => c.id));
+  const dateNumber = (date: { year: number; day: number }) => date.year * 366 + date.day;
+  const today = { year: w.year, day: w.calendar?.day ?? w.round * 7 };
+  if (w.npcMarketAt && dateNumber(w.npcMarketAt) > dateNumber(today))
+    throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+  for (const [playerId, record] of Object.entries(w.playerRecords ?? {})) {
+    const lines = new Set<string>();
+    for (const line of record.lines ?? []) {
+      const key = `${line.year}:${line.club}`;
+      if (
+        !ids.has(line.club) ||
+        line.year > w.year ||
+        lines.has(key) ||
+        (line.cleanSheets !== undefined && line.cleanSheets > line.appearances)
+      )
+        throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+      lines.add(key);
+    }
+    if (
+      record.retired &&
+      (record.retired.profile.id !== playerId ||
+        record.retired.year > w.year ||
+        (record.retired.club !== undefined && !ids.has(record.retired.club)))
+    )
+      throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+    let previous: (typeof record.moves)[number] | undefined;
+    for (const move of record.moves) {
+      if (
+        !ids.has(move.from) ||
+        !ids.has(move.to) ||
+        move.from === move.to ||
+        dateNumber(move) > dateNumber(today) ||
+        (previous && (dateNumber(move) < dateNumber(previous) || previous.to !== move.from))
+      )
+        throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+      previous = move;
+    }
+    if (
+      record.loan &&
+      (!ids.has(record.loan.club) || !previous?.loan || previous.from !== record.loan.club)
+    )
+      throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+  }
   for (const [club, results] of Object.entries(w.recentResults ?? {})) {
     const seen = new Set<string>();
     if (!ids.has(club)) throw new Error(sourceMessage('copy.schema.df9beb0eea'));
@@ -1458,7 +1567,6 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       throw new Error(sourceMessage('copy.schema.66925a0aed'));
   }
   const occupied = new Set<string>();
-  const dateNumber = (date: { year: number; day: number }) => date.year * 366 + date.day;
   const mediationIds = new Set<string>(),
     mediationKeys = new Set<string>();
   for (const mediation of w.mediations ?? []) {
@@ -1501,7 +1609,6 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       !arrival.positions[arrival.position]
     )
       throw new Error(sourceMessage('copy.schema.cf04608c1a'));
-  const today = { year: w.year, day: w.calendar?.day ?? w.round * 7 };
   const beforeToday = (at: { year: number; day: number }) => dateNumber(at) <= dateNumber(today);
   const isCoach = (role: string) => !['player', 'manager', 'director', 'scout'].includes(role);
   const arrivalKeys = new Set<string>();
@@ -1718,6 +1825,24 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   }
   const playerIds = new Set(w.players.map((p) => p.id));
   if (playerIds.size !== w.players.length) throw new Error(sourceMessage('copy.schema.7d0218ff22'));
+  if (w.squads) {
+    if (w.clubs.some((c) => !c.representative && c.id !== w.playerClub && !w.squads![c.id]))
+      throw new Error(sourceMessage('copy.schema.df9beb0eea'));
+    const live = new Set(w.players.filter((p) => p.status === 'active').map((p) => p.id));
+    for (const [club, players] of Object.entries(w.squads)) {
+      if (club === w.playerClub || !w.clubs.some((c) => c.id === club && !c.representative))
+        throw new Error(sourceMessage('copy.schema.df9beb0eea'));
+      for (const p of players) {
+        if (p.status !== 'active' || live.has(p.id))
+          throw new Error(sourceMessage('copy.schema.7d0218ff22'));
+        live.add(p.id);
+      }
+    }
+    for (const p of w.freeAgents ?? []) {
+      if (live.has(p.id)) throw new Error(sourceMessage('copy.schema.7d0218ff22'));
+      live.add(p.id);
+    }
+  }
   for (const f of [...w.fixtures, ...w.ownMatches, ...w.europe.flatMap((t) => t.fixtures)])
     if (!ids.has(f.home) || !ids.has(f.away) || f.home === f.away)
       throw new Error(sourceMessage('copy.schema.ec2c12eba2'));

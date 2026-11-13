@@ -1,6 +1,7 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { clubMilestones, clubOf } from './index';
 import { careerWorld } from './career.testkit';
+import { setNpcLevel } from './testing';
 
 /**
  * The milestone club on the released model: club goals, not the match model, are the subject. A
@@ -22,7 +23,7 @@ export function world(strong = false) {
       player.born = w.year - 20;
       w.people![player.id].born = player.born;
     }
-    for (const club of w.clubs) if (club.id !== w.playerClub) club.strength = 5;
+    for (const club of w.clubs) if (club.id !== w.playerClub) setNpcLevel(w, club, 5);
   }
   return w;
 }

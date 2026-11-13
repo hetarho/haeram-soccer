@@ -27,7 +27,7 @@ export const ADAPTATION_CONFIG = {
   /** 조직력 per settled league round, below and above 0.80 (→LEAGUE-12). */
   cohesionRise: { below: 0.01, above: 0.005 },
   /** 조직력 a summer's change costs: a takeover or a new project, a promotion or a relegation. */
-  cohesionDrop: { investment: 0.15, move: 0.1 },
+  cohesionDrop: { move: 0.1 },
   cohesionFloor: 0.3,
 } as const;
 
@@ -145,10 +145,9 @@ export function settleCohesion(w: World) {
 export function cohesionAfterManager(club: Club, sameSchool: boolean) {
   club.cohesion = managerChangeLoss(cohesion(club), sameSchool);
 }
-/** A summer's change of squad costs 조직력: an investment, then a change of division (→LEAGUE-12). */
-export function cohesionAfterSummer(club: Club, change: { investment: boolean; move: boolean }) {
-  const { investment, move } = ADAPTATION_CONFIG.cohesionDrop;
-  const drop = (change.investment ? investment : 0) + (change.move ? move : 0);
+/** Promotion or relegation costs cohesion (→LEAGUE-12). */
+export function cohesionAfterSummer(club: Club, change: { move: boolean }) {
+  const drop = change.move ? ADAPTATION_CONFIG.cohesionDrop.move : 0;
   if (!drop) return;
   club.cohesion = round4(Math.max(ADAPTATION_CONFIG.cohesionFloor, cohesion(club) - drop));
 }

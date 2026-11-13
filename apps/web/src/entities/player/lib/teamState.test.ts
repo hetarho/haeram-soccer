@@ -1,3 +1,4 @@
+import { worldMarketFixture } from '../../../../../../packages/engine/src/world-market.testkit';
 import { describe, expect, it } from 'vitest';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
 import { rating } from '../../../../../../packages/engine/src/world';
@@ -127,6 +128,7 @@ describe('registration-aware squad state', () => {
   });
   it('uses counted and exempt players for an observed modern rule and discloses fallback estimation', () => {
     const w = world();
+    w.players = w.players.slice(0, 20);
     expect(squadRegistration(w).detail).toContain('등록 한도 40명 · 추정');
     w.year = 2011;
     w.clubs.find((c) => c.id === w.playerClub)!.tier = 0;
@@ -210,6 +212,13 @@ describe('clubhouse current-club summary (→WEB-44)', () => {
 });
 
 describe('team strength tile', () => {
+  it('uses published rival ratings in a view without squads', () => {
+    const w = worldMarketFixture();
+    w.clubs[1] = { ...w.clubs[1]!, country: 'ENG', rating: 99 } as (typeof w.clubs)[number];
+    w.clubs = w.clubs.slice(0, 2);
+    const own = rating(w, w.clubs[0]!);
+    expect(teamStates(w)[0]).toMatchObject({ value: String(own), status: '리그 2/2위' });
+  });
   it('reads the starting XI average and its place in our division', () => {
     const w = world();
     const strength = teamStates(w)[0];

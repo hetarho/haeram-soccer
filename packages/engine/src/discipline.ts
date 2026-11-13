@@ -228,6 +228,7 @@ export function isUnavailable(
 ) {
   const id = typeof player === 'string' ? player : player.id;
   if (isBanned(w, id, f)) return true;
+  if (typeof player !== 'string' && isInjured(w, player)) return true;
   if (club === w.playerClub) {
     const p = typeof player === 'string' ? w.players.find((x) => x.id === id) : player;
     return !!p && isInjured(w, p);
@@ -265,13 +266,12 @@ export function yellowWarning(w: World, p: Player) {
 }
 
 /**
- * The season turns: yellow counts reset, other clubs' injuries go with their regenerated squads,
- * unserved bans carry over by player.
+ * Yellow counts reset; playable clubs' injuries and unserved bans carry over by person.
  */
 export function closeDisciplineSeason(w: World) {
   const d = w.discipline;
   if (!d) return;
   d.year = w.year;
   d.yellows = {};
-  d.out = [];
+  d.out = d.out.filter((o) => !!w.squads?.[o.club] || o.club === w.playerClub);
 }

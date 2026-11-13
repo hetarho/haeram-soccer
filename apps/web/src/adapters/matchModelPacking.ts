@@ -45,6 +45,8 @@ export interface PackedNpcSeason {
   players: SparseTable;
   /** `[club, appearances, starts, …metrics(12), …detail(PD)]` per contribution, players in order. */
   contributions: SparseTable;
+  /** Optional presence/value pairs preserve pre-tracking absence. */
+  cleanSheets?: [number, number][];
 }
 
 const VERSION = 1;
@@ -233,7 +235,8 @@ function packSeason(
   const competitions: number[] = [],
     clubs: number[] = [],
     players: number[] = [],
-    contributions: number[] = [];
+    contributions: number[] = [],
+    cleanSheets: [number, number][] = [];
   for (const c of season.competitions) {
     const kind = KINDS.indexOf(c.kind);
     if (kind < 0) throw corrupt(sourceMessage('copy.matchModelPacking.5472360f2b'));
@@ -253,7 +256,9 @@ function packSeason(
       );
     for (const player of c.players) {
       players.push(ref(player.id), ref(player.name), ref(player.position), player.clubs.length);
-      for (const share of player.clubs)
+      for (const share of player.clubs) {
+        if (share.cleanSheets !== undefined)
+          cleanSheets.push([contributions.length / CONTRIBUTION_WIDTH, share.cleanSheets]);
         contributions.push(
           ref(share.club),
           share.appearances,
@@ -265,9 +270,11 @@ function packSeason(
             sourceMessage('copy.matchModelPacking.91b477874c'),
           ),
         );
+      }
     }
   }
   return {
+    ...(cleanSheets.length ? { cleanSheets } : {}),
     header: [
       season.year,
       revision(season.model),
@@ -413,6 +420,22 @@ function unpackSeason(
     CONTRIBUTION_WIDTH,
     Math.min(contributionTotal, MAX_ROWS),
   );
+  const cleanSheets = new Map<number, number>();
+  if (season.cleanSheets !== undefined) {
+    if (!Array.isArray(season.cleanSheets) || season.cleanSheets.length > contributionTotal)
+      throw corrupt(sourceMessage('copy.packing.5ccd8ed532'));
+    for (const row of season.cleanSheets) {
+      if (
+        !Array.isArray(row) ||
+        row.length !== 2 ||
+        !isCount(row[0], contributionTotal - 1) ||
+        !isCount(row[1], 1000) ||
+        cleanSheets.has(row[0])
+      )
+        throw corrupt(sourceMessage('copy.packing.5ccd8ed532'));
+      cleanSheets.set(row[0], row[1]);
+    }
+  }
   let club = 0,
     player = 0,
     contribution = 0;
@@ -472,6 +495,9 @@ function unpackSeason(
               club: str(r[0]),
               appearances: r[1],
               starts: r[2],
+              ...(cleanSheets.has(contribution - 1)
+                ? { cleanSheets: cleanSheets.get(contribution - 1)! }
+                : {}),
               metrics: r.slice(3, 3 + METRICS),
               detail: r.slice(3 + METRICS),
             };

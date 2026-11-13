@@ -1,3 +1,4 @@
+import { projectedClubRating } from '../../../runtime/squadReads';
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { squadRegistration } from './squadRegistration';
 import { registrationRoom } from '../../../../../../packages/engine/src/registration';
@@ -204,7 +205,7 @@ export function teamStates(w: World): TeamStateItem[] {
     field = ownLeagueIds(w).flatMap((id) => {
       if (id === club.id) return [strength];
       const other = w.clubs.find((c) => c.id === id);
-      return other ? [rating(w, other)] : [];
+      return other ? [projectedClubRating(other)] : [];
     }),
     place = strengthPlace(field, strength);
   return [

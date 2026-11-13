@@ -1,0 +1,122 @@
+import type { World } from '../../../../packages/contracts/src/types';
+import { message } from '../../../../packages/contracts/src/messages';
+
+/** Every canonical top-level field is classified before it can cross to the UI. */
+export const WORLD_VIEW_FIELDS = {
+  schema: 'include',
+  engine: 'include',
+  catalog: 'include',
+  catalogHash: 'include',
+  id: 'include',
+  seed: 'include',
+  squads: 'exclude',
+  playerRecords: 'exclude',
+  npcMarketAt: 'exclude',
+  npcGrowthAt: 'exclude',
+  npcRetirementAt: 'exclude',
+  npcSummerAt: 'exclude',
+  year: 'include',
+  round: 'include',
+  revision: 'include',
+  calendar: 'include',
+  rankHistory: 'include',
+  scorerSeason: 'include',
+  playerClub: 'include',
+  clubs: 'include',
+  people: 'exclude',
+  playingCoachProposals: 'include',
+  coachingMarketAt: 'include',
+  recruitmentArrivals: 'include',
+  replacementNeeds: 'include',
+  mediations: 'include',
+  promises: 'include',
+  players: 'include',
+  hardStreak: 'include',
+  trainingAt: 'include',
+  policy: 'include',
+  staff: 'include',
+  academy: 'include',
+  settings: 'include',
+  decisionChoices: 'include',
+  approvalWaits: 'include',
+  academyReviews: 'include',
+  bids: 'include',
+  inbox: 'include',
+  morale: 'include',
+  build: 'include',
+  buildNext: 'include',
+  managerMarket: 'include',
+  staffMarket: 'include',
+  shortlist: 'include',
+  freeAgents: 'exclude',
+  manager: 'include',
+  tactic: 'include',
+  fixtures: 'include',
+  tables: 'include',
+  recentResults: 'include',
+  kitChoice: 'include',
+  designCommission: 'include',
+  ownMatches: 'include',
+  newsJournal: 'exclude',
+  careerReads: 'exclude',
+  matchModel: 'include',
+  npcSeason: 'exclude',
+  managerHistory: 'exclude',
+  transfers: 'include',
+  history: 'include',
+  events: 'include',
+  cash: 'include',
+  income: 'include',
+  expense: 'include',
+  operatingExpenses: 'include',
+  currency: 'include',
+  priceIndex: 'include',
+  stadium: 'include',
+  trainingGround: 'include',
+  academyFacility: 'include',
+  facilityWorks: 'include',
+  ticket: 'include',
+  campaigns: 'include',
+  sponsor: 'include',
+  sponsors: 'include',
+  direction: 'include',
+  delegationRequests: 'include',
+  budgetPlan: 'include',
+  localBase: 'include',
+  globalReach: 'include',
+  cupWinners: 'include',
+  cups: 'include',
+  europe: 'include',
+  lastChampions: 'include',
+  critical: 'include',
+  insolvent: 'include',
+  bankrupt: 'include',
+  receiptIds: 'include',
+  discipline: 'include',
+  owner: 'include',
+  loan: 'include',
+  ended: 'include',
+} as const satisfies Record<keyof World, 'include' | 'exclude'>;
+export type ViewWorldFacts = Omit<
+  World,
+  | 'people'
+  | 'npcSeason'
+  | 'managerHistory'
+  | 'newsJournal'
+  | 'careerReads'
+  | 'freeAgents'
+  | 'squads'
+  | 'playerRecords'
+  | 'npcMarketAt'
+  | 'npcGrowthAt'
+  | 'npcRetirementAt'
+  | 'npcSummerAt'
+>;
+export function projectWorldFacts(w: World): ViewWorldFacts {
+  const projected: Record<string, unknown> = {};
+  for (const key of Object.keys(w) as (keyof World)[]) {
+    if (!Object.hasOwn(WORLD_VIEW_FIELDS, key)) throw new Error(message('copy.packing.5ccd8ed532'));
+    if (WORLD_VIEW_FIELDS[key] === 'include') projected[key] = w[key];
+  }
+  return projected as ViewWorldFacts;
+}

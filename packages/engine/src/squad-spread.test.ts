@@ -6,7 +6,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { COUNTRIES } from '../../catalogs/src/index';
 import type { Club, Player, PersonCareer, World } from '../../contracts/src/types';
-import { squadCostAt } from './dynamics';
+import { marketWageAt } from './market-prices';
 import { continuousSquad } from './npc-continuity';
 import { ovrAt } from './player';
 import {
@@ -222,8 +222,16 @@ describe('SQUAD_SPREAD `spread`', () => {
         let flat = 0n,
           spreadCost = 0n;
         for (const c of [...clubs('ENG', 8), ...clubs('ESP', 8)]) {
-          flat += squadCostAt(w, c, strength, 0, year);
-          spreadCost += spread(() => squadCostAt(w, c, strength, 0, year));
+          flat += npcSquad(w.seed, year, { ...c, strength, tier: 0 }).reduce(
+            (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)),
+            0n,
+          );
+          spreadCost += spread(() =>
+            npcSquad(w.seed, year, { ...c, strength, tier: 0 }).reduce(
+              (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)),
+              0n,
+            ),
+          );
         }
         const ratio = Number(spreadCost) / Number(flat);
         expect(ratio, `${strength} in ${year}`).toBeGreaterThan(0.85);

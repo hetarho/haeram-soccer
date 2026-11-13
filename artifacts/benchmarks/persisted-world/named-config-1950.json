@@ -1,0 +1,699 @@
+{
+  "scope": "One seed, actual annual1950 observation only. Joint named-config trials, not isolated causal factors, completed fits, storage measurements or five-seed gates. The inherited stable partial lacks a full config snapshot; its retained override file is provided.",
+  "runs": [
+    {
+      "label": "production",
+      "input": "artifacts/benchmarks/persisted-world/final-seed-viability.json.partial.json",
+      "sha256": "92f76e4e5e29c0f23743f96c1901c8e1240259e99207e6de2c207f48c513cb86",
+      "seed": "persisted-world-viability",
+      "observedYear": 1950,
+      "completedRun": false,
+      "recordedConfig": {
+        "NPC_SQUAD": {
+          "size": 22
+        },
+        "NPC_YOUTH": {
+          "ages": [
+            17,
+            18
+          ],
+          "byAcademy": [
+            {
+              "count": 2,
+              "potential": [
+                44,
+                65
+              ]
+            },
+            {
+              "count": 2,
+              "potential": [
+                54,
+                75
+              ]
+            },
+            {
+              "count": 3,
+              "potential": [
+                64,
+                85
+              ]
+            },
+            {
+              "count": 3,
+              "potential": [
+                74,
+                95
+              ]
+            },
+            {
+              "count": 4,
+              "potential": [
+                78,
+                99
+              ]
+            },
+            {
+              "count": 5,
+              "potential": [
+                83,
+                99
+              ]
+            }
+          ],
+          "headroom": [
+            12,
+            24
+          ]
+        },
+        "CLUB_LEVELS": {
+          "investment": 0.5,
+          "decay": 0.05,
+          "coachingAbility": [
+            30,
+            40,
+            50,
+            60,
+            70,
+            80
+          ]
+        },
+        "NPC_MARKET": {
+          "days": [
+            0,
+            0.5,
+            1
+          ],
+          "upgrade": 4,
+          "blocked": 4,
+          "loanAge": 23,
+          "moves": 3,
+          "minimum": 18,
+          "termAge": 27
+        },
+        "SQUAD_SPREAD": {
+          "inForce": "flat"
+        }
+      },
+      "overrideFile": null,
+      "overrides": null,
+      "divisionCells": [
+        {
+          "country": "ENG",
+          "tier": 0,
+          "change": 10.649999999999991,
+          "meanXiSpan": 14.376078951447246
+        },
+        {
+          "country": "ENG",
+          "tier": 1,
+          "change": 18.91666666666667,
+          "meanXiSpan": 24.016163548767405
+        },
+        {
+          "country": "ENG",
+          "tier": 2,
+          "change": 28.58333333333333,
+          "meanXiSpan": 29.495784982718803
+        },
+        {
+          "country": "ENG",
+          "tier": 3,
+          "change": 36.25000000000001,
+          "meanXiSpan": 37.69200402422333
+        },
+        {
+          "country": "ESP",
+          "tier": 0,
+          "change": 8.200000000000003,
+          "meanXiSpan": 15.599187343620434
+        },
+        {
+          "country": "ESP",
+          "tier": 1,
+          "change": 18.454545454545446,
+          "meanXiSpan": 17.603682705115737
+        },
+        {
+          "country": "GER",
+          "tier": 0,
+          "change": 9.055555555555557,
+          "meanXiSpan": 16.108839052423612
+        },
+        {
+          "country": "GER",
+          "tier": 1,
+          "change": 16.722222222222214,
+          "meanXiSpan": 25.137650347999863
+        },
+        {
+          "country": "GER",
+          "tier": 2,
+          "change": 24.35000000000001,
+          "meanXiSpan": 28.861138097237728
+        },
+        {
+          "country": "ITA",
+          "tier": 0,
+          "change": 8.5,
+          "meanXiSpan": 15.751556942559073
+        },
+        {
+          "country": "ITA",
+          "tier": 1,
+          "change": 16.799999999999997,
+          "meanXiSpan": 27.58064132326008
+        },
+        {
+          "country": "ITA",
+          "tier": 2,
+          "change": 23.950000000000003,
+          "meanXiSpan": 32.55634706115236
+        },
+        {
+          "country": "FRA",
+          "tier": 0,
+          "change": 6.333333333333329,
+          "meanXiSpan": 17.68968120712802
+        },
+        {
+          "country": "FRA",
+          "tier": 1,
+          "change": 18.222222222222214,
+          "meanXiSpan": 23.822223808535327
+        },
+        {
+          "country": "FRA",
+          "tier": 2,
+          "change": 22.388888888888893,
+          "meanXiSpan": 32.95947214223685
+        },
+        {
+          "country": "POR",
+          "tier": 0,
+          "change": 6.444444444444443,
+          "meanXiSpan": 15.186879765477803
+        },
+        {
+          "country": "POR",
+          "tier": 1,
+          "change": 14.888888888888886,
+          "meanXiSpan": 19.477960561651496
+        },
+        {
+          "country": "NED",
+          "tier": 0,
+          "change": 8.388888888888886,
+          "meanXiSpan": 17.0383417383361
+        },
+        {
+          "country": "NED",
+          "tier": 1,
+          "change": 15.049999999999997,
+          "meanXiSpan": 18.198760567145275
+        },
+        {
+          "country": "BEL",
+          "tier": 0,
+          "change": 6.444444444444457,
+          "meanXiSpan": 15.94628151691264
+        },
+        {
+          "country": "BEL",
+          "tier": 1,
+          "change": 15,
+          "meanXiSpan": 21.62997680750622
+        }
+      ],
+      "outsideFive": 21
+    },
+    {
+      "label": "lower-facility-and-potential",
+      "input": "artifacts/benchmarks/persisted-world/stable-levels-2010.json.partial.json",
+      "sha256": "39ae5e7282d8740350d5012d5d6022cf3c0e7572fddfd19a684b25676a0d1602",
+      "seed": "persisted-world-viability",
+      "observedYear": 1950,
+      "completedRun": false,
+      "recordedConfig": null,
+      "overrideFile": "stable-levels.config.json",
+      "overrides": {
+        "CLUB_LEVELS": {
+          "investment": 0.02,
+          "decay": 0.005
+        },
+        "NPC_YOUTH": {
+          "byAcademy": [
+            {
+              "count": 2,
+              "potential": [
+                38,
+                59
+              ]
+            },
+            {
+              "count": 2,
+              "potential": [
+                48,
+                69
+              ]
+            },
+            {
+              "count": 3,
+              "potential": [
+                58,
+                79
+              ]
+            },
+            {
+              "count": 3,
+              "potential": [
+                68,
+                89
+              ]
+            },
+            {
+              "count": 4,
+              "potential": [
+                73,
+                95
+              ]
+            },
+            {
+              "count": 5,
+              "potential": [
+                78,
+                99
+              ]
+            }
+          ]
+        }
+      },
+      "divisionCells": [
+        {
+          "country": "ENG",
+          "tier": 0,
+          "change": 1.25,
+          "meanXiSpan": 19.761910212132637
+        },
+        {
+          "country": "ENG",
+          "tier": 1,
+          "change": 6.458333333333343,
+          "meanXiSpan": 32.26884251563388
+        },
+        {
+          "country": "ENG",
+          "tier": 2,
+          "change": 13.583333333333329,
+          "meanXiSpan": 33.750248863167066
+        },
+        {
+          "country": "ENG",
+          "tier": 3,
+          "change": 18.708333333333336,
+          "meanXiSpan": 31.152242562883732
+        },
+        {
+          "country": "ESP",
+          "tier": 0,
+          "change": 0.04999999999999716,
+          "meanXiSpan": 20.404529084967315
+        },
+        {
+          "country": "ESP",
+          "tier": 1,
+          "change": 5.499999999999993,
+          "meanXiSpan": 24.41720243588111
+        },
+        {
+          "country": "GER",
+          "tier": 0,
+          "change": 0.6111111111111143,
+          "meanXiSpan": 23.21522991038555
+        },
+        {
+          "country": "GER",
+          "tier": 1,
+          "change": 6,
+          "meanXiSpan": 32.566979448782874
+        },
+        {
+          "country": "GER",
+          "tier": 2,
+          "change": 9.600000000000001,
+          "meanXiSpan": 31.443481792472237
+        },
+        {
+          "country": "ITA",
+          "tier": 0,
+          "change": -0.8499999999999943,
+          "meanXiSpan": 24.07425637156145
+        },
+        {
+          "country": "ITA",
+          "tier": 1,
+          "change": 6.900000000000006,
+          "meanXiSpan": 30.019512209530667
+        },
+        {
+          "country": "ITA",
+          "tier": 2,
+          "change": 11.11666666666666,
+          "meanXiSpan": 33.266349875441016
+        },
+        {
+          "country": "FRA",
+          "tier": 0,
+          "change": -1.7222222222222285,
+          "meanXiSpan": 26.362680681529795
+        },
+        {
+          "country": "FRA",
+          "tier": 1,
+          "change": 7.888888888888886,
+          "meanXiSpan": 26.833629637247284
+        },
+        {
+          "country": "FRA",
+          "tier": 2,
+          "change": 10.94444444444445,
+          "meanXiSpan": 29.433888802473845
+        },
+        {
+          "country": "POR",
+          "tier": 0,
+          "change": -1.3333333333333286,
+          "meanXiSpan": 21.106239517027994
+        },
+        {
+          "country": "POR",
+          "tier": 1,
+          "change": 2.5,
+          "meanXiSpan": 23.6411375640155
+        },
+        {
+          "country": "NED",
+          "tier": 0,
+          "change": -0.6666666666666572,
+          "meanXiSpan": 21.472901524156672
+        },
+        {
+          "country": "NED",
+          "tier": 1,
+          "change": 4.900000000000006,
+          "meanXiSpan": 24.14032282537724
+        },
+        {
+          "country": "BEL",
+          "tier": 0,
+          "change": -1.2222222222222143,
+          "meanXiSpan": 19.403032367097314
+        },
+        {
+          "country": "BEL",
+          "tier": 1,
+          "change": 3.3999999999999915,
+          "meanXiSpan": 25.254229321506383
+        }
+      ],
+      "outsideFive": 10
+    },
+    {
+      "label": "lower-intake-and-potential",
+      "input": "artifacts/benchmarks/persisted-world/residual-trial.json.partial.json",
+      "sha256": "22756771d15fd65cbf4d924d545fd3a169935330a28f4a527823790441863f6d",
+      "seed": "persisted-world-viability",
+      "observedYear": 1950,
+      "completedRun": false,
+      "recordedConfig": {
+        "NPC_SQUAD": {
+          "size": 22
+        },
+        "NPC_YOUTH": {
+          "ages": [
+            17,
+            18
+          ],
+          "byAcademy": [
+            {
+              "count": 1,
+              "potential": [
+                28,
+                49
+              ]
+            },
+            {
+              "count": 1,
+              "potential": [
+                40,
+                61
+              ]
+            },
+            {
+              "count": 2,
+              "potential": [
+                52,
+                73
+              ]
+            },
+            {
+              "count": 2,
+              "potential": [
+                64,
+                85
+              ]
+            },
+            {
+              "count": 3,
+              "potential": [
+                76,
+                96
+              ]
+            },
+            {
+              "count": 3,
+              "potential": [
+                82,
+                99
+              ]
+            }
+          ],
+          "headroom": [
+            12,
+            24
+          ]
+        },
+        "CLUB_LEVELS": {
+          "investment": 0.02,
+          "decay": 0.005,
+          "coachingAbility": [
+            30,
+            40,
+            50,
+            60,
+            70,
+            80
+          ]
+        },
+        "NPC_MARKET": {
+          "days": [
+            0,
+            0.5,
+            1
+          ],
+          "upgrade": 4,
+          "blocked": 4,
+          "loanAge": 23,
+          "moves": 3,
+          "minimum": 18,
+          "termAge": 27
+        },
+        "SQUAD_SPREAD": {
+          "inForce": "flat"
+        }
+      },
+      "overrideFile": "residual-trial.config.json",
+      "overrides": {
+        "CLUB_LEVELS": {
+          "investment": 0.02,
+          "decay": 0.005
+        },
+        "NPC_YOUTH": {
+          "byAcademy": [
+            {
+              "count": 1,
+              "potential": [
+                28,
+                49
+              ]
+            },
+            {
+              "count": 1,
+              "potential": [
+                40,
+                61
+              ]
+            },
+            {
+              "count": 2,
+              "potential": [
+                52,
+                73
+              ]
+            },
+            {
+              "count": 2,
+              "potential": [
+                64,
+                85
+              ]
+            },
+            {
+              "count": 3,
+              "potential": [
+                76,
+                96
+              ]
+            },
+            {
+              "count": 3,
+              "potential": [
+                82,
+                99
+              ]
+            }
+          ]
+        }
+      },
+      "divisionCells": [
+        {
+          "country": "ENG",
+          "tier": 0,
+          "change": -2.6500000000000057,
+          "meanXiSpan": 27.895840020404428
+        },
+        {
+          "country": "ENG",
+          "tier": 1,
+          "change": 2.083333333333343,
+          "meanXiSpan": 37.43452737419172
+        },
+        {
+          "country": "ENG",
+          "tier": 2,
+          "change": 4.708333333333336,
+          "meanXiSpan": 38.294292531426905
+        },
+        {
+          "country": "ENG",
+          "tier": 3,
+          "change": 7.333333333333336,
+          "meanXiSpan": 37.03533649154493
+        },
+        {
+          "country": "ESP",
+          "tier": 0,
+          "change": -2.9000000000000057,
+          "meanXiSpan": 25.221556063725494
+        },
+        {
+          "country": "ESP",
+          "tier": 1,
+          "change": -3.181818181818187,
+          "meanXiSpan": 28.244023011985043
+        },
+        {
+          "country": "GER",
+          "tier": 0,
+          "change": -2.8333333333333286,
+          "meanXiSpan": 33.20078458193042
+        },
+        {
+          "country": "GER",
+          "tier": 1,
+          "change": 1.7222222222222143,
+          "meanXiSpan": 32.969662048010086
+        },
+        {
+          "country": "GER",
+          "tier": 2,
+          "change": -0.6499999999999986,
+          "meanXiSpan": 31.309193804912404
+        },
+        {
+          "country": "ITA",
+          "tier": 0,
+          "change": -1.9500000000000028,
+          "meanXiSpan": 27.052439911967117
+        },
+        {
+          "country": "ITA",
+          "tier": 1,
+          "change": 1.5,
+          "meanXiSpan": 34.465743249691485
+        },
+        {
+          "country": "ITA",
+          "tier": 2,
+          "change": -0.13333333333333286,
+          "meanXiSpan": 33.38837011413967
+        },
+        {
+          "country": "FRA",
+          "tier": 0,
+          "change": -4.055555555555557,
+          "meanXiSpan": 26.978142043278062
+        },
+        {
+          "country": "FRA",
+          "tier": 1,
+          "change": 0.1666666666666714,
+          "meanXiSpan": 35.663918975196914
+        },
+        {
+          "country": "FRA",
+          "tier": 2,
+          "change": 0.27777777777777857,
+          "meanXiSpan": 31.4527161309551
+        },
+        {
+          "country": "POR",
+          "tier": 0,
+          "change": -4.6111111111111,
+          "meanXiSpan": 23.262168988963108
+        },
+        {
+          "country": "POR",
+          "tier": 1,
+          "change": -6.5,
+          "meanXiSpan": 28.96852900463916
+        },
+        {
+          "country": "NED",
+          "tier": 0,
+          "change": -3.555555555555557,
+          "meanXiSpan": 26.197623188343968
+        },
+        {
+          "country": "NED",
+          "tier": 1,
+          "change": -4.199999999999996,
+          "meanXiSpan": 26.053523779529293
+        },
+        {
+          "country": "BEL",
+          "tier": 0,
+          "change": -3.8333333333333286,
+          "meanXiSpan": 23.969350261802465
+        },
+        {
+          "country": "BEL",
+          "tier": 1,
+          "change": -6.333333333333336,
+          "meanXiSpan": 29.627102099044745
+        }
+      ],
+      "outsideFive": 3
+    }
+  ]
+}

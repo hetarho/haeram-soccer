@@ -7,6 +7,7 @@ import { movePerson } from './npc-continuity';
 import { careerWorld } from './career.testkit';
 function world() {
   const w = careerWorld({ seed: 'deadline-youth' });
+  w.players = w.players.slice(0, 20);
   w.calendar = { day: transferWindowDays(w.year).winterClose };
   w.settings!.responsibilities.academy = 'delegated';
   w.cash = '0';
@@ -34,6 +35,9 @@ describe('window-close call-ups', () => {
   it('calls up an unready same-line prospect below the cash floor on the day after the winter deadline', () => {
     const w = world(),
       p = prospect(w, 'same', 'CB');
+    expect(activePlayers(w)).toHaveLength(20);
+    expect(w.people![p.id]).toMatchObject({ club: w.playerClub, playing: 'active' });
+    expect(w.academy!.players).toContain(p);
     depart(w);
     dailyMarket(w);
     expect(w.players).not.toContain(p);

@@ -64,6 +64,33 @@ describe('source prose and display translation', () => {
     expect(record.detail).toBe('약 3주');
   });
 
+  it('keeps saved project reports translatable after their producer retires', () => {
+    const directory = new URL('../../public/presentation/locales/', import.meta.url);
+    const registry = validateRegistry(
+      JSON.parse(readFileSync(new URL('index.json', directory), 'utf8')),
+      'locale',
+    );
+    const english: LocalePack = JSON.parse(readFileSync(new URL('en-GB.json', directory), 'utf8'));
+    const saved = Object.freeze({
+      title: '인수, 대형 투자 유치',
+      detail:
+        '새 구단주와 대규모 투자로 앞으로 몇 시즌 동안 전력이 크게 오를 전망이에요. 지금 전력 64.',
+    });
+    select(english.messages);
+    expect(localizeText(saved.title)).toBe('인수 attracts large investments');
+    expect(localizeText(saved.detail)).toBe(
+      "With a new owner and large-scale investment, the team's power is expected to rise significantly over the next few seasons. Now power 64.",
+    );
+    for (const entry of registry.entries) {
+      const pack: LocalePack = JSON.parse(readFileSync(new URL(entry.resource, directory), 'utf8'));
+      expect(pack.messages['copy.dynamics.d1735c6a1e']).toContain('{p0}');
+      expect(pack.messages['copy.dynamics.f3616ce2a8']).toContain('{p0}');
+    }
+    setTextLocale();
+    expect(localizeText(saved.title)).toBe(saved.title);
+    expect(localizeText(saved.detail)).toBe(saved.detail);
+  });
+
   it('translates authored competition names inside generated messages', () => {
     const directory = new URL('../../public/presentation/locales/', import.meta.url);
     const registry = validateRegistry(

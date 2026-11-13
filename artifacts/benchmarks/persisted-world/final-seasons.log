@@ -1,0 +1,67 @@
+process 1/4: cpu ×38.557
+process 2/4: cpu ×36.514
+process 3/4: cpu ×43.512
+process 4/4: cpu ×33.597
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.22.1",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "cores": 12
+  },
+  "base": "b41b8978774506a0344aafd100bf4237ce70046d",
+  "cand": "/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860",
+  "procs": 4,
+  "jobs": 1,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "395630af332d7b0f",
+    "cand": "653a6f9a8a650405"
+  },
+  "sameBundle": false,
+  "sameHash": false,
+  "hashes": {
+    "base": [
+      "9e00a049bf6b781b"
+    ],
+    "cand": [
+      "fb79799121517000"
+    ]
+  },
+  "season": {
+    "pairs": 4,
+    "ms": {
+      "base": {
+        "cpu": 5565.769499999999,
+        "wall": 6322.22312150001
+      },
+      "cand": {
+        "cpu": 206395.549,
+        "wall": 215510.57459250002
+      }
+    },
+    "cpu": {
+      "ratio": 37.876,
+      "lo": 34.7735,
+      "hi": 41.6456,
+      "call": "slower"
+    },
+    "wall": {
+      "ratio": 34.0185,
+      "lo": 29.5458,
+      "hi": 38.3334,
+      "call": "slower"
+    }
+  },
+  "load1": [
+    10.43,
+    12.34,
+    11.71,
+    10.99,
+    12.62
+  ]
+}

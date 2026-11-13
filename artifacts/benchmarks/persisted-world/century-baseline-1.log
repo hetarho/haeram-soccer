@@ -1,0 +1,19 @@
+baseline founding: 627158 checkpoint bytes, 1964 people, 0 promises, 1 tenures
+baseline: 10/100 seasons, 12939 retained people, 2 tenures
+/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/aggregate/engine.ts:144
+      throw new Error(sourceMessage('copy.engine.9c28025341', { p0: club.id, p1: f.id }));
+            ^
+
+Error: 집계 경기 선발 11명이 아닙니다: ENG:3:0:0 1960:ENG:3:0:0:9
+    at matchdayRosters (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/aggregate/engine.ts:144:13)
+    at simulateMatch (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/match.ts:271:19)
+    at playFixture (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:957:10)
+    at <anonymous> (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:1000:66)
+    at Array.map (<anonymous>)
+    at playRound (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:1000:32)
+    at stepDay (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:1061:5)
+    at advanceRound (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:927:48)
+    at simulateSeason (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:932:54)
+    at playSeasons (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:635:5)
+
+Node.js v24.22.1

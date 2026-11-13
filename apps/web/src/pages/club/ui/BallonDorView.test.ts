@@ -9,11 +9,13 @@ vi.mock('../../../shared/ui/Panel', () => ({
   Panel: ({ title, children }: { title: string; children: unknown }) =>
     createElement('section', { 'aria-label': title }, children as never),
 }));
-vi.mock('./ClubLink', () => ({
+vi.mock('../../../entities/club', () => ({
   ClubLink: ({ id }: { id: string }) => createElement('span', null, `club:${id}`),
 }));
-vi.mock('./PlayerSheet', () => ({
-  PlayerLink: ({ name }: { name: string }) => createElement('button', null, name),
+vi.mock('../../../entities/player', async (original) => ({
+  ...(await original<typeof import('../../../entities/player')>()),
+  PlayerLink: ({ id, name }: { id: string; name: string }) =>
+    createElement('button', { 'data-player': id }, name),
 }));
 
 const place = (id: string, club: string, points: number): BallonDorPlace => ({
@@ -51,6 +53,7 @@ describe('the Ballon d’Or view (→WEB-111)', () => {
     const podium = html.slice(html.indexOf('aria-label="발롱도르 순위"'));
     expect(podium.indexOf('Player star')).toBeLessThan(podium.indexOf('Player x'));
     expect(podium).toContain('우리 팀');
+    for (const id of ['star', 'x']) expect(podium).toContain(`data-player="${id}"`);
     expect(podium).toContain('유럽 정상 · 리그 우승');
     expect(html).toContain('aria-label="이전 발롱도르 시즌"');
   });

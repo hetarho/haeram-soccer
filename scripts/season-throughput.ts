@@ -3,9 +3,11 @@
  * on the released match model (every fixture on the result path; T844 removed the grid and
  * pre-feature switches).
  *
- *   pnpm exec tsx scripts/season-throughput.ts [--seasons N] [--profile baseline|active-management]
+ *   pnpm exec tsx scripts/season-throughput.ts [--seasons N] [--profile baseline|active-management|history]
  *   pnpm exec tsx scripts/season-throughput.ts --stages N [--reps R]
  *   pnpm exec tsx scripts/season-throughput.ts --ab name=repo ... [--seasons N] [--reps R]
+ *
+ *   pnpm exec tsx scripts/season-throughput.ts --paired-base <pre-T861-ref> --json <report.json>
  *
  * - `--profile active-management` plays the runner's owner actions each season
  *   (scripts/match-model-baseline.ts `manage`); the default is the baseline world.
@@ -19,6 +21,7 @@
  *   Output names trees by the given names, never by their paths.
  */
 import { execFileSync } from 'node:child_process';
+import { message } from '../packages/contracts/src/messages';
 import { readFileSync } from 'node:fs';
 import { loadavg } from 'node:os';
 import { join } from 'node:path';
@@ -38,8 +41,36 @@ import {
   sponsorSlots,
   transferOffers,
 } from '../packages/engine/src/index';
+import { historyWorld, liveHistory } from '../packages/engine/src/history';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import type { World } from '../packages/contracts/src/types';
+
+/** --paired-base <pre-T861 ref>: identical bundled five-season workloads, paired with noise. */
+if (process.argv.includes('--paired-base')) {
+  const at = process.argv.indexOf('--paired-base');
+  const baseline = process.argv[at + 1];
+  if (!baseline) throw new Error(message('copy.packing.5ccd8ed532'));
+  const jsonAt = process.argv.indexOf('--json');
+  execFileSync(
+    process.execPath,
+    [
+      'scripts/perf/ab.mjs',
+      '--base',
+      baseline,
+      '--workload',
+      'history-five',
+      '--procs',
+      '4',
+      '--reps',
+      '1',
+      '--warm',
+      '0',
+      ...(jsonAt < 0 ? [] : ['--json', process.argv[jsonAt + 1]!]),
+    ],
+    { stdio: 'inherit' },
+  );
+  process.exit(0);
+}
 
 const arg = (name: string) => {
   const at = process.argv.indexOf(name);
@@ -51,6 +82,7 @@ const count = (name: string, fallback: number) => {
   return n;
 };
 const PROFILES = {
+  history: { seed: 'persisted-throughput-history' },
   baseline: { seed: 'release-century-baseline' },
   'active-management': { seed: 'release-century-active-management' },
 } as const;
@@ -63,7 +95,9 @@ const median = (xs: readonly number[]) => {
 const load1 = () => Number(loadavg()[0]!.toFixed(2));
 
 function world(profile: Profile) {
-  return careerWorld({ country: 'ENG', seed: PROFILES[profile].seed });
+  return profile === 'history'
+    ? historyWorld(PROFILES.history.seed)
+    : careerWorld({ country: 'ENG', seed: PROFILES[profile].seed });
 }
 
 /** The active-management century workload's owner actions, as the runner plays them. */
@@ -103,14 +137,15 @@ function manage(w: World, season: number) {
 async function seasons() {
   const seasonCount = count('--seasons', 5);
   const profile = (arg('--profile') ?? 'baseline') as Profile;
-  if (!(profile in PROFILES)) throw new Error('--profile takes baseline or active-management');
+  if (!(profile in PROFILES)) throw new Error(message('copy.packing.5ccd8ed532'));
   const w = world(profile);
   const startLoad = load1();
   const times: number[] = [];
   for (let n = 0; n < seasonCount; n++) {
     const start = performance.now();
     if (profile === 'active-management') manage(w, n);
-    simulateSeason(w);
+    if (profile === 'history') liveHistory(w, w.year + 1);
+    else simulateSeason(w);
     times.push((performance.now() - start) / 1000);
   }
   const mean = times.reduce((sum, t) => sum + t, 0) / times.length;

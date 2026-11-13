@@ -1,3 +1,6 @@
+import { squadPlayer } from './clubProfile';
+import { squad } from '../../../../packages/engine/src/world';
+import { WORLD_VIEW_FIELDS, projectWorldFacts } from './worldProjection';
 import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
@@ -57,6 +60,67 @@ function withCodec() {
   return { host, jobs };
 }
 describe('worker command protocol', () => {
+  it('never projects persisted squads onto the UI thread', async () => {
+    const { host, reply } = await startedHost();
+    expect(Object.keys(host.world!.squads!).length).toBeGreaterThan(0);
+    expect(reply.view!.world).not.toHaveProperty('squads');
+    expect(reply.view!.world.clubs.every((club) => Number.isFinite(club.rating))).toBe(true);
+  });
+  it('resolves own, full squad, free, retired and representative player-profile reads without publishing records', async () => {
+    const { host } = await startedHost();
+    const w = host.world!;
+    const [club, squadPlayers] = Object.entries(w.squads!)[0]!;
+    const live = squadPlayers.at(-1)!;
+    const free = { ...structuredClone(live), id: 'profile-free', freeSince: w.year };
+    const retired = { ...structuredClone(live), id: 'profile-retired' };
+    w.freeAgents = [free];
+    w.playerRecords = {
+      [retired.id]: {
+        moves: [],
+        linked: true,
+        lines: [{ year: w.year - 1, club, appearances: 1, goals: 0, assists: 0 }],
+        retired: { year: w.year - 1, club, profile: retired },
+      },
+    };
+    const representative = w.clubs.find((c) => c.representative)!;
+    const rep = squad(w, representative)[0]!;
+    for (const [id, kind] of [
+      [w.players[0]!.id, 'own'],
+      [live.id, 'squad'],
+      [free.id, 'free'],
+      [retired.id, 'retired'],
+      [rep.id, 'representative'],
+    ] as const) {
+      const reply = await host.handle(
+        req(`profile-${kind}`, -1, {
+          type: 'player-profile',
+          world: w.id,
+          playerId: id,
+          clubId: w.playerClub,
+        }),
+      );
+      expect(reply.ok, reply.error).toBe(true);
+      expect(reply.playerProfile).toEqual(squadPlayer(w, id, w.playerClub));
+      expect(reply.playerProfile!.kind).toBe(kind);
+      expect(reply.view).toBeUndefined();
+    }
+    const missing = await host.handle(
+      req('profile-missing', -1, {
+        type: 'player-profile',
+        world: w.id,
+        playerId: 'unknown-player',
+      }),
+    );
+    expect(missing.ok).toBe(false);
+    expect(projectWorldFacts(w)).not.toHaveProperty('playerRecords');
+  });
+  it('classifies every World key before projection', async () => {
+    const { host } = await startedHost();
+    expect(Object.keys(host.world!).every((key) => Object.hasOwn(WORLD_VIEW_FIELDS, key))).toBe(
+      true,
+    );
+    expect(() => projectWorldFacts({ ...host.world!, futureField: [] } as World)).toThrow();
+  });
   it('serializes commands, returns duplicate acknowledgment and rejects stale/session requests', async () => {
     const { host: h } = await startedHost();
     const a = req('advance', 0, { type: 'command', command: { type: 'advance', rounds: 1 } });
@@ -436,6 +500,33 @@ function withoutIdentities(w: World) {
 const preIdentity = (span?: { rounds: number }) => withoutIdentities(simulatedWorld(input, span));
 const activate = (id: string, raw: string, upgrade = true) =>
   req(id, -1, { type: 'inspect', raw, activate: true, upgrade });
+
+describe('supported-career persisted squad adoption', () => {
+  it('keeps inspection unchanged and saves founded squads only on writer activation', async () => {
+    const legacy = startedWorld();
+    delete legacy.squads;
+    const raw = await encode(legacy);
+    const h = new Host();
+    const inspected = await h.handle(req('squad-inspect', -1, { type: 'inspect', raw }));
+    expect(inspected.ok, inspected.error).toBe(true);
+    expect(inspected.candidate).not.toHaveProperty('squads');
+    expect(inspected.raw).toBeUndefined();
+    const readonly = await h.handle(activate('squad-readonly', raw, false));
+    expect(readonly.ok, readonly.error).toBe(true);
+    expect(h.world).not.toHaveProperty('squads');
+    const written = await h.handle(activate('squad-writer', raw));
+    expect(written.ok, written.error).toBe(true);
+    expect(written.upgraded).toBe(true);
+    expect(h.world!.squads).toBeDefined();
+    expect(written.raw).toBeDefined();
+    const saved = await decode(written.raw!);
+    expect(saved.world.squads).toEqual(h.world!.squads);
+    const reloaded = await h.handle(activate('squad-again', written.raw!));
+    expect(reloaded.ok, reloaded.error).toBe(true);
+    expect(reloaded.upgraded).toBeUndefined();
+    expect(reloaded.raw).toBeUndefined();
+  });
+});
 
 describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
   it('inspect/read-only activation does not install identities or increment revision', async () => {

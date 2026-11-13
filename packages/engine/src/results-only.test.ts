@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { MatchPlayback } from '../../contracts/src/types';
 import { historyWorld } from './history';
 import { RESULTS_LUCK, resultsOnlyMatch } from './results-only';
-import { equalSides } from './results-only.testkit';
+import { equalSides, releasedResultsWorld } from './results-only.testkit';
 import { M } from './match/record';
 import { lineOf } from './player';
 import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -153,7 +153,7 @@ describe("T698's placebo draw (RESULTS_LUCK, a measurement override)", () => {
 
   it('leaves the released draw exactly as it was by default', () => {
     expect(RESULTS_LUCK).toEqual({ salt: '', season: 1930 });
-    const w = historyWorld('results-only', ENABLED_RELEASE);
+    const w = releasedResultsWorld();
     expect(w.year).toBe(1930);
     const list = read(w);
     expect(scores(list)).toEqual(RELEASED.scores);
@@ -163,7 +163,7 @@ describe("T698's placebo draw (RESULTS_LUCK, a measurement override)", () => {
   });
 
   it("leaves a fixture of another season unchanged and redraws the salted season's", () => {
-    const w = historyWorld('results-only', ENABLED_RELEASE);
+    const w = releasedResultsWorld();
     const released = read(w);
     expect(withLuck('placebo-1', 1931, () => read(w))).toEqual(released);
     const one = withLuck('placebo-1', 1930, () => read(w)),

@@ -1,5 +1,6 @@
 import type { ClubBuild } from '../../contracts/src/build';
 import type {
+  Club,
   ClubPolicy,
   ContractTerm,
   Direction,
@@ -9,10 +10,14 @@ import type {
   InboxItem,
   MatchPlayback,
   OwnerState,
+  Player,
   TransferBid,
   World,
 } from '../../contracts/src/types';
 import { clubOf } from './player-state';
+import { lineOf } from './player';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import { invalidateNpcSquad } from './world';
 import { advanceDays } from './season';
 import { currentDay, seasonLength } from './calendar';
 import { placeBid, playerValue, respondBid } from './transfers';
@@ -29,6 +34,15 @@ import { fillDelegatedPost, STAFF_ROLES } from './staff';
 import { footballQuote } from './quotes';
 import { FAN_MOOD, OWNER_BUSINESS, OWNER_DIVIDEND } from './owner-config';
 import { stageAll } from './staging/frames';
+
+/** Sets fixture attributes, then derives a persisted club's strength from its real XI. */
+export function setNpcLevel(w: World, club: Club, level: number) {
+  const players = w.squads?.[club.id];
+  if (players) {
+    for (const p of players) for (const a of ATTRIBUTES) p.attrs[a] = level;
+  } else club.strength = level;
+  invalidateNpcSquad(w, club.id);
+}
 
 /**
  * Puts direction rows in force on a test world, as a founded or saved club holds them: cards,
@@ -88,10 +102,26 @@ export function stagePlayingCoach(w: World, id: string, years: 1 | 2, term: Cont
   return submitPlayingCoachProposal(w, quote);
 }
 
+/** A synthetic buyer missing this player's line, with explicit fee and wage room. */
+export function prepareSaleBuyer(w: World, p: Player) {
+  const club = w.clubs.find((c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id])!;
+  w.squads![club.id] = w.squads![club.id]!.filter(
+    (player) => lineOf(player.position) !== lineOf(p.position),
+  );
+  club.books = {
+    seasons: [],
+    cash: '999999999999',
+    debt: '0',
+    openingIncome: '999999999999',
+  };
+  invalidateNpcSquad(w, club.id);
+  return club;
+}
+
 /** Another club's accepted offer for one of our players at his value (window must be open). */
 export function sellPlayer(w: World, id: string) {
   const p = w.players.find((player) => player.id === id)!;
-  const club = w.clubs.find((c) => c.id !== w.playerClub && !c.representative)!;
+  const club = prepareSaleBuyer(w, p);
   const day = currentDay(w);
   const bid: TransferBid = {
     id: `in:test:${w.year}:${day}:${id}`,

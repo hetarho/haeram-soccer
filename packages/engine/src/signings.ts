@@ -4,7 +4,7 @@ import { bidCeiling, directorTrait, staffBidShare } from './director-bidding';
 import { SQUAD_TARGET } from './squad-size';
 import { registration, registrationRoom } from './registration';
 import { detectMediations, resolveDelegatedMediations } from './mediation';
-import { careerDate } from './person-careers';
+import { careerDate, openEmployment, retainPerson } from './person-careers';
 import { movePerson } from './npc-continuity';
 import type {
   Line,
@@ -457,7 +457,10 @@ export function noteSigning(w: World, player: Player, sourceClub?: string) {
   const source = sourceClub ? w.clubs.find((club) => club.id === sourceClub) : undefined;
   // Establish the real seller before moving a previously unretained player, including his loan
   // parent. Reads never enroll players; only the completed move opens this employment fact.
-  if (source) movePerson(w, player, source.id);
+  if (source) {
+    retainPerson(w, player, source.id);
+    openEmployment(w, player.id, 'player', source.id);
+  }
   const foreign = isForeignCandidate(w, player.id, source?.id);
   closeNeedFor(w, player);
   movePerson(w, player, w.playerClub, true, player.loanUntil);

@@ -1,5 +1,11 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'player.record.retired': '은퇴 · {season}',
+  'player.record.retiredAtClub': '은퇴 · {season} · {club}',
+  'player.record.representative': '대표 구단 · {club}',
+  'player.record.table': '시즌·구단별 기록',
+  'player.record.retirementNews': '{player}, 선수 생활 은퇴',
+  'player.record.lastClub': '마지막 구단: {club}',
   // Match-lab tuning descriptions (T836).
   'lab.tunable.rule.probability':
     '{control}의 확률(0–1)입니다. 높이면 더 자주, 낮추면 덜 발생합니다.',
@@ -1427,17 +1433,17 @@ export const sourceMessages = {
   'copy.influences.d1cc8d2916': 'FFP 시대와 한도 적용',
   'copy.influences.37147f7020': '등록 제한 변화',
   'copy.influences.362e156ec0': '다른 구단의 성장·쇠퇴·투자와 조직력',
-  'copy.influences.e6f8512aa0':
-    '인수 전후의 세계는 움직입니다. 상대 구단도 성적·프로젝트·선수 경력과 조직력을 통해 달라집니다.',
-  'copy.influences.7897c84fb0': '구단 체급·디비전·최근 성과',
-  'copy.influences.0449b55136': '강팀과 약팀의 장기 기량 변화 기준에 작용합니다.',
-  'copy.influences.a799e7ef8e': '프로젝트·세계 추첨·선수 이동과 세대 교체',
+  'copy.influences.e6f8512aa0': '인수 전후의 상대 구단은 선수·계약·조직력과 함께 달라집니다.',
+  'copy.influences.7897c84fb0': '선수단과 선수 성장',
+  'copy.influences.0449b55136':
+    '선발 11명의 기량이 조직력과 피로를 적용하기 전의 구단 전력을 결정합니다.',
+  'copy.influences.a799e7ef8e': '선수 이동과 세대 교체',
   'copy.influences.6905eea8e2': '시간에 따라 라이벌 구도와 선수단이 달라집니다.',
   'copy.influences.2310663dbf': '구단의 조직력·감독·승강 등 변화',
   'copy.influences.600de29d69': '선수 구성의 수준 외에도 경기에서 발휘하는 기량을 바꿉니다.',
   'influences.affordableSquad.name': '장부가 감당하는 선수단',
   'influences.affordableSquad.effect':
-    '주인 없는 구단은 지난 시즌 장부의 수입에서 운영비를 뺀 돈으로 연봉을 줄 수 있는 전력까지만 유지하고, 넘치면 그만큼 선수를 팝니다. 프로젝트 중이거나 막 인수된 구단은 예외입니다.',
+    '주인 없는 구단은 계약 임금 총액이 지난 시즌 수입에서 운영비를 뺀 금액을 넘는 영입이나 재계약을 하지 않습니다. 첫 마감 전에는 개막 수입을 기준으로 삼습니다.',
   'influences.competitionIncome.name': '컵·대륙 대회 수입',
   'influences.competitionIncome.effect':
     '장부의 수입에는 리그 배분금·관중·상업 수입과 함께 국내 컵과 대륙 대회의 상금, 경기 결과 보너스, 홈 경기 관중 수입이 들어갑니다.',
@@ -3748,7 +3754,6 @@ export const sourceMessages = {
   'copy.PersonCareer.d022448529': '경력 상세를 불러올 수 없어요. {p0}',
   'copy.PersonCareer.a0e882038c': '경력을 불러오는 중이에요.',
   'copy.PersonCareer.0ab0fb4510': '{p0} · 인물 경력',
-  'copy.PersonCareer.e0f5283afd': '{p0}년생 · {p1}세',
   'copy.PersonCareer.e3a69d9427': '선수 경력',
   'copy.PersonCareer.89a03c5123': '우리 클럽에서 기록한 통산 경기 {p0} · 득점 {p1}{p2}· 도움 {p3}',
   'copy.PersonCareer.d74811434b': '기록되지 않은 다른 구단·시작 이전 선수 통계는 제공되지 않아요.',
@@ -4308,7 +4313,6 @@ export const sourceMessages = {
   'team.column.fatigue': '피로',
   'copy.Rich.fc798874df': '은퇴',
   'team.loan': '임대',
-  'copy.Rich.5e81695906': '{p0}년생',
   'copy.Rich.f254b07d47': ' (교체 {p0})',
   'copy.Rich.0ff383e96f':
     '감독이 포메이션 자리마다 실효 능력과 피로를 따져 선발을 고르고, 부상 선수는 빼요. 선수마다 이적 상태 뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장 기간에 실제 구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요. 지금: {p0}',
@@ -5258,8 +5262,6 @@ export const sourceMessages = {
   'copy.ProfilePanels.cbff5c65de': '최근 시즌',
   'copy.ProfilePanels.13490b426f': '기록된 지난 시즌이 아직 없어요.',
   'copy.OtherPlayerSheet.3bf84e4582': '선수 정보를 불러오는 중…',
-  'copy.OtherPlayerSheet.7c16259479':
-    '지금 어느 1군에도 없는 선수예요. 인물 경력에서 그의 기록을 볼 수 있어요.',
   'copy.OtherPlayerSheet.b3ec12ceb7': '{p0} · {p1}세 ·{p2}{p3}',
   'copy.OwnPlayerSheet.a4436fd312': '이 선수 관리',
   'copy.OwnPlayerSheet.33c518b619': '{p0} · {p1} · 에이전트{p2}{p3}등급',
@@ -5568,6 +5570,7 @@ export const sourceMessages = {
   'copy.discipline.fcf7c31621': '징계 통보: {p0}',
   'copy.discipline.7c80359382':
     '{p0} · 다음 {p1}경기({p2})에 나설 수 없어요. 감독이 다른 선수로 선발을 짜요.',
+  // Supported saves still contain reports written by the retired project producer.
   'copy.dynamics.d1735c6a1e': '{p0}, 대형 투자 유치',
   'copy.dynamics.f3616ce2a8':
     '새 구단주와 대규모 투자로 앞으로 몇 시즌 동안 전력이 크게 오를 전망이에요. 지금 전력 {p0}.',

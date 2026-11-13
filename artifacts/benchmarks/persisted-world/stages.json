@@ -1,0 +1,194 @@
+[
+  {
+    "task": "T867",
+    "ref": "affbd6c6846cb29418b923daf354244557fbb503",
+    "budget": 1.25,
+    "command": [
+      "/home/deep/.nvm/versions/node/v24.22.1/bin/node",
+      "scripts/perf/ab.mjs",
+      "--base",
+      "b41b8978774506a0344aafd100bf4237ce70046d",
+      "--cand",
+      "affbd6c6846cb29418b923daf354244557fbb503",
+      "--workload",
+      "history-five",
+      "--procs",
+      "4",
+      "--reps",
+      "1",
+      "--warm",
+      "0",
+      "--json",
+      "artifacts/benchmarks/persisted-world/T867-stage.json"
+    ],
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 4598.541499999999,
+          "wall": 4616.453194
+        },
+        "cand": {
+          "cpu": 4304.6355,
+          "wall": 4315.607100499999
+        }
+      },
+      "cpu": {
+        "ratio": 0.9121,
+        "lo": 0.8119,
+        "hi": 0.9985,
+        "call": "faster"
+      },
+      "wall": {
+        "ratio": 0.911,
+        "lo": 0.8106,
+        "hi": 0.9977,
+        "call": "faster"
+      }
+    }
+  },
+  {
+    "task": "T862",
+    "ref": "4afa1fa1bad788ddcea2548d2409e9754333dcfb",
+    "budget": 1.6,
+    "command": [
+      "/home/deep/.nvm/versions/node/v24.22.1/bin/node",
+      "scripts/perf/ab.mjs",
+      "--base",
+      "b41b8978774506a0344aafd100bf4237ce70046d",
+      "--cand",
+      "4afa1fa1bad788ddcea2548d2409e9754333dcfb",
+      "--workload",
+      "history-five",
+      "--procs",
+      "4",
+      "--reps",
+      "1",
+      "--warm",
+      "0",
+      "--json",
+      "artifacts/benchmarks/persisted-world/T862-stage.json"
+    ],
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 5305.6224999999995,
+          "wall": 6814.170760499999
+        },
+        "cand": {
+          "cpu": 18307.953999999998,
+          "wall": 21439.291698
+        }
+      },
+      "cpu": {
+        "ratio": 3.4404,
+        "lo": 3.14,
+        "hi": 3.8058,
+        "call": "slower"
+      },
+      "wall": {
+        "ratio": 3.3839,
+        "lo": 2.8009,
+        "hi": 4.3996,
+        "call": "slower"
+      }
+    }
+  },
+  {
+    "task": "T863",
+    "ref": "935a91df96fb7c90c60a85c3504e77c7d5758894",
+    "budget": 1.6,
+    "command": [
+      "/home/deep/.nvm/versions/node/v24.22.1/bin/node",
+      "scripts/perf/ab.mjs",
+      "--base",
+      "b41b8978774506a0344aafd100bf4237ce70046d",
+      "--cand",
+      "935a91df96fb7c90c60a85c3504e77c7d5758894",
+      "--workload",
+      "history-five",
+      "--procs",
+      "4",
+      "--reps",
+      "1",
+      "--warm",
+      "0",
+      "--json",
+      "artifacts/benchmarks/persisted-world/T863-stage.json"
+    ],
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 5096.461999999996,
+          "wall": 5146.291861500003
+        },
+        "cand": {
+          "cpu": 67592.253,
+          "wall": 67707.258191
+        }
+      },
+      "cpu": {
+        "ratio": 13.438,
+        "lo": 12.6768,
+        "hi": 14.5468,
+        "call": "slower"
+      },
+      "wall": {
+        "ratio": 13.3642,
+        "lo": 11.9328,
+        "hi": 15.4062,
+        "call": "slower"
+      }
+    }
+  },
+  {
+    "task": "T864",
+    "ref": "a85d3b99ab76d0d5fa6dcb4d7e71e8cb081cd42d",
+    "budget": 1.9,
+    "command": [
+      "/home/deep/.nvm/versions/node/v24.22.1/bin/node",
+      "scripts/perf/ab.mjs",
+      "--base",
+      "b41b8978774506a0344aafd100bf4237ce70046d",
+      "--cand",
+      "a85d3b99ab76d0d5fa6dcb4d7e71e8cb081cd42d",
+      "--workload",
+      "history-five",
+      "--procs",
+      "4",
+      "--reps",
+      "1",
+      "--warm",
+      "0",
+      "--json",
+      "artifacts/benchmarks/persisted-world/T864-stage.json"
+    ],
+    "measurement": {
+      "pairs": 4,
+      "ms": {
+        "base": {
+          "cpu": 6204.093499999998,
+          "wall": 7731.798047499996
+        },
+        "cand": {
+          "cpu": 194287.25900000002,
+          "wall": 215294.977684
+        }
+      },
+      "cpu": {
+        "ratio": 31.1927,
+        "lo": 28.4459,
+        "hi": 33.191,
+        "call": "slower"
+      },
+      "wall": {
+        "ratio": 30.1685,
+        "lo": 24.5222,
+        "hi": 35.6383,
+        "call": "slower"
+      }
+    }
+  }
+]

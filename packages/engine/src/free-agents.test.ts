@@ -1,367 +1,259 @@
 import { describe, expect, it } from 'vitest';
-import type { Club, FreeAgent, Player, Position, World } from '../../contracts/src/types';
-import { ATTRIBUTES, FREE_AGENT_CAP } from '../../contracts/src/player';
-import { validateWorld } from '../../contracts/src/schema';
-import { LOAD_CATALOG } from '../../catalogs/src/index';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import type { FreeAgent, Position } from '../../contracts/src/types';
+import { npcBooksFixture } from './npc-books.testkit';
 import {
+  capFreeAgents,
   closeFreeAgents,
   FREE_AGENT_CONFIG,
-  isFreeAgent,
   joinFreeAgents,
-  lettingGo,
-  nationalityOf,
+  joinAtClose,
+  npcContractTerm,
   refreshFreeAgents,
-  seedFreeAgents,
   takeFreeAgent,
 } from './free-agents';
-import { historyWorld } from './history';
-import { careerWorld } from './career.testkit';
-import { makePlayer, npcSquad, refillPosition, squad } from './world';
-import { activePlayers, overall } from './player-state';
-import { compareIds, random } from './primitives';
-import { suitorFor } from './transfers';
-import { openEmployment, retainPerson } from './person-careers';
-import { movePerson } from './npc-continuity';
-import { expireContracts, marketWage } from './contracts';
-import { divisionStrength, topUpAtClose } from './season';
+import { foundSquads } from './persisted-squads';
+import { intakeNpcYouth, renewNpcContracts } from './npc-careers';
+import {
+  clubPlayers,
+  invalidateNpcSquad,
+  makePlayer,
+  NPC_SQUAD,
+  startingSquad,
+  stature,
+} from './world';
+import { marketWageAt } from './market-prices';
+import { npcWageBill } from './books';
 import { lineOf } from './player';
-import { SQUAD_TARGET } from './squad-size';
-import { promotionAge } from './academy';
 
-const club = (id: string, strength: number): Club => ({
-  id,
-  name: id,
-  short: id.slice(-2),
-  country: 'ENG',
-  tier: Number(id.split(':')[1]),
-  group: 0,
-  strength,
-  reputation: 50,
-  fans: 1000,
-  color: '#000000',
-});
-/** Three clubs nobody owns on a season's first day, nothing else: the pool's rules alone. */
-function small(year = 1960): World {
-  return {
-    seed: 'free-agents',
-    year,
-    round: 0,
-    calendar: { day: 0 },
-    playerClub: '',
-    clubs: [club('ENG:0:0:0', 80), club('ENG:1:0:0', 62), club('ENG:3:0:0', 40)],
-    players: [],
-    events: [],
-    currency: 'GBP',
-  } as unknown as World;
-}
-/** A free agent of `age` rated `ability` at every attribute, free from `since`. */
-function agent(
-  w: World,
-  id: string,
-  ability: number,
-  since: number,
-  age = 25,
-  position: Position = 'CB',
-) {
-  const p = makePlayer('ENG', w.seed, id, w.year, ability, position, age);
+function agent(id: string, ability = 50, position: Position = 'CB'): FreeAgent {
+  const p = makePlayer('ESP', 'free-unit', id, 1950, ability, position, 24);
   for (const a of ATTRIBUTES) p.attrs[a] = ability;
-  return { ...p, freeSince: since } satisfies FreeAgent;
+  return { ...p, freeSince: 1951 };
 }
-/** The let-go rule read from a squad itself. */
-function leastAble(players: readonly Player[], year: number) {
-  return players
-    .filter((p) => year - p.born >= FREE_AGENT_CONFIG.letGoMinAge)
-    .sort((a, b) => overall(a) - overall(b) || compareIds(a.id, b.id))
-    .slice(0, FREE_AGENT_CONFIG.letGoPerClub)
-    .map((p) => p.id);
-}
-const ids = (players: readonly { id: string }[]) => players.map((p) => p.id).sort(compareIds);
 
-describe('free agents at a world start (→CLUB-49)', () => {
-  it("holds each club's two least able aged 21 or older, kept off their old squads", () => {
-    const w = small();
-    seedFreeAgents(w);
-    expect(ids(w.freeAgents!)).toEqual(
-      w.clubs.flatMap((c) => leastAble(npcSquad(w.seed, w.year, c), w.year)).sort(compareIds),
-    );
-    for (const p of w.freeAgents!) {
-      expect(p.freeSince).toBe(w.year);
-      expect(p.season.every((v) => v === 0) && p.career.every((v) => v === 0)).toBe(true);
-      expect(p).not.toHaveProperty('clauses');
-      expect(p).not.toHaveProperty('loanUntil');
-      expect(BigInt(p.wage)).toBeGreaterThan(0n);
-      expect(nationalityOf(w, p.id)).toBe('ENG');
-    }
-    // Nobody is in two places: the old club's generated place is someone else's this season.
-    for (const c of w.clubs) {
-      const players = squad(w, c);
-      expect(players).toHaveLength(18);
-      expect(players.some((p) => isFreeAgent(w, p.id))).toBe(false);
-    }
+describe('NPC contracts and need-based free agents on isolated squads', () => {
+  it('starts a persisted world with no fabricated free agents', () => {
+    const { w } = npcBooksFixture();
+    expect(w.freeAgents ?? []).toEqual([]);
   });
-  it('makes every new world with a full pool from its first day', () => {
-    const w = historyWorld('free-agents', undefined, 1950);
-    expect(w.freeAgents).toHaveLength(FREE_AGENT_CAP);
-    // The cap keeps the ablest of everyone let go.
-    const letGo = lettingGo({ ...w, freeAgents: [] }, w.year, w.year)
-      .map((p) => overall(p))
-      .sort((a, b) => b - a);
-    expect(Math.min(...w.freeAgents!.map(overall))).toBe(letGo[FREE_AGENT_CAP - 1]);
-  });
-});
 
-describe('free agents at the close (→CLUB-49)', () => {
-  it('retires one unsigned through the season and admits the let-go, free from the next', () => {
-    const w = small();
-    seedFreeAgents(w);
-    const seeded = ids(w.freeAgents!);
-    // The closing season's squads, a free agent's place held by someone else.
-    const expected = w.clubs.flatMap((c) => leastAble(squad(w, c), w.year));
-    closeFreeAgents(w, w.year, lettingGo(w, w.year, w.year + 1));
-    expect(ids(w.freeAgents!).some((id) => seeded.includes(id))).toBe(false);
-    expect(w.freeAgents!.every((p) => p.freeSince === w.year + 1)).toBe(true);
-    // The let-go of the closing season come from its squads, a retirement draw aside.
-    expect(ids(w.freeAgents!).every((id) => expected.includes(id))).toBe(true);
+  it('renews an expiring starter at next season division wage, preserving a running contract', () => {
+    const { w, c, players } = npcBooksFixture();
+    const starter = startingSquad(w, c)[0]!;
+    const running = players.find((p) => p !== starter)!;
+    const old = { wage: running.wage, until: running.until };
+    starter.until = w.year;
+    starter.wage = '1';
+    c.tier = 1;
+    renewNpcContracts(w, c);
+    expect(starter.wage).toBe(marketWageAt(c.country, 1951, 1, starter));
+    expect(starter.until).toBe(1951 + npcContractTerm(1951 - starter.born) - 1);
+    expect(running).toMatchObject(old);
+    expect(w.freeAgents ?? []).toEqual([]);
   });
-  it('lets the retirement chance decide and stops everyone at 41', () => {
-    const w = small(),
-      old = agent(w, 'old', 60, w.year + 1, 40),
-      young = agent(w, 'young', 60, w.year + 1, 25);
-    closeFreeAgents(w, w.year, [old, young]);
-    expect(ids(w.freeAgents!)).toEqual(['young']);
-  });
-  it('ages a newcomer a season without growth', () => {
-    const w = small(),
-      p = agent(w, 'veteran', 60, w.year + 1, 29),
-      before = { ...p.attrs };
-    closeFreeAgents(w, w.year, [p]);
-    const after = w.freeAgents![0]!.attrs;
-    // At 30 next season only pace and stamina are past their decline age (→PLAYER-17).
-    for (const a of ATTRIBUTES)
-      if (a === 'pace' || a === 'stamina') {
-        expect(after[a]).toBeLessThanOrEqual(before[a] - 1.5);
-        expect(after[a]).toBeGreaterThanOrEqual(before[a] - 2.5);
-      } else expect(after[a]).toBe(before[a]);
-  });
-  it('keeps the ablest up to the cap; a registered newcomer left out stays at his club', () => {
-    const w = small(),
-      since = w.year + 1,
-      strong = Array.from({ length: FREE_AGENT_CAP }, (_, i) =>
-        agent(w, `cap:${String(i).padStart(3, '0')}`, 60, since),
-      ),
-      weak = [agent(w, 'weak:0', 30, since), agent(w, 'weak:1', 30, since)];
-    const register = (p: Player) => {
-      retainPerson(w, p, 'ENG:1:0:0');
-      openEmployment(w, p.id, 'player', 'ENG:1:0:0');
-    };
-    for (const p of [weak[0]!, strong[0]!, strong.at(-1)!]) register(p);
-    closeFreeAgents(w, w.year, [...weak, ...strong]);
-    expect(ids(w.freeAgents!)).toEqual(ids(strong));
-    expect(w.people!['weak:0']).toMatchObject({ playing: 'active', club: 'ENG:1:0:0' });
-    expect(w.people!['cap:000']!.playing).toBe('released');
-    // Over the cap the least able held free agent retires, the last by ID among equals.
-    expect(joinFreeAgents(w, agent(w, 'newcomer', 70, since), since)).toBe(true);
-    expect(w.freeAgents).toHaveLength(FREE_AGENT_CAP);
-    expect(w.freeAgents!.some((p) => p.id === 'cap:199')).toBe(false);
-    expect(w.people!['cap:199']!.playing).toBe('retired');
-    // A newcomer less able than everyone held is left out.
-    expect(joinFreeAgents(w, agent(w, 'late', 30, since), since)).toBe(false);
-  });
-});
 
-describe('free agents at each refresh (→CLUB-49)', () => {
-  const world = () => {
-    const w = historyWorld('free-agents', undefined, 1950);
-    w.round = 4;
-    return w;
-  };
-  it('lets each join a club nobody owns with the configured chance from his own stream', () => {
-    const w = world(),
-      before = w.freeAgents!;
-    const leaving = before.filter((p) => {
-      const r = random(`${w.seed}:free-agent:${p.id}:${w.year}:${w.round}`);
-      return r() < FREE_AGENT_CONFIG.joinChance && suitorFor(w, p, r);
+  it('releases an unnecessary expiry, while preserving identity and attributes', () => {
+    const { w, c, players } = npcBooksFixture();
+    const xi = new Set(startingSquad(w, c).map((p) => p.id));
+    const p = players.find(
+      (p) =>
+        !xi.has(p.id) &&
+        players.filter((q) => lineOf(q.position) === lineOf(p.position)).length > 6,
+    )!;
+    p.until = w.year;
+    const before = structuredClone(p);
+    renewNpcContracts(w, c);
+    expect(clubPlayers(w, c).some((q) => q.id === p.id)).toBe(false);
+    expect(w.freeAgents!.find((q) => q.id === p.id)).toMatchObject({
+      id: p.id,
+      name: before.name,
+      born: before.born,
+      attrs: before.attrs,
+      personality: before.personality,
+      potential: before.potential,
+      freeSince: 1951,
     });
-    expect(leaving.length).toBeGreaterThan(0);
-    const { freeAgents: _pool, people: _people, ...rest } = w;
-    const others = JSON.stringify(rest);
-    refreshFreeAgents(w);
-    expect(ids(w.freeAgents!)).toEqual(ids(before.filter((p) => !leaving.includes(p))));
-    // Nothing else moves for anyone unregistered: the stream is the free agent's own.
-    const { freeAgents: _after, people: _peopleAfter, ...restAfter } = w;
-    expect(JSON.stringify(restAfter)).toBe(others);
-    void [_pool, _people, _after, _peopleAfter];
-    // A registered one's move is recorded and he plays for his new club.
-    for (const p of leaving.filter((p) => w.people?.[p.id])) {
-      const person = w.people![p.id]!;
-      expect(person.playing).toBe('active');
-      const club = w.clubs.find((c) => c.id === person.club)!;
-      expect(squad(w, club).some((q) => q.id === p.id)).toBe(true);
+    expect(w.people![p.id]!.playing).toBe('released');
+  });
+
+  it('renews line cover even outside the best XI', () => {
+    const { w, c, players } = npcBooksFixture();
+    const xi = new Set(startingSquad(w, c).map((p) => p.id));
+    const keeper = players.find((p) => p.position === 'GK' && !xi.has(p.id))!;
+    w.squads![c.id] = players.filter((p) => p.position !== 'GK' || p === keeper || xi.has(p.id));
+    keeper.until = w.year;
+    renewNpcContracts(w, c);
+    expect(keeper.until).toBeGreaterThan(w.year);
+    expect(w.freeAgents ?? []).toEqual([]);
+  });
+
+  it('refuses renewals above the limit and permits a contract exactly at it', () => {
+    const { w, c } = npcBooksFixture();
+    const p = startingSquad(w, c)[0]!;
+    p.until = w.year;
+    const wage = marketWageAt(c.country, 1951, c.tier, p);
+    const budget = npcWageBill(w, c) - BigInt(p.wage) + BigInt(wage);
+    c.books = { seasons: [], cash: '0', debt: '0', openingIncome: (budget - 1n).toString() };
+    const allowed = structuredClone(w);
+    allowed.clubs[1]!.books!.openingIncome = budget.toString();
+    renewNpcContracts(w, c);
+    expect(w.freeAgents!.some((q) => q.id === p.id)).toBe(true);
+    const other = allowed.clubs[1]!;
+    renewNpcContracts(allowed, other);
+    expect(clubPlayers(allowed, other).find((q) => q.id === p.id)!.wage).toBe(wage);
+    expect(allowed.freeAgents ?? []).toEqual([]);
+  });
+
+  it('signs the ablest affordable missing line, keeps unique affiliation and records its move', () => {
+    const { w, c } = npcBooksFixture();
+    w.squads![c.id] = clubPlayers(w, c).filter((p) => p.position !== 'GK');
+    while (w.squads![c.id]!.length < NPC_SQUAD.size) {
+      const i = w.squads![c.id]!.length;
+      w.squads![c.id]!.push(makePlayer('ESP', w.seed, `cover:${i}`, w.year, 40, 'CM', 24));
     }
-    // An unregistered one is back in his old club's generated squad, the place no longer empty.
-    const back = leaving.find((p) => !w.people?.[p.id])!;
-    const old = w.clubs.find((c) => back.id.startsWith(`${c.id}:`))!;
-    expect(squad(w, old).some((q) => q.id === back.id)).toBe(true);
+    invalidateNpcSquad(w, c.id);
+    const weak = agent('weak', 40, 'GK'),
+      strong = agent('strong', 70, 'GK');
+    w.freeAgents = [weak, strong, agent('wrong-line', 90, 'ST')];
+    refreshFreeAgents(w);
+    const signed = clubPlayers(w, c).filter((p) => ['weak', 'strong'].includes(p.id));
+    expect(signed).toHaveLength(2);
+    expect(w.people!['strong']!.employment[0]).toMatchObject({ role: 'player', club: c.id });
+    expect(w.people!['weak']!.employment[0]).toMatchObject({ role: 'player', club: c.id });
+    expect(w.freeAgents!.map((p) => p.id)).toContain('wrong-line');
+    expect(signed[0]!.wage).toBe(marketWageAt(c.country, w.year, c.tier, signed[0]!));
+    expect(signed.every((p) => !('freeSince' in p))).toBe(true);
   });
-  it('is the same for the same world', () => {
-    const a = world(),
-      b = world();
-    refreshFreeAgents(a);
-    refreshFreeAgents(b);
-    expect(a.freeAgents).toEqual(b.freeAgents);
-  });
-});
 
-describe('taking a free agent', () => {
-  it('removes him from the pool without his free season and frees his old place', () => {
-    const w = small();
-    seedFreeAgents(w);
-    const p = w.freeAgents![0]!,
-      old = w.clubs.find((c) => p.id.startsWith(`${c.id}:`))!;
-    expect(squad(w, old).some((q) => q.id === p.id)).toBe(false);
-    const taken = takeFreeAgent(w, p.id)!;
-    expect(taken).not.toHaveProperty('freeSince');
-    expect(taken.id).toBe(p.id);
-    expect(w.freeAgents!.some((q) => q.id === p.id)).toBe(false);
-    expect(squad(w, old).some((q) => q.id === p.id)).toBe(true);
-    expect(takeFreeAgent(w, p.id)).toBeUndefined();
+  it('skips an unaffordable star for the ablest affordable player', () => {
+    const { w, c, players } = npcBooksFixture();
+    const keeper = players.find((p) => p.position === 'GK')!;
+    w.squads![c.id] = players.filter((p) => p.position !== 'GK' || p === keeper);
+    invalidateNpcSquad(w, c.id);
+    const cheap = agent('cheap', 30, 'GK'),
+      dear = agent('dear', 90, 'GK');
+    const wage = marketWageAt(c.country, w.year, c.tier, cheap);
+    c.books = {
+      seasons: [],
+      cash: '0',
+      debt: '0',
+      openingIncome: (npcWageBill(w, c) + BigInt(wage)).toString(),
+    };
+    w.freeAgents = [dear, cheap];
+    refreshFreeAgents(w);
+    expect(clubPlayers(w, c).some((p) => p.id === cheap.id)).toBe(true);
+    expect(w.freeAgents!.map((p) => p.id)).toEqual([dear.id]);
+    expect(npcWageBill(w, c)).toBe(BigInt(c.books.openingIncome!));
   });
-});
 
-describe('our expiring player no club signs (→CLUB-28, CLUB-49)', () => {
-  it('joins the pool instead of vanishing, with the same event', () => {
-    const w = careerWorld({ seed: 'free-agent-expiry' }),
-      [star, plain] = activePlayers(w);
-    // Better than any club's strength, so no club is a suitor; the other has one.
-    for (const a of ATTRIBUTES) star!.attrs[a] = 99;
-    star!.until = plain!.until = w.year;
-    const before = { ...star!.attrs };
-    w.year++;
-    expireContracts(w);
-    const held = w.freeAgents!.find((p) => p.id === star!.id)!;
-    expect(held.freeSince).toBe(w.year);
-    for (const a of ATTRIBUTES) expect(held.attrs[a]).toBeLessThanOrEqual(before[a]);
-    expect(w.freeAgents!.some((p) => p.id === plain!.id)).toBe(false);
-    expect(w.people![star!.id]!.playing).toBe('released');
-    expect(w.events.find((e) => e.title === `${star!.name} 계약 만료`)?.detail).toContain(
-      '새 팀을 찾아 떠남',
-    );
-  });
-});
-
-describe("the close's top-up (→CLUB-3, CLUB-40)", () => {
-  /** A career one player short of the target in the line it lacks most, the pool `pool`. */
-  function short(pool: (w: World, position: Position, level: number) => FreeAgent[]) {
-    const w = careerWorld({ seed: 'free-agent-top-up' });
-    w.academy = { players: [] };
-    const line = lineOf(refillPosition(w));
-    const gone = activePlayers(w)
-      .filter((p) => lineOf(p.position) === line)
-      .at(-1)!;
-    gone.status = 'sold';
-    movePerson(w, gone, undefined, true);
-    const position = refillPosition(w),
-      level = Math.round(divisionStrength(w));
-    expect(lineOf(position)).toBe(line);
-    w.freeAgents = pool(w, position, level);
-    return { w, level, gone };
-  }
-  const other = (position: Position): Position => (lineOf(position) === 'FW' ? 'CM' : 'ST');
-  it('signs the ablest free agent of the line at most the division average, before a youngster', () => {
-    const { w, level } = short((w, position, level) => [
-      agent(w, 'ENG:0:0:0:p:1:900', level + 5, w.year, 25, position),
-      agent(w, 'ENG:0:0:0:p:2:900', level - 2, w.year, 25, position),
-      agent(w, 'ENG:0:0:0:p:3:900', level - 8, w.year, 25, position),
-      agent(w, 'ENG:0:0:0:p:4:900', level, w.year, 25, other(position)),
-    ]);
-    topUpAtClose(w, level);
-    expect(activePlayers(w)).toHaveLength(SQUAD_TARGET);
-    const signed = w.players.find((p) => p.id === 'ENG:0:0:0:p:2:900')!;
-    expect(signed.status).toBe('active');
-    expect(signed.joined).toBe(w.year);
-    expect(signed.wage).toBe(marketWage(w, signed));
-    expect(signed.clauses).toBeDefined();
-    expect(signed).not.toHaveProperty('freeSince');
-    expect(w.people![signed.id]).toMatchObject({ playing: 'active', club: w.playerClub });
-    expect(ids(w.freeAgents!)).toEqual([
-      'ENG:0:0:0:p:1:900',
-      'ENG:0:0:0:p:3:900',
-      'ENG:0:0:0:p:4:900',
-    ]);
-    expect(w.events.at(-1)).toMatchObject({ kind: 'free-agent-signing' });
-    expect(w.players.some((p) => p.id.includes(':youth:'))).toBe(false);
-  });
-  it('generates an 18-year-old only when no free agent of the line fits', () => {
-    const { w, level } = short((w, position, level) => [
-      agent(w, 'ENG:0:0:0:p:1:900', level + 1, w.year, 25, position),
-      agent(w, 'ENG:0:0:0:p:4:900', level - 5, w.year, 25, other(position)),
-    ]);
-    topUpAtClose(w, level);
-    expect(activePlayers(w)).toHaveLength(SQUAD_TARGET);
-    expect(w.freeAgents).toHaveLength(2);
-    expect(activePlayers(w).filter((p) => p.id.includes(':youth:'))).toHaveLength(1);
-  });
-  it("calls up a delegated youth director's prospect before any free agent", () => {
-    const { w, level } = short((w, position, level) => [
-      agent(w, 'ENG:0:0:0:p:2:900', level - 2, w.year, 25, position),
-    ]);
-    w.settings!.responsibilities.academy = 'delegated';
-    const prospect = makePlayer(
-      'ENG',
-      w.seed,
-      `${w.playerClub}:academy:df`,
-      w.year,
-      30,
-      refillPosition(w),
-      promotionAge(w),
-    );
-    w.academy!.players.push(prospect);
-    movePerson(w, prospect, w.playerClub, true);
-    topUpAtClose(w, level);
-    expect(activePlayers(w).some((p) => p.id === prospect.id)).toBe(true);
+  it('does not sign beyond standing size when every line has cover', () => {
+    const { w, c } = npcBooksFixture();
+    w.freeAgents = [agent('unneeded', 99)];
+    const before = clubPlayers(w, c).map((p) => p.id);
+    refreshFreeAgents(w);
+    expect(clubPlayers(w, c).map((p) => p.id)).toEqual(before);
     expect(w.freeAgents).toHaveLength(1);
   });
-  it('keeps a former player of ours on his one row with his career', () => {
-    const { w, level, gone } = short((w, position, level) => {
-      const former = w.players.find((p) => p.status === 'sold')!;
-      return [
-        {
-          ...agent(w, former.id, level - 1, w.year, 25, position),
-          name: former.name,
-          born: former.born,
-          personality: { ...former.personality },
-          qualities: former.qualities,
-        },
-      ];
-    });
-    gone.career[0] = 7;
-    topUpAtClose(w, level);
-    const rows = w.players.filter((p) => p.id === gone.id);
-    expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ status: 'active' });
-    expect(rows[0]!.career[0]).toBe(7);
-  });
-});
 
-describe('the saved pool', () => {
-  it('validates and round-trips, bounded by the cap and without duplicates', () => {
-    const w = careerWorld({ seed: 'free-agent-save' });
-    expect(w.freeAgents!.length).toBeGreaterThan(0);
-    const loaded = validateWorld(JSON.parse(JSON.stringify(w)), LOAD_CATALOG);
-    expect(loaded.freeAgents).toEqual(w.freeAgents);
-    const pool = w.freeAgents!;
-    expect(() =>
-      validateWorld({ ...structuredClone(w), freeAgents: [pool[0], pool[0]] }, LOAD_CATALOG),
-    ).toThrow();
-    const over = Array.from({ length: FREE_AGENT_CAP + 1 }, (_, i) => ({
-      ...pool[0]!,
-      id: `over:${i}`,
-    }));
-    expect(() =>
-      validateWorld({ ...structuredClone(w), freeAgents: over }, LOAD_CATALOG),
-    ).toThrow();
-    const without = structuredClone(w);
-    delete without.freeAgents;
-    expect(validateWorld(without, LOAD_CATALOG).freeAgents).toBeUndefined();
+  it('gives the higher-stature club the contested keeper regardless of club array order', () => {
+    const { w, c } = npcBooksFixture();
+    const rival = { ...c, id: 'ENG:0:0:0', country: 'ENG', levels: undefined };
+    c.id = 'ENG:3:0:0';
+    w.clubs = [w.clubs[0]!, c, rival];
+    delete w.squads;
+    foundSquads(w);
+    const ranked = [c, rival].sort((a, b) => stature(w.seed, b.id) - stature(w.seed, a.id));
+    expect(stature(w.seed, ranked[0]!.id)).toBeGreaterThan(stature(w.seed, ranked[1]!.id));
+    w.clubs = [w.clubs[0]!, ranked[1]!, ranked[0]!];
+    for (const club of [c, rival])
+      w.squads![club.id] = clubPlayers(w, club).filter((p) => p.position !== 'GK');
+    w.freeAgents = [agent('contested', 50, 'GK')];
+    refreshFreeAgents(w);
+    expect(w.people!['contested']!.club).toBe(ranked[0]!.id);
   });
+
+  it('breaks equal stature by the higher offered wage, and respects a full registration list', () => {
+    const { w, c } = npcBooksFixture(2005);
+    const rival = { ...c, id: 'other', tier: 1, levels: undefined };
+    w.clubs = [w.clubs[0]!, rival, c];
+    delete w.squads;
+    foundSquads(w);
+    for (const club of [c, rival])
+      w.squads![club.id] = clubPlayers(w, club).filter((p) => p.position !== 'GK');
+    expect(stature(w.seed, c.id)).toBe(stature(w.seed, rival.id));
+    const p = { ...agent('wage-tie', 50, 'GK'), born: 1980, freeSince: 2005 };
+    expect(BigInt(marketWageAt(c.country, w.year, c.tier, p))).toBeGreaterThan(
+      BigInt(marketWageAt(rival.country, w.year, rival.tier, p)),
+    );
+    w.freeAgents = [p];
+    refreshFreeAgents(w);
+    expect(w.people![p.id]!.club).toBe(c.id);
+    const full = clubPlayers(w, rival);
+    while (full.length < 40)
+      full.push(makePlayer('ESP', w.seed, `full:${full.length}`, 2005, 50, 'CM', 30));
+    w.freeAgents = [{ ...p, id: 'over-limit' }];
+    // The other club already has both keepers; only the capped squad needs this one.
+    w.squads![c.id]!.push(makePlayer('ESP', w.seed, 'second-keeper', 2005, 40, 'GK', 25));
+    refreshFreeAgents(w);
+    expect(w.freeAgents!.map((p) => p.id)).toEqual(['over-limit']);
+    expect(w.squads![rival.id]).toHaveLength(40);
+  });
+
+  it('ages an own release without growth, while an NPC release keeps its settled attributes', () => {
+    const { w } = npcBooksFixture();
+    const p = agent('ageing', 60);
+    p.born = w.year - 30;
+    const before = structuredClone(p.attrs);
+    joinAtClose(w, p);
+    const aged = w.freeAgents![0]!;
+    expect(aged.attrs.pace).toBeLessThan(before.pace);
+    for (const a of ATTRIBUTES) expect(aged.attrs[a]).toBeLessThanOrEqual(before[a]);
+    const npc = { ...p, id: 'already-aged', attrs: { ...before } };
+    joinFreeAgents(w, npc, w.year + 1);
+    expect(w.freeAgents!.find((q) => q.id === npc.id)!.attrs).toEqual(before);
+  });
+
+  it('applies the pool cap only after signings, retiring surplus newcomers', () => {
+    const { w, c } = npcBooksFixture();
+    w.squads![c.id] = clubPlayers(w, c).filter((p) => p.position !== 'GK');
+    w.freeAgents = Array.from({ length: FREE_AGENT_CONFIG.cap }, (_, i) => agent(`held:${i}`, 70));
+    const keeper = agent('weak-keeper', 25, 'GK');
+    joinFreeAgents(w, keeper, w.year + 1);
+    joinFreeAgents(w, agent('surplus', 20), w.year + 1);
+    expect(w.freeAgents).toHaveLength(FREE_AGENT_CONFIG.cap + 2);
+    refreshFreeAgents(w);
+    capFreeAgents(w);
+    expect(clubPlayers(w, c).some((p) => p.id === keeper.id)).toBe(true);
+    expect(w.freeAgents).toHaveLength(FREE_AGENT_CONFIG.cap);
+    expect(w.people!['surplus']!.playing).toBe('retired');
+  });
+
+  it('retires a player unsigned for a whole season, and leaves no duplicate after taking one', () => {
+    const { w } = npcBooksFixture();
+    joinFreeAgents(w, agent('old'), w.year);
+    joinFreeAgents(w, agent('new'), w.year + 1);
+    closeFreeAgents(w, w.year);
+    expect(w.people!['old']!.playing).toBe('retired');
+    expect(w.freeAgents!.map((p) => p.id)).toEqual(['new']);
+    expect(takeFreeAgent(w, 'new')!.id).toBe('new');
+    expect(w.freeAgents).toEqual([]);
+    expect(takeFreeAgent(w, 'new')).toBeUndefined();
+  });
+
+  it('never subjects youth intake to the signing wage limit', () => {
+    const { w, c } = npcBooksFixture();
+    w.squads![c.id] = [];
+    c.books = { seasons: [], cash: '0', debt: '0', openingIncome: '0' };
+    intakeNpcYouth(w, c);
+    expect(clubPlayers(w, c).length).toBeGreaterThanOrEqual(NPC_SQUAD.size);
+    expect(npcWageBill(w, c)).toBeGreaterThan(0n);
+  });
+
+  it.each([18, 24, 28, 31, 34])(
+    'signs age %i for 1–5 seasons with an age-shortened term',
+    (age) => {
+      expect(npcContractTerm(age)).toBe(5 - [18, 24, 28, 31, 34].indexOf(age));
+    },
+  );
 });

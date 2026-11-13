@@ -1,0 +1,24 @@
+{
+  "beforeCommit": "6626fea832c91ae3482d686a447a6e9bd7eecb49",
+  "rawInputsUnchanged": true,
+  "completeWorldsBefore": 4,
+  "completeWorldsAfter": 4,
+  "divisionFailuresUnchanged": true,
+  "championFailuresUnchanged": true,
+  "booksUnchanged": true,
+  "peakRowsBefore": {
+    "persisted-world-1": 21,
+    "persisted-world-2": 21,
+    "persisted-world-3": 21,
+    "persisted-world-4": 21,
+    "persisted-world-viability": 21
+  },
+  "peakRowsAfter": {
+    "persisted-world-1": 21,
+    "persisted-world-2": 21,
+    "persisted-world-3": 21,
+    "persisted-world-4": 21,
+    "persisted-world-viability": 0
+  },
+  "meaning": "Only the partial fifth peak aggregates are removed from the completed-cohort comparison; all raw observations and other measured facts are retained. A complete1980 request is also not counted as a complete2010 core."
+}

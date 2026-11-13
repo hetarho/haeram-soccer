@@ -6,6 +6,8 @@
 import type { CareerDate, World } from '../../contracts/src/types';
 import { SEASON_END_DAY } from './calendar';
 import { hasOwner, ownerSettleGap } from './owner';
+import { closeNpcSummer } from './npc-careers';
+import { retirementAnnounceDay, announceNpcRetirements } from './careers';
 
 export { WARTIME, seasonAfter, seasonFrom } from './season-years';
 
@@ -19,6 +21,7 @@ export { WARTIME, seasonAfter, seasonFrom } from './season-years';
 export function crossWar(w: World, closed: number) {
   const skipped = w.year - closed - 1;
   if (skipped <= 0) return;
+  if (w.npcSummerAt !== undefined && w.npcSummerAt >= w.year - 1) return;
   const later = (date: CareerDate) => ({ ...date, year: date.year + skipped });
   for (const p of w.players) {
     if (p.status !== 'active') continue;
@@ -26,14 +29,47 @@ export function crossWar(w: World, closed: number) {
     if (p.loanUntil !== undefined) p.loanUntil += skipped;
   }
   for (const p of w.academy?.players ?? []) p.until += skipped;
+  const restart = w.year,
+    calendar = w.calendar,
+    round = w.round;
+  try {
+    for (let year = closed + 1; year < restart; year++) {
+      w.year = year;
+      w.round = 0;
+      for (const players of Object.values(w.squads ?? {}))
+        for (const p of players) {
+          p.until++;
+          if (p.loanUntil !== undefined) p.loanUntil++;
+        }
+      for (const record of Object.values(w.playerRecords ?? {}))
+        if (record.loan) {
+          record.loan.until++;
+          record.loan.contractUntil++;
+        }
+      for (const person of Object.values(w.people ?? {})) {
+        if (person.loan) person.loan.until++;
+        for (const job of person.employment)
+          if (!job.to && job.role === 'player' && job.contractUntil)
+            job.contractUntil = { ...job.contractUntil, year: job.contractUntil.year + 1 };
+      }
+      w.calendar = { day: retirementAnnounceDay(year) };
+      announceNpcRetirements(w);
+      w.calendar = { day: SEASON_END_DAY + 1 };
+      closeNpcSummer(w, undefined, false);
+    }
+  } finally {
+    w.year = restart;
+    w.round = round;
+    w.calendar = calendar;
+  }
   if (hasOwner(w)) w.manager.until += skipped;
   for (const member of w.staff ?? []) member.until += skipped;
   for (const sponsor of w.sponsors ?? []) sponsor.until += skipped;
   for (const m of w.managerMarket?.free ?? []) m.until += skipped;
   for (const person of Object.values(w.people ?? {})) {
-    if (person.loan) person.loan = { ...person.loan, until: person.loan.until + skipped };
     for (const job of person.employment)
-      if (!job.to && job.contractUntil) job.contractUntil = later(job.contractUntil);
+      if (!job.to && job.role !== 'player' && job.contractUntil)
+        job.contractUntil = later(job.contractUntil);
   }
   ownerSettleGap(w, { year: closed, day: SEASON_END_DAY + 1 }, { year: w.year, day: 0 });
 }

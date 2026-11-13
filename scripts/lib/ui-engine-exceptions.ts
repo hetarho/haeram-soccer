@@ -122,7 +122,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/morale.ts',
     'packages/engine/src/training.ts',
   ],
-  'apps/web/src/entities/player/lib/discipline.ts': ['packages/engine/src/world.ts'],
   'apps/web/src/entities/office/lib/officeChanges.ts': [
     'packages/engine/src/pending-work-preview.ts',
   ],

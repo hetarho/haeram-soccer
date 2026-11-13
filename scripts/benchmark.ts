@@ -54,7 +54,7 @@ import {
   type IdentityWorkloadState,
   type WorkloadKitChoice,
 } from '../tests/fixtures/identity-workload';
-import { payloadBytes } from '../apps/web/src/adapters/compression';
+import { encodePayload, payloadBytes } from '../apps/web/src/adapters/compression';
 import { pack } from '../apps/web/src/adapters/packing';
 import {
   ACTIVATION_CAREER,
@@ -93,6 +93,9 @@ type Phase = (typeof PHASES)[number];
 const VARIANTS = ['baseline', 'active-management'] as const;
 type Variant = (typeof VARIANTS)[number];
 const args = process.argv.slice(2);
+const outputAt = args.indexOf('--out');
+const outputFile =
+  outputAt < 0 ? 'artifacts/benchmarks/T286-full-model-storage.json' : args[outputAt + 1]!;
 const smoke = args.includes('--smoke');
 const named =
   args.find((arg) => arg.startsWith('--phase='))?.slice('--phase='.length) ??
@@ -220,6 +223,25 @@ async function measure(w: World, label: string) {
   if (canonical(restored) !== worldCanonical) throw new Error('Lossless checkpoint failed');
   // Both checkpoint copies live in IndexedDB (→SAVE-3).
   const checkpointBytes = 2 * (raw.length + ACTIVE.length);
+  const packed = pack(w);
+  const envelope = JSON.parse(raw);
+  const compressedPayloadBytes = payloadBytes(envelope.codec, envelope.payload).length;
+  const decompressedJsonBytes = Buffer.byteLength(canonical(packed), 'utf8');
+  const persistedStreams: Record<
+    string,
+    { jsonBytes: number; compressedBytes: number; codec: string; standaloneToPayloadRatio: number }
+  > = {};
+  for (const key of ['squads', 'playerRecords'] as const) {
+    const bytes = new TextEncoder().encode(canonical(packed[key] ?? null));
+    const encoded = await encodePayload(bytes);
+    persistedStreams[key] = {
+      jsonBytes: bytes.length,
+      compressedBytes: payloadBytes(encoded.codec, encoded.payload).length,
+      codec: encoded.codec,
+      standaloneToPayloadRatio:
+        payloadBytes(encoded.codec, encoded.payload).length / compressedPayloadBytes,
+    };
+  }
   const heapBytes = process.memoryUsage().heapUsed;
   peakObservedHeapBytes = Math.max(peakObservedHeapBytes, heapBytes);
   const result = {
@@ -233,6 +255,8 @@ async function measure(w: World, label: string) {
     seed: w.seed,
     canonicalBytes: Buffer.byteLength(worldCanonical, 'utf8'),
     canonicalUtf16Bytes: worldCanonical.length * 2,
+    decompressedJsonBytes,
+    persistedStreams,
     retainedPeople: Object.keys(w.people ?? {}).length,
     employmentSpells: Object.values(w.people ?? {}).reduce(
       (sum, p) => sum + p.employment.length,
@@ -249,8 +273,8 @@ async function measure(w: World, label: string) {
     trainingAt: w.trainingAt,
     managerTenures: w.managerHistory?.tenures.length ?? 0,
     managerOutcomes: w.managerHistory?.outcomes.length ?? 0,
-    container: JSON.parse(raw).schema,
-    compressedPayloadBytes: payloadBytes(JSON.parse(raw).codec, JSON.parse(raw).payload).length,
+    container: envelope.schema,
+    compressedPayloadBytes,
     checkpointBytes,
     fileBytes: Buffer.byteLength(raw, 'utf8'),
     heapBytes,
@@ -1035,10 +1059,7 @@ function report() {
   }
   mkdirSync('artifacts/benchmarks', { recursive: true });
   // This feature's report; T308's manager-history.json stays as T308 recorded it.
-  writeFileSync(
-    'artifacts/benchmarks/T286-full-model-storage.json',
-    JSON.stringify(report, null, 2) + '\n',
-  );
+  writeFileSync(outputFile, JSON.stringify(report, null, 2) + '\n');
   // The one-process run (the Benchmark workflow) also refreshes the reports first-play.mjs reads;
   // a phased run writes only this feature's report.
   if (!named) {

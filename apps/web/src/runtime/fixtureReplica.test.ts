@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { makePlayer, rating, squad, startingSquad } from '../../../../packages/engine/src/world';
+import { worldMarketFixture } from '../../../../packages/engine/src/world-market.testkit';
+import { foundSquads } from '../../../../packages/engine/src/persisted-squads';
+import { settleNpcGrowth } from '../../../../packages/engine/src/npc-careers';
 import type { Club, PersonCareer } from '../../../../packages/contracts/src/types';
 import {
   fixtureRosterKey,
+  readCopy,
   type FixtureReadCopy,
 } from '../../../../packages/engine/src/fixture-copy';
 import {
@@ -50,6 +55,121 @@ function packet(writer: FixtureReplicaWriter, value: FixtureReadCopy, id: number
 const plain = (x: unknown) => JSON.parse(JSON.stringify(x)) as unknown;
 
 describe('ordered fixture replicas', () => {
+  it('replicates only changed squads through puts, drops and unchanged rounds', () => {
+    const source = copy(),
+      writer = new FixtureReplicaWriter(),
+      reader = new FixtureReplicaReader();
+    source.squads = {
+      a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)],
+      b: [makePlayer('ENG', source.seed, 'b:stored', source.year, 40, 'GK', 25)],
+    };
+    const before = reader.apply(packet(writer, source, 1));
+    const unchangedSquad = before.copy.squads!.b;
+    expect(before.copy.squads).toEqual(source.squads);
+    const key = fixtureRosterKey(source);
+    source.squads.a![0]!.attrs.passing++;
+    const edited = packet(writer, source, 2);
+    const delta = JSON.parse(edited.patch!);
+    expect(delta.state).not.toHaveProperty('squads');
+    expect(delta.squads.put).toEqual([]);
+    expect(delta.attributes.map(([id]: [string]) => id)).toEqual(['a']);
+    const after = reader.apply(edited);
+    expect(after.rosterChanged).toBe(true);
+    expect(fixtureRosterKey(source)).not.toBe(key);
+    expect(after.copy.squads).toEqual(source.squads);
+    expect(after.copy.squads!.b).toBe(unchangedSquad);
+    const unchanged = packet(writer, source, 3);
+    expect(JSON.parse(unchanged.patch!).squads).toEqual({ put: [], drop: [] });
+    expect(reader.apply(unchanged).rosterChanged).toBe(false);
+    delete source.squads.a;
+    const removed = packet(writer, source, 4);
+    expect(JSON.parse(removed.patch!).squads.drop).toEqual(['a']);
+    expect(reader.apply(removed).copy.squads).toEqual({ b: source.squads.b });
+    delete source.squads;
+    expect(reader.apply(packet(writer, source, 5)).copy.squads).toBeUndefined();
+  });
+  it('replicates growth as attribute columns while preserving the stored matchday choice', () => {
+    const w = worldMarketFixture(),
+      writer = new FixtureReplicaWriter(),
+      reader = new FixtureReplicaReader();
+    w.clubs[2]!.representative = true;
+    foundSquads(w);
+    const c = w.clubs[1]!;
+    w.squads![c.id]!.forEach((p) => {
+      p.born = w.year - 18;
+      p.potential = 99;
+    });
+    reader.apply(packet(writer, readCopy(w), 1));
+    const ids = squad(w, c).map((p) => p.id),
+      xi = startingSquad(w, c).map((p) => p.id);
+    w.round = 4;
+    settleNpcGrowth(w);
+    const update = packet(writer, readCopy(w), 2);
+    const patch = JSON.parse(update.patch!);
+    expect(patch.squads.put).toEqual([]);
+    expect(patch.attributes.map(([id]: [string]) => id)).toEqual([c.id]);
+    expect(update.patch).not.toContain('personality');
+    expect(update.patch).not.toContain('potential');
+    const replicated = reader.apply(update).copy;
+    expect(replicated.squads).toEqual(w.squads);
+    expect(replicated.clubs.find((club) => club.id === c.id)!.strength).toBe(c.strength);
+    expect(squad(w, c).map((p) => p.id)).toEqual(ids);
+    expect(startingSquad(w, c).map((p) => p.id)).toEqual(xi);
+    const helper = replicated as typeof w;
+    const helperClub = helper.clubs.find((club) => club.id === c.id)!;
+    expect(squad(helper, helperClub).map((p) => p.id)).toEqual(ids);
+    expect(startingSquad(helper, helperClub).map((p) => p.id)).toEqual(xi);
+    expect(rating(helper, helperClub)).toBe(rating(w, c));
+    const duplicate = packet(writer, readCopy(w), 3);
+    expect(JSON.parse(duplicate.patch!).attributes).toEqual([]);
+    expect(reader.apply(duplicate).copy.squads).toEqual(w.squads);
+  });
+  it('requires a snapshot when a helper missed a squad patch', () => {
+    const source = copy(),
+      writer = new FixtureReplicaWriter(),
+      reader = new FixtureReplicaReader();
+    source.squads = { a: [makePlayer('ENG', 'replica', 'stored', 1975, 55, 'CM', 23)] };
+    reader.apply(packet(writer, source, 1));
+    source.squads.a![0]!.fatigue++;
+    packet(writer, source, 2);
+    expect(() => reader.apply(packet(writer, source, 3))).toThrow('Missing helper base');
+    const encoded = writer.encode(source, 4);
+    const recovered = reader.apply({
+      protocol: FIXTURE_HELPER_PROTOCOL,
+      session: 'session',
+      id: 4,
+      worldRevision: 4,
+      base: 0,
+      copy: encoded.snapshot(),
+      jobs: [],
+    });
+    expect(recovered.copy.squads).toEqual(source.squads);
+  });
+  it.each(['unknown', 'width', 'range', 'duplicate'] as const)(
+    'rejects a malformed attribute column: %s',
+    (kind) => {
+      const source = copy(),
+        writer = new FixtureReplicaWriter(),
+        reader = new FixtureReplicaReader();
+      source.squads = {
+        a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)],
+      };
+      reader.apply(packet(writer, source, 1));
+      source.squads.a![0]!.attrs.passing++;
+      const update = packet(writer, source, 2);
+      const patch = JSON.parse(update.patch!) as {
+        attributes: [string, [string, number[], number | null][]][];
+      };
+      const row = patch.attributes[0]![1][0]!;
+      if (kind === 'unknown') row[0] = 'missing';
+      if (kind === 'width') row[1].pop();
+      if (kind === 'range') row[1][0] = 100;
+      if (kind === 'duplicate') patch.attributes[0]![1].push(row);
+      update.patch = JSON.stringify(patch);
+      expect(() => reader.apply(update)).toThrow();
+      expect(reader.revision).toBe(0);
+    },
+  );
   it('replicates changed and removed fields, preserving clubs but refreshing edited person indexes', () => {
     const source = copy(),
       writer = new FixtureReplicaWriter(),

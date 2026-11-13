@@ -1,3 +1,4 @@
+import { retirePlayerRecord } from './player-records';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { hasOwner } from './owner';
 import { decideCoachingIntention, initializeCoaching } from './coaching-entry';
@@ -8,7 +9,7 @@ import {
   playingChanged,
   retainPerson,
 } from './person-careers';
-import { invalidateNpcSquads } from './world';
+import { invalidateNpcSquad } from './world';
 import type { PersonCareer, Player, Position, World } from '../../contracts/src/types';
 import { currentDay, dayCountedFrom, seasonDayLabel, seasonDayOf } from './calendar';
 import { clamp, integer, random } from './primitives';
@@ -45,8 +46,8 @@ export function retirementChanceWithContext(
   position: Position,
   context: { minutes?: number; strongStarter?: boolean } = {},
 ) {
+  if (year + 1 - born >= RETIREMENT.lastAge) return 1;
   const age = year + 1 - born - (position === 'GK' ? 1 : 0);
-  if (age >= RETIREMENT.lastAge) return 1;
   if (age < RETIREMENT.firstAge) return 0;
   const base = RETIREMENT.byAge[Math.min(age - RETIREMENT.firstAge, RETIREMENT.byAge.length - 1)];
   const fringe = context.minutes !== undefined && context.minutes < RETIREMENT.fringeMinutes;
@@ -67,19 +68,57 @@ export function recordRetirementAnnouncement(w: World, person: PersonCareer, yea
   if (!person.retirement) person.retirement = { announced: careerDate(w), year };
   decideCoachingIntention(w, person);
 }
-export function retirePerson(w: World, person: PersonCareer) {
+export function retirePerson(w: World, person: PersonCareer, reselect = true) {
   if (person.playing === 'retired') return;
+  const club = person.club;
   recordRetirementAnnouncement(w, person);
   closeEmployment(w, person.id, 'player');
   person.playing = 'retired';
   playingChanged(w);
   person.retirement!.at = careerDate(w);
   initializeCoaching(w, person);
-  invalidateNpcSquads(w);
+  if (club && reselect) invalidateNpcSquad(w, club);
 }
-function announceNpcRetirements(w: World) {
+export function announceNpcRetirements(w: World) {
+  if (w.npcRetirementAt === w.year) return;
+  // Aggregate minutes are known only for named participants; absent never means zero.
+  const minutes = new Map<string, number>();
+  if (w.npcSeason?.year === w.year)
+    for (const competition of w.npcSeason.competitions)
+      for (const p of competition.players)
+        minutes.set(
+          p.id,
+          (minutes.get(p.id) ?? 0) + p.clubs.reduce((n, c) => n + c.metrics[10]!, 0),
+        );
+  const live = new Set<string>();
+  for (const players of Object.values(w.squads ?? {})) {
+    const starters = new Set(players.slice(0, 11).map((p) => p.id));
+    for (const p of players) {
+      live.add(p.id);
+      const person = w.people?.[p.id];
+      if (person?.retirement) {
+        p.retiring = person.retirement.year;
+        continue;
+      }
+      if (p.retiring !== undefined) continue;
+      const known = minutes.get(p.id);
+      const chance = retirementChanceWithContext(w.year, p.born, p.position, {
+        minutes: known,
+        strongStarter: known !== undefined && starters.has(p.id) && overall(p) >= 60,
+      });
+      if (!chance || random(`${w.seed}:retire:${p.id}:${w.year}`)() >= chance) continue;
+      p.retiring = w.year;
+      if (person) recordRetirementAnnouncement(w, person);
+    }
+  }
   for (const person of peopleOf(w)) {
-    if (person.playing === 'retired' || person.club === w.playerClub || person.retirement) continue;
+    if (
+      live.has(person.id) ||
+      person.playing === 'retired' ||
+      person.club === w.playerClub ||
+      person.retirement
+    )
+      continue;
     const age = w.year + 1 - person.born;
     const chance =
       age >= RETIREMENT.lastAge
@@ -88,6 +127,7 @@ function announceNpcRetirements(w: World) {
     if (random(`${w.seed}:retire:${person.id}:${w.year}`)() < chance)
       recordRetirementAnnouncement(w, person);
   }
+  w.npcRetirementAt = w.year;
 }
 
 function careerLine(w: World, p: Player) {
@@ -140,6 +180,7 @@ export function retireAtClose(w: World) {
   for (const p of activePlayers(w)) {
     const age = w.year + 1 - p.born;
     if (p.retiring !== w.year && age < RETIREMENT.lastAge) continue;
+    retirePlayerRecord(w, p, w.playerClub);
     p.status = 'retired';
     const person = retainPerson(w, p, w.playerClub, true);
     retirePerson(w, person);

@@ -1,0 +1,4 @@
+
+> haeram-soccor@0.8.0 lint /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860
+> eslint apps packages scripts tests --no-warn-ignored
+

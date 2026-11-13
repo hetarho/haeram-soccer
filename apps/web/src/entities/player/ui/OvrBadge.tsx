@@ -4,16 +4,15 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import type { Club, World } from '../../../../../../packages/contracts/src/types';
 import { cohesionMultiplier } from '../../../../../../packages/engine/src/player-state';
 import { rating } from '../../../../../../packages/engine/src/world';
+import { projectedClubRating } from '../../../runtime/squadReads';
 import s from './OvrBadge.module.css';
 
 /**
- * A club's overall rating: ours is the starting XI as home shows it, a rival's the XI its strength
- * holds at its 조직력 (→LEAGUE-12; building rival squads for every table row would cost a frame).
+ * A club's overall rating: ours is read from our XI, a rival's actual XI rating is published by
+ * the worker (→LEAGUE-12), so table rows never need the other clubs' players.
  */
 export function clubOvr(w: World, club: Club) {
-  return club.id === w.playerClub
-    ? rating(w, club)
-    : Math.round(club.strength * cohesionMultiplier(club));
+  return club.id === w.playerClub ? rating(w, club) : projectedClubRating(club);
 }
 /** A rival's 조직력 and what it does to its XI: "조직력 0.86 · ×1.03" (→LEAGUE-12, WEB-58). */
 export function cohesionLine(club: Club) {

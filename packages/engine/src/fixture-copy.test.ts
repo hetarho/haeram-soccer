@@ -1,8 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
+import type {
+  Club,
+  Fixture,
+  MatchRecord,
+  PersonCareer,
+  Player,
+  World,
+} from '../../contracts/src/types';
 import { fixtureRosterKey, readCopy } from './fixture-copy';
 import { continuousSquad } from './npc-continuity';
-import { npcSquad, squadPlaceAge } from './world';
+import { npcSquad, squad, squadPlaceAge, startingSquad } from './world';
+import { worldMarketFixture } from './world-market.testkit';
+import { foundSquads } from './persisted-squads';
+import { recordNpcInjury } from './discipline';
+import { jobPlayback } from './round-jobs';
 
 const club = { id: 'ENG:test', country: 'ENG', strength: 60, tier: 1 } as Club;
 /**
@@ -25,6 +36,34 @@ const retained = (p: Player): PersonCareer => ({
 });
 
 describe('fixture roster read copy', () => {
+  it('keeps every persisted player and resolves a helper replacement from outside the eighteen', () => {
+    const w = worldMarketFixture();
+    w.clubs[2]!.representative = true;
+    foundSquads(w);
+    const c = w.clubs[1]!,
+      selected = squad(w, c),
+      f = {
+        id: 'fixture',
+        home: c.id,
+        away: w.clubs[2]!.id,
+        kind: 'league',
+        year: w.year,
+      } as Fixture;
+    for (const p of [selected[0]!, ...selected.slice(11)]) recordNpcInjury(w, p.id, c.id, 30);
+    const expected = startingSquad(w, c, f);
+    expect(selected).not.toContain(expected[0]);
+    const remote = JSON.parse(JSON.stringify(readCopy(w))) as World;
+    expect(remote.squads).toEqual(w.squads);
+    expect(startingSquad(remote, c, f)).toEqual(expected);
+    const result = {
+      record: { id: f.id, home: f.home, away: f.away } as MatchRecord,
+      squads: [expected.map((p) => p.id), squad(w, w.clubs[2]!).map((p) => p.id)] as [
+        string[],
+        string[],
+      ],
+    };
+    expect(jobPlayback(w, { fixture: f }, result)?.squads[0]).toEqual(expected);
+  });
   it('keeps active identities and every reserved ID without copying lifetime career data', () => {
     const raw = npcSquad('read-copy', 2000, club),
       active = { ...retained(raw[0]), name: 'Retained native', origin: { club: club.id, slot: 0 } },

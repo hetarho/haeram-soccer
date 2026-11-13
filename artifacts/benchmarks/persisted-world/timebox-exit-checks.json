@@ -1,0 +1,145 @@
+{
+  "task": "T866",
+  "scope": "Timebox-exit documentation; application code and all measured source unchanged. Original 2941-test result is historical evidence, not a new run.",
+  "node": "v26.8.1",
+  "pnpm": "10.34.6",
+  "checks": [
+    {
+      "name": "lint",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "stale": false,
+      "ms": 10087,
+      "scope": {
+        "TIER": "task",
+        "DIFF_BASE": "27ae0d0b",
+        "TASK": "T866",
+        "TASKS": "T866"
+      },
+      "commit": "27ae0d0b8a9d55254b790531a544e940d66a5475",
+      "tree": "eadde3f55da033b68035f7d82553372aa2eb8b08",
+      "failedTests": [],
+      "failureSetComplete": false,
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 lint /Users/ihaelam/project/haeram-soccer",
+        "> eslint apps packages scripts tests --no-warn-ignored"
+      ],
+      "originalLog": "check-2919b464-1a0e-4ec5-be69-d1b42d9a3047.log",
+      "log": "artifacts/benchmarks/persisted-world/timebox-exit-lint.log",
+      "logSha256": "f4d5d5918c27fbd588339f65df1b82798db0f24e57516a61be13aa86f07c8cbb",
+      "command": "pnpm run lint",
+      "originalLogSha256": "9a2685cda520efe0a8c5905b83aa1d649a9a5aea9eb6bb17d66a52ea50bca8da"
+    },
+    {
+      "name": "format",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "stale": false,
+      "ms": 10858,
+      "scope": {
+        "TIER": "task",
+        "DIFF_BASE": "27ae0d0b",
+        "TASK": "T866",
+        "TASKS": "T866"
+      },
+      "commit": "27ae0d0b8a9d55254b790531a544e940d66a5475",
+      "tree": "eadde3f55da033b68035f7d82553372aa2eb8b08",
+      "failedTests": [],
+      "failureSetComplete": false,
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 format:check /Users/ihaelam/project/haeram-soccer",
+        "> prettier --check --cache --cache-strategy content --cache-location .tmp/prettier-cache apps packages scripts tests *.json *.ts *.mjs .github",
+        "",
+        "Checking formatting...",
+        "All matched files use Prettier code style!"
+      ],
+      "originalLog": "check-97e49bf9-6d05-48f9-80c8-6cb37bf71d4a.log",
+      "log": "artifacts/benchmarks/persisted-world/timebox-exit-format.log",
+      "logSha256": "119b5c7b0ceabfdcb3cd0c6f7fd0a8c64dd97d46b86f1206516667630a8ab7ff",
+      "command": "pnpm run format:check",
+      "originalLogSha256": "119b5c7b0ceabfdcb3cd0c6f7fd0a8c64dd97d46b86f1206516667630a8ab7ff"
+    },
+    {
+      "name": "typecheck",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "stale": false,
+      "ms": 29538,
+      "scope": {
+        "TIER": "task",
+        "DIFF_BASE": "27ae0d0b",
+        "TASK": "T866",
+        "TASKS": "T866"
+      },
+      "commit": "27ae0d0b8a9d55254b790531a544e940d66a5475",
+      "tree": "eadde3f55da033b68035f7d82553372aa2eb8b08",
+      "failedTests": [],
+      "failureSetComplete": false,
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 typecheck /Users/ihaelam/project/haeram-soccer",
+        "> tsc --noEmit --incremental --tsBuildInfoFile .tmp/tsc/tsbuildinfo"
+      ],
+      "originalLog": "check-80481da3-9bcb-48d0-a14e-809276f53c7b.log",
+      "log": "artifacts/benchmarks/persisted-world/timebox-exit-typecheck.log",
+      "logSha256": "91478c377780b9a1895a0d97daf154a3ae353bc3776a11064a646cf413fbf572",
+      "command": "pnpm run typecheck",
+      "originalLogSha256": "ba5461c7af0fe6e193335eeea5602190897bc29e3f69f52f79aa105935c364c3"
+    },
+    {
+      "name": "i18n",
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "ms": 2301,
+      "commit": "27ae0d0b8a9d55254b790531a544e940d66a5475",
+      "tree": "eadde3f55da033b68035f7d82553372aa2eb8b08",
+      "originalLog": "check-765c20eb-8260-491e-9343-68e432daac9b.log",
+      "log": "artifacts/benchmarks/persisted-world/timebox-exit-i18n.log",
+      "logSha256": "d470678ef9e4e85d3f1dccabc824c4b63bab1a8e1706390f0150815653ac1ced",
+      "command": "pnpm run validate:i18n",
+      "originalLogSha256": "d470678ef9e4e85d3f1dccabc824c4b63bab1a8e1706390f0150815653ac1ced"
+    },
+    {
+      "name": "unit",
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "ms": 1091,
+      "commit": "27ae0d0b8a9d55254b790531a544e940d66a5475",
+      "tree": "eadde3f55da033b68035f7d82553372aa2eb8b08",
+      "filesPassed": 2,
+      "testsPassed": 9,
+      "originalLog": "check-5cda2931-43de-44fa-a9e9-47de41b11694.log",
+      "log": "artifacts/benchmarks/persisted-world/timebox-exit-unit.log",
+      "logSha256": "b0f13d1dac2c3763ccd5ce5ec14022d7c4d0cd18f8b1897909aa73862f971aab",
+      "command": "pnpm exec vitest run --project unit --maxWorkers 2 scripts/lib/persisted-world-facts.test.ts scripts/perf/stats.test.ts --reporter dot",
+      "originalLogSha256": "eaa6f16e3af322465888f8eb1162f581b7838f84091822e8ae3eb5db5171ed31"
+    }
+  ],
+  "notRun": [
+    "full-unit-suite",
+    "integration",
+    "contract",
+    "e2e",
+    "browser-generation",
+    "build",
+    "verify:batch",
+    "CI",
+    "new-calibration-measurements"
+  ],
+  "logNormalization": "Archived log copies remove trailing blank lines only; originalLogSha256 identifies the exact raw CLI log retained under the Git directory."
+}

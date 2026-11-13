@@ -84,7 +84,7 @@ import {
   marketWageAt,
   STAR_SPREAD_CONFIG,
 } from '../packages/engine/src/market-prices';
-import { levelOf, MEANS_LEVEL, meansLevel } from '../packages/engine/src/dynamics';
+import { npcWageBill, npcWageLimit } from '../packages/engine/src/books';
 import { divisionFor } from '../packages/engine/src/contracts';
 import { ownStarters, rating, tierLevel } from '../packages/engine/src/world';
 import {
@@ -147,16 +147,6 @@ if (SPREAD) {
   STAR_SPREAD_CONFIG.own = table.own;
 }
 /**
- * --means: LEAGUE-10's means level on in the careers and their worlds (→T696), a measurement
- * override of `MEANS_LEVEL`, never a game setting; it enters only with a `--spread` table, as
- * CLUB-48 admits it, so its worlds too belong in their own --world-dir.
- */
-const MEANS = args.includes('--means');
-if (MEANS) {
-  if (!SPREAD) throw new Error('--means enters only with CLUB-48 table: give it with --spread');
-  MEANS_LEVEL.inForce = true;
-}
-/**
  * --cups: the books count their clubs' cup and continental money (→ECON-36, T697), a measurement
  * override of `BOOK_COMPETITIONS`, never a game setting; its worlds belong in their own
  * --world-dir.
@@ -176,7 +166,7 @@ if (FIT) ABILITY_FIT.inForce = true;
  * rating against its league's clubs nobody owns, its XI by origin and price (`divisionFor`), each
  * XI player's wage beside his ability-fit market wage, the squad's bills, the 단장's discounted
  * signings replayed on 재정 기조's checks at the ability-fit wage, the abilities the scout's list
- * offered, and the means level's hold on the league at the summer change (`MEANS_LEVEL.observe`).
+ * offered, and the means level's hold on the league at the summer change (historical reports only).
  */
 const GROWTH = args.includes('--growth');
 /** --sources: with --in, print only the growth sources report (T700's growth.md). */
@@ -617,13 +607,12 @@ const leagueRivals = (w: World) => {
       c.id !== own.id && c.country === own.country && c.tier === own.tier && c.group === own.group,
   );
 };
-/** The means level's hold at the summer change just played, on the league the club plays next. */
+/** Clubs whose current payroll exceeds their signing limit, on the league the club plays next. */
 function holdOf(w: World, cuts: ReadonlyMap<string, number>) {
   const rivals = leagueRivals(w);
   const limited = rivals.filter((c) => {
-    if (c.project !== undefined) return false;
-    const held = meansLevel(w, c, c.tier);
-    return held !== undefined && held < levelOf(w, c);
+    const limit = npcWageLimit(w, c);
+    return limit !== undefined && npcWageBill(w, c) > limit;
   }).length;
   const after = rivals.map((c) => c.strength),
     before = rivals.map((c) => c.strength + (cuts.get(c.id) ?? 0));
@@ -695,7 +684,6 @@ function playCareer(
   const arrivals = arrivalTracker(w);
   let hold: Growth['hold'];
   const cuts = new Map<string, number>();
-  if (GROWTH) MEANS_LEVEL.observe = (c, from, to) => cuts.set(c.id, from - to);
   const payroll = observeSettlementPayroll(w);
   try {
     while (w.year <= UNTIL && !careerEnded(w)) {
@@ -1642,7 +1630,7 @@ function main() {
       .map((t) => t.multiple)
       .join(
         '/',
-      )}, living ${SSOT_LIVING * 100}% a season${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${MEANS_LEVEL.inForce ? `, LEAGUE-10's means level on${MEANS ? ' (--means)' : ''}` : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''}${ABILITY_FIT.inForce ? `, CLUB-25's ability-fit wage on${FIT ? ' (--ability-fit)' : ''}` : ''})`,
+      )}, living ${SSOT_LIVING * 100}% a season${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''}${ABILITY_FIT.inForce ? `, CLUB-25's ability-fit wage on${FIT ? ' (--ability-fit)' : ''}` : ''})`,
   );
   /** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
   if (option('note', '')) console.log(`\n${option('note', '')}`);

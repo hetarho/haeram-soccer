@@ -13,6 +13,7 @@ import {
 } from './person-careers';
 import {
   generatedPlayer,
+  invalidateNpcSquad,
   invalidateNpcSquads,
   makePlayer,
   npcSquad,
@@ -25,11 +26,12 @@ import { lineOf } from './player';
 import { hasOwner } from './owner';
 import { clamp, integer, random } from './primitives';
 import { seasonPlayerJobs } from './fixture-copy';
+import { moveSquadPlayer } from './persisted-squads';
+import { recordPlayerMove } from './npc-market';
 
 /**
- * A club's generated squad of the season (`npcSquad`), drawn once a season in a world nobody owns
- * a club in (T669): materializing the season's people and every roster after it read the same
- * draw, each reader its own copies. A career draws it afresh every time, as before.
+ * Representative clubs' generated squads, also used by checkpoints without stored squads until
+ * their writer founds them. Materializing people and roster reads share the season's draw.
  */
 const drawnSquads = new WeakMap<World, { year: number; clubs: Map<string, [string, Player[]]> }>();
 function generatedSquad(w: World, c: Club): Player[] {
@@ -73,6 +75,14 @@ export function materializePeople(w: World) {
   );
   for (const c of w.clubs) {
     if (c.id === w.playerClub) continue;
+    if (w.squads?.[c.id]) {
+      for (const p of w.squads[c.id]) {
+        if ((coachingGrade(p) ?? 0) < 4) continue;
+        retainPerson(w, p, c.id);
+        openEmployment(w, p.id, 'player', c.id);
+      }
+      continue;
+    }
     const raw = generatedSquad(w, c);
     for (let slot = 0; slot < raw.length; slot++) {
       if (occupiedOrigins.has(`${c.id}:${slot}`)) continue;
@@ -165,8 +175,9 @@ function identity(p: Player, person: PersonCareer): Player {
     personality: { ...p.personality, professionalism: person.professionalism },
   };
 }
-/** Playing attributes remain the ordinary current club-strength draw; identity grants no bonus. */
+/** Stored clubs keep their players; representatives retain the seasonal generation model. */
 export function continuousSquad(w: World, c: Club): Player[] {
+  if (w.squads?.[c.id]) return w.squads[c.id];
   const raw = generatedSquad(w, c);
   if (!w.people && !w.freeAgents?.length) return raw;
   const people = w.people ? playingFor(w, c.id) : [];
@@ -219,10 +230,40 @@ export function continuousSquad(w: World, c: Club): Player[] {
   return players;
 }
 /** A recorded move, with one identity and one active player affiliation. Unknown destinations stay unknown. */
-export function movePerson(w: World, p: Player, club?: string, own = false, loanUntil?: number) {
+export function movePerson(
+  w: World,
+  p: Player,
+  club?: string,
+  own = false,
+  loanUntil?: number,
+  source?: string,
+) {
   const person = retainPerson(w, p, undefined, own || p.id.startsWith(`${w.playerClub}:`));
+  const ownRow = w.players.find((row) => row.id === p.id);
+  if (person.formerOwn && ownRow) person.ownCareer = [...ownRow.career];
   if (loanUntil !== undefined && !person.loan)
     person.loan = { club: person.club, until: loanUntil };
+  const previousClub = person.club;
+  const at = careerDate(w);
+  const last = w.playerRecords?.[p.id]?.moves.at(-1);
+  const from =
+    previousClub ??
+    last?.to ??
+    person.employment.filter((job) => job.role === 'player').at(-1)?.club;
+  if (
+    from &&
+    club &&
+    from !== club &&
+    !(last?.year === at.year && last.day === at.day && last.from === from && last.to === club)
+  )
+    recordPlayerMove(w, p.id, {
+      ...at,
+      from,
+      to: club,
+      fee: '0',
+      ...(loanUntil === undefined ? {} : { loan: true }),
+    });
+  moveSquadPlayer(w, p, club, source);
   if (
     person.club === club &&
     person.playing === (club ? 'active' : 'released') &&
@@ -238,15 +279,16 @@ export function movePerson(w: World, p: Player, club?: string, own = false, loan
     person.playing = 'released';
     playingChanged(w);
   }
-  invalidateNpcSquads(w);
+  if (previousClub) invalidateNpcSquad(w, previousClub);
+  if (club) invalidateNpcSquad(w, club);
   return person;
 }
 export function returnLoan(w: World, p: Player) {
   endPlayingCoachForDeparture(w, p.id, true);
   const person = retainPerson(w, p, undefined, true);
   const parent = person.loan?.club;
+  delete p.loanUntil;
   movePerson(w, p, parent);
   delete person.loan;
-  delete p.loanUntil;
-  p.status = 'sold';
+  p.status = parent === w.playerClub ? 'active' : 'sold';
 }

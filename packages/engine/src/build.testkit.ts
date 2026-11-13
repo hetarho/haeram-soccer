@@ -2,6 +2,7 @@ import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import type { Fixture, Tactic, World } from '../../contracts/src/types';
 import { MATCH_MODEL_RELEASE, type MatchModelRelease, npcTactic, simulateMatch } from './index';
 import { careerWorld } from './career.testkit';
+import { setNpcLevel } from './testing';
 
 interface Build {
   passing: number;
@@ -37,8 +38,8 @@ export function scenario(
   const opponent = w.clubs.find(
     (club) => club.id !== w.playerClub && npcTactic(club) === opponentTactic,
   )!;
-  // Generated squads rate at their club strength; 55 fields an XI rated about like ours.
-  opponent.strength = 55;
+  // The opponent plays with actual attributes at the same level as the fixture.
+  setNpcLevel(w, opponent, 55);
   const fixture: Fixture = {
     id: 'build-fixture',
     year: w.year,

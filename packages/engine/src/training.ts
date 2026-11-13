@@ -84,7 +84,15 @@ export function growAttributes(
   player: Player,
   gain: number,
   factor: (attribute: Attribute) => number = () => 1,
-  { only, share = GROWTH_SHARE }: { only?: (a: Attribute) => boolean; share?: number } = {},
+  {
+    only,
+    share = GROWTH_SHARE,
+    adaptation = player.adaptation,
+  }: {
+    only?: (a: Attribute) => boolean;
+    share?: number;
+    adaptation?: number;
+  } = {},
 ) {
   if (gain <= 0) return 0;
   const before = mainOvr(player);
@@ -92,7 +100,7 @@ export function growAttributes(
   const rise =
     excess < 0
       ? Math.min(gain * share, -excess)
-      : player.adaptation >= OVERSHOOT_ADAPTATION
+      : adaptation >= OVERSHOOT_ADAPTATION
         ? gain * share * overshootFactor(excess)
         : 0;
   if (rise <= 0) return 0;
@@ -132,8 +140,58 @@ export function focusFor(w: World, p: Player, squad = activeTrainingFocus(w)): T
 }
 
 /** The manager's youth work, before the training ground's growth multiplier. */
+const developmentFromYouth = (youth: number) => 0.5 + youth / 100;
 export function developmentBase(w: World) {
-  return 0.5 + w.manager.youth / 100;
+  return developmentFromYouth(w.manager.youth);
+}
+
+export interface GrowthContext {
+  age: number;
+  youth: number;
+  ground: number;
+  focus: TrainingFocus;
+  adaptation?: number;
+  investment?: number;
+  style?: number;
+  youthDevelopment?: number;
+}
+
+/** Shared round math, with no world, staff lookup or random draw. */
+function roundGrowthGain(player: Player, context: GrowthContext) {
+  const { age, youth, ground, focus, investment = 1, style = 1, youthDevelopment = 1 } = context;
+  if (age >= 27 || player.status !== 'active') return 0;
+  const adaptation = context.adaptation ?? player.adaptation;
+  const gap = Math.max(
+    player.potential - mainOvr(player),
+    adaptation >= OVERSHOOT_ADAPTATION ? OVERSHOOT_GAP : 0,
+  );
+  const ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
+  const base = Math.min(0.12, (gap / 400) * developmentFromYouth(youth) * ageWeight);
+  return hundredths(
+    base *
+      trainingFocusInfo[focus].developmentMultiplier *
+      PROFESSIONALISM_RATE[player.personality.professionalism - 1] *
+      investment *
+      ground *
+      style *
+      (age <= 21 ? youthDevelopment : 1),
+  );
+}
+
+/** Replays the small attribute steps, so batching never changes the rounding or potential curve. */
+export function settlePlayerGrowth(
+  player: Player,
+  context: GrowthContext,
+  rounds: number,
+  factor: (a: Attribute) => number = () => 1,
+) {
+  for (let round = 0; round < rounds; round++)
+    recordDevelopment(
+      player,
+      growAttributes(player, roundGrowthGain(player, context), factor, {
+        adaptation: context.adaptation,
+      }),
+    );
 }
 
 function roundGain(
@@ -143,24 +201,16 @@ function roundGain(
   staff = staffEffects(w),
   focus = activeTrainingFocus(w),
 ) {
-  const age = w.year - player.born;
-  if (age >= 27 || player.status !== 'active') return 0;
-  const gap = Math.max(
-    player.potential - mainOvr(player),
-    player.adaptation >= OVERSHOOT_ADAPTATION ? OVERSHOOT_GAP : 0,
-  );
-  const ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
-  const base = Math.min(0.12, (gap / 400) * developmentBase(w) * ageWeight);
   const style = managerStyleEffects(w);
-  return hundredths(
-    base *
-      trainingFocusInfo[focus].developmentMultiplier *
-      PROFESSIONALISM_RATE[player.personality.professionalism - 1] *
-      policy.developmentMultiplier *
-      trainingGroundTerms(w).growth *
-      style.growth *
-      (age <= 21 ? staff.youthDevelopment * style.youthGrowth * buildEffects(w).youthGrowth : 1),
-  );
+  return roundGrowthGain(player, {
+    age: w.year - player.born,
+    youth: w.manager.youth,
+    ground: trainingGroundTerms(w).growth,
+    focus,
+    investment: policy.developmentMultiplier,
+    style: style.growth,
+    youthDevelopment: staff.youthDevelopment * style.youthGrowth * buildEffects(w).youthGrowth,
+  });
 }
 /** The main-OVR rise a round would bring him, read without changing him. */
 function actualRoundGain(w: World, player: Player) {
@@ -220,16 +270,22 @@ export function settleTraining(w: World) {
  * years take the season's growth by the main position's weights; those past it hold; those past
  * their decline age fall by their group's amount. Every change carries noise of ±0.5.
  */
-export function developAnnually(w: World, player: Player) {
-  const age = w.year - player.born,
+export function developAnnually(
+  w: World,
+  player: Player,
+  context = {
+    year: w.year,
+    youth: w.manager.youth,
+    ground: trainingGroundTerms(w).growth,
+    adaptation: player.adaptation,
+    report: true,
+  },
+) {
+  const age = context.year - player.born,
     gap = Math.max(0, player.potential - mainOvr(player)),
-    variation = random(`${w.seed}:growth:${player.id}:${w.year}`);
+    variation = random(`${w.seed}:growth:${player.id}:${context.year}`);
   const growth =
-    age < 27
-      ? Math.min(3, (gap / 20 + w.manager.youth / 100) * trainingGroundTerms(w).growth)
-      : age <= 30
-        ? 0.3
-        : 0;
+    age < 27 ? Math.min(3, (gap / 20 + context.youth / 100) * context.ground) : age <= 30 ? 0.3 : 0;
   const growing = (a: Attribute) => age <= AGEING[a].growUntil;
   const before = mainOvr(player);
   // A season's growth reaches the main OVR whole. Under 27 its noise rides inside it, so it never
@@ -238,10 +294,11 @@ export function developAnnually(w: World, player: Player) {
   growAttributes(player, Math.max(0, growth + (young ? variation() - 0.5 : 0)), undefined, {
     only: growing,
     share: 1,
+    adaptation: context.adaptation,
   });
   ageAttributes(player, age, variation, (a) => young && growing(a));
   recordDevelopment(player, hundredths(mainOvr(player) - before));
-  revisePotential(w, player);
+  revisePotential(w, player, context.year, context.report);
 }
 
 /**
@@ -272,10 +329,10 @@ export const POTENTIAL_REVISION = {
   stall: { chance: 0.05, min: 4, max: 7 },
   drift: 2,
 } as const;
-export function revisePotential(w: World, player: Player) {
-  const age = w.year - player.born;
+export function revisePotential(w: World, player: Player, year = w.year, report = true) {
+  const age = year - player.born;
   if (age > POTENTIAL_REVISION.maxAge || player.status !== 'active') return;
-  const r = random(`${w.seed}:potential:${player.id}:${w.year}`);
+  const r = random(`${w.seed}:potential:${player.id}:${year}`);
   const u = r(),
     c = POTENTIAL_REVISION;
   const change =
@@ -289,7 +346,7 @@ export function revisePotential(w: World, player: Player) {
   if (next === player.potential) return;
   const before = player.potential;
   player.potential = next;
-  if (Math.abs(change) >= c.stall.min)
+  if (report && Math.abs(change) >= c.stall.min)
     addEvent(
       w,
       change > 0 ? 'potential-breakthrough' : 'potential-stall',

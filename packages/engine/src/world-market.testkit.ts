@@ -1,7 +1,33 @@
 /** Minimal synthetic market: three clubs and their present squads, no world generation/matches. */
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
-import type { Club, World } from '../../contracts/src/types';
-import { makeManager, makePlayer, squadPlaces } from './world';
+import type { Club, Position, World } from '../../contracts/src/types';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import { invalidateNpcSquad, makeManager, makePlayer, squadPlaces } from './world';
+import { scoutReach } from './scout-search';
+
+/** An explicit eligible candidate at the scout's ceiling, enrolled at his club or in the pool. */
+export function marketCandidate(w: World, club: Club | undefined, position: Position, age = 22) {
+  const own = w.clubs.find((c) => c.id === w.playerClub)!;
+  const level = scoutReach(w).ability[1];
+  const p = makePlayer(
+    club?.country ?? own.country,
+    w.seed,
+    `${club?.id ?? own.id}:fixture:${position}:${age}`,
+    w.year,
+    level,
+    position,
+    age,
+    club?.tier ?? own.tier,
+  );
+  for (const attribute of ATTRIBUTES) p.attrs[attribute] = level;
+  p.potential = 99;
+  if (club) {
+    ((w.squads ??= {})[club.id] ??= []).push(p);
+    invalidateNpcSquad(w, club.id);
+  } else w.freeAgents = [...(w.freeAgents ?? []), { ...p, freeSince: w.year }];
+  w.revision++;
+  return p;
+}
 
 export function worldMarketFixture(): World {
   const club = (id: string, country: string, strength: number): Club => ({

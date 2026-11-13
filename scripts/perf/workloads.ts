@@ -111,7 +111,18 @@ export function workloadOf(name: string, seed: string): Workload {
       },
     };
   }
-  if (name === 'history') {
+  if (name === 'creation-1990') {
+    let created: World;
+    return {
+      cycle: 1,
+      digest: () => hash.update(canonical(created)).digest('hex').slice(0, 16),
+      rep() {
+        created = liveHistory(historyWorld(seed), 1990);
+        return 'creation';
+      },
+    };
+  }
+  if (name === 'history' || name === 'history-five') {
     // A new game's history: no career world is built for it.
     const h = historyWorld(seed);
     return {
@@ -119,7 +130,7 @@ export function workloadOf(name: string, seed: string): Workload {
       cycle: 0,
       rep() {
         const year = h.year;
-        liveHistory(h, year + 1);
+        for (let n = 0; n < (name === 'history-five' ? 5 : 1); n++) liveHistory(h, h.year + 1);
         if (h.year <= year) throw new Error('History benchmark did not close a season');
         return 'season';
       },

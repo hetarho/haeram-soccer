@@ -1,0 +1,13 @@
+{
+  "CLUB_LEVELS": { "investment": 0.02, "decay": 0.005 },
+  "NPC_YOUTH": {
+    "byAcademy": [
+      { "count": 2, "potential": [38, 59] },
+      { "count": 2, "potential": [48, 69] },
+      { "count": 3, "potential": [58, 79] },
+      { "count": 3, "potential": [68, 89] },
+      { "count": 4, "potential": [73, 95] },
+      { "count": 5, "potential": [78, 99] }
+    ]
+  }
+}

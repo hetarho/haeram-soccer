@@ -1,16 +1,20 @@
+import { disciplineNames } from '../../../runtime/disciplineNames';
 import { afterEach, expect, it, vi } from 'vitest';
 import { emptyPlayerDetail, PD } from '../../../../../../packages/contracts/src/detail';
 import type { FullStatsRead } from '../../../../../../packages/contracts/src/match-model';
 import type { World } from '../../../../../../packages/contracts/src/types';
-import * as squads from '../../../../../../packages/engine/src/world';
 import type { MatchRecord } from '../../../../../../packages/contracts/src/types';
-import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
+import { worldMarketFixture } from '../../../../../../packages/engine/src/world-market.testkit';
+import { foundSquads } from '../../../../../../packages/engine/src/persisted-squads';
 import { squad } from '../../../../../../packages/engine/src/world';
 import { banText, cardCounts, leagueDiscipline, leagueReds } from './discipline';
 import { ownLeagueIds } from '../../league/@x/player';
 
 it("lists the league's cards and bans", () => {
-  const w = careerWorld({ country: 'ENG', seed: 'cards' });
+  const w = worldMarketFixture();
+  w.clubs[1]!.country = 'ENG';
+  w.clubs[2]!.country = 'FRA';
+  foundSquads(w);
   const ids = ownLeagueIds(w);
   const rival = w.clubs.find((c) => c.id === ids.find((id) => id !== w.playerClub))!;
   const abroad = w.clubs.find((c) => !ids.includes(c.id))!;
@@ -65,7 +69,9 @@ it("lists the league's cards and bans", () => {
   });
   const reds = leagueReds(w);
   expect(reds).toEqual({ [ours.id]: 1, [theirs.id]: 1 });
-  const rows = leagueDiscipline(w, ids, reds);
+  const view = { ...w, disciplineNames: disciplineNames(w) };
+  delete view.squads;
+  const rows = leagueDiscipline(view, ids, reds);
   // Most reds, then most yellows; the other league's player is not listed.
   expect(rows.map((row) => [row.name, row.club, row.yellows, row.reds])).toEqual([
     [ours.name, w.playerClub, 2, 1],
@@ -74,7 +80,7 @@ it("lists the league's cards and bans", () => {
   ]);
   expect(rows[1].bans.map(banText)).toEqual(['출장 정지 · 3경기 (국내)']);
   expect(rows.some((row) => row.id === stranger.id)).toBe(false);
-  expect(leagueDiscipline(w, [abroad.id], {}).map((row) => row.bans.map(banText))).toEqual([
+  expect(leagueDiscipline(view, [abroad.id], {}).map((row) => row.bans.map(banText))).toEqual([
     ['출장 정지 · 1경기 (리그)'],
   ]);
 });
@@ -118,7 +124,6 @@ const recorded = (): FullStatsRead => ({
   },
 });
 const syntheticWorld = () => {
-  vi.spyOn(squads, 'squad').mockReturnValue([]);
   return {
     year: 2024,
     playerClub: 'own',
@@ -178,11 +183,14 @@ it('never overwrites retained read identities when resolving another unnamed pla
     reason: 'yellows',
     matches: 1,
   });
-  vi.spyOn(squads, 'squad').mockReturnValue([
-    { id: 'straight', name: 'Wrong Regenerated Identity' },
-    { id: 'unknown', name: 'Known Roster' },
-  ] as World['players']);
-  const rows = leagueDiscipline(w, ['own', 'rival'], {}, recorded());
+  const view = {
+    ...w,
+    disciplineNames: {
+      straight: { name: 'Wrong Regenerated Identity', club: 'rival' },
+      unknown: { name: 'Known Roster', club: 'rival' },
+    },
+  };
+  const rows = leagueDiscipline(view, ['own', 'rival'], {}, recorded());
   expect(rows.find((r) => r.id === 'straight')?.name).toBe('Retained Straight');
   expect(rows.find((r) => r.id === 'unknown')?.name).toBe('Known Roster');
 });

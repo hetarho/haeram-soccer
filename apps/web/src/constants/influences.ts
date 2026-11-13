@@ -2292,7 +2292,8 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
         ],
         [
-          ...src('dynamics', 'evolveClubs', 'successBonus', 'meansLevel'),
+          ...src('world', 'clubStrength'),
+          ...src('books', 'npcWageLimit'),
           ...src('adaptation', 'settleCohesion'),
           ...src('books', 'settleNpcBooks', 'bookCompetitionMoney'),
         ],

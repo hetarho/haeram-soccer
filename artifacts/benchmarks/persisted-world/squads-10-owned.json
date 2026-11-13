@@ -1,0 +1,98 @@
+{
+  "measuredAt": "2026-11-13T10:10:32.773Z",
+  "computation": {
+    "algorithm": "sha256",
+    "sha256": "40354ef389d20da2434a42ec38e37b54745b6ace54b1946405f050fa2612e930",
+    "files": 242,
+    "entry": "scripts/persisted-size.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "source": "bae5614715c9682c4be36fd1107d0a131132d112",
+  "machine": {
+    "platform": "linux",
+    "arch": "x64",
+    "release": "5.15.0-164-generic",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "load": [
+      11.26,
+      11.43,
+      11.11
+    ],
+    "node": "v24.22.1"
+  },
+  "seed": "persisted-size-261113",
+  "ownership": "takeover-after-ownerless-history",
+  "complete": true,
+  "seasons": 10,
+  "year": 1947,
+  "playerCount": 16397,
+  "squads": {
+    "full": {
+      "codec": "gzip-cjk14",
+      "payloadBytes": 996226
+    },
+    "incrementBytes": 997205,
+    "budget": 500000,
+    "standaloneGap": 496226
+  },
+  "budget": 500000,
+  "addedBytes": 997205,
+  "bytesPerPlayer": 60.81630786119412,
+  "gap": 497205,
+  "rows": [
+    {
+      "before": {
+        "postMs": 184.19715299998643,
+        "encodeMs": 1628.3954599999706,
+        "codec": "gzip-cjk14",
+        "payloadBytes": 669447,
+        "portableBytes": 1147940,
+        "checkpointBytes": 765720
+      },
+      "after": {
+        "postMs": 353.3706649999949,
+        "encodeMs": 2197.61851999996,
+        "codec": "gzip-cjk14",
+        "payloadBytes": 1666652,
+        "portableBytes": 2857433,
+        "checkpointBytes": 1905382
+      }
+    },
+    {
+      "before": {
+        "postMs": 198.02640500001144,
+        "encodeMs": 1320.7011530000018,
+        "codec": "gzip-cjk14",
+        "payloadBytes": 669447,
+        "portableBytes": 1147940,
+        "checkpointBytes": 765720
+      },
+      "after": {
+        "postMs": 320.36327700002585,
+        "encodeMs": 1961.0775930000236,
+        "codec": "gzip-cjk14",
+        "payloadBytes": 1666652,
+        "portableBytes": 2857433,
+        "checkpointBytes": 1905382
+      }
+    },
+    {
+      "before": {
+        "postMs": 199.5252530000289,
+        "encodeMs": 1130.120355000021,
+        "codec": "gzip-cjk14",
+        "payloadBytes": 669447,
+        "portableBytes": 1147940,
+        "checkpointBytes": 765720
+      },
+      "after": {
+        "postMs": 300.53658299997915,
+        "encodeMs": 2043.821146000002,
+        "codec": "gzip-cjk14",
+        "payloadBytes": 1666652,
+        "portableBytes": 2857433,
+        "checkpointBytes": 1905382
+      }
+    }
+  ]
+}

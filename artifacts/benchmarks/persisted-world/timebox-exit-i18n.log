@@ -1,0 +1,5 @@
+
+> haeram-soccor@0.8.0 validate:i18n /Users/ihaelam/project/haeram-soccer
+> tsx scripts/validate-i18n.ts
+
+{"locales":12,"messages":6833,"references":8370}

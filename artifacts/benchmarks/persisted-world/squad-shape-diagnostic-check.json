@@ -1,0 +1,12 @@
+{
+  "classification": "numerical analysis of an existing generated snapshot; no simulation step or test framework",
+  "command": "pnpm exec tsx .tmp/pw86/squad-shape-diagnostic.ts",
+  "exitCode": 0,
+  "milliseconds": 2218,
+  "commit": "dde7ab817c11331bfd8745511293294a7be071c3",
+  "workingTree": "176ca18833628160342f17aa430e81b66a280ed1",
+  "cached": false,
+  "stale": false,
+  "log": "artifacts/benchmarks/persisted-world/squad-shape-diagnostic.log",
+  "logSha256": "ff2923e89b2aae627cdc7bf35148bdc455df3e0cecb40bbb890393845eb4d7a3"
+}

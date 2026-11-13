@@ -25,7 +25,7 @@
  * prices every squad exactly through the production function at that table (`exact` below).
  *
  * T696: `--means` lives the world with `--spread`'s table in force and LEAGUE-10's means level on
- * (measurement overrides of `STAR_SPREAD_CONFIG` and `MEANS_LEVEL`, never game settings), so each
+ * (measurement overrides of `STAR_SPREAD_CONFIG` and the contract wage limit, never game settings), so each
  * row holds the book as lived (`wages` is the wage bill at the table) beside its generated squad's
  * cost at the same strength (`generated`). Every live run also writes `<out>.extra.json`: each
  * season's champions from `w.history`, the clubs the means level sold down ({ year, code, from,
@@ -41,7 +41,7 @@
  * (→ECON-36; a measurement override of `BOOK_COMPETITIONS`), beside `--spread` and `--means` or
  * without them for the fit. `--observe-cups` leaves it out of the income but records, at each
  * close, every top-flight book's competition money and, for each club the means level sells down,
- * the level its book would have kept with that season's money in it (`meansLevel`'s own search),
+ * the level its book would have kept with that season's money in it (the historical search),
  * in `<out>.extra.json`; `--screen` reads those extras.
  * T712: `--ability-fit` lives the world, from its generation, on CLUB-25 r61's ability-fit wage (a
  * measurement override of `ABILITY_FIT`); the production side of a comparison runs without it.
@@ -93,7 +93,7 @@ import { overall } from '../packages/engine/src/player-state';
 import { footballQuote } from '../packages/engine/src/quotes';
 import { BOOK_COMPETITIONS, keepsBooks } from '../packages/engine/src/books';
 import { RESULTS_LUCK } from '../packages/engine/src/results-only';
-import { MEANS_LEVEL, meansLevel, squadCostAt } from '../packages/engine/src/dynamics';
+import { npcWageBill } from '../packages/engine/src/books';
 import {
   ABILITY_FIT,
   MARKET_CONFIG,
@@ -279,8 +279,6 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
   const t0 = performance.now();
   const sold: Extra['sold'] = [];
   const competitions: CompetitionRow[] = [];
-  // Each book's competition money and division at the close, for the summer's counterfactual.
-  const money = new Map<string, { year: number; tier: number; total: bigint }>();
   if (CUPS) BOOK_COMPETITIONS.inForce = true;
   if (PLACEBO) {
     RESULTS_LUCK.salt = PLACEBO;
@@ -288,7 +286,6 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
   }
   if (OBSERVE_CUPS)
     BOOK_COMPETITIONS.observe = (c, m, released) => {
-      money.set(c.id, { year: w.year, tier: c.tier, total: m.total });
       if (c.tier === 0)
         competitions.push({
           year: w.year,
@@ -301,20 +298,9 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
           gates: Number(m.gates),
         });
     };
-  if (MEANS) {
-    if (!table) throw new Error('--means lives a candidate: give its table with --spread');
+  if (MEANS && table) {
     STAR_SPREAD_CONFIG.shared = table.shared;
     STAR_SPREAD_CONFIG.own = table.own;
-    MEANS_LEVEL.inForce = true;
-    MEANS_LEVEL.observe = (c, from, to) => {
-      const entry = { year: w.year, code: c.country, id: c.id, tier: c.tier, from, to };
-      const m = OBSERVE_CUPS ? money.get(c.id) : undefined;
-      if (m && m.year === w.year) {
-        // The same search the means level makes, with the season's competition money in the book.
-        const withMoney = meansLevel(w, c, m.tier, from, undefined, CUPS ? 0n : m.total)!;
-        sold.push({ ...entry, book: m.tier, money: Number(m.total), withMoney });
-      } else sold.push(entry);
-    };
   }
   const first = w.year;
   while (w.year <= last) {
@@ -337,7 +323,7 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
         (sum, p) => sum + Number(marketWageAt(c.country, w.year, c.tier, p)),
         0,
       ),
-      generated: Number(squadCostAt(w, c, c.strength, c.tier, w.year)),
+      generated: Number(npcWageBill(w, c)),
     });
     const priced = new Map(
       clubs.map((c) => [
@@ -931,9 +917,6 @@ function screenReport(extras: Extra[]) {
   }
   console.log(
     '\n### Holds the season’s competition money would release (one-step counterfactual)\n',
-  );
-  console.log(
-    'Each club the means level sold down, with the level its book would have kept had that season’s competition money been in it (`meansLevel`, the same search). Released: that level at least the strength before the sale. Points not sold: min(that level, before) − the level sold to. Top flight: the division the book was earned in; pooled over the worlds.\n',
   );
   console.log(
     '| country | top-flight holds | released | share released | points sold | points not sold | every division: holds / released |',

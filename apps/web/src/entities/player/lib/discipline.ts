@@ -2,7 +2,7 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import type { Ban, World } from '../../../../../../packages/contracts/src/types';
 import type { FullStatsRead } from '../../../../../../packages/contracts/src/match-model';
 import { PD } from '../../../../../../packages/contracts/src/detail';
-import { squad } from '../../../../../../packages/engine/src/world';
+import type { ProjectedWorld } from '../../../runtime/protocol';
 
 /**
  * Display read models of cards and bans (→MATCH-19, CLUB-45, LEAGUE-15): shared own-match
@@ -43,7 +43,7 @@ export interface DisciplineRow {
  * unavailable reds. Omitting the fourth argument preserves the legacy three-argument read.
  */
 export function leagueDiscipline(
-  w: World,
+  w: World & Pick<ProjectedWorld, 'disciplineNames'>,
   clubIds: string[],
   reds: Record<string, number>,
   read?: FullStatsRead | null,
@@ -89,14 +89,8 @@ export function leagueDiscipline(
         club: w.playerClub,
         clubs: people.get(p.id)?.clubs ?? [w.playerClub],
       });
-  // Other clubs' squads are generated only when someone is still unnamed.
-  if (ids.some((id) => !people.has(id)))
-    for (const id of clubIds) {
-      const club = w.clubs.find((c) => c.id === id);
-      if (club && id !== w.playerClub)
-        for (const p of squad(w, club))
-          if (!people.has(p.id)) people.set(p.id, { name: p.name, club: id, clubs: [id] });
-    }
+  for (const [id, person] of Object.entries(w.disciplineNames ?? {}))
+    if (!people.has(id)) people.set(id, { ...person, clubs: [person.club] });
   const rows: DisciplineRow[] = [];
   for (const id of ids) {
     const bans = d?.bans.filter((ban) => ban.player === id) ?? [];

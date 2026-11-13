@@ -1,8 +1,12 @@
+import { closePlayerLines, linkOwnMatchPlayers, linkPlayer } from './player-records';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { refreshReadModels } from './read-models';
 import { applyDelegatePlans } from './delegation';
 import { openNeed } from './replacements';
 import { callUpFor, callUpProspects } from './squad-target';
+import { foundSquads } from './persisted-squads';
+import { closeNpcSummer, closeNpcWindow, settleNpcGrowth } from './npc-careers';
+import { npcMarket } from './npc-market';
 import { SQUAD_TARGET } from './squad-size';
 import { isDelegated } from './responsibilities';
 import { countApprovalWaits } from './approvals';
@@ -48,7 +52,14 @@ import { COUNTRIES } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
 import { activePlayers, clubOf } from './player-state';
 import { addEvent } from './events';
-import { joinClub, makePlayer, ownStarters, refillPosition, rating } from './world';
+import {
+  joinClub,
+  makePlayer,
+  ownStarters,
+  refillPosition,
+  rating,
+  refreshNpcSquads,
+} from './world';
 import { lineOf } from './player';
 import {
   applyClauses,
@@ -89,12 +100,11 @@ import { assertFullMatchRecord } from './match-model';
 import { attributeOwnMatch, captureSeasonClose } from './manager-history-capture';
 import { openNpcSeason, settleNpcSeason } from './npc-stats';
 import { ballonDorPodium, payBallonDorBonus } from './ballon-dor-award';
-import { BALLON_DOR_CONFIG } from './ballon-dor';
 import { activeMatchModel } from '../../contracts/src/match-model';
 import { recordRecentResult, retainRecentResults } from './recent-results';
 import { careerEnded, hasOwner, ownerClose, ownerDay } from './owner';
 import { crossWar, seasonAfter } from './wartime';
-import { closeFreeAgents, lettingGo, refreshFreeAgents, signFreeAgentAtClose } from './free-agents';
+import { capFreeAgents, refreshFreeAgents, signFreeAgentAtClose } from './free-agents';
 import { booksClose } from './books';
 import { fanMoodAfterLeagueMatch, fanMoodClose, fanMoodRound } from './fan-mood';
 import {
@@ -138,6 +148,8 @@ export function prepareSeason(w: World, continental = true, lifecycle = true) {
   w.calendar = { day: 0 };
   // The season turns here only on a lifecycle run; a save's fixture rebuild changes nothing.
   if (lifecycle) {
+    foundSquads(w);
+    refreshNpcSquads(w);
     closeDisciplineSeason(w);
     materializePeople(w);
     // An active model's complete aggregates start the new season empty and tracked whole.
@@ -246,6 +258,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     // The manager in charge is frozen on the kept record as it settles (→HIST-18).
     const saved = attributeOwnMatch(w, { ...m, players, ...(lineCounts ? { lineCounts } : {}) });
     w.ownMatches.push(saved);
+    linkOwnMatchPlayers(w, m);
     refreshReadModels(w);
     gate(w, m);
     // Every starter settles a little by the slot he played, a substitute by the slot of the
@@ -281,9 +294,9 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   }
   injuriesFromMatch(w, m);
   // Before the takeover every fixture is results-only (→MATCH-22, WORLD-13) and the season's
-  // aggregates feed only its close's Ballon d'Or (→PLAYER-27), so none are kept before 1955/56.
+  // aggregates feed player careers from the first season (→HIST-23); awards still start in 1955.
   if (hasOwner(w)) settleNpcSeason(w, playback);
-  else if (m.year >= BALLON_DOR_CONFIG.first) settleNpcSeason(w, playback, true);
+  else settleNpcSeason(w, playback, true);
   recordRecentResult(w, m);
 }
 /** The own substitutes who came on, each with the XI slot of the player he replaced. */
@@ -364,7 +377,7 @@ function tournament(w: World, clubs: Club[], key: string) {
  * relegates nobody (→LEAGUE-16): its promotion places go up and the division above relegates
  * into it, so every division keeps its capacity.
  */
-export function promote(w: World) {
+function promotionResults(w: World) {
   const transfers: { club: Club; tier: number }[] = [];
   for (const cp of COUNTRIES) {
     for (let tier = 0; tier < cp.groups.length - 1; tier++) {
@@ -423,6 +436,9 @@ export function promote(w: World) {
         transfers.push({ club: c, tier: tier + 1 });
     }
   }
+  return transfers;
+}
+function applyPromotion(w: World, transfers: ReturnType<typeof promotionResults>) {
   for (const t of transfers) t.club.tier = t.tier;
   for (const cp of COUNTRIES) {
     for (let tier = 0; tier < cp.groups.length; tier++) {
@@ -436,6 +452,10 @@ export function promote(w: World) {
       }
     }
   }
+}
+/** Standalone promotion retains the same settlement and tier-change boundary. */
+export function promote(w: World) {
+  applyPromotion(w, promotionResults(w));
 }
 /** How far the own club went in this season's cups (→HIST-12). */
 function cupRuns(w: World): CupRun[] {
@@ -630,16 +650,18 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     ...seasonRecords(w, order, oldTier, oldGroup),
     ...(ballonDor ? { ballonDor } : {}),
   });
+  for (const place of ballonDor ?? []) linkPlayer(w, place.id);
+  // The playoff is part of these player lines, while the existing season archive stays as recorded.
+  const promotion = promotionResults(w);
+  closePlayerLines(w);
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   // Other clubs' books close on the season as played; a founded career keeps none (→ECON-36).
   booksClose(w);
   const startersBeforeDepartures = [...ownStarters(w)];
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
-  // Whom the clubs nobody owns let go, read from the squads the season was played with.
-  const released = lettingGo(w, w.year, seasonAfter(w.year));
-  // The promotion playoff belongs to the season just played: its squads retire after it.
-  promote(w);
+  // Playoffs have settled with the closing season; only now do their clubs change division.
+  applyPromotion(w, promotion);
   // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
   retainRecentResults(w);
   refreshReadModels(w);
@@ -648,8 +670,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   // The final table and any promotion are credited before the close's departures (→HIST-19).
   captureSeasonClose(w, { tier: oldTier, group: oldGroup });
-  // The clubs nobody owns let go of the season's least able (→CLUB-49).
-  closeFreeAgents(w, w.year, released);
+  closeNpcSummer(w);
   retireAtClose(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
@@ -680,6 +701,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   w.year = seasonAfter(closed);
   w.calendar = { day: 0 };
   crossWar(w, closed);
+  for (const players of Object.values(w.squads ?? {}))
+    for (const p of players)
+      if (p.loanUntil !== undefined && p.loanUntil <= w.year) returnLoan(w, p);
   atCareerDate(w, { year: closed, day: SEASON_END_DAY + 1 }, () => {
     // The new season's books open before the close pays anything, so its renewals and hires are
     // booked where their events are (→ECON-10).
@@ -748,8 +772,10 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   );
   refreshStaffMarket(w);
   refreshFreeAgents(w);
+  capFreeAgents(w);
   // The new season's first day of club business opens the summer window.
-  clubDay(w);
+  // NPC opening moves settle when this day is first advanced, after the legal opening snapshot.
+  clubDay(w, false);
   sponsorReminder(w);
   refreshReadModels(w);
 }
@@ -844,15 +870,18 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
     brackets: seasonBrackets(w),
     ...(ballonDor ? { ballonDor } : {}),
   });
+  for (const place of ballonDor ?? []) linkPlayer(w, place.id);
+  // The playoff is part of these player lines, while the existing season archive stays as recorded.
+  const promotion = promotionResults(w);
+  closePlayerLines(w);
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   // The books close on the season as played, before anyone moves division (→ECON-36).
   booksClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
-  const released = lettingGo(w, w.year, seasonAfter(w.year));
-  promote(w);
+  applyPromotion(w, promotion);
   retainRecentResults(w);
-  closeFreeAgents(w, w.year, released);
+  closeNpcSummer(w);
   retireAtClose(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
@@ -860,6 +889,9 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
   w.year = seasonAfter(closed);
   w.calendar = { day: 0 };
   crossWar(w, closed);
+  for (const players of Object.values(w.squads ?? {}))
+    for (const p of players)
+      if (p.loanUntil !== undefined && p.loanUntil <= w.year) returnLoan(w, p);
   atCareerDate(w, { year: closed, day: SEASON_END_DAY + 1 }, () => {
     settleNpcCoaching(w, true);
     refreshCoachingMarket(w);
@@ -875,7 +907,8 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
   );
   refreshStaffMarket(w);
   refreshFreeAgents(w);
-  clubDay(w);
+  capFreeAgents(w);
+  clubDay(w, false);
 }
 /**
  * One round: the days up to and including its league match day, each lived as a day step lives it
@@ -990,6 +1023,7 @@ function playRound(
   snapshotStandings(w);
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {
+    settleNpcGrowth(w);
     refreshManagerMarket(w);
     // The staff markets move with the managers' (→STAFF-49).
     refreshStaffMarket(w);
@@ -1007,6 +1041,8 @@ function beginDays(w: World) {
   w.calendar ||= { day: currentDay(w) };
   if (!w.rankHistory) snapshotStandings(w);
   ensureScorers(w);
+  // The founding world's day zero has no preceding clubDay; settle its opening before advancing.
+  npcMarket(w);
 }
 /**
  * The next day of the world season in its one order (→LEAGUE-11): the close on the day after the
@@ -1094,14 +1130,17 @@ export function completeRound(
  * by counting the owner's waiting approvals, once a day on every progression path, the season's
  * close included (→STAFF-48), and closes with the owner's own business (→OWNER-7).
  */
-export function clubDay(w: World) {
-  if (!hasOwner(w)) return worldDay(w);
+export function clubDay(w: World, settleNpc = true) {
+  if (!hasOwner(w)) {
+    if (settleNpc) npcMarket(w);
+    return worldDay(w);
+  }
   countApprovalWaits(w);
   settleNpcCoaching(w);
   qualifyManagers(w);
   progressFacilityWorks(w);
   runAcademyIntake(w);
-  dailyMarket(w);
+  dailyMarket(w, settleNpc);
   delegatedBusiness(w);
   dailyStaff(w);
   judgePromises(w);
@@ -1117,6 +1156,7 @@ function worldDay(w: World) {
   settleNpcCoaching(w);
   qualifyManagers(w);
   announceRetirements(w);
+  closeNpcWindow(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
 export function advanceDays(

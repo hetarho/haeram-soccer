@@ -207,6 +207,12 @@ export function settleNpcSeason(w: World, playback: MatchPlayback, resultsOnly =
       };
       player.clubs.push(part);
     }
+    if (person.position === 'GK' && (part.appearances === 0 || part.cleanSheets !== undefined)) {
+      // A starting keeper earns a clean sheet at settlement, including results-only fixtures.
+      part.cleanSheets ??= 0;
+      const conceded = side === 0 ? r.score.away : r.score.home;
+      if (!came.has(line.id) && conceded === 0) part.cleanSheets++;
+    }
     part.appearances++;
     if (!came.has(line.id)) part.starts++;
     add(part.metrics, line.metrics);

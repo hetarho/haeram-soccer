@@ -1,0 +1,51 @@
+{
+  "closedAt": "2026-11-13T12:51:31Z",
+  "branch": "work/persisted-world-860",
+  "testPolicy": "unit-only",
+  "completedTasks": [
+    "T860",
+    "T861",
+    "T867",
+    "T862",
+    "T863",
+    "T864",
+    "T865",
+    "T869",
+    "T870",
+    "T872"
+  ],
+  "remainingTask": "T866",
+  "remainingStatus": "todo",
+  "calibrationPassed": false,
+  "productionConfigChanged": false,
+  "originalExplorationStart": "2026-11-13T08:52:43.827Z",
+  "originalExplorationEnd": "2026-11-13T12:52:43.827Z",
+  "candidateRequestedHorizon": 1980,
+  "candidateFull2010Gate": false,
+  "files": {
+    "artifacts/benchmarks/persisted-world/residual-through-1980-check.json": {
+      "bytes": 2991,
+      "sha256": "2ae353bd022fbffd13f0fe288b5b53b1052ec709eda76fda8b6cb91712f536b7"
+    },
+    "artifacts/benchmarks/persisted-world/residual-through-1980-comparison.json": {
+      "bytes": 45002,
+      "sha256": "13128462f71437aafee63ec4cde568568a5730630a06c588b72f9cd8d5f63cec"
+    },
+    "artifacts/benchmarks/persisted-world/residual-through-1980-comparison.md": {
+      "bytes": 5568,
+      "sha256": "d16e0969386184433eea48aca12c20e4005675f9c8c4120dc8d2168735e27a15"
+    },
+    "artifacts/benchmarks/persisted-world/residual-through-1980.json": {
+      "bytes": 1706419,
+      "sha256": "38afe896dcb6ea43f75abb9dee7242b4666301264be529655f0e1a886751bf0a"
+    },
+    "artifacts/benchmarks/persisted-world/residual-through-1980.json.partial.json": {
+      "bytes": 1706058,
+      "sha256": "9925c000ba55c90d264a1cb6e38bb75810b6add0a7664cbe7d671b4cfbfdcd33"
+    },
+    "artifacts/benchmarks/persisted-world/residual-through-1980.log": {
+      "bytes": 1706694,
+      "sha256": "729704b0fafeb9aba839ee76117e6d19a7a0316179d23ea09a84324428b2c23a"
+    }
+  }
+}
