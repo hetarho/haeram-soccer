@@ -87,7 +87,7 @@ describe('free-kick receiver timing', () => {
         state.bodies[p.index].pos = point(x - 5, y);
       }
       expect(rx(target())).toBeCloseTo(before - 5, 6);
-      state.bodies[receiver].pos = target();
+      state.bodies[receiver].pos = [...target()];
       expect(held.onside()).toBe(true);
     },
   );
