@@ -61,7 +61,6 @@
 - 261113 suggest T873 T874 T875: Read-only scouting for the overlapping nf14 plan: reuse remote 5ddd7284 viewer mechanics, not all code. Untested keep.ts invents unrecorded passes (contradicts MATCH-38/39); old contracts would drop NpcContribution.cleanSheets. Free-kick root cause: scenes.ts:190-192 moves receiver to landing while dead; pass.ts:247-248 and metrics.ts:324 guard only ordinary pass. Extend legal launch-timed receiver movement and typed metric, preserve IFAB goal-kick/throw/corner exemptions, explicit scripted offsides, exact record/script hashes, physics and current 60000ms watch minute. Localize old viewer copy through all 12 packs; remove Linux-specific paths and repo: imports. IFAB law 11 https://theifab.com/laws/latest/offside/; FIFA passing-the-press supports available receiver plus runner, including useful backward escape passes.
 - 261113 decided ECON-42 WORLD-17 T880: Unspecified NPC private backing -> bounded estimated annual allowance by stature: at least 9 = 100%, at least 4 = 50%, at least -1 = 15%, otherwise zero of prior operating income; actual capital is drawn only for a closing shortfall (alternatives: unlimited debt balancing | retain a turnover-only wage cap). Support remains separate from sponsorship/gates and expires unused, so funded losses are possible without unbounded grants. First optimize existing algorithms result-identically; simplify a model only if measurement justifies a separate explicit policy.
 - 261113 suggest T877 T878: Coordinator review of the new settlementFacts map: preserve a no-free-agents fast path after the retirement filter. Previously an empty pool skipped all per-club registration/wage work; eager indexing of every club could regress that common case. Also consider avoiding registration/limit construction for clubs whose wanted lines are empty. Cover no-pool/no-need cases without changing observer calls or game facts, and include them in the existing performance scope if correction is needed.
-- 261113 parked T873 T874 T875 T876: 구현 T873/T874 ba8feee4와 비교 도구 T875 55a4f847은 검증 후 ready, HTML localhost:19610 및 원본 checkout .tmp/natural-football/index.html에 보존. Claude 주간한도가 2026-11-15 16:00 KST까지 막혀 AGENTS의 다른 제공자 리뷰를 수행할 수 없습니다. 별도 Codex 독립 리뷰 예외를 사용자에게 비동기로 요청했으며 답변 전 코드 통합·T876 후속 구현·최종 관문은 진행하지 않았습니다. 재개 기록 spec/reports/261114-nf14.md.
 
 ## unlanded
 | id | tag | branch | commit | at |
@@ -69,6 +68,7 @@
 | T877 | pb14 | work/performance-books-pb14 | 0a2d63f8acd0 | 2026-11-13T16:51Z |
 
 ## log
+- 261113 Owner approved independent Codex review and permanent quota-aware provider fallback; AGENTS.md pushed main6fecb6de. Fresh code review resumed.
 - 261113 T877 done
 - 261113 Full persisted-world implementation published to main at 3d002a0b, version 0.9.0; current main also includes independent nf14 planning 0a2cefd3. Storage included, capacity not an integration blocker. Avoided a second implementation writer in the nf14-owned checkout; read-only scout evidence handed to T873/T874/T875 through inbox.
 - 261113 261114 main integration started from bb383c33 with full origin/work/persisted-world-860 c70cf228; only STATE conflict resolved while preserving Gusta 0.17.1 and ARCH@43. Storage is included and no capacity or calibration pass is claimed.
@@ -88,4 +88,3 @@
 - 261113 gusta-update-ssot ARCH start: retain message resources for supported saved prose
 - 261113 T865 done
 - 261113 T864 done
-- 261113 T863 done
