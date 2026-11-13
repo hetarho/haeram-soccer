@@ -31,7 +31,7 @@
 | ECON | 58 | 58 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
-| SAVE | 69 | 69 | - | 0 |
+| SAVE | 70 | 70 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
 | PLAYER | 18 | 18 | - | 0 |
 
@@ -62,6 +62,8 @@
 | T874 | Wait onside before a free-kick delivery | MATCH ARCH | T873 | todo |
 | T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
 | T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
+| T883 | Prepare one coherent compatible game release | SAVE ARCH | T882 | todo |
 
 ## next
 - gusta-implement-task T873 T875
+- gusta-implement-task T883
