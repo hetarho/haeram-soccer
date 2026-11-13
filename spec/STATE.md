@@ -64,6 +64,7 @@
 | T887 | Prepare real post-close free agents for promise journeys | ARCH CLUB | T885 | todo |
 | T888 | Find goal scenes through the actual replay adapters | ARCH MATCH | - | todo |
 | T889 | Keep the best-placed defender in central cover | MATCH ARCH | T885 | todo |
+| T883 | Prepare one coherent compatible game release | SAVE ARCH | T882 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -73,3 +74,4 @@
 ## next
 - Continue authorized natural-football improvement and baseline repairs until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
 - Complete approved CI foundation, fixture and scene repairs, then proceed through one measured football hypothesis at a time.
+- gusta-implement-task T883
