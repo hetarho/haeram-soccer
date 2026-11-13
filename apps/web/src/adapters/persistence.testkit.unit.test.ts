@@ -39,7 +39,7 @@ function ownerState(): World {
         currency: 'GBP-LSD',
       },
     },
-  } as World;
+  } as unknown as World;
 }
 
 describe('explicit long-codec owner support', () => {
