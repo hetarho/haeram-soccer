@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T08:27Z | - | work/persisted-world-860 | 8419467d3984 |
+| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T08:39Z | T870 | work/persisted-world-860 | 31d5dd478bb5 |
 | fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:06Z | 2026-11-13T07:53Z | - | work/fin3-final | 892eb45f64de |
 
 ## inbox
