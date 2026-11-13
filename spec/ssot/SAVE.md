@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r69 | Define the browser-demo rules for browser persistence and protocol.
+> r70 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -25,7 +25,9 @@
   - a background save during automatic play may hold days computed ahead of the shown date (→WEB-18); the save on stopping follows once those days are shown, so it holds the date the clock stopped on.
 - SAVE-9 [o] Export/import uses the same envelope; checksum provides corruption detection only. All successful changes remain local.
 
-- SAVE-10 [o] The game is version 0.7.0, a beta before 1.0: the app and its engine rules carry that one version, raised with each release, and a match-model revision (→SAVE-23) ships inside a version. Rules-4.0.0 checkpoints are the same rules line and load as 0.7.0, only their version label rewritten; only 0.7.0 gameplay checkpoints are accepted after that (→SAVE-19). ← one number the player sees and the save checks; 1.0 is kept for the release Earlier gameplay is never converted; unsupported-version protection follows →SAVE-11; retired storage compatibility follows →!SAVE-29.
+- SAVE-10 [o] The beta's app and engine rules carry one current game version, defined by `CURRENT_ENGINE_VERSION` in `packages/contracts/src/versions.ts`; 1.0 is reserved for the release. The root and all workspace package versions match it, and a release raises them coherently before final verification. A match-model revision (→SAVE-23) ships inside a version. ← one number the player sees and the save checks
+  - The rules-5.0.0 takeover line accepts its explicitly listed compatible patch labels, including 0.8.0, alongside the current label. Writer activation rewrites a supported earlier label to the current version while preserving every game fact and absent optional field; only rule/catalog metadata and world revision may change. A semver range or an arbitrary earlier label is never compatibility permission.
+  - Earlier incompatible gameplay, including rules-4.0.0 and 0.7.0, is never converted (→!SAVE-26); unsupported-version protection follows →!SAVE-11 and retired storage compatibility follows →!SAVE-29.
   - A supported world pinned to recognized catalog 2026-demo-4 moves to 2026-demo-5 on writer activation whatever its country: 2026-demo-5 changes only the person-name pools (→WORLD-12), so recorded facts and stored names stay and only generated people not yet retained show their new names.
   - A supported world pinned to recognized catalog 2026-demo-1, 2026-demo-2 or 2026-demo-3 whose club is English moves to 2026-demo-5 on writer activation; England's prices, money and football index are unchanged, so recorded facts stay. A career in another country pinned to them is a compatibility failure (→SAVE-11): 2026-demo-4 re-levelled its money (→ECON-35), so its recorded amounts would mix two levels.
   - Supported writer activation upgrades metadata/world revision through a pure transformation preserving all retained facts and missing optional defaults, committed through →SAVE-3. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
@@ -113,6 +115,7 @@
 - SAVE-30 [o] A supported career saved with per-decision 재정 기조 or per-person wage caps opens with every other fact kept: those are dropped on load and every delegated decision runs at 적당히 (→ECON-33). A career whose direction still carries the retired club 재정 기조 row, which the game's UI never wrote, is refused as incompatible, failing safe (→ARCH-16, →SAVE-5); it is never converted. ← removing an owner control must not end a career, and no shim is kept for a row no UI wrote
 
 ## chg
+- r70 261114 SAVE-10✎ stale 0.7.0-only label→one coherently prepared current release with explicit compatible rules-5 patch labels including 0.8.0; metadata-only writer upgrade preserves facts and absent fields, incompatible/future rules remain refused
 - r69 261114 SAVE-27✎ books without financing breakdown→optional lossless income components/owner capital, absent older facts preserved and prospective support
 - r68 261113 SAVE-17✎ per-decision 재정 기조 and wage caps→the owner's spending request per delegated decision (absent = 적당히) and the 단장's season plan (season, planned income, sales at the plan); SAVE-30+ per-decision 재정 기조 and wage caps dropped on load, a retired 재정 기조 direction row refused as incompatible
 - r67 261111 SAVE-23✎ the continuous-match and complete aggregate-result model→a match model; a settled match replays under its revision→keeps the revision as a label and replays from its record alone, earlier revisions' match code not kept
