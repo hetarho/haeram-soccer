@@ -37,6 +37,7 @@
 | T872 | pw86 | work/persisted-world-860 | 41c5bf2e826e | 2026-11-13T10:54Z |
 
 ## log
+- 261113 - 261113 fix calibration: exclude incomplete and shortened windows from completed-core counts and peak-age comparisons; preserve all raw observations, two isolated regressions and nine affected unit cases pass.
 - 261113 T872 done
 - 261113 pw86: completed T860-T865/T867/T869/T870 source is remote on work/persisted-world-860 at af821030; T866 numeric measurements continue under unit-test-only steering, work cutoff 12:00 UTC and publication deadline 13:00 UTC.
 - 261113 T859 done
