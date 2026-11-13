@@ -1,3 +1,11 @@
+import { exportWorld } from './club-identity-helpers';
+import { importPreparedCareer } from '../fixtures/browser-career';
+import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
+import { movePerson } from '../../packages/engine/src/npc-continuity';
+import { npcOffer } from '../../packages/engine/src/npc-market';
+import { clubOf } from '../../packages/engine/src/player-state';
+import { pendingDecisions } from '../../packages/engine/src/stopping';
+import { validateWorld } from '../../packages/contracts/src/schema';
 import { chooseOption, selectOptions } from './select';
 import { advanceDays } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
@@ -292,17 +300,34 @@ test('a page that closed with the clock running plays the time away on return an
 
 test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)', async ({ page }) => {
   await foundQuiet(page);
-  // Level 4 leaves offers and mediation with the owner here and observes only the match eve, so
-  // the clock stops by itself only on the eve of our first match, 1930.08.07. This career's first
-  // offer for one of our players arrives on 1930.08.03 and its own deadline closes it after
-  // 08.08 (→CLUB-18), the only owner-held work until 08.20, so it still waits on that eve however
-  // many days a slow runner lets pass. An owner's stop at x10 could land after it had closed: CI
-  // WebKit 42519984966 saw the entrance's count during play, then 대기 0 once stopped.
+  // Keep the original owner, seed and natural Aug3 draw. An actual Spanish buyer needs an
+  // MF after two of its current players move to another real Spanish club; the ordinary market
+  // then creates the one owner-held offer, with its untouched Aug8 deadline.
   await chooseLevel(page, 4);
   await configureResponsibilities(page, {
     responsibilities: { sales: 'direct', recruitment: 'direct' },
     observations: { matchEve: true },
   });
+  const prepared = await exportWorld(page);
+  expect(prepared.year).toBe(1930);
+  expect(prepared.calendar!.day).toBe(0);
+  expect(prepared.playerClub).toBe('ENG:0:0:12');
+  expect(pendingDecisions(prepared)).toEqual([]);
+  const buyer = prepared.clubs.find((c) => c.id === 'ESP:0:0:18')!;
+  const destination = prepared.clubs.find((c) => c.id === 'ESP:0:0:0')!;
+  for (const id of ['ESP:0:0:18:p:14:107', 'ESP:0:0:18:p:6:108']) {
+    const player = prepared.squads![buyer.id]!.find((p) => p.id === id)!;
+    expect(player?.status).toBe('active');
+    retainPerson(prepared, player, buyer.id);
+    openEmployment(prepared, player.id, 'player', buyer.id);
+    movePerson(prepared, player, destination.id);
+    expect(prepared.people![id]!.club).toBe(destination.id);
+  }
+  const target = prepared.players.find((p) => p.id === 'ENG:0:0:12:p:16:108')!;
+  expect(npcOffer(prepared, buyer, target, clubOf(prepared), '1978685')).toBeDefined();
+  expect(pendingDecisions(prepared)).toEqual([]);
+  validateWorld(prepared);
+  await importPreparedCareer(page, prepared);
   const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
   await chooseOption(clock.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
   const play = clock.getByRole('button', { name: '자동 진행 시작', exact: true }),
@@ -366,6 +391,19 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   await dismissMatchReport(page);
   await expect(play).toBeVisible();
   await expect(date).toHaveText(eve);
+  const observed = await exportWorld(page);
+  const pending = pendingDecisions(observed);
+  expect(pending).toHaveLength(1);
+  expect(observed.bids!.find((bid) => bid.id === pending[0]!.ref)).toMatchObject({
+    direction: 'in',
+    playerId: target.id,
+    club: buyer.id,
+    year: 1930,
+    day: 2,
+    due: 7,
+    status: 'pending',
+    fee: '1978685',
+  });
   // The controller's 결재함 counts the same work as the entrance and opens the office's queue
   // (→WEB-18/100).
   const inbox = clock.getByTestId('approval-inbox');

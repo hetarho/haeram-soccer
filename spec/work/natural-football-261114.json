@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T21:59:00.218Z",
-  "sourceCommit": "134ae45faa3c62bc03921fa24675b88adc34fa08",
+  "snapshotAt": "2026-11-13T22:07:22.574Z",
+  "sourceCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -45,7 +45,8 @@
       "T909",
       "T910",
       "T911",
-      "T912"
+      "T912",
+      "T913"
     ],
     "lastRun": {
       "id": "5932b97a-14a6-4d61-a8b9-f4397341625d",
@@ -79,32 +80,23 @@
     }
   },
   "summary": {
-    "total": 31,
-    "completed": 29,
-    "remaining": 2,
-    "running": 2,
-    "review": 0,
+    "total": 32,
+    "completed": 31,
+    "remaining": 1,
+    "running": 0,
+    "review": 1,
     "blocked": 0,
     "unassigned": 0
   },
   "tasks": [
     {
-      "id": "T906",
-      "title": "Prepare exact current-model browser scenes",
+      "id": "T913",
+      "title": "Read the specified raw XI strength in the historical division observer",
       "dep": [
-        "T885"
+        "T901"
       ],
-      "lane": "current-browser-scenes",
-      "status": "doing"
-    },
-    {
-      "id": "T910",
-      "title": "Prepare genuine combined-role departure offers",
-      "dep": [
-        "T906"
-      ],
-      "lane": "current-browser-scenes",
-      "status": "doing"
+      "lane": "raw-division-strength-observer",
+      "status": "reviewing"
     }
   ],
   "attempts": [
@@ -2136,14 +2128,28 @@
       "contributors": [
         "nf14-codex-browser-bundle"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T21:16:29.097Z",
       "startCommit": "ad9583936a91e92e4cf65734a94d02980fa6f526",
-      "submittedBase": "ac400f5f79e39b5474f7ec98d43d22fcfe078c5a",
-      "submissionId": "972a3589-4c8d-4f89-8d9a-111ae5708b5b",
-      "submittedAt": "2026-11-13T21:27:43.835Z",
+      "verifiedCommit": "b2808542cc170b1bd7e1a206dde162622ba63f30",
+      "submittedBase": "834271a276e67b2c216f18fcd6360f86731ba289",
+      "submissionId": "7e80fc51-d4cf-4ebc-9078-6fe2e387157a",
+      "submittedAt": "2026-11-13T22:03:24.516Z",
       "risk": null,
+      "review": {
+        "id": "8bce8a76-2754-4cb5-ae9f-0ee3f826626d",
+        "owner": "pr14-independent-browser-bundle-recheck",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T906/T910 b2808542 independently reviewed against834271a2, including both whole task contracts and both prior P2 findings. The release leaf exactly matches originale434 bytes (SHA256482972c3); both helper bodies match37edad byte-for-byte, with exactly three import-only consumer updates. Own pure standard dependency parser on the frozen checkout reports222nodes and zero web/browser files (positive prior-source control250nodes/24web). All original seven browser workloads retain CSV schema/BOM/exact IDs/births, actual roster counts, canonical releases, public imports, exact eight loans/cap/no-mutation, natural pending decision/deadline and original age-independent identity checks. Both combined-role journeys retain the full-price/one-unit-floor policy explicitly approved by T910, exact real buyer need/registration/funding, two minimal canonical same-line releases and all disclosure, dual-job, cash/severance-once/reload/office assertions; setup-only ordinary settlement/replay evidence passes and these bodies are unchanged by migration. The original loan-return predicate is intact; independently approved T912 source and all27unit blobs are exactly inherited, addressing the prior actual missing-event failure. Full performance/finance main4b5661b2 is an ancestor. Final type/lint/format/12-locale checks pass; migrated minimal release/cap probes pass; zero selected changed units are correctly not claimed as unit execution. No browser, application build, integration, world generation or cache warming ran in this review. Exact full browser journeys and the complete current-source gate remain coordinator-owned; no current full-browser pass is invented.",
+        "findings": [],
+        "commit": "b2808542cc170b1bd7e1a206dde162622ba63f30",
+        "baseCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
+        "submissionId": "7e80fc51-d4cf-4ebc-9078-6fe2e387157a",
+        "createdAt": "2026-11-13T22:03:27.497Z",
+        "finishedAt": "2026-11-13T22:07:16.571Z"
+      },
       "reviewHistory": [
         {
           "id": "dfe0e322-8ff0-4c54-b76c-d7bf2990e137",
@@ -2187,13 +2193,13 @@
         },
         {
           "taskId": "T910",
-          "commit": "37edad62635d4195bc271b26ac8a4129377e880c",
-          "at": "2026-11-13T21:27:43.824Z",
+          "commit": "b2808542cc170b1bd7e1a206dde162622ba63f30",
+          "at": "2026-11-13T22:03:24.505Z",
           "verification": [
             {
               "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
-              "startedAt": "2026-11-13T21:27:22.976Z",
-              "finishedAt": "2026-11-13T21:27:43.626Z"
+              "startedAt": "2026-11-13T22:03:06.331Z",
+              "finishedAt": "2026-11-13T22:03:24.322Z"
             }
           ]
         }
@@ -2201,8 +2207,8 @@
       "verification": [
         {
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
-          "startedAt": "2026-11-13T21:27:22.976Z",
-          "finishedAt": "2026-11-13T21:27:43.626Z"
+          "startedAt": "2026-11-13T22:03:06.331Z",
+          "finishedAt": "2026-11-13T22:03:24.322Z"
         }
       ]
     },
@@ -2226,6 +2232,8 @@
       "submittedBase": "134ae45faa3c62bc03921fa24675b88adc34fa08",
       "submissionId": "731763c7-4c2b-4452-9123-a6590102cbbd",
       "submittedAt": "2026-11-13T21:55:51.363Z",
+      "integratedCommit": "4ecd64fdd0517fa91619b74627f94e7e1b62a9ff",
+      "integratedAt": "2026-11-13T21:59:33.796Z",
       "risk": null,
       "review": {
         "id": "b176e0b1-5081-4119-9572-3b0f259c3f6d",
@@ -2259,6 +2267,65 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T21:55:32.794Z",
           "finishedAt": "2026-11-13T21:55:51.176Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T21:59:00.397Z",
+          "finishedAt": "2026-11-13T21:59:33.427Z"
+        }
+      ]
+    },
+    {
+      "id": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+      "group": "natural-football-261114",
+      "taskId": "T913",
+      "tasks": [
+        "T913"
+      ],
+      "lane": "raw-division-strength-observer",
+      "owner": "nf14-codex-raw-strength-observer",
+      "contributors": [
+        "nf14-codex-raw-strength-observer"
+      ],
+      "status": "reviewing",
+      "reason": null,
+      "createdAt": "2026-11-13T22:03:04.047Z",
+      "startCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
+      "verifiedCommit": "de7d3fd413aefe13bd730b31dc7b96cea0890bb2",
+      "submittedBase": "834271a276e67b2c216f18fcd6360f86731ba289",
+      "submissionId": "38e3a141-aace-4a4c-978b-e59323f6700a",
+      "submittedAt": "2026-11-13T22:05:59.026Z",
+      "risk": null,
+      "review": {
+        "id": "a82026a2-7dbe-464d-bda1-247823535acd",
+        "owner": "nf14-codex-independent-raw-strength",
+        "status": "reviewing",
+        "commit": "de7d3fd413aefe13bd730b31dc7b96cea0890bb2",
+        "baseCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
+        "submissionId": "38e3a141-aace-4a4c-978b-e59323f6700a",
+        "createdAt": "2026-11-13T22:07:19.528Z"
+      },
+      "steps": [
+        {
+          "taskId": "T913",
+          "commit": "de7d3fd413aefe13bd730b31dc7b96cea0890bb2",
+          "at": "2026-11-13T22:05:58.987Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T22:05:39.399Z",
+              "finishedAt": "2026-11-13T22:05:58.770Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T22:05:39.399Z",
+          "finishedAt": "2026-11-13T22:05:58.770Z"
         }
       ]
     }
@@ -10493,6 +10560,342 @@
       "group": "natural-football-261114",
       "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
       "taskId": "T912",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 371,
+      "at": "2026-11-13T21:59:33.561Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T21:59:00.397Z",
+            "finishedAt": "2026-11-13T21:59:33.427Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 372,
+      "at": "2026-11-13T21:59:33.797Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "82f68b4c-7817-43a7-af26-8345d11e4f24",
+      "taskId": "T912",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "4ecd64fdd0517fa91619b74627f94e7e1b62a9ff",
+        "integratedAt": "2026-11-13T21:59:33.796Z"
+      }
+    },
+    {
+      "sequence": 373,
+      "at": "2026-11-13T22:03:03.885Z",
+      "type": "group",
+      "group": "natural-football-261114",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T873",
+          "T874",
+          "T875",
+          "T876",
+          "T884",
+          "T885",
+          "T886",
+          "T887",
+          "T888",
+          "T889",
+          "T890",
+          "T891",
+          "T892",
+          "T893",
+          "T894",
+          "T895",
+          "T896",
+          "T897",
+          "T898",
+          "T900",
+          "T901",
+          "T902",
+          "T903",
+          "T905",
+          "T906",
+          "T907",
+          "T908",
+          "T909",
+          "T910",
+          "T911",
+          "T912",
+          "T913"
+        ]
+      }
+    },
+    {
+      "sequence": 374,
+      "at": "2026-11-13T22:03:04.047Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+      "taskId": "T913",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+        "group": "natural-football-261114",
+        "taskId": "T913",
+        "tasks": [
+          "T913"
+        ],
+        "lane": "raw-division-strength-observer",
+        "owner": "nf14-codex-raw-strength-observer",
+        "contributors": [
+          "nf14-codex-raw-strength-observer"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T22:03:04.047Z",
+        "startCommit": "834271a276e67b2c216f18fcd6360f86731ba289"
+      }
+    },
+    {
+      "sequence": 375,
+      "at": "2026-11-13T22:03:05.982Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+      "taskId": "T913",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 376,
+      "at": "2026-11-13T22:03:06.145Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2ac44d36-027a-48e8-8dee-3a3a92ed741a",
+      "taskId": "T910",
+      "tasks": [
+        "T906",
+        "T910"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 377,
+      "at": "2026-11-13T22:03:24.516Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2ac44d36-027a-48e8-8dee-3a3a92ed741a",
+      "taskId": "T910",
+      "tasks": [
+        "T906",
+        "T910"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "834271a276e67b2c216f18fcd6360f86731ba289",
+        "submissionId": "7e80fc51-d4cf-4ebc-9078-6fe2e387157a",
+        "submittedAt": "2026-11-13T22:03:24.516Z",
+        "steps": [
+          {
+            "taskId": "T906",
+            "commit": "37edad62635d4195bc271b26ac8a4129377e880c",
+            "at": "2026-11-13T21:27:43.824Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T21:27:22.976Z",
+                "finishedAt": "2026-11-13T21:27:43.626Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T910",
+            "commit": "b2808542cc170b1bd7e1a206dde162622ba63f30",
+            "at": "2026-11-13T22:03:24.505Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T22:03:06.331Z",
+                "finishedAt": "2026-11-13T22:03:24.322Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T22:03:06.331Z",
+            "finishedAt": "2026-11-13T22:03:24.322Z"
+          }
+        ],
+        "verifiedCommit": "b2808542cc170b1bd7e1a206dde162622ba63f30"
+      }
+    },
+    {
+      "sequence": 378,
+      "at": "2026-11-13T22:03:27.498Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2ac44d36-027a-48e8-8dee-3a3a92ed741a",
+      "taskId": "T910",
+      "tasks": [
+        "T906",
+        "T910"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "8bce8a76-2754-4cb5-ae9f-0ee3f826626d",
+          "owner": "pr14-independent-browser-bundle-recheck",
+          "status": "reviewing",
+          "commit": "b2808542cc170b1bd7e1a206dde162622ba63f30",
+          "baseCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
+          "submissionId": "7e80fc51-d4cf-4ebc-9078-6fe2e387157a",
+          "createdAt": "2026-11-13T22:03:27.497Z"
+        }
+      }
+    },
+    {
+      "sequence": 379,
+      "at": "2026-11-13T22:05:39.233Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+      "taskId": "T913",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 380,
+      "at": "2026-11-13T22:05:59.026Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+      "taskId": "T913",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "de7d3fd413aefe13bd730b31dc7b96cea0890bb2",
+        "submittedBase": "834271a276e67b2c216f18fcd6360f86731ba289",
+        "submissionId": "38e3a141-aace-4a4c-978b-e59323f6700a",
+        "submittedAt": "2026-11-13T22:05:59.026Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T913",
+            "commit": "de7d3fd413aefe13bd730b31dc7b96cea0890bb2",
+            "at": "2026-11-13T22:05:58.987Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T22:05:39.399Z",
+                "finishedAt": "2026-11-13T22:05:58.770Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T22:05:39.399Z",
+            "finishedAt": "2026-11-13T22:05:58.770Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 381,
+      "at": "2026-11-13T22:07:16.571Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2ac44d36-027a-48e8-8dee-3a3a92ed741a",
+      "taskId": "T910",
+      "tasks": [
+        "T906",
+        "T910"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "8bce8a76-2754-4cb5-ae9f-0ee3f826626d",
+          "owner": "pr14-independent-browser-bundle-recheck",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T906/T910 b2808542 independently reviewed against834271a2, including both whole task contracts and both prior P2 findings. The release leaf exactly matches originale434 bytes (SHA256482972c3); both helper bodies match37edad byte-for-byte, with exactly three import-only consumer updates. Own pure standard dependency parser on the frozen checkout reports222nodes and zero web/browser files (positive prior-source control250nodes/24web). All original seven browser workloads retain CSV schema/BOM/exact IDs/births, actual roster counts, canonical releases, public imports, exact eight loans/cap/no-mutation, natural pending decision/deadline and original age-independent identity checks. Both combined-role journeys retain the full-price/one-unit-floor policy explicitly approved by T910, exact real buyer need/registration/funding, two minimal canonical same-line releases and all disclosure, dual-job, cash/severance-once/reload/office assertions; setup-only ordinary settlement/replay evidence passes and these bodies are unchanged by migration. The original loan-return predicate is intact; independently approved T912 source and all27unit blobs are exactly inherited, addressing the prior actual missing-event failure. Full performance/finance main4b5661b2 is an ancestor. Final type/lint/format/12-locale checks pass; migrated minimal release/cap probes pass; zero selected changed units are correctly not claimed as unit execution. No browser, application build, integration, world generation or cache warming ran in this review. Exact full browser journeys and the complete current-source gate remain coordinator-owned; no current full-browser pass is invented.",
+          "findings": [],
+          "commit": "b2808542cc170b1bd7e1a206dde162622ba63f30",
+          "baseCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
+          "submissionId": "7e80fc51-d4cf-4ebc-9078-6fe2e387157a",
+          "createdAt": "2026-11-13T22:03:27.497Z",
+          "finishedAt": "2026-11-13T22:07:16.571Z"
+        }
+      }
+    },
+    {
+      "sequence": 382,
+      "at": "2026-11-13T22:07:19.528Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "e12055a4-19ee-4e56-b794-4c78324ba5ec",
+      "taskId": "T913",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "a82026a2-7dbe-464d-bda1-247823535acd",
+          "owner": "nf14-codex-independent-raw-strength",
+          "status": "reviewing",
+          "commit": "de7d3fd413aefe13bd730b31dc7b96cea0890bb2",
+          "baseCommit": "834271a276e67b2c216f18fcd6360f86731ba289",
+          "submissionId": "38e3a141-aace-4a4c-978b-e59323f6700a",
+          "createdAt": "2026-11-13T22:07:19.528Z"
+        }
+      }
+    },
+    {
+      "sequence": 383,
+      "at": "2026-11-13T22:07:19.587Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2ac44d36-027a-48e8-8dee-3a3a92ed741a",
+      "taskId": "T910",
+      "tasks": [
+        "T906",
+        "T910"
+      ],
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

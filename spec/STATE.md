@@ -59,14 +59,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
-| T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T906 | todo |
 | T913 | Read the specified raw XI strength in the historical division observer | ARCH LEAGUE WORLD | T901 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 31 | 29 | 2 | 2 | 0 | 0 | 2026-11-13T21:59:00.218Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 32 | 31 | 1 | 0 | 1 | 0 | 2026-11-13T22:07:22.574Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
