@@ -25,7 +25,7 @@
 | WORLD | 13 | 13 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 70 | 70 | - | 0 |
-| MATCH | 64 | 64 | - | 0 |
+| MATCH | 65 | 65 | - | 0 |
 | LEAGUE | 20 | 20 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
 | ECON | 57 | 57 | - | 0 |
@@ -38,6 +38,7 @@
 ## review
 | id | st |
 |---|---|
+| natural-football-261114 | converted@261114 |
 | game-realism-261110 | converted@261110 |
 | football-data-consistency-261109 | converted@261110 |
 | economy-transfers-261109 | converted@261109 |
@@ -58,7 +59,12 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 
+| T873 | Restore connected build-up and pressure reactions | MATCH ARCH | - | todo |
+
+| T874 | Wait onside before a free-kick delivery | MATCH ARCH | T873 | todo |
+
+| T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
+
 ## next
-- Finish the owner-authorized full persisted-world merge into main. Storage capacity does not block this integration; retain the complete implementation and measured residuals.
-- Continue the requested natural-football improvement from origin/wip/natural-football after main is current; compare baseline and improved playback side by side in HTML.
-- T866 completed its original exploratory exit. Performance and long-world balance residuals remain documented in artifacts/benchmarks/persisted-world/README.md; do not report them as passing.
+- Complete natural-football improvements T873 → T874 and paired comparison T875, then independently review, verify and land on main.
+- Preserve the baseline from 9b701adf; record iterative measurements and remaining football limitations in reports/261114-nf14.md.
