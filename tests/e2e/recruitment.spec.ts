@@ -1,3 +1,5 @@
+import { releasedMarketPlayer, importPreparedCareer } from '../fixtures/releases';
+import { message } from '../../packages/contracts/src/messages';
 import { openPersonnel } from './personnel-navigation';
 import { marketRows, marketFilters, marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { makePlayer, joinClub, operate, advanceDays } from '../../packages/engine/src/index';
@@ -305,7 +307,13 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await foundMarket(page, 'recruitment-ui', { fund: true });
   // Isolate the loan's annual wage change from unrelated delegated staff appointments.
   await configureResponsibilities(page, { responsibilities: { staff: 'direct' } });
+  const prepared = await exportWorld(page);
+  const released = await releasedMarketPlayer(prepared);
+  expect(released?.available && released.freeAgent).toBe(true);
+  await importPreparedCareer(page, prepared);
+  await openMarket(page);
   const before = await exportWorld(page);
+  const initialCount = before.players.filter((p) => p.status === 'active').length;
   const offers = transferOffers(before);
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
   const cards = marketRows(page);
@@ -357,6 +365,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
 
   await closeMarketPanel(page, '영입 필터');
   const free = offers.find((offer) => BigInt(offer.fee) === 0n)!;
+  expect(free?.player.id).toBe(released!.player.id);
   const freeCard = await marketCandidate(page, free.player.id, free.player.name);
   expect(BigInt(free.player.wage)).toBeGreaterThan(0n);
   await expect(freeCard).toContainText('이적료 없음 · 연봉은 계속 지급해요');
@@ -379,7 +388,9 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await expect(freeCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   await closeMarketPanel(page, '영입 후보 상세');
   await closeOutcome(page, '선수를 영입했어요');
-  await expect(await marketInfo(page)).toContainText('선수단 정원 21/40');
+  await expect(await marketInfo(page)).toContainText(
+    message('copy.RecruitmentDesk.f59c136d52', { p0: `${initialCount + 1}/40`, p1: '' }),
+  );
   await closeMarketPanel(page, '영입 정보');
   const recruited = await exportWorld(page);
   expect(recruited.cash).toBe(before.cash);
@@ -397,7 +408,9 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   const loanCard = await marketCandidate(page, loan.player.id, loan.player.name);
   const loanPreview = recruitmentPreview(recruited, loan, true);
   await completeLoan(page, recruited, loan, loanCard);
-  await expect(await marketInfo(page)).toContainText('선수단 정원 22/40');
+  await expect(await marketInfo(page)).toContainText(
+    message('copy.RecruitmentDesk.f59c136d52', { p0: `${initialCount + 2}/40`, p1: '' }),
+  );
   await closeMarketPanel(page, '영입 정보');
   const borrowed = await exportWorld(page);
   // The calendar may settle ordinary income/costs while the bid is answered. The transfer's
@@ -472,6 +485,9 @@ test('reaches the forty-player ceiling with eight loans and prevents any further
     setup.players.push(player);
     movePerson(setup, player, setup.playerClub, true);
   }
+  expect(setup.players.filter((p) => p.status === 'active')).toHaveLength(32);
+  const released = await releasedMarketPlayer(setup);
+  expect(released?.available && released.freeAgent).toBe(true);
   await importResponsibilityCareer(page, setup);
   await openMarket(page);
   await configureResponsibilities(page, {
