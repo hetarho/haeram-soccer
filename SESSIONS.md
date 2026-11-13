@@ -69,6 +69,7 @@
 | T872 | pw86 | work/persisted-world-860 | 41c5bf2e826e | 2026-11-13T10:54Z |
 
 ## log
+- 261113 gusta-create-task ARCH r42..r43 no-op (no code impact): operating conventions only; no active task contracts to rewrite
 - 261113 gusta-update-ssot ARCH r43: task builds and browser acceptance move to final batch; preserve full coverage, i18n and original publication restrictions
 - 261113 gusta-update-ssot ARCH start: align verification with approved gusta 0.17.1 defaults
 - 261113 fix calibration: exclude incomplete and shortened windows from completed-core and peak comparisons; preserve raw observations; two new regressions and nine affected unit cases pass
@@ -88,4 +89,3 @@
 - 261113 T861 done
 - 261113 T868 done
 - 261113 T860 done
-- 261113 T866 done
