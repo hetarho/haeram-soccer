@@ -191,6 +191,39 @@ function writeFitted(settled: Settled, seed: string): Script {
       'event' in t.release &&
       SET_PIECES[settled.events[t.release.event]![EV.setPiece]!] !== 'none',
   );
+  // Each player's floating touches are spread over the minutes he and the men they name share:
+  // a group of touches (same side, player and window) behind its even share is pulled forward,
+  // one ahead of it waits. Without it the order spends a departing man's touches only when his
+  // window closes, in a burst of long links (T840: 260 beats in one minute).
+  const groupKey = new Map<string, number>();
+  const spreadGroup = touches.map((t) => {
+    if (t.minute !== FLOATING) return -1;
+    const key = `${t.side}:${t.actor}:${t.period}:${t.from}:${t.until}`;
+    let g = groupKey.get(key);
+    if (g === undefined) groupKey.set(key, (g = groupKey.size));
+    return g;
+  });
+  const spreadTotal = Array<number>(groupKey.size).fill(0);
+  const spreadPlayed = Array<number>(groupKey.size).fill(0);
+  const spreadSpan = Array<[number, number]>(groupKey.size);
+  touches.forEach((t, i) => {
+    const g = spreadGroup[i]!;
+    if (g < 0) return;
+    spreadTotal[g]!++;
+    spreadSpan[g] = [t.from, t.until];
+  });
+  const spreadCap = Math.round(FIT.spread.weight * FIT.spread.cap * 100);
+  /** How much cheaper touch `i` is for its group being behind its even share at `time`. */
+  const spreadPull = (i: number, time: number): number => {
+    const g = spreadGroup[i]!;
+    if (g < 0 || spreadCap === 0) return 0;
+    const [from, until] = spreadSpan[g]!;
+    const share = Math.min(1, Math.max(0, (time - from) / Math.max(1, until - from)));
+    const behind = share * spreadTotal[g]! - spreadPlayed[g]!;
+    return Math.round(
+      Math.min(Math.max(behind, -FIT.spread.cap), FIT.spread.cap) * FIT.spread.weight * 100,
+    );
+  };
   const search = new TouchSearch(
     touches.map((t, i) => ({
       side: t.side,
@@ -426,6 +459,7 @@ function writeFitted(settled: Settled, seed: string): Script {
     const lead = share - done[other(team)]! / Math.max(1, total[other(team)]!);
     const endsLead = endsDone[team]! / Math.max(1, endsTotal[team]!) - share;
     return {
+      time: minute + fill,
       fixed: met ? FIT.fixedPush * 100 : Math.round((FIT.fixedPull + fill * FIT.fixedRamp) * 100),
       pace: Math.round(
         Math.min(Math.max((lead - endsLead) / FIT.paceSlack, -1), 1) * FIT.paceBias * 100,
@@ -446,7 +480,7 @@ function writeFitted(settled: Settled, seed: string): Script {
     cell: number,
     terms: ReturnType<typeof costTerms>,
   ): number => {
-    let cost = cellGap(startCell[i]!, cell);
+    let cost = cellGap(startCell[i]!, cell) - spreadPull(i, terms.time);
     const release = touches[i]!.release;
     // Prefer the minute's existing dead ball for its incidents over opening a keeper stoppage.
     if (
@@ -469,11 +503,15 @@ function writeFitted(settled: Settled, seed: string): Script {
     // A corner's or free kick's delivery waits for its restart rather than be played in open play.
     if (touches[i]!.until === minute + 1) cost -= FIT.fixedPush * 100;
     if (setPiece[i]) cost += FIT.setPieceWait * 100;
+    // A reserved delivery waits for its restart, but not past its window's last minute: a minute
+    // is held open until such a touch is played, so waiting there writes a burst of the minute's
+    // other touches instead (T840: up to 328 beats in two minutes).
     if (
       release &&
       'event' in release &&
       reserve.has(release.event) &&
-      demand[team]![startCell[i]!]! > 0
+      demand[team]![startCell[i]!]! > 0 &&
+      touches[i]!.until !== minute + 1
     )
       cost += FIT.restartPull * 100;
     if (ends[i]) {
@@ -548,6 +586,7 @@ function writeFitted(settled: Settled, seed: string): Script {
     if (exact && pool.length > MIN_INDEXED_POOL) {
       const common =
         minPlace +
+        -spreadCap +
         Math.min(0, waitingIncidents.length ? -FIT.fixedPull * 100 : 0) +
         Math.min(0, FIT.winnerPull * 100) +
         Math.min(0, FIT.setPieceWait * 100) +
@@ -577,17 +616,16 @@ function writeFitted(settled: Settled, seed: string): Script {
   };
 
   /** Writes a pending pass to `receiver`, who then has the ball in its `to` cell. */
-  const resolve = (receiver: number) => {
+  const resolve = (receiver: number, next = -1) => {
     const p = pending!;
     pending = null;
     const e = settled.events[p.event]!;
-    const to = pointAway(
-      p.side,
-      e[EV.to]!,
-      spotOf(receiver, p.from, p.side),
-      p.from,
-      GRAMMAR.minPass,
-    );
+    // Played to the touch he was chosen for, the ball meets him on the side of the recorded cell
+    // nearest where that touch starts, so the carry linking them is as short as the cells allow.
+    const spot = spotOf(receiver, p.from, p.side);
+    const toward =
+      next >= 0 && startCell[next]! >= 0 ? intoCell(p.side, startCell[next]!, spot) : spot;
+    const to = pointAway(p.side, e[EV.to]!, toward, p.from, GRAMMAR.minPass);
     push({
       side: p.side,
       move: KIND(e[EV.kind]!),
@@ -599,7 +637,7 @@ function writeFitted(settled: Settled, seed: string): Script {
       outcome: p.outcome,
       loft: isLofted(e[EV.kind]!),
       through: KIND(e[EV.kind]!) === 'through',
-      reason: KIND(e[EV.kind]!) === 'cutBack' ? 'cutBack' : undefined,
+      reason: passReason(p.side, e[EV.kind]!, p.kind, p.actor, p.from, to),
       event: p.event,
       lineBreaking: e[EV.lineBreaking] === 1,
       creditedOpponent: e[EV.other]! >= 0,
@@ -618,6 +656,35 @@ function writeFitted(settled: Settled, seed: string): Script {
     ball = to;
   };
   const isLofted = (k: number) => KIND(k) === 'long' || KIND(k) === 'cross';
+  /**
+   * Why an open-play pass goes back, a staging cue (→MATCH-39): the record's cut-back; a ball
+   * returned first time to the man whose forward pass reached him is a lay-off; otherwise, in the
+   * other half a man who kept it is closed down (`pressed`: the staging brings the presser to him
+   * before the kick) and in his own half he resets the attack.
+   */
+  const passReason = (
+    team: TeamId,
+    move: number,
+    kind: BeatKind,
+    actor: number,
+    from: Vec,
+    to: Vec,
+  ): Beat['reason'] => {
+    if (KIND(move) === 'cutBack') return 'cutBack';
+    const fx = toAttack(team, from)[0];
+    if (kind !== 'pass' || toAttack(team, to)[0] > fx - GRAMMAR.backPass) return undefined;
+    const last = beats.at(-1);
+    if (
+      last !== undefined &&
+      last.side === team &&
+      isPassLike(last.kind) &&
+      last.outcome === 'complete' &&
+      last.receiver === actor &&
+      toAttack(team, last.to)[0] > toAttack(team, last.from)[0]
+    )
+      return 'layoff';
+    return fx >= PITCH.length / 2 ? 'pressed' : 'reset';
+  };
 
   /** Plays a pass event from the ball's point, `kind` the restart it delivers or `pass`. */
   const playPass = (id: number, kind: BeatKind) => {
@@ -668,6 +735,7 @@ function writeFitted(settled: Settled, seed: string): Script {
       push({
         ...base,
         to,
+        reason: passReason(side, e[EV.kind]!, kind, actor, ball, to),
         opponent: by,
         outcome:
           res === R('intercepted') ? 'intercepted' : res === R('tackled') ? 'tackled' : 'loose',
@@ -685,7 +753,12 @@ function writeFitted(settled: Settled, seed: string): Script {
         spot: restartSpot('freeKick', other(side), to),
       };
     } else {
-      push({ ...base, to, outcome: 'out' });
+      push({
+        ...base,
+        to,
+        reason: passReason(side, e[EV.kind]!, kind, actor, ball, to),
+        outcome: 'out',
+      });
       owed =
         res === R('outTouch')
           ? { kind: 'throwIn', side: other(side), spot: restartSpot('throwIn', other(side), to) }
@@ -764,6 +837,7 @@ function writeFitted(settled: Settled, seed: string): Script {
   /** Plays touch `i` by its actor, who has the ball. */
   const playTouch = (i: number, delivering?: Owed) => {
     played[i] = true;
+    if (spreadGroup[i]! >= 0) spreadPlayed[spreadGroup[i]!]!++;
     eligibilityVersion++;
     const t = touches[i]!;
     for (let m = Math.max(minute, t.from); m < Math.min(settled.length, t.until); m++)
@@ -1020,7 +1094,7 @@ function writeFitted(settled: Settled, seed: string): Script {
         const p: Pending = pending;
         const i = choose(p.side, cellAt(p.side, ball), p.actor, ball);
         if (i >= 0 && touches[i]!.actor !== p.actor) {
-          resolve(touches[i]!.actor);
+          resolve(touches[i]!.actor, i);
           // He was chosen for that touch: it is the one he plays.
           intended = i;
           continue;

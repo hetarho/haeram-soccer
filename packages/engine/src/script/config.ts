@@ -22,9 +22,13 @@ export const SCRIPT_CONFIG = {
   endsSlack: 0.03,
   setPieceWait: 0,
   placeWeight: 0,
+  /** A player's floating touches spread over his window: metres of pull per touch behind its share, at most `cap` touches. */
+  spread: { weight: 4, cap: 10 },
   phaseX: { progression: 38, finalThird: 72 },
   speeds: { ground: 16, loft: 19, carry: 5, shot: 28 },
   minPass: 7,
+  /** Metres a pass lands behind its start for the writer to give it a reason (`passReason`). */
+  backPass: 5,
   /** Reserve a recorded delivery rather than spending the last usable release in open play. */
   restartPull: 300,
   /** Keep a release available for a player whose recorded ball wins are still ahead of him. */
