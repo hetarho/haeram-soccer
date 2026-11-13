@@ -5,7 +5,7 @@ import { LOAD_CATALOG } from '../../catalogs/src/index';
 import { addEvent } from '../../engine/src/events';
 import { careerDate } from '../../engine/src/person-careers';
 import { withOwner } from '../../engine/src/testing';
-import { validateWorld } from './schema';
+import { clubBooksSchema, validateWorld } from './schema';
 import { CAREER_READS_FORMAT, OBSOLETE_CAREER_READS_FORMAT } from './career-reads';
 import { initializeCareerReads } from '../../engine/src/career-reads';
 import { initializeNewsJournal } from '../../engine/src/news';
@@ -246,23 +246,6 @@ describe('owner and takeover (→SAVE-27)', () => {
     expect(loaded.clubs.find((club) => club.id === other.id)!.books!.seasons[1]).not.toHaveProperty(
       'incomeComponents',
     );
-    for (const invalid of ['-1', '1.5', '', '1e3', 1, null]) {
-      for (const field of ['ownerCapital', 'distribution', 'gate', 'commercial', 'competitions']) {
-        const broken = structuredClone(w);
-        const book = broken.clubs.find((club) => club.id === other.id)!.books!.seasons[0];
-        if (field === 'ownerCapital') Object.assign(book, { ownerCapital: invalid });
-        else Object.assign(book.incomeComponents!, { [field]: invalid });
-        expect(() => validateWorld(broken, LOAD_CATALOG)).toThrow();
-      }
-    }
-    const incomplete = structuredClone(w);
-    delete (
-      incomplete.clubs.find((club) => club.id === other.id)!.books!.seasons[0]
-        .incomeComponents as Partial<
-        NonNullable<(typeof other.books.seasons)[0]['incomeComponents']>
-      >
-    ).gate;
-    expect(() => validateWorld(incomplete, LOAD_CATALOG)).toThrow();
     // A save of it reads back the same world.
     expect(validateWorld(JSON.parse(JSON.stringify(loaded)), LOAD_CATALOG)).toEqual(loaded);
     // A save carrying none of it (an older one) validates as before.
@@ -272,6 +255,41 @@ describe('owner and takeover (→SAVE-27)', () => {
     const plain = validateWorld(older, LOAD_CATALOG);
     for (const key of ['owner', 'loan', 'ended'] as const) expect(plain).not.toHaveProperty(key);
     expect(plain.clubs.every((club) => club.books === undefined)).toBe(true);
+  });
+
+  it('rejects malformed funding amounts with the production book schema', () => {
+    const books = {
+      seasons: [
+        {
+          year: 1950,
+          income: '10',
+          incomeComponents: { distribution: '1', gate: '2', commercial: '3', competitions: '4' },
+          ownerCapital: '0',
+          wages: '20',
+          costs: '0',
+          result: '-10',
+        },
+      ],
+      cash: '0',
+      debt: '10',
+    };
+    expect(clubBooksSchema.parse(books)).toEqual(books);
+    for (const invalid of ['-1', '1.5', '', '1e3', 1, null]) {
+      for (const field of ['ownerCapital', 'distribution', 'gate', 'commercial', 'competitions']) {
+        const broken = structuredClone(books);
+        const book = broken.seasons[0]!;
+        if (field === 'ownerCapital') Object.assign(book, { ownerCapital: invalid });
+        else Object.assign(book.incomeComponents, { [field]: invalid });
+        expect(() => clubBooksSchema.parse(broken)).toThrow(ZodError);
+      }
+    }
+    const incomplete = structuredClone(books);
+    delete (
+      incomplete.seasons[0]!.incomeComponents as Partial<
+        (typeof books.seasons)[number]['incomeComponents']
+      >
+    ).gate;
+    expect(() => clubBooksSchema.parse(incomplete)).toThrow(ZodError);
   });
 
   it.each([

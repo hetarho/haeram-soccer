@@ -124,7 +124,7 @@ export const budgetResponsibilitySchema = z.enum([
 /** The owner's spending request to a delegated person (→ SpendRequest). */
 export const spendRequestSchema = z.literal([1, 2, 3, 4, 5]);
 /** A club's books while nobody owns it (→ECON-36): the current and the last closed season. */
-const clubBooks = z.strictObject({
+export const clubBooksSchema = z.strictObject({
   openingIncome: amount.optional(),
   transfersPaid: amount.optional(),
   transfersReceived: amount.optional(),
@@ -169,7 +169,7 @@ const club = z.object({
   project: z.number().finite().min(0).max(60).optional(),
   cohesion: z.number().finite().min(0.3).max(1).optional(),
   identity: clubIdentitySchema.optional(),
-  books: clubBooks.optional(),
+  books: clubBooksSchema.optional(),
   levels: z
     .strictObject({
       academy: z.number().int().min(0).max(5),
