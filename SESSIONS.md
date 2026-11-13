@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T17:13Z | T880 | work/performance-books-pb14 | 0880bc593cfd |
+| pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T17:21Z | - | work/performance-books-pb14 | 0880bc593cfd |
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T16:56Z | - | codex/natural-football-261114 | a3a5e07d282a |
 
 ## inbox
@@ -72,8 +72,10 @@
 | T874 | work | codex/natural-football-261114 | 7602032a9501 | 2026-11-13T17:08Z |
 | T875 | work | codex/natural-football-261114 | 88820aeb00e4 | 2026-11-13T17:10Z |
 | T879 | pb14 | work/performance-books-pb14 | 4c164ef5e69f | 2026-11-13T17:12Z |
+| T880 | pb14 | work/performance-books-pb14 | 0880bc593cfd | 2026-11-13T17:21Z |
 
 ## log
+- 261113 T880 done
 - 261113 T879 done
 - 261113 T875 integrated
 - 261113 T873 T874 integrated
@@ -93,4 +95,3 @@
 - 261113 pw86: completed T860-T865/T867/T869/T870 source is remote on work/persisted-world-860 at af821030; T866 numeric measurements continue under unit-test-only steering, work cutoff 12:00 UTC and publication deadline 13:00 UTC.
 - 261113 T859 done
 - 261113 T870 done
-- 261113 T869 done
