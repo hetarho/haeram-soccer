@@ -73,16 +73,10 @@
 ## unlanded
 | id | tag | branch | commit | at |
 |---|---|---|---|---|
-| T877 | pb14 | work/performance-books-pb14 | 0a2d63f8acd0 | 2026-11-13T16:51Z |
-| T878 | pb14 | work/performance-books-pb14 | 0cd4fb216686 | 2026-11-13T17:08Z |
 | T873 | work | codex/natural-football-261114 | 7602032a9501 | 2026-11-13T17:08Z |
 | T874 | work | codex/natural-football-261114 | 7602032a9501 | 2026-11-13T17:08Z |
 | T875 | work | codex/natural-football-261114 | 88820aeb00e4 | 2026-11-13T17:10Z |
-| T879 | pb14 | work/performance-books-pb14 | 4c164ef5e69f | 2026-11-13T17:12Z |
-| T880 | pb14 | work/performance-books-pb14 | 0880bc593cfd | 2026-11-13T17:21Z |
 | T876 | work | codex/natural-football-261114 | 15ec0ba65b84 | 2026-11-13T17:23Z |
-| T881 | pb14 | work/performance-books-pb14 | 588127d5d1eb | 2026-11-13T17:33Z |
-| T882 | pb14 | work/performance-books-pb14 | f901f7c1c6c2 | 2026-11-13T18:02Z |
 
 ## log
 - 261113 T882 done
