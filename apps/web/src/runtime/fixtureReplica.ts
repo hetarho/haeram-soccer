@@ -1,4 +1,4 @@
-import type { Club } from '../../../../packages/contracts/src/types';
+import type { Club, Player } from '../../../../packages/contracts/src/types';
 import {
   FIXTURE_READ_KEYS,
   fixtureRosterKey,
@@ -7,7 +7,7 @@ import {
 } from '../../../../packages/engine/src/fixture-copy';
 import type { RoundJob, RoundJobResult } from '../../../../packages/engine/src/round-jobs';
 
-export const FIXTURE_HELPER_PROTOCOL = 1;
+export const FIXTURE_HELPER_PROTOCOL = 2;
 export interface HelperJob {
   protocol: number;
   session: string;
@@ -32,11 +32,13 @@ interface Changes<T> {
   drop: string[];
   order?: string[];
 }
-type Dynamic = Omit<FixtureReadCopy, 'clubs' | 'people'>;
+type Dynamic = Omit<FixtureReadCopy, 'clubs' | 'people' | 'squads'>;
 interface Patch {
   state: Dynamic;
   clubs: Changes<Club>;
   people: Changes<FixtureReadPerson>;
+  squads: Changes<Player[]>;
+  hasSquads: boolean;
   hasPeople: boolean;
   rosterChanged: boolean;
 }
@@ -66,6 +68,7 @@ export class FixtureReplicaWriter {
     roster: string;
     clubs: Map<string, string>;
     people: Map<string, string>;
+    squads: Map<string, string>;
   };
   reset() {
     this.previous = undefined;
@@ -73,26 +76,38 @@ export class FixtureReplicaWriter {
   encode(copy: FixtureReadCopy, revision: number) {
     const clubs = copy.clubs.map((c): [string, Club] => [c.id, c]);
     const people = Object.entries(copy.people ?? {});
+    const squads = Object.entries(copy.squads ?? {});
     const clubTexts = textsOf(clubs),
-      peopleTexts = textsOf(people);
+      peopleTexts = textsOf(people),
+      squadTexts = textsOf(squads);
     if (clubTexts.size !== clubs.length) throw new Error('Duplicate fixture-copy club');
     const key = identity(copy),
       roster = fixtureRosterKey(copy);
     const previous = this.previous?.identity === key ? this.previous : undefined;
     let patch: string | undefined;
     if (previous) {
-      const { clubs: _clubs, people: _people, ...state } = copy;
+      const { clubs: _clubs, people: _people, squads: _squads, ...state } = copy;
       void _clubs;
       void _people;
+      void _squads;
       patch = JSON.stringify({
         state,
         clubs: changes(clubs, clubTexts, previous.clubs),
         people: changes(people, peopleTexts, previous.people),
         hasPeople: copy.people !== undefined,
+        squads: changes(squads, squadTexts, previous.squads),
+        hasSquads: copy.squads !== undefined,
         rosterChanged: previous.roster !== roster,
       } satisfies Patch);
     }
-    this.previous = { revision, identity: key, roster, clubs: clubTexts, people: peopleTexts };
+    this.previous = {
+      revision,
+      identity: key,
+      roster,
+      clubs: clubTexts,
+      people: peopleTexts,
+      squads: squadTexts,
+    };
     let snapshot: string | undefined;
     return {
       base: previous?.revision ?? 0,
@@ -115,7 +130,7 @@ function assertState(state: unknown): asserts state is Dynamic {
   )
     throw new Error('Invalid fixture-copy state');
 }
-function assertRows<T extends { id: string }>(rows: unknown): asserts rows is Changes<T> {
+function assertRows<T>(rows: unknown, squads = false): asserts rows is Changes<T> {
   if (
     !object(rows) ||
     !Array.isArray(rows.put) ||
@@ -126,8 +141,9 @@ function assertRows<T extends { id: string }>(rows: unknown): asserts rows is Ch
         !Array.isArray(row) ||
         row.length !== 2 ||
         typeof row[0] !== 'string' ||
-        !object(row[1]) ||
-        row[1].id !== row[0],
+        (squads
+          ? !Array.isArray(row[1]) || row[1].some((p) => !object(p) || typeof p.id !== 'string')
+          : !object(row[1]) || row[1].id !== row[0]),
     ) ||
     (rows.order !== undefined &&
       (!Array.isArray(rows.order) || rows.order.some((id) => typeof id !== 'string')))
@@ -162,6 +178,25 @@ function replaceFields(target: object, source: object) {
       writable: true,
       configurable: true,
     });
+}
+
+/** Preserve insertion order and unchanged registry references, including empty registries. */
+function applyRegistry<T>(current: Record<string, T> | undefined, rows: Changes<T>, present: boolean) {
+  if (!present) {
+    if (rows.put.length || rows.order?.length) throw new Error('Absent people registry');
+    return undefined;
+  }
+  if (current && !rows.put.length && !rows.drop.length && !rows.order) return current;
+  const records = new Map(Object.entries(current ?? {}));
+  for (const id of rows.drop) records.delete(id);
+  for (const [id, value] of rows.put) records.set(id, value);
+  if (rows.order) ordered(records, rows.order);
+  else if (
+    records.size !== Object.keys(current ?? {}).length ||
+    [...records.keys()].some((id) => !Object.hasOwn(current ?? {}, id))
+  )
+    throw new Error('Missing people order');
+  return Object.fromEntries((rows.order ?? [...records.keys()]).map((id) => [id, records.get(id)!]));
 }
 
 /** One reader per served channel. Errors discard the replica; the active world is never touched. */
@@ -201,6 +236,11 @@ export class FixtureReplicaReader {
         if (
           !Array.isArray(copy.clubs) ||
           copy.clubs.some((c) => !object(c) || typeof c.id !== 'string') ||
+          (copy.squads !== undefined &&
+            (!object(copy.squads) ||
+              Object.values(copy.squads).some(
+                (ps) => !Array.isArray(ps) || ps.some((p) => !object(p) || typeof p.id !== 'string'),
+              ))) ||
           (copy.people !== undefined &&
             (!object(copy.people) ||
               Object.entries(copy.people).some(([id, p]) => !object(p) || p.id !== id)))
@@ -220,18 +260,26 @@ export class FixtureReplicaReader {
         if (
           'clubs' in parsed.state ||
           'people' in parsed.state ||
+          'squads' in parsed.state ||
+          typeof parsed.hasSquads !== 'boolean' ||
           identity(parsed.state) !== identity(this.copy) ||
           typeof parsed.hasPeople !== 'boolean' ||
           typeof parsed.rosterChanged !== 'boolean'
         )
           throw new Error('Invalid patch identity');
+        assertRows<Player[]>(parsed.squads, true);
         assertRows<Club>(parsed.clubs);
         assertRows<FixtureReadPerson>(parsed.people);
         const patch = parsed as unknown as Patch;
         const copy = this.copy;
         const root = copy as unknown as Record<string, unknown>;
         for (const key of FIXTURE_READ_KEYS)
-          if (key !== 'clubs' && key !== 'people' && !Object.hasOwn(patch.state, key))
+          if (
+            key !== 'clubs' &&
+            key !== 'people' &&
+            key !== 'squads' &&
+            !Object.hasOwn(patch.state, key)
+          )
             delete root[key];
         Object.assign(copy, patch.state);
         for (const id of patch.clubs.drop) this.clubs.delete(id);
@@ -246,28 +294,10 @@ export class FixtureReplicaReader {
           copy.clubs.some((c) => this.clubs.get(c.id) !== c)
         )
           throw new Error('Missing club order');
-        if (!patch.hasPeople) {
-          if (patch.people.put.length) throw new Error('Absent people registry');
-          delete copy.people;
-        } else if (
-          !copy.people ||
-          patch.people.put.length ||
-          patch.people.drop.length ||
-          patch.people.order
-        ) {
-          const people = new Map(Object.entries(copy.people ?? {}));
-          for (const id of patch.people.drop) people.delete(id);
-          for (const [id, value] of patch.people.put) people.set(id, value);
-          if (patch.people.order) ordered(people, patch.people.order);
-          else if (
-            people.size !== Object.keys(copy.people ?? {}).length ||
-            [...people.keys()].some((id) => !Object.hasOwn(copy.people ?? {}, id))
-          )
-            throw new Error('Missing people order');
-          copy.people = Object.fromEntries(
-            (patch.people.order ?? [...people.keys()]).map((id) => [id, people.get(id)!]),
-          );
-        }
+        copy.people = applyRegistry(copy.people, patch.people, patch.hasPeople);
+        copy.squads = applyRegistry(copy.squads, patch.squads, patch.hasSquads);
+        if (!patch.hasPeople) delete copy.people;
+        if (!patch.hasSquads) delete copy.squads;
         rosterChanged = patch.rosterChanged;
       }
       this.revision = job.id;

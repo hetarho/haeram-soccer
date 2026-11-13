@@ -1,3 +1,4 @@
+import type { Club } from '../../../../packages/contracts/src/types';
 import { newsItemSchema } from '../../../../packages/contracts/src/news';
 import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { GenerationDigest, WorldMarketPage } from '../../../../packages/contracts/src/types';
@@ -341,9 +342,20 @@ export type Body = Request['body'];
  */
 export type ProjectedWorld = Omit<
   World,
-  'people' | 'npcSeason' | 'managerHistory' | 'newsJournal' | 'careerReads' | 'freeAgents'
+  | 'people'
+  | 'npcSeason'
+  | 'managerHistory'
+  | 'newsJournal'
+  | 'careerReads'
+  | 'freeAgents'
+  | 'squads'
+  | 'clubs'
 > & {
   people?: never;
+  squads?: never;
+  /** Always supplied by the worker; optional for earlier prepared views. */
+  clubs: (Club & { rating?: number })[];
+  disciplineNames?: Record<string, { name: string; club: string }>;
   /**
    * The next opponent's actual eligible XI and its manager, resolved on the worker: the person
    * registry names the XI, and the manager market (orchestration, →ARCH-4) names the manager.

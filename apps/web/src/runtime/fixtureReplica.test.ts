@@ -51,21 +51,58 @@ function packet(writer: FixtureReplicaWriter, value: FixtureReadCopy, id: number
 const plain = (x: unknown) => JSON.parse(JSON.stringify(x)) as unknown;
 
 describe('ordered fixture replicas', () => {
-  it('carries persisted squads whole through snapshots, edits and removals', () => {
+  it('replicates only changed squads through puts, drops and unchanged rounds', () => {
     const source = copy(),
       writer = new FixtureReplicaWriter(),
       reader = new FixtureReplicaReader();
-    source.squads = { a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)] };
+    source.squads = {
+      a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)],
+      b: [makePlayer('ENG', source.seed, 'b:stored', source.year, 40, 'GK', 25)],
+    };
     const before = reader.apply(packet(writer, source, 1));
+    const unchangedSquad = before.copy.squads!.b;
     expect(before.copy.squads).toEqual(source.squads);
     const key = fixtureRosterKey(source);
     source.squads.a![0]!.attrs.passing++;
-    const after = reader.apply(packet(writer, source, 2));
+    const edited = packet(writer, source, 2);
+    const delta = JSON.parse(edited.patch!);
+    expect(delta.state).not.toHaveProperty('squads');
+    expect(delta.squads.put.map(([id]: [string]) => id)).toEqual(['a']);
+    const after = reader.apply(edited);
     expect(after.rosterChanged).toBe(true);
     expect(fixtureRosterKey(source)).not.toBe(key);
     expect(after.copy.squads).toEqual(source.squads);
+    expect(after.copy.squads!.b).toBe(unchangedSquad);
+    const unchanged = packet(writer, source, 3);
+    expect(JSON.parse(unchanged.patch!).squads).toEqual({ put: [], drop: [] });
+    expect(reader.apply(unchanged).rosterChanged).toBe(false);
+    delete source.squads.a;
+    const removed = packet(writer, source, 4);
+    expect(JSON.parse(removed.patch!).squads.drop).toEqual(['a']);
+    expect(reader.apply(removed).copy.squads).toEqual({ b: source.squads.b });
     delete source.squads;
-    expect(reader.apply(packet(writer, source, 3)).copy.squads).toBeUndefined();
+    expect(reader.apply(packet(writer, source, 5)).copy.squads).toBeUndefined();
+  });
+  it('requires a snapshot when a helper missed a squad patch', () => {
+    const source = copy(),
+      writer = new FixtureReplicaWriter(),
+      reader = new FixtureReplicaReader();
+    source.squads = { a: [makePlayer('ENG', 'replica', 'stored', 1975, 55, 'CM', 23)] };
+    reader.apply(packet(writer, source, 1));
+    source.squads.a![0]!.fatigue++;
+    packet(writer, source, 2);
+    expect(() => reader.apply(packet(writer, source, 3))).toThrow('Missing helper base');
+    const encoded = writer.encode(source, 4);
+    const recovered = reader.apply({
+      protocol: FIXTURE_HELPER_PROTOCOL,
+      session: 'session',
+      id: 4,
+      worldRevision: 4,
+      base: 0,
+      copy: encoded.snapshot(),
+      jobs: [],
+    });
+    expect(recovered.copy.squads).toEqual(source.squads);
   });
   it('replicates changed and removed fields, preserving clubs but refreshing edited person indexes', () => {
     const source = copy(),

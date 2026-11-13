@@ -2,8 +2,8 @@ import type { CareerEmployment, PersonCareer, World } from '../../contracts/src/
 
 /**
  * The read-only inputs an unowned fixture consumes (ARCH-6); no campaign execution imports.
- * Fixtures draw their own streams and read disjoint clubs in a round. Persisted squads travel
- * whole until T867 introduces per-club replication.
+ * Fixtures draw their own streams and read disjoint clubs in a round. Persisted squads are
+ * replicated per club by the runtime channel.
  */
 export const FIXTURE_READ_KEYS = [
   'calendar',
@@ -78,8 +78,8 @@ export function readCopy(w: World): FixtureReadCopy {
 
 /**
  * Inputs of stored matchday selection and representative squad generation, in registry order.
- * Changes to those builders must update this signature and its parity cases. Stored squads
- * travel whole for now, including the player changes that require a fresh matchday choice.
+ * Changes to those builders must update this signature and its parity cases. Stored player
+ * changes require a fresh matchday choice.
  */
 export function fixtureRosterKey(copy: FixtureReadCopy): string {
   return JSON.stringify([

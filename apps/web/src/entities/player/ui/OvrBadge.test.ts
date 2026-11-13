@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
+import { worldMarketFixture } from '../../../../../../packages/engine/src/world-market.testkit';
 import { clubOvr, cohesionLine, ovrTier } from './OvrBadge';
 
 describe('overall presentation tiers', () => {
@@ -20,8 +20,14 @@ describe('overall presentation tiers', () => {
 });
 
 describe("a rival's XI at its 조직력 (→LEAGUE-12, WEB-58)", () => {
+  it('uses the worker rating when the view has no persisted squads', () => {
+    const w = worldMarketFixture(),
+      rival = { ...w.clubs[1]!, rating: 81 };
+    expect(w).not.toHaveProperty('squads');
+    expect(clubOvr(w, rival)).toBe(81);
+  });
   it('rates a rival by its strength at its 조직력 and names it', () => {
-    const w = careerWorld({ country: 'ENG', seed: 'cohesion-ui' });
+    const w = worldMarketFixture();
     const rival = w.clubs.find((club) => club.id !== w.playerClub && club.strength > 40)!;
     // A new rival stands at 0.80: exactly its strength.
     expect(clubOvr(w, rival)).toBe(rival.strength);

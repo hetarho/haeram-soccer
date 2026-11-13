@@ -27,7 +27,7 @@ import { cpSync, mkdirSync, existsSync, readFileSync, rmSync, writeFileSync } fr
 import { createHash } from 'node:crypto';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { tmpdir, loadavg } from 'node:os';
+import { tmpdir, loadavg, cpus } from 'node:os';
 import { bundleWorkloads } from './bundle.mjs';
 import { median, verdict } from './stats.ts';
 
@@ -49,6 +49,7 @@ const DEFAULTS = {
   view: { procs: 4, reps: 60, warm: 6 },
   // About 1.2 s a season (pf10 scout, 261110): 1930/31 warms up, the measured reps end in 1947/48.
   history: { procs: 4, reps: 10, warm: 1 },
+  'history-five': { procs: 4, reps: 1, warm: 0 },
 };
 const d = DEFAULTS[workload];
 if (!d) throw new Error(`unknown workload ${workload}`);
@@ -159,6 +160,13 @@ const hashes = {
 };
 const summary = {
   workload,
+  machine: {
+    platform: process.platform,
+    arch: process.arch,
+    node: process.version,
+    cpu: cpus()[0]?.model,
+    cores: cpus().length,
+  },
   base: baseSpec,
   cand: candSpec,
   procs,

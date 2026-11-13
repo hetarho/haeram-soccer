@@ -1,3 +1,4 @@
+import { packSquads, unpackSquads, type PackedSquads } from './squadPacking';
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
 import { packAppearances, readAppearances, type PackedAppearances } from './identityPacking';
@@ -193,6 +194,7 @@ const HEAT_CELLS = 40;
 type Tuple = (number | number[] | number[][])[];
 interface Packed {
   format: 'compact1';
+  squads?: PackedSquads;
   careers?: PackedCareers;
   world: World;
   dict: string[];
@@ -511,9 +513,11 @@ export function pack(w: World): Packed {
         });
   return {
     ...(careers ? { careers } : {}),
+    ...(w.squads === undefined ? {} : { squads: packSquads(w.squads) }),
     format: 'compact1',
     world: {
       ...w,
+      ...(w.squads === undefined ? {} : { squads: undefined }),
       ...(careers ? { people: undefined } : {}),
       ...(model ? { matchModel: undefined, npcSeason: undefined } : {}),
       ...(managerHistory ? { managerHistory: undefined } : {}),
@@ -739,6 +743,9 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   };
   if (p.careers !== undefined && p.world.people !== undefined)
     throw new Error(sourceMessage('copy.packing.57c43b7950'));
+  if (p.squads !== undefined && p.world.squads !== undefined)
+    throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+  const squads = p.squads === undefined ? undefined : unpackSquads(p.squads);
   const people =
     p.careers === undefined
       ? undefined
@@ -1213,6 +1220,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   }
   return {
     ...p.world,
+    ...(squads === undefined ? {} : { squads }),
     ...(people === undefined ? {} : { people }),
     ...(model?.matchModel ? { matchModel: model.matchModel } : {}),
     ...(model?.npcSeason ? { npcSeason: model.npcSeason } : {}),

@@ -1,3 +1,4 @@
+import { historyWorld } from '../../../../packages/engine/src/history';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../../../packages/contracts/src/index';
 import {
@@ -38,6 +39,15 @@ function legacyIntegers(values: number[]) {
 }
 
 describe('lossless career stream compaction', () => {
+  it('restores all persisted squad fields in founded and hundredth-attribute worlds', () => {
+    const w = historyWorld('persisted-pack');
+    const plain = () => JSON.parse(JSON.stringify(pack(w)));
+    expect(unpack(plain()).squads).toEqual(w.squads);
+    for (const squad of Object.values(w.squads!))
+      for (const player of squad) player.attrs.passing = 63.27;
+    expect(unpack(plain()).squads).toEqual(w.squads);
+    expect(plain().world).not.toHaveProperty('squads');
+  });
   it('retains optional European qualification causes and association totals without rewriting older facts', () => {
     const w = career();
     const opponent = w.clubs.find((c) => c.id !== w.playerClub)!.id;

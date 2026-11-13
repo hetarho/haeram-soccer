@@ -1,3 +1,6 @@
+import { projectWorldFacts } from './worldProjection';
+import { disciplineNames } from './disciplineNames';
+import { adoptSquads } from './squadActivation';
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { newsBefore, newsTotal } from '../../../../packages/engine/src/news';
 import { NEWS_LIMITS } from '../../../../packages/contracts/src/news';
@@ -9,7 +12,7 @@ import { personCareer } from './personCareer';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { officeRead } from './officeRead';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
-import { readingOnce, startingSquad } from '../../../../packages/engine/src/world';
+import { readingOnce, startingSquad, rating } from '../../../../packages/engine/src/world';
 import { staffMarket } from '../../../../packages/engine/src/staff';
 import { clubManager } from '../../../../packages/engine/src/managerMarket';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
@@ -452,25 +455,13 @@ export class Host {
     const briefingClubs = new Set(next ? [next.home, next.away] : [w.playerClub]);
     // The season's complete statistics are read on request (`full-stats`), not sent every day, and
     // so are the manager-history facts; the free-agent pool stays on the worker (→CLUB-49).
-    const {
-      people: _people,
-      npcSeason: _season,
-      managerHistory: _history,
-      newsJournal: _news,
-      careerReads: _reads,
-      freeAgents: _free,
-      ...projected
-    } = w;
-    void _people;
-    void _season;
-    void _history;
-    void _news;
-    void _reads;
-    void _free;
+    const projected = projectWorldFacts(w);
     return {
       coaches: staffMarket(w),
       world: {
         ...projected,
+        clubs: w.clubs.map((club) => ({ ...club, rating: rating(w, club) })),
+        disciplineNames: disciplineNames(w),
         // Browser projections omit `people`; resolving names there would regenerate old identities.
         nextOpponentLineup:
           next && opponent
@@ -725,9 +716,10 @@ export class Host {
         const modelled = writer
           ? this.adoptModel(identified, identified !== result.world)
           : identified;
+        const squadWorld = writer ? adoptSquads(modelled, modelled !== result.world) : modelled;
         let activated = writer
-          ? this.adoptManagerHistory(modelled, modelled !== result.world)
-          : modelled;
+          ? this.adoptManagerHistory(squadWorld, squadWorld !== result.world)
+          : squadWorld;
         if (writer && needsReadModels(activated) && !settledAhead(this.world, activated)) {
           const journalled = structuredClone(activated);
           initializeReadModels(journalled);
