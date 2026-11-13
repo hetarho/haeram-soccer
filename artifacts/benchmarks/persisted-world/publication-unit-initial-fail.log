@@ -1,0 +1,382 @@
+
+ RUN  v5.0.3 /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860
+
+······················x·········································································x·······x·························x···································································································································································································x·················································································xx·························································x·x···x·x···················································xx················x·················································································stderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 11
+Encountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+·stderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 12
+Encountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+
+··················································································x························stderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness
+[presentation:locale] Missing message "navigation.league" (en-US); using the registered default (ko-KR). {
+  code: 'missing-message',
+  locale: 'en-US',
+  messageId: 'navigation.league',
+  message: 'Missing message "navigation.league" (en-US); using the registered default (ko-KR).'
+}
+
+·····················x···············································································································xx······························································································································································································································x·····························stderr | apps/web/src/presentation/text.test.ts > source prose and display translation > translates exact source labels and recognized historical templates without mutating data
+[presentation:locale] Missing message "budget.part.line" (en-GB); using the registered default (ko-KR). {
+  code: 'missing-message',
+  locale: 'en-GB',
+  messageId: 'budget.part.line',
+  message: 'Missing message "budget.part.line" (en-GB); using the registered default (ko-KR).'
+}
+[presentation:locale] Missing message "budget.part.line" (en-GB); using the registered default (ko-KR). {
+  code: 'missing-message',
+  locale: 'en-GB',
+  messageId: 'budget.part.line',
+  message: 'Missing message "budget.part.line" (en-GB); using the registered default (ko-KR).'
+}
+[presentation:locale] Missing message "budget.part.line" (en-GB); using the registered default (ko-KR). {
+  code: 'missing-message',
+  locale: 'en-GB',
+  messageId: 'budget.part.line',
+  message: 'Missing message "budget.part.line" (en-GB); using the registered default (ko-KR).'
+}
+
+······························································································································································································································································stdout | packages/engine/src/staging/tendencies.test.ts
+T829 tendencies {"firstStepSeconds":[0.7,0.4],"meanPlaceMetres":[4.581032737775992,3.7643993060807],"pressingAt18Metres":[{"presses":false,"closed":2.557693872320087},{"presses":true,"closed":3.0249999999999844}],"roleMetresFromAnchor":[0,17.262674647921738,22.441477042298263],"run65MetresSeconds":[12.5,7.4],"carry6Seconds":[{"speed":5,"distance":27.973715555555565},{"speed":4.6000000000000005,"distance":25.90000000000004}]}
+
+···························································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| packages/engine/src/approvals.test.ts > approval waiting days (→STAFF-48) > counts each owner-held approval a day per settled day and notices it once when overdue
+AssertionError: expected [ …(10) ] to deeply equal [ Array(1) ]
+
+- Expected
++ Received
+
+  [
+    "decision:contracts:ENG:3:0:0:p:11:108:",
++   "decision:contracts:ENG:3:0:0:p:1:109:",
++   "decision:contracts:ENG:3:0:0:p:13:109:",
++   "decision:contracts:ENG:3:0:0:p:6:108:",
++   "decision:contracts:ENG:3:0:0:founding:1950:1:",
++   "decision:contracts:ENG:3:0:0:founding:1950:2:",
++   "decision:contracts:ENG:3:0:0:p:15:108:",
++   "decision:contracts:ENG:3:0:0:p:8:109:",
++   "decision:contracts:ENG:3:0:0:founding:1950:0:",
++   "decision:contracts:ENG:3:0:0:founding:1950:3:",
+  ]
+
+ ❯ packages/engine/src/approvals.test.ts:55:56
+     53|     expect(notices()).toBe(0);
+     54|     countApprovalWaits(w);
+     55|     expect(overdueApprovals(w).map((item) => item.id)).toEqual([talk.i…
+       |                                                        ^
+     56|     expect(notices()).toBe(1);
+     57|     const notice = w.inbox!.at(-1)!;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/19]⎯
+
+ FAIL  |unit| packages/engine/src/approvals.test.ts > approval waiting days (→STAFF-48) > forgets an approval once answered or handed to the staff
+AssertionError: expected [ …(10) ] to have a length of 1 but got 10
+
+- Expected
++ Received
+
+- 1
++ 10
+
+ ❯ packages/engine/src/approvals.test.ts:71:43
+     69|     const w = asking();
+     70|     countApprovalWaits(w);
+     71|     expect(Object.keys(w.approvalWaits!)).toHaveLength(1);
+       |                                           ^
+     72|     w.settings!.responsibilities.contracts = 'delegated';
+     73|     countApprovalWaits(w);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/19]⎯
+
+ FAIL  |unit| packages/engine/src/npc-market.test.ts > isolated NPC transfer windows > keeps winter contributions under the same ID, separated by the two real clubs
+TypeError: Cannot read properties of undefined (reading 'away')
+ ❯ settleNpcSeason packages/engine/src/npc-stats.ts:213:45
+    211|       // A starting keeper earns a clean sheet at settlement, includin…
+    212|       part.cleanSheets ??= 0;
+    213|       const conceded = side === 0 ? r.score.away : r.score.home;
+       |                                             ^
+    214|       if (!came.has(line.id) && conceded === 0) part.cleanSheets++;
+    215|     }
+ ❯ settle packages/engine/src/npc-market.test.ts:345:7
+ ❯ packages/engine/src/npc-market.test.ts:347:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/19]⎯
+
+ FAIL  |unit| packages/engine/src/npc-retirement.test.ts > actual retained NPC retirement > records announcement and actual retirement separately once and excludes retired players
+TypeError: Cannot set properties of undefined (setting 'born')
+ ❯ packages/engine/src/npc-retirement.test.ts:27:12
+     25|     const w = world(),
+     26|       person = retained(w);
+     27|     person.born = w.year - 40;
+       |            ^
+     28|     const club = w.clubs.find((c) => c.id === person.club)!;
+     29|     w.calendar = { day: retirementAnnounceDay(w.year) };
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/19]⎯
+
+ FAIL  |unit| packages/engine/src/npc-retirement.test.ts > actual retained NPC retirement > is independent of roster inspection and forces actual age 41 even for a keeper
+TypeError: Cannot read properties of undefined (reading 'id')
+ ❯ packages/engine/src/npc-retirement.test.ts:53:46
+     51|     const a = world(),
+     52|       b = world();
+     53|     const ids = [a, b].map((w) => retained(w).id);
+       |                                              ^
+     54|     expect(ids[0]).toBe(ids[1]);
+     55|     for (const w of [a, b]) {
+ ❯ packages/engine/src/npc-retirement.test.ts:53:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/19]⎯
+
+ FAIL  |unit| packages/engine/src/playing-coach-lifecycle.test.ts > playing-coach independent role lifecycle > a player sale ends both roles with one ordinary coach termination cost
+Error: 현재 완료할 수 없는 협상이에요.
+ ❯ completeSale packages/engine/src/transfers.ts:246:21
+    244|   const club = w.clubs.find((c) => c.id === bid.club);
+    245|   const offer = club && npcOffer(w, club, p, clubOf(w), bid.fee);
+    246|   if (!offer) throw new Error(sourceMessage('copy.transfers.30aac47a5f…
+       |                     ^
+    247|   if (BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureC…
+    248|     throw new Error(sourceMessage('copy.transfers.4c1042837b'));
+ ❯ respondBid packages/engine/src/transfers.ts:394:7
+ ❯ packages/engine/src/playing-coach-lifecycle.test.ts:120:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/19]⎯
+
+ FAIL  |unit| packages/engine/src/playing-coach-lifecycle.test.ts > playing-coach independent role lifecycle > delegated sales wait for direct staff authority and transfer one combined pending decision
+AssertionError: expected 'rejected' to be 'completed' // Object.is equality
+
+Expected: "completed"
+Received: "rejected"
+
+ ❯ packages/engine/src/playing-coach-lifecycle.test.ts:145:58
+    143|     settings.responsibilities.staff = 'delegated';
+    144|     operate(w, { type: 'settings', settings });
+    145|     expect(w.bids!.find((b) => b.id === bid.id)!.status).toBe('complet…
+       |                                                          ^
+    146|     expect(w.staff!.some((member) => member.person === id)).toBe(false…
+    147|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/19]⎯
+
+ FAIL  |unit| packages/engine/src/promises.test.ts > fixed-deadline reinforcement commitments > waits through the deadline and counts permanent, loan and free arrivals through noteSigning, even when later sold
+AssertionError: expected -1 to be greater than or equal to 0
+ ❯ packages/engine/src/promises.test.ts:77:21
+     75|           (kind === 'free' ? o.freeAgent : !o.freeAgent),
+     76|       );
+     77|       expect(index).toBeGreaterThanOrEqual(0);
+       |                     ^
+     78|       const id = offers[index].player.id;
+     79|       // A free agent signs at once; another club's player through his…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/19]⎯
+
+ FAIL  |unit| packages/engine/src/registration.test.ts > season-specific squad registration > checks the loan exemption at bid creation and again before accepting a counter
+AssertionError: expected -1 to be greater than or equal to 0
+ ❯ packages/engine/src/registration.test.ts:95:19
+     93|     const offers = transferOffers(full),
+     94|       index = offers.findIndex((o) => !o.freeAgent && full.year - o.pl…
+     95|     expect(index).toBeGreaterThanOrEqual(0);
+       |                   ^
+     96|     expect(() => placeBid(full, index, offers[index].fee, true)).toThr…
+     97|     placeBid(full, index, offers[index].fee, false);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/19]⎯
+
+ FAIL  |unit| packages/engine/src/results-only.test.ts > T698's placebo draw (RESULTS_LUCK, a measurement override) > leaves the released draw exactly as it was by default
+AssertionError: expected [ '0000000021200000000000', …(7) ] to deeply equal [ '0000000030200000000000', …(7) ]
+
+- Expected
++ Received
+
+  [
+-   "0000000030200000000000",
++   "0000000021200000000000",
+    "0100001010000000000001",
+    "0000000010000000001000",
+    "0100000000000000011010",
+    "0000001100100000010010",
+-   "0000000000000100002000",
++   "0000000000000100001100",
+    "0000000101100000000000",
+    "0000001000000000010000",
+  ]
+
+ ❯ packages/engine/src/results-only.test.ts:160:87
+    158|     const list = read(w);
+    159|     expect(scores(list)).toEqual(RELEASED.scores);
+    160|     expect(list.map((p) => p.record.players.map((l) => l.metrics[M.goa…
+       |                                                                                       ^
+    161|       RELEASED.goals,
+    162|     );
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/19]⎯
+
+ FAIL  |unit| packages/engine/src/staff.hiring.test.ts > coach hiring by 코치 기조 (STAFF-15) > renews an expiring coach who meets 코치 기조 unless a match beats him by 3 ability or a 10% lower wage
+Error: Test timed out in 30000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ packages/engine/src/staff.hiring.test.ts:145:3
+    143|   });
+    144|
+    145|   it('renews an expiring coach who meets 코치 기조 unless a match beats hi…
+       |   ^
+    146|     // 최고 수준 (the ablest first): the ablest match must be 3 better.
+    147|     const seed = seedWhere('renew-ability', (abilities) => Math.max(..…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/19]⎯
+
+ FAIL  |unit| packages/engine/src/takeover.test.ts > takeover (→ECON-38, CLUB-1, OWNER-4) > makes the club as it stands the owner’s, its squad his players at the club’s 조직력
+AssertionError: expected [ { position: 'LB', …(1) }, …(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "position": "LB",
++     "role": "overlappingFullBack",
++   },
++   {
++     "position": "RW",
++     "role": "invertedWinger",
++   },
++ ]
+
+ ❯ packages/engine/src/takeover.test.ts:71:62
+     69|       CLUB_TAKEOVER.goalkeepers,
+     70|     );
+     71|     expect(uncoveredSlots(w.players, formationOf(w.tactic))).toEqual([…
+       |                                                              ^
+     72|     for (const p of w.players) {
+     73|       expect(p).toMatchObject({ status: 'active', fatigue: 0, adaptati…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/19]⎯
+
+ FAIL  |unit| packages/engine/src/window-callups.test.ts > window-close call-ups > calls up an unready same-line prospect below the cash floor on the day after the winter deadline
+AssertionError: expected [ …(23) ] to not include { id: 'ENG:3:0:0:academy:same', …(18) }
+ ❯ packages/engine/src/window-callups.test.ts:39:27
+     37|     depart(w);
+     38|     dailyMarket(w);
+     39|     expect(w.players).not.toContain(p);
+       |                           ^
+     40|     judge(w);
+     41|     expect(activePlayers(w)).toContain(p);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/19]⎯
+
+ FAIL  |unit| packages/engine/src/window-callups.test.ts > window-close call-ups > falls back to the best other line before generating
+AssertionError: expected [ …(23) ] to have a length of 20 but got 23
+
+- Expected
++ Received
+
+- 20
++ 23
+
+ ❯ packages/engine/src/window-callups.test.ts:52:30
+     50|     judge(w);
+     51|     expect(activePlayers(w)).toContain(p);
+     52|     expect(activePlayers(w)).toHaveLength(20);
+       |                              ^
+     53|   });
+     54|   it('generates an eighteen-year-old graduate when the academy is empt…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/19]⎯
+
+ FAIL  |unit| packages/engine/src/window-callups.test.ts > window-close call-ups > calls up three to cover seventeen without needs, including the summer deadline
+AssertionError: expected [ { …(23) } ] to have a length of 3 but got 1
+
+- Expected
++ Received
+
+- 3
++ 1
+
+ ❯ packages/engine/src/window-callups.test.ts:72:71
+     70|     judge(w);
+     71|     expect(activePlayers(w)).toHaveLength(20);
+     72|     expect(activePlayers(w).filter((p) => p.id.includes(':callup:'))).…
+       |                                                                       ^
+     73|   });
+     74|   it('reports one ordered recommendation with direct academy authority…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/19]⎯
+
+ FAIL  |unit| packages/engine/src/window-callups.test.ts > window-close call-ups > stops at the full registration ceiling and clears unfilled needs
+AssertionError: expected [ …(41) ] to have a length of 40 but got 41
+
+- Expected
++ Received
+
+- 40
++ 41
+
+ ❯ packages/engine/src/window-callups.test.ts:101:30
+     99|     const p = prospect(w, 'blocked', 'CB');
+    100|     judge(w);
+    101|     expect(activePlayers(w)).toHaveLength(40);
+       |                              ^
+    102|     expect(w.academy!.players).toContain(p);
+    103|     expect(w.replacementNeeds).toEqual([]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/19]⎯
+
+ FAIL  |unit| apps/web/src/app/model/outcome.test.ts > action outcome summaries > lists only facts that changed and the squad size after a sale
+Error: 현재 완료할 수 없는 협상이에요.
+ ❯ completeSale packages/engine/src/transfers.ts:246:21
+    244|   const club = w.clubs.find((c) => c.id === bid.club);
+    245|   const offer = club && npcOffer(w, club, p, clubOf(w), bid.fee);
+    246|   if (!offer) throw new Error(sourceMessage('copy.transfers.30aac47a5f…
+       |                     ^
+    247|   if (BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureC…
+    248|     throw new Error(sourceMessage('copy.transfers.4c1042837b'));
+ ❯ respondBid packages/engine/src/transfers.ts:394:7
+ ❯ sellPlayer packages/engine/src/testing.ts:120:3
+ ❯ apps/web/src/app/model/outcome.test.ts:59:39
+ ❯ after apps/web/src/app/model/outcome.test.ts:19:3
+ ❯ apps/web/src/app/model/outcome.test.ts:59:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/19]⎯
+
+ FAIL  |unit| apps/web/src/entities/player/lib/teamState.test.ts > registration-aware squad state > uses counted and exempt players for an observed modern rule and discloses fallback estimation
+AssertionError: expected '18/25 · 제외 4' to be '16/25 · 제외 4' // Object.is equality
+
+Expected: "16/25 · 제외 4"
+Received: "18/25 · 제외 4"
+
+ ❯ apps/web/src/entities/player/lib/teamState.test.ts:136:65
+    134|     for (const p of w.players) p.born = 1980;
+    135|     for (const p of w.players.slice(0, 4)) p.born = 1991;
+    136|     expect(teamStates(w).find((s) => s.key === 'squad')!.value).toBe('…
+       |                                                                 ^
+    137|     expect(squadRegistration(w).detail).toContain('21세 이하 제외');
+    138|     expect(squadRegistration(w).detail).not.toContain('추정');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/19]⎯
+
+ FAIL  |unit| apps/web/src/pages/club/lib/shortlist.test.ts > where a market candidate is (→CLUB-50, CLUB-51) > names where each shortlisted player is, free or at his club, those abroad marked
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ apps/web/src/pages/club/lib/shortlist.test.ts:148:58
+    146|     }
+    147|     expect(entries.some(({ origin }) => origin.kind === 'club' && orig…
+    148|     expect(entries.some(({ origin }) => !origin.abroad)).toBe(true);
+       |                                                          ^
+    149|     expect(entries.some(({ origin }) => origin.kind === 'free')).toBe(…
+    150|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/19]⎯
+
+
+ Test Files  13 failed | 331 passed (344)
+      Tests  19 failed | 2920 passed (2939)
+   Start at  19:13:19
+   Duration  624.61s (tests 83%, import 14%, transform 3%)
+

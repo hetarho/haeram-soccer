@@ -1,0 +1,98 @@
+{
+  "verifiedSource": "c0768c7ec900fa8f1efb2b3789741514b27cfd26",
+  "testPolicy": "unit-only",
+  "checks": [
+    {
+      "name": "unit-final",
+      "command": "pnpm exec vitest run --project unit --maxWorkers 2 --reporter dot",
+      "commit": "c0768c7ec900fa8f1efb2b3789741514b27cfd26",
+      "workingTree": "1391ec501eef6a85c4ee709e78a7d509c7086d8d",
+      "milliseconds": 469057,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "originalLog": "check-a03677d5-153e-4f04-ac3b-3f4f737e0f5f.log",
+      "log": "artifacts/benchmarks/persisted-world/publication-unit-final.log",
+      "logSha256": "be40396a9a8759988d6c4fcac65985999610fa494bc7b57623c7d3b475aaf999",
+      "project": "unit",
+      "filesPassed": 344,
+      "testsPassed": 2941,
+      "testsFailed": 0
+    },
+    {
+      "name": "typecheck-final",
+      "command": "pnpm run typecheck",
+      "commit": "9ee755eb0dad6e704933fb559f39a2c3fffe0189",
+      "workingTree": "75f9d0e13561db9e2bb500a9697301f936f54189",
+      "milliseconds": 38755,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "originalLog": "check-8be9f1ab-e1b7-4b73-9b03-71e27fd9f554.log",
+      "log": "artifacts/benchmarks/persisted-world/publication-typecheck-final.log",
+      "logSha256": "1c71d1441c14e7d1c15cb13059a4cbb9aa97e02de0e1a8a4066ecef0d3c27c7a"
+    },
+    {
+      "name": "lint-final",
+      "command": "pnpm run lint",
+      "commit": "9ee755eb0dad6e704933fb559f39a2c3fffe0189",
+      "workingTree": "75f9d0e13561db9e2bb500a9697301f936f54189",
+      "milliseconds": 29594,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "originalLog": "check-45f3cf72-926e-453a-af20-9c8fc255e28f.log",
+      "log": "artifacts/benchmarks/persisted-world/publication-lint-final.log",
+      "logSha256": "1967a1279e9d0f208bd6784377fabd2acbc21d24a676cdbca7812044f572bea0"
+    },
+    {
+      "name": "i18n-final",
+      "command": "pnpm run validate:i18n",
+      "commit": "9ee755eb0dad6e704933fb559f39a2c3fffe0189",
+      "workingTree": "75f9d0e13561db9e2bb500a9697301f936f54189",
+      "milliseconds": 5286,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "originalLog": "check-0128aa23-73b5-48cb-bd73-e92080e4b6c2.log",
+      "log": "artifacts/benchmarks/persisted-world/publication-i18n-final.log",
+      "logSha256": "abf96a5c99bb865584856c498ffd13414176b257d02b6180fc9ec38ca416fcdf"
+    },
+    {
+      "name": "format-final",
+      "command": "pnpm run format:check",
+      "commit": "c0768c7ec900fa8f1efb2b3789741514b27cfd26",
+      "workingTree": "1391ec501eef6a85c4ee709e78a7d509c7086d8d",
+      "milliseconds": 13260,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "originalLog": "check-7ad05a60-3213-4b02-b816-f88e5fddc42f.log",
+      "log": "artifacts/benchmarks/persisted-world/publication-format-final.log",
+      "logSha256": "b1bfb51b62716caff43f071fac5a9db24ecacad978cf15e338078bbb57f0eac0"
+    },
+    {
+      "name": "spec-lint-final",
+      "command": "node /home/deep/.npm/_npx/c183f26c8545da3b/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+      "commit": "9ee755eb0dad6e704933fb559f39a2c3fffe0189",
+      "workingTree": "75f9d0e13561db9e2bb500a9697301f936f54189",
+      "milliseconds": 822,
+      "exitCode": 0,
+      "cached": false,
+      "stale": false,
+      "originalLog": "check-07b4dbe3-7d16-48dc-8845-986ef8914590.log",
+      "log": "artifacts/benchmarks/persisted-world/publication-spec-lint-final.log",
+      "logSha256": "ece2852c22bed1886c63d9eb3757796817e77e304509f765489685b6c26cd896"
+    }
+  ],
+  "reuse": "After 9ee755eb only whitespace in two test-helper files changed before c0768c7e; reviewed exact hunks. Type/lint/i18n results remain applicable. Later report/artifact-only commits do not change tested source.",
+  "notRun": [
+    "integration",
+    "contract",
+    "e2e",
+    "browser-generation",
+    "build",
+    "verify:batch",
+    "CI"
+  ]
+}
