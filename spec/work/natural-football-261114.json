@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T19:09:21.196Z",
-  "sourceCommit": "76f72bbaa835badb7e86195149732aa95d6bfa11",
+  "snapshotAt": "2026-11-13T19:13:19.552Z",
+  "sourceCommit": "42ad99267a657e302e135aab9c3c0c913e86d67b",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -68,12 +68,12 @@
   },
   "summary": {
     "total": 19,
-    "completed": 8,
-    "remaining": 11,
-    "running": 1,
-    "review": 1,
+    "completed": 9,
+    "remaining": 10,
+    "running": 2,
+    "review": 0,
     "blocked": 0,
-    "unassigned": 9
+    "unassigned": 8
   },
   "tasks": [
     {
@@ -86,22 +86,13 @@
       "status": "doing"
     },
     {
-      "id": "T887",
-      "title": "Prepare real post-close free agents for promise journeys",
-      "dep": [
-        "T885"
-      ],
-      "lane": "promise-browser-scenes",
-      "status": "reviewing"
-    },
-    {
       "id": "T890",
       "title": "Prepare exact replacement and top-up scenarios",
       "dep": [
         "T885"
       ],
       "lane": "replacement-topup-fixtures",
-      "status": "todo"
+      "status": "preparing"
     },
     {
       "id": "T891",
@@ -693,6 +684,8 @@
       "submittedBase": "9a3db42dae0a196303b63ab5804d35cd35f34dc5",
       "submissionId": "c819abbb-e10a-466d-b96c-d2e88bb20fbd",
       "submittedAt": "2026-11-13T19:03:41.904Z",
+      "integratedCommit": "42ad99267a657e302e135aab9c3c0c913e86d67b",
+      "integratedAt": "2026-11-13T19:09:55.802Z",
       "risk": null,
       "review": {
         "id": "d634fa4c-f1d2-4a37-997b-2794208132c9",
@@ -727,6 +720,13 @@
           "startedAt": "2026-11-13T19:02:56.528Z",
           "finishedAt": "2026-11-13T19:03:41.719Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T19:09:21.389Z",
+          "finishedAt": "2026-11-13T19:09:55.461Z"
+        }
       ]
     },
     {
@@ -741,7 +741,7 @@
       "contributors": [
         "nf14-codex-promise-fixtures"
       ],
-      "status": "reviewing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T18:49:05.162Z",
       "startCommit": "548dae09df9cbbd28e99ba4bec4f8078c0a09710",
@@ -753,11 +753,15 @@
       "review": {
         "id": "067a1dbb-77c3-4164-93ca-5d00516f7c11",
         "owner": "nf14-codex-independent-promise-fixtures",
-        "status": "reviewing",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T887 changes only the two approved browser fixture/spec files. The new private cached post-close world releases actual eligible external goalkeeper identities through joinFreeAgents before creating any commitment; it neither invents unattached players nor releases replacements at the deadline. The resolver computes the promise deadline once, and the shared advancement loop reaches that absolute date from the actual current year/day. No deadline assignment/extension, player-attribute edit, market search-setting change, assertion removal or timeout weakening was found. The owner-market selector retains available/free/GK and alternate-player requirements instead of relying on scout recommendations. Independently reran the scene probe with additional identity, actual free/available/fee0, alternate-pick and fixed-deadline assertions: actual Tommy Carroll signs and moves to the owner, promise metadata survives encode/decode, all four retained statuses exist, and name search retains58 rows at page size50 with the target beyond page one. The retained zero-reserve scene keeps the original explicit public-owner recruitment while signingVerdict is false and eligibility/affordability are true; the deadline arrival scene has a true signingVerdict. A second independent probe confirmed both none and paid-loan scenes reach their original1950/day184 deadline with pending commitment; the loan remains a real countered bid with fee168. The post-close free scene retains its canonically created1951/day184 deadline. Evidence: /tmp/nf14-t887-review-probe.mts and .jsonl; /tmp/nf14-t887-review-other-deadlines.mts and .jsonl. Verified d1302bc7 fixture/spec source equals reviewed1964335f. No P1/P2 finding; real Chromium journeys and final batch remain coordinator-owned.",
+        "findings": [],
         "commit": "1964335f75577bf565dd39b804869f79bf35c661",
         "baseCommit": "76f72bbaa835badb7e86195149732aa95d6bfa11",
         "submissionId": "080e8c0e-203d-48ed-8e1f-633f0f34c794",
-        "createdAt": "2026-11-13T19:09:19.793Z"
+        "createdAt": "2026-11-13T19:09:19.793Z",
+        "finishedAt": "2026-11-13T19:12:32.274Z"
       },
       "steps": [
         {
@@ -796,6 +800,22 @@
       "status": "doing",
       "createdAt": "2026-11-13T19:04:11.525Z",
       "startCommit": "917cc24841f42cd872d3ded6ca8956eb00072f27"
+    },
+    {
+      "id": "2d9c1736-d3fb-4bcf-84d6-4bdfe41dd9d7",
+      "group": "natural-football-261114",
+      "taskId": "T890",
+      "tasks": [
+        "T890"
+      ],
+      "lane": "replacement-topup-fixtures",
+      "owner": "nf14-codex-replacement-fixtures",
+      "contributors": [
+        "nf14-codex-replacement-fixtures"
+      ],
+      "status": "preparing",
+      "createdAt": "2026-11-13T19:13:18.439Z",
+      "startCommit": "42ad99267a657e302e135aab9c3c0c913e86d67b"
     }
   ],
   "history": [
@@ -3455,6 +3475,105 @@
           "submissionId": "080e8c0e-203d-48ed-8e1f-633f0f34c794",
           "createdAt": "2026-11-13T19:09:19.793Z"
         }
+      }
+    },
+    {
+      "sequence": 117,
+      "at": "2026-11-13T19:09:55.587Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "f1b55503-fdcd-4859-8a21-c0437b6979e5",
+      "taskId": "T889",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T19:09:21.389Z",
+            "finishedAt": "2026-11-13T19:09:55.461Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 118,
+      "at": "2026-11-13T19:09:55.802Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "f1b55503-fdcd-4859-8a21-c0437b6979e5",
+      "taskId": "T889",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "42ad99267a657e302e135aab9c3c0c913e86d67b",
+        "integratedAt": "2026-11-13T19:09:55.802Z"
+      }
+    },
+    {
+      "sequence": 119,
+      "at": "2026-11-13T19:12:32.274Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "9ccc8ded-158f-4a20-8e3f-824b1042a659",
+      "taskId": "T887",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "067a1dbb-77c3-4164-93ca-5d00516f7c11",
+          "owner": "nf14-codex-independent-promise-fixtures",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T887 changes only the two approved browser fixture/spec files. The new private cached post-close world releases actual eligible external goalkeeper identities through joinFreeAgents before creating any commitment; it neither invents unattached players nor releases replacements at the deadline. The resolver computes the promise deadline once, and the shared advancement loop reaches that absolute date from the actual current year/day. No deadline assignment/extension, player-attribute edit, market search-setting change, assertion removal or timeout weakening was found. The owner-market selector retains available/free/GK and alternate-player requirements instead of relying on scout recommendations. Independently reran the scene probe with additional identity, actual free/available/fee0, alternate-pick and fixed-deadline assertions: actual Tommy Carroll signs and moves to the owner, promise metadata survives encode/decode, all four retained statuses exist, and name search retains58 rows at page size50 with the target beyond page one. The retained zero-reserve scene keeps the original explicit public-owner recruitment while signingVerdict is false and eligibility/affordability are true; the deadline arrival scene has a true signingVerdict. A second independent probe confirmed both none and paid-loan scenes reach their original1950/day184 deadline with pending commitment; the loan remains a real countered bid with fee168. The post-close free scene retains its canonically created1951/day184 deadline. Evidence: /tmp/nf14-t887-review-probe.mts and .jsonl; /tmp/nf14-t887-review-other-deadlines.mts and .jsonl. Verified d1302bc7 fixture/spec source equals reviewed1964335f. No P1/P2 finding; real Chromium journeys and final batch remain coordinator-owned.",
+          "findings": [],
+          "commit": "1964335f75577bf565dd39b804869f79bf35c661",
+          "baseCommit": "76f72bbaa835badb7e86195149732aa95d6bfa11",
+          "submissionId": "080e8c0e-203d-48ed-8e1f-633f0f34c794",
+          "createdAt": "2026-11-13T19:09:19.793Z",
+          "finishedAt": "2026-11-13T19:12:32.274Z"
+        }
+      }
+    },
+    {
+      "sequence": 120,
+      "at": "2026-11-13T19:13:17.193Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "9ccc8ded-158f-4a20-8e3f-824b1042a659",
+      "taskId": "T887",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 121,
+      "at": "2026-11-13T19:13:18.439Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "2d9c1736-d3fb-4bcf-84d6-4bdfe41dd9d7",
+      "taskId": "T890",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "2d9c1736-d3fb-4bcf-84d6-4bdfe41dd9d7",
+        "group": "natural-football-261114",
+        "taskId": "T890",
+        "tasks": [
+          "T890"
+        ],
+        "lane": "replacement-topup-fixtures",
+        "owner": "nf14-codex-replacement-fixtures",
+        "contributors": [
+          "nf14-codex-replacement-fixtures"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T19:13:18.439Z",
+        "startCommit": "42ad99267a657e302e135aab9c3c0c913e86d67b"
       }
     }
   ]
