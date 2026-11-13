@@ -5086,6 +5086,8 @@
     "copy.discipline.15b0bedd72": "{p0} · 감독이 다른 선수로 선발을 짜요.",
     "copy.discipline.fcf7c31621": "징계 통보: {p0}",
     "copy.discipline.7c80359382": "{p0} · 다음 {p1}경기({p2})에 나설 수 없어요. 감독이 다른 선수로 선발을 짜요.",
+    "copy.dynamics.d1735c6a1e": "{p0}, 대형 투자 유치",
+    "copy.dynamics.f3616ce2a8": "새 구단주와 대규모 투자로 앞으로 몇 시즌 동안 전력이 크게 오를 전망이에요. 지금 전력 {p0}.",
     "copy.economy.34beff4028": "화폐 전환의 원본 단위가 일치하지 않습니다.",
     "copy.economy.69414b9830": "새로운 화폐의 시대",
     "copy.economy.bb1964ac72": " · 초기 화폐 단순화 추정",

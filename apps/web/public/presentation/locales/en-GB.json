@@ -4923,6 +4923,8 @@
     "copy.discipline.15b0bedd72": "{p0} · The coach selects different players.",
     "copy.discipline.fcf7c31621": "Disciplinary Notice: {p0}",
     "copy.discipline.7c80359382": "{p0} · I cannot participate in the next {p1} match ({p2}). The coach selects different players.",
+    "copy.dynamics.d1735c6a1e": "{p0} attracts large investments",
+    "copy.dynamics.f3616ce2a8": "With a new owner and large-scale investment, the team's power is expected to rise significantly over the next few seasons. Now power {p0}.",
     "copy.economy.34beff4028": "The original unit of currency conversion does not match.",
     "copy.economy.69414b9830": "new era of money",
     "copy.economy.bb1964ac72": " · Initial currency simplification estimation",
