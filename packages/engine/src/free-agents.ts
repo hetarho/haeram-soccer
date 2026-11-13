@@ -23,7 +23,7 @@ import { clubRegistration, registrationExempt, registrationRoom } from './regist
 import { isForeignCandidate } from './scout-search';
 import { addEvent } from './events';
 import { moneyLabel } from './finance';
-import { npcCanPay } from './books';
+import { npcCanPay, npcWageBill, npcWageLimit } from './books';
 import { clubStyle } from './tactics';
 import { inPounds } from './club-value';
 import { LINE_MINIMUM } from './player';
@@ -192,15 +192,27 @@ export function npcContractTerm(age: number) {
 }
 
 /** The missing lines take priority over topping up the standing squad. */
-function wantsFreeAgent(w: World, club: World['clubs'][number], p: FreeAgent, year: number) {
+function settlementFacts(w: World, club: World['clubs'][number], year: number) {
   const players = w.squads![club.id]!;
   const missing = (Object.keys(LINE_MINIMUM) as Line[]).filter(
     (line) => players.filter((q) => lineOf(q.position) === line).length < LINE_MINIMUM[line],
   );
-  if (!missing.length && players.length >= NPC_SQUAD.size) return false;
-  const wanted = missing.length ? missing : [lineOf(refillPlace(clubStyle(club), players))];
-  if (!wanted.includes(lineOf(p.position))) return false;
-  const state = clubRegistration(club, year, players);
+  const wanted = missing.length
+    ? missing
+    : players.length >= NPC_SQUAD.size
+      ? []
+      : [lineOf(refillPlace(clubStyle(club), players))];
+  return {
+    wanted,
+    registration: clubRegistration(club, year, players),
+    bill: npcWageBill(w, club),
+    limit: npcWageLimit(w, club, year),
+  };
+}
+
+function wantsFreeAgent(facts: ReturnType<typeof settlementFacts>, p: FreeAgent, year: number) {
+  if (!facts.wanted.includes(lineOf(p.position))) return false;
+  const state = facts.registration;
   return (
     state.total < state.ceiling &&
     (registrationExempt(state.rule, year, { ...p, joined: year }) || state.counted < state.allowed)
@@ -225,17 +237,18 @@ export function refreshFreeAgents(w: World, year = w.year) {
   const clubs = w.clubs.filter(
     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
   );
+  const facts = new Map(clubs.map((club) => [club.id, settlementFacts(w, club, year)]));
   let signed: boolean;
   do {
     signed = false;
     for (const agent of byAbility(freeAgentsOf(w))) {
       const offers = clubs
-        .filter((c) => wantsFreeAgent(w, c, agent, year))
+        .filter((c) => wantsFreeAgent(facts.get(c.id)!, agent, year))
         .map((club) => {
           const wage = marketWageAt(club.country, year, club.tier, agent);
           return { club, wage, pounds: BigInt(inPounds(club.country, year, wage)) };
         })
-        .filter(({ club, wage }) => npcCanPay(w, club, wage, undefined, year));
+        .filter(({ club, wage }) => npcCanPay(w, club, wage, undefined, year, facts.get(club.id)!));
       offers.sort(
         (a, b) =>
           stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
@@ -251,6 +264,7 @@ export function refreshFreeAgents(w: World, year = w.year) {
       // Employment records the free move's actual club and date; a free move has no fee.
       movePerson(w, player, club.id);
       FREE_AGENT_FLOW.observe?.('sign', player, club.id);
+      facts.set(club.id, settlementFacts(w, club, year));
       signed = true;
     }
   } while (signed);

@@ -253,12 +253,22 @@ export const NPC_WAGE_DECISIONS: {
 } = {};
 
 /** One affordability rule for renewals and free/fee signings; replacement excludes the old wage. */
-export function npcCanPay(w: World, club: Club, wage: string, replacing?: string, year = w.year) {
-  const limit = npcWageLimit(w, club, year);
-  const bill = clubPlayers(w, club).reduce(
-    (sum, p) => sum + (p.id === replacing ? 0n : BigInt(p.wage)),
-    0n,
-  );
+export function npcCanPay(
+  w: World,
+  club: Club,
+  wage: string,
+  replacing?: string,
+  year = w.year,
+  facts?: { limit: bigint | undefined; bill: bigint },
+) {
+  const limit = facts ? facts.limit : npcWageLimit(w, club, year);
+  const bill =
+    facts && replacing === undefined
+      ? facts.bill
+      : clubPlayers(w, club).reduce(
+          (sum, p) => sum + (p.id === replacing ? 0n : BigInt(p.wage)),
+          0n,
+        );
   const proposed = bill + BigInt(wage);
   const allowed = limit === undefined || proposed <= limit;
   NPC_WAGE_DECISIONS.observe?.(club, proposed, limit, allowed);

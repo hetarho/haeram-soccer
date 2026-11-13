@@ -62,12 +62,11 @@
 | T874 | Wait onside before a free-kick delivery | MATCH ARCH | T873 | todo |
 | T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
 | T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
-| T877 | Index free-agent settlement facts | ARCH WORLD CLUB | - | todo |
 | T878 | Reuse NPC market settlement contexts | ARCH WORLD CLUB | T877 | todo |
 | T879 | Persist optional owner capital and income components | ARCH ECON SAVE | T878 | todo |
 | T880 | Permit finite cash-backed NPC operating deficits | ARCH WORLD ECON CLUB SAVE | T879 | todo |
 | T881 | Report funded deficits separately from funding failures | ARCH ECON CLUB | T880 | todo |
 
 ## next
-- gusta-start scope T877 T878 T879 T880 T881: free-agent and NPC-market optimization, then funded NPC books and financing diagnostics; preserve other live natural-football assignments.
+- gusta-implement-task T873 T875 T878
 - Local unit-only validation remains; owner-authorized main publication and normal CI follow one final candidate. Capacity is not a blocker for this request.
