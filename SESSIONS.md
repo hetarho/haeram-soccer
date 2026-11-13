@@ -69,6 +69,7 @@
 | T872 | pw86 | work/persisted-world-860 | 41c5bf2e826e | 2026-11-13T10:54Z |
 
 ## log
+- 261113 gusta-update-ssot ARCH start: align verification with approved gusta 0.17.1 defaults
 - 261113 fix calibration: exclude incomplete and shortened windows from completed-core and peak comparisons; preserve raw observations; two new regressions and nine affected unit cases pass
 - 261113 - 261113 fix calibration: exclude incomplete and shortened windows from completed-core counts and peak-age comparisons; preserve all raw observations, two isolated regressions and nine affected unit cases pass.
 - 261113 T872 done
@@ -88,4 +89,3 @@
 - 261113 T860 done
 - 261113 T866 done
 - 261113 gusta-create-task T866 start: distinguish original measurement targets from its elapsed four-hour exit; preserve every failed/unrun verdict and the unit-only override ct13
-- 261113 fix watch: publish the first staged minute before filling the normal two-minute batches; preserve frame order, match results and the original 3 s browser latency guard fin3
