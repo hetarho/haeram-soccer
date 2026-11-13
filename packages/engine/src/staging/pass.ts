@@ -259,6 +259,7 @@ export function* holdUntil(
   hold: number,
   ready: (reached: boolean) => boolean,
   receiverOrder?: Order,
+  prepare?: () => boolean,
 ): Generator<void, void> {
   state.orders.set(actor, holdMove(state, actor, to));
   if (receiver !== undefined) {
@@ -266,14 +267,14 @@ export function* holdUntil(
   }
   const start = state.t;
   const off = pressedOff(state, actor);
-  yield* runUntil(
-    state,
-    () => {
-      const reached = off();
-      return (reached || state.t - start >= hold - 1e-9) && ready(reached);
-    },
-    hold + STAGE.maxExtraHold,
-  );
+  const readyNow = (): boolean => {
+    const reached = off();
+    return (reached || state.t - start >= hold - 1e-9) && ready(reached);
+  };
+  yield* runUntil(state, readyNow, hold + STAGE.maxExtraHold);
+  // A scripted press may still be approaching when the ordinary hold allowance ends. Keep
+  // the same readiness/watch lifetime while it arrives, with a separate finite preparation cap.
+  if (prepare && !prepare()) yield* runUntil(state, readyNow, STAGE.through.maxWait);
 }
 
 /**
@@ -302,6 +303,7 @@ export function* holdForPass(
   hold: number,
   wait?: () => boolean,
   receiverOrder?: Order,
+  prepare?: () => boolean,
 ): Generator<void, boolean> {
   yield* holdUntil(
     state,
@@ -311,6 +313,7 @@ export function* holdForPass(
     hold,
     (reached) => (reached || canReceive(state, receiver, to, speed)) && (wait ? wait() : true),
     receiverOrder,
+    prepare,
   );
   return canReceive(state, receiver, to, speed);
 }
@@ -433,7 +436,17 @@ export function* performPass(state: StageState, ctx: BeatContext): Generator<voi
   const press = pressWait(state, beat);
   const held = receiverHold(state, beat, receiver, to);
   const wait = (): boolean => press() && held.onside();
-  yield* holdForPass(state, beat.actor, receiver, to, speed, beat.hold, wait, held.order);
+  yield* holdForPass(
+    state,
+    beat.actor,
+    receiver,
+    to,
+    speed,
+    beat.hold,
+    wait,
+    held.order,
+    beat.reason === 'pressed' ? press : undefined,
+  );
   yield* untilOnside(state, held);
   to = kickAim(state, beat, to);
   if (!canReceive(state, receiver, to, speed)) {
@@ -485,6 +498,7 @@ export function* performPassLoose(state: StageState, ctx: BeatContext): Generato
   const R = clampToPitch(beat.to, 0.5);
   const speed = speedOf(beat);
   const held = receiverHold(state, beat, beat.receiver, R);
+  const press = pressWait(state, beat);
   yield* holdForPass(
     state,
     beat.actor,
@@ -492,9 +506,11 @@ export function* performPassLoose(state: StageState, ctx: BeatContext): Generato
     R,
     speed,
     beat.hold,
-    pressWait(state, beat),
+    () => press() && held.onside(),
     held.order,
+    beat.reason === 'pressed' ? press : undefined,
   );
+  yield* untilOnside(state, held);
   kickEvent(state, beat.actor, beat.receiver);
   const flight = startFlight(state, R, speed, beat.loft);
   state.orders.delete(beat.actor);
@@ -576,6 +592,7 @@ function* winOnPath(
       return (reached || cut.margin <= STAGE.cutSlack) && press() && held.onside();
     },
     held.order,
+    beat.reason === 'pressed' ? press : undefined,
   );
   yield* untilOnside(state, held);
   R = kickAim(state, beat, R);
@@ -629,7 +646,17 @@ export function* performPassOut(state: StageState, ctx: BeatContext): Generator<
   const press = pressWait(state, beat);
   const held = receiverHold(state, beat, receiver, R);
   const wait = (): boolean => press() && held.onside();
-  yield* holdForPass(state, beat.actor, receiver, R, speed, beat.hold, wait, held.order);
+  yield* holdForPass(
+    state,
+    beat.actor,
+    receiver,
+    R,
+    speed,
+    beat.hold,
+    wait,
+    held.order,
+    beat.reason === 'pressed' ? press : undefined,
+  );
   yield* untilOnside(state, held);
   const ballPos: Vec = [state.ball.pos[0], state.ball.pos[1]];
   const E: Vec = !inPitch(beat.to, -0.1)

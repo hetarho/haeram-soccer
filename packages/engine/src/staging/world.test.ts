@@ -10,6 +10,7 @@ import { assignMarks } from './mark';
 import { performScript } from './script.testkit';
 import { posOf, scriptOf } from './script.testkit';
 import { createStage, defaultTarget, positionsOf, separated, step, type StageState } from './world';
+import { performance } from './perform';
 
 const fixture = demoFixture();
 const PRESS = STAGING_CONFIG.shape.press;
@@ -365,8 +366,33 @@ describe('stage world', () => {
     });
 
     it('one second after a long pass some free players walk while others run', () => {
+      const state = createStage(LONG);
+      const program = performance(state);
+      let prepared = false;
+      let kicked: number | undefined;
+      for (let tick = 0; tick < 200 && !program.next().done; tick++) {
+        const event = state.events.find((e) => e.kind === 'kick' && e.beat === 1);
+        if (!event) continue;
+        kicked = event.t;
+        if (!prepared) {
+          // A far free winger must recover his shape while nearer free teammates can walk.
+          // Set the actual body before the next tick; keep his ordinary target and pace.
+          state.bodies[10].pos = [10, 5];
+          state.bodies[10].vel = [0, 0];
+          prepared = true;
+        }
+        if (state.t >= event.t + 1) break;
+      }
+      expect(prepared).toBe(true);
+      const at = state.frames.findIndex((frame) => frame.t === kicked);
       const f = at + Math.round(1 / STAGING_CONFIG.tick);
-      const moving = free.map((p) => speedAt(f, p.index)).filter((speed) => speed > LIMITS.go);
+      const moving = free
+        .map(
+          (p) =>
+            dist(posOf(state.frames[f - 1], p.index), posOf(state.frames[f], p.index)) /
+            STAGING_CONFIG.tick,
+        )
+        .filter((speed) => speed > LIMITS.go);
       expect(moving.some((speed) => speed < MOTION.jog - 0.5)).toBe(true);
       expect(moving.some((speed) => speed > MOTION.jog + 0.5)).toBe(true);
     });

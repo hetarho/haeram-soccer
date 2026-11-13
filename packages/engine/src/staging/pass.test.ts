@@ -5,6 +5,9 @@ import type { Frame, Playback, StageEvent, Vec } from './types';
 import { add, dist, norm, scale, sub } from './vec';
 import { performScript } from './script.testkit';
 import { posOf, type BeatSpec, scriptOf as buildScript } from './script.testkit';
+import { createStage, performance } from './perform';
+
+type Staged = Pick<Playback, 'frames' | 'events'>;
 
 const fixture = demoFixture();
 // Isolate the approach/hold mechanics at neutral relative pace; T829 tests pace differences.
@@ -35,12 +38,12 @@ const toward = (index: number, metres: number, from?: number): Vec => {
   return add(origin, scale(norm(sub(posOf(frame, index), origin)), metres));
 };
 
-const firstFrameOf = (p: Playback, beat: number): Frame => {
+const firstFrameOf = (p: Staged, beat: number): Frame => {
   const frame = p.frames.find((f) => f.beat === beat);
   if (!frame) throw new Error('beat ' + beat + ' never starts');
   return frame;
 };
-const eventOf = (p: Playback, beat: number, kind: StageEvent['kind']): StageEvent => {
+const eventOf = (p: Staged, beat: number, kind: StageEvent['kind']): StageEvent => {
   const event = p.events.find((e) => e.beat === beat && e.kind === kind);
   if (!event) throw new Error('beat ' + beat + ' has no ' + kind);
   return event;
@@ -65,7 +68,7 @@ const driftBeforeKick = (p: Playback, beat: number, index: number): number => {
 
 /** The share of frames from `from` seconds after beat `beat` starts until its kick in which `index` moves at `speed` m/s at least. */
 const movingShare = (
-  p: Playback,
+  p: Staged,
   beat: number,
   index: number,
   from: number,
@@ -87,10 +90,21 @@ const movingShare = (
 
 describe('pass staging', () => {
   it('the passer keeps the ball moving while he holds', () => {
-    const p = performScript(
+    const p = createStage(
       scriptOf([KICK_OFF, { kind: 'pass', actor: PASSER, receiver: 2, to: [26, 22], hold: 3 }]),
-      { duration: 30 },
     );
+    const program = performance(p);
+    let prepared = false;
+    for (let tick = 0; tick < 300 && !program.next().done; tick++) {
+      if (prepared || p.beat !== 1) continue;
+      // Isolate unpressed carrying: pressure braking and release have their own tests below.
+      for (const opponent of p.fixture.teams[1].players) {
+        p.bodies[opponent.index].pos = [90, 4 + opponent.slot * 5];
+        p.bodies[opponent.index].vel = [0, 0];
+      }
+      prepared = true;
+    }
+    expect(prepared).toBe(true);
     const start = firstFrameOf(p, 1);
     expect(eventOf(p, 1, 'kick').t - start.t).toBeGreaterThan(2.5);
     expect(movingShare(p, 1, PASSER, 0.6, 1)).toBeGreaterThanOrEqual(0.9);

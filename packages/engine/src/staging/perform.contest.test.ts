@@ -1,11 +1,57 @@
 import { describe, expect, it } from 'vitest';
 import { STAGING_CONFIG } from './config';
 import { offsideLineX } from './places';
+import { HALFWAY } from './pitch';
 import { demoFixture } from './squads.testkit';
-import type { Frame, Playback, StageEvent, Vec } from './types';
+import type { BeatOutcome, Frame, Playback, StageEvent, Vec } from './types';
 import { dist } from './vec';
 import { performScript } from './script.testkit';
 import { posOf, scriptOf, type BeatSpec } from './script.testkit';
+import { createStage } from './world';
+import { performPass } from './pass';
+import { giveBall } from './ball';
+import { RELEASE } from './release';
+import { freezeOthers } from './tactics.testkit';
+
+/** One legal receiver and an optional opponent continuously tracking the carrier at 1.5 m. */
+function pressureRelease(escape: number, impossible = false) {
+  const isolated = demoFixture();
+  isolated.players[5].escape = escape;
+  const script = scriptOf(isolated, [
+    {
+      kind: 'pass',
+      actor: 5,
+      receiver: 8,
+      to: [55, 30],
+      hold: impossible ? 0.6 : 8,
+      reason: 'pressed',
+    },
+  ]);
+  const state = createStage(script);
+  for (const p of isolated.players) {
+    state.bodies[p.index].pos = p.team === 0 ? [15, 3 + p.slot * 6] : [90, 3 + p.slot * 6];
+    state.bodies[p.index].vel = [0, 0];
+  }
+  state.bodies[11].pos = [104, 34];
+  state.bodies[5].pos = [45, 30];
+  state.bodies[8].pos = [55, 30];
+  if (!impossible) state.bodies[17].pos = [46.5, 30];
+  giveBall(state, 5);
+  freezeOthers(state, impossible ? [5, 8] : [5, 8, 17]);
+  if (!impossible)
+    state.orders.set(17, {
+      target: () => [state.bodies[5].pos[0] + 1.5, state.bodies[5].pos[1]],
+      pace: 'run',
+    });
+  const program = performPass(state, { beat: script.beats[0] });
+  for (let tick = 0; tick < 300; tick++) {
+    const next = program.next();
+    const kick = state.events.find((e) => e.kind === 'kick');
+    if (kick) return { state, kick };
+    if (next.done) break;
+  }
+  throw new Error('pressed pass never kicked');
+}
 
 // Fixed scripts A–E of T796 (home = slot, away = 11 + slot); every one opens with the kick-off K.
 const fixture = demoFixture();
@@ -201,6 +247,62 @@ describe('stage contests and dead balls', () => {
       ...Array.from({ length: 10 }, (_, k) => dist(posOf(frame, 12 + k), actor)),
     );
     expect(nearest).toBeLessThanOrEqual(STAGE.pressVisible + STAGING_CONFIG.limits.pressedSlack);
+  });
+
+  it.each(['complete', 'out', 'intercepted', 'loose'] as const)(
+    'prepares visible pressure and a legal receiver for an ordinary %s pass',
+    (outcome: BeatOutcome) => {
+      const p = stage([
+        K,
+        { kind: 'pass', actor: 5, receiver: 2, to: [25, 20] },
+        {
+          kind: 'pass',
+          actor: 2,
+          receiver: 3,
+          to: [22, 44],
+          reason: 'pressed',
+          hold: 0.6,
+          outcome,
+          ...(outcome === 'intercepted' || outcome === 'loose' ? { opponent: 17 } : {}),
+        },
+      ]);
+      const kick = p.events.find((e) => e.kind === 'kick' && e.beat === 2);
+      expect(kick).toBeDefined();
+      if (!kick) return;
+      const frame = frameAt(p, kick.t);
+      const actor = posOf(frame, 2);
+      const nearest = Math.min(
+        ...fixture.teams[1].players
+          .filter((q) => q.slot !== 0)
+          .map((q) => dist(posOf(frame, q.index), actor)),
+      );
+      expect(nearest).toBeLessThanOrEqual(STAGE.pressVisible + STAGING_CONFIG.limits.pressedSlack);
+      const receiver = posOf(frame, 3);
+      const positions = fixture.players.map((q) => posOf(frame, q.index));
+      expect(receiver[0]).toBeLessThanOrEqual(
+        Math.max(HALFWAY, actor[0], offsideLineX(fixture, positions, 0)),
+      );
+    },
+  );
+
+  it.each([
+    [0, RELEASE.react],
+    [RELEASE.escape, RELEASE.shield],
+  ] as const)('escape %s retains the ordinary %s s pressure deadline', (escape, deadline) => {
+    const { state, kick } = pressureRelease(escape);
+    expect(kick.t).toBeCloseTo(deadline, 6);
+    expect(state.bodies[8].pos[0]).toBeLessThan(
+      offsideLineX(
+        state.fixture,
+        state.bodies.map((b) => b.pos),
+        0,
+      ),
+    );
+  });
+
+  it('ends impossible visible-pressure preparation within its finite allowance', () => {
+    const { kick } = pressureRelease(0, true);
+    expect(kick.t).toBeCloseTo(0.6 + STAGE.maxExtraHold + STAGE.through.maxWait, 6);
   });
 
   it('a shot blocked far out goes behind for a corner no faster than a deflection', () => {
