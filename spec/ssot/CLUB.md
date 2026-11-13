@@ -1,8 +1,8 @@
 # CLUB Squad and growth
-> r69 | Define the browser-demo rules for squad and growth.
+> r70 | Define the browser-demo rules for squad and growth.
 
 ## decisions
-- CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its generated squad becomes its own players, filled to 20 with players generated at its level (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
+- CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its squad (→WORLD-16) becomes its own players, each as the player he was with his contract, filled to 20 with players generated at its level when it holds fewer (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
   - the 20 cover the manager's formation (→STAFF-22): every slot has a player at 최상 or 준수 there, with two goalkeepers.
 - CLUB-2 [o] Every player carries his birth year, wage, contract term and reputation beside the player model (→PLAYER-1).
 - CLUB-3 [o] Players age using the game calendar, develop and decline by attribute (→PLAYER-15, →PLAYER-17) and are replaced by generated youth. On 1 April each veteran decides from his own stream whether the season is his last; announced players play on and retire at the close unless an accepted playing-coach deferral applies (→STAFF-34). At 41 everyone stops playing, including playing coaches.
@@ -341,6 +341,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r70 261113 CLUB-1✎ the bought club's generated squad becomes its own players, filled to 20→its persisted squad, each as the player he was with his contract, filled to 20 only when it holds fewer
 - r69 261113 CLUB-49✎ clubs nobody owns let go their two least able aged 21+ and sign a free agent at 20% a refresh, a new world starts with a pool→unrenewed contracts join, clubs sign free agents for need, the pool fills from the first close; CLUB-48✎ in force with LEAGUE-10's means level→with WORLD-17's wage limit from the books
 - r68 261113 CLUB-18/24✎ sell cuts at 재정 기조 runway steps→wage bill over the 단장's sales line, runway <4 rounds a crisis; CLUB-26✎ raise checks runway/12-month ceiling/projection→squad-share room + insolvency stop, 12-month revenue removed; CLUB-33/41/47✎ 재정 기조 options→request steps, fee share→squad money + stop; CLUB-32✎ +youth director while delegated; CLUB-43✎ promotion floor→insolvency stop
 - r67 261110 CLUB-26✎ revenue over the last 12 months of a club bought this season read from this season's turnover alone (£0 on its first owned day)→last season from the books it was bought with
