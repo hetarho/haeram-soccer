@@ -119,8 +119,10 @@ describe('incoming bids', () => {
     expect(def.status).toBe('active');
     // Squad minimum and the last goalkeeper.
     const keepers = activePlayers(w).filter((p) => p.position === 'GK');
-    keepers[1].status = 'retired';
+    for (const keeper of keepers.slice(1)) keeper.status = 'retired';
+    expect(activePlayers(w).filter((p) => p.position === 'GK')).toHaveLength(1);
     const lastKeeper = incoming(w, keepers[0].id, '500');
+    lastKeeper.club = buyerFor(w, keepers[0], lastKeeper.fee).id;
     expect(() => respondBid(w, lastKeeper.id, true)).toThrow('골키퍼');
     for (const p of activePlayers(w)
       .filter((p) => p.position !== 'GK')
@@ -132,6 +134,11 @@ describe('incoming bids', () => {
       activePlayers(w).find((p) => lineOf(p.position) === 'FW')!.id,
       '500',
     );
+    minimum.club = buyerFor(
+      w,
+      w.players.find((p) => p.id === minimum.playerId)!,
+      minimum.fee,
+    ).id;
     const before = canonical(w);
     expect(() => respondBid(w, minimum.id, true)).toThrow('최소 선수단');
     expect(canonical(w)).toBe(before);
