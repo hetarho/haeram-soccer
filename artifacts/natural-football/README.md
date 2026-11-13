@@ -4,6 +4,8 @@ The standalone comparison shows the same frozen fixture on two pitches: latest-f
 
 Local delivered page: `.tmp/natural-football/index.html`, served at `http://localhost:19610/`. Production tool sources are `scripts/natural-football/`; generated full-match datasets and raw receipts remain in `.tmp/nf14-evidence/` in the coordinator checkout. Small durable measurements are in [261114-measurements.json](261114-measurements.json).
 
+All34approved tasks are locally integrated through `931991c7`. [Final validation evidence](261114-final-validation.json) records the failed broad gates and the passing post-repair material/scripted-browser cases separately. Main publication is blocked by the unchanged historical division-order failure and fresh actual1950checkpoint inflation (all21country/tier cells outside the original±5band). No football code was pushed, and focused successes are not a complete final-gate pass. The paired HTML remains available offline and at the local URL above.
+
 ## Fixed comparison
 
 ENG, 2024, club `ENG:0:0:0`, first own league fixture, seeds `viewer-2`, `viewer-3`, `viewer-4`. Baseline and candidate use identical inputs, squads and settled records; the support-only step also keeps the full actual record and script hashes identical to the preceding candidate. The builder compares actual normalized records and frozen squads as well as provenance hashes, so changed score/player facts cannot pass by retaining an old hash.

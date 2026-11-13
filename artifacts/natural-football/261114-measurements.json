@@ -1,5 +1,5 @@
 {
-  "status": "pending-final-browser-repair-historical-contract-and-batch-gate",
+  "status": "blocked-current-model-calibration",
   "baseline": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
   "foundation": "ae8fcc86",
   "onsideAndThroughRepair": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
@@ -926,9 +926,10 @@
     "limits": "Three deterministic fixtures; defensive occupancy improves while circling and screened-support proxies worsen relative to the preceding candidate. No universal realism claim; final batch and main publication remain pending."
   },
   "publication": {
-    "status": "private_coordinator_pending_full_gate",
-    "coordinatorAtUpdate": "dde45bf2",
-    "mainFootballPublished": false
+    "footballCodePublished": false,
+    "localIntegration": "931991c7934aa7a32a322753f7808bcaf8ab40cc",
+    "lastObservedMain": "f90ca887696e3ae17e71da6d3f81db54b6417aa1",
+    "reason": "Unchanged historical division-order failure and actual current1950level inflation; full final gate not passed."
   },
   "finalRuntimeCheck": {
     "source": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
@@ -982,5 +983,6 @@
     },
     "publication": "pending; main contains planning/provider rule only",
     "historicalGate": "unchanged original case failed at1946 ENG tier2; diagnosis pending, not waived"
-  }
+  },
+  "finalValidation": "261114-final-validation.json"
 }
