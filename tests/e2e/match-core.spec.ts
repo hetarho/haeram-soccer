@@ -411,7 +411,13 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await replay.getByRole('button', { name: '경기 상세', exact: true }).click();
   const scrubber = matchDetails(page).getByRole('slider', { name: '경기 시간', exact: true });
   await expect(scrubber).toHaveAttribute('max', String(samples.length - 1));
+  const canvas = replay.locator('canvas[data-seconds]');
+  expect(scoredAt(first!) - 1).toBe(0);
+  // An unchanged zero value fires no React seek; establish a real change while paused first.
+  await scrubber.fill('1');
+  await expect(canvas).toHaveAttribute('data-seconds', samples[1]!.time.toFixed(2));
   await scrubber.fill(String(scoredAt(first!) - 1));
+  await expect(canvas).toHaveAttribute('data-seconds', samples[0]!.time.toFixed(2));
   await expect(score).toHaveText('0 : 0');
   await closeMatchDetails(page);
   await replay.getByRole('button', { name: '재생', exact: true }).click();

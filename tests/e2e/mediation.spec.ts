@@ -2,17 +2,9 @@ import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { approvalTray, dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
-import {
-  operate,
-  managerCandidates,
-  prepareSeason,
-  transferWindowDays,
-} from '../../packages/engine/src/index';
+import { operate } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
 import { resolveMediation } from '../../packages/engine/src/mediation';
-import { judgePromises } from '../../packages/engine/src/promises';
-import { signingVerdict } from '../../packages/engine/src/signings';
-import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
 import { DEFAULT_MARKET_QUERY } from '../../apps/web/src/pages/club/lib/worldMarket';
 import { lineOf } from '../../packages/engine/src/player';
@@ -21,7 +13,7 @@ import {
   importResponsibilityCareer,
   mediationCareer as fixture,
   promiseDeadlineCareer,
-  freeAgentMediationCareer,
+  retainedPromiseCareer,
   promiseFreeAgent,
 } from './responsibility-fixtures';
 import { horizontalOverflow, settle } from './layout';
@@ -137,46 +129,22 @@ test('support changes retain the preview and confirm only the latest conditions'
   await expect(preview).toHaveAttribute('aria-busy', 'false');
   await expect(confirm).toBeEnabled();
 });
-test('retained-promise-status', async ({ page }) => {
-  const w = freeAgentMediationCareer();
-  resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
-  const gk = ask(w, 'GK');
-  resolveMediation(w, gk.id, 'manager', 'delegated');
-  const free = promiseFreeAgent(w)!;
-  expect(free).toBeDefined();
-  expect(free.target).toMatchObject({ world: w.id, kind: 'offer', playerId: free.player.id });
-  expect(free.fee).toBe('0');
-  expect(w.people![free.player.id]).toMatchObject({ playing: 'released' });
-  expect(w.people![free.player.id].club).toBeUndefined();
-  expect(recruitmentPreview(w, free)).toMatchObject({ eligible: true, affordable: true });
-  // The original zero-reserve conflict remains: the owner explicitly signs the fee-free keeper.
-  expect(signingVerdict(w, free.player, free.fee, 'short').ok).toBe(false);
-  operate(w, { type: 'recruit', target: free.target });
-  w.calendar = { day: transferWindowDays(w.year).winterClose + 1 };
-  w.round = Math.floor(w.calendar.day / 7);
-  delete w.scorerSeason;
-  judgePromises(w);
-  w.year++;
-  prepareSeason(w);
-  w.manager.until = w.year + 3;
-  w.cash = '0';
-  const pending = ask(w, 'MF');
-  resolveMediation(w, pending.id, 'manager', 'delegated');
-  w.cash = '999999999999';
-  operate(w, { type: 'hire', id: managerCandidates(w)[0].id });
-  w.cash = '0';
-  const last = ask(w, 'MF');
-  resolveMediation(w, last.id, 'manager', 'delegated');
-  w.inbox = [];
-  w.events = [];
-  await market(page, w);
-  await marketInfo(page);
-  await page.getByRole('button', { name: '전체 영입 결정 기록', exact: true }).click();
-  const history = page.getByRole('dialog', { name: '영입 결정 기록' });
-  for (const text of ['이행 대기', '이행 완료', '미이행', '취소'])
-    await expect(history).toContainText(text);
-  await expect(history).toContainText('마감');
-  await expect(history).not.toContainText('신뢰 +');
+test.describe('retained promise history', () => {
+  let prepared: World;
+  test.beforeAll(() => {
+    prepared = retainedPromiseCareer();
+  });
+  test('retained-promise-status', async ({ page }) => {
+    const w = structuredClone(prepared);
+    await market(page, w);
+    await marketInfo(page);
+    await page.getByRole('button', { name: '전체 영입 결정 기록', exact: true }).click();
+    const history = page.getByRole('dialog', { name: '영입 결정 기록' });
+    for (const text of ['이행 대기', '이행 완료', '미이행', '취소'])
+      await expect(history).toContainText(text);
+    await expect(history).toContainText('마감');
+    await expect(history).not.toContainText('신뢰 +');
+  });
 });
 
 for (const mode of ['manual', 'automatic'] as const)

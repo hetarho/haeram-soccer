@@ -5,6 +5,9 @@ import {
   advanceDays,
   currentDay,
   managerOffers,
+  managerCandidates,
+  prepareSeason,
+  transferWindowDays,
   operate,
   seasonDayOf,
   simulateSeason,
@@ -13,6 +16,9 @@ import {
 } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { joinFreeAgents } from '../../packages/engine/src/free-agents';
+import { judgePromises } from '../../packages/engine/src/promises';
+import { signingVerdict } from '../../packages/engine/src/signings';
+import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { scoutReach } from '../../packages/engine/src/scout-search';
 import { clubOf, overall } from '../../packages/engine/src/player-state';
 import { careerDate, careerOrdinal } from '../../packages/engine/src/person-careers';
@@ -155,6 +161,52 @@ export function freeAgentMediationCareer() {
       w.cash = '0';
       // The commitment is created by the caller only after this preparation has finished.
       askForSigning(w, 'MF');
+      return w;
+    },
+    { dependencies: [SELF] },
+  );
+}
+
+/** The complete retained-history scene, prepared before its browser case. */
+export function retainedPromiseCareer() {
+  return cachedWorld(
+    'e2e-mediation-four-status',
+    () => {
+      const w = freeAgentMediationCareer();
+      resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
+      const gk = askForSigning(w, 'GK');
+      resolveMediation(w, gk.id, 'manager', 'delegated');
+      const free = promiseFreeAgent(w)!;
+      expect(free).toBeDefined();
+      expect(free.target).toMatchObject({ world: w.id, kind: 'offer', playerId: free.player.id });
+      expect(free.fee).toBe('0');
+      expect(w.people![free.player.id]).toMatchObject({ playing: 'released' });
+      expect(w.people![free.player.id].club).toBeUndefined();
+      expect(recruitmentPreview(w, free)).toMatchObject({ eligible: true, affordable: true });
+      // The original zero-reserve conflict remains: the owner explicitly signs the fee-free keeper.
+      expect(signingVerdict(w, free.player, free.fee, 'short').ok).toBe(false);
+      operate(w, { type: 'recruit', target: free.target });
+      w.calendar = { day: transferWindowDays(w.year).winterClose + 1 };
+      w.round = Math.floor(w.calendar.day / 7);
+      delete w.scorerSeason;
+      judgePromises(w);
+      w.year++;
+      prepareSeason(w);
+      w.manager.until = w.year + 3;
+      w.cash = '0';
+      const pending = askForSigning(w, 'MF');
+      resolveMediation(w, pending.id, 'manager', 'delegated');
+      w.cash = '999999999999';
+      operate(w, { type: 'hire', id: managerCandidates(w)[0].id });
+      w.cash = '0';
+      const last = askForSigning(w, 'MF');
+      resolveMediation(w, last.id, 'manager', 'delegated');
+      w.inbox = [];
+      w.events = [];
+      expect(new Set(w.promises!.map((promise) => promise.status))).toEqual(
+        new Set(['pending', 'fulfilled', 'unfulfilled', 'cancelled']),
+      );
+      expect(w.cash).toBe('0');
       return w;
     },
     { dependencies: [SELF] },
