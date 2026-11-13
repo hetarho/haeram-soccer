@@ -1,11 +1,6 @@
 # SESSIONS
 > Running sessions, their claims, the inbox and the log. Written by the gusta CLI on its own branch; never merged into a code branch.
 
-## active
-| tag | host | mode | since | at | doing | branch | commit |
-|---|---|---|---|---|---|---|---|
-| pr14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T18:19Z | 2026-11-13T22:42Z | - | fix/pb14-final-review | 544a404176fa |
-
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
 - 261113 decided T864: 시장 초기값 선택: 첫날·중간날·마지막 날 3회 정산, 개선 폭 4, 임대 23세 이하, 일반 이동 창구당 3회를 채택했습니다. 대안은 매일 정산 또는 더 큰 이동 한도였으나 T864의 제한된 정산과 T866 보정을 유지했습니다. 강제 매각은 급여 한도와 인원·라인 최소를 우선하고, 개막 0일 이동은 개막 상태를 남긴 뒤 첫 진행에서 정산합니다. 성장만으로 XI를 다시 고르지 않는 기존 계약을 복구했습니다.
