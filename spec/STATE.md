@@ -80,6 +80,8 @@
 | T897 | Preserve regulation facts and exact seeded replay inputs | ARCH MATCH WORLD | T885 | todo |
 | T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
 | T899 | Trial settlement-local NPC market ratings | ARCH | T878 T880 | todo |
+| T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
+| T900 | Reuse identical placed weights within one attribution | ARCH MATCH WORLD | T885 | todo |
 
 ## next
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
