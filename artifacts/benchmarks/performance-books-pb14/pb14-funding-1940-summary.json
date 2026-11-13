@@ -1,0 +1,33 @@
+{
+  "years": [
+    1930,
+    1931,
+    1932,
+    1933,
+    1934,
+    1935,
+    1936,
+    1937,
+    1938
+  ],
+  "countries": [
+    "BEL",
+    "ENG",
+    "ESP",
+    "FRA",
+    "GER",
+    "ITA",
+    "NED",
+    "POR"
+  ],
+  "clubSeasons": 4059,
+  "wagesAboveTurnover": 35,
+  "negativeResults": 572,
+  "capitalDraws": 26,
+  "exhausted": 0,
+  "unsupportedShortfalls": 0,
+  "debtBooks": 0,
+  "reconciliationFailures": 0,
+  "afterSummerCommitments": 4059,
+  "unsupportedSummerCommitments": 0
+}

@@ -1,0 +1,50 @@
+{
+  "source": "21f8a88d0af56ccd11cd9205b4f060a059d1dc70",
+  "runtimeUnchanged": true,
+  "sourceStatus": {
+    "1940": "clean",
+    "1950": "report_dirty"
+  },
+  "computation": {
+    "algorithm": "sha256",
+    "sha256": "120720786e669c765cb2cc58d05ce0a08dae037a0875f07f44b7eb7c5e51a93e",
+    "files": 211,
+    "entry": "scripts/persisted-world-read.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "seed": "pb14-funding-1930",
+  "commands": [
+    "node --import tsx scripts/persisted-world-read.ts --seed pb14-funding-1930 --until 1940 --extend 1940 --out .tmp/pb14-funding-1940.json",
+    "node --import tsx scripts/persisted-world-read.ts --seed pb14-funding-1930 --until 1950 --extend 1950 --out .tmp/pb14-funding-1950.json"
+  ],
+  "files": {
+    "pb14-funding-1940.json": {
+      "bytes": 6277531,
+      "sha256": "366393dd129415cd84651d02b6b000531f8a7ee53ce0037bb4699f6d4998ed85"
+    },
+    "pb14-funding-1940-summary.json": {
+      "bytes": 486,
+      "sha256": "ccffdf56f7e111a380abc83ba52a99cf04166baa7bfd4cb231a681a237138c3b"
+    },
+    "pb14-funding-1940-receipt.json": {
+      "bytes": 1689,
+      "sha256": "8e0b7f0e3935f790e353332828392e9333f10e23947040af192186e12c8b2e4f"
+    },
+    "pb14-funding-1950.json": {
+      "bytes": 9107299,
+      "sha256": "d293ff355b81020380ee30cad1aa0bff69752ffaf859c2d8a83e958028899861"
+    },
+    "pb14-funding-1950-summary.json": {
+      "bytes": 884,
+      "sha256": "fbf256ca9bc1050a61f16421a823cc3c90038406a72d028fbc345b53e069adc2"
+    },
+    "pb14-funding-1950-receipt.json": {
+      "bytes": 1707,
+      "sha256": "280a2cd4bd47df0aec59e349fead4be61184feba892c0757edf6a5f122465eaf"
+    },
+    "pb14-postwar-debts.csv": {
+      "bytes": 1267,
+      "sha256": "d8a3d485b4a81bea1f47ee95ed5b0060bb9a299ecee32551ba0d60319528c703"
+    }
+  }
+}

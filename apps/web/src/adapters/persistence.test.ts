@@ -39,6 +39,7 @@ import { bmpText } from './bmp127';
 import { encodePayload } from './compression';
 import { brotliCompressSync } from 'node:zlib';
 import {
+  COMPATIBLE_ENGINE_VERSIONS,
   CURRENT_CHECKPOINT_SCHEMA,
   CURRENT_ENGINE_VERSION,
   envelopeEngine,
@@ -605,7 +606,10 @@ describe('checkpoint container schema 2', () => {
       FULL_MODEL_CHECKPOINT_SCHEMA,
       MANAGER_HISTORY_CHECKPOINT_SCHEMA,
     ]);
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION]);
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([
+      CURRENT_ENGINE_VERSION,
+      ...COMPATIBLE_ENGINE_VERSIONS,
+    ]);
     // A career saved before the full model and manager history, which a new founding tracks
     // (→SAVE-23/24).
     const w = withoutManagerHistory(withIdentity(unmodelled(1), IDENTITY));
