@@ -1344,11 +1344,9 @@ function Roster({ state, client }: Props) {
                               {localizeValue(p.status === 'active' ? p.adaptation.toFixed(2) : '—')}
                             </td>
                             <td>
-                              {localizeValue(
-                                p.status === 'active'
-                                  ? w.year - p.born
-                                  : sourceMessage('copy.Rich.5e81695906', { p0: p.born }),
-                              )}
+                              {richMessage('copy.ClubOverview.9c2b927c8a', {
+                                p0: w.year - p.born,
+                              })}
                             </td>
                             <td>{localizeValue(number(p.potential))}</td>
                             <td>

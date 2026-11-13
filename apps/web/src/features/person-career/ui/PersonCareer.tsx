@@ -94,9 +94,8 @@ export function PersonCareer({
           <>
             <h2>{richMessage('copy.PersonCareer.0ab0fb4510', { p0: d.person.name })}</h2>
             <p>
-              {richMessage('copy.PersonCareer.e0f5283afd', {
-                p0: d.person.born,
-                p1: d.at.year - d.person.born,
+              {richMessage('copy.ClubOverview.9c2b927c8a', {
+                p0: d.at.year - d.person.born,
               })}
             </p>
             <h3>{richMessage('copy.PersonCareer.e3a69d9427')}</h3>

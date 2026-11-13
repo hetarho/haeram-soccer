@@ -3748,7 +3748,6 @@ export const sourceMessages = {
   'copy.PersonCareer.d022448529': '경력 상세를 불러올 수 없어요. {p0}',
   'copy.PersonCareer.a0e882038c': '경력을 불러오는 중이에요.',
   'copy.PersonCareer.0ab0fb4510': '{p0} · 인물 경력',
-  'copy.PersonCareer.e0f5283afd': '{p0}년생 · {p1}세',
   'copy.PersonCareer.e3a69d9427': '선수 경력',
   'copy.PersonCareer.89a03c5123': '우리 클럽에서 기록한 통산 경기 {p0} · 득점 {p1}{p2}· 도움 {p3}',
   'copy.PersonCareer.d74811434b': '기록되지 않은 다른 구단·시작 이전 선수 통계는 제공되지 않아요.',
@@ -4308,7 +4307,6 @@ export const sourceMessages = {
   'team.column.fatigue': '피로',
   'copy.Rich.fc798874df': '은퇴',
   'team.loan': '임대',
-  'copy.Rich.5e81695906': '{p0}년생',
   'copy.Rich.f254b07d47': ' (교체 {p0})',
   'copy.Rich.0ff383e96f':
     '감독이 포메이션 자리마다 실효 능력과 피로를 따져 선발을 고르고, 부상 선수는 빼요. 선수마다 이적 상태 뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장 기간에 실제 구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요. 지금: {p0}',

@@ -85,9 +85,7 @@ export function OwnPlayerSheet({
       <p>
         {richMessage('copy.OwnPlayerSheet.33c518b619', {
           p0: player.position,
-          p1: active
-            ? sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: w.year - player.born })
-            : sourceMessage('copy.Rich.5e81695906', { p0: player.born }),
+          p1: sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: w.year - player.born }),
           p2: ' ',
           p3: agentOf(w, player),
         })}
