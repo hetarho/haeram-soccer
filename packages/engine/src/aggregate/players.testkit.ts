@@ -5,6 +5,8 @@ import { FORMATIONS } from '../player';
 import { matchdayRosters, playAggregate } from './engine';
 import { buildAggregateInput, fullParticipation } from './input';
 import { deriveTeamFacts } from './ledger';
+import { attributePlayerFacts, type SideLines } from './players';
+import { aggregateStreams } from './team';
 import type {
   AggregateAttributionTrace,
   AggregateLedger,
@@ -120,4 +122,76 @@ export function attributionFixture(index = 0) {
     sides: [ledgerSide(), ledgerSide()],
   };
   return { input, plan, participation, facts: deriveTeamFacts(ledger) };
+}
+
+/** Repeated/distinct placement keys with extra time, a replacement and a dismissal. */
+export function attributionCacheFixture() {
+  const m = attributionFixture(5);
+  m.input.sides[0].lines = [...m.input.sides[0].lines, { id: '0-bench' }];
+  m.participation = {
+    ...m.participation,
+    stints: [
+      [
+        ...m.participation.stints[0].map((s) => (s.line === 6 ? { ...s, to: 50 } : s)),
+        { line: 11, slot: 6, from: 50, to: 120 },
+      ],
+      m.participation.stints[1].map((s) => (s.line === 10 ? { ...s, to: 60 } : s)),
+    ],
+    incidents: [{ side: 1, minute: 60, kind: 'red', player: '1-10', reason: 'reckless' }],
+  };
+  for (const side of [0, 1] as const) {
+    const ledger = m.facts.ledger.sides[side];
+    ledger.moves.push(
+      { ...ledger.moves[0]! },
+      { ...ledger.moves[0]!, kind: 'long' },
+      ...ledger.moves.map((move) => ({ ...move, period: 'extra' as const })),
+    );
+    ledger.fouled.push({ period: 'extra', cell: 22, n: 2, penalties: 0 });
+    ledger.shots.push({ ...ledger.shots[0]!, period: 'extra', minute: 105, source: 14 });
+  }
+  m.facts.ledger.sides[1].cards.red = 1;
+  m.facts.ledger.sides[1].cardFouls = 1;
+  m.facts = deriveTeamFacts(m.facts.ledger);
+  return m;
+}
+
+/** Full isolated output plus every named random draw, for exact pre/post comparisons. */
+export function attributionObservation(index: number, placed: boolean, varied = false) {
+  const m = varied ? attributionCacheFixture() : attributionFixture(index);
+  const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
+  const streams = aggregateStreams(m.input.seed, m.input.fixture);
+  const draws: { stream: string; value: number }[] = [];
+  const players = attributePlayerFacts(
+    m.input,
+    { ...m.plan, placed },
+    m.participation,
+    m.facts,
+    {
+      names: streams.names,
+      draw: (family, period) => {
+        const draw = streams.draw(family, period);
+        return () => {
+          const value = draw();
+          draws.push({ stream: streams.names(family, period), value });
+          return value;
+        };
+      },
+    },
+    trace,
+  );
+  return { players, trace, draws };
+}
+
+/** Distinct roles sharing an attribute still have independent line/action weights. */
+export function attributionWeightRole(id: number): Parameters<SideLines['weightsAt']>[1] {
+  const byLine = [0, id + 1, 8 - id, 2 + id / 2];
+  return {
+    id,
+    table: { GK: byLine[0]!, DF: byLine[1]!, MF: byLine[2]!, FW: byLine[3]! },
+    byLine,
+    attribute: 'passing',
+    call: undefined,
+    action: id % 2 ? 'long' : undefined,
+    wide: id % 2 ? 1.5 : undefined,
+  };
 }

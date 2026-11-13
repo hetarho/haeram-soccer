@@ -207,7 +207,7 @@ interface Row {
 }
 
 /** One side's lines, their exposures and cached weights while the match is attributed. */
-class SideLines {
+export class SideLines {
   readonly rows: Row[];
   private readonly cache = new Map<string, Map<TakerKey, number[]>>();
   /** Per period (regulation, extra), each role's weights by its `id` (T612). */
@@ -227,6 +227,11 @@ class SideLines {
   private readonly presence = new Map<number, readonly { line: number; slot: number }[]>();
   /** Place terms by cell and possession, then slot; shared by all action roles. */
   private readonly places = new Map<number, number[]>();
+  /** Complete placed-weight keys; this instance lives for one side of one attribution only. */
+  private readonly placedWeights = new Map<
+    AggregatePeriod,
+    Map<number, Map<number, readonly number[]>>
+  >();
   /** One split's buffers of the side's line count, reused by every move group (T326). */
   readonly attempts: number[];
   readonly completed: number[];
@@ -381,9 +386,21 @@ class SideLines {
   }
 
   /** The same exposure weights, bent by the role's place in this cell. */
-  weightsAt(period: AggregatePeriod, role: Role, cell: number, inPossession: boolean): number[] {
+  weightsAt(
+    period: AggregatePeriod,
+    role: Role,
+    cell: number,
+    inPossession: boolean,
+  ): readonly number[] {
     const base = this.weights(period, role);
     if (!this.plan.placed) return base;
+    let roles = this.placedWeights.get(period);
+    if (!roles) this.placedWeights.set(period, (roles = new Map()));
+    let cells = roles.get(role.id);
+    if (!cells) roles.set(role.id, (cells = new Map()));
+    const key = cell * 2 + Number(inPossession);
+    const cached = cells.get(key);
+    if (cached) return cached;
     const list = this.exposuresOf(period);
     const terms = this.termsOf(
       period,
@@ -401,6 +418,7 @@ class SideLines {
     // Preserve `weights`' minutes-only fallback when none of the role's lines played.
     if (!(total > 0))
       for (const e of list) out[e.line]! += e.minutes * this.place(e.slot, cell, inPossession);
+    cells.set(key, out);
     return out;
   }
 
