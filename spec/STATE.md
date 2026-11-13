@@ -62,7 +62,7 @@
 | T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
 | T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
 | T908 | Reconcile throughput signatures with proven founding changes | ARCH WORLD MATCH HIST | T885 T889 | todo |
-| T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T906 | todo |
+| T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T885 | todo |
 | T911 | Observe contract expiry before genuine mandatory rehires | ARCH CLUB WORLD HIST | T885 | todo |
 
 ## work
