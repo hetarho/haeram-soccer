@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T17:22:06.194Z",
-  "sourceCommit": "5f8bdf24b0461d02b349694b2d716dda336b4561",
+  "snapshotAt": "2026-11-13T18:37:38.319Z",
+  "sourceCommit": "92778ca0fb0fa805120bfd48128bddb1c5697ac4",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -18,7 +18,16 @@
       "T873",
       "T874",
       "T875",
-      "T876"
+      "T876",
+      "T884",
+      "T885",
+      "T886",
+      "T887",
+      "T888",
+      "T889",
+      "T890",
+      "T891",
+      "T892"
     ],
     "lastRun": {
       "id": "5932b97a-14a6-4d61-a8b9-f4397341625d",
@@ -52,15 +61,84 @@
     }
   },
   "summary": {
-    "total": 4,
-    "completed": 4,
-    "remaining": 0,
-    "running": 0,
+    "total": 13,
+    "completed": 5,
+    "remaining": 8,
+    "running": 2,
     "review": 0,
     "blocked": 0,
-    "unassigned": 0
+    "unassigned": 6
   },
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "T884",
+      "title": "Retain live verification stages and full failure logs",
+      "dep": [],
+      "lane": "ci-verification",
+      "status": "doing"
+    },
+    {
+      "id": "T886",
+      "title": "Reconcile portable fixtures with reviewed current rules",
+      "dep": [
+        "T885"
+      ],
+      "lane": "portable-contracts",
+      "status": "todo"
+    },
+    {
+      "id": "T887",
+      "title": "Prepare real post-close free agents for promise journeys",
+      "dep": [
+        "T885"
+      ],
+      "lane": "promise-browser-scenes",
+      "status": "todo"
+    },
+    {
+      "id": "T888",
+      "title": "Find goal scenes through the actual replay adapters",
+      "dep": [],
+      "lane": "goal-browser-scenes",
+      "status": "doing"
+    },
+    {
+      "id": "T889",
+      "title": "Keep the best-placed defender in central cover",
+      "dep": [
+        "T885"
+      ],
+      "lane": "football-cover",
+      "status": "todo"
+    },
+    {
+      "id": "T890",
+      "title": "Prepare exact replacement and top-up scenarios",
+      "dep": [
+        "T885"
+      ],
+      "lane": "replacement-topup-fixtures",
+      "status": "todo"
+    },
+    {
+      "id": "T891",
+      "title": "Prepare real market candidates and exact registration caps",
+      "dep": [
+        "T885"
+      ],
+      "lane": "market-consumer-fixtures",
+      "status": "todo"
+    },
+    {
+      "id": "T892",
+      "title": "Prepare explicit founding, employment and legacy identity fixtures",
+      "dep": [
+        "T885"
+      ],
+      "lane": "identity-lifecycle-fixtures",
+      "status": "todo"
+    }
+  ],
   "attempts": [
     {
       "id": "54889c68-0b2c-4ce5-ad4a-463b58dc1b66",
@@ -295,6 +373,8 @@
       "submittedBase": "88820aeb00e4c23b2b2960ec5766600f75126fc6",
       "submissionId": "d1da0d0d-278e-4261-b4aa-1a6f4edc4c62",
       "submittedAt": "2026-11-13T17:18:44.835Z",
+      "integratedCommit": "15ec0ba65b849f6e11f635d4e51b8c03949efe26",
+      "integratedAt": "2026-11-13T17:23:01.776Z",
       "risk": null,
       "review": {
         "id": "9f163989-0b3b-4323-b23e-4b1b3b23dcfd",
@@ -329,7 +409,151 @@
           "startedAt": "2026-11-13T17:15:56.791Z",
           "finishedAt": "2026-11-13T17:18:44.244Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T17:22:06.373Z",
+          "finishedAt": "2026-11-13T17:23:01.340Z"
+        }
       ]
+    },
+    {
+      "id": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "group": "natural-football-261114",
+      "taskId": "T884",
+      "tasks": [
+        "T884"
+      ],
+      "lane": "ci-verification",
+      "owner": "nf14-codex-verification",
+      "contributors": [
+        "nf14-codex-verification"
+      ],
+      "status": "doing",
+      "reason": "T884 retains full logs and truthful process/reporter failures, but catchable cancellation can leave nested command processes alive and never emit the promised terminal receipt.",
+      "createdAt": "2026-11-13T18:24:59.855Z",
+      "startCommit": "e63f6616d7e1eab3caee4707f35accf06ff1f763",
+      "submittedBase": "6c418538190abbe69f8f1383538a8e564ad9d647",
+      "submissionId": "3bc970d5-5c36-4d0c-8233-5836e98f45ac",
+      "submittedAt": "2026-11-13T18:33:31.480Z",
+      "risk": null,
+      "reviewHistory": [
+        {
+          "id": "42dd2926-8acb-49e4-aef0-4a9953946801",
+          "owner": "nf14-codex-independent-verification",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T884 retains full logs and truthful process/reporter failures, but catchable cancellation can leave nested command processes alive and never emit the promised terminal receipt.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "T884 scripts/lib/verification-runner.ts:163-171 and scripts/verify.mjs:147-154",
+              "message": "cancel() signals only the immediate child. A command that spawns a long-lived child with inherited stdout/stderr exits on SIGTERM while its descendant survives and holds the pipes open; Node never emits the immediate child close event, so run.done and verify.mjs remain waiting with only a cancelling receipt. Reproduced on the fixed submission with two tiny Node processes: after 500 ms done=false, lastStatus=cancelling and grandchildAlive=true; the terminal receipt appeared only after explicit grandchild cleanup. The real stages run through pnpm and can have the same process nesting. Make cancellation terminate the owned command subtree and finish its terminal/log receipt within a bounded cleanup period, while retaining outer-Gusta cancellation containment; add a focused nested-child cancellation regression rather than a full-suite test. Raw reproduction: /tmp/nf14-t884-review-descendant.mts and /tmp/nf14-t884-review-descendant.jsonl. All nine submitted tiny-child tests independently pass (/tmp/nf14-t884-review-unit.log), but none exercises descendants."
+            }
+          ],
+          "commit": "85c5918a0a12abf25d5a13317c5184d02963c30e",
+          "baseCommit": "6c418538190abbe69f8f1383538a8e564ad9d647",
+          "submissionId": "3bc970d5-5c36-4d0c-8233-5836e98f45ac",
+          "createdAt": "2026-11-13T18:33:34.088Z",
+          "finishedAt": "2026-11-13T18:35:39.388Z",
+          "invalidatedAt": "2026-11-13T18:37:33.615Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T884",
+          "commit": "85c5918a0a12abf25d5a13317c5184d02963c30e",
+          "at": "2026-11-13T18:33:31.462Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T18:32:51.193Z",
+              "finishedAt": "2026-11-13T18:33:31.176Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T18:32:51.193Z",
+          "finishedAt": "2026-11-13T18:33:31.176Z"
+        }
+      ]
+    },
+    {
+      "id": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+      "group": "natural-football-261114",
+      "taskId": "T885",
+      "tasks": [
+        "T885"
+      ],
+      "lane": "persisted-test-fixtures",
+      "owner": "nf14-codex-fixture-foundation",
+      "contributors": [
+        "nf14-codex-fixture-foundation"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-13T18:25:02.798Z",
+      "startCommit": "e63f6616d7e1eab3caee4707f35accf06ff1f763",
+      "verifiedCommit": "8fc61ad85e6b4ed9027394e900d276751e2b095b",
+      "submittedBase": "0ceda9a86366220f4cce7111fa6ad9ef8e9e2a50",
+      "submissionId": "f83a42c9-5d84-4c8c-a0de-449bf3f7d0ea",
+      "submittedAt": "2026-11-13T18:35:36.711Z",
+      "risk": null,
+      "review": {
+        "id": "197e047d-d224-4b23-844c-0b8c861e8891",
+        "owner": "nf14-codex-independent-fixtures",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T885 repairs the demonstrated test-input assumptions without changing production careers, market policy, cache defaults or identity rules. The extracted release helper retains the original stored-club/stable-ability/two-adult sequence and uses joinFreeAgents; explicit twenty-player setup preserves line/formation/GK cover and transfers spare identities through movePerson. A separate real-takeover assertion retains all purchased IDs, birth years and contract ends. Contract clauses/loan exclusions and canonical helper season-transfer-reload equality remain. Independently ran all five focused helper unit cases successfully (1.25 s, /tmp/nf14-t885-review-unit.log) and inspected the coordinator receipts: seven unchanged squad cases plus the corrected first-case recheck, contract signing and season/helper equivalence pass. No P1/P2 finding; full integration/browser/final release gates remain coordinator-owned.",
+        "findings": [],
+        "commit": "8fc61ad85e6b4ed9027394e900d276751e2b095b",
+        "baseCommit": "0ceda9a86366220f4cce7111fa6ad9ef8e9e2a50",
+        "submissionId": "f83a42c9-5d84-4c8c-a0de-449bf3f7d0ea",
+        "createdAt": "2026-11-13T18:35:51.479Z",
+        "finishedAt": "2026-11-13T18:37:17.247Z"
+      },
+      "steps": [
+        {
+          "taskId": "T885",
+          "commit": "8fc61ad85e6b4ed9027394e900d276751e2b095b",
+          "at": "2026-11-13T18:35:36.701Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+              "startedAt": "2026-11-13T18:35:01.706Z",
+              "finishedAt": "2026-11-13T18:35:36.517Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T18:35:01.706Z",
+          "finishedAt": "2026-11-13T18:35:36.517Z"
+        }
+      ]
+    },
+    {
+      "id": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+      "group": "natural-football-261114",
+      "taskId": "T888",
+      "tasks": [
+        "T888"
+      ],
+      "lane": "goal-browser-scenes",
+      "owner": "nf14-codex-goal-scenes",
+      "contributors": [
+        "nf14-codex-goal-scenes"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-13T18:34:01.312Z",
+      "startCommit": "6c418538190abbe69f8f1383538a8e564ad9d647"
     }
   ],
   "history": [
@@ -1744,6 +1968,464 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 58,
+      "at": "2026-11-13T17:23:01.524Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "701a2974-071d-4871-9354-42dc824e39b0",
+      "taskId": "T876",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T17:22:06.373Z",
+            "finishedAt": "2026-11-13T17:23:01.340Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 59,
+      "at": "2026-11-13T17:23:01.776Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "701a2974-071d-4871-9354-42dc824e39b0",
+      "taskId": "T876",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "15ec0ba65b849f6e11f635d4e51b8c03949efe26",
+        "integratedAt": "2026-11-13T17:23:01.776Z"
+      }
+    },
+    {
+      "sequence": 60,
+      "at": "2026-11-13T18:24:40.882Z",
+      "type": "group",
+      "group": "natural-football-261114",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T873",
+          "T874",
+          "T875",
+          "T876",
+          "T884",
+          "T885",
+          "T886",
+          "T887",
+          "T888",
+          "T889"
+        ]
+      }
+    },
+    {
+      "sequence": 61,
+      "at": "2026-11-13T18:24:59.855Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+        "group": "natural-football-261114",
+        "taskId": "T884",
+        "tasks": [
+          "T884"
+        ],
+        "lane": "ci-verification",
+        "owner": "nf14-codex-verification",
+        "contributors": [
+          "nf14-codex-verification"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T18:24:59.855Z",
+        "startCommit": "e63f6616d7e1eab3caee4707f35accf06ff1f763"
+      }
+    },
+    {
+      "sequence": 62,
+      "at": "2026-11-13T18:25:02.590Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 63,
+      "at": "2026-11-13T18:25:02.798Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+      "taskId": "T885",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+        "group": "natural-football-261114",
+        "taskId": "T885",
+        "tasks": [
+          "T885"
+        ],
+        "lane": "persisted-test-fixtures",
+        "owner": "nf14-codex-fixture-foundation",
+        "contributors": [
+          "nf14-codex-fixture-foundation"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T18:25:02.798Z",
+        "startCommit": "e63f6616d7e1eab3caee4707f35accf06ff1f763"
+      }
+    },
+    {
+      "sequence": 64,
+      "at": "2026-11-13T18:25:05.543Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+      "taskId": "T885",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 65,
+      "at": "2026-11-13T18:32:50.934Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 66,
+      "at": "2026-11-13T18:33:18.342Z",
+      "type": "group",
+      "group": "natural-football-261114",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T873",
+          "T874",
+          "T875",
+          "T876",
+          "T884",
+          "T885",
+          "T886",
+          "T887",
+          "T888",
+          "T889",
+          "T890",
+          "T891",
+          "T892"
+        ]
+      }
+    },
+    {
+      "sequence": 67,
+      "at": "2026-11-13T18:33:31.480Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "85c5918a0a12abf25d5a13317c5184d02963c30e",
+        "submittedBase": "6c418538190abbe69f8f1383538a8e564ad9d647",
+        "submissionId": "3bc970d5-5c36-4d0c-8233-5836e98f45ac",
+        "submittedAt": "2026-11-13T18:33:31.480Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T884",
+            "commit": "85c5918a0a12abf25d5a13317c5184d02963c30e",
+            "at": "2026-11-13T18:33:31.462Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T18:32:51.193Z",
+                "finishedAt": "2026-11-13T18:33:31.176Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T18:32:51.193Z",
+            "finishedAt": "2026-11-13T18:33:31.176Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 68,
+      "at": "2026-11-13T18:33:34.088Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "42dd2926-8acb-49e4-aef0-4a9953946801",
+          "owner": "nf14-codex-independent-verification",
+          "status": "reviewing",
+          "commit": "85c5918a0a12abf25d5a13317c5184d02963c30e",
+          "baseCommit": "6c418538190abbe69f8f1383538a8e564ad9d647",
+          "submissionId": "3bc970d5-5c36-4d0c-8233-5836e98f45ac",
+          "createdAt": "2026-11-13T18:33:34.088Z"
+        }
+      }
+    },
+    {
+      "sequence": 69,
+      "at": "2026-11-13T18:34:01.312Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+      "taskId": "T888",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+        "group": "natural-football-261114",
+        "taskId": "T888",
+        "tasks": [
+          "T888"
+        ],
+        "lane": "goal-browser-scenes",
+        "owner": "nf14-codex-goal-scenes",
+        "contributors": [
+          "nf14-codex-goal-scenes"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-13T18:34:01.312Z",
+        "startCommit": "6c418538190abbe69f8f1383538a8e564ad9d647"
+      }
+    },
+    {
+      "sequence": 70,
+      "at": "2026-11-13T18:34:04.306Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "b5890125-316e-4d26-9cab-5b6981d61ae7",
+      "taskId": "T888",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 71,
+      "at": "2026-11-13T18:35:01.521Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+      "taskId": "T885",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 72,
+      "at": "2026-11-13T18:35:36.711Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+      "taskId": "T885",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "8fc61ad85e6b4ed9027394e900d276751e2b095b",
+        "submittedBase": "0ceda9a86366220f4cce7111fa6ad9ef8e9e2a50",
+        "submissionId": "f83a42c9-5d84-4c8c-a0de-449bf3f7d0ea",
+        "submittedAt": "2026-11-13T18:35:36.711Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T885",
+            "commit": "8fc61ad85e6b4ed9027394e900d276751e2b095b",
+            "at": "2026-11-13T18:35:36.701Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+                "startedAt": "2026-11-13T18:35:01.706Z",
+                "finishedAt": "2026-11-13T18:35:36.517Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T18:35:01.706Z",
+            "finishedAt": "2026-11-13T18:35:36.517Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 73,
+      "at": "2026-11-13T18:35:39.388Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T884 retains full logs and truthful process/reporter failures, but catchable cancellation can leave nested command processes alive and never emit the promised terminal receipt.",
+        "review": {
+          "id": "42dd2926-8acb-49e4-aef0-4a9953946801",
+          "owner": "nf14-codex-independent-verification",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T884 retains full logs and truthful process/reporter failures, but catchable cancellation can leave nested command processes alive and never emit the promised terminal receipt.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "T884 scripts/lib/verification-runner.ts:163-171 and scripts/verify.mjs:147-154",
+              "message": "cancel() signals only the immediate child. A command that spawns a long-lived child with inherited stdout/stderr exits on SIGTERM while its descendant survives and holds the pipes open; Node never emits the immediate child close event, so run.done and verify.mjs remain waiting with only a cancelling receipt. Reproduced on the fixed submission with two tiny Node processes: after 500 ms done=false, lastStatus=cancelling and grandchildAlive=true; the terminal receipt appeared only after explicit grandchild cleanup. The real stages run through pnpm and can have the same process nesting. Make cancellation terminate the owned command subtree and finish its terminal/log receipt within a bounded cleanup period, while retaining outer-Gusta cancellation containment; add a focused nested-child cancellation regression rather than a full-suite test. Raw reproduction: /tmp/nf14-t884-review-descendant.mts and /tmp/nf14-t884-review-descendant.jsonl. All nine submitted tiny-child tests independently pass (/tmp/nf14-t884-review-unit.log), but none exercises descendants."
+            }
+          ],
+          "commit": "85c5918a0a12abf25d5a13317c5184d02963c30e",
+          "baseCommit": "6c418538190abbe69f8f1383538a8e564ad9d647",
+          "submissionId": "3bc970d5-5c36-4d0c-8233-5836e98f45ac",
+          "createdAt": "2026-11-13T18:33:34.088Z",
+          "finishedAt": "2026-11-13T18:35:39.388Z"
+        }
+      }
+    },
+    {
+      "sequence": 74,
+      "at": "2026-11-13T18:35:51.479Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+      "taskId": "T885",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "197e047d-d224-4b23-844c-0b8c861e8891",
+          "owner": "nf14-codex-independent-fixtures",
+          "status": "reviewing",
+          "commit": "8fc61ad85e6b4ed9027394e900d276751e2b095b",
+          "baseCommit": "0ceda9a86366220f4cce7111fa6ad9ef8e9e2a50",
+          "submissionId": "f83a42c9-5d84-4c8c-a0de-449bf3f7d0ea",
+          "createdAt": "2026-11-13T18:35:51.479Z"
+        }
+      }
+    },
+    {
+      "sequence": 75,
+      "at": "2026-11-13T18:37:17.247Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+      "taskId": "T885",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "197e047d-d224-4b23-844c-0b8c861e8891",
+          "owner": "nf14-codex-independent-fixtures",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T885 repairs the demonstrated test-input assumptions without changing production careers, market policy, cache defaults or identity rules. The extracted release helper retains the original stored-club/stable-ability/two-adult sequence and uses joinFreeAgents; explicit twenty-player setup preserves line/formation/GK cover and transfers spare identities through movePerson. A separate real-takeover assertion retains all purchased IDs, birth years and contract ends. Contract clauses/loan exclusions and canonical helper season-transfer-reload equality remain. Independently ran all five focused helper unit cases successfully (1.25 s, /tmp/nf14-t885-review-unit.log) and inspected the coordinator receipts: seven unchanged squad cases plus the corrected first-case recheck, contract signing and season/helper equivalence pass. No P1/P2 finding; full integration/browser/final release gates remain coordinator-owned.",
+          "findings": [],
+          "commit": "8fc61ad85e6b4ed9027394e900d276751e2b095b",
+          "baseCommit": "0ceda9a86366220f4cce7111fa6ad9ef8e9e2a50",
+          "submissionId": "f83a42c9-5d84-4c8c-a0de-449bf3f7d0ea",
+          "createdAt": "2026-11-13T18:35:51.479Z",
+          "finishedAt": "2026-11-13T18:37:17.247Z"
+        }
+      }
+    },
+    {
+      "sequence": 76,
+      "at": "2026-11-13T18:37:33.420Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "3fb11e7c-84d2-4ff8-a521-629231f4c2b9",
+      "taskId": "T885",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 77,
+      "at": "2026-11-13T18:37:33.615Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "1e2f5a8c-f96b-48b4-970d-6540fa930da7",
+      "taskId": "T884",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "42dd2926-8acb-49e4-aef0-4a9953946801",
+            "owner": "nf14-codex-independent-verification",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T884 retains full logs and truthful process/reporter failures, but catchable cancellation can leave nested command processes alive and never emit the promised terminal receipt.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "T884 scripts/lib/verification-runner.ts:163-171 and scripts/verify.mjs:147-154",
+                "message": "cancel() signals only the immediate child. A command that spawns a long-lived child with inherited stdout/stderr exits on SIGTERM while its descendant survives and holds the pipes open; Node never emits the immediate child close event, so run.done and verify.mjs remain waiting with only a cancelling receipt. Reproduced on the fixed submission with two tiny Node processes: after 500 ms done=false, lastStatus=cancelling and grandchildAlive=true; the terminal receipt appeared only after explicit grandchild cleanup. The real stages run through pnpm and can have the same process nesting. Make cancellation terminate the owned command subtree and finish its terminal/log receipt within a bounded cleanup period, while retaining outer-Gusta cancellation containment; add a focused nested-child cancellation regression rather than a full-suite test. Raw reproduction: /tmp/nf14-t884-review-descendant.mts and /tmp/nf14-t884-review-descendant.jsonl. All nine submitted tiny-child tests independently pass (/tmp/nf14-t884-review-unit.log), but none exercises descendants."
+              }
+            ],
+            "commit": "85c5918a0a12abf25d5a13317c5184d02963c30e",
+            "baseCommit": "6c418538190abbe69f8f1383538a8e564ad9d647",
+            "submissionId": "3bc970d5-5c36-4d0c-8233-5836e98f45ac",
+            "createdAt": "2026-11-13T18:33:34.088Z",
+            "finishedAt": "2026-11-13T18:35:39.388Z",
+            "invalidatedAt": "2026-11-13T18:37:33.615Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
       }
     }
   ]

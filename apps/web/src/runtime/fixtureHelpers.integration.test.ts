@@ -10,7 +10,7 @@ import {
 import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { movePerson } from '../../../../packages/engine/src/npc-continuity';
-import { findClub, squad } from '../../../../packages/engine/src/world';
+import { persistedFixturePlayer } from '../../../../packages/engine/src/player-fixtures.testkit';
 import { createFixtureHelper } from './fixtureHelper';
 import { HelperPool, playDay, type HelperJob, type HelperPort } from './helperPool';
 
@@ -29,14 +29,13 @@ function channel() {
   return { port, sent };
 }
 function transfer(w: World) {
-  const person = Object.values(w.people ?? {}).find(
-    (p) => p.playing === 'active' && p.club && p.club !== w.playerClub && p.origin,
-  );
-  expect(person).toBeDefined();
-  const from = findClub(w, person!.club!),
-    to = w.clubs.find((c) => c.id !== from.id && c.id !== w.playerClub)!;
-  const player = squad(w, from).find((p) => p.id === person!.id)!;
-  expect(player).toBeDefined();
+  const held = persistedFixturePlayer(w);
+  expect(held).toBeDefined();
+  const { club: from, player } = held!;
+  const to = w.clubs.find(
+    (c) => c.id !== from.id && c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
+  )!;
+  expect(w.people?.[player.id]).toMatchObject({ club: from.id, playing: 'active' });
   movePerson(w, player, to.id);
 }
 

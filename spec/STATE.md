@@ -59,7 +59,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T884 | Retain live verification stages and full failure logs | ARCH | - | todo |
-| T885 | Prepare coherent persisted-player integration fixtures | ARCH CLUB WORLD | - | todo |
 | T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
 | T887 | Prepare real post-close free agents for promise journeys | ARCH CLUB | T885 | todo |
 | T888 | Find goal scenes through the actual replay adapters | ARCH MATCH | - | todo |
@@ -72,10 +71,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-13T17:22:06.194Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 13 | 5 | 8 | 2 | 0 | 0 | 2026-11-13T18:37:38.319Z | [history](work/natural-football-261114.json) |
 
 ## next
-- Continue authorized natural-football improvement and baseline repairs until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
-- Complete approved CI foundation, fixture and scene repairs, then proceed through one measured football hypothesis at a time.
-- Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
-- T883 coherent compatible release is owned by pr14; merge its result before final release preparation.
+- inspect work board for remaining tasks

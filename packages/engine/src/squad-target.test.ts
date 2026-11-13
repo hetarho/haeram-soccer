@@ -2,7 +2,19 @@ import { describe, expect, it } from 'vitest';
 import type { Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { activePlayers, makePlayer, npcSquad, clubOf, formationOf } from './index';
+import {
+  activePlayers,
+  makePlayer,
+  npcSquad,
+  clubOf,
+  formationOf,
+  NPC_SQUAD,
+  clubPlayers,
+} from './index';
+import { twentyPlayerFixture } from './player-fixtures.testkit';
+import { historyWorld } from './history';
+import { careerClub, CAREER_YEAR } from './career.testkit';
+import { takeOver } from './takeover';
 import { callUpFor, SQUAD_TARGET } from './squad-target';
 import { closeSeason } from './season';
 import { movePerson } from './npc-continuity';
@@ -12,7 +24,11 @@ import { promotionAge } from './academy';
 
 const CAREER = { country: 'ENG', seed: 'squad-target' } as const;
 /** The club on the released model: the squad target, not the match model, is the subject. */
-const world = (rounds = 0) => simulatedWorld(CAREER, { rounds });
+const world = (rounds = 0) => {
+  const w = simulatedWorld(CAREER, { rounds });
+  expect(twentyPlayerFixture(w)).toHaveLength(SQUAD_TARGET);
+  return w;
+};
 function prospect(w: World, id: string, position: Position, age = 18, skill = 1) {
   const p = makePlayer(
     'ENG',
@@ -55,7 +71,7 @@ function close(w: World) {
 }
 
 describe('twenty-player squad target', () => {
-  it('founds with twenty, covers every formation slot and leaves NPC squads at eighteen', () => {
+  it('prepares twenty, covers every formation slot and preserves fallback and persisted NPC squads', () => {
     const w = world(),
       players = activePlayers(w);
     expect(SQUAD_TARGET).toBe(20);
@@ -76,7 +92,26 @@ describe('twenty-player squad target', () => {
         w.clubs.find((c) => c.id !== w.playerClub)!,
       ),
     ).toHaveLength(18);
+    // The fallback generator remains an eighteen-player input; persisted clubs add their
+    // standing bench. Choose one the explicit spare-player transfers did not enlarge.
+    const persisted = w.clubs.find(
+      (c) =>
+        c.id !== w.playerClub && !c.representative && w.squads?.[c.id]?.length === NPC_SQUAD.size,
+    );
+    expect(persisted).toBeDefined();
+    expect(clubPlayers(w, persisted!)).toHaveLength(NPC_SQUAD.size);
   });
+  it('retains every actual purchased player when the real takeover squad exceeds twenty', () => {
+    const w = historyWorld(CAREER.seed, undefined, CAREER_YEAR);
+    const club = w.clubs.find((c) => c.id === careerClub(CAREER.country))!;
+    const roster = clubPlayers(w, club).map((p) => ({ id: p.id, born: p.born, until: p.until }));
+    expect(roster.length).toBeGreaterThanOrEqual(SQUAD_TARGET);
+    takeOver(w, club.id, { tier: 'oil', traits: [] });
+    for (const player of roster)
+      expect(activePlayers(w)).toContainEqual(expect.objectContaining(player));
+    expect(activePlayers(w).length).toBeGreaterThanOrEqual(roster.length);
+  });
+
   it('promotes the best eligible matching prospect, ignoring readiness and the cash floor', () => {
     const w = world();
     const young = prospect(w, 'underage', 'CB', promotionAge(w) - 1, 99);
