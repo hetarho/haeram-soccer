@@ -118,8 +118,10 @@
 | T900 | work | codex/natural-football-261114 | ce9d4c768c91 | 2026-11-13T20:35Z |
 | T905 | work | codex/natural-football-261114 | 4722f33abb5a | 2026-11-13T20:36Z |
 | T895 | work | codex/natural-football-261114 | dbacf8e3d51b | 2026-11-13T20:37Z |
+| T894 | work | codex/natural-football-261114 | 215b0d7b579f | 2026-11-13T20:37Z |
 
 ## log
+- 261113 T894 integrated
 - 261113 T895 integrated
 - 261113 T905 integrated
 - 261113 T900 integrated
@@ -139,4 +141,3 @@
 - 261113 fix pb14 NPC move observation: a valid free signing is already registered at its destination when its known former affiliation is recorded. Preserve zero fee, unique arrival, source-history and paid-before-arrival checks. 56 related units and statics/i18n passed; full persisted-world integration remains deferred.
 - 261113 T888 integrated
 - 261113 T884 integrated
-- 261113 T885 integrated
