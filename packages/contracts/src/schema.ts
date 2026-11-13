@@ -133,6 +133,15 @@ const clubBooks = z.strictObject({
       z.strictObject({
         year: season,
         income: amount,
+        incomeComponents: z
+          .strictObject({
+            distribution: amount,
+            gate: amount,
+            commercial: amount,
+            competitions: amount,
+          })
+          .optional(),
+        ownerCapital: amount.optional(),
         wages: amount,
         costs: amount,
         transfersPaid: amount.optional(),

@@ -39,6 +39,34 @@ function legacyIntegers(values: number[]) {
 }
 
 describe('lossless career stream compaction', () => {
+  it('preserves present and absent club book financing through compact encoding', () => {
+    const w = career();
+    const club = w.clubs.find((c) => c.id !== w.playerClub)!;
+    club.books = {
+      cash: '0',
+      debt: '25',
+      seasons: [
+        {
+          year: w.year,
+          income: '10',
+          incomeComponents: { distribution: '1', gate: '2', commercial: '3', competitions: '4' },
+          ownerCapital: '900719925474099312345',
+          wages: '30',
+          costs: '5',
+          result: '-25',
+        },
+        { year: w.year - 1, income: '10', wages: '20', costs: '5', result: '-15' },
+      ],
+    };
+    const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
+    expect(restored.clubs.find((c) => c.id === club.id)!.books).toEqual(club.books);
+    expect(restored.clubs.find((c) => c.id === club.id)!.books!.seasons[1]).not.toHaveProperty(
+      'incomeComponents',
+    );
+    expect(restored.clubs.find((c) => c.id === club.id)!.books!.seasons[1]).not.toHaveProperty(
+      'ownerCapital',
+    );
+  });
   it('restores all persisted squad fields in founded and hundredth-attribute worlds', () => {
     const w = historyWorld('persisted-pack');
     const plain = () => JSON.parse(JSON.stringify(pack(w)));

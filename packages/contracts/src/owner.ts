@@ -148,8 +148,17 @@ export interface TakeoverLoan {
 /** One club's settled season (→ECON-36), in the money of that season. */
 export interface ClubSeasonBook {
   year: number;
-  /** League distribution, gate and commercial income (→ECON-28, ECON-9, ECON-8). */
+  /** Operating income, excluding owner capital and player sales. */
   income: string;
+  /** Sources of operating income, absent from older books. */
+  incomeComponents?: {
+    distribution: string;
+    gate: string;
+    commercial: string;
+    competitions: string;
+  };
+  /** Actual owner support, separate from income and result. */
+  ownerCapital?: string;
   /** The wage bill (→CLUB-25). */
   wages: string;
   /** Operating expenses (→ECON-30). */
