@@ -113,8 +113,10 @@
 | T891 | work | codex/natural-football-261114 | d53849d5152f | 2026-11-13T20:32Z |
 | T903 | work | codex/natural-football-261114 | 0c4ebf73e00c | 2026-11-13T20:32Z |
 | T896 | work | codex/natural-football-261114 | e434933fb0e4 | 2026-11-13T20:33Z |
+| T898 | work | codex/natural-football-261114 | adcbd9c65fa6 | 2026-11-13T20:34Z |
 
 ## log
+- 261113 T898 integrated
 - 261113 T896 integrated
 - 261113 T903 integrated
 - 261113 T891 integrated
@@ -134,4 +136,3 @@
 - 261113 gusta-create-task SAVE r70 start: coherent explicit release preparation and metadata-only compatible patch labels; retain the original pb14 deadline and gate ledger.
 - 261113 gusta-update-ssot SAVE start: pb14 root-only release recurrence; preserve rules-5 careers through an explicit compatible patch label, synchronize the one game version before publication.
 - 261113 fix pb14 diagnostics: 0c39493c replaces newly authored prose with a machine enum and asserts complete funding using the raw club ID; 12-locale validation and lint passed without new display copy.
-- 261113 fix pb14 wage observer: 1e3eef0e keeps the salary bill separate and exposes the proposed fee, with the isolated boundary unit and deferred integration invariant enforcing their combined envelope.
