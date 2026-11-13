@@ -72,6 +72,7 @@ import { buyOffer, handTo, holdRows, staffAuthority } from './testing';
 import { financeProjection } from './projection';
 import { delegatePlan } from './delegation';
 import { askingMultiplier } from './world-market';
+import { releaseFixturePlayers } from './player-fixtures.testkit';
 import { locateOffer } from './scout-search';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
@@ -1154,11 +1155,14 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
 
   it('signs clauses with a transfer, a free agent and an academy promotion, none with a loan', () => {
     const w = world();
+    releaseFixturePlayers(w);
     w.cash = '999999999999';
     w.calendar = { day: 10 };
     const offers = transferOffers(w),
       agent = offers.find((o) => o.freeAgent)!,
       club = offers.find((o) => !o.freeAgent)!;
+    expect(agent).toMatchObject({ freeAgent: true, available: true });
+    expect(club).toMatchObject({ freeAgent: false, available: true });
     // A free agent signs at once; another club's player joins on loan through an accepted bid.
     operate(w, { type: 'recruit', candidate: offers.indexOf(agent) });
     buyOffer(
