@@ -1013,6 +1013,8 @@ describe('aggregate measurement (T284)', () => {
     const own = conditionedMatch(w, f, { tactics: plain.prepared.tactics });
     for (const key of ['tactics', 'strength', 'shift', 'profiles', 'possessionChance'] as const)
       expect(own.prepared[key]).toEqual(plain.prepared[key]);
+    expect(own.rosters).toEqual(plain.rosters);
+    expect(own.prepared.squads).toEqual(plain.prepared.squads);
     expect(own.gap).toBe(plain.gap);
     const form = matchForm(w, f);
     expect(

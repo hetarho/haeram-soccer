@@ -12,6 +12,7 @@ import {
   transferOffers,
   yearlyStaff,
 } from './index';
+import { releaseFixturePlayers } from './player-fixtures.testkit';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { careerWorld } from './career.testkit';
 /** The club on the released model: owner operations, not the match model, are the subject. */
@@ -135,9 +136,12 @@ describe('club decisions', () => {
   it('writes amounts in event texts in the app notation, never in raw minor units', () => {
     const w = world();
     w.cash = '999999999';
+    releaseFixturePlayers(w);
     // A free agent signs at once, so his signing's line is the last event.
     const free = transferOffers(w).findIndex((o) => o.freeAgent),
       signing = transferOffers(w)[free]!;
+    expect(free).toBeGreaterThanOrEqual(0);
+    expect(signing).toMatchObject({ available: true, freeAgent: true, fee: '0' });
     operate(w, { type: 'recruit', candidate: free });
     const signed = w.events.at(-1)!.detail;
     expect(signed).toContain(`연봉 ${moneyLabel(w, signing.player.wage)}`);

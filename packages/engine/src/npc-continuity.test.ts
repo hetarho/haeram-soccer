@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { operate, transferOffers } from './index';
+import { operate, transferOffers, overall } from './index';
 import {
   clubStyle,
   clubPlayers,
@@ -13,7 +13,7 @@ import {
 } from './world';
 import { continuousSquad, materializePeople, movePerson, returnLoan } from './npc-continuity';
 import { coachingGrade } from './aptitude';
-import { ovrAt } from './player';
+import { lineOf, ovrAt } from './player';
 import { validateWorld } from '../../contracts/src/schema';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { careerWorld } from './career.testkit';
@@ -86,11 +86,36 @@ describe('selected NPC continuity', () => {
   it('records external recruitment without inventing an old club or historical appearances', () => {
     const w = world();
     w.cash = '9999999999';
-    const free = makePlayer('ENG', w.seed, 'unretained:free', w.year, 38, 'CM', 25);
-    joinFreeAgents(w, free, w.year);
+    const template = transferOffers(w).find(
+      (offer) => offer.available && !offer.foreign && lineOf(offer.player.position) === 'MF',
+    )!.player;
+    const free = makePlayer(
+      'ENG',
+      w.seed,
+      'unretained:free',
+      w.year,
+      overall(template),
+      template.position,
+      w.year - template.born,
+    );
+    free.attrs = { ...template.attrs };
+    free.positions = { ...template.positions };
+    free.potential = template.potential;
+    expect(joinFreeAgents(w, free, w.year)).toBe(true);
+    expect(w.people![free.id].club).toBeUndefined();
+    expect(w.people![free.id].origin).toBeUndefined();
+    expect(w.people![free.id].employment).toEqual([]);
+    expect(w.playerRecords?.[free.id]?.lines ?? []).toEqual([]);
+    const candidate = transferOffers(w).findIndex(
+      (offer) => offer.available && offer.freeAgent && offer.player.id === free.id,
+    );
+    expect(candidate).toBeGreaterThanOrEqual(0);
     // A free agent of the pool: no club to record as his seller.
-    operate(w, { type: 'recruit', candidate: transferOffers(w).findIndex((o) => o.freeAgent) });
+    operate(w, { type: 'recruit', candidate });
     const player = w.players.at(-1)!;
+    expect(player.id).toBe(free.id);
+    expect(w.playerRecords?.[player.id]?.lines ?? []).toEqual([]);
+    expect(w.people![player.id].origin).toBeUndefined();
     expect(w.people![player.id]).toMatchObject({
       club: w.playerClub,
       formerOwn: true,

@@ -266,12 +266,16 @@ export function yellowWarning(w: World, p: Player) {
 }
 
 /**
- * Yellow counts reset; playable clubs' injuries and unserved bans carry over by person.
+ * Yellow counts reset; playable clubs' unexpired injuries and unserved bans carry over by person.
  */
 export function closeDisciplineSeason(w: World) {
   const d = w.discipline;
   if (!d) return;
   d.year = w.year;
   d.yellows = {};
-  d.out = d.out.filter((o) => !!w.squads?.[o.club] || o.club === w.playerClub);
+  d.out = d.out.filter(
+    (o) =>
+      (!!w.squads?.[o.club] || o.club === w.playerClub) &&
+      o.until.day - dayCountedFrom(w, o.until.year) > 0,
+  );
 }
