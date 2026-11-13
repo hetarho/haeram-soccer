@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T18:55Z | - | codex/natural-football-261114 | 08997a1db9db |
-| pr14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T18:19Z | 2026-11-13T19:15Z | T899 | fix/pb14-final-review | d28b04fd47bd |
+| pr14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T18:19Z | 2026-11-13T19:30Z | - | fix/pb14-final-review | d595fcf9 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -92,8 +92,10 @@
 | T888 | work | codex/natural-football-261114 | 55ed6375239b | 2026-11-13T18:53Z |
 | T889 | work | codex/natural-football-261114 | 42ad99267a65 | 2026-11-13T19:09Z |
 | T887 | work | codex/natural-football-261114 | 45db3d7e9f7c | 2026-11-13T19:13Z |
+| T899 | pr14 | fix/pb14-final-review | d595fcf9 | 2026-11-13T19:30Z |
 
 ## log
+- 261113 T899 done
 - 261113 T887 integrated
 - 261113 T889 integrated
 - 261113 fix pb14 NPC move observation: a valid free signing is already registered at its destination when its known former affiliation is recorded. Preserve zero fee, unique arrival, source-history and paid-before-arrival checks. 56 related units and statics/i18n passed; full persisted-world integration remains deferred.
@@ -113,4 +115,3 @@
 - 261113 T879 done
 - 261113 T875 integrated
 - 261113 T873 T874 integrated
-- 261113 T878 done
