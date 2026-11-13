@@ -21,8 +21,7 @@ function world() {
   return w;
 }
 /** The registered person belonging to an actual stored NPC player. */
-const retained = (w: ReturnType<typeof world>) =>
-  w.people![w.squads!.foreign![0]!.id]!;
+const retained = (w: ReturnType<typeof world>) => w.people![w.squads!.foreign![0]!.id]!;
 function close(w: ReturnType<typeof world>) {
   closeNpcSummer(w);
   retireAtClose(w);

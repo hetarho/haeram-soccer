@@ -104,9 +104,7 @@ export function stagePlayingCoach(w: World, id: string, years: 1 | 2, term: Cont
 
 /** A synthetic buyer missing this player's line, with explicit fee and wage room. */
 export function prepareSaleBuyer(w: World, p: Player) {
-  const club = w.clubs.find(
-    (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
-  )!;
+  const club = w.clubs.find((c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id])!;
   w.squads![club.id] = w.squads![club.id]!.filter(
     (player) => lineOf(player.position) !== lineOf(p.position),
   );
