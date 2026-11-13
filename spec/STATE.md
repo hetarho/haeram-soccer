@@ -13,6 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T03:57Z | 2026-11-13T03:57Z | T859 |
 
 ## inbox
 - 261113 decided ECON-24 ECON-33 ECON-41: unspecified reserve steps and debt amount → cautious 50/40/30/20/10, balanced 40/30/20/10/5, bold 30/20/10/5/0 years by acted request; bankruptcy only below minus one year of fixed costs, no duration trigger; bold/freely keeps zero cash buffer (alt: one universal reserve | fixed nominal debt limit). The requested anchors hold, and costs scale across eras and currencies. fin3
@@ -60,20 +61,20 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 41 | 41 | - | 2 |
-| WEB | 218 | 218 | - | 0 |
+| WEB | 219 | 219 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
-| WORLD | 11 | 11 | - | 0 |
+| WORLD | 12 | 12 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 68 | 68 | - | 0 |
+| CLUB | 69 | 69 | - | 0 |
 | MATCH | 62 | 62 | - | 0 |
-| LEAGUE | 18 | 18 | - | 0 |
+| LEAGUE | 19 | 19 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
-| ECON | 56 | 56 | - | 0 |
+| ECON | 57 | 57 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 25 | 25 | - | 0 |
+| HIST | 26 | 26 | - | 0 |
 | SAVE | 68 | 68 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
-| PLAYER | 17 | 17 | - | 0 |
+| PLAYER | 18 | 18 | - | 0 |
 
 ## review
 | id | st |
@@ -98,19 +99,26 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | doing@261113.fin3 |
+| T860 | Show every age as N세, never a birth year | WEB | - | todo |
+| T861 | Persist every playable-country club's players as people | WORLD PLAYER LEAGUE HIST | - | todo |
+| T862 | Persisted players develop, age, retire and are replaced by youth | WORLD PLAYER CLUB STAFF | T861 | todo |
+| T863 | Club strength from its squad, wages from its books, contracts and free agents | LEAGUE WORLD ECON CLUB | T862 | todo |
+| T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON | T863 | todo |
+| T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB | T862 T864 | todo |
+| T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 | todo |
 
 ## next
+- gusta-implement-task T860, then T861 → T866 in dep order (persisted world players, sketch persistent-world-players 261113)
 - main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261113 sketch persistent-world-players end: T860–T866 from WORLD@12 LEAGUE@19 PLAYER@18 CLUB@69 ECON@57 HIST@26 WEB@219 pr13
+- 261113 gusta-create-task WORLD LEAGUE PLAYER CLUB ECON HIST WEB: T860–T866 pr13
+- 261113 gusta-update-ssot WORLD LEAGUE PLAYER CLUB ECON HIST WEB: persisted world players, squad strength, books and stature, player records, ages as N세 pr13
+- 261113 sketch persistent-world-players start pr13
 - 261113 gusta-create-task ECON WEB: T859 consumes ECON@56 WEB@218 fin3
 - 261113 gusta-update-ssot ECON WEB start: reserve-funded delegated investment and amount-based bankruptcy fin3
-- 261113 docs cleanup: NARRATIVE.md removed (stale since ARCH@3; regenerate with gusta-create-narrative), README and design docs updated, misplaced root reports moved, finished handoff artifacts/handoffs/261110-fi09 removed
-- 261113 ideation archived to done/ as converted@261113: 15 docs reflected in or superseded by current SSOTs (calibration-pass, club-direction, club-history-reboot, club-identity-and-kits, difficulty-and-adaptation, expert-proposal-review, manager-achievements, match-continuity-and-performance, match-day-progress, match-engine-rebuild, match-viewing-pace-and-freedom, navigation-and-records, own-club-match-edge, save-storage-and-fast-pace, set-piece-defence-and-goal-feedback)
-- 261113 ARCH r41..r41 no-op (no code impact)
-- 261113 gusta-update-ssot ARCH r41 (ARCH-1✎ and constraints✎: no current-rule path to archived ideation or NARRATIVE)
-- 261113 inbox cleanup by the owner: 803 decided lines confirmed and removed (reports keep them), 63 parked/suggest lines removed as resolved or obsolete, stale active rows k2d7 f5j2 ot03 ba04 removed
 - 261112 T858 done
 - 261112 T857 done
 - 261112 T856 done
@@ -124,3 +132,4 @@
 - 261112 T845 done
 - 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
 - 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
+- 261113 ab money-spend: adopt a — the 단장 budgets every delegated spend on this season's income by the owner's five-step request

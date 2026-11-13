@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r18 | Define the browser-demo rules for domestic seasons and relegation.
+> r19 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -17,16 +17,10 @@
 - LEAGUE-8 [o] Close a season only after its fixtures/cups/Europe and financial settlement; archive standings, renew personnel and fixtures, then advance the season.
 
 - LEAGUE-9 [o] A season closes on the day after its final round (day 323 counted from 1 August); the empty summer is skipped and the next season starts on 1 August. ← nothing happens after the final round, so waiting through it only delays the season review and the summer window
-- LEAGUE-10 [o] Between seasons every club nobody owns rises or falls. ← fixed strengths let one well-run club pull away forever; real leagues see clubs rise and fall, while a few stay on top
-  - it closes 20% of the gap to its level: its division's midpoint + its stature + last season's success; promotion closes 35% more of the gap at once and relegation 15%.
-  - its means level (→!ECON-36): a club nobody owns that keeps books plays at most at the highest strength whose squad its last closed season's book pays: that squad's market wage bill (→CLUB-25, →CLUB-48), priced in the division and season the book was earned, at most the book's income less its operating expenses (→ECON-30). Its level is never above its means level, and a club above it after its summer change sells down to it at once. A club with a project, or in the summer of its takeover, is not held to it; a club without books has none. ← a club pays its stars from its own income, as small-league giants sell what their league's money cannot keep: a country's strongest club earns only 1.2–1.7× its top flight's median club (measured 261104)
-  - the means level is in force together with CLUB-48's table and the books' competition money (→ECON-36), which passed CLUB-48's gate with it (measured 261104), never alone. ← at the modern spread it would sell the stars the 1950s market kept near a regular's pay, and on books without their cup and European nights it held the clubs those nights pay
-  - stature is stable per club: each country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from its upper divisions; of the rest 45% are ordinary (−1 to +1) and the others small (−3 to −5).
-  - success: last season's top-flight champion +3, the rest of the top four +1.5, a continental winner +2.
-  - a rare project (a new owner, a golden generation; 0.4% a club a summer, from its own stream) adds 8–18 to its level, fading 15% a summer; a project in the owner's country within one division is reported. ← any club can become as strong as the owner's, by chance
-  - strengths stay within 15–99, the very best an owner can build ← a cap below the owner's best would leave one club unbeatable
-  - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); reputation follows →LEAGUE-14.
-  - measured 261011 (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
+- LEAGUE-10 [o] A club nobody owns is as strong as its squad: its strength is read from its players (→WORLD-16/17), never set by a rule, and it rises or falls with them. ← a scripted strength lets no club be built or broken by its own business; real leagues see clubs rise and fall from money, standing and chance, while a few stay on top
+  - stature is stable per club: each country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from its upper divisions; of the rest 45% are ordinary (−1 to +1) and the others small (−3 to −5). It sets the founding strength (→WORLD-15), income and a player's preference (→WORLD-17), never strength itself.
+  - worlds lived with persisted players land within the real leagues' spread below: 4–9 different champions per country and the most successful club 7–17 titles over 1980/81–2009/10.
+  - measured 261011 on the former scripted strengths (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
   - the real leagues 1980/81–2009/10 (each league's official champions list, titles not awarded left out: Italy 2004/05, France 1992/93; recalled, not yet read against the lists): 4–9 different champions per country, the most successful club 7–17 titles. ← one generic model of giants and big clubs per country should land where real leagues do, from France's nine champions to Portugal's four
     | country | different champions | most titles of one club |
     |---|---|---|
@@ -38,7 +32,6 @@
     | NED | 5 | 14 (PSV) |
     | POR | 4 | 17 (Porto) |
     | BEL | 7 | 14 (Anderlecht) |
-  - a takeover or project clears the club's debt (→ECON-36).
 - LEAGUE-11 [o] The world season is lived one day at a time in one order, whatever advances it — an automatic day step, manual next-event advance, explicit round or an internal season simulation (public controls →WEB-5) — so every mode records the same facts (→ARCH-5). ← the control that advanced time must not change results
   - a midweek cup or continental tie plays on its own day, league round × 7 − 3 (→LEAGUE-5, →EURO-10), before that round's league matches.
   - a league match day plays the round's matches first, then the round's settlement (training, wages, supporters), then that day's club business — academy intake, market, delegated business, staff, retirement announcements, healed injuries — so a player healed or signed that day plays from his next match.
@@ -49,7 +42,7 @@
   - every club starts at 0.80 when the world is made.
   - each settled league round it rises 0.010 below 0.80 and 0.005 above, up to 1.0.
   - a new manager (→STAFF-17) takes 30% of the distance to 0.50 when his school differs from his predecessor's, 10% when it is the same.
-  - between seasons a takeover or a project (→LEAGUE-10) takes 0.15, a promotion or a relegation 0.10, never below 0.30.
+  - between seasons a promotion or a relegation takes 0.10, never below 0.30.
   - a rival's dossier and its league-table OVR show it (→WEB-58).
 - LEAGUE-13 [o] Balance is measured on reference careers per wealth tier: a takeover in 1950 of the median-priced club of the tier's reach in each country (→OWNER-3; the nearest band holding a club of that country when its own holds none) with no traits and no owner money moved (stake 0%, no injection, dividend 0%), all business responsibilities delegated and 기본 방향, run to 2009 in four countries (ENG ESP FRA GER) × 5 seeds; tuning changes rules and constants for every tier alike, never one tier's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
   | tier | first top-flight title | share of top-flight titles after the first | bankrupt |
@@ -88,12 +81,13 @@
   - measured 261016 for the owner's club (domestic cup term not included; ENG, 보통, all business delegated, 3 seeds): mostly third-division careers stand at 44–50 with 30–33k supporters in 2000, and a club relegated from the second division fell from 49 to 43 and from 59k to 30k supporters over eleven seasons.
 
 - LEAGUE-15 [o] Players of clubs nobody owns are injured (→CLUB-23) and suspended (→MATCH-19) like own players, on whichever engine path their fixture takes (→MATCH-22); their club's XI and bench skip them while they are out. ← an opponent can really be weakened, and the owner's club is not the only one that loses players
-  - each club keeps a short list of its unavailable players (who, until when, how many matches banned); it clears when the club's squad is generated for a new season (→WORLD-6), while an unserved ban carries over by person.
+  - each club keeps a short list of its unavailable players (who, until when, how many matches banned); an injury and an unserved ban carry over by person, as own players' do; a representative club's list clears when its squad is generated for a new season (→WORLD-6).
   - every league keeps a discipline table: each player's yellow and red cards and current bans by competition.
 
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r19 261113 LEAGUE-10✎ clubs nobody owns rise or fall by rule (20% toward division midpoint + stature + success, promotion/relegation pulls, means-level selling, 0.4% projects, 1.5% takeovers and crises, summer luck, 15–99)→strength is the squad's, rising and falling with its players; stature sets founding strength, income and preference; the real-league spread stays the target; LEAGUE-12✎ a takeover or project costs 0.15 between seasons→removed; LEAGUE-15✎ unavailability list cleared with the new season's generated squad→injuries and bans carry over by person, representative clubs clear
 - r18 261104 LEAGUE-10✎ means level in force only through CLUB-48's gate→in force with CLUB-48's table and competition money, the gate passed (measured 261104); LEAGUE-13✎ +measured 261104 on the rules in force (석유 재벌 8 of 8 win, none bankrupt; 중견 사업가 1 of 8 wins, 8 reach the top flight), the earlier 261104 table marked before CLUB-48's table
 - r17 261104 LEAGUE-10✎ champions spread: the model's 261011 measurement only→also the real leagues 1980/81–2009/10 (4–9 different champions, the most titles 7–17, per country)
 - r16 261104 LEAGUE-10✎ means level in force only with CLUB-48's table→with CLUB-48's table and the books' competition money (→ECON-36)
