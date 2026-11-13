@@ -23,31 +23,16 @@ import {
   untouchableVerdict,
 } from './index';
 import { CLOSED, inBids, incoming, on, world } from './transfers.testkit';
-import { cachedWorld } from '../../../tests/fixtures/cached-world';
 
 /**
- * A market whose season of days passes with every veteran of ours playing on, so a player can leave
- * only through a bid. CLUB-3's 1 April draw retires one or more in most seasons since each club's
- * own age ladder (→WORLD-6) moved who stands at 33–35 (`transfer-market` retires three): the first
- * such seed, searched once per engine source since each try lives a season.
+ * The no-retirement market measured in the fixture search, checked again by the test below.
+ * Pin the seed so the test lives only the season it verifies, rather than searching up to 21.
  */
-const quietSeason = () =>
-  cachedWorld('incoming-bids:quiet-season', () => {
-    const seeds = [
-      'transfer-market',
-      ...Array.from({ length: 20 }, (_, i) => `incoming-bids-${i}`),
-    ];
-    for (const seed of seeds) {
-      const w = world(seed);
-      for (let n = 0; n < seasonLength(w) - 1; n++) advanceDays(w, 1);
-      if (!w.events.some((e) => e.kind === 'retirement-announce')) return seed;
-    }
-    throw new Error(`a veteran retires in every one of ${seeds.length} markets`);
-  });
+const QUIET_SEASON_SEED = 'incoming-bids-2';
 
 describe('incoming bids', () => {
   it('arrive only inside windows, at most three at a time, and lapse after their due day', () => {
-    const w = world(quietSeason());
+    const w = world(QUIET_SEASON_SEED);
     const seen = new Set<string>();
     for (let n = 0; n < seasonLength(w) - 1; n++) {
       advanceDays(w, 1);
@@ -78,6 +63,7 @@ describe('incoming bids', () => {
         expect(BigInt(bid.fee) * 100n).toBeLessThanOrEqual(value * 160n + 100n);
       }
     }
+    expect(w.events.some((event) => event.kind === 'retirement-announce')).toBe(false);
     expect(seen.size).toBeGreaterThan(0);
     expect(inBids(w).some((b) => b.status === 'expired')).toBe(true);
     expect(w.players.every((p) => p.status === 'active')).toBe(true);
