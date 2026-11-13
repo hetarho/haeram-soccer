@@ -1,0 +1,258 @@
+diff --git a/packages/engine/src/staging/config.ts b/packages/engine/src/staging/config.ts
+index 9c1318cf..3c2e1ba2 100644
+--- a/packages/engine/src/staging/config.ts
++++ b/packages/engine/src/staging/config.ts
+@@ -207,6 +207,23 @@ export const STAGING_CONFIG = {
+     separation: 8,
+     /** How far a free outfield player of the side in possession keeps his target from the man on the ball and from teammates under an order. */
+     ownerRoom: 8,
++    /**
++     * The tempo between the record's fixed moments (`tempo.ts`): a beat's nominal hold (`hold`,
++     * `restartHold` for a restart's taker), its ball's nominal `speeds` (m/s) and a substitution's
++     * walking on and off (`subWalk` s) share the time between two such moments; each hold then
++     * takes up `catchUp` of how far the staging runs behind that plan, within `minHold`..`maxHold`
++     * (`maxRestartHold` for a restart's taker).
++     */
++    tempo: {
++      hold: 1.6,
++      restartHold: 1,
++      minHold: 0.4,
++      maxHold: 6,
++      maxRestartHold: 2.5,
++      catchUp: 0.6,
++      subWalk: 15,
++      speeds: { ground: 14, loft: 17, carry: 4.5, shot: 25 },
++    },
+     scene: {
+       substitution: 30,
+       card: 15,
+diff --git a/packages/engine/src/staging/frame-clock.ts b/packages/engine/src/staging/frame-clock.ts
+index ed4b8df1..a5e4faef 100644
+--- a/packages/engine/src/staging/frame-clock.ts
++++ b/packages/engine/src/staging/frame-clock.ts
+@@ -47,6 +47,32 @@ export function framePeriods(script: MatchScript, added: readonly number[] = [])
+   });
+ }
+ 
++/**
++ * A clock on the staged timeline. The record has no added-time minutes: it dates every fact of a
++ * complete half's added time to the half's last minute, so that minute's beats are drawn across
++ * the minute and the added time after it, and the picture never stands still waiting for the
++ * whistle (→MATCH-12).
++ */
++export function presentClock(p: FramePeriod, clock: number): number {
++  const length = LENGTH[p.period - 1];
++  const c = clock - OFFSET[p.period - 1] * 60;
++  const last = (length - 1) * 60;
++  const added = p.minutes - length;
++  return p.start + (added > 0 && c > last ? last + (c - last) * (1 + added) : c);
++}
++
++/** The shots' set-up passes: like the shots, they keep the record's minute. */
++export const shotSources = (script: MatchScript): Set<number> =>
++  new Set(script.beats.flatMap((b) => (b.source === undefined || b.source < 0 ? [] : [b.source])));
++
++/** A beat the clock fit pins to its scripted clock: a recorded shot, its set-up pass or an incident. */
++export const isAnchor = (b: ScriptBeat, sources: ReadonlySet<number>): boolean =>
++  b.shot !== undefined ||
++  b.kind === 'shot' ||
++  b.kind === 'penalty' ||
++  !!b.incidents?.length ||
++  (b.event !== undefined && sources.has(b.event));
++
+ const actionEvents = new Set<StageEvent['kind']>([
+   'kick',
+   'shot',
+@@ -76,9 +102,7 @@ const finishEvents = new Set<StageEvent['kind']>([
+  * An unfinished staging exposes only stretches whose right anchor is already known.
+  */
+ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRate[] {
+-  const sources = new Set(
+-    script.beats.flatMap((b) => (b.source === undefined || b.source < 0 ? [] : [b.source])),
+-  );
++  const sources = shotSources(script);
+   const byBeat = new Map<number, StageEvent[]>();
+   for (const e of staging.events) {
+     const list = byBeat.get(e.beat) ?? [];
+@@ -94,18 +118,11 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+     ];
+     for (const b of p.beats) {
+       if (b === p.beats[0] && b.kind === 'kickOff') continue;
+-      if (!(
+-        b.shot !== undefined ||
+-        b.kind === 'shot' ||
+-        b.kind === 'penalty' ||
+-        b.incidents?.length ||
+-        (b.event !== undefined && sources.has(b.event))
+-      ))
+-        continue;
++      if (!isAnchor(b, sources)) continue;
+       const events = byBeat.get(b.index) ?? [];
+       const action = events.find((e) => actionEvents.has(e.kind));
+       if (!action) continue;
+-      anchors.push({ t: action.t, clock: p.start + b.clock - OFFSET[p.period - 1] * 60, beat: b });
++      anchors.push({ t: action.t, clock: presentClock(p, b.clock), beat: b });
+     }
+     const whistle = byBeat.get(p.beats.at(-1)!.index)?.find((e) => e.kind === 'whistle');
+     if (whistle) anchors.push({ t: whistle.t, clock: p.start + p.minutes * 60 });
+@@ -128,9 +145,7 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+       };
+       const b = a.beat;
+       const last = b && byBeat.get(b.index)?.findLast((e) => finishEvents.has(e.kind) && e.t < z.t);
+-      const minuteEnd = b
+-        ? p.start + (Math.floor(b.clock / 60) + 1 - OFFSET[p.period - 1]) * 60
+-        : Infinity;
++      const minuteEnd = b ? presentClock(p, (Math.floor(b.clock / 60) + 1) * 60) : Infinity;
+       const projected = last ? a.clock + ((last.t - a.t) * (z.clock - a.clock)) / (z.t - a.t) : 0;
+       if (last && last.t > a.t && projected >= minuteEnd) {
+         const end = minuteEnd - 1e-6;
+diff --git a/packages/engine/src/staging/tempo.ts b/packages/engine/src/staging/tempo.ts
+new file mode 100644
+index 00000000..31d49ce1
+--- /dev/null
++++ b/packages/engine/src/staging/tempo.ts
+@@ -0,0 +1,144 @@
++/**
++ * The tempo a staging keeps (→MATCH-12): the picture's seconds are fitted to the match clock only
++ * at the record's fixed moments, so the motion program itself plays at the pace those moments
++ * leave. Before a performance it plans when each beat begins on the staged timeline: between two
++ * fixed moments (a recorded shot, its set-up pass, an incident, a half's start and its whistle)
++ * the beats share the time by their nominal lengths. While performing, each beat's hold on the
++ * ball takes up the difference between that plan and where the staging is, within bounds, so a
++ * stretch the script packs is played briskly and one it leaves thin is played patiently; the
++ * players themselves keep their movement-bounded pace throughout.
++ */
++import type { MatchScript, ScriptBeat } from '../../../contracts/src/match-script';
++import { SCRIPT_CONFIG } from '../script/config';
++import { framePeriods, isAnchor, presentClock, shotSources } from './frame-clock';
++import { STAGING_CONFIG } from './config';
++import { RESTART_KINDS } from './types';
++import type { Beat } from './types';
++import { dist } from './vec';
++
++const TEMPO = STAGING_CONFIG.stage.tempo;
++const SCENE = STAGING_CONFIG.stage.scene;
++
++export interface Tempo {
++  /** Planned staged-timeline second each beat begins, by its position in the script. */
++  at: number[];
++  /** Planned seconds each beat's actor has the ball. */
++  hold: number[];
++  /** Planned seconds of incident scenes before each beat's action. */
++  scene: number[];
++  /** The position of the first beat of each beat's period. */
++  first: number[];
++  /** Staged seconds less planned seconds, fixed when a period's first beat begins. */
++  offset: number;
++}
++
++const isRestart = (b: ScriptBeat) => (RESTART_KINDS as readonly string[]).includes(b.kind);
++const isShot = (b: ScriptBeat) =>
++  b.shot !== undefined || b.kind === 'shot' || b.kind === 'penalty' || b.kind === 'shootoutKick';
++
++/** Nominal seconds of a beat's dead ball, its incidents and its ball's travel. */
++function parts(b: ScriptBeat, k: number): { dead: number; scene: number; travel: number } {
++  const dead =
++    b.kind === 'stoppage'
++      ? b.hold
++      : isRestart(b) && !(k === 0 && b.kind === 'kickOff')
++        ? (SCRIPT_CONFIG.dead[b.kind as keyof typeof SCRIPT_CONFIG.dead] ?? 0)
++        : 0;
++  let scene = 0;
++  const incidents = b.incidents ?? [];
++  // Substitutions made together are one scene (`runIncidents`).
++  if (incidents.some((x) => x.kind === 'sub')) scene += SCENE.substitution + TEMPO.subWalk;
++  for (const x of incidents)
++    scene += x.kind === 'injury' ? SCENE.injury : x.kind === 'sub' ? 0 : SCENE.card;
++  const length = dist(b.from, b.to);
++  const speed = TEMPO.speeds;
++  const travel =
++    b.outcome === 'foul'
++      ? 0
++      : length /
++        (isShot(b)
++          ? speed.shot
++          : b.kind === 'carry' || b.kind === 'takeOn'
++            ? speed.carry
++            : b.loft
++              ? speed.loft
++              : speed.ground);
++  return { dead, scene, travel };
++}
++
++/** The planned hold of a beat at the natural pace. */
++const nominalHold = (b: ScriptBeat): number =>
++  isShot(b) || b.kind === 'stoppage' ? 0 : isRestart(b) ? TEMPO.restartHold : TEMPO.hold;
++
++/** Plans every period of `script`, its complete halves including their `added` minutes. */
++export function planTempo(script: MatchScript, added: readonly number[] = []): Tempo {
++  const n = script.beats.length;
++  const at = Array<number>(n).fill(NaN);
++  const hold = Array<number>(n).fill(NaN);
++  const scene = Array<number>(n).fill(0);
++  const first = Array<number>(n).fill(-1);
++  const position = new Map(script.beats.map((b, i) => [b, i]));
++  const sources = shotSources(script);
++  for (const p of framePeriods(script, added)) {
++    const index = p.beats.map((b) => position.get(b)!);
++    const len = p.beats.map((b, k) => {
++      const x = parts(b, k);
++      scene[index[k]!] = x.scene;
++      return x.dead + x.scene + nominalHold(b) + x.travel;
++    });
++    // Fixed moments: the half's start, each recorded moment's beginning, the whistle.
++    const nodes: { k: number; at: number }[] = [{ k: 0, at: p.start }];
++    p.beats.forEach((b, k) => {
++      if (k === 0 || !isAnchor(b, sources)) return;
++      const x = parts(b, k);
++      const begins = presentClock(p, b.clock) - x.dead - x.scene - nominalHold(b);
++      if (begins > nodes.at(-1)!.at) nodes.push({ k, at: begins });
++    });
++    nodes.push({ k: p.beats.length, at: p.start + p.minutes * 60 });
++    for (let j = 0; j + 1 < nodes.length; j++) {
++      const a = nodes[j]!,
++        z = nodes[j + 1]!;
++      let total = 0;
++      for (let k = a.k; k < z.k; k++) total += len[k]!;
++      const scale = total > 0 ? (z.at - a.at) / total : 1;
++      let t = a.at;
++      for (let k = a.k; k < z.k; k++) {
++        const i = index[k]!;
++        at[i] = t;
++        hold[i] = nominalHold(p.beats[k]!) + len[k]! * (scale - 1);
++        first[i] = index[0]!;
++        t += len[k]! * scale;
++      }
++    }
++  }
++  return { at, hold, scene, first, offset: 0 };
++}
++
++/** Fixes the plan's offset as a period's first beat begins at staged second `t`. */
++export function beginBeat(tempo: Tempo, i: number, t: number): void {
++  if (tempo.first[i] === i && Number.isFinite(tempo.at[i]!)) tempo.offset = t - tempo.at[i]!;
++}
++
++/**
++ * The hold `beat` (at position `i`) is played with when its action is about to start at staged
++ * second `t`, `scenes` true when its incidents were staged first: the planned hold less part of
++ * how far the staging runs behind its plan, within the tempo bounds. A shot, a lay-off, a
++ * stoppage and a beat outside the plan keep the script's hold.
++ */
++export function pacedHold(tempo: Tempo, i: number, beat: Beat, t: number, scenes: boolean): number {
++  const planned = tempo.hold[i]!;
++  if (
++    !Number.isFinite(planned) ||
++    beat.kind === 'stoppage' ||
++    beat.reason === 'layoff' ||
++    (beat.original !== undefined && isShot(beat.original))
++  )
++    return beat.hold;
++  const due = tempo.at[i]! + tempo.offset + (scenes ? tempo.scene[i]! : 0);
++  const behind = t - due;
++  const restart = beat.original !== undefined && isRestart(beat.original);
++  const max = restart ? TEMPO.maxRestartHold : TEMPO.maxHold;
++  const min = Math.min(beat.hold, TEMPO.minHold);
++  const hold = planned - behind * TEMPO.catchUp;
++  return Math.round(Math.min(Math.max(hold, min), max) * 100) / 100;
++}

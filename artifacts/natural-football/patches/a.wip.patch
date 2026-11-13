@@ -1,0 +1,353 @@
+diff --git a/packages/engine/src/match/clock.ts b/packages/engine/src/match/clock.ts
+index 722c356b..e84b220a 100644
+--- a/packages/engine/src/match/clock.ts
++++ b/packages/engine/src/match/clock.ts
+@@ -2,6 +2,17 @@
+ export const OFFSET = [0, 45, 90, 105] as const;
+ export const LENGTH = [45, 45, 15, 15] as const;
+ 
++/**
++ * Seconds into `period` of a script clock, `extra` its added minutes: the script writes a half's
++ * last record minute, which the record counts its added time in, into that minute, and it is
++ * played over the minute and the added time, each beat at its share of both.
++ */
++export function periodSeconds(period: 1 | 2 | 3 | 4, clock: number, extra: number): number {
++  const elapsed = clock - OFFSET[period - 1]! * 60;
++  const last = (LENGTH[period - 1]! - 1) * 60;
++  return elapsed <= last ? elapsed : last + (elapsed - last) * (1 + Math.max(0, extra));
++}
++
+ export function stampAt(
+   period: 1 | 2 | 3 | 4,
+   t: number,
+diff --git a/packages/engine/src/script/clock.ts b/packages/engine/src/script/clock.ts
+index 4dd193a4..99810f17 100644
+--- a/packages/engine/src/script/clock.ts
++++ b/packages/engine/src/script/clock.ts
+@@ -23,13 +23,28 @@ export const deadOf = (b: Beat, k: number, m: number): number =>
+   !(k === 0 && b.kind === 'kickOff' && (m === 0 || m === 45 || m === 90 || m === 105))
+     ? FIT.dead[b.kind as keyof typeof FIT.dead]
+     : 0;
++/** The script minutes that close a half (or an extra-time half), in `added` order. */
++export const HALF_ENDS = [44, 89, 104, 119] as const;
+ /**
+- * A minute's clock before pressing: its sixty seconds less its restarts' dead time shared equally
+- * between its beats as hold plus travel, each hold within `fit.hold`, and the seconds that needs.
++ * The seconds record minute `m` is played for: sixty, and a half's last minute also its added
++ * time, which the record counts in that minute (45 + 2 is the 45th minute's fact).
+  */
+-export function minuteTimes(list: readonly Beat[], m: number): { holds: number[]; need: number } {
++export const minuteSeconds = (added: readonly number[], m: number): number => {
++  const half = HALF_ENDS.indexOf(m as (typeof HALF_ENDS)[number]);
++  return 60 * (1 + (half < 0 ? 0 : Math.max(0, added[half] ?? 0)));
++};
++/**
++ * A minute's clock before pressing: its `seconds` (sixty, or with a half's added time) less its
++ * restarts' dead time shared equally between its beats as hold plus travel, each hold within
++ * `fit.hold`, and the seconds that needs.
++ */
++export function minuteTimes(
++  list: readonly Beat[],
++  m: number,
++  seconds = 60,
++): { holds: number[]; need: number } {
+   const dead = list.reduce((s, b, k) => s + deadOf(b, k, m), 0);
+-  const share = (60 - dead) / list.length;
++  const share = (seconds - dead) / list.length;
+   const holds = list.map((b) => Math.min(Math.max(share - travel(b), FIT.hold[0]), FIT.hold[1]));
+   const need = list.reduce((s, b, k) => s + deadOf(b, k, m) + holds[k]! + travel(b), 0);
+   return { holds, need };
+diff --git a/packages/engine/src/script/count.ts b/packages/engine/src/script/count.ts
+index c3065248..368c9ac3 100644
+--- a/packages/engine/src/script/count.ts
++++ b/packages/engine/src/script/count.ts
+@@ -7,7 +7,7 @@ import type { Beat, Script } from './types';
+ import { isPassLike, isRestartKind } from './types';
+ import { cellAt, dist } from './cells';
+ import { buildTouches, dealFixed } from './touches';
+-import { minuteTimes } from './clock';
++import { minuteSeconds, minuteTimes } from './clock';
+ import { planRestarts } from './restarts';
+ import { incidentRows } from './incidents';
+ 
+@@ -196,7 +196,9 @@ export function scriptCost(script: Script, detail: MatchDetail): ScriptCost {
+   let maxOverrun = 0;
+   for (let m = 0; m < detail.length; m++) {
+     const list = b.filter((x) => Math.floor(x.clock / 60) === m);
+-    if (list.length) maxOverrun = Math.max(maxOverrun, minuteTimes(list, m).need - 60);
++    const seconds = minuteSeconds(detail.added, m);
++    if (list.length)
++      maxOverrun = Math.max(maxOverrun, minuteTimes(list, m, seconds).need - seconds);
+   }
+   return {
+     beats: b.length,
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index 60a43f79..7d02392a 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -32,7 +32,7 @@ import { beatIncident, foulCards, incidentIndex, scriptPeriod } from './incident
+ import { validateScript } from './validate';
+ import { compareRecord, countScript } from './count';
+ import { planRestarts } from './restarts';
+-import { minuteTimes, travel, deadOf } from './clock';
++import { minuteSeconds, minuteTimes, travel, deadOf } from './clock';
+ import { TouchSearch, cellsByDistance } from './search';
+ const FIT = SCRIPT_CONFIG;
+ const GRAMMAR = SCRIPT_CONFIG;
+@@ -44,6 +44,9 @@ const MIN_INDEXED_POOL = 32;
+  * do and then carry it out again. Writer rules, not lab tunables.
+  */
+ const LOOKAHEAD = 0.3;
++/** Centimetres a departing man's touch is cheaper per touch he is behind his pace (see `urge`). */
++const URGE = 1500;
++const URGE_CAP = 3;
+ /** A shot from outside the box is struck within this many metres of the cell's goal-side edge. */
+ const SHOT_DEPTH = 10;
+ /** A pass played at least this many metres back states why (a staging cue, →MATCH-12). */
+@@ -146,6 +149,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+   );
+   const fixedRemaining = Array.from({ length: settled.length }, () => [0, 0]);
+   const expiring = Array<number>(settled.length).fill(0);
++  /** `expiring` by side: touches that must be played by the end of that minute. */
++  const expiringBy = Array.from({ length: settled.length }, () => [0, 0]);
+   const turnsRemaining = minuteOrder.map((teams) =>
+     teams.map((rows, team) => {
+       const counts = settled.sides[team]!.lines.map(() => 0);
+@@ -156,7 +161,10 @@ function writeFitted(settled: Settled, seed: string): Script {
+   for (const t of touches) {
+     if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!++;
+     const last = t.until - 1;
+-    if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!++;
++    if (last >= 0 && last < settled.length && t.period === periodOf(last)) {
++      expiring[last]!++;
++      expiringBy[last]![t.side]!++;
++    }
+   }
+   const total = [0, 0];
+   const done = [0, 0];
+@@ -522,22 +530,68 @@ function writeFitted(settled: Settled, seed: string): Script {
+     team === undefined
+       ? fixedRemaining[minute]![0]! + fixedRemaining[minute]![1]! > 0
+       : fixedRemaining[minute]![team]! > 0;
+-  /** The touches played by the end of minute `m`: an even share of all of them. */
++  /**
++   * A touch of `team`'s that must be played this minute: fixed to it, or its window ends with it
++   * (a departing man's). The other side then gives the ball up rather than keep it all minute.
++   */
++  const dueLeft = (team: TeamId) => fixedLeft(team) || expiringBy[minute]![team]! > 0;
++  /**
++   * The touches played by the end of the minute being written: those already played and its even
++   * share of the touches its period has left, a half's last minute weighted by its added time
++   * (natural-football variant a). A minute that had to play more than its share (a departing
++   * man's last touches) takes it from every later minute alike, so none is left nearly empty.
++   */
+   const periodCounts = [0, 0];
+   for (const t of touches) periodCounts[t.period]!++;
+-  const quotas = Array.from({ length: settled.length }, (_, m) =>
+-    m < 90
+-      ? Math.round(((m + 1) * periodCounts[0]!) / 90)
+-      : periodCounts[0]! + Math.round(((m - 89) * periodCounts[1]!) / 30),
++  const minuteWeights = Array.from(
++    { length: settled.length },
++    (_, m) => minuteSeconds(settled.added, m) / 60,
++  );
++  let minuteQuota = 0;
++  const planQuota = () => {
++    const end = Math.min(settled.length, minute < 90 ? 90 : 120);
++    const target = minute < 90 ? periodCounts[0]! : periodCounts[0]! + periodCounts[1]!;
++    let weight = 0;
++    for (let m = minute; m < end; m++) weight += minuteWeights[m]!;
++    const left = Math.max(0, target - done[0]! - done[1]!);
++    minuteQuota = done[0]! + done[1]! + Math.round((left * minuteWeights[minute]!) / weight);
++  };
++  const quotaMet = () => done[0]! + done[1]! >= minuteQuota;
++  /**
++   * A man who leaves before his period ends plays his touches spread over his time on the pitch,
++   * not all in his last minute (natural-football variant a): a touch of his costs `URGE` less per
++   * touch his group (side, man, last minute) is behind an even pace through its window, up to
++   * `URGE_CAP` touches behind.
++   */
++  const urgeGroup = touches.map((t) =>
++    t.minute === FLOATING && t.until < (t.period === 0 ? 90 : 120) && t.until > t.from
++      ? `${t.side}:${t.actor}:${t.until}`
++      : '',
+   );
+-  const quota = (m: number) => quotas[m]!;
+-  const quotaMet = () => done[0]! + done[1]! >= quota(minute);
++  const urgeTotal = new Map<string, number>();
++  const urgeDone = new Map<string, number>();
++  const urgeFrom = new Map<string, number>();
++  touches.forEach((t, i) => {
++    const g = urgeGroup[i]!;
++    if (!g) return;
++    urgeTotal.set(g, (urgeTotal.get(g) ?? 0) + 1);
++    urgeFrom.set(g, Math.min(urgeFrom.get(g) ?? t.from, t.from));
++  });
++  const urge = (i: number): number => {
++    const g = urgeGroup[i]!;
++    if (!g) return 0;
++    const from = urgeFrom.get(g)!,
++      until = touches[i]!.until;
++    const due = Math.floor((urgeTotal.get(g)! * (minute + 1 - from)) / (until - from));
++    const behind = due - (urgeDone.get(g) ?? 0);
++    return behind > 0 ? Math.min(behind, URGE_CAP) * URGE : 0;
++  };
+   /** Quota and pace terms are constant during one cheapest-touch search. */
+   const costTerms = (team: TeamId) => {
+     const met = quotaMet();
+     const fill = Math.min(
+       1,
+-      (done[0]! + done[1]! - minuteStart) / Math.max(1, quota(minute) - minuteStart),
++      (done[0]! + done[1]! - minuteStart) / Math.max(1, minuteQuota - minuteStart),
+     );
+     const share = done[team]! / Math.max(1, total[team]!);
+     const lead = share - done[other(team)]! / Math.max(1, total[other(team)]!);
+@@ -547,7 +601,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+       pace: Math.round(
+         Math.min(Math.max((lead - endsLead) / FIT.paceSlack, -1), 1) * FIT.paceBias * 100,
+       ),
+-      push: met && fixedLeft(other(team)),
++      push: met && dueLeft(other(team)),
+     };
+   };
+   /**
+@@ -585,12 +639,17 @@ function writeFitted(settled: Settled, seed: string): Script {
+     if (touches[i]!.minute === minute) cost -= terms.fixed;
+     // A corner's or free kick's delivery waits for its restart rather than be played in open play.
+     if (touches[i]!.until === minute + 1) cost -= FIT.fixedPush * 100;
++    const urged = urge(i);
++    cost -= urged;
+     if (setPiece[i]) cost += FIT.setPieceWait * 100;
++    // A departing man behind his pace plays a reserved delivery in open play rather than wait
++    // for a restart (the restart is then delivered connectively).
+     if (
+       release &&
+       'event' in release &&
+       reserve.has(release.event) &&
+-      demand[team]![startCell[i]!]! > 0
++      demand[team]![startCell[i]!]! > 0 &&
++      urged === 0
+     )
+       cost += FIT.restartPull * 100;
+     if (ends[i]) {
+@@ -683,7 +742,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+         Math.max(0, cell),
+         bounds,
+         (i) => touchCost(team, i, cell, terms) + (place?.get(touches[i]!.actor) ?? 0),
+-        (i) => touches[i]!.minute !== FLOATING || touches[i]!.until === minute + 1,
++        (i) =>
++          touches[i]!.minute !== FLOATING || touches[i]!.until === minute + 1 || urge(i) > 0,
+       );
+     }
+     for (const i of pool) {
+@@ -903,12 +963,17 @@ function writeFitted(settled: Settled, seed: string): Script {
+     played[i] = true;
+     eligibilityVersion++;
+     const t = touches[i]!;
++    const group = urgeGroup[i]!;
++    if (group) urgeDone.set(group, (urgeDone.get(group) ?? 0) + 1);
+     for (let m = Math.max(minute, t.from); m < Math.min(settled.length, t.until); m++)
+       if (t.period === periodOf(m) && (t.minute === FLOATING || t.minute === m))
+         turnsRemaining[m]![t.side]![t.actor]!--;
+     if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!--;
+     const last = t.until - 1;
+-    if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!--;
++    if (last >= 0 && last < settled.length && t.period === periodOf(last)) {
++      expiring[last]!--;
++      expiringBy[last]![t.side]!--;
++    }
+     actorLeft[t.side]![t.actor]!--;
+     if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!--;
+     done[t.side]!++;
+@@ -1215,8 +1280,10 @@ function writeFitted(settled: Settled, seed: string): Script {
+       }
+       // Yield to the other side's fixed touch only after this side has played its own. Otherwise
+       // two sides with possession-preserving fixed touches can yield forever without playing one.
+-      if (quotaMet() && !fixedLeft(side) && fixedLeft(other(side))) {
+-        const waiting = theirs.filter((i) => touches[i]!.minute === minute);
++      if (quotaMet() && !dueLeft(side) && dueLeft(other(side))) {
++        const waiting = theirs.filter(
++          (i) => touches[i]!.minute === minute || touches[i]!.until === minute + 1,
++        );
+         const lone = waiting.find((i) => unassisted(i));
+         if (waiting.length > 0 && (lone !== undefined || !mine.some((i) => ends[i]))) {
+           miscontrol(
+@@ -1262,6 +1329,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+ 
+   for (minute = 0; minute < settled.length; minute++) {
+     minuteStart = done[0]! + done[1]!;
++    planQuota();
+     waitingIncidents = settled.incidents.flatMap((row, i) =>
+       row[IN.minute] === minute + 1 && !booked.has(i) ? [beatIncident(row)] : [],
+     );
+@@ -1325,19 +1393,23 @@ function writeFitted(settled: Settled, seed: string): Script {
+     }
+   }
+ 
+-  // A minute whose beats need more than its sixty seconds is pressed into them, every part alike,
+-  // so each beat keeps its record minute; `minuteTimes` gives what each minute needed.
++  // A minute whose beats need more than its seconds is pressed into them, every part alike, so
++  // each beat keeps its record minute; `minuteTimes` gives what each minute needed. A half's last
++  // minute is played over its added time too, its clock written into the record minute (the
++  // staging spreads it back over the added time, `frame-clock.ts`).
+   for (let m = 0; m < settled.length; m++) {
+     const list = beats.filter((_, i) => minuteOf[i] === m);
+     if (list.length === 0) continue;
+-    const { holds, need } = minuteTimes(list, m);
+-    const press = need > 60 ? 60 / need : 1;
++    const seconds = minuteWeights[m]! * 60;
++    const { holds, need } = minuteTimes(list, m, seconds);
++    const press = need > seconds ? seconds / need : 1;
++    const squeeze = 60 / seconds;
+     let t = m * 60;
+     for (const [k, b] of list.entries()) {
+-      t += deadOf(b, k, m) * press;
++      t += deadOf(b, k, m) * press * squeeze;
+       b.hold = Math.floor(holds[k]! * press * 100) / 100;
+       b.clock = Math.floor(t * 100) / 100;
+-      t += (holds[k]! + travel(b)) * press;
++      t += (holds[k]! + travel(b)) * press * squeeze;
+     }
+   }
+   const shootoutRng = random(`${seed}:script:shootout`);
+diff --git a/packages/engine/src/staging/frame-clock.ts b/packages/engine/src/staging/frame-clock.ts
+index ed4b8df1..3c0ef226 100644
+--- a/packages/engine/src/staging/frame-clock.ts
++++ b/packages/engine/src/staging/frame-clock.ts
+@@ -1,6 +1,6 @@
+ /** Fit staged seconds to record seconds between fixed moments (MATCH-12). */
+ import type { MatchScript, ScriptBeat } from '../../../contracts/src/match-script';
+-import { LENGTH, OFFSET } from '../match/clock';
++import { LENGTH, OFFSET, periodSeconds } from '../match/clock';
+ import { invalidDetail } from '../script/failure';
+ import type { StageEvent, StageFrame } from './staging';
+ import { STAGING_CONFIG } from './config';
+@@ -47,6 +47,10 @@ export function framePeriods(script: MatchScript, added: readonly number[] = [])
+   });
+ }
+ 
++/** Seconds into period `p` of a script clock, a half's last minute over its added time. */
++const secondsIn = (p: FramePeriod, clock: number): number =>
++  periodSeconds(p.period, clock, p.minutes - LENGTH[p.period - 1]);
++
+ const actionEvents = new Set<StageEvent['kind']>([
+   'kick',
+   'shot',
+@@ -105,7 +109,7 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+       const events = byBeat.get(b.index) ?? [];
+       const action = events.find((e) => actionEvents.has(e.kind));
+       if (!action) continue;
+-      anchors.push({ t: action.t, clock: p.start + b.clock - OFFSET[p.period - 1] * 60, beat: b });
++      anchors.push({ t: action.t, clock: p.start + secondsIn(p, b.clock), beat: b });
+     }
+     const whistle = byBeat.get(p.beats.at(-1)!.index)?.find((e) => e.kind === 'whistle');
+     if (whistle) anchors.push({ t: whistle.t, clock: p.start + p.minutes * 60 });
+@@ -129,7 +133,7 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+       const b = a.beat;
+       const last = b && byBeat.get(b.index)?.findLast((e) => finishEvents.has(e.kind) && e.t < z.t);
+       const minuteEnd = b
+-        ? p.start + (Math.floor(b.clock / 60) + 1 - OFFSET[p.period - 1]) * 60
++        ? p.start + secondsIn(p, (Math.floor(b.clock / 60) + 1) * 60)
+         : Infinity;
+       const projected = last ? a.clock + ((last.t - a.t) * (z.clock - a.clock)) / (z.t - a.t) : 0;
+       if (last && last.t > a.t && projected >= minuteEnd) {

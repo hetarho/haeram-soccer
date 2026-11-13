@@ -1,0 +1,994 @@
+diff --git a/packages/engine/src/script/cells.ts b/packages/engine/src/script/cells.ts
+index d1fff4ad..b43a7e7a 100644
+--- a/packages/engine/src/script/cells.ts
++++ b/packages/engine/src/script/cells.ts
+@@ -43,10 +43,22 @@ export const intoCell = (side: TeamId, cell: number, p: Vec): Vec => {
+   return toAttack(side, [clamp(a[0], x0 + mx, x1 - mx), clamp(a[1], y0 + my, y1 - my)]);
+ };
+ 
+-/** A point in `cell` near `wanted`, moved to at least `min` metres from `ball` when the cell allows. */
++/**
++ * A point in `cell` near `wanted`, moved to at least `min` metres from `ball` when the cell allows:
++ * straight away from the ball when that stays in the cell, else to the nearest far corner.
++ */
+ export const pointAway = (side: TeamId, cell: number, wanted: Vec, ball: Vec, min: number): Vec => {
+   const p = intoCell(side, cell, wanted);
+-  if (dist(p, ball) >= min) return p;
++  const near = dist(p, ball);
++  if (near >= min) return p;
++  // The nearest point to `p` at least `min` away lies on the ray from the ball through it.
++  if (near > 1e-9) {
++    const q = intoCell(side, cell, [
++      ball[0] + ((p[0] - ball[0]) / near) * min,
++      ball[1] + ((p[1] - ball[1]) / near) * min,
++    ]);
++    if (dist(q, ball) >= min - 1e-9) return q;
++  }
+   const [x0, x1, y0, y1] = rectOf(cell);
+   const m = SCRIPT_CONFIG.cellMargin;
+   const attack: Vec[] = [
+diff --git a/packages/engine/src/script/clock.ts b/packages/engine/src/script/clock.ts
+index 4dd193a4..ced7adcb 100644
+--- a/packages/engine/src/script/clock.ts
++++ b/packages/engine/src/script/clock.ts
+@@ -23,14 +23,21 @@ export const deadOf = (b: Beat, k: number, m: number): number =>
+   !(k === 0 && b.kind === 'kickOff' && (m === 0 || m === 45 || m === 90 || m === 105))
+     ? FIT.dead[b.kind as keyof typeof FIT.dead]
+     : 0;
++/** A first-time lay-off is played at once: its hold is the shortest. */
++const firstTime = (b: Beat): boolean => b.reason === 'layoff';
+ /**
+- * A minute's clock before pressing: its sixty seconds less its restarts' dead time shared equally
+- * between its beats as hold plus travel, each hold within `fit.hold`, and the seconds that needs.
++ * A minute's clock before pressing: its sixty seconds less its restarts' dead time and its
++ * first-time lay-offs shared equally between its other beats as hold plus travel, each hold within
++ * `fit.hold`, and the seconds that needs.
+  */
+ export function minuteTimes(list: readonly Beat[], m: number): { holds: number[]; need: number } {
+   const dead = list.reduce((s, b, k) => s + deadOf(b, k, m), 0);
+-  const share = (60 - dead) / list.length;
+-  const holds = list.map((b) => Math.min(Math.max(share - travel(b), FIT.hold[0]), FIT.hold[1]));
++  const quick = list.filter(firstTime);
++  const spent = quick.reduce((s, b) => s + FIT.hold[0] + travel(b), 0);
++  const share = (60 - dead - spent) / Math.max(1, list.length - quick.length);
++  const holds = list.map((b) =>
++    firstTime(b) ? FIT.hold[0] : Math.min(Math.max(share - travel(b), FIT.hold[0]), FIT.hold[1]),
++  );
+   const need = list.reduce((s, b, k) => s + deadOf(b, k, m) + holds[k]! + travel(b), 0);
+   return { holds, need };
+ }
+diff --git a/packages/engine/src/script/config.ts b/packages/engine/src/script/config.ts
+index 819f0d68..8b29d9b3 100644
+--- a/packages/engine/src/script/config.ts
++++ b/packages/engine/src/script/config.ts
+@@ -33,4 +33,24 @@ export const SCRIPT_CONFIG = {
+   cellJitter: 0.01,
+   /** A broken touch chain returns problems instead of keeping a worker busy forever. */
+   maxStepsPerTouch: 20,
++  /**
++   * The order of play reads as football (natural-football b). A reception or a carry's end whose
++   * next action starts in another cell is placed on the side of its cell facing that one, up to
++   * `leadDepth` metres (seeded) back from the margin, so the link into it is a touch, not a run.
++   */
++  leadDepth: 3,
++  /**
++   * What a touch costs per metre (between cell centres) its link would carry the ball forward
++   * before a release that goes back: the man who drives forward does not then turn round and pass
++   * backward. A factor of the link's own metres.
++   */
++  reversal: 1,
++  /** What a backward release costs per metre back from the attacking half: attacks go on first. */
++  backDelay: 0.2,
++  /**
++   * A pass played at least `back` metres backward is given its reason: a first-time `layoff`, a
++   * `reset` of at least `reset` metres, a `switch` across `switchLanes` lanes, else `pressed` from
++   * attack x `pressedX` (staged with the presser closing) and a `reset` behind it.
++   */
++  backPass: { back: 8, reset: 25, switchLanes: 2, pressedX: 52.5 },
+ } as const;
+diff --git a/packages/engine/src/script/order.test.ts b/packages/engine/src/script/order.test.ts
+new file mode 100644
+index 00000000..09c4cdc2
+--- /dev/null
++++ b/packages/engine/src/script/order.test.ts
+@@ -0,0 +1,120 @@
++// The order of play reads as football (natural-football b): links are touches into the next
++// cell, a run forward is not turned round into a back pass, and every back pass has its reason.
++import { describe, expect, it } from 'vitest';
++import { cellAt, dist, pointAway, toAttack } from './cells';
++import { minuteTimes } from './clock';
++import { SCRIPT_CONFIG } from './config';
++import type { MatchDetail as Settled } from './detail';
++import type { Beat, Script } from './types';
++import { writePeriods } from './write';
++import { loadDetail } from '../../../../tests/fixtures/match-script';
++
++const write = (detail: Settled): Script => {
++  const result = writePeriods(detail, 'fit');
++  if ('problems' in result) throw new Error(`${detail.id}: ${result.problems.join(';')}`);
++  return result.script;
++};
++const scripts = (['s01', 's02', 's03'] as const).map((id) => [id, write(loadDetail(id))] as const);
++const ax = (b: Beat, p: readonly [number, number]) => toAttack(b.side, p)[0];
++const B = SCRIPT_CONFIG.backPass;
++/** The most a link can need from a reception led to an edge-adjacent cell: both margins and the depth. */
++const TOUCH = 2 * SCRIPT_CONFIG.cellMargin + SCRIPT_CONFIG.leadDepth + 1e-6;
++
++describe('the order of play (natural-football b)', () => {
++  it('a pass whose receiver plays on from the next cell is received on its side: the link is a touch', () => {
++    for (const [id, script] of scripts) {
++      let adjacent = 0,
++        touches = 0;
++      script.beats.forEach((b, k) => {
++        const p = script.beats[k - 1];
++        if (b.move !== 'link' || !p || p.side !== b.side || p.actor === b.actor) return;
++        if (p.outcome !== 'complete') return;
++        const a = cellAt(b.side, b.from),
++          c = cellAt(b.side, b.to);
++        const steps = Math.abs(Math.floor(a / 5) - Math.floor(c / 5)) + Math.abs((a % 5) - (c % 5));
++        if (steps !== 1) return;
++        adjacent++;
++        if (dist(b.from, b.to) <= TOUCH) touches++;
++      });
++      expect(adjacent, id).toBeGreaterThan(50);
++      expect(touches / adjacent, id).toBeGreaterThan(0.7);
++    }
++  });
++
++  it('every pass played back far enough to need one has its reason', () => {
++    for (const [id, script] of scripts) {
++      const back = script.beats.filter(
++        (b) => b.kind === 'pass' && ax(b, b.from) - ax(b, b.to) >= B.back,
++      );
++      expect(back.length, id).toBeGreaterThan(50);
++      for (const b of back) expect(b.reason, `${id} beat ${b.index}`).toBeDefined();
++      // A lay-off is first time: the beat before it is the completed pass that gave him the ball.
++      for (const b of back.filter((x) => x.reason === 'layoff')) {
++        const before = script.beats[b.index - 1]!;
++        expect(before.receiver, `${id} beat ${b.index}`).toBe(b.actor);
++        expect(before.outcome).toBe('complete');
++      }
++      // The presser is staged closing him down, so a pressed back pass is played up the pitch.
++      for (const b of back.filter((x) => x.reason === 'pressed'))
++        expect(ax(b, b.from), `${id} beat ${b.index}`).toBeGreaterThanOrEqual(B.pressedX);
++    }
++  });
++
++  it('a man who links the ball a cell forward rarely turns round and passes it back', () => {
++    for (const [id, script] of scripts) {
++      let turned = 0,
++        back = 0;
++      script.beats.forEach((b, k) => {
++        if (b.kind !== 'pass' || ax(b, b.from) - ax(b, b.to) < B.back) return;
++        back++;
++        const p = script.beats[k - 1];
++        if (p?.move === 'link' && p.actor === b.actor && ax(p, p.to) - ax(p, p.from) >= B.back)
++          turned++;
++      });
++      expect(turned / back, id).toBeLessThan(0.03);
++    }
++  });
++
++  it('a first-time lay-off takes the shortest hold; the minute shares the rest', () => {
++    const beat = (index: number, reason?: Beat['reason']): Beat => ({
++      index,
++      possession: 0,
++      side: 0,
++      phase: 'progression',
++      move: 'short',
++      kind: 'pass',
++      actor: 1,
++      receiver: 2,
++      from: [50, 30],
++      to: [42, 30],
++      loft: false,
++      through: false,
++      header: false,
++      hold: 0,
++      clock: 0,
++      period: 1,
++      outcome: 'complete',
++      ...(reason && { reason }),
++    });
++    // Twenty beats a minute: their share is within `hold`, so the minute stays sixty seconds.
++    const plain = minuteTimes(
++      Array.from({ length: 20 }, (_, k) => beat(k)),
++      10,
++    );
++    const laid = minuteTimes(
++      Array.from({ length: 20 }, (_, k) => beat(k, k === 1 ? 'layoff' : undefined)),
++      10,
++    );
++    expect(laid.holds[1]).toBe(SCRIPT_CONFIG.hold[0]);
++    expect(laid.holds[0]).toBeGreaterThan(plain.holds[0]!);
++    expect(laid.need).toBeCloseTo(plain.need, 6);
++  });
++
++  it('a point kept a pass length from the ball moves straight away from it, not to a far corner', () => {
++    // Band 6 lane 0 of side 0 (x 88.5–99.5, y 0–13.84); the ball 3 m from the wanted point.
++    const ball: [number, number] = [90, 15.34];
++    const p = pointAway(0, 30, [91.5, 12.34], ball, SCRIPT_CONFIG.minPass);
++    expect(dist(p, ball)).toBeCloseTo(SCRIPT_CONFIG.minPass, 6);
++    expect(p[0]).toBeLessThan(95);
++  });
++});
+diff --git a/packages/engine/src/script/touches.ts b/packages/engine/src/script/touches.ts
+index 5ccce20b..3136be76 100644
+--- a/packages/engine/src/script/touches.ts
++++ b/packages/engine/src/script/touches.ts
+@@ -6,7 +6,7 @@ import { random, integer } from '../primitives';
+ import { EV, EVENT_KINDS, EVENT_RESULTS, FO, SH, SHOT_KINDS } from './codes';
+ import type { MatchDetail as Settled } from './detail';
+ import type { TeamId } from './types';
+-import { cellDistance } from './cells';
++import { cellCentre, cellDistance } from './cells';
+ import { touchWindow, minuteIndex } from './windows';
+ import { invalidDetail } from './failure';
+ export { minuteIndex } from './windows';
+@@ -103,6 +103,24 @@ export function firstCell(settled: Settled, touch: Touch): number {
+   return settled.fouls[r.foul]![FO.cell]!;
+ }
+ 
++/** Attack-frame metres from cell `from`'s centre forward to cell `to`'s (negative when backward). */
++const advance = (from: number, to: number): number => cellCentre(0, to)[0] - cellCentre(0, from)[0];
++
++/**
++ * Centimetres it costs to run a carry from `from` to `to` into `touch`: a carry forward into a
++ * release that goes back reads as a run that turns round (`reversal`, as the writer prices it).
++ */
++const turnRound = (settled: Settled, from: number, to: number, touch: Touch): number => {
++  const r = touch.release;
++  if (r === undefined || !('event' in r)) return 0;
++  const e = settled.events[r.event]!;
++  const forward = advance(from, to);
++  const back = -advance(e[EV.from]!, e[EV.to]!);
++  return forward > 0 && back > 0
++    ? Math.round(SCRIPT_CONFIG.reversal * Math.min(forward, back) * 100)
++    : 0;
++};
++
+ /** The cell a touch's release starts in (its first cell when it has none). */
+ const releaseCell = (settled: Settled, touch: Touch): number =>
+   firstCell(settled, { ...touch, carries: [] }) >= 0
+@@ -277,7 +295,9 @@ export function buildTouches(
+         )
+           return;
+         const cost =
+-          cellDistance(firstCell(settled, t), e[EV.to]!) + (t.minute === FLOATING ? 0 : 50);
++          cellDistance(firstCell(settled, t), e[EV.to]!) +
++          (t.minute === FLOATING ? 0 : 50) +
++          turnRound(settled, e[EV.from]!, e[EV.to]!, t);
+         if (cost < bestCost) [best, bestCost] = [i, cost];
+       });
+       // Too far from every release of his, it is a touch of its own the writer plays where it starts.
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index f09f03cd..93cc81d3 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -191,6 +191,15 @@ function writeFitted(settled: Settled, seed: string): Script {
+       'event' in t.release &&
+       SET_PIECES[settled.events[t.release.event]![EV.setPiece]!] !== 'none',
+   );
++  // Attack-frame metres between cell centres: how far a link carries forward and a release goes back.
++  const centreX = (cell: number) => cellCentre(0, Math.max(cell, 0))[0];
++  /** Metres touch `i`'s release goes back (a pass or a lost ball played backward; else 0). */
++  const releaseBack = touches.map((t) => {
++    const r = t.release;
++    if (r === undefined || !('event' in r)) return 0;
++    const e = settled.events[r.event]!;
++    return Math.max(0, centreX(e[EV.from]!) - centreX(e[EV.to]!));
++  });
+   const search = new TouchSearch(
+     touches.map((t, i) => ({
+       side: t.side,
+@@ -330,9 +339,78 @@ function writeFitted(settled: Settled, seed: string): Script {
+     });
+     ball = to;
+   };
++  /**
++   * A point in `cell` near `wanted`; when the ball goes on from it into another cell `next` (of
++   * `nextTeam`'s frame), the point on the side of `cell` facing `next`, a seeded depth back from
++   * its margin, so the link that follows is a touch into the next cell rather than a run across
++   * this one.
++   */
++  const lead = (
++    team: TeamId,
++    cell: number,
++    wanted: Vec,
++    next: number,
++    nextTeam: TeamId = team,
++  ): Vec => {
++    if (next < 0) return intoCell(team, cell, wanted);
++    const edge = intoCell(nextTeam, next, wanted);
++    if (cellAt(team, edge) === cell) return intoCell(team, cell, wanted);
++    const p = intoCell(team, cell, edge);
++    const d = dist(p, edge);
++    if (d < 1e-9) return p;
++    const depth = rng() * FIT.leadDepth;
++    return intoCell(team, cell, [
++      p[0] + ((p[0] - edge[0]) / d) * depth,
++      p[1] + ((p[1] - edge[1]) / d) * depth,
++    ]);
++  };
++  /** The cell touch `i`'s release starts in (-1 without one). */
++  const releaseStart = (i: number): number => {
++    const r = touches[i]!.release;
++    if (r === undefined) return -1;
++    if ('event' in r) return settled.events[r.event]![EV.from]!;
++    if ('shot' in r) return settled.shots[r.shot]![SH.cell]!;
++    return settled.fouls[r.foul]![FO.cell]!;
++  };
++  /**
++   * Why a pass from `from` to `to` by `actor` of `team` is played backward, when it goes back at
++   * least `backPass.back` metres: a cut-back; a first-time lay-off of the pass he has just been
++   * given; a reset to the back; a switch across the pitch; else pressed in the attacking half
++   * (staged with the presser closing him down) and recycled behind it.
++   */
++  const backReason = (
++    team: TeamId,
++    actor: number,
++    move: string,
++    from: Vec,
++    to: Vec,
++  ): Beat['reason'] => {
++    if (move === 'cutBack') return 'cutBack';
++    const B = FIT.backPass;
++    const a = toAttack(team, from),
++      b = toAttack(team, to);
++    const back = a[0] - b[0];
++    if (back < B.back) return undefined;
++    const last = beats.at(-1);
++    if (
++      last !== undefined &&
++      last.side === team &&
++      last.receiver === actor &&
++      last.outcome === 'complete' &&
++      isPassLike(last.kind)
++    )
++      return 'layoff';
++    if (back >= B.reset) return 'reset';
++    if (Math.abs((cellAt(team, from) % 5) - (cellAt(team, to) % 5)) >= B.switchLanes)
++      return 'switch';
++    return a[0] >= B.pressedX ? 'pressed' : 'reset';
++  };
+   /** The holder's heavy touch: the ball runs to `to` of the other side. */
+-  const miscontrol = (to: number) => {
+-    const at = spotOf(to, ball, other(side));
++  const miscontrol = (to: number, touch = -1) => {
++    const spot = spotOf(to, ball, other(side));
++    // The ball runs into the cell where the man who gets it plays on, so he needs no run to it.
++    const at = touch >= 0 ? intoCell(other(side), startCell[touch]!, spot) : spot;
++    if (touch >= 0) intended = touch;
+     push({
+       side: side,
+       move: 'miscontrol',
+@@ -447,6 +525,14 @@ function writeFitted(settled: Settled, seed: string): Script {
+     terms: ReturnType<typeof costTerms>,
+   ): number => {
+     let cost = cellGap(startCell[i]!, cell);
++    const back = releaseBack[i]!;
++    if (back > 0) {
++      // Driving forward to a touch that then goes backward reads as a run that turns round.
++      const ahead = centreX(startCell[i]!) - centreX(Math.max(cell, 0));
++      if (ahead > 0) cost += Math.round(FIT.reversal * Math.min(ahead, back) * 100);
++      // In the attacking half the attack goes on first; the ball is recycled when it is spent.
++      if (centreX(startCell[i]!) > PITCH.length / 2) cost += Math.round(FIT.backDelay * back * 100);
++    }
+     const release = touches[i]!.release;
+     // Prefer the minute's existing dead ball for its incidents over opening a keeper stoppage.
+     if (
+@@ -576,15 +662,18 @@ function writeFitted(settled: Settled, seed: string): Script {
+     return best;
+   };
+ 
+-  /** Writes a pending pass to `receiver`, who then has the ball in its `to` cell. */
+-  const resolve = (receiver: number) => {
++  /**
++   * Writes a pending pass to `receiver`, who then has the ball in its `to` cell; received on the
++   * side facing `next` when his next action starts in another cell.
++   */
++  const resolve = (receiver: number, next = -1) => {
+     const p = pending!;
+     pending = null;
+     const e = settled.events[p.event]!;
+     const to = pointAway(
+       p.side,
+       e[EV.to]!,
+-      spotOf(receiver, p.from, p.side),
++      lead(p.side, e[EV.to]!, spotOf(receiver, p.from, p.side), next),
+       p.from,
+       GRAMMAR.minPass,
+     );
+@@ -599,7 +688,12 @@ function writeFitted(settled: Settled, seed: string): Script {
+       outcome: p.outcome,
+       loft: isLofted(e[EV.kind]!),
+       through: KIND(e[EV.kind]!) === 'through',
+-      reason: KIND(e[EV.kind]!) === 'cutBack' ? 'cutBack' : undefined,
++      reason:
++        p.kind === 'pass'
++          ? backReason(p.side, p.actor, KIND(e[EV.kind]!), p.from, to)
++          : KIND(e[EV.kind]!) === 'cutBack'
++            ? 'cutBack'
++            : undefined,
+       event: p.event,
+       lineBreaking: e[EV.lineBreaking] === 1,
+       creditedOpponent: e[EV.other]! >= 0,
+@@ -618,6 +712,17 @@ function writeFitted(settled: Settled, seed: string): Script {
+     ball = to;
+   };
+   const isLofted = (k: number) => KIND(k) === 'long' || KIND(k) === 'cross';
++  /**
++   * Writes the pending pass to `receiver`, a man not chosen for a touch of his: received facing the
++   * cheapest touch he has left, which he then plays.
++   */
++  const receive = (receiver: number) => {
++    const team = pending!.side;
++    const own = unplayed(team).filter((i) => touches[i]!.actor === receiver);
++    const first = own.length > 0 ? cheapest(team, own, cellAt(team, ball)) : -1;
++    resolve(receiver, first >= 0 ? startCell[first]! : -1);
++    if (first >= 0) intended = first;
++  };
+ 
+   /** Plays a pass event from the ball's point, `kind` the restart it delivers or `pass`. */
+   const playPass = (id: number, kind: BeatKind) => {
+@@ -633,7 +738,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+       from: ball,
+       loft: isLofted(e[EV.kind]!),
+       through: KIND(e[EV.kind]!) === 'through',
+-      reason: KIND(e[EV.kind]!) === 'cutBack' ? ('cutBack' as const) : undefined,
++      reason: (KIND(e[EV.kind]!) === 'cutBack' ? 'cutBack' : undefined) as Beat['reason'],
+       event: id,
+       lineBreaking: e[EV.lineBreaking] === 1,
+       creditedOpponent: e[EV.other]! >= 0,
+@@ -661,10 +766,21 @@ function writeFitted(settled: Settled, seed: string): Script {
+       holder = -1;
+       return actor;
+     }
+-    const to = intoCell(side, toCell, spotOf(actor));
++    let to = intoCell(side, toCell, spotOf(actor));
+     if (res === R('intercepted') || res === R('looseRecovered') || res === R('tackled')) {
++      const by =
++        e[EV.other]! >= 0 ? e[EV.other]! : nearestBy(other(side), res === R('tackled') ? ball : to);
++      if (res !== R('tackled')) {
++        // Won where the winner plays on: on the side of the cell facing his first touch.
++        const own = unplayed(other(side)).filter((i) => touches[i]!.actor === by);
++        const first = own.length > 0 ? cheapest(other(side), own, cellAt(other(side), to)) : -1;
++        if (first >= 0) {
++          to = lead(side, toCell, spotOf(actor), startCell[first]!, other(side));
++          intended = first;
++        }
++      }
+       const at = res === R('tackled') ? ball : to;
+-      const by = e[EV.other]! >= 0 ? e[EV.other]! : nearestBy(other(side), at);
++      if (kind === 'pass') base.reason = backReason(side, actor, base.move, ball, to);
+       push({
+         ...base,
+         to,
+@@ -677,6 +793,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+       ball = at;
+       return actor;
+     }
++    if (kind === 'pass') base.reason = backReason(side, actor, base.move, ball, to);
+     if (res === R('offside')) {
+       push({ ...base, to, receiver: e[EV.other]!, through: true, outcome: 'offside' });
+       owed = {
+@@ -777,10 +894,16 @@ function writeFitted(settled: Settled, seed: string): Script {
+     done[t.side]!++;
+     if (ends[i]) endsDone[t.side]!++;
+     nextOwed = t.next ?? -1;
+-    for (const c of t.carries) {
++    for (const [k, c] of t.carries.entries()) {
+       const e = settled.events[c]!;
+       linkTo(e[EV.from]!);
+-      const to = intoCell(side, e[EV.to]!, spotOf(holder));
++      const following = t.carries[k + 1];
++      const to = lead(
++        side,
++        e[EV.to]!,
++        spotOf(holder),
++        following === undefined ? releaseStart(i) : settled.events[following]![EV.from]!,
++      );
+       const takeOn = KIND(e[EV.kind]!) === 'takeOn';
+       if (e[EV.result] === R('complete')) {
+         push({
+@@ -890,7 +1013,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+     }
+     const incidents = waitingIncidents.filter((x) => !waitingSides.has(x.side));
+     if (!incidents.length) return;
+-    if (pending) resolve(nearestBy(pending.side, ball, [pending.actor]));
++    if (pending) receive(nearestBy(pending.side, ball, [pending.actor]));
+     const last = beats.at(-1);
+     if (owed && minuteOf.at(-1) === minute && last) {
+       last.incidents = [...(last.incidents ?? []), ...incidents].sort(
+@@ -1020,7 +1143,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+         const p: Pending = pending;
+         const i = choose(p.side, cellAt(p.side, ball), p.actor, ball);
+         if (i >= 0 && touches[i]!.actor !== p.actor) {
+-          resolve(touches[i]!.actor);
++          resolve(touches[i]!.actor, startCell[i]!);
+           // He was chosen for that touch: it is the one he plays.
+           intended = i;
+           continue;
+@@ -1033,7 +1156,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+           break;
+         }
+         // Nobody else of his side is left: a nominal receiver loses it.
+-        resolve(nearestBy(p.side, ball, [p.actor]));
++        receive(nearestBy(p.side, ball, [p.actor]));
+         continue;
+       }
+       if (mine.length + theirs.length === 0) {
+@@ -1044,7 +1167,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+         break;
+       }
+       if (mine.length === 0) {
+-        miscontrol(touches[choose(other(side), cellAt(other(side), ball))]!.actor);
++        const next = choose(other(side), cellAt(other(side), ball));
++        miscontrol(touches[next]!.actor, next);
+         continue;
+       }
+       // Yield to the other side's fixed touch only after this side has played its own. Otherwise
+@@ -1053,9 +1177,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+         const waiting = theirs.filter((i) => touches[i]!.minute === minute);
+         const lone = waiting.find((i) => unassisted(i));
+         if (waiting.length > 0 && (lone !== undefined || !mine.some((i) => ends[i]))) {
+-          miscontrol(
+-            touches[lone ?? cheapest(other(side), waiting, cellAt(other(side), ball))]!.actor,
+-          );
++          const next = lone ?? cheapest(other(side), waiting, cellAt(other(side), ball));
++          miscontrol(touches[next]!.actor, next);
+           continue;
+         }
+       }
+@@ -1083,11 +1206,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+         theirs.length > 0;
+       // A goal the record credits to nobody's pass is not scored straight off a pass to the scorer.
+       if (spread || touches[pickOwn]!.actor !== holder || (unassisted(pickOwn) && fed())) {
+-        const them =
+-          theirs.length > 0
+-            ? touches[choose(other(side), cellAt(other(side), ball))]!.actor
+-            : nearestBy(other(side), ball);
+-        miscontrol(them);
++        const next = theirs.length > 0 ? choose(other(side), cellAt(other(side), ball)) : -1;
++        miscontrol(next >= 0 ? touches[next]!.actor : nearestBy(other(side), ball), next);
+         continue;
+       }
+       playTouch(pickOwn);
+@@ -1118,7 +1238,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+           i >= 0 && touches[i]!.actor !== p.actor
+             ? touches[i]!.actor
+             : nearestBy(p.side, ball, [p.actor]);
+-        resolve(receiver);
++        resolve(receiver, receiver === touches[i]?.actor ? startCell[i]! : -1);
+         if (i >= 0 && receiver === touches[i]!.actor) intended = i;
+       }
+       // A recorded completed delivery creates its beat only once the receiver is known.
+@@ -1129,7 +1249,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+     // the ball to a still-present opponent before his stint ends, never after it.
+     if (pending !== null) {
+       const p: Pending = pending;
+-      resolve(nearestBy(p.side, ball, [p.actor]));
++      receive(nearestBy(p.side, ball, [p.actor]));
+     }
+     // A minute left with a pass in flight still stops for its incidents once the pass is in;
+     // the next minute's incidents replace whatever waits, so none may be carried over (T840).
+diff --git a/packages/engine/src/staging/config.ts b/packages/engine/src/staging/config.ts
+index d00608b6..bd8c4158 100644
+--- a/packages/engine/src/staging/config.ts
++++ b/packages/engine/src/staging/config.ts
+@@ -147,8 +147,9 @@ export const STAGING_CONFIG = {
+      * away from an opponent within `avoid` metres (by up to `shy` of his heading) and from a
+      * teammate within `mates` metres (the huddle distance and a little more), keeps `room`
+      * metres beyond `kickGap` from a pass's reception point and `edge` metres off the lines, and
+-     * turns from the line he arrived on toward the attack, a half turn taking `turn` seconds; in a
+-     * pressed beat he shields at `pressed` and keeps his line; `lead` is how far ahead his target sits.
++     * turns from the line he arrived on toward the attack, a half turn taking `turn` seconds, at
++     * `turnSlow` of his speed while the turn still to make is a right angle or more; in a pressed
++     * beat he shields across the pitch at `pressed`; `lead` is how far ahead his target sits.
+      */
+     holdMove: {
+       speed: 2.6,
+@@ -162,6 +163,7 @@ export const STAGING_CONFIG = {
+       room: 1.5,
+       edge: 3,
+       turn: 2.2,
++      turnSlow: 0.4,
+       lead: 2,
+     },
+     /** The least distance between the ball and the point an ordinary pass is received at, and how near to that point the passer's touch may take him. */
+@@ -189,7 +191,25 @@ export const STAGING_CONFIG = {
+     /** A heavy touch (`carry:loose`) leaves the ball loose this far toward the named opponent (m). */
+     heavyTouch: 3,
+     foulFreeze: 1,
+-    takeOn: { side: 2, speed: 4.5, beatenSpeed: 2, beatenTime: 0.9 },
++    /**
++     * A completed take-on (stage/takeon.ts): the defender stands between `stand` and `jockey`
++     * metres in the attacker's way, the attacker steps `side` metres beside him and `stride`
++     * beyond at up to `speed` (the side nearer the end, or the one toward the attack when the two
++     * are within `prefer` metres of it), the beaten man turning at `beatenSpeed` for up to
++     * `beatenTime` seconds; the end lies at least `past` beyond the man, and he presses nobody for
++     * `recover` seconds.
++     */
++    takeOn: {
++      side: 2,
++      stride: 1,
++      speed: 4.5,
++      beatenSpeed: 2,
++      beatenTime: 0.9,
++      stand: 1.2,
++      past: 2,
++      recover: 3,
++      prefer: 0.5,
++    },
+     pressVisible: 3,
+     /** How far outside the lines a target may lie, and where the boards stop a player. */
+     boards: 2,
+diff --git a/packages/engine/src/staging/pass.ts b/packages/engine/src/staging/pass.ts
+index fe03ef55..f56d1465 100644
+--- a/packages/engine/src/staging/pass.ts
++++ b/packages/engine/src/staging/pass.ts
+@@ -76,12 +76,20 @@ function offTheLines(pos: Vec, dir: Vec, edge: number): Vec {
+ }
+ 
+ /**
+- * The order of the man on the ball while he holds it (`stage.holdMove`): he never stands still.
+- * He carries on in the line he arrived on, turning toward the attack over `turn` seconds, bends away
+- * from a near opponent and keeps off the lines; with a pass to come he never closes on its reception
+- * point `to` inside `kickGap` + `room` (the complaint of passes between men standing on each other),
+- * while a carry's holder (`toward`) heads for `to`. His speed is `speed` for the first `carry`
+- * metres and `slow` after, `pressed` with an opponent within `press` metres.
++ * The order of the man on the ball while he holds it (`stage.holdMove`): he never stands still,
++ * except on a carry's end. He carries on in the line he arrived on, turning toward the attack over
++ * `turn` seconds, bends away from a near opponent and keeps off the lines; with a pass to come he
++ * never closes on its reception point `to` inside `kickGap` + `room` (the complaint of passes
++ * between men standing on each other), while a carry's holder (`toward`) heads for `to` and stops on
++ * it. His speed is `speed` for the first `carry` metres and `slow` after, `pressed` with an
++ * opponent within `press` metres.
++ *
++ * He never goes round in circles or gives ground (the owner's complaint of a carrier who beats his
++ * man, comes back and goes round and round): an opponent in front holds him up, so he faces him off
++ * across the pitch on one side (`across`) and never backs toward his own goal; a pressed beat
++ * (`state.tight`) is shielded the same way, the presser mirroring him goal-side; and a turn wider
++ * than a right angle slows him to `turnSlow` of his speed, so he turns on the ball where he is
++ * rather than looping round a point.
+  */
+ export function holdMove(state: StageState, actor: number, to: Vec, toward = false): Order {
+   const HM = STAGE.holdMove;
+@@ -95,6 +103,18 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
+   let lastT = state.t;
+   let carried = 0;
+   let cap: number = HM.speed;
++  // The side he faces an opponent off on, kept once chosen: the side his heading leans to, else
++  // the one toward the middle of the pitch.
++  let across: Vec | undefined;
++  const acrossOf = (pos: Vec): Vec => {
++    if (!across) {
++      const lean = heading[1];
++      const sign = Math.abs(lean) > 0.05 ? Math.sign(lean) : pos[1] <= PITCH.width / 2 ? 1 : -1;
++      across = [0, sign];
++    }
++    if (offTheLines(pos, across, HM.edge)[1] === 0) across = [0, -across[1]];
++    return across;
++  };
+   return {
+     pace: 'jog',
+     get speedCap() {
+@@ -107,18 +127,16 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
+       const dt = Math.max(0, state.t - lastT);
+       lastT = state.t;
+       const opp = nearestOpponent(state, actor);
+-      // A pressed beat (`state.tight`): he shields at the pressed speed, moving across the presser's
+-      // line on the side nearer his heading, so the presser stays on him.
+       const shielding = state.tight;
+       let want: Vec;
+       if (toward) {
+         want = norm(sub(to, pos));
+       } else if (shielding && opp.index >= 0) {
+-        const side = perp(norm(sub(state.bodies[opp.index].pos, pos)));
+-        want = dot(side, heading) >= 0 ? side : scale(side, -1);
++        // A pressed beat: he shields across the pitch at the pressed speed, the presser on him.
++        want = acrossOf(pos);
+       } else {
+         want = forward;
+-        if (!shielding && opp.index >= 0 && opp.distance < HM.avoid) {
++        if (opp.index >= 0 && opp.distance < HM.avoid) {
+           const away = norm(sub(pos, state.bodies[opp.index].pos));
+           want = add(want, scale(away, ((HM.avoid - opp.distance) / HM.avoid) * HM.shy));
+         }
+@@ -131,7 +149,17 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
+         const away = norm(sub(pos, state.bodies[mate.index].pos));
+         want = add(want, scale(away, ((HM.mates - gap) / HM.mates) * 2));
+       }
+-      if (len(want) > 1e-3) heading = turnToward(heading, norm(want), (Math.PI * dt) / HM.turn);
++      if (!toward) {
++        // Held up, never driven back: what points toward his own goal is dropped, and with an
++        // opponent square in front he goes across.
++        const back = dot(want, forward);
++        if (back < 0) want = sub(want, scale(forward, back));
++        if (len(want) < 0.2) want = acrossOf(pos);
++      }
++      const aim = len(want) > 1e-3 ? norm(want) : heading;
++      heading = turnToward(heading, aim, (Math.PI * dt) / HM.turn);
++      // A turn still to make slows him: at a right angle or more he turns on the ball.
++      const turning = Math.max(HM.turnSlow, dot(heading, aim));
+       let dir: Vec = heading;
+       if (!toward) {
+         const u = norm(sub(to, pos));
+@@ -144,11 +172,13 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
+       if (len(dir) < 1e-3) dir = offTheLines(pos, forward, HM.edge);
+       if (len(dir) < 1e-3) dir = scale(forward, -1);
+       cap =
+-        shielding || opp.distance <= HM.press
++        (shielding || opp.distance <= HM.press
+           ? HM.pressed
+           : carried < HM.carry
+             ? HM.speed
+-            : HM.slow;
++            : HM.slow) * turning;
++      // A carry's holder stops on its end rather than circling it.
++      if (toward && dist(pos, to) <= HM.lead) return to;
+       return add(pos, scale(norm(dir), HM.lead));
+     },
+   };
+diff --git a/packages/engine/src/staging/takeon.test.ts b/packages/engine/src/staging/takeon.test.ts
+new file mode 100644
+index 00000000..2302be93
+--- /dev/null
++++ b/packages/engine/src/staging/takeon.test.ts
+@@ -0,0 +1,112 @@
++import { describe, expect, it } from 'vitest';
++import { STAGING_CONFIG } from './config';
++import { demoFixture } from './squads.testkit';
++import type { Playback, Vec } from './types';
++import { dot, sub } from './vec';
++import { performScript, posOf, scriptOf, type BeatSpec } from './script.testkit';
++import { takeOnLine } from './takeon';
++
++// The owner's rule (261113): a carrier held up by his man may face him off, but once he has gone
++// past him he goes on; he never comes back to him or goes round in circles.
++const fixture = demoFixture();
++const STAGE = STAGING_CONFIG.stage;
++const TAKE_ON = STAGE.takeOn;
++
++/** Home (index = slot) attacks +x in the first half; H6 receives on [50, 24]. */
++const K: BeatSpec = { kind: 'kickOff', actor: 9, receiver: 5, to: [45, 30] };
++const TO_6: BeatSpec = { kind: 'pass', actor: 5, receiver: 6, to: [50, 24] };
++const ON: BeatSpec = { kind: 'pass', actor: 6, receiver: 9, to: [72, 34] };
++
++/** Home player `index`'s x through beat `beat` (from `skip` seconds into it). */
++const xsOf = (p: Playback, beat: number, index: number, skip = 0): number[] => {
++  const frames = p.frames.filter((f) => f.beat === beat);
++  const from = (frames[0]?.t ?? 0) + skip;
++  return frames.filter((f) => f.t >= from).map((f) => posOf(f, index)[0]);
++};
++
++/** The most he gives back toward his own goal (−x) from the furthest he has been. */
++const givenBack = (xs: readonly number[]): number => {
++  let best = -Infinity;
++  let back = 0;
++  for (const x of xs) {
++    best = Math.max(best, x);
++    back = Math.max(back, best - x);
++  }
++  return back;
++};
++
++/** Total absolute heading change (degrees) of a path sampled at points `step` metres apart. */
++const turning = (path: readonly Vec[], step = 1): number => {
++  const pts: Vec[] = path.slice(0, 1);
++  for (const q of path) {
++    const last = pts[pts.length - 1];
++    if (Math.hypot(q[0] - last[0], q[1] - last[1]) >= step) pts.push(q);
++  }
++  let total = 0;
++  for (let k = 2; k < pts.length; k++) {
++    const a = Math.atan2(pts[k - 1][1] - pts[k - 2][1], pts[k - 1][0] - pts[k - 2][0]);
++    const b = Math.atan2(pts[k][1] - pts[k - 1][1], pts[k][0] - pts[k - 1][0]);
++    let d = b - a;
++    while (d > Math.PI) d -= 2 * Math.PI;
++    while (d < -Math.PI) d += 2 * Math.PI;
++    total += Math.abs(d);
++  }
++  return (total * 180) / Math.PI;
++};
++
++describe('takeOnLine', () => {
++  it('keeps an end that lies beyond the man', () => {
++    const r = takeOnLine([50, 30], [60, 30], [1, 0]);
++    expect(r.end).toEqual([60, 30]);
++    expect(r.way).toEqual([1, 0]);
++    expect(r.stand).toBe(STAGE.jockey);
++  });
++
++  it('never points back and always ends past the man', () => {
++    for (const to of [
++      [46, 31],
++      [50.5, 30],
++      [51, 36],
++    ] as Vec[]) {
++      const r = takeOnLine([50, 30], to, [1, 0]);
++      expect(r.way[0]).toBeGreaterThanOrEqual(0);
++      expect(dot(sub(r.end, [50, 30]), r.way)).toBeGreaterThanOrEqual(
++        r.stand + TAKE_ON.past - 1e-9,
++      );
++    }
++  });
++});
++
++describe('a carrier and his man', () => {
++  it('a take-on that ends level with its start still goes on past the defender, never back', () => {
++    const takeOn: BeatSpec = { kind: 'takeOn', actor: 6, to: [49, 26], opponent: 17, hold: 1 };
++    const p = performScript(scriptOf(fixture, [K, TO_6, takeOn, ON]), { duration: 40 });
++    // After the face-off (the beat's hold), in which he pulls up from the run he received on.
++    const all = p.frames.filter((f) => f.beat === 2);
++    const frames = all.filter((f) => f.t >= all[0].t + 1);
++    expect(frames.length).toBeGreaterThan(0);
++    const start = posOf(frames[0], 6);
++    const { way } = takeOnLine(start, takeOn.to, [1, 0]);
++    expect(way[0]).toBeGreaterThanOrEqual(0);
++    const along = frames.map((f) => dot(sub(posOf(f, 6), start), way));
++    expect(along[along.length - 1]).toBeGreaterThanOrEqual(TAKE_ON.stand + TAKE_ON.past - 0.6);
++    // At most the pull-up on the end (`stage.arrive`), far inside the 3 m of a carrier coming back.
++    expect(givenBack(along)).toBeLessThanOrEqual(1);
++    // Across the pitch he steps round his man on the side toward the attack and comes level
++    // again, never back toward his own goal by the 3 m that reads as coming back.
++    expect(givenBack(xsOf(p, 2, 6, 1))).toBeLessThan(3);
++  });
++
++  it('a pressed carrier holds it up without backing off or going round his presser', () => {
++    const pressed: BeatSpec = { ...ON, reason: 'pressed', hold: 3 };
++    const p = performScript(scriptOf(fixture, [K, TO_6, pressed]), { duration: 40 });
++    const frames = p.frames.filter((f) => f.beat === 2);
++    const kick = p.events.find((e) => e.kind === 'kick' && e.beat === 2);
++    expect(kick).toBeDefined();
++    const held = frames.filter((f) => f.t <= (kick?.t ?? 0));
++    // From half a second in: the first touch may still carry his arrival's momentum.
++    const settled = held.filter((f) => f.t >= held[0].t + 0.5);
++    expect(givenBack(settled.map((f) => posOf(f, 6)[0]))).toBeLessThanOrEqual(0.5);
++    expect(turning(held.map((f) => posOf(f, 6)))).toBeLessThan(180);
++  });
++});
+diff --git a/packages/engine/src/staging/takeon.ts b/packages/engine/src/staging/takeon.ts
+index a73c1d6d..e32e6b07 100644
+--- a/packages/engine/src/staging/takeon.ts
++++ b/packages/engine/src/staging/takeon.ts
+@@ -1,12 +1,15 @@
+ import { invalidDetail } from '../script/failure';
+-// A completed take-on: the defender jockeys goal-side while the attacker holds, the attacker
+-// steps past him on the side nearer his goal for the run while the beaten defender is slow to
+-// turn, then accelerates away to the beat's end with the defender chasing behind.
++// A completed take-on: the defender stands in the attacker's way while he holds (the face-off),
++// the attacker steps past that place in the way on the side nearer the beat's end (the one
++// toward the attack when the end lies on the way), a stride beyond it, while the beaten defender
++// is slow to turn, then goes straight on to the beat's end with the defender chasing behind. The way he takes his man on never points back toward his own goal, and the end
++// lies beyond the man he beats, so a carrier who has gone past his man never comes back to him;
++// the beaten man does not press again for `takeOn.recover` seconds (`state.beaten`).
+ import { STAGING_CONFIG } from './config';
+-import { clampToPitch, inPitch } from './pitch';
++import { clampToPitch, inPitch, toAttack } from './pitch';
+ import type { Vec } from './types';
+-import { add, dist, norm, perp, scale, sub } from './vec';
+-import { cueNext, jockeyPoint } from './contest';
++import { add, dist, dot, len, norm, perp, scale, sub } from './vec';
++import { cueNext } from './contest';
+ import { paceSpeed } from './motion';
+ import type { BeatContext } from './perform';
+ import { ensureOwner, runUntil, setPossession, type StageState } from './world';
+@@ -14,6 +17,26 @@ import { ensureOwner, runUntil, setPossession, type StageState } from './world';
+ const STAGE = STAGING_CONFIG.stage;
+ const TAKE_ON = STAGE.takeOn;
+ 
++/**
++ * Where a take-on from `at` toward `to` goes, for a man attacking along `forward`: the unit way
++ * (toward `to` with what points back toward his own goal dropped, else `forward`), how far in it
++ * the defender stands, and the end, `to` itself when it lies `takeOn.past` beyond that man, else
++ * the point that far along the way.
++ */
++export function takeOnLine(at: Vec, to: Vec, forward: Vec): { way: Vec; stand: number; end: Vec } {
++  let toward = sub(to, at);
++  const back = dot(toward, forward);
++  if (back < 0) toward = sub(toward, scale(forward, back));
++  const way = len(toward) > 0.5 ? norm(toward) : forward;
++  const reach = dot(sub(to, at), way);
++  const stand = Math.max(TAKE_ON.stand, Math.min(STAGE.jockey, reach - TAKE_ON.past));
++  const end =
++    back >= 0 && reach >= stand + TAKE_ON.past
++      ? to
++      : clampToPitch(add(at, scale(way, stand + TAKE_ON.past)), 0.5);
++  return { way, stand, end };
++}
++
+ /** `takeOn:complete`. */
+ export function* performTakeOn(state: StageState, ctx: BeatContext): Generator<void, void> {
+   const beat = ctx.beat;
+@@ -22,32 +45,54 @@ export function* performTakeOn(state: StageState, ctx: BeatContext): Generator<v
+   if (defender === undefined) throw invalidDetail(`staging:beat:${beat.index}`);
+   setPossession(state, beat);
+   yield* ensureOwner(state, actor);
+-  const team = state.fixture.players[defender].team;
+   const actorPos = (): Vec => state.bodies[actor].pos;
++  const team = state.fixture.players[actor].team;
++  const forward: Vec = [toAttack(team, [105, 34], state.fixture.period)[0] === 105 ? 1 : -1, 0];
++  const start: Vec = [actorPos()[0], actorPos()[1]];
++  const { way, stand, end: E } = takeOnLine(start, clampToPitch(beat.to, 0.5), forward);
+   state.orders.set(actor, { target: actorPos, pace: 'walk' });
+   state.orders.set(defender, {
+-    target: () => jockeyPoint(team, actorPos(), state.fixture.period),
++    target: () => clampToPitch(add(actorPos(), scale(way, stand)), 0.5),
+     pace: 'run',
+   });
+   const holdStart = state.t;
+   yield* runUntil(state, () => state.t - holdStart >= beat.hold - 1e-9, beat.hold);
+ 
+-  const E = clampToPitch(beat.to, 0.5);
+-  const dir = norm(sub(E, actorPos()));
+   const here: Vec = [state.bodies[defender].pos[0], state.bodies[defender].pos[1]];
+-  const plus = add(here, scale(perp(dir), TAKE_ON.side));
+-  const minus = add(here, scale(perp(dir), -TAKE_ON.side));
++  // He is beaten at his place in the way, wherever the face-off has left him.
++  const spot = clampToPitch(add(start, scale(way, stand)), 0.5);
++  const beyond = add(spot, scale(way, TAKE_ON.stride));
++  const plus = add(beyond, scale(perp(way), TAKE_ON.side));
++  const minus = add(beyond, scale(perp(way), -TAKE_ON.side));
+   const plusIn = inPitch(plus, 1);
+   const minusIn = inPitch(minus, 1);
++  const nearer = Math.abs(dist(minus, E) - dist(plus, E)) >= TAKE_ON.prefer;
+   const side =
+-    plusIn !== minusIn ? (plusIn ? plus : minus) : dist(minus, E) < dist(plus, E) ? minus : plus;
++    plusIn !== minusIn
++      ? plusIn
++        ? plus
++        : minus
++      : nearer
++        ? dist(minus, E) < dist(plus, E)
++          ? minus
++          : plus
++        : dot(sub(minus, plus), forward) > 0
++          ? minus
++          : plus;
+   state.orders.set(actor, { target: side, pace: 'run', speedCap: TAKE_ON.speed });
+   state.orders.set(defender, { target: here, pace: 'walk', speedCap: TAKE_ON.beatenSpeed });
+-  yield* runUntil(state, () => dist(actorPos(), side) <= 0.8, TAKE_ON.beatenTime + 1);
++  // Past him once level with him along the way: from there he goes on to the end.
++  const level = (): boolean => dot(sub(actorPos(), spot), way) >= 0;
++  yield* runUntil(
++    state,
++    () => dist(actorPos(), side) <= 0.8 || (level() && dot(sub(E, actorPos()), way) > 0),
++    TAKE_ON.beatenTime + 1,
++  );
+ 
+   const sprint = paceSpeed('sprint', state.fixture.players[actor]);
+   state.orders.set(actor, { target: E, pace: 'sprint', speedCap: 0.9 * sprint });
+   state.orders.set(defender, { target: actorPos, pace: 'run' });
++  state.beaten = { index: defender, until: state.t + TAKE_ON.recover };
+   cueNext(state, ctx, E);
+   yield* runUntil(
+     state,
+diff --git a/packages/engine/src/staging/world.ts b/packages/engine/src/staging/world.ts
+index c2cfd461..3f264722 100644
+--- a/packages/engine/src/staging/world.ts
++++ b/packages/engine/src/staging/world.ts
+@@ -89,6 +89,8 @@ export interface StageState {
+   marks: Map<number, number>;
+   /** The presser closes to `shape.press.tight` during this beat. */
+   tight: boolean;
++  /** A defender just beaten by a take-on, who presses nobody until `until` (stage/takeon.ts). */
++  beaten?: { index: number; until: number };
+   /** The presser engaged with the man on the ball, and since when (set each tick by `trackPress`). */
+   pressing?: { index: number; owner: number; since: number };
+   /** Dead-ball scenes: shapes read this point instead of the ball. */
+@@ -310,7 +312,13 @@ const pressRoles = (
+   const cached = byTeam.get(d);
+   if (cached) return cached;
+   const free = presentPlayers(state.fixture, d)
+-    .filter((p) => p.slot !== 0 && !state.orders.has(p.index) && !state.cues.has(p.index))
++    .filter(
++      (p) =>
++        p.slot !== 0 &&
++        !state.orders.has(p.index) &&
++        !state.cues.has(p.index) &&
++        !(state.beaten?.index === p.index && state.t < state.beaten.until),
++    )
+     .map((p) => ({ index: p.index, d: dist(snapshot[p.index], ref) }))
+     .filter(({ index, d: metres }) => {
+       const spec = state.fixture.players[index];

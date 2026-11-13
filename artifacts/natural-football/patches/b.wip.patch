@@ -1,0 +1,551 @@
+diff --git a/packages/engine/src/script/clock.ts b/packages/engine/src/script/clock.ts
+index ced7adcb..c51470c7 100644
+--- a/packages/engine/src/script/clock.ts
++++ b/packages/engine/src/script/clock.ts
+@@ -26,15 +26,20 @@ export const deadOf = (b: Beat, k: number, m: number): number =>
+ /** A first-time lay-off is played at once: its hold is the shortest. */
+ const firstTime = (b: Beat): boolean => b.reason === 'layoff';
+ /**
+- * A minute's clock before pressing: its sixty seconds less its restarts' dead time and its
++ * A minute's clock before pressing: its `seconds` (sixty, more for a period's last minute with its
++ * added time) less its restarts' dead time and its
+  * first-time lay-offs shared equally between its other beats as hold plus travel, each hold within
+  * `fit.hold`, and the seconds that needs.
+  */
+-export function minuteTimes(list: readonly Beat[], m: number): { holds: number[]; need: number } {
++export function minuteTimes(
++  list: readonly Beat[],
++  m: number,
++  seconds = 60,
++): { holds: number[]; need: number } {
+   const dead = list.reduce((s, b, k) => s + deadOf(b, k, m), 0);
+   const quick = list.filter(firstTime);
+   const spent = quick.reduce((s, b) => s + FIT.hold[0] + travel(b), 0);
+-  const share = (60 - dead - spent) / Math.max(1, list.length - quick.length);
++  const share = (seconds - dead - spent) / Math.max(1, list.length - quick.length);
+   const holds = list.map((b) =>
+     firstTime(b) ? FIT.hold[0] : Math.min(Math.max(share - travel(b), FIT.hold[0]), FIT.hold[1]),
+   );
+diff --git a/packages/engine/src/script/config.ts b/packages/engine/src/script/config.ts
+index 8b29d9b3..0baa4b0f 100644
+--- a/packages/engine/src/script/config.ts
++++ b/packages/engine/src/script/config.ts
+@@ -29,6 +29,11 @@ export const SCRIPT_CONFIG = {
+   restartPull: 300,
+   /** Keep a release available for a player whose recorded ball wins are still ahead of him. */
+   winnerPull: 20,
++  /**
++   * Metres a touch is cheaper when its man leaves before the end and is behind his even pace,
++   * in full once he needs twice his pace: his touches spread over his minutes (natural-football b).
++   */
++  duePull: 40,
+   /** Seeded point variation in metres; costs still read only integer cell distances. */
+   cellJitter: 0.01,
+   /** A broken touch chain returns problems instead of keeping a worker busy forever. */
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index 93cc81d3..c9690ea2 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -68,6 +68,15 @@ const phaseOf = (side: TeamId, ball: Vec): Phase => {
+ 
+ const cellGap = (a: number, b: number) => cellDistance(Math.max(a, 0), Math.max(b, 0));
+ 
++/**
++ * Minutes of play minute `m` lasts: a period's last minute also holds the period's added time,
++ * which the record counts in it, so its beats are played through the added time (natural-football b).
++ */
++const minuteSpan = (settled: Settled, m: number): number => {
++  const end = [44, 89, 104, 119].indexOf(m);
++  return 1 + (end >= 0 && m < settled.length ? (settled.added[end] ?? 0) : 0);
++};
++
+ /** Public boundary: any failed placement/recount returns no script. */
+ export function writeScript(
+   detail: Settled,
+@@ -184,6 +193,31 @@ function writeFitted(settled: Settled, seed: string): Script {
+     actorLeft[t.side]![t.actor]!++;
+     if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!++;
+   });
++  // A man who leaves before the end plays his touches at his own even pace while he is on, not
++  // all in his last minute (the burst that made one minute race and the next ones stand still).
++  // Touches of one actor sharing a deadline before their period's end form one group.
++  const dueKey = touches.map((t) =>
++    t.until < (t.period === 0 ? 90 : 120) ? (t.side * 64 + t.actor) * 256 + t.until : -1,
++  );
++  const dueLeft = new Map<number, number>();
++  const dueSpan = new Map<number, number>();
++  touches.forEach((t, i) => {
++    const k = dueKey[i]!;
++    if (k < 0) return;
++    dueLeft.set(k, (dueLeft.get(k) ?? 0) + 1);
++    dueSpan.set(k, Math.min(dueSpan.get(k) ?? t.from, t.from));
++  });
++  /** Touches a minute group `k` started with, per minute of its span. */
++  const dueRate = new Map<number, number>();
++  for (const [k, n] of dueLeft) dueRate.set(k, n / Math.max(1, (k % 256) - dueSpan.get(k)!));
++  /** The pull on touch `i` when its group is behind its even pace, in centimetres. */
++  const duePull = (i: number): number => {
++    const k = dueKey[i]!;
++    if (k < 0) return 0;
++    const need = dueLeft.get(k)! / Math.max(1, touches[i]!.until - minute);
++    const behind = Math.min(Math.max(need / dueRate.get(k)! - 1, 0), 1);
++    return Math.round(FIT.duePull * behind * 100);
++  };
+   /** Whether touch `i` releases a pass the record flags as a corner's or free kick's delivery. */
+   const setPiece = touches.map(
+     (t) =>
+@@ -217,6 +251,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+     FIT.winnerPull,
+     FIT.setPieceWait,
+     FIT.restartPull,
++    FIT.duePull,
+   ].map((x) => x * 100);
+   const indexedCosts =
+     weights.every(Number.isSafeInteger) &&
+@@ -486,10 +521,16 @@ function writeFitted(settled: Settled, seed: string): Script {
+   /** The touches played by the end of minute `m`: an even share of all of them. */
+   const periodCounts = [0, 0];
+   for (const t of touches) periodCounts[t.period]!++;
++  // A half's last minute lasts its added time too, so it takes that many shares of play.
++  const span = Array.from({ length: settled.length }, (_, m) => minuteSpan(settled, m));
++  const spanUntil: number[] = [];
++  span.reduce((sum, x, m) => (spanUntil[m] = sum + x), 0);
++  const regulation = spanUntil[Math.min(89, settled.length - 1)]!;
+   const quotas = Array.from({ length: settled.length }, (_, m) =>
+     m < 90
+-      ? Math.round(((m + 1) * periodCounts[0]!) / 90)
+-      : periodCounts[0]! + Math.round(((m - 89) * periodCounts[1]!) / 30),
++      ? Math.round((spanUntil[m]! * periodCounts[0]!) / regulation)
++      : periodCounts[0]! +
++        Math.round(((spanUntil[m]! - regulation) * periodCounts[1]!) / (spanUntil.at(-1)! - regulation)),
+   );
+   const quota = (m: number) => quotas[m]!;
+   const quotaMet = () => done[0]! + done[1]! >= quota(minute);
+@@ -555,13 +596,18 @@ function writeFitted(settled: Settled, seed: string): Script {
+     // A corner's or free kick's delivery waits for its restart rather than be played in open play.
+     if (touches[i]!.until === minute + 1) cost -= FIT.fixedPush * 100;
+     if (setPiece[i]) cost += FIT.setPieceWait * 100;
++    // A man about to leave plays a reserved delivery in open play rather than wait for its restart.
++    const due = duePull(i);
+     if (
+       release &&
+       'event' in release &&
+       reserve.has(release.event) &&
+-      demand[team]![startCell[i]!]! > 0
++      demand[team]![startCell[i]!]! > 0 &&
++      due === 0 &&
++      touches[i]!.until > minute + 1
+     )
+       cost += FIT.restartPull * 100;
++    cost -= due;
+     if (ends[i]) {
+       // Ahead of the other side, or behind in spending its own possession-ending touches, a side
+       // ends its possession sooner; so neither side runs out of touches, nor of ways to lose the ball.
+@@ -608,7 +654,13 @@ function writeFitted(settled: Settled, seed: string): Script {
+     if (at !== undefined)
+       for (const [index] of settled.sides[team].lines.entries())
+         place.set(index, Math.round(FIT.placeWeight * dist(spotOf(index, at, team), at) * 100));
+-    return cheapest(team, pool, cell, place);
++    const pick = cheapest(team, pool, cell, place);
++    if (process.env.DUEDBG && minute === 26 && team === 1) {
++      const terms = costTerms(team);
++      const seven = all.filter((i) => touches[i]!.actor === 7).map((i) => `${i}:${touchCost(team, i, cell, terms)}${pool.includes(i) ? '' : 'X'}`);
++      console.error('choose', team, 'skip', skip, 'pick', pick, touches[pick]?.actor, pick >= 0 ? touchCost(team, pick, cell, terms) : '', 'seven', seven.join(','));
++    }
++    return pick;
+   };
+   const cheapest = (
+     team: TeamId,
+@@ -637,7 +689,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+         Math.min(0, waitingIncidents.length ? -FIT.fixedPull * 100 : 0) +
+         Math.min(0, FIT.winnerPull * 100) +
+         Math.min(0, FIT.setPieceWait * 100) +
+-        Math.min(0, FIT.restartPull * 100);
++        Math.min(0, FIT.restartPull * 100) -
++        Math.max(0, FIT.duePull * 100);
+       const bounds = [0, 1, 2, 3].map(
+         (group) =>
+           common +
+@@ -890,6 +943,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+     const last = t.until - 1;
+     if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!--;
+     actorLeft[t.side]![t.actor]!--;
++    if (dueKey[i]! >= 0) dueLeft.set(dueKey[i]!, dueLeft.get(dueKey[i]!)! - 1);
+     if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!--;
+     done[t.side]!++;
+     if (ends[i]) endsDone[t.side]!++;
+@@ -1216,6 +1270,12 @@ function writeFitted(settled: Settled, seed: string): Script {
+ 
+   for (minute = 0; minute < settled.length; minute++) {
+     minuteStart = done[0]! + done[1]!;
++    if (process.env.DUEDBG) {
++      const g = [...dueLeft].filter(([, n]) => n > 0).map(([k, n]) => `${Math.floor(k / 256 / 64)}:${Math.floor(k / 256) % 64}@${k % 256}=${n}(${dueRate.get(k)!.toFixed(2)})`);
++      const exp = touches.filter((t, i) => !played[i] && t.until - 1 === minute + 1).length;
++      console.error(minute, 'quota', quota(minute), 'done', minuteStart, 'expNext', exp);
++      if (minute === 26 || minute === 25) touches.forEach((t, i) => { if (!played[i] && dueKey[i]! >= 0 && t.until <= 27) console.error('  T', i, t.side + ':' + t.actor, 'until', t.until, 'from', t.from, 'min', t.minute, 'rel', JSON.stringify(t.release), 'carries', t.carries.length, 'after', after[i], 'ends', ends[i], 'setPiece', setPiece[i], 'start', startCell[i]); });
++    }
+     waitingIncidents = settled.incidents.flatMap((row, i) =>
+       row[IN.minute] === minute + 1 && !booked.has(i) ? [beatIncident(row)] : [],
+     );
+@@ -1283,13 +1343,17 @@ function writeFitted(settled: Settled, seed: string): Script {
+   for (let m = 0; m < settled.length; m++) {
+     const list = beats.filter((_, i) => minuteOf[i] === m);
+     if (list.length === 0) continue;
+-    const { holds, need } = minuteTimes(list, m);
+-    const press = need > 60 ? 60 / need : 1;
+-    let t = m * 60;
++    const seconds = span[m]! * 60;
++    const { holds, need } = minuteTimes(list, m, seconds);
++    const press = need > seconds ? seconds / need : 1;
++    // The record keeps a period's last minute as one minute: its clock reads the added time
++    // pressed into that minute's sixty seconds, which the staging opens out again (`frame-clock`).
++    const fold = 60 / seconds;
++    let t = 0;
+     for (const [k, b] of list.entries()) {
+       t += deadOf(b, k, m) * press;
+       b.hold = Math.floor(holds[k]! * press * 100) / 100;
+-      b.clock = Math.floor(t * 100) / 100;
++      b.clock = Math.floor((m * 60 + t * fold) * 100) / 100;
+       t += (holds[k]! + travel(b)) * press;
+     }
+   }
+diff --git a/packages/engine/src/staging/config.ts b/packages/engine/src/staging/config.ts
+index bd8c4158..d32a25c6 100644
+--- a/packages/engine/src/staging/config.ts
++++ b/packages/engine/src/staging/config.ts
+@@ -65,7 +65,8 @@ export const STAGING_CONFIG = {
+   motion: {
+     walk: 1.8,
+     jog: 3.8,
+-    run: 6,
++    /** A free run stays under high-speed running (5.5 m/s): sprints are the runs that need it. */
++    run: 5,
+     sprintBase: 6.4,
+     sprintPerPace: 2.4,
+     accel: 5.5,
+@@ -75,7 +76,7 @@ export const STAGING_CONFIG = {
+     reactTime: 0.35,
+     jogWithin: 10,
+     transitionSeconds: 3,
+-    pressSprintBeyond: 6,
++    pressSprintBeyond: 10,
+     /** Piecewise-linear around 50: neutral keeps the prototype's coefficients. */
+     tendency: {
+       discipline: { min: 0.6, max: 1.5 },
+@@ -111,7 +112,7 @@ export const STAGING_CONFIG = {
+       lag: { settled: 2, counter: 0.5 },
+       /** Inside the window after a counter a free player runs to a place farther than `runBeyond` metres and sprints to one farther than `sprintBeyond`. */
+       runBeyond: 3,
+-      sprintBeyond: 12,
++      sprintBeyond: 20,
+     },
+   },
+   ball: {
+@@ -316,6 +317,23 @@ export const STAGING_CONFIG = {
+       goalSide: 1.2,
+     },
+   },
++  /**
++   * Fitting staged seconds to the clock between fixed moments (natural-football b): live play keeps
++   * one match second a staged second while a dead ball's rate stays within `dead`; past that live
++   * play gives, keeping at least `liveShare` of the stretch. A fixed action stands where real pace
++   * brings it inside its minute, at least `anchorGap` seconds after the previous one and leaving
++   * `anchorRoom` of the minute's remaining seconds for later ones and `tail` seconds for its own
++   * facts after it. The guard that keeps those facts in the minute never presses them below
++   * `guardFloor`.
++   */
++  clockFit: {
++    dead: [0.5, 3],
++    liveShare: 0.05,
++    anchorGap: 0.01,
++    anchorRoom: 0.02,
++    tail: { action: 3, incidents: 25 },
++    guardFloor: 0.25,
++  },
+   limits: {
+     /** Match seconds per staged second; reported by T831 and judged at the release verdict. */
+     clockRate: [0.8, 1.25],
+diff --git a/packages/engine/src/staging/frame-clock.ts b/packages/engine/src/staging/frame-clock.ts
+index ed4b8df1..9437e067 100644
+--- a/packages/engine/src/staging/frame-clock.ts
++++ b/packages/engine/src/staging/frame-clock.ts
+@@ -2,6 +2,7 @@
+ import type { MatchScript, ScriptBeat } from '../../../contracts/src/match-script';
+ import { LENGTH, OFFSET } from '../match/clock';
+ import { invalidDetail } from '../script/failure';
++import { isRestartKind } from '../script/types';
+ import type { StageEvent, StageFrame } from './staging';
+ import { STAGING_CONFIG } from './config';
+ 
+@@ -22,6 +23,8 @@ export interface ClockRate {
+   /** Match seconds per staged second. */
+   rate: number;
+   withinLimit: boolean;
++  /** A dead ball: its rate takes up what live play at real pace leaves of the stretch. */
++  dead?: boolean;
+ }
+ export interface FramePeriod {
+   period: 1 | 2 | 3 | 4;
+@@ -47,6 +50,19 @@ export function framePeriods(script: MatchScript, added: readonly number[] = [])
+   });
+ }
+ 
++/**
++ * Elapsed match seconds of a beat's nominal `clock` in period `p`. The record keeps a complete
++ * period's last minute as one minute; its beats were played through the added time and their
++ * clock pressed into that minute (script `minuteSpan`), so here it opens out again.
++ */
++export function elapsedAt(p: FramePeriod, clock: number): number {
++  const length = LENGTH[p.period - 1];
++  const extra = p.minutes - length;
++  const rel = clock - OFFSET[p.period - 1] * 60;
++  const last = (length - 1) * 60;
++  return p.start + (extra > 0 && rel > last ? last + (rel - last) * (1 + extra) : rel);
++}
++
+ const actionEvents = new Set<StageEvent['kind']>([
+   'kick',
+   'shot',
+@@ -68,6 +84,41 @@ const finishEvents = new Set<StageEvent['kind']>([
+   'wide',
+ ]);
+ 
++/**
++ * Staged dead-ball spans, half open: from the first fact that stops play (or a restart's or
++ * stoppage's begin) to the kick that restarts it, as `frameStoppages` reads them; a period's
++ * opening kick-off is live.
++ */
++export function deadSpans(script: MatchScript, events: readonly StageEvent[]): [number, number][] {
++  const byIndex = new Map(script.beats.map((b) => [b.index, b]));
++  const first = new Set(
++    [1, 2, 3, 4].map((period) => script.beats.find((b) => b.period === period)?.index),
++  );
++  const out: [number, number][] = [];
++  let dead: number | undefined;
++  for (const e of events) {
++    const b = byIndex.get(e.beat);
++    if (!b || b.period === 5) continue;
++    const opening = first.has(b.index) && b.kind === 'kickOff';
++    if (
++      e.kind === 'begin' &&
++      (isRestartKind(b.kind) || b.kind === 'stoppage' || b.incidents?.length) &&
++      !opening
++    )
++      dead ??= e.t;
++    if (['goal', 'out', 'foul', 'offside', 'card', 'injury', 'sub'].includes(e.kind)) dead ??= e.t;
++    if ((e.kind === 'kick' || e.kind === 'shot') && !opening && dead !== undefined) {
++      if (e.t > dead) out.push([dead, e.t]);
++      dead = undefined;
++    }
++    if (e.kind === 'whistle') dead = undefined;
++  }
++  // A dead ball whose restart is not staged yet lasts past every staged fact, so a stretch it
++  // overlaps splits the same way before and after its kick is known.
++  if (dead !== undefined) out.push([dead, Infinity]);
++  return out;
++}
++
+ /**
+  * The action of a fixed beat anchors its scripted clock. Its last visible fact also stays in
+  * that minute: if the next fixed moment lies much later, a guard at that fact bounds the fit.
+@@ -86,9 +137,11 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+     byBeat.set(e.beat, list);
+   }
+   const out: ClockRate[] = [];
++  const dead = deadSpans(script, staging.events);
+   for (const p of framePeriods(script, staging.added)) {
+     const first = byBeat.get(p.beats[0].index)?.find((e) => e.kind === 'begin');
+     if (!first) continue;
++    const fit = STAGING_CONFIG.clockFit;
+     const anchors: { t: number; clock: number; beat?: ScriptBeat }[] = [
+       { t: first.t, clock: p.start, beat: p.beats[0] },
+     ];
+@@ -105,7 +158,23 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+       const events = byBeat.get(b.index) ?? [];
+       const action = events.find((e) => actionEvents.has(e.kind));
+       if (!action) continue;
+-      anchors.push({ t: action.t, clock: p.start + b.clock - OFFSET[p.period - 1] * 60, beat: b });
++      // The record fixes the minute, not the second: the action stands where play at real pace
++      // brings it, inside its minute (natural-football b). Earlier anchors alone decide it, so an
++      // unfinished staging places it as the finished one does.
++      const prev = anchors.at(-1)!;
++      const m = Math.floor(b.clock / 60) * 60;
++      const lo = Math.max(elapsedAt(p, m), prev.clock);
++      const room = elapsedAt(p, m + 60) - lo;
++      if (!(room > 0)) throw invalidDetail('staging:clock');
++      const at = prev.clock + (action.t - prev.t);
++      const least = lo + Math.min(fit.anchorGap, room * 0.01);
++      // Its own facts after the action (a save, the substitutions' walk) keep room in the minute.
++      const tail = b.incidents?.length ? fit.tail.incidents : fit.tail.action;
++      const clock = Math.min(
++        Math.max(at, least),
++        Math.max(least, Math.min(lo + room * (1 - fit.anchorRoom), lo + room - tail)),
++      );
++      anchors.push({ t: action.t, clock, beat: b });
+     }
+     const whistle = byBeat.get(p.beats.at(-1)!.index)?.find((e) => e.kind === 'whistle');
+     if (whistle) anchors.push({ t: whistle.t, clock: p.start + p.minutes * 60 });
+@@ -113,9 +182,15 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+       const a = anchors[i],
+         z = anchors[i + 1];
+       if (!(z.t > a.t && z.clock > a.clock)) throw invalidDetail('staging:clock');
+-      const append = (from: number, to: number, startSeconds: number, endSeconds: number) => {
++      const limit = STAGING_CONFIG.limits.clockRate;
++      const push = (
++        from: number,
++        to: number,
++        startSeconds: number,
++        endSeconds: number,
++        isDead: boolean,
++      ) => {
+         const rate = (endSeconds - startSeconds) / (to - from);
+-        const limit = STAGING_CONFIG.limits.clockRate;
+         out.push({
+           period: p.period,
+           from,
+@@ -123,16 +198,56 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+           startSeconds,
+           endSeconds,
+           rate,
+-          withinLimit: rate >= limit[0] && rate <= limit[1],
++          withinLimit: isDead || (rate >= limit[0] && rate <= limit[1]),
++          ...(isDead ? { dead: true } : {}),
++        });
++      };
++      // Live play runs at one match second a staged second while the stretch's dead balls can take
++      // up the difference within `clockFit.dead`; beyond that live play gives (natural-football b).
++      const append = (from: number, to: number, startSeconds: number, endSeconds: number) => {
++        const parts: [number, number, boolean][] = [];
++        let at = from;
++        for (const [a, z] of dead) {
++          if (z <= at || a >= to) continue;
++          if (a > at) parts.push([at, a, false]);
++          parts.push([Math.max(a, at), Math.min(z, to), true]);
++          at = Math.min(z, to);
++        }
++        if (at < to) parts.push([at, to, false]);
++        const gap = endSeconds - startSeconds;
++        const D = parts.reduce((s, [a, z, d]) => s + (d ? z - a : 0), 0);
++        const L = to - from - D;
++        if (D < 1e-6 || L < 1e-6) return push(from, to, startSeconds, endSeconds, L < 1e-6);
++        const deadRate = Math.min(Math.max((gap - L) / D, fit.dead[0]), fit.dead[1]);
++        const live = Math.max(gap - D * deadRate, gap * fit.liveShare) / L;
++        const deadAt = (gap - L * live) / D;
++        let seconds = startSeconds;
++        parts.forEach(([a, z, d], k) => {
++          const end =
++            k === parts.length - 1 ? endSeconds : seconds + (z - a) * (d ? deadAt : live);
++          if (z > a) push(a, z, seconds, end, d);
++          seconds = end;
+         });
+       };
+       const b = a.beat;
+       const last = b && byBeat.get(b.index)?.findLast((e) => finishEvents.has(e.kind) && e.t < z.t);
+       const minuteEnd = b
+-        ? p.start + (Math.floor(b.clock / 60) + 1 - OFFSET[p.period - 1]) * 60
++        ? Math.min(
++            p.start + (Math.floor(b.clock / 60) + 1 - OFFSET[p.period - 1]) * 60,
++            p.start + p.minutes * 60,
++          ) +
++          (Math.floor(b.clock / 60) + 1 - OFFSET[p.period - 1] === LENGTH[p.period - 1]
++            ? (p.minutes - LENGTH[p.period - 1]) * 60
++            : 0)
+         : Infinity;
+       const projected = last ? a.clock + ((last.t - a.t) * (z.clock - a.clock)) / (z.t - a.t) : 0;
+-      if (last && last.t > a.t && projected >= minuteEnd) {
++      // The guard never presses the beat's own facts beyond `clockFit.guardFloor` (a jump).
++      if (
++        last &&
++        last.t > a.t &&
++        projected >= minuteEnd &&
++        (minuteEnd - a.clock) / (last.t - a.t) >= fit.guardFloor
++      ) {
+         const end = minuteEnd - 1e-6;
+         append(a.t, last.t, a.clock, end);
+         append(last.t, z.t, end, z.clock);
+diff --git a/packages/engine/src/staging/participants.ts b/packages/engine/src/staging/participants.ts
+index e2558e0e..2b2fe1a2 100644
+--- a/packages/engine/src/staging/participants.ts
++++ b/packages/engine/src/staging/participants.ts
+@@ -98,13 +98,80 @@ function keeperChange(state: StageState, side: TeamId, ctx: BeatContext): void {
+   refreshFrame(state);
+ }
+ 
++/**
++ * Several substitutions at one stoppage are made together, as a bench makes them: the men coming
++ * off walk to the gate at once, leave in the record's order with their replacements coming on, and
++ * the replacements walk to their places together (natural-football b: one at a time, four changes
++ * held the ball dead for two minutes).
++ */
++function* substitutions(
++  state: StageState,
++  ctx: BeatContext,
++  subs: readonly ScriptIncident[],
++): Generator<void, void> {
++  const start = state.t;
++  const leavers = subs.map((x) => participant(state, x.side, x.line));
++  const entrants = subs.map((x) => {
++    if (x.other === undefined) throw invalidDetail('staging:input');
++    return participant(state, x.side, x.other);
++  });
++  for (const a of leavers)
++    if (onPitch(state.fixture, a)) state.orders.set(a, { target: SCENE.gate, pace: 'walk' });
++  const gone = (a: number) =>
++    !onPitch(state.fixture, a) || dist(state.bodies[a].pos, SCENE.gate) <= SCENE.ready;
++  yield* runUntil(state, () => leavers.every(gone), SCENE.maxTravel);
++  subs.forEach((x, k) => {
++    const actor = leavers[k],
++      other = entrants[k];
++    if (onPitch(state.fixture, actor)) {
++      if (!gone(actor)) throw invalidDetail('staging:input');
++      state.fixture.present![actor] = false;
++      state.orders.delete(actor);
++      state.bodies[actor].vel = [0, 0];
++      pushEvent(state, {
++        kind: 'exit',
++        team: state.fixture.players[actor].team,
++        actor,
++        at: SCENE.gate,
++      });
++      refreshFrame(state);
++    }
++    state.fixture.present![other] = true;
++    state.enteredAt![other] = state.clock ?? state.t;
++    state.seen = [];
++    pushEvent(state, { kind: 'sub', team: x.side, actor, other, at: SCENE.gate });
++    keeperChange(state, x.side, ctx);
++    refreshFrame(state);
++  });
++  const targets = entrants.map((o) =>
++    nominalSpot(
++      { fixture: state.fixture, ball: state.ball.pos, team: state.team, phase: state.phase },
++      o,
++    ),
++  );
++  entrants.forEach((o, k) => state.orders.set(o, { target: targets[k], pace: 'walk' }));
++  const placed = () => entrants.every((o, k) => dist(state.bodies[o].pos, targets[k]) <= SCENE.ready);
++  yield* runUntil(state, placed, SCENE.maxTravel);
++  if (!placed()) throw invalidDetail('staging:input');
++  yield* holdScene(state, Math.max(0, SCENE.substitution - (state.t - start)));
++  for (const x of subs) keeperChange(state, x.side, ctx);
++}
++
+ export function* runIncidents(state: StageState, ctx: BeatContext): Generator<void, void> {
+   const incidents = ctx.beat.original?.incidents ?? [];
+   if (!incidents.length) return;
+   const heldBy = state.ball.owner;
+   stopPlay(state);
+   state.beat = ctx.beat.index;
+-  for (const incident of incidents) {
++  for (let k = 0; k < incidents.length; k++) {
++    const incident = incidents[k];
++    let run = k;
++    while (run + 1 < incidents.length && incidents[run + 1].kind === 'sub') run++;
++    if (incident.kind === 'sub' && run > k) {
++      yield* substitutions(state, ctx, incidents.slice(k, run + 1));
++      k = run;
++      continue;
++    }
+     const actor = participant(state, incident.side, incident.line);
+     const start = state.t;
+     const at = [...state.bodies[actor].pos] as Vec;

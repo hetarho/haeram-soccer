@@ -1,0 +1,743 @@
+diff --git a/packages/contracts/src/match-script.ts b/packages/contracts/src/match-script.ts
+index f54aa8d1..67633848 100644
+--- a/packages/contracts/src/match-script.ts
++++ b/packages/contracts/src/match-script.ts
+@@ -99,6 +99,11 @@ export interface MatchScript {
+   seed: string;
+   beats: ScriptBeat[];
+   bound: true;
++  /**
++   * The record's added minutes a period, played in the minute that closes it (→MATCH-12); absent
++   * when there are none.
++   */
++  added?: number[];
+ }
+ 
+ /** Presentation inputs in record line order, independent of world and roster objects. */
+diff --git a/packages/engine/src/script/clock.ts b/packages/engine/src/script/clock.ts
+index 4dd193a4..56a57392 100644
+--- a/packages/engine/src/script/clock.ts
++++ b/packages/engine/src/script/clock.ts
+@@ -1,5 +1,5 @@
+ /** Nominal, portable match seconds; presentation staging owns its separate motion clock. */
+-import { SCRIPT_CONFIG as FIT, SCRIPT_CONFIG as GRAMMAR } from './config';
++import { SCRIPT_CONFIG as FIT, SCRIPT_CONFIG as GRAMMAR, SCRIPT_ORDER } from './config';
+ import { dist } from './cells';
+ import type { Beat } from './types';
+ import { isRestartKind } from './types';
+@@ -23,14 +23,31 @@ export const deadOf = (b: Beat, k: number, m: number): number =>
+   !(k === 0 && b.kind === 'kickOff' && (m === 0 || m === 45 || m === 90 || m === 105))
+     ? FIT.dead[b.kind as keyof typeof FIT.dead]
+     : 0;
++/** The record minutes that close a period (45', 90', 105', 120'). */
++const PERIOD_ENDS = [44, 89, 104, 119] as const;
+ /**
+- * A minute's clock before pressing: its sixty seconds less its restarts' dead time shared equally
+- * between its beats as hold plus travel, each hold within `fit.hold`, and the seconds that needs.
++ * Minutes of play the record minute `m` stands for: one, or for the minute that closes a period
++ * one plus the added time the record gives that period, which the picture plays in it (MATCH-12).
+  */
+-export function minuteTimes(list: readonly Beat[], m: number): { holds: number[]; need: number } {
++export const minuteSpan = (m: number, added: readonly number[] = []): number => {
++  const p = PERIOD_ENDS.indexOf(m as (typeof PERIOD_ENDS)[number]);
++  return p < 0 ? 1 : 1 + Math.max(0, added[p] ?? 0);
++};
++/**
++ * A minute's clock before pressing: its `span` minutes of play less its restarts' dead time shared
++ * equally between its beats as hold plus travel, each hold at least `fit.hold[0]` and at most
++ * `order.longHold`, and the seconds that needs.
++ */
++export function minuteTimes(
++  list: readonly Beat[],
++  m: number,
++  span = 1,
++): { holds: number[]; need: number } {
+   const dead = list.reduce((s, b, k) => s + deadOf(b, k, m), 0);
+-  const share = (60 - dead) / list.length;
+-  const holds = list.map((b) => Math.min(Math.max(share - travel(b), FIT.hold[0]), FIT.hold[1]));
++  const share = (60 * span - dead) / list.length;
++  const holds = list.map((b) =>
++    Math.min(Math.max(share - travel(b), FIT.hold[0]), SCRIPT_ORDER.longHold),
++  );
+   const need = list.reduce((s, b, k) => s + deadOf(b, k, m) + holds[k]! + travel(b), 0);
+   return { holds, need };
+ }
+diff --git a/packages/engine/src/script/config.ts b/packages/engine/src/script/config.ts
+index 819f0d68..61b1e3d8 100644
+--- a/packages/engine/src/script/config.ts
++++ b/packages/engine/src/script/config.ts
+@@ -34,3 +34,39 @@ export const SCRIPT_CONFIG = {
+   /** A broken touch chain returns problems instead of keeping a worker busy forever. */
+   maxStepsPerTouch: 20,
+ } as const;
++
++/**
++ * How the order of play reads football (MATCH-38), outside the lab's catalog (→LAB-3). A touch's
++ * cost is the metres a link would carry the ball to it, against which the writer's pulls
++ * (`SCRIPT_CONFIG`) are weighed; these terms add the direction of that link, where the touch leaves
++ * the ball, and the cues and holds the staging shows for the ball played back.
++ */
++export const SCRIPT_ORDER = {
++  /** Each centimetre a link carries the ball upfield costs this much more than one across or back:
++   * a man turning out with the ball is ordinary, one running through the opposing block is not. */
++  ahead: 0.5,
++  /** ...and this much more again when the touch it reaches plays the ball back: the man who
++   * dribbles past everybody only to pass backward. */
++  thenBack: 3,
++  /** While the minute owes a touch the record fixes in it (a chance's key pass, a booked foul),
++   * each centimetre another touch leaves the ball from that touch's cell costs this much: the side
++   * builds toward the chance instead of being dragged to it by one long link. */
++  toward: 0.5,
++  /** Metres further than the nearest man a shot's blocker may stand when he, unlike the nearest,
++   * has a touch left to play on with the ball (the record names no blocker). */
++  blockerRest: 8,
++  /** A pass played at least this many metres back from the final third carries a staged reason. */
++  backCue: 5,
++  /** The longest of a man's own touches since his reception that still lets him lay it off first time. */
++  layoffTouch: 3,
++  /** Seconds a man may hold the ball in a minute of few beats, which would otherwise end early. */
++  longHold: 8,
++  /** Each touch a man is behind the even spread of his touches over his minutes pulls his next one
++   * this many metres nearer, up to `dueCap` touches: nobody's part piles up before he leaves. */
++  duePull: 10,
++  dueCap: 10,
++  /** Minutes before he leaves by which a substituted or injured man's touches are all due. */
++  dueLead: 5,
++  /** The share of an even minute's touches every minute plays at least, while enough are left. */
++  minuteFloor: 0.6,
++};
+diff --git a/packages/engine/src/script/count.ts b/packages/engine/src/script/count.ts
+index c3065248..c5e9ed0d 100644
+--- a/packages/engine/src/script/count.ts
++++ b/packages/engine/src/script/count.ts
+@@ -7,7 +7,7 @@ import type { Beat, Script } from './types';
+ import { isPassLike, isRestartKind } from './types';
+ import { cellAt, dist } from './cells';
+ import { buildTouches, dealFixed } from './touches';
+-import { minuteTimes } from './clock';
++import { minuteSpan, minuteTimes } from './clock';
+ import { planRestarts } from './restarts';
+ import { incidentRows } from './incidents';
+ 
+@@ -196,7 +196,8 @@ export function scriptCost(script: Script, detail: MatchDetail): ScriptCost {
+   let maxOverrun = 0;
+   for (let m = 0; m < detail.length; m++) {
+     const list = b.filter((x) => Math.floor(x.clock / 60) === m);
+-    if (list.length) maxOverrun = Math.max(maxOverrun, minuteTimes(list, m).need - 60);
++    const span = minuteSpan(m, detail.added);
++    if (list.length) maxOverrun = Math.max(maxOverrun, minuteTimes(list, m, span).need - 60 * span);
+   }
+   return {
+     beats: b.length,
+diff --git a/packages/engine/src/script/order.test.ts b/packages/engine/src/script/order.test.ts
+new file mode 100644
+index 00000000..1a26feaf
+--- /dev/null
++++ b/packages/engine/src/script/order.test.ts
+@@ -0,0 +1,124 @@
++import { describe, expect, it } from 'vitest';
++import { loadDetail, fixtureSeed } from '../../../../tests/fixtures/match-script';
++import { toAttack } from './cells';
++import { minuteTimes } from './clock';
++import { SCRIPT_CONFIG, SCRIPT_ORDER } from './config';
++import { scriptCost } from './count';
++import type { Beat, Script } from './types';
++import { isPassLike } from './types';
++import { writeScript } from './write';
++
++const TEN = ['s01', 's02', 's03', 's04', 's05', 's06', 's07', 's08', 's09', 's10'];
++const ten = TEN.map((id) => {
++  const detail = loadDetail(id);
++  const written = writeScript(detail, fixtureSeed(id));
++  if (!('script' in written)) throw new Error(`${id}: ${written.problems.join(', ')}`);
++  return { id, detail, script: written.script };
++});
++const upfield = (b: Beat): number => toAttack(b.side, b.to)[0] - toAttack(b.side, b.from)[0];
++const length = (b: Beat): number => Math.hypot(b.to[0] - b.from[0], b.to[1] - b.from[1]);
++const recordedPasses = (script: Script) =>
++  script.beats.flatMap((b, i) =>
++    b.kind === 'pass' && b.event !== undefined ? [[b, i] as const] : [],
++  );
++
++describe('the order of play reads football (SCRIPT_ORDER)', () => {
++  it('builds toward where play goes, so its links stay short', () => {
++    // Released writer (T840) on these ten: 54,014 m of links; aiming each ball at the side of its
++    // cell where the man plays on and building toward the minute's owed touch: 36,172 m.
++    const metres = ten.reduce((sum, x) => sum + scriptCost(x.script, x.detail).linkMetres, 0);
++    expect(metres).toBeLessThanOrEqual(36_172 * 1.02);
++  });
++
++  it('a man is seldom dragged upfield by a link only to play the ball back', () => {
++    // A link of 8 m or more upfield straight into the same man's backward pass: 68 on these ten
++    // under the released writer, 25 now.
++    let count = 0;
++    for (const { script } of ten)
++      for (const [b, i] of recordedPasses(script)) {
++        const before = script.beats[i - 1];
++        if (before?.move === 'link' && before.actor === b.actor && upfield(before) >= 8)
++          if (upfield(b) <= -3) count++;
++      }
++    expect(count).toBeLessThanOrEqual(30);
++  });
++
++  it('every ball played back from the final third shows why', () => {
++    let backward = 0;
++    for (const { id, script } of ten)
++      for (const [b, i] of recordedPasses(script)) {
++        const x = toAttack(b.side, b.from)[0];
++        if (x < SCRIPT_CONFIG.phaseX.finalThird || upfield(b) > -SCRIPT_ORDER.backCue) continue;
++        backward++;
++        expect(['cutBack', 'layoff', 'pressed'], `${id}#${b.index}`).toContain(b.reason);
++        if (b.reason !== 'layoff') continue;
++        // A lay-off is played first time off the pass that found him.
++        expect(b.hold, `${id}#${b.index}`).toBeLessThanOrEqual(SCRIPT_CONFIG.hold[0]);
++        let k = i - 1;
++        while (
++          script.beats[k]!.actor === b.actor &&
++          script.beats[k]!.side === b.side &&
++          (script.beats[k]!.kind === 'carry' || script.beats[k]!.kind === 'takeOn')
++        ) {
++          expect(length(script.beats[k]!)).toBeLessThanOrEqual(SCRIPT_ORDER.layoffTouch);
++          k--;
++        }
++        const fed = script.beats[k]!;
++        expect(isPassLike(fed.kind) && fed.receiver === b.actor && fed.outcome === 'complete').toBe(
++          true,
++        );
++      }
++    expect(backward).toBeGreaterThan(100);
++  });
++
++  it('no other pass carries a cue', () => {
++    for (const { script } of ten)
++      for (const [b] of recordedPasses(script)) {
++        if (b.reason === undefined || b.reason === 'cutBack') continue;
++        expect(toAttack(b.side, b.from)[0]).toBeGreaterThanOrEqual(SCRIPT_CONFIG.phaseX.finalThird);
++        expect(upfield(b)).toBeLessThanOrEqual(-SCRIPT_ORDER.backCue);
++      }
++  });
++});
++
++describe('minute clock (minuteTimes)', () => {
++  const beat = (over: Partial<Beat>): Beat =>
++    ({
++      index: 0,
++      possession: 0,
++      side: 0,
++      phase: 'progression',
++      move: 'short',
++      kind: 'pass',
++      actor: 1,
++      from: [40, 30],
++      to: [50, 30],
++      outcome: 'complete',
++      loft: false,
++      through: false,
++      header: false,
++      hold: 0,
++      clock: 0,
++      period: 1,
++      ...over,
++    }) as Beat;
++
++  it('a lay-off holds the shortest hold and leaves the rest of the minute to the others', () => {
++    const list = Array.from({ length: 12 }, (_, k) =>
++      beat({ index: k, ...(k === 5 && { reason: 'layoff' as const }) }),
++    );
++    const { holds, need } = minuteTimes(list, 10);
++    expect(holds[5]).toBe(SCRIPT_CONFIG.hold[0]);
++    expect(holds[4]).toBeGreaterThan(holds[5]!);
++    expect(need).toBeCloseTo(60, 6);
++  });
++
++  it('a minute of few beats spans its sixty seconds, no man holding the ball beyond longHold', () => {
++    const few = [beat({}), beat({ index: 1 }), beat({ index: 2 })];
++    const spread = minuteTimes(few, 10);
++    expect(spread.holds.every((h) => h > SCRIPT_CONFIG.hold[1])).toBe(true);
++    expect(spread.holds.every((h) => h <= SCRIPT_ORDER.longHold)).toBe(true);
++    const six = Array.from({ length: 6 }, (_, k) => beat({ index: k }));
++    expect(minuteTimes(six, 10).need).toBeCloseTo(60, 6);
++  });
++});
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index f09f03cd..a2b23c91 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -4,7 +4,7 @@
+ // record gives none, the receivers, the points inside the cells, the clock and the connective
+ // tissue (link carries, miscontrols, restart deliveries no recorded pass makes). A pure function of
+ // the settled match and the seed (-> ARCH-5).
+-import { SCRIPT_CONFIG } from './config';
++import { SCRIPT_CONFIG, SCRIPT_ORDER } from './config';
+ import {
+   PITCH,
+   toAttack,
+@@ -31,7 +31,7 @@ import { beatIncident, foulCards, incidentIndex, scriptPeriod } from './incident
+ import { validateScript } from './validate';
+ import { compareRecord, countScript } from './count';
+ import { planRestarts } from './restarts';
+-import { minuteTimes, travel, deadOf } from './clock';
++import { minuteSpan, minuteTimes, travel, deadOf } from './clock';
+ import { TouchSearch } from './search';
+ const FIT = SCRIPT_CONFIG;
+ const GRAMMAR = SCRIPT_CONFIG;
+@@ -130,8 +130,50 @@ function writeFitted(settled: Settled, seed: string): Script {
+       }),
+     ),
+   );
++  /** Minutes of play through the end of record minute `m`, added time included. */
++  const playedBy: number[] = [];
++  for (let m = 0, sum = 0; m < Math.max(settled.length, 120); m++)
++    playedBy.push((sum += minuteSpan(m, settled.added)));
++  /**
++   * A man's touches the record gives no minute are spread over the minutes he may play them in
++   * (row-id order is irrelevant: only how many he has played counts), so his part in the game runs
++   * through it instead of piling up just before he leaves (T840's 260-beat minute at 74').
++   */
++  const paceOf = touches.map(() => -1);
++  const paces: { from: number; until: number; total: number; done: number }[] = [];
++  {
++    const keyed = new Map<string, number>();
++    for (const i of order) {
++      const t = touches[i]!;
++      if (t.minute !== FLOATING) continue;
++      const key = `${t.side}:${t.actor}:${t.from}:${t.until}`;
++      let g = keyed.get(key);
++      if (g === undefined) {
++        g = paces.length;
++        keyed.set(key, g);
++        paces.push({ from: t.from, until: Math.min(t.until, settled.length), total: 0, done: 0 });
++      }
++      paces[g]!.total++;
++      paceOf[i] = g;
++    }
++  }
++  /** How many touches behind its even spread touch `i`'s man is at the end of this minute. */
++  const behind = (i: number): number => {
++    const g = paceOf[i]!;
++    if (g < 0) return 0;
++    const p = paces[g]!;
++    const before = p.from > 0 ? playedBy[p.from - 1]! : 0;
++    // A man who leaves before the end has his last touches due a few minutes early.
++    const end = p.until < settled.length ? Math.max(p.from + 1, p.until - SCRIPT_ORDER.dueLead) : p.until;
++    const span = playedBy[end - 1]! - before;
++    if (span <= 0) return 0;
++    const due = (p.total * (playedBy[minute]! - before)) / span;
++    return Math.min(SCRIPT_ORDER.dueCap, Math.floor(due - p.done));
++  };
+   const fixedRemaining = Array.from({ length: settled.length }, () => [0, 0]);
+   const expiring = Array<number>(settled.length).fill(0);
++  /** ...and by side: a side whose last chance for a touch is this minute is let on the ball. */
++  const expiringBy = Array.from({ length: settled.length }, () => [0, 0]);
+   const turnsRemaining = minuteOrder.map((teams) =>
+     teams.map((rows, team) => {
+       const counts = settled.sides[team]!.lines.map(() => 0);
+@@ -142,7 +184,10 @@ function writeFitted(settled: Settled, seed: string): Script {
+   for (const t of touches) {
+     if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!++;
+     const last = t.until - 1;
+-    if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!++;
++    if (last >= 0 && last < settled.length && t.period === periodOf(last)) {
++      expiring[last]!++;
++      expiringBy[last]![t.side]!++;
++    }
+   }
+   const total = [0, 0];
+   const done = [0, 0];
+@@ -401,17 +446,24 @@ function writeFitted(settled: Settled, seed: string): Script {
+     cached.rows = rows;
+     return rows;
+   };
++  /** `team` has touches whose last chance is this minute and `them` has none. */
++  const owesLast = (team: TeamId, them: TeamId) =>
++    expiringBy[minute]![team]! > 0 && expiringBy[minute]![them]! === 0;
+   const fixedLeft = (team?: TeamId) =>
+     team === undefined
+       ? fixedRemaining[minute]![0]! + fixedRemaining[minute]![1]! > 0
+       : fixedRemaining[minute]![team]! > 0;
+-  /** The touches played by the end of minute `m`: an even share of all of them. */
++  /**
++   * The touches played by the end of minute `m`: an even share of all of them a minute of play,
++   * the minute closing a period taking its added time's shares too.
++   */
+   const periodCounts = [0, 0];
+   for (const t of touches) periodCounts[t.period]!++;
+   const quotas = Array.from({ length: settled.length }, (_, m) =>
+     m < 90
+-      ? Math.round(((m + 1) * periodCounts[0]!) / 90)
+-      : periodCounts[0]! + Math.round(((m - 89) * periodCounts[1]!) / 30),
++      ? Math.round((playedBy[m]! * periodCounts[0]!) / playedBy[89]!)
++      : periodCounts[0]! +
++        Math.round(((playedBy[m]! - playedBy[89]!) * periodCounts[1]!) / (playedBy[119]! - playedBy[89]!)),
+   );
+   const quota = (m: number) => quotas[m]!;
+   const quotaMet = () => done[0]! + done[1]! >= quota(minute);
+@@ -430,7 +482,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+       pace: Math.round(
+         Math.min(Math.max((lead - endsLead) / FIT.paceSlack, -1), 1) * FIT.paceBias * 100,
+       ),
+-      push: met && fixedLeft(other(team)),
++      push: met && (fixedLeft(other(team)) || owesLast(other(team), team)),
+     };
+   };
+   /**
+@@ -466,14 +518,18 @@ function writeFitted(settled: Settled, seed: string): Script {
+       cost -= FIT.winnerPull * 100;
+     // The pull grows as the minute fills, so its fixed touches come before its share runs out.
+     if (touches[i]!.minute === minute) cost -= terms.fixed;
++    const late = behind(i);
++    if (late > 0) cost -= late * SCRIPT_ORDER.duePull * 100;
+     // A corner's or free kick's delivery waits for its restart rather than be played in open play.
+     if (touches[i]!.until === minute + 1) cost -= FIT.fixedPush * 100;
+     if (setPiece[i]) cost += FIT.setPieceWait * 100;
++    // ...unless its man is about to leave: then it is played in open play rather than wait.
+     if (
+       release &&
+       'event' in release &&
+       reserve.has(release.event) &&
+-      demand[team]![startCell[i]!]! > 0
++      demand[team]![startCell[i]!]! > 0 &&
++      touches[i]!.until - minute > SCRIPT_ORDER.dueLead
+     )
+       cost += FIT.restartPull * 100;
+     if (ends[i]) {
+@@ -566,7 +622,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+         Math.max(0, cell),
+         bounds,
+         (i) => touchCost(team, i, cell, terms) + (place?.get(touches[i]!.actor) ?? 0),
+-        (i) => touches[i]!.minute !== FLOATING || touches[i]!.until === minute + 1,
++        (i) =>
++          touches[i]!.minute !== FLOATING || touches[i]!.until === minute + 1 || behind(i) > 0,
+       );
+     }
+     for (const i of pool) {
+@@ -771,8 +828,12 @@ function writeFitted(settled: Settled, seed: string): Script {
+         turnsRemaining[m]![t.side]![t.actor]!--;
+     if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!--;
+     const last = t.until - 1;
+-    if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!--;
++    if (last >= 0 && last < settled.length && t.period === periodOf(last)) {
++      expiring[last]!--;
++      expiringBy[last]![t.side]!--;
++    }
+     actorLeft[t.side]![t.actor]!--;
++    if (paceOf[i]! >= 0) paces[paceOf[i]!]!.done++;
+     if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!--;
+     done[t.side]!++;
+     if (ends[i]) endsDone[t.side]!++;
+@@ -992,7 +1053,26 @@ function writeFitted(settled: Settled, seed: string): Script {
+     ball = to;
+   };
+ 
++  /**
++   * The touches every minute plays at least: `order.minuteFloor` of an even minute's share while
++   * enough are left for the minutes after it at that rate, so a minute that had to play more than
++   * its share is not followed by minutes where the ball barely moves.
++   */
++  const leastOf = (m: number): number => {
++    const regular = m < 90;
++    const count = periodCounts[regular ? 0 : 1]!;
++    const last = regular ? 89 : 119;
++    const minutes = regular ? playedBy[89]! : playedBy[119]! - playedBy[89]!;
++    const floor = SCRIPT_ORDER.minuteFloor * (count / Math.max(1, minutes));
++    const left = (regular ? count : periodCounts[0]! + count) - done[0]! - done[1]!;
++    const after = playedBy[Math.min(last, settled.length - 1)]! - playedBy[m]!;
++    return left - floor * minuteSpan(m, settled.added) >= floor * after
++      ? Math.max(1, Math.floor(floor * minuteSpan(m, settled.added)))
++      : 1;
++  };
++  let least = 1;
+   const settledMinute = () => {
++    least = leastOf(minute);
+     // Corrupt/incompatible chains cannot make a partial writer spin forever.
+     for (let steps = 0; steps < (touches.length + 1) * FIT.maxStepsPerTouch; steps++) {
+       if (waitingIncidents.length && (owed || (pending === null && holder === keeperOf(side)))) {
+@@ -1001,7 +1081,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+       // The minute ends with its share of touches played and nothing fixed to it left.
+       if (
+         quotaMet() &&
+-        done[0]! + done[1]! > minuteStart &&
++        done[0]! + done[1]! - minuteStart >= least &&
+         !fixedLeft() &&
+         expiring[minute] === 0
+       ) {
+@@ -1049,8 +1129,12 @@ function writeFitted(settled: Settled, seed: string): Script {
+       }
+       // Yield to the other side's fixed touch only after this side has played its own. Otherwise
+       // two sides with possession-preserving fixed touches can yield forever without playing one.
+-      if (quotaMet() && !fixedLeft(side) && fixedLeft(other(side))) {
+-        const waiting = theirs.filter((i) => touches[i]!.minute === minute);
++      const lastChance =
++        !fixedLeft(side) && !fixedLeft(other(side)) && owesLast(other(side), side);
++      if (quotaMet() && !fixedLeft(side) && (fixedLeft(other(side)) || lastChance)) {
++        const waiting = theirs.filter((i) =>
++          lastChance ? touches[i]!.until === minute + 1 : touches[i]!.minute === minute,
++        );
+         const lone = waiting.find((i) => unassisted(i));
+         if (waiting.length > 0 && (lone !== undefined || !mine.some((i) => ends[i]))) {
+           miscontrol(
+@@ -1160,16 +1244,19 @@ function writeFitted(settled: Settled, seed: string): Script {
+ 
+   // A minute whose beats need more than its sixty seconds is pressed into them, every part alike,
+   // so each beat keeps its record minute; `minuteTimes` gives what each minute needed.
++  // The minute closing a period plays through its added time: its clock stays inside the record
++  // minute, each second of it standing for `span` seconds of play (MATCH-12).
+   for (let m = 0; m < settled.length; m++) {
+     const list = beats.filter((_, i) => minuteOf[i] === m);
+     if (list.length === 0) continue;
+-    const { holds, need } = minuteTimes(list, m);
+-    const press = need > 60 ? 60 / need : 1;
+-    let t = m * 60;
++    const span = minuteSpan(m, settled.added);
++    const { holds, need } = minuteTimes(list, m, span);
++    const press = need > 60 * span ? (60 * span) / need : 1;
++    let t = 0;
+     for (const [k, b] of list.entries()) {
+       t += deadOf(b, k, m) * press;
+       b.hold = Math.floor(holds[k]! * press * 100) / 100;
+-      b.clock = Math.floor(t * 100) / 100;
++      b.clock = Math.floor((m * 60 + t / span) * 100) / 100;
+       t += (holds[k]! + travel(b)) * press;
+     }
+   }
+@@ -1202,5 +1289,5 @@ function writeFitted(settled: Settled, seed: string): Script {
+       clock: settled.length * 60 + i * FIT.shootout.seconds,
+     });
+   }
+-  return { version: 1, seed, beats, bound: true };
++  return { version: 1, seed, beats, bound: true, ...(settled.added.some((n) => n > 0) && { added: [...settled.added] }) };
+ }
+diff --git a/packages/engine/src/staging/config.ts b/packages/engine/src/staging/config.ts
+index d00608b6..25df9283 100644
+--- a/packages/engine/src/staging/config.ts
++++ b/packages/engine/src/staging/config.ts
+@@ -64,10 +64,10 @@ export const STAGING_CONFIG = {
+   },
+   motion: {
+     walk: 1.8,
+-    jog: 3.8,
+-    run: 6,
+-    sprintBase: 6.4,
+-    sprintPerPace: 2.4,
++    jog: 3.4,
++    run: 5.2,
++    sprintBase: 6,
++    sprintPerPace: 2.2,
+     accel: 5.5,
+     decel: 8,
+     arriveTime: 0.35,
+@@ -164,6 +164,12 @@ export const STAGING_CONFIG = {
+       turn: 2.2,
+       lead: 2,
+     },
++    /**
++     * The staging keeps to the script's clock (MATCH-12): a beat's hold takes up the seconds the
++     * beats before it left over, at most `extra` more than the script's hold, or gives back what
++     * they overran, down to `least`; a shot's hold is never lengthened (it is struck at once).
++     */
++    pace: { least: 0.3, extra: 6 },
+     /** The least distance between the ball and the point an ordinary pass is received at, and how near to that point the passer's touch may take him. */
+     kickGap: 5.5,
+     maxExtraHold: 1.5,
+diff --git a/packages/engine/src/staging/contest.test.ts b/packages/engine/src/staging/contest.test.ts
+index 1bcc5c97..c7a3cad5 100644
+--- a/packages/engine/src/staging/contest.test.ts
++++ b/packages/engine/src/staging/contest.test.ts
+@@ -91,6 +91,19 @@ describe('contests', () => {
+     expect(slow.plan.margin).toBeGreaterThan(STAGE.cutSlack);
+   });
+ 
++  it('a lay-off is played with its marker tight at his back, as a pressed ball is', () => {
++    const state = parked();
++    const [, b1, b2] = beats(fixture, [
++      { kind: 'kickOff', actor: 9, receiver: 5, to: [45, 30] },
++      { kind: 'pass', actor: 5, receiver: 9, to: [70, 34] },
++      { kind: 'pass', actor: 9, receiver: 6, to: [60, 30], reason: 'layoff' },
++    ]);
++    setPossession(state, b1);
++    expect(state.tight).toBe(false);
++    setPossession(state, b2);
++    expect(state.tight).toBe(true);
++  });
++
+   it("cueNext cues the next beat's opponent and tightens the press for a pressed beat", () => {
+     const state = parked();
+     const [, b1, b2] = beats(fixture, [
+diff --git a/packages/engine/src/staging/frame-clock.ts b/packages/engine/src/staging/frame-clock.ts
+index ed4b8df1..ec6ad2ea 100644
+--- a/packages/engine/src/staging/frame-clock.ts
++++ b/packages/engine/src/staging/frame-clock.ts
+@@ -27,9 +27,21 @@ export interface FramePeriod {
+   period: 1 | 2 | 3 | 4;
+   start: number;
+   minutes: number;
++  /** The added minutes its closing minute plays (none for a cut that ends before it). */
++  extra: number;
+   beats: ScriptBeat[];
+ }
+ 
++/**
++ * Seconds of play into its period at which the script's `clock` falls: the period's closing
++ * minute runs through its `added` minutes (MATCH-12), every other minute is its sixty seconds.
++ */
++export function playSeconds(clock: number, period: 1 | 2 | 3 | 4, added: number): number {
++  const x = clock - OFFSET[period - 1] * 60;
++  const last = (LENGTH[period - 1] - 1) * 60;
++  return x <= last ? x : last + (x - last) * (1 + Math.max(0, added));
++}
++
+ /** Cuts of a fixture keep only their covered minutes; a complete half includes its added time. */
+ export function framePeriods(script: MatchScript, added: readonly number[] = []): FramePeriod[] {
+   let start = 0;
+@@ -40,8 +52,9 @@ export function framePeriods(script: MatchScript, added: readonly number[] = [])
+     const played = script.beats.some((b) => b.period > period && b.period < 5)
+       ? length
+       : Math.max(1, Math.ceil((beats.at(-1)!.clock + 0.001) / 60 - OFFSET[period - 1]));
+-    const minutes = played + (played >= length ? (added[period - 1] ?? 0) : 0);
+-    const p = { period, start, minutes, beats };
++    const extra = played >= length ? (added[period - 1] ?? 0) : 0;
++    const minutes = played + extra;
++    const p = { period, start, minutes, extra, beats };
+     start += minutes * 60;
+     return [p];
+   });
+@@ -105,7 +118,7 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+       const events = byBeat.get(b.index) ?? [];
+       const action = events.find((e) => actionEvents.has(e.kind));
+       if (!action) continue;
+-      anchors.push({ t: action.t, clock: p.start + b.clock - OFFSET[p.period - 1] * 60, beat: b });
++      anchors.push({ t: action.t, clock: p.start + playSeconds(b.clock, p.period, p.extra), beat: b });
+     }
+     const whistle = byBeat.get(p.beats.at(-1)!.index)?.find((e) => e.kind === 'whistle');
+     if (whistle) anchors.push({ t: whistle.t, clock: p.start + p.minutes * 60 });
+@@ -129,7 +142,7 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
+       const b = a.beat;
+       const last = b && byBeat.get(b.index)?.findLast((e) => finishEvents.has(e.kind) && e.t < z.t);
+       const minuteEnd = b
+-        ? p.start + (Math.floor(b.clock / 60) + 1 - OFFSET[p.period - 1]) * 60
++        ? p.start + playSeconds((Math.floor(b.clock / 60) + 1) * 60, p.period, p.extra)
+         : Infinity;
+       const projected = last ? a.clock + ((last.t - a.t) * (z.clock - a.clock)) / (z.t - a.t) : 0;
+       if (last && last.t > a.t && projected >= minuteEnd) {
+diff --git a/packages/engine/src/staging/input.ts b/packages/engine/src/staging/input.ts
+index 6776d8bf..cee04c38 100644
+--- a/packages/engine/src/staging/input.ts
++++ b/packages/engine/src/staging/input.ts
+@@ -62,5 +62,6 @@ export function stageScript(script: MatchScript, fixture: Fixture): Script {
+     beats,
+     times: beats.map((b) => b.clock ?? 0),
+     nominalSeconds: 0,
++    ...(script.added && { added: script.added }),
+   };
+ }
+diff --git a/packages/engine/src/staging/perform.ts b/packages/engine/src/staging/perform.ts
+index 808b4375..5628d902 100644
+--- a/packages/engine/src/staging/perform.ts
++++ b/packages/engine/src/staging/perform.ts
+@@ -3,6 +3,8 @@ import { invalidDetail } from '../script/failure';
+ // moves the stage tick by tick until the beat is done. The program pauses before each tick so
+ // the caller can bound its work; script and side inputs alone determine every frame (ARCH-5).
+ import { STAGING_CONFIG } from './config';
++import { SCRIPT_CONFIG } from '../script/config';
++import { playSeconds } from './frame-clock';
+ import type { Beat } from './types';
+ import { PASS_KINDS, RESTART_KINDS, isShotLike } from './types';
+ import { performCarry, performCarryLost, performMiscontrol } from './carry';
+@@ -53,6 +55,33 @@ export const HANDLERS: Record<string, Handler> = {
+   'clearance:loose': withRestart(performPassLoose),
+ };
+ 
++/**
++ * The hold the staging gives `beat` so it keeps to the script's clock: the script's hold plus the
++ * seconds of play the staging is ahead of the clock (minus those it is behind), within
++ * `stage.pace`. The clock is read from the period's first beat on, in seconds of play, so the
++ * closing minute's added time counts (MATCH-12).
++ */
++export function pacedHold(state: StageState, beat: Beat): number {
++  const period = beat.original?.period;
++  if (!state.bound || beat.clock === undefined || period === undefined || period > 4)
++    return beat.hold;
++  const at = playSeconds(beat.clock, period, state.added[period - 1] ?? 0);
++  if (state.paceFrom?.period !== period) {
++    // A period opens on its first beat: the staging is on the clock there.
++    state.paceFrom = { period, t: state.t, at };
++    return beat.hold;
++  }
++  // A restart's clock is its kick's: the dead time the script gave it comes before (`fit.dead`).
++  const dead =
++    beat.kind === 'stoppage' || RESTART_KINDS.includes(beat.kind)
++      ? SCRIPT_CONFIG.dead[beat.kind as keyof typeof SCRIPT_CONFIG.dead]
++      : 0;
++  const ahead = at - dead - state.paceFrom.at - (state.t - state.paceFrom.t);
++  const PACE = STAGING_CONFIG.stage.pace;
++  const most = isShotLike(beat) ? beat.hold : beat.hold + PACE.extra;
++  return Math.min(Math.max(beat.hold + ahead, Math.min(beat.hold, PACE.least)), most);
++}
++
+ /** Each period ends in a whistle, with a dead-ball hold. */
+ function* endPeriod(state: StageState): Generator<void, void> {
+   // The final touch and the whistle are distinct instants, including a last-tick save.
+@@ -93,7 +122,8 @@ export function* performance(state: StageState): Generator<void, void> {
+       ? Math.max(state.clock, next.clock ?? state.clock)
+       : (next?.clock ?? Infinity);
+     const before = state.tickCount;
+-    const ctx = { beat, next };
++    const hold = pacedHold(state, beat);
++    const ctx = { beat: hold === beat.hold ? beat : { ...beat, hold }, next };
+     const beforeAction = beat.kind === 'stoppage' || RESTART_KINDS.includes(beat.kind);
+     if (beforeAction) {
+       state.beat = beat.index;
+@@ -103,12 +133,12 @@ export function* performance(state: StageState): Generator<void, void> {
+     }
+     if (beat.kind === 'stoppage') {
+       stopPlay(state);
+-      yield* holdScene(state, beat.hold);
++      yield* holdScene(state, hold);
+     } else {
+       state.live = true;
+       const handler = HANDLERS[handlerKey(beat)];
+       if (!handler) throw invalidDetail('staging:input');
+-      yield* handler(state, { beat, next });
++      yield* handler(state, ctx);
+     }
+     if (!beforeAction) yield* runIncidents(state, ctx);
+     if (state.tickCount === before) yield* nextTick(state);
+diff --git a/packages/engine/src/staging/types.ts b/packages/engine/src/staging/types.ts
+index 07ae1232..c9ce84f8 100644
+--- a/packages/engine/src/staging/types.ts
++++ b/packages/engine/src/staging/types.ts
+@@ -108,6 +108,8 @@ export interface Script {
+   nominalSeconds: number;
+   /** Written from a settled result: staging may not replace a beat's opponent (T821). */
+   bound?: true;
++  /** The record's added minutes a period, played in the minute that closes it (MATCH-12). */
++  added?: readonly number[];
+ }
+ 
+ export type BallMode = 'held' | 'flight' | 'loose' | 'dead';
+diff --git a/packages/engine/src/staging/world.ts b/packages/engine/src/staging/world.ts
+index c2cfd461..f87ace20 100644
+--- a/packages/engine/src/staging/world.ts
++++ b/packages/engine/src/staging/world.ts
+@@ -110,6 +110,13 @@ export interface StageState {
+   clockCap: number;
+   /** Record-clock seconds when each participant entered; starters start at zero. */
+   enteredAt?: number[];
++  /** The record's added minutes a period (a bound script's): its closing minute plays them. */
++  added: readonly number[];
++  /**
++   * Where the period's first beat began, in staged seconds (`t`) and in seconds of play (`at`), so
++   * each later beat knows how far the staging runs ahead of or behind the script's clock.
++   */
++  paceFrom?: { period: number; t: number; at: number };
+   /** The exact targets used by the last movement tick. Observation only. */
+   targets?: Vec[];
+   action?: BeatKind;
+@@ -274,6 +281,7 @@ export function createStage(script: Script): StageState {
+     frames: [],
+     events: [],
+     bound: script.bound === true,
++    added: script.added ?? [],
+     clockCap: Infinity,
+     enteredAt: fixture.players.map((p) => (incoming.has(p.index) ? Infinity : 0)),
+   };
