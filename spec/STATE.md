@@ -89,6 +89,7 @@
 | T909 | Skip already ineligible sellers before market pool work | ARCH WORLD CLUB | T885 | todo |
 | T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T906 | todo |
 | T911 | Observe contract expiry before genuine mandatory rehires | ARCH CLUB WORLD HIST | T885 | todo |
+| T912 | Restore the ordinary owned-loan return notification | ARCH CLUB WORLD HIST | T909 | todo |
 
 ## next
 - gusta-implement-task T873 T875 T884
