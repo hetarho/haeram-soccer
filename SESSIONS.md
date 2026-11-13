@@ -79,6 +79,7 @@
 | T876 | work | codex/natural-football-261114 | 15ec0ba65b84 | 2026-11-13T17:23Z |
 
 ## log
+- 261113 fix pb14 schema: 7ca7b44d reuses the production book schema for 30 malformed amount cases and the incomplete component case, retaining whole-world roundtrips; isolated review checkout, 85 affected units and static/i18n checks passed.
 - 261113 T882 done
 - 261113 T881 done
 - 261113 T876 integrated
@@ -98,4 +99,3 @@
 - 261113 gusta-update-ssot ARCH start: align verification with approved gusta 0.17.1 defaults
 - 261113 fix calibration: exclude incomplete and shortened windows from completed-core and peak comparisons; preserve raw observations; two new regressions and nine affected unit cases pass
 - 261113 - 261113 fix calibration: exclude incomplete and shortened windows from completed-core counts and peak-age comparisons; preserve all raw observations, two isolated regressions and nine affected unit cases pass.
-- 261113 T872 done
