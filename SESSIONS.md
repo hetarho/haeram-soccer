@@ -4,7 +4,6 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| ml14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:30Z | 2026-11-13T16:30Z | - | main | bb383c33aad0 |
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:30Z | 2026-11-13T16:30Z | - | main | bb383c33aad0 |
 
 ## inbox
