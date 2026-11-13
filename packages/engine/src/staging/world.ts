@@ -39,6 +39,7 @@ import {
 import { advanceBody, speedAt, type Body, type Pace } from './motion';
 import { pressingReach } from './tendency';
 import { supportTarget } from './support';
+import { pressCoverPoint, selectPressRoles, type PressRoles } from './press-roles';
 
 export interface Order {
   target: Vec | (() => Vec);
@@ -300,11 +301,6 @@ export function positionsOf(state: StageState): Vec[] {
 export const isBeaten = (state: StageState, index: number): boolean =>
   (state.beaten.get(index) ?? -Infinity) > state.t;
 
-/** Presser and cover of a defending team for one snapshot (one tick). */
-interface PressRoles {
-  presser: number;
-  cover: number;
-}
 const pressCache = new WeakMap<readonly Vec[], Map<TeamId, PressRoles>>();
 
 const pressRoles = (
@@ -337,9 +333,12 @@ const pressRoles = (
           STAGING_CONFIG.stage.press[state.fixture.teams[d].style].reach *
             pressingReach(spec.pressing)
       );
-    })
-    .sort((a, b) => a.d - b.d || a.index - b.index);
-  const roles = { presser: free[0]?.index ?? -1, cover: free[1]?.index ?? -1 };
+    });
+  const roles = selectPressRoles(
+    free,
+    snapshot,
+    pressCoverPoint(ref, ownGoal(d, state.fixture.period), SHAPE.press.coverGap),
+  );
   byTeam.set(d, roles);
   return roles;
 };
@@ -407,7 +406,7 @@ export function defaultTarget(
         direct: true,
       };
     }
-    return { target: add(ref, scale(g, SHAPE.press.coverGap)), pace: 'run', direct: true };
+    return { target: pressCoverPoint(ref, goal, SHAPE.press.coverGap), pace: 'run', direct: true };
   }
   // He goes with a man only once he believes his side is defending.
   if (view.team === d) return open();
