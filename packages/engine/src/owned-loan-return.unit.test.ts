@@ -8,6 +8,7 @@ import { currentDay, SEASON_END_DAY, SEASON_ROUNDS } from './calendar';
 import { npcWageBill } from './books';
 import { marketWageAt } from './market-prices';
 import { npcMarket, npcMarketDays, returnNpcLoans } from './npc-market';
+import { closeNpcSummer } from './npc-careers';
 import { retainPerson, openEmployment } from './person-careers';
 import { foundSquads } from './persisted-squads';
 import { generatedPlayer, invalidateNpcSquad } from './world';
@@ -173,6 +174,12 @@ describe('canonical owned loan return notification', () => {
       returnNpcLoans(w);
       expect(w).toEqual(once);
       expect(draws).toEqual([]);
+      closeNpcSummer(w);
+      expect(w.events.slice(eventAt).filter((e) => e.kind === 'loan-return')).toHaveLength(1);
+      expect(w.playerRecords![id]!.moves).toHaveLength(moveAt + 1);
+      const closed = structuredClone(w);
+      closeNpcSummer(w);
+      expect(w).toEqual(closed);
     },
   );
 
