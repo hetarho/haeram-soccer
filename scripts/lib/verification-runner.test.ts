@@ -69,6 +69,45 @@ describe('verification stage receipts and raw logs', () => {
     expect(terminal.cancelRequested?.signal).toBe('SIGTERM');
     expect(readFileSync(terminal.stdoutPath, 'utf8')).toBe('ready');
   });
+  it('cancels nested children holding inherited pipes, including a signal-resistant descendant', async () => {
+    const nested = `process.on('SIGTERM',()=>{});process.stdout.write(JSON.stringify({grandchild:process.pid})+'\\n');setInterval(()=>{},1000);`;
+    const code = `const {spawn}=require('node:child_process');spawn(process.execPath,['-e',${JSON.stringify(nested)}],{stdio:['ignore','inherit','inherit']});setInterval(()=>{},1000);`;
+    const run = child(code);
+    const [chunk] = await once(run.child.stdout!, 'data');
+    const grandchild = (JSON.parse(chunk.toString()) as { grandchild: number }).grandchild;
+    let guard: ReturnType<typeof setTimeout> | undefined;
+    try {
+      run.cancel('SIGTERM');
+      const terminal = await Promise.race([
+        run.done,
+        new Promise<never>(
+          (_, reject) =>
+            (guard = setTimeout(
+              () => reject(new Error('descendant-cancellation-incomplete')),
+              2000,
+            )),
+        ),
+      ]);
+      expect(terminal.status).toBe('cancelled');
+      expect(terminal.commandExitCode).toBeNull();
+      expect(terminal.signal).toBe('SIGTERM');
+      expect(terminal.cancellationCleanup).toMatchObject({
+        descendants: [grandchild],
+        escalated: [grandchild],
+      });
+      expect(() => process.kill(grandchild, 0)).toThrow();
+      expect(readFileSync(terminal.stdoutPath, 'utf8')).toContain(String(grandchild));
+      expect(run.updates.at(-1)?.status).toBe('cancelled');
+    } finally {
+      clearTimeout(guard);
+      try {
+        process.kill(grandchild, 'SIGKILL');
+      } catch {
+        /* Already gone is the expected outcome. */
+      }
+      run.child.kill('SIGKILL');
+    }
+  });
   it('records a self-terminated child even without a cancellation request', async () => {
     const terminal = await child("process.kill(process.pid,'SIGTERM')").done;
     expect(terminal.status).toBe('cancelled');
