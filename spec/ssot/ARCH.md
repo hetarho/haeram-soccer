@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r40 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r41 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -7,7 +7,7 @@
   - Web goal: attract interest through observable matches, meaningful statistics, strategic experiments, and a continuing club history.
   - Carry the agreed eight-country scope: England, Spain, Germany, Italy, France, Portugal, Netherlands, Belgium; other European associations provide representative clubs.
   - Carry the takeover start with owner wealth tiers and traits, manager personality, recruitment, marketing, sponsors, historical prices/currencies, and historically introduced European competitions.
-  - Product rule details and balance values belong in product SSOTs derived from `ideation/club-history-reboot.md`; architecture does not silently settle their open policies.
+  - Product rule details and balance values belong in the product SSOTs; architecture does not silently settle their open policies.
 - ARCH-2 [o] Web stack: React + TypeScript in strict mode + Vite, delivered as a static SPA. ← fast browser entry and a deployment artifact without an application server
   - pnpm workspaces; the pnpm release is pinned by `packageManager`; stable dependency versions and the exact active-LTS Node release are pinned at scaffolding; commit the lockfile.
   - CSS Modules and CSS design tokens; Canvas 2D for the simplified pitch; SVG for initial charts; semantic HTML for tables and controls.
@@ -258,9 +258,10 @@
 - Browser storage capacity and complete catalog coverage require measured/validated evidence before release claims.
 - A long-career capacity claim requires benchmark evidence; a passing UI demonstration is insufficient.
 - Never label planned scripts, unimplemented milestones, mock catalogs, or drafted backend infrastructure as completed functionality.
-- Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
+- Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r41 261113 ARCH-1✎ product SSOTs derived from `ideation/club-history-reboot.md`→the product SSOTs · constraints✎ product background `spec/ideation/club-history-reboot.md` and project overview `spec/NARRATIVE.md`→rules in `spec/ssot/` only, archived ideation is background (NARRATIVE removed, club-history-reboot archived)
 - r40 261112 ARCH-30✎ project-only rules (planning on `next`, host-locked batch before `vibe push` to `main`, work-group flag map, CI-wait and `verify` stand-in rules)→gusta's default tiers: task · batch before code push or final completion · CI after code push · flow✎ Planning names no skill, Verification no `next` or `vibe push`
 - r39 261111 ARCH-3✎ `grid/` and `aggregate/` compute matches→`aggregate/` settles, `script/` and `staging/` write and stage an own match · ARCH-4✎ grid-execution orchestration→match orchestration (settlement, script writing, staging) · ARCH-6✎ +a watched match staged by a worker of its own in bounded steps · ARCH-9✎ +the script writer's platform-stable arithmetic, the staging exempt · ARCH-31✎ the continuous-match and full probabilistic-result release→a match-model release; +own-match settlement and watched cost measured apart · ARCH-33✎ the grid kernel→the script writer and the staging as leaves · ARCH-34✎ workload hashes grid, aggregate, day→own match, aggregate, staging, day
 - r38 261110 ARCH-21✎ world cache `node_modules/.cache/haeram-worlds` per worktree→one clone-wide store under the Git common directory locally (CI keeps the per-job path); a fresh worktree's gate or task check reuses worlds of the same fingerprint (warm vitest phase 531 s against 822 s cold)

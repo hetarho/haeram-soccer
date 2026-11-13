@@ -1,5 +1,5 @@
 # IDEATION match-viewing-pace-and-freedom
-> st:ready@261026 | Open play readable at 1x, dead balls that do not drag, coherent corner defence, and players who leave their formation spot when football calls for it.
+> st:converted@261113 | Open play readable at 1x, dead balls that do not drag, coherent corner defence, and players who leave their formation spot when football calls for it.
 
 ## vision
 - Problem (owner, 261024, watching own matches in the live game): open play moves too fast to follow at 1x while corners, free kicks and goal kicks crawl; at a corner only the attacking side gathers at the goal while the defenders keep their formation; players hold their shape so well that an LB on the right wing, normal in real football, never happens.
@@ -29,8 +29,10 @@
 - [x] Manager's style alone, the whole side equally free ← players would differ only by role
 - [x] The owner suggests or sets freedom per player ← the game has no per-player tactical instructions, and freedom alone would be the first; the owner acts through his manager
 - [o] Freedom changes results, as a trade-off: a free player joins the build-up and creates more, but leaves space behind him for counters, and a player with poor 판단력 loses more than he gains ← the manager's choice must have consequences the owner can read; the candidate model then needs recalibration
+  - Later reversed (MATCH r59): MATCH-17 keeps freedom and the tendencies in the picture only; the record does not read them.
 - [x] Freedom changes only how play looks ← the manager's choice would have no consequence
 - [o] v1 also includes situational disorder (on a transition, chasing a result late, straight after a set piece the shape loosens whatever a player's freedom) and position swaps (wingers switching flanks, full-back/winger rotation) ← owner's choice; real football's structure breaks and re-forms
+  - Later removed (MATCH r59) with the detailed engine; MATCH-17 no longer has situational disorder or position swaps.
 - [o] All four inspector tendencies (자유도, 규율, 압박 성향, 예측력) drive real movement: 규율 holding his place, 압박 성향 how often he presses, 예측력 how early he reads play ← a shown number must do what it says; more work and calibration than freedom alone
 - [x] Keep only 자유도 and remove the other three ← owner chose to make all four real
 - [x] Leave the numbers as display only ← they suggest a mechanic that does not exist
@@ -53,17 +55,19 @@
 - at activation (T286, unchanged scope): T348's corner defence and continuous movement reach the live game
 - next model revision after activation (candidate football): per-player freedom set by the manager (style × role × ability) with trade-offs in results, situational disorder, position swaps, four tendencies that drive movement; seen in post-match heat maps and average positions; recalibrated
 - not: changing the live pre-feature engine's football; per-player tactical instructions; owner control of freedom
+- Other dead time (open until archive): answered by WEB-32 and MATCH-12: every stoppage, not only the set-piece walk-in, is a dead-ball beat (WEB r156, MATCH r33).
+- How the anticipation tendency differs from the decisions and positioning attributes (open until archive): answered by PLAYER-26 and MATCH-17: the four tendencies drive movement in the picture only and the record does not read them, so nothing counts twice against the attributes the result path reads.
+- Post-match views (open until archive): answered by MATCH-25: heat maps are where a player's scripted touches fall and his average position their mean, read from the record and script; no off-ball positions are added.
+- Manager style and freedom (open until archive): answered by STAFF-46: freedom is the manager's flexibility (STAFF-14) × how creative the slot's role is × the player's decisions attribute.
+- Archived 261113: the pace and dead-ball scope lives in WEB-32 and MATCH-12, freedom and the four tendencies in STAFF-46, PLAYER-26 and MATCH-17 (picture only since MATCH r59), and the post-match views in MATCH-25.
 
 ## domains
-- [o] WEB: Legacy scope WEB (now); WEB-32 running-speed policy (1x = 12 s per open-play minute, 2x start, the set-piece walk-in drawn fast) →WEB-32
-- [o] WEB: Legacy scope WEB (next model revision); inspector tendency labels →PLAYER-26
-- [o] MATCH: Legacy scope MATCH (now); MATCH-12 uniform mapping with the set-piece walk-in as an explicit presentation exception; settled facts, added time and the engine's recorded dead time unchanged →MATCH-12
-- [o] MATCH: Legacy scope MATCH (next model revision); MATCH-17 intentions with manager-set positional freedom, situational disorder and position swaps; tendencies in movement; MATCH-25 views showing it; recalibration under MATCH-28 →MATCH-17
-- [o] STAFF: how a manager sets each player's freedom (his philosophy/flexibility, the slot's role, the player's ability); no owner control →STAFF-46
-- [o] PLAYER: the four tendencies (자유도, 규율, 압박 성향, 예측력) — today attributes plus a hidden stable personality (`motionTraits`); their meaning beside 판단력/위치선정 →PLAYER-26
+- [o] WEB: Legacy scope WEB (now); WEB-32 running-speed policy (1x = 12 s per open-play minute, 2x start, the set-piece walk-in drawn fast) →WEB-32 →WEB
+- [o] WEB: Legacy scope WEB (next model revision); inspector tendency labels →PLAYER-26 →PLAYER →WEB
+- [o] MATCH: Legacy scope MATCH (now); MATCH-12 uniform mapping with the set-piece walk-in as an explicit presentation exception; settled facts, added time and the engine's recorded dead time unchanged →MATCH-12 →MATCH
+- [o] MATCH: Legacy scope MATCH (next model revision); MATCH-17 intentions with manager-set positional freedom, situational disorder and position swaps; tendencies in movement; MATCH-25 views showing it; recalibration under MATCH-28 →MATCH-17 →MATCH
+- [o] STAFF: how a manager sets each player's freedom (his philosophy/flexibility, the slot's role, the player's ability); no owner control →STAFF-46 →STAFF
+- [o] PLAYER: the four tendencies (자유도, 규율, 압박 성향, 예측력) — today attributes plus a hidden stable personality (`motionTraits`); their meaning beside 판단력/위치선정 →PLAYER-26 →PLAYER
 
 ## open
-- Beyond the set-piece walk-in: whether other dead time (ball retrieval, penalties, cards, injuries, substitutions) is compressed — the owner decides after seeing v1 in play.
-- 예측력 overlaps the 판단력 and 위치선정 attributes the engine already reads (defenders' early read of a ball in behind): how it differs, so nothing counts twice.
-- Post-match views: are the touch-based heat maps and pass-network positions enough, or are off-ball average positions added?
-- Which manager values carry "style" (flexibility, philosophy) and how far the freest player may go — rules for gusta-update-ssot.
+- -

@@ -1,5 +1,5 @@
 # IDEATION match-day-progress
-> st:ready@261026 | An own match day is a steady visible beat of at least 2 s at every pace, and visible automatic play never skips days.
+> st:converted@261113 | An own match day is a steady visible beat of at least 2 s at every pace, and visible automatic play never skips days.
 
 ## vision
 - Problem (owner, 261026): T465's late-step indicator (a small spinner and 경기 진행 중… beside the transport, shown only when a step outlasts one pace interval, followed by catch-up days) is not what the owner wants. At x10 the calendar still halts on match days and then jumps ahead.
@@ -24,15 +24,17 @@
 - [o] Manual mode (다음 이벤트) is unchanged; the moment belongs to automatic play ← manual play stops before matches on its own (recommendation)
 - [x] Show our fixture (clubs, crests, competition) or reveal the final score inside the moment ← owner 261026 chose an animation only
 - [x] Show the moment in the middle of the screen or as a widened transport row ← owner 261026 chose the next-match card
-- [?] With the fixed beat, the result-identical performance steps (parallel aggregate workers, detailed-engine repeated-work cuts) matter only where a match day computes past 2 s or ordinary days run late; revisit after the beat is in play
+- [x] With the fixed beat, the result-identical performance steps (parallel aggregate workers, detailed-engine repeated-work cuts) matter only where a match day computes past 2 s or ordinary days run late; revisit after the beat is in play ← overturned: WEB r161 dropped the beat and took the performance work at once, as ARCH-6's helper workers (ARCH r24) and WEB-18's computing ahead of the shown date
 
 ## shape
 - Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: ordinary days at the chosen pace → own match day: a ≥ 2 s match-day moment while it computes → the next day at the chosen pace, no skipped days
 - v1: the ≥ 2 s animation in the home's next-match card (small in the bottom controls elsewhere) on own fixture days at every pace; no visible catch-up or late-step indicator; the result-notice checkbox / not: clubs or score in the moment, other clubs' match days, a beat while hidden, manual mode, performance work
+- Performance steps (open until archive): not deferred after all; ARCH-6's helper workers compute an own match day's other fixtures and WEB-18 computes up to 3/5/7 days ahead with identical results (WEB r161, ARCH r24).
+- Archived 261113: converted in WEB r155, whose ≥ 2 s match-day moment WEB r161 then removed (WEB-18: automatic play has no match-day pause or animation, days computed ahead instead); kept are visible steps of one day with no visible catch-up (WEB-18/64) and the result notice, off by default (WEB-18, WEB-79).
 
 ## domains
-- [o] WEB: WEB-18 automatic play (replaces r154's late-step indicator and visible catch-up), WEB-64 (catch-up only for hidden or away time) →WEB-18
+- [o] WEB: WEB-18 automatic play (replaces r154's late-step indicator and visible catch-up), WEB-64 (catch-up only for hidden or away time) →WEB-18 →WEB
 
 ## open
-- Performance steps: after the owner has played with the beat
+- -

@@ -1,5 +1,5 @@
 # IDEATION match-engine-rebuild
-> st:ready@261026 | Rebuild the match engine so every player's choice comes from his role, his place on the pitch and the situation, drawn by probability.
+> st:converted@261113 | Rebuild the match engine so every player's choice comes from his role, his place on the pitch and the situation, drawn by probability.
 
 ## vision
 - Problem: observed matches do not read as football — the ball sits with a defender and a moment later is a shot; shots leave from odd, distant spots; a forward suddenly plays the ball back to a deep full-back or wing-back. The owner wants a full engine rebuild, not patches.
@@ -63,7 +63,8 @@
 - [o] 판단력 and 침착성 count in 실효 OVR with weights by position (e.g. decisions heavier for central midfielders and centre-backs, composure for forwards' finishing) ← MATCH-2 calibration reads strength from OVR, so attributes that move results must move strength
 - [x] Hidden attributes outside OVR, revealed by scouts and coaches ← discovery appeal, but equal OVRs would play unequally and break the calibration
 - [o] The own club's matches always play the grid engine. Fixtures between other clubs — own league included — are decided by measurement: if the grid engine's measured cost keeps season progression as fast as today, own-league fixtures play it too; otherwise every fixture without the own club resolves by probability on a fast team-level path that still names scorers, assisters, cards and injuries at real rates ← owner 261019 revised the earlier pick ("measure first, compute the rest by probability for speed"); the first choice remains the grid engine for own-league fixtures so league leaders compare on one standard
-- [?] On the probabilistic path, other clubs' players lack the grid-only statistics (box entries, expected-threat added, line-breaking passes …): leave them absent, or draw estimates by position at real rates — settle once the measurement is in.
+  - Later reversed (MATCH r59, T838–T845): the grid engine was built, then removed; every fixture, the own club's included, settles on one aggregate path (MATCH-22), and an own match gets a script (MATCH-38) and a presentation-only staging (MATCH-39).
+- [o] On the probabilistic path, other clubs' players lack the grid-only statistics (box entries, expected-threat added, line-breaking passes …): leave them absent, or draw estimates by position at real rates — settle once the measurement is in. ← drawn: every match's record holds every advanced counter for both sides and every named player under one definition, none omitted because the match used probability (MATCH-13/26), at real-football levels (MATCH-30)
 - [o] Unwatched fixtures elsewhere (~10,000 a season) stay a fast team-level summary on the same scoring curve, and also draw cards, suspensions and injuries for named players at real rates ← rivals lose players too, so an opponent can really be weakened, at unchanged speed
 - [x] Cards and injuries in the own league only ← continental opponents would always be at full strength
 - [x] Cards and injuries in own matches only ← simplest, but opponents always full strength reads unfair
@@ -74,6 +75,10 @@
 - v1 in: grid engine with per-touch time and event-only possession changes; fouls, free kicks, corners and penalties; the four tactics deepened; spatial commentary, post-match shot map/heat maps/pass network, new statistics with season and career totals, post-match tactical report; calibration against the current MATCH-2 curve and the real baselines; the unwatched path kept fast on the same scoring curve.
 - v1 also in: cards and suspensions under one English-style rule, era rules for substitutes and cards, in-match substitutions by the manager and in-match injuries; decisions and composure attributes in 실효 OVR for newly generated players; current-season maps and season heat maps; own-league fixtures on the grid engine if the measured cost allows, else on the probabilistic path; cards, suspensions and injuries drawn in unwatched fixtures too.
 - v1 not: continuous agent physics; new tactical instructions; converting earlier careers.
+- Determinism (open until archive): kept in MATCH-7: fast and observed processing use the same match seed and result path, and an own match's script and post-match material are written from its record the same way whether watched or not.
+- Real rates (open until archive): fixed in MATCH-19 (bans), MATCH-23 (cards a match), MATCH-21 with CLUB-23 (in-match injuries) and MATCH-20 (substitutes by era); the decisions and composure weights by position are PLAYER-6's tables.
+- Feasibility (open until archive): moot; the grid engine was built and then removed (T838–T845), every fixture settles on one aggregate path (MATCH-22), its costs are measured and reported with each release (ARCH-31), and the checkpoint limit is now SAVE-4's 6 MiB.
+- Archived 261113: replaced by the scripted model, one aggregate result for every match with a script (MATCH-38) and a presentation-only staging (MATCH-39) for the own club's matches; its surviving ideas live on in MATCH-13/14/18/19/20/21/23/24/25 and PLAYER-2/6/19.
 
 ## domains
 - [o] MATCH: Legacy scope MATCH →MATCH; MATCH-1/11/12 rewritten around the grid decision engine (cells, tags, per-touch time, event-only possession changes, fouls and set pieces); MATCH-2 calibration kept and re-measured; MATCH-5/10 the view and commentary; MATCH-13 counters kept plus the new statistics; MATCH-8/9 tactics as shape, line and pressing behaviour.
@@ -85,6 +90,4 @@
 - [o] ARCH: Legacy scope ARCH →MATCH; the processing budget of the grid engine for own and recorded fixtures and of the unwatched path.
 
 ## open
-- Determinism (MATCH-7) is assumed kept: watched and unwatched play of a fixture give the same result.
-- Real rates still to fix at SSOT time: cards per match, in-match injuries, substitution timing by era; the 판단력/침착성 weights by position.
-- [?] Feasibility: measure the grid engine's cost first — it decides whether own-league fixtures play it (see explored) — against today's (today 0.41 ms a recorded fixture, 0.13 ms a summary, 326 ms an observed match with motion), and the checkpoint size of season heat maps and the new career totals within 1.5 MiB.
+- -

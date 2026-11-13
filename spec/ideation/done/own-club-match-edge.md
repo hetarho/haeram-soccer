@@ -1,5 +1,5 @@
 # IDEATION own-club-match-edge
-> st:ready@261026 | Our club should win only what its squad, manager and circumstances earn; on equal terms it should score like any other club of the same strength.
+> st:converted@261113 | Our club should win only what its squad, manager and circumstances earn; on equal terms it should score like any other club of the same strength.
 
 ## vision
 - Problem (owner, 261023, from a 1950–1995 쉬움 career): a squad of OVR ~78–82 keeps winning 1부 titles against rivals shown at 98–102. The owner asked why a weaker side beats far stronger ones season after season.
@@ -54,13 +54,15 @@
 - Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: measure on the candidate model too → choose A/B/C → update MATCH/CLUB rules → recalibrate → re-measure on this save and reference careers
 - v1: equal-terms parity of results and symmetric match context / not: changing difficulty levels, changing how strong NPC clubs are generated
+- Tier-4 detailed-engine gap (open until archive): moot; the detailed engine was removed (T838–T845), every fixture, the own club's included, settles on one aggregate path (MATCH-22), and T840's read (`artifacts/benchmarks/scripted-model-calibration/README.md` (a)) finds no own-club row that differs from clubs playing the same tactic.
+- Title band (open until archive): answered by LEAGUE-13: balance is measured on reference careers per wealth tier, with bands for the first top-flight title and the share of titles after it.
+- Reproduce (as of T467): `pnpm exec tsx scripts/own-edge-probe.ts --seeds 10 --seasons 10 --out <file.json>` (a cached 10-season world; each fixture with `w.seed = <seed>:probe<i>` on `simulateMatch` or `simulateAggregate`); for a save, `decode` from `apps/web/src/adapters/persistence.ts` gives the world instead.
+- Archived 261113: choice C landed as MATCH-2's symmetric context (a club nobody owns adds its named manager's ability, morale neutral), parity became one aggregate path for every fixture (MATCH-22) with the own club measured on MATCH-28's registry, and title-rate expectations are LEAGUE-13's.
 
 ## domains
-- [o] MATCH: parity of own and other fixtures' outcome curve (MATCH-2 curve, MATCH-22 paths)
-- [o] CLUB: Legacy scope CLUB / STAFF; match context from manager ability and morale for every club (morale or a proxy for clubs nobody owns)
-- [o] LEAGUE: title-rate expectations for reference careers (how often a dominant club should win)
+- [o] MATCH: parity of own and other fixtures' outcome curve (MATCH-2 curve, MATCH-22 paths) →MATCH
+- [o] CLUB: Legacy scope CLUB / STAFF; match context from manager ability and morale for every club (morale or a proxy for clubs nobody owns); landed in MATCH-2 with STAFF-17's named managers →MATCH →STAFF
+- [o] LEAGUE: title-rate expectations for reference careers (how often a dominant club should win) →LEAGUE
 
 ## open
-- Does the reversed engine gap hold on a top-tier career with OVR near MATCH-23's equal top-tier sides? T467: no — at the top tier both paths sit on the curve; the gap stays at the founding's tier-4 level. Is that the level or the founded squad's own inputs? Separate it by playing the founding league's other fixtures on the detailed engine at the same gaps.
-- How often should a club that is genuinely the strongest win its league (a target band for reference careers)?
-- Reproduce: `pnpm exec tsx scripts/own-edge-probe.ts --seeds 10 --seasons 10 --out <file.json>` (a cached 10-season world; each fixture with `w.seed = <seed>:probe<i>` on `simulateMatch` or `simulateAggregate`); for a save, `decode` from `apps/web/src/adapters/persistence.ts` gives the world instead.
+- -

@@ -1,5 +1,5 @@
 # IDEATION save-storage-and-fast-pace
-> st:ready@261026 | Move the game in play's checkpoint to IndexedDB, then make x10 automatic play feel smooth, covering a match day's computation with a "경기 진행 중…" animation.
+> st:converted@261113 | Move the game in play's checkpoint to IndexedDB, then make x10 automatic play feel smooth, covering a match day's computation with a "경기 진행 중…" animation.
 
 ## vision
 - Problem (owner, 261026, on the deployed build at x10): the calendar runs 1, 2, 3 … 6 quickly, then halts for about a second, then runs on. The halt is every own league match day. Separately, the game in play's checkpoint is capped at 3 MiB only because it lives in localStorage (about 5 MiB per origin), and writing it blocks the main thread.
@@ -12,6 +12,7 @@
   - x10 is one day per 100 ms (`PACE_MS` in `apps/web/src/runtime/progression.ts`); a tick while the previous day is still in flight is skipped, so a 0.9 s day shows as a halt; the next step then catches up at most 5 owed days (`MAX_STEP_DAYS`), ending early on an own match or news day.
   - On an own match day about half the time is the own match on the detailed engine (about 0.375 s without frames, about 0.6 s with frames; per match about 1,000 decisions, 1,800 intention updates, 79,000 target reads, 640,000 movement steps) and about 40% the day's other fixtures on the aggregate path (about 2.2 ms each, every league's round on one day). Building the view and publishing it take 10–20 ms. On match days 0.6–1 MB of view delta reaches the main thread, mostly `world.clubs` (~400 KB) and `world.discipline` (~360 KB).
 - [o] Keep today's engine dispatch: every own match on the detailed engine, watched or not; every other fixture on the aggregate path ← owner 261026, after weighing the alternatives below
+  - Later reversed (MATCH r59, T838–T845): every fixture, the own club's included, settles on one aggregate path (MATCH-22); an own match is scripted at settlement, watched or not (MATCH-38).
 - [x] Per-world engine choice at founding (rich world: every fixture on the detailed engine; fast world: every fixture aggregate except the watched own match, with post-match material shown once and not kept) ← the rich world needs about 2 h of computation and about 6 MB of material per season; the fast world breaks MATCH-7 (a watched and an unwatched match give different results, and export/re-import could reroll one)
 - [x] Run unwatched own matches on the aggregate path ← loses their material and makes watching change results (MATCH-7)
 - [o] Order of work: (1) the IndexedDB move, (2) the x10 work ← owner 261026; both wait until the current football tasks are done (T433, T434, T410 at 261026), since they would collide with work in progress
@@ -33,11 +34,14 @@
 - Format migration 261026: previous converted status restored to ready pending a coverage audit; historical questions and decisions are preserved. Parked during the module-boundary refactor; this restoration authorizes no product changes.
 - flow: (1) IndexedDB move → (2) x10: match-day indicator, then the chosen result-identical performance steps
 - v1: the game in play's checkpoint in IndexedDB with migration of existing saves; the "경기 진행 중…" indicator on match days at fast paces / not: the season-archive split, the run-ahead buffer, any change to engine results or dispatch
+- Later changes: the indicator (WEB r154, T465) was replaced by WEB r155's match-day moment and then by WEB r161 (WEB-18: no match-day pause or animation, days computed ahead instead); the per-checkpoint cap became 6 MiB in IndexedDB (SAVE-4, SAVE r64) and the localStorage fallback was retired (SAVE r65).
+- Performance steps and the season-archive split (open until archive): step (a) landed as ARCH-6's helper workers (ARCH r24); step (c) is moot, since the detailed engine was removed (T845); the season-archive split was not taken up, with SAVE-4 allowing 6 MiB per IndexedDB checkpoint and SAVE-8 saving automatic play every 30 s of running clock rather than every step.
+- Archived 261113: the IndexedDB move is carried by SAVE-3/4 and ARCH-11, and the x10 presentation it planned was replaced by WEB-18's computing ahead with no match-day animation (WEB r161) and ARCH-6's helper workers.
 
 ## domains
-- [o] SAVE: SAVE-3 (where the active and previous checkpoints live), SAVE-4 (the 3 MiB per-checkpoint cap and the 3.5 MiB total, which came from localStorage), SAVE-14 (parked slots, the IndexedDB-unavailable fallback), migration of an existing localStorage checkpoint →SAVE-3
-- [o] ARCH: ARCH-11 (localStorage as the save store), ARCH-14 (the budget rule that never moves the active checkpoint), the constraint "the web demo's primary save store is localStorage"; ARCH-31 if throughput budgets change →ARCH-11
-- [o] WEB: WEB-18 / automatic play (the match-day indicator at fast paces, what the calendar shows while it runs), WEB-64 if background play is affected →WEB-18
+- [o] SAVE: SAVE-3 (where the active and previous checkpoints live), SAVE-4 (the 3 MiB per-checkpoint cap and the 3.5 MiB total, which came from localStorage), SAVE-14 (parked slots, the IndexedDB-unavailable fallback), migration of an existing localStorage checkpoint →SAVE-3 →SAVE
+- [o] ARCH: ARCH-11 (localStorage as the save store), ARCH-14 (the budget rule that never moves the active checkpoint), the constraint "the web demo's primary save store is localStorage"; ARCH-31 if throughput budgets change →ARCH-11 →ARCH
+- [o] WEB: WEB-18 / automatic play (the match-day indicator at fast paces, what the calendar shows while it runs), WEB-64 if background play is affected →WEB-18 →WEB
 
 ## open
-- Season-archive split and performance steps (a)/(c): revisit when a profile or the owner's x10 read asks for them
+- -

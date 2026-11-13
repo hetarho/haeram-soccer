@@ -1,5 +1,5 @@
 # IDEATION club-identity-and-kits
-> st:ready@261026 | Design club colours, a selectable crest and home/away/third kits with a faithful match preview.
+> st:converted@261113 | Design club colours, a selectable crest and home/away/third kits with a faithful match preview.
 
 ## vision
 - Problem: founding exposes one colour, while the resulting crest adds an automatically chosen second colour, shape, field pattern and emblem. Owners cannot deliberately design the identity they later see.
@@ -45,6 +45,8 @@
 - v1 confirmed scope: club colours, ready-made 1–3-colour crest templates with optional shape/pattern/emblem composition, home defaulting to club colours, independent away/third palettes, solid and patterned shirts, automatically distinguished goalkeeper colours, a creation-time pitch preview, automatic kit selection with a pre-match override, and identity editing through club management after founding.
 - v1 excludes separate shorts/socks colour controls and manual goalkeeper-kit editing; these remain possible later extensions.
 - Settled policy: 1–3 colours/default two, six crest templates, eight shirt patterns, three starting shirt designs, warned manual clashes, explicit palette reuse and preserved recorded playback (→KIT-4/5/7/10/12/14/15/16).
+- Open at conversion: none; identity policies were settled in KIT r2, WEB r91 and SAVE r47.
+- Archived 261113: opponent identities, adoption timing, supported-career adoption and the v1 exclusions are carried by KIT-11/12/15/16 and SAVE-20/21/22, while the founding editor gave way to the takeover (WEB-86, KIT-14 [x]), the 1–3-colour palette to three named colours (KIT-1), eight patterns to fourteen (KIT-5) and free editing to a designer commission (WEB-108, KIT-9).
 
 ## domains
 - [o] KIT: club identity, relationship between representative colours and kit palettes, kit roles and later identity changes →KIT
@@ -52,4 +54,4 @@
 - [o] SAVE: preservation of applied designs and fixture choices, supported-career adoption and historical-kit retention; SAVE-20/21/22 →SAVE
 
 ## open
-- None; identity policies are settled in KIT r2, WEB r91 and SAVE r47.
+- -
