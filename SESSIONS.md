@@ -85,8 +85,10 @@
 | T876 | work | codex/natural-football-261114 | 15ec0ba65b84 | 2026-11-13T17:23Z |
 | T883 | pr14 | fix/pb14-final-review | a05839f3d0b1 | 2026-11-13T18:28Z |
 | T885 | work | codex/natural-football-261114 | 488d14e9ec73 | 2026-11-13T18:38Z |
+| T884 | work | codex/natural-football-261114 | 548dae09df9c | 2026-11-13T18:44Z |
 
 ## log
+- 261113 T884 integrated
 - 261113 T885 integrated
 - 261113 T883 done
 - 261113 gusta-create-task SAVE r70 start: coherent explicit release preparation and metadata-only compatible patch labels; retain the original pb14 deadline and gate ledger.
@@ -106,4 +108,3 @@
 - 261113 T877 done
 - 261113 Full persisted-world implementation published to main at 3d002a0b, version 0.9.0; current main also includes independent nf14 planning 0a2cefd3. Storage included, capacity not an integration blocker. Avoided a second implementation writer in the nf14-owned checkout; read-only scout evidence handed to T873/T874/T875 through inbox.
 - 261113 261114 main integration started from bb383c33 with full origin/work/persisted-world-860 c70cf228; only STATE conflict resolved while preserving Gusta 0.17.1 and ARCH@43. Storage is included and no capacity or calibration pass is claimed.
-- 261113 Owner authorized full main implementation merge and removed storage capacity as an integration blocker on 261114; the measured capacity and calibration residuals remain documented.
