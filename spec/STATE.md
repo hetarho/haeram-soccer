@@ -59,13 +59,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T914 | Prepare a genuine no-playoff season for exact heat-map reduction | ARCH MATCH HIST LEAGUE | T885 | todo |
 | T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 32 | 32 | 0 | 0 | 0 | 0 | 2026-11-13T22:08:37.348Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 34 | 33 | 1 | 1 | 0 | 0 | 2026-11-13T22:51:07.416Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
