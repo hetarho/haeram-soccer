@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T08:24Z | T869 | work/persisted-world-860 | a1207bed1fce |
+| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T08:27Z | - | work/persisted-world-860 | 8419467d3984 |
 | fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:06Z | 2026-11-13T07:53Z | - | work/fin3-final | 892eb45f64de |
 
 ## inbox
@@ -23,8 +23,10 @@
 | T863 | pw86 | work/persisted-world-860 | 4afa1fa1bad7 | 2026-11-13T07:28Z |
 | T864 | pw86 | work/persisted-world-860 | 935a91df96fb | 2026-11-13T07:53Z |
 | T865 | pw86 | work/persisted-world-860 | 2d8f77e7118c | 2026-11-13T08:18Z |
+| T869 | pw86 | work/persisted-world-860 | 8419467d3984 | 2026-11-13T08:27Z |
 
 ## log
+- 261113 T869 done
 - 261113 gusta-create-task ARCH: T869 for retained saved-report resources; T866 follows it, ARCH r42 consumed. T859 cites ARCH-32 but financial behavior is unchanged and fin3 reports no active task.
 - 261113 gusta-update-ssot ARCH start: retain message resources for supported saved prose
 - 261113 T865 done
