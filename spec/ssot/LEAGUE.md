@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r19 | Define the browser-demo rules for domestic seasons and relegation.
+> r20 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -19,7 +19,10 @@
 - LEAGUE-9 [o] A season closes on the day after its final round (day 323 counted from 1 August); the empty summer is skipped and the next season starts on 1 August. ← nothing happens after the final round, so waiting through it only delays the season review and the summer window
 - LEAGUE-10 [o] A club nobody owns is as strong as its squad: its strength is read from its players (→WORLD-16/17), never set by a rule, and it rises or falls with them. ← a scripted strength lets no club be built or broken by its own business; real leagues see clubs rise and fall from money, standing and chance, while a few stay on top
   - stature is stable per club: each country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from its upper divisions; of the rest 45% are ordinary (−1 to +1) and the others small (−3 to −5). It sets the founding strength (→WORLD-15), income and a player's preference (→WORLD-17), never strength itself.
+  - its strength is the mean 실효 OVR of its XI at its slots (→CLUB-6) before 조직력 and fatigue, on the scale the owner's club is read on, read again whenever its XI is chosen (→WORLD-16).
+  - a representative club (→WORLD-1), whose squad is generated (→WORLD-6) and which keeps no books, keeps a scripted strength, the one exception to →WORLD-17: each summer it closes 20% of the gap to 68 + its stature + 2 after a continental title, with a summer's luck (sum of three uniforms, sd ≈ 1.5), a 1.5% takeover (+4 to +8) or crisis (−4 to −8) and a 0.4% project (+8 to +18, fading 15% a summer), within 15–99.
   - worlds lived with persisted players land within the real leagues' spread below: 4–9 different champions per country and the most successful club 7–17 titles over 1980/81–2009/10.
+  - they keep each division near its level: the mean strength of a division's clubs stays within ±5 of its founding level (→WORLD-15) in every decade from the 1950s (band estimated). ← wages, values and the owner's balance are priced on the divisions' levels (→CLUB-25, →LEAGUE-13); squads that all grow or fade together would move every one of them
   - measured 261011 on the former scripted strengths (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
   - the real leagues 1980/81–2009/10 (each league's official champions list, titles not awarded left out: Italy 2004/05, France 1992/93; recalled, not yet read against the lists): 4–9 different champions per country, the most successful club 7–17 titles. ← one generic model of giants and big clubs per country should land where real leagues do, from France's nine champions to Portugal's four
     | country | different champions | most titles of one club |
@@ -87,6 +90,7 @@
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r20 261113 LEAGUE-10✎ strength read from its players, measure unstated→the mean 실효 OVR of its XI at its slots before 조직력 and fatigue, read again whenever the XI is chosen; +lived worlds keep each division's mean strength within ±5 of its founding level from the 1950s (estimated); +a representative club keeps the scripted strength r19 removed for every club (20% toward 68 + stature + continental success, luck, 1.5% takeover or crisis, 0.4% project, 15–99)
 - r19 261113 LEAGUE-10✎ clubs nobody owns rise or fall by rule (20% toward division midpoint + stature + success, promotion/relegation pulls, means-level selling, 0.4% projects, 1.5% takeovers and crises, summer luck, 15–99)→strength is the squad's, rising and falling with its players; stature sets founding strength, income and preference; the real-league spread stays the target; LEAGUE-12✎ a takeover or project costs 0.15 between seasons→removed; LEAGUE-15✎ unavailability list cleared with the new season's generated squad→injuries and bans carry over by person, representative clubs clear
 - r18 261104 LEAGUE-10✎ means level in force only through CLUB-48's gate→in force with CLUB-48's table and competition money, the gate passed (measured 261104); LEAGUE-13✎ +measured 261104 on the rules in force (석유 재벌 8 of 8 win, none bankrupt; 중견 사업가 1 of 8 wins, 8 reach the top flight), the earlier 261104 table marked before CLUB-48's table
 - r17 261104 LEAGUE-10✎ champions spread: the model's 261011 measurement only→also the real leagues 1980/81–2009/10 (4–9 different champions, the most titles 7–17, per country)
