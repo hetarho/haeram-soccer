@@ -75,6 +75,7 @@
 | T872 | pw86 | work/persisted-world-860 | 41c5bf2e826e | 2026-11-13T10:54Z |
 
 ## log
+- 261113 261114 main integration started from bb383c33 with full origin/work/persisted-world-860 c70cf228; only STATE conflict resolved while preserving Gusta 0.17.1 and ARCH@43. Storage is included and no capacity or calibration pass is claimed.
 - 261113 Owner authorized full main implementation merge and removed storage capacity as an integration blocker on 261114; the measured capacity and calibration residuals remain documented.
 - 261113 gusta-self-improve natural football start; clean main bb383c33 equals fetched origin/main; two read-only scouts; local integration plus synchronized baseline/candidate HTML; Codex workers and Claude review
 - 261113 gusta-create-task ARCH r42..r43 no-op (no code impact): operating conventions only; no active task contracts to rewrite
@@ -94,4 +95,3 @@
 - 261113 T863 done
 - 261113 T862 done
 - 261113 T867 done
-- 261113 T861 done
