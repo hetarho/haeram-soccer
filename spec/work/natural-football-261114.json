@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T20:35:59.536Z",
-  "sourceCommit": "ce9d4c768c91fdfe6d4cbef53bd972c88b25994b",
+  "snapshotAt": "2026-11-13T20:36:41.127Z",
+  "sourceCommit": "4722f33abb5afed963faab2f32e9580ea41423fb",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -77,10 +77,10 @@
   },
   "summary": {
     "total": 28,
-    "completed": 20,
-    "remaining": 8,
+    "completed": 21,
+    "remaining": 7,
     "running": 2,
-    "review": 3,
+    "review": 2,
     "blocked": 0,
     "unassigned": 3
   },
@@ -92,15 +92,6 @@
         "T890"
       ],
       "lane": "contract-scene-fixtures",
-      "status": "approved"
-    },
-    {
-      "id": "T895",
-      "title": "Prepare valid buyers and remaining market participants",
-      "dep": [
-        "T890"
-      ],
-      "lane": "remaining-market-fixtures",
       "status": "approved"
     },
     {
@@ -1418,7 +1409,7 @@
       "contributors": [
         "nf14-codex-consumer-next"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T19:59:27.325Z",
       "startCommit": "729a7095cdc4e4ce8d3dcd6af64dc273e20620ed",
@@ -1694,6 +1685,8 @@
       "submittedBase": "37d987956774171f41ddef4bee971e703c5f3e86",
       "submissionId": "7bf5ecf7-5180-4b19-96ae-10fe61421a76",
       "submittedAt": "2026-11-13T20:20:03.833Z",
+      "integratedCommit": "4722f33abb5afed963faab2f32e9580ea41423fb",
+      "integratedAt": "2026-11-13T20:36:36.311Z",
       "risk": null,
       "review": {
         "id": "5b97b8ac-3671-489c-9de4-71e6dcd62e84",
@@ -1727,6 +1720,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n",
           "startedAt": "2026-11-13T20:19:45.150Z",
           "finishedAt": "2026-11-13T20:20:03.648Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:35:59.912Z",
+          "finishedAt": "2026-11-13T20:36:35.860Z"
         }
       ]
     },
@@ -8075,6 +8075,53 @@
       "group": "natural-football-261114",
       "attemptId": "ac354c08-e287-4ffb-970b-96ba77b40300",
       "taskId": "T905",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 286,
+      "at": "2026-11-13T20:36:36.097Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "ac354c08-e287-4ffb-970b-96ba77b40300",
+      "taskId": "T905",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:35:59.912Z",
+            "finishedAt": "2026-11-13T20:36:35.860Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 287,
+      "at": "2026-11-13T20:36:36.311Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "ac354c08-e287-4ffb-970b-96ba77b40300",
+      "taskId": "T905",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "4722f33abb5afed963faab2f32e9580ea41423fb",
+        "integratedAt": "2026-11-13T20:36:36.311Z"
+      }
+    },
+    {
+      "sequence": 288,
+      "at": "2026-11-13T20:36:38.901Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "166d0eeb-bbd1-48b5-8676-0dbf1340533b",
+      "taskId": "T895",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
