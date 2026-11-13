@@ -61,6 +61,7 @@
 - 261113 suggest T873 T874 T875: Read-only scouting for the overlapping nf14 plan: reuse remote 5ddd7284 viewer mechanics, not all code. Untested keep.ts invents unrecorded passes (contradicts MATCH-38/39); old contracts would drop NpcContribution.cleanSheets. Free-kick root cause: scenes.ts:190-192 moves receiver to landing while dead; pass.ts:247-248 and metrics.ts:324 guard only ordinary pass. Extend legal launch-timed receiver movement and typed metric, preserve IFAB goal-kick/throw/corner exemptions, explicit scripted offsides, exact record/script hashes, physics and current 60000ms watch minute. Localize old viewer copy through all 12 packs; remove Linux-specific paths and repo: imports. IFAB law 11 https://theifab.com/laws/latest/offside/; FIFA passing-the-press supports available receiver plus runner, including useful backward escape passes.
 
 ## log
+- 261113 Full persisted-world implementation published to main at 3d002a0b, version 0.9.0; current main also includes independent nf14 planning 0a2cefd3. Storage included, capacity not an integration blocker. Avoided a second implementation writer in the nf14-owned checkout; read-only scout evidence handed to T873/T874/T875 through inbox.
 - 261113 261114 main integration started from bb383c33 with full origin/work/persisted-world-860 c70cf228; only STATE conflict resolved while preserving Gusta 0.17.1 and ARCH@43. Storage is included and no capacity or calibration pass is claimed.
 - 261113 Owner authorized full main implementation merge and removed storage capacity as an integration blocker on 261114; the measured capacity and calibration residuals remain documented.
 - 261113 gusta-self-improve natural football start; clean main bb383c33 equals fetched origin/main; two read-only scouts; local integration plus synchronized baseline/candidate HTML; Codex workers and Claude review
@@ -80,4 +81,3 @@
 - 261113 T864 done
 - 261113 T863 done
 - 261113 T862 done
-- 261113 T867 done
