@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
+import { addEvent } from './events';
 import { playerRecord } from './player-records';
 /** Settled, need-led business between persisted clubs (→WORLD-11/16/17). */
 import type { Club, Line, Player, PlayerMove, World } from '../../contracts/src/types';
@@ -282,6 +284,13 @@ export function returnNpcLoans(w: World) {
         movePerson(w, p, parent.id, borrower?.id === w.playerClub, undefined, borrower?.id);
         delete w.people[id]!.loan;
       } else moveSquadPlayer(w, p, parent.id, borrower?.id);
+      if (borrower!.id === w.playerClub)
+        addEvent(
+          w,
+          'loan-return',
+          sourceMessage('copy.careers.a1549f3110', { p0: p.name }),
+          sourceMessage('copy.season.f3d7a85a92'),
+        );
     }
     delete record.loan;
   }
