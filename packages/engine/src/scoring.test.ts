@@ -5,12 +5,17 @@ import {
   advanceDays,
   advanceRound,
   clubOf,
+  currentDay,
   isScoringFixture,
   prepareSeason,
   rankedScorers,
+  prepareRound,
+  ROUND_INTERVAL_DAYS,
   resolveTie,
-  simulateMatch,
   simulateSeason,
+  simulateRoundJob,
+  type FixtureReadCopy,
+  type RoundJob,
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
@@ -37,8 +42,8 @@ function afterRounds(rounds: number): ReturnType<typeof world> {
 describe('actual league scorer standings', () => {
   it('accounts for every real goal and starting appearance of every league club', () => {
     const w = afterRounds(7);
-    // 조직력 moves with every settled round (→LEAGUE-12); the replay below needs the round's own.
-    const cohesion = new Map(w.clubs.map((club) => [club.id, club.cohesion]));
+    // Replay the complete pre-round input: persisted rosters and selection change with it too.
+    const preRound = structuredClone(w);
     advanceRound(w, undefined, false);
     const season = w.scorerSeason!;
     expect(season.trackedSinceRound).toBe(1);
@@ -73,10 +78,32 @@ describe('actual league scorer standings', () => {
         f.home !== w.playerClub &&
         f.away !== w.playerClub,
     )!;
-    const settled = new Map(w.clubs.map((club) => [club.id, club.cohesion]));
-    for (const club of w.clubs) club.cohesion = cohesion.get(club.id);
-    const replay = simulateMatch(w, fixture, false);
-    for (const club of w.clubs) club.cohesion = settled.get(club.id);
+    let input: FixtureReadCopy | undefined, job: RoundJob | undefined;
+    for (let day = 0; day < ROUND_INTERVAL_DAYS; day++) {
+      if (
+        prepareRound(
+          preRound,
+          (copy, jobs) => {
+            input = structuredClone(copy);
+            job = structuredClone(jobs.find((one) => one.fixture.id === fixture.id));
+          },
+          false,
+        )
+      )
+        break;
+      const before = currentDay(preRound);
+      advanceDays(preRound, 1, undefined, false);
+      expect(currentDay(preRound)).toBeGreaterThan(before);
+    }
+    expect(input).toBeDefined();
+    expect(job).toBeDefined();
+    expect(job!.fixture.id).toBe(fixture.id);
+    expect(job!.fixture.score).toBeUndefined();
+    const unchanged = canonical(input),
+      twin = structuredClone(input!),
+      replay = simulateRoundJob(input!, job!);
+    expect(canonical(input)).toBe(unchanged);
+    expect(simulateRoundJob(twin, structuredClone(job!)).record).toEqual(replay.record);
     expect(replay.record.score).toEqual(fixture.score);
     expect(replay.record.highlights.filter((h) => h.action === '골').length).toBe(
       fixture.score!.home + fixture.score!.away,
