@@ -57,6 +57,7 @@
 - 261105 suggest WEB-116: gusta-update-ssot its values sentence — "the transfer shortlist's size, potential, ability and fee" → the scout's list per line, the countries searched abroad, the ability band's shift and the fee — as rs01's merge of main implements it. rs01
 - 261105 suggest CLUB-49 CLUB-3 T702: the cap keeps the ablest 200 of about 900 let-go a close, so the pool is top-flight cast-offs (OVR 75–92, median 80, in a 1950 generation-reference world) and a top-up below the top flight rarely finds one at or under its division's average; a gusta-update-ssot could keep the cap per division or prefer the least able, if lower-league owners should sign free agents. rs01
 - 261105 suggest CLUB-21 ECON-22 T702: gusta-update-ssot to reword 머니볼/트레이딩 머신/글로벌 스카우팅's bonuses and 긴축 재정/스타 대우's "candidate ability" as the code now reads them (a search band shift, no candidate potential). rs01
+- 261113 decided SAVE-4 SAVE-13 ARCH-30 T866: Owner explicitly requested the entire persisted-world branch be merged into main, including storage code, and said storage capacity must not block that merge. Preserve all source, facts, limits and measured failures; do not remove persistence or disable validation. This explicit main publication also authorizes the normal automatic main CI effect; retain the prior local unit-only test restriction rather than launch a local mixed suite.
 
 ## unlanded
 | id | tag | branch | commit | at |
