@@ -1,5 +1,5 @@
 {
-  "status": "pending-final-support-review-and-batch-gate",
+  "status": "pending-final-browser-repair-historical-contract-and-batch-gate",
   "baseline": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
   "foundation": "ae8fcc86",
   "onsideAndThroughRepair": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
@@ -929,5 +929,58 @@
     "status": "private_coordinator_pending_full_gate",
     "coordinatorAtUpdate": "dde45bf2",
     "mainFootballPublished": false
+  },
+  "finalRuntimeCheck": {
+    "source": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+    "release": "0.8.3",
+    "comparedAgainst": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+    "actualPlaybacks": [
+      {
+        "seed": "viewer-2",
+        "old": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "current": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+        "inputEqual": true,
+        "recordEqual": true,
+        "squadsEqual": true,
+        "framesEqual": true,
+        "playbackHash": "0e3d232e5396d5b622737c414a4cf6bc71a5fb50c3b8198e159f40a9efa69c31"
+      },
+      {
+        "seed": "viewer-3",
+        "old": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "current": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+        "inputEqual": true,
+        "recordEqual": true,
+        "squadsEqual": true,
+        "framesEqual": true,
+        "playbackHash": "373234d89a51c5028f17c5e8197b304f0fde360146370b26753a3fcfd7e99ba6"
+      },
+      {
+        "seed": "viewer-4",
+        "old": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "current": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+        "inputEqual": true,
+        "recordEqual": true,
+        "squadsEqual": true,
+        "framesEqual": true,
+        "playbackHash": "758fc10edc2d0ce3a71eea93984dde4df88a7257ee67dbe6622e709988426f70"
+      }
+    ],
+    "offlineSmoke": {
+      "page": "/Users/ihaelam/project/haeram-soccer/.tmp/natural-football/index.html",
+      "offline": true,
+      "panels": 2,
+      "players": [
+        22,
+        22
+      ],
+      "controls": true,
+      "repeatedSeek": true,
+      "desktopSideBySide": true,
+      "mobileOverflow": false,
+      "errors": []
+    },
+    "publication": "pending; main contains planning/provider rule only",
+    "historicalGate": "unchanged original case failed at1946 ENG tier2; diagnosis pending, not waived"
   }
 }
