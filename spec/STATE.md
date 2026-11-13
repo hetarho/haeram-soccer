@@ -10,6 +10,10 @@
 - lang: ko   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+
 ## inbox
 - 261113 parked SAVE-4 SAVE-13 HIST-23 T867 T865: the persisted world may not fit a century save — the worst century profile has about 1.07 MB of compressed payload left (6,551,024 of 8,388,608 portable bytes, artifacts/benchmarks/T286-full-model-storage.json), 9,922 persisted players are 0.62–0.93 MiB gzipped before any packer, and every opponent of an own match stays as a kept retiree with his profile; T867 and T865 read their shares (500,000 and 450,000 bytes) early, and when one is over the owner chooses: a tighter packer | a smaller NPC_SQUAD.size | the kept profile only for podium, news and transfer links | a higher SAVE-4 portable limit rv13
 - 261113 suggest WEB-59 T860 T865: every age reads the current season's year − birth year, so a player who retired decades ago reads 80세 or 110세 on his sheet; an age at retirement for a retired player would be a WEB-59 change, if wanted rv13
