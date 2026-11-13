@@ -1,0 +1,66 @@
+{
+  "name": "century-baseline-1",
+  "startedAt": "2026-11-13T09:39:02.455Z",
+  "finishedAt": "2026-11-13T10:03:59.355Z",
+  "classification": "non-browser numerical calibration",
+  "command": [
+    "/home/deep/.nvm/versions/node/v24.22.1/bin/node",
+    "/home/deep/.npm/_npx/c183f26c8545da3b/node_modules/@haeram/gusta/bin/gusta.mjs",
+    "vibe",
+    "check",
+    "--tier",
+    "task",
+    "--task",
+    "T866",
+    "--diff-base",
+    "3c07ec2d8a46e9d868a9864750c892aa5b86ca22",
+    "--timeout-ms",
+    "8457545",
+    "--",
+    "pnpm",
+    "exec",
+    "tsx",
+    "scripts/benchmark.ts",
+    "--phase",
+    "baseline-1",
+    "--out",
+    "artifacts/benchmarks/persisted-world/century.json"
+  ],
+  "environment": {
+    "NODE_OPTIONS": "--max-old-space-size=8192"
+  },
+  "code": 1,
+  "result": {
+    "schemaVersion": 1,
+    "ok": false,
+    "exitCode": 1,
+    "cached": false,
+    "timedOut": false,
+    "stale": false,
+    "ms": 1496499,
+    "scope": {
+      "TIER": "task",
+      "DIFF_BASE": "3c07ec2d8a46e9d868a9864750c892aa5b86ca22",
+      "TASK": "T866",
+      "TASKS": "T866"
+    },
+    "commit": "438592699e72f3553546fb231511562328057079",
+    "tree": "278b71f8c0eb4ee89e0eea121153d1a76ad83aa7",
+    "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-03aafbdc-81e6-4a04-b955-cbc21c771672.log",
+    "failedTests": [],
+    "failureSetComplete": false,
+    "tail": [
+      "    at Array.map (<anonymous>)",
+      "    at playRound (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:1000:32)",
+      "    at stepDay (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:1061:5)",
+      "    at advanceRound (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:927:48)",
+      "    at simulateSeason (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/packages/engine/src/season.ts:932:54)",
+      "    at playSeasons (/home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/scripts/benchmark.ts:635:5)",
+      "",
+      "Node.js v24.22.1"
+    ],
+    "slow": true,
+    "hint": "task check exceeded 5 min: run only the unit tests affected since GUSTA_DIFF_BASE; move integration/e2e/full suites to the batch gate."
+  },
+  "stderr": ""
+}

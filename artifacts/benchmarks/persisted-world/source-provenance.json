@@ -16,5 +16,8 @@
   "historicalArtifact": {
     "file": "T286-before.json",
     "sha256": "a0512495234a966671a6e1db9e5b98b15e7ad2eaef6089dde1b7e84e0c5232cb"
-  }
+  },
+  "taskDiffBase": "3c07ec2d8a46e9d868a9864750c892aa5b86ca22",
+  "diffBasePackageTree": "0212c08e4b21729615c906a8bf024cd4576f05ab",
+  "samePackagesSinceTaskStart": true
 }

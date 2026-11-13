@@ -1,0 +1,85 @@
+{
+  "complete": false,
+  "measuredAt": "2026-11-13T10:13:49.451Z",
+  "computation": {
+    "algorithm": "sha256",
+    "sha256": "40354ef389d20da2434a42ec38e37b54745b6ace54b1946405f050fa2612e930",
+    "files": 242,
+    "entry": "scripts/persisted-size.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "seed": "persisted-records-261113",
+  "requestedSeasons": 20,
+  "completedSeasons": 5,
+  "year": 1955,
+  "historyYears": [
+    1950,
+    1951,
+    1952,
+    1953,
+    1954
+  ],
+  "careerEnded": true,
+  "ended": "fans",
+  "playerClub": "ENG:3:0:0",
+  "cash": "9703325",
+  "error": "알 수 없는 저장 형식",
+  "records": {
+    "full": {
+      "codec": "gzip-cjk14",
+      "payloadBytes": 319223
+    },
+    "components": {
+      "moves": {
+        "codec": "gzip-cjk14",
+        "payloadBytes": 69248
+      },
+      "lines": {
+        "codec": "gzip-cjk14",
+        "payloadBytes": 212945
+      },
+      "profiles": {
+        "codec": "gzip-cjk14",
+        "payloadBytes": 25174
+      },
+      "links": {
+        "codec": "gzip-cjk14",
+        "payloadBytes": 49467
+      }
+    },
+    "keptPerSeason": [
+      {
+        "year": 1950,
+        "kept": 24
+      },
+      {
+        "year": 1951,
+        "kept": 24
+      },
+      {
+        "year": 1952,
+        "kept": 52
+      },
+      {
+        "year": 1953,
+        "kept": 116
+      },
+      {
+        "year": 1954,
+        "kept": 155
+      }
+    ],
+    "kept": 371,
+    "linear100": {
+      "kept": 7420,
+      "payloadBytes": 6384460,
+      "checkpointIncrementBytes": null
+    },
+    "budget": 450000,
+    "gap100": 5934460
+  },
+  "squads": {
+    "codec": "gzip-cjk14",
+    "payloadBytes": 694044
+  }
+}
