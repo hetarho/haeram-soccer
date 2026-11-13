@@ -106,15 +106,14 @@
 | T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON | T863 | todo |
 | T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB | T862 T864 | todo |
 | T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 | todo |
-| T868 | Slow 1x to 18 real seconds a match minute | WEB MATCH | - | todo |
 
 ## next
-- gusta-implement-task T868 (1x 12→18 real s a match minute, WEB@220 MATCH@63)
 - gusta-implement-task T860, then T861 → T866 in dep order (persisted world players, sketch persistent-world-players 261113)
 - main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261113 T868 done
 - 261113 gusta-create-task WEB MATCH: T868 consumes WEB@220 MATCH@63 sx1
 - 261113 gusta-update-ssot WEB MATCH: WEB-32✎ MATCH-12✎ 1x 12→18 real s per 60 match seconds sx1
 - 261113 fix watch: publish the first staged minute before filling the normal two-minute batches; preserve frame order, match results and the original 3 s browser latency guard fin3
@@ -134,4 +133,3 @@
 - 261112 T852 done
 - 261112 T851 done
 - 261112 T848 done
-- 261112 T845 done
