@@ -65,4 +65,3 @@
 
 ## next
 - gusta-implement-task T873 T875
-- Local unit-only validation remains; owner-authorized main publication and normal CI follow one final candidate. Capacity is not a blocker for this request.
