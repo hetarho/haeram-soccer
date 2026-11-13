@@ -87,7 +87,7 @@
 | T907 | Normalize prepared manager careers at the writer boundary | ARCH WORLD SAVE WEB | T893 | todo |
 | T908 | Reconcile throughput signatures with proven founding changes | ARCH WORLD MATCH HIST | T885 T889 | todo |
 | T909 | Skip already ineligible sellers before market pool work | ARCH WORLD CLUB | T885 | todo |
-| T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T885 | todo |
+| T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T906 | todo |
 | T911 | Observe contract expiry before genuine mandatory rehires | ARCH CLUB WORLD HIST | T885 | todo |
 
 ## next
