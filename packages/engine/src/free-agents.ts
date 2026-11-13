@@ -3,37 +3,37 @@ import { message as sourceMessage } from '../../contracts/src/messages';
  * The world's free agents (→CLUB-49): players football let go, held without a club. They join at
  * the close on release; at each market refresh some join a club nobody owns; one unsigned through
  * a whole season retires; above the cap the least able retire. They age and decline as any player
- * and never grow. `w.freeAgents` is replaced whole on every change, here. Persisted clubs'
- * contract decisions follow in T863; older checkpoints keep their generated let-go path.
+ * and never grow. `w.freeAgents` is replaced whole on every change, here.
  */
-import type { Club, FreeAgent, Line, Player, World } from '../../contracts/src/types';
+import type { FreeAgent, Line, Player, World } from '../../contracts/src/types';
 import { ATTRIBUTES, FREE_AGENT_CAP } from '../../contracts/src/player';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { compareIds, random, zeroMetrics } from './primitives';
 import { overall } from './player-state';
-import { clubById, invalidateNpcSquad, invalidateNpcSquads, joinClub, squad } from './world';
+import { clubById, invalidateNpcSquad, joinClub, NPC_SQUAD, stature, refillPlace } from './world';
 import { movePerson } from './npc-continuity';
-import { closeEmployment, openEmployment } from './person-careers';
-import { retirementChanceWithContext, retirePerson } from './careers';
+import { RETIREMENT, retirePerson } from './careers';
 import { ageAttributes } from './training';
 import { AGEING, lineOf } from './player';
 import { divisionFor, signingClauses } from './contracts';
 import { marketWage, marketWageAt } from './market-prices';
-import { suitorFor } from './transfers';
-import { registrationRoom } from './registration';
+import { clubRegistration, registrationExempt, registrationRoom } from './registration';
 import { isForeignCandidate } from './scout-search';
 import { addEvent } from './events';
 import { moneyLabel } from './finance';
-import { moveSquadPlayer } from './persisted-squads';
+import { npcCanPay } from './books';
+import { clubStyle } from './tactics';
+import { inPounds } from './club-value';
+import { LINE_MINIMUM } from './player';
 
 export { isFreeAgent } from './npc-continuity';
 
+/** Measurement observers never change a draw, fact or checkpoint. */
+export const FREE_AGENT_FLOW: {
+  observe?: (kind: 'release' | 'sign' | 'retire', player: Player, club?: string) => void;
+} = {};
+
 export const FREE_AGENT_CONFIG = {
-  /** Players each club nobody owns lets go at the close: its least able of `letGoMinAge` or older. */
-  letGoPerClub: 2,
-  letGoMinAge: 21,
-  /** Each refresh's chance that a free agent joins a club nobody owns. */
-  joinChance: 0.2,
   /** The most the world holds; above it the least able retire at the close. */
   cap: FREE_AGENT_CAP,
   /** Seasons a free signing's contract runs past this one, as a generated youngster's (`makePlayer`). */
@@ -111,7 +111,7 @@ function freeAgentWage(w: World, p: FreeAgent) {
   const nationality = nationalityOf(w, p.id),
     code = COUNTRIES.some((c) => c.code === nationality) ? nationality! : 'ENG',
     ovr = overall(p);
-  return marketWageAt(code, p.freeSince, divisionFor(code, ovr), p, ovr);
+  return marketWageAt(code, Math.max(w.year, p.freeSince), divisionFor(code, ovr), p, ovr);
 }
 /** Ablest first, then ID: the order the cap keeps and the close's top-up signs in. */
 function byAbility(pool: readonly FreeAgent[]) {
@@ -125,160 +125,117 @@ function byAbility(pool: readonly FreeAgent[]) {
 function retireFreeAgent(w: World, p: Player) {
   const person = w.people?.[p.id];
   if (person) retirePerson(w, person);
+  FREE_AGENT_FLOW.observe?.('retire', p);
 }
-/**
- * Admits `joining` to the pool and cuts it to the cap, the least able retiring (→CLUB-49). A
- * registered newcomer's move is recorded as a release; nobody else gets a record (storage). A
- * newcomer the cap leaves out is never let go: like an unrecorded one, whose old club generates
- * him again, a registered one stays where he is rather than retire young.
- */
+/** Admit releases before signings; only the season close applies the pool cap. */
 function admit(w: World, joining: readonly FreeAgent[]) {
   const held = new Set(freeAgentsOf(w).map((p) => p.id));
   const fresh = joining.filter((p) => !held.has(p.id));
-  if (!fresh.length) return [];
-  const pool = byAbility([...freeAgentsOf(w), ...fresh]),
-    kept = new Set(pool.slice(0, FREE_AGENT_CONFIG.cap)),
-    cut = pool.slice(FREE_AGENT_CONFIG.cap);
-  const admitted = fresh.filter((p) => kept.has(p));
-  for (const p of admitted) {
+  for (const p of fresh) {
+    held.add(p.id);
     p.wage = freeAgentWage(w, p);
-    // A registered player still at his club is released; the record keeps his career with us.
-    const person = w.people?.[p.id];
-    if (person?.playing === 'active') {
-      const club = person.club;
-      closeEmployment(w, p.id, 'player');
-      if (club) invalidateNpcSquad(w, club);
-    }
-    moveSquadPlayer(w, p);
+    const from = w.people?.[p.id]?.club;
+    movePerson(w, p);
+    FREE_AGENT_FLOW.observe?.('release', p, from);
     freePlace(w, p.id);
   }
-  // Those already held keep their order; newcomers follow in the order they were let go.
-  w.freeAgents = freeAgentsOf(w)
-    .filter((p) => kept.has(p))
-    .concat(admitted);
-  for (const p of cut) if (held.has(p.id)) retireFreeAgent(w, p);
-  if (!w.squads) invalidateNpcSquads(w);
-  return admitted;
+  w.freeAgents = [...freeAgentsOf(w), ...fresh];
+  return fresh;
 }
 
-/**
- * A club nobody owns's let-go players of `year`'s squad (→CLUB-49): its `letGoPerClub` least able
- * aged `letGoMinAge` or older, an announced retirement excluded (he retires instead).
- */
-function letGo(w: World, c: Club, year: number) {
-  return squad(w, c)
-    .filter((p) => year - p.born >= FREE_AGENT_CONFIG.letGoMinAge && !staying(w, p.id))
-    .map((p) => ({ p, ovr: overall(p) }))
-    .sort((a, b) => a.ovr - b.ovr || compareIds(a.p.id, b.p.id))
-    .slice(0, FREE_AGENT_CONFIG.letGoPerClub)
-    .map(({ p }) => p);
-}
-/** An announced retirement retires instead (→CLUB-3); one on a club's staff as well stays. */
-function staying(w: World, id: string) {
-  const person = w.people?.[id];
-  return (
-    !!person?.retirement || !!person?.employment.some((job) => !job.to && job.role !== 'player')
-  );
-}
-/**
- * Whom the clubs nobody owns let go of their `year` squads (→CLUB-49), each free from `since`:
- * every league club but ours lets go of its least able by `letGo`'s rule. Read at the close before
- * a promotion playoff, which the squads still play as they stood.
- */
-export function lettingGo(w: World, year: number, since: number): FreeAgent[] {
-  return w.clubs
-    // Persisted clubs' contract decisions follow in T863; never release a generated copy of one.
-    .filter((c) => c.id !== w.playerClub && !c.representative && !w.squads?.[c.id])
-    .flatMap((c) => letGo(w, c, year).map((p) => freeAgentOf(p, since)));
+/** After the close's signings, retire the least able surplus, including new releases. */
+export function capFreeAgents(w: World) {
+  const pool = byAbility(freeAgentsOf(w));
+  for (const p of pool.slice(FREE_AGENT_CONFIG.cap)) {
+    retireFreeAgent(w, p);
+    freePlace(w, p.id);
+  }
+  w.freeAgents = pool.slice(0, FREE_AGENT_CONFIG.cap);
 }
 
-/**
- * Legacy generated-world setup: persisted worlds start without free agents (→CLUB-49).
- */
-export function seedFreeAgents(w: World) {
-  if (w.squads) return;
-  admit(w, lettingGo(w, w.year, w.year));
-}
-
-/**
- * The close of `closedYear` (→CLUB-49), before the year rolls over: a free agent unsigned through
- * the season retires; the players the clubs nobody owns let go (`released`, read before the
- * playoff) each face the retirement chance (→CLUB-3) unless, registered, he already decided on
- * 1 April; the newcomers age a season without growing, free from the next one, and the pool is
- * cut to the cap.
- */
-export function closeFreeAgents(w: World, closedYear: number, released: readonly FreeAgent[]) {
-  const stayed = freeAgentsOf(w).filter((p) => p.freeSince > closedYear);
-  for (const p of freeAgentsOf(w))
-    if (p.freeSince <= closedYear) {
+/** A whole season unsigned ends a career; the remaining pool ages without training. */
+export function closeFreeAgents(w: World, closedYear: number) {
+  const stayed: FreeAgent[] = [];
+  for (const p of freeAgentsOf(w)) {
+    if (p.freeSince <= closedYear || w.people?.[p.id]?.retirement) {
       retireFreeAgent(w, p);
       freePlace(w, p.id);
+    } else {
+      declineFreeAgent(w, p, closedYear + 1);
+      p.wage = freeAgentWage(w, p);
+      stayed.push(p);
     }
-  if (stayed.length !== freeAgentsOf(w).length) {
-    w.freeAgents = stayed;
   }
-  const joining = released.filter((p) => {
-    const chance = retirementChanceWithContext(closedYear, p.born, p.position);
-    // At 41 everyone stops; below it a registered player's 1 April decision stands.
-    if (chance >= 1) return false;
-    return (
-      !!w.people?.[p.id] || random(`${w.seed}:free-agent-retire:${p.id}:${closedYear}`)() >= chance
-    );
-  });
-  for (const p of joining) declineFreeAgent(w, p, p.freeSince);
-  admit(w, joining);
+  w.freeAgents = stayed;
 }
 
-/**
- * Our player whose contract ran out and whom no club signed (→CLUB-28), at the close once the
- * year has rolled over: he ages a season without growing and joins the pool, free from this one.
- * Whether he was admitted: the cap leaves out one less able than all it holds.
- */
+/** Our player has not received annual development yet when his expired contract is released. */
 export function joinAtClose(w: World, p: Player) {
   const agent = freeAgentOf(p, w.year);
   declineFreeAgent(w, agent, w.year);
   return admit(w, [agent]).length > 0;
 }
-/**
- * Admits a player free from `since`; whether he joined. Over the cap the least able held one
- * retires, or the newcomer is left out when he is less able than all it holds.
- */
+/** An NPC release has already developed and aged in the shared summer. */
 export function joinFreeAgents(w: World, player: Player, since: number) {
   return admit(w, [freeAgentOf(player, since)]).length > 0;
 }
 
-/**
- * A market refresh (→CLUB-49): every 4 league rounds and at the close, each free agent joins a
- * club nobody owns with `joinChance`, the club drawn as for an expiring contract (→CLUB-28), all
- * from his own stream. A persisted destination receives the actual player; a representative or
- * legacy generated squad keeps its identity-based continuity.
- */
-export function refreshFreeAgents(w: World) {
-  const pool = freeAgentsOf(w);
-  if (!pool.length) return;
-  const left: FreeAgent[] = [];
-  const stayed = pool.filter((p) => {
-    const r = random(`${w.seed}:free-agent:${p.id}:${w.year}:${w.round}`);
-    const club = r() < FREE_AGENT_CONFIG.joinChance ? suitorFor(w, p, r) : undefined;
-    if (!club) return true;
-    left.push(p);
-    // His move, recorded: he held no place anywhere, so only his new club's roster changes.
-    if (w.squads?.[club.id]) {
-      const { freeSince: _since, ...player } = p;
-      void _since;
-      player.until = w.year + FREE_AGENT_CONFIG.term;
-      player.wage = marketWageAt(club.country, w.year, club.tier, player);
-      if (w.people?.[p.id]) movePerson(w, player, club.id);
-      else moveSquadPlayer(w, player, club.id);
-    } else if (w.people?.[p.id]) {
-      openEmployment(w, p.id, 'player', club.id);
-      invalidateNpcSquad(w, club.id);
-    }
+/** New summer terms include their first season, shortening with age (→CLUB-26). */
+export function npcContractTerm(age: number) {
+  return age <= 23 ? 5 : age <= 27 ? 4 : age <= 30 ? 3 : age <= 33 ? 2 : 1;
+}
+
+/** The missing lines take priority over topping up the standing squad. */
+function wantsFreeAgent(w: World, club: World['clubs'][number], p: FreeAgent, year: number) {
+  const players = w.squads![club.id]!;
+  const missing = (Object.keys(LINE_MINIMUM) as Line[]).filter(
+    (line) => players.filter((q) => lineOf(q.position) === line).length < LINE_MINIMUM[line],
+  );
+  if (!missing.length && players.length >= NPC_SQUAD.size) return false;
+  const wanted = missing.length ? missing : [lineOf(refillPlace(clubStyle(club), players))];
+  if (!wanted.includes(lineOf(p.position))) return false;
+  const state = clubRegistration(club, year, players);
+  return state.total < state.ceiling &&
+    (registrationExempt(state.rule, year, { ...p, joined: year }) || state.counted < state.allowed);
+}
+
+/** Ablest affordable first; contested players prefer stature, then wage in comparable money. */
+export function refreshFreeAgents(w: World, year = w.year) {
+  // A war gap or an older checkpoint may leave an announced retiree in the held pool.
+  w.freeAgents = freeAgentsOf(w).filter((p) => {
+    const person = w.people?.[p.id];
+    if (year - p.born < RETIREMENT.lastAge && person?.playing !== 'retired' &&
+      (person?.retirement?.year === undefined || person.retirement.year >= year)) return true;
+    retireFreeAgent(w, p);
+    freePlace(w, p.id);
     return false;
   });
-  if (!left.length) return;
-  w.freeAgents = stayed;
-  for (const p of left) freePlace(w, p.id);
+  const clubs = w.clubs.filter(
+    (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
+  );
+  let signed: boolean;
+  do {
+    signed = false;
+    for (const agent of byAbility(freeAgentsOf(w))) {
+      const offers = clubs.filter((c) => wantsFreeAgent(w, c, agent, year)).map((club) => {
+        const wage = marketWageAt(club.country, year, club.tier, agent);
+        return { club, wage, pounds: BigInt(inPounds(club.country, year, wage)) };
+      }).filter(({ club, wage }) => npcCanPay(w, club, wage, undefined, year));
+      offers.sort((a, b) => stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
+        (a.pounds > b.pounds ? -1 : a.pounds < b.pounds ? 1 : compareIds(a.club.id, b.club.id)));
+      const offer = offers[0];
+      if (!offer) continue;
+      const { club, wage } = offer;
+      const player = takeFreeAgent(w, agent.id)!;
+      player.wage = wage;
+      player.until = year + npcContractTerm(year - player.born) - 1;
+      joinClub(player, nationalityOf(w, player.id) === club.country ? 'domestic' : 'abroad', year);
+      // Employment records the free move's actual club and date; a free move has no fee.
+      movePerson(w, player, club.id);
+      FREE_AGENT_FLOW.observe?.('sign', player, club.id);
+      signed = true;
+    }
+  } while (signed);
 }
 
 /** Takes a free agent out of the pool for a signing; undefined when he is not in it. */

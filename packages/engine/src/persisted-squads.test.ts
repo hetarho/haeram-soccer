@@ -27,7 +27,6 @@ import { materializePeople, movePerson, returnLoan } from './npc-continuity';
 import { closeDisciplineSeason, recordNpcInjury } from './discipline';
 import { crossWar } from './wartime';
 import {
-  FREE_AGENT_CONFIG,
   joinFreeAgents,
   refreshFreeAgents,
   signFreeAgentAtClose,
@@ -41,7 +40,6 @@ import { lineOf } from './player';
 import { isInjured, overall } from './player-state';
 import { takeOver } from './takeover';
 import { staffAuthority } from './testing';
-import { random } from './primitives';
 import { retirePerson } from './careers';
 import { readCopy } from './fixture-copy';
 
@@ -348,13 +346,11 @@ describe('persisted playable squads', () => {
       c = w.clubs[1]!,
       p = w.squads![c.id]![0]!;
     const before = structuredClone(p);
+    w.squads![c.id] = w.squads![c.id]!.filter((q) => lineOf(q.position) !== lineOf(p.position) || q.id === p.id);
     joinFreeAgents(w, p, w.year);
     expect(w.squads![c.id]!.some((q) => q.id === p.id)).toBe(false);
     liveIds(w);
-    w.round = Array.from({ length: 100 }, (_, i) => i).find(
-      (round) =>
-        random(`${w.seed}:free-agent:${p.id}:${w.year}:${round}`)() < FREE_AGENT_CONFIG.joinChance,
-    )!;
+    w.round = 4;
     refreshFreeAgents(w);
     expect(w.freeAgents).toHaveLength(0);
     const live = Object.values(w.squads!)

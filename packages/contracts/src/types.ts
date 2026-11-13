@@ -336,14 +336,20 @@ export interface Club {
   elo?: number;
   /** How settled a club nobody owns is under its manager (조직력, →LEAGUE-12); absent is 0.80. */
   cohesion?: number;
-  /** Level a rare project (new owner, golden generation) adds, fading each summer (→LEAGUE-10). */
+  /** Level a representative club's rare project adds, fading each summer (→LEAGUE-10). */
   project?: number;
   /** Crest, representative colours and saved shirts (→KIT-1); absent in older saves. */
   identity?: ClubIdentity;
   /** Season books while nobody owns it (→ECON-36); absent in a founded career. */
   books?: ClubBooks;
   /** Persisted facilities of a club nobody owns (→WORLD-17), each at level 0–5. */
-  levels?: { academy: number; ground: number; coaching: number };
+  levels?: {
+    academy: number;
+    ground: number;
+    coaching: number;
+    /** Fractional investment/decay carried until a whole level is reached. */
+    progress?: number;
+  };
 }
 export interface Player {
   id: string;

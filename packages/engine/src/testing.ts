@@ -1,5 +1,6 @@
 import type { ClubBuild } from '../../contracts/src/build';
 import type {
+  Club,
   ClubPolicy,
   ContractTerm,
   Direction,
@@ -13,6 +14,8 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { clubOf } from './player-state';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import { invalidateNpcSquad } from './world';
 import { advanceDays } from './season';
 import { currentDay, seasonLength } from './calendar';
 import { placeBid, playerValue, respondBid } from './transfers';
@@ -29,6 +32,15 @@ import { fillDelegatedPost, STAFF_ROLES } from './staff';
 import { footballQuote } from './quotes';
 import { FAN_MOOD, OWNER_BUSINESS, OWNER_DIVIDEND } from './owner-config';
 import { stageAll } from './staging/frames';
+
+/** Sets fixture attributes, then derives a persisted club's strength from its real XI. */
+export function setNpcLevel(w: World, club: Club, level: number) {
+  const players = w.squads?.[club.id];
+  if (players) {
+    for (const p of players) for (const a of ATTRIBUTES) p.attrs[a] = level;
+  } else club.strength = level;
+  invalidateNpcSquad(w, club.id);
+}
 
 /**
  * Puts direction rows in force on a test world, as a founded or saved club holds them: cards,

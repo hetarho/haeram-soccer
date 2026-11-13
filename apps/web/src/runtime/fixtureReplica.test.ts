@@ -88,7 +88,7 @@ describe('ordered fixture replicas', () => {
     delete source.squads;
     expect(reader.apply(packet(writer, source, 5)).copy.squads).toBeUndefined();
   });
-  it('replicates a real growth settlement using attribute columns alone', () => {
+  it('replicates growth together with the XI chosen from the changed attributes', () => {
     const w = worldMarketFixture(),
       writer = new FixtureReplicaWriter(),
       reader = new FixtureReplicaReader();
@@ -104,11 +104,11 @@ describe('ordered fixture replicas', () => {
     settleNpcGrowth(w);
     const update = packet(writer, readCopy(w), 2);
     const patch = JSON.parse(update.patch!);
-    expect(patch.squads.put).toEqual([]);
-    expect(patch.attributes).toHaveLength(1);
-    expect(JSON.stringify(patch.attributes)).not.toContain('personality');
-    expect(JSON.stringify(patch.attributes)).not.toContain('potential');
-    expect(reader.apply(update).copy.squads).toEqual(w.squads);
+    expect(patch.squads.put.map(([id]: [string]) => id)).toEqual([c.id]);
+    expect(patch.attributes).toEqual([]);
+    const replicated = reader.apply(update).copy;
+    expect(replicated.squads).toEqual(w.squads);
+    expect(replicated.clubs.find((club) => club.id === c.id)!.strength).toBe(c.strength);
     const duplicate = packet(writer, readCopy(w), 3);
     expect(JSON.parse(duplicate.patch!).attributes).toEqual([]);
     expect(reader.apply(duplicate).copy.squads).toEqual(w.squads);

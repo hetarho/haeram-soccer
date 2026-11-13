@@ -10,12 +10,18 @@ import { clamp, integer, random } from './primitives';
 import { clubRegistration, registrationExempt } from './registration';
 import { departmentMultiplier } from './staff';
 import { clubStyle } from './tactics';
+import { marketWageAt } from './market-prices';
+import { npcCanPay } from './books';
+import { capFreeAgents, closeFreeAgents, joinFreeAgents, npcContractTerm, refreshFreeAgents } from './free-agents';
+import { SQUAD_MINIMUM } from './squad-size';
+import { compareIds } from './primitives';
 import { developAnnually, settlePlayerGrowth } from './training';
 import {
   clubById,
   generatedPlayer,
   invalidateNpcSquad,
-  invalidateNpcSquads,
+  refreshNpcSquads,
+  startingSquad,
   LINE_MINIMUM,
   NPC_SQUAD,
   PRESS_LOAD_FATIGUE,
@@ -63,8 +69,8 @@ export function settleNpcGrowth(w: World) {
       );
     }
   }
-  // New slices invalidate cached OVRs without choosing any of the stored eighteen again.
-  invalidateNpcSquads(w);
+  // Attribute changes choose the XI again and publish its new strength.
+  refreshNpcSquads(w);
   w.npcGrowthAt = { year: w.year, round: w.round };
 }
 
@@ -116,10 +122,36 @@ export function intakeNpcYouth(w: World, c: Club, year = w.year + 1) {
   }
 }
 
-/**
- * Both closes enter here after season lines, books and promotion. Later tasks plug contract and
- * market steps into this one sequence. A skipped summer has no match growth or free-agent step.
- */
+/** Needed expiring players renew at their new division's wage; the rest leave as themselves. */
+export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
+  const players = w.squads?.[c.id];
+  if (!players) return;
+  const xi = new Set(startingSquad(w, c).map((p) => p.id));
+  const expiring = players.filter((p) => p.until < year)
+    .sort((a, b) => Number(xi.has(b.id)) - Number(xi.has(a.id)) ||
+      mainOvr(b) - mainOvr(a) || compareIds(a.id, b.id));
+  // Release surplus first, so its old contracts do not consume the renewal budget.
+  const renewing: Player[] = [];
+  for (const p of [...expiring].reverse()) {
+    const current = w.squads![c.id]!;
+    const line = lineOf(p.position);
+    const needed = xi.has(p.id) || current.length <= SQUAD_MINIMUM ||
+      current.filter((q) => lineOf(q.position) === line).length <= LINE_MINIMUM[line];
+    if (needed) renewing.push(p);
+    else joinFreeAgents(w, p, year);
+  }
+  for (const p of renewing.reverse()) {
+    const wage = marketWageAt(c.country, year, c.tier, p);
+    if (npcCanPay(w, c, wage, p.id, year)) {
+      p.wage = wage;
+      p.until = year + npcContractTerm(year - p.born) - 1;
+      const job = w.people?.[p.id]?.employment.find((j) => j.role === 'player' && !j.to);
+      if (job) job.contractUntil = { year: p.until, day: 365 };
+    } else joinFreeAgents(w, p, year);
+  }
+}
+
+/** Both closes share development, retirement, contracts, free signings, youth and the final cap. */
 export function closeNpcSummer(w: World, afterRetirements?: () => void, matches = true) {
   if (w.npcSummerAt !== undefined && w.npcSummerAt >= w.year) return;
   foundSquads(w);
@@ -154,6 +186,13 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
       return !retire;
     });
   }
+  refreshNpcSquads(w);
+  closeFreeAgents(w, w.year);
+  if (matches) {
+    for (const c of w.clubs)
+      if (c.id !== w.playerClub && !c.representative) renewNpcContracts(w, c);
+    refreshFreeAgents(w, w.year + 1);
+  }
   afterRetirements?.();
   for (const id of Object.keys(w.squads ?? {})) {
     const c = clubById(w, id);
@@ -161,5 +200,6 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     intakeNpcYouth(w, c);
     invalidateNpcSquad(w, id);
   }
+  if (matches) capFreeAgents(w);
   w.npcSummerAt = w.year;
 }

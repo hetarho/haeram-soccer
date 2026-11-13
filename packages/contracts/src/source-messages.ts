@@ -1428,16 +1428,19 @@ export const sourceMessages = {
   'copy.influences.37147f7020': '등록 제한 변화',
   'copy.influences.362e156ec0': '다른 구단의 성장·쇠퇴·투자와 조직력',
   'copy.influences.e6f8512aa0':
-    '인수 전후의 세계는 움직입니다. 상대 구단도 성적·프로젝트·선수 경력과 조직력을 통해 달라집니다.',
-  'copy.influences.7897c84fb0': '구단 체급·디비전·최근 성과',
-  'copy.influences.0449b55136': '강팀과 약팀의 장기 기량 변화 기준에 작용합니다.',
-  'copy.influences.a799e7ef8e': '프로젝트·세계 추첨·선수 이동과 세대 교체',
+    '인수 전후의 상대 구단은 선수·계약·조직력과 함께 달라집니다.',
+  'copy.influences.7897c84fb0':
+    '선수단과 선수 성장',
+  'copy.influences.0449b55136':
+    '선발 11명의 기량이 조직력과 피로를 적용하기 전의 구단 전력을 결정합니다.',
+  'copy.influences.a799e7ef8e':
+    '선수 이동과 세대 교체',
   'copy.influences.6905eea8e2': '시간에 따라 라이벌 구도와 선수단이 달라집니다.',
   'copy.influences.2310663dbf': '구단의 조직력·감독·승강 등 변화',
   'copy.influences.600de29d69': '선수 구성의 수준 외에도 경기에서 발휘하는 기량을 바꿉니다.',
   'influences.affordableSquad.name': '장부가 감당하는 선수단',
   'influences.affordableSquad.effect':
-    '주인 없는 구단은 지난 시즌 장부의 수입에서 운영비를 뺀 돈으로 연봉을 줄 수 있는 전력까지만 유지하고, 넘치면 그만큼 선수를 팝니다. 프로젝트 중이거나 막 인수된 구단은 예외입니다.',
+    '주인 없는 구단은 계약 임금 총액이 지난 시즌 수입에서 운영비를 뺀 금액을 넘는 영입이나 재계약을 하지 않습니다. 첫 마감 전에는 개막 수입을 기준으로 삼습니다.',
   'influences.competitionIncome.name': '컵·대륙 대회 수입',
   'influences.competitionIncome.effect':
     '장부의 수입에는 리그 배분금·관중·상업 수입과 함께 국내 컵과 대륙 대회의 상금, 경기 결과 보너스, 홈 경기 관중 수입이 들어갑니다.',
@@ -5566,9 +5569,6 @@ export const sourceMessages = {
   'copy.discipline.fcf7c31621': '징계 통보: {p0}',
   'copy.discipline.7c80359382':
     '{p0} · 다음 {p1}경기({p2})에 나설 수 없어요. 감독이 다른 선수로 선발을 짜요.',
-  'copy.dynamics.d1735c6a1e': '{p0}, 대형 투자 유치',
-  'copy.dynamics.f3616ce2a8':
-    '새 구단주와 대규모 투자로 앞으로 몇 시즌 동안 전력이 크게 오를 전망이에요. 지금 전력 {p0}.',
   'copy.economy.34beff4028': '화폐 전환의 원본 단위가 일치하지 않습니다.',
   'copy.economy.69414b9830': '새로운 화폐의 시대',
   'copy.economy.bb1964ac72': ' · 초기 화폐 단순화 추정',

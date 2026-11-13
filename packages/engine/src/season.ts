@@ -95,7 +95,7 @@ import { activeMatchModel } from '../../contracts/src/match-model';
 import { recordRecentResult, retainRecentResults } from './recent-results';
 import { careerEnded, hasOwner, ownerClose, ownerDay } from './owner';
 import { crossWar, seasonAfter } from './wartime';
-import { closeFreeAgents, lettingGo, refreshFreeAgents, signFreeAgentAtClose } from './free-agents';
+import { capFreeAgents, refreshFreeAgents, signFreeAgentAtClose } from './free-agents';
 import { booksClose } from './books';
 import { fanMoodAfterLeagueMatch, fanMoodClose, fanMoodRound } from './fan-mood';
 import {
@@ -639,8 +639,6 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   const startersBeforeDepartures = [...ownStarters(w)];
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
-  // Whom the clubs nobody owns let go, read from the squads the season was played with.
-  const released = lettingGo(w, w.year, seasonAfter(w.year));
   // The promotion playoff belongs to the season just played: its squads retire after it.
   promote(w);
   // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
@@ -651,8 +649,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   // The final table and any promotion are credited before the close's departures (→HIST-19).
   captureSeasonClose(w, { tier: oldTier, group: oldGroup });
-  // The clubs nobody owns let go of the season's least able (→CLUB-49).
-  closeNpcSummer(w, () => closeFreeAgents(w, w.year, released));
+  closeNpcSummer(w);
   retireAtClose(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
@@ -754,6 +751,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   );
   refreshStaffMarket(w);
   refreshFreeAgents(w);
+  capFreeAgents(w);
   // The new season's first day of club business opens the summer window.
   clubDay(w);
   sponsorReminder(w);
@@ -855,10 +853,9 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
   booksClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
-  const released = lettingGo(w, w.year, seasonAfter(w.year));
   promote(w);
   retainRecentResults(w);
-  closeNpcSummer(w, () => closeFreeAgents(w, w.year, released));
+  closeNpcSummer(w);
   retireAtClose(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
@@ -884,6 +881,7 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
   );
   refreshStaffMarket(w);
   refreshFreeAgents(w);
+  capFreeAgents(w);
   clubDay(w);
 }
 /**

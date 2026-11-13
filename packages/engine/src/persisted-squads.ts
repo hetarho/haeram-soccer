@@ -24,6 +24,10 @@ import { message } from '../../contracts/src/messages';
 export const CLUB_LEVELS = {
   founding: facilityStage,
   coachingAbility: [30, 40, 50, 60, 70, 80],
+  /** Level points per season of income invested; T866 calibrates these starting values. */
+  investment: 0.5,
+  /** Level points lost in a season without investment. */
+  decay: 0.05,
 } as const;
 
 export function enrollSquadPlayer(w: World, c: Club, p: Player) {

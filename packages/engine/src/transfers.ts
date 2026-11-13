@@ -78,7 +78,7 @@ export {
 const INCOMING_BID_CHANCE = 0.06;
 const MAX_PENDING_INCOMING = 3;
 const INCOMING_RESPONSE_DAYS = 5;
-const SQUAD_MINIMUM = 14;
+import { SQUAD_MINIMUM } from './squad-size';
 /** Resolved bids kept for the record; open negotiations are never pruned. */
 const CLOSED_BID_HISTORY = 60;
 /**

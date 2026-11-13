@@ -111,6 +111,8 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/owner.ended.test.ts',
   'packages/engine/src/pending-work.test.ts',
   'packages/engine/src/persisted-world.integration.test.ts',
+  'packages/engine/src/books.integration.test.ts',
+  'packages/engine/src/free-agents.integration.test.ts',
   'packages/engine/src/policy.test.ts',
   'packages/engine/src/projection.plain.test.ts',
   'packages/engine/src/projection.test.ts',

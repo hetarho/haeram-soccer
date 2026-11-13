@@ -369,6 +369,7 @@ export function invalidateNpcSquad(w: World, club: string) {
       const chosen = matchdaySquad(w, c, players),
         ids = new Set(chosen.map((p) => p.id));
       w.squads![club] = [...chosen, ...players.filter((p) => !ids.has(p.id))];
+      clubStrength(w, c);
     }
   }
   npcCaches.get(w)?.clubs.delete(club);
@@ -450,7 +451,7 @@ export function squadPlaceAge(
 export const SQUAD_SPREAD: { inForce: 'flat' | 'spread' } = { inForce: 'flat' };
 /**
  * WORLD-6's spread terms. `class` and `bench` are chosen within WORLD-6's ranges (±6, 3–8) to keep a
- * squad's market cost, which the means level reads (`squadCostAt`, →LEAGUE-10), nearest the flat
+ * founding squad's market cost nearest the flat
  * draw's over strengths 50–95 and the star pay spread's eras: spread squads cost less (the age term
  * lowers the young and the old; below a star pay spread of 1 a starter lifted above OVR 80 earns
  * little more; at 95 the ceiling holds the starters), so the bench sits as near as WORLD-6 allows and
@@ -601,6 +602,12 @@ export function npcSquad(
     player.fatigue = fatigue;
     return player;
   });
+}
+/** Store the persisted XI's strength before cohesion and fatigue (→LEAGUE-10). */
+export function clubStrength(w: World, c: Club) {
+  if (c.id !== w.playerClub && !c.representative && w.squads?.[c.id])
+    c.strength = xiRating(w.squads[c.id].slice(0, 11), clubStyle(c));
+  return c.strength;
 }
 /** Average 실효 OVR of a starting XI at its formation's slots, before any multiplier. */
 export function xiRating(players: readonly Player[], tactic: Tactic) {
