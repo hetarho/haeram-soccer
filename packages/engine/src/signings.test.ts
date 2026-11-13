@@ -180,6 +180,13 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
       line: lineOf(free.player.position),
       count: 1,
     });
+    // A previously drawn manager shortlist would give its paid member priority over this tie.
+    delete w.shortlist;
+    expect(signingRequests(w)).toEqual([]);
+    expect(transferOffers(w).find((offer) => offer.player.id === free.player.id)?.available).toBe(
+      true,
+    );
+    expect(signingVerdict(w, free.player, '0', 'short').ok).toBe(true);
     const cash = w.cash;
     staffSignings(w);
     const signed = w.players.find((p) => p.id === free.player.id)!;
