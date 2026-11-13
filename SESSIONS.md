@@ -110,8 +110,10 @@
 | T886 | work | codex/natural-football-261114 | 4618c03f8060 | 2026-11-13T19:50Z |
 | T893 | work | codex/natural-football-261114 | 24d042b1e6ad | 2026-11-13T19:51Z |
 | T892 | work | codex/natural-football-261114 | 729a7095cdc4 | 2026-11-13T19:51Z |
+| T891 | work | codex/natural-football-261114 | d53849d5152f | 2026-11-13T20:32Z |
 
 ## log
+- 261113 T891 integrated
 - 261113 T904 done
 - 261113 T892 integrated
 - 261113 T893 integrated
@@ -131,4 +133,3 @@
 - 261113 fix pb14 wage observer: 1e3eef0e keeps the salary bill separate and exposes the proposed fee, with the isolated boundary unit and deferred integration invariant enforcing their combined envelope.
 - 261113 fix pb14 schema: 7ca7b44d reuses the production book schema for 30 malformed amount cases and the incomplete component case, retaining whole-world roundtrips; isolated review checkout, 85 affected units and static/i18n checks passed.
 - 261113 T882 done
-- 261113 T881 done
