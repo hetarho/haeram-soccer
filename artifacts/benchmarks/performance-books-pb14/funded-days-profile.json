@@ -1,0 +1,262 @@
+{
+  "schemaVersion": 1,
+  "kind": "v8-samples",
+  "source": "3344308d64f8ad7348144f6642841b23636701ab",
+  "pairedTiming": false,
+  "sampleMicros": 28448548,
+  "samples": 20130,
+  "rawSha256": "e31813c719b77582de362b29aac02699bc6be1efed5a6a8d907d7374a3df4f32",
+  "rawPath": ".tmp/pb14-cpu-profile/funded-days.cpuprofile",
+  "hotspots": [
+    {
+      "file": "packages/engine/src/npc-market.ts",
+      "function": "npcMarket",
+      "selfSampleMicros": 4759743
+    },
+    {
+      "file": "packages/engine/src/player.ts",
+      "function": "ovrAt",
+      "selfSampleMicros": 4655347
+    },
+    {
+      "file": "packages/engine/src/npc-market.ts",
+      "function": "",
+      "selfSampleMicros": 3662589
+    },
+    {
+      "file": "packages/engine/src/season.ts",
+      "function": "beginDays",
+      "selfSampleMicros": 1303400
+    },
+    {
+      "file": "packages/engine/src/player.ts",
+      "function": "",
+      "selfSampleMicros": 947096
+    },
+    {
+      "file": "packages/engine/src/player.ts",
+      "function": "weightEntry",
+      "selfSampleMicros": 945378
+    },
+    {
+      "file": "packages/engine/src/season.ts",
+      "function": "clubDay",
+      "selfSampleMicros": 936671
+    },
+    {
+      "file": "packages/engine/src/training.ts",
+      "function": "settlePlayerGrowth",
+      "selfSampleMicros": 800228
+    },
+    {
+      "file": "packages/engine/src/npc-market.ts",
+      "function": "npcCanSell",
+      "selfSampleMicros": 712210
+    },
+    {
+      "file": "packages/engine/src/persisted-squads.ts",
+      "function": "matchdaySquad",
+      "selfSampleMicros": 676487
+    },
+    {
+      "file": "packages/engine/src/persisted-squads.ts",
+      "function": "moveSquadPlayer",
+      "selfSampleMicros": 667750
+    },
+    {
+      "file": "packages/engine/src/training.ts",
+      "function": "growAttributes",
+      "selfSampleMicros": 522464
+    },
+    {
+      "file": "",
+      "function": "(program)",
+      "selfSampleMicros": 516211
+    },
+    {
+      "file": "packages/engine/src/world.ts",
+      "function": "lineup",
+      "selfSampleMicros": 498261
+    },
+    {
+      "file": "packages/engine/src/persisted-squads.ts",
+      "function": "",
+      "selfSampleMicros": 458541
+    },
+    {
+      "file": "packages/engine/src/npc-market.ts",
+      "function": "needs",
+      "selfSampleMicros": 406842
+    },
+    {
+      "file": "packages/engine/src/world.ts",
+      "function": "stature",
+      "selfSampleMicros": 378667
+    },
+    {
+      "file": "packages/engine/src/world.ts",
+      "function": "",
+      "selfSampleMicros": 353275
+    },
+    {
+      "file": "packages/engine/src/npc-market.ts",
+      "function": "listings",
+      "selfSampleMicros": 344890
+    },
+    {
+      "file": "/Users/ihaelam/project/haeram-soccer/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js",
+      "function": "runCallSync",
+      "selfSampleMicros": 260099
+    },
+    {
+      "file": "",
+      "function": "(garbage collector)",
+      "selfSampleMicros": 230385
+    },
+    {
+      "file": "packages/engine/src/npc-continuity.ts",
+      "function": "movePerson",
+      "selfSampleMicros": 168512
+    },
+    {
+      "file": "packages/engine/src/player.ts",
+      "function": "rolesAt",
+      "selfSampleMicros": 134649
+    },
+    {
+      "file": "packages/engine/src/player.ts",
+      "function": "levelFactor",
+      "selfSampleMicros": 127949
+    },
+    {
+      "file": "packages/engine/src/books.ts",
+      "function": "",
+      "selfSampleMicros": 118439
+    },
+    {
+      "file": "packages/engine/src/player-state.ts",
+      "function": "",
+      "selfSampleMicros": 117365
+    },
+    {
+      "file": "packages/engine/src/npc-stats.ts",
+      "function": "settleNpcSeason",
+      "selfSampleMicros": 113258
+    },
+    {
+      "file": "packages/engine/src/player-state.ts",
+      "function": "slotOvr",
+      "selfSampleMicros": 102270
+    },
+    {
+      "file": "packages/engine/src/free-agents.ts",
+      "function": "",
+      "selfSampleMicros": 98971
+    },
+    {
+      "file": "packages/engine/src/primitives.ts",
+      "function": "ratio",
+      "selfSampleMicros": 81144
+    },
+    {
+      "file": "internal/modules/cjs/loader",
+      "function": "wrapSafe",
+      "selfSampleMicros": 74253
+    },
+    {
+      "file": "packages/engine/src/managerMarket.ts",
+      "function": "clubManager",
+      "selfSampleMicros": 67781
+    },
+    {
+      "file": "/Users/ihaelam/project/haeram-soccer/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-B1c7OH6V.cjs",
+      "function": "O",
+      "selfSampleMicros": 64925
+    },
+    {
+      "file": "internal/worker/js_transferable",
+      "function": "structuredClone",
+      "selfSampleMicros": 64899
+    },
+    {
+      "file": "packages/engine/src/results-only.ts",
+      "function": "resultsOnlyMatch",
+      "selfSampleMicros": 64429
+    },
+    {
+      "file": "packages/engine/src/npc-careers.ts",
+      "function": "settleNpcGrowth",
+      "selfSampleMicros": 60010
+    },
+    {
+      "file": "packages/engine/src/world.ts",
+      "function": "invalidateNpcSquad",
+      "selfSampleMicros": 57662
+    },
+    {
+      "file": "packages/engine/src/results-only.ts",
+      "function": "elevenOf",
+      "selfSampleMicros": 56820
+    },
+    {
+      "file": "packages/engine/src/results-only.ts",
+      "function": "",
+      "selfSampleMicros": 56523
+    },
+    {
+      "file": "packages/engine/src/training.ts",
+      "function": "developAnnually",
+      "selfSampleMicros": 55903
+    },
+    {
+      "file": "packages/engine/src/primitives.ts",
+      "function": "hash",
+      "selfSampleMicros": 55303
+    },
+    {
+      "file": "packages/engine/src/world.ts",
+      "function": "selectionValue",
+      "selfSampleMicros": 54667
+    },
+    {
+      "file": "packages/engine/src/quotes.ts",
+      "function": "indexed",
+      "selfSampleMicros": 48511
+    },
+    {
+      "file": "packages/engine/src/npc-market.ts",
+      "function": "clubFacts",
+      "selfSampleMicros": 46292
+    },
+    {
+      "file": "scripts/persisted-world-read.ts",
+      "function": "",
+      "selfSampleMicros": 44572
+    },
+    {
+      "file": "packages/engine/src/world.ts",
+      "function": "xiRating",
+      "selfSampleMicros": 44270
+    },
+    {
+      "file": "packages/engine/src/world.ts",
+      "function": "ratingOf",
+      "selfSampleMicros": 41853
+    },
+    {
+      "file": "internal/modules/esm/utils",
+      "function": "compileSourceTextModule",
+      "selfSampleMicros": 40746
+    },
+    {
+      "file": "",
+      "function": "set toTemporalInstant",
+      "selfSampleMicros": 39821
+    },
+    {
+      "file": "packages/engine/src/npc-market.ts",
+      "function": "npcOffer",
+      "selfSampleMicros": 37988
+    }
+  ]
+}
