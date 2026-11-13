@@ -126,7 +126,8 @@ function byAbility(pool: readonly FreeAgent[]) {
 /** A free agent stops playing; linked profiles and registered people's careers survive. */
 function retireFreeAgent(w: World, p: Player) {
   const person = w.people?.[p.id];
-  const club = person?.employment.filter((job) => job.role === 'player').at(-1)?.club ??
+  const club =
+    person?.employment.filter((job) => job.role === 'player').at(-1)?.club ??
     w.playerRecords?.[p.id]?.moves.at(-1)?.to;
   if (retirePlayerRecord(w, p, club)) recordRetirementNews(w, p, club);
   if (person) retirePerson(w, person);
@@ -200,8 +201,10 @@ function wantsFreeAgent(w: World, club: World['clubs'][number], p: FreeAgent, ye
   const wanted = missing.length ? missing : [lineOf(refillPlace(clubStyle(club), players))];
   if (!wanted.includes(lineOf(p.position))) return false;
   const state = clubRegistration(club, year, players);
-  return state.total < state.ceiling &&
-    (registrationExempt(state.rule, year, { ...p, joined: year }) || state.counted < state.allowed);
+  return (
+    state.total < state.ceiling &&
+    (registrationExempt(state.rule, year, { ...p, joined: year }) || state.counted < state.allowed)
+  );
 }
 
 /** Ablest affordable first; contested players prefer stature, then wage in comparable money. */
@@ -209,8 +212,12 @@ export function refreshFreeAgents(w: World, year = w.year) {
   // A war gap or an older checkpoint may leave an announced retiree in the held pool.
   w.freeAgents = freeAgentsOf(w).filter((p) => {
     const person = w.people?.[p.id];
-    if (year - p.born < RETIREMENT.lastAge && person?.playing !== 'retired' &&
-      (person?.retirement?.year === undefined || person.retirement.year >= year)) return true;
+    if (
+      year - p.born < RETIREMENT.lastAge &&
+      person?.playing !== 'retired' &&
+      (person?.retirement?.year === undefined || person.retirement.year >= year)
+    )
+      return true;
     retireFreeAgent(w, p);
     freePlace(w, p.id);
     return false;
@@ -222,12 +229,18 @@ export function refreshFreeAgents(w: World, year = w.year) {
   do {
     signed = false;
     for (const agent of byAbility(freeAgentsOf(w))) {
-      const offers = clubs.filter((c) => wantsFreeAgent(w, c, agent, year)).map((club) => {
-        const wage = marketWageAt(club.country, year, club.tier, agent);
-        return { club, wage, pounds: BigInt(inPounds(club.country, year, wage)) };
-      }).filter(({ club, wage }) => npcCanPay(w, club, wage, undefined, year));
-      offers.sort((a, b) => stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
-        (a.pounds > b.pounds ? -1 : a.pounds < b.pounds ? 1 : compareIds(a.club.id, b.club.id)));
+      const offers = clubs
+        .filter((c) => wantsFreeAgent(w, c, agent, year))
+        .map((club) => {
+          const wage = marketWageAt(club.country, year, club.tier, agent);
+          return { club, wage, pounds: BigInt(inPounds(club.country, year, wage)) };
+        })
+        .filter(({ club, wage }) => npcCanPay(w, club, wage, undefined, year));
+      offers.sort(
+        (a, b) =>
+          stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
+          (a.pounds > b.pounds ? -1 : a.pounds < b.pounds ? 1 : compareIds(a.club.id, b.club.id)),
+      );
       const offer = offers[0];
       if (!offer) continue;
       const { club, wage } = offer;

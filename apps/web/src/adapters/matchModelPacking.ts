@@ -257,7 +257,8 @@ function packSeason(
     for (const player of c.players) {
       players.push(ref(player.id), ref(player.name), ref(player.position), player.clubs.length);
       for (const share of player.clubs) {
-        if (share.cleanSheets !== undefined) cleanSheets.push([contributions.length / CONTRIBUTION_WIDTH, share.cleanSheets]);
+        if (share.cleanSheets !== undefined)
+          cleanSheets.push([contributions.length / CONTRIBUTION_WIDTH, share.cleanSheets]);
         contributions.push(
           ref(share.club),
           share.appearances,
@@ -421,10 +422,17 @@ function unpackSeason(
   );
   const cleanSheets = new Map<number, number>();
   if (season.cleanSheets !== undefined) {
-    if (!Array.isArray(season.cleanSheets) || season.cleanSheets.length > contributionTotal) throw corrupt(sourceMessage('copy.packing.5ccd8ed532'));
+    if (!Array.isArray(season.cleanSheets) || season.cleanSheets.length > contributionTotal)
+      throw corrupt(sourceMessage('copy.packing.5ccd8ed532'));
     for (const row of season.cleanSheets) {
-      if (!Array.isArray(row) || row.length !== 2 || !isCount(row[0], contributionTotal - 1) ||
-        !isCount(row[1], 1000) || cleanSheets.has(row[0])) throw corrupt(sourceMessage('copy.packing.5ccd8ed532'));
+      if (
+        !Array.isArray(row) ||
+        row.length !== 2 ||
+        !isCount(row[0], contributionTotal - 1) ||
+        !isCount(row[1], 1000) ||
+        cleanSheets.has(row[0])
+      )
+        throw corrupt(sourceMessage('copy.packing.5ccd8ed532'));
       cleanSheets.set(row[0], row[1]);
     }
   }
@@ -487,7 +495,9 @@ function unpackSeason(
               club: str(r[0]),
               appearances: r[1],
               starts: r[2],
-              ...(cleanSheets.has(contribution - 1) ? { cleanSheets: cleanSheets.get(contribution - 1)! } : {}),
+              ...(cleanSheets.has(contribution - 1)
+                ? { cleanSheets: cleanSheets.get(contribution - 1)! }
+                : {}),
               metrics: r.slice(3, 3 + METRICS),
               detail: r.slice(3 + METRICS),
             };

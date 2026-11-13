@@ -102,7 +102,7 @@
 |---|---|---|---|---|
 | T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | doing@261113.fin3 |
 | T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 T869 T870 | todo |
-| T870 | Repair integrated static checks before calibration | ARCH | T865 T869 | todo |
+| T870 | Repair integrated static checks before calibration | ARCH | T865 T869 | doing@261113.pw86 |
 
 ## next
 - gusta-implement-task T870, then T866

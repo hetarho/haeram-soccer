@@ -7,7 +7,17 @@ import { worldMarketFixture } from './world-market.testkit';
 import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads';
 import { closeNpcSummer, intakeNpcYouth, NPC_YOUTH, settleNpcGrowth } from './npc-careers';
 import { clubManager } from './managerMarket';
-import { clubPlayers, rating, ratingOf, squad, startingSquad, xiRating, clubStyle, NPC_SQUAD, LINE_MINIMUM } from './world';
+import {
+  clubPlayers,
+  rating,
+  ratingOf,
+  squad,
+  startingSquad,
+  xiRating,
+  clubStyle,
+  NPC_SQUAD,
+  LINE_MINIMUM,
+} from './world';
 import { lineOf, mainOvr } from './player';
 import { random, zeroMetrics } from './primitives';
 import { clubRegistration } from './registration';
@@ -96,7 +106,9 @@ describe('persisted NPC careers on isolated squads', () => {
     expect(squad(w, c).map((p) => p.id)).toEqual(ids);
     expect(startingSquad(w, c).map((p) => p.id)).toEqual(xi);
     expect(c.strength).toBe(xiRating(held, clubStyle(c)));
-    expect(clubPlayers(w, c).find((p) => p.id === players[0]!.id)!.attrs).toEqual(players[0]!.attrs);
+    expect(clubPlayers(w, c).find((p) => p.id === players[0]!.id)!.attrs).toEqual(
+      players[0]!.attrs,
+    );
   });
 
   it('uses club cohesion for potential overshoot and leaves stored adaptation alone', () => {
@@ -293,7 +305,9 @@ describe('persisted NPC careers on isolated squads', () => {
     for (const p of players) {
       expect(p.id).toMatch(new RegExp(`^${c.id}:y:${w.year + 1}:\\d+$`));
       expect([17, 18]).toContain(w.year + 1 - p.born);
-      expect(p.potential).toBeGreaterThanOrEqual(NPC_YOUTH.byAcademy[c.levels!.academy]!.potential[0]);
+      expect(p.potential).toBeGreaterThanOrEqual(
+        NPC_YOUTH.byAcademy[c.levels!.academy]!.potential[0],
+      );
       expect(p.potential).toBeLessThanOrEqual(NPC_YOUTH.byAcademy[c.levels!.academy]!.potential[1]);
       if ((coachingGrade(p) ?? 0) >= 4)
         expect(w.people![p.id]).toMatchObject({ id: p.id, born: p.born, name: p.name, club: c.id });

@@ -8,7 +8,7 @@
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { operate } from '../packages/engine/src/operations';
 import { simulateSeason } from '../packages/engine/src/season';
-import { OWNER_BUSINESS } from '../packages/contracts/src/owner';
+import { OWNER_BUSINESS } from '../packages/engine/src/owner-config';
 import { canonical } from '../packages/contracts/src/index';
 import { packPlayerRecords } from '../apps/web/src/adapters/playerRecordPacking';
 import { MessageChannel } from 'node:worker_threads';
@@ -31,7 +31,12 @@ async function sample(world: World) {
   try {
     const received = new Promise<CodecJob>((done) => port2.once('message', done));
     const start = performance.now();
-    port1.postMessage({ id: 1, world, generation: 1, parentGeneration: 0 } satisfies CodecJob);
+    port1.postMessage({
+      id: 'persisted-size',
+      world,
+      generation: 1,
+      parentGeneration: 0,
+    } satisfies CodecJob);
     const postMs = performance.now() - start;
     const job = await received;
     const encodeStart = performance.now();
@@ -57,33 +62,50 @@ async function measureRecords(world: World, seasons: number, addedBytes: number)
   const compressed = async (part: NonNullable<World['playerRecords']>) => {
     const raw = new TextEncoder().encode(canonical(packPlayerRecords(part)));
     const encoded = await encodePayload(raw);
-    return { codec: encoded.codec, payloadBytes: payloadBytes(encoded.codec, encoded.payload).length };
+    return {
+      codec: encoded.codec,
+      payloadBytes: payloadBytes(encoded.codec, encoded.payload).length,
+    };
   };
-  const pick = (part: 'moves' | 'lines' | 'profiles' | 'links'): NonNullable<World['playerRecords']> => {
+  const pick = (
+    part: 'moves' | 'lines' | 'profiles' | 'links',
+  ): NonNullable<World['playerRecords']> => {
     const selected: NonNullable<World['playerRecords']> = {};
     for (const [id, record] of Object.entries(records)) {
       if (part === 'moves' && (record.moves.length || record.loan))
         selected[id] = { moves: record.moves, ...(record.loan ? { loan: record.loan } : {}) };
-      if (part === 'lines' && record.lines?.length) selected[id] = { moves: [], lines: record.lines };
-      if (part === 'profiles' && record.retired) selected[id] = { moves: [], retired: record.retired };
-      if (part === 'links' && record.linked !== undefined) selected[id] = { moves: [], linked: record.linked };
+      if (part === 'lines' && record.lines?.length)
+        selected[id] = { moves: [], lines: record.lines };
+      if (part === 'profiles' && record.retired)
+        selected[id] = { moves: [], retired: record.retired };
+      if (part === 'links' && record.linked !== undefined)
+        selected[id] = { moves: [], linked: record.linked };
     }
     return selected;
   };
-  const full = await compressed(records), components = {} as Record<string, Awaited<ReturnType<typeof compressed>>>;
-  for (const part of ['moves', 'lines', 'profiles', 'links'] as const) components[part] = await compressed(pick(part));
+  const full = await compressed(records),
+    components = {} as Record<string, Awaited<ReturnType<typeof compressed>>>;
+  for (const part of ['moves', 'lines', 'profiles', 'links'] as const)
+    components[part] = await compressed(pick(part));
   const keptPerSeason = world.history.map((season) => ({
     year: season.year,
     kept: Object.values(records).filter((record) => record.retired?.year === season.year).length,
   }));
   const kept = keptPerSeason.reduce((sum, season) => sum + season.kept, 0);
   const linear100 = {
-    kept: kept * 100 / seasons,
-    payloadBytes: full.payloadBytes * 100 / seasons,
-    checkpointIncrementBytes: addedBytes * 100 / seasons,
+    kept: (kept * 100) / seasons,
+    payloadBytes: (full.payloadBytes * 100) / seasons,
+    checkpointIncrementBytes: (addedBytes * 100) / seasons,
   };
-  return { full, components, keptPerSeason, kept, linear100, budget: PERSISTED_BUDGET.records,
-    gap100: Math.max(0, linear100.payloadBytes - PERSISTED_BUDGET.records) };
+  return {
+    full,
+    components,
+    keptPerSeason,
+    kept,
+    linear100,
+    budget: PERSISTED_BUDGET.records,
+    gap100: Math.max(0, linear100.payloadBytes - PERSISTED_BUDGET.records),
+  };
 }
 async function main() {
   const arg = (name: string, fallback: string) => {
@@ -142,7 +164,10 @@ async function main() {
       budget: recordsMode ? PERSISTED_BUDGET.records : PERSISTED_BUDGET.squads,
       addedBytes,
       bytesPerPlayer: playerCount ? addedBytes / playerCount : null,
-      gap: Math.max(0, addedBytes - (recordsMode ? PERSISTED_BUDGET.records : PERSISTED_BUDGET.squads)),
+      gap: Math.max(
+        0,
+        addedBytes - (recordsMode ? PERSISTED_BUDGET.records : PERSISTED_BUDGET.squads),
+      ),
       rows,
     }),
   );

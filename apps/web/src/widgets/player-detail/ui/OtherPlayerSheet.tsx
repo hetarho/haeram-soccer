@@ -32,7 +32,8 @@ export function OtherPlayerSheet({
   useTextLocale();
   const found = read.status === 'ready' ? read.value : undefined;
   const name = found?.player.name ?? sourceMessage('team.column.player');
-  const honours = found && found.kind !== 'representative' ? ballonDorLine(w.history, id) : undefined;
+  const honours =
+    found && found.kind !== 'representative' ? ballonDorLine(w.history, id) : undefined;
   const clubLink = (club: string) => (
     <span onClickCapture={onClose}>
       <ClubLink w={w} id={club} crest={14} />

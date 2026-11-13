@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import type { Club, MatchPlayback, Player, World } from '../../contracts/src/types';
+import type { Club, MatchPlayback, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
-import { npcCanSell, npcMarket, npcMarketDays, npcOffer, NPC_MARKET, returnNpcLoans } from './npc-market';
+import {
+  npcCanSell,
+  npcMarket,
+  npcMarketDays,
+  npcOffer,
+  NPC_MARKET,
+  returnNpcLoans,
+} from './npc-market';
 import { closeNpcSummer, closeNpcWindow, intakeNpcYouth } from './npc-careers';
 import { foundSquads } from './persisted-squads';
 import { generatedPlayer, invalidateNpcSquad, stature } from './world';
@@ -25,9 +32,15 @@ function fixture(year = 1950) {
   const w = worldMarketFixture();
   w.year = year;
   w.calendar = { day: npcMarketDays(w.year)[0]![0]! };
-  w.clubs = [w.clubs[0]!, ...[0, 1, 2].map((n): Club => ({
-    ...w.clubs[1]!, id: `ENG:0:0:${n}`, country: 'ENG', strength: 65,
-  }))];
+  w.clubs = [
+    w.clubs[0]!,
+    ...[0, 1, 2].map((n): Club => ({
+      ...w.clubs[1]!,
+      id: `ENG:0:0:${n}`,
+      country: 'ENG',
+      strength: 65,
+    })),
+  ];
   foundSquads(w);
   w.people = {};
   for (const c of w.clubs.slice(1)) {
@@ -38,7 +51,12 @@ function fixture(year = 1950) {
       for (const a of ATTRIBUTES) p.attrs[a] = 65;
       p.wage = marketWageAt(c.country, w.year, c.tier, p);
     }
-    c.books = { seasons: [], cash: '999999999999', debt: '0', openingIncome: npcWageBill(w, c).toString() };
+    c.books = {
+      seasons: [],
+      cash: '999999999999',
+      debt: '0',
+      openingIncome: npcWageBill(w, c).toString(),
+    };
     invalidateNpcSquad(w, c.id);
   }
   return { w, seller: w.clubs[1]!, buyer: w.clubs[2]!, other: w.clubs[3]! };
@@ -58,14 +76,17 @@ function missingKeeper(w: World, c: Club) {
   w.squads![c.id] = w.squads![c.id]!.filter((p) => p.position !== 'GK');
   invalidateNpcSquad(w, c.id);
 }
-const locations = (w: World, id: string) => Object.entries(w.squads ?? {})
-  .filter(([, ps]) => ps.some((p) => p.id === id)).map(([club]) => club);
+const locations = (w: World, id: string) =>
+  Object.entries(w.squads ?? {})
+    .filter(([, ps]) => ps.some((p) => p.id === id))
+    .map(([club]) => club);
 
 describe('isolated NPC transfer windows', () => {
   it('buys a needed keeper at market value, settles both books and preserves one live identity', () => {
     const { w, seller, buyer, other } = fixture();
     const p = listedKeeper(w, seller);
-    const before = structuredClone(p), untouched = w.squads![other.id];
+    const before = structuredClone(p),
+      untouched = w.squads![other.id];
     missingKeeper(w, buyer);
     const fee = marketValueAt('ENG', w.year, seller.tier, p);
     npcMarket(w);
@@ -95,7 +116,11 @@ describe('isolated NPC transfer windows', () => {
     npcMarket(w);
     expect(w.playerRecords![p.id]!.moves[0]!.to).toBe(buyer.id);
     expect(npcWageBill(w, seller)).toBeLessThanOrEqual(npcWageLimit(w, seller)!);
-    expect(Object.values(w.playerRecords!).flatMap((r) => r.moves).some((m) => m.to === seller.id)).toBe(false);
+    expect(
+      Object.values(w.playerRecords!)
+        .flatMap((r) => r.moves)
+        .some((m) => m.to === seller.id),
+    ).toBe(false);
     w.squads![seller.id] = w.squads![seller.id]!.slice(0, NPC_MARKET.minimum);
     expect(w.squads![seller.id]!.every((q) => !npcCanSell(w, seller, q))).toBe(true);
   });
@@ -103,7 +128,9 @@ describe('isolated NPC transfer windows', () => {
   it('protects each line minimum and the last goalkeeper', () => {
     const { w, seller } = fixture();
     const keepers = w.squads![seller.id]!.filter((p) => p.position === 'GK');
-    w.squads![seller.id] = w.squads![seller.id]!.filter((p) => p.position !== 'GK' || p === keepers[0]);
+    w.squads![seller.id] = w.squads![seller.id]!.filter(
+      (p) => p.position !== 'GK' || p === keepers[0],
+    );
     expect(npcCanSell(w, seller, keepers[0]!)).toBe(false);
   });
 
@@ -120,7 +147,8 @@ describe('isolated NPC transfer windows', () => {
   });
 
   it('runs only on configured window days, once across reloads and identically for one seed', () => {
-    const a = fixture(), b = fixture();
+    const a = fixture(),
+      b = fixture();
     for (const { w, seller, buyer } of [a, b]) {
       listedKeeper(w, seller);
       missingKeeper(w, buyer);
@@ -142,7 +170,10 @@ describe('isolated NPC transfer windows', () => {
   it('uses the higher offered wage when stature is equal', () => {
     const { w, seller, buyer, other } = fixture();
     const p = listedKeeper(w, seller);
-    for (const [c, id] of [[buyer, 'bidder-a'], [other, 'bidder-b']] as const) {
+    for (const [c, id] of [
+      [buyer, 'bidder-a'],
+      [other, 'bidder-b'],
+    ] as const) {
       const players = w.squads![c.id]!;
       delete w.squads![c.id];
       c.id = id;
@@ -187,7 +218,9 @@ describe('isolated NPC transfer windows', () => {
     w.squads![seller.id]!.push(stronger);
     seller.books!.openingIncome = npcWageBill(w, seller).toString();
     missingKeeper(w, buyer);
-    buyer.books!.openingIncome = (npcWageBill(w, buyer) + BigInt(marketWageAt('ENG', w.year, buyer.tier, stronger))).toString();
+    buyer.books!.openingIncome = (
+      npcWageBill(w, buyer) + BigInt(marketWageAt('ENG', w.year, buyer.tier, stronger))
+    ).toString();
     expect(npcOffer(w, buyer, stronger, seller, '1')).toBeDefined();
     npcMarket(w);
     expect(w.playerRecords![stronger.id]!.moves[0]!.to).toBe(buyer.id);
@@ -216,7 +249,9 @@ describe('isolated NPC transfer windows', () => {
     expect(npcOffer(w, seller, candidate, other, '1')).toBeUndefined();
     const withoutLoan = structuredClone(w);
     delete withoutLoan.playerRecords![p.id]!.loan;
-    expect(npcOffer(withoutLoan, withoutLoan.clubs[1]!, candidate, withoutLoan.clubs[3]!, '1')).toBeDefined();
+    expect(
+      npcOffer(withoutLoan, withoutLoan.clubs[1]!, candidate, withoutLoan.clubs[3]!, '1'),
+    ).toBeDefined();
   });
 
   it('returns a young blocked loan before renewing contracts at the shared close', () => {
@@ -237,7 +272,11 @@ describe('isolated NPC transfer windows', () => {
     closeNpcSummer(automatic);
     expect(locations(automatic, p.id)).toEqual([seller.id]);
     expect(automatic.playerRecords![p.id]!.loan).toBeUndefined();
-    expect(automatic.playerRecords![p.id]!.moves.at(-1)).toMatchObject({ from: buyer.id, to: seller.id, fee: '0' });
+    expect(automatic.playerRecords![p.id]!.moves.at(-1)).toMatchObject({
+      from: buyer.id,
+      to: seller.id,
+      fee: '0',
+    });
     w.calendar = { day: SEASON_END_DAY + 1 };
     returnNpcLoans(w);
     expect(locations(w, p.id)).toEqual([seller.id]);
@@ -248,7 +287,11 @@ describe('isolated NPC transfer windows', () => {
     expect(returned.graduate).toBe(true);
     expect(returned.joined).toBe(w.year - 2);
     expect(w.playerRecords![p.id]!.loan).toBeUndefined();
-    expect(w.playerRecords![p.id]!.moves.at(-1)).toMatchObject({ from: buyer.id, to: seller.id, fee: '0' });
+    expect(w.playerRecords![p.id]!.moves.at(-1)).toMatchObject({
+      from: buyer.id,
+      to: seller.id,
+      fee: '0',
+    });
     closeNpcSummer(w);
     expect(locations(w, p.id)).toEqual([seller.id]);
   });
@@ -263,23 +306,42 @@ describe('isolated NPC transfer windows', () => {
     npcMarket(w);
     const person = w.people![p.id]!;
     expect(person.club).toBe(buyer.id);
-    expect(person.employment.filter((job) => job.role === 'player').map((job) => job.club)).toEqual([seller.id, buyer.id]);
-    expect(person.employment.at(-1)!.contractUntil!.year).toBe(w.squads![buyer.id]!.find((q) => q.id === p.id)!.until);
+    expect(person.employment.filter((job) => job.role === 'player').map((job) => job.club)).toEqual(
+      [seller.id, buyer.id],
+    );
+    expect(person.employment.at(-1)!.contractUntil!.year).toBe(
+      w.squads![buyer.id]!.find((q) => q.id === p.id)!.until,
+    );
   });
 
   it('keeps winter contributions under the same ID, separated by the two real clubs', () => {
     const { w, seller, buyer } = fixture();
     const p = listedKeeper(w, seller);
     missingKeeper(w, buyer);
-    w.npcSeason = { year: w.year, model: MATCH_MODEL_REVISION, trackedFrom: { year: w.year, day: 0, round: 0 }, competitions: [] };
+    w.npcSeason = {
+      year: w.year,
+      model: MATCH_MODEL_REVISION,
+      trackedFrom: { year: w.year, day: 0, round: 0 },
+      competitions: [],
+    };
     const settle = (club: Club) => {
       const metrics = zeroMetrics();
       metrics[M.minutes] = 90;
       metrics[M.goals] = 1;
-      const playback = { record: {
-        year: w.year, kind: 'league', groupKey: 'synthetic', home: club.id, away: 'own',
-        incidents: [], lineCounts: [1, 0], players: [{ id: p.id, metrics }], metrics: [metrics, zeroMetrics()],
-      }, squads: [[p], []] } as unknown as MatchPlayback;
+      const playback = {
+        record: {
+          year: w.year,
+          kind: 'league',
+          groupKey: 'synthetic',
+          home: club.id,
+          away: 'own',
+          incidents: [],
+          lineCounts: [1, 0],
+          players: [{ id: p.id, metrics }],
+          metrics: [metrics, zeroMetrics()],
+        },
+        squads: [[p], []],
+      } as unknown as MatchPlayback;
       settleNpcSeason(w, playback, true);
     };
     settle(seller);
@@ -295,7 +357,9 @@ describe('isolated NPC transfer windows', () => {
   it('refills on summer last day without reusing an unregistered transferred youngster ID', () => {
     const { w, seller, buyer } = fixture();
     intakeNpcYouth(w, seller, w.year);
-    const young = w.squads![seller.id]!.find((p) => p.id.includes(':y:') && (coachingGrade(p) ?? 0) < 4)!;
+    const young = w.squads![seller.id]!.find(
+      (p) => p.id.includes(':y:') && (coachingGrade(p) ?? 0) < 4,
+    )!;
     expect(young).toBeDefined();
     expect(w.people?.[young.id]).toBeUndefined();
     w.squads![seller.id] = w.squads![seller.id]!.filter((p) => p.id !== young.id);
@@ -316,7 +380,9 @@ describe('isolated NPC transfer windows', () => {
     expect(state.counted).toBeLessThanOrEqual(state.allowed);
     // A retained move also reserves the identity after its live row has left football.
     w.squads![buyer.id] = w.squads![buyer.id]!.filter((p) => p.id !== young.id);
-    w.playerRecords = { [young.id]: { moves: [{ year: w.year, day, from: seller.id, to: buyer.id, fee: '0' }] } };
+    w.playerRecords = {
+      [young.id]: { moves: [{ year: w.year, day, from: seller.id, to: buyer.id, fee: '0' }] },
+    };
     intakeNpcYouth(w, seller, w.year);
     expect(locations(w, young.id)).toEqual([]);
   });
@@ -363,7 +429,8 @@ describe('isolated NPC transfer windows', () => {
     npcMarket(w);
     const record = w.playerRecords![p.id]!;
     expect(record.loan).toBeDefined();
-    const until = record.loan!.until, contract = record.loan!.contractUntil;
+    const until = record.loan!.until,
+      contract = record.loan!.contractUntil;
     w.year = 1946;
     crossWar(w, 1938);
     expect(record.loan!.until).toBe(until + 7);

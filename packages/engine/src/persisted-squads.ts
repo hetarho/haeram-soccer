@@ -51,7 +51,8 @@ export function foundSquads(w: World) {
   if (w.squads !== undefined) return;
   // Read all legacy affiliations before installing the registry. Its presence changes roster reads.
   const adopting = w.people !== undefined || !!w.freeAgents?.length;
-  const founding = w.clubs.filter((c) => !c.representative && c.id !== w.playerClub)
+  const founding = w.clubs
+    .filter((c) => !c.representative && c.id !== w.playerClub)
     .map((c) => ({ c, players: continuousSquad(w, c) }));
   w.squads = {};
   for (const { c, players } of founding) {
@@ -78,7 +79,8 @@ export function foundSquads(w: World) {
       players.push(p);
     }
     for (const [i, p] of players.entries()) {
-      if (!adopting || i >= retained) p.until = w.year + integer(random(`${w.seed}:${p.id}:contract`), 1, 5);
+      if (!adopting || i >= retained)
+        p.until = w.year + integer(random(`${w.seed}:${p.id}:contract`), 1, 5);
       enrollSquadPlayer(w, c, p);
     }
     w.squads[c.id] = players;
@@ -150,7 +152,12 @@ export function moveSquadPlayer(w: World, p: Player, club?: string, source?: str
       live.career = zeroMetrics();
       live.season = zeroMetrics();
       w.squads[club] = [...w.squads[club], live];
-      if (!w.people?.[live.id]) enrollSquadPlayer(w, w.clubs.find((c) => c.id === club)!, live);
+      if (!w.people?.[live.id])
+        enrollSquadPlayer(
+          w,
+          w.clubs.find((c) => c.id === club)!,
+          live,
+        );
       invalidateNpcSquad(w, club);
     }
   }

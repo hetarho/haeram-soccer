@@ -223,11 +223,15 @@ describe('SQUAD_SPREAD `spread`', () => {
           spreadCost = 0n;
         for (const c of [...clubs('ENG', 8), ...clubs('ESP', 8)]) {
           flat += npcSquad(w.seed, year, { ...c, strength, tier: 0 }).reduce(
-            (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)), 0n,
+            (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)),
+            0n,
           );
-          spreadCost += spread(() => npcSquad(w.seed, year, { ...c, strength, tier: 0 }).reduce(
-            (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)), 0n,
-          ));
+          spreadCost += spread(() =>
+            npcSquad(w.seed, year, { ...c, strength, tier: 0 }).reduce(
+              (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)),
+              0n,
+            ),
+          );
         }
         const ratio = Number(spreadCost) / Number(flat);
         expect(ratio, `${strength} in ${year}`).toBeGreaterThan(0.85);

@@ -74,29 +74,51 @@ describe('worker command protocol', () => {
     const free = { ...structuredClone(live), id: 'profile-free', freeSince: w.year };
     const retired = { ...structuredClone(live), id: 'profile-retired' };
     w.freeAgents = [free];
-    w.playerRecords = { [retired.id]: { moves: [], linked: true,
-      lines: [{ year: w.year - 1, club, appearances: 1, goals: 0, assists: 0 }],
-      retired: { year: w.year - 1, club, profile: retired },
-    } };
+    w.playerRecords = {
+      [retired.id]: {
+        moves: [],
+        linked: true,
+        lines: [{ year: w.year - 1, club, appearances: 1, goals: 0, assists: 0 }],
+        retired: { year: w.year - 1, club, profile: retired },
+      },
+    };
     const representative = w.clubs.find((c) => c.representative)!;
     const rep = squad(w, representative)[0]!;
-    for (const [id, kind] of [[w.players[0]!.id, 'own'], [live.id, 'squad'], [free.id, 'free'],
-      [retired.id, 'retired'], [rep.id, 'representative']] as const) {
-      const reply = await host.handle(req(`profile-${kind}`, -1, {
-        type: 'player-profile', world: w.id, playerId: id, clubId: w.playerClub,
-      }));
+    for (const [id, kind] of [
+      [w.players[0]!.id, 'own'],
+      [live.id, 'squad'],
+      [free.id, 'free'],
+      [retired.id, 'retired'],
+      [rep.id, 'representative'],
+    ] as const) {
+      const reply = await host.handle(
+        req(`profile-${kind}`, -1, {
+          type: 'player-profile',
+          world: w.id,
+          playerId: id,
+          clubId: w.playerClub,
+        }),
+      );
       expect(reply.ok, reply.error).toBe(true);
       expect(reply.playerProfile).toEqual(squadPlayer(w, id, w.playerClub));
       expect(reply.playerProfile!.kind).toBe(kind);
       expect(reply.view).toBeUndefined();
     }
-    const missing = await host.handle(req('profile-missing', -1, { type: 'player-profile', world: w.id, playerId: 'unknown-player' }));
+    const missing = await host.handle(
+      req('profile-missing', -1, {
+        type: 'player-profile',
+        world: w.id,
+        playerId: 'unknown-player',
+      }),
+    );
     expect(missing.ok).toBe(false);
     expect(projectWorldFacts(w)).not.toHaveProperty('playerRecords');
   });
   it('classifies every World key before projection', async () => {
     const { host } = await startedHost();
-    expect(Object.keys(host.world!).every((key) => Object.hasOwn(WORLD_VIEW_FIELDS, key))).toBe(true);
+    expect(Object.keys(host.world!).every((key) => Object.hasOwn(WORLD_VIEW_FIELDS, key))).toBe(
+      true,
+    );
     expect(() => projectWorldFacts({ ...host.world!, futureField: [] } as World)).toThrow();
   });
   it('serializes commands, returns duplicate acknowledgment and rejects stale/session requests', async () => {

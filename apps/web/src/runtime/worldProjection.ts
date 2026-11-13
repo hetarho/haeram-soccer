@@ -115,8 +115,7 @@ export type ViewWorldFacts = Omit<
 export function projectWorldFacts(w: World): ViewWorldFacts {
   const projected: Record<string, unknown> = {};
   for (const key of Object.keys(w) as (keyof World)[]) {
-    if (!Object.hasOwn(WORLD_VIEW_FIELDS, key))
-      throw new Error(message('copy.packing.5ccd8ed532'));
+    if (!Object.hasOwn(WORLD_VIEW_FIELDS, key)) throw new Error(message('copy.packing.5ccd8ed532'));
     if (WORLD_VIEW_FIELDS[key] === 'include') projected[key] = w[key];
   }
   return projected as ViewWorldFacts;

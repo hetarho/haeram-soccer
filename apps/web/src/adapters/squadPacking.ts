@@ -17,7 +17,9 @@ const invalid = () => new Error(message('copy.packing.5ccd8ed532'));
 export function packSquads(squads: NonNullable<World['squads']>): PackedSquads {
   const clubs = Object.keys(squads);
   const players = clubs.flatMap((club) => squads[club]!);
-  const keys = [...new Set(players.flatMap((p) => Object.keys(p)))].filter((key) => key !== 'attrs');
+  const keys = [...new Set(players.flatMap((p) => Object.keys(p)))].filter(
+    (key) => key !== 'attrs',
+  );
   const values: number[] = [],
     exactAttrs: [number, number][] = [];
   for (const player of players) {

@@ -3,7 +3,13 @@ import { playerRecord } from './player-records';
 import type { Club, Line, Player, PlayerMove, World } from '../../contracts/src/types';
 import { currentDay } from './calendar';
 import { fromPounds, inPounds } from './club-value';
-import { currencyChange, npcCanPay, npcWageBill, npcWageLimit, recordNpcTransferFee } from './books';
+import {
+  currencyChange,
+  npcCanPay,
+  npcWageBill,
+  npcWageLimit,
+  recordNpcTransferFee,
+} from './books';
 import { npcContractTerm } from './free-agents';
 import { MARKET_CONFIG, marketValueAt, marketWageAt } from './market-prices';
 import { movePerson } from './npc-continuity';
@@ -33,14 +39,19 @@ export function npcMarketDays(year: number) {
   return [
     [d.summerOpen, d.summerClose],
     [d.winterOpen, d.winterClose],
-  ].map(([open, close]) => NPC_MARKET.days.map((part) => open! + Math.round((close! - open!) * part)));
+  ].map(([open, close]) =>
+    NPC_MARKET.days.map((part) => open! + Math.round((close! - open!) * part)),
+  );
 }
 
 type Need = { line: Line; slot?: Slot; best: number; rank: number };
 type Listing = { club: Club; player: Player; loan: boolean };
 const lines = Object.keys(LINE_MINIMUM) as Line[];
-const compareMoney = (a: bigint, b: bigint) => a > b ? -1 : a < b ? 1 : 0;
-const loanReservations = new WeakMap<World, { records: World['playerRecords']; clubs: Map<string, number> }>();
+const compareMoney = (a: bigint, b: bigint) => (a > b ? -1 : a < b ? 1 : 0);
+const loanReservations = new WeakMap<
+  World,
+  { records: World['playerRecords']; clubs: Map<string, number> }
+>();
 function reservedReturns(w: World, club: string) {
   let index = loanReservations.get(w);
   if (!index || index.records !== w.playerRecords) {
@@ -60,8 +71,12 @@ function canPayFee(w: World, c: Club, fee: string) {
   const b = c.books;
   if (!b) return false;
   const income = b.seasons[0]?.income ?? b.openingIncome ?? '0';
-  const room = BigInt(b.cash) - BigInt(b.debt) + BigInt(b.transfersReceived ?? '0') -
-    BigInt(b.transfersPaid ?? '0') + BigInt(scaleBy(income, CLUB_BOOKS.debtSeasons, 1000n));
+  const room =
+    BigInt(b.cash) -
+    BigInt(b.debt) +
+    BigInt(b.transfersReceived ?? '0') -
+    BigInt(b.transfersPaid ?? '0') +
+    BigInt(scaleBy(income, CLUB_BOOKS.debtSeasons, 1000n));
   return BigInt(fee) <= room;
 }
 
@@ -70,7 +85,8 @@ function affordableLevel(w: World, c: Club, players: Player[]) {
   const limit = npcWageLimit(w, c);
   if (limit === undefined || !players.length) return c.strength;
   const budget = limit / BigInt(NPC_SQUAD.size);
-  let low = 15, high = 99;
+  let low = 15,
+    high = 99;
   const regular = { ...players[0]!, born: w.year - NPC_MARKET.termAge, potential: 0 };
   while (low < high) {
     const mid = Math.ceil((low + high) / 2);
@@ -85,7 +101,8 @@ function needs(w: World, c: Club): Need[] {
   const result: Need[] = [];
   for (const line of lines) {
     const count = players.filter((p) => lineOf(p.position) === line).length;
-    if (count < LINE_MINIMUM[line]) result.push({ line, best: -1, rank: count - LINE_MINIMUM[line] });
+    if (count < LINE_MINIMUM[line])
+      result.push({ line, best: -1, rank: count - LINE_MINIMUM[line] });
   }
   if (players.length < NPC_SQUAD.size) {
     const line = lineOf(refillPlace(clubStyle(c), players));
@@ -101,32 +118,58 @@ function needs(w: World, c: Club): Need[] {
   return result.sort((a, b) => Number(!!a.slot) - Number(!!b.slot) || a.rank - b.rank);
 }
 
-const fills = (p: Player, need: Need) => lineOf(p.position) === need.line &&
+const fills = (p: Player, need: Need) =>
+  lineOf(p.position) === need.line &&
   (!need.slot || slotOvr(p, need.slot) >= need.best + NPC_MARKET.upgrade);
 
 /** One conservative departure gate, also used for the highest-paid sell-down. */
 export function npcCanSell(w: World, c: Club, p: Player) {
   const players = w.squads?.[c.id] ?? [];
   const line = lineOf(p.position);
-  return !p.loanUntil && p.retiring === undefined &&
+  return (
+    !p.loanUntil &&
+    p.retiring === undefined &&
     players.length > Math.max(SQUAD_MINIMUM, NPC_MARKET.minimum) &&
-    players.filter((q) => lineOf(q.position) === line).length > LINE_MINIMUM[line];
+    players.filter((q) => lineOf(q.position) === line).length > LINE_MINIMUM[line]
+  );
 }
 
 function canRegister(w: World, c: Club, p: Player, loan: boolean) {
   const players = w.squads?.[c.id] ?? [];
   const state = clubRegistration(c, w.year, players);
   const returning = reservedReturns(w, c.id);
-  const incoming = { ...p, graduate: undefined, joined: w.year, loanUntil: loan ? w.year + 1 : undefined };
-  return state.total + returning < state.ceiling &&
-    (registrationExempt(state.rule, w.year, incoming) || state.counted + returning < state.allowed);
+  const incoming = {
+    ...p,
+    graduate: undefined,
+    joined: w.year,
+    loanUntil: loan ? w.year + 1 : undefined,
+  };
+  return (
+    state.total + returning < state.ceiling &&
+    (registrationExempt(state.rule, w.year, incoming) || state.counted + returning < state.allowed)
+  );
 }
 
 /** Shared by the NPC market and incoming offers for our players; quotes use the real seller. */
-export function npcOffer(w: World, buyer: Club, p: Player, seller: Club, fee: string, loan = false, wanted = needs(w, buyer)) {
-  if (!/^\d{1,80}$/.test(fee) || buyer.id === w.playerClub || buyer.representative || !w.squads?.[buyer.id] ||
-    buyer.id === seller.id || !wanted.some((n) => fills(p, n)) ||
-    !canRegister(w, buyer, p, loan)) return undefined;
+export function npcOffer(
+  w: World,
+  buyer: Club,
+  p: Player,
+  seller: Club,
+  fee: string,
+  loan = false,
+  wanted = needs(w, buyer),
+) {
+  if (
+    !/^\d{1,80}$/.test(fee) ||
+    buyer.id === w.playerClub ||
+    buyer.representative ||
+    !w.squads?.[buyer.id] ||
+    buyer.id === seller.id ||
+    !wanted.some((n) => fills(p, n)) ||
+    !canRegister(w, buyer, p, loan)
+  )
+    return undefined;
   const limit = npcWageLimit(w, buyer);
   if (limit !== undefined && npcWageBill(w, buyer) > limit) return undefined;
   const wage = marketWageAt(buyer.country, w.year, buyer.tier, p);
@@ -146,14 +189,29 @@ export function recordPlayerMove(w: World, id: string, move: PlayerMove) {
   return record;
 }
 
-function settleMove(w: World, listing: Listing, offer: NonNullable<ReturnType<typeof npcOffer>>, fee: string) {
+function settleMove(
+  w: World,
+  listing: Listing,
+  offer: NonNullable<ReturnType<typeof npcOffer>>,
+  fee: string,
+) {
   const { player: p, club: seller, loan } = listing;
   const record = recordPlayerMove(w, p.id, {
-    year: w.year, day: currentDay(w), from: seller.id, to: offer.club.id, fee,
+    year: w.year,
+    day: currentDay(w),
+    from: seller.id,
+    to: offer.club.id,
+    fee,
     ...(loan ? { loan: true } : {}),
   });
   if (loan) {
-    record.loan = { club: seller.id, until: w.year + 1, wage: p.wage, contractUntil: p.until, year: w.year };
+    record.loan = {
+      club: seller.id,
+      until: w.year + 1,
+      wage: p.wage,
+      contractUntil: p.until,
+      year: w.year,
+    };
     if (p.graduate) record.loan.graduate = true;
     if (p.joined !== undefined) record.loan.joined = p.joined;
     p.loanUntil = w.year + 1;
@@ -178,17 +236,27 @@ export function returnNpcLoans(w: World) {
   loanReservations.delete(w);
   const held = new Map<string, { club: Club; player: Player }>();
   for (const c of w.clubs) {
-    const players = c.id === w.playerClub ? w.players.filter((p) => p.status === 'active') : w.squads?.[c.id] ?? [];
+    const players =
+      c.id === w.playerClub
+        ? w.players.filter((p) => p.status === 'active')
+        : (w.squads?.[c.id] ?? []);
     for (const player of players) held.set(player.id, { club: c, player });
   }
   for (const [id, record] of Object.entries(w.playerRecords ?? {})) {
     const loan = record.loan;
     if (!loan || loan.until > w.year + 1) continue;
-    const current = held.get(id), borrower = current?.club;
+    const current = held.get(id),
+      borrower = current?.club;
     const parent = clubById(w, loan.club);
     const p = current?.player;
     if (p && parent) {
-      recordPlayerMove(w, id, { year: w.year, day: currentDay(w), from: borrower!.id, to: parent.id, fee: '0' });
+      recordPlayerMove(w, id, {
+        year: w.year,
+        day: currentDay(w),
+        from: borrower!.id,
+        to: parent.id,
+        fee: '0',
+      });
       delete p.loanUntil;
       p.wage = currencyChange(parent.country, loan.year, w.year)?.(loan.wage) ?? loan.wage;
       p.until = loan.contractUntil;
@@ -213,18 +281,31 @@ function listings(w: World, clubs: Club[]) {
     let bill = npcWageBill(w, c);
     const sellDown = limit !== undefined && bill > limit;
     const ranked = [...players].sort((a, b) =>
-      sellDown ? compareMoney(BigInt(a.wage), BigInt(b.wage)) || compareIds(a.id, b.id) :
-        mainOvr(a) - mainOvr(b) || compareIds(a.id, b.id));
+      sellDown
+        ? compareMoney(BigInt(a.wage), BigInt(b.wage)) || compareIds(a.id, b.id)
+        : mainOvr(a) - mainOvr(b) || compareIds(a.id, b.id),
+    );
     const remaining = [...players];
     let surplus = Math.max(0, players.length - NPC_SQUAD.size);
     for (const p of ranked) {
       if (!npcCanSell(w, c, p)) continue;
       const line = lineOf(p.position);
-      if (sellDown && (remaining.length <= Math.max(SQUAD_MINIMUM, NPC_MARKET.minimum) ||
-        remaining.filter((q) => lineOf(q.position) === line).length <= LINE_MINIMUM[line])) continue;
-      const blocked = players.filter((q) => lineOf(q.position) === line && mainOvr(q) >= mainOvr(p) + NPC_MARKET.blocked).length >= LINE_MINIMUM[line];
+      if (
+        sellDown &&
+        (remaining.length <= Math.max(SQUAD_MINIMUM, NPC_MARKET.minimum) ||
+          remaining.filter((q) => lineOf(q.position) === line).length <= LINE_MINIMUM[line])
+      )
+        continue;
+      const blocked =
+        players.filter(
+          (q) => lineOf(q.position) === line && mainOvr(q) >= mainOvr(p) + NPC_MARKET.blocked,
+        ).length >= LINE_MINIMUM[line];
       if (sellDown ? bill <= limit! : !(surplus > 0 || blocked || p.until <= w.year)) continue;
-      listed.push({ club: c, player: p, loan: !sellDown && (blocked || surplus > 0) && w.year - p.born <= NPC_MARKET.loanAge });
+      listed.push({
+        club: c,
+        player: p,
+        loan: !sellDown && (blocked || surplus > 0) && w.year - p.born <= NPC_MARKET.loanAge,
+      });
       if (sellDown) {
         remaining.splice(remaining.indexOf(p), 1);
         bill -= BigInt(p.wage);
@@ -240,48 +321,104 @@ export function npcMarket(w: World) {
   const days = npcMarketDays(w.year).find((dates) => dates.includes(day));
   if (!days || (w.npcMarketAt?.year === w.year && w.npcMarketAt.day >= day)) return;
   w.npcMarketAt = { year: w.year, day };
-  const clubs = w.clubs.filter((c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id]);
+  const clubs = w.clubs.filter(
+    (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
+  );
   const counts = new Map<string, number>();
   for (const record of Object.values(w.playerRecords ?? {}))
     for (const move of record.moves)
       if (move.year === w.year && move.day >= days[0]! && move.day <= days.at(-1)!)
         for (const id of [move.from, move.to]) counts.set(id, (counts.get(id) ?? 0) + 1);
   const listed = listings(w, clubs);
-  const tie = new Map(listed.map(({ player }) => [player.id,
-    random(`${w.seed}:npc-market:${w.year}:${day}:${player.id}`)()]));
-  const byLine = new Map(lines.map((line) => [line, listed.filter((l) => lineOf(l.player.position) === line)]));
-  const buyers = [...clubs].sort((a, b) => stature(w.seed, b.id) - stature(w.seed, a.id) || compareIds(a.id, b.id));
+  const tie = new Map(
+    listed.map(({ player }) => [
+      player.id,
+      random(`${w.seed}:npc-market:${w.year}:${day}:${player.id}`)(),
+    ]),
+  );
+  const byLine = new Map(
+    lines.map((line) => [line, listed.filter((l) => lineOf(l.player.position) === line)]),
+  );
+  const buyers = [...clubs].sort(
+    (a, b) => stature(w.seed, b.id) - stature(w.seed, a.id) || compareIds(a.id, b.id),
+  );
   const wanted = new Map(clubs.map((c) => [c.id, needs(w, c)]));
   const moved = new Set<string>();
   for (const buyer of buyers) {
     while ((counts.get(buyer.id) ?? 0) < NPC_MARKET.moves) {
       let completed = false;
       for (const need of wanted.get(buyer.id)!) {
-        const pool = (byLine.get(need.line) ?? []).filter((l) =>
-          l.club !== buyer && !moved.has(l.player.id) && npcCanSell(w, l.club, l.player) && fills(l.player, need));
-        pool.sort((a, b) =>
-          (need.slot ? slotOvr(b.player, need.slot) - slotOvr(a.player, need.slot) : mainOvr(b.player) - mainOvr(a.player)) ||
-          tie.get(a.player.id)! - tie.get(b.player.id)! || compareIds(a.player.id, b.player.id));
+        const pool = (byLine.get(need.line) ?? []).filter(
+          (l) =>
+            l.club !== buyer &&
+            !moved.has(l.player.id) &&
+            npcCanSell(w, l.club, l.player) &&
+            fills(l.player, need),
+        );
+        pool.sort(
+          (a, b) =>
+            (need.slot
+              ? slotOvr(b.player, need.slot) - slotOvr(a.player, need.slot)
+              : mainOvr(b.player) - mainOvr(a.player)) ||
+            tie.get(a.player.id)! - tie.get(b.player.id)! ||
+            compareIds(a.player.id, b.player.id),
+        );
         for (const listing of pool) {
           const limit = npcWageLimit(w, listing.club);
           const sellingDown = limit !== undefined && npcWageBill(w, listing.club) > limit;
           if (!sellingDown && (counts.get(listing.club.id) ?? 0) >= NPC_MARKET.moves) continue;
-          const value = marketValueAt(listing.club.country, w.year, listing.club.tier, listing.player);
-          const fee = listing.loan ? ratio(value, BigInt(Math.round(MARKET_CONFIG.loan * 1000)), 1000n) : value;
-          const ownOffer = npcOffer(w, buyer, listing.player, listing.club, fee, listing.loan, wanted.get(buyer.id));
+          const value = marketValueAt(
+            listing.club.country,
+            w.year,
+            listing.club.tier,
+            listing.player,
+          );
+          const fee = listing.loan
+            ? ratio(value, BigInt(Math.round(MARKET_CONFIG.loan * 1000)), 1000n)
+            : value;
+          const ownOffer = npcOffer(
+            w,
+            buyer,
+            listing.player,
+            listing.club,
+            fee,
+            listing.loan,
+            wanted.get(buyer.id),
+          );
           if (!ownOffer) continue;
           // Equal-stature contenders compare their actual wages in one currency.
-          const offers = buyers.filter((c) => (counts.get(c.id) ?? 0) < NPC_MARKET.moves &&
-            stature(w.seed, c.id) >= stature(w.seed, buyer.id)).flatMap((c) => {
-            const offer = c === buyer ? ownOffer : npcOffer(w, c, listing.player, listing.club, fee, listing.loan, wanted.get(c.id));
-            return offer ? [offer] : [];
-          });
-          offers.sort((a, b) => stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
-            compareMoney(a.pounds, b.pounds) || compareIds(a.club.id, b.club.id));
+          const offers = buyers
+            .filter(
+              (c) =>
+                (counts.get(c.id) ?? 0) < NPC_MARKET.moves &&
+                stature(w.seed, c.id) >= stature(w.seed, buyer.id),
+            )
+            .flatMap((c) => {
+              const offer =
+                c === buyer
+                  ? ownOffer
+                  : npcOffer(
+                      w,
+                      c,
+                      listing.player,
+                      listing.club,
+                      fee,
+                      listing.loan,
+                      wanted.get(c.id),
+                    );
+              return offer ? [offer] : [];
+            });
+          offers.sort(
+            (a, b) =>
+              stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
+              compareMoney(a.pounds, b.pounds) ||
+              compareIds(a.club.id, b.club.id),
+          );
           const winner = offers[0]!;
           settleMove(w, listing, winner, fee);
           moved.add(listing.player.id);
-          for (const id of [listing.club.id, winner.club.id]) counts.set(id, (counts.get(id) ?? 0) + 1);
+          for (const id of [listing.club.id, winner.club.id])
+            counts.set(id, (counts.get(id) ?? 0) + 1);
           wanted.set(listing.club.id, needs(w, listing.club));
           wanted.set(winner.club.id, needs(w, winner.club));
           completed = true;

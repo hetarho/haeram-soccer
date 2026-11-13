@@ -285,11 +285,7 @@ export function developAnnually(
     gap = Math.max(0, player.potential - mainOvr(player)),
     variation = random(`${w.seed}:growth:${player.id}:${context.year}`);
   const growth =
-    age < 27
-      ? Math.min(3, (gap / 20 + context.youth / 100) * context.ground)
-      : age <= 30
-        ? 0.3
-        : 0;
+    age < 27 ? Math.min(3, (gap / 20 + context.youth / 100) * context.ground) : age <= 30 ? 0.3 : 0;
   const growing = (a: Attribute) => age <= AGEING[a].growUntil;
   const before = mainOvr(player);
   // A season's growth reaches the main OVR whole. Under 27 its noise rides inside it, so it never

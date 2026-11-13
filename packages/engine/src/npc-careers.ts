@@ -14,7 +14,13 @@ import { departmentMultiplier } from './staff';
 import { clubStyle } from './tactics';
 import { marketWageAt } from './market-prices';
 import { npcCanPay } from './books';
-import { capFreeAgents, closeFreeAgents, joinFreeAgents, npcContractTerm, refreshFreeAgents } from './free-agents';
+import {
+  capFreeAgents,
+  closeFreeAgents,
+  joinFreeAgents,
+  npcContractTerm,
+  refreshFreeAgents,
+} from './free-agents';
 import { SQUAD_MINIMUM } from './squad-size';
 import { compareIds } from './primitives';
 import { currentDay } from './calendar';
@@ -116,7 +122,11 @@ export function intakeNpcYouth(w: World, c: Club, year = w.year + 1, used = npcY
     const r = random(`${w.seed}:youth:${id}`);
     const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
     const potential = integer(r, config.potential[0], config.potential[1]);
-    const level = clamp(potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]), 15, 92);
+    const level = clamp(
+      potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]),
+      15,
+      92,
+    );
     const p = generatedPlayer(
       c.country,
       w.seed,
@@ -145,15 +155,22 @@ export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
   const players = w.squads?.[c.id];
   if (!players) return;
   const xi = new Set(startingSquad(w, c).map((p) => p.id));
-  const expiring = players.filter((p) => p.until < year)
-    .sort((a, b) => Number(xi.has(b.id)) - Number(xi.has(a.id)) ||
-      mainOvr(b) - mainOvr(a) || compareIds(a.id, b.id));
+  const expiring = players
+    .filter((p) => p.until < year)
+    .sort(
+      (a, b) =>
+        Number(xi.has(b.id)) - Number(xi.has(a.id)) ||
+        mainOvr(b) - mainOvr(a) ||
+        compareIds(a.id, b.id),
+    );
   // Release surplus first, so its old contracts do not consume the renewal budget.
   const renewing: Player[] = [];
   for (const p of [...expiring].reverse()) {
     const current = w.squads![c.id]!;
     const line = lineOf(p.position);
-    const needed = xi.has(p.id) || current.length <= SQUAD_MINIMUM ||
+    const needed =
+      xi.has(p.id) ||
+      current.length <= SQUAD_MINIMUM ||
       current.filter((q) => lineOf(q.position) === line).length <= LINE_MINIMUM[line];
     if (needed) renewing.push(p);
     else joinFreeAgents(w, p, year);
@@ -171,12 +188,13 @@ export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
 
 /** Both worlds close the same windows; the summer safety net uses the existing youth intake. */
 export function closeNpcWindow(w: World) {
-  const day = currentDay(w), dates = transferWindowDays(w.year);
+  const day = currentDay(w),
+    dates = transferWindowDays(w.year);
   let used: Set<string> | undefined;
   if (day === dates.summerClose)
     for (const c of w.clubs)
       if (c.id !== w.playerClub && !c.representative && w.squads?.[c.id] && npcNeedsRefill(w, c))
-        intakeNpcYouth(w, c, w.year, used ??= npcYouthIds(w));
+        intakeNpcYouth(w, c, w.year, (used ??= npcYouthIds(w)));
   if (day === dates.summerClose || day === dates.winterClose) refreshNpcSquads(w);
 }
 
@@ -193,8 +211,11 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
   const retiring = (p: Player) => {
     const person = w.people?.[p.id];
     const year = person?.retirement?.year ?? p.retiring;
-    return person?.playing === 'retired' || (year !== undefined && year <= w.year) ||
-      w.year + 1 - p.born >= RETIREMENT.lastAge;
+    return (
+      person?.playing === 'retired' ||
+      (year !== undefined && year <= w.year) ||
+      w.year + 1 - p.born >= RETIREMENT.lastAge
+    );
   };
   for (const [id, players] of Object.entries(w.squads ?? {})) {
     const c = clubById(w, id);

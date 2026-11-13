@@ -8,7 +8,15 @@ import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
 import { simulateAggregate } from './aggregate/engine';
 import { nextOwnFixture } from './calendar';
 import { type DecideRule } from './match/rules';
-import { closeSeason, eloOf, finishCups, finishEurope, ownLeagueClubs, promote, simulateSeason } from './index';
+import {
+  closeSeason,
+  eloOf,
+  finishCups,
+  finishEurope,
+  ownLeagueClubs,
+  promote,
+  simulateSeason,
+} from './index';
 import { playFixture, tieRule } from './knockout';
 import { simulateMatch } from './match';
 import { appearanceForFixture } from './match-appearance';
@@ -83,13 +91,15 @@ describe('closed season archive', () => {
     finishCups(expected);
     finishEurope(expected);
     promote(expected);
-    const playoff = expected.npcSeason!.competitions.find((c) => c.kind === 'playoff' && c.groupKey.includes('ESP'))!;
+    const playoff = expected.npcSeason!.competitions.find(
+      (c) => c.kind === 'playoff' && c.groupKey.includes('ESP'),
+    )!;
     expect(playoff.players.length).toBeGreaterThan(0);
     const p = playoff.players[0]!;
     // Keep this observed identity regardless of whether he retires at this close.
     (w.playerRecords ??= {})[p.id] = { moves: [], linked: true };
-    const parts = expected.npcSeason!.competitions.flatMap((c) =>
-      c.players.find((player) => player.id === p.id)?.clubs ?? [],
+    const parts = expected.npcSeason!.competitions.flatMap(
+      (c) => c.players.find((player) => player.id === p.id)?.clubs ?? [],
     );
     closeSeason(w);
     const actual = w.playerRecords![p.id]!.lines!.filter((line) => line.year === expected.year);

@@ -73,7 +73,8 @@ describe('source prose and display translation', () => {
     const english: LocalePack = JSON.parse(readFileSync(new URL('en-GB.json', directory), 'utf8'));
     const saved = Object.freeze({
       title: '인수, 대형 투자 유치',
-      detail: '새 구단주와 대규모 투자로 앞으로 몇 시즌 동안 전력이 크게 오를 전망이에요. 지금 전력 64.',
+      detail:
+        '새 구단주와 대규모 투자로 앞으로 몇 시즌 동안 전력이 크게 오를 전망이에요. 지금 전력 64.',
     });
     select(english.messages);
     expect(localizeText(saved.title)).toBe('인수 attracts large investments');

@@ -1,5 +1,9 @@
 import { packSquads, unpackSquads, type PackedSquads } from './squadPacking';
-import { packPlayerRecords, unpackPlayerRecords, type PackedPlayerRecords } from './playerRecordPacking';
+import {
+  packPlayerRecords,
+  unpackPlayerRecords,
+  type PackedPlayerRecords,
+} from './playerRecordPacking';
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
 import { packAppearances, readAppearances, type PackedAppearances } from './identityPacking';
@@ -752,7 +756,8 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   const squads = p.squads === undefined ? undefined : unpackSquads(p.squads);
   if (p.playerRecords !== undefined && p.world.playerRecords !== undefined)
     throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
-  const playerRecords = p.playerRecords === undefined ? undefined : unpackPlayerRecords(p.playerRecords);
+  const playerRecords =
+    p.playerRecords === undefined ? undefined : unpackPlayerRecords(p.playerRecords);
   const people =
     p.careers === undefined
       ? undefined

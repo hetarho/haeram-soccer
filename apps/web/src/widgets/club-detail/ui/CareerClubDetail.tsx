@@ -350,7 +350,11 @@ function CareerClubDetail({
             <small>
               {localizeValue(clubDivision(w, club))}
               {localizeValue(ours ? sourceMessage('copy.CareerClubDetail.0f7a9c5edf') : '')}
-              {localizeValue(club.representative && club.project ? sourceMessage('copy.CareerClubDetail.8285a435f0') : '')}
+              {localizeValue(
+                club.representative && club.project
+                  ? sourceMessage('copy.CareerClubDetail.8285a435f0')
+                  : '',
+              )}
             </small>
             {localizeValue(
               !ours && (

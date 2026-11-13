@@ -34,7 +34,13 @@ describe('persisted squad columns on a small isolated fixture', () => {
       players = w.squads!.foreign!;
     players[0]!.attrs.passing = 63.27;
     players[1]!.attrs.reflexes = 40.123456789;
-    players[1]!.talk = { kind: 'renew', demand: '9007199254740993', floor: '42', year: 1950, day: 3 };
+    players[1]!.talk = {
+      kind: 'renew',
+      demand: '9007199254740993',
+      floor: '42',
+      year: 1950,
+      day: 3,
+    };
     players[1]!.loanUntil = 1952;
     const squads = { empty: [], foreign: players, other: [w.players[0]!] };
     expect(unpackSquads(plain(packSquads(squads)))).toEqual(squads);

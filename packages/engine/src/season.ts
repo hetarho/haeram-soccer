@@ -52,7 +52,14 @@ import { COUNTRIES } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
 import { activePlayers, clubOf } from './player-state';
 import { addEvent } from './events';
-import { joinClub, makePlayer, ownStarters, refillPosition, rating, refreshNpcSquads } from './world';
+import {
+  joinClub,
+  makePlayer,
+  ownStarters,
+  refillPosition,
+  rating,
+  refreshNpcSquads,
+} from './world';
 import { lineOf } from './player';
 import {
   applyClauses,

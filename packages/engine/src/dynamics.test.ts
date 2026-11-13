@@ -34,7 +34,9 @@ describe('scripted representative summers', () => {
     const p = random(`${w.seed}:project:${w.year}:${c.id}`);
     expect(p()).toBeGreaterThanOrEqual(EVOLUTION.project.chance);
     const r = random(`${w.seed}:evolve:${w.year}:${c.id}`);
-    let next = c.strength + (68 + stature(w.seed, c.id) + project - c.strength) * EVOLUTION.reversion +
+    let next =
+      c.strength +
+      (68 + stature(w.seed, c.id) + project - c.strength) * EVOLUTION.reversion +
       (r() + r() + r() - 1.5) * EVOLUTION.luck;
     const event = r();
     if (event < EVOLUTION.takeover.chance)
@@ -43,6 +45,8 @@ describe('scripted representative summers', () => {
       next -= EVOLUTION.crisis.min + r() * (EVOLUTION.crisis.max - EVOLUTION.crisis.min);
     evolveClubs(w, new Map());
     expect(c.project).toBe(project);
-    expect(c.strength).toBe(Math.round(Math.max(EVOLUTION.floor, Math.min(EVOLUTION.ceiling, next))));
+    expect(c.strength).toBe(
+      Math.round(Math.max(EVOLUTION.floor, Math.min(EVOLUTION.ceiling, next))),
+    );
   });
 });

@@ -28,11 +28,7 @@ import { clubManager } from './managerMarket';
 import { continuousSquad, materializePeople, movePerson, returnLoan } from './npc-continuity';
 import { closeDisciplineSeason, recordNpcInjury } from './discipline';
 import { crossWar } from './wartime';
-import {
-  joinFreeAgents,
-  refreshFreeAgents,
-  signFreeAgentAtClose,
-} from './free-agents';
+import { joinFreeAgents, refreshFreeAgents, signFreeAgentAtClose } from './free-agents';
 import { respondBid } from './transfers';
 import { signFreeAgent } from './ops-squad';
 import { clubPlayer, freeAgentTerms, worldMarketPage } from './world-market';
@@ -62,15 +58,13 @@ function fixture(year = 1950, owner = true): World {
     reputation: 40,
   }));
   w.clubs.push(
-    ...['HUN', 'SCO'].map(
-      (country): Club => ({
-        ...model,
-        id: `euro:${country}`,
-        name: country,
-        country,
-        representative: true,
-      }),
-    ),
+    ...['HUN', 'SCO'].map((country): Club => ({
+      ...model,
+      id: `euro:${country}`,
+      name: country,
+      country,
+      representative: true,
+    })),
   );
   w.playerClub = owner ? w.clubs[0]!.id : '';
   if (!owner) w.players = [];
@@ -139,7 +133,8 @@ describe('persisted playable squads', () => {
   });
 
   it.each([false, true])('adopts legacy current affiliations once (loan=%s)', (loan) => {
-    const w = worldMarketFixture(), c = w.clubs[1]!;
+    const w = worldMarketFixture(),
+      c = w.clubs[1]!;
     w.clubs[2]!.representative = true;
     const native = continuousSquad(w, c);
     const purchased = structuredClone(native[4]!);
@@ -155,7 +150,9 @@ describe('persisted playable squads', () => {
     joinFreeAgents(w, released, w.year);
     const expected = continuousSquad(w, c);
     // An already archived podium keeps a still-live profile when the registry is adopted.
-    w.history = [{ year: w.year - 1, ballonDor: [{ id: native[6]!.id }, { id: 'unavailable-old-profile' }] }] as World['history'];
+    w.history = [
+      { year: w.year - 1, ballonDor: [{ id: native[6]!.id }, { id: 'unavailable-old-profile' }] },
+    ] as World['history'];
     // The old raw founding would redraw this active own player's id at his origin.
     expect(npcSquad(w.seed, w.year, c).some((p) => p.id === purchased.id)).toBe(true);
     const original = structuredClone(w);
@@ -167,7 +164,9 @@ describe('persisted playable squads', () => {
     expect(adopted.players.find((p) => p.id === purchased.id)).toEqual(purchased);
     expect(adopted.freeAgents!.find((p) => p.id === released.id)).toEqual(w.freeAgents![0]);
     expect(adopted.squads![c.id]!.slice(0, expected.length)).toEqual(expected);
-    expect(adopted.squads![c.id]!.some((p) => [purchased.id, released.id].includes(p.id))).toBe(false);
+    expect(adopted.squads![c.id]!.some((p) => [purchased.id, released.id].includes(p.id))).toBe(
+      false,
+    );
     expect(adopted.players.find((p) => p.id === purchased.id)!.career[0]).toBe(9);
     liveIds(adopted);
     const held = structuredClone(adopted.squads);
@@ -205,7 +204,7 @@ describe('persisted playable squads', () => {
       c = w.clubs[1]!,
       selected = squad(w, c),
       starter = selected[0]!;
-    const f = { kind: 'league' as const };
+    const f = { kind: 'league' as const, groupKey: `${c.country}:${c.tier}:${c.group}` };
     recordNpcInjury(w, starter.id, c.id, 500);
     const replacement = startingSquad(w, c, f)[0]!;
     expect(replacement.id).not.toBe(starter.id);
@@ -277,7 +276,9 @@ describe('persisted playable squads', () => {
     ours.graduate = true;
     liveIds(w);
     // The bidder has a real vacancy and books that can carry the agreed fee and contract.
-    w.squads![buyer.id] = w.squads![buyer.id]!.filter((q) => lineOf(q.position) !== lineOf(ours.position));
+    w.squads![buyer.id] = w.squads![buyer.id]!.filter(
+      (q) => lineOf(q.position) !== lineOf(ours.position),
+    );
     buyer.books = { seasons: [], cash: '999999999999', debt: '0', openingIncome: '999999999999' };
     respondBid(w, bid(w, ours, buyer.id, 'in').id, true);
     const sold = w.squads![buyer.id]!.find((q) => q.id === p.id)!;
@@ -321,27 +322,36 @@ describe('persisted playable squads', () => {
     liveIds(w);
     returnLoan(w, loaned);
     liveIds(w);
-    expect(w.squads![c.id]!.find((q) => q.id === p.id)).toMatchObject({ attrs: p.attrs, born: p.born });
+    expect(w.squads![c.id]!.find((q) => q.id === p.id)).toMatchObject({
+      attrs: p.attrs,
+      born: p.born,
+    });
     expect(loaned.status).toBe('sold');
   });
 
-  it.each(['immediate', 'close'])('a %s free signing restores one live row and its career', (how) => {
-    const w = fixture(),
-      p = w.players[5]!;
-    p.career[0] = 12;
-    p.graduate = true;
-    movePerson(w, p, undefined, true);
-    expect(joinFreeAgents(w, p, w.year)).toBe(true);
-    liveIds(w);
-    const agent = w.freeAgents![0]!;
-    if (how === 'immediate') signFreeAgent(w, { player: freeAgentTerms(w, agent).player });
-    else expect(signFreeAgentAtClose(w, lineOf(p.position), 100)).toBeDefined();
-    liveIds(w);
-    expect(w.freeAgents).toHaveLength(0);
-    expect(w.players.filter((q) => q.id === p.id)).toHaveLength(1);
-    expect(w.players.find((q) => q.id === p.id)).toMatchObject({ status: 'active', graduate: true });
-    expect(w.players.find((q) => q.id === p.id)!.career[0]).toBe(12);
-  });
+  it.each(['immediate', 'close'])(
+    'a %s free signing restores one live row and its career',
+    (how) => {
+      const w = fixture(),
+        p = w.players[5]!;
+      p.career[0] = 12;
+      p.graduate = true;
+      movePerson(w, p, undefined, true);
+      expect(joinFreeAgents(w, p, w.year)).toBe(true);
+      liveIds(w);
+      const agent = w.freeAgents![0]!;
+      if (how === 'immediate') signFreeAgent(w, { player: freeAgentTerms(w, agent).player });
+      else expect(signFreeAgentAtClose(w, lineOf(p.position), 100)).toBeDefined();
+      liveIds(w);
+      expect(w.freeAgents).toHaveLength(0);
+      expect(w.players.filter((q) => q.id === p.id)).toHaveLength(1);
+      expect(w.players.find((q) => q.id === p.id)).toMatchObject({
+        status: 'active',
+        graduate: true,
+      });
+      expect(w.players.find((q) => q.id === p.id)!.career[0]).toBe(12);
+    },
+  );
 
   it('reads every persisted market player, including those outside the eighteen, without a redraw', () => {
     const w = fixture(),
@@ -389,7 +399,9 @@ describe('persisted playable squads', () => {
       c = w.clubs[1]!,
       p = w.squads![c.id]![0]!;
     const before = structuredClone(p);
-    w.squads![c.id] = w.squads![c.id]!.filter((q) => lineOf(q.position) !== lineOf(p.position) || q.id === p.id);
+    w.squads![c.id] = w.squads![c.id]!.filter(
+      (q) => lineOf(q.position) !== lineOf(p.position) || q.id === p.id,
+    );
     joinFreeAgents(w, p, w.year);
     expect(w.squads![c.id]!.some((q) => q.id === p.id)).toBe(false);
     liveIds(w);

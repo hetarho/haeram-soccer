@@ -3,12 +3,23 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import { npcBooksFixture } from './npc-books.testkit';
 import { moveSquadPlayer } from './persisted-squads';
 import { closeNpcSummer, settleNpcGrowth } from './npc-careers';
-import { clubPlayers, clubStrength, invalidateNpcSquad, makePlayer, squad, startingSquad, xiRating } from './world';
+import {
+  clubPlayers,
+  clubStrength,
+  invalidateNpcSquad,
+  makePlayer,
+  squad,
+  startingSquad,
+  xiRating,
+} from './world';
 import { clubStyle } from './tactics';
 import { evolveClubs } from './dynamics';
 import { setNpcLevel } from './testing';
 
-function expected(w: ReturnType<typeof npcBooksFixture>['w'], c: ReturnType<typeof npcBooksFixture>['c']) {
+function expected(
+  w: ReturnType<typeof npcBooksFixture>['w'],
+  c: ReturnType<typeof npcBooksFixture>['c'],
+) {
   return xiRating(startingSquad(w, c), clubStyle(c));
 }
 

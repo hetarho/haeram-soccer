@@ -86,7 +86,10 @@ export function announceNpcRetirements(w: World) {
   if (w.npcSeason?.year === w.year)
     for (const competition of w.npcSeason.competitions)
       for (const p of competition.players)
-        minutes.set(p.id, (minutes.get(p.id) ?? 0) + p.clubs.reduce((n, c) => n + c.metrics[10]!, 0));
+        minutes.set(
+          p.id,
+          (minutes.get(p.id) ?? 0) + p.clubs.reduce((n, c) => n + c.metrics[10]!, 0),
+        );
   const live = new Set<string>();
   for (const players of Object.values(w.squads ?? {})) {
     const starters = new Set(players.slice(0, 11).map((p) => p.id));

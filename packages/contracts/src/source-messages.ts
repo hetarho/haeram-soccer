@@ -1433,14 +1433,11 @@ export const sourceMessages = {
   'copy.influences.d1cc8d2916': 'FFP 시대와 한도 적용',
   'copy.influences.37147f7020': '등록 제한 변화',
   'copy.influences.362e156ec0': '다른 구단의 성장·쇠퇴·투자와 조직력',
-  'copy.influences.e6f8512aa0':
-    '인수 전후의 상대 구단은 선수·계약·조직력과 함께 달라집니다.',
-  'copy.influences.7897c84fb0':
-    '선수단과 선수 성장',
+  'copy.influences.e6f8512aa0': '인수 전후의 상대 구단은 선수·계약·조직력과 함께 달라집니다.',
+  'copy.influences.7897c84fb0': '선수단과 선수 성장',
   'copy.influences.0449b55136':
     '선발 11명의 기량이 조직력과 피로를 적용하기 전의 구단 전력을 결정합니다.',
-  'copy.influences.a799e7ef8e':
-    '선수 이동과 세대 교체',
+  'copy.influences.a799e7ef8e': '선수 이동과 세대 교체',
   'copy.influences.6905eea8e2': '시간에 따라 라이벌 구도와 선수단이 달라집니다.',
   'copy.influences.2310663dbf': '구단의 조직력·감독·승강 등 변화',
   'copy.influences.600de29d69': '선수 구성의 수준 외에도 경기에서 발휘하는 기량을 바꿉니다.',

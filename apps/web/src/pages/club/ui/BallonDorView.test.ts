@@ -14,7 +14,8 @@ vi.mock('../../../entities/club', () => ({
 }));
 vi.mock('../../../entities/player', async (original) => ({
   ...(await original<typeof import('../../../entities/player')>()),
-  PlayerLink: ({ id, name }: { id: string; name: string }) => createElement('button', { 'data-player': id }, name),
+  PlayerLink: ({ id, name }: { id: string; name: string }) =>
+    createElement('button', { 'data-player': id }, name),
 }));
 
 const place = (id: string, club: string, points: number): BallonDorPlace => ({

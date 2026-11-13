@@ -142,8 +142,7 @@ export class FixtureReplicaWriter {
             id,
             players
               .filter(
-                (p) =>
-                  attributeTexts.get(id)!.get(p.id) !== previous.attributes.get(id)?.get(p.id),
+                (p) => attributeTexts.get(id)!.get(p.id) !== previous.attributes.get(id)?.get(p.id),
               )
               .map((p) => [p.id, ATTRIBUTES.map((a) => p.attrs[a]), p.developed ?? null]),
           ]),
@@ -235,7 +234,11 @@ function replaceFields(target: object, source: object) {
 }
 
 /** Preserve insertion order and unchanged registry references, including empty registries. */
-function applyRegistry<T>(current: Record<string, T> | undefined, rows: Changes<T>, present: boolean) {
+function applyRegistry<T>(
+  current: Record<string, T> | undefined,
+  rows: Changes<T>,
+  present: boolean,
+) {
   if (!present) {
     if (rows.put.length || rows.order?.length) throw new Error('Absent people registry');
     return undefined;
@@ -250,7 +253,9 @@ function applyRegistry<T>(current: Record<string, T> | undefined, rows: Changes<
     [...records.keys()].some((id) => !Object.hasOwn(current ?? {}, id))
   )
     throw new Error('Missing people order');
-  return Object.fromEntries((rows.order ?? [...records.keys()]).map((id) => [id, records.get(id)!]));
+  return Object.fromEntries(
+    (rows.order ?? [...records.keys()]).map((id) => [id, records.get(id)!]),
+  );
 }
 
 function applyAttributeColumns(copy: FixtureReadCopy, patch: Patch) {
@@ -337,7 +342,8 @@ export class FixtureReplicaReader {
           (copy.squads !== undefined &&
             (!object(copy.squads) ||
               Object.values(copy.squads).some(
-                (ps) => !Array.isArray(ps) || ps.some((p) => !object(p) || typeof p.id !== 'string'),
+                (ps) =>
+                  !Array.isArray(ps) || ps.some((p) => !object(p) || typeof p.id !== 'string'),
               ))) ||
           (copy.people !== undefined &&
             (!object(copy.people) ||

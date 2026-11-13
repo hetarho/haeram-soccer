@@ -1,4 +1,10 @@
-import type { Club, Player, PlayerProfileRead, Staff, World } from '../../../../packages/contracts/src/types';
+import type {
+  Club,
+  Player,
+  PlayerProfileRead,
+  Staff,
+  World,
+} from '../../../../packages/contracts/src/types';
 import type { ClubPost, ClubProfile } from '../../../../packages/contracts/src/owner';
 import { continuousSquad } from '../../../../packages/engine/src/npc-continuity';
 import { squad } from '../../../../packages/engine/src/world';
@@ -95,13 +101,30 @@ export function clubProfile(w: World, clubId: string): ClubProfile | undefined {
 }
 
 /** Every supported identity link resolves without drawing a replacement for a persisted player. */
-export function squadPlayer(w: World, playerId: string, clubId?: string): PlayerProfileRead | undefined {
+export function squadPlayer(
+  w: World,
+  playerId: string,
+  clubId?: string,
+): PlayerProfileRead | undefined {
   const record = w.playerRecords?.[playerId];
-  const read = (player: Player, kind: PlayerProfileRead['kind'], club?: string): PlayerProfileRead =>
-    structuredClone({ player, kind, ...(club ? { club } : {}), lines: record?.lines ?? [],
-      ...(kind === 'retired' && record?.retired ? {
-        retired: { year: record.retired.year, ...(record.retired.club ? { club: record.retired.club } : {}) },
-      } : {}),
+  const read = (
+    player: Player,
+    kind: PlayerProfileRead['kind'],
+    club?: string,
+  ): PlayerProfileRead =>
+    structuredClone({
+      player,
+      kind,
+      ...(club ? { club } : {}),
+      lines: record?.lines ?? [],
+      ...(kind === 'retired' && record?.retired
+        ? {
+            retired: {
+              year: record.retired.year,
+              ...(record.retired.club ? { club: record.retired.club } : {}),
+            },
+          }
+        : {}),
     });
   const own = w.players.find((p) => p.id === playerId);
   if (own) return read(own, 'own', w.playerClub);

@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
-  booksClose, booksOpen, currencyChange, npcCanPay, npcWageBill, npcWageLimit,
-  recordNpcTransferFee, settleNpcBooks,
+  booksClose,
+  booksOpen,
+  currencyChange,
+  npcCanPay,
+  npcWageBill,
+  npcWageLimit,
+  recordNpcTransferFee,
+  settleNpcBooks,
 } from './books';
 import { npcBooksFixture } from './npc-books.testkit';
 import { CLUB_LEVELS } from './persisted-squads';
@@ -17,9 +23,11 @@ describe('NPC contract books on an isolated squad', () => {
     const book = settleNpcBooks(w, c).seasons[0]!;
     expect(book.wages).toBe(wages.toString());
     expect(npcWageBill(w, c)).toBe(wages);
-    expect(book.wages).not.toBe(players.reduce(
-      (sum, p) => sum + BigInt(marketWageAt(c.country, w.year, c.tier, p)), 0n,
-    ).toString());
+    expect(book.wages).not.toBe(
+      players
+        .reduce((sum, p) => sum + BigInt(marketWageAt(c.country, w.year, c.tier, p)), 0n)
+        .toString(),
+    );
     expect(BigInt(book.result)).toBe(BigInt(book.income) - wages - BigInt(book.costs));
   });
 
@@ -67,7 +75,9 @@ describe('NPC contract books on an isolated squad', () => {
     recordNpcTransferFee(w, c, '3', false);
     const book = settleNpcBooks(w, c).seasons[0]!;
     expect(book).toMatchObject({ transfersPaid: '23', transfersReceived: '70' });
-    expect(BigInt(book.result)).toBe(BigInt(book.income) - BigInt(book.wages) - BigInt(book.costs) + 47n);
+    expect(BigInt(book.result)).toBe(
+      BigInt(book.income) - BigInt(book.wages) - BigInt(book.costs) + 47n,
+    );
     expect(c.books!.transfersPaid).toBeUndefined();
     expect(c.books!.transfersReceived).toBeUndefined();
     w.year++;
@@ -95,9 +105,14 @@ describe('NPC contract books on an isolated squad', () => {
       const probe = structuredClone(w);
       const book = settleNpcBooks(probe, probe.clubs[1]!).seasons[0]!;
       const income = BigInt(book.income);
-      c.books.cash = (BigInt(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n)) + income - BigInt(book.result)).toString();
+      c.books.cash = (
+        BigInt(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n)) +
+        income -
+        BigInt(book.result)
+      ).toString();
       settleNpcBooks(w, c);
-      if (year === 1950) expect(c.levels).toEqual({ academy: 1, ground: 2, coaching: 3, progress: 0.5 });
+      if (year === 1950)
+        expect(c.levels).toEqual({ academy: 1, ground: 2, coaching: 3, progress: 0.5 });
     }
     expect(c.levels).toEqual({ academy: 2, ground: 3, coaching: 4, progress: 0 });
   });
@@ -117,14 +132,18 @@ describe('NPC contract books on an isolated squad', () => {
     const { w, c, players } = npcBooksFixture(1998);
     c.country = 'FRA';
     booksOpen(w);
-    players.forEach((p, i) => { p.wage = String(10000 + i); });
+    players.forEach((p, i) => {
+      p.wage = String(10000 + i);
+    });
     const old = players.map((p) => p.wage);
     const bill = npcWageBill(w, c);
     const book = settleNpcBooks(w, c).seasons[0]!;
     const change = currencyChange('FRA', 1998, 1999)!;
     expect(book.wages).toBe(bill.toString());
     expect(players.map((p) => p.wage)).toEqual(old.map(change));
-    expect(npcWageLimit(w, c, 1999)).toBe(BigInt(change((BigInt(book.income) - BigInt(book.costs)).toString())));
+    expect(npcWageLimit(w, c, 1999)).toBe(
+      BigInt(change((BigInt(book.income) - BigInt(book.costs)).toString())),
+    );
     w.year = 1999;
     const converted = players.map((p) => p.wage);
     settleNpcBooks(w, c);

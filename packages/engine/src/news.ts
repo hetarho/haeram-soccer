@@ -1278,10 +1278,26 @@ function honours(w: World): NewsItem[] {
         title: sourceMessage('copy.news.313915a09d', { p0: name, p1: europe.name }),
       });
   const award = ballonDorNews(w, last);
-  if (award?.ours) items.push({ ...base('ballon-dor'), title: award.title, detail: award.detail, players: last.ballonDor!.map((p) => p.id) });
+  if (award?.ours)
+    items.push({
+      ...base('ballon-dor'),
+      title: award.title,
+      detail: award.detail,
+      players: last.ballonDor!.map((p) => p.id),
+    });
   else if (award) {
     const { id, year, round, order, tag } = base('ballon-dor');
-    items.push({ id, year, round, order, tag, tone: 'neutral', weight: 'notable', ...award.text, players: last.ballonDor!.map((p) => p.id) });
+    items.push({
+      id,
+      year,
+      round,
+      order,
+      tag,
+      tone: 'neutral',
+      weight: 'notable',
+      ...award.text,
+      players: last.ballonDor!.map((p) => p.id),
+    });
   }
   return items;
 }
@@ -1774,8 +1790,10 @@ export function refreshNewsJournal(w: World) {
     if (item) appendHeadline(w, j, item);
   }
   // These reads are bounded to the retained round window and the last season's honour row.
-  if (sources?.table !== table) for (const item of tableNews(w, ctx.name)) appendHeadline(w, j, item);
-  if (!sources || sources.honour !== honour) for (const item of honours(w)) appendHeadline(w, j, item);
+  if (sources?.table !== table)
+    for (const item of tableNews(w, ctx.name)) appendHeadline(w, j, item);
+  if (!sources || sources.honour !== honour)
+    for (const item of honours(w)) appendHeadline(w, j, item);
   journalSources.set(j, { table, honour });
   journalContexts.set(j, ctx);
   j.state = newsState(ctx);
@@ -1855,9 +1873,13 @@ export function recordRetirementNews(w: World, player: Player, club?: string) {
     tone: 'neutral',
     weight: 'minor',
     title: sourceMessage('player.record.retirementNews', { player: player.name }),
-    ...(club ? { detail: sourceMessage('player.record.lastClub', {
-      club: w.clubs.find((c) => c.id === club)?.name ?? club,
-    }) } : {}),
+    ...(club
+      ? {
+          detail: sourceMessage('player.record.lastClub', {
+            club: w.clubs.find((c) => c.id === club)?.name ?? club,
+          }),
+        }
+      : {}),
     players: [player.id],
   });
 }

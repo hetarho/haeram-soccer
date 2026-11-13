@@ -3,12 +3,25 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import type { FreeAgent, Position } from '../../contracts/src/types';
 import { npcBooksFixture } from './npc-books.testkit';
 import {
-  capFreeAgents, closeFreeAgents, FREE_AGENT_CONFIG, joinFreeAgents,
-  joinAtClose, npcContractTerm, refreshFreeAgents, takeFreeAgent,
+  capFreeAgents,
+  closeFreeAgents,
+  FREE_AGENT_CONFIG,
+  joinFreeAgents,
+  joinAtClose,
+  npcContractTerm,
+  refreshFreeAgents,
+  takeFreeAgent,
 } from './free-agents';
 import { foundSquads } from './persisted-squads';
 import { intakeNpcYouth, renewNpcContracts } from './npc-careers';
-import { clubPlayers, invalidateNpcSquad, makePlayer, NPC_SQUAD, startingSquad, stature } from './world';
+import {
+  clubPlayers,
+  invalidateNpcSquad,
+  makePlayer,
+  NPC_SQUAD,
+  startingSquad,
+  stature,
+} from './world';
 import { marketWageAt } from './market-prices';
 import { npcWageBill } from './books';
 import { lineOf } from './player';
@@ -43,15 +56,23 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
   it('releases an unnecessary expiry, while preserving identity and attributes', () => {
     const { w, c, players } = npcBooksFixture();
     const xi = new Set(startingSquad(w, c).map((p) => p.id));
-    const p = players.find((p) => !xi.has(p.id) &&
-      players.filter((q) => lineOf(q.position) === lineOf(p.position)).length > 6)!;
+    const p = players.find(
+      (p) =>
+        !xi.has(p.id) &&
+        players.filter((q) => lineOf(q.position) === lineOf(p.position)).length > 6,
+    )!;
     p.until = w.year;
     const before = structuredClone(p);
     renewNpcContracts(w, c);
     expect(clubPlayers(w, c).some((q) => q.id === p.id)).toBe(false);
     expect(w.freeAgents!.find((q) => q.id === p.id)).toMatchObject({
-      id: p.id, name: before.name, born: before.born, attrs: before.attrs,
-      personality: before.personality, potential: before.potential, freeSince: 1951,
+      id: p.id,
+      name: before.name,
+      born: before.born,
+      attrs: before.attrs,
+      personality: before.personality,
+      potential: before.potential,
+      freeSince: 1951,
     });
     expect(w.people![p.id]!.playing).toBe('released');
   });
@@ -92,7 +113,8 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
       w.squads![c.id]!.push(makePlayer('ESP', w.seed, `cover:${i}`, w.year, 40, 'CM', 24));
     }
     invalidateNpcSquad(w, c.id);
-    const weak = agent('weak', 40, 'GK'), strong = agent('strong', 70, 'GK');
+    const weak = agent('weak', 40, 'GK'),
+      strong = agent('strong', 70, 'GK');
     w.freeAgents = [weak, strong, agent('wrong-line', 90, 'ST')];
     refreshFreeAgents(w);
     const signed = clubPlayers(w, c).filter((p) => ['weak', 'strong'].includes(p.id));
@@ -109,9 +131,15 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     const keeper = players.find((p) => p.position === 'GK')!;
     w.squads![c.id] = players.filter((p) => p.position !== 'GK' || p === keeper);
     invalidateNpcSquad(w, c.id);
-    const cheap = agent('cheap', 30, 'GK'), dear = agent('dear', 90, 'GK');
+    const cheap = agent('cheap', 30, 'GK'),
+      dear = agent('dear', 90, 'GK');
     const wage = marketWageAt(c.country, w.year, c.tier, cheap);
-    c.books = { seasons: [], cash: '0', debt: '0', openingIncome: (npcWageBill(w, c) + BigInt(wage)).toString() };
+    c.books = {
+      seasons: [],
+      cash: '0',
+      debt: '0',
+      openingIncome: (npcWageBill(w, c) + BigInt(wage)).toString(),
+    };
     w.freeAgents = [dear, cheap];
     refreshFreeAgents(w);
     expect(clubPlayers(w, c).some((p) => p.id === cheap.id)).toBe(true);
@@ -162,7 +190,8 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     refreshFreeAgents(w);
     expect(w.people![p.id]!.club).toBe(c.id);
     const full = clubPlayers(w, rival);
-    while (full.length < 40) full.push(makePlayer('ESP', w.seed, `full:${full.length}`, 2005, 50, 'CM', 30));
+    while (full.length < 40)
+      full.push(makePlayer('ESP', w.seed, `full:${full.length}`, 2005, 50, 'CM', 30));
     w.freeAgents = [{ ...p, id: 'over-limit' }];
     // The other club already has both keepers; only the capped squad needs this one.
     w.squads![c.id]!.push(makePlayer('ESP', w.seed, 'second-keeper', 2005, 40, 'GK', 25));
@@ -221,7 +250,10 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     expect(npcWageBill(w, c)).toBeGreaterThan(0n);
   });
 
-  it.each([18, 24, 28, 31, 34])('signs age %i for 1–5 seasons with an age-shortened term', (age) => {
-    expect(npcContractTerm(age)).toBe(5 - [18, 24, 28, 31, 34].indexOf(age));
-  });
+  it.each([18, 24, 28, 31, 34])(
+    'signs age %i for 1–5 seasons with an age-shortened term',
+    (age) => {
+      expect(npcContractTerm(age)).toBe(5 - [18, 24, 28, 31, 34].indexOf(age));
+    },
+  );
 });

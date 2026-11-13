@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import type { Club, Fixture, MatchRecord, PersonCareer, Player, World } from '../../contracts/src/types';
+import type {
+  Club,
+  Fixture,
+  MatchRecord,
+  PersonCareer,
+  Player,
+  World,
+} from '../../contracts/src/types';
 import { fixtureRosterKey, readCopy } from './fixture-copy';
 import { continuousSquad } from './npc-continuity';
 import { npcSquad, squad, squadPlaceAge, startingSquad } from './world';

@@ -1,5 +1,11 @@
 /** Season-and-club records and the profiles every retained player link can still open. */
-import type { MatchRecord, Player, PlayerRecord, PlayerSeasonLine, World } from '../../contracts/src/types';
+import type {
+  MatchRecord,
+  Player,
+  PlayerRecord,
+  PlayerSeasonLine,
+  World,
+} from '../../contracts/src/types';
 import { M } from './match/record';
 
 export function playerRecord(w: World, id: string): PlayerRecord {
@@ -35,8 +41,7 @@ export function restorePlayerLinks(w: World) {
   const restore = (id: string | undefined) => {
     if (id && available.has(id)) linkPlayer(w, id);
   };
-  for (const season of w.history)
-    for (const place of season.ballonDor ?? []) restore(place.id);
+  for (const season of w.history) for (const place of season.ballonDor ?? []) restore(place.id);
   for (const match of w.ownMatches) {
     for (const line of match.players) if (line.metrics[M.minutes]! > 0) restore(line.id);
     for (const incident of match.incidents ?? []) {
@@ -79,7 +84,10 @@ export function closePlayerLines(w: World) {
       }
   for (const [id, clubs] of lines) {
     const record = playerRecord(w, id);
-    record.lines = [...(record.lines ?? []).filter((line) => line.year !== w.year), ...clubs.values()];
+    record.lines = [
+      ...(record.lines ?? []).filter((line) => line.year !== w.year),
+      ...clubs.values(),
+    ];
   }
 }
 

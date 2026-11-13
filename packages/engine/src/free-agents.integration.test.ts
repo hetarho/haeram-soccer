@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FreeAgent, Player, Position, World } from '../../contracts/src/types';
+import type { FreeAgent, Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES, FREE_AGENT_CAP } from '../../contracts/src/player';
 import { validateWorld } from '../../contracts/src/schema';
 import { LOAD_CATALOG } from '../../catalogs/src/index';

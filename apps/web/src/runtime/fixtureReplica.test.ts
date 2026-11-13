@@ -151,7 +151,9 @@ describe('ordered fixture replicas', () => {
       const source = copy(),
         writer = new FixtureReplicaWriter(),
         reader = new FixtureReplicaReader();
-      source.squads = { a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)] };
+      source.squads = {
+        a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)],
+      };
       reader.apply(packet(writer, source, 1));
       source.squads.a![0]!.attrs.passing++;
       const update = packet(writer, source, 2);

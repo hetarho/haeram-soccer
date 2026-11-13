@@ -23,7 +23,6 @@ export const EVOLUTION = {
   floor: 15,
 } as const;
 
-
 /** Only continental success changes a representative club's target. */
 export function successBonus(w: World, c: Club) {
   if (!c.representative) return 0;
@@ -48,10 +47,12 @@ export function evolveClubs(w: World, tiers: ReadonlyMap<string, number>) {
     }
     const p = random(`${w.seed}:project:${w.year}:${c.id}`);
     if (p() < e.project.chance)
-      c.project = Math.round((c.project ?? 0) + e.project.min + p() * (e.project.max - e.project.min));
+      c.project = Math.round(
+        (c.project ?? 0) + e.project.min + p() * (e.project.max - e.project.min),
+      );
     const r = random(`${w.seed}:evolve:${w.year}:${c.id}`);
-    let next = c.strength + (levelOf(w, c) - c.strength) * e.reversion +
-      (r() + r() + r() - 1.5) * e.luck;
+    let next =
+      c.strength + (levelOf(w, c) - c.strength) * e.reversion + (r() + r() + r() - 1.5) * e.luck;
     const event = r();
     if (event < e.takeover.chance) next += e.takeover.min + r() * (e.takeover.max - e.takeover.min);
     else if (event < e.takeover.chance + e.crisis.chance)

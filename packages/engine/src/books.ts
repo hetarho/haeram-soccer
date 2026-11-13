@@ -242,7 +242,7 @@ export function npcWageLimit(w: World, club: Club, year = w.year): bigint | unde
   const last = club.books.seasons[0];
   const budget = last
     ? (BigInt(last.income) - BigInt(last.costs)).toString()
-    : club.books.openingIncome ?? seasonIncome(w, club, undefined, seasonIndex(w)).toString();
+    : (club.books.openingIncome ?? seasonIncome(w, club, undefined, seasonIndex(w)).toString());
   const change = last && currencyChange(club.country, last.year, year);
   return BigInt(change ? change(budget) : budget);
 }
@@ -256,7 +256,8 @@ export const NPC_WAGE_DECISIONS: {
 export function npcCanPay(w: World, club: Club, wage: string, replacing?: string, year = w.year) {
   const limit = npcWageLimit(w, club, year);
   const bill = clubPlayers(w, club).reduce(
-    (sum, p) => sum + (p.id === replacing ? 0n : BigInt(p.wage)), 0n,
+    (sum, p) => sum + (p.id === replacing ? 0n : BigInt(p.wage)),
+    0n,
   );
   const proposed = bill + BigInt(wage);
   const allowed = limit === undefined || proposed <= limit;
@@ -274,7 +275,7 @@ export function recordNpcTransferFee(w: World, club: Club, fee: string, received
 function investNpcLevels(club: Club, spent: bigint, income: bigint) {
   const levels = club.levels;
   if (!levels) return;
-  const share = spent > 0n && income > 0n ? Number(spent * 10000n / income) / 10000 : 0;
+  const share = spent > 0n && income > 0n ? Number((spent * 10000n) / income) / 10000 : 0;
   const delta = spent > 0n ? Math.min(5, share * CLUB_LEVELS.investment) : -CLUB_LEVELS.decay;
   const progress = Math.round(((levels.progress ?? 0) + delta) * 10000) / 10000;
   const whole = Math.trunc(progress);
@@ -297,7 +298,13 @@ function seasonBook(w: World, club: Club, books: ClubBooks, season: SeasonIndex)
     costs: costs.toString(),
     transfersPaid: books.transfersPaid ?? '0',
     transfersReceived: books.transfersReceived ?? '0',
-    result: (income + BigInt(books.transfersReceived ?? '0') - wages - costs - BigInt(books.transfersPaid ?? '0')).toString(),
+    result: (
+      income +
+      BigInt(books.transfersReceived ?? '0') -
+      wages -
+      costs -
+      BigInt(books.transfersPaid ?? '0')
+    ).toString(),
   };
 }
 

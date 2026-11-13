@@ -188,13 +188,21 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
     const sellerFee = fromPounds(seller.country, w.year, inPounds(clubOf(w).country, w.year, fee));
     recordNpcTransferFee(w, seller, sellerFee, true);
     const record = recordPlayerMove(w, p.id, {
-      year: w.year, day: currentDay(w), from: seller.id, to: w.playerClub,
+      year: w.year,
+      day: currentDay(w),
+      from: seller.id,
+      to: w.playerClub,
       fee: sellerFee,
       ...(bid.loan ? { loan: true } : {}),
     });
     if (bid.loan) {
-      record.loan = { club: seller.id, until: p.loanUntil!, wage: offer.player.wage,
-        contractUntil: offer.player.until, year: w.year };
+      record.loan = {
+        club: seller.id,
+        until: p.loanUntil!,
+        wage: offer.player.wage,
+        contractUntil: offer.player.until,
+        year: w.year,
+      };
       if (offer.player.graduate) record.loan.graduate = true;
       if (offer.player.joined !== undefined) record.loan.joined = offer.player.joined;
     }
@@ -251,7 +259,11 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
   delete live.clauses;
   recordNpcTransferFee(w, club!, offer.paid, false);
   recordPlayerMove(w, p.id, {
-    year: w.year, day: currentDay(w), from: w.playerClub, to: club!.id, fee: bid.fee,
+    year: w.year,
+    day: currentDay(w),
+    from: w.playerClub,
+    to: club!.id,
+    fee: bid.fee,
   });
   movePerson(w, live, club?.id, true);
   if (wasStarter || activePlayers(w).length < 20) openNeed(w, p);
@@ -764,7 +776,12 @@ function saleBarLabel(bar: ReturnType<typeof saleBar>) {
  * A real vacancy and affordable terms within CLUB-18's strength band, from any country.
  * Contenders prefer stature, then the actual offered wage in comparable money (→WORLD-16).
  */
-export function suitorFor(w: World, p: Player, r: () => number, fee = playerValue(w, p)): Club | undefined {
+export function suitorFor(
+  w: World,
+  p: Player,
+  r: () => number,
+  fee = playerValue(w, p),
+): Club | undefined {
   const ability = overall(p);
   const pool = w.clubs
     .filter(
@@ -778,12 +795,18 @@ export function suitorFor(w: World, p: Player, r: () => number, fee = playerValu
       const offer = npcOffer(w, c, p, clubOf(w), fee);
       return offer ? [offer] : [];
     })
-    .sort((a, b) => stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
-      (a.pounds > b.pounds ? -1 : a.pounds < b.pounds ? 1 : compareIds(a.club.id, b.club.id)));
+    .sort(
+      (a, b) =>
+        stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
+        (a.pounds > b.pounds ? -1 : a.pounds < b.pounds ? 1 : compareIds(a.club.id, b.club.id)),
+    );
   if (!pool.length) return undefined;
   const first = pool[0]!;
-  const tied = pool.filter((offer) => stature(w.seed, offer.club.id) === stature(w.seed, first.club.id) &&
-    offer.pounds === first.pounds);
+  const tied = pool.filter(
+    (offer) =>
+      stature(w.seed, offer.club.id) === stature(w.seed, first.club.id) &&
+      offer.pounds === first.pounds,
+  );
   return tied[Math.floor(r() * tied.length)]!.club;
 }
 /**

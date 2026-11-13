@@ -9,7 +9,14 @@ import { settleNpcSeason } from './npc-stats';
 import { closeNpcSummer } from './npc-careers';
 import { deriveClubNews, initializeNewsJournal, recordRetirementNews } from './news';
 import { recordTransfer } from './transfer-records';
-import { closePlayerLines, linkOwnMatchPlayers, linkPlayer, playerRecord, retirePlayerRecord, settleAbsentPlayerRecords } from './player-records';
+import {
+  closePlayerLines,
+  linkOwnMatchPlayers,
+  linkPlayer,
+  playerRecord,
+  retirePlayerRecord,
+  settleAbsentPlayerRecords,
+} from './player-records';
 
 /** Two synthetic participants, no fixtures simulated and no world generation. */
 function fixture() {
@@ -17,26 +24,48 @@ function fixture() {
   w.players = w.players.slice(0, 2);
   w.clubs[2]!.representative = true;
   w.squads = { foreign: [] };
-  w.npcSeason = { year: w.year, model: MATCH_MODEL_REVISION,
-    trackedFrom: { year: w.year, day: 1, round: 1 }, competitions: [] };
+  w.npcSeason = {
+    year: w.year,
+    model: MATCH_MODEL_REVISION,
+    trackedFrom: { year: w.year, day: 1, round: 1 },
+    competitions: [],
+  };
   return w;
 }
-function playback(w: World, p: Player, club = 'foreign', kind: 'league' | 'cup' = 'league', conceded = 0, substitute = false): MatchPlayback {
+function playback(
+  w: World,
+  p: Player,
+  club = 'foreign',
+  kind: 'league' | 'cup' = 'league',
+  conceded = 0,
+  substitute = false,
+): MatchPlayback {
   const metrics = zeroMetrics();
   metrics[M.minutes] = substitute ? 30 : 90;
   metrics[M.goals] = 1;
   metrics[M.assists] = 2;
   metrics[M.saves] = p.position === 'GK' ? 4 : 0;
-  return { record: { year: w.year, kind, groupKey: kind, home: club, away: 'representative',
-    score: { home: 1, away: conceded }, metrics: [zeroMetrics(), zeroMetrics()],
-    lineCounts: [1, 0], players: [{ id: p.id, metrics }],
-    incidents: substitute ? [{ kind: 'sub', other: p.id }] : [],
-  }, squads: [[p], []] } as unknown as MatchPlayback;
+  return {
+    record: {
+      year: w.year,
+      kind,
+      groupKey: kind,
+      home: club,
+      away: 'representative',
+      score: { home: 1, away: conceded },
+      metrics: [zeroMetrics(), zeroMetrics()],
+      lineCounts: [1, 0],
+      players: [{ id: p.id, metrics }],
+      incidents: substitute ? [{ kind: 'sub', other: p.id }] : [],
+    },
+    squads: [[p], []],
+  } as unknown as MatchPlayback;
 }
 
 describe('persisted player records on isolated settled inputs', () => {
   it('combines all competitions, keeps both clubs of a winter move, and never invents untracked lines', () => {
-    const w = fixture(), p = w.players[1]!;
+    const w = fixture(),
+      p = w.players[1]!;
     settleNpcSeason(w, playback(w, p), true);
     settleNpcSeason(w, playback(w, p, 'foreign', 'cup'), true);
     settleNpcSeason(w, playback(w, p, 'own'), true);
@@ -55,46 +84,69 @@ describe('persisted player records on isolated settled inputs', () => {
     expect(w.playerRecords![p.id]!.lines).toHaveLength(2);
   });
 
-  it.each([true, false])('counts starting keeper clean sheets (resultsOnly=%s), including a conceded match and a substitute', (resultsOnly) => {
-    const w = fixture(), p = w.players[0]!;
-    const settle = (match: MatchPlayback) => {
-      if (!resultsOnly) {
-        match.record.model = MATCH_MODEL_REVISION;
-        match.record.detail = [emptyTeamDetail(), emptyTeamDetail()];
-        match.record.xg = [0, 0];
-      }
-      settleNpcSeason(w, match, resultsOnly);
-    };
-    p.position = 'GK';
-    settle(playback(w, p));
-    settle(playback(w, p, 'foreign', 'league', 1));
-    settle(playback(w, p, 'foreign', 'cup', 0, true));
-    closePlayerLines(w);
-    expect(w.playerRecords![p.id]!.lines).toEqual([
-      { year: w.year, club: 'foreign', appearances: 3, goals: 3, assists: 6, saves: 12, cleanSheets: 1 },
-    ]);
-    // A supported pre-tracking contribution stays unavailable, even after a newly tracked match.
-    delete w.npcSeason!.competitions[0]!.players[0]!.clubs[0]!.cleanSheets;
-    settle(playback(w, p));
-    closePlayerLines(w);
-    expect(w.playerRecords![p.id]!.lines![0]).not.toHaveProperty('cleanSheets');
-  });
+  it.each([true, false])(
+    'counts starting keeper clean sheets (resultsOnly=%s), including a conceded match and a substitute',
+    (resultsOnly) => {
+      const w = fixture(),
+        p = w.players[0]!;
+      const settle = (match: MatchPlayback) => {
+        if (!resultsOnly) {
+          match.record.model = MATCH_MODEL_REVISION;
+          match.record.detail = [emptyTeamDetail(), emptyTeamDetail()];
+          match.record.xg = [0, 0];
+        }
+        settleNpcSeason(w, match, resultsOnly);
+      };
+      p.position = 'GK';
+      settle(playback(w, p));
+      settle(playback(w, p, 'foreign', 'league', 1));
+      settle(playback(w, p, 'foreign', 'cup', 0, true));
+      closePlayerLines(w);
+      expect(w.playerRecords![p.id]!.lines).toEqual([
+        {
+          year: w.year,
+          club: 'foreign',
+          appearances: 3,
+          goals: 3,
+          assists: 6,
+          saves: 12,
+          cleanSheets: 1,
+        },
+      ]);
+      // A supported pre-tracking contribution stays unavailable, even after a newly tracked match.
+      delete w.npcSeason!.competitions[0]!.players[0]!.clubs[0]!.cleanSheets;
+      settle(playback(w, p));
+      closePlayerLines(w);
+      expect(w.playerRecords![p.id]!.lines![0]).not.toHaveProperty('cleanSheets');
+    },
+  );
 
   it('links participants and retained incident names, excluding unused bench players', () => {
     const w = fixture();
     const metrics = zeroMetrics();
     metrics[M.minutes] = 1;
-    linkOwnMatchPlayers(w, { players: [{ id: 'opponent', metrics }, { id: 'bench', metrics: zeroMetrics() }],
+    linkOwnMatchPlayers(w, {
+      players: [
+        { id: 'opponent', metrics },
+        { id: 'bench', metrics: zeroMetrics() },
+      ],
       incidents: [{ player: 'other-opponent', other: 'substitute' }],
     } as unknown as MatchRecord);
-    for (const id of ['opponent', 'other-opponent', 'substitute']) expect(w.playerRecords![id]!.linked).toBe(true);
+    for (const id of ['opponent', 'other-opponent', 'substitute'])
+      expect(w.playerRecords![id]!.linked).toBe(true);
     expect(w.playerRecords!.bench).toBeUndefined();
-    recordTransfer(w, { direction: 'in', loan: false, player: { id: 'signed', name: 'Synthetic' }, fee: '1' });
+    recordTransfer(w, {
+      direction: 'in',
+      loan: false,
+      player: { id: 'signed', name: 'Synthetic' },
+      fee: '1',
+    });
     expect(w.playerRecords!.signed!.linked).toBe(true);
   });
 
   it('sets a news identity link only when the writer keeps the headline, with pure reads unchanged', () => {
-    const w = fixture(), p = w.players[1]!;
+    const w = fixture(),
+      p = w.players[1]!;
     const match = playback(w, p, 'own').record;
     match.id = 'synthetic-news-match';
     match.round = 1;
@@ -112,9 +164,16 @@ describe('persisted player records on isolated settled inputs', () => {
 
   it('keeps only linked NPC retirees, snapshots before annual ageing, and never writes news for a removed id', () => {
     const w = fixture();
-    const [kept, removed] = w.players.map((p, i) => ({ ...structuredClone(p), id: `npc:${i}`, born: 1910, retiring: w.year }));
+    const [kept, removed] = w.players.map((p, i) => ({
+      ...structuredClone(p),
+      id: `npc:${i}`,
+      born: 1910,
+      retiring: w.year,
+    }));
     w.squads!.foreign = [kept!, removed!];
-    playerRecord(w, removed!.id).lines = [{ year: w.year - 1, club: 'foreign', appearances: 1, goals: 1, assists: 0 }];
+    playerRecord(w, removed!.id).lines = [
+      { year: w.year - 1, club: 'foreign', appearances: 1, goals: 1, assists: 0 },
+    ];
     playerRecord(w, 'already-gone');
     linkPlayer(w, kept!.id);
     initializeNewsJournal(w);
@@ -134,7 +193,8 @@ describe('persisted player records on isolated settled inputs', () => {
   });
 
   it('preserves own career rows and a free agent profile without fabricating a last club', () => {
-    const w = fixture(), own = w.players[0]!;
+    const w = fixture(),
+      own = w.players[0]!;
     own.career[M.goals] = 7;
     expect(retirePlayerRecord(w, own, w.playerClub)).toBe(true);
     expect(own.career[M.goals]).toBe(7);

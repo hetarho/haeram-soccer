@@ -820,8 +820,12 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     leaveContract(w, p);
     if (club) {
       const offer = npcOffer(w, club, p, clubOf(w), amount)!;
-      const live = { ...p, wage: marketWageAt(club.country, w.year, club.tier, p),
-        until: w.year + npcContractTerm(w.year - p.born) - 1, joined: w.year };
+      const live = {
+        ...p,
+        wage: marketWageAt(club.country, w.year, club.tier, p),
+        until: w.year + npcContractTerm(w.year - p.born) - 1,
+        joined: w.year,
+      };
       delete live.graduate;
       delete live.clauses;
       recordNpcTransferFee(w, club, offer.paid, false);

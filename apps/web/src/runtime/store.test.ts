@@ -4,12 +4,13 @@ import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import type { StoragePort } from '../adapters/repository';
 import type { ClientState } from './client';
 import type { View } from './protocol';
+import { projectWorldFacts } from './worldProjection';
 import { NOTIFICATIONS_KEY, createGameStore, createNotificationStore, shareView } from './store';
 
 function view(): View {
   const world = careerWorld({ country: 'ENG', seed: 'stable-store' });
   return {
-    world: { ...world, people: undefined },
+    world: projectWorldFacts(world),
     coaches: {},
     milestones: clubMilestones(world),
     totalMatches: 0,
