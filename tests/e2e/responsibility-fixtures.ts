@@ -12,6 +12,10 @@ import {
   transferOffers,
 } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
+import { joinFreeAgents } from '../../packages/engine/src/free-agents';
+import { scoutReach } from '../../packages/engine/src/scout-search';
+import { clubOf, overall } from '../../packages/engine/src/player-state';
+import { careerDate, careerOrdinal } from '../../packages/engine/src/person-careers';
 import type { World } from '../../packages/contracts/src/types';
 import { ratio } from '../../packages/engine/src/primitives';
 import { detectMediations, resolveMediation } from '../../packages/engine/src/mediation';
@@ -79,6 +83,84 @@ export function mediationCareer() {
   askForSigning(w, 'MF');
   return w;
 }
+/** Release actual eligible outside-club keepers through the ordinary identity/market API. */
+function releasePromiseGoalkeepers(w: World) {
+  const reach = scoutReach(w),
+    country = clubOf(w).country;
+  const candidates = w.clubs
+    .flatMap((club) => {
+      if (club.id === w.playerClub || club.representative || club.country !== country) return [];
+      const squad = w.squads?.[club.id] ?? [];
+      if (squad.filter((player) => player.position === 'GK').length < 2) return [];
+      return squad
+        .filter((player) => {
+          const age = w.year - player.born,
+            level = overall(player),
+            person = w.people?.[player.id];
+          return (
+            player.position === 'GK' &&
+            player.status === 'active' &&
+            !player.loanUntil &&
+            !player.retiring &&
+            person?.club === club.id &&
+            person.playing === 'active' &&
+            age >= reach.age[0] &&
+            age <= reach.age[1] &&
+            level >= reach.ability[0] &&
+            level <= reach.ability[1]
+          );
+        })
+        .map((player) => ({ player, club: club.id }));
+    })
+    .sort((a, b) => overall(a.player) - overall(b.player) || (a.player.id < b.player.id ? -1 : 1));
+  const origins = new Set<string>();
+  for (const { player, club } of candidates) {
+    if (origins.has(club)) continue;
+    expect(joinFreeAgents(w, player, w.year)).toBe(true);
+    expect(w.people![player.id].club).toBeUndefined();
+    expect(w.squads![club].some((one) => one.id === player.id)).toBe(false);
+    origins.add(club);
+    if (origins.size === 2) break;
+  }
+  expect(origins.size).toBe(2);
+}
+
+/** The actual owner-market row, independent of the scout's two recommended places. */
+export function promiseFreeAgent(w: World, pick?: string) {
+  return worldMarketPage(w, { world: w.id, line: 'GK', sort: 'fee', direction: 'asc' }).items.find(
+    (offer) =>
+      offer.available &&
+      offer.freeAgent &&
+      lineOf(offer.player.position) === 'GK' &&
+      offer.player.id !== pick,
+  );
+}
+
+/** A private post-close market with actual external releases; ordinary fresh careers stay empty. */
+export function freeAgentMediationCareer() {
+  return cachedWorld(
+    'e2e-mediation-post-close-free-agents',
+    () => {
+      const w = careerWorld({ country: 'ENG', seed: 'synthetic-mediation' });
+      w.cash = '999999999999';
+      w.settings!.responsibilities.recruitment = 'direct';
+      w.settings!.responsibilities.contracts = 'delegated';
+      w.settings!.responsibilities.sales = 'delegated';
+      w.settings!.observations = { matchEve: false, windowOpen: false };
+      simulateSeason(w);
+      expect(w.year).toBe(1951);
+      releasePromiseGoalkeepers(w);
+      w.settings!.mode = 'manual';
+      w.settings!.observations.matchEve = true;
+      w.cash = '0';
+      // The commitment is created by the caller only after this preparation has finished.
+      askForSigning(w, 'MF');
+      return w;
+    },
+    { dependencies: [SELF] },
+  );
+}
+
 /** The manager shortlists the first available player of `line`; the conflict it raises. */
 export function askForSigning(w: World, line: 'MF' | 'GK') {
   const offer = transferOffers(w).find((o) => o.available && lineOf(o.player.position) === line)!;
@@ -101,7 +183,7 @@ export function promiseDeadlineCareer(arrival: 'none' | 'loan' | 'free') {
   return cachedWorld(
     `e2e-mediation-promise-deadline-${arrival}`,
     () => {
-      const w = mediationCareer();
+      const w = arrival === 'free' ? freeAgentMediationCareer() : mediationCareer();
       if (arrival === 'free') {
         w.mediations = [];
         askForSigning(w, 'GK');
@@ -116,7 +198,13 @@ export function promiseDeadlineCareer(arrival: 'none' | 'loan' | 'free') {
       // A paid loan must be offered before the deadline and answered through the real bid flow.
       // Prepare a counter awaiting the owner's final signature on deadline day; its eventual
       // acceptance, cost and promise fulfilment still happen through the public browser control.
-      advanceDays(w, promise.deadline.day - (arrival === 'loan' ? 4 : 0), undefined, false);
+      const target = careerOrdinal(promise.deadline) - (arrival === 'loan' ? 4 : 0);
+      while (careerOrdinal(careerDate(w)) < target) {
+        const before = careerOrdinal(careerDate(w));
+        advanceDays(w, 1, undefined, false);
+        expect(careerOrdinal(careerDate(w))).toBeGreaterThan(before);
+      }
+      expect(careerOrdinal(careerDate(w))).toBe(target);
       let loan: { id: string; player: string; name: string; fee: string } | undefined;
       if (arrival === 'loan')
         for (const offer of worldMarketPage(w, {

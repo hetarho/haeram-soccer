@@ -3,7 +3,6 @@ import { marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { approvalTray, dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import {
-  transferOffers,
   operate,
   managerCandidates,
   prepareSeason,
@@ -12,6 +11,8 @@ import {
 import type { World } from '../../packages/contracts/src/types';
 import { resolveMediation } from '../../packages/engine/src/mediation';
 import { judgePromises } from '../../packages/engine/src/promises';
+import { signingVerdict } from '../../packages/engine/src/signings';
+import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
 import { DEFAULT_MARKET_QUERY } from '../../apps/web/src/pages/club/lib/worldMarket';
 import { lineOf } from '../../packages/engine/src/player';
@@ -20,6 +21,8 @@ import {
   importResponsibilityCareer,
   mediationCareer as fixture,
   promiseDeadlineCareer,
+  freeAgentMediationCareer,
+  promiseFreeAgent,
 } from './responsibility-fixtures';
 import { horizontalOverflow, settle } from './layout';
 async function market(page: Page, w: World) {
@@ -135,12 +138,20 @@ test('support changes retain the preview and confirm only the latest conditions'
   await expect(confirm).toBeEnabled();
 });
 test('retained-promise-status', async ({ page }) => {
-  const w = fixture();
+  const w = freeAgentMediationCareer();
   resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
   const gk = ask(w, 'GK');
   resolveMediation(w, gk.id, 'manager', 'delegated');
-  const free = transferOffers(w).findIndex((o) => o.freeAgent);
-  operate(w, { type: 'recruit', candidate: free });
+  const free = promiseFreeAgent(w)!;
+  expect(free).toBeDefined();
+  expect(free.target).toMatchObject({ world: w.id, kind: 'offer', playerId: free.player.id });
+  expect(free.fee).toBe('0');
+  expect(w.people![free.player.id]).toMatchObject({ playing: 'released' });
+  expect(w.people![free.player.id].club).toBeUndefined();
+  expect(recruitmentPreview(w, free)).toMatchObject({ eligible: true, affordable: true });
+  // The original zero-reserve conflict remains: the owner explicitly signs the fee-free keeper.
+  expect(signingVerdict(w, free.player, free.fee, 'short').ok).toBe(false);
+  operate(w, { type: 'recruit', target: free.target });
   w.calendar = { day: transferWindowDays(w.year).winterClose + 1 };
   w.round = Math.floor(w.calendar.day / 7);
   delete w.scorerSeason;
@@ -254,7 +265,7 @@ for (const arrival of ['none', 'loan', 'free'] as const)
     if (arrival === 'loan')
       expect(loan, 'seeded paid loan counter on the unchanged promise deadline').toBeDefined();
     await market(page, w);
-    let free: ReturnType<typeof transferOffers>[number] | undefined;
+    let free: ReturnType<typeof promiseFreeAgent>;
     if (loan) {
       await page.getByRole('button', { name: /^이적 협상 ·/ }).click();
       const dialog = page.getByRole('dialog', { name: '이적 협상', exact: true });
@@ -265,14 +276,10 @@ for (const arrival of ['none', 'loan', 'free'] as const)
       ).toBeVisible();
       await closeMarketPanel(page, '이적 협상');
     } else if (arrival === 'free') {
-      free = transferOffers(w).find(
-        (o) =>
-          o.available &&
-          lineOf(o.player.position) === promise.target.line &&
-          o.player.id !== promise.target.pick &&
-          o.freeAgent,
-      )!;
+      free = promiseFreeAgent(w, promise.target.pick)!;
       expect(free).toBeDefined();
+      expect(lineOf(free!.player.position)).toBe(promise.target.line);
+      expect(free!.player.id).not.toBe(promise.target.pick);
       // Full names rarely repeat (→WORLD-12), so the search is a piece of his name that more than
       // a page of other players share: the intended free agent is behind a full page of them. He
       // is a real free agent now (→CLUB-49), able enough to rank high under the default OVR
