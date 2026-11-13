@@ -15,9 +15,16 @@ function fixture() {
 it('classifies all top-level fields and excludes the persisted registry', () => {
   const w = fixture();
   foundSquads(w);
+  w.npcGrowthAt = { year: w.year, round: 4 };
+  w.npcRetirementAt = w.year;
+  w.npcSummerAt = w.year;
+  w.npcMarketAt = { year: w.year, day: 0 };
+  w.playerRecords = { p: { moves: [{ year: w.year, day: 0, from: 'own', to: 'foreign', fee: '100' }] } };
   const projected = projectWorldFacts(w);
   expect(projected).not.toHaveProperty('squads');
   expect(projected).not.toHaveProperty('people');
+  for (const key of ['playerRecords', 'npcGrowthAt', 'npcRetirementAt', 'npcSummerAt', 'npcMarketAt'])
+    expect(projected).not.toHaveProperty(key);
   expect(Object.keys(w).every((key) => Object.hasOwn(WORLD_VIEW_FIELDS, key))).toBe(true);
   expect(() => projectWorldFacts(Object.assign(w, { futureField: ['large'] }))).toThrow();
 });

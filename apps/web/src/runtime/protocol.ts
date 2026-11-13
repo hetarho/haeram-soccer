@@ -349,6 +349,11 @@ export type ProjectedWorld = Omit<
   | 'careerReads'
   | 'freeAgents'
   | 'squads'
+  | 'playerRecords'
+  | 'npcMarketAt'
+  | 'npcGrowthAt'
+  | 'npcRetirementAt'
+  | 'npcSummerAt'
   | 'clubs'
 > & {
   people?: never;

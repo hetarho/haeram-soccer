@@ -15,11 +15,16 @@ import { npcCanPay } from './books';
 import { capFreeAgents, closeFreeAgents, joinFreeAgents, npcContractTerm, refreshFreeAgents } from './free-agents';
 import { SQUAD_MINIMUM } from './squad-size';
 import { compareIds } from './primitives';
+import { currentDay } from './calendar';
+import { transferWindowDays } from './transfer-window';
+import { npcNeedsRefill, returnNpcLoans } from './npc-market';
 import { developAnnually, settlePlayerGrowth } from './training';
 import {
   clubById,
   generatedPlayer,
   invalidateNpcSquad,
+  invalidateNpcSquads,
+  clubStrength,
   refreshNpcSquads,
   startingSquad,
   LINE_MINIMUM,
@@ -69,8 +74,9 @@ export function settleNpcGrowth(w: World) {
       );
     }
   }
-  // Attribute changes choose the XI again and publish its new strength.
-  refreshNpcSquads(w);
+  // Growth refreshes the held XI's rating without changing the stored matchday choice.
+  invalidateNpcSquads(w);
+  for (const c of w.clubs) clubStrength(w, c);
   w.npcGrowthAt = { year: w.year, round: w.round };
 }
 
@@ -81,12 +87,21 @@ function lacksLine(players: Player[]) {
 }
 
 /** Academy draws alone can produce a golden generation, with no club-level event. */
-export function intakeNpcYouth(w: World, c: Club, year = w.year + 1) {
+function npcYouthIds(w: World) {
+  return new Set([
+    ...Object.values(w.squads ?? {}).flatMap((players) => players.map((p) => p.id)),
+    ...w.players.map((p) => p.id),
+    ...(w.academy?.players ?? []).map((p) => p.id),
+    ...(w.freeAgents ?? []).map((p) => p.id),
+    ...Object.keys(w.people ?? {}),
+    ...Object.keys(w.playerRecords ?? {}),
+  ]);
+}
+export function intakeNpcYouth(w: World, c: Club, year = w.year + 1, used = npcYouthIds(w)) {
   const players = w.squads?.[c.id];
   if (!players || !c.levels) return;
   const config = NPC_YOUTH.byAcademy[c.levels.academy]!;
   let added = 0;
-  const used = new Set(players.map((p) => p.id));
   for (
     let serial = 0;
     added < config.count || players.length < NPC_SQUAD.size || lacksLine(players);
@@ -95,7 +110,7 @@ export function intakeNpcYouth(w: World, c: Club, year = w.year + 1) {
     const state = clubRegistration(c, year, players);
     if (state.total >= state.ceiling) break;
     const id = `${c.id}:y:${year}:${serial}`;
-    if (used.has(id) || w.people?.[id] || w.freeAgents?.some((p) => p.id === id)) continue;
+    if (used.has(id)) continue;
     const r = random(`${w.seed}:youth:${id}`);
     const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
     const potential = integer(r, config.potential[0], config.potential[1]);
@@ -117,6 +132,7 @@ export function intakeNpcYouth(w: World, c: Club, year = w.year + 1) {
     p.until = year + integer(random(`${w.seed}:${id}:contract`), 1, 5);
     if (!registrationExempt(state.rule, year, p) && state.counted >= state.allowed) break;
     players.push(p);
+    used.add(p.id);
     enrollSquadPlayer(w, c, p);
     added++;
   }
@@ -149,6 +165,17 @@ export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
       if (job) job.contractUntil = { year: p.until, day: 365 };
     } else joinFreeAgents(w, p, year);
   }
+}
+
+/** Both worlds close the same windows; the summer safety net uses the existing youth intake. */
+export function closeNpcWindow(w: World) {
+  const day = currentDay(w), dates = transferWindowDays(w.year);
+  let used: Set<string> | undefined;
+  if (day === dates.summerClose)
+    for (const c of w.clubs)
+      if (c.id !== w.playerClub && !c.representative && w.squads?.[c.id] && npcNeedsRefill(w, c))
+        intakeNpcYouth(w, c, w.year, used ??= npcYouthIds(w));
+  if (day === dates.summerClose || day === dates.winterClose) refreshNpcSquads(w);
 }
 
 /** Both closes share development, retirement, contracts, free signings, youth and the final cap. */
@@ -186,6 +213,7 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
       return !retire;
     });
   }
+  if (matches) returnNpcLoans(w);
   refreshNpcSquads(w);
   closeFreeAgents(w, w.year);
   if (matches) {
@@ -194,10 +222,11 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     refreshFreeAgents(w, w.year + 1);
   }
   afterRetirements?.();
+  const used = npcYouthIds(w);
   for (const id of Object.keys(w.squads ?? {})) {
     const c = clubById(w, id);
     if (!c) continue;
-    intakeNpcYouth(w, c);
+    intakeNpcYouth(w, c, w.year + 1, used);
     invalidateNpcSquad(w, id);
   }
   if (matches) capFreeAgents(w);

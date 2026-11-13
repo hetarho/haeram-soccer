@@ -236,6 +236,9 @@ describe('persisted playable squads', () => {
     ours.career[0] = 7;
     ours.graduate = true;
     liveIds(w);
+    // The bidder has a real vacancy and books that can carry the agreed fee and contract.
+    w.squads![buyer.id] = w.squads![buyer.id]!.filter((q) => lineOf(q.position) !== lineOf(ours.position));
+    buyer.books = { seasons: [], cash: '999999999999', debt: '0', openingIncome: '999999999999' };
     respondBid(w, bid(w, ours, buyer.id, 'in').id, true);
     const sold = w.squads![buyer.id]!.find((q) => q.id === p.id)!;
     expect(sold.attrs).toEqual(attrs);

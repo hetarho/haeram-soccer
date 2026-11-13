@@ -10,6 +10,11 @@ export const WORLD_VIEW_FIELDS = {
   id: 'include',
   seed: 'include',
   squads: 'exclude',
+  playerRecords: 'exclude',
+  npcMarketAt: 'exclude',
+  npcGrowthAt: 'exclude',
+  npcRetirementAt: 'exclude',
+  npcSummerAt: 'exclude',
   year: 'include',
   round: 'include',
   revision: 'include',
@@ -94,7 +99,18 @@ export const WORLD_VIEW_FIELDS = {
 } as const satisfies Record<keyof World, 'include' | 'exclude'>;
 export type ViewWorldFacts = Omit<
   World,
-  'people' | 'npcSeason' | 'managerHistory' | 'newsJournal' | 'careerReads' | 'freeAgents' | 'squads'
+  | 'people'
+  | 'npcSeason'
+  | 'managerHistory'
+  | 'newsJournal'
+  | 'careerReads'
+  | 'freeAgents'
+  | 'squads'
+  | 'playerRecords'
+  | 'npcMarketAt'
+  | 'npcGrowthAt'
+  | 'npcRetirementAt'
+  | 'npcSummerAt'
 >;
 export function projectWorldFacts(w: World): ViewWorldFacts {
   const projected: Record<string, unknown> = {};

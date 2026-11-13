@@ -105,11 +105,13 @@ export function matchdaySquad(w: World, c: Club, players: Player[]): Player[] {
 }
 
 /** Move the live record; the owner's departed row remains only his history with the club. */
-export function moveSquadPlayer(w: World, p: Player, club?: string) {
+export function moveSquadPlayer(w: World, p: Player, club?: string, source?: string) {
   if (!w.squads) return;
   const live = structuredClone(p);
   live.status = 'active';
-  for (const [id, players] of Object.entries(w.squads)) {
+  // A market settlement already knows the source; avoid scanning every other club for each move.
+  const origins = source ? [[source, w.squads[source] ?? []] as const] : Object.entries(w.squads);
+  for (const [id, players] of origins) {
     if (!players.some((q) => q.id === p.id)) continue;
     // An idempotent affiliation update is not a roster change.
     if (id === club) return;

@@ -4,7 +4,8 @@ import { applyDelegatePlans } from './delegation';
 import { openNeed } from './replacements';
 import { callUpFor, callUpProspects } from './squad-target';
 import { foundSquads } from './persisted-squads';
-import { closeNpcSummer, settleNpcGrowth } from './npc-careers';
+import { closeNpcSummer, closeNpcWindow, settleNpcGrowth } from './npc-careers';
+import { npcMarket } from './npc-market';
 import { SQUAD_TARGET } from './squad-size';
 import { isDelegated } from './responsibilities';
 import { countApprovalWaits } from './approvals';
@@ -753,7 +754,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   refreshFreeAgents(w);
   capFreeAgents(w);
   // The new season's first day of club business opens the summer window.
-  clubDay(w);
+  // NPC opening moves settle when this day is first advanced, after the legal opening snapshot.
+  clubDay(w, false);
   sponsorReminder(w);
   refreshReadModels(w);
 }
@@ -882,7 +884,7 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
   refreshStaffMarket(w);
   refreshFreeAgents(w);
   capFreeAgents(w);
-  clubDay(w);
+  clubDay(w, false);
 }
 /**
  * One round: the days up to and including its league match day, each lived as a day step lives it
@@ -1015,6 +1017,8 @@ function beginDays(w: World) {
   w.calendar ||= { day: currentDay(w) };
   if (!w.rankHistory) snapshotStandings(w);
   ensureScorers(w);
+  // The founding world's day zero has no preceding clubDay; settle its opening before advancing.
+  npcMarket(w);
 }
 /**
  * The next day of the world season in its one order (→LEAGUE-11): the close on the day after the
@@ -1102,14 +1106,17 @@ export function completeRound(
  * by counting the owner's waiting approvals, once a day on every progression path, the season's
  * close included (→STAFF-48), and closes with the owner's own business (→OWNER-7).
  */
-export function clubDay(w: World) {
-  if (!hasOwner(w)) return worldDay(w);
+export function clubDay(w: World, settleNpc = true) {
+  if (!hasOwner(w)) {
+    if (settleNpc) npcMarket(w);
+    return worldDay(w);
+  }
   countApprovalWaits(w);
   settleNpcCoaching(w);
   qualifyManagers(w);
   progressFacilityWorks(w);
   runAcademyIntake(w);
-  dailyMarket(w);
+  dailyMarket(w, settleNpc);
   delegatedBusiness(w);
   dailyStaff(w);
   judgePromises(w);
@@ -1125,6 +1132,7 @@ function worldDay(w: World) {
   settleNpcCoaching(w);
   qualifyManagers(w);
   announceRetirements(w);
+  closeNpcWindow(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
 export function advanceDays(

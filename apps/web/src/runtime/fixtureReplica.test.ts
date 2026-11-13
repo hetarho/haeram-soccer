@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { makePlayer } from '../../../../packages/engine/src/world';
+import { makePlayer, rating, squad, startingSquad } from '../../../../packages/engine/src/world';
 import { worldMarketFixture } from '../../../../packages/engine/src/world-market.testkit';
 import { foundSquads } from '../../../../packages/engine/src/persisted-squads';
 import { settleNpcGrowth } from '../../../../packages/engine/src/npc-careers';
@@ -88,7 +88,7 @@ describe('ordered fixture replicas', () => {
     delete source.squads;
     expect(reader.apply(packet(writer, source, 5)).copy.squads).toBeUndefined();
   });
-  it('replicates growth together with the XI chosen from the changed attributes', () => {
+  it('replicates growth as attribute columns while preserving the stored matchday choice', () => {
     const w = worldMarketFixture(),
       writer = new FixtureReplicaWriter(),
       reader = new FixtureReplicaReader();
@@ -100,15 +100,26 @@ describe('ordered fixture replicas', () => {
       p.potential = 99;
     });
     reader.apply(packet(writer, readCopy(w), 1));
+    const ids = squad(w, c).map((p) => p.id),
+      xi = startingSquad(w, c).map((p) => p.id);
     w.round = 4;
     settleNpcGrowth(w);
     const update = packet(writer, readCopy(w), 2);
     const patch = JSON.parse(update.patch!);
-    expect(patch.squads.put.map(([id]: [string]) => id)).toEqual([c.id]);
-    expect(patch.attributes).toEqual([]);
+    expect(patch.squads.put).toEqual([]);
+    expect(patch.attributes.map(([id]: [string]) => id)).toEqual([c.id]);
+    expect(update.patch).not.toContain('personality');
+    expect(update.patch).not.toContain('potential');
     const replicated = reader.apply(update).copy;
     expect(replicated.squads).toEqual(w.squads);
     expect(replicated.clubs.find((club) => club.id === c.id)!.strength).toBe(c.strength);
+    expect(squad(w, c).map((p) => p.id)).toEqual(ids);
+    expect(startingSquad(w, c).map((p) => p.id)).toEqual(xi);
+    const helper = replicated as typeof w;
+    const helperClub = helper.clubs.find((club) => club.id === c.id)!;
+    expect(squad(helper, helperClub).map((p) => p.id)).toEqual(ids);
+    expect(startingSquad(helper, helperClub).map((p) => p.id)).toEqual(xi);
+    expect(rating(helper, helperClub)).toBe(rating(w, c));
     const duplicate = packet(writer, readCopy(w), 3);
     expect(JSON.parse(duplicate.patch!).attributes).toEqual([]);
     expect(reader.apply(duplicate).copy.squads).toEqual(w.squads);

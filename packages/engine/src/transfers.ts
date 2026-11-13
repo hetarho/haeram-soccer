@@ -6,7 +6,12 @@ import { bidCeiling, haggling } from './director-bidding';
 import { registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
-import { refreshNpcSquads } from './world';
+import { npcMarket, npcOffer, recordPlayerMove } from './npc-market';
+import { closeNpcWindow } from './npc-careers';
+import { recordNpcTransferFee } from './books';
+import { npcContractTerm } from './free-agents';
+import { stature } from './world';
+import { fromPounds, inPounds } from './club-value';
 import type {
   Club,
   Player,
@@ -178,6 +183,22 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
   } else p.clauses = signingClauses(w, p);
   if (prior >= 0) w.players[prior] = p;
   else w.players.push(p);
+  if (bid.club) {
+    const seller = w.clubs.find((c) => c.id === bid.club)!;
+    const sellerFee = fromPounds(seller.country, w.year, inPounds(clubOf(w).country, w.year, fee));
+    recordNpcTransferFee(w, seller, sellerFee, true);
+    const record = recordPlayerMove(w, p.id, {
+      year: w.year, day: currentDay(w), from: seller.id, to: w.playerClub,
+      fee: sellerFee,
+      ...(bid.loan ? { loan: true } : {}),
+    });
+    if (bid.loan) {
+      record.loan = { club: seller.id, until: p.loanUntil!, wage: offer.player.wage,
+        contractUntil: offer.player.until, year: w.year };
+      if (offer.player.graduate) record.loan.graduate = true;
+      if (offer.player.joined !== undefined) record.loan.joined = offer.player.joined;
+    }
+  }
   noteSigning(w, p, bid.club);
   const fact = recordTransfer(w, {
     direction: 'in',
@@ -213,6 +234,8 @@ function saleBlocker(w: World, p: Player | undefined) {
 }
 function completeSale(w: World, bid: TransferBid, p: Player) {
   const club = w.clubs.find((c) => c.id === bid.club);
+  const offer = club && npcOffer(w, club, p, clubOf(w), bid.fee);
+  if (!offer) throw new Error(sourceMessage('copy.transfers.30aac47a5f'));
   if (BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, p.id)))
     throw new Error(sourceMessage('copy.transfers.4c1042837b'));
   const wasStarter = ownStarters(w).some((starter) => starter.id === p.id);
@@ -222,7 +245,15 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
   delete p.stance;
   // His sale ends his talk, his unhappiness and his transfer request (→CLUB-27).
   leaveContract(w, p);
-  movePerson(w, p, club?.id, true);
+  const live = { ...p, wage: offer.wage, until: w.year + npcContractTerm(w.year - p.born) - 1 };
+  live.joined = w.year;
+  delete live.graduate;
+  delete live.clauses;
+  recordNpcTransferFee(w, club!, offer.paid, false);
+  recordPlayerMove(w, p.id, {
+    year: w.year, day: currentDay(w), from: w.playerClub, to: club!.id, fee: bid.fee,
+  });
+  movePerson(w, live, club?.id, true);
   if (wasStarter || activePlayers(w).length < 20) openNeed(w, p);
   const fact = recordTransfer(w, {
     direction: 'out',
@@ -730,10 +761,10 @@ function saleBarLabel(bar: ReturnType<typeof saleBar>) {
   return `${bar.prospect ? sourceMessage('copy.transfers.bd0e2a77d1') : sourceMessage('copy.LabPage.eaea55bff6')} ${bar.percent}%${steps.length ? sourceMessage('copy.transfers.06ddab0099', { p0: bar.base, p1: steps.join(' · ') }) : ''}`;
 }
 /**
- * A club that would buy `p`: one whose level suits him (from 4 below to 12 above his ability),
- * the stronger ones more often, from any country. Weaker players go to smaller clubs.
+ * A real vacancy and affordable terms within CLUB-18's strength band, from any country.
+ * Contenders prefer stature, then the actual offered wage in comparable money (→WORLD-16).
  */
-export function suitorFor(w: World, p: Player, r: () => number): Club | undefined {
+export function suitorFor(w: World, p: Player, r: () => number, fee = playerValue(w, p)): Club | undefined {
   const ability = overall(p);
   const pool = w.clubs
     .filter(
@@ -743,15 +774,17 @@ export function suitorFor(w: World, p: Player, r: () => number): Club | undefine
         c.strength <= ability + 12 &&
         !(c.representative && !c.id.startsWith('euro:') && ability >= 45),
     )
-    .sort((a, b) => compareIds(a.id, b.id));
+    .flatMap((c) => {
+      const offer = npcOffer(w, c, p, clubOf(w), fee);
+      return offer ? [offer] : [];
+    })
+    .sort((a, b) => stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
+      (a.pounds > b.pounds ? -1 : a.pounds < b.pounds ? 1 : compareIds(a.club.id, b.club.id)));
   if (!pool.length) return undefined;
-  const weights = pool.map((c) => 1 + Math.max(0, c.strength - ability + 4) / 4);
-  let target = r() * weights.reduce((sum, v) => sum + v, 0);
-  for (let i = 0; i < pool.length; i++) {
-    target -= weights[i];
-    if (target < 0) return pool[i];
-  }
-  return pool[pool.length - 1];
+  const first = pool[0]!;
+  const tied = pool.filter((offer) => stature(w.seed, offer.club.id) === stature(w.seed, first.club.id) &&
+    offer.pounds === first.pounds);
+  return tied[Math.floor(r() * tied.length)]!.club;
 }
 /**
  * Market stance (→CLUB-22): a listed player draws offers from real clubs while a window is open
@@ -911,12 +944,12 @@ function listedOffers(w: World, day: number, until: number) {
     if (p.stance !== 'listed' || pending.has(p.id) || saleBlocker(w, p)) continue;
     const r = random(`${w.seed}:listed:${p.id}:${w.year}:${day}`);
     if (r() >= LISTED_OFFER.chance * listingAppeal(w, p)) continue;
-    const club = suitorFor(w, p, r);
-    if (!club) continue;
     const value = playerValue(w, p),
       share =
         (LISTED_OFFER.low + r() * (LISTED_OFFER.high - LISTED_OFFER.low)) * buildEffects(w).saleFee;
     const fee = offerFee(w, scaleBy(value, share, 1000n));
+    const club = suitorFor(w, p, r, fee);
+    if (!club) continue;
     const bid: TransferBid = {
       id: bidId('in', w, day, p.id, 'list:'),
       direction: 'in',
@@ -981,10 +1014,10 @@ function incomingBid(w: World, day: number, until: number) {
       break;
     }
   }
-  const club = suitorFor(w, player, r);
-  if (!club) return;
   const value = playerValue(w, player),
     fee = offerFee(w, ratio(value, BigInt(Math.round(integer(r, 90, 160) * build.saleFee)), 100n));
+  const club = suitorFor(w, player, r, fee);
+  if (!club) return;
   const bid: TransferBid = {
     id: bidId('in', w, day, player.id),
     direction: 'in',
@@ -1038,6 +1071,10 @@ function answerIncoming(
       ? sourceMessage('copy.transfers.e744d7026d')
       : sourceMessage('copy.transfers.1654d061b5'),
   ) => {
+    if (accept && !npcOffer(w, club, player, clubOf(w), bid.fee)) {
+      accept = false;
+      detail = sourceMessage('copy.transfers.30aac47a5f');
+    }
     if (
       accept &&
       BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, player.id))
@@ -1179,7 +1216,8 @@ function pruneBids(w: World) {
   w.bids = bids.filter((b) => !drop.has(b));
 }
 /** Each day: answer due bids, receive other clubs' offers, open/close windows. */
-export function dailyMarket(w: World): void {
+export function dailyMarket(w: World, settleNpc = true): void {
+  if (settleNpc) npcMarket(w);
   const day = currentDay(w),
     window = transferWindow(w, day);
   announceWindows(w, day);
@@ -1190,8 +1228,7 @@ export function dailyMarket(w: World): void {
     // With transfers delegated the 단장 looks for players (→CLUB-33).
     staffSignings(w);
   }
-  const dates = transferWindowDays(w.year);
-  if (day === dates.summerClose || day === dates.winterClose) refreshNpcSquads(w);
+  closeNpcWindow(w);
   pruneBids(w);
 }
 

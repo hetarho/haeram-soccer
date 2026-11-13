@@ -41,6 +41,11 @@ export function crossWar(w: World, closed: number) {
           p.until++;
           if (p.loanUntil !== undefined) p.loanUntil++;
         }
+      for (const record of Object.values(w.playerRecords ?? {}))
+        if (record.loan) {
+          record.loan.until++;
+          record.loan.contractUntil++;
+        }
       for (const person of Object.values(w.people ?? {})) {
         if (person.loan) person.loan.until++;
         for (const job of person.employment)

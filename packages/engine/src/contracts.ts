@@ -1,6 +1,7 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { endPlayingCoachForDeparture } from './playing-coach';
 import { movePerson } from './npc-continuity';
+import { careerDate } from './person-careers';
 import type {
   AgentRating,
   ContractClauses,
@@ -14,7 +15,7 @@ import type {
 import { clamp, random, ratio, scaleBy } from './primitives';
 import { activePlayers, clubOf, overall, UNHAPPY_PENALTY } from './player-state';
 import { addEvent } from './events';
-import { marketValue, marketWage, starPaySpread } from './market-prices';
+import { marketValue, marketWage, marketWageAt, starPaySpread } from './market-prices';
 export {
   MARKET_CONFIG,
   STAR_SPREAD_CONFIG,
@@ -49,7 +50,9 @@ import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom } from './calendar';
 import { credit } from './transactions';
 import { suitorFor } from './transfers';
-import { joinAtClose } from './free-agents';
+import { joinAtClose, npcContractTerm } from './free-agents';
+import { npcOffer, recordPlayerMove } from './npc-market';
+import { recordNpcTransferFee } from './books';
 import { transferWindowDays } from './transfer-window';
 import { isDelegated } from './responsibilities';
 import { AMBITION_UNHAPPY, GRADE_LABEL } from './player';
@@ -805,7 +808,9 @@ export const EXPIRY_COMPENSATION = 50;
 export function expireContracts(w: World, division = clubOf(w).tier) {
   for (const p of activePlayers(w)) {
     if (p.loanUntil || p.until > w.year) continue;
-    const club = suitorFor(w, p, random(`${w.seed}:expiry:${p.id}:${w.year}`)),
+    const value = marketValue(w, p, division),
+      amount = w.year >= BOSMAN_YEAR ? '0' : ratio(value, BigInt(EXPIRY_COMPENSATION), 100n),
+      club = suitorFor(w, p, random(`${w.seed}:expiry:${p.id}:${w.year}`), amount),
       where = club
         ? sourceMessage('copy.contracts.09184ea14a', { p0: club.name })
         : sourceMessage('copy.contracts.9a612830cc');
@@ -813,7 +818,16 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     p.status = 'sold';
     delete p.stance;
     leaveContract(w, p);
-    movePerson(w, p, club?.id, true);
+    if (club) {
+      const offer = npcOffer(w, club, p, clubOf(w), amount)!;
+      const live = { ...p, wage: marketWageAt(club.country, w.year, club.tier, p),
+        until: w.year + npcContractTerm(w.year - p.born) - 1, joined: w.year };
+      delete live.graduate;
+      delete live.clauses;
+      recordNpcTransferFee(w, club, offer.paid, false);
+      recordPlayerMove(w, p.id, { ...careerDate(w), from: w.playerClub, to: club.id, fee: amount });
+      movePerson(w, live, club.id, true);
+    } else movePerson(w, p, undefined, true);
     // One no club signs is a free agent (→CLUB-49).
     if (!club) joinAtClose(w, p);
     if (w.year >= BOSMAN_YEAR || !club) {
@@ -825,8 +839,6 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
       );
       continue;
     }
-    const value = marketValue(w, p, division),
-      amount = ratio(value, BigInt(EXPIRY_COMPENSATION), 100n);
     credit(w, amount);
     addEvent(
       w,

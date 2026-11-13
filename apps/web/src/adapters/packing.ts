@@ -1,4 +1,5 @@
 import { packSquads, unpackSquads, type PackedSquads } from './squadPacking';
+import { packPlayerRecords, unpackPlayerRecords, type PackedPlayerRecords } from './playerRecordPacking';
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
 import { packAppearances, readAppearances, type PackedAppearances } from './identityPacking';
@@ -194,6 +195,7 @@ const HEAT_CELLS = 40;
 type Tuple = (number | number[] | number[][])[];
 interface Packed {
   format: 'compact1';
+  playerRecords?: PackedPlayerRecords;
   squads?: PackedSquads;
   careers?: PackedCareers;
   world: World;
@@ -513,10 +515,12 @@ export function pack(w: World): Packed {
         });
   return {
     ...(careers ? { careers } : {}),
+    ...(w.playerRecords === undefined ? {} : { playerRecords: packPlayerRecords(w.playerRecords) }),
     ...(w.squads === undefined ? {} : { squads: packSquads(w.squads) }),
     format: 'compact1',
     world: {
       ...w,
+      ...(w.playerRecords === undefined ? {} : { playerRecords: undefined }),
       ...(w.squads === undefined ? {} : { squads: undefined }),
       ...(careers ? { people: undefined } : {}),
       ...(model ? { matchModel: undefined, npcSeason: undefined } : {}),
@@ -746,6 +750,9 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   if (p.squads !== undefined && p.world.squads !== undefined)
     throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
   const squads = p.squads === undefined ? undefined : unpackSquads(p.squads);
+  if (p.playerRecords !== undefined && p.world.playerRecords !== undefined)
+    throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+  const playerRecords = p.playerRecords === undefined ? undefined : unpackPlayerRecords(p.playerRecords);
   const people =
     p.careers === undefined
       ? undefined
@@ -1220,6 +1227,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   }
   return {
     ...p.world,
+    ...(playerRecords === undefined ? {} : { playerRecords }),
     ...(squads === undefined ? {} : { squads }),
     ...(people === undefined ? {} : { people }),
     ...(model?.matchModel ? { matchModel: model.matchModel } : {}),

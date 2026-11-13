@@ -27,6 +27,7 @@ import { hasOwner } from './owner';
 import { clamp, integer, random } from './primitives';
 import { seasonPlayerJobs } from './fixture-copy';
 import { moveSquadPlayer } from './persisted-squads';
+import { recordPlayerMove } from './npc-market';
 
 /**
  * Representative clubs' generated squads, also used by checkpoints without stored squads until
@@ -229,14 +230,22 @@ export function continuousSquad(w: World, c: Club): Player[] {
   return players;
 }
 /** A recorded move, with one identity and one active player affiliation. Unknown destinations stay unknown. */
-export function movePerson(w: World, p: Player, club?: string, own = false, loanUntil?: number) {
+export function movePerson(w: World, p: Player, club?: string, own = false, loanUntil?: number, source?: string) {
   const person = retainPerson(w, p, undefined, own || p.id.startsWith(`${w.playerClub}:`));
   const ownRow = w.players.find((row) => row.id === p.id);
   if (person.formerOwn && ownRow) person.ownCareer = [...ownRow.career];
   if (loanUntil !== undefined && !person.loan)
     person.loan = { club: person.club, until: loanUntil };
   const previousClub = person.club;
-  moveSquadPlayer(w, p, club);
+  const at = careerDate(w);
+  const last = w.playerRecords?.[p.id]?.moves.at(-1);
+  const from = previousClub ?? last?.to ??
+    person.employment.filter((job) => job.role === 'player').at(-1)?.club;
+  if (from && club && from !== club &&
+    !(last?.year === at.year && last.day === at.day && last.from === from && last.to === club))
+    recordPlayerMove(w, p.id, { ...at, from, to: club, fee: '0',
+      ...(loanUntil === undefined ? {} : { loan: true }) });
+  moveSquadPlayer(w, p, club, source);
   if (
     person.club === club &&
     person.playing === (club ? 'active' : 'released') &&

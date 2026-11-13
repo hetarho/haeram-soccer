@@ -7,7 +7,7 @@ import { worldMarketFixture } from './world-market.testkit';
 import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads';
 import { closeNpcSummer, intakeNpcYouth, NPC_YOUTH, settleNpcGrowth } from './npc-careers';
 import { clubManager } from './managerMarket';
-import { clubPlayers, rating, ratingOf, squad, startingSquad, NPC_SQUAD, LINE_MINIMUM } from './world';
+import { clubPlayers, rating, ratingOf, squad, startingSquad, xiRating, clubStyle, NPC_SQUAD, LINE_MINIMUM } from './world';
 import { lineOf, mainOvr } from './player';
 import { random, zeroMetrics } from './primitives';
 import { clubRegistration } from './registration';
@@ -68,7 +68,7 @@ describe('persisted NPC careers on isolated squads', () => {
     settleNpcGrowth(w);
     expect(w.squads).toEqual(single.squads);
     expect(w.squads).not.toEqual(before);
-    expect(w.squads![c.id]!.map((p) => p.id).sort()).toEqual(before![c.id]!.map((p) => p.id).sort());
+    expect(w.squads![c.id]!.map((p) => p.id)).toEqual(before![c.id]!.map((p) => p.id));
     const saved = JSON.parse(JSON.stringify(w)) as typeof w;
     settleNpcGrowth(saved);
     expect(saved.squads).toEqual(w.squads);
@@ -77,7 +77,7 @@ describe('persisted NPC careers on isolated squads', () => {
     expect(saved.squads).not.toEqual(w.squads);
   });
 
-  it('chooses again and invalidates cached ratings when attributes change', () => {
+  it('keeps the selected IDs in order and invalidates held-XI ratings after growth', () => {
     const { w, c, players } = fixture();
     c.cohesion = 1;
     for (const p of players) {
@@ -92,9 +92,10 @@ describe('persisted NPC careers on isolated squads', () => {
     w.round = 46;
     settleNpcGrowth(w);
     expect(rating(w, c)).toBeGreaterThan(before);
-    expect(ratingOf(w, c, held)).toBeGreaterThan(before);
-    expect(squad(w, c)).toHaveLength(ids.length);
-    expect(startingSquad(w, c)).toHaveLength(xi.length);
+    expect(ratingOf(w, c, held)).toBe(rating(w, c));
+    expect(squad(w, c).map((p) => p.id)).toEqual(ids);
+    expect(startingSquad(w, c).map((p) => p.id)).toEqual(xi);
+    expect(c.strength).toBe(xiRating(held, clubStyle(c)));
     expect(clubPlayers(w, c).find((p) => p.id === players[0]!.id)!.attrs).toEqual(players[0]!.attrs);
   });
 

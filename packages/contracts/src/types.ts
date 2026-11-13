@@ -1237,6 +1237,29 @@ export interface TransferRecords {
   facts: TransferFact[];
 }
 
+/** A completed move; fees are in the selling club's money in the recorded season. */
+export interface PlayerMove {
+  year: number;
+  day: number;
+  from: string;
+  to: string;
+  fee: string;
+  loan?: boolean;
+}
+export interface PlayerRecord {
+  moves: PlayerMove[];
+  /** Parent terms retained while the single live player is at his borrowing club. */
+  loan?: {
+    club: string;
+    until: number;
+    wage: string;
+    contractUntil: number;
+    year: number;
+    graduate?: true;
+    joined?: number;
+  };
+}
+
 export interface World {
   schema: 1;
   /** The game version whose rules it plays (→SAVE-10, SAVE-26). */
@@ -1247,6 +1270,9 @@ export interface World {
   seed: string;
   /** Live players of playable clubs nobody owns, chosen eighteen first; ours stay in `players`. */
   squads?: Record<string, Player[]>;
+  playerRecords?: Record<string, PlayerRecord>;
+  /** Last settled market day, retained across checkpoint reloads. */
+  npcMarketAt?: { year: number; day: number };
   year: number;
   round: number;
   revision: number;

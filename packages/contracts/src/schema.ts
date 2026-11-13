@@ -1099,6 +1099,30 @@ const worldSchema: z.ZodType<World> = z.object({
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
   squads: z.record(id, z.array(player).max(20000)).optional(),
+  playerRecords: z
+    .record(
+      id,
+      z.strictObject({
+        moves: z.array(
+          z.strictObject({
+            year: season,
+            day: seasonDay,
+            from: id,
+            to: id,
+            fee: amount,
+            loan: z.boolean().optional(),
+          }),
+        ),
+        loan: z
+          .strictObject({
+            club: id, until: season, wage: amount, contractUntil: season, year: season,
+            graduate: z.literal(true).optional(), joined: season.optional(),
+          })
+          .optional(),
+      }),
+    )
+    .optional(),
+  npcMarketAt: careerDate.optional(),
   npcGrowthAt: z.strictObject({ year: season, round: z.number().int().min(0).max(46) }).optional(),
   npcRetirementAt: season.optional(),
   npcSummerAt: season.optional(),
@@ -1448,6 +1472,22 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   for (const person of Object.values(w.people ?? {}))
     if (person.intention) delete (person.intention as { encouraged?: unknown }).encouraged;
   const ids = new Set(w.clubs.map((c) => c.id));
+  const dateNumber = (date: { year: number; day: number }) => date.year * 366 + date.day;
+  const today = { year: w.year, day: w.calendar?.day ?? w.round * 7 };
+  if (w.npcMarketAt && dateNumber(w.npcMarketAt) > dateNumber(today))
+    throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+  for (const record of Object.values(w.playerRecords ?? {})) {
+    let previous: (typeof record.moves)[number] | undefined;
+    for (const move of record.moves) {
+      if (!ids.has(move.from) || !ids.has(move.to) || move.from === move.to ||
+        dateNumber(move) > dateNumber(today) || (previous &&
+          (dateNumber(move) < dateNumber(previous) || previous.to !== move.from)))
+        throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+      previous = move;
+    }
+    if (record.loan && (!ids.has(record.loan.club) || !previous?.loan || previous.from !== record.loan.club))
+      throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+  }
   for (const [club, results] of Object.entries(w.recentResults ?? {})) {
     const seen = new Set<string>();
     if (!ids.has(club)) throw new Error(sourceMessage('copy.schema.df9beb0eea'));
@@ -1475,7 +1515,6 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       throw new Error(sourceMessage('copy.schema.66925a0aed'));
   }
   const occupied = new Set<string>();
-  const dateNumber = (date: { year: number; day: number }) => date.year * 366 + date.day;
   const mediationIds = new Set<string>(),
     mediationKeys = new Set<string>();
   for (const mediation of w.mediations ?? []) {
@@ -1518,7 +1557,6 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       !arrival.positions[arrival.position]
     )
       throw new Error(sourceMessage('copy.schema.cf04608c1a'));
-  const today = { year: w.year, day: w.calendar?.day ?? w.round * 7 };
   const beforeToday = (at: { year: number; day: number }) => dateNumber(at) <= dateNumber(today);
   const isCoach = (role: string) => !['player', 'manager', 'director', 'scout'].includes(role);
   const arrivalKeys = new Set<string>();
