@@ -21,17 +21,17 @@ import { operatingExpensesAt } from './finance';
 describe('NPC contract books on an isolated squad', () => {
   it('observes salary without the fee while enforcing their shared headroom', () => {
     const { w, c } = npcBooksFixture();
-    const observations: [bigint, boolean][] = [];
-    NPC_WAGE_DECISIONS.observe = (_club, bill, _limit, allowed) =>
-      observations.push([bill, allowed]);
+    const observations: [bigint, bigint, boolean][] = [];
+    NPC_WAGE_DECISIONS.observe = (_club, bill, _limit, allowed, fee) =>
+      observations.push([bill, fee, allowed]);
     try {
       expect(npcCanPay(w, c, '20', undefined, w.year, { bill: 80n, limit: 110n }, '10')).toBe(true);
       expect(npcCanPay(w, c, '20', undefined, w.year, { bill: 80n, limit: 110n }, '11')).toBe(
         false,
       );
       expect(observations).toEqual([
-        [100n, true],
-        [100n, false],
+        [100n, 10n, true],
+        [100n, 11n, false],
       ]);
     } finally {
       delete NPC_WAGE_DECISIONS.observe;

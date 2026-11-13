@@ -1,4 +1,5 @@
 /** Ownerless persisted-world calibration. JSON contains machine facts, not display copy. */
+import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { cpus, loadavg, platform, release, totalmem } from 'node:os';
@@ -298,7 +299,7 @@ function closed(
       const opening = before.get(c.id)!;
       const book = c.books!.seasons[0]!;
       const funding = fundingFacts(book, opening);
-      if (funding.status !== 'known') throw new Error(`Incomplete funding facts: ${c.id}`);
+      assert(funding.status === 'known', c.id);
       const raw = BigInt(funding.balanceBeforeBounds);
       const ceiling = BigInt(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n));
       const floor = -BigInt(scaleBy(book.income, CLUB_BOOKS.debtSeasons, 1000n));

@@ -74,10 +74,10 @@ describe('the persisted world from 1930 to 1970', () => {
       expect(world.squads?.[move.to]?.some((p) => p.id === id)).not.toBe(true);
     };
     const overAtClose = new Set<string>();
-    NPC_WAGE_DECISIONS.observe = (club, bill, limit, allowed) => {
+    NPC_WAGE_DECISIONS.observe = (club, bill, limit, allowed, fee) => {
       decisions++;
-      expect(allowed, `${w.year}:${club.id}:${bill}:${limit}`).toBe(
-        limit === undefined || bill <= limit,
+      expect(allowed, `${w.year}:${club.id}:${bill}:${fee}:${limit}`).toBe(
+        limit === undefined || bill + fee <= limit,
       );
     };
     try {
