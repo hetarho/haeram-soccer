@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:30Z | 2026-11-13T16:49Z | - | codex/natural-football-261114 | b7186455e701 |
-| pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T16:47Z | T877 | work/performance-books-pb14 | 0a2d63f8acd0 |
+| pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T16:51Z | - | work/performance-books-pb14 | 0a2d63f8acd0 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -61,7 +61,13 @@
 - 261113 suggest T873 T874 T875: Read-only scouting for the overlapping nf14 plan: reuse remote 5ddd7284 viewer mechanics, not all code. Untested keep.ts invents unrecorded passes (contradicts MATCH-38/39); old contracts would drop NpcContribution.cleanSheets. Free-kick root cause: scenes.ts:190-192 moves receiver to landing while dead; pass.ts:247-248 and metrics.ts:324 guard only ordinary pass. Extend legal launch-timed receiver movement and typed metric, preserve IFAB goal-kick/throw/corner exemptions, explicit scripted offsides, exact record/script hashes, physics and current 60000ms watch minute. Localize old viewer copy through all 12 packs; remove Linux-specific paths and repo: imports. IFAB law 11 https://theifab.com/laws/latest/offside/; FIFA passing-the-press supports available receiver plus runner, including useful backward escape passes.
 - 261113 decided ECON-42 WORLD-17 T880: Unspecified NPC private backing -> bounded estimated annual allowance by stature: at least 9 = 100%, at least 4 = 50%, at least -1 = 15%, otherwise zero of prior operating income; actual capital is drawn only for a closing shortfall (alternatives: unlimited debt balancing | retain a turnover-only wage cap). Support remains separate from sponsorship/gates and expires unused, so funded losses are possible without unbounded grants. First optimize existing algorithms result-identically; simplify a model only if measurement justifies a separate explicit policy.
 
+## unlanded
+| id | tag | branch | commit | at |
+|---|---|---|---|---|
+| T877 | pb14 | work/performance-books-pb14 | 0a2d63f8acd0 | 2026-11-13T16:51Z |
+
 ## log
+- 261113 T877 done
 - 261113 Full persisted-world implementation published to main at 3d002a0b, version 0.9.0; current main also includes independent nf14 planning 0a2cefd3. Storage included, capacity not an integration blocker. Avoided a second implementation writer in the nf14-owned checkout; read-only scout evidence handed to T873/T874/T875 through inbox.
 - 261113 261114 main integration started from bb383c33 with full origin/work/persisted-world-860 c70cf228; only STATE conflict resolved while preserving Gusta 0.17.1 and ARCH@43. Storage is included and no capacity or calibration pass is claimed.
 - 261113 Owner authorized full main implementation merge and removed storage capacity as an integration blocker on 261114; the measured capacity and calibration residuals remain documented.
@@ -81,4 +87,3 @@
 - 261113 T865 done
 - 261113 T864 done
 - 261113 T863 done
-- 261113 T862 done
