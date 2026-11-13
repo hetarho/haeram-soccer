@@ -119,16 +119,14 @@
 - 261113 sketch persistent-world-players start pr13
 - 261113 gusta-create-task ECON WEB: T859 consumes ECON@56 WEB@218 fin3
 - 261113 gusta-update-ssot ECON WEB start: reserve-funded delegated investment and amount-based bankruptcy fin3
+- 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
+- 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
+- 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
+- 261113 docs cleanup: NARRATIVE.md removed (stale since ARCH@3; regenerate with gusta-create-narrative), README and design docs updated, misplaced root reports moved, finished handoff artifacts/handoffs/261110-fi09 removed
+- 261113 ideation archived to done/ as converted@261113: 15 docs reflected in or superseded by current SSOTs (calibration-pass, club-direction, club-history-reboot, club-identity-and-kits, difficulty-and-adaptation, expert-proposal-review, manager-achievements, match-continuity-and-performance, match-day-progress, match-engine-rebuild, match-viewing-pace-and-freedom, navigation-and-records, own-club-match-edge, save-storage-and-fast-pace, set-piece-defence-and-goal-feedback)
+- 261113 ARCH r41..r41 no-op (no code impact)
+- 261113 gusta-update-ssot ARCH r41 (ARCH-1✎ and constraints✎: no current-rule path to archived ideation or NARRATIVE)
+- 261113 inbox cleanup by the owner: 803 decided lines confirmed and removed (reports keep them), 63 parked/suggest lines removed as resolved or obsolete, stale active rows k2d7 f5j2 ot03 ba04 removed
 - 261112 T858 done
 - 261112 T857 done
 - 261112 T856 done
-- 261112 T855 done
-- 261112 T854 done
-- 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
-- 261112 T853 done
-- 261112 T852 done
-- 261112 T851 done
-- 261112 T848 done
-- 261112 T845 done
-- 261113 gusta-create-task ECON CLUB STAFF WEB SAVE: T851 (the adopted money rules hold in the integration tier), T852 (a refused delegated setting names its person); the rest of ECON r55, CLUB r68, STAFF r42, WEB r217, SAVE r68 is implemented by the ab money-spend/a merge
-- 261113 gusta-update-ssot ECON r55 CLUB r68 STAFF r42 WEB r217 SAVE r68 (adopted money variants: five-step spending request, the 단장's plan on season income, insolvency stop, delegates set their works' settings, 위임 설정, 구단 예산)
