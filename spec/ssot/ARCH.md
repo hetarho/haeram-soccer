@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r41 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r42 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -228,6 +228,7 @@
   - Locale/theme preferences are small namespaced browser settings, separate from world saves and worker commands; denied storage leaves session selection usable. Stored prose remains unchanged in game data; display adapters resolve recognized source messages without mutating records. Rendering preferences cannot change seeded outcomes, canonical facts, progression or replay position (→ARCH-5/7/11/28).
   - The shipped locale/theme inventory follows the registries and →WEB-90/91; adding a pack does not change shared contracts or introduce a supported-ID list in code.
   - All authored display prose belongs in message resources, including engine-produced explanations/errors/news. The locale-independent source formatter in contracts emits canonical source prose; presentation translates text leaves and rich messages. Engine comparisons, IDs and persisted facts never read the selected locale.
+  - Keep source IDs, source templates and every registered translation while supported saves can contain that prose, including after its producer is removed. Retiring a display resource never rewrites saved facts (→~SAVE-5/28).
   - ESLint rejects Korean executable string/template literals, raw JSX prose in any language and literal accessibility text outside the source resource; type-only facts, comments and tests are not display copy. A mandatory `validate:i18n` gate verifies source-resource/default-pack agreement, every registered pack's complete keys/parameters and all static message references. No existing-copy baseline or production-file exemption is allowed.
   - Theme-transition snapshots and animation belong to a progressive browser adapter (→WEB-93). Resource preparation stays asynchronous; installation and presentation publication share one synchronous callback, with a freshness check inside it. Animation failure must not prevent a valid selection.
 
@@ -261,6 +262,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r42 261113 ARCH-32✎ stored-prose recognition without a resource-lifetime rule→retain source IDs, templates and every registered translation while supported saves can contain their prose, even after producer removal
 - r41 261113 ARCH-1✎ product SSOTs derived from `ideation/club-history-reboot.md`→the product SSOTs · constraints✎ product background `spec/ideation/club-history-reboot.md` and project overview `spec/NARRATIVE.md`→rules in `spec/ssot/` only, archived ideation is background (NARRATIVE removed, club-history-reboot archived)
 - r40 261112 ARCH-30✎ project-only rules (planning on `next`, host-locked batch before `vibe push` to `main`, work-group flag map, CI-wait and `verify` stand-in rules)→gusta's default tiers: task · batch before code push or final completion · CI after code push · flow✎ Planning names no skill, Verification no `next` or `vibe push`
 - r39 261111 ARCH-3✎ `grid/` and `aggregate/` compute matches→`aggregate/` settles, `script/` and `staging/` write and stage an own match · ARCH-4✎ grid-execution orchestration→match orchestration (settlement, script writing, staging) · ARCH-6✎ +a watched match staged by a worker of its own in bounded steps · ARCH-9✎ +the script writer's platform-stable arithmetic, the staging exempt · ARCH-31✎ the continuous-match and full probabilistic-result release→a match-model release; +own-match settlement and watched cost measured apart · ARCH-33✎ the grid kernel→the script writer and the staging as leaves · ARCH-34✎ workload hashes grid, aggregate, day→own match, aggregate, staging, day
