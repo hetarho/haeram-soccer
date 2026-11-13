@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
-| pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T17:21Z | T881 | work/performance-books-pb14 | 588127d5d1eb |
+| pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T17:33Z | - | work/performance-books-pb14 | 588127d5d1eb |
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T16:56Z | - | codex/natural-football-261114 | a3a5e07d282a |
 
 ## inbox
@@ -75,8 +75,10 @@
 | T879 | pb14 | work/performance-books-pb14 | 4c164ef5e69f | 2026-11-13T17:12Z |
 | T880 | pb14 | work/performance-books-pb14 | 0880bc593cfd | 2026-11-13T17:21Z |
 | T876 | work | codex/natural-football-261114 | 15ec0ba65b84 | 2026-11-13T17:23Z |
+| T881 | pb14 | work/performance-books-pb14 | 588127d5d1eb | 2026-11-13T17:33Z |
 
 ## log
+- 261113 T881 done
 - 261113 T876 integrated
 - 261113 T880 done
 - 261113 T879 done
@@ -96,4 +98,3 @@
 - 261113 - 261113 fix calibration: exclude incomplete and shortened windows from completed-core counts and peak-age comparisons; preserve all raw observations, two isolated regressions and nine affected unit cases pass.
 - 261113 T872 done
 - 261113 pw86: completed T860-T865/T867/T869/T870 source is remote on work/persisted-world-860 at af821030; T866 numeric measurements continue under unit-test-only steering, work cutoff 12:00 UTC and publication deadline 13:00 UTC.
-- 261113 T859 done
