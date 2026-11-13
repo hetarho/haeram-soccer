@@ -4794,7 +4794,6 @@
     "copy.ProfilePanels.cbff5c65de": "letzte Saison",
     "copy.ProfilePanels.13490b426f": "Es ist noch keine letzte Saison aufgezeichnet.",
     "copy.OtherPlayerSheet.3bf84e4582": "Spielerinformationen werden geladen...",
-    "copy.OtherPlayerSheet.7c16259479": "Er ist ein Spieler, der derzeit in keiner ersten Mannschaft spielt. Sie können seine Bilanz in der Karriere der Person sehen.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}·{p1}·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "Verwalte diesen Spieler",
     "copy.OwnPlayerSheet.33c518b619": "{p0}·{p1}·Agent{p2}{p3}Grade",
@@ -6845,6 +6844,12 @@
     "delegation.flow.budget": "Budget mit Guthaben",
     "delegation.verdict.fundedWages": "Die Spielergehälter von {bill} übersteigen das Budget mit Guthaben von {budget}",
     "delegation.verdict.fundedRaise": "Erhöhung abgelehnt: Die Spielergehälter von {bill} würden das Budget mit Guthaben von {budget} übersteigen ({plan}).",
-    "delegation.plan.fundedSellLine": "Leichter verkaufen, wenn Spielergehälter {first}% und {second}% der Einnahmen plus verfügbarem Kapital übersteigen (aktuell {now}%)."
+    "delegation.plan.fundedSellLine": "Leichter verkaufen, wenn Spielergehälter {first}% und {second}% der Einnahmen plus verfügbarem Kapital übersteigen (aktuell {now}%).",
+    "player.record.retired": "Karriere beendet · {season}",
+    "player.record.retiredAtClub": "Karriere beendet · {season} · {club}",
+    "player.record.representative": "Repräsentativer Verein · {club}",
+    "player.record.table": "Bilanz nach Saison und Verein",
+    "player.record.retirementNews": "{player} beendet seine Spielerkarriere",
+    "player.record.lastClub": "Letzter Verein: {club}"
   }
 }

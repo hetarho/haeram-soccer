@@ -5132,7 +5132,6 @@
     "copy.ProfilePanels.cbff5c65de": "musim baru-baru ini",
     "copy.ProfilePanels.13490b426f": "Belum ada catatan musim lalu.",
     "copy.OtherPlayerSheet.3bf84e4582": "Memuat informasi pemain...",
-    "copy.OtherPlayerSheet.7c16259479": "Dia adalah pemain yang saat ini tidak berada di tim utama mana pun. Anda bisa melihat rekornya dalam karier orang tersebut.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}·{p1}·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "Kelola pemain ini",
     "copy.OwnPlayerSheet.33c518b619": "{p0}·{p1}·Agen{p2}{p3}Kelas",
@@ -6842,6 +6841,12 @@
     "delegation.flow.budget": "Anggaran termasuk kas",
     "delegation.verdict.fundedWages": "Total gaji pemain {bill} melebihi anggaran termasuk kas {budget}",
     "delegation.verdict.fundedRaise": "Kenaikan ditolak: total gaji pemain {bill} akan melebihi anggaran termasuk kas {budget} ({plan}).",
-    "delegation.plan.fundedSellLine": "Lebih mudah menjual saat gaji pemain melebihi {first}% dan {second}% dari pendapatan ditambah modal tersedia (kini {now}%)."
+    "delegation.plan.fundedSellLine": "Lebih mudah menjual saat gaji pemain melebihi {first}% dan {second}% dari pendapatan ditambah modal tersedia (kini {now}%).",
+    "player.record.retired": "Pensiun · {season}",
+    "player.record.retiredAtClub": "Pensiun · {season} · {club}",
+    "player.record.representative": "Klub perwakilan · {club}",
+    "player.record.table": "Catatan per musim dan klub",
+    "player.record.retirementNews": "{player} pensiun sebagai pemain",
+    "player.record.lastClub": "Klub terakhir: {club}"
   }
 }

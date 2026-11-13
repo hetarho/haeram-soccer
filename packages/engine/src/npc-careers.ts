@@ -1,3 +1,5 @@
+import { retirePlayerRecord, settleAbsentPlayerRecords } from './player-records';
+import { recordRetirementNews } from './news';
 /** The shared summer of every playable club nobody owns (→WORLD-16). */
 import type { Club, Player, World } from '../../contracts/src/types';
 import { atCareerDate } from './person-careers';
@@ -188,9 +190,17 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
   atCareerDate(w, { year: w.year, day: retirementAnnounceDay(w.year) }, () =>
     announceNpcRetirements(w),
   );
+  const retiring = (p: Player) => {
+    const person = w.people?.[p.id];
+    const year = person?.retirement?.year ?? p.retiring;
+    return person?.playing === 'retired' || (year !== undefined && year <= w.year) ||
+      w.year + 1 - p.born >= RETIREMENT.lastAge;
+  };
   for (const [id, players] of Object.entries(w.squads ?? {})) {
     const c = clubById(w, id);
     if (!c?.levels) continue;
+    for (const p of players)
+      if (retiring(p) && retirePlayerRecord(w, p, id)) recordRetirementNews(w, p, id);
     const manager = clubManager(w, c);
     for (const p of players)
       developAnnually(w, p, {
@@ -204,11 +214,7 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
   for (const [id, players] of Object.entries(w.squads ?? {})) {
     w.squads![id] = players.filter((p) => {
       const person = w.people?.[p.id];
-      const retirement = person?.retirement?.year ?? p.retiring;
-      const retire =
-        person?.playing === 'retired' ||
-        (retirement !== undefined && retirement <= w.year) ||
-        w.year + 1 - p.born >= RETIREMENT.lastAge;
+      const retire = retiring(p);
       if (retire && person) retirePerson(w, person, false);
       return !retire;
     });
@@ -230,5 +236,6 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     invalidateNpcSquad(w, id);
   }
   if (matches) capFreeAgents(w);
+  settleAbsentPlayerRecords(w);
   w.npcSummerAt = w.year;
 }

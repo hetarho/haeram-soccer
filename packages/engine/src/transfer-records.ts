@@ -1,3 +1,4 @@
+import { linkPlayer } from './player-records';
 /**
  * Our club's fee transfers (→HIST-20): the facts the writers record as a signing, sale or loan
  * completes, and their ranking in today's money. A read leaf: the records room imports it.
@@ -48,6 +49,7 @@ export function recordTransfer(w: World, fact: TransferMove): TransferFact | und
     day: currentDay(w),
   };
   records.facts.push(recorded);
+  linkPlayer(w, recorded.player);
   return recorded;
 }
 

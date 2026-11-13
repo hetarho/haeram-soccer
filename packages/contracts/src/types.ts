@@ -1246,8 +1246,21 @@ export interface PlayerMove {
   fee: string;
   loan?: boolean;
 }
+export interface PlayerSeasonLine {
+  year: number;
+  club: string;
+  appearances: number;
+  goals: number;
+  assists: number;
+  saves?: number;
+  cleanSheets?: number;
+}
 export interface PlayerRecord {
   moves: PlayerMove[];
+  /** Absent on supported saves from before season records. */
+  lines?: PlayerSeasonLine[];
+  linked?: boolean;
+  retired?: { year: number; club?: string; profile: Player };
   /** Parent terms retained while the single live player is at his borrowing club. */
   loan?: {
     club: string;
@@ -1258,6 +1271,15 @@ export interface PlayerRecord {
     graduate?: true;
     joined?: number;
   };
+}
+
+/** Bounded worker read, never the whole other-club player registry. */
+export interface PlayerProfileRead {
+  player: Player;
+  club?: string;
+  kind: 'own' | 'squad' | 'free' | 'retired' | 'representative';
+  lines: PlayerSeasonLine[];
+  retired?: { year: number; club?: string };
 }
 
 export interface World {

@@ -16,6 +16,7 @@ z.config({ jitless: true });
 import type {
   World,
   Player,
+  PlayerProfileRead,
   Manager,
   Fixture,
   MatchPlayback,
@@ -556,7 +557,7 @@ export interface Reply {
   /** The generated world's clubs on sale and the chosen tier's fortune in pounds (→ECON-37). */
   start?: { listings: ClubListing[]; fortune: string };
   clubProfile?: ClubProfile;
-  playerProfile?: { player: Player; club: string };
+  playerProfile?: PlayerProfileRead;
   cancelled?: boolean;
   /** A save request handed this world revision to the codec worker; its checkpoint follows there. */
   saving?: { worldId: string; revision: number };

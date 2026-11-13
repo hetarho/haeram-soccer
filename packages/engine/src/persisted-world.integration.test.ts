@@ -120,6 +120,18 @@ describe('the persisted world from 1930 to 1970', () => {
         }
         if (w.year !== year) {
           years.push(w.year);
+          for (const place of w.history.at(-1)!.ballonDor ?? [])
+            expect(w.playerRecords![place.id]!.linked).toBe(true);
+          for (const [id, record] of Object.entries(w.playerRecords ?? {})) {
+            const lines = record.lines ?? [];
+            expect(new Set(lines.map((line) => `${line.year}:${line.club}`)).size).toBe(lines.length);
+            expect(lines.every((line) => line.appearances > 0)).toBe(true);
+            if (record.retired) {
+              expect(record.linked).toBe(true);
+              expect(record.retired.profile.id).toBe(id);
+              expect(Object.values(w.squads!).some((players) => players.some((p) => p.id === id))).toBe(false);
+            }
+          }
           firstDay(w);
           expect((w.freeAgents ?? []).length).toBeLessThanOrEqual(FREE_AGENT_CONFIG.cap);
           for (const c of w.clubs.filter((c) => !c.representative)) {

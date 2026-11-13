@@ -8,7 +8,7 @@ import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
 import { simulateAggregate } from './aggregate/engine';
 import { nextOwnFixture } from './calendar';
 import { type DecideRule } from './match/rules';
-import { closeSeason, eloOf, ownLeagueClubs, simulateSeason } from './index';
+import { closeSeason, eloOf, finishCups, finishEurope, ownLeagueClubs, promote, simulateSeason } from './index';
 import { playFixture, tieRule } from './knockout';
 import { simulateMatch } from './match';
 import { appearanceForFixture } from './match-appearance';
@@ -77,6 +77,33 @@ describe('closed season archive', () => {
     },
   );
 
+  it('archives playoff contributions with all competitions before promotion and retirement', () => {
+    const w = archiveLastRound('professional');
+    const expected = structuredClone(w);
+    finishCups(expected);
+    finishEurope(expected);
+    promote(expected);
+    const playoff = expected.npcSeason!.competitions.find((c) => c.kind === 'playoff' && c.groupKey.includes('ESP'))!;
+    expect(playoff.players.length).toBeGreaterThan(0);
+    const p = playoff.players[0]!;
+    // Keep this observed identity regardless of whether he retires at this close.
+    (w.playerRecords ??= {})[p.id] = { moves: [], linked: true };
+    const parts = expected.npcSeason!.competitions.flatMap((c) =>
+      c.players.find((player) => player.id === p.id)?.clubs ?? [],
+    );
+    closeSeason(w);
+    const actual = w.playerRecords![p.id]!.lines!.filter((line) => line.year === expected.year);
+    for (const club of new Set(parts.map((part) => part.club))) {
+      const contributions = parts.filter((part) => part.club === club);
+      expect(actual.find((line) => line.club === club)).toMatchObject({
+        appearances: contributions.reduce((n, part) => n + part.appearances, 0),
+        goals: contributions.reduce((n, part) => n + part.metrics[0]!, 0),
+        assists: contributions.reduce((n, part) => n + part.metrics[1]!, 0),
+      });
+    }
+    expect(actual).toHaveLength(new Set(parts.map((part) => part.club)).size);
+  });
+
   it('rejects archived bracket rows and scorers that point nowhere or contradict their legs', () => {
     const { w, season } = closedSeason(archiveLastRound('professional'));
     const corruptions: ((row: number[]) => void)[] = [
@@ -121,6 +148,8 @@ describe('league settlement appearance (→KIT-12)', () => {
       let live: MatchPlayback | undefined;
       advanceRound(w, (_, p) => (live = p), observe);
       expect(live!.record.id).toBe(next.id);
+      for (const line of live!.record.players.filter((line) => line.metrics[10]! > 0))
+        expect(w.playerRecords![line.id]!.linked).toBe(true);
       // Watching hands over the released match's script to stage; the record is the same.
       expect(live!.script !== undefined).toBe(observe);
       expect(live!.frames).toEqual([]);

@@ -29,6 +29,7 @@ export const newsItemSchema = z.object({
   detail: z.string().max(8000).optional(),
   celebrate: z.boolean().optional(),
   sequence: count.optional(),
+  players: z.array(key).max(1000).optional(),
 });
 export type NewsItem = z.infer<typeof newsItemSchema>;
 export const newsStateSchema = z.object({

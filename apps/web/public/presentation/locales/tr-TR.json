@@ -4799,7 +4799,6 @@
     "copy.ProfilePanels.cbff5c65de": "son sezon",
     "copy.ProfilePanels.13490b426f": "Geçen sezonun kaydı henüz yok.",
     "copy.OtherPlayerSheet.3bf84e4582": "Oyuncu bilgileri yükleniyor...",
-    "copy.OtherPlayerSheet.7c16259479": "Kendisi şu anda hiçbir takımda yer almayan bir oyuncu. Onun rekorunu kişinin kariyerinde görebilirsiniz.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}·{p1}·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "Bu oynatıcıyı yönet",
     "copy.OwnPlayerSheet.33c518b619": "{p0}·{p1}·Ajan{p2}{p3}Not",
@@ -6845,6 +6844,12 @@
     "delegation.flow.budget": "Kasa dahil bütçe",
     "delegation.verdict.fundedWages": "{bill} oyuncu maaş yükü, kasa dahil {budget} bütçeyi aşıyor",
     "delegation.verdict.fundedRaise": "Zam reddedildi: {bill} oyuncu maaş yükü, kasa dahil {budget} bütçeyi aşacaktı ({plan}).",
-    "delegation.plan.fundedSellLine": "Oyuncu maaşları gelir ve kullanılabilir sermaye toplamının %{first} ve %{second} sınırlarını aşınca daha kolay satılır (şimdi %{now})."
+    "delegation.plan.fundedSellLine": "Oyuncu maaşları gelir ve kullanılabilir sermaye toplamının %{first} ve %{second} sınırlarını aşınca daha kolay satılır (şimdi %{now}).",
+    "player.record.retired": "Emekli · {season}",
+    "player.record.retiredAtClub": "Emekli · {season} · {club}",
+    "player.record.representative": "Temsilci kulüp · {club}",
+    "player.record.table": "Sezon ve kulüp kayıtları",
+    "player.record.retirementNews": "{player} futbolculuğu bıraktı",
+    "player.record.lastClub": "Son kulüp: {club}"
   }
 }

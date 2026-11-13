@@ -101,7 +101,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | doing@261113.fin3 |
-| T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB PLAYER SAVE ARCH | T862 T864 | todo |
+| T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB PLAYER SAVE ARCH | T862 T864 | doing@261113.pw86 |
 | T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 | todo |
 
 ## next

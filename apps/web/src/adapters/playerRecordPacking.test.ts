@@ -1,3 +1,4 @@
+import { initializeNewsJournal, recordRetirementNews } from '../../../../packages/engine/src/news';
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
 import { validateWorld } from '../../../../packages/contracts/src/schema';
@@ -62,6 +63,59 @@ describe('lossless player move columns on a tiny fixture', () => {
     reversed.playerRecords!.one!.moves.reverse();
     expect(() => validateWorld(reversed)).toThrow();
   });
+  it('retains lines, optional keeper counters, link presence and exact last profiles through schema and packing', () => {
+    const w = worldMarketFixture();
+    w.catalogHash = '0'.repeat(64);
+    w.clubs.push(...Array.from({ length: 7 }, (_, i) => ({ ...w.clubs[1]!, id: `synthetic:${i}` })));
+    const profile = { ...structuredClone(w.players[0]!), id: 'retired' };
+    profile.attrs.passing = 71.123456789;
+    w.playerRecords = {
+      ...records,
+      retired: { moves: [], linked: true,
+        lines: [
+          { year: w.year - 1, club: 'foreign', appearances: 2, goals: 0, assists: 0, saves: 4, cleanSheets: 0 },
+          { year: w.year, club: 'own', appearances: 1, goals: 1, assists: 0 },
+        ], retired: { year: w.year, club: 'foreign', profile },
+      },
+      freeRetiree: { moves: [], linked: true, lines: [], retired: { year: w.year, profile: { ...profile, id: 'freeRetiree' } } },
+      presentEmpty: { moves: [], lines: [], linked: false },
+    };
+    // Keep the older move fixture in its future season for schema date validation.
+    w.calendar = { day: 200 };
+    w.round = 28;
+    initializeNewsJournal(w);
+    recordRetirementNews(w, profile, 'foreign');
+    const loaded = unpack(plain(pack(w)));
+    expect(loaded.newsJournal).toEqual(w.newsJournal);
+    expect(validateWorld(plain(loaded)).newsJournal).toEqual(w.newsJournal);
+    expect(Object.values(loaded.newsJournal!.seasons).flat()[0]!.players).toEqual(['retired']);
+    expect(loaded.playerRecords).toEqual(w.playerRecords);
+    expect(validateWorld(plain(loaded)).playerRecords).toEqual(w.playerRecords);
+    expect(plain(pack(w)).world).not.toHaveProperty('playerRecords');
+    const valid = plain(packPlayerRecords(w.playerRecords));
+    for (const mutate of [
+      (p: typeof valid) => { p.lines![0]![1][0]![1] = -1; },
+      (p: typeof valid) => { p.lines!.push(p.lines![0]!); },
+      (p: typeof valid) => { p.linked![0]![1] = 2 as 1; },
+      (p: typeof valid) => { p.retirees!.rows[0]![0] = 999; },
+      (p: typeof valid) => { p.retirees!.rows[0]![2] = -1; },
+      (p: typeof valid) => { p.retirees!.rows.reverse(); },
+    ]) {
+      const bad = plain(valid);
+      mutate(bad);
+      expect(() => unpackPlayerRecords(bad)).toThrow();
+    }
+    for (const mutate of [
+      (world: World) => { world.playerRecords!.retired!.lines![0]!.club = 'unknown'; },
+      (world: World) => { world.playerRecords!.retired!.lines!.push(world.playerRecords!.retired!.lines![0]!); },
+      (world: World) => { world.playerRecords!.retired!.retired!.profile.id = 'someone-else'; },
+    ]) {
+      const bad = plain(loaded);
+      mutate(bad);
+      expect(() => validateWorld(bad)).toThrow();
+    }
+  });
+
   it('rejects corrupt counts, dictionaries, fees, date rows and duplicated loans', () => {
     const valid = plain(packPlayerRecords(records));
     for (const mutate of [

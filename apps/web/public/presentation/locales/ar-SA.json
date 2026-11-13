@@ -4893,7 +4893,6 @@
     "copy.ProfilePanels.cbff5c65de": "الموسم الأخير",
     "copy.ProfilePanels.13490b426f": "لم يتم تسجيل الموسم الماضي حتى الآن.",
     "copy.OtherPlayerSheet.3bf84e4582": "جارٍ تحميل معلومات اللاعب...",
-    "copy.OtherPlayerSheet.7c16259479": "وهو لاعب لا يلعب حاليًا في أي فريق أول. تستطيع أن ترى سجله في مهنة الشخص.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}·{p1}·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "إدارة هذا اللاعب",
     "copy.OwnPlayerSheet.33c518b619": "{p0}·{p1}·الوكيل{p2}{p3}الدرجة",
@@ -6857,6 +6856,12 @@
     "delegation.flow.budget": "الميزانية مع النقد",
     "delegation.verdict.fundedWages": "رواتب اللاعبين البالغة {bill} تتجاوز الميزانية الممولة بالنقد البالغة {budget}",
     "delegation.verdict.fundedRaise": "رُفضت الزيادة: رواتب اللاعبين البالغة {bill} ستتجاوز الميزانية الممولة بالنقد البالغة {budget} ({plan}).",
-    "delegation.plan.fundedSellLine": "تزداد الرغبة في البيع عندما تتجاوز الرواتب {first}% و{second}% من الدخل ورأس المال المتاح معًا (حاليًا {now}%)."
+    "delegation.plan.fundedSellLine": "تزداد الرغبة في البيع عندما تتجاوز الرواتب {first}% و{second}% من الدخل ورأس المال المتاح معًا (حاليًا {now}%).",
+    "player.record.retired": "معتزل · {season}",
+    "player.record.retiredAtClub": "معتزل · {season} · {club}",
+    "player.record.representative": "نادٍ ممثل · {club}",
+    "player.record.table": "السجل حسب الموسم والنادي",
+    "player.record.retirementNews": "{player} يعتزل اللعب",
+    "player.record.lastClub": "النادي الأخير: {club}"
   }
 }

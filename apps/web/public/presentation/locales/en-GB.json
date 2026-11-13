@@ -4619,7 +4619,6 @@
     "copy.ProfilePanels.cbff5c65de": "recent season",
     "copy.ProfilePanels.13490b426f": "There is no recorded last season yet.",
     "copy.OtherPlayerSheet.3bf84e4582": "Loading player information...",
-    "copy.OtherPlayerSheet.7c16259479": "He is a player who is not currently in any first team. You can see his record in the person's career.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}·{p1}·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "Manage this player",
     "copy.OwnPlayerSheet.33c518b619": "{p0}·{p1}·Agent{p2}{p3}Grade",
@@ -6845,6 +6844,12 @@
     "delegation.flow.budget": "Budget including cash",
     "delegation.verdict.fundedWages": "The player wage bill of {bill} exceeds the cash-funded budget of {budget}",
     "delegation.verdict.fundedRaise": "The raise was refused: the player wage bill of {bill} would exceed the cash-funded budget of {budget} ({plan}).",
-    "delegation.plan.fundedSellLine": "Sell more readily when player wages exceed {first}% and {second}% of income plus available capital (now {now}%)."
+    "delegation.plan.fundedSellLine": "Sell more readily when player wages exceed {first}% and {second}% of income plus available capital (now {now}%).",
+    "player.record.retired": "Retired · {season}",
+    "player.record.retiredAtClub": "Retired · {season} · {club}",
+    "player.record.representative": "Representative club · {club}",
+    "player.record.table": "Record by season and club",
+    "player.record.retirementNews": "{player} retires from playing",
+    "player.record.lastClub": "Last club: {club}"
   }
 }

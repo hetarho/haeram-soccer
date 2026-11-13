@@ -1,5 +1,6 @@
-import type { Club, Player, Staff, World } from '../../../../packages/contracts/src/types';
+import type { Club, Player, PlayerProfileRead, Staff, World } from '../../../../packages/contracts/src/types';
 import type { ClubPost, ClubProfile } from '../../../../packages/contracts/src/owner';
+import { continuousSquad } from '../../../../packages/engine/src/npc-continuity';
 import { squad } from '../../../../packages/engine/src/world';
 import { overall } from '../../../../packages/engine/src/player-state';
 import { clubManager } from '../../../../packages/engine/src/managerMarket';
@@ -93,19 +94,32 @@ export function clubProfile(w: World, clubId: string): ClubProfile | undefined {
   };
 }
 
-/**
- * A first-team player of any club as his detail reads him, with the club he plays for: looked for
- * at `clubId` first, the club he was named with, then at every club, since he may have moved.
- */
-export function squadPlayer(
-  w: World,
-  playerId: string,
-  clubId?: string,
-): { player: Player; club: string } | undefined {
+/** Every supported identity link resolves without drawing a replacement for a persisted player. */
+export function squadPlayer(w: World, playerId: string, clubId?: string): PlayerProfileRead | undefined {
+  const record = w.playerRecords?.[playerId];
+  const read = (player: Player, kind: PlayerProfileRead['kind'], club?: string): PlayerProfileRead =>
+    structuredClone({ player, kind, ...(club ? { club } : {}), lines: record?.lines ?? [],
+      ...(kind === 'retired' && record?.retired ? {
+        retired: { year: record.retired.year, ...(record.retired.club ? { club: record.retired.club } : {}) },
+      } : {}),
+    });
+  const own = w.players.find((p) => p.id === playerId);
+  if (own) return read(own, 'own', w.playerClub);
   const hinted = w.clubs.find((c) => c.id === clubId);
-  for (const club of hinted ? [hinted, ...w.clubs] : w.clubs) {
+  const clubs = hinted ? [hinted, ...w.clubs.filter((c) => c !== hinted)] : w.clubs;
+  for (const club of clubs) {
+    if (club.id === w.playerClub || club.representative) continue;
+    const players = w.squads === undefined ? continuousSquad(w, club) : (w.squads[club.id] ?? []);
+    const player = players.find((p) => p.id === playerId);
+    if (player) return read(player, 'squad', club.id);
+  }
+  const free = w.freeAgents?.find((p) => p.id === playerId);
+  if (free) return read(free, 'free');
+  if (record?.retired) return read(record.retired.profile, 'retired', record.retired.club);
+  for (const club of clubs) {
+    if (!club.representative) continue;
     const player = squad(w, club).find((p) => p.id === playerId);
-    if (player) return { player: structuredClone(player), club: club.id };
+    if (player) return read(player, 'representative', club.id);
   }
   return undefined;
 }

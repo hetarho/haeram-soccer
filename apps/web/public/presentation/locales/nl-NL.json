@@ -4882,7 +4882,6 @@
     "copy.ProfilePanels.cbff5c65de": "afgelopen seizoen",
     "copy.ProfilePanels.13490b426f": "Er is nog geen opname van vorig seizoen.",
     "copy.OtherPlayerSheet.3bf84e4582": "Spelerinformatie laden...",
-    "copy.OtherPlayerSheet.7c16259479": "Hij is een speler die momenteel in geen enkel eerste elftal speelt. Je kunt zijn staat van dienst in de carrière van de persoon zien.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}·{p1}·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "Beheer deze speler",
     "copy.OwnPlayerSheet.33c518b619": "{p0}·{p1}·Agent{p2}{p3}Kwaliteit",
@@ -6845,6 +6844,12 @@
     "delegation.flow.budget": "Budget met kasgeld",
     "delegation.verdict.fundedWages": "De spelersloonsom van {bill} overschrijdt het budget met kasgeld van {budget}",
     "delegation.verdict.fundedRaise": "Verhoging geweigerd: de spelersloonsom van {bill} zou het budget met kasgeld van {budget} overschrijden ({plan}).",
-    "delegation.plan.fundedSellLine": "Verkoop makkelijker als de lonen {first}% en {second}% van inkomsten plus beschikbaar kapitaal overschrijden (nu {now}%)."
+    "delegation.plan.fundedSellLine": "Verkoop makkelijker als de lonen {first}% en {second}% van inkomsten plus beschikbaar kapitaal overschrijden (nu {now}%).",
+    "player.record.retired": "Gestopt · {season}",
+    "player.record.retiredAtClub": "Gestopt · {season} · {club}",
+    "player.record.representative": "Vertegenwoordigende club · {club}",
+    "player.record.table": "Statistieken per seizoen en club",
+    "player.record.retirementNews": "{player} stopt als speler",
+    "player.record.lastClub": "Laatste club: {club}"
   }
 }

@@ -449,10 +449,12 @@ const npcSeasonSchema = z.strictObject({
                       appearances: z.number().int().nonnegative().max(1000),
                       // Appearances are starts plus substitute appearances (→HIST-13).
                       starts: z.number().int().nonnegative().max(1000),
+                      cleanSheets: z.number().int().nonnegative().max(1000).optional(),
                       metrics,
                       detail: playerDetail,
                     })
-                    .refine((part) => part.starts <= part.appearances),
+                    .refine((part) => part.starts <= part.appearances &&
+                      (part.cleanSheets === undefined || part.cleanSheets <= part.starts)),
                 )
                 .min(1)
                 .max(50),
@@ -1113,6 +1115,17 @@ const worldSchema: z.ZodType<World> = z.object({
             loan: z.boolean().optional(),
           }),
         ),
+        lines: z.array(z.strictObject({
+          year: season,
+          club: id,
+          appearances: z.number().int().positive().max(10000),
+          goals: z.number().int().nonnegative(),
+          assists: z.number().int().nonnegative(),
+          saves: z.number().int().nonnegative().optional(),
+          cleanSheets: z.number().int().nonnegative().optional(),
+        })).max(100000).optional(),
+        linked: z.boolean().optional(),
+        retired: z.strictObject({ year: season, club: id.optional(), profile: player }).optional(),
         loan: z
           .strictObject({
             club: id, until: season, wage: amount, contractUntil: season, year: season,
@@ -1476,7 +1489,18 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const today = { year: w.year, day: w.calendar?.day ?? w.round * 7 };
   if (w.npcMarketAt && dateNumber(w.npcMarketAt) > dateNumber(today))
     throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
-  for (const record of Object.values(w.playerRecords ?? {})) {
+  for (const [playerId, record] of Object.entries(w.playerRecords ?? {})) {
+    const lines = new Set<string>();
+    for (const line of record.lines ?? []) {
+      const key = `${line.year}:${line.club}`;
+      if (!ids.has(line.club) || line.year > w.year || lines.has(key) ||
+        (line.cleanSheets !== undefined && line.cleanSheets > line.appearances))
+        throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
+      lines.add(key);
+    }
+    if (record.retired && (record.retired.profile.id !== playerId || record.retired.year > w.year ||
+      (record.retired.club !== undefined && !ids.has(record.retired.club))))
+      throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
     let previous: (typeof record.moves)[number] | undefined;
     for (const move of record.moves) {
       if (!ids.has(move.from) || !ids.has(move.to) || move.from === move.to ||

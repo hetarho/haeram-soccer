@@ -4802,7 +4802,6 @@
     "copy.ProfilePanels.cbff5c65de": "최근 시즌",
     "copy.ProfilePanels.13490b426f": "기록된 지난 시즌이 아직 없어요.",
     "copy.OtherPlayerSheet.3bf84e4582": "선수 정보를 불러오는 중…",
-    "copy.OtherPlayerSheet.7c16259479": "지금 어느 1군에도 없는 선수예요. 인물 경력에서 그의 기록을 볼 수 있어요.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0} · {p1}세 ·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "이 선수 관리",
     "copy.OwnPlayerSheet.33c518b619": "{p0} · {p1} · 에이전트{p2}{p3}등급",
@@ -6842,6 +6841,12 @@
     "delegation.flow.budget": "보유 자금을 포함한 예산",
     "delegation.verdict.fundedWages": "선수 연봉 총액 {bill}이 보유 자금을 포함한 예산 {budget}을 넘어요",
     "delegation.verdict.fundedRaise": "인상 후 선수 연봉 총액 {bill}이 보유 자금을 포함한 예산 {budget}을 넘어 거절했어요({plan}).",
-    "delegation.plan.fundedSellLine": "선수 연봉이 수입과 투자 가능 자금 합계의 {first}%와 {second}%를 넘으면 매각을 늘려요(지금 {now}%)."
+    "delegation.plan.fundedSellLine": "선수 연봉이 수입과 투자 가능 자금 합계의 {first}%와 {second}%를 넘으면 매각을 늘려요(지금 {now}%).",
+    "player.record.retired": "은퇴 · {season}",
+    "player.record.retiredAtClub": "은퇴 · {season} · {club}",
+    "player.record.representative": "대표 구단 · {club}",
+    "player.record.table": "시즌·구단별 기록",
+    "player.record.retirementNews": "{player}, 선수 생활 은퇴",
+    "player.record.lastClub": "마지막 구단: {club}"
   }
 }

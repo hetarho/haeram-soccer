@@ -4674,7 +4674,6 @@
     "copy.ProfilePanels.cbff5c65de": "temporada recente",
     "copy.ProfilePanels.13490b426f": "Ainda não há temporada passada registrada.",
     "copy.OtherPlayerSheet.3bf84e4582": "Carregando informações do jogador...",
-    "copy.OtherPlayerSheet.7c16259479": "Ele é um jogador que atualmente não está em nenhum time titular. Você pode ver o histórico dele na carreira da pessoa.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}·{p1}·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "Gerenciar este jogador",
     "copy.OwnPlayerSheet.33c518b619": "{p0}·{p1}·Agente{p2}{p3}Classe",
@@ -6848,6 +6847,12 @@
     "delegation.flow.budget": "Orçamento com caixa",
     "delegation.verdict.fundedWages": "A folha salarial de {bill} supera o orçamento com caixa de {budget}",
     "delegation.verdict.fundedRaise": "Aumento recusado: a folha salarial de {bill} superaria o orçamento com caixa de {budget} ({plan}).",
-    "delegation.plan.fundedSellLine": "Venda com mais facilidade quando os salários superarem {first}% e {second}% da receita mais o capital disponível (agora {now}%)."
+    "delegation.plan.fundedSellLine": "Venda com mais facilidade quando os salários superarem {first}% e {second}% da receita mais o capital disponível (agora {now}%).",
+    "player.record.retired": "Aposentado · {season}",
+    "player.record.retiredAtClub": "Aposentado · {season} · {club}",
+    "player.record.representative": "Clube representante · {club}",
+    "player.record.table": "Histórico por temporada e clube",
+    "player.record.retirementNews": "{player} se aposenta como jogador",
+    "player.record.lastClub": "Último clube: {club}"
   }
 }

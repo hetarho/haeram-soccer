@@ -1,3 +1,4 @@
+import { closePlayerLines, linkOwnMatchPlayers, linkPlayer } from './player-records';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { refreshReadModels } from './read-models';
 import { applyDelegatePlans } from './delegation';
@@ -250,6 +251,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     // The manager in charge is frozen on the kept record as it settles (→HIST-18).
     const saved = attributeOwnMatch(w, { ...m, players, ...(lineCounts ? { lineCounts } : {}) });
     w.ownMatches.push(saved);
+    linkOwnMatchPlayers(w, m);
     refreshReadModels(w);
     gate(w, m);
     // Every starter settles a little by the slot he played, a substitute by the slot of the
@@ -368,7 +370,7 @@ function tournament(w: World, clubs: Club[], key: string) {
  * relegates nobody (→LEAGUE-16): its promotion places go up and the division above relegates
  * into it, so every division keeps its capacity.
  */
-export function promote(w: World) {
+function promotionResults(w: World) {
   const transfers: { club: Club; tier: number }[] = [];
   for (const cp of COUNTRIES) {
     for (let tier = 0; tier < cp.groups.length - 1; tier++) {
@@ -427,6 +429,9 @@ export function promote(w: World) {
         transfers.push({ club: c, tier: tier + 1 });
     }
   }
+  return transfers;
+}
+function applyPromotion(w: World, transfers: ReturnType<typeof promotionResults>) {
   for (const t of transfers) t.club.tier = t.tier;
   for (const cp of COUNTRIES) {
     for (let tier = 0; tier < cp.groups.length; tier++) {
@@ -440,6 +445,10 @@ export function promote(w: World) {
       }
     }
   }
+}
+/** Standalone promotion retains the same settlement and tier-change boundary. */
+export function promote(w: World) {
+  applyPromotion(w, promotionResults(w));
 }
 /** How far the own club went in this season's cups (→HIST-12). */
 function cupRuns(w: World): CupRun[] {
@@ -634,14 +643,18 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     ...seasonRecords(w, order, oldTier, oldGroup),
     ...(ballonDor ? { ballonDor } : {}),
   });
+  for (const place of ballonDor ?? []) linkPlayer(w, place.id);
+  // The playoff is part of these player lines, while the existing season archive stays as recorded.
+  const promotion = promotionResults(w);
+  closePlayerLines(w);
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   // Other clubs' books close on the season as played; a founded career keeps none (→ECON-36).
   booksClose(w);
   const startersBeforeDepartures = [...ownStarters(w)];
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
-  // The promotion playoff belongs to the season just played: its squads retire after it.
-  promote(w);
+  // Playoffs have settled with the closing season; only now do their clubs change division.
+  applyPromotion(w, promotion);
   // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
   retainRecentResults(w);
   refreshReadModels(w);
@@ -850,12 +863,16 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
     brackets: seasonBrackets(w),
     ...(ballonDor ? { ballonDor } : {}),
   });
+  for (const place of ballonDor ?? []) linkPlayer(w, place.id);
+  // The playoff is part of these player lines, while the existing season archive stays as recorded.
+  const promotion = promotionResults(w);
+  closePlayerLines(w);
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   // The books close on the season as played, before anyone moves division (→ECON-36).
   booksClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
-  promote(w);
+  applyPromotion(w, promotion);
   retainRecentResults(w);
   closeNpcSummer(w);
   retireAtClose(w);

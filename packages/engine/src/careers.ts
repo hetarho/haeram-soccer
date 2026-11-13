@@ -1,3 +1,4 @@
+import { retirePlayerRecord } from './player-records';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { hasOwner } from './owner';
 import { decideCoachingIntention, initializeCoaching } from './coaching-entry';
@@ -176,6 +177,7 @@ export function retireAtClose(w: World) {
   for (const p of activePlayers(w)) {
     const age = w.year + 1 - p.born;
     if (p.retiring !== w.year && age < RETIREMENT.lastAge) continue;
+    retirePlayerRecord(w, p, w.playerClub);
     p.status = 'retired';
     const person = retainPerson(w, p, w.playerClub, true);
     retirePerson(w, person);

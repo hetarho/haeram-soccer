@@ -1,3 +1,5 @@
+import { squadPlayer } from './clubProfile';
+import { squad } from '../../../../packages/engine/src/world';
 import { WORLD_VIEW_FIELDS, projectWorldFacts } from './worldProjection';
 import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
@@ -63,6 +65,34 @@ describe('worker command protocol', () => {
     expect(Object.keys(host.world!.squads!).length).toBeGreaterThan(0);
     expect(reply.view!.world).not.toHaveProperty('squads');
     expect(reply.view!.world.clubs.every((club) => Number.isFinite(club.rating))).toBe(true);
+  });
+  it('resolves own, full squad, free, retired and representative player-profile reads without publishing records', async () => {
+    const { host } = await startedHost();
+    const w = host.world!;
+    const [club, squadPlayers] = Object.entries(w.squads!)[0]!;
+    const live = squadPlayers.at(-1)!;
+    const free = { ...structuredClone(live), id: 'profile-free', freeSince: w.year };
+    const retired = { ...structuredClone(live), id: 'profile-retired' };
+    w.freeAgents = [free];
+    w.playerRecords = { [retired.id]: { moves: [], linked: true,
+      lines: [{ year: w.year - 1, club, appearances: 1, goals: 0, assists: 0 }],
+      retired: { year: w.year - 1, club, profile: retired },
+    } };
+    const representative = w.clubs.find((c) => c.representative)!;
+    const rep = squad(w, representative)[0]!;
+    for (const [id, kind] of [[w.players[0]!.id, 'own'], [live.id, 'squad'], [free.id, 'free'],
+      [retired.id, 'retired'], [rep.id, 'representative']] as const) {
+      const reply = await host.handle(req(`profile-${kind}`, -1, {
+        type: 'player-profile', world: w.id, playerId: id, clubId: w.playerClub,
+      }));
+      expect(reply.ok, reply.error).toBe(true);
+      expect(reply.playerProfile).toEqual(squadPlayer(w, id, w.playerClub));
+      expect(reply.playerProfile!.kind).toBe(kind);
+      expect(reply.view).toBeUndefined();
+    }
+    const missing = await host.handle(req('profile-missing', -1, { type: 'player-profile', world: w.id, playerId: 'unknown-player' }));
+    expect(missing.ok).toBe(false);
+    expect(projectWorldFacts(w)).not.toHaveProperty('playerRecords');
   });
   it('classifies every World key before projection', async () => {
     const { host } = await startedHost();

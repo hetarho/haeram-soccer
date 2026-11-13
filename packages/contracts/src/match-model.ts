@@ -161,6 +161,8 @@ export interface NpcClubTotals {
  */
 export interface NpcContribution {
   club: string;
+  /** Absent before clean-sheet tracking; never reconstructed as historical zero. */
+  cleanSheets?: number;
   appearances: number;
   starts: number;
   metrics: Metrics;

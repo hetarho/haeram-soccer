@@ -1,5 +1,11 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'player.record.retired': '은퇴 · {season}',
+  'player.record.retiredAtClub': '은퇴 · {season} · {club}',
+  'player.record.representative': '대표 구단 · {club}',
+  'player.record.table': '시즌·구단별 기록',
+  'player.record.retirementNews': '{player}, 선수 생활 은퇴',
+  'player.record.lastClub': '마지막 구단: {club}',
   // Match-lab tuning descriptions (T836).
   'lab.tunable.rule.probability':
     '{control}의 확률(0–1)입니다. 높이면 더 자주, 낮추면 덜 발생합니다.',
@@ -5259,8 +5265,6 @@ export const sourceMessages = {
   'copy.ProfilePanels.cbff5c65de': '최근 시즌',
   'copy.ProfilePanels.13490b426f': '기록된 지난 시즌이 아직 없어요.',
   'copy.OtherPlayerSheet.3bf84e4582': '선수 정보를 불러오는 중…',
-  'copy.OtherPlayerSheet.7c16259479':
-    '지금 어느 1군에도 없는 선수예요. 인물 경력에서 그의 기록을 볼 수 있어요.',
   'copy.OtherPlayerSheet.b3ec12ceb7': '{p0} · {p1}세 ·{p2}{p3}',
   'copy.OwnPlayerSheet.a4436fd312': '이 선수 관리',
   'copy.OwnPlayerSheet.33c518b619': '{p0} · {p1} · 에이전트{p2}{p3}등급',

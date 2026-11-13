@@ -1,3 +1,5 @@
+import { retirePlayerRecord } from './player-records';
+import { recordRetirementNews } from './news';
 import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The world's free agents (→CLUB-49): players football let go, held without a club. They join at
@@ -121,9 +123,12 @@ function byAbility(pool: readonly FreeAgent[]) {
     .map(({ p }) => p);
 }
 
-/** A free agent stops playing: a registered person's retirement is recorded, nobody else's. */
+/** A free agent stops playing; linked profiles and registered people's careers survive. */
 function retireFreeAgent(w: World, p: Player) {
   const person = w.people?.[p.id];
+  const club = person?.employment.filter((job) => job.role === 'player').at(-1)?.club ??
+    w.playerRecords?.[p.id]?.moves.at(-1)?.to;
+  if (retirePlayerRecord(w, p, club)) recordRetirementNews(w, p, club);
   if (person) retirePerson(w, person);
   FREE_AGENT_FLOW.observe?.('retire', p);
 }

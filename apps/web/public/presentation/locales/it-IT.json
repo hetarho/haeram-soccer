@@ -4542,7 +4542,6 @@
     "copy.ProfilePanels.cbff5c65de": "stagione recente",
     "copy.ProfilePanels.13490b426f": "Non c'è ancora alcuna registrazione della scorsa stagione.",
     "copy.OtherPlayerSheet.3bf84e4582": "Caricamento informazioni giocatore...",
-    "copy.OtherPlayerSheet.7c16259479": "E' un giocatore che al momento non gioca in nessuna prima squadra. Puoi vedere il suo record nella carriera della persona.",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}·{p1}·{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "Gestisci questo giocatore",
     "copy.OwnPlayerSheet.33c518b619": "{p0}·{p1}·Agente{p2}{p3}Grado",
@@ -6848,6 +6847,12 @@
     "delegation.flow.budget": "Budget con cassa",
     "delegation.verdict.fundedWages": "Il monte ingaggi di {bill} supera il budget con cassa di {budget}",
     "delegation.verdict.fundedRaise": "Aumento rifiutato: il monte ingaggi di {bill} supererebbe il budget con cassa di {budget} ({plan}).",
-    "delegation.plan.fundedSellLine": "Vendere più facilmente quando gli ingaggi superano il {first}% e il {second}% dei ricavi più il capitale disponibile (ora {now}%)."
+    "delegation.plan.fundedSellLine": "Vendere più facilmente quando gli ingaggi superano il {first}% e il {second}% dei ricavi più il capitale disponibile (ora {now}%).",
+    "player.record.retired": "Ritirato · {season}",
+    "player.record.retiredAtClub": "Ritirato · {season} · {club}",
+    "player.record.representative": "Club rappresentativo · {club}",
+    "player.record.table": "Statistiche per stagione e club",
+    "player.record.retirementNews": "{player} si ritira dal calcio giocato",
+    "player.record.lastClub": "Ultimo club: {club}"
   }
 }

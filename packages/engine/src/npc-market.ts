@@ -1,3 +1,4 @@
+import { playerRecord } from './player-records';
 /** Settled, need-led business between persisted clubs (→WORLD-11/16/17). */
 import type { Club, Line, Player, PlayerMove, World } from '../../contracts/src/types';
 import { currentDay } from './calendar';
@@ -139,7 +140,7 @@ export const PLAYER_MOVE_FLOW: { observe?: (w: World, id: string, move: PlayerMo
 export function recordPlayerMove(w: World, id: string, move: PlayerMove) {
   loanReservations.delete(w);
   PLAYER_MOVE_FLOW.observe?.(w, id, move);
-  const record = ((w.playerRecords ??= {})[id] ??= { moves: [] });
+  const record = playerRecord(w, id);
   if (record.loan?.club === move.to && !move.loan) delete record.loan;
   record.moves.push(move);
   return record;

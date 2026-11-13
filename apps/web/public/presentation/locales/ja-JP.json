@@ -4785,7 +4785,6 @@
     "copy.ProfilePanels.cbff5c65de": "最近の季節",
     "copy.ProfilePanels.13490b426f": "昨シーズンの記録はまだありません。",
     "copy.OtherPlayerSheet.3bf84e4582": "プレイヤー情報を読み込み中...",
-    "copy.OtherPlayerSheet.7c16259479": "彼は現在どのトップチームにも所属していない選手です。その人の経歴を見ればその実績がわかります。",
     "copy.OtherPlayerSheet.b3ec12ceb7": "{p0}・{p1}・{p2}{p3}",
     "copy.OwnPlayerSheet.a4436fd312": "このプレーヤーを管理する",
     "copy.OwnPlayerSheet.33c518b619": "{p0}・{p1}・エージェント{p2}{p3}グレード",
@@ -6842,6 +6841,12 @@
     "delegation.flow.budget": "手元資金を含む予算",
     "delegation.verdict.fundedWages": "選手年俸総額{bill}が手元資金を含む予算{budget}を超えます",
     "delegation.verdict.fundedRaise": "増額後の選手年俸総額{bill}が手元資金を含む予算{budget}を超えるため拒否しました（{plan}）。",
-    "delegation.plan.fundedSellLine": "選手年俸が収入と投資可能資金の合計の{first}%と{second}%を超えると売却を増やします（現在{now}%）。"
+    "delegation.plan.fundedSellLine": "選手年俸が収入と投資可能資金の合計の{first}%と{second}%を超えると売却を増やします（現在{now}%）。",
+    "player.record.retired": "引退 · {season}",
+    "player.record.retiredAtClub": "引退 · {season} · {club}",
+    "player.record.representative": "代表クラブ · {club}",
+    "player.record.table": "シーズン・クラブ別成績",
+    "player.record.retirementNews": "{player}が現役を引退",
+    "player.record.lastClub": "最終所属クラブ：{club}"
   }
 }

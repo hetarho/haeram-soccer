@@ -3,6 +3,8 @@ import { COUNTRIES, CATALOG_HASH, CATALOG_VERSION } from '../../catalogs/src/ind
 import type { Club, Player, TransferBid, World } from '../../contracts/src/types';
 import { validateWorld } from '../../contracts/src/schema';
 import { worldMarketFixture } from './world-market.testkit';
+import { adoptSquads } from '../../../apps/web/src/runtime/squadActivation';
+import { retainPerson, openEmployment } from './person-careers';
 import { foundSquads } from './persisted-squads';
 import { closeNpcSummer, NPC_YOUTH } from './npc-careers';
 import { developAnnually } from './training';
@@ -23,7 +25,7 @@ import {
   startingSquad,
 } from './world';
 import { clubManager } from './managerMarket';
-import { materializePeople, movePerson, returnLoan } from './npc-continuity';
+import { continuousSquad, materializePeople, movePerson, returnLoan } from './npc-continuity';
 import { closeDisciplineSeason, recordNpcInjury } from './discipline';
 import { crossWar } from './wartime';
 import {
@@ -134,6 +136,40 @@ describe('persisted playable squads', () => {
     materializePeople(w);
     expect(w.squads).toEqual(before);
     liveIds(w);
+  });
+
+  it.each([false, true])('adopts legacy current affiliations once (loan=%s)', (loan) => {
+    const w = worldMarketFixture(), c = w.clubs[1]!;
+    w.clubs[2]!.representative = true;
+    const native = continuousSquad(w, c);
+    const purchased = structuredClone(native[4]!);
+    purchased.name = 'Legacy arrival';
+    purchased.attrs.passing = 73.125;
+    purchased.career[0] = 9;
+    w.players.push(purchased);
+    const person = retainPerson(w, purchased, c.id, true);
+    person.origin = { club: c.id, slot: 4 };
+    openEmployment(w, person.id, 'player', c.id);
+    movePerson(w, purchased, w.playerClub, true, loan ? w.year + 1 : undefined);
+    const released = native[5]!;
+    joinFreeAgents(w, released, w.year);
+    const expected = continuousSquad(w, c);
+    // The old raw founding would redraw this active own player's id at his origin.
+    expect(npcSquad(w.seed, w.year, c).some((p) => p.id === purchased.id)).toBe(true);
+    const original = structuredClone(w);
+    const adopted = adoptSquads(w, false);
+    expect(w).toEqual(original);
+    expect(adopted.people![person.id]!.club).toBe(w.playerClub);
+    expect(adopted.players.find((p) => p.id === purchased.id)).toEqual(purchased);
+    expect(adopted.freeAgents!.find((p) => p.id === released.id)).toEqual(w.freeAgents![0]);
+    expect(adopted.squads![c.id]!.slice(0, expected.length)).toEqual(expected);
+    expect(adopted.squads![c.id]!.some((p) => [purchased.id, released.id].includes(p.id))).toBe(false);
+    expect(adopted.players.find((p) => p.id === purchased.id)!.career[0]).toBe(9);
+    liveIds(adopted);
+    const held = structuredClone(adopted.squads);
+    foundSquads(adopted);
+    expect(adopted.squads).toEqual(held);
+    expect(adoptSquads(adopted, false)).toBe(adopted);
   });
 
   it('selects the eleven and line-cover bench once per club, keeping attributes through a rollover', () => {

@@ -1,7 +1,9 @@
-import type { PlayerMove, World } from '../../../../packages/contracts/src/types';
+import { packSquads, unpackSquads, type PackedSquads } from './squadPacking';
+import type { Player, PlayerMove, World } from '../../../../packages/contracts/src/types';
 import { message } from '../../../../packages/contracts/src/messages';
 
 type Records = NonNullable<World['playerRecords']>;
+type LineRow = [number, number, number, number, number, number | null, number | null];
 type MoveRow = [number, number, number, number, string, (0 | 1)?];
 export interface PackedPlayerRecords {
   version: 1;
@@ -9,6 +11,9 @@ export interface PackedPlayerRecords {
   clubs: string[];
   counts: number[];
   moves: MoveRow[];
+  lines?: [number, LineRow[]][];
+  linked?: [number, 0 | 1][];
+  retirees?: { rows: [number, number, number | null][]; profiles: PackedSquads };
   loans: [number, number, number, string, number, number, 1 | null, number | null][];
 }
 const invalid = () => new Error(message('copy.packing.5ccd8ed532'));
@@ -25,7 +30,26 @@ export function packPlayerRecords(records: Records): PackedPlayerRecords {
     }
     return at;
   };
+  const lines: NonNullable<PackedPlayerRecords['lines']> = [],
+    linked: NonNullable<PackedPlayerRecords['linked']> = [],
+    rows: NonNullable<PackedPlayerRecords['retirees']>['rows'] = [],
+    profiles: Player[] = [];
+  for (const [i, id] of ids.entries()) {
+    const record = records[id]!;
+    if (record.lines !== undefined) lines.push([i, record.lines.map((line): LineRow => [
+      line.year, club(line.club), line.appearances, line.goals, line.assists,
+      line.saves ?? null, line.cleanSheets ?? null,
+    ])]);
+    if (record.linked !== undefined) linked.push([i, record.linked ? 1 : 0]);
+    if (record.retired) {
+      rows.push([i, record.retired.year, record.retired.club === undefined ? null : club(record.retired.club)]);
+      profiles.push(record.retired.profile);
+    }
+  }
   return {
+    ...(lines.length ? { lines } : {}),
+    ...(linked.length ? { linked } : {}),
+    ...(rows.length ? { retirees: { rows, profiles: packSquads({ retired: profiles }) } } : {}),
     version: 1,
     ids,
     clubs,
@@ -79,6 +103,46 @@ export function unpackPlayerRecords(p: PackedPlayerRecords): Records {
       ...(row[6] === 1 ? { graduate: true as const } : {}),
       ...(row[7] === null ? {} : { joined: row[7] }),
     };
+  }
+  const indexes = (rows: unknown): [number, unknown][] => {
+    if (!Array.isArray(rows) || rows.length > p.ids.length) throw invalid();
+    const seen = new Set<number>();
+    for (const row of rows) {
+      if (!Array.isArray(row) || row.length !== 2 || !integer(row[0], 0, p.ids.length - 1) || seen.has(row[0])) throw invalid();
+      seen.add(row[0]);
+    }
+    return rows;
+  };
+  if (p.lines !== undefined) for (const [i, value] of indexes(p.lines)) {
+    if (!Array.isArray(value) || value.length > 100000) throw invalid();
+    records[p.ids[i]!]!.lines = value.map((row: LineRow) => {
+      if (!Array.isArray(row) || row.length !== 7 || !integer(row[0], 1901, 4000) ||
+        !integer(row[2], 1, 10000) || !integer(row[3], 0, Number.MAX_SAFE_INTEGER) ||
+        !integer(row[4], 0, Number.MAX_SAFE_INTEGER) ||
+        (row[5] !== null && !integer(row[5], 0, Number.MAX_SAFE_INTEGER)) ||
+        (row[6] !== null && !integer(row[6], 0, row[2]))) throw invalid();
+      return { year: row[0], club: club(row[1]), appearances: row[2], goals: row[3], assists: row[4],
+        ...(row[5] === null ? {} : { saves: row[5] }),
+        ...(row[6] === null ? {} : { cleanSheets: row[6] }) };
+    });
+  }
+  if (p.linked !== undefined) for (const [i, value] of indexes(p.linked)) {
+    if (value !== 0 && value !== 1) throw invalid();
+    records[p.ids[i]!]!.linked = value === 1;
+  }
+  if (p.retirees !== undefined) {
+    if (!p.retirees || !Array.isArray(p.retirees.rows) || p.retirees.rows.length > p.ids.length) throw invalid();
+    const profiles = unpackSquads(p.retirees.profiles);
+    if (Object.keys(profiles).length !== 1 || !profiles.retired || profiles.retired.length !== p.retirees.rows.length) throw invalid();
+    const seen = new Set<number>();
+    p.retirees.rows.forEach((row, at) => {
+      if (!Array.isArray(row) || row.length !== 3 || !integer(row[0], 0, p.ids.length - 1) ||
+        seen.has(row[0]) || !integer(row[1], 1901, 4000)) throw invalid();
+      seen.add(row[0]);
+      const profile = profiles.retired![at]!;
+      if (profile.id !== p.ids[row[0]]) throw invalid();
+      records[profile.id]!.retired = { year: row[1], ...(row[2] === null ? {} : { club: club(row[2]) }), profile };
+    });
   }
   return records;
 }

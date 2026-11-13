@@ -1,5 +1,6 @@
 /** Live squads of the playable associations (→WORLD-16). Reads never generate a new person. */
 import type { Club, Player, World } from '../../contracts/src/types';
+import { continuousSquad } from './npc-continuity';
 import { coachingGrade } from './aptitude';
 import { clubManager } from './managerMarket';
 import { openEmployment, retainPerson } from './person-careers';
@@ -11,9 +12,9 @@ import { clubStyle } from './tactics';
 import {
   generatedPlayer,
   invalidateNpcSquad,
+  invalidateNpcSquads,
   lineup,
   NPC_SQUAD,
-  npcSquad,
   selectionValue,
   squadPlaceAge,
   squadPlaces,
@@ -48,12 +49,15 @@ export function foundSquads(w: World) {
     };
   }
   if (w.squads !== undefined) return;
+  // Read all legacy affiliations before installing the registry. Its presence changes roster reads.
+  const adopting = w.people !== undefined || !!w.freeAgents?.length;
+  const founding = w.clubs.filter((c) => !c.representative && c.id !== w.playerClub)
+    .map((c) => ({ c, players: continuousSquad(w, c) }));
   w.squads = {};
-  for (const c of w.clubs) {
-    if (c.representative || c.id === w.playerClub) continue;
+  for (const { c, players } of founding) {
     const style = clubStyle(c),
-      players = npcSquad(w.seed, w.year, c),
-      places = squadPlaces(style);
+      places = squadPlaces(style),
+      retained = players.length;
     while (players.length < NPC_SQUAD.size) {
       const extra = players.length - places.length,
         place = places[11 + (extra % (places.length - 11))]!,
@@ -73,12 +77,13 @@ export function foundSquads(w: World) {
       p.fatigue = players[0]!.fatigue;
       players.push(p);
     }
-    for (const p of players) {
-      p.until = w.year + integer(random(`${w.seed}:${p.id}:contract`), 1, 5);
+    for (const [i, p] of players.entries()) {
+      if (!adopting || i >= retained) p.until = w.year + integer(random(`${w.seed}:${p.id}:contract`), 1, 5);
       enrollSquadPlayer(w, c, p);
     }
     w.squads[c.id] = players;
-    invalidateNpcSquad(w, c.id);
+    if (adopting) invalidateNpcSquads(w);
+    else invalidateNpcSquad(w, c.id);
   }
 }
 
