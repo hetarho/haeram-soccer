@@ -1,3 +1,5 @@
+import { exportWorld } from './club-identity-helpers';
+import { message } from '../../packages/contracts/src/messages';
 import { openPersonnel } from './personnel-navigation';
 import { openClubRecords, openCups, openLeague } from './competition-navigation';
 import { finishSeason } from './season-progression';
@@ -202,6 +204,8 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
 
   test('keeps the transfer market as a primary entry with its own address', async ({ page }) => {
     await found(page, 'market-segment-journey');
+    const actual = await exportWorld(page);
+    const roster = actual.players.filter((p) => p.status === 'active').length;
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     await openPersonnel(page, 'players');
     const sections = page.getByRole('tablist', { name: '구단 섹션', exact: true });
@@ -235,7 +239,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await page.reload();
     await expect(market).toBeVisible();
     await openPersonnel(page, 'players');
-    await expect(page.getByText('선수단 20/40', { exact: true })).toBeVisible();
+    await expect(
+      page.getByText(message('copy.Rich.1573cecd98', { p0: `${roster}/40` }), { exact: true }),
+    ).toBeVisible();
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     // The older market address lands there too, replaced in the address bar.
     await page.goto('/transfers');
