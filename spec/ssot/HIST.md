@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r26 | Define the browser-demo rules for durable metrics and history.
+> r27 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -88,7 +88,8 @@
   - source matches, events and season archives remain retained under →!HIST-1/2/8; writer activation reconstructs missing or recognized obsolete summaries once under →=SAVE-28. Current summaries remain incremental across normal updates and reloads.
 
 - HIST-23 [o] Every persisted player (→WORLD-16) keeps his playing record: for each season and club his appearances, goals and assists — a goalkeeper's saves and clean sheets too — and his honours (→HIST-13). ← fans follow a player's career across clubs and decades, not only his current season
-  - season lines are written at each close from the season's settled aggregates (→HIST-17), one per club after a move; no other counter is kept for a player of a club nobody owns (the own club's are →HIST-16).
+  - season lines are written at each close from the season's settled aggregates (→HIST-17), all its competitions together, one per club after a move; no other counter is kept for a player of a club nobody owns (the own club's are →HIST-16).
+  - the aggregates are kept for this from the world's first season, with or without an owner; the 발롱도르 still begins in 1955/56 (→PLAYER-27). A season with no tracked aggregates writes no line, never a zero one.
   - at retirement he is kept — his last profile as his club fielded him (→PLAYER-1), his season lines, honours, last club and retirement season — when any retained record links him by identity: a Ballon d'Or podium, a news item, an own match's record or a transfer fact. A player no retained record links is removed at retirement; his lines are not a retained fact under →HIST-8. Own players (→HIST-1) and people with a later career (→HIST-14) are kept by their own rules. ← every player the owner can open stays openable, and a century of unseen players would outgrow the save
   - a record written after a player is removed never links him; news of a retirement names only a player kept by another link.
   - kept players stay within →SAVE-4/13's century limits without pruning.
@@ -99,6 +100,7 @@
 
 
 ## chg
+- r27 261113 HIST-23✎ season lines from the season's settled aggregates, scope and start unstated→all competitions together, aggregates kept from the world's first season with or without an owner (before: none in a world nobody owns until 1955/56), no line for a season with no tracked aggregates
 - r26 261113 HIST-3✎ career/season summaries represent older NPC history→each persisted player's season lines; HIST-23+ persisted players' season lines (appearances, goals, assists, keeper saves and clean sheets) and honours, kept at retirement with the last profile when a retained record links them, removed otherwise
 - r25 261111 HIST-17✎ results on either engine path→every settled match's result (one result path, →MATCH-22)
 - r24 261110 HIST-16✎ implicit own-card contribution scope→recorded match-side attribution; HIST-22✎ missing-only reconstruction→missing or recognized obsolete summaries once, current reloads stay incremental
