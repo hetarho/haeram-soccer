@@ -73,6 +73,11 @@
 | T891 | Prepare real market candidates and exact registration caps | ARCH CLUB WORLD | T885 | todo |
 | T892 | Prepare explicit founding, employment and legacy identity fixtures | ARCH WORLD SAVE | T885 | todo |
 | T893 | Avoid new identity collisions during supported squad adoption | ARCH WORLD SAVE | T885 | todo |
+| T894 | Prepare exact contract, expiry and refill scenes | ARCH CLUB WORLD ECON | T890 | todo |
+| T895 | Prepare valid buyers and remaining market participants | ARCH CLUB WORLD | T890 | todo |
+| T896 | Prepare affordable academy, pending-decision and discipline scenes | ARCH CLUB WORLD MATCH | T885 | todo |
+| T897 | Preserve regulation facts and exact seeded replay inputs | ARCH MATCH WORLD | T885 | todo |
+| T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
 
 ## next
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
