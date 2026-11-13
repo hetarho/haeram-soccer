@@ -90,6 +90,7 @@
 | T888 | work | codex/natural-football-261114 | 55ed6375239b | 2026-11-13T18:53Z |
 
 ## log
+- 261113 fix pb14 NPC move observation: a valid free signing is already registered at its destination when its known former affiliation is recorded. Preserve zero fee, unique arrival, source-history and paid-before-arrival checks. 56 related units and statics/i18n passed; full persisted-world integration remains deferred.
 - 261113 T888 integrated
 - 261113 T884 integrated
 - 261113 T885 integrated
@@ -109,4 +110,3 @@
 - 261113 T878 done
 - 261113 Owner approved independent Codex review and permanent quota-aware provider fallback; AGENTS.md pushed main6fecb6de. Fresh code review resumed.
 - 261113 T877 done
-- 261113 Full persisted-world implementation published to main at 3d002a0b, version 0.9.0; current main also includes independent nf14 planning 0a2cefd3. Storage included, capacity not an integration blocker. Avoided a second implementation writer in the nf14-owned checkout; read-only scout evidence handed to T873/T874/T875 through inbox.
