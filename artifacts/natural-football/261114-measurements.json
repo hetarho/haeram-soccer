@@ -1,5 +1,5 @@
 {
-  "status": "pending-final-support-review-and-batch-gate",
+  "status": "all-independent-reviews-approved-pending-batch-gate",
   "baseline": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
   "foundation": "ae8fcc86",
   "onsideAndThroughRepair": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
@@ -510,5 +510,35 @@
     "Raw maximum displacement speed includes transitions and is not a football running-speed claim."
   ],
   "rawEvidence": ".tmp/nf14-evidence/",
-  "preview": ".tmp/natural-football/index.html"
+  "preview": ".tmp/natural-football/index.html",
+  "integrationCommit": "15ec0ba65b849f6e11f635d4e51b8c03949efe26",
+  "runtimeReuseProof": [
+    {
+      "area": "engine",
+      "source": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+      "target": "15ec0ba65b849f6e11f635d4e51b8c03949efe26",
+      "paths": [
+        "packages/engine",
+        "packages/contracts/src/match-script.ts"
+      ],
+      "noDifference": true
+    },
+    {
+      "area": "viewer",
+      "source": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+      "target": "15ec0ba65b849f6e11f635d4e51b8c03949efe26",
+      "paths": [
+        "scripts/natural-football",
+        "packages/contracts/src/source-messages.ts",
+        "packages/contracts/src/message-parameters.ts",
+        "apps/web/public/presentation/locales"
+      ],
+      "noDifference": true
+    }
+  ],
+  "reviews": {
+    "engine": "6e0e2cb8-122c-4f7a-a68d-4e7072122c42",
+    "viewer": "d748d56b-c5f0-4061-bd62-478d1417a475",
+    "support": "9f163989-0b3b-4323-b23e-4b1b3b23dcfd"
+  }
 }
