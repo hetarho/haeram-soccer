@@ -26,7 +26,7 @@ import { buyOffer } from './testing';
 import { releaseFixturePlayers } from './player-fixtures.testkit';
 import { movePerson } from './npc-continuity';
 
-function world(strong = false) {
+function world(strong = false, released = false) {
   const w = careerWorld({ seed: 'recruitment-preview' });
   w.cash = '999999999999';
   w.tactic = 'possession';
@@ -34,7 +34,7 @@ function world(strong = false) {
     for (const a of ATTRIBUTES) player.attrs[a] = strong ? 95 : 25;
     player.fatigue = 0;
   }
-  releaseFixturePlayers(w);
+  if (released) releaseFixturePlayers(w);
   return w;
 }
 /** The first of another club's players on the scout's list, and the first free agent. */
@@ -78,7 +78,7 @@ describe('recruitment build and budget previews', () => {
   });
 
   it('discloses wages for a free bench transfer even with zero cash', () => {
-    const w = world(true),
+    const w = world(true, true),
       index = freeIndex(w),
       offer = transferOffers(w)[index]!,
       annual = operatingCost(w);
@@ -118,7 +118,7 @@ describe('recruitment build and budget previews', () => {
   });
 
   it('treats negative cash as unaffordable even for free players and rejects paid shortages', () => {
-    const w = world(),
+    const w = world(false, true),
       offers = transferOffers(w),
       free = freeIndex(w),
       club = clubIndex(w);
