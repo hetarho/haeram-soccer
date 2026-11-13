@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-13T20:31:31.065Z",
-  "sourceCommit": "05c83f360965bf05efa2ced9c559780d2f5eee06",
+  "snapshotAt": "2026-11-13T20:32:14.360Z",
+  "sourceCommit": "d53849d5152fe2c3d02222144e6e2418c5d6ecc2",
   "group": {
     "id": "natural-football-261114",
     "branch": "codex/natural-football-261114",
@@ -77,10 +77,10 @@
   },
   "summary": {
     "total": 28,
-    "completed": 14,
-    "remaining": 14,
+    "completed": 15,
+    "remaining": 13,
     "running": 0,
-    "review": 9,
+    "review": 8,
     "blocked": 0,
     "unassigned": 5
   },
@@ -155,16 +155,6 @@
         "T885"
       ],
       "lane": "viable-codec-career",
-      "status": "approved"
-    },
-    {
-      "id": "T903",
-      "title": "Establish an actual archive seek and bounded promise setup",
-      "dep": [
-        "T887",
-        "T888"
-      ],
-      "lane": "browser-setup-and-seek",
       "status": "approved"
     },
     {
@@ -1129,6 +1119,8 @@
       "submittedBase": "37d987956774171f41ddef4bee971e703c5f3e86",
       "submissionId": "9690db80-be02-4e56-9263-d8f32955ea38",
       "submittedAt": "2026-11-13T20:20:49.648Z",
+      "integratedCommit": "d53849d5152fe2c3d02222144e6e2418c5d6ecc2",
+      "integratedAt": "2026-11-13T20:32:03.819Z",
       "risk": null,
       "review": {
         "id": "16323532-51a7-4477-88c3-4eb6d960d54e",
@@ -1181,6 +1173,13 @@
           "startedAt": "2026-11-13T20:20:49.510Z",
           "finishedAt": "2026-11-13T20:20:49.510Z",
           "cached": "2026-11-13T19:54:48.880Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+          "startedAt": "2026-11-13T20:31:31.242Z",
+          "finishedAt": "2026-11-13T20:32:03.482Z"
         }
       ]
     },
@@ -1317,7 +1316,7 @@
       "contributors": [
         "nf14-codex-browser-preconditions"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-13T19:49:17.328Z",
       "startCommit": "cc47cc2321c08bbfd577b1770f324ae17362a335",
@@ -7683,6 +7682,54 @@
       "group": "natural-football-261114",
       "attemptId": "534feb4d-44c1-4a14-bdf0-9946614ecb78",
       "taskId": "T891",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 264,
+      "at": "2026-11-13T20:32:03.607Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "534feb4d-44c1-4a14-bdf0-9946614ecb78",
+      "taskId": "T891",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run validate:i18n",
+            "startedAt": "2026-11-13T20:31:31.242Z",
+            "finishedAt": "2026-11-13T20:32:03.482Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 265,
+      "at": "2026-11-13T20:32:03.819Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "534feb4d-44c1-4a14-bdf0-9946614ecb78",
+      "taskId": "T891",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "d53849d5152fe2c3d02222144e6e2418c5d6ecc2",
+        "integratedAt": "2026-11-13T20:32:03.819Z"
+      }
+    },
+    {
+      "sequence": 266,
+      "at": "2026-11-13T20:32:12.105Z",
+      "type": "attempt",
+      "group": "natural-football-261114",
+      "attemptId": "d87773a2-eff4-43d6-b35c-654a9c55efd0",
+      "taskId": "T903",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
