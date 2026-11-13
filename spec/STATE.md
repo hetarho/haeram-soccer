@@ -69,7 +69,7 @@
 | T900 | Evaluate scoped attribution-weight reuse | ARCH MATCH WORLD | T885 | todo |
 | T902 | Prepare a supported ten-season codec career through owner actions | ARCH SAVE OWNER | T885 | todo |
 | T903 | Establish an actual archive seek and bounded promise setup | ARCH MATCH CLUB | T887 T888 | todo |
-| T904 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
+| T905 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
