@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit |
 |---|---|---|---|---|---|---|---|
 | sx1 | hq-dev1-pve2-vm2 | pair | 2026-11-13T06:00Z | 2026-11-13T06:08Z | - | slow-1x | 311d6c71 |
-| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T06:46Z | T862 | work/persisted-world-860 | 0fde410bab7d |
+| pw86 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:03Z | 2026-11-13T06:53Z | T862 | work/persisted-world-860 | 0fde410bab7d |
 | fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T06:06Z | 2026-11-13T06:06Z | - | main | 9769ffe9f1fd |
 
 ## unlanded
