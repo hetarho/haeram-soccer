@@ -1,6 +1,8 @@
 import { expect, it } from 'vitest';
 import {
   completeChampions,
+  completedPeakRows,
+  completeWorldWindow,
   distribution,
   peakFacts,
   type PeakObservation,
@@ -45,4 +47,25 @@ it('does not count partial, duplicate or boundary-shifted title windows as compl
   expect(completeChampions([...rows.slice(1), rows[1]!])).toBe(false);
   expect(completeChampions(rows.map((r) => ({ ...r, year: r.year + 1 })))).toBe(false);
   expect(completeChampions(rows.map((r) => ({ ...r, club: undefined })))).toBe(false);
+});
+
+it('requires the requested core end even when a shorter run completed', () => {
+  expect(completeWorldWindow({ until: 2010, complete: true }, 2010)).toBe(true);
+  expect(completeWorldWindow({ until: 2010, measured: true }, 2010)).toBe(true);
+  expect(completeWorldWindow({ until: 2010, complete: false }, 2010)).toBe(false);
+  expect(completeWorldWindow({ until: 2010, complete: false, measured: true }, 2010)).toBe(false);
+  expect(completeWorldWindow({ until: 1980, complete: true }, 2010)).toBe(false);
+  expect(completeWorldWindow({ complete: true }, 2010)).toBe(false);
+});
+
+it('excludes incomplete peak aggregates without discarding the retained raw observations', () => {
+  const rows = [{ country: 'ENG', tier: 1, observedAnnualPeaks: { n: 2, mean: 25 } }];
+  const retainedRows = structuredClone(rows);
+  const partial = { until: 2010, complete: false, peakAges: rows };
+  expect(completedPeakRows(partial, 2010)).toEqual([]);
+  expect(partial.peakAges).toEqual(retainedRows);
+  expect(completedPeakRows({ until: 1980, complete: true, peakAges: rows }, 2010)).toEqual([]);
+  expect(completedPeakRows({ until: 1980, complete: true, peakAges: rows }, 1980)).toEqual(rows);
+  expect(completedPeakRows({ until: 2010, measured: true, peakAges: rows }, 2010)).toEqual(rows);
+  expect(completedPeakRows({ until: 2010, complete: true }, 2010)).toEqual([]);
 });

@@ -2,7 +2,11 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { COUNTRIES } from '../packages/catalogs/src/index';
-import { completeChampions } from './lib/persisted-world-facts';
+import {
+  completeChampions,
+  completedPeakRows,
+  completeWorldWindow,
+} from './lib/persisted-world-facts';
 const args = process.argv.slice(2);
 const at = args.indexOf('--in');
 const files = args[at + 1]!.split(',');
@@ -176,9 +180,7 @@ const values = [...new Set(runs.flatMap((r) => r.values.map((v) => v.year)))].so
 });
 const result = {
   coreEnd,
-  completeWorlds: runs.filter(
-    (r) => r.complete === true || (r.measured === true && r.until === coreEnd),
-  ).length,
+  completeWorlds: runs.filter((r) => completeWorldWindow(r, coreEnd)).length,
   requestedWorlds: 5,
   inputs: inputs.map(({ run, ...i }) => ({
     ...i,
@@ -186,7 +188,7 @@ const result = {
     computation: run.computation,
     configs: run.configs,
     playedSeasons: run.playedSeasons,
-    complete: run.complete === true || (run.measured === true && run.until === coreEnd),
+    complete: completeWorldWindow(run, coreEnd),
     observedFirstYear: Math.min(...run.rows.map((row) => row.year)),
     observedLastYear: Math.max(...run.rows.map((row) => row.year)),
     missingFields: ['configs', 'playedSeasons', 'champions', 'peakAges'].filter(
@@ -198,7 +200,11 @@ const result = {
   books,
   values,
   affiliations: runs.map((r) => ({ seed: r.seed, rows: r.affiliations })),
-  peakAges: runs.map((r) => ({ seed: r.seed, rows: r.peakAges ?? [] })),
+  peakAges: runs.map((r) => ({
+    seed: r.seed,
+    complete: completeWorldWindow(r, coreEnd),
+    rows: completedPeakRows(r, coreEnd),
+  })),
   divisionFailures: divisions.reduce((n, d) => n + (d.outOfBand ?? 0), 0),
   championFailures: champions.reduce((n, c) => n + c.outOfBand, 0),
 };

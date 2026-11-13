@@ -1,0 +1,1012 @@
+{
+  "input": "artifacts/benchmarks/persisted-world/T865-profile-profile.cpuprofile.gz",
+  "gzipSha256": "185e8575606ebceeb71db07a74790bf220179586046aa2e43dcd146801354105",
+  "sampleCount": 202220,
+  "profileDurationMs": 240188.042,
+  "method": "Self counts from sample IDs; inclusive counts de-duplicate identical function locations per sampled stack. Shares are captured samples, not a final-candidate CPU attribution or an extrapolated speedup. This auxiliary table includes all captured samples, including initialization/digest. The original runner log filters the measured-repetition window and remains the primary windowed table.",
+  "scope": "Historical exact T865 source 2d8f77e7 with the corrected held-XI contract; current repaired source has not been profiled here.",
+  "topSelf": [
+    {
+      "function": "clubDay",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 258398,
+      "column": 17,
+      "selfSamples": 18996,
+      "selfPercent": 9.393729601424191,
+      "inclusiveSamples": 85390,
+      "inclusivePercent": 42.22628820096924
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255184,
+      "column": 36,
+      "selfSamples": 16704,
+      "selfPercent": 8.260310552863219,
+      "inclusiveSamples": 26037,
+      "inclusivePercent": 12.875581050341212
+    },
+    {
+      "function": "reservedReturns",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259053,
+      "column": 25,
+      "selfSamples": 16599,
+      "selfPercent": 8.208386905350608,
+      "inclusiveSamples": 16599,
+      "inclusivePercent": 8.208386905350608
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259244,
+      "column": 60,
+      "selfSamples": 16599,
+      "selfPercent": 8.208386905350608,
+      "inclusiveSamples": 33322,
+      "inclusivePercent": 16.478093165858965
+    },
+    {
+      "function": "npcMarket",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259220,
+      "column": 19,
+      "selfSamples": 14454,
+      "selfPercent": 7.147660963307289,
+      "inclusiveSamples": 106557,
+      "inclusivePercent": 52.693601028582734
+    },
+    {
+      "function": "beginDays",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 258340,
+      "column": 19,
+      "selfSamples": 13428,
+      "selfPercent": 6.6402927504697855,
+      "inclusiveSamples": 55386,
+      "inclusivePercent": 27.388982296508754
+    },
+    {
+      "function": "ovrAt",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 232965,
+      "column": 15,
+      "selfSamples": 9711,
+      "selfPercent": 4.80219562852339,
+      "inclusiveSamples": 12649,
+      "inclusivePercent": 6.255068737019088
+    },
+    {
+      "function": "fills",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259104,
+      "column": 13,
+      "selfSamples": 7856,
+      "selfPercent": 3.8848778558006134,
+      "inclusiveSamples": 14554,
+      "inclusivePercent": 7.197112056176442
+    },
+    {
+      "function": "wantsFreeAgent",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255158,
+      "column": 24,
+      "selfSamples": 7548,
+      "selfPercent": 3.732568489763624,
+      "inclusiveSamples": 9335,
+      "inclusivePercent": 4.616259519335378
+    },
+    {
+      "function": "mainOvr",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 232971,
+      "column": 15,
+      "selfSamples": 6113,
+      "selfPercent": 3.0229453070912866,
+      "inclusiveSamples": 10458,
+      "inclusivePercent": 5.171595292255959
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259245,
+      "column": 20,
+      "selfSamples": 4703,
+      "selfPercent": 2.3256848976362376,
+      "inclusiveSamples": 10068,
+      "inclusivePercent": 4.978736030066265
+    },
+    {
+      "function": "moveSquadPlayer",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235288,
+      "column": 25,
+      "selfSamples": 4671,
+      "selfPercent": 2.309860547918109,
+      "inclusiveSamples": 12339,
+      "inclusivePercent": 6.101770349124716
+    },
+    {
+      "function": "lineup",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235947,
+      "column": 16,
+      "selfSamples": 4313,
+      "selfPercent": 2.1328256354465434,
+      "inclusiveSamples": 7434,
+      "inclusivePercent": 3.67619424389279
+    },
+    {
+      "function": "weightEntry",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 232948,
+      "column": 21,
+      "selfSamples": 2967,
+      "selfPercent": 1.4672139254277519,
+      "inclusiveSamples": 2968,
+      "inclusivePercent": 1.4677084363564434
+    },
+    {
+      "function": "growAttributes",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 249762,
+      "column": 24,
+      "selfSamples": 2844,
+      "selfPercent": 1.4063890811986945,
+      "inclusiveSamples": 4354,
+      "inclusivePercent": 2.153100583522896
+    },
+    {
+      "function": "npcOffer",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259117,
+      "column": 18,
+      "selfSamples": 2837,
+      "selfPercent": 1.4029275046978538,
+      "inclusiveSamples": 22677,
+      "inclusivePercent": 11.214024329937692
+    },
+    {
+      "function": "lineOf",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 232713,
+      "column": 14,
+      "selfSamples": 2689,
+      "selfPercent": 1.3297398872515083,
+      "inclusiveSamples": 2689,
+      "inclusivePercent": 1.3297398872515083
+    },
+    {
+      "function": "matchdaySquad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235271,
+      "column": 23,
+      "selfSamples": 2567,
+      "selfPercent": 1.2694095539511423,
+      "inclusiveSamples": 11916,
+      "inclusivePercent": 5.892592226288201
+    },
+    {
+      "function": "stature",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235694,
+      "column": 17,
+      "selfSamples": 2567,
+      "selfPercent": 1.2694095539511423,
+      "inclusiveSamples": 2569,
+      "inclusivePercent": 1.2703985758085254
+    },
+    {
+      "function": "levelFactor",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 232980,
+      "column": 21,
+      "selfSamples": 2516,
+      "selfPercent": 1.2441894965878746,
+      "inclusiveSamples": 2516,
+      "inclusivePercent": 1.2441894965878746
+    },
+    {
+      "function": "movePerson",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259425,
+      "column": 20,
+      "selfSamples": 2441,
+      "selfPercent": 1.2071011769360103,
+      "inclusiveSamples": 11901,
+      "inclusivePercent": 5.885174562357828
+    },
+    {
+      "function": "settlePlayerGrowth",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 249816,
+      "column": 28,
+      "selfSamples": 2337,
+      "selfPercent": 1.1556720403520917,
+      "inclusiveSamples": 7860,
+      "inclusivePercent": 3.8868558995153792
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 258878,
+      "column": 39,
+      "selfSamples": 2321,
+      "selfPercent": 1.1477598654930274,
+      "inclusiveSamples": 2321,
+      "inclusivePercent": 1.1477598654930274
+    },
+    {
+      "function": "(garbage collector)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfSamples": 1831,
+      "selfPercent": 0.9054495104341806,
+      "inclusiveSamples": 1831,
+      "inclusivePercent": 0.9054495104341806
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259209,
+      "column": 38,
+      "selfSamples": 1746,
+      "selfPercent": 0.863416081495401,
+      "inclusiveSamples": 4519,
+      "inclusivePercent": 2.2346948867569973
+    },
+    {
+      "function": "needs",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259085,
+      "column": 15,
+      "selfSamples": 1660,
+      "selfPercent": 0.82088814162793,
+      "inclusiveSamples": 3601,
+      "inclusivePercent": 1.7807338542181783
+    },
+    {
+      "function": "canRegister",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259110,
+      "column": 21,
+      "selfSamples": 1399,
+      "selfPercent": 0.6918207892394422,
+      "inclusiveSamples": 18175,
+      "inclusivePercent": 8.98773612896845
+    },
+    {
+      "function": "npcCanSell",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259105,
+      "column": 20,
+      "selfSamples": 1264,
+      "selfPercent": 0.6250618138660864,
+      "inclusiveSamples": 2397,
+      "inclusivePercent": 1.1853426960735833
+    },
+    {
+      "function": "listings",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259195,
+      "column": 18,
+      "selfSamples": 1066,
+      "selfPercent": 0.5271486499851646,
+      "inclusiveSamples": 8166,
+      "inclusivePercent": 4.038176243694986
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259202,
+      "column": 39,
+      "selfSamples": 1063,
+      "selfPercent": 0.5256651171990901,
+      "inclusiveSamples": 2387,
+      "inclusivePercent": 1.180397586786668
+    },
+    {
+      "function": "roundGrowthGain",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 249802,
+      "column": 25,
+      "selfSamples": 843,
+      "selfPercent": 0.4168727128869548,
+      "inclusiveSamples": 1298,
+      "inclusivePercent": 0.6418751854415983
+    },
+    {
+      "function": "npcWageLimit",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 258880,
+      "column": 22,
+      "selfSamples": 785,
+      "selfPercent": 0.3881910790228464,
+      "inclusiveSamples": 1088,
+      "inclusivePercent": 0.5380278904163782
+    },
+    {
+      "function": "settleNpcSeason",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 240779,
+      "column": 25,
+      "selfSamples": 735,
+      "selfPercent": 0.3634655325882702,
+      "inclusiveSamples": 782,
+      "inclusivePercent": 0.38670754623677184
+    },
+    {
+      "function": "structuredClone",
+      "url": "node:internal/worker/js_transferable",
+      "line": 113,
+      "column": 25,
+      "selfSamples": 607,
+      "selfPercent": 0.3001681337157551,
+      "inclusiveSamples": 732,
+      "inclusivePercent": 0.36198199980219564
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235954,
+      "column": 15,
+      "selfSamples": 593,
+      "selfPercent": 0.2932449807140738,
+      "inclusiveSamples": 596,
+      "inclusivePercent": 0.29472851350014834
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259254,
+      "column": 153,
+      "selfSamples": 513,
+      "selfPercent": 0.25368410641875183,
+      "inclusiveSamples": 3157,
+      "inclusivePercent": 1.5611710018791416
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259238,
+      "column": 37,
+      "selfSamples": 513,
+      "selfPercent": 0.25368410641875183,
+      "inclusiveSamples": 2534,
+      "inclusivePercent": 1.253090693304322
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259098,
+      "column": 45,
+      "selfSamples": 511,
+      "selfPercent": 0.2526950845613688,
+      "inclusiveSamples": 1490,
+      "inclusivePercent": 0.7368212837503709
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259254,
+      "column": 40,
+      "selfSamples": 511,
+      "selfPercent": 0.2526950845613688,
+      "inclusiveSamples": 2440,
+      "inclusivePercent": 1.2066066660073187
+    },
+    {
+      "function": "clubManager",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 261561,
+      "column": 21,
+      "selfSamples": 502,
+      "selfPercent": 0.2482444862031451,
+      "inclusiveSamples": 726,
+      "inclusivePercent": 0.3590149342300465
+    },
+    {
+      "function": "npcWageBill",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 258877,
+      "column": 21,
+      "selfSamples": 496,
+      "selfPercent": 0.24527742063099595,
+      "inclusiveSamples": 2840,
+      "inclusivePercent": 1.4044110374839285
+    },
+    {
+      "function": "canonical",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 266267,
+      "column": 19,
+      "selfSamples": 466,
+      "selfPercent": 0.2304420927702502,
+      "inclusiveSamples": 646,
+      "inclusivePercent": 0.31945405993472453
+    },
+    {
+      "function": "invalidateNpcSquad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235781,
+      "column": 28,
+      "selfSamples": 456,
+      "selfPercent": 0.225496983483335,
+      "inclusiveSamples": 12538,
+      "inclusivePercent": 6.200178023934329
+    },
+    {
+      "function": "(program)",
+      "url": "",
+      "line": 0,
+      "column": 0,
+      "selfSamples": 413,
+      "selfPercent": 0.20423301354959944,
+      "inclusiveSamples": 413,
+      "inclusivePercent": 0.20423301354959944
+    },
+    {
+      "function": "ratio",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 233355,
+      "column": 15,
+      "selfSamples": 406,
+      "selfPercent": 0.20077143704875877,
+      "inclusiveSamples": 406,
+      "inclusivePercent": 0.20077143704875877
+    },
+    {
+      "function": "refreshFreeAgents",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255169,
+      "column": 27,
+      "selfSamples": 388,
+      "selfPercent": 0.19187024033231134,
+      "inclusiveSamples": 31924,
+      "inclusivePercent": 15.786766887548215
+    },
+    {
+      "function": "selectionValue",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235942,
+      "column": 24,
+      "selfSamples": 384,
+      "selfPercent": 0.18989219661754525,
+      "inclusiveSamples": 2812,
+      "inclusivePercent": 1.3905647314805658
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235280,
+      "column": 7,
+      "selfSamples": 344,
+      "selfPercent": 0.17011175946988427,
+      "inclusiveSamples": 780,
+      "inclusivePercent": 0.3857185243793888
+    },
+    {
+      "function": "",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235796,
+      "column": 50,
+      "selfSamples": 343,
+      "selfPercent": 0.16961724854119276,
+      "inclusiveSamples": 363,
+      "inclusivePercent": 0.17950746711502324
+    },
+    {
+      "function": "unhappyPenalty",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 233316,
+      "column": 22,
+      "selfSamples": 340,
+      "selfPercent": 0.16813371575511818,
+      "inclusiveSamples": 340,
+      "inclusivePercent": 0.16813371575511818
+    }
+  ],
+  "topDomainInclusive": [
+    {
+      "function": "npcMarket",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259220,
+      "column": 19,
+      "selfSamples": 14454,
+      "selfPercent": 7.147660963307289,
+      "inclusiveSamples": 106557,
+      "inclusivePercent": 52.693601028582734
+    },
+    {
+      "function": "refreshFreeAgents",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255169,
+      "column": 27,
+      "selfSamples": 388,
+      "selfPercent": 0.19187024033231134,
+      "inclusiveSamples": 31924,
+      "inclusivePercent": 15.786766887548215
+    },
+    {
+      "function": "npcOffer",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259117,
+      "column": 18,
+      "selfSamples": 2837,
+      "selfPercent": 1.4029275046978538,
+      "inclusiveSamples": 22677,
+      "inclusivePercent": 11.214024329937692
+    },
+    {
+      "function": "ovrAt",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 232965,
+      "column": 15,
+      "selfSamples": 9711,
+      "selfPercent": 4.80219562852339,
+      "inclusiveSamples": 12649,
+      "inclusivePercent": 6.255068737019088
+    },
+    {
+      "function": "invalidateNpcSquad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235781,
+      "column": 28,
+      "selfSamples": 456,
+      "selfPercent": 0.225496983483335,
+      "inclusiveSamples": 12538,
+      "inclusivePercent": 6.200178023934329
+    },
+    {
+      "function": "moveSquadPlayer",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235288,
+      "column": 25,
+      "selfSamples": 4671,
+      "selfPercent": 2.309860547918109,
+      "inclusiveSamples": 12339,
+      "inclusivePercent": 6.101770349124716
+    },
+    {
+      "function": "matchdaySquad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235271,
+      "column": 23,
+      "selfSamples": 2567,
+      "selfPercent": 1.2694095539511423,
+      "inclusiveSamples": 11916,
+      "inclusivePercent": 5.892592226288201
+    },
+    {
+      "function": "slotOvr",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 233319,
+      "column": 17,
+      "selfSamples": 279,
+      "selfPercent": 0.13796854910493522,
+      "inclusiveSamples": 11761,
+      "inclusivePercent": 5.815943032341015
+    },
+    {
+      "function": "mainOvr",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 232971,
+      "column": 15,
+      "selfSamples": 6113,
+      "selfPercent": 3.0229453070912866,
+      "inclusiveSamples": 10458,
+      "inclusivePercent": 5.171595292255959
+    },
+    {
+      "function": "wantsFreeAgent",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255158,
+      "column": 24,
+      "selfSamples": 7548,
+      "selfPercent": 3.732568489763624,
+      "inclusiveSamples": 9335,
+      "inclusivePercent": 4.616259519335378
+    },
+    {
+      "function": "settleNpcGrowth",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255256,
+      "column": 25,
+      "selfSamples": 222,
+      "selfPercent": 0.10978142616951835,
+      "inclusiveSamples": 8583,
+      "inclusivePercent": 4.244387300959351
+    },
+    {
+      "function": "settlePlayerGrowth",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 249816,
+      "column": 28,
+      "selfSamples": 2337,
+      "selfPercent": 1.1556720403520917,
+      "inclusiveSamples": 7860,
+      "inclusivePercent": 3.8868558995153792
+    },
+    {
+      "function": "joinFreeAgents",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255152,
+      "column": 24,
+      "selfSamples": 30,
+      "selfPercent": 0.014835327860745722,
+      "inclusiveSamples": 6114,
+      "inclusivePercent": 3.023439818019978
+    },
+    {
+      "function": "growAttributes",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 249762,
+      "column": 24,
+      "selfSamples": 2844,
+      "selfPercent": 1.4063890811986945,
+      "inclusiveSamples": 4354,
+      "inclusivePercent": 2.153100583522896
+    },
+    {
+      "function": "refreshNpcSquads",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235777,
+      "column": 26,
+      "selfSamples": 26,
+      "selfPercent": 0.012857284145979626,
+      "inclusiveSamples": 3164,
+      "inclusivePercent": 1.5646325783799822
+    },
+    {
+      "function": "npcWageBill",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 258877,
+      "column": 21,
+      "selfSamples": 496,
+      "selfPercent": 0.24527742063099595,
+      "inclusiveSamples": 2840,
+      "inclusivePercent": 1.4044110374839285
+    },
+    {
+      "function": "roundGrowthGain",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 249802,
+      "column": 25,
+      "selfSamples": 843,
+      "selfPercent": 0.4168727128869548,
+      "inclusiveSamples": 1298,
+      "inclusivePercent": 0.6418751854415983
+    },
+    {
+      "function": "recordMatch",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 257720,
+      "column": 21,
+      "selfSamples": 216,
+      "selfPercent": 0.1068143605973692,
+      "inclusiveSamples": 1258,
+      "inclusivePercent": 0.6220947482939373
+    },
+    {
+      "function": "npcWageLimit",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 258880,
+      "column": 22,
+      "selfSamples": 785,
+      "selfPercent": 0.3881910790228464,
+      "inclusiveSamples": 1088,
+      "inclusivePercent": 0.5380278904163782
+    },
+    {
+      "function": "marketWageAt",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 234926,
+      "column": 22,
+      "selfSamples": 151,
+      "selfPercent": 0.07467115023242013,
+      "inclusiveSamples": 826,
+      "inclusivePercent": 0.4084660270991989
+    },
+    {
+      "function": "generatedPlayer",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235627,
+      "column": 25,
+      "selfSamples": 6,
+      "selfPercent": 0.0029670655721491445,
+      "inclusiveSamples": 638,
+      "inclusivePercent": 0.31549797250519235
+    },
+    {
+      "function": "drawPlayer",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235631,
+      "column": 20,
+      "selfSamples": 54,
+      "selfPercent": 0.0267035901493423,
+      "inclusiveSamples": 632,
+      "inclusivePercent": 0.3125309069330432
+    },
+    {
+      "function": "ratingOf",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235990,
+      "column": 18,
+      "selfSamples": 164,
+      "selfPercent": 0.08109979230540995,
+      "inclusiveSamples": 608,
+      "inclusivePercent": 0.30066264464444664
+    },
+    {
+      "function": "xiRating",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235936,
+      "column": 18,
+      "selfSamples": 58,
+      "selfPercent": 0.028681633864108397,
+      "inclusiveSamples": 511,
+      "inclusivePercent": 0.2526950845613688
+    },
+    {
+      "function": "foundSquads",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235230,
+      "column": 21,
+      "selfSamples": 13,
+      "selfPercent": 0.006428642072989813,
+      "inclusiveSamples": 510,
+      "inclusivePercent": 0.2522005736326773
+    },
+    {
+      "function": "generatedSquad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259281,
+      "column": 24,
+      "selfSamples": 6,
+      "selfPercent": 0.0029670655721491445,
+      "inclusiveSamples": 498,
+      "inclusivePercent": 0.246266442488379
+    },
+    {
+      "function": "npcSquad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235901,
+      "column": 18,
+      "selfSamples": 12,
+      "selfPercent": 0.005934131144298289,
+      "inclusiveSamples": 490,
+      "inclusivePercent": 0.2423103550588468
+    },
+    {
+      "function": "squadPlaces",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235794,
+      "column": 21,
+      "selfSamples": 90,
+      "selfPercent": 0.04450598358223717,
+      "inclusiveSamples": 454,
+      "inclusivePercent": 0.22450796162595194
+    },
+    {
+      "function": "startingSquad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 236014,
+      "column": 23,
+      "selfSamples": 176,
+      "selfPercent": 0.08703392344970824,
+      "inclusiveSamples": 420,
+      "inclusivePercent": 0.2076945900504401
+    },
+    {
+      "function": "continuousSquad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259378,
+      "column": 25,
+      "selfSamples": 1,
+      "selfPercent": 0.000494510928691524,
+      "inclusiveSamples": 240,
+      "inclusivePercent": 0.11868262288596577
+    },
+    {
+      "function": "takeFreeAgent",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255202,
+      "column": 23,
+      "selfSamples": 69,
+      "selfPercent": 0.03412125407971516,
+      "inclusiveSamples": 199,
+      "inclusivePercent": 0.0984076748096133
+    },
+    {
+      "function": "recordRecentResult",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 257454,
+      "column": 28,
+      "selfSamples": 118,
+      "selfPercent": 0.05835228958559984,
+      "inclusiveSamples": 199,
+      "inclusivePercent": 0.0984076748096133
+    },
+    {
+      "function": "marketValueAt",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 234939,
+      "column": 23,
+      "selfSamples": 28,
+      "selfPercent": 0.013846306003362674,
+      "inclusiveSamples": 190,
+      "inclusivePercent": 0.09395707645138958
+    },
+    {
+      "function": "refreshCoachingMarket",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255723,
+      "column": 31,
+      "selfSamples": 49,
+      "selfPercent": 0.02423103550588468,
+      "inclusiveSamples": 163,
+      "inclusivePercent": 0.08060528137671842
+    },
+    {
+      "function": "marketWageUnits",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 234892,
+      "column": 25,
+      "selfSamples": 59,
+      "selfPercent": 0.02917614479279992,
+      "inclusiveSamples": 134,
+      "inclusivePercent": 0.06626446444466423
+    },
+    {
+      "function": "enrollSquadPlayer",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235225,
+      "column": 27,
+      "selfSamples": 10,
+      "selfPercent": 0.004945109286915241,
+      "inclusiveSamples": 110,
+      "inclusivePercent": 0.05439620215606765
+    },
+    {
+      "function": "sponsorOffers",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 237732,
+      "column": 23,
+      "selfSamples": 18,
+      "selfPercent": 0.008901196716447433,
+      "inclusiveSamples": 101,
+      "inclusivePercent": 0.049945603797843935
+    },
+    {
+      "function": "closePlayerLines",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 236477,
+      "column": 26,
+      "selfSamples": 78,
+      "selfPercent": 0.038571852437938876,
+      "inclusiveSamples": 88,
+      "inclusivePercent": 0.04351696172485412
+    },
+    {
+      "function": "freeAgentWage",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255097,
+      "column": 23,
+      "selfSamples": 11,
+      "selfPercent": 0.005439620215606765,
+      "inclusiveSamples": 84,
+      "inclusivePercent": 0.04153891801008802
+    },
+    {
+      "function": "atCareerDate",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 261914,
+      "column": 22,
+      "selfSamples": 0,
+      "selfPercent": 0.0,
+      "inclusiveSamples": 82,
+      "inclusivePercent": 0.040549896152704976
+    },
+    {
+      "function": "settleAbsentPlayerRecords",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 236522,
+      "column": 35,
+      "selfSamples": 34,
+      "selfPercent": 0.01681337157551182,
+      "inclusiveSamples": 75,
+      "inclusivePercent": 0.03708831965186431
+    },
+    {
+      "function": "freeAgentOf",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255062,
+      "column": 21,
+      "selfSamples": 61,
+      "selfPercent": 0.03016516665018297,
+      "inclusiveSamples": 70,
+      "inclusivePercent": 0.034615765008406685
+    },
+    {
+      "function": "starredWageUnits",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 234901,
+      "column": 26,
+      "selfSamples": 5,
+      "selfPercent": 0.0024725546434576206,
+      "inclusiveSamples": 68,
+      "inclusivePercent": 0.03362674315102364
+    },
+    {
+      "function": "marketValueUnits",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 234914,
+      "column": 26,
+      "selfSamples": 30,
+      "selfPercent": 0.014835327860745722,
+      "inclusiveSamples": 57,
+      "inclusivePercent": 0.028187122935416874
+    },
+    {
+      "function": "recordNpcTransferFee",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 258899,
+      "column": 30,
+      "selfSamples": 38,
+      "selfPercent": 0.018791415290277915,
+      "inclusiveSamples": 41,
+      "inclusivePercent": 0.020274948076352488
+    },
+    {
+      "function": "recordPlayerMove",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 259127,
+      "column": 26,
+      "selfSamples": 25,
+      "selfPercent": 0.012362773217288101,
+      "inclusiveSamples": 38,
+      "inclusivePercent": 0.018791415290277915
+    },
+    {
+      "function": "squad",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235759,
+      "column": 15,
+      "selfSamples": 32,
+      "selfPercent": 0.01582434971812877,
+      "inclusiveSamples": 32,
+      "inclusivePercent": 0.01582434971812877
+    },
+    {
+      "function": "refreshManagerMarket",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 261840,
+      "column": 30,
+      "selfSamples": 3,
+      "selfPercent": 0.0014835327860745723,
+      "inclusiveSamples": 25,
+      "inclusivePercent": 0.012362773217288101
+    },
+    {
+      "function": "clubPlayers",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 235756,
+      "column": 21,
+      "selfSamples": 24,
+      "selfPercent": 0.011868262288596578,
+      "inclusiveSamples": 24,
+      "inclusivePercent": 0.011868262288596578
+    },
+    {
+      "function": "capFreeAgents",
+      "url": "file:///tmp/haeram-perf-profile/workloads-1663762.mjs",
+      "line": 255125,
+      "column": 23,
+      "selfSamples": 1,
+      "selfPercent": 0.000494510928691524,
+      "inclusiveSamples": 22,
+      "inclusivePercent": 0.01087924043121353
+    }
+  ]
+}

@@ -112,5 +112,5 @@ The raw affiliations include the strongest XI and each world’s top eleven cont
 - persisted-world-4: 0/74 annual samples in one club; from 1950, 0/61; top players at the strongest club range 0–9.
 - persisted-world-viability: 0/64 annual samples in one club; from 1950, 0/51; top players at the strongest club range 0–8.
 
-Observed outfield peak means and counts by seed/country/tier are retained in peak-ages.csv; keeper/all-player observations, where present, have separate population labels.
+Only completed core windows contribute to peak-ages.csv. Partial aggregates can include right-censored active careers and are excluded from this comparison; their raw inputs are retained. Eligible outfield, keeper and all-player populations have separate labels. The completed initial four observers are outfield-only.
 

@@ -21,6 +21,28 @@ export interface PeakObservation {
   outfield: boolean;
 }
 
+interface ObservationWindow {
+  until?: number;
+  complete?: boolean;
+  measured?: boolean;
+}
+
+/** A shorter completed request is not a completed core window. */
+export function completeWorldWindow(run: ObservationWindow, end: number) {
+  return (
+    run.until === end &&
+    (run.complete === true || (run.complete === undefined && run.measured === true))
+  );
+}
+
+/** Partial aggregates can include active careers whose last observation precedes the requested end. */
+export function completedPeakRows<T>(
+  run: ObservationWindow & { peakAges?: T[] },
+  end: number,
+): T[] {
+  return completeWorldWindow(run, end) ? (run.peakAges ?? []) : [];
+}
+
 /** Excludes founding adults, short observations and cohorts censored at the core end. */
 export function peakFacts(peaks: PeakObservation[], country: string, tier: number, end: number) {
   const cohort = peaks.filter(
