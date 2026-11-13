@@ -107,15 +107,17 @@
 | T863 | Club strength from its squad, wages from its books, contracts and free agents | LEAGUE WORLD ECON CLUB | T862 | todo |
 | T864 | Clubs nobody owns trade players in both transfer windows | WORLD CLUB ECON HIST ARCH | T863 | todo |
 | T865 | Every player's record, kept retirees and a sheet for every player link | HIST WEB PLAYER SAVE ARCH | T862 T864 | todo |
-| T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 T869 | todo |
+| T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 T869 T870 | todo |
 | T867 | Keep persisted squads off the UI thread, in the fixture helpers and in the save | WORLD SAVE HIST ARCH LEAGUE | T861 | todo |
 | T869 | Retain retired news resources for supported saved reports | ARCH | T863 T865 | todo |
+| T870 | Repair integrated static checks before calibration | ARCH | T865 T869 | todo |
 
 ## next
 - gusta-implement-task T860, then T861 → T867 → T862 → T863 → T864 → T865 → T866 (persisted world players, sketch persistent-world-players 261113; plan reviewed 261113 rv13 — T867 is new, so a loop scoped T860–T866 stops before T862 until T867 is in its scope)
 - main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 - gusta-implement-task T869, then T866 for final calibration and the integrated pre-main-push gate
+- gusta-implement-task T870, then T866
 
 ## log
 - 261113 gusta-create-task WORLD LEAGUE CLUB HIST: T861–T866 revised to WORLD@13 LEAGUE@20 CLUB@70 HIST@27, T867 new (view, fixture helpers, schema, packing, size and time reads split from T861) rv13
