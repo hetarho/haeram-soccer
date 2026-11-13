@@ -240,11 +240,11 @@
   "evidence": {
     "coordinatorDirectory": ".tmp/nf14-evidence/remaining-diagnosis/throughput-history",
     "provenanceSha256": "eb7d44710e44d40ef38eb4fe05057218b0d97d0328c980049528508110ca917a",
-    "changedFactDiffSha256": "7768026f6dc17bee625d6822147430d31ef9a4afe092cdd6cb0fa7c6e4a3007a",
     "legacyNonExhaustiveChangedNodes": 1500,
     "exhaustiveFactDiffFile": ".tmp/t908/exhaustive-fact-diff.json",
     "exhaustiveFactDiffSha256": "3f8da6fd9419b7254123cbc994ae52d33ba12215b27ca7fd15ea259e524b4a9f",
-    "auditScriptSha256": "66097fa6fd7a792e921815f7b84ae1445cf15dd20111799b5dbc2c3d448e9283"
+    "auditScriptSha256": "13118edcea0012639d69c3ab5e9ae40442b1d5d28a170a4034d4f72ec11a2537",
+    "legacyNonExhaustiveDiffSha256": "7768026f6dc17bee625d6822147430d31ef9a4afe092cdd6cb0fa7c6e4a3007a"
   },
   "finalScopedConfirmation": {
     "source": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
