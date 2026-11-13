@@ -26,3 +26,12 @@ This project is built spec-first with GUSTA. `spec/` is the source of truth and 
 - Branch, push, deploy and version behavior comes from `spec/SETTINGS.md` (the `gusta-preference` skill); never assume branch names.
 
 <!-- gusta:end -->
+
+# Orchestrated agent providers
+
+Default implementation workers to the provider running the orchestration session. Use another
+enabled provider for independent review, relative to the provider that actually wrote the code.
+`spec/SETTINGS.md` enables Codex and Claude; its fixed fallback order does not select the current
+orchestrator dynamically. For `gusta work run`, pass `--provider` for the orchestration provider
+and `--reviewer-provider` for the other provider explicitly. Apply the same choice when dispatching
+separate implementation and review sessions, and reselect the reviewer if the worker provider changes.
