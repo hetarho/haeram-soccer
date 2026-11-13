@@ -60,7 +60,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
-| T890 | Prepare exact replacement and top-up scenarios | ARCH CLUB WORLD | T885 | todo |
 | T891 | Prepare real market candidates and exact registration caps | ARCH CLUB WORLD | T885 | todo |
 | T892 | Prepare explicit founding, employment and legacy identity fixtures | ARCH WORLD SAVE | T885 | todo |
 | T893 | Avoid new identity collisions during supported squad adoption | ARCH WORLD SAVE | T885 | todo |
@@ -77,9 +76,7 @@
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 19 | 9 | 10 | 2 | 0 | 0 | 2026-11-13T19:13:19.552Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 23 | 10 | 13 | 2 | 5 | 0 | 2026-11-13T19:49:21.426Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
-- gusta-implement-task T873 T875 T884
-- T883 and T899 are complete in the pr14 publication candidate; NF14 must include that result and prepare a coherent newer patch if its root version matches main.
