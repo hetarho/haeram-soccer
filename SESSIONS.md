@@ -6,7 +6,7 @@
 |---|---|---|---|---|---|---|---|
 | pb14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:37Z | 2026-11-13T18:17Z | - | work/performance-books-pb14 | f1aef0bcd58e |
 | nf14 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T16:56Z | 2026-11-13T18:28Z | - | codex/natural-football-261114 | e63f6616d7e1 |
-| pr14 | ihaelam-ui-MacBookPro | pair | 2026-11-13T18:19Z | 2026-11-13T18:19Z | T883 | fix/pb14-final-review | bb7707c73b5e |
+| pr14 | ihaelam-ui-MacBookPro | pair | 2026-11-13T18:19Z | 2026-11-13T18:28Z | - | fix/pb14-final-review | a05839f3d0b1 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -80,8 +80,10 @@
 | T874 | work | codex/natural-football-261114 | 7602032a9501 | 2026-11-13T17:08Z |
 | T875 | work | codex/natural-football-261114 | 88820aeb00e4 | 2026-11-13T17:10Z |
 | T876 | work | codex/natural-football-261114 | 15ec0ba65b84 | 2026-11-13T17:23Z |
+| T883 | pr14 | fix/pb14-final-review | a05839f3d0b1 | 2026-11-13T18:28Z |
 
 ## log
+- 261113 T883 done
 - 261113 gusta-create-task SAVE r70 start: coherent explicit release preparation and metadata-only compatible patch labels; retain the original pb14 deadline and gate ledger.
 - 261113 gusta-update-ssot SAVE start: pb14 root-only release recurrence; preserve rules-5 careers through an explicit compatible patch label, synchronize the one game version before publication.
 - 261113 fix pb14 diagnostics: 0c39493c replaces newly authored prose with a machine enum and asserts complete funding using the raw club ID; 12-locale validation and lint passed without new display copy.
@@ -101,4 +103,3 @@
 - 261113 261114 main integration started from bb383c33 with full origin/work/persisted-world-860 c70cf228; only STATE conflict resolved while preserving Gusta 0.17.1 and ARCH@43. Storage is included and no capacity or calibration pass is claimed.
 - 261113 Owner authorized full main implementation merge and removed storage capacity as an integration blocker on 261114; the measured capacity and calibration residuals remain documented.
 - 261113 gusta-self-improve natural football start; clean main bb383c33 equals fetched origin/main; two read-only scouts; local integration plus synchronized baseline/candidate HTML; Codex workers and Claude review
-- 261113 gusta-create-task ARCH r42..r43 no-op (no code impact): operating conventions only; no active task contracts to rewrite
