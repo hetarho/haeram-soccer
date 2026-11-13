@@ -6,6 +6,7 @@ import {
   npcCanPay,
   npcWageBill,
   npcWageLimit,
+  NPC_WAGE_DECISIONS,
   recordNpcTransferFee,
   settleNpcBooks,
 } from './books';
@@ -18,6 +19,24 @@ import { stature } from './world';
 import { operatingExpensesAt } from './finance';
 
 describe('NPC contract books on an isolated squad', () => {
+  it('observes salary without the fee while enforcing their shared headroom', () => {
+    const { w, c } = npcBooksFixture();
+    const observations: [bigint, boolean][] = [];
+    NPC_WAGE_DECISIONS.observe = (_club, bill, _limit, allowed) =>
+      observations.push([bill, allowed]);
+    try {
+      expect(npcCanPay(w, c, '20', undefined, w.year, { bill: 80n, limit: 110n }, '10')).toBe(true);
+      expect(npcCanPay(w, c, '20', undefined, w.year, { bill: 80n, limit: 110n }, '11')).toBe(
+        false,
+      );
+      expect(observations).toEqual([
+        [100n, true],
+        [100n, false],
+      ]);
+    } finally {
+      delete NPC_WAGE_DECISIONS.observe;
+    }
+  });
   it('pays all stored contracts, including players outside the eighteen, without repricing', () => {
     const { w, c, players } = npcBooksFixture();
     for (const [i, p] of players.entries()) p.wage = String(i + 1);

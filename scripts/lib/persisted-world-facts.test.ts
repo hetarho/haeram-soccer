@@ -4,9 +4,45 @@ import {
   completedPeakRows,
   completeWorldWindow,
   distribution,
+  fundingFacts,
   peakFacts,
   type PeakObservation,
 } from './persisted-world-facts';
+import type { ClubSeasonBook } from '../../packages/contracts/src/owner';
+
+it('distinguishes funded losses, exhausted support, duplicated capital and missing history', () => {
+  const book: ClubSeasonBook = {
+    year: 1930,
+    income: '100',
+    wages: '130',
+    costs: '10',
+    transfersReceived: '0',
+    transfersPaid: '0',
+    result: '-40',
+    ownerCapital: '30',
+    incomeComponents: { distribution: '25', gate: '25', commercial: '25', competitions: '25' },
+  };
+  const opening = { cash: '10', debt: '0', allowance: '40' };
+  expect(fundingFacts(book, opening)).toMatchObject({
+    status: 'known',
+    capitalReconciles: true,
+    incomeComponentsReconcile: true,
+    resultReconciles: true,
+    unsupportedShortfall: '0',
+    exhausted: false,
+  });
+  expect(
+    fundingFacts({ ...book, ownerCapital: '20' }, { ...opening, allowance: '20' }),
+  ).toMatchObject({ capitalReconciles: true, exhausted: true, unsupportedShortfall: '10' });
+  expect(fundingFacts({ ...book, income: '130', result: '-10' }, opening)).toMatchObject({
+    incomeComponentsReconcile: false,
+    capitalReconciles: false,
+  });
+  expect(fundingFacts({ ...book, ownerCapital: undefined }, opening)).toEqual({
+    status: 'unknown',
+  });
+  expect(fundingFacts(book)).toEqual({ status: 'unknown' });
+});
 
 it('keeps empty populations explicit and summarizes actual observations', () => {
   expect(distribution([])).toEqual({ n: 0, mean: null, min: null, median: null, max: null });

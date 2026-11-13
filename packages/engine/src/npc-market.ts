@@ -173,8 +173,7 @@ export function npcOffer(
   if (facts.limit !== undefined && facts.bill > facts.limit) return undefined;
   const wage = marketWageAt(buyer.country, w.year, buyer.tier, p);
   const paid = convertFee(w, seller, buyer, fee);
-  if (!npcCanPay(w, buyer, (BigInt(wage) + BigInt(paid)).toString(), undefined, w.year, facts))
-    return undefined;
+  if (!npcCanPay(w, buyer, wage, undefined, w.year, facts, paid)) return undefined;
   return { club: buyer, wage, paid, pounds: BigInt(inPounds(buyer.country, w.year, wage)) };
 }
 

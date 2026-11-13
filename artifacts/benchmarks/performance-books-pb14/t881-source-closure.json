@@ -1,0 +1,855 @@
+{
+  "identity": {
+    "algorithm": "sha256",
+    "sha256": "a91e9370040b119fcb3da8ee203ef9dfc1b9ecd80b72a3eaec8ad49f83632936",
+    "files": 211,
+    "entry": "scripts/persisted-world-read.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "files": [
+    {
+      "path": "package.json",
+      "sha256": "0551e2f9c9ff499e4c49bb8c5e7ba96e68ab3cce23d0a7459336d417b19c2cd3"
+    },
+    {
+      "path": "packages/catalogs/data/football-index.json",
+      "sha256": "744cf9ad3ef3ed27b25d33622de353b129f6f8c053494af57f2de999911bd30c"
+    },
+    {
+      "path": "packages/catalogs/data/names.json",
+      "sha256": "8a42d6291b49a39490d4c7bbf00406f85d76bedb3ae569042add8def2a797c49"
+    },
+    {
+      "path": "packages/catalogs/data/prices.json",
+      "sha256": "b2e974ec785691a14070459888e963a00d0fd3838dce8b4d81e10d80bae1b82c"
+    },
+    {
+      "path": "packages/catalogs/data/squad-rules.json",
+      "sha256": "3387b47f30bcfb6dcc0c6850590566629aca5f0dfdde0d2af63ed99e776c01d1"
+    },
+    {
+      "path": "packages/catalogs/src/fingerprint.ts",
+      "sha256": "11170b5728e7d4b01b5713989f219cecdc86fc682eb3570ddf90344f940ba27d"
+    },
+    {
+      "path": "packages/catalogs/src/index.ts",
+      "sha256": "190dbc48885e2d739793033e0b7914621f13f352811cc3d9b7f885c5ddcd178e"
+    },
+    {
+      "path": "packages/contracts/src/build.ts",
+      "sha256": "a9111fa57bb71a9256c8343746efb0b26aff08a9e21c456ec71164943c4e550f"
+    },
+    {
+      "path": "packages/contracts/src/career-reads.ts",
+      "sha256": "a99cddd2dc852a383f2e8ca7775cff2b4da6081a461bf04149b5016060d51d71"
+    },
+    {
+      "path": "packages/contracts/src/detail.ts",
+      "sha256": "7d9643a06bf48d071a3c16a3609a46ccdd91c56cef5073e8c22bcd24b9d3f4dc"
+    },
+    {
+      "path": "packages/contracts/src/identity.ts",
+      "sha256": "fe454b128afe2ee09d594faf7c6cc577b864c7fd23687ce7f5542154bbea55be"
+    },
+    {
+      "path": "packages/contracts/src/identitySchema.ts",
+      "sha256": "2a6184efa1fff9909b26164f57fdf1640d399893f42bac0831a5b744e77400eb"
+    },
+    {
+      "path": "packages/contracts/src/manager-history.ts",
+      "sha256": "f8273ec4667641a47d0ebc981154309a0b4505f5d2c8fa7d126990b1bdafed06"
+    },
+    {
+      "path": "packages/contracts/src/match-model.ts",
+      "sha256": "12368e18718e2b075d925a8e9047b272b8024f4a10569ad5d449bcb856d51236"
+    },
+    {
+      "path": "packages/contracts/src/messages.ts",
+      "sha256": "7d53fa6a22ee62a83acc2654a1236a437fd5b1261960dd6d9d7f07d42594abf0"
+    },
+    {
+      "path": "packages/contracts/src/news.ts",
+      "sha256": "2d67da73e3de01fbc17bc4fb9030e7e33525930c80862927a5f358145995d5e7"
+    },
+    {
+      "path": "packages/contracts/src/owner.ts",
+      "sha256": "c02b02224816ba3b8954e498423169d73c4937e368432d8b4c79104590bd51bc"
+    },
+    {
+      "path": "packages/contracts/src/player.ts",
+      "sha256": "e0144b6b0aef6aaa6686fca16076585e9332daf882ecb5901a4eb78f27b1fe53"
+    },
+    {
+      "path": "packages/contracts/src/recent-results.ts",
+      "sha256": "d14c1e52b45c8a01d3a612c857ddeae819bb5bdd1aae743a0e6de9e9b62c777e"
+    },
+    {
+      "path": "packages/contracts/src/schema.ts",
+      "sha256": "bbeaf4b8d56e79f5ac003ff4de7c0341978bc0edcbc1676013c49e5bc23c1555"
+    },
+    {
+      "path": "packages/contracts/src/source-messages.ts",
+      "sha256": "bec7f6f11d18e6c0550e45a121a43c0bbe83d99eb8dd1dea97aab89b8568dacc"
+    },
+    {
+      "path": "packages/contracts/src/versions.ts",
+      "sha256": "cb1040138e9ebabcfdc593e15f962b95205f3fe20ab66fbb3f7f6e02bdf9917a"
+    },
+    {
+      "path": "packages/engine/src/academy.ts",
+      "sha256": "20cc011fbb88bf84e7bed728d8d89127f4207e1b4bb7b1cd5b250a5c41f32ffd"
+    },
+    {
+      "path": "packages/engine/src/adaptation.ts",
+      "sha256": "1a8200d74190c37b820f79a8bbb5d22137d72eef178659b9d0e483e050917bc0"
+    },
+    {
+      "path": "packages/engine/src/aggregate/config.ts",
+      "sha256": "92d0037bc0a2fd2219052b4dc0c44688a8beee9a750f8b9b25f7636c1ff143d2"
+    },
+    {
+      "path": "packages/engine/src/aggregate/count.ts",
+      "sha256": "fcb5e4808df74256f992c79794e189a69114381e55c37206222b2cb407ae7381"
+    },
+    {
+      "path": "packages/engine/src/aggregate/engine.ts",
+      "sha256": "b50655a7d8f5d5c485ac019f082b91ac2e2a4833d3f7bf2e05d96066b5733cf8"
+    },
+    {
+      "path": "packages/engine/src/aggregate/input.ts",
+      "sha256": "b17a3ecfec83241134802f395a8209cbb6d5cd16ddbd26ed5e3651c44658d552"
+    },
+    {
+      "path": "packages/engine/src/aggregate/ledger.ts",
+      "sha256": "a4b29164e783d62a542648a65423c5da31b303825cc9fe62d24f1b46ff10c58d"
+    },
+    {
+      "path": "packages/engine/src/aggregate/participation.ts",
+      "sha256": "5d408ea4b4d82117c759ea837b7f69405e262f1c98fa5154a5b51d4a8419fc24"
+    },
+    {
+      "path": "packages/engine/src/aggregate/place.ts",
+      "sha256": "8c15d7c2a68d4af475fbcf95abd71f64c423eb9b2eb65b3512fb159d218c9110"
+    },
+    {
+      "path": "packages/engine/src/aggregate/players.ts",
+      "sha256": "84821883ac0e82e2fd16aabb0f9dfff076c742a4691cd25d58d806a5ca029463"
+    },
+    {
+      "path": "packages/engine/src/aggregate/team.ts",
+      "sha256": "1727a70623f78d8b17b12ed2c48d29748b5442b7d00d151ea937aceea063bf2c"
+    },
+    {
+      "path": "packages/engine/src/aggregate/timeline.ts",
+      "sha256": "d87a026817a547747b66d99134e3ca03b2e84181e950852e051e16107ea5a5ba"
+    },
+    {
+      "path": "packages/engine/src/aggregate/types.ts",
+      "sha256": "81b9fc977e49c8c32d0236caea5910821a58c6c2aee3e247649e7d2d6e088e4b"
+    },
+    {
+      "path": "packages/engine/src/approvals.ts",
+      "sha256": "21ed53d7cbb6b34069bee41b696e854b5f7c116606217229a1fd9ac77843bfc1"
+    },
+    {
+      "path": "packages/engine/src/aptitude.ts",
+      "sha256": "e4f35c5a930a19cf92c58895c21d49f5466c61a92a57da2e17f519e2245bd207"
+    },
+    {
+      "path": "packages/engine/src/ballon-dor-award.ts",
+      "sha256": "d4f302f2235d416b49adcc086423181fbc2bbf37e48f426be2ae0afab5eeb01c"
+    },
+    {
+      "path": "packages/engine/src/ballon-dor.ts",
+      "sha256": "a7eb8a817098c4d09d5448cd2ee52be1836eeb1841191f6e907fa7a1c4459fe9"
+    },
+    {
+      "path": "packages/engine/src/bases.ts",
+      "sha256": "1f5a7bdef0369ff83890706cb71c66f1dee8261227f1260d7f2d7557b53b6ef0"
+    },
+    {
+      "path": "packages/engine/src/books.ts",
+      "sha256": "0cfe35553d80893455757397a55ebda5618c3cfb46a8afd125f69da432c1d4f9"
+    },
+    {
+      "path": "packages/engine/src/build.ts",
+      "sha256": "2f4ae380b53e71dbdaba2403e112f141f15711bd669b0283fcf928d3aca55277"
+    },
+    {
+      "path": "packages/engine/src/calendar.ts",
+      "sha256": "64f567077217205093e8d0a78b341c1c800667be4cc09503e42bc4dedfdb6ac3"
+    },
+    {
+      "path": "packages/engine/src/career-reads.ts",
+      "sha256": "d6385fcddaed79260af750d81da82036d8c357aa834f36489a14d9d8f04a6529"
+    },
+    {
+      "path": "packages/engine/src/careers.ts",
+      "sha256": "22d6134209e90aac48197616428239ec29fce8d672878875ed87f8ba6b16157f"
+    },
+    {
+      "path": "packages/engine/src/club-identity.ts",
+      "sha256": "13de44acae1c0273769efadf90ceb203dc4ef2fac826f3756e29681666680603"
+    },
+    {
+      "path": "packages/engine/src/club-staff.ts",
+      "sha256": "c0dd48fff8673f8c9ae2e0f157a70b96d8838fe62d5a0d9523e00f447acbb846"
+    },
+    {
+      "path": "packages/engine/src/club-value.ts",
+      "sha256": "d067004dd8f616416821c529d57f301c9dcab32f6450c3da3dd49bcbcb774b36"
+    },
+    {
+      "path": "packages/engine/src/coaching-entry.ts",
+      "sha256": "21ed650d80cc77fbf56567169dd1a6b3fad660212536520bfc72895034ff1c56"
+    },
+    {
+      "path": "packages/engine/src/coaching-market.ts",
+      "sha256": "d9dbd6a8288d9f926b6c952ac3126b92eae4d1ffba73d1b9cbdc28e60ecb6dc3"
+    },
+    {
+      "path": "packages/engine/src/coaching.ts",
+      "sha256": "bffbdfb4f7392c274e76ea6dda34fd58691d4bac1f055c96a6fc6f33b6003df8"
+    },
+    {
+      "path": "packages/engine/src/competition-keys.ts",
+      "sha256": "ca9b8ec5cd1b37dddd820c3f08b5cd66c8a1459338bed8b0065f26590afc89c9"
+    },
+    {
+      "path": "packages/engine/src/contracts.ts",
+      "sha256": "d54db39e1328174aa812f5ee034b752a02f006b5b3bbb7548bd56a28da481ccf"
+    },
+    {
+      "path": "packages/engine/src/cups.ts",
+      "sha256": "3a4bfacd41a484da3fd37931af715ac76c9e07333c3d5acd90f823e4de897df0"
+    },
+    {
+      "path": "packages/engine/src/delegation-info.ts",
+      "sha256": "900c6eece58569917574ff4c8bc85f83981c468941d7046678eee9d8d5c62581"
+    },
+    {
+      "path": "packages/engine/src/delegation.ts",
+      "sha256": "5130ac48bec61b36893dc8e305979bbd2388e17e0ae0b759e13331c6308d43db"
+    },
+    {
+      "path": "packages/engine/src/direction.ts",
+      "sha256": "a43ed2ab44d7ca39895eb94618518e2dcf4cd2a9dbd1ebabd5a2b0bf1fbe6980"
+    },
+    {
+      "path": "packages/engine/src/director-bidding.ts",
+      "sha256": "084fee52949f534c68b97ce18163ed009d7d611d4b8c14cbc75e983909807865"
+    },
+    {
+      "path": "packages/engine/src/discipline.ts",
+      "sha256": "166295b812bc73d515e4997a4c47a82b411496b15beddac7301a91546be69ee4"
+    },
+    {
+      "path": "packages/engine/src/dynamics.ts",
+      "sha256": "8298c0b26a9a26b944b99d8ace6d4e2afe28644bae1954c3658f8483172df329"
+    },
+    {
+      "path": "packages/engine/src/economy.ts",
+      "sha256": "00277125620de0d071551094f60f4bab4f9a39316580871c75d7bce2620042a2"
+    },
+    {
+      "path": "packages/engine/src/elo.ts",
+      "sha256": "821eba25673e100a3cc62236baf8acdb4dd0f096dca78d0e272f23f17edc4026"
+    },
+    {
+      "path": "packages/engine/src/employment-money.ts",
+      "sha256": "746b7af5bf3f14469f86576285d946229dbef69f7a1dc9e708a0a523ed7d7639"
+    },
+    {
+      "path": "packages/engine/src/europe-access.ts",
+      "sha256": "16d3bb5ee3d218d00b03932ff7ec784ef48a770fb4207acf39ce4b869c0f3ba0"
+    },
+    {
+      "path": "packages/engine/src/europe-coefficients.ts",
+      "sha256": "986bf300552f9df8fccbb6e1197e8db54a7245eecb7725f0d71549a062b2c810"
+    },
+    {
+      "path": "packages/engine/src/europe.ts",
+      "sha256": "78aa5bb525d5dbb109a18c13d58fa286a46ff38f264ce5d1bbb65c56cf24e5e4"
+    },
+    {
+      "path": "packages/engine/src/events.ts",
+      "sha256": "5740a002689ea06a2b9af19d18ecea0b01320983931e47ca649b9a0211e4c765"
+    },
+    {
+      "path": "packages/engine/src/facilities.ts",
+      "sha256": "d07380d8f67ce8bf4969fb3c69673df6bd1d9dc490d6d5752a9d76bfbdc780c9"
+    },
+    {
+      "path": "packages/engine/src/facility-model.ts",
+      "sha256": "011d16f87c66ccdcda0422f65c78f303a72f3a7c38322f1d49d7433093749fe1"
+    },
+    {
+      "path": "packages/engine/src/fan-mood-read.ts",
+      "sha256": "16c21bf8d3769f0b2c468f6d14e58f335fe58095b332c958a77cb10787d55517"
+    },
+    {
+      "path": "packages/engine/src/fan-mood.ts",
+      "sha256": "5deae060be6f2d3b4672ee222e4ce93b05cda8f989dc44be48ff6190a47d4261"
+    },
+    {
+      "path": "packages/engine/src/fans.ts",
+      "sha256": "973ee0b167ba4d7c9f81eefc81b5b940183da18a62c72165c16537e841bfbf2a"
+    },
+    {
+      "path": "packages/engine/src/finance-read.ts",
+      "sha256": "013ca0eb5466d9cc9699a12f9751b23e816b8151a1b374d331a450a22dff4d79"
+    },
+    {
+      "path": "packages/engine/src/finance.ts",
+      "sha256": "fd39764a53cc675790d03628a39fb0f4d097aa641eea0d4918724ff4a53d1001"
+    },
+    {
+      "path": "packages/engine/src/fixture-copy.ts",
+      "sha256": "b2b647c9153dd59c39bc7c4029d9bb6070fcbfe160d5483fa97a3568ca707cbf"
+    },
+    {
+      "path": "packages/engine/src/formations.ts",
+      "sha256": "2c92ba99ab413406f46201eec71af6424d56ab0d277c950c5e4ed94c56861eb9"
+    },
+    {
+      "path": "packages/engine/src/free-agents.ts",
+      "sha256": "993fd9c1591983726d5623bd1c5a17447eff52029e662e82ae38140c9b769e81"
+    },
+    {
+      "path": "packages/engine/src/hiring-info.ts",
+      "sha256": "dd190676f6cdde8478ff7f2263db6b21f33766662985fa9018590787c37baa5b"
+    },
+    {
+      "path": "packages/engine/src/hiring.ts",
+      "sha256": "1c80714568699146dc4c6a0b98213c85b994d4a6c99e99611bfbcc6a63cab793"
+    },
+    {
+      "path": "packages/engine/src/history.ts",
+      "sha256": "9f2320c6ad863c4991c2d0d2d8f95e119db043d41b35c84712f3ca07a178d98c"
+    },
+    {
+      "path": "packages/engine/src/identity-legacy.ts",
+      "sha256": "d5d31d27ebbc4d4486a641335fbdb63b2cc9c69723b09ca26e1a12a7857a0757"
+    },
+    {
+      "path": "packages/engine/src/inbox.ts",
+      "sha256": "12e4bd33cec83709acd74dd0a396740a19b9c0d01f494d788a53690a81940433"
+    },
+    {
+      "path": "packages/engine/src/injury-rules.ts",
+      "sha256": "78db3a26f25f2a4d23b67c2df3b4b4c1dc0d27236306ea14d2d0bac7f33d6cb0"
+    },
+    {
+      "path": "packages/engine/src/investment.ts",
+      "sha256": "d27081b346a25a2b1248a32fedb276ccd4e4691901b93b9a68d548f8c537b5ab"
+    },
+    {
+      "path": "packages/engine/src/kit-patterns.ts",
+      "sha256": "7adee1dfbb66ab90b7f88e2cc48a1a6c3cc1f689c36b64b26905bc3e02d730e8"
+    },
+    {
+      "path": "packages/engine/src/kit-selection.ts",
+      "sha256": "a1111ba83ec3f687876a9061bfab09c8cdf57d936385dc61d9f17e2a7941883b"
+    },
+    {
+      "path": "packages/engine/src/kit-wear.ts",
+      "sha256": "d0808a4fd0f472acae09f600b50b89b2437655e260408fec729ea44c16f7dd42"
+    },
+    {
+      "path": "packages/engine/src/knockout.ts",
+      "sha256": "633417e6570c32b78adb0f0438bfcdae8127787bc29bb4164b208bee5c488d5f"
+    },
+    {
+      "path": "packages/engine/src/league-fixtures.ts",
+      "sha256": "e44d38bfd852a413024bf6ce84b7d0a4deee239f43f06d8ca36425e7812adade"
+    },
+    {
+      "path": "packages/engine/src/manager-entry.ts",
+      "sha256": "222c74e2d8921924e990819d9e949164bbc087d898903b1d0448daed35f208db"
+    },
+    {
+      "path": "packages/engine/src/manager-history-capture.ts",
+      "sha256": "170059cc7e0daae9cea7224ac0b1d858630c2e3b9c53e3481bb61d23cab19b9d"
+    },
+    {
+      "path": "packages/engine/src/manager-history.ts",
+      "sha256": "769928e4ad240f4d3b0e5c136b1455232821669f8b554a19f7b598783d4bfd32"
+    },
+    {
+      "path": "packages/engine/src/managerMarket.ts",
+      "sha256": "5007a33910daf5c2390ec959b633fbf1ebd6243ecc64f562d9d7ec377272f6c6"
+    },
+    {
+      "path": "packages/engine/src/market-prices.ts",
+      "sha256": "b722c9a4c0a15201d033914ebdc79f58a75ef094477204bf2f270b142b01fa46"
+    },
+    {
+      "path": "packages/engine/src/match-appearance.ts",
+      "sha256": "102c81ffb96cffd9c504182cf0a2c64eec56567e5df03ae894365387f2664d8b"
+    },
+    {
+      "path": "packages/engine/src/match-model-release.ts",
+      "sha256": "44e5daed19105da563412f787225b96e313fe7df4f96ad96f716a1ce7e74f19c"
+    },
+    {
+      "path": "packages/engine/src/match-model.ts",
+      "sha256": "ee8fb74207a5b8d6465fc335f9b9b7243f712158a175ba80e163391dff9113ed"
+    },
+    {
+      "path": "packages/engine/src/match-rules.ts",
+      "sha256": "4a2a84d2ed7fac5f7caad0e745bc6d4151a7f3502121b0ed187d95f5beedb6db"
+    },
+    {
+      "path": "packages/engine/src/match-weights.ts",
+      "sha256": "14b73194f79f4647ded33cea8ba765ee75a6721ebbe2ed9b2594218229ad2a63"
+    },
+    {
+      "path": "packages/engine/src/match.ts",
+      "sha256": "ba35c9873bfd26b4ec7ee146a0e24979654f27c0939f3ab023cf9316993fd17a"
+    },
+    {
+      "path": "packages/engine/src/match/baselines.json",
+      "sha256": "ae64633d19161db5260a9fec2dd3bfafe877bda0c486963a878ee3fedc18d030"
+    },
+    {
+      "path": "packages/engine/src/match/baselines.ts",
+      "sha256": "40a70eb0dc279b4bf0a6be1b0d09572509e34048cdbc8b91203db16a7863e01f"
+    },
+    {
+      "path": "packages/engine/src/match/bench.ts",
+      "sha256": "7de4520d205854c34670c5d605f6a7a3fed7c3448a424fe9a600d5134aed1fcf"
+    },
+    {
+      "path": "packages/engine/src/match/changes.ts",
+      "sha256": "f001bdc9af05be2abaea07659709009f8d208240d380515ec725c56f344cd0b3"
+    },
+    {
+      "path": "packages/engine/src/match/config.ts",
+      "sha256": "837e625bcb774524abf1155717dfeead6416368836b1c20c743b580b2776c32c"
+    },
+    {
+      "path": "packages/engine/src/match/motion.ts",
+      "sha256": "f9f824ea018a6444cfae6894d2fbeb00600eac5fbdff86e93ce8b4f234f98692"
+    },
+    {
+      "path": "packages/engine/src/match/pitch.ts",
+      "sha256": "bfd26475ddbaa302d02108cd0b5fb7651056b6916421481ea4dae57e44d59c6f"
+    },
+    {
+      "path": "packages/engine/src/match/record.ts",
+      "sha256": "844bcc037331bb370478d4005e153b46588c6b398b0003e6052723b226b7996f"
+    },
+    {
+      "path": "packages/engine/src/match/roster.ts",
+      "sha256": "827f644f3eedb0f41da0f0494cc4f3493d114618f3b58c45648949f4e43b1955"
+    },
+    {
+      "path": "packages/engine/src/match/rules.ts",
+      "sha256": "eab5ff45573bed83f4f5b17e86fe2640b348103319d72cf5f0b9e148e8cffa21"
+    },
+    {
+      "path": "packages/engine/src/match/spots.ts",
+      "sha256": "6eceb170ec90573e87a35c83ac09d1d0b6482d65fa10e3c26e25ef953337c737"
+    },
+    {
+      "path": "packages/engine/src/match/tendencies.ts",
+      "sha256": "402e3331c4bdc02e4f082c7b05d01ce5983f7583985a354b14d7b897db2e7c19"
+    },
+    {
+      "path": "packages/engine/src/material.ts",
+      "sha256": "459fdc47cb9e5457adcc15cd34d24a2355c4cffa04dd569bc4f084576defa0c8"
+    },
+    {
+      "path": "packages/engine/src/mediation.ts",
+      "sha256": "07ac671167adc0d3c721f045b0fe2f8c738f530265db118289fd38ca5a74ffc2"
+    },
+    {
+      "path": "packages/engine/src/morale.ts",
+      "sha256": "52511d0790460236673bfc212ebe9cf3938fd2d91430a8fcb3d8d4b5d390e8b8"
+    },
+    {
+      "path": "packages/engine/src/news.ts",
+      "sha256": "5a524ec3336f09ae818fbc02d96c058ab26680342a13c921c176394b83271b01"
+    },
+    {
+      "path": "packages/engine/src/npc-careers.ts",
+      "sha256": "38829e41e9942e923caea8674d8cfd2457a82ac4433f375a3cb3b6244fcc84d9"
+    },
+    {
+      "path": "packages/engine/src/npc-continuity.ts",
+      "sha256": "ff89d7532e5aabd50d602a59182de527d77b728bc1062a81d3da3a00d8ae1285"
+    },
+    {
+      "path": "packages/engine/src/npc-market.ts",
+      "sha256": "0844f9fa0c6b92cb9d17a6e424f627fef493043ae5e3ec143db7955017ee4085"
+    },
+    {
+      "path": "packages/engine/src/npc-stats.ts",
+      "sha256": "39c99df7e9095e4abb92592ce2d42c9d946052276fbd06f0db3669575d0c4467"
+    },
+    {
+      "path": "packages/engine/src/ops-commercial.ts",
+      "sha256": "890559e8f451c16d08527d4343e66023cce9a4b0090bf9ed0121df3fca081b4a"
+    },
+    {
+      "path": "packages/engine/src/ops-squad.ts",
+      "sha256": "b3a8d4ebfd483465dbdd9a255117259a1a729351ec6cee0ac470b28fb5f6bb2e"
+    },
+    {
+      "path": "packages/engine/src/ops-staff.ts",
+      "sha256": "a915624641c9138048bd2cdbd3a9bea8f3d8fb098d431b6c7aa4a805193f1699"
+    },
+    {
+      "path": "packages/engine/src/owner-config.ts",
+      "sha256": "9c152be44e6932ad198ac2f4cc34be3096ca286a986326751ce50ee7fc7b9bc4"
+    },
+    {
+      "path": "packages/engine/src/owner-traits.ts",
+      "sha256": "ee2e0e43274e6ac2319b533b72a8fbeb065b790e439f3da6d36da297ee53088e"
+    },
+    {
+      "path": "packages/engine/src/owner.ts",
+      "sha256": "2543089f7e07bf994f9da166fef9f2cc5dfd0da692fab974c684e7ea99c942e6"
+    },
+    {
+      "path": "packages/engine/src/persisted-squads.ts",
+      "sha256": "366ad0638feb176b68f002349cc9e84b0a615d32826de1e4db08e3a59a6e46a6"
+    },
+    {
+      "path": "packages/engine/src/person-careers.ts",
+      "sha256": "cd560fe95bdc6a3c9b44a44e4cd0a85fd724ed936aa7792020f7625d7a50c472"
+    },
+    {
+      "path": "packages/engine/src/player-records.ts",
+      "sha256": "700883c2d96af04697d93861d8af407489ddd288ced8a9cc37c9d0238477f0d0"
+    },
+    {
+      "path": "packages/engine/src/player-state.ts",
+      "sha256": "0092aca4c5a2bb5046ca5abaed40dd28ad57c3ace0a3f33f09d97c5725d70d63"
+    },
+    {
+      "path": "packages/engine/src/player.ts",
+      "sha256": "c6abb4f1fe645a59294a93783d17c1f15e1719ec1eca13975ba6005bfc7ca269"
+    },
+    {
+      "path": "packages/engine/src/playing-coach.ts",
+      "sha256": "0d20311ed2e717ad5254fde2c509f23664c0eb45f58ce3e90d329e082445e20c"
+    },
+    {
+      "path": "packages/engine/src/policy.ts",
+      "sha256": "a6fc54bc3b2585b3565d2874932bb0df59f449f3146846863e2bfbd6ac551fad"
+    },
+    {
+      "path": "packages/engine/src/portable-math.ts",
+      "sha256": "39a581301fa91c53b19c1a7ba883493642e3e32bf9271f54ebba483919d97f31"
+    },
+    {
+      "path": "packages/engine/src/preset-data.ts",
+      "sha256": "3a237b10ccaef7c381b71bbe098bddc2497c28c937b8e4302d946d6cfd6d2c38"
+    },
+    {
+      "path": "packages/engine/src/presets.ts",
+      "sha256": "2d33a21fa8dd3951a295f135b05f7f607ef9b6477c8b5632ac3a151e80e0b447"
+    },
+    {
+      "path": "packages/engine/src/primitives.ts",
+      "sha256": "44e94693be6043298c9b73c98873f6ad859bb5573a54e449a1addaaad1f0b0a1"
+    },
+    {
+      "path": "packages/engine/src/projection.ts",
+      "sha256": "ec9764ce26d25e2f2edd26168716697ee65e866710fe63cede993e248fb3ea04"
+    },
+    {
+      "path": "packages/engine/src/promises.ts",
+      "sha256": "6b9187a0598a963dff95eb2b8503a7d2600a7d3502a703407d6570abec001a28"
+    },
+    {
+      "path": "packages/engine/src/quotes.ts",
+      "sha256": "4b220dfdfba838a35ff9c875b9a03ef06d5d4143574574ad986ccd9658b9b2a4"
+    },
+    {
+      "path": "packages/engine/src/ratings.ts",
+      "sha256": "819882533e8a089ca8aa84678d25e3ffd5f2243141b1408bccf7f708644e58a9"
+    },
+    {
+      "path": "packages/engine/src/read-models.ts",
+      "sha256": "70ed1f7c1363dec4a0a9760cf599e1feed405771f9a0b8851b0109cf4386d8a3"
+    },
+    {
+      "path": "packages/engine/src/recent-results.ts",
+      "sha256": "b77fd1b792af5ade24992bbb75a9787fe1c3a3326d4d729cb3f797b747e08060"
+    },
+    {
+      "path": "packages/engine/src/recruitment.ts",
+      "sha256": "e03b7603a65751bbcae36755cfb6f46d677f5e0b0504a27a534705360723a816"
+    },
+    {
+      "path": "packages/engine/src/registration.ts",
+      "sha256": "7fa852ec7e1ca807f8cce376f330ce971cda5039842a10f59a368d63731ecff8"
+    },
+    {
+      "path": "packages/engine/src/replacements.ts",
+      "sha256": "8021623f9f30d47baaf8f84aa8ccb349f377075e40d015012a47fcf5d2246760"
+    },
+    {
+      "path": "packages/engine/src/reputation.ts",
+      "sha256": "0ce3b536be34c95ef1608380359065e87235761a1704bda8094f344d810cf78d"
+    },
+    {
+      "path": "packages/engine/src/responsibilities.ts",
+      "sha256": "827583633d2d5b82c55f10ac9a7a3bd343332680e4d00d7347479b482106d87b"
+    },
+    {
+      "path": "packages/engine/src/results-only.ts",
+      "sha256": "9d164a4d68af19d4a7f01acb048f58dd46d8b1c265b793e5dcedfc17771ce922"
+    },
+    {
+      "path": "packages/engine/src/round-jobs.ts",
+      "sha256": "65fbf9e24211b97479c56fcce086b92f31f2bb3fc847e86d1c52f624025e0615"
+    },
+    {
+      "path": "packages/engine/src/scoring.ts",
+      "sha256": "c2bcccbd57e52c11c89a57319aefffd7eaba8de5b1cde003bf24aab96d0119cf"
+    },
+    {
+      "path": "packages/engine/src/scout-search.ts",
+      "sha256": "724dd5e91cac6659f03d577f1aaa78c062ddb66355fbcb6027527831c2700bf9"
+    },
+    {
+      "path": "packages/engine/src/scout-verdict.ts",
+      "sha256": "4e14a073fe449d4352939e9721d4913f90874bd7b05ac77f404a2ac218941638"
+    },
+    {
+      "path": "packages/engine/src/script/build.ts",
+      "sha256": "9e8e9969d4c14fc07f2ea3fe485e43dbfc4743382677b0111e19ca08869fdc37"
+    },
+    {
+      "path": "packages/engine/src/script/cells.ts",
+      "sha256": "bfc982c442f504537b23c577abc8d5fea728339327f57d167a6b2c21ebd78057"
+    },
+    {
+      "path": "packages/engine/src/script/clock.ts",
+      "sha256": "9c572e13d3f8578100450f391c6bc102bba130a55cf3bbb9a0110092e191f929"
+    },
+    {
+      "path": "packages/engine/src/script/codes.ts",
+      "sha256": "ed02963c213e1734b15faeacbf9778f3bfad1de7ee16ff26fffd3e8dd2ff467c"
+    },
+    {
+      "path": "packages/engine/src/script/config.ts",
+      "sha256": "ebd451fb2808fc36148412d989f1c39169bf8881334c41ed1529667633116531"
+    },
+    {
+      "path": "packages/engine/src/script/count.ts",
+      "sha256": "dd898742a102b52c2c0be09c49e6865c0c0de75f5abec4abcfe10afe871668d2"
+    },
+    {
+      "path": "packages/engine/src/script/detail.ts",
+      "sha256": "f344f936c1a036aeb04dfd46e0ed36928a30a848d9569828fe87c5ba435c48e1"
+    },
+    {
+      "path": "packages/engine/src/script/expand.ts",
+      "sha256": "87f7032abf6330c7051d97a46df8cc0868bf74824a88cf97ec37dd1cdb532ff8"
+    },
+    {
+      "path": "packages/engine/src/script/failure.ts",
+      "sha256": "c8c93f85c9803e0d4971358dd94d189feddb1ce71fbed88f250d0f7517afa564"
+    },
+    {
+      "path": "packages/engine/src/script/incidents.ts",
+      "sha256": "e73a93693085c1dbdd3e35480d880ae7167e216901f1e110848c3b3e9c6dace1"
+    },
+    {
+      "path": "packages/engine/src/script/material.ts",
+      "sha256": "0cd5a33d2338dbdcadbbf249df7737ce4d24a2a078debd95ba27eb88ab051fd5"
+    },
+    {
+      "path": "packages/engine/src/script/playback.ts",
+      "sha256": "057fdd368fd22cc40c5b23b8e4fc1d656c7bb47f436757b7f6e9676f02a47cc1"
+    },
+    {
+      "path": "packages/engine/src/script/recount.ts",
+      "sha256": "1df3236abc85efb7245f56b49ec6cfb24ecec87d60ec37e787abab9a1ad2455f"
+    },
+    {
+      "path": "packages/engine/src/script/restarts.ts",
+      "sha256": "fd9f0cc7ba53baf6c0cdaa5987ba57f05a4fb72c42d0a21b874fe25cbe8c43ba"
+    },
+    {
+      "path": "packages/engine/src/script/search.ts",
+      "sha256": "23ad1663a8d054b5ed8fe4c925ecf46f68dc42b4e721076084585573dedf171c"
+    },
+    {
+      "path": "packages/engine/src/script/touches.ts",
+      "sha256": "56899b5e53aad25c0ae724ec3804689ef287f3213ea3cd60ffde3861d82cef69"
+    },
+    {
+      "path": "packages/engine/src/script/types.ts",
+      "sha256": "ab7d616fe041aebb2383e6d930d2361acba510f106cade8e5caa3e13a585e174"
+    },
+    {
+      "path": "packages/engine/src/script/validate-incidents.ts",
+      "sha256": "529fc0ac0277f386049bc5dbce8ef44cc969044997fd64865425f2438b414ba6"
+    },
+    {
+      "path": "packages/engine/src/script/validate.ts",
+      "sha256": "9abd290dd4d11bca22a7db03c404348789a10184c61316f16dc27d97a6a109a7"
+    },
+    {
+      "path": "packages/engine/src/script/windows.ts",
+      "sha256": "4a3601ac79cae01741b3f7adbd065ac2403cf06df84ef4d46a95ac92ec264163"
+    },
+    {
+      "path": "packages/engine/src/script/write.ts",
+      "sha256": "c9eeddebb585ddad6b063b0ec0015f89851314dded26ea4d98bfe480d96bf309"
+    },
+    {
+      "path": "packages/engine/src/season-index.ts",
+      "sha256": "d29999df6e62786b7fe323820c6a9215bcda0c6ef596b27170269517f2c822d6"
+    },
+    {
+      "path": "packages/engine/src/season-years.ts",
+      "sha256": "9476c87d206548453acf9b45fd380a15e2a400f4893fc91f98a83795c474f903"
+    },
+    {
+      "path": "packages/engine/src/season.ts",
+      "sha256": "babe36c6cca279264772995b06f739c5d562c5dd21624b37dd802c51714e1ffe"
+    },
+    {
+      "path": "packages/engine/src/settlement.ts",
+      "sha256": "3fd7293b5adb8b924517302ba05b031421b89e1b9f1d5f9863fc6b03b42c09ad"
+    },
+    {
+      "path": "packages/engine/src/signings.ts",
+      "sha256": "ef8ae433bc866092a36d4d4d943d8755c65a6ba7c91053193d40a6a917ab2516"
+    },
+    {
+      "path": "packages/engine/src/sponsors.ts",
+      "sha256": "b4b0fe9141d849d8ba4fa0c5e613ca620c0414fc334c1079a94d0dd5393da517"
+    },
+    {
+      "path": "packages/engine/src/squad-size.ts",
+      "sha256": "ee45d96f98c841d34be5bc53a7296f4b38d8ed6528d38abc68cc5d490dd2e3bf"
+    },
+    {
+      "path": "packages/engine/src/squad-target.ts",
+      "sha256": "01acc3eec34103299d95c52218f3f0f4cda76279248ae4dc6663823223beeff4"
+    },
+    {
+      "path": "packages/engine/src/staff-info.ts",
+      "sha256": "2c2b0d01f11544ce3353d8d230d918e04e6408ab68719c272b683c52bbb292ba"
+    },
+    {
+      "path": "packages/engine/src/staff.ts",
+      "sha256": "14adb01d6c0ecdccf0b0cde0d4fb6e800581a28b4cf3a683b6edda24b57bad41"
+    },
+    {
+      "path": "packages/engine/src/staging/config.ts",
+      "sha256": "5d7c08ac2a7484e4a4886e81b9be302a172a51719d10863c251ccc2737f30f89"
+    },
+    {
+      "path": "packages/engine/src/staging/shape.ts",
+      "sha256": "0decd613ff469ec7b39125e0ef5e296fc63f64ea74ec2aaea0a154fd11bc5072"
+    },
+    {
+      "path": "packages/engine/src/staging/tendency.ts",
+      "sha256": "dd60b43774ac08c0b600c468318f5193f0d45bd5494bf7b5eb7c7b7159a1ef2c"
+    },
+    {
+      "path": "packages/engine/src/staging/vec.ts",
+      "sha256": "c38398a3383cfc16b01ca53845b3f7143bf8784185b4e77e85286f647ae5e652"
+    },
+    {
+      "path": "packages/engine/src/stopping.ts",
+      "sha256": "2e5bc806d41a734eefee917aa37b54f28dfc3b8d21f0005c4ff9ce210657015c"
+    },
+    {
+      "path": "packages/engine/src/strategy.ts",
+      "sha256": "e89b763359e0b9773a62813a9c0dd50d4b6688c7ae5d9fb9c5ff9a7833e9eaee"
+    },
+    {
+      "path": "packages/engine/src/styles.ts",
+      "sha256": "7a7bc00654dbaa08599cac5b04c705a22316cba64f2df5da147146e00f54f8fc"
+    },
+    {
+      "path": "packages/engine/src/synergy.ts",
+      "sha256": "e008a9434fac0be0021676e6c9b58b72e3c34b27029217408130c80e7643861b"
+    },
+    {
+      "path": "packages/engine/src/tactics.ts",
+      "sha256": "cec16715e571b0bcc95427f028c78a0df4afc3150d1b7de9224e0eba9a8bab71"
+    },
+    {
+      "path": "packages/engine/src/tier-levels.ts",
+      "sha256": "3d1a8d7d3580f28298b255093780ce2d5c050b84b0af23bf04497780e6fb943c"
+    },
+    {
+      "path": "packages/engine/src/training.ts",
+      "sha256": "6fa83551f3758bc16cb21ee5bdce0ba5bcdde69c0faeaf2052c41dbf75f18037"
+    },
+    {
+      "path": "packages/engine/src/transactions.ts",
+      "sha256": "05d3e8418b0e35a6307cd22ddc7fee1eaf5480bec5424541c8d860365a492cc1"
+    },
+    {
+      "path": "packages/engine/src/transfer-policy.ts",
+      "sha256": "e44c015a72de1b9d6eca9296218fcd2adf4a50a891624ca36a14f3d9ea9ec0d7"
+    },
+    {
+      "path": "packages/engine/src/transfer-records.ts",
+      "sha256": "4242542b43f1869c021ec8dfb2a4206f99cd98f209c7d3ea4841ee729e99c589"
+    },
+    {
+      "path": "packages/engine/src/transfer-window.ts",
+      "sha256": "e39585d1b9309b407825d9d60f1432c200d9236e91ecba5780418fb45515d3e7"
+    },
+    {
+      "path": "packages/engine/src/transfers.ts",
+      "sha256": "83673221535bc535372a25868341ab1d6b7b161a8c87a7d1c07d1007c21f7fd5"
+    },
+    {
+      "path": "packages/engine/src/wartime.ts",
+      "sha256": "d84865ba492c7a9512b1cc7a4e95c068ee4e2d3c403d54609a246eda3dcc4de7"
+    },
+    {
+      "path": "packages/engine/src/world-market.ts",
+      "sha256": "fb2543836ff038a29522508f76e96ed2d03ffe21e20d6b970496b61d7a61d06e"
+    },
+    {
+      "path": "packages/engine/src/world.ts",
+      "sha256": "59405eea5be354f8e327e678f988a7ae469d2a33121ca050fa1fb3aeef9cca2f"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "e5e5c1676d95a4baa2ea93fb1528dcc2f38da273ed55967c55b89eb9dc4a9c33"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "sha256": "c9f686d025b8739da79b0263e777a58b46a29a0787dee4ff61ece4cc242aa26b"
+    },
+    {
+      "path": "scripts/lib/measurement-identity.ts",
+      "sha256": "7f52562816620b85520aeffef57adfc8fea47e9dfb639c30ce16df7abd0deb62"
+    },
+    {
+      "path": "scripts/lib/persisted-world-facts.ts",
+      "sha256": "5b9685c9fd58c21fccccbf803a45c5e6569f4918aec14900e62a1b26c9498533"
+    },
+    {
+      "path": "scripts/lib/source-graph.ts",
+      "sha256": "f5f87e9f37ec8387acf8f1610aa17935bd2ec1ced423d4573086461d7a7786b9"
+    },
+    {
+      "path": "scripts/lib/transfer-reference.ts",
+      "sha256": "89d48e2592b12f6e57513f2eed95e8450f2498fd661fe3cfd79580dbf1fc3b73"
+    },
+    {
+      "path": "scripts/persisted-world-read.ts",
+      "sha256": "10df7fb13a491704d94056d152fab5e8627cde0bd4ba166b2ebf3ded6a25c2ff"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "d0a72e3ac66c8417289b20e187c17a9f2baacce7ebd935a527b8fb0445db888d"
+    }
+  ]
+}

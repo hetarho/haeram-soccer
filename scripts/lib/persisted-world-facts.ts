@@ -1,4 +1,43 @@
+import type { ClubSeasonBook } from '../../packages/contracts/src/owner';
+
 /** Pure summaries for the calibration probe; no simulation or presentation dependencies. */
+export function fundingFacts(
+  book: ClubSeasonBook,
+  opening?: { cash: string; debt: string; allowance: string },
+) {
+  const components = book.incomeComponents;
+  const known =
+    components !== undefined &&
+    book.ownerCapital !== undefined &&
+    book.transfersPaid !== undefined &&
+    book.transfersReceived !== undefined &&
+    opening !== undefined;
+  if (!known) return { status: 'unknown' as const };
+  const income = BigInt(book.income),
+    capital = BigInt(book.ownerCapital!);
+  const componentSum = Object.values(components!).reduce((n, value) => n + BigInt(value), 0n);
+  const result =
+    income +
+    BigInt(book.transfersReceived!) -
+    BigInt(book.wages) -
+    BigInt(book.costs) -
+    BigInt(book.transfersPaid!);
+  const beforeSupport = BigInt(opening!.cash) - BigInt(opening!.debt) + result;
+  const shortfall = beforeSupport < 0n ? -beforeSupport : 0n;
+  const allowance = BigInt(opening!.allowance);
+  const expectedCapital = shortfall < allowance ? shortfall : allowance;
+  return {
+    status: 'known' as const,
+    incomeComponentsReconcile: componentSum === income,
+    resultReconciles: result === BigInt(book.result),
+    capitalReconciles: capital === expectedCapital,
+    expectedCapital: String(expectedCapital),
+    allowance: String(allowance),
+    exhausted: shortfall > 0n && capital === allowance,
+    unsupportedShortfall: String(shortfall > capital ? shortfall - capital : 0n),
+    balanceBeforeBounds: String(beforeSupport + capital),
+  };
+}
 export function distribution(xs: number[]) {
   const sorted = xs.toSorted((a, b) => a - b);
   return {

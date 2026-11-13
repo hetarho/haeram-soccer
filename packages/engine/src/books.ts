@@ -295,6 +295,13 @@ function backingAllowance(
   return backingFromIncome(w, club, forecastIncome(w, club, books, year, season));
 }
 
+/** Read this season's finite allowance without changing the book. */
+export function npcBackingAllowance(w: World, club: Club): bigint | undefined {
+  return keepsBooks(w, club) && club.books
+    ? backingAllowance(w, club, club.books, w.year)
+    : undefined;
+}
+
 /** Observation only, for the lived-world wage invariant; never a gameplay setting. */
 export const NPC_WAGE_DECISIONS: {
   observe?: (club: Club, bill: bigint, limit: bigint | undefined, allowed: boolean) => void;
@@ -308,6 +315,7 @@ export function npcCanPay(
   replacing?: string,
   year = w.year,
   facts?: { limit: bigint | undefined; bill: bigint },
+  fee = '0',
 ) {
   const limit = facts ? facts.limit : npcWageLimit(w, club, year);
   const bill =
@@ -318,7 +326,7 @@ export function npcCanPay(
           0n,
         );
   const proposed = bill + BigInt(wage);
-  const allowed = limit === undefined || proposed <= limit;
+  const allowed = limit === undefined || proposed + BigInt(fee) <= limit;
   NPC_WAGE_DECISIONS.observe?.(club, proposed, limit, allowed);
   return allowed;
 }
