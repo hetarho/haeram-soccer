@@ -14,6 +14,7 @@
 - 261113 decided T866: 전력·용량 잔차 후속 보정 선택 → 제품 계수는 동결하고 같은 시드에서 낮은 유소년 잠재력·인원 및 느린 시설 투자의 시안 하나만 추가 측정한다. 대안은 기본값 유지 또는 알고리즘 수리였으며, 실제 초기 전력 초과와 선수단 496226바이트 초과를 근거로 승인된 계수만 시험한다. 통과나 제품 반영을 주장하지 않는다.
 - 261113 suggest T866 LEAGUE-10 WORLD-15: Four completed persisted-world seeds miss every one of 588 observed division/decade/seed cells from1950 (±5); 2010 across-seed division deltas range +7.94 to +25.28. Named-config alternatives only have partial failing evidence. Review founding potential versus age and the growth/facility balance before changing WORLD-6 or its gate; preserve flat founding and current controls until an adequately measured replacement exists.
 - 261113 suggest T866 LEAGUE-10: Four completed seeds have32/32 country/champion windows outside the1980–2009 target: different champions are10–17 depending on country/seed versus4–9, with most titles3–9 versus7–17. Review structural squad/stature persistence alongside the division inflation, rather than inserting scripted winners. Fifth-core attempt is separate and not yet complete.
+- 261113 suggest T866 WORLD-6: Four completed seeds show2010 per-division mean XI spans14.32–48.99 against the estimate8–12. Review persisted squad age/ability classes and youth entry together with league levels. Outfield annual peak cohorts are observed; goalkeeper/all-player populations are only measured by the newer fifth observer, so no complete all-player five-seed gate is claimed.
 
 ## unlanded
 | id | tag | branch | commit | at |
