@@ -11,6 +11,7 @@ import { simulateSeason } from '../packages/engine/src/season';
 import { OWNER_BUSINESS } from '../packages/engine/src/owner-config';
 import { canonical } from '../packages/contracts/src/index';
 import { packPlayerRecords } from '../apps/web/src/adapters/playerRecordPacking';
+import { packSquads } from '../apps/web/src/adapters/squadPacking';
 import { MessageChannel } from 'node:worker_threads';
 import { execFileSync } from 'node:child_process';
 import { arch, cpus, loadavg, platform, release } from 'node:os';
@@ -23,6 +24,8 @@ import { encode } from '../apps/web/src/adapters/persistence';
 import { encodePayload, payloadBytes } from '../apps/web/src/adapters/compression';
 import { ACTIVE, type Envelope } from '../apps/web/src/adapters/repository';
 import { message } from '../packages/contracts/src/messages';
+import { writeFileSync } from 'node:fs';
+import { measurementIdentity } from './lib/measurement-identity';
 
 export const PERSISTED_BUDGET = { squads: 500_000, records: 450_000 } as const;
 
@@ -56,17 +59,19 @@ async function sample(world: World) {
     port2.close();
   }
 }
+async function compressedStream(value: unknown) {
+  const raw = new TextEncoder().encode(canonical(value));
+  const encoded = await encodePayload(raw);
+  return {
+    codec: encoded.codec,
+    payloadBytes: payloadBytes(encoded.codec, encoded.payload).length,
+  };
+}
 /** Standalone record streams and whole-checkpoint increments are both reported: compression is not additive. */
 async function measureRecords(world: World, seasons: number, addedBytes: number) {
   const records = world.playerRecords ?? {};
-  const compressed = async (part: NonNullable<World['playerRecords']>) => {
-    const raw = new TextEncoder().encode(canonical(packPlayerRecords(part)));
-    const encoded = await encodePayload(raw);
-    return {
-      codec: encoded.codec,
-      payloadBytes: payloadBytes(encoded.codec, encoded.payload).length,
-    };
-  };
+  const compressed = (part: NonNullable<World['playerRecords']>) =>
+    compressedStream(packPlayerRecords(part));
   const pick = (
     part: 'moves' | 'lines' | 'profiles' | 'links',
   ): NonNullable<World['playerRecords']> => {
@@ -145,31 +150,48 @@ async function main() {
   }
   const addedBytes = rows[0]!.after.payloadBytes - rows[0]!.before.payloadBytes;
   const recordSizes = recordsMode ? await measureRecords(world, seasons, addedBytes) : undefined;
-  console.log(
-    JSON.stringify({
-      source: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
-      machine: {
-        platform: platform(),
-        arch: arch(),
-        release: release(),
-        cpu: cpus()[0]?.model,
-        load: loadavg(),
-        node: process.version,
-      },
-      seed: world.seed,
-      seasons,
-      year: world.year,
-      playerCount,
-      ...(recordSizes ? { records: recordSizes } : {}),
-      budget: recordsMode ? PERSISTED_BUDGET.records : PERSISTED_BUDGET.squads,
-      addedBytes,
-      bytesPerPlayer: playerCount ? addedBytes / playerCount : null,
-      gap: Math.max(
-        0,
-        addedBytes - (recordsMode ? PERSISTED_BUDGET.records : PERSISTED_BUDGET.squads),
-      ),
-      rows,
-    }),
-  );
+  const squadSizes = recordsMode
+    ? undefined
+    : await compressedStream(packSquads(world.squads ?? {}));
+  const result = {
+    measuredAt: new Date().toISOString(),
+    computation: measurementIdentity('scripts/persisted-size.ts'),
+    source: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+    machine: {
+      platform: platform(),
+      arch: arch(),
+      release: release(),
+      cpu: cpus()[0]?.model,
+      load: loadavg(),
+      node: process.version,
+    },
+    seed: world.seed,
+    seasons,
+    year: world.year,
+    playerCount,
+    ...(recordSizes ? { records: recordSizes } : {}),
+    ...(squadSizes
+      ? {
+          squads: {
+            full: squadSizes,
+            incrementBytes: addedBytes,
+            budget: PERSISTED_BUDGET.squads,
+            standaloneGap: Math.max(0, squadSizes.payloadBytes - PERSISTED_BUDGET.squads),
+          },
+        }
+      : {}),
+    budget: recordsMode ? PERSISTED_BUDGET.records : PERSISTED_BUDGET.squads,
+    addedBytes,
+    bytesPerPlayer: playerCount ? addedBytes / playerCount : null,
+    gap: Math.max(
+      0,
+      addedBytes - (recordsMode ? PERSISTED_BUDGET.records : PERSISTED_BUDGET.squads),
+    ),
+    rows,
+  };
+  const output = JSON.stringify(result, null, 2) + '\n';
+  const out = arg('--out', '');
+  if (out) writeFileSync(out, output);
+  console.log(output);
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

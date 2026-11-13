@@ -45,6 +45,7 @@ const RUN_MS = 5;
 const TICK_HZ = 100;
 const seed = arg('seed', 'generation-reference');
 const out = arg('out', 'artifacts/benchmarks/T667-generation.json');
+const listingTimeoutMs = Number(arg('listing-timeout-ms', '1800000'));
 const port = Number(process.env.GENERATION_BENCH_PORT || 4291);
 const origin = `http://127.0.0.1:${port}`;
 /** ARCH-28's budgets and the checkpoint limits a takeover's first save must meet (→SAVE-4). */
@@ -290,173 +291,189 @@ async function run(
   // The process slowdown starts once the page's renderer has loaded (its cold load is not slowed).
   const slowed = (await renderers(browserCdp)).map((item) => item.pid);
   const resume = mode === 'process-x4' ? slowDown(slowed) : async () => {};
-  console.log(`${decade} ${mode}: loaded in ${coldLoadMs} ms; renderers ${slowed.join(', ')}`);
-  await flow
-    .getByTestId('start-tiers')
-    .getByRole('button', { name: OWNER_TIERS.oil.label })
-    .click();
-  await flow.getByRole('button', { name: '다음 →', exact: true }).click();
-  await expect(flow.getByTestId('start-traits')).toBeVisible();
-  await flow.getByRole('button', { name: '다음 →', exact: true }).click();
-  await flow
-    .getByTestId('start-decades')
-    .getByRole('button', { name: `${decade}년대` })
-    .click();
-  await flow.getByText('고급 설정', { exact: true }).click();
-  await flow.getByLabel('세계 생성 시드').fill(seed);
-  const button = flow.getByRole('button', { name: '세계 생성 →', exact: true });
-  await expect(button).toBeEnabled();
+  let stopSampling = async () => {};
+  try {
+    console.log(`${decade} ${mode}: loaded in ${coldLoadMs} ms; renderers ${slowed.join(', ')}`);
+    await flow
+      .getByTestId('start-tiers')
+      .getByRole('button', { name: OWNER_TIERS.oil.label })
+      .click();
+    await flow.getByRole('button', { name: '다음 →', exact: true }).click();
+    await expect(flow.getByTestId('start-traits')).toBeVisible();
+    await flow.getByRole('button', { name: '다음 →', exact: true }).click();
+    await flow
+      .getByTestId('start-decades')
+      .getByRole('button', { name: `${decade}년대` })
+      .click();
+    await flow.getByText('고급 설정', { exact: true }).click();
+    await flow.getByLabel('세계 생성 시드').fill(seed);
+    const button = flow.getByRole('button', { name: '세계 생성 →', exact: true });
+    await expect(button).toBeEnabled();
 
-  // Samples memory and heaps once a second while the world is generated.
-  const samples: {
-    atMs: number;
-    renderers: { pid: number; rssKiB?: number; peakKiB?: number; cpuMs?: number }[];
-    workerHeaps: { url: string; usedBytes?: number; error?: string }[];
-    pageHeapBytes?: number;
-  }[] = [];
-  let sampling = true;
-  const cpuAt = async () =>
-    (await renderers(browserCdp)).reduce((sum, item) => sum + (item.cpuMs ?? 0), 0);
-  const cpuBefore = await cpuAt();
-  const clicked = performance.now();
-  const sampler = (async () => {
-    while (sampling) {
-      const processes = await renderers(browserCdp);
-      const workerHeaps = await Promise.all(
-        [...workers.workers].map(([sessionId, worker]) =>
-          workers.send<{ usedSize: number }>(sessionId, 'Runtime.getHeapUsage', {}, 2000).then(
-            (heap) => ({ url: worker.url, usedBytes: heap.usedSize }),
-            (error: Error) => ({ url: worker.url, error: error.message }),
+    // Samples memory and heaps once a second while the world is generated.
+    const samples: {
+      atMs: number;
+      renderers: { pid: number; rssKiB?: number; peakKiB?: number; cpuMs?: number }[];
+      workerHeaps: { url: string; usedBytes?: number; error?: string }[];
+      pageHeapBytes?: number;
+    }[] = [];
+    let sampling = true;
+    const cpuAt = async () =>
+      (await renderers(browserCdp)).reduce((sum, item) => sum + (item.cpuMs ?? 0), 0);
+    const cpuBefore = await cpuAt();
+    const clicked = performance.now();
+    const sampler = (async () => {
+      while (sampling) {
+        const processes = await renderers(browserCdp);
+        const workerHeaps = await Promise.all(
+          [...workers.workers].map(([sessionId, worker]) =>
+            workers.send<{ usedSize: number }>(sessionId, 'Runtime.getHeapUsage', {}, 2000).then(
+              (heap) => ({ url: worker.url, usedBytes: heap.usedSize }),
+              (error: Error) => ({ url: worker.url, error: error.message }),
+            ),
           ),
-        ),
-      );
-      const pageHeap = (await cdp.send('Runtime.getHeapUsage').catch(() => undefined)) as
-        { usedSize: number } | undefined;
-      samples.push({
-        atMs: Math.round(performance.now() - clicked),
-        renderers: processes,
-        workerHeaps,
-        pageHeapBytes: pageHeap?.usedSize,
-      });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+        );
+        const pageHeap = (await cdp.send('Runtime.getHeapUsage').catch(() => undefined)) as
+          { usedSize: number } | undefined;
+        samples.push({
+          atMs: Math.round(performance.now() - clicked),
+          renderers: processes,
+          workerHeaps,
+          pageHeapBytes: pageHeap?.usedSize,
+        });
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    })();
+    stopSampling = async () => {
+      sampling = false;
+      await sampler;
+    };
+    await button.click();
+    const listing = flow.getByTestId('club-listing');
+    await expect(listing).toBeVisible({ timeout: listingTimeoutMs });
+    const generationMs = Math.round(performance.now() - clicked);
+    const generationCpuMs = Math.round((await cpuAt()) - cpuBefore);
+    const loadAtListing = load();
+    console.log(`${decade} ${mode}: club list after ${generationMs} ms, load ${loadAtListing[0]}`);
+    const pageMarks = (await page.evaluate('window.generationMarks')) as {
+      kind: string;
+      at: number;
+      season?: number;
+      digest?: boolean;
+      feat?: string;
+    }[];
+
+    // Takes the first club the fortune pays for over and reads its first checkpoint back.
+    const row = listing.locator('button[data-affordable="true"]').first();
+    const club = (await row.locator('b').first().textContent())!.trim();
+    await row.click();
+    const sheet = page.getByRole('dialog', { name: club, exact: true });
+    await expect(sheet.getByTestId('club-sheet')).toBeVisible({ timeout: 120000 });
+    await sheet.getByRole('button', { name: '인수 검토 →', exact: true }).click();
+    const confirm = page.getByRole('dialog', { name: `${club} 인수`, exact: true });
+    await expect(confirm.getByTestId('takeover-confirm')).toBeVisible({ timeout: 120000 });
+    const takeoverStart = performance.now();
+    await confirm.getByRole('button', { name: '인수 확정', exact: true }).click();
+    await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 600000 });
+    const hubMs = Math.round(performance.now() - takeoverStart);
+    console.log(`${decade} ${mode}: club hub ${hubMs} ms after the takeover`);
+    await expect(page.getByTestId('save-status')).toContainText('저장 완료', { timeout: 600000 });
+    const savedMs = Math.round(performance.now() - takeoverStart);
+    sampling = false;
+    await sampler;
+    const checkpoint = (await page.evaluate(ACTIVE_CHECKPOINT)) as {
+      conservativeUtf16Bytes: number;
+    };
+    const worker = [...workers.workers.values()].map(({ url, throttle }) => ({ url, throttle }));
+
+    const request = pageMarks.find((mark) => mark.kind === 'generate');
+    const listed = pageMarks.find((mark) => mark.kind === 'listed');
+    const seasons = pageMarks
+      .filter((mark) => mark.kind === 'season')
+      .map((mark) => ({ season: mark.season!, atMs: Math.round(mark.at - (request?.at ?? 0)) }));
+    const peakRendererKiB = Math.max(
+      0,
+      ...samples.flatMap((sample) => sample.renderers.map((item) => item.peakKiB ?? 0)),
+    );
+    const peakWorkerHeapBytes = Math.max(
+      0,
+      ...samples.flatMap((sample) => sample.workerHeaps.map((heap) => heap.usedBytes ?? 0)),
+    );
+    const peakPageHeapBytes = Math.max(0, ...samples.map((sample) => sample.pageHeapBytes ?? 0));
+    const workerGenerationMs = request && listed ? Math.round(listed.at - request.at) : null;
+    const perSeason = (ms: number | null) =>
+      ms !== null && seasons.length ? Math.round(ms / seasons.length) : null;
+    const result = {
+      decade,
+      mode,
+      seed,
+      club,
+      /** os.loadavg() as the run began and as the club list opened (a shared host, →T679). */
+      loadAverage: { start: loadAtStart, listing: loadAtListing },
+      coldLoadMs,
+      slowedRenderers: mode === 'process-x4' ? slowed : [],
+      generationMs,
+      generationRendererCpuMs: generationCpuMs,
+      budgetMs: BUDGET_MS[decade] ?? null,
+      withinBudget: BUDGET_MS[decade] === undefined ? null : generationMs <= BUDGET_MS[decade]!,
+      workerGenerationMs,
+      /** Click to club list, and the worker's request to its listing, per season played. */
+      perSeasonMs: perSeason(generationMs),
+      canonicalSeasonBudgetMs: 5000,
+      withinCanonicalSeasonBudget: seasons.length
+        ? generationMs / seasons.length <= 5000
+        : generationMs <= 5000,
+      perSeasonWorkerMs: perSeason(workerGenerationMs),
+      seasonsReported: seasons.length,
+      /** Progress replies carrying the history view's digest (→WEB-115) and the cards it showed. */
+      seasonsWithDigest: pageMarks.filter((mark) => mark.kind === 'season' && mark.digest).length,
+      cards: pageMarks
+        .filter((mark) => mark.kind === 'card')
+        .map((mark) => ({ feat: mark.feat, atMs: Math.round(mark.at - (request?.at ?? 0)) })),
+      /**
+       * Click to club list beyond the worker's span: the click's dispatch, the list's wait behind a
+       * card still open or waiting after the last season (→WEB-115) and its render.
+       */
+      beyondWorkerMs: workerGenerationMs !== null ? generationMs - workerGenerationMs : null,
+      decadeMarks: seasons.filter((item) => item.season % 10 === 0),
+      lastSeasonGapMs: seasons.length
+        ? Math.round((listed?.at ?? 0) - (request?.at ?? 0)) - seasons.at(-1)!.atMs
+        : null,
+      takeover: { hubMs, savedMs },
+      memory: {
+        peakRendererRssMiB: Math.round((peakRendererKiB / 1024) * 10) / 10,
+        peakWorkerHeapMiB: Math.round((peakWorkerHeapBytes / MiB) * 10) / 10,
+        peakPageHeapMiB: Math.round((peakPageHeapBytes / MiB) * 10) / 10,
+        samples: samples.length,
+        workerHeapSamples: samples.filter((sample) => sample.workerHeaps.some((h) => h.usedBytes))
+          .length,
+        /** [ms since the click, largest renderer RSS MiB, largest worker heap MiB] once a second. */
+        timeline: samples.map((sample) => [
+          sample.atMs,
+          Math.round(Math.max(0, ...sample.renderers.map((item) => item.rssKiB ?? 0)) / 1024),
+          Math.round(Math.max(0, ...sample.workerHeaps.map((heap) => heap.usedBytes ?? 0)) / MiB),
+        ]),
+      },
+      checkpoint,
+      workers: worker,
+      errors,
+    };
+    console.log(
+      `${decade} ${mode}: generation ${(generationMs / 1000).toFixed(1)} s` +
+        ` (worker ${((result.workerGenerationMs ?? 0) / 1000).toFixed(1)} s, renderer CPU ${(generationCpuMs / 1000).toFixed(1)} s, ${seasons.length} seasons),` +
+        ` renderer peak ${result.memory.peakRendererRssMiB} MiB, worker heap ${result.memory.peakWorkerHeapMiB} MiB,` +
+        ` checkpoint ${checkpoint.conservativeUtf16Bytes} B UTF-16,` +
+        ` takeover saved ${(savedMs / 1000).toFixed(1)} s; workers ${worker.map((item) => item.throttle).join(', ')}`,
+    );
+    return result;
+  } finally {
+    await resume();
+    try {
+      await stopSampling();
+    } finally {
+      await context.close();
     }
-  })();
-  await button.click();
-  const listing = flow.getByTestId('club-listing');
-  await expect(listing).toBeVisible({ timeout: 1800000 });
-  const generationMs = Math.round(performance.now() - clicked);
-  const generationCpuMs = Math.round((await cpuAt()) - cpuBefore);
-  const loadAtListing = load();
-  console.log(`${decade} ${mode}: club list after ${generationMs} ms, load ${loadAtListing[0]}`);
-  const pageMarks = (await page.evaluate('window.generationMarks')) as {
-    kind: string;
-    at: number;
-    season?: number;
-    digest?: boolean;
-    feat?: string;
-  }[];
-
-  // Takes the first club the fortune pays for over and reads its first checkpoint back.
-  const row = listing.locator('button[data-affordable="true"]').first();
-  const club = (await row.locator('b').first().textContent())!.trim();
-  await row.click();
-  const sheet = page.getByRole('dialog', { name: club, exact: true });
-  await expect(sheet.getByTestId('club-sheet')).toBeVisible({ timeout: 120000 });
-  await sheet.getByRole('button', { name: '인수 검토 →', exact: true }).click();
-  const confirm = page.getByRole('dialog', { name: `${club} 인수`, exact: true });
-  await expect(confirm.getByTestId('takeover-confirm')).toBeVisible({ timeout: 120000 });
-  const takeoverStart = performance.now();
-  await confirm.getByRole('button', { name: '인수 확정', exact: true }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 600000 });
-  const hubMs = Math.round(performance.now() - takeoverStart);
-  console.log(`${decade} ${mode}: club hub ${hubMs} ms after the takeover`);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료', { timeout: 600000 });
-  const savedMs = Math.round(performance.now() - takeoverStart);
-  sampling = false;
-  await sampler;
-  await resume();
-  const checkpoint = (await page.evaluate(ACTIVE_CHECKPOINT)) as {
-    conservativeUtf16Bytes: number;
-  };
-  const worker = [...workers.workers.values()].map(({ url, throttle }) => ({ url, throttle }));
-  await context.close();
-
-  const request = pageMarks.find((mark) => mark.kind === 'generate');
-  const listed = pageMarks.find((mark) => mark.kind === 'listed');
-  const seasons = pageMarks
-    .filter((mark) => mark.kind === 'season')
-    .map((mark) => ({ season: mark.season!, atMs: Math.round(mark.at - (request?.at ?? 0)) }));
-  const peakRendererKiB = Math.max(
-    0,
-    ...samples.flatMap((sample) => sample.renderers.map((item) => item.peakKiB ?? 0)),
-  );
-  const peakWorkerHeapBytes = Math.max(
-    0,
-    ...samples.flatMap((sample) => sample.workerHeaps.map((heap) => heap.usedBytes ?? 0)),
-  );
-  const peakPageHeapBytes = Math.max(0, ...samples.map((sample) => sample.pageHeapBytes ?? 0));
-  const workerGenerationMs = request && listed ? Math.round(listed.at - request.at) : null;
-  const perSeason = (ms: number | null) =>
-    ms !== null && seasons.length ? Math.round(ms / seasons.length) : null;
-  const result = {
-    decade,
-    mode,
-    seed,
-    club,
-    /** os.loadavg() as the run began and as the club list opened (a shared host, →T679). */
-    loadAverage: { start: loadAtStart, listing: loadAtListing },
-    coldLoadMs,
-    slowedRenderers: mode === 'process-x4' ? slowed : [],
-    generationMs,
-    generationRendererCpuMs: generationCpuMs,
-    budgetMs: BUDGET_MS[decade] ?? null,
-    withinBudget: BUDGET_MS[decade] === undefined ? null : generationMs <= BUDGET_MS[decade]!,
-    workerGenerationMs,
-    /** Click to club list, and the worker's request to its listing, per season played. */
-    perSeasonMs: perSeason(generationMs),
-    perSeasonWorkerMs: perSeason(workerGenerationMs),
-    seasonsReported: seasons.length,
-    /** Progress replies carrying the history view's digest (→WEB-115) and the cards it showed. */
-    seasonsWithDigest: pageMarks.filter((mark) => mark.kind === 'season' && mark.digest).length,
-    cards: pageMarks
-      .filter((mark) => mark.kind === 'card')
-      .map((mark) => ({ feat: mark.feat, atMs: Math.round(mark.at - (request?.at ?? 0)) })),
-    /**
-     * Click to club list beyond the worker's span: the click's dispatch, the list's wait behind a
-     * card still open or waiting after the last season (→WEB-115) and its render.
-     */
-    beyondWorkerMs: workerGenerationMs !== null ? generationMs - workerGenerationMs : null,
-    decadeMarks: seasons.filter((item) => item.season % 10 === 0),
-    lastSeasonGapMs: seasons.length
-      ? Math.round((listed?.at ?? 0) - (request?.at ?? 0)) - seasons.at(-1)!.atMs
-      : null,
-    takeover: { hubMs, savedMs },
-    memory: {
-      peakRendererRssMiB: Math.round((peakRendererKiB / 1024) * 10) / 10,
-      peakWorkerHeapMiB: Math.round((peakWorkerHeapBytes / MiB) * 10) / 10,
-      peakPageHeapMiB: Math.round((peakPageHeapBytes / MiB) * 10) / 10,
-      samples: samples.length,
-      workerHeapSamples: samples.filter((sample) => sample.workerHeaps.some((h) => h.usedBytes))
-        .length,
-      /** [ms since the click, largest renderer RSS MiB, largest worker heap MiB] once a second. */
-      timeline: samples.map((sample) => [
-        sample.atMs,
-        Math.round(Math.max(0, ...sample.renderers.map((item) => item.rssKiB ?? 0)) / 1024),
-        Math.round(Math.max(0, ...sample.workerHeaps.map((heap) => heap.usedBytes ?? 0)) / MiB),
-      ]),
-    },
-    checkpoint,
-    workers: worker,
-    errors,
-  };
-  console.log(
-    `${decade} ${mode}: generation ${(generationMs / 1000).toFixed(1)} s` +
-      ` (worker ${((result.workerGenerationMs ?? 0) / 1000).toFixed(1)} s, renderer CPU ${(generationCpuMs / 1000).toFixed(1)} s, ${seasons.length} seasons),` +
-      ` renderer peak ${result.memory.peakRendererRssMiB} MiB, worker heap ${result.memory.peakWorkerHeapMiB} MiB,` +
-      ` checkpoint ${checkpoint.conservativeUtf16Bytes} B UTF-16,` +
-      ` takeover saved ${(savedMs / 1000).toFixed(1)} s; workers ${worker.map((item) => item.throttle).join(', ')}`,
-  );
-  return result;
+  }
 }
 
 const preview = spawn(process.execPath, ['scripts/preview.mjs'], {
@@ -496,6 +513,7 @@ try {
       loadAverageAtEnd: [] as number[],
     },
     reference: {
+      observationTimeoutMs: listingTimeoutMs,
       viewport: '390x844',
       deviceScaleFactor: 2,
       modes: {
