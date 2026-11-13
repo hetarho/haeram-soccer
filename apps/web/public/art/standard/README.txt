@@ -4,8 +4,9 @@ Selected direction: the approved third illustration study, reused as the first
 heritage stadium scene. Every scene shares expressive brush inking, layered
 paint, warm sunlight, material detail and a grounded Western comic atmosphere.
 
-92 optimized 1440 x 480 WebP scenes: every stadium/locker, training and academy
-stage in all three eras, plus distinct era-neutral manager and staff interiors.
+92 optimized scenes, each a 960 x 320 WebP with a 480 x 160 .small.webp variant
+(184 files): every stadium/locker, training and academy stage in all three eras,
+plus distinct era-neutral manager and staff interiors.
 The built-in image_gen tool produced the paintings. ffmpeg only encoded the
 original generated sources for browser delivery. generation.json contains the
 exact prompts, source provenance, logical references, sizes and checksums.

@@ -176,17 +176,18 @@ return, competition filters and view tabs inside that plane; separate sticky row
 offsets or margins can expose scrolling table rows between them when content wraps.
 
 Navigation between sibling pages reuses the shared page-tab treatment rather than a new card,
-door or button row. The office's section bar (사무실, 훈련, 운영; →WEB-10) is the shared
-`ClubNavigation` component: the shell renders it once above the owner office and its working
-pages. Select it from the requested page and keep it outside the inert content boundary while
-the deferred body changes. Only the departing dashboard/working content becomes inert; the
-persistent bar stays focusable, so consecutive arrow/Home/End keys keep both focus and selection.
-Its tabs name no panel (`TabList` with `panel={false}`). Its first tab, which Home reaches, opens
-the office's queue, never the home briefing. A page's own sections, such as 구단 운영's 재정·투자,
-후원 and 구단 디자인, keep the ordinary tab list and panel below it. Pages without the office bar
-(the clubhouse briefing, Team directory and personnel detail pages, the market, competitions)
-must not grow a copy. Team owns 1군/유소년/코치 and its detailed work has one quiet return to its
-own list. Themes style the shared bars through their tab roles, never per-page selectors.
+door or button row. The owner office, training and operations share one office menu instead of
+section tabs (→WEB-10): the shared `ClubNavigation` component, a quiet back link (`data-ui="link"`)
+then 오버뷰, 결재함 and 위임 설정 as `secondary` buttons, each opening its modal over the current
+page (→WEB-39). The back link leads home, or back to the office from an investment detail or a
+구단 운영 section. The shell renders the menu once above those pages and keeps it outside the
+inert content boundary while the deferred body changes: only the departing dashboard/working
+content becomes inert, and the persistent menu stays focusable. A page's own sections, such as
+구단 운영's 재정·투자, 후원 and 구단 디자인, keep the ordinary tab list and panel below it. Pages
+without the office menu (the clubhouse briefing, Team directory and personnel detail pages, the
+market, competitions) must not grow a copy. Team owns 1군/유소년/코치 and its detailed work has one
+quiet return to its own list. Themes style the shared tab lists and the office menu through their
+shared roles, never per-page selectors.
 
 An opened club season keeps a named back action in its sticky header. Return to the season
 list at its saved scroll position, or to manager history when a tenure opened the season.
@@ -271,33 +272,28 @@ next-match report leads with one `ticket` (the memo) and keeps `dark` for a sing
 the remaining records use `detail`. Waiting requests are listed only by the 결재함's rows below,
 never as a second tray inside another work.
 
-The owner office ([OfficeOverview](../src/entities/office/ui/OfficeDesk.tsx) in
-[Operations](../src/pages/club/ui/Operations.tsx), →WEB-39/100) is one column as wide as its queue: the
-manager-room `FacilityOverview` as an illustrated header, then the work queue
-([ApprovalQueue](../src/pages/club/ui/ApprovalQueue.tsx)) — the office bar's quiet 결재함 heading, one counts
-line with the secondary overview link, `Segments` filters and the request rows — then the team
-content. The header's art slot is shorter on phones (112px, near the art's 3:1) so the first
-request still sits above the bottom controls in the first phone viewport; desk cards and doors
-stay retired. A row keeps its kind `label`, title, subject and 결재 기한 beside a 44px review
-action; on phones the action spans the row's two text lines. The work figures (`stat-tile`, one
-row of four on every width, [OfficeDesk](../src/entities/office/ui/OfficeDesk.tsx)) stay with 구단 운영's sections.
+The owner office (the investment directory in [InvestmentView](../src/pages/club/ui/InvestmentView.tsx),
+→WEB-39/116) opens on its effects in force ([OfficeEffects](../src/pages/club/ui/OfficeEffects.tsx))
+under the office menu. No room illustration heads it, and desk cards and doors stay retired. The
+work queue ([ApprovalQueue](../src/pages/club/ui/ApprovalQueue.tsx), →WEB-100) opens as a modal
+from the menu's 결재함: one counts line, then each title of the owner's work with its waiting
+requests below it, without filters. Under its title a row keeps the request's title, subject and
+결재 기한 beside a 44px review action; on phones the action spans the row's two text lines. The
+work figures (`stat-tile`, one row of four on every width,
+[OfficeDesk](../src/entities/office/ui/OfficeDesk.tsx)) stay with 구단 운영's sections.
 
-The office's team content ([OfficeTeam](../src/pages/clubhouse/ui/ClubHub.tsx)) follows the queue as supporting
-work, never in its place. Its current-club summary (`ClubSituation`, →WEB-44) reuses the same
-`stat-tile` role as read-only facts: a `dl` of five tiles (strength with its division place,
-출전 가능 of the whole team with the injured and suspended, 선발 피로, 분위기, 감독 입지), one row
-on wide screens and, on phones, strength and availability over the three moods in a six-column
-grid, so no tile drops below 12px text. Tone colours the value and note, and a warning is also
-written as a word (주의, 위험) beside the note; a summary tile never becomes a button or a
-redirect. The office offers no immediate owner action beside it (→WEB-39). The HUD money
+The current-club overview (우리 팀 오버뷰, →WEB-44) opens from the menu's 오버뷰 as a modal
+([ClubOverview](../src/widgets/club-overview/ui/ClubOverview.tsx)). It only reads, with no
+redirect-button grid, and the home briefing has no copy. The HUD money
 dialog (자금 관리) reads, under two tabs, 구단 예산 — the club's money season by season with the
 league pages' ‹ season › stepper, never an editing control — and, for an owner, 내 자산.
 
-The clubhouse's home briefing keeps the season card, NEXT MATCH and the illustrated office
-entrance only (→WEB-11): the manager-room art fills a reserved slot (168–280px) under a light top
-shade, with one live caption line over its top edge — 구단주 사무실, 결재 대기 n건 · 지연 n건 and a
-44px 들어가기. Caption text stays light over the shaded art in every theme. Home has no section
-bar or club summary.
+The clubhouse's home briefing keeps the season card, NEXT MATCH, the illustrated office entrance
+and, under it, the office's investment areas
+([InvestmentGallery](../src/pages/clubhouse/ui/InvestmentGallery.tsx), →WEB-11): the
+manager-room art fills a reserved slot (168–280px) under a light top shade, with one live caption
+line over its top edge — 구단주 사무실, 결재 대기 n건 · 지연 n건 and a 44px 들어가기. Caption text
+stays light over the shaded art in every theme. Home has no office menu or club summary.
 
 People sections lead with their people under their own rooms: 1군 opens on the current locker
 room (it follows the completed stadium) over the roster's availability line and cards, then the
@@ -305,7 +301,7 @@ tactics request and culture criteria; 코치진 heads the manager's card with hi
 post with its person or vacancy with the coaching workroom, then who appoints them, then the
 owner's requests to the manager and the staff. Each room heads its own people, so neither scene
 pushes the other's list off a phone's first view; no room menu or office-return bar stands
-before them, and the office's section bar is their only navigation. The market view of 1군 (the
+before them, and the office menu never appears on them (→WEB-10). The market view of 1군 (the
 primary 이적시장) carries no art. Training and youth keep their bounded facility illustration
 (→WEB-70/72) directly above the working panels.
 
@@ -392,9 +388,11 @@ Keep shared components, locale copy and theme ownership distinct. New theme-only
 live in `design/<theme-id>/<resource-group>/`; compact output lives in
 `public/art/<theme-id>/<resource-group>/`. The theme JSON maps those assets to shared semantic
 roles. See the [ownership inventory](README.md) for legacy directories still awaiting migration.
-Reusable UI labels use `useLocale().t(...)`, with keys in every registered locale pack, rather
-than Korean literals in components or copy embedded in a theme image. Existing feature copy
-is still only partially localized under WEB-90; this guidance does not claim it is complete.
+Reusable UI labels are message IDs in `packages/contracts/src/source-messages.ts`, resolved at
+the display boundary with `displayMessage`, `localizeValue`, `richMessage` or `LocalizedMessage`
+(see the [repository guidance](../../../AGENTS.md)), rather than Korean literals in components or
+copy embedded in a theme image. Every shipped pack translates every default-pack ID with its
+parameters (WEB-90, ARCH-32); `pnpm run validate:i18n` and ESLint enforce it.
 
 Home/away badges are informational resources, separate from action emphasis and result status.
 The shared `HomeAwayBadge` keeps home/away labels live, and `match-{home,away}-badge-{frame,slice,fill,text}`
@@ -522,8 +520,7 @@ available outside the diagram. Selection labels resolve again when the locale ch
 
 ## Applying the system throughout the app
 
-See the [UI coverage inventory](UI-COVERAGE.md) for the module and preview audit. Reuse the
-existing semantic control, tab, table and panel assembly. `data-surface="sheet"` is a skin-only
+Reuse the existing semantic control, tab, table and panel assembly. `data-surface="sheet"` is a skin-only
 quiet group; `data-surface="inset"` is a secondary inset; neither adds padding. Use
 `data-ui="disclosure"` for a collapsible group, retaining its existing summary/body layout.
 Do not apply a padded panel role to every list item, pitch marker or inner wrapper. Components

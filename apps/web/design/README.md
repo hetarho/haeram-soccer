@@ -35,10 +35,13 @@ skins are in `public/art/shared/staff-role-badges-v1/` and registered by every t
 ## Localization status
 
 The project has a working locale registry, message packs, fallback and formatting services.
-Its existing translated inventory covers the shell/navigation, saves, slots, presentation
-settings, facility descriptions and extracted match cues (WEB-90). Many feature screens and
-engine-authored details still contain Korean; the language picker is not evidence of complete
-translation. Saved prose remains unchanged.
+Every shipped pack translates every default-pack message ID with its parameters (WEB-90,
+ARCH-32); `pnpm run validate:i18n` and ESLint reject hardcoded Korean literals, missing keys,
+incomplete packs and mismatched parameters. Saved prose remains unchanged; recognized source
+labels and generated prose are translated at display boundaries.
 
-Reusable UI labels such as the new home/away badges use `useLocale().t(...)`, with the same
-message IDs present in every registered pack. Keep this copy outside theme JSON and bitmap art.
+Authored copy, including reusable UI labels such as the home/away badges, is a message ID in
+`packages/contracts/src/source-messages.ts` with the same ID and parameters in every registered
+pack. New copy resolves it with `displayMessage`, `localizeValue`, `richMessage` or
+`LocalizedMessage` as the [repository guidance](../../../AGENTS.md) describes. Keep this copy outside theme JSON
+and bitmap art.

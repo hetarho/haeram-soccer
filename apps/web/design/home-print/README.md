@@ -10,8 +10,7 @@ The [home/away badge notes](../matchday-print/home-away-badges/README.md) cover 
 The [content hierarchy notes](../hierarchy-print/README.md) cover tab marks, quiet panel surfaces,
 table materials and compact spacing.
 The [analysis notes](../analysis-print/README.md) cover chart paper and circular player markers;
-the [surface notes](../surfaces-print/README.md) define the three neutral material planes and Card;
-the [coverage inventory](../UI-COVERAGE.md) records their application across actual app views.
+the [surface notes](../surfaces-print/README.md) define the three neutral material planes and Card.
 
 - `sources/frames.png`: six frames with fixed corners for nine-slice scaling.
 - `sources/icons.png`: sixteen stamped navigation and state pictograms.

@@ -30,8 +30,9 @@ inferred from fallback hex tokens. The two neighbouring gaps are 0.2105 and 0.22
 
 Neutral content frames and inset frames are disabled by Matchday Print aliases. The unused
 content-sheet frame is retained in its source/manifest but removed from the active pack
-preload list. The registered UI resources total 299269 bytes, within the existing 300000-byte
-budget; the new paper tiles keep their full 256px detail. The material
+preload list. The pack's registered UI resources must stay under the 340000-byte budget in
+`src/presentation/uiResources.test.ts` (338239 bytes on 2026-11-13; 299269 bytes when these
+planes landed); the new paper tiles keep their full 256px detail. The material
 planes and their existing spacing separate groups. Input/button/badge artwork, functional
 selection cues, fine table rules and keyboard focus retain their own semantic roles. Pitch
 art remains on its separate analysis material. The deeper canvas requires readable dark text;
@@ -47,10 +48,16 @@ and `actions` are optional live React content. Standard HTML attributes are forw
 ```tsx
 <Card
   title={<ClubLink w={w} id={opponent.id} />}
-  meta="프리미어리그 · 홈 경기"
-  actions={<button onClick={openReport}>분석 보기</button>}
+  meta={displayMessage('fixture.home')}
+  actions={<button onClick={openReport}>{richMessage('copy.FixtureNotebook.5624f76fe0')}</button>}
 >
-  <b>우리 승 2–1</b>
+  <b>
+    {richMessage('copy.FixtureNotebook.70b778e4b4', {
+      p0: result.result,
+      p1: result.own,
+      p2: result.other,
+    })}
+  </b>
 </Card>
 ```
 

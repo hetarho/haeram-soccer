@@ -36,4 +36,5 @@ pnpm run validate:presentation
 
 Preparation uses the shared `createUiArtPipeline` and encoding policy. It requires project
 dependencies, Chromium, ffmpeg and ffprobe, and synchronizes the print pack's metadata.
-Browser verification belongs to ARCH-30's final coordinator gate; disposable captures go in `.tmp/`.
+Browser verification belongs to ARCH-30's batch tier (`pnpm run verify:batch`) and CI, not a
+task's own checks; disposable captures go in `.tmp/`.

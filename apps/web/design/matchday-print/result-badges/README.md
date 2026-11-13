@@ -33,6 +33,6 @@ node apps/web/design/matchday-print/result-badges/build.mjs
 ```
 
 Preparation uses the existing `createUiArtPipeline` bounds and compact WebP policy, requiring
-project dependencies, Chromium, ffmpeg and ffprobe. The encoded resources were inspected;
-the treatment awaits the owner's screen review. Tests and final verification remain deferred
-while this checkout is in design mode.
+project dependencies, Chromium, ffmpeg and ffprobe. The encoded resources were inspected, and
+the treatment has shipped: `ResultBadge` draws it in the next-match report
+([MatchBriefing](../../../src/features/match-prep/ui/MatchBriefing.tsx)) and the `badges` story.

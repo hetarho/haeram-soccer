@@ -30,5 +30,5 @@ Review captures belong in ignored `.tmp/`; verification follows ARCH-30.
 Review evidence: actual home, cup cards, settings and team sheets at 1380px and 390px across
 all four packs; controller bounds, five rating roles and browser errors checked. Focused Chromium
 checks confirm settings/transport text contrast in every theme, including menu hover, and settled
-modal touch geometry. Source/runtime validation and the shared resource budgets pass. Existing
-engine and legacy browser regressions remain tracked separately in T596–T598.
+modal touch geometry. Source/runtime validation and the shared resource budgets pass. The engine
+and legacy browser regressions found then were tracked separately in T596–T598, all since done.

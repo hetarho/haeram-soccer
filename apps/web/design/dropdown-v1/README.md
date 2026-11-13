@@ -35,7 +35,7 @@ remain source alternatives: they lost visible edge definition at the original di
 
 The product-wide rollout also covers settings, records and transfer-history season scopes,
 competition and fixture filters, tactics and lineup controls, analysis and player comparison,
-founding and transport pace. Former unframed season/presentation variants and local height,
+the takeover's club listing (country and league filters) and transport pace. Former unframed season/presentation variants and local height,
 weight and font overrides have been removed. Screen CSS retains width, flex and placement;
 the common Select and theme pack own its visual treatment. The independent development
 workbench and tuning lab keep their own tool interface.

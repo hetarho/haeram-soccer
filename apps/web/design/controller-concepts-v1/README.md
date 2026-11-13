@@ -1,12 +1,12 @@
 # Controller material studies
 
-Twelve controller studies, prepared on 2026-10-31. The owner selected **P3, G1, X2 and S1**
-and those four materials are now applied to the active theme packs. The other eight remain
-development alternatives.
+Twelve controller studies, prepared on 2026-10-31. The owner selected **P3, G1, X2 and S1**;
+they ship as `image-art-controller-background`, the transport material of the Matchday Print,
+Stadium Green, Pixel and Sticker Football Club packs. The other eight remain development
+alternatives.
 
 Open the real component in `/design-system?story=controller-backgrounds` and choose
-a theme. A disposable all-theme comparison board is available during this session at
-`/.tmp/controller-background-review/index.html`.
+a theme.
 
 | Theme                 | Candidates                                         | Saved original sources                                             | Exact prompt set                                                  |
 | --------------------- | -------------------------------------------------- | ------------------------------------------------------------------ | ----------------------------------------------------------------- |
@@ -25,7 +25,6 @@ dimensions and repeat metadata. Candidate IDs and local text roles live in
 
 Visual review covered all twelve actual controls in automatic and manual mode at
 wide and 390px preview widths. No clipping or missing resources was observed.
-No automated test suite, commit or push was run during this design iteration.
 
 ## Selected material deployment
 
@@ -39,10 +38,5 @@ and muted tokens reproduce the chosen treatment with normal material blending. O
 Run `node scripts/optimize-presentation-art.mjs --write` after preparation to synchronize
 the standard deployment encoding and manifests. Run the selected-controller recipe last
 when rebuilding older theme/page-refresh families, which retain historical controller tokens.
-
-Local preparation uses the shared browser encoder. This checkout's FFmpeg lacks `libwebp`,
-so the global optimizer's write pass stops at an existing page-refresh resource before
-processing these materials; it requires an FFmpeg build with WebP encoding support.
-The read-only optimizer pass succeeds, confirming the deployed resources' hashes,
-dimensions and byte budgets. The selected resources also render correctly in the real
-controller at desktop and 390px widths with no missing requests or browser errors.
+Preparation uses the shared browser encoder; the optimizer's write pass needs an FFmpeg build
+with `libwebp`.

@@ -29,6 +29,11 @@ in the task and remove those disposable files. Follow the
 
 ## Component details (T595)
 
+Current page-refresh resources supersede the iron/elite rating family described below, and the
+[dropdown family](../dropdown-v1/README.md) now draws the Select; see the
+[active recipe](../page-refresh-v1/README.md). This section retains the earlier detail-family
+provenance.
+
 Implemented working treatment, 2026-10-29. `pixelDetailSources()` in `source.mjs` extends the
 original stepped frames. Run `node scripts/prepare-theme-details.mjs` from the root to prepare
 all alternative packs and register their images/tokens; `--check` verifies encoded hashes.

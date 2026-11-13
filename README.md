@@ -1,14 +1,14 @@
 # Haeram Football Archives
 
-A Korean, account-free football club growing game. Found a fictional club in 1950, prepare the
-squad, observe matches and preserve the club's history. Gameplay and saves run locally in the
-browser; no API keys, database or login are required.
+A Korean, account-free football club owner game. Choose the owner's wealth tier and traits and a
+takeover decade from 1930 to 2000; the world lives from 1930 up to that decade, then the owner buys
+one existing club, runs it, watches its matches and keeps its history. Gameplay and saves run
+locally in the browser; no API keys, database or login are required.
 
 The language picker offers Korean (default), English, Spanish, Brazilian Portuguese, French,
-German, Italian, Dutch, Turkish, Arabic, Japanese and Indonesian. These packs translate the
-shared navigation, save and slot tools, display settings, facility descriptions and extracted
-match cues. Detailed gameplay text still includes Korean; previously saved prose stays in its
-original language. Language preferences persist in the browser independently of game saves.
+German, Italian, Dutch, Turkish, Arabic, Japanese and Indonesian. Every pack translates every
+message of the default pack (`pnpm run validate:i18n` enforces it); previously saved prose stays in
+its original language. Language preferences persist in the browser independently of game saves.
 
 Use the Node version in [.node-version](.node-version) and the pnpm version pinned by
 `packageManager` in [package.json](package.json).
@@ -31,8 +31,8 @@ HTTPS or localhost is required for browser saving and exclusive-tab ownership. E
 
 Current product rules and architecture are maintained in [spec/ssot/](spec/ssot/), with the
 [architecture](spec/ssot/ARCH.md) defining dependency boundaries, deployment and verification.
-The [Korean project narrative](spec/NARRATIVE.md) provides an overview; [spec/STATE.md](spec/STATE.md)
-records current work, and completed task files retain implementation history.
+[spec/STATE.md](spec/STATE.md) records current work, and completed task files retain
+implementation history.
 
 [artifacts/](artifacts/README.md) holds benchmark measurements and reproduction tools. Unimplemented
 visual concepts may also be retained there; product plans and rules belong in `spec/`. Applied UI
@@ -54,6 +54,7 @@ pnpm run lint
 pnpm run format:check
 pnpm run validate:catalogs
 pnpm run validate:presentation
+pnpm run validate:i18n
 ```
 
 Install the pinned Playwright browsers with `pnpm exec playwright install --with-deps` before a

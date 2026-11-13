@@ -15,7 +15,7 @@ values outside the artwork.
 
 | Topic                    | Status                        | Treatment                                                                                                   |
 | ------------------------ | ----------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Resource-backed controls | Implemented                   | Separate bitmap surfaces for supporting buttons, editable fields, dropdowns and checkbox states             |
+| Resource-backed controls | Implemented                   | Separate bitmap surfaces for supporting buttons, editable fields and checkbox states                        |
 | Primary                  | Established artwork           | Vermilion ticket using the existing stamp frame and material                                                |
 | Secondary                | Implemented working treatment | Forest-green filled ticket; visual hierarchy is under review                                                |
 | Tertiary                 | Implemented working treatment | Blue-grey filled ticket; visual hierarchy is under review                                                   |
@@ -37,7 +37,7 @@ inventory; all files deploy under `public/art/matchday-print/controls-v1/`.
 | `image-art-control-secondary`    | `frame-secondary.webp`   | Filled supporting button                 |
 | `image-art-control-tertiary`     | `frame-tertiary.webp`    | Filled additional-action button          |
 | `image-art-control-input`        | `frame-input.webp`       | Text/number fields and text areas        |
-| `image-art-control-dropdown`     | `frame-dropdown.webp`    | Select trigger and open list frame       |
+| `image-art-control-dropdown`     | `frame-dropdown.webp`    | Registered; the Select uses ticket art   |
 | `image-art-control-checkbox-off` | `icon-checkbox-off.webp` | Complete unchecked box                   |
 | `image-art-control-checkbox-on`  | `icon-checkbox-on.webp`  | Complete checked box, including its mark |
 | `image-art-control-disabled`     | `frame-disabled.webp`    | Inactive buttons and fields              |
@@ -48,14 +48,16 @@ labels that retain the larger interaction target. The dropdown indicator remains
 semantic icon. Disabled checkboxes currently reuse their checked/unchecked images; they do
 not have separate disabled artwork in this source set.
 
-The [theme pack](../../public/presentation/themes/matchday-print.json) maps these image roles to
-the shared button, field, select and checkbox aliases. The
+The [theme pack](../../public/presentation/themes/matchday-print.json) maps these image roles,
+except the dropdown frame, to the shared button, field and checkbox aliases. The
 [shared control stylesheet](../../public/presentation/themes/image-ui-controls.css) draws them.
 Review the rendered checked state: the unchecked selector must not override its image.
 
-The transport's compact pace selector also uses `frame-dropdown.webp`, including its filled
-centre, through the same shared aliases. Its wrapper adjusts sizing only; the surrounding
-transport material does not replace the dropdown skin.
+The pack no longer maps `frame-dropdown.webp` to the select: its trigger and popup use the
+established `image-art-frame-ticket` and the selected row `image-art-frame-stamp` (see the
+[dropdown notes](../matchday-print/dropdown-v1/README.md)). The transport's compact pace
+selector is the same shared Select. Its wrapper adjusts sizing only; the surrounding transport
+material does not replace the select skin.
 
 ## Sources and regeneration
 
@@ -82,7 +84,6 @@ pnpm run validate:presentation
 ```
 
 These checks validate resource delivery. Application checks and browser-suite scope remain
-defined by ARCH-30. Existing `preview*.png` files are working review evidence, not approved
-artwork or production assets; keep new disposable captures in ignored `.tmp/` and record the
-review outcome in the task. Update this README when the hierarchy proposal is accepted,
+defined by ARCH-30. Keep disposable review captures in ignored `.tmp/` and record the review
+outcome in the task. Update this README when the hierarchy proposal is accepted,
 rejected or implemented so another theme author can distinguish the current state.

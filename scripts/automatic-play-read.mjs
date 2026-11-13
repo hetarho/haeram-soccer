@@ -3,8 +3,8 @@
  * of `apps/web/dist` in Chromium with a 1950 ENG takeover whose observation and decisions are
  * delegated, plays one season at x10 and a month each at x1/x2/x5, and records every shown day:
  * the gap since the previous one, stalls (a gap of at least 1.5 × the pace), days a second, the
- * main thread's long tasks and whether the fixture helpers ran. Writes reports/automatic-play-read
- * -<YYMMDD>.{json,md} with machine, load and build hash, beside the Node simulation's numbers.
+ * main thread's long tasks and whether the fixture helpers ran. Writes
+ * artifacts/benchmarks/automatic-play-read/automatic-play-read-<YYMMDD>.{json,md} with machine, load and build hash, beside the Node simulation's numbers.
  *
  * Run after `pnpm run build`: `pnpm exec tsx scripts/automatic-play-read.mjs [--reps 2]
  * [--days 30] [--season-days 365] [--viewport 1280x800] [--origin http://127.0.0.1:4193]`.
@@ -267,8 +267,9 @@ try {
     },
     runs,
   };
-  mkdirSync('reports', { recursive: true });
-  const file = `reports/automatic-play-read-${stamp}`;
+  const dir = 'artifacts/benchmarks/automatic-play-read';
+  mkdirSync(dir, { recursive: true });
+  const file = `${dir}/automatic-play-read-${stamp}`;
   writeFileSync(`${file}.json`, JSON.stringify(report, null, 2) + '\n');
   const rows = runs.map(
     (r) =>

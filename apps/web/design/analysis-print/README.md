@@ -36,4 +36,5 @@ resources remain the ground. Completed-pass circles use the recorded shirt base 
 contrast ink as the scoreboard; lines and directional arrowheads use the shared chart-primary
 token. The geometry and numbers remain live SVG, requiring no new artwork or regeneration.
 The shared interaction/locale unit cases are recorded in the task; phone geometry and browser
-interaction assertions in `match-material.spec.ts` await the coordinator's batch.
+interaction assertions in `match-material.spec.ts` run in ARCH-30's batch tier
+(`pnpm run verify:batch`), which confirmed them for T835.
