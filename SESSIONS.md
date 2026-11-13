@@ -67,8 +67,11 @@
 |---|---|---|---|---|
 | T877 | pb14 | work/performance-books-pb14 | 0a2d63f8acd0 | 2026-11-13T16:51Z |
 | T878 | pb14 | work/performance-books-pb14 | 0cd4fb216686 | 2026-11-13T17:08Z |
+| T873 | work | codex/natural-football-261114 | 7602032a9501 | 2026-11-13T17:08Z |
+| T874 | work | codex/natural-football-261114 | 7602032a9501 | 2026-11-13T17:08Z |
 
 ## log
+- 261113 T873 T874 integrated
 - 261113 T878 done
 - 261113 Owner approved independent Codex review and permanent quota-aware provider fallback; AGENTS.md pushed main6fecb6de. Fresh code review resumed.
 - 261113 T877 done
@@ -88,4 +91,3 @@
 - 261113 T869 done
 - 261113 gusta-create-task ARCH: T869 for retained saved-report resources; T866 follows it, ARCH r42 consumed. T859 cites ARCH-32 but financial behavior is unchanged and fin3 reports no active task.
 - 261113 gusta-update-ssot ARCH start: retain message resources for supported saved prose
-- 261113 T865 done
