@@ -1,0 +1,23 @@
+✘ [ERROR] The working directory ".tmp/pw86/haeram-perf-ab/tree-2d8f77e7118c" is not an absolute path
+
+/home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:1752
+  let error = new Error(text);
+              ^
+
+Error: Build failed with 1 error:
+error: The working directory ".tmp/pw86/haeram-perf-ab/tree-2d8f77e7118c" is not an absolute path
+    at failureErrorWithLog (/home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:1752:15)
+    at /home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:1211:25
+    at /home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:1163:52
+    at buildResponseToResult (/home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:1209:7)
+    at /home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:1236:16
+    at responseCallbacks.<computed> (/home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:886:9)
+    at handleIncomingPacket (/home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:941:12)
+    at Socket.readFromStdout (/home/deep/haeram/haeram-soccor/node_modules/.pnpm/esbuild@0.28.2/node_modules/esbuild/lib/main.js:864:7)
+    at Socket.emit (node:events:514:28)
+    at addChunk (node:internal/streams/readable:569:12) {
+  errors: [Getter/Setter],
+  warnings: [Getter/Setter]
+}
+
+Node.js v24.22.1

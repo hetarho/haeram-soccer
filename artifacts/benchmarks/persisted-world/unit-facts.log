@@ -1,0 +1,9 @@
+
+ RUN  v5.0.3 /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860
+
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  18:37:04
+   Duration  456ms (tests 50%, transform 31%, import 15%, worker 4%)
+

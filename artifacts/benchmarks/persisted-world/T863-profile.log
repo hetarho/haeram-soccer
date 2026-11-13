@@ -1,0 +1,68 @@
+history: 5 reps after 0 warm, 67680 ms, 60239 samples, load1 6.06, digest b9ca13ac48f25cec
+
+self
+ 25.0%  16904 ms  (anonymous) workloads-1316715.mjs:255867
+ 14.8%   9994 ms  wantsFreeAgent workloads-1316715.mjs:255841
+  7.2%   4866 ms  lineup workloads-1316715.mjs:235939
+  5.3%   3568 ms  moveSquadPlayer workloads-1316715.mjs:235281
+  4.8%   3227 ms  matchdaySquad workloads-1316715.mjs:235264
+  4.6%   3095 ms  growAttributes workloads-1316715.mjs:240035
+  3.0%   2054 ms  settlePlayerGrowth workloads-1316715.mjs:240089
+  3.0%   2026 ms  ovrAt workloads-1316715.mjs:232960
+  2.8%   1881 ms  lineOf workloads-1316715.mjs:232708
+  2.3%   1541 ms  mainOvr workloads-1316715.mjs:232966
+  1.5%   1010 ms  weightEntry workloads-1316715.mjs:232943
+  1.5%   1009 ms  movePerson workloads-1316715.mjs:236244
+  1.2%    818 ms  levelFactor workloads-1316715.mjs:232975
+  1.2%    806 ms  (garbage collector)
+  1.2%    798 ms  (anonymous) workloads-1316715.mjs:235946
+  1.1%    734 ms  roundGrowthGain workloads-1316715.mjs:240075
+  1.0%    652 ms  settleNpcSeason workloads-1316715.mjs:243460
+  0.9%    633 ms  refreshFreeAgents workloads-1316715.mjs:255852
+  0.7%    465 ms  invalidateNpcSquad workloads-1316715.mjs:235773
+  0.7%    455 ms  stature workloads-1316715.mjs:235686
+  0.6%    430 ms  (anonymous) workloads-1316715.mjs:235273
+  0.6%    389 ms  clubManager workloads-1316715.mjs:261010
+  0.5%    349 ms  selectionValue workloads-1316715.mjs:235934
+  0.5%    313 ms  admit workloads-1316715.mjs:255794
+  0.4%    288 ms  (anonymous) workloads-1316715.mjs:235788
+  0.4%    274 ms  (anonymous) workloads-1316715.mjs:255844
+  0.4%    267 ms  elevenOf workloads-1316715.mjs:249477
+  0.4%    255 ms  resultsOnlyMatch workloads-1316715.mjs:249562
+  0.4%    243 ms  settleNpcGrowth workloads-1316715.mjs:255939
+  0.3%    231 ms  (anonymous) workloads-1316715.mjs:251570
+
+inclusive
+ 98.5%  66671 ms  advanceDays workloads-1316715.mjs:258377
+ 98.5%  66671 ms  liveHistory workloads-1316715.mjs:262405
+ 98.5%  66671 ms  rep workloads-1316715.mjs:271681
+ 98.5%  66671 ms  (anonymous) [eval1]:1
+ 98.5%  66667 ms  stepDay workloads-1316715.mjs:258303
+ 51.7%  34964 ms  refreshFreeAgents workloads-1316715.mjs:255852
+ 49.6%  33557 ms  playRound workloads-1316715.mjs:258248
+ 48.0%  32485 ms  closeSeason workloads-1316715.mjs:257965
+ 48.0%  32478 ms  closeWorldSeason workloads-1316715.mjs:258146
+ 44.0%  29771 ms  (anonymous) workloads-1316715.mjs:255867
+ 42.9%  29039 ms  closeNpcSummer workloads-1316715.mjs:256032
+ 25.9%  17504 ms  settleNpcGrowth workloads-1316715.mjs:255939
+ 20.2%  13672 ms  invalidateNpcSquad workloads-1316715.mjs:235773
+ 19.2%  13001 ms  matchdaySquad workloads-1316715.mjs:235264
+ 18.3%  12396 ms  wantsFreeAgent workloads-1316715.mjs:255841
+ 15.2%  10282 ms  refreshNpcSquads workloads-1316715.mjs:235769
+ 12.4%   8378 ms  settlePlayerGrowth workloads-1316715.mjs:240089
+ 11.8%   7979 ms  lineup workloads-1316715.mjs:235939
+ 11.6%   7864 ms  movePerson workloads-1316715.mjs:236244
+  8.7%   5884 ms  moveSquadPlayer workloads-1316715.mjs:235281
+  7.9%   5321 ms  renewNpcContracts workloads-1316715.mjs:256009
+  7.6%   5140 ms  joinFreeAgents workloads-1316715.mjs:255835
+  7.5%   5076 ms  admit workloads-1316715.mjs:255794
+  6.9%   4691 ms  growAttributes workloads-1316715.mjs:240035
+  4.4%   3007 ms  ovrAt workloads-1316715.mjs:232960
+  4.3%   2883 ms  mainOvr workloads-1316715.mjs:232966
+  4.0%   2717 ms  slotOvr workloads-1316715.mjs:233314
+  4.0%   2717 ms  selectionValue workloads-1316715.mjs:235934
+  3.5%   2346 ms  simulateMatch workloads-1316715.mjs:249826
+  3.5%   2341 ms  (anonymous) workloads-1316715.mjs:235944
+
+profile /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/.tmp/pw86/haeram-perf-profile/history-1316715.cpuprofile
+bundle /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/.tmp/pw86/haeram-perf-profile/workloads-1316715.mjs

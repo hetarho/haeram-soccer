@@ -1,0 +1,68 @@
+history: 5 reps after 0 warm, 18305 ms, 17014 samples, load1 11.95, digest d294e86c0475ae89
+
+self
+ 17.1%   3126 ms  growAttributes workloads-1176087.mjs:240021
+ 11.8%   2155 ms  settlePlayerGrowth workloads-1176087.mjs:240075
+  5.6%   1030 ms  ovrAt workloads-1176087.mjs:232962
+  5.4%    997 ms  mainOvr workloads-1176087.mjs:232968
+  5.3%    969 ms  roundGrowthGain workloads-1176087.mjs:240061
+  3.5%    635 ms  settleNpcSeason workloads-1176087.mjs:244385
+  3.1%    567 ms  lineup workloads-1176087.mjs:235925
+  2.8%    508 ms  weightEntry workloads-1176087.mjs:232945
+  2.7%    500 ms  (garbage collector)
+  1.7%    314 ms  matchdaySquad workloads-1176087.mjs:235262
+  1.5%    272 ms  resultsOnlyMatch workloads-1176087.mjs:250487
+  1.5%    269 ms  clubManager workloads-1176087.mjs:260991
+  1.5%    266 ms  generateAttributes workloads-1176087.mjs:233141
+  1.4%    261 ms  elevenOf workloads-1176087.mjs:250402
+  1.2%    216 ms  settleNpcGrowth workloads-1176087.mjs:240746
+  1.1%    200 ms  developAnnually workloads-1176087.mjs:240128
+  1.1%    198 ms  playRound workloads-1176087.mjs:258229
+  1.0%    192 ms  recentClubResults workloads-1176087.mjs:257435
+  0.9%    164 ms  ratingOf workloads-1176087.mjs:235968
+  0.9%    162 ms  recordMatch workloads-1176087.mjs:257668
+  0.9%    158 ms  zeroMetrics workloads-1176087.mjs:233367
+  0.8%    155 ms  (anonymous) workloads-1176087.mjs:235976
+  0.8%    147 ms  actionWeight workloads-1176087.mjs:250375
+  0.8%    143 ms  generateProfile workloads-1176087.mjs:233272
+  0.7%    134 ms  out workloads-1176087.mjs:236001
+  0.7%    133 ms  generatePositions workloads-1176087.mjs:233171
+  0.7%    125 ms  recordRecentResult workloads-1176087.mjs:257466
+  0.7%    119 ms  levelFactor workloads-1176087.mjs:232977
+  0.6%    117 ms  startingSquad workloads-1176087.mjs:235992
+  0.6%    111 ms  traitVector workloads-1176087.mjs:250364
+
+inclusive
+ 96.9%  17731 ms  liveHistory workloads-1176087.mjs:262386
+ 96.9%  17731 ms  rep workloads-1176087.mjs:271662
+ 96.9%  17731 ms  (anonymous) [eval1]:1
+ 96.9%  17730 ms  advanceDays workloads-1176087.mjs:258358
+ 96.8%  17727 ms  stepDay workloads-1176087.mjs:258284
+ 65.1%  11924 ms  playRound workloads-1176087.mjs:258229
+ 46.1%   8446 ms  settleNpcGrowth workloads-1176087.mjs:240746
+ 44.5%   8139 ms  settlePlayerGrowth workloads-1176087.mjs:240075
+ 28.2%   5171 ms  closeSeason workloads-1176087.mjs:257946
+ 28.2%   5165 ms  closeWorldSeason workloads-1176087.mjs:258127
+ 25.7%   4710 ms  growAttributes workloads-1176087.mjs:240021
+ 13.0%   2374 ms  simulateMatch workloads-1176087.mjs:250751
+ 12.9%   2364 ms  resultsOnlyMatch workloads-1176087.mjs:250487
+ 12.7%   2317 ms  closeNpcSummer workloads-1176087.mjs:240816
+ 12.4%   2264 ms  mainOvr workloads-1176087.mjs:232968
+ 12.3%   2243 ms  (anonymous) workloads-1176087.mjs:258244
+ 12.2%   2240 ms  playFixture2 workloads-1176087.mjs:258209
+  9.2%   1688 ms  invalidateNpcSquad workloads-1176087.mjs:235771
+  9.0%   1654 ms  matchdaySquad workloads-1176087.mjs:235262
+  8.3%   1511 ms  ovrAt workloads-1176087.mjs:232962
+  7.6%   1390 ms  roundGrowthGain workloads-1176087.mjs:240061
+  7.0%   1276 ms  recordMatch workloads-1176087.mjs:257668
+  7.0%   1275 ms  prepareSeason workloads-1176087.mjs:257591
+  6.6%   1212 ms  (anonymous) workloads-1176087.mjs:258245
+  6.1%   1111 ms  generatedPlayer workloads-1176087.mjs:235617
+  6.0%   1104 ms  drawPlayer workloads-1176087.mjs:235621
+  5.7%   1046 ms  lineup workloads-1176087.mjs:235925
+  5.7%   1041 ms  npcSquad workloads-1176087.mjs:235890
+  5.4%    987 ms  (anonymous) workloads-1176087.mjs:235903
+  4.9%    896 ms  evolveClubs workloads-1176087.mjs:256494
+
+profile /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/.tmp/pw86/haeram-perf-profile/history-1176087.cpuprofile
+bundle /home/deep/haeram/haeram-soccor/.tmp/persisted-world-860/.tmp/pw86/haeram-perf-profile/workloads-1176087.mjs
