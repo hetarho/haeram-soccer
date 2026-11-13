@@ -71,7 +71,7 @@ function close(w: World) {
 }
 
 describe('twenty-player squad target', () => {
-  it('prepares twenty, covers every formation slot and retains the NPC standing size', () => {
+  it('prepares twenty, covers every formation slot and preserves fallback and persisted NPC squads', () => {
     const w = world(),
       players = activePlayers(w);
     expect(SQUAD_TARGET).toBe(20);
@@ -91,7 +91,15 @@ describe('twenty-player squad target', () => {
         w.year,
         w.clubs.find((c) => c.id !== w.playerClub)!,
       ),
-    ).toHaveLength(NPC_SQUAD.size);
+    ).toHaveLength(18);
+    // The fallback generator remains an eighteen-player input; persisted clubs add their
+    // standing bench. Choose one the explicit spare-player transfers did not enlarge.
+    const persisted = w.clubs.find(
+      (c) =>
+        c.id !== w.playerClub && !c.representative && w.squads?.[c.id]?.length === NPC_SQUAD.size,
+    );
+    expect(persisted).toBeDefined();
+    expect(clubPlayers(w, persisted!)).toHaveLength(NPC_SQUAD.size);
   });
   it('retains every actual purchased player when the real takeover squad exceeds twenty', () => {
     const w = historyWorld(CAREER.seed, undefined, CAREER_YEAR);
