@@ -3,6 +3,7 @@ import type { MatchScript, ScriptSide, StagingSide } from '../../../contracts/sr
 import { STAGING_CONFIG } from './config';
 import { stageFixture, stageScript } from './input';
 import { createStage, performance } from './perform';
+import { pacePlan } from './pace';
 import type { BallMode, Frame, Phase, StageEvent as InternalEvent, Vec } from './types';
 import type { StageState } from './world';
 
@@ -38,11 +39,18 @@ const identity = (state: StageState, index: number): StagingId | null => {
   return p ? { side: p.team, line: p.line } : null;
 };
 
+/**
+ * `pace` keeps a record's staging in real time (stage/pace.ts): `added` holds the record's added
+ * minutes per period, which its whistles include. Without it each beat keeps the writer's hold.
+ */
 export function createStaging(
   script: MatchScript,
   sides: readonly [StagingSide, StagingSide],
+  pace?: { added: readonly number[] },
 ): Staging {
-  const state = createStage(stageScript(script, stageFixture(sides)));
+  const staged = stageScript(script, stageFixture(sides));
+  if (pace) staged.pace = pacePlan(script, staged.beats, pace.added);
+  const state = createStage(staged);
   const program = performance(state);
   const done = program.next().done === true;
   return { state, program, done, eventCursor: 0 };

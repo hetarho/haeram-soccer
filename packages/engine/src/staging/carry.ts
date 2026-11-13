@@ -15,6 +15,7 @@ import { holdMove } from './pass';
 import { cueNext, jockeyPoint } from './contest';
 import { manInTheWay, releaseBeaten, slipPast } from './takeon';
 import { holdOver } from './release';
+import { PACE } from './pace';
 import type { BeatContext } from './perform';
 import {
   ensureOwner,
@@ -41,7 +42,9 @@ export function* performCarry(state: StageState, ctx: BeatContext): Generator<vo
   const man = manInTheWay(state, actor, end);
   if (man >= 0) yield* slipPast(state, actor, man, end);
   const d = dist(state.bodies[actor].pos, end);
-  state.orders.set(actor, { target: end, pace: 'sprint', speedCap: STAGE.dribbleSpeed });
+  // Behind the record's clock (stage/pace.ts) he runs with the ball rather than dribbling.
+  const dribble = STAGE.dribbleSpeed * (state.hurry ? PACE.hurry.dribble : 1);
+  state.orders.set(actor, { target: end, pace: 'sprint', speedCap: dribble });
   cueNext(state, ctx, end);
   // He trails the carrier unless the next beat already sends him to contest the ball.
   if (man >= 0 && !state.cues.has(man))
@@ -49,7 +52,7 @@ export function* performCarry(state: StageState, ctx: BeatContext): Generator<vo
   yield* runUntil(
     state,
     () => dist(state.bodies[actor].pos, end) <= STAGE.arrive,
-    (d / speedAt(state, actor, 'sprint', STAGE.dribbleSpeed)) * 1.5 + 2,
+    (d / speedAt(state, actor, 'sprint', dribble)) * 1.5 + 2,
   );
   releaseBeaten(state);
   state.orders.clear();

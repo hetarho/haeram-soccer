@@ -9,6 +9,7 @@ import type { BeatContext } from './perform';
 import type { TeamId, Vec } from './types';
 import { onPitch, presentPlayers } from './types';
 import { dist } from './vec';
+import { PITCH } from './pitch';
 import { pushEvent, refreshFrame, runUntil, type StageState } from './world';
 
 const SCENE = STAGING_CONFIG.stage.scene;
@@ -98,33 +99,76 @@ function keeperChange(state: StageState, side: TeamId, ctx: BeatContext): void {
   refreshFrame(state);
 }
 
+/** The touchline point nearest a player: a substituted man leaves the pitch there (Law 3). */
+const touchlineExit = (at: Vec): Vec => [
+  Math.min(PITCH.length - 1, Math.max(1, at[0])),
+  at[1] < PITCH.width / 2 ? 0 : PITCH.width,
+];
+
+/**
+ * A stoppage's substitutions all at once: the men going off walk to their nearest touchline
+ * together, then every entrant comes on at the halfway gate and jogs to his place while the
+ * stoppage runs its course; play resumes without waiting for him to arrive.
+ */
+function* substitute(
+  state: StageState,
+  ctx: BeatContext,
+  subs: readonly ScriptIncident[],
+): Generator<void, void> {
+  const going = subs.map((x) => participant(state, x.side, x.line));
+  const exits = going.map((index) => touchlineExit(state.bodies[index].pos));
+  const off = (k: number): boolean =>
+    !onPitch(state.fixture, going[k]) || dist(state.bodies[going[k]].pos, exits[k]) <= SCENE.ready;
+  going.forEach((index, k) => {
+    if (onPitch(state.fixture, index)) state.orders.set(index, { target: exits[k], pace: 'walk' });
+  });
+  yield* runUntil(state, () => going.every((_, k) => off(k)), SCENE.maxTravel);
+  if (!going.every((_, k) => off(k))) throw invalidDetail('staging:input');
+  const coming: number[] = [];
+  for (const [k, x] of subs.entries()) {
+    if (x.other === undefined) throw invalidDetail('staging:input');
+    const actor = going[k];
+    const other = participant(state, x.side, x.other);
+    if (onPitch(state.fixture, actor)) {
+      state.fixture.present![actor] = false;
+      state.orders.delete(actor);
+      state.bodies[actor].vel = [0, 0];
+      pushEvent(state, { kind: 'exit', team: x.side, actor, at: exits[k] });
+    }
+    state.fixture.present![other] = true;
+    state.enteredAt![other] = state.clock ?? state.t;
+    // Refill delay history on the next tick; the entrant follows his own scripted slot.
+    pushEvent(state, { kind: 'sub', team: x.side, actor, other, at: SCENE.gate });
+    keeperChange(state, x.side, ctx);
+    coming.push(other);
+  }
+  state.seen = [];
+  refreshFrame(state);
+  for (const other of coming)
+    state.orders.set(other, {
+      target: nominalSpot(
+        { fixture: state.fixture, ball: state.ball.pos, team: state.team, phase: state.phase },
+        other,
+      ),
+      pace: 'jog',
+    });
+}
+
 export function* runIncidents(state: StageState, ctx: BeatContext): Generator<void, void> {
   const incidents = ctx.beat.original?.incidents ?? [];
   if (!incidents.length) return;
   const heldBy = state.ball.owner;
   stopPlay(state);
   state.beat = ctx.beat.index;
+  const subs = incidents.filter((x) => x.kind === 'sub');
   for (const incident of incidents) {
     const actor = participant(state, incident.side, incident.line);
     const start = state.t;
     const at = [...state.bodies[actor].pos] as Vec;
     const kind: ScriptIncident['kind'] = incident.kind;
     if (kind === 'sub') {
-      if (incident.other === undefined) throw invalidDetail('staging:input');
-      const other = participant(state, incident.side, incident.other);
-      yield* leave(state, actor);
-      state.fixture.present![other] = true;
-      state.enteredAt![other] = state.clock ?? state.t;
-      state.seen = [];
-      // Refill delay history on the next tick; the entrant follows his own scripted slot.
-      pushEvent(state, { kind: 'sub', team: incident.side, actor, other, at: SCENE.gate });
-      keeperChange(state, incident.side, ctx);
-      refreshFrame(state);
-      const target = nominalSpot(
-        { fixture: state.fixture, ball: state.ball.pos, team: state.team, phase: state.phase },
-        other,
-      );
-      yield* walkTo(state, other, target);
+      if (incident !== subs[0]) continue;
+      yield* substitute(state, ctx, subs);
     } else if (kind === 'injury') {
       state.bodies[actor].vel = [0, 0];
       state.orders.set(actor, { target: at, pace: 'walk', speedCap: 0 });

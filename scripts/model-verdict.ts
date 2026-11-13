@@ -447,7 +447,7 @@ function stageOne(w: World, f: Fixture, plan: Plan) {
     ...compareRecord(detail, countScript(script, detail), record),
   ];
   const sides = stagingSides(detail, rosters, managers);
-  const staged = advance(createStaging(script, sides), Infinity);
+  const staged = advance(createStaging(script, sides, { added: record.added ?? [] }), Infinity);
   const metrics = stagingMetrics(staged.frames, staged.events, script, sides);
   const fit = fitLines(staged.frames, staged.events, script, detail);
   const rates = clockRates(script, { ...staged, added: record.added });

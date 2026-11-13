@@ -207,7 +207,8 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
     order(cutter, place, 'jog', RESTART.receiverReady);
   }
   const start = state.t;
-  const delay = RESTART.delay[kind];
+  // A paced staging takes the restart quickly or calmly to keep time (stage/pace.ts).
+  const delay = state.restartDelay ?? RESTART.delay[kind];
   const ready = (): boolean => {
     if (state.t - start < delay - 1e-9) return false;
     if (dist(ball.pos, spot) > 0.1) return false;

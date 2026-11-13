@@ -75,10 +75,23 @@ const finishEvents = new Set<StageEvent['kind']>([
  * are reported, never clamped to the picture-quality limits.
  * An unfinished staging exposes only stretches whose right anchor is already known.
  */
+/** Record events another beat names as its source. */
+export const recordSources = (script: MatchScript): Set<number> =>
+  new Set(script.beats.flatMap((b) => (b.source === undefined || b.source < 0 ? [] : [b.source])));
+
+/** A beat whose action is a fixed moment of the record: a shot, an incident or a source event. */
+export const isClockAnchor = (b: ScriptBeat, sources: ReadonlySet<number>): boolean =>
+  b.shot !== undefined ||
+  b.kind === 'shot' ||
+  b.kind === 'penalty' ||
+  !!b.incidents?.length ||
+  (b.event !== undefined && sources.has(b.event));
+
+/** Match seconds an anchor keeps from a neighbour in its own minute. */
+const ANCHOR_GAP = 0.05;
+
 export function clockRates(script: MatchScript, staging: ClockStaging): ClockRate[] {
-  const sources = new Set(
-    script.beats.flatMap((b) => (b.source === undefined || b.source < 0 ? [] : [b.source])),
-  );
+  const sources = recordSources(script);
   const byBeat = new Map<number, StageEvent[]>();
   for (const e of staging.events) {
     const list = byBeat.get(e.beat) ?? [];
@@ -92,20 +105,35 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
     const anchors: { t: number; clock: number; beat?: ScriptBeat }[] = [
       { t: first.t, clock: p.start, beat: p.beats[0] },
     ];
+    const fixed: { t: number; beat: ScriptBeat; minute: number }[] = [];
     for (const b of p.beats) {
       if (b === p.beats[0] && b.kind === 'kickOff') continue;
-      if (!(
-        b.shot !== undefined ||
-        b.kind === 'shot' ||
-        b.kind === 'penalty' ||
-        b.incidents?.length ||
-        (b.event !== undefined && sources.has(b.event))
-      ))
-        continue;
+      if (!isClockAnchor(b, sources)) continue;
       const events = byBeat.get(b.index) ?? [];
       const action = events.find((e) => actionEvents.has(e.kind));
       if (!action) continue;
-      anchors.push({ t: action.t, clock: p.start + b.clock - OFFSET[p.period - 1] * 60, beat: b });
+      fixed.push({ t: action.t, beat: b, minute: Math.floor(b.clock / 60) });
+    }
+    // A fixed action keeps its record minute, not its nominal second: inside the minute it falls
+    // where real time (one match second per staged second) from the previous anchor puts it. It
+    // leaves the later fixed actions of its minute their nominal spacing, and reads nothing later
+    // than itself, so a minute already shown never moves.
+    for (const [k, f] of fixed.entries()) {
+      const prev = anchors.at(-1)!;
+      const nominal = f.beat.clock - OFFSET[p.period - 1] * 60;
+      const lo = p.start + (f.minute - OFFSET[p.period - 1]) * 60;
+      let reserve = 0;
+      for (let q = k + 1; q < fixed.length && fixed[q].minute === f.minute; q++)
+        reserve = fixed[q].beat.clock - f.beat.clock + ANCHOR_GAP * (q - k);
+      // A shot's outcome, a card after its foul: the beat's own facts follow its action in the minute.
+      const own = f.beat.shot !== undefined || f.beat.kind === 'shot' ? 3 : f.beat.incidents?.length ? 2 : 1;
+      const hi = Math.max(p.start + nominal, lo + 60 - ANCHOR_GAP - reserve - own);
+      const ideal = prev.clock + (f.t - prev.t);
+      anchors.push({
+        t: f.t,
+        clock: Math.max(prev.clock + ANCHOR_GAP, Math.min(hi, Math.max(lo, ideal))),
+        beat: f.beat,
+      });
     }
     const whistle = byBeat.get(p.beats.at(-1)!.index)?.find((e) => e.kind === 'whistle');
     if (whistle) anchors.push({ t: whistle.t, clock: p.start + p.minutes * 60 });
@@ -127,7 +155,13 @@ export function clockRates(script: MatchScript, staging: ClockStaging): ClockRat
         });
       };
       const b = a.beat;
-      const last = b && byBeat.get(b.index)?.findLast((e) => finishEvents.has(e.kind) && e.t < z.t);
+      // Play kept on after a half's last beat (stage/keep.ts) is not that beat's fact.
+      const performed = (b && byBeat.get(b.index)?.find((e) => e.kind === 'performed')?.t) ?? Infinity;
+      const last =
+        b &&
+        byBeat
+          .get(b.index)
+          ?.findLast((e) => finishEvents.has(e.kind) && e.t < z.t && e.t <= performed);
       const minuteEnd = b
         ? p.start + (Math.floor(b.clock / 60) + 1 - OFFSET[p.period - 1]) * 60
         : Infinity;

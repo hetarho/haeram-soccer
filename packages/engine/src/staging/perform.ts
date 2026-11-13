@@ -13,6 +13,8 @@ import { runIncidents, holdScene, stopPlay } from './participants';
 import { performTakeOn } from './takeon';
 import { performThrough } from './through';
 import { createStage, pushEvent, runUntil, nextTick, type StageState } from './world';
+import { paceBeat } from './pace';
+import { keepBall } from './keep';
 
 export { ensureOwner, setPossession } from './world';
 
@@ -72,12 +74,19 @@ function* endPeriod(state: StageState): Generator<void, void> {
 /** A resumable program. Yielding means the next operation is precisely one movement tick. */
 export function* performance(state: StageState): Generator<void, void> {
   for (let i = 0; i < state.beats.length; i++) {
-    const beat = state.beats[i];
+    let beat = state.beats[i];
     const next = state.beats[i + 1];
-    const periodEnds =
-      next &&
-      (beat.original?.period ?? (beat.clock! < 2700 ? 1 : 2)) !==
-        (next.original?.period ?? (next.clock! < 2700 ? 1 : 2));
+    const periodOf = (b: Beat): number => b.original?.period ?? (b.clock! < 2700 ? 1 : 2);
+    const periodEnds = next && periodOf(beat) !== periodOf(next);
+    // Real-time pace: the beat's hold and a restart's delay keep the performance on the record's
+    // clock (stage/pace.ts); each period's time counts from its first beat.
+    if (state.pace) {
+      if (i === 0 || periodOf(state.beats[i - 1]) !== periodOf(beat)) state.paceOrigin = state.t;
+      const paced = paceBeat(state.pace, beat, i, state.t - (state.paceOrigin ?? 0));
+      beat = { ...beat, hold: paced.hold };
+      state.restartDelay = paced.delay;
+      state.hurry = paced.hurry;
+    }
     state.clock = Math.max(state.clock ?? 0, beat.clock ?? 0);
     state.fixture.period = beat.original?.period ?? ((beat.clock ?? 0) < 2700 ? 1 : 2);
     state.beat = beat.index;
@@ -100,6 +109,7 @@ export function* performance(state: StageState): Generator<void, void> {
         Math.max(state.clock, (Math.floor(beat.clock / 60) + 1) * 60 - 0.01),
       );
     const before = state.tickCount;
+    const eventsFrom = state.events.length;
     const ctx = { beat, next };
     const beforeAction = beat.kind === 'stoppage' || RESTART_KINDS.includes(beat.kind);
     if (beforeAction) {
@@ -119,12 +129,40 @@ export function* performance(state: StageState): Generator<void, void> {
     }
     if (!beforeAction) yield* runIncidents(state, ctx);
     if (state.tickCount === before) yield* nextTick(state);
+    if (state.pace && state.pace.fixed[i]) rebase(state, i, eventsFrom);
     state.performed.push(beat);
     pushEvent(state, { kind: 'performed', actor: beat.actor, at: [...state.ball.pos] });
-    if (periodEnds) yield* endPeriod(state);
+    if (periodEnds) {
+      yield* untilWhistle(state, i);
+      yield* endPeriod(state);
+    }
   }
   state.clockCap = state.clock ?? 0;
+  if (state.beats.length) yield* untilWhistle(state, state.beats.length - 1);
   yield* endPeriod(state);
+}
+
+const ANCHOR_KINDS = new Set(['kick', 'shot', 'foul', 'offside', 'card', 'sub', 'injury']);
+
+/**
+ * A fixed beat's action is shown inside its record minute however early or late the performance
+ * reached it (stage/frame-clock.ts); time kept after it counts from there, so a lag the minute
+ * could not absorb is not made up by slowing the play that follows.
+ */
+function rebase(state: StageState, i: number, from: number): void {
+  const plan = state.pace!;
+  const action = state.events.slice(from).find((e) => e.beat === i && ANCHOR_KINDS.has(e.kind));
+  if (!action || state.paceOrigin === undefined) return;
+  const shown = action.t - state.paceOrigin;
+  const lo = Math.floor(plan.pin[i] / 60) * 60;
+  if (shown > lo + 60) state.paceOrigin += shown - (lo + 60);
+  else if (shown < lo) state.paceOrigin -= lo - shown;
+}
+
+/** A paced half plays on past its last recorded beat until its whistle is due (stage/keep.ts). */
+function* untilWhistle(state: StageState, last: number): Generator<void, void> {
+  if (!state.pace || state.beats[last].original?.period === 5) return;
+  yield* keepBall(state, (state.paceOrigin ?? 0) + state.pace.close[last]);
 }
 
 export { createStage };

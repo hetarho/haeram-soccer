@@ -38,6 +38,7 @@ import {
 } from './mind';
 import { advanceBody, speedAt, type Body, type Pace } from './motion';
 import { pressingReach } from './tendency';
+import type { PacePlan } from './pace';
 
 export interface Order {
   target: Vec | (() => Vec);
@@ -119,6 +120,12 @@ export interface StageState {
   targets?: Vec[];
   action?: BeatKind;
   receiver?: number;
+  /** Real-time pace of a staged record (stage/pace.ts), the staged second its period began, and
+   * the current restart's scene delay. */
+  pace?: PacePlan;
+  paceOrigin?: number;
+  restartDelay?: number;
+  hurry?: boolean;
 }
 
 const SHAPE = STAGING_CONFIG.shape;
@@ -282,6 +289,7 @@ export function createStage(script: Script): StageState {
     bound: script.bound === true,
     clockCap: Infinity,
     enteredAt: fixture.players.map((p) => (incoming.has(p.index) ? Infinity : 0)),
+    ...(script.pace ? { pace: script.pace } : {}),
   };
   if (state.bound && first.clock !== undefined) state.clock = first.clock;
   giveBall(state, first.actor);

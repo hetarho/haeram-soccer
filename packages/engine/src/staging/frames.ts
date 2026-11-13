@@ -86,7 +86,7 @@ export function* stageFrames(
 ): Generator<MatchFrame> {
   if (!script.beats.length) return;
   const { identity, detail } = frameInputs(record, sides, squads);
-  const staging = createStaging(script, sides);
+  const staging = createStaging(script, sides, { added: record.added ?? [] });
   const raw: ClockStaging & { frames: StageFrame[]; events: StageEvent[] } = {
     frames: [],
     events: [],

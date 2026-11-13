@@ -1,5 +1,6 @@
 import type { ScriptBeat, StagingPlayer, StagingSide } from '../../../contracts/src/match-script';
 import type { PlayerMotionState, Position, RoleId, Tactic } from '../../../contracts/src/types';
+import type { PacePlan } from './pace';
 export type { Position, RoleId };
 export type Vec = readonly [number, number];
 export type TeamId = 0 | 1;
@@ -108,6 +109,8 @@ export interface Script {
   nominalSeconds: number;
   /** Written from a settled result: staging may not replace a beat's opponent (T821). */
   bound?: true;
+  /** Real-time pace of a staged record (stage/pace.ts); absent, beats keep the writer's holds. */
+  pace?: PacePlan;
 }
 
 export type BallMode = 'held' | 'flight' | 'loose' | 'dead';
