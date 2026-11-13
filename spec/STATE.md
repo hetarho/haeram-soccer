@@ -59,17 +59,15 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
 | T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
-| T907 | Normalize prepared manager careers at the writer boundary | ARCH WORLD SAVE WEB | T893 | todo |
 | T908 | Reconcile throughput signatures with proven founding changes | ARCH WORLD MATCH HIST | T885 T889 | todo |
 | T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T906 | todo |
-| T911 | Observe contract expiry before genuine mandatory rehires | ARCH CLUB WORLD HIST | T885 | todo |
+| T912 | Restore the ordinary owned-loan return notification | ARCH CLUB WORLD HIST | T909 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| natural-football-261114 | 2 | 30 | 24 | 6 | 2 | 2 | 0 | 2026-11-13T20:54:00.913Z | [history](work/natural-football-261114.json) |
+| natural-football-261114 | 2 | 30 | 27 | 3 | 0 | 2 | 1 | 2026-11-13T21:32:44.407Z | [history](work/natural-football-261114.json) |
 
 ## next
 - inspect work board for remaining tasks
