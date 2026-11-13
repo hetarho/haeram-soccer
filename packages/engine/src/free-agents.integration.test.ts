@@ -7,6 +7,7 @@ import { joinFreeAgents } from './free-agents';
 import { careerWorld } from './career.testkit';
 import { historyWorld } from './history';
 import { makePlayer, refillPosition } from './world';
+import { suitorFor } from './transfers';
 import { activePlayers } from './player-state';
 import { compareIds } from './primitives';
 import { movePerson } from './npc-continuity';
@@ -49,6 +50,30 @@ describe('our expiring player no club signs (→CLUB-28, CLUB-49)', () => {
     star!.until = plain!.until = w.year;
     const before = { ...star!.attrs };
     w.year++;
+    // Supply an actual same-line vacancy and verify the plain player's real affordable suitor.
+    const vacancy = w.clubs
+      .filter((c) => c.id !== w.playerClub && !c.representative)
+      .map((club) => ({
+        club,
+        player: w.squads![club.id].find((p) => lineOf(p.position) === lineOf(plain!.position)),
+      }))
+      .find(({ club, player }) => {
+        if (!player) return false;
+        const trial = structuredClone(w);
+        if (
+          !joinFreeAgents(
+            trial,
+            trial.squads![club.id].find((p) => p.id === player.id)!,
+            w.year,
+          )
+        )
+          return false;
+        return suitorFor(trial, plain!, () => 0, '0')?.id === club.id;
+      });
+    expect(vacancy).toBeDefined();
+    expect(joinFreeAgents(w, vacancy!.player!, w.year)).toBe(true);
+    expect(suitorFor(w, plain!, () => 0, '0')).toBeDefined();
+    expect(suitorFor(w, star!, () => 0, '0')).toBeUndefined();
     expireContracts(w);
     const held = w.freeAgents!.find((p) => p.id === star!.id)!;
     expect(held.freeSince).toBe(w.year);
