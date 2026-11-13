@@ -78,9 +78,8 @@
 | T896 | Prepare affordable academy, pending-decision and discipline scenes | ARCH CLUB WORLD MATCH | T885 | todo |
 | T897 | Preserve regulation facts and exact seeded replay inputs | ARCH MATCH WORLD | T885 | todo |
 | T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
-| T899 | Trial settlement-local NPC market ratings | ARCH | T878 T880 | doing@261113.pr14 |
 
 ## next
+- gusta-implement-task T873 T875 T884
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
 - T883 coherent compatible release is owned by pr14; merge its result before final release preparation.
-- T899 is the bounded pr14 rating-cache experiment under the original pb14 deadline; retain its actual exit verdict and final publication reserve.
