@@ -17,6 +17,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| fin3 | hq-dev1-pve2-vm2 | autopilot | 2026-11-13T03:57Z | 2026-11-13T03:57Z | T859 |
 
 ## inbox
 - 261113 decided ECON-24 ECON-33 ECON-41: unspecified reserve steps and debt amount → cautious 50/40/30/20/10, balanced 40/30/20/10/5, bold 30/20/10/5/0 years by acted request; bankruptcy only below minus one year of fixed costs, no duration trigger; bold/freely keeps zero cash buffer (alt: one universal reserve | fixed nominal debt limit). The requested anchors hold, and costs scale across eras and currencies. fin3
@@ -982,7 +983,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | todo |
+| T859 | Fund delegated investment from reserves and soften club bankruptcy | ECON WEB ARCH | - | doing@261113.fin3 |
 | T860 | Show every age as N세, never a birth year | WEB | - | todo |
 | T861 | Persist every playable-country club's players as people | WORLD PLAYER LEAGUE HIST | - | todo |
 | T862 | Persisted players develop, age, retire and are replaced by youth | WORLD PLAYER CLUB STAFF | T861 | todo |
