@@ -22,9 +22,39 @@ import {
   seasonDayLabel,
   trainingInjuries,
 } from './index';
+import { lineOf } from './player';
+import { joinFreeAgents } from './free-agents';
+import { npcOffer } from './npc-market';
 import { NEWS_PER_MATCH, type NewsItem } from './news';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
+
+/** One real departure prepares a buyer; its unchanged books still decide the actual offer. */
+function buyerFor(w: World, player: Player, fee: string) {
+  const vacancy = w.clubs
+    .filter((club) => club.id !== w.playerClub && !club.representative)
+    .map((club) => ({
+      club,
+      departing: w.squads?.[club.id]?.find(
+        (one) => lineOf(one.position) === lineOf(player.position),
+      ),
+    }))
+    .find(({ club, departing }) => {
+      if (!departing) return false;
+      const trial = structuredClone(w);
+      joinFreeAgents(
+        trial,
+        trial.squads![club.id].find((one) => one.id === departing.id)!,
+        w.year,
+      );
+      return !!npcOffer(trial, club, player, clubOf(trial), fee);
+    });
+  expect(vacancy).toBeDefined();
+  const { club, departing } = vacancy!;
+  expect(joinFreeAgents(w, departing!, w.year)).toBe(true);
+  expect(npcOffer(w, club, player, clubOf(w), fee)).toBeDefined();
+  return club;
+}
 
 const founding = (seed = 'news') => ({ country: 'ENG', seed }) as const;
 const world = (seed = 'news') => simulatedWorld(founding(seed));
@@ -364,7 +394,7 @@ describe('club news from the event texts their producers write', () => {
     const w = world('news-transfer');
     w.calendar = { day: 1 };
     const p = activePlayers(w).find((x) => x.position !== 'GK')!,
-      club = w.clubs.find((c) => c.id !== w.playerClub && !c.representative)!;
+      club = buyerFor(w, p, '100000');
     const bid: TransferBid = {
       id: `sale:${p.id}`,
       direction: 'in',

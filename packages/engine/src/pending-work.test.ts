@@ -1,9 +1,46 @@
 import { describe, expect, it } from 'vitest';
-import type { TransferBid } from '../../contracts/src/types';
-import { operate, transferOffers, contractTalks, activePlayers, advanceRound } from './index';
+import type { TransferBid, Player, World } from '../../contracts/src/types';
+import {
+  operate,
+  transferOffers,
+  contractTalks,
+  activePlayers,
+  advanceRound,
+  clubOf,
+} from './index';
+import { lineOf } from './player';
+import { joinFreeAgents } from './free-agents';
+import { npcOffer } from './npc-market';
 import { pendingWorkPreview } from './pending-work';
 import { Host } from '../../../apps/web/src/runtime/host';
 import { careerWorld } from './career.testkit';
+/** One real departure prepares a buyer; its unchanged books still decide the actual offer. */
+function buyerFor(w: World, player: Player, fee: string) {
+  const vacancy = w.clubs
+    .filter((club) => club.id !== w.playerClub && !club.representative)
+    .map((club) => ({
+      club,
+      departing: w.squads?.[club.id]?.find(
+        (one) => lineOf(one.position) === lineOf(player.position),
+      ),
+    }))
+    .find(({ club, departing }) => {
+      if (!departing) return false;
+      const trial = structuredClone(w);
+      joinFreeAgents(
+        trial,
+        trial.squads![club.id].find((one) => one.id === departing.id)!,
+        w.year,
+      );
+      return !!npcOffer(trial, club, player, clubOf(trial), fee);
+    });
+  expect(vacancy).toBeDefined();
+  const { club, departing } = vacancy!;
+  expect(joinFreeAgents(w, departing!, w.year)).toBe(true);
+  expect(npcOffer(w, club, player, clubOf(w), fee)).toBeDefined();
+  return club;
+}
+
 function world() {
   const w = careerWorld({ seed: 'handover' });
   w.cash = w.income = '999999999999';
@@ -11,6 +48,8 @@ function world() {
   return w;
 }
 function offers(w: ReturnType<typeof world>) {
+  const p = activePlayers(w)[0],
+    buyer = buyerFor(w, p, '100');
   const candidates = transferOffers(w)
     .filter((o) => o.available && BigInt(o.fee) > 0n)
     .slice(0, 2);
@@ -27,12 +66,11 @@ function offers(w: ReturnType<typeof world>) {
     due: w.calendar!.day + 5,
     status: 'countered',
   }));
-  const p = activePlayers(w)[0];
   w.bids.push({
     id: 'sale',
     direction: 'in',
     playerId: p.id,
-    club: w.clubs.find((c) => c.id !== w.playerClub)!.id,
+    club: buyer.id,
     fee: '100',
     year: w.year,
     day: w.calendar!.day,
