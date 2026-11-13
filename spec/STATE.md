@@ -10,11 +10,6 @@
 - lang: ko   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
 
-## active
-| tag | host | mode | since | at | doing |
-|---|---|---|---|---|---|
-| ct13 | ihaelam-ui-MacBookPro | autopilot | 2026-11-13T14:10Z | 2026-11-13T14:10Z | - |
-
 ## inbox
 - 261113 parked SAVE-4 SAVE-13 HIST-23 T867 T865: the persisted world may not fit a century save — the worst century profile has about 1.07 MB of compressed payload left (6,551,024 of 8,388,608 portable bytes, artifacts/benchmarks/T286-full-model-storage.json), 9,922 persisted players are 0.62–0.93 MiB gzipped before any packer, and every opponent of an own match stays as a kept retiree with his profile; T867 and T865 read their shares (500,000 and 450,000 bytes) early, and when one is over the owner chooses: a tighter packer | a smaller NPC_SQUAD.size | the kept profile only for podium, news and transfer links | a higher SAVE-4 portable limit rv13
 - 261113 suggest WEB-59 T860 T865: every age reads the current season's year − birth year, so a player who retired decades ago reads 80세 or 110세 on his sheet; an age at retirement for a retired player would be a WEB-59 change, if wanted rv13
@@ -100,14 +95,14 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T866 | Calibrate the persisted world against the league, squad, value and save targets | LEAGUE WORLD CLUB SAVE ARCH | T865 T869 T870 T872 | todo |
 
 ## next
-- gusta-implement-task T866: partial handoff on work/persisted-world-860; read report 261113-pw86 and the original exploration clock before restarting; preserve the owner’s unit-only test restriction
-- main is green at 66bfa96c (CI 43299202108) after n813: T845 T848 T851 T852 and the repairs T853–T858 done, no task left; plan next with /gusta-sketch from the 261113 suggests (SAVE-30 retired 재정 기조 row on load, WEB-44/118 fixed-cost runway, MATCH-39 `Pitch` recomputing every staged frame) — report spec/reports/261112-n813.md
-- owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
+- No implementation tasks remain on work/persisted-world-860; T866 completed its original timebox exit, with calibration still failed/incomplete. See report 261113-ct13.
+- Use /gusta-sketch for new rule/performance/storage work from T866’s six preserved suggestions; do not restart its exhausted exploration clock.
+- Main implementation publication remains parked under the owner’s unit-only restriction and the unproven century-capacity gate (ARCH-30, SAVE-13); no release or mixed-suite pass is claimed.
 
 ## log
+- 261113 T866 done
 - 261113 gusta-create-task T866 start: distinguish original measurement targets from its elapsed four-hour exit; preserve every failed/unrun verdict and the unit-only override ct13
 - 261113 fix watch: publish the first staged minute before filling the normal two-minute batches; preserve frame order, match results and the original 3 s browser latency guard fin3
 - 261113 gusta-create-task WORLD LEAGUE CLUB HIST: T861–T866 revised to WORLD@13 LEAGUE@20 CLUB@70 HIST@27, T867 new (view, fixture helpers, schema, packing, size and time reads split from T861) rv13
@@ -127,4 +122,3 @@
 - 261113 T871 done
 - 261113 gusta-create-task WEB MATCH: T871 consumes WEB@221 MATCH@64 sx2
 - 261113 gusta-update-ssot WEB MATCH: WEB-32✎ MATCH-12✎ 1x 18→60 real s per 60 match seconds (real time) sx2
-- 261113 T868 done

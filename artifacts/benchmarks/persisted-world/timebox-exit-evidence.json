@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-11-13T14:13:44.904352+00:00",
+  "head": "27ae0d0b8a9d55254b790531a544e940d66a5475",
+  "task": "T866",
+  "exit": "original-four-hour-timebox",
+  "calibrationPassed": false,
+  "originalExplorationStart": "2026-11-13T08:52:43.827Z",
+  "originalExplorationEnd": "2026-11-13T12:52:43.827Z",
+  "newMeasurements": 0,
+  "originalNumericalObjectivesRetainedVerbatim": 6,
+  "originalExitRetainedVerbatim": true,
+  "productionConfigsChanged": false,
+  "reusedFullUnitEvidence": {
+    "source": "c0768c7ec900fa8f1efb2b3789741514b27cfd26",
+    "filesPassed": 344,
+    "testsPassed": 2941,
+    "logHashesChecked": true,
+    "isNewRun": false
+  },
+  "unchangedDirectories": [
+    "apps",
+    "packages",
+    "tests"
+  ],
+  "laterSourceChangesCoveredByFocusedEvidence": [
+    "scripts/lib/persisted-world-facts.test.ts",
+    "scripts/lib/persisted-world-facts.ts",
+    "scripts/persisted-world-summary.ts"
+  ],
+  "verifiedLogHashes": [
+    "artifacts/benchmarks/persisted-world/publication-unit-final.log",
+    "artifacts/benchmarks/persisted-world/publication-typecheck-final.log",
+    "artifacts/benchmarks/persisted-world/publication-lint-final.log",
+    "artifacts/benchmarks/persisted-world/publication-i18n-final.log",
+    "artifacts/benchmarks/persisted-world/publication-format-final.log",
+    "artifacts/benchmarks/persisted-world/publication-spec-lint-final.log",
+    "artifacts/benchmarks/persisted-world/publication-spec-final.log",
+    "artifacts/benchmarks/persisted-world/reporting-window-unit.log",
+    "artifacts/benchmarks/persisted-world/reporting-window-typecheck.log",
+    "artifacts/benchmarks/persisted-world/reporting-window-lint.log",
+    "artifacts/benchmarks/persisted-world/reporting-window-i18n.log",
+    "artifacts/benchmarks/persisted-world/reporting-window-format.log",
+    "artifacts/benchmarks/persisted-world/reporting-window-test-lint.log",
+    "artifacts/benchmarks/persisted-world/reporting-window-test-format.log"
+  ],
+  "verifiedHandoffFileHashes": [
+    "artifacts/benchmarks/persisted-world/residual-through-1980-check.json",
+    "artifacts/benchmarks/persisted-world/residual-through-1980-comparison.json",
+    "artifacts/benchmarks/persisted-world/residual-through-1980-comparison.md",
+    "artifacts/benchmarks/persisted-world/residual-through-1980.json",
+    "artifacts/benchmarks/persisted-world/residual-through-1980.json.partial.json",
+    "artifacts/benchmarks/persisted-world/residual-through-1980.log"
+  ],
+  "reportingSourceHashesMatch": true,
+  "followUpInboxIds": [
+    "a32ca639",
+    "4b0e8926",
+    "01f7a5ee",
+    "0d2cae43",
+    "6ebec794",
+    "84ac63b0"
+  ],
+  "mainImplementationPublished": false,
+  "testPolicy": "unit-only",
+  "limits": [
+    "Original numerical objectives remain failed, incomplete or unrun as stated in README.md.",
+    "Historical performance and capacity observations retain their original source and machine.",
+    "No new simulation, capacity, integration, contract, browser, build or CI run."
+  ],
+  "explorationCompleted": true,
+  "targetVerdictsPassing": false,
+  "releaseComplete": false,
+  "closedByContinuation": "ct13"
+}

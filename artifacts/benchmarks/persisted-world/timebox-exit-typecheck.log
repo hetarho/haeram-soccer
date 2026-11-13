@@ -1,0 +1,3 @@
+
+> haeram-soccor@0.8.0 typecheck /Users/ihaelam/project/haeram-soccer
+> tsc --noEmit --incremental --tsBuildInfoFile .tmp/tsc/tsbuildinfo

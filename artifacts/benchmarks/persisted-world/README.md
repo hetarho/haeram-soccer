@@ -1,6 +1,23 @@
 # Persisted-world calibration (T866)
 
-Measurement in progress. The original four-hour window began 2026-11-13T08:52:43.827Z, with its original end at 12:52:43.827Z. The owner deadline is 13:00 UTC. The host initially reserved the period from 12:00 UTC for finalization. Once all unit/static checks and completed-work publication finished early, inbox 31641f13 reallocates that reserve to one existing residual candidate through 1980 after the fifth control finishes, with an absolute 12:45 UTC cutoff before the original four-hour end. The original start is preserved. Publication belongs to the host by 13:00 UTC. The host holds the clone-wide heavy lock. No target is claimed passing until its measured evidence is recorded here.
+The four-hour exploration is closed under T866's original timebox exit. Its original window, 2026-11-13T08:52:43.827Z–12:52:43.827Z, is unchanged. Continuation ct13 reviewed the preserved evidence after that window; it started no new measurement. Calibration has **not passed**. Failed, incomplete and unrun objectives remain below, with their original bounds and source identities. Production controls and flat founding are unchanged.
+
+The previous publication deadline was 13:00 UTC. The original host reserved finalization from 12:00 UTC, then inbox 31641f13 authorized one existing residual candidate through 1980, ending before its absolute 12:45 UTC cutoff. Those historical reservations are not a new exploration budget or a current running job.
+
+## Timebox-exit verdict
+
+| Objective | Preserved result | Verdict / follow-up inbox |
+|---|---|---|
+| Division levels, 5 seeds through 2010, ±5 from the 1950s | Four complete core worlds; fifth stops at the 2000 boundary. The combined observed panel has 714 cells outside the band, including the fifth's one-observation 2000s cell. | Failed; five-seed coverage incomplete. `a32ca639` |
+| Champions, 4–9 different winners / 7–17 most titles | All 32 completed country/seed windows miss the spread. The fifth window is incomplete. | Failed. `4b0e8926` |
+| XI span about 8–12 / peak ages about 25–29 | Complete-world 2010 mean spans are 14.32–48.99. Four completed outfield cohorts are retained; the fifth's partial goalkeeper/all-player cohorts cannot establish completed peaks. | Span failed; complete-population coverage incomplete. `01f7a5ee` |
+| Values and books | Wages exceed revenue in 12849/160105 observed closed club-seasons; 57174 after-summer wage-limit breaches. ENG mean-value/average-fee ratios 2.36 (1993) and 2.56 (2003) exceed 0.6–1.4. | Failed. `0d2cae43` |
+| Lossless century saves, original 6/8 MiB limits | Historical ten-season squad stream is 996226 bytes against 500000. The baseline, active-management and retained workloads failed before their required checkpoints; the records diagnostic completed 5/20 seasons. | Squad share failed; century capacity unproven. `6ebec794` |
+| Throughput and reference generation | Historical season CPU ratio 37.876× and creation CPU ratio 33.1119× against pre-T861, on the original Xeon Silver 4214 host. Reference-browser generation is unrun under the unit-only restriction. | Measured regression; generation budget unmeasured. `84ac63b0` |
+
+The numerical rows retain their original measurement source. In particular, pre-T872 performance and owned-capacity evidence is not relabeled as a measurement of the repaired source or of this Mac. LEAGUE-13's reference careers remain **not re-measured**. `configs-in-force.json`, the raw artifacts and all reproduction commands are retained. The residual candidate improves some common-prefix observations but does not pass the complete gate, so it is not applied to production.
+
+The six follow-up suggestions exist on the shared coordination branch and are also preserved verbatim in `follow-up-suggestions.json`. Inbox `3bbe0a89` records applying the existing exploratory exit without changing a numerical objective. Inbox `4ce64abf` parks main implementation publication: the owner’s unit-only restriction still excludes the final mixed suite, and a code push to main would automatically run that CI. The work branch preserves the implementation and this exit; no release, century-capacity or mixed-suite success is claimed.
 
 The immutable comparison is `T286-before.json`, copied before any century phase. Historical throughput uses pre-T861 `b41b8978774506a0344aafd100bf4237ce70046d`, the owner's specified stage commits and ARCH-34's paired main-thread CPU estimator. Historical T863 evidence includes its subsequently corrected growth/XI-reselection behavior; it is not evidence for the final growth contract.
 
@@ -198,4 +215,4 @@ The completed producer calls its final annual observation at the requested bound
 
 Application code is byte-identical to unit-tested c0768c7e. The only later source change is the three-file reporting eligibility fix 535200c7, covered by nine focused units and static checks. The candidate loaded its modules before that reporting fix: its controller start commit/computation fingerprint identifies the executed source. Its raw `source` field is Git HEAD at output time, so it must not override that start provenance or relabel the measurement. No simulation/model code changed during the final trial.
 
-The host returns T866 to todo and preserves the worktree. Every acceptance remains open; failed or omitted targets are never marked passing. Publication is the remote work branch, with no main implementation push or CI. The original four-hour clock remains explicit, and further work needs a deliberate continuation/replanning rather than a fresh hidden timebox.
+At the previous handoff the host returned T866 to todo with its evidence intact. Continuation ct13 now applies the original exploratory exit: numerical objectives remain unchanged and their failed/incomplete/unrun verdicts above remain visible. Task completion records the bounded exploration and its follow-up suggestions, not a passing calibration or release. Publication remains the remote work branch, with no main implementation push or CI and no restarted timebox.

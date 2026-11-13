@@ -1,0 +1,9 @@
+
+ RUN  v5.0.3 /Users/ihaelam/project/haeram-soccer
+
+·········
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  23:13:46
+   Duration  222ms (tests 56%, transform 30%, import 10%, worker 4%)

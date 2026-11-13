@@ -1,0 +1,6 @@
+
+> haeram-soccor@0.8.0 format:check /Users/ihaelam/project/haeram-soccer
+> prettier --check --cache --cache-strategy content --cache-location .tmp/prettier-cache apps packages scripts tests *.json *.ts *.mjs .github
+
+Checking formatting...
+All matched files use Prettier code style!
