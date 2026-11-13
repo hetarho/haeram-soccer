@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "task": "T908",
+  "scope": "Historical exact-result provenance; no gameplay policy or performance claim.",
+  "workload": {
+    "seed": "season-archive",
+    "year": 2024,
+    "staffAuthority": 2,
+    "aggregateFixtures": 40,
+    "ordinaryCandidateRoundCalls": 2,
+    "capturedScoreRows": 450
+  },
+  "hashContract": {
+    "algorithm": "sha256",
+    "hexCharacters": 16,
+    "serialization": "JSON.stringify of complete records/facts",
+    "fieldsExcluded": "Only original facts() managerTenure attribution exclusion; no new exclusions. All material and cleanSheets remain in the final hash."
+  },
+  "originalExpected": {
+    "aggregateRecords": "9ad7a73f17eb42d4",
+    "candidateRounds": "6829def1e75ea8f9"
+  },
+  "provenHistoricalCurrent": {
+    "aggregateRecords": "d01e8b16487872a4",
+    "candidateRounds": "aef5e3c0618eb5f2"
+  },
+  "historicalCaptures": [
+    {
+      "key": "T838",
+      "source": "d45937dde0923b4e8f5f1b98513fb2e5a7098f16",
+      "embeddedLabel": "T838-d45937dd",
+      "digests": {
+        "aggregateRecords": "9ad7a73f17eb42d4",
+        "candidateRounds": "6829def1e75ea8f9"
+      },
+      "engine": "0.8.0",
+      "persistedRegistry": false,
+      "ownPlayers": 20,
+      "captureFile": "T838.json.gz",
+      "gzipSha256": "2528739c8f4ffab3e99645a1095de3b79796d0cb27d3af5c2a1cfc43eae037e8",
+      "payloadSha256": "113f0fc8b9baa69cdc1e2fa85746ebac9103bf162c4c6a2e5993d506f4b02971",
+      "gzipBytes": 442465
+    },
+    {
+      "key": "preT861",
+      "source": "b41b8978774506a0344aafd100bf4237ce70046d",
+      "embeddedLabel": "preT861-b41b8978",
+      "digests": {
+        "aggregateRecords": "9ad7a73f17eb42d4",
+        "candidateRounds": "6829def1e75ea8f9"
+      },
+      "engine": "0.8.0",
+      "persistedRegistry": false,
+      "ownPlayers": 20,
+      "captureFile": "preT861.json.gz",
+      "gzipSha256": "f034caed1dc9c899282a1ca867e61b2b83d6c1b7d8531ba2ccc995cc4d7dea7e",
+      "payloadSha256": "dd75b79c85eb9ef5fb4d9c994510e254c949d7713f347a7509e324e7d4f140a1",
+      "gzipBytes": 442467
+    },
+    {
+      "key": "T861",
+      "source": "6e483e5e7830e394a4fd0381eec967b912b58020",
+      "embeddedLabel": "T861-6e483e5e",
+      "digests": {
+        "aggregateRecords": "8c72389c8ad38555",
+        "candidateRounds": "67d3ac5251a40f79"
+      },
+      "engine": "0.8.0",
+      "persistedRegistry": true,
+      "ownPlayers": 22,
+      "captureFile": "T861.json.gz",
+      "gzipSha256": "ecaaa40a849f6bbb58b16de560f630a353b9a23d1e6496829e8d611e75aebf7b",
+      "payloadSha256": "3646e2398fd9520accf3cd1445206ac03c23981971fd76721504cdda9cb22595",
+      "gzipBytes": 444366
+    },
+    {
+      "key": "T863",
+      "source": "935a91df96fb7c90c60a85c3504e77c7d5758894",
+      "embeddedLabel": "T863-935a91df",
+      "digests": {
+        "aggregateRecords": "d01e8b16487872a4",
+        "candidateRounds": "e33e19c15a2a19dc"
+      },
+      "engine": "0.8.0",
+      "persistedRegistry": true,
+      "ownPlayers": 22,
+      "captureFile": "T863.json.gz",
+      "gzipSha256": "fb4d01ed5ee4549d59defa7c478cb485dcb2672fa8ff7e7d7bf16a2678006636",
+      "payloadSha256": "df4175f501cacd7b0474b414d8a6a2b4123c04771e53c4f16c45b1afdfafcdab",
+      "gzipBytes": 444595
+    },
+    {
+      "key": "current",
+      "source": "37d987956774171f41ddef4bee971e703c5f3e86",
+      "embeddedLabel": "current-cb615f03",
+      "digests": {
+        "aggregateRecords": "d01e8b16487872a4",
+        "candidateRounds": "aef5e3c0618eb5f2"
+      },
+      "engine": "0.8.1",
+      "persistedRegistry": true,
+      "ownPlayers": 22,
+      "captureFile": "current.json.gz",
+      "gzipSha256": "ff8b8736ef7427f7e285635c0d57d0cd87484b1fe2a8fdf870702ad42d041174",
+      "payloadSha256": "10f4aad7406155216465e5a3c531f8caeabb5858abd244fb31b50bd6d6ce03bf",
+      "gzipBytes": 446657
+    }
+  ],
+  "currentSourceLabelCaveat": "capture label sayscb615f03;gitdiff proves all packages/engine/src,packages/contracts/src andworlds/releasesfixture bytes identical between cb615f03 and actual frozen37d98795. No runtime source difference.",
+  "causalComparisons": [
+    {
+      "from": "T838",
+      "to": "preT861",
+      "inputChangedFixturesByCategory": {
+        "fixture": 0,
+        "clubs": 0,
+        "squads": 0,
+        "strength": 0,
+        "shift": 0,
+        "profiles": 0,
+        "tactics": 0,
+        "form": 0,
+        "context": 0
+      },
+      "recordChangedFixturesByCategory": {},
+      "changedScoreRows": 0,
+      "fixtureIDsExact": true
+    },
+    {
+      "from": "preT861",
+      "to": "T861",
+      "inputChangedFixturesByCategory": {
+        "fixture": 0,
+        "clubs": 0,
+        "squads": 40,
+        "strength": 4,
+        "shift": 4,
+        "profiles": 40,
+        "tactics": 0,
+        "form": 0,
+        "context": 0
+      },
+      "recordChangedFixturesByCategory": {
+        "score": 35,
+        "metrics": 40,
+        "players": 40,
+        "highlights": 40,
+        "xg": 40,
+        "detail": 40,
+        "incidents": 40,
+        "added": 34
+      },
+      "changedScoreRows": 383,
+      "fixtureIDsExact": true
+    },
+    {
+      "from": "T861",
+      "to": "T863",
+      "inputChangedFixturesByCategory": {
+        "fixture": 0,
+        "clubs": 4,
+        "squads": 0,
+        "strength": 4,
+        "shift": 4,
+        "profiles": 0,
+        "tactics": 0,
+        "form": 0,
+        "context": 4
+      },
+      "recordChangedFixturesByCategory": {
+        "score": 3,
+        "metrics": 4,
+        "players": 4,
+        "highlights": 3,
+        "xg": 3,
+        "detail": 4,
+        "added": 3
+      },
+      "changedScoreRows": 19,
+      "fixtureIDsExact": true
+    },
+    {
+      "from": "T863",
+      "to": "current",
+      "inputChangedFixturesByCategory": {
+        "fixture": 0,
+        "clubs": 0,
+        "squads": 0,
+        "strength": 0,
+        "shift": 0,
+        "profiles": 0,
+        "tactics": 0,
+        "form": 0,
+        "context": 0
+      },
+      "recordChangedFixturesByCategory": {},
+      "changedScoreRows": 0,
+      "fixtureIDsExact": true
+    }
+  ],
+  "changedFactCategories": {
+    "/npcSeason/competitions/*/players/*/clubs/*/cleanSheets": 540,
+    "/ownMatches/*/material/heat/*": 441,
+    "/ownMatches/*/material/network/length": 2,
+    "/ownMatches/*/material/network/*": 466,
+    "/ownMatches/*/material/report/*": 20,
+    "/ownMatches/*/material/shots/*": 31
+  },
+  "causes": [
+    {
+      "boundary": "T8616e483e5e",
+      "evidence": "Both historical digests and fullrecords/facts are unchanged immediately beforeT861. T861 installs real persisted22-player squads, removes generated-slot release/refill selection, and selects actual players. All40selected squads/profiles change; fixtureIDs/tactics/form/context stayexact. This causally explains changedscores,counters,contributors,incidents,discipline and competitionledgers; no new random rule is inferred."
+    },
+    {
+      "boundary": "T863935a91df",
+      "evidence": "world.tsclubStrength stores actualXIstrength and invalidateNpcSquad updates it; clubManager ability derives club.strength, then npcMatchContext=(ability−50)/4. Of40cases,4club/contextstrength inputs change while exactsquads/profiles/tactics/form stayequal. T863first40records exactly reproduce currentd01e8b16487872a4, including allcounter/score/identity fields."
+    },
+    {
+      "boundary": "HIST23/1f4a6be8 playerseasonrecords",
+      "evidence": "RemainingNPCledger difference T863→current is exactly540explicitGKcleanSheets fields. HIST.md90 requires them; npc-stats.ts210–214 sets0andcredits startingkeeper when actualscoreconceded0. OtherNPCledgerfacts equal after onlythisfield is excluded diagnostically."
+    },
+    {
+      "boundary": "approvedscript/stagingchanges T873,T874,T876,T889",
+      "evidence": "Remainingtwoownrecord differences are exclusively material.heat/network/report/shots. Sameinitialandafterbothroundplayer/manager/club snapshots, all450scores, discipline, and allownfacts exceptmaterial are identicalT863/current. After diagnostically excluding onlymaterial andcleanSheets, fullcandidatefacts areEXACT. This is causal category isolation, not permission to removefields fromtest."
+    }
+  ],
+  "unchangedChecks": {
+    "T838AndPreT861CompleteInputsRecordsFacts": true,
+    "T863AndCurrentComplete40InputsRecords": true,
+    "T863AndCurrentAll450Scores": true,
+    "T863AndCurrentAllPlayerManagerClubStages": true,
+    "T863AndCurrentDiscipline": true,
+    "completeFactsExactAfterDiagnosticOnlyTwoCategories": true
+  },
+  "evidence": {
+    "coordinatorDirectory": ".tmp/nf14-evidence/remaining-diagnosis/throughput-history",
+    "provenanceSha256": "eb7d44710e44d40ef38eb4fe05057218b0d97d0328c980049528508110ca917a",
+    "exhaustiveChangedFactNodes": 1500,
+    "changedFactDiffSha256": "7768026f6dc17bee625d6822147430d31ef9a4afe092cdd6cb0fa7c6e4a3007a"
+  },
+  "finalScopedConfirmation": {
+    "source": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+    "embeddedLabel": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+    "engine": "0.8.2",
+    "digests": {
+      "aggregateRecords": "d01e8b16487872a4",
+      "candidateRounds": "aef5e3c0618eb5f2"
+    },
+    "captureFile": "final-current.json.gz",
+    "gzipSha256": "402af58d4409507462a436f884681d47d48b7b4ccf596936ba19746f2a221e32",
+    "payloadSha256": "e9740b64f7a281e59bc8f6843ce68b72450be2609858fc24b5cc441752e51c3b",
+    "aggregateRecords": 40,
+    "scoredFixtures": 450,
+    "allInputsRecordsFactsStagesExactToHistoricalCurrent": true,
+    "coordinatorElapsedMs": 2961,
+    "scope": "Coordinator executed the unchanged bounded capture on this actual scoped runtime before replacing constants; elapsed is diagnostic, not a performance comparison."
+  },
+  "limits": [
+    "Capture comparisons explain intended different results; no speed comparison is valid across them.",
+    "Diagnostic exclusion isolates causes only and MUST NOT be applied to the production assertion.",
+    "Worker revalidated captured bytes without executing a match, round, season or integration.",
+    "Final scoped capture and unchanged complete integration gate are coordinator-owned."
+  ]
+}
