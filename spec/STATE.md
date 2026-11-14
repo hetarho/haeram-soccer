@@ -59,6 +59,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -66,4 +67,4 @@
 | natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 
 ## next
-- inspect work board for remaining tasks
+- run coordinator-owned T916 exploration; preserve prior group failures
