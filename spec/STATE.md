@@ -93,6 +93,7 @@
 | T913 | Read the specified raw XI strength in the historical division observer | ARCH LEAGUE WORLD | T901 | todo |
 | T914 | Prepare a genuine no-playoff season for exact heat-map reduction | ARCH MATCH HIST LEAGUE | T885 | todo |
 | T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
+| T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 
 ## next
 - gusta-implement-task T873 T875 T884
