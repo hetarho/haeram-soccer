@@ -75,6 +75,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
+| pf17-perf | 2 | 4 | 0 | 4 | 0 | 0 | 3 | 2026-11-16T16:57:46.045Z | [history](work/pf17-perf.json) |
 
 ## next
 - Session pf17 runs T925 T926 T927 then T921 (review/generation-hotpaths-261117): identical worlds, kept only with a measured CPU gain.
