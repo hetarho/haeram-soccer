@@ -64,7 +64,8 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
-| T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | blocked@261116 |
+| T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | todo |
+| T928 | Share market ratings and orders between slots of one position and role | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -74,6 +75,6 @@
 | pf17-perf | 2 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-16T17:33:37.532Z | [history](work/pf17-perf.json) |
 
 ## next
-- Session pf17 landed T921 T926 T927 (identical worlds; generation history CPU ratio 0.6849, reports/261117-pf17); T925 recorded no gain; generation-hotpaths F4 stays open.
+- Session pf17 landed T921 T926 T927 (identical worlds; generation history CPU ratio 0.6849, reports/261117-pf17); T925 recorded no gain; second cycle re-measures T920 and runs T928 (F4).
 - NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
 - Session chslow landed T918 T919 in 0.8.3 (identical worlds, 1950 generation 666.7 s → 199.9 s; reports/261116-chslow); T920 is blocked on an idle-host re-measure of its kept patch.
