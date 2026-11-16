@@ -379,18 +379,26 @@ export function npcMarket(w: World) {
   // A non-moved player's rating cannot change within the settlement and the walk's filters
   // only change when a move settles, which ends the walk, so filtering lazily in this order
   // selects what filtering and then sorting the pool would.
-  const orders = new Map<Line, Map<Slot | undefined, Listing[]>>();
+  // Each entry stores its slot rating and settlement tie once, valid only within this settlement.
+  type Ranked = { listing: Listing; score: number; tie: number };
+  const orders = new Map<Line, Map<Slot | undefined, Ranked[]>>();
   const orderFor = (need: Need) => {
     let bySlot = orders.get(need.line);
     if (!bySlot) orders.set(need.line, (bySlot = new Map()));
     let order = bySlot.get(need.slot);
     if (!order) {
-      order = (byLine.get(need.line) ?? []).filter((l) => !moved.has(l.player.id));
+      order = (byLine.get(need.line) ?? [])
+        .filter((l) => !moved.has(l.player.id))
+        .map((listing) => ({
+          listing,
+          score: rating(listing.player, settlement, need.slot),
+          tie: tie.get(listing.player.id)!,
+        }));
       order.sort(
         (a, b) =>
-          rating(b.player, settlement, need.slot) - rating(a.player, settlement, need.slot) ||
-          tie.get(a.player.id)! - tie.get(b.player.id)! ||
-          compareIds(a.player.id, b.player.id),
+          b.score - a.score ||
+          a.tie - b.tie ||
+          compareIds(a.listing.player.id, b.listing.player.id),
       );
       bySlot.set(need.slot, order);
     }
@@ -401,9 +409,9 @@ export function npcMarket(w: World) {
       let completed = false;
       for (const need of wanted.get(buyer.id)!) {
         const floor = need.slot ? need.best + NPC_MARKET.upgrade : undefined;
-        for (const listing of orderFor(need)) {
+        for (const { listing, score } of orderFor(need)) {
           // Ranked by this slot's rating, so no later listing fills the need either.
-          if (floor !== undefined && rating(listing.player, settlement, need.slot) < floor) break;
+          if (floor !== undefined && score < floor) break;
           if (listing.club === buyer || moved.has(listing.player.id)) continue;
           // Settlement-local seller facts reject a seller before the squad-rule scan (T909).
           const { limit, bill } = clubFacts(w, listing.club, settlement);
