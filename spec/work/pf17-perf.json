@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T18:25:31.043Z",
-  "sourceCommit": "9f685c170339cb159094a178d1114cfac44918bd",
+  "snapshotAt": "2026-11-16T18:28:51.636Z",
+  "sourceCommit": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -23,7 +23,7 @@
       "T928"
     ],
     "lastRun": {
-      "id": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+      "id": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -44,9 +44,9 @@
           "version": null
         }
       ],
-      "startedAt": "2026-11-16T18:22:17.606Z",
-      "stoppedAt": "2026-11-16T18:25:29.455Z",
-      "dispatched": 5,
+      "startedAt": "2026-11-16T18:28:06.290Z",
+      "stoppedAt": "2026-11-16T18:28:50.029Z",
+      "dispatched": 2,
       "outcome": "needs-attention",
       "failures": [
         {
@@ -491,29 +491,30 @@
         "T920"
       ],
       "lane": null,
-      "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1",
+      "owner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561/worker-1",
       "contributors": [
         "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1",
-        "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1"
+        "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1",
+        "7c32fab5-f6a0-4c6f-8018-8baea8d05561/worker-1"
       ],
       "status": "blocked",
       "reason": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
       "createdAt": "2026-11-16T18:11:38.271Z",
       "startCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2",
-      "submittedBase": "c4304ece5a15ddaeed2a895bdf7cb1433cd7cdfd",
-      "submissionId": "8a3c7fa7-505d-408d-b348-1d5fbccd4b7b",
-      "submittedAt": "2026-11-16T18:20:37.946Z",
+      "submittedBase": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
+      "submissionId": "8fa00dd2-9cc6-46d6-9c6b-ac6f8382b272",
+      "submittedAt": "2026-11-16T18:27:59.406Z",
       "risk": null,
       "dispatch": {
-        "id": "4d9896f2-ca70-4922-8068-f9e4c3c94ce4",
-        "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+        "id": "772e54b1-5ab0-42e8-81d1-c859a68f9b26",
+        "runner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": "sonnet",
         "status": "finished",
-        "startedAt": "2026-11-16T18:22:36.053Z",
-        "finishedAt": "2026-11-16T18:24:22.751Z",
+        "startedAt": "2026-11-16T18:28:29.425Z",
+        "finishedAt": "2026-11-16T18:28:49.778Z",
         "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
         "summary": null
       },
@@ -538,18 +539,39 @@
           "finishedAt": "2026-11-16T18:22:35.893Z",
           "invalidatedAt": "2026-11-16T18:22:35.923Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "aaf753e0-68ab-4d1e-b242-361bfdfc4096",
+          "owner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T920’s implementation and performance evidence support the optimization, but the recorded acceptance overstates academy test coverage.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T920.growth-step-reuse.md:10",
+              "message": "T920 marks the training, NPC careers and academy test criterion complete, but the result records passes only for training and NPC careers. The runner’s changed-unit check found no test files, and academy.test.ts is excluded from that unit project. Record academy coverage as pending and explicitly hand it to the coordinator’s integration gate, or provide evidence that the academy tests passed against this candidate."
+            }
+          ],
+          "commit": "d7f95ffb4da84ceba2ceb1dd886a33d3ebe39bc0",
+          "baseCommit": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
+          "submissionId": "8fa00dd2-9cc6-46d6-9c6b-ac6f8382b272",
+          "createdAt": "2026-11-16T18:28:06.492Z",
+          "finishedAt": "2026-11-16T18:28:29.315Z",
+          "invalidatedAt": "2026-11-16T18:28:29.344Z",
+          "invalidationReason": "correction assigned"
         }
       ],
       "steps": [
         {
           "taskId": "T920",
-          "commit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
-          "at": "2026-11-16T18:20:37.930Z",
+          "commit": "d7f95ffb4da84ceba2ceb1dd886a33d3ebe39bc0",
+          "at": "2026-11-16T18:27:59.393Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-11-16T18:19:37.210Z",
-              "finishedAt": "2026-11-16T18:20:37.729Z"
+              "startedAt": "2026-11-16T18:27:34.875Z",
+              "finishedAt": "2026-11-16T18:27:59.220Z"
             }
           ]
         }
@@ -557,8 +579,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-11-16T18:19:37.210Z",
-          "finishedAt": "2026-11-16T18:20:37.729Z"
+          "startedAt": "2026-11-16T18:27:34.875Z",
+          "finishedAt": "2026-11-16T18:27:59.220Z"
         }
       ]
     },
@@ -5160,6 +5182,426 @@
           "startedAt": "2026-11-16T18:22:17.606Z",
           "stoppedAt": "2026-11-16T18:25:29.455Z",
           "dispatched": 5,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+              "role": "worker",
+              "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 677,
+      "at": "2026-11-16T18:27:34.216Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 678,
+      "at": "2026-11-16T18:27:34.718Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 679,
+      "at": "2026-11-16T18:27:59.406Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
+        "submissionId": "8fa00dd2-9cc6-46d6-9c6b-ac6f8382b272",
+        "submittedAt": "2026-11-16T18:27:59.406Z",
+        "steps": [
+          {
+            "taskId": "T920",
+            "commit": "d7f95ffb4da84ceba2ceb1dd886a33d3ebe39bc0",
+            "at": "2026-11-16T18:27:59.393Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-16T18:27:34.875Z",
+                "finishedAt": "2026-11-16T18:27:59.220Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T18:27:34.875Z",
+            "finishedAt": "2026-11-16T18:27:59.220Z"
+          }
+        ],
+        "verifiedCommit": "d7f95ffb4da84ceba2ceb1dd886a33d3ebe39bc0"
+      }
+    },
+    {
+      "sequence": 680,
+      "at": "2026-11-16T18:28:06.297Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:28:06.290Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 681,
+      "at": "2026-11-16T18:28:06.492Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "aaf753e0-68ab-4d1e-b242-361bfdfc4096",
+          "owner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561/reviewer-1",
+          "status": "reviewing",
+          "commit": "d7f95ffb4da84ceba2ceb1dd886a33d3ebe39bc0",
+          "baseCommit": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
+          "submissionId": "8fa00dd2-9cc6-46d6-9c6b-ac6f8382b272",
+          "createdAt": "2026-11-16T18:28:06.492Z"
+        }
+      }
+    },
+    {
+      "sequence": 682,
+      "at": "2026-11-16T18:28:08.341Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "7f84edf6-860e-4dd5-b035-858e10278ee3",
+          "runner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:28:08.341Z"
+        }
+      }
+    },
+    {
+      "sequence": 683,
+      "at": "2026-11-16T18:28:08.350Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "7f84edf6-860e-4dd5-b035-858e10278ee3",
+          "runner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-16T18:28:08.341Z"
+        }
+      }
+    },
+    {
+      "sequence": 684,
+      "at": "2026-11-16T18:28:29.315Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T920’s implementation and performance evidence support the optimization, but the recorded acceptance overstates academy test coverage.",
+        "review": {
+          "id": "aaf753e0-68ab-4d1e-b242-361bfdfc4096",
+          "owner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T920’s implementation and performance evidence support the optimization, but the recorded acceptance overstates academy test coverage.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T920.growth-step-reuse.md:10",
+              "message": "T920 marks the training, NPC careers and academy test criterion complete, but the result records passes only for training and NPC careers. The runner’s changed-unit check found no test files, and academy.test.ts is excluded from that unit project. Record academy coverage as pending and explicitly hand it to the coordinator’s integration gate, or provide evidence that the academy tests passed against this candidate."
+            }
+          ],
+          "commit": "d7f95ffb4da84ceba2ceb1dd886a33d3ebe39bc0",
+          "baseCommit": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
+          "submissionId": "8fa00dd2-9cc6-46d6-9c6b-ac6f8382b272",
+          "createdAt": "2026-11-16T18:28:06.492Z",
+          "finishedAt": "2026-11-16T18:28:29.315Z"
+        }
+      }
+    },
+    {
+      "sequence": 685,
+      "at": "2026-11-16T18:28:29.324Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "7f84edf6-860e-4dd5-b035-858e10278ee3",
+          "runner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:28:08.341Z",
+          "finishedAt": "2026-11-16T18:28:29.324Z",
+          "error": null,
+          "summary": "T920’s implementation and performance evidence support the optimization, but the recorded acceptance overstates academy test coverage."
+        }
+      }
+    },
+    {
+      "sequence": 686,
+      "at": "2026-11-16T18:28:29.344Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561/worker-1",
+        "contributors": [
+          "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1",
+          "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1",
+          "7c32fab5-f6a0-4c6f-8018-8baea8d05561/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "ac0c8bad-5a64-41b9-bdb7-5a11f218488f",
+            "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T920’s performance measurement supports the optimization, but the submitted same-world proof does not satisfy the recorded hash acceptance criterion.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T920.growth-step-reuse.md:9",
+                "message": "T920 marks the same-world criterion as passed even though both reported hashes differ from the required values. The result attributes this to a version bump, but does not demonstrate that the version field alone explains the mismatch. Reconcile the expected hashes with the coordinator and provide evidence for the revised baseline, or reproduce the specified hashes before marking this criterion complete."
+              }
+            ],
+            "commit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
+            "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+            "submissionId": "8a3c7fa7-505d-408d-b348-1d5fbccd4b7b",
+            "createdAt": "2026-11-16T18:22:17.822Z",
+            "finishedAt": "2026-11-16T18:22:35.893Z",
+            "invalidatedAt": "2026-11-16T18:22:35.923Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "aaf753e0-68ab-4d1e-b242-361bfdfc4096",
+            "owner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T920’s implementation and performance evidence support the optimization, but the recorded acceptance overstates academy test coverage.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T920.growth-step-reuse.md:10",
+                "message": "T920 marks the training, NPC careers and academy test criterion complete, but the result records passes only for training and NPC careers. The runner’s changed-unit check found no test files, and academy.test.ts is excluded from that unit project. Record academy coverage as pending and explicitly hand it to the coordinator’s integration gate, or provide evidence that the academy tests passed against this candidate."
+              }
+            ],
+            "commit": "d7f95ffb4da84ceba2ceb1dd886a33d3ebe39bc0",
+            "baseCommit": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
+            "submissionId": "8fa00dd2-9cc6-46d6-9c6b-ac6f8382b272",
+            "createdAt": "2026-11-16T18:28:06.492Z",
+            "finishedAt": "2026-11-16T18:28:29.315Z",
+            "invalidatedAt": "2026-11-16T18:28:29.344Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 687,
+      "at": "2026-11-16T18:28:29.425Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "772e54b1-5ab0-42e8-81d1-c859a68f9b26",
+          "runner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:28:29.425Z"
+        }
+      }
+    },
+    {
+      "sequence": 688,
+      "at": "2026-11-16T18:28:29.726Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "772e54b1-5ab0-42e8-81d1-c859a68f9b26",
+          "runner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T18:28:29.425Z"
+        }
+      }
+    },
+    {
+      "sequence": 689,
+      "at": "2026-11-16T18:28:49.767Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
+      }
+    },
+    {
+      "sequence": 690,
+      "at": "2026-11-16T18:28:49.778Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "772e54b1-5ab0-42e8-81d1-c859a68f9b26",
+          "runner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:28:29.425Z",
+          "finishedAt": "2026-11-16T18:28:49.778Z",
+          "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
+          "summary": null
+        }
+      }
+    },
+    {
+      "sequence": 691,
+      "at": "2026-11-16T18:28:50.029Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:28:06.290Z",
+          "stoppedAt": "2026-11-16T18:28:50.029Z",
+          "dispatched": 2,
           "outcome": "needs-attention",
           "failures": [
             {
