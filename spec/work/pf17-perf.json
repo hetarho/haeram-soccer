@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T18:24:48.123Z",
-  "sourceCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+  "snapshotAt": "2026-11-16T18:25:31.043Z",
+  "sourceCommit": "9f685c170339cb159094a178d1114cfac44918bd",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -22,7 +22,7 @@
       "T920",
       "T928"
     ],
-    "runner": {
+    "lastRun": {
       "id": "a1d93534-ea3d-406f-bc68-8bff660c141a",
       "adapter": "builtin",
       "providers": {
@@ -45,41 +45,10 @@
         }
       ],
       "startedAt": "2026-11-16T18:22:17.606Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "a0aba48f-43f4-42d7-a662-a0d765721464",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "route",
-          "model": null,
-          "version": null
-        },
-        "reviewer": {
-          "provider": "route",
-          "model": null,
-          "version": null
-        }
-      },
-      "workers": [
-        {
-          "provider": "route",
-          "model": null,
-          "version": null
-        }
-      ],
-      "startedAt": "2026-11-16T18:11:38.159Z",
-      "stoppedAt": "2026-11-16T18:18:58.538Z",
-      "dispatched": 2,
+      "stoppedAt": "2026-11-16T18:25:29.455Z",
+      "dispatched": 5,
       "outcome": "needs-attention",
       "failures": [
-        {
-          "attempt": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
-          "role": "worker",
-          "error": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
-        },
         {
           "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
           "role": "worker",
@@ -614,6 +583,9 @@
       "submittedBase": "bfcede4ed069b7095cf3cb869ab597028f07a706",
       "submissionId": "3d6fc150-f1bc-4fe9-a2c9-12742347c068",
       "submittedAt": "2026-11-16T18:24:20.149Z",
+      "integratedCommit": "9f685c170339cb159094a178d1114cfac44918bd",
+      "integratedAt": "2026-11-16T18:25:22.070Z",
+      "cleanedAt": "2026-11-16T18:25:29.446Z",
       "risk": null,
       "dispatch": {
         "id": "67526027-277d-4d85-81cd-ad9146ac8ce7",
@@ -683,6 +655,13 @@
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-11-16T18:23:57.350Z",
           "finishedAt": "2026-11-16T18:24:19.968Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T18:24:48.314Z",
+          "finishedAt": "2026-11-16T18:25:21.758Z"
         }
       ]
     }
@@ -5084,6 +5063,114 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 672,
+      "at": "2026-11-16T18:25:21.886Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T18:24:48.314Z",
+            "finishedAt": "2026-11-16T18:25:21.758Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 673,
+      "at": "2026-11-16T18:25:22.070Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "9f685c170339cb159094a178d1114cfac44918bd",
+        "integratedAt": "2026-11-16T18:25:22.070Z"
+      }
+    },
+    {
+      "sequence": 674,
+      "at": "2026-11-16T18:25:24.983Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 675,
+      "at": "2026-11-16T18:25:29.446Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T18:25:29.446Z"
+      }
+    },
+    {
+      "sequence": 676,
+      "at": "2026-11-16T18:25:29.455Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:22:17.606Z",
+          "stoppedAt": "2026-11-16T18:25:29.455Z",
+          "dispatched": 5,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+              "role": "worker",
+              "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
