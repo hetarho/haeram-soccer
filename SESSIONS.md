@@ -126,6 +126,7 @@
 - 261116 decided LEAGUE-10: Owner chose the check boundary over a model fix: LEAGUE-10 r21 keeps division order on every season's first day except the 1946-1948 openings after the war gap (T924). Alternatives: model fix of the post-war restart (hours to days, broad fixture churn, uncertain); stop with the failure (rejected by owner).
 
 ## log
+- 261116 fix ci: two Chromium workers on four-core runners (1950 generation journey timeout)
 - 261116 gusta-create-task LEAGUE r21 -> T924
 - 261116 gusta-create-task LEAGUE start
 - 261116 gusta-update-ssot LEAGUE-10 r21 done; next gusta-create-task LEAGUE
@@ -145,4 +146,3 @@
 - 261113 T913 integrated
 - 261113 T906 T910 integrated
 - 261113 gusta-create-task review/natural-football-261114 F39 -> T913; scalar correction only, original strict historical workload retained
-- 261113 T912 integrated
