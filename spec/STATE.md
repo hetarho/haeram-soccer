@@ -64,7 +64,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
-| T929 | Give integration shards the cold-cache time limit | ARCH | - | doing@261116.pf17 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -74,6 +73,6 @@
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
 
 ## next
+- gusta-implement-task T916
 - Session pf17 landed T920 T921 T926 T927 (identical worlds; history CPU about 3476 → 2293 ms a season, reports/261117-pf17); T925 and T928 recorded no gain.
 - NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
-- Session chslow landed T918 T919 in 0.8.3 (identical worlds, 1950 generation 666.7 s → 199.9 s; reports/261116-chslow); T920 landed with pf17.
