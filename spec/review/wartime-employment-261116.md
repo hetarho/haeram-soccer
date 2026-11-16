@@ -1,0 +1,17 @@
+# REVIEW wartime-employment-261116
+> st:converted@261116 | scope:packages/engine/src/coaching-entry.ts packages/engine/src/coaching-market.ts packages/engine/src/staff.ts packages/engine/src/club-staff.ts | at:5969d98 | base:ARCH@44
+
+## summary
+- The owner's explicit local self-improvement and push request delegates one correction of the confirmed 0.8.2 new-game save blocker. Read-only scout `/root/wartime_scout` returned `/tmp/ws16-scout-proposal.md`; the orchestrator checked its cited eligibility and hiring call sites against the fixed base before adoption.
+
+## findings
+- F1 [o] P1 packages/engine/src/coaching-entry.ts:36, coaching-market.ts:84 and staff.ts:328: bug: coaching candidates are evaluated from current retirement state even when the actual hiring boundary predates that retirement. After skipped summers retire players in 1939–1945, the 1938 close can hire them retrospectively, creating overlapping playing/coaching employment and rejecting the first checkpoint. Make retained-player coaching readiness date-aware at NPC and owned hiring boundaries, including matching candidate counts, while retaining optional legacy-date fallback and strict validation. ← a fresh 1930→1946 history has 68 illegal overlaps; checkpoint and portable reload fail with the reported error without existing browser data or CSP →T922
+
+## notes
+- Initially proposed by the independent scout; adopted by this orchestrator under the explicit invocation, without a new gameplay policy. Existing WORLD-11/14/16, STAFF-27/43/50 and SAVE-5 already require actual retirement, availability and employment facts. No SSOT rev, storage migration, cleanup or validation exception is authorized.
+- Base: `5969d98da08ae4906818ad3ae8c4d99b39978ae3`. Raw diagnosis: `/tmp/haeram-save-diagnosis.md` and its reproduction/JSON artifacts; proposal: `/tmp/ws16-scout-proposal.md`. Example: retirement in 1942 and another-club coach employment from 1938.
+- Allowed production paths are the four scope paths; affected unit cases, a focused integration chronology/checkpoint regression and its tier registration may change. Do not touch unrelated chslow market/growth optimizations, immutable T892 fixture work, saved facts, CSP, codec/schema or error copy.
+- Verification: task-tier type/lint/format/i18n/changed unit checks via `vibe check --tier task`; coordinator fixed-candidate integration must produce no forbidden employment overlap and a valid checkpoint/portable round trip through the 1946 restart. Normal post-retirement hiring, exact-boundary availability, legacy missing optional dates and legal same-club playing-coach behavior stay covered. Final batch and browser CI retain ARCH-30/35 scope.
+- Cost: one bounded implementation/review unit, 15 minutes per command within a 60-minute cycle; reserve the observed roughly 396-second complete production-history experiment and final verification/publication. No speedup is claimed.
+- Rejected implementation shortcut: moving the complete war transition below owned settlement would expire terms against the restart before their pause extension; moving only the NPC market misses owned delegated offers. A separate observation about newly opened prewar coaching terms is recorded for later investigation, not included in this fault's fix or claimed coverage.
+- Rollback is a small code revert with no persistent format/flag to undo. Existing invalid exports remain preserved and are not silently rewritten.

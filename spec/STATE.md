@@ -38,6 +38,8 @@
 ## review
 | id | st |
 |---|---|
+| verification-prerequisite-261116 | converted@261116 |
+| wartime-employment-261116 | converted@261116 |
 | generation-market-261116 | converted@261116 |
 | natural-football-261114 | converted@261114 |
 | performance-books-261114 | converted@261114 |
@@ -95,11 +97,13 @@
 | T914 | Prepare a genuine no-playoff season for exact heat-map reduction | ARCH MATCH HIST LEAGUE | T885 | todo |
 | T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
-| T917 | Run browser journeys only in CI, on Chrome alone | ARCH | T884 | todo |
+| T917 | Run browser journeys only in CI, on Chrome alone | ARCH | - | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | blocked@261116 |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |
+| T922 | Keep coaching hires after their actual retirement | ARCH | - | todo |
 
 ## next
+- Session ws16 implements T922 for the reproduced wartime save blocker; independent review and shared fixed-candidate verification precede push.
 - gusta-implement-task T873 T875 T884
 - Session chslow integrated T918 T919 (identical worlds, 1950 generation 666.7 s → 199.9 s); T920 is blocked on an idle-host re-measure of its kept patch and T921 waits for a longer A/B workload.
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
