@@ -65,7 +65,6 @@
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | blocked@261116 |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |
-| T924 | Exempt only the post-war openings from the division-order check | LEAGUE WORLD | - | doing@261116.nf16 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -74,7 +73,6 @@
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
 
 ## next
-- gusta-implement-task T924
+- gusta-implement-task T916 T921
 - NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
 - Session chslow landed T918 T919 in 0.8.3 (identical worlds, 1950 generation 666.7 s → 199.9 s; reports/261116-chslow); T920 is blocked on an idle-host re-measure of its kept patch and T921 waits for a longer A/B workload.
-- Netlify "Powered by Netlify" badge must be turned off in the account settings to clear the production CSP report (reports/261116-ws16).
