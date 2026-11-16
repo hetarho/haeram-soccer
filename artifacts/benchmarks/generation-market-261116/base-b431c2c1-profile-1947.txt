@@ -1,0 +1,12 @@
+{"season":1931,"ms":4918,"year":1931,"clubsWithSquads":451,"squadPlayers":10564,"squadMedian":23,"squadMax":26,"freeAgents":0,"people":2845,"playerRecords":5640,"moves":0,"events":0,"jsonMB":11}
+{"season":1932,"ms":18237,"year":1932,"clubsWithSquads":451,"squadPlayers":11173,"squadMedian":25,"squadMax":32,"freeAgents":51,"people":3454,"playerRecords":6974,"moves":1488,"events":0,"jsonMB":13}
+{"season":1933,"ms":27703,"year":1933,"clubsWithSquads":451,"squadPlayers":11544,"squadMedian":25,"squadMax":33,"freeAgents":176,"people":4266,"playerRecords":7454,"moves":2996,"events":0,"jsonMB":14}
+{"season":1934,"ms":37282,"year":1934,"clubsWithSquads":451,"squadPlayers":11662,"squadMedian":25,"squadMax":33,"freeAgents":200,"people":5342,"playerRecords":7569,"moves":4263,"events":0,"jsonMB":15}
+{"season":1935,"ms":46289,"year":1935,"clubsWithSquads":451,"squadPlayers":11552,"squadMedian":25,"squadMax":32,"freeAgents":200,"people":6599,"playerRecords":7372,"moves":5193,"events":0,"jsonMB":16}
+{"season":1936,"ms":46198,"year":1936,"clubsWithSquads":451,"squadPlayers":11334,"squadMedian":25,"squadMax":29,"freeAgents":200,"people":8104,"playerRecords":7053,"moves":6091,"events":0,"jsonMB":17}
+{"season":1937,"ms":42507,"year":1937,"clubsWithSquads":451,"squadPlayers":11498,"squadMedian":25,"squadMax":33,"freeAgents":200,"people":9276,"playerRecords":7062,"moves":6895,"events":0,"jsonMB":18}
+{"season":1938,"ms":42573,"year":1938,"clubsWithSquads":451,"squadPlayers":11537,"squadMedian":25,"squadMax":32,"freeAgents":200,"people":10500,"playerRecords":6972,"moves":7504,"events":0,"jsonMB":19}
+{"season":1946,"ms":48699,"year":1946,"clubsWithSquads":451,"squadPlayers":17254,"squadMedian":40,"squadMax":40,"freeAgents":0,"people":13615,"playerRecords":4205,"moves":3592,"events":0,"jsonMB":23}
+{"season":1947,"ms":81555,"year":1947,"clubsWithSquads":451,"squadPlayers":17038,"squadMedian":39,"squadMax":40,"freeAgents":200,"people":14781,"playerRecords":6235,"moves":3484,"events":0,"jsonMB":24}
+{"profiled":true,"season":1948,"ms":113728,"year":1948,"clubsWithSquads":451,"squadPlayers":15829,"squadMedian":35,"squadMax":40,"freeAgents":200,"people":16892,"playerRecords":6239,"moves":3473,"events":0,"jsonMB":24}
+wrote /tmp/claude-2378/-home-deep-haeram-haeram-soccor/97a9be9f-680d-4a33-ac34-820adbbb2a13/scratchpad/scout-a/steady-1947.cpuprofile

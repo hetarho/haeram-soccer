@@ -1,0 +1,24 @@
+lived to 1933 in 48365 ms
+{"day":1,"round":0,"kind":"day0(beginDays market)+day1","ms":12221}
+{"day":7,"round":1,"kind":"league","ms":56}
+{"day":16,"round":2,"kind":"market","ms":583}
+{"day":28,"round":4,"kind":"league+growth","ms":280}
+{"day":31,"round":4,"kind":"market","ms":767}
+{"day":56,"round":8,"kind":"league+growth","ms":235}
+{"day":84,"round":12,"kind":"league+growth","ms":251}
+{"day":112,"round":16,"kind":"league+growth","ms":244}
+{"day":140,"round":20,"kind":"league+growth","ms":231}
+{"day":147,"round":21,"kind":"league","ms":50}
+{"day":153,"round":21,"kind":"market","ms":15082}
+{"day":168,"round":24,"kind":"league+growth","ms":317}
+{"day":169,"round":24,"kind":"market","ms":1901}
+{"day":184,"round":26,"kind":"market","ms":1586}
+{"day":196,"round":28,"kind":"league+growth","ms":246}
+{"day":224,"round":32,"kind":"league+growth","ms":236}
+{"day":243,"round":34,"kind":"other","ms":54}
+{"day":252,"round":36,"kind":"league+growth","ms":234}
+{"day":280,"round":40,"kind":"league+growth","ms":243}
+{"day":308,"round":44,"kind":"league+growth","ms":231}
+{"day":315,"round":45,"kind":"league","ms":57}
+{"day":-1,"round":0,"kind":"close","ms":3905}
+{"season":1933,"days":323,"totals":{"day0(beginDays market)+day1":12221,"other":132,"league":854,"market":19918,"league+growth":2749,"close":3905}}
