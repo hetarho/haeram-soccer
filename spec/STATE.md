@@ -19,7 +19,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 44 | 43 | ARCH-18✎ ARCH-23✎ ARCH-30✎ ARCH-35+ | 2 |
+| ARCH | 44 | 44 | - | 2 |
 | WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 14 | 14 | - | 0 |
@@ -94,6 +94,7 @@
 | T914 | Prepare a genuine no-playoff season for exact heat-map reduction | ARCH MATCH HIST LEAGUE | T885 | todo |
 | T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
+| T917 | Run browser journeys only in CI, on Chrome alone | ARCH | T884 | todo |
 
 ## next
 - gusta-implement-task T873 T875 T884
