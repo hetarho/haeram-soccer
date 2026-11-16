@@ -105,6 +105,6 @@
 ## next
 - Session ws16 implements T922 for the reproduced wartime save blocker; independent review and shared fixed-candidate verification precede push.
 - gusta-implement-task T873 T875 T884
-- Session chslow integrated T918 T919 (identical worlds, 1950 generation 666.7 s → 199.9 s); T920 is blocked on an idle-host re-measure of its kept patch and T921 waits for a longer A/B workload.
+- Session chslow landed T918 T919 in 0.8.3 (identical worlds, 1950 generation 666.7 s → 199.9 s; reports/261116-chslow); T920 is blocked on an idle-host re-measure of its kept patch and T921 waits for a longer A/B workload.
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
 - T883 and T899 are complete in the pr14 publication candidate; NF14 must include that result and prepare a coherent newer patch if its root version matches main.
