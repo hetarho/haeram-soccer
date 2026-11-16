@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T18:19:00.492Z",
-  "sourceCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2",
+  "snapshotAt": "2026-11-16T18:25:31.043Z",
+  "sourceCommit": "9f685c170339cb159094a178d1114cfac44918bd",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -23,7 +23,7 @@
       "T928"
     ],
     "lastRun": {
-      "id": "a0aba48f-43f4-42d7-a662-a0d765721464",
+      "id": "a1d93534-ea3d-406f-bc68-8bff660c141a",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -44,16 +44,11 @@
           "version": null
         }
       ],
-      "startedAt": "2026-11-16T18:11:38.159Z",
-      "stoppedAt": "2026-11-16T18:18:58.538Z",
-      "dispatched": 2,
+      "startedAt": "2026-11-16T18:22:17.606Z",
+      "stoppedAt": "2026-11-16T18:25:29.455Z",
+      "dispatched": 5,
       "outcome": "needs-attention",
       "failures": [
-        {
-          "attempt": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
-          "role": "worker",
-          "error": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
-        },
         {
           "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
           "role": "worker",
@@ -66,23 +61,17 @@
   },
   "summary": {
     "total": 6,
-    "completed": 4,
-    "remaining": 2,
+    "completed": 5,
+    "remaining": 1,
     "running": 0,
     "review": 0,
-    "blocked": 2,
+    "blocked": 1,
     "unassigned": 0
   },
   "tasks": [
     {
       "id": "T920",
       "title": "Reuse known OVR and weight sums in growth steps",
-      "dep": [],
-      "status": "blocked"
-    },
-    {
-      "id": "T928",
-      "title": "Share market ratings and orders between slots of one position and role",
       "dep": [],
       "status": "blocked"
     }
@@ -502,27 +491,76 @@
         "T920"
       ],
       "lane": null,
-      "owner": "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1",
+      "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1",
       "contributors": [
-        "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1"
+        "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1",
+        "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1"
       ],
       "status": "blocked",
       "reason": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
       "createdAt": "2026-11-16T18:11:38.271Z",
       "startCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2",
+      "submittedBase": "c4304ece5a15ddaeed2a895bdf7cb1433cd7cdfd",
+      "submissionId": "8a3c7fa7-505d-408d-b348-1d5fbccd4b7b",
+      "submittedAt": "2026-11-16T18:20:37.946Z",
+      "risk": null,
       "dispatch": {
-        "id": "17582434-1482-43d4-955d-3365a7937285",
-        "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+        "id": "4d9896f2-ca70-4922-8068-f9e4c3c94ce4",
+        "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": "sonnet",
         "status": "finished",
-        "startedAt": "2026-11-16T18:11:40.866Z",
-        "finishedAt": "2026-11-16T18:18:58.275Z",
+        "startedAt": "2026-11-16T18:22:36.053Z",
+        "finishedAt": "2026-11-16T18:24:22.751Z",
         "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
         "summary": null
-      }
+      },
+      "reviewHistory": [
+        {
+          "id": "ac0c8bad-5a64-41b9-bdb7-5a11f218488f",
+          "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T920’s performance measurement supports the optimization, but the submitted same-world proof does not satisfy the recorded hash acceptance criterion.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T920.growth-step-reuse.md:9",
+              "message": "T920 marks the same-world criterion as passed even though both reported hashes differ from the required values. The result attributes this to a version bump, but does not demonstrate that the version field alone explains the mismatch. Reconcile the expected hashes with the coordinator and provide evidence for the revised baseline, or reproduce the specified hashes before marking this criterion complete."
+            }
+          ],
+          "commit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
+          "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+          "submissionId": "8a3c7fa7-505d-408d-b348-1d5fbccd4b7b",
+          "createdAt": "2026-11-16T18:22:17.822Z",
+          "finishedAt": "2026-11-16T18:22:35.893Z",
+          "invalidatedAt": "2026-11-16T18:22:35.923Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T920",
+          "commit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
+          "at": "2026-11-16T18:20:37.930Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-16T18:19:37.210Z",
+              "finishedAt": "2026-11-16T18:20:37.729Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T18:19:37.210Z",
+          "finishedAt": "2026-11-16T18:20:37.729Z"
+        }
+      ]
     },
     {
       "id": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
@@ -532,27 +570,100 @@
         "T928"
       ],
       "lane": null,
-      "owner": "a0aba48f-43f4-42d7-a662-a0d765721464/worker-2",
+      "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-2",
       "contributors": [
-        "a0aba48f-43f4-42d7-a662-a0d765721464/worker-2"
+        "a0aba48f-43f4-42d7-a662-a0d765721464/worker-2",
+        "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-2"
       ],
-      "status": "blocked",
-      "reason": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-16T18:11:41.289Z",
       "startCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2",
+      "verifiedCommit": "981c779b28abf3906f660a8cf11227d4fb8c673e",
+      "submittedBase": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+      "submissionId": "3d6fc150-f1bc-4fe9-a2c9-12742347c068",
+      "submittedAt": "2026-11-16T18:24:20.149Z",
+      "integratedCommit": "9f685c170339cb159094a178d1114cfac44918bd",
+      "integratedAt": "2026-11-16T18:25:22.070Z",
+      "cleanedAt": "2026-11-16T18:25:29.446Z",
+      "risk": null,
       "dispatch": {
-        "id": "09e1f281-2507-46ef-9cf2-b8fa52bd6952",
-        "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
-        "role": "worker",
-        "slot": 2,
-        "provider": "claude",
-        "model": "sonnet",
+        "id": "67526027-277d-4d85-81cd-ad9146ac8ce7",
+        "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": "gpt-6.1-terra",
         "status": "finished",
-        "startedAt": "2026-11-16T18:11:43.803Z",
-        "finishedAt": "2026-11-16T18:16:17.877Z",
-        "error": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
-        "summary": "I implemented the semantic slot key, but it measured slower, so I restored the original `npc-market.ts` and its test as the acceptance requires. The change is recorded with no speed claim.\n\n- **Change tried:** the rating cache and the per-line order cache were keyed by a `position:role` string, with main-position OVR on its own empty key. I added a unit for it and all 24 `npc-market` tests passed.\n- **Result:** the paired history A/B gave a CPU ratio of 1.025 (interval 1.0091–1.0384), wall 1.0246, with equal output hash `241652780a3ea62a` on both sides. The interval is above 1, so the candidate is slower. The likely cause is that formation slots are already shared objects, so equal-slot hits are rare and the string key costs more than the Map lookup it replaces.\n- **Hash mismatch:** the task's quoted hashes did not reproduce. This tree prints `8ce690d8…` for `--until=1934` on both baseline and candidate, and the candidate's full run printed `db04c937…`. The quoted `fc424c51…` and `0e509f5d…` were recorded earlier at 0.8.5, so they look stale for this HEAD. Candidate equals baseline, which is the meaningful same-world proof. I did not rerun the full hash on the baseline, so that part rests on the A/B hash equality.\n- **Not run:** no source change remains, so I did not rerun the task-tier checks, and I ran no integration or build.\n- **Files:** `spec/tasks/T928.market-semantic-slot-keys.md` (result written) and the new `artifacts/benchmarks/generation-hotpaths-261117/T928/ab-history.json`."
-      }
+        "startedAt": "2026-11-16T18:24:22.718Z",
+        "finishedAt": "2026-11-16T18:24:46.279Z",
+        "error": null,
+        "summary": "T928 records matching full-generation hashes for the candidate and unchanged base, addressing the prior review finding. The measured candidate was slower, and the submitted production and test files remain at the base as required. Worker task-tier checks passed; the coordinator owns the final batch gate."
+      },
+      "review": {
+        "id": "5bc1c971-2fc1-4384-8958-e304fa7ebf62",
+        "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T928 records matching full-generation hashes for the candidate and unchanged base, addressing the prior review finding. The measured candidate was slower, and the submitted production and test files remain at the base as required. Worker task-tier checks passed; the coordinator owns the final batch gate.",
+        "findings": [],
+        "commit": "981c779b28abf3906f660a8cf11227d4fb8c673e",
+        "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+        "submissionId": "3d6fc150-f1bc-4fe9-a2c9-12742347c068",
+        "createdAt": "2026-11-16T18:24:20.271Z",
+        "finishedAt": "2026-11-16T18:24:46.271Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "f8a14a35-4aef-422c-a79a-bfa8a790b380",
+          "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T928 correctly restores the production files after the measured slowdown, but the required full-generation parity check is not supported by the recorded evidence.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T928.market-semantic-slot-keys.md:21",
+              "message": "T928 marks full `gen-driver.mts 1950 generation-reference --hash` parity as passed even though the baseline full hash was not run. The A/B history benchmark uses the `perf-261027` seed and hashes its own history workload, so its equal hashes do not establish equality for the required full generation-reference run. Recreate the measured candidate and compare its full driver hash with the unchanged base, or leave that acceptance item unpassed and hand off the missing verification."
+            }
+          ],
+          "commit": "846ba798417f46a04fcea8385265db1011031173",
+          "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+          "submissionId": "aaa35e76-f88a-44c2-9ca4-86397cca8b9c",
+          "createdAt": "2026-11-16T18:22:36.453Z",
+          "finishedAt": "2026-11-16T18:22:53.601Z",
+          "invalidatedAt": "2026-11-16T18:22:53.628Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T928",
+          "commit": "981c779b28abf3906f660a8cf11227d4fb8c673e",
+          "at": "2026-11-16T18:24:20.137Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-16T18:23:57.350Z",
+              "finishedAt": "2026-11-16T18:24:19.968Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T18:23:57.350Z",
+          "finishedAt": "2026-11-16T18:24:19.968Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T18:24:48.314Z",
+          "finishedAt": "2026-11-16T18:25:21.758Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -4082,6 +4193,975 @@
               "role": "worker",
               "error": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
             },
+            {
+              "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+              "role": "worker",
+              "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 636,
+      "at": "2026-11-16T18:19:36.557Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 637,
+      "at": "2026-11-16T18:19:37.032Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 638,
+      "at": "2026-11-16T18:20:37.946Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
+        "submittedBase": "c4304ece5a15ddaeed2a895bdf7cb1433cd7cdfd",
+        "submissionId": "8a3c7fa7-505d-408d-b348-1d5fbccd4b7b",
+        "submittedAt": "2026-11-16T18:20:37.946Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T920",
+            "commit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
+            "at": "2026-11-16T18:20:37.930Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-16T18:19:37.210Z",
+                "finishedAt": "2026-11-16T18:20:37.729Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T18:19:37.210Z",
+            "finishedAt": "2026-11-16T18:20:37.729Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 639,
+      "at": "2026-11-16T18:21:05.600Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 640,
+      "at": "2026-11-16T18:21:06.078Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 641,
+      "at": "2026-11-16T18:22:08.022Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "846ba798417f46a04fcea8385265db1011031173",
+        "submittedBase": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+        "submissionId": "aaa35e76-f88a-44c2-9ca4-86397cca8b9c",
+        "submittedAt": "2026-11-16T18:22:08.022Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T928",
+            "commit": "846ba798417f46a04fcea8385265db1011031173",
+            "at": "2026-11-16T18:22:08.008Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-16T18:21:06.228Z",
+                "finishedAt": "2026-11-16T18:22:07.839Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T18:21:06.228Z",
+            "finishedAt": "2026-11-16T18:22:07.839Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 642,
+      "at": "2026-11-16T18:22:17.613Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:22:17.606Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 643,
+      "at": "2026-11-16T18:22:17.822Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "ac0c8bad-5a64-41b9-bdb7-5a11f218488f",
+          "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+          "status": "reviewing",
+          "commit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
+          "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+          "submissionId": "8a3c7fa7-505d-408d-b348-1d5fbccd4b7b",
+          "createdAt": "2026-11-16T18:22:17.822Z"
+        }
+      }
+    },
+    {
+      "sequence": 644,
+      "at": "2026-11-16T18:22:20.301Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "e3f0ec88-31c8-4ccc-9f3c-db58fea2a024",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:22:20.301Z"
+        }
+      }
+    },
+    {
+      "sequence": 645,
+      "at": "2026-11-16T18:22:20.310Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "e3f0ec88-31c8-4ccc-9f3c-db58fea2a024",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-16T18:22:20.301Z"
+        }
+      }
+    },
+    {
+      "sequence": 646,
+      "at": "2026-11-16T18:22:35.893Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T920’s performance measurement supports the optimization, but the submitted same-world proof does not satisfy the recorded hash acceptance criterion.",
+        "review": {
+          "id": "ac0c8bad-5a64-41b9-bdb7-5a11f218488f",
+          "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T920’s performance measurement supports the optimization, but the submitted same-world proof does not satisfy the recorded hash acceptance criterion.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T920.growth-step-reuse.md:9",
+              "message": "T920 marks the same-world criterion as passed even though both reported hashes differ from the required values. The result attributes this to a version bump, but does not demonstrate that the version field alone explains the mismatch. Reconcile the expected hashes with the coordinator and provide evidence for the revised baseline, or reproduce the specified hashes before marking this criterion complete."
+            }
+          ],
+          "commit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
+          "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+          "submissionId": "8a3c7fa7-505d-408d-b348-1d5fbccd4b7b",
+          "createdAt": "2026-11-16T18:22:17.822Z",
+          "finishedAt": "2026-11-16T18:22:35.893Z"
+        }
+      }
+    },
+    {
+      "sequence": 647,
+      "at": "2026-11-16T18:22:35.904Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "e3f0ec88-31c8-4ccc-9f3c-db58fea2a024",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:22:20.301Z",
+          "finishedAt": "2026-11-16T18:22:35.904Z",
+          "error": null,
+          "summary": "T920’s performance measurement supports the optimization, but the submitted same-world proof does not satisfy the recorded hash acceptance criterion."
+        }
+      }
+    },
+    {
+      "sequence": 648,
+      "at": "2026-11-16T18:22:35.923Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1",
+        "contributors": [
+          "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1",
+          "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "ac0c8bad-5a64-41b9-bdb7-5a11f218488f",
+            "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T920’s performance measurement supports the optimization, but the submitted same-world proof does not satisfy the recorded hash acceptance criterion.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T920.growth-step-reuse.md:9",
+                "message": "T920 marks the same-world criterion as passed even though both reported hashes differ from the required values. The result attributes this to a version bump, but does not demonstrate that the version field alone explains the mismatch. Reconcile the expected hashes with the coordinator and provide evidence for the revised baseline, or reproduce the specified hashes before marking this criterion complete."
+              }
+            ],
+            "commit": "ebda6be32d85b4965c158f0f716454ce4116a8f1",
+            "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+            "submissionId": "8a3c7fa7-505d-408d-b348-1d5fbccd4b7b",
+            "createdAt": "2026-11-16T18:22:17.822Z",
+            "finishedAt": "2026-11-16T18:22:35.893Z",
+            "invalidatedAt": "2026-11-16T18:22:35.923Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 649,
+      "at": "2026-11-16T18:22:36.053Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "4d9896f2-ca70-4922-8068-f9e4c3c94ce4",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:22:36.053Z"
+        }
+      }
+    },
+    {
+      "sequence": 650,
+      "at": "2026-11-16T18:22:36.339Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "4d9896f2-ca70-4922-8068-f9e4c3c94ce4",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T18:22:36.053Z"
+        }
+      }
+    },
+    {
+      "sequence": 651,
+      "at": "2026-11-16T18:22:36.453Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "f8a14a35-4aef-422c-a79a-bfa8a790b380",
+          "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+          "status": "reviewing",
+          "commit": "846ba798417f46a04fcea8385265db1011031173",
+          "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+          "submissionId": "aaa35e76-f88a-44c2-9ca4-86397cca8b9c",
+          "createdAt": "2026-11-16T18:22:36.453Z"
+        }
+      }
+    },
+    {
+      "sequence": 652,
+      "at": "2026-11-16T18:22:38.469Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "e12ed0e5-637e-4a93-9c3a-2c6c76fb5ef6",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:22:38.469Z"
+        }
+      }
+    },
+    {
+      "sequence": 653,
+      "at": "2026-11-16T18:22:38.477Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "e12ed0e5-637e-4a93-9c3a-2c6c76fb5ef6",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-16T18:22:38.469Z"
+        }
+      }
+    },
+    {
+      "sequence": 654,
+      "at": "2026-11-16T18:22:53.601Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T928 correctly restores the production files after the measured slowdown, but the required full-generation parity check is not supported by the recorded evidence.",
+        "review": {
+          "id": "f8a14a35-4aef-422c-a79a-bfa8a790b380",
+          "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T928 correctly restores the production files after the measured slowdown, but the required full-generation parity check is not supported by the recorded evidence.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T928.market-semantic-slot-keys.md:21",
+              "message": "T928 marks full `gen-driver.mts 1950 generation-reference --hash` parity as passed even though the baseline full hash was not run. The A/B history benchmark uses the `perf-261027` seed and hashes its own history workload, so its equal hashes do not establish equality for the required full generation-reference run. Recreate the measured candidate and compare its full driver hash with the unchanged base, or leave that acceptance item unpassed and hand off the missing verification."
+            }
+          ],
+          "commit": "846ba798417f46a04fcea8385265db1011031173",
+          "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+          "submissionId": "aaa35e76-f88a-44c2-9ca4-86397cca8b9c",
+          "createdAt": "2026-11-16T18:22:36.453Z",
+          "finishedAt": "2026-11-16T18:22:53.601Z"
+        }
+      }
+    },
+    {
+      "sequence": 655,
+      "at": "2026-11-16T18:22:53.609Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "e12ed0e5-637e-4a93-9c3a-2c6c76fb5ef6",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:22:38.469Z",
+          "finishedAt": "2026-11-16T18:22:53.609Z",
+          "error": null,
+          "summary": "T928 correctly restores the production files after the measured slowdown, but the required full-generation parity check is not supported by the recorded evidence."
+        }
+      }
+    },
+    {
+      "sequence": 656,
+      "at": "2026-11-16T18:22:53.628Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-2",
+        "contributors": [
+          "a0aba48f-43f4-42d7-a662-a0d765721464/worker-2",
+          "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-2"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "f8a14a35-4aef-422c-a79a-bfa8a790b380",
+            "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T928 correctly restores the production files after the measured slowdown, but the required full-generation parity check is not supported by the recorded evidence.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T928.market-semantic-slot-keys.md:21",
+                "message": "T928 marks full `gen-driver.mts 1950 generation-reference --hash` parity as passed even though the baseline full hash was not run. The A/B history benchmark uses the `perf-261027` seed and hashes its own history workload, so its equal hashes do not establish equality for the required full generation-reference run. Recreate the measured candidate and compare its full driver hash with the unchanged base, or leave that acceptance item unpassed and hand off the missing verification."
+              }
+            ],
+            "commit": "846ba798417f46a04fcea8385265db1011031173",
+            "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+            "submissionId": "aaa35e76-f88a-44c2-9ca4-86397cca8b9c",
+            "createdAt": "2026-11-16T18:22:36.453Z",
+            "finishedAt": "2026-11-16T18:22:53.601Z",
+            "invalidatedAt": "2026-11-16T18:22:53.628Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 657,
+      "at": "2026-11-16T18:22:53.709Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "02e8535c-acef-45d6-b023-b4ad84f314e3",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:22:53.709Z"
+        }
+      }
+    },
+    {
+      "sequence": 658,
+      "at": "2026-11-16T18:22:54.001Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "02e8535c-acef-45d6-b023-b4ad84f314e3",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T18:22:53.709Z"
+        }
+      }
+    },
+    {
+      "sequence": 659,
+      "at": "2026-11-16T18:23:56.856Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 660,
+      "at": "2026-11-16T18:23:57.189Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 661,
+      "at": "2026-11-16T18:23:57.208Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 662,
+      "at": "2026-11-16T18:24:20.149Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "3d6fc150-f1bc-4fe9-a2c9-12742347c068",
+        "submittedAt": "2026-11-16T18:24:20.149Z",
+        "steps": [
+          {
+            "taskId": "T928",
+            "commit": "981c779b28abf3906f660a8cf11227d4fb8c673e",
+            "at": "2026-11-16T18:24:20.137Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-16T18:23:57.350Z",
+                "finishedAt": "2026-11-16T18:24:19.968Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T18:23:57.350Z",
+            "finishedAt": "2026-11-16T18:24:19.968Z"
+          }
+        ],
+        "verifiedCommit": "981c779b28abf3906f660a8cf11227d4fb8c673e"
+      }
+    },
+    {
+      "sequence": 663,
+      "at": "2026-11-16T18:24:20.160Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "02e8535c-acef-45d6-b023-b4ad84f314e3",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:22:53.709Z",
+          "finishedAt": "2026-11-16T18:24:20.160Z",
+          "error": null,
+          "summary": "I closed the reviewer's P2 finding by running the unchanged base's full `gen-driver.mts 1950 generation-reference --hash`. It printed `db04c937535f1bc3ed940f97b2815eab18c06e6c7c7246074f5feaa6a38be855`. That is identical to the candidate's earlier full hash. Together with the `--until=1934` hash `8ce690d8…`, which matched on both sides, full-generation parity is now shown directly. The A/B hash `241652780a3ea62a` is recorded as separate evidence, not a substitute.\n\nI updated only the `verified` line in `spec/tasks/T928.market-semantic-slot-keys.md` to say this. The earlier result stands: the position:role key kept every output identical but was slower (history A/B CPU ratio 1.025, interval 1.0091–1.0384), so the production and test files stay at the base and no speed claim is made. No source changed, so I did not rerun the task-tier lint/typecheck/vitest. Integration, contract and build are left to the coordinator's final batch gate."
+        }
+      }
+    },
+    {
+      "sequence": 664,
+      "at": "2026-11-16T18:24:20.271Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "5bc1c971-2fc1-4384-8958-e304fa7ebf62",
+          "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+          "status": "reviewing",
+          "commit": "981c779b28abf3906f660a8cf11227d4fb8c673e",
+          "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+          "submissionId": "3d6fc150-f1bc-4fe9-a2c9-12742347c068",
+          "createdAt": "2026-11-16T18:24:20.271Z"
+        }
+      }
+    },
+    {
+      "sequence": 665,
+      "at": "2026-11-16T18:24:22.718Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "67526027-277d-4d85-81cd-ad9146ac8ce7",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:24:22.718Z"
+        }
+      }
+    },
+    {
+      "sequence": 666,
+      "at": "2026-11-16T18:24:22.727Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "67526027-277d-4d85-81cd-ad9146ac8ce7",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-16T18:24:22.718Z"
+        }
+      }
+    },
+    {
+      "sequence": 667,
+      "at": "2026-11-16T18:24:22.742Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
+      }
+    },
+    {
+      "sequence": 668,
+      "at": "2026-11-16T18:24:22.751Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "4d9896f2-ca70-4922-8068-f9e4c3c94ce4",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:22:36.053Z",
+          "finishedAt": "2026-11-16T18:24:22.751Z",
+          "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
+          "summary": null
+        }
+      }
+    },
+    {
+      "sequence": 669,
+      "at": "2026-11-16T18:24:46.271Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "5bc1c971-2fc1-4384-8958-e304fa7ebf62",
+          "owner": "a1d93534-ea3d-406f-bc68-8bff660c141a/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T928 records matching full-generation hashes for the candidate and unchanged base, addressing the prior review finding. The measured candidate was slower, and the submitted production and test files remain at the base as required. Worker task-tier checks passed; the coordinator owns the final batch gate.",
+          "findings": [],
+          "commit": "981c779b28abf3906f660a8cf11227d4fb8c673e",
+          "baseCommit": "bfcede4ed069b7095cf3cb869ab597028f07a706",
+          "submissionId": "3d6fc150-f1bc-4fe9-a2c9-12742347c068",
+          "createdAt": "2026-11-16T18:24:20.271Z",
+          "finishedAt": "2026-11-16T18:24:46.271Z"
+        }
+      }
+    },
+    {
+      "sequence": 670,
+      "at": "2026-11-16T18:24:46.279Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "67526027-277d-4d85-81cd-ad9146ac8ce7",
+          "runner": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:24:22.718Z",
+          "finishedAt": "2026-11-16T18:24:46.279Z",
+          "error": null,
+          "summary": "T928 records matching full-generation hashes for the candidate and unchanged base, addressing the prior review finding. The measured candidate was slower, and the submitted production and test files remain at the base as required. Worker task-tier checks passed; the coordinator owns the final batch gate."
+        }
+      }
+    },
+    {
+      "sequence": 671,
+      "at": "2026-11-16T18:24:46.302Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 672,
+      "at": "2026-11-16T18:25:21.886Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T18:24:48.314Z",
+            "finishedAt": "2026-11-16T18:25:21.758Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 673,
+      "at": "2026-11-16T18:25:22.070Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "9f685c170339cb159094a178d1114cfac44918bd",
+        "integratedAt": "2026-11-16T18:25:22.070Z"
+      }
+    },
+    {
+      "sequence": 674,
+      "at": "2026-11-16T18:25:24.983Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 675,
+      "at": "2026-11-16T18:25:29.446Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T18:25:29.446Z"
+      }
+    },
+    {
+      "sequence": 676,
+      "at": "2026-11-16T18:25:29.455Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "a1d93534-ea3d-406f-bc68-8bff660c141a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:22:17.606Z",
+          "stoppedAt": "2026-11-16T18:25:29.455Z",
+          "dispatched": 5,
+          "outcome": "needs-attention",
+          "failures": [
             {
               "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
               "role": "worker",
