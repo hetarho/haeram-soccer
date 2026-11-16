@@ -19,6 +19,7 @@ import {
   marketWage,
   overall,
   policyOf,
+  settlePlayerGrowth,
   settleTraining,
   trainingFocusInfo,
   trainingSummary,
@@ -182,6 +183,27 @@ describe('earned player growth and training choices', () => {
     expect(gained('dribbling')).toBeGreaterThan(0);
     for (const a of ATTRIBUTES) if (!weights[a]) expect(gained(a)).toBe(0);
     expect(player.developed).toBeCloseTo(ovr(player) - 40, 1);
+  });
+
+  it('settles a batch of rounds exactly as the same rounds one by one, past potential too', () => {
+    const w = world('hard');
+    for (const [position, potential, adaptation] of [
+      ['CM', 85, 0.5],
+      ['ST', 60.05, 0.5],
+      ['GK', 62, 0.95],
+    ] as const) {
+      const base = w.players.find((candidate) => candidate.position === position)!;
+      base.potential = potential;
+      base.adaptation = adaptation;
+      const context = { age: 19, youth: 60, ground: 1.2, focus: 'hard' as const };
+      const factor = (a: (typeof ATTRIBUTES)[number]) => (a === 'passing' ? 1.1 : 0.9);
+      const batched = structuredClone(base),
+        stepped = structuredClone(base);
+      settlePlayerGrowth(batched, context, 12, factor);
+      for (let round = 0; round < 12; round++) settlePlayerGrowth(stepped, context, 1, factor);
+      expect(batched.attrs).toEqual(stepped.attrs);
+      expect(batched.developed).toBe(stepped.developed);
+    }
   });
 
   it('stops growth at potential and records only actual gains', () => {
