@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r44 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r45 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -167,7 +167,7 @@
   - `verify` runs type/lint/format, unit/integration/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.
   - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.
 - ARCH-23 [o] CI and release use a reproducible static build.
-  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit and integration tests in separate jobs (integration in three shards), each restoring the simulated test worlds (→ARCH-21); built-preview browser tests for each →!ARCH-35 supported browser — Chromium in three shards — each installing only its pinned browser and restoring the simulated test worlds its journeys set up (→ARCH-21). Every job has a time limit (checks and unit 20 min, integration 45 min, browser shards 120 min) so a hung run fails instead of holding main's run queue for the platform's six hours. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
+  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit and integration tests in separate jobs (integration in three shards), each restoring the simulated test worlds (→ARCH-21); built-preview browser tests for each →!ARCH-35 supported browser — Chromium in three shards — each installing only its pinned browser and restoring the simulated test worlds its journeys set up (→ARCH-21). Every job has a time limit (checks and unit 20 min, integration 75 min, browser shards 120 min) so a hung run fails instead of holding main's run queue for the platform's six hours; an integration shard's limit covers a cold world cache after an engine change (measured 261117: 11 min of world warm-up and over 34 min of cases in one shard). Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
   - The storage and first-play benchmarks against the production build run only on demand, in their own manually dispatched workflow that retains `apps/web/dist` and the benchmark reports; a storage or release gate task (→ARCH-14) runs `pnpm run benchmark` locally or has the owner dispatch that workflow. ← the 100-season benchmark took about 90 minutes on every push once own-league matches played the grid engine
   - Require verification checks on the protected production branch; Netlify production deploys only that branch and uses the pinned install/build commands.
   - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
@@ -274,6 +274,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r45 261117 ARCH-23✎ integration job limit 45 min→75 min, covering a cold world cache after an engine change
 - r44 261116 ARCH-18✎ Chrome/Edge, Firefox and Safari/WebKit gate→ARCH-35 supported browsers · ARCH-23✎ Chromium and Firefox three shards, WebKit four→supported browsers, Chromium three shards · ARCH-30✎ batch every journey on Chromium→no browser spec, journeys only in CI; three cumulative failed gates→repair and rerun within limits · ARCH-35+ alpha, current stable Chrome only
 - r43 261114 ARCH-30✎ per-task build and browser acceptance after build→coordinator batch build and task-tier acceptance with handoff; task execution and i18n guidance→once through `vibe check` with mandatory i18n; recovery unspecified→input-valid success reuse and three cumulative failed gates
 - r42 261113 ARCH-32✎ stored-prose recognition without a resource-lifetime rule→retain source IDs, templates and every registered translation while supported saves can contain their prose, even after producer removal
