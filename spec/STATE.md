@@ -68,16 +68,13 @@
 | T921 | Sign free agents without searching every squad | ARCH | T925 | todo |
 | T925 | Pick each bench player with one scan instead of a sort | ARCH | - | todo |
 | T926 | Read the sixteen OVR attributes directly | ARCH | - | todo |
-| T927 | Store each market listing rating once per settlement order | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
 | natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
-| pf17-perf | 2 | 4 | 0 | 4 | 0 | 1 | 2 | 2026-11-16T17:05:22.770Z | [history](work/pf17-perf.json) |
+| pf17-perf | 2 | 4 | 1 | 3 | 1 | 1 | 0 | 2026-11-16T17:09:21.356Z | [history](work/pf17-perf.json) |
 
 ## next
-- Session pf17 runs T925 T926 T927 then T921 (review/generation-hotpaths-261117): identical worlds, kept only with a measured CPU gain.
-- NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
-- Session chslow landed T918 T919 in 0.8.3 (identical worlds, 1950 generation 666.7 s → 199.9 s; reports/261116-chslow); T920 is blocked on an idle-host re-measure of its kept patch and T921 waits for a longer A/B workload.
+- inspect work board for remaining tasks

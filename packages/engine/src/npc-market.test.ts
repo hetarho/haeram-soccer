@@ -12,7 +12,9 @@ import {
 } from './npc-market';
 import { closeNpcSummer, closeNpcWindow, intakeNpcYouth } from './npc-careers';
 import { foundSquads } from './persisted-squads';
-import { generatedPlayer, invalidateNpcSquad, stature } from './world';
+import { clubStyle, generatedPlayer, invalidateNpcSquad, stature } from './world';
+import { formationOf, slotOvr } from './player-state';
+import { compareIds, random } from './primitives';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
 import { npcWageBill, npcWageLimit } from './books';
@@ -116,6 +118,66 @@ describe('isolated NPC transfer windows', () => {
     npcMarket(w);
     expect(locations(w, p.id)).toEqual([buyer.id]);
     expect(locations(w, alternative.id)).toEqual([seller.id]);
+  });
+
+  it('settles equal-rated listings in their settlement tie order, not id order', () => {
+    const { w, seller, buyer } = fixture();
+    const day = currentDay(w);
+    const tie = (id: string) => random(`${w.seed}:npc-market:${w.year}:${day}:${id}`)();
+    // Two ids whose seeded tie order disagrees with their id order.
+    const ids = ['tie-a', 'tie-b', 'tie-c', 'tie-d', 'tie-e', 'tie-f'];
+    const first = ids.find((a) => ids.some((b) => compareIds(a, b) < 0 && tie(a) > tie(b)))!;
+    const second = ids.find((b) => compareIds(first, b) < 0 && tie(first) > tie(b))!;
+    expect(tie(second)).toBeLessThan(tie(first));
+    const [a, b] = [first, second].map((id) => ({
+      ...structuredClone(listedKeeper(w, seller)),
+      id,
+    }));
+    // listedKeeper pushed one extra keeper; replace it by the two equal ones.
+    w.squads![seller.id] = [
+      ...w.squads![seller.id]!.filter((p) => p.id !== 'listed-keeper'),
+      a!,
+      b!,
+    ];
+    seller.books!.openingIncome = npcWageBill(w, seller).toString();
+    // The buyer lacks exactly one keeper, so one move settles the need.
+    const own = w.squads![buyer.id]!.find((p) => p.position === 'GK')!;
+    w.squads![buyer.id] = w.squads![buyer.id]!.filter((p) => p.position !== 'GK' || p === own);
+    invalidateNpcSquad(w, buyer.id);
+    npcMarket(w);
+    expect(locations(w, second)).toEqual([buyer.id]);
+    expect(locations(w, first)).toEqual([seller.id]);
+  });
+
+  it('fills an upgrade need from a listing exactly at the threshold and not one point below', () => {
+    const { w, seller, buyer } = fixture();
+    const slot = formationOf(clubStyle(buyer)).find((s) => s.position === 'GK')!;
+    for (const k of w.squads![buyer.id]!.filter((p) => p.position === 'GK'))
+      for (const a of ATTRIBUTES) k.attrs[a] = 40;
+    invalidateNpcSquad(w, buyer.id);
+    const best = Math.max(
+      ...w.squads![buyer.id]!.filter((p) => p.position === 'GK').map((p) => slotOvr(p, slot)),
+    );
+    const keeperRated = (id: string, target: number) => {
+      const p = { ...structuredClone(listedKeeper(w, seller)), id };
+      for (let v = 1; v <= 99; v++) {
+        for (const a of ATTRIBUTES) p.attrs[a] = v;
+        if (slotOvr(p, slot) === target) break;
+      }
+      expect(slotOvr(p, slot)).toBe(target);
+      return p;
+    };
+    const exact = keeperRated('threshold-exact', best + NPC_MARKET.upgrade);
+    const below = keeperRated('threshold-below', best + NPC_MARKET.upgrade - 1);
+    w.squads![seller.id] = [
+      ...w.squads![seller.id]!.filter((p) => p.id !== 'listed-keeper'),
+      exact,
+      below,
+    ];
+    seller.books!.openingIncome = npcWageBill(w, seller).toString();
+    npcMarket(w);
+    expect(locations(w, exact.id)).toEqual([buyer.id]);
+    expect(locations(w, below.id)).toEqual([seller.id]);
   });
 
   it('buys a needed keeper at market value, settles both books and preserves one live identity', () => {

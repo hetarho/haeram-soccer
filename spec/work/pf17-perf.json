@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T17:05:22.770Z",
-  "sourceCommit": "1056b5931a99e9024a6abf82dcc8413c13d7f1a5",
+  "snapshotAt": "2026-11-16T17:09:21.356Z",
+  "sourceCommit": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -20,6 +20,32 @@
       "T927",
       "T921"
     ],
+    "runner": {
+      "id": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "route",
+          "model": null,
+          "version": null
+        },
+        "reviewer": {
+          "provider": "route",
+          "model": null,
+          "version": null
+        }
+      },
+      "workers": [
+        {
+          "provider": "route",
+          "model": null,
+          "version": null
+        }
+      ],
+      "startedAt": "2026-11-16T17:08:58.144Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
     "lastRun": {
       "id": "d8d3a689-2b2d-463a-b4a4-849d595ad4fb",
       "adapter": "builtin",
@@ -71,11 +97,11 @@
   },
   "summary": {
     "total": 4,
-    "completed": 0,
-    "remaining": 4,
-    "running": 0,
+    "completed": 1,
+    "remaining": 3,
+    "running": 1,
     "review": 1,
-    "blocked": 2,
+    "blocked": 0,
     "unassigned": 1
   },
   "tasks": [
@@ -91,19 +117,13 @@
       "id": "T925",
       "title": "Pick each bench player with one scan instead of a sort",
       "dep": [],
-      "status": "approved"
+      "status": "ready"
     },
     {
       "id": "T926",
       "title": "Read the sixteen OVR attributes directly",
       "dep": [],
-      "status": "blocked"
-    },
-    {
-      "id": "T927",
-      "title": "Store each market listing rating once per settlement order",
-      "dep": [],
-      "status": "blocked"
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -119,14 +139,14 @@
       "contributors": [
         "716a7625-cdcf-4060-9427-046922222193/worker-1"
       ],
-      "status": "approved",
-      "reason": "Command failed: git -C /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/pf17-perf-integrate-e7d828a1 merge --no-ff --no-commit ae59fc6b37fb1215d3a4d0efa43d16d93931c3d1\n",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-11-16T16:50:12.872Z",
       "startCommit": "e4a60d06cd74f7d6b1e274feb8f435dc214e2e36",
-      "verifiedCommit": "ae59fc6b37fb1215d3a4d0efa43d16d93931c3d1",
-      "submittedBase": "1056b5931a99e9024a6abf82dcc8413c13d7f1a5",
-      "submissionId": "bd4a1dd3-ebfb-48b1-b078-c2e2a083642d",
-      "submittedAt": "2026-11-16T17:01:54.984Z",
+      "verifiedCommit": "4219dcf60ed3f5014ec4d53c1ccd6a2424c585b2",
+      "submittedBase": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
+      "submissionId": "e7248e31-4094-41df-9567-e67359ff287f",
+      "submittedAt": "2026-11-16T17:08:49.891Z",
       "risk": null,
       "dispatch": {
         "id": "123417a8-7ea3-4b30-8b8c-77f60896a308",
@@ -141,38 +161,42 @@
         "error": null,
         "summary": "T925 records the experiment and retains the base implementation because the measured CPU interval does not establish a gain. The candidate patch and worker evidence were reviewed; integration, contract and build verification remain with the coordinator’s final gate."
       },
-      "review": {
-        "id": "e6a8cd48-17ae-4f28-9c61-7459dca4e51f",
-        "owner": "d8d3a689-2b2d-463a-b4a4-849d595ad4fb/reviewer-1",
-        "status": "approved",
-        "verdict": "approved",
-        "summary": "T925 records the experiment and retains the base implementation because the measured CPU interval does not establish a gain. The candidate patch and worker evidence were reviewed; integration, contract and build verification remain with the coordinator’s final gate.",
-        "findings": [],
-        "commit": "ae59fc6b37fb1215d3a4d0efa43d16d93931c3d1",
-        "baseCommit": "1056b5931a99e9024a6abf82dcc8413c13d7f1a5",
-        "submissionId": "bd4a1dd3-ebfb-48b1-b078-c2e2a083642d",
-        "createdAt": "2026-11-16T17:02:47.237Z",
-        "finishedAt": "2026-11-16T17:03:14.356Z"
-      },
+      "reviewHistory": [
+        {
+          "id": "e6a8cd48-17ae-4f28-9c61-7459dca4e51f",
+          "owner": "d8d3a689-2b2d-463a-b4a4-849d595ad4fb/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T925 records the experiment and retains the base implementation because the measured CPU interval does not establish a gain. The candidate patch and worker evidence were reviewed; integration, contract and build verification remain with the coordinator’s final gate.",
+          "findings": [],
+          "commit": "ae59fc6b37fb1215d3a4d0efa43d16d93931c3d1",
+          "baseCommit": "1056b5931a99e9024a6abf82dcc8413c13d7f1a5",
+          "submissionId": "bd4a1dd3-ebfb-48b1-b078-c2e2a083642d",
+          "createdAt": "2026-11-16T17:02:47.237Z",
+          "finishedAt": "2026-11-16T17:03:14.356Z",
+          "invalidatedAt": "2026-11-16T17:08:23.979Z",
+          "invalidationReason": "worker resumed or blocked"
+        }
+      ],
       "steps": [
         {
           "taskId": "T925",
-          "commit": "ae59fc6b37fb1215d3a4d0efa43d16d93931c3d1",
-          "at": "2026-11-16T17:01:54.972Z",
+          "commit": "4219dcf60ed3f5014ec4d53c1ccd6a2424c585b2",
+          "at": "2026-11-16T17:08:49.878Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-11-16T17:01:07.388Z",
-              "finishedAt": "2026-11-16T17:01:54.800Z"
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-16T17:08:24.623Z",
+              "finishedAt": "2026-11-16T17:08:49.699Z"
             }
           ]
         }
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-11-16T17:01:07.388Z",
-          "finishedAt": "2026-11-16T17:01:54.800Z"
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T17:08:24.623Z",
+          "finishedAt": "2026-11-16T17:08:49.699Z"
         }
       ]
     },
@@ -184,27 +208,25 @@
         "T926"
       ],
       "lane": null,
-      "owner": "d8d3a689-2b2d-463a-b4a4-849d595ad4fb/worker-1",
+      "owner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/worker-1",
       "contributors": [
         "716a7625-cdcf-4060-9427-046922222193/worker-2",
-        "d8d3a689-2b2d-463a-b4a4-849d595ad4fb/worker-1"
+        "d8d3a689-2b2d-463a-b4a4-849d595ad4fb/worker-1",
+        "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/worker-1"
       ],
-      "status": "blocked",
-      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "status": "doing",
+      "reason": null,
       "createdAt": "2026-11-16T16:50:15.890Z",
       "startCommit": "e4a60d06cd74f7d6b1e274feb8f435dc214e2e36",
       "dispatch": {
-        "id": "42785b8b-c7aa-4251-bd3f-6092a6e3e8fe",
-        "runner": "716a7625-cdcf-4060-9427-046922222193",
+        "id": "2190f38e-d549-48fe-b6a0-b57ea93b1c78",
+        "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
         "role": "worker",
-        "slot": 2,
+        "slot": 1,
         "provider": "claude",
         "model": "sonnet",
-        "status": "finished",
-        "startedAt": "2026-11-16T16:50:18.245Z",
-        "finishedAt": "2026-11-16T16:50:46.974Z",
-        "error": "The edits are made but nothing has run, so none of the acceptance checks are verified. This worktree has no node_modules, so every pnpm exec command fails with ERR_MODULE_NOT_FOUND for 'zod'. That includes tsx, vitest, the gen-driver hash runs and `vibe check --tier task`. I did not install dependencies. The work needs a worktree with dependencies installed before the host can run the checks.\n\nWhat changed:\n- packages/engine/src/player.ts: `ovrAt` now reads the sixteen attributes as fixed properties in ATTRIBUTES order. It still sums left to right from zero and divides by `total` as before. The weight caches, exports and the existing zero-weight and NaN behaviour are untouched.\n- packages/engine/src/player.test.ts: added a case where a non-finite value on a zero-weight attribute (GK) must give NaN. The existing exact-sum oracle compares `ovrAt` against ATTRIBUTES-order iteration, which also guards the explicit order.\n\nDeferred to the host once dependencies are installed (none of these has run):\n- `pnpm exec tsx artifacts/benchmarks/generation-market-261116/gen-driver.mts 1950 generation-reference --hash --until=1934`, expected `fc424c514162d059ce350a7e684af690f140f7233ef2e1ecf7313711fb8c19df`.\n- The same driver without `--until`, expected `0e509f5db0f370e1ec56ff44e7dd72b38d34f344faefa99c4e8ec97ef205bdaf`.\n- `node scripts/perf/ab.mjs --base \"$GUSTA_DIFF_BASE\" --workload history --procs 8 --reps 2 --warm 1 --json artifacts/benchmarks/generation-hotpaths-261117/T926/ab-history.json`, run serially under `vibe check --heavy`. If the CPU-ratio interval is not below 1, restore the original `ovrAt` and record the measurement without a speed claim.\n- `vibe check --tier task`, which covers the `player`, `training`, `npc-careers` and `persisted-squads` units.\n\nNo result lines or acceptance checkboxes were written. The empty directory artifacts/benchmarks/generation-hotpaths-261117/T926 was created for the ab output.",
-        "summary": "The edits are made but nothing has run, so none of the acceptance checks are verified. This worktree has no node_modules, so every pnpm exec command fails with ERR_MODULE_NOT_FOUND for 'zod'. That includes tsx, vitest, the gen-driver hash runs and `vibe check --tier task`. I did not install dependencies. The work needs a worktree with dependencies installed before the host can run the checks.\n\nWhat changed:\n- packages/engine/src/player.ts: `ovrAt` now reads the sixteen attributes as fixed properties in ATTRIBUTES order. It still sums left to right from zero and divides by `total` as before. The weight caches, exports and the existing zero-weight and NaN behaviour are untouched.\n- packages/engine/src/player.test.ts: added a case where a non-finite value on a zero-weight attribute (GK) must give NaN. The existing exact-sum oracle compares `ovrAt` against ATTRIBUTES-order iteration, which also guards the explicit order.\n\nDeferred to the host once dependencies are installed (none of these has run):\n- `pnpm exec tsx artifacts/benchmarks/generation-market-261116/gen-driver.mts 1950 generation-reference --hash --until=1934`, expected `fc424c514162d059ce350a7e684af690f140f7233ef2e1ecf7313711fb8c19df`.\n- The same driver without `--until`, expected `0e509f5db0f370e1ec56ff44e7dd72b38d34f344faefa99c4e8ec97ef205bdaf`.\n- `node scripts/perf/ab.mjs --base \"$GUSTA_DIFF_BASE\" --workload history --procs 8 --reps 2 --warm 1 --json artifacts/benchmarks/generation-hotpaths-261117/T926/ab-history.json`, run serially under `vibe check --heavy`. If the CPU-ratio interval is not below 1, restore the original `ovrAt` and record the measurement without a speed claim.\n- `vibe check --tier task`, which covers the `player`, `training`, `npc-careers` and `persisted-squads` units.\n\nNo result lines or acceptance checkboxes were written. The empty directory artifacts/benchmarks/generation-hotpaths-261117/T926 was created for the ab output."
+        "status": "running",
+        "startedAt": "2026-11-16T17:08:58.507Z"
       }
     },
     {
@@ -220,26 +242,40 @@
         "716a7625-cdcf-4060-9427-046922222193/worker-2",
         "d8d3a689-2b2d-463a-b4a4-849d595ad4fb/worker-1"
       ],
-      "status": "blocked",
-      "reason": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-16T16:50:47.066Z",
       "startCommit": "e4a60d06cd74f7d6b1e274feb8f435dc214e2e36",
-      "submittedBase": "11a1db227abfc7b8915b02c55f6204dcc450a24b",
-      "submissionId": "3fddff9e-1bfd-4f1c-87e7-0cb8d76c5f19",
-      "submittedAt": "2026-11-16T17:00:28.215Z",
+      "verifiedCommit": "1854f6c9589f416b9adc116139ca81530a58689c",
+      "submittedBase": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
+      "submissionId": "83ede00b-d479-4218-ba10-6c9ef5c4fdcc",
+      "submittedAt": "2026-11-16T17:08:04.391Z",
       "risk": null,
       "dispatch": {
-        "id": "77e0684e-4cf4-4341-a167-26844f5ecd4b",
-        "runner": "d8d3a689-2b2d-463a-b4a4-849d595ad4fb",
-        "role": "worker",
+        "id": "b3f47552-bc63-4104-af45-c97cb8463e1b",
+        "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+        "role": "reviewer",
         "slot": 1,
-        "provider": "claude",
-        "model": "sonnet",
+        "provider": "codex",
+        "model": "gpt-6.1-terra",
         "status": "finished",
-        "startedAt": "2026-11-16T17:02:46.836Z",
-        "finishedAt": "2026-11-16T17:05:20.270Z",
-        "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
-        "summary": null
+        "startedAt": "2026-11-16T17:09:01.435Z",
+        "finishedAt": "2026-11-16T17:09:18.841Z",
+        "error": null,
+        "summary": "T927 preserves the market ordering and settlement behavior, and the added tests cover the previously requested tie-order and threshold boundaries. Worker evidence reports matching world hashes, a measured CPU improvement, and passing task checks. The coordinator retains the final integration, contract, and build gate."
+      },
+      "review": {
+        "id": "4c945518-76bb-4f66-bbeb-b574b86bcab5",
+        "owner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T927 preserves the market ordering and settlement behavior, and the added tests cover the previously requested tie-order and threshold boundaries. Worker evidence reports matching world hashes, a measured CPU improvement, and passing task checks. The coordinator retains the final integration, contract, and build gate.",
+        "findings": [],
+        "commit": "1854f6c9589f416b9adc116139ca81530a58689c",
+        "baseCommit": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
+        "submissionId": "83ede00b-d479-4218-ba10-6c9ef5c4fdcc",
+        "createdAt": "2026-11-16T17:08:58.971Z",
+        "finishedAt": "2026-11-16T17:09:18.834Z"
       },
       "reviewHistory": [
         {
@@ -267,22 +303,22 @@
       "steps": [
         {
           "taskId": "T927",
-          "commit": "0d5c35ce306a780610f0796115de4539e7db8cfe",
-          "at": "2026-11-16T17:00:28.202Z",
+          "commit": "1854f6c9589f416b9adc116139ca81530a58689c",
+          "at": "2026-11-16T17:08:04.377Z",
           "verification": [
             {
-              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-11-16T16:58:59.774Z",
-              "finishedAt": "2026-11-16T17:00:28.014Z"
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-16T17:07:39.146Z",
+              "finishedAt": "2026-11-16T17:08:04.189Z"
             }
           ]
         }
       ],
       "verification": [
         {
-          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-11-16T16:58:59.774Z",
-          "finishedAt": "2026-11-16T17:00:28.014Z"
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T17:07:39.146Z",
+          "finishedAt": "2026-11-16T17:08:04.189Z"
         }
       ]
     }
@@ -1462,6 +1498,397 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 527,
+      "at": "2026-11-16T17:07:38.455Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 528,
+      "at": "2026-11-16T17:07:38.970Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 529,
+      "at": "2026-11-16T17:08:04.391Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
+        "submissionId": "83ede00b-d479-4218-ba10-6c9ef5c4fdcc",
+        "submittedAt": "2026-11-16T17:08:04.391Z",
+        "steps": [
+          {
+            "taskId": "T927",
+            "commit": "1854f6c9589f416b9adc116139ca81530a58689c",
+            "at": "2026-11-16T17:08:04.377Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-16T17:07:39.146Z",
+                "finishedAt": "2026-11-16T17:08:04.189Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T17:07:39.146Z",
+            "finishedAt": "2026-11-16T17:08:04.189Z"
+          }
+        ],
+        "verifiedCommit": "1854f6c9589f416b9adc116139ca81530a58689c"
+      }
+    },
+    {
+      "sequence": 530,
+      "at": "2026-11-16T17:08:23.979Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "approved",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "e6a8cd48-17ae-4f28-9c61-7459dca4e51f",
+            "owner": "d8d3a689-2b2d-463a-b4a4-849d595ad4fb/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T925 records the experiment and retains the base implementation because the measured CPU interval does not establish a gain. The candidate patch and worker evidence were reviewed; integration, contract and build verification remain with the coordinator’s final gate.",
+            "findings": [],
+            "commit": "ae59fc6b37fb1215d3a4d0efa43d16d93931c3d1",
+            "baseCommit": "1056b5931a99e9024a6abf82dcc8413c13d7f1a5",
+            "submissionId": "bd4a1dd3-ebfb-48b1-b078-c2e2a083642d",
+            "createdAt": "2026-11-16T17:02:47.237Z",
+            "finishedAt": "2026-11-16T17:03:14.356Z",
+            "invalidatedAt": "2026-11-16T17:08:23.979Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 531,
+      "at": "2026-11-16T17:08:24.466Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 532,
+      "at": "2026-11-16T17:08:49.891Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
+        "submissionId": "e7248e31-4094-41df-9567-e67359ff287f",
+        "submittedAt": "2026-11-16T17:08:49.891Z",
+        "steps": [
+          {
+            "taskId": "T925",
+            "commit": "4219dcf60ed3f5014ec4d53c1ccd6a2424c585b2",
+            "at": "2026-11-16T17:08:49.878Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-16T17:08:24.623Z",
+                "finishedAt": "2026-11-16T17:08:49.699Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T17:08:24.623Z",
+            "finishedAt": "2026-11-16T17:08:49.699Z"
+          }
+        ],
+        "verifiedCommit": "4219dcf60ed3f5014ec4d53c1ccd6a2424c585b2"
+      }
+    },
+    {
+      "sequence": 533,
+      "at": "2026-11-16T17:08:50.791Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "d63de2e0-0291-4558-aed6-7ff87507e8a0",
+      "taskId": "T926",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 534,
+      "at": "2026-11-16T17:08:58.151Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T17:08:58.144Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 535,
+      "at": "2026-11-16T17:08:58.165Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "d63de2e0-0291-4558-aed6-7ff87507e8a0",
+      "taskId": "T926",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/worker-1",
+        "contributors": [
+          "716a7625-cdcf-4060-9427-046922222193/worker-2",
+          "d8d3a689-2b2d-463a-b4a4-849d595ad4fb/worker-1",
+          "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 536,
+      "at": "2026-11-16T17:08:58.507Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "d63de2e0-0291-4558-aed6-7ff87507e8a0",
+      "taskId": "T926",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2190f38e-d549-48fe-b6a0-b57ea93b1c78",
+          "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T17:08:58.507Z"
+        }
+      }
+    },
+    {
+      "sequence": 537,
+      "at": "2026-11-16T17:08:58.850Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "d63de2e0-0291-4558-aed6-7ff87507e8a0",
+      "taskId": "T926",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2190f38e-d549-48fe-b6a0-b57ea93b1c78",
+          "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T17:08:58.507Z"
+        }
+      }
+    },
+    {
+      "sequence": 538,
+      "at": "2026-11-16T17:08:58.971Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "4c945518-76bb-4f66-bbeb-b574b86bcab5",
+          "owner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/reviewer-1",
+          "status": "reviewing",
+          "commit": "1854f6c9589f416b9adc116139ca81530a58689c",
+          "baseCommit": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
+          "submissionId": "83ede00b-d479-4218-ba10-6c9ef5c4fdcc",
+          "createdAt": "2026-11-16T17:08:58.971Z"
+        }
+      }
+    },
+    {
+      "sequence": 539,
+      "at": "2026-11-16T17:09:01.435Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "b3f47552-bc63-4104-af45-c97cb8463e1b",
+          "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-16T17:09:01.435Z"
+        }
+      }
+    },
+    {
+      "sequence": 540,
+      "at": "2026-11-16T17:09:01.443Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "b3f47552-bc63-4104-af45-c97cb8463e1b",
+          "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-16T17:09:01.435Z"
+        }
+      }
+    },
+    {
+      "sequence": 541,
+      "at": "2026-11-16T17:09:18.834Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "4c945518-76bb-4f66-bbeb-b574b86bcab5",
+          "owner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T927 preserves the market ordering and settlement behavior, and the added tests cover the previously requested tie-order and threshold boundaries. Worker evidence reports matching world hashes, a measured CPU improvement, and passing task checks. The coordinator retains the final integration, contract, and build gate.",
+          "findings": [],
+          "commit": "1854f6c9589f416b9adc116139ca81530a58689c",
+          "baseCommit": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
+          "submissionId": "83ede00b-d479-4218-ba10-6c9ef5c4fdcc",
+          "createdAt": "2026-11-16T17:08:58.971Z",
+          "finishedAt": "2026-11-16T17:09:18.834Z"
+        }
+      }
+    },
+    {
+      "sequence": 542,
+      "at": "2026-11-16T17:09:18.841Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "b3f47552-bc63-4104-af45-c97cb8463e1b",
+          "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-16T17:09:01.435Z",
+          "finishedAt": "2026-11-16T17:09:18.841Z",
+          "error": null,
+          "summary": "T927 preserves the market ordering and settlement behavior, and the added tests cover the previously requested tie-order and threshold boundaries. Worker evidence reports matching world hashes, a measured CPU improvement, and passing task checks. The coordinator retains the final integration, contract, and build gate."
+        }
+      }
+    },
+    {
+      "sequence": 543,
+      "at": "2026-11-16T17:09:18.865Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
