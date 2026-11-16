@@ -360,29 +360,47 @@ export function npcMarket(w: World) {
   const byLine = new Map(
     lines.map((line) => [line, listed.filter((l) => lineOf(l.player.position) === line)]),
   );
-  const buyers = [...clubs].sort(
-    (a, b) => stature(w.seed, b.id) - stature(w.seed, a.id) || compareIds(a.id, b.id),
-  );
+  // Stature is a pure function of seed and club; read it once per settlement.
+  const statures = new Map(clubs.map((c) => [c.id, stature(w.seed, c.id)]));
+  const statureOf = (c: Club) => statures.get(c.id)!;
+  const buyers = [...clubs].sort((a, b) => statureOf(b) - statureOf(a) || compareIds(a.id, b.id));
   const wanted = new Map(clubs.map((c) => [c.id, needs(w, c, settlement)]));
   const moved = new Set<string>();
+  // Each line's listings ranked once for a need's slot (formation slots are shared objects).
+  // A non-moved player's rating cannot change within the settlement and the walk's filters
+  // only change when a move settles, which ends the walk, so filtering lazily in this order
+  // selects what filtering and then sorting the pool would.
+  const orders = new Map<Line, Map<Slot | undefined, Listing[]>>();
+  const orderFor = (need: Need) => {
+    let bySlot = orders.get(need.line);
+    if (!bySlot) orders.set(need.line, (bySlot = new Map()));
+    let order = bySlot.get(need.slot);
+    if (!order) {
+      order = (byLine.get(need.line) ?? []).filter((l) => !moved.has(l.player.id));
+      order.sort(
+        (a, b) =>
+          rating(b.player, settlement, need.slot) - rating(a.player, settlement, need.slot) ||
+          tie.get(a.player.id)! - tie.get(b.player.id)! ||
+          compareIds(a.player.id, b.player.id),
+      );
+      bySlot.set(need.slot, order);
+    }
+    return order;
+  };
   for (const buyer of buyers) {
     while ((counts.get(buyer.id) ?? 0) < NPC_MARKET.moves) {
       let completed = false;
       for (const need of wanted.get(buyer.id)!) {
-        const pool = (byLine.get(need.line) ?? []).filter(
-          (l) =>
-            l.club !== buyer &&
-            !moved.has(l.player.id) &&
-            npcCanSell(w, l.club, l.player) &&
-            fills(l.player, need, settlement),
-        );
-        pool.sort(
-          (a, b) =>
-            rating(b.player, settlement, need.slot) - rating(a.player, settlement, need.slot) ||
-            tie.get(a.player.id)! - tie.get(b.player.id)! ||
-            compareIds(a.player.id, b.player.id),
-        );
-        for (const listing of pool) {
+        const floor = need.slot ? need.best + NPC_MARKET.upgrade : undefined;
+        for (const listing of orderFor(need)) {
+          // Ranked by this slot's rating, so no later listing fills the need either.
+          if (floor !== undefined && rating(listing.player, settlement, need.slot) < floor) break;
+          if (
+            listing.club === buyer ||
+            moved.has(listing.player.id) ||
+            !npcCanSell(w, listing.club, listing.player)
+          )
+            continue;
           const { limit, bill } = clubFacts(w, listing.club, settlement);
           const sellingDown = limit !== undefined && bill > limit;
           if (listing.sellDown && !sellingDown) continue;
@@ -410,9 +428,7 @@ export function npcMarket(w: World) {
           // Equal-stature contenders compare their actual wages in one currency.
           const offers = buyers
             .filter(
-              (c) =>
-                (counts.get(c.id) ?? 0) < NPC_MARKET.moves &&
-                stature(w.seed, c.id) >= stature(w.seed, buyer.id),
+              (c) => (counts.get(c.id) ?? 0) < NPC_MARKET.moves && statureOf(c) >= statureOf(buyer),
             )
             .flatMap((c) => {
               const offer =
@@ -432,7 +448,7 @@ export function npcMarket(w: World) {
             });
           offers.sort(
             (a, b) =>
-              stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
+              statureOf(b.club) - statureOf(a.club) ||
               compareMoney(a.pounds, b.pounds) ||
               compareIds(a.club.id, b.club.id),
           );
