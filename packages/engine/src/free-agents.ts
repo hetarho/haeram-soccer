@@ -262,7 +262,8 @@ export function refreshFreeAgents(w: World, year = w.year) {
       player.until = year + npcContractTerm(year - player.born) - 1;
       joinClub(player, nationalityOf(w, player.id) === club.country ? 'domestic' : 'abroad', year);
       // Employment records the free move's actual club and date; a free move has no fee.
-      movePerson(w, player, club.id);
+      // A pooled free agent is in no squad (`admit` took him out of his), so no squad is searched.
+      movePerson(w, player, club.id, false, undefined, null);
       FREE_AGENT_FLOW.observe?.('sign', player, club.id);
       facts.set(club.id, settlementFacts(w, club, year));
       signed = true;
@@ -309,7 +310,7 @@ export function signFreeAgentAtClose(
     w.players[prior] = p;
   } else w.players.push(p);
   joinClub(p, isForeignCandidate(w, p.id) ? 'abroad' : 'domestic', w.year);
-  movePerson(w, p, w.playerClub, true);
+  movePerson(w, p, w.playerClub, true, undefined, null);
   addEvent(
     w,
     'free-agent-signing',
