@@ -134,14 +134,14 @@ function retireFreeAgent(w: World, p: Player) {
   FREE_AGENT_FLOW.observe?.('retire', p);
 }
 /** Admit releases before signings; only the season close applies the pool cap. */
-function admit(w: World, joining: readonly FreeAgent[]) {
+function admit(w: World, joining: readonly FreeAgent[], source?: string) {
   const held = new Set(freeAgentsOf(w).map((p) => p.id));
   const fresh = joining.filter((p) => !held.has(p.id));
   for (const p of fresh) {
     held.add(p.id);
     p.wage = freeAgentWage(w, p);
     const from = w.people?.[p.id]?.club;
-    movePerson(w, p);
+    movePerson(w, p, undefined, false, undefined, source);
     FREE_AGENT_FLOW.observe?.('release', p, from);
     freePlace(w, p.id);
   }
@@ -182,8 +182,8 @@ export function joinAtClose(w: World, p: Player) {
   return admit(w, [agent]).length > 0;
 }
 /** An NPC release has already developed and aged in the shared summer. */
-export function joinFreeAgents(w: World, player: Player, since: number) {
-  return admit(w, [freeAgentOf(player, since)]).length > 0;
+export function joinFreeAgents(w: World, player: Player, since: number, source?: string) {
+  return admit(w, [freeAgentOf(player, since)], source).length > 0;
 }
 
 /** New summer terms include their first season, shortening with age (→CLUB-26). */

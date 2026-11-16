@@ -99,11 +99,10 @@ export function matchdaySquad(w: World, c: Club, players: Player[]): Player[] {
     const remaining = players.filter((p) => !used.has(p.id));
     const line = remaining.filter((p) => lineOf(p.position) === lineOf(place.position));
     const slot = formationOf(style).find((s) => s.position === place.position)!;
-    const next = (line.length ? line : remaining).sort(
-      (a, b) =>
-        selectionValue(b, slot, manager, w.year) - selectionValue(a, slot, manager, w.year) ||
-        compareIds(a.id, b.id),
-    )[0];
+    // Each candidate's value is read once, not again at every comparison.
+    const next = (line.length ? line : remaining)
+      .map((p) => ({ p, value: selectionValue(p, slot, manager, w.year) }))
+      .sort((a, b) => b.value - a.value || compareIds(a.p.id, b.p.id))[0]?.p;
     if (!next) break;
     chosen.push(next);
     used.add(next.id);
@@ -111,11 +110,15 @@ export function matchdaySquad(w: World, c: Club, players: Player[]): Player[] {
   return chosen;
 }
 
-/** Move the live record; the owner's departed row remains only his history with the club. */
-export function moveSquadPlayer(w: World, p: Player, club?: string, source?: string) {
-  if (!w.squads) return;
+/**
+ * Move the live record; the owner's departed row remains only his history with the club. Returns
+ * the clubs whose matchday squad it chose again, so a caller need not repeat that work.
+ */
+export function moveSquadPlayer(w: World, p: Player, club?: string, source?: string): string[] {
+  const chosenAgain: string[] = [];
+  if (!w.squads) return chosenAgain;
   // Academy enrollment records the club affiliation without promoting the prospect.
-  if (club === w.playerClub && w.academy?.players.some((q) => q.id === p.id)) return;
+  if (club === w.playerClub && w.academy?.players.some((q) => q.id === p.id)) return chosenAgain;
   const live = structuredClone(p);
   live.status = 'active';
   // A market settlement already knows the source; avoid scanning every other club for each move.
@@ -123,9 +126,10 @@ export function moveSquadPlayer(w: World, p: Player, club?: string, source?: str
   for (const [id, players] of origins) {
     if (!players.some((q) => q.id === p.id)) continue;
     // An idempotent affiliation update is not a roster change.
-    if (id === club) return;
+    if (id === club) return chosenAgain;
     w.squads[id] = players.filter((q) => q.id !== p.id);
     invalidateNpcSquad(w, id);
+    chosenAgain.push(id);
   }
   const prior = w.players.findIndex((q) => q.id === p.id);
   if (club === w.playerClub) {
@@ -161,6 +165,7 @@ export function moveSquadPlayer(w: World, p: Player, club?: string, source?: str
           live,
         );
       invalidateNpcSquad(w, club);
+      chosenAgain.push(club);
     }
   }
   if (club && w.freeAgents?.some((q) => q.id === p.id))
@@ -169,4 +174,5 @@ export function moveSquadPlayer(w: World, p: Player, club?: string, source?: str
     w.discipline.bans = w.discipline.bans.map((b) => (b.player === p.id ? { ...b, club } : b));
     w.discipline.out = w.discipline.out.map((o) => (o.player === p.id ? { ...o, club } : o));
   }
+  return chosenAgain;
 }

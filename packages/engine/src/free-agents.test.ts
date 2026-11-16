@@ -300,6 +300,28 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     expect(w.people!['surplus']!.playing).toBe('retired');
   });
 
+  it('removes a sourced release from exactly its own squad, as the unsourced scan does', () => {
+    const run = (sourced: boolean) => {
+      const { w, c } = npcBooksFixture();
+      const rival = { ...c, id: 'ENG:0:0:0', country: 'ENG', tier: 1, levels: undefined };
+      w.clubs = [w.clubs[0]!, c, rival];
+      delete w.squads;
+      foundSquads(w);
+      const leaving = w.squads![c.id]![15]!;
+      joinFreeAgents(w, leaving, w.year + 1, sourced ? c.id : undefined);
+      return {
+        own: w.squads![c.id]!.map((p) => p.id),
+        rival: w.squads![rival.id]!.map((p) => p.id),
+        pool: w.freeAgents!.map((p) => p.id),
+        leaving: leaving.id,
+      };
+    };
+    const sourced = run(true);
+    expect(sourced.own).not.toContain(sourced.leaving);
+    expect(sourced.pool).toContain(sourced.leaving);
+    expect(sourced).toEqual(run(false));
+  });
+
   it('retires a player unsigned for a whole season, and leaves no duplicate after taking one', () => {
     const { w } = npcBooksFixture();
     joinFreeAgents(w, agent('old'), w.year);
