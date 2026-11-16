@@ -34,6 +34,21 @@
         "node --import tsx /tmp/ws16-verify-world.mjs .",
         "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
       ]
+    },
+    "7a88e7723e75cfe5a6df9ab7": {
+      "id": "7a88e7723e75cfe5a6df9ab7",
+      "owner": "5e24c55a-f79b-4439-8cb3-6738ec521145",
+      "tag": "nf16",
+      "kind": "start",
+      "publication": "merge",
+      "host": "ihaelam-ui-MacBookPro",
+      "branch": "gusta-session-start-nf16-46eb8aaa",
+      "head": "d6c3caf7a4a2170c4b79f918b6e0bf61027c45a3",
+      "land": "main",
+      "status": "working",
+      "at": "2026-11-16T14:02:30.878Z",
+      "agentChecks": [],
+      "verificationCommands": []
     }
   },
   "gate": null,
