@@ -6,6 +6,8 @@
  */
 import { tenRichSeasons } from '../apps/web/src/adapters/persistence.testkit';
 import { operatingLossWorld } from '../tests/fixtures/business';
+import { retainedReplaySeed } from '../tests/fixtures/replay-seed';
 
 tenRichSeasons();
 operatingLossWorld();
+retainedReplaySeed();

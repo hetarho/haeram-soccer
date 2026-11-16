@@ -1,12 +1,9 @@
 import { expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import { Host } from '../../../apps/web/src/runtime/host';
-import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
-import { RESPONSIBILITY_KEYS } from './responsibilities';
-import { currentDay, advanceDays } from './index';
-import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { retainedReplaySeed } from '../../../tests/fixtures/replay-seed';
+import { currentDay } from './index';
 import { command, facts, readAndReload } from './feature-replay.testkit';
-import { careerWorld } from './career.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
 // The retained one is built over three and a half seasons and then crosses a season close,
@@ -17,16 +14,11 @@ for (const retained of [true])
   it(
     `keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (${retained ? 'retained' : 'new'} career)`,
     async () => {
-      // The starting career is setup, built once; the replays below are the test. The retained
-      // career keeps a playing coach and a former player's second career, on the released model,
-      // while feature-replay.test replays a new career.
-      const seed = cachedWorld(`seed:${retained ? 'retained' : 'new'}`, () => {
-        const seed = retained ? retainedWorkload().w : careerWorld({ seed: 'feature-replay' });
-        for (const key of RESPONSIBILITY_KEYS) seed.settings!.responsibilities[key] = 'delegated';
-        // Cross the next seasonal boundary in the retained case, keeping its outstanding promise.
-        if (retained) advanceDays(seed, 322 - currentDay(seed), undefined, false);
-        return seed;
-      });
+      // The starting career is setup, built once (and warmed outside this timer, T771); the
+      // replays below are the test. The retained career keeps a playing coach and a former
+      // player's second career, on the released model, while feature-replay.test replays a new
+      // career.
+      const seed = retainedReplaySeed();
       seed.settings!.mode = 'manual';
       seed.settings!.observations = { matchEve: true, windowOpen: false };
       const manual = new Host(),
