@@ -74,4 +74,6 @@
 | pf17-perf | 2 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-16T17:33:37.532Z | [history](work/pf17-perf.json) |
 
 ## next
-- inspect work board for remaining tasks
+- Session pf17 landed T921 T926 T927 (identical worlds; generation history CPU ratio 0.6849, reports/261117-pf17); T925 recorded no gain; generation-hotpaths F4 stays open.
+- NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
+- Session chslow landed T918 T919 in 0.8.3 (identical worlds, 1950 generation 666.7 s → 199.9 s; reports/261116-chslow); T920 is blocked on an idle-host re-measure of its kept patch.
