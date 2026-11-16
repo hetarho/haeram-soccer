@@ -11,9 +11,10 @@ import { offsideLineX } from './places';
 import type { TeamId, Vec } from './types';
 import { clamp, dist, len } from './vec';
 import { apexFor, flightTime, startFlight, startFlightTimed } from './ball';
-import { cueNext, resolveCut } from './contest';
+import { cueNext, nearestOpponent, resolveCut } from './contest';
 import { speedAt, timeToReach } from './motion';
 import { holdMove } from './pass';
+import { holdOver, RELEASE } from './release';
 import type { BeatContext } from './perform';
 import {
   ensureOwner,
@@ -46,14 +47,22 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
   const offside = beat.outcome === 'offside';
   const lead = THROUGH.runLead + (offside ? THROUGH.earlyBy : 0);
   const start = state.t;
-  const left = (): number => beat.hold - (state.t - start);
+  const over = holdOver(state, actor, start, beat.hold);
+  let released = false;
+  const left = (): number => {
+    released ||= over();
+    return released ? 0 : beat.hold - (state.t - start);
+  };
+  // A legal runner prepares while his passer is closely pressed, so the pressure reaction can
+  // release the ball as soon as the runner is ready; the recorded offside keeps its early run.
+  const preparing = (): boolean =>
+    left() <= lead || (!offside && nearestOpponent(state, actor, true).distance <= RELEASE.reach);
 
   state.orders.set(actor, holdMove(state, actor, beat.to));
   const runOrder: Order = {
     target: (): Vec => {
       const me = toAttack(T, runnerPos(), state.fixture.period);
-      if (left() > lead)
-        return toAttack(T, [line() - THROUGH.setBack, me[1]], state.fixture.period);
+      if (!preparing()) return toAttack(T, [line() - THROUGH.setBack, me[1]], state.fixture.period);
       if (!offside) {
         return toAttack(
           T,
@@ -64,7 +73,7 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
       return beat.to;
     },
     get pace() {
-      return left() > lead ? 'run' : 'sprint';
+      return preparing() ? 'sprint' : 'run';
     },
   };
   state.orders.set(runner, runOrder);

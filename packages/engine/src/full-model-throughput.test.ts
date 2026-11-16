@@ -173,9 +173,15 @@ const facts = (w: World) => ({
 // on the activation candidate; revision-10 digests were 1777e46a55e11535 / c1dae39d1b1fc9a9.
 // The grid and its digests were removed in T845; the portable golden plays revision 11 since
 // T843.
+// T908 retains the complete proof in ../../../artifacts/verification/nf14-throughput-provenance.json:
+// T861 persisted founding squads and T863 selected-XI context changed inputs; HIST-23 added keeper
+// clean sheets and reviewed football staging changed retained material. The final scoped capture
+// confirms these full-field signatures. Neither material nor cleanSheets is excluded here, and
+// changed results establish no throughput speed claim.
+// The evidence audit expands every missing array tail; scalar leaves and array lengths are separate.
 const BEFORE = {
-  aggregateRecords: '9ad7a73f17eb42d4',
-  candidateRounds: '6829def1e75ea8f9',
+  aggregateRecords: 'd01e8b16487872a4',
+  candidateRounds: 'aef5e3c0618eb5f2',
 };
 
 describe('complete-result throughput (T285)', () => {

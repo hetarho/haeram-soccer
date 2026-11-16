@@ -6864,6 +6864,24 @@
     "player.record.representative": "نادٍ ممثل · {club}",
     "player.record.table": "السجل حسب الموسم والنادي",
     "player.record.retirementNews": "{player} يعتزل اللعب",
-    "player.record.lastClub": "النادي الأخير: {club}"
+    "player.record.lastClub": "النادي الأخير: {club}",
+    "naturalFootball.title": "مقارنة حركة كرة القدم",
+    "naturalFootball.baseline": "النسخة الأصلية",
+    "naturalFootball.improved": "النسخة المحسّنة",
+    "naturalFootball.match": "{home} ضد {away}",
+    "naturalFootball.provenance": "{seed} · {sha}",
+    "naturalFootball.help": "مسافة: تشغيل/إيقاف مؤقت · ← →: انتقال 5 ثوانٍ · 1× بالوقت الحقيقي.",
+    "naturalFootball.clock": "{minute}′ {second}″",
+    "naturalFootball.pitch": "{version}: ملعب {home} ضد {away}",
+    "naturalFootball.pressure2": "استحواذ تحت ضغط قريب لمدة ثانيتين أو أكثر: {count}",
+    "naturalFootball.pressure5": "استحواذ تحت ضغط قريب لمدة 5 ثوانٍ أو أكثر: {count}",
+    "naturalFootball.sameFacts": "مقارنة اللاعبين أنفسهم وسجل المباراة النهائي نفسه.",
+    "naturalFootball.usage": "الاستخدام: {command}",
+    "naturalFootball.invalid": "بيانات مقارنة كرة القدم غير صالحة.",
+    "naturalFootball.mismatch": "شروط المقارنة مختلفة بين النسختين: {field}",
+    "naturalFootball.noMatch": "تعذّر عرض أول مباراة دوري للبذرة {seed}.",
+    "naturalFootball.failed": "تعذّر إعداد المقارنة: {detail}",
+    "naturalFootball.step": "انتقال {seconds} ثانية",
+    "naturalFootball.loading": "جارٍ إعداد عرض المباراة."
   }
 }

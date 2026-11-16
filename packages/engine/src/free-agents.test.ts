@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ATTRIBUTES } from '../../contracts/src/player';
-import type { FreeAgent, Position } from '../../contracts/src/types';
+import type { FreeAgent, PlayerMove, Position, World } from '../../contracts/src/types';
 import { npcBooksFixture } from './npc-books.testkit';
 import {
   capFreeAgents,
@@ -13,7 +13,9 @@ import {
   refreshFreeAgents,
   takeFreeAgent,
 } from './free-agents';
-import { foundSquads } from './persisted-squads';
+import { foundSquads, moveSquadPlayer } from './persisted-squads';
+import { PLAYER_MOVE_FLOW, recordPlayerMove } from './npc-market';
+import { freeSigningSourceWitness } from './free-signing-source.testkit';
 import { intakeNpcYouth, renewNpcContracts } from './npc-careers';
 import {
   clubPlayers,
@@ -37,6 +39,161 @@ function agent(id: string, ability = 50, position: Position = 'CB'): FreeAgent {
   for (const a of ATTRIBUTES) p.attrs[a] = ability;
   return { ...p, freeSince: 1951 };
 }
+
+/** A real prior move followed by a release, with no fabricated unobserved employment. */
+function releasedHistoryFixture() {
+  const { w, c } = npcBooksFixture();
+  const origin = { ...c, id: 'POR:0:0:13', country: 'POR', representative: false };
+  w.clubs.push(origin);
+  w.squads![origin.id] = [];
+  const p = makePlayer('POR', w.seed, `${origin.id}:p:3:108`, w.year, 50, 'GK', 24);
+  p.qualities = { understanding: 1, teaching: 1, judgement: 1 };
+  for (const attribute of ATTRIBUTES) p.attrs[attribute] = 50;
+  w.squads![origin.id]!.push(p);
+  recordPlayerMove(w, p.id, { year: w.year, day: 1, from: origin.id, to: c.id, fee: '123' });
+  moveSquadPlayer(w, p, c.id, origin.id);
+  return { w, c, origin, p };
+}
+
+describe('observed released-player source proof', () => {
+  it('observes one real signing before append, then consumes the exact release witness', () => {
+    const { w, c, origin, p } = releasedHistoryFixture();
+    const witness = freeSigningSourceWitness();
+    const previousFree = FREE_AGENT_FLOW.observe;
+    const previousMove = PLAYER_MOVE_FLOW.observe;
+    let releases = 0,
+      signs = 0,
+      callbacks = 0;
+    FREE_AGENT_FLOW.observe = (kind, player) => {
+      if (kind === 'release') {
+        releases++;
+        witness.release(w, player.id);
+      } else if (kind === 'sign') {
+        signs++;
+        witness.consume(player.id);
+      }
+    };
+    let observedMove: PlayerMove | undefined;
+    PLAYER_MOVE_FLOW.observe = (world, id, move) => {
+      callbacks++;
+      expect(id).toBe(p.id);
+      expect(world.playerRecords![id]!.moves).toHaveLength(1);
+      expect(world.playerRecords![id]!.moves[0]!.to).toBe(move.from);
+      expect(world.people![id]!.employment).toEqual([]);
+      expect(world.people![id]!.playing).toBe('released');
+      expect(world.people![id]!.club).toBeUndefined();
+      expect(world.freeAgents!.some((row) => row.id === id)).toBe(false);
+      expect(world.squads![c.id]!.some((row) => row.id === id)).toBe(false);
+      expect(witness.accepts(world, id, move)).toBe(true);
+      observedMove = structuredClone(move);
+    };
+    try {
+      expect(joinFreeAgents(w, p, w.year)).toBe(true);
+      expect(w.people![p.id]!.employment).toEqual([]);
+      c.representative = true; // The real new destination differs from the previous club.
+      w.calendar = { day: 4 };
+      refreshFreeAgents(w);
+      expect([releases, signs, callbacks]).toEqual([1, 1, 1]);
+      expect(w.playerRecords![p.id]!.moves).toHaveLength(2);
+      expect(w.playerRecords![p.id]!.moves[1]).toEqual({
+        year: w.year,
+        day: 4,
+        from: c.id,
+        to: origin.id,
+        fee: '0',
+      });
+      expect(w.people![p.id]!.employment).toEqual([
+        { role: 'player', club: origin.id, from: { year: w.year, day: 4 } },
+      ]);
+      expect(
+        Object.entries(w.squads!).flatMap(([club, players]) =>
+          players.filter((row) => row.id === p.id).map(() => club),
+        ),
+      ).toEqual([origin.id]);
+      expect(witness.accepts(w, p.id, observedMove!)).toBe(false);
+    } finally {
+      FREE_AGENT_FLOW.observe = previousFree;
+      PLAYER_MOVE_FLOW.observe = previousMove;
+    }
+  });
+
+  it('rejects unwitnessed, absent, mismatched or future history and invalid signing state', () => {
+    const { w, c, origin, p } = releasedHistoryFixture();
+    const previous = FREE_AGENT_FLOW.observe;
+    const witness = freeSigningSourceWitness();
+    FREE_AGENT_FLOW.observe = (kind, player) => {
+      if (kind === 'release') witness.release(w, player.id);
+    };
+    try {
+      expect(joinFreeAgents(w, p, w.year)).toBe(true);
+    } finally {
+      FREE_AGENT_FLOW.observe = previous;
+    }
+    const move: PlayerMove = { year: w.year, day: 4, from: c.id, to: origin.id, fee: '0' };
+    expect(witness.accepts(w, p.id, move)).toBe(true);
+    expect(freeSigningSourceWitness().accepts(w, p.id, move)).toBe(false);
+    const reject = (change: (copy: World, next: PlayerMove) => void) => {
+      const copy = structuredClone(w),
+        next = structuredClone(move);
+      change(copy, next);
+      expect(witness.accepts(copy, p.id, next)).toBe(false);
+    };
+    reject((copy) => {
+      copy.playerRecords![p.id]!.moves = [];
+    });
+    reject((copy) => {
+      copy.playerRecords![p.id]!.moves[0]!.to = origin.id;
+    });
+    reject((copy) => {
+      copy.playerRecords![p.id]!.moves[0]!.day = 5;
+    });
+    reject((_copy, next) => {
+      next.day = 2;
+    });
+    reject((_copy, next) => {
+      next.fee = '1';
+    });
+    reject((_copy, next) => {
+      next.loan = true;
+    });
+    reject((copy) => {
+      copy.people![p.id]!.club = c.id;
+    });
+    reject((copy) => {
+      copy.people![p.id]!.playing = 'active';
+    });
+    reject((copy) => {
+      copy.people![p.id]!.loan = { club: c.id, until: w.year + 1 };
+    });
+    reject((copy) => {
+      copy.playerRecords![p.id]!.loan = {
+        club: c.id,
+        until: w.year + 1,
+        wage: p.wage,
+        contractUntil: p.until,
+        year: w.year,
+      };
+    });
+    reject((copy) => {
+      copy.people![p.id]!.employment.push({
+        role: 'player',
+        club: c.id,
+        from: { year: w.year, day: 1 },
+      });
+    });
+    reject((copy) => {
+      copy.squads![c.id]!.push(structuredClone(p));
+    });
+    reject((copy) => {
+      copy.squads![origin.id]!.push(structuredClone(p), structuredClone(p));
+    });
+    const registered = structuredClone(w);
+    registered.squads![origin.id]!.push(structuredClone(p));
+    expect(witness.accepts(registered, p.id, move)).toBe(true);
+    witness.consume(p.id);
+    expect(witness.accepts(registered, p.id, move)).toBe(false);
+  });
+});
 
 describe('NPC contracts and need-based free agents on isolated squads', () => {
   it.each([1951, 2020])(

@@ -8,7 +8,7 @@ import { cellOf } from './match/pitch';
 import { MaterialTally } from './match/record';
 import { country } from '../../catalogs/src/index';
 import { closeSeason, simulateMatch } from './index';
-import { careerWorld } from './career.testkit';
+import { careerWorld, CAREER_YEAR, type CareerInput } from './career.testkit';
 import { ranked } from './season';
 import { clubOf } from './world';
 import {
@@ -136,10 +136,42 @@ describe('post-match material', () => {
   });
 
   it('reduces material to season heat maps at the close', () => {
-    // The finance club's first season to its last round: this club plays no playoff in it, so the
-    // league season is all its material (a playoff is the next case).
-    const w = simulatedWorld(CAREER, { rounds: 46 });
+    // This local career must genuinely finish outside the playoff places; the next case covers
+    // material from a playoff played during the close.
+    const input: CareerInput = { ...CAREER, seed: 'material-season-heat-no-playoff' };
+    const w = simulatedWorld(input, { rounds: 46 });
+    expect(w.year).toBe(CAREER_YEAR);
+    expect(w.round).toBe(46);
+    const own = clubOf(w),
+      cp = country(own.country),
+      automatic = cp.automatic[own.tier - 1]!;
+    const division = w.clubs.filter(
+      (c) => c.country === own.country && c.tier === own.tier && !c.representative,
+    );
+    const rank = ranked(w, division).findIndex((c) => c.id === own.id) + 1;
+    expect(rank).toBeGreaterThan(0);
+    expect(rank <= automatic || rank > automatic + 4, `actual non-playoff rank: ${rank}`).toBe(
+      true,
+    );
+    const ownFixture = (f: { home: string; away: string }) =>
+      f.home === w.playerClub || f.away === w.playerClub;
+    const regular = w.fixtures.filter(
+      (f) => f.year === w.year && f.kind === 'league' && ownFixture(f),
+    );
+    expect(regular).toHaveLength(46);
+    expect(regular.every((f) => f.score !== undefined)).toBe(true);
+    const fixtures = [
+      ...w.fixtures,
+      ...(w.cups ?? []).flatMap((cup) => cup.fixtures),
+      ...w.europe.flatMap((tournament) => tournament.fixtures),
+    ].filter((f) => f.year === w.year && ownFixture(f));
+    expect(fixtures.every((f) => f.score !== undefined)).toBe(true);
+    expect(fixtures.some((f) => f.kind === 'playoff')).toBe(false);
     const season = w.ownMatches.filter((m) => m.year === w.year);
+    expect(regular.every((f) => season.some((m) => m.id === f.id))).toBe(true);
+    const playoff = `${w.year}:promotion:${own.country}:${own.tier - 1}:`;
+    expect(season.some((m) => m.id.startsWith(playoff))).toBe(false);
+    const ownMatchIds = season.map((m) => m.id);
     expect(season.length).toBeGreaterThan(0);
     // The saved own record keeps only the own lines and its material.
     for (const m of season) expect(m.material).toBeDefined();
@@ -156,6 +188,8 @@ describe('post-match material', () => {
 
     closeSeason(w);
 
+    expect(w.ownMatches.filter((m) => m.year === year).map((m) => m.id)).toEqual(ownMatchIds);
+    expect(w.ownMatches.some((m) => m.id.startsWith(playoff))).toBe(false);
     const archive = w.history.find((h) => h.year === year)!;
     expect(archive.heat).toEqual(expected);
     const [first] = Object.keys(expected);

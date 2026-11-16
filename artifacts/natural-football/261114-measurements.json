@@ -1,0 +1,988 @@
+{
+  "status": "blocked-current-model-calibration",
+  "baseline": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
+  "foundation": "ae8fcc86",
+  "onsideAndThroughRepair": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+  "supportRuntime": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+  "viewerApproved": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+  "baselineMetrics": {
+    "baseline": "9b701adf7bb0ea9c79551d13b722c88196f5876e",
+    "at": "2026-11-13T16:36:46.391717+00:00",
+    "environment": {
+      "platform": "macOS-26.5.2-arm64-arm-64bit",
+      "python": "3.9.6 (default, May 22 2026, 11:13:45) \n[Clang 21.0.0 (clang-2100.1.1.101)]",
+      "node": "v26.8.1"
+    },
+    "metricSources": {
+      "offside": "73ec25f6dfc4f593afed1850bf6dee01d6b78d51bd8d6de530908989592345e0",
+      "press": "7497f6f848f41d9e438c91d78b0928a817d55b8d97c1ede0afe99ac7ad936266",
+      "circle": "8b8304237c7a76ee1e0f7dbff3efdaa20268e996b7f6e284b13e54af3c9c5954",
+      "stick": "94b0208ade040975244f4fbbd0ee7a9815e0591c6e856c96427790d1893226bc"
+    },
+    "seeds": [
+      {
+        "seed": "viewer-2",
+        "exportSha256": "b41e2b7ecd370285d3575d5aa907119649a2664abe3573192bb15997f4d80250",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "baseline balls played to a teammate: 869, receiver offside at the kick: 5 (3 by more than 5 m); worst: [('17', 24.0, 'restart', 14.8), ('66', 27.4, 'restart', 7.2), ('69', 46.0, 'restart', 5.6), ('64', 54.2, 'restart', 4.8), ('50', 37.1, 'restart', 2.1)]\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "baseline open-play passes 877, lost 93, lost to nobody 37 | spells held 2 s+ with an opponent within 2 m: 96 (5 s+: 19, longest 21 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "baseline spells on the ball 2 s+: 676  circling under pressure: 126  beat-then-come-back: 7  turn p90 435 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "baseline running samples=5469  nearest opponent <2m  7.1%  <3m 13.5%  | pairs within 3m: 5s+ 251, 10s+ 119, 20s+ 31, longest 49s, total 49.7 min\n     10s+ pairs by states: mark/support 67, carry/press 20, mark/run 19, run/shape 6, shape/support 4\n",
+            "stderr": ""
+          }
+        }
+      },
+      {
+        "seed": "viewer-3",
+        "exportSha256": "4d57b15297d4933319b4c04a3fa7b9e2334e2e8a589f89468e53b8488f72eb73",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "baseline balls played to a teammate: 871, receiver offside at the kick: 5 (3 by more than 5 m); worst: [('70', 54.6, 'restart', 10.0), ('66', 56.2, 'restart', 9.8), ('35', 53.9, 'restart', 6.5), ('81', 6.5, 'restart', 2.0), ('54', 39.2, 'pass', 1.1)]\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "baseline open-play passes 870, lost 98, lost to nobody 35 | spells held 2 s+ with an opponent within 2 m: 99 (5 s+: 25, longest 60 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "baseline spells on the ball 2 s+: 685  circling under pressure: 149  beat-then-come-back: 11  turn p90 387 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "baseline running samples=5538  nearest opponent <2m  7.4%  <3m 14.5%  | pairs within 3m: 5s+ 224, 10s+ 102, 20s+ 38, longest 122s, total 54.9 min\n     10s+ pairs by states: mark/support 75, carry/press 17, shape/shape 5, press/support 5\n",
+            "stderr": ""
+          }
+        }
+      },
+      {
+        "seed": "viewer-4",
+        "exportSha256": "670e5a39b16685c544b9a4065280b57d931329431cff1544e898b8a212bcb48c",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "baseline balls played to a teammate: 707, receiver offside at the kick: 4 (2 by more than 5 m); worst: [('70', 50.7, 'restart', 7.6), ('59', 18.6, 'restart', 7.4), ('78', 36.9, 'restart', 3.3), ('74', 48.6, 'restart', 1.0)]\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "baseline open-play passes 706, lost 69, lost to nobody 25 | spells held 2 s+ with an opponent within 2 m: 97 (5 s+: 21, longest 13 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "baseline spells on the ball 2 s+: 686  circling under pressure: 118  beat-then-come-back: 7  turn p90 455 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "baseline running samples=4990  nearest opponent <2m  8.0%  <3m 14.7%  | pairs within 3m: 5s+ 290, 10s+ 132, 20s+ 42, longest 118s, total 61.6 min\n     10s+ pairs by states: mark/support 70, carry/press 25, mark/run 18, shape/shape 10, run/shape 5\n",
+            "stderr": ""
+          }
+        }
+      }
+    ],
+    "limits": "Historical proxy measurements, not football ground truth; unchanged exporters and scripts from remote5ddd7284. New typed exporter will supply authoritative input and record hashes."
+  },
+  "foundationMetrics": {
+    "commit": "ae8fcc86",
+    "seeds": [
+      {
+        "seed": "viewer-2",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "step1 balls played to a teammate: 874, receiver offside at the kick: 6 (4 by more than 5 m); worst: [('56', 41.2, 'restart', 16.2), ('7', 25.8, 'restart', 14.6), ('69', 21.7, 'restart', 10.7), ('77', 56.9, 'restart', 7.3), ('24', 5.4, 'restart', 4.8), ('65', 17.5, 'restart', 4.5)]\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "step1 open-play passes 877, lost 92, lost to nobody 22 | spells held 2 s+ with an opponent within 2 m: 37 (5 s+: 6, longest 10 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "step1 spells on the ball 2 s+: 642  circling under pressure: 64  beat-then-come-back: 5  turn p90 352 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "step1 running samples=5430  nearest opponent <2m  6.6%  <3m 12.5%  | pairs within 3m: 5s+ 217, 10s+ 78, 20s+ 18, longest 90s, total 38.9 min\n     10s+ pairs by states: mark/support 45, mark/run 13, carry/press 9, run/shape 8, press/run 1\n",
+            "stderr": ""
+          }
+        }
+      },
+      {
+        "seed": "viewer-3",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "step1 balls played to a teammate: 873, receiver offside at the kick: 5 (2 by more than 5 m); worst: [('44', 21.0, 'restart', 11.3), ('51', 36.0, 'restart', 10.7), ('28', 58.7, 'restart', 2.1), ('68', 19.3, 'restart', 2.0), ('77', 48.6, 'restart', 1.9)]\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "step1 open-play passes 871, lost 97, lost to nobody 24 | spells held 2 s+ with an opponent within 2 m: 28 (5 s+: 4, longest 6 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "step1 spells on the ball 2 s+: 620  circling under pressure: 76  beat-then-come-back: 4  turn p90 360 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "step1 running samples=5487  nearest opponent <2m  7.6%  <3m 14.2%  | pairs within 3m: 5s+ 171, 10s+ 62, 20s+ 13, longest 104s, total 34.9 min\n     10s+ pairs by states: mark/support 53, shape/shape 6, press/run 3\n",
+            "stderr": ""
+          }
+        }
+      },
+      {
+        "seed": "viewer-4",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "step1 balls played to a teammate: 703, receiver offside at the kick: 4 (3 by more than 5 m); worst: [('7', 55.6, 'restart', 27.0), ('78', 55.3, 'restart', 18.5), ('43', 59.4, 'restart', 9.1), ('73', 10.0, 'restart', 4.5)]\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "step1 open-play passes 703, lost 70, lost to nobody 18 | spells held 2 s+ with an opponent within 2 m: 38 (5 s+: 4, longest 8 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "step1 spells on the ball 2 s+: 616  circling under pressure: 47  beat-then-come-back: 4  turn p90 341 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "step1 running samples=4957  nearest opponent <2m  7.1%  <3m 13.8%  | pairs within 3m: 5s+ 231, 10s+ 115, 20s+ 33, longest 138s, total 54.5 min\n     10s+ pairs by states: mark/support 66, mark/run 17, shape/shape 15, carry/press 8, shape/support 4\n",
+            "stderr": ""
+          }
+        }
+      }
+    ]
+  },
+  "onsideMetrics": {
+    "commit": "ba8feee4040365e332c21d8eeb09476080ec6327",
+    "seeds": [
+      {
+        "seed": "viewer-2",
+        "exportSha256": "d8f40933966da98dcad7a601fc79b197189fcbab4e95fb39bd4ce9cd5bfaff0d",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "step2 balls played to a teammate: 874, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "step2 open-play passes 877, lost 92, lost to nobody 19 | spells held 2 s+ with an opponent within 2 m: 36 (5 s+: 4, longest 10 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "step2 spells on the ball 2 s+: 633  circling under pressure: 63  beat-then-come-back: 4  turn p90 368 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "step2 running samples=5432  nearest opponent <2m  6.6%  <3m 12.6%  | pairs within 3m: 5s+ 219, 10s+ 89, 20s+ 18, longest 66s, total 39.5 min\n     10s+ pairs by states: mark/support 55, mark/run 16, run/shape 7, carry/press 6, shape/support 2\n",
+            "stderr": ""
+          }
+        }
+      },
+      {
+        "seed": "viewer-3",
+        "exportSha256": "1628ddced84606f4131127d8d121f6e00e14ba09184d1e1e51748f4e53b89091",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "step2 balls played to a teammate: 871, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "step2 open-play passes 871, lost 97, lost to nobody 21 | spells held 2 s+ with an opponent within 2 m: 34 (5 s+: 6, longest 6 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "step2 spells on the ball 2 s+: 595  circling under pressure: 72  beat-then-come-back: 5  turn p90 361 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "step2 running samples=5484  nearest opponent <2m  7.6%  <3m 14.2%  | pairs within 3m: 5s+ 171, 10s+ 62, 20s+ 14, longest 104s, total 35.2 min\n     10s+ pairs by states: mark/support 54, shape/shape 7, shape/support 1\n",
+            "stderr": ""
+          }
+        }
+      },
+      {
+        "seed": "viewer-4",
+        "exportSha256": "48c8b1a4671cf1318cabc68f1fc91dc2bacf9084ed195121a3243c8c8c784e22",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "step2 balls played to a teammate: 703, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "step2 open-play passes 703, lost 70, lost to nobody 16 | spells held 2 s+ with an opponent within 2 m: 30 (5 s+: 3, longest 8 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "step2 spells on the ball 2 s+: 618  circling under pressure: 58  beat-then-come-back: 2  turn p90 342 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "step2 running samples=4966  nearest opponent <2m  7.2%  <3m 13.9%  | pairs within 3m: 5s+ 229, 10s+ 110, 20s+ 31, longest 138s, total 52.7 min\n     10s+ pairs by states: mark/support 64, mark/run 23, shape/shape 13, carry/press 5, run/shape 4\n",
+            "stderr": ""
+          }
+        }
+      }
+    ]
+  },
+  "supportMeasurement": {
+    "source": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+    "at": "2026-11-13T17:13:55.765004+00:00",
+    "priorCandidate": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+    "supportMetricSha256": "1b571b6ebf4049833d9913cf06832b41009862a3bd4553705f59f5090b21822e",
+    "rows": [
+      {
+        "seed": "viewer-2",
+        "head": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+        "inputHash": "2f67daaea45a2c79145ae21c91786aa18d2dfbd323fa16b4e7332a42fa9d1412",
+        "recordHash": "e09f2e2bced21b779fa603f7dc6b124bcd9f3ea011ea1514fe3bb797991c916c",
+        "baselineDiagnostics": {
+          "samples": 5996,
+          "maxSpeed": 114.25419078961217,
+          "pressureSeconds": 552.8641837523985,
+          "pressureSpells2": 96,
+          "pressureSpells5": 19
+        },
+        "candidateDiagnostics": {
+          "samples": 5987,
+          "maxSpeed": 30.882823078651814,
+          "pressureSeconds": 238.63276337890176,
+          "pressureSpells2": 38,
+          "pressureSpells5": 6
+        },
+        "metrics": {
+          "offside": "candidate balls played to a teammate: 874, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+          "press": "candidate open-play passes 878, lost 93, lost to nobody 20 | spells held 2 s+ with an opponent within 2 m: 38 (5 s+: 6, longest 11 s)\n",
+          "circle": "candidate spells on the ball 2 s+: 634  circling under pressure: 68  beat-then-come-back: 2  turn p90 360 deg\n",
+          "stick": "candidate running samples=5444  nearest opponent <2m  6.7%  <3m 12.6%  | pairs within 3m: 5s+ 212, 10s+ 82, 20s+ 21, longest 68s, total 38.8 min\n     10s+ pairs by states: mark/support 43, mark/run 17, run/shape 9, carry/press 9, shape/shape 2\n"
+        },
+        "support": {
+          "label": "viewer-2",
+          "samples": 2821,
+          "eligibleSupportOptions": 8021,
+          "blockedOptions": 1152,
+          "blockedRate": 0.14362298965216308,
+          "laterallyImprovableOptions": 1093,
+          "examples": [
+            {
+              "minute": 1,
+              "elapsed": 8,
+              "owner": "ENG:0:0:9:p:16:113",
+              "support": "ENG:0:0:9:p:9:113",
+              "clearance": 0.582,
+              "best": 1.928
+            },
+            {
+              "minute": 1,
+              "elapsed": 10.678,
+              "owner": "ENG:0:0:9:p:6:113",
+              "support": "ENG:0:0:9:p:17:113",
+              "clearance": 0.654,
+              "best": 13.328
+            },
+            {
+              "minute": 1,
+              "elapsed": 12,
+              "owner": "ENG:0:0:9:p:6:113",
+              "support": "ENG:0:0:9:p:5:113",
+              "clearance": 1.185,
+              "best": 1.546
+            }
+          ],
+          "limits": "Sampled positions proxy; not planner targets; no claim of actual pass completion."
+        },
+        "rawSha256": "feb9548fc6447a2584acf5211dad341a4604667dc462c4991eeaffa06be09d9e"
+      },
+      {
+        "seed": "viewer-3",
+        "head": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+        "inputHash": "25c12bd6a3376a2a38a37e042901ec61675bb5dc97dd2d8c2ea67573e69b3f17",
+        "recordHash": "8e3c09aa70ba1af91dc9934c35ce017cf613719e48c05acd3780f1f24a0a100a",
+        "baselineDiagnostics": {
+          "samples": 6115,
+          "maxSpeed": 36.72454382439802,
+          "pressureSeconds": 759.0764772061202,
+          "pressureSpells2": 99,
+          "pressureSpells5": 25
+        },
+        "candidateDiagnostics": {
+          "samples": 6135,
+          "maxSpeed": 65.64084757059243,
+          "pressureSeconds": 219.20027554283195,
+          "pressureSpells2": 38,
+          "pressureSpells5": 4
+        },
+        "metrics": {
+          "offside": "candidate balls played to a teammate: 872, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+          "press": "candidate open-play passes 870, lost 96, lost to nobody 21 | spells held 2 s+ with an opponent within 2 m: 38 (5 s+: 4, longest 6 s)\n",
+          "circle": "candidate spells on the ball 2 s+: 600  circling under pressure: 77  beat-then-come-back: 7  turn p90 371 deg\n",
+          "stick": "candidate running samples=5493  nearest opponent <2m  7.6%  <3m 14.1%  | pairs within 3m: 5s+ 174, 10s+ 66, 20s+ 15, longest 104s, total 35.5 min\n     10s+ pairs by states: mark/support 55, shape/shape 9, shape/support 1, carry/press 1\n"
+        },
+        "support": {
+          "label": "viewer-3",
+          "samples": 2481,
+          "eligibleSupportOptions": 7297,
+          "blockedOptions": 1182,
+          "blockedRate": 0.16198437714129094,
+          "laterallyImprovableOptions": 1142,
+          "examples": [
+            {
+              "minute": 1,
+              "elapsed": 4,
+              "owner": "ENG:0:0:0:p:10:112",
+              "support": "ENG:0:0:0:p:6:113",
+              "clearance": 0.174,
+              "best": 0.622
+            },
+            {
+              "minute": 1,
+              "elapsed": 4,
+              "owner": "ENG:0:0:0:p:10:112",
+              "support": "ENG:0:0:0:p:8:113",
+              "clearance": 0.803,
+              "best": 1.008
+            },
+            {
+              "minute": 1,
+              "elapsed": 6,
+              "owner": "ENG:0:0:0:p:10:112",
+              "support": "ENG:0:0:0:p:6:113",
+              "clearance": 0.611,
+              "best": 1.237
+            }
+          ],
+          "limits": "Sampled positions proxy; not planner targets; no claim of actual pass completion."
+        },
+        "rawSha256": "fa97d0820cea1537e89c0b2a92fae1e5f290ed102838b9114ea1f9138fb64512"
+      },
+      {
+        "seed": "viewer-4",
+        "head": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+        "inputHash": "6ae217b11124c1855c997a6ed1e5ca9cd34b224db70667d616baf11608cd0261",
+        "recordHash": "03673c91d2fe2dfb4a05ab943f163f409d0a543f5a4f199b4b46a9c2df59b88e",
+        "baselineDiagnostics": {
+          "samples": 5570,
+          "maxSpeed": 34.48030953510788,
+          "pressureSeconds": 571.3852385900186,
+          "pressureSpells2": 97,
+          "pressureSpells5": 21
+        },
+        "candidateDiagnostics": {
+          "samples": 5580,
+          "maxSpeed": 35.401839973797884,
+          "pressureSeconds": 187.62478452237892,
+          "pressureSpells2": 29,
+          "pressureSpells5": 5
+        },
+        "metrics": {
+          "offside": "candidate balls played to a teammate: 703, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+          "press": "candidate open-play passes 705, lost 72, lost to nobody 19 | spells held 2 s+ with an opponent within 2 m: 29 (5 s+: 5, longest 8 s)\n",
+          "circle": "candidate spells on the ball 2 s+: 621  circling under pressure: 58  beat-then-come-back: 3  turn p90 350 deg\n",
+          "stick": "candidate running samples=4980  nearest opponent <2m  7.3%  <3m 13.8%  | pairs within 3m: 5s+ 231, 10s+ 114, 20s+ 33, longest 138s, total 53.8 min\n     10s+ pairs by states: mark/support 68, mark/run 21, shape/shape 15, carry/press 5, run/shape 3\n"
+        },
+        "support": {
+          "label": "viewer-4",
+          "samples": 2630,
+          "eligibleSupportOptions": 7605,
+          "blockedOptions": 1087,
+          "blockedRate": 0.14293228139381986,
+          "laterallyImprovableOptions": 1040,
+          "examples": [
+            {
+              "minute": 1,
+              "elapsed": 16,
+              "owner": "ENG:0:0:9:p:5:113",
+              "support": "ENG:0:0:9:p:6:113",
+              "clearance": 1.107,
+              "best": 2.578
+            },
+            {
+              "minute": 1,
+              "elapsed": 16.775,
+              "owner": "ENG:0:0:9:p:5:113",
+              "support": "ENG:0:0:9:p:6:113",
+              "clearance": 1.346,
+              "best": 2.703
+            },
+            {
+              "minute": 1,
+              "elapsed": 22,
+              "owner": "ENG:0:0:9:p:7:113",
+              "support": "ENG:0:0:9:p:6:113",
+              "clearance": 0.709,
+              "best": 2.665
+            }
+          ],
+          "limits": "Sampled positions proxy; not planner targets; no claim of actual pass completion."
+        },
+        "rawSha256": "f087128e7ba3dc59fbbe77a573fbdcf6c9b30ecef194b5124af349fa59139bb5"
+      }
+    ],
+    "limits": "Three fixed deterministic fixtures; sampled support positions are a proxy, not pass-completion or population-level realism."
+  },
+  "actualRecordAndScriptHashes": [
+    {
+      "seed": "viewer-2",
+      "head": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+      "scriptHash": "d8f67b41b8a119f9bb70ab29c434442b5916ea6e8a21666037f42703de90c203",
+      "recordHash": "19074d71eb6d41ecb018d42808bf824377fc1ab5cad26791bd8603f824e72bcb",
+      "scriptBeats": 1837
+    },
+    {
+      "seed": "viewer-2",
+      "head": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+      "scriptHash": "d8f67b41b8a119f9bb70ab29c434442b5916ea6e8a21666037f42703de90c203",
+      "recordHash": "19074d71eb6d41ecb018d42808bf824377fc1ab5cad26791bd8603f824e72bcb",
+      "scriptBeats": 1837
+    },
+    {
+      "seed": "viewer-3",
+      "head": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+      "scriptHash": "268df3324cff7a9590331c66f05050d73c7de224c3d47711649c8feab1ab2206",
+      "recordHash": "4ac1e05c24f9b6bef30839bd37c4e5524bd3a455922fc32721a7c6633acb02fd",
+      "scriptBeats": 1866
+    },
+    {
+      "seed": "viewer-3",
+      "head": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+      "scriptHash": "268df3324cff7a9590331c66f05050d73c7de224c3d47711649c8feab1ab2206",
+      "recordHash": "4ac1e05c24f9b6bef30839bd37c4e5524bd3a455922fc32721a7c6633acb02fd",
+      "scriptBeats": 1866
+    },
+    {
+      "seed": "viewer-4",
+      "head": "7e80480ccabe30e6ffc18243af39b06e21a861bf",
+      "scriptHash": "80da4f3224966dffeb6bec93578a96e716113e4d40df3bbab3ce9c0cb7c36d31",
+      "recordHash": "8f5947bb56dfc640632415d3c702f993fbd964cc8b7c44a701536168a41c8f69",
+      "scriptBeats": 1572
+    },
+    {
+      "seed": "viewer-4",
+      "head": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+      "scriptHash": "80da4f3224966dffeb6bec93578a96e716113e4d40df3bbab3ce9c0cb7c36d31",
+      "recordHash": "8f5947bb56dfc640632415d3c702f993fbd964cc8b7c44a701536168a41c8f69",
+      "scriptBeats": 1572
+    }
+  ],
+  "limits": [
+    "Three fixed deterministic fixtures, not a population-level validation of football realism.",
+    "Supporting-lane rate improves only slightly in aggregate; viewer-4 and some pressure/circle/sticking proxies worsen relative to the immediately preceding candidate.",
+    "Existing staging limits remain unchanged; untested pace/keep-ball patches and result-model recalibration were excluded.",
+    "Raw maximum displacement speed includes transitions and is not a football running-speed claim."
+  ],
+  "rawEvidence": ".tmp/nf14-evidence/",
+  "preview": ".tmp/natural-football/index.html",
+  "integrationCommit": "15ec0ba65b849f6e11f635d4e51b8c03949efe26",
+  "runtimeReuseProof": [
+    {
+      "area": "engine",
+      "source": "881917b31ddbbfb94d242d569000378cef4b4cc1",
+      "target": "15ec0ba65b849f6e11f635d4e51b8c03949efe26",
+      "paths": [
+        "packages/engine",
+        "packages/contracts/src/match-script.ts"
+      ],
+      "noDifference": true
+    },
+    {
+      "area": "viewer",
+      "source": "ffc79d52409c2c05fd2ae8b137cca09c30dd1f5b",
+      "target": "15ec0ba65b849f6e11f635d4e51b8c03949efe26",
+      "paths": [
+        "scripts/natural-football",
+        "packages/contracts/src/source-messages.ts",
+        "packages/contracts/src/message-parameters.ts",
+        "apps/web/public/presentation/locales"
+      ],
+      "noDifference": true
+    }
+  ],
+  "reviews": {
+    "engine": "6e0e2cb8-122c-4f7a-a68d-4e7072122c42",
+    "viewer": "d748d56b-c5f0-4061-bd62-478d1417a475",
+    "support": "9f163989-0b3b-4323-b23e-4b1b3b23dcfd"
+  },
+  "htmlSha256": "0613941084b65515c0c6593299a0e049ebb3fc26c02420b540efac42b3d1d3a0",
+  "htmlBytes": 11449761,
+  "standaloneSmoke": {
+    "page": "/Users/ihaelam/project/haeram-soccer/.tmp/natural-football/index.html",
+    "offline": true,
+    "panels": 2,
+    "players": [
+      22,
+      22
+    ],
+    "controls": true,
+    "repeatedSeek": true,
+    "desktopSideBySide": true,
+    "mobileOverflow": false,
+    "errors": []
+  },
+  "latestExperiment": {
+    "baseline": "2fe2386d0588da11e598c83aaee7704235f2b7d2",
+    "candidate": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+    "reviewedSubmission": "4977f93b4e8a319b4156736af38f3ea1eaec3f1f",
+    "integrated": "42ad99267a657e302e135aab9c3c0c913e86d67b",
+    "status": "locally_integrated_pending_full_batch",
+    "comparison": [
+      {
+        "seed": "viewer-2",
+        "command": [
+          "pnpm",
+          "exec",
+          "tsx",
+          "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/natural-football-261114-football-cover-f1b55503/.tmp/t889/measure-cover.mts",
+          "--repo",
+          "/Users/ihaelam/project/haeram-soccer-natural-football/.tmp/epoch-2-cover-final",
+          "--seed",
+          "viewer-2",
+          "--out",
+          "/Users/ihaelam/project/haeram-soccer-natural-football/.tmp/nf14-evidence/epoch-2/cover-final-actual-viewer-2.json"
+        ],
+        "elapsedSeconds": 7.728153944015503,
+        "inputRecordScriptEqual": true,
+        "before": {
+          "eligibleTicks": 29422,
+          "eligibleSeconds": 2942.2000000000003,
+          "assignedCoverDistance": {
+            "n": 29422,
+            "mean": 8.906226797823003,
+            "p50": 7.750877068497474,
+            "p90": 18.448135860921912,
+            "max": 32.638412440895834
+          },
+          "nearestDefenderCoverDistance": {
+            "n": 29422,
+            "mean": 4.2114852735393145,
+            "p50": 3.7169041806492333,
+            "p90": 8.087153676280865,
+            "max": 20.854147917933386
+          },
+          "vacantTicks": 26774,
+          "vacancySeconds": 2677.4,
+          "vacancyShare": 0.9099993202365577,
+          "occupiedButDistantAssignment": 823,
+          "ambiguousTicks": 0,
+          "presserHandovers": 404,
+          "coverHandovers": 1274,
+          "sameOwnerPresserHandovers": 403,
+          "sameOwnerCoverHandovers": 1273,
+          "assignedCoverTravelMetres": 11376.240464045228,
+          "coverTrackingSeconds": 2725.7999999986164,
+          "meanFreeMarkDistance": 6.433114791968938,
+          "markedFreeSamples": 121896,
+          "coverTakingPreviousMark": 691
+        },
+        "after": {
+          "eligibleTicks": 29623,
+          "eligibleSeconds": 2962.3,
+          "assignedCoverDistance": {
+            "n": 29623,
+            "mean": 3.1951190377912737,
+            "p50": 1.7248969931549953,
+            "p90": 7.9332778307157,
+            "max": 26.53403097998802
+          },
+          "nearestDefenderCoverDistance": {
+            "n": 29623,
+            "mean": 2.643647385652956,
+            "p50": 1.6935607634566963,
+            "p90": 6.144617517804828,
+            "max": 19.31487893888099
+          },
+          "vacantTicks": 21657,
+          "vacancySeconds": 2165.7000000000003,
+          "vacancyShare": 0.7310873307902643,
+          "occupiedButDistantAssignment": 106,
+          "ambiguousTicks": 0,
+          "presserHandovers": 386,
+          "coverHandovers": 286,
+          "sameOwnerPresserHandovers": 385,
+          "sameOwnerCoverHandovers": 286,
+          "assignedCoverTravelMetres": 9393.1191226539,
+          "coverTrackingSeconds": 2845.4999999985075,
+          "meanFreeMarkDistance": 6.11396429712586,
+          "markedFreeSamples": 131908,
+          "coverTakingPreviousMark": 168
+        },
+        "baselineInputRecordEqual": true,
+        "source": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "exportSha256": "fb060dd1b0e7f0f69c37d2a9ccb50ae33e235c4517301f7286e250f9814ccb9f"
+      },
+      {
+        "seed": "viewer-3",
+        "command": [
+          "pnpm",
+          "exec",
+          "tsx",
+          "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/natural-football-261114-football-cover-f1b55503/.tmp/t889/measure-cover.mts",
+          "--repo",
+          "/Users/ihaelam/project/haeram-soccer-natural-football/.tmp/epoch-2-cover-final",
+          "--seed",
+          "viewer-3",
+          "--out",
+          "/Users/ihaelam/project/haeram-soccer-natural-football/.tmp/nf14-evidence/epoch-2/cover-final-actual-viewer-3.json"
+        ],
+        "elapsedSeconds": 7.144766092300415,
+        "inputRecordScriptEqual": true,
+        "before": {
+          "eligibleTicks": 35307,
+          "eligibleSeconds": 3530.7000000000003,
+          "assignedCoverDistance": {
+            "n": 35307,
+            "mean": 9.09631130039538,
+            "p50": 7.88867700619096,
+            "p90": 18.772119017544295,
+            "max": 31.960877875345677
+          },
+          "nearestDefenderCoverDistance": {
+            "n": 35307,
+            "mean": 4.470160032360479,
+            "p50": 3.9214799207800586,
+            "p90": 8.848900880244729,
+            "max": 22.831576836002355
+          },
+          "vacantTicks": 32161,
+          "vacancySeconds": 3216.1000000000004,
+          "vacancyShare": 0.9108958563457671,
+          "occupiedButDistantAssignment": 885,
+          "ambiguousTicks": 0,
+          "presserHandovers": 522,
+          "coverHandovers": 1500,
+          "sameOwnerPresserHandovers": 522,
+          "sameOwnerCoverHandovers": 1500,
+          "assignedCoverTravelMetres": 13745.465926122393,
+          "coverTrackingSeconds": 3278.7999999981134,
+          "meanFreeMarkDistance": 6.52678059098295,
+          "markedFreeSamples": 171648,
+          "coverTakingPreviousMark": 745
+        },
+        "after": {
+          "eligibleTicks": 35537,
+          "eligibleSeconds": 3553.7000000000003,
+          "assignedCoverDistance": {
+            "n": 35537,
+            "mean": 2.8347263520024537,
+            "p50": 1.6332840035029568,
+            "p90": 6.662935842391148,
+            "max": 29.377392712999082
+          },
+          "nearestDefenderCoverDistance": {
+            "n": 35537,
+            "mean": 2.5178484310503175,
+            "p50": 1.604851211162482,
+            "p90": 5.748698656537399,
+            "max": 22.827657531012594
+          },
+          "vacantTicks": 25744,
+          "vacancySeconds": 2574.4,
+          "vacancyShare": 0.7244280608942792,
+          "occupiedButDistantAssignment": 144,
+          "ambiguousTicks": 0,
+          "presserHandovers": 453,
+          "coverHandovers": 223,
+          "sameOwnerPresserHandovers": 453,
+          "sameOwnerCoverHandovers": 223,
+          "assignedCoverTravelMetres": 11509.651011493374,
+          "coverTrackingSeconds": 3429.0999999979767,
+          "meanFreeMarkDistance": 6.137237702693115,
+          "markedFreeSamples": 188193,
+          "coverTakingPreviousMark": 119
+        },
+        "baselineInputRecordEqual": true,
+        "source": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "exportSha256": "f112d7e8b243136b3f05fd841bd559356a6543d5e2f795f1b8cb5903c7411771"
+      },
+      {
+        "seed": "viewer-4",
+        "command": [
+          "pnpm",
+          "exec",
+          "tsx",
+          "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/natural-football-261114-football-cover-f1b55503/.tmp/t889/measure-cover.mts",
+          "--repo",
+          "/Users/ihaelam/project/haeram-soccer-natural-football/.tmp/epoch-2-cover-final",
+          "--seed",
+          "viewer-4",
+          "--out",
+          "/Users/ihaelam/project/haeram-soccer-natural-football/.tmp/nf14-evidence/epoch-2/cover-final-actual-viewer-4.json"
+        ],
+        "elapsedSeconds": 6.691507816314697,
+        "inputRecordScriptEqual": true,
+        "before": {
+          "eligibleTicks": 25948,
+          "eligibleSeconds": 2594.8,
+          "assignedCoverDistance": {
+            "n": 25948,
+            "mean": 9.166673018892665,
+            "p50": 8.098659103067392,
+            "p90": 18.61558600382546,
+            "max": 31.73387010596736
+          },
+          "nearestDefenderCoverDistance": {
+            "n": 25948,
+            "mean": 4.202850261525532,
+            "p50": 3.746535006437316,
+            "p90": 7.910765485108793,
+            "max": 17.643480192183443
+          },
+          "vacantTicks": 23531,
+          "vacancySeconds": 2353.1,
+          "vacancyShare": 0.9068521658702019,
+          "occupiedButDistantAssignment": 782,
+          "ambiguousTicks": 0,
+          "presserHandovers": 377,
+          "coverHandovers": 1102,
+          "sameOwnerPresserHandovers": 377,
+          "sameOwnerCoverHandovers": 1102,
+          "assignedCoverTravelMetres": 9903.746031855753,
+          "coverTrackingSeconds": 2411.899999998902,
+          "meanFreeMarkDistance": 6.310002914850621,
+          "markedFreeSamples": 111308,
+          "coverTakingPreviousMark": 587
+        },
+        "after": {
+          "eligibleTicks": 26058,
+          "eligibleSeconds": 2605.8,
+          "assignedCoverDistance": {
+            "n": 26058,
+            "mean": 3.2131633369537385,
+            "p50": 1.7446007077537307,
+            "p90": 8.019969043886062,
+            "max": 25.206572229133485
+          },
+          "nearestDefenderCoverDistance": {
+            "n": 26058,
+            "mean": 2.6591663708803193,
+            "p50": 1.7046880041228532,
+            "p90": 6.251345413112022,
+            "max": 17.65995815754746
+          },
+          "vacantTicks": 18526,
+          "vacancySeconds": 1852.6000000000001,
+          "vacancyShare": 0.710952490597897,
+          "occupiedButDistantAssignment": 112,
+          "ambiguousTicks": 0,
+          "presserHandovers": 336,
+          "coverHandovers": 238,
+          "sameOwnerPresserHandovers": 336,
+          "sameOwnerCoverHandovers": 238,
+          "assignedCoverTravelMetres": 7940.910725202152,
+          "coverTrackingSeconds": 2510.1999999988125,
+          "meanFreeMarkDistance": 6.241891939274986,
+          "markedFreeSamples": 118077,
+          "coverTakingPreviousMark": 167
+        },
+        "baselineInputRecordEqual": true,
+        "source": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "exportSha256": "fef9e37f25a83632b4c4cab9fde7ca2d4744b575e2864885308ec016c1b3af91"
+      }
+    ],
+    "pictureProxies": [
+      {
+        "seed": "viewer-2",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "cover-final balls played to a teammate: 875, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "cover-final open-play passes 877, lost 92, lost to nobody 21 | spells held 2 s+ with an opponent within 2 m: 34 (5 s+: 6, longest 7 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "cover-final spells on the ball 2 s+: 643  circling under pressure: 79  beat-then-come-back: 5  turn p90 363 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "cover-final running samples=5435  nearest opponent <2m  6.4%  <3m 12.6%  | pairs within 3m: 5s+ 216, 10s+ 79, 20s+ 22, longest 66s, total 38.7 min\n     10s+ pairs by states: mark/support 59, mark/run 8, carry/press 5, run/shape 4, shape/shape 1\n",
+            "stderr": ""
+          },
+          "support": {
+            "exitCode": 0,
+            "stdout": "{\"label\": \"cover-final\", \"samples\": 2837, \"eligibleSupportOptions\": 8050, \"blockedOptions\": 1301, \"blockedRate\": 0.16161490683229815, \"laterallyImprovableOptions\": 1243, \"examples\": [{\"minute\": 1, \"elapsed\": 8, \"owner\": \"ENG:0:0:9:p:16:113\", \"support\": \"ENG:0:0:9:p:9:113\", \"clearance\": 0.626, \"best\": 1.962}, {\"minute\": 1, \"elapsed\": 10.718, \"owner\": \"ENG:0:0:9:p:6:113\", \"support\": \"ENG:0:0:9:p:17:113\", \"clearance\": 0.654, \"best\": 8.133}, {\"minute\": 1, \"elapsed\": 12, \"owner\": \"ENG:0:0:9:p:6:113\", \"support\": \"ENG:0:0:9:p:17:113\", \"clearance\": 0.323, \"best\": 8.838}], \"limits\": \"Sampled positions proxy; not planner targets; no claim of actual pass completion.\"}\n",
+            "stderr": ""
+          }
+        }
+      },
+      {
+        "seed": "viewer-3",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "cover-final balls played to a teammate: 873, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "cover-final open-play passes 870, lost 96, lost to nobody 27 | spells held 2 s+ with an opponent within 2 m: 43 (5 s+: 3, longest 6 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "cover-final spells on the ball 2 s+: 603  circling under pressure: 82  beat-then-come-back: 5  turn p90 362 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "cover-final running samples=5478  nearest opponent <2m  7.2%  <3m 14.1%  | pairs within 3m: 5s+ 188, 10s+ 73, 20s+ 16, longest 104s, total 37.3 min\n     10s+ pairs by states: mark/support 60, shape/shape 6, press/run 3, shape/support 2, carry/press 1\n",
+            "stderr": ""
+          },
+          "support": {
+            "exitCode": 0,
+            "stdout": "{\"label\": \"cover-final\", \"samples\": 2508, \"eligibleSupportOptions\": 7162, \"blockedOptions\": 1268, \"blockedRate\": 0.17704551801172858, \"laterallyImprovableOptions\": 1230, \"examples\": [{\"minute\": 1, \"elapsed\": 4, \"owner\": \"ENG:0:0:0:p:10:112\", \"support\": \"ENG:0:0:0:p:6:113\", \"clearance\": 0.332, \"best\": 0.767}, {\"minute\": 1, \"elapsed\": 33.502, \"owner\": \"ENG:0:0:9:p:8:113\", \"support\": \"ENG:0:0:9:p:5:113\", \"clearance\": 0.602, \"best\": 1.179}, {\"minute\": 1, \"elapsed\": 34, \"owner\": \"ENG:0:0:9:p:8:113\", \"support\": \"ENG:0:0:9:p:5:113\", \"clearance\": 1.15, \"best\": 1.651}], \"limits\": \"Sampled positions proxy; not planner targets; no claim of actual pass completion.\"}\n",
+            "stderr": ""
+          }
+        }
+      },
+      {
+        "seed": "viewer-4",
+        "metrics": {
+          "offside": {
+            "exitCode": 0,
+            "stdout": "cover-final balls played to a teammate: 704, receiver offside at the kick: 0 (0 by more than 5 m); worst: []\n",
+            "stderr": ""
+          },
+          "press": {
+            "exitCode": 0,
+            "stdout": "cover-final open-play passes 704, lost 71, lost to nobody 19 | spells held 2 s+ with an opponent within 2 m: 34 (5 s+: 3, longest 14 s)\n",
+            "stderr": ""
+          },
+          "circle": {
+            "exitCode": 0,
+            "stdout": "cover-final spells on the ball 2 s+: 621  circling under pressure: 64  beat-then-come-back: 3  turn p90 359 deg\n",
+            "stderr": ""
+          },
+          "stick": {
+            "exitCode": 0,
+            "stdout": "cover-final running samples=5004  nearest opponent <2m  7.0%  <3m 13.5%  | pairs within 3m: 5s+ 213, 10s+ 87, 20s+ 30, longest 142s, total 49.3 min\n     10s+ pairs by states: mark/support 51, shape/shape 14, mark/run 10, carry/press 6, run/shape 4\n",
+            "stderr": ""
+          },
+          "support": {
+            "exitCode": 0,
+            "stdout": "{\"label\": \"cover-final\", \"samples\": 2642, \"eligibleSupportOptions\": 7619, \"blockedOptions\": 1176, \"blockedRate\": 0.15435096469352932, \"laterallyImprovableOptions\": 1129, \"examples\": [{\"minute\": 1, \"elapsed\": 16, \"owner\": \"ENG:0:0:9:p:5:113\", \"support\": \"ENG:0:0:9:p:6:113\", \"clearance\": 0.94, \"best\": 2.435}, {\"minute\": 1, \"elapsed\": 17.079, \"owner\": \"ENG:0:0:9:p:5:113\", \"support\": \"ENG:0:0:9:p:6:113\", \"clearance\": 1.295, \"best\": 2.643}, {\"minute\": 1, \"elapsed\": 22, \"owner\": \"ENG:0:0:9:p:7:113\", \"support\": \"ENG:0:0:9:p:5:113\", \"clearance\": 1.302, \"best\": 2.401}], \"limits\": \"Sampled positions proxy; not planner targets; no claim of actual pass completion.\"}\n",
+            "stderr": ""
+          }
+        }
+      }
+    ],
+    "offlineSmoke": {
+      "page": "/Users/ihaelam/project/haeram-soccer-natural-football/.tmp/nf14-evidence/epoch-2/cover-final-comparison.html",
+      "offline": true,
+      "panels": 2,
+      "players": [
+        22,
+        22
+      ],
+      "controls": true,
+      "repeatedSeek": true,
+      "desktopSideBySide": true,
+      "mobileOverflow": false,
+      "errors": []
+    },
+    "limits": "Three deterministic fixtures; defensive occupancy improves while circling and screened-support proxies worsen relative to the preceding candidate. No universal realism claim; final batch and main publication remain pending."
+  },
+  "publication": {
+    "footballCodePublished": false,
+    "localIntegration": "931991c7934aa7a32a322753f7808bcaf8ab40cc",
+    "lastObservedMain": "f90ca887696e3ae17e71da6d3f81db54b6417aa1",
+    "reason": "Unchanged historical division-order failure and actual current1950level inflation; full final gate not passed."
+  },
+  "finalRuntimeCheck": {
+    "source": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+    "release": "0.8.3",
+    "comparedAgainst": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+    "actualPlaybacks": [
+      {
+        "seed": "viewer-2",
+        "old": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "current": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+        "inputEqual": true,
+        "recordEqual": true,
+        "squadsEqual": true,
+        "framesEqual": true,
+        "playbackHash": "0e3d232e5396d5b622737c414a4cf6bc71a5fb50c3b8198e159f40a9efa69c31"
+      },
+      {
+        "seed": "viewer-3",
+        "old": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "current": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+        "inputEqual": true,
+        "recordEqual": true,
+        "squadsEqual": true,
+        "framesEqual": true,
+        "playbackHash": "373234d89a51c5028f17c5e8197b304f0fde360146370b26753a3fcfd7e99ba6"
+      },
+      {
+        "seed": "viewer-4",
+        "old": "c1124ede8b52f872ca6d045f1daa253fab444d94",
+        "current": "fc5d4c26e5fb1572e1cacbcc9fc7065295b8a173",
+        "inputEqual": true,
+        "recordEqual": true,
+        "squadsEqual": true,
+        "framesEqual": true,
+        "playbackHash": "758fc10edc2d0ce3a71eea93984dde4df88a7257ee67dbe6622e709988426f70"
+      }
+    ],
+    "offlineSmoke": {
+      "page": "/Users/ihaelam/project/haeram-soccer/.tmp/natural-football/index.html",
+      "offline": true,
+      "panels": 2,
+      "players": [
+        22,
+        22
+      ],
+      "controls": true,
+      "repeatedSeek": true,
+      "desktopSideBySide": true,
+      "mobileOverflow": false,
+      "errors": []
+    },
+    "publication": "pending; main contains planning/provider rule only",
+    "historicalGate": "unchanged original case failed at1946 ENG tier2; diagnosis pending, not waived"
+  },
+  "finalValidation": "261114-final-validation.json"
+}

@@ -1,3 +1,4 @@
+import { message } from '../../packages/contracts/src/messages';
 import { approvalQueue, approvalRequest } from './office';
 import { managerCard, openPersonnel } from './personnel-navigation';
 import { test, expect } from '@playwright/test';
@@ -43,7 +44,7 @@ test('combined-playing-coach-review', async ({ page }) => {
 });
 
 test('same-person-cross-role-links', async ({ page }) => {
-  const { qualifiedCoachFixture } = await import('./career-fixtures');
+  const { qualifiedCoachFixture, exportedCareer } = await import('./career-fixtures');
   const { importResponsibilityCareer } = await import('./responsibility-fixtures');
   const { w, player } = await qualifiedCoachFixture('internal');
   await importResponsibilityCareer(page, w);
@@ -52,7 +53,9 @@ test('same-person-cross-role-links', async ({ page }) => {
   await page.getByRole('button', { name: `${player.name} 인물 경력`, exact: true }).click();
   let detail = page.getByRole('dialog', { name: '인물 경력', exact: true });
   await expect(detail).toContainText(player.name);
-  await expect(detail).toContainText(`${player.born}년생`);
+  await expect(detail).toContainText(
+    message('copy.ClubOverview.9c2b927c8a', { p0: w.year - player.born }),
+  );
   await expect(detail).toContainText('3년 근무 충족');
   await detail.getByRole('button', { name: '닫기', exact: true }).last().click();
   await openPersonnel(page, 'manager');
@@ -76,9 +79,20 @@ test('same-person-cross-role-links', async ({ page }) => {
   await expect(history).toBeVisible();
   await history.click();
   detail = page.getByRole('dialog', { name: '인물 경력', exact: true });
-  await expect(detail).toContainText(`${player.born}년생`);
+  await expect(detail).toContainText(
+    message('copy.ClubOverview.9c2b927c8a', { p0: w.year - player.born }),
+  );
   await expect(detail).toContainText('감독 능력');
   await expect(detail).toContainText('코치 능력');
+  await detail.getByRole('button', { name: '닫기', exact: true }).last().click();
+  const actual = await exportedCareer(page);
+  expect(actual.people![player.id]).toMatchObject({
+    id: player.id,
+    name: player.name,
+    born: player.born,
+  });
+  expect(actual.players.find((p) => p.id === player.id)?.born).toBe(player.born);
+  expect(actual.year).toBe(w.year);
 });
 test('employed-coach-manager-quote', async ({ page }) => {
   const { qualifiedCoachFixture } = await import('./career-fixtures');
@@ -303,27 +317,16 @@ test('playing retirement retains the unexpired coach job at the real season clos
 test('a disclosed player departure ends both jobs and charges coach compensation once', async ({
   page,
 }) => {
-  const { combinedCareerFixture, exportedCareer } = await import('./career-fixtures');
+  const { combinedDepartureFixture, exportedCareer } = await import('./career-fixtures');
   const { importResponsibilityCareer } = await import('./responsibility-fixtures');
-  const { prepareSeason } = await import('../../packages/engine/src/season');
   const { pushInbox } = await import('../../packages/engine/src/inbox');
-  const { playingCoachDepartureCost } = await import('../../packages/engine/src/playing-coach');
-  const { w, player } = await combinedCareerFixture();
-  w.year++;
-  prepareSeason(w);
-  const club = w.clubs.find((c) => c.id !== w.playerClub)!.id;
-  const bid = {
-    id: 'synthetic-dual-departure',
-    direction: 'in' as const,
-    playerId: player.id,
-    club,
-    fee: '9999999',
-    year: w.year,
-    day: 0,
-    due: 5,
-    status: 'pending' as const,
-  };
-  w.bids = [bid];
+  const {
+    w,
+    player,
+    bid,
+    compensation: owed,
+  } = await combinedDepartureFixture('synthetic-dual-departure');
+  const club = bid.club;
   pushInbox(w, {
     kind: 'incoming-bid',
     title: 'Synthetic combined departure',
@@ -331,7 +334,6 @@ test('a disclosed player departure ends both jobs and charges coach compensation
     attention: true,
     ref: bid.id,
   });
-  const owed = playingCoachDepartureCost(w, player.id);
   await importResponsibilityCareer(page, w);
   await reviewInOffice(page, '선수·코치 계약 종료 검토');
   await expect(approvalRequest(page)).toContainText('코치 계약도 함께 종료');

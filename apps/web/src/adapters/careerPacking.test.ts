@@ -34,6 +34,25 @@ const noGlobalDictionary = () => {
 describe('versioned lossless career relationships', () => {
   it('round trips complete generated origins, name templates and seeded scalar references', () => {
     const world = simulatedWorld({ country: 'ENG', seed: 'career-dictionary' });
+    // Explicitly prepare the supported legacy origin of a real stored generated player. Its
+    // identity, profile and live affiliation stay the ones this world already holds.
+    const person = Object.values(world.people!).find((candidate) => {
+      const origin = candidate.id.match(/^(.+):p:(\d+):\d+$/);
+      return (
+        origin &&
+        Number(origin[2]) <= 25 &&
+        world.squads![origin[1]!]?.some((player) => player.id === candidate.id)
+      );
+    })!;
+    expect(person).toBeDefined();
+    const origin = person.id.match(/^(.+):p:(\d+):\d+$/)!;
+    const stored = world.squads![origin[1]!]!.find((player) => player.id === person.id)!;
+    expect([person.name, person.born, person.qualities]).toEqual([
+      stored.name,
+      stored.born,
+      stored.qualities,
+    ]);
+    person.origin = { club: origin[1]!, slot: Number(origin[2]) };
     const context = {
       clubs: world.clubs.map((club) => club.id),
       playerClub: world.playerClub,

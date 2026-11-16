@@ -41,7 +41,13 @@ describe('knockout ties (→MATCH-6)', () => {
       const { record } = simulateMatch(w, f, false, { awayGoals: false });
       if (!record.shootout) continue;
       found++;
-      expect(record.regulation).toEqual(record.score);
+      expect(record.regulation).toBeDefined();
+      expect(record.regulation!.home).toBe(record.regulation!.away);
+      expect(record.score.home).toBe(record.score.away);
+      const extraHome = record.score.home - record.regulation!.home,
+        extraAway = record.score.away - record.regulation!.away;
+      expect(extraHome).toBeGreaterThanOrEqual(0);
+      expect(extraAway).toBe(extraHome);
       expect(record.metrics[0][10]).toBe(120);
       const winner = record.shootout.home > record.shootout.away ? 0 : 1;
       expect(record.highlights.at(-1)).toEqual({

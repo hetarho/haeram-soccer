@@ -32,6 +32,8 @@ import {
 import { holdRows, staffAuthority } from './testing';
 import { lastRound, world } from './academy.testkit';
 import { CAREER_YEAR } from './career.testkit';
+import { LINE_LIMIT } from './academy';
+import { insolvencyStop } from './delegation';
 
 /** Runs the intake as the daily club business would on 15 March. */
 function intake(w: World) {
@@ -274,6 +276,20 @@ describe('season boundary', () => {
 
   it('lets delegated staff promote the ready, keep the growing and release the stalled', () => {
     const { w, ready, growing, young, review, aged } = cohort();
+    // This scene tests the director's choices with an affordable place in the ready player's line.
+    const line = lineOf(ready.position);
+    const destination = w.clubs.find(
+      (club) => club.id !== w.playerClub && !club.representative && w.squads?.[club.id],
+    )!;
+    for (const player of activePlayers(w).filter((p) => lineOf(p.position) === line)) {
+      if (activePlayers(w).filter((p) => lineOf(p.position) === line).length < LINE_LIMIT[line])
+        break;
+      movePerson(w, player, destination.id, true);
+    }
+    expect(activePlayers(w).filter((p) => lineOf(p.position) === line).length).toBeLessThan(
+      LINE_LIMIT[line],
+    );
+    expect(insolvencyStop(w, 0n, BigInt(ready.wage), true, 'academy')).toBeUndefined();
     seasonAcademy(w);
     const owned = new Set(w.players.map((player) => player.id));
     expect(owned.has(ready.id)).toBe(true);

@@ -32,11 +32,18 @@ export function fixtureCareer(definition: Pick<FixtureDefinition, 'input' | 'yea
     ...(definition.year ? { year: definition.year } : {}),
   });
 }
-export function runFixture(definition: FixtureDefinition) {
+/** Optional diagnostic observer: copy retained facts here; never mutate the live scenario. */
+export type FixtureTrace = (
+  phase: 'created' | 'prepared' | 'setup' | 'command',
+  world: World,
+  command?: Command,
+) => void;
+export function runFixture(definition: FixtureDefinition, trace?: FixtureTrace) {
   // Freeze the portable v1 scenarios to their original authority, independently of new-game
   // defaults: unless asked, the original settings. They play the released match model, as every
   // career does (→SAVE-23).
   const w = fixtureCareer(definition);
+  trace?.('created', w);
   if (!definition.currentRules) w.settings = staffAuthority(2);
   const code = clubOf(w).country;
   if (definition.cupQualification)
@@ -48,6 +55,7 @@ export function runFixture(definition: FixtureDefinition) {
       },
     ];
   prepareSeason(w);
+  trace?.('prepared', w);
   // Explicit synthetic setup is portable input, followed only by normal engine commands.
   if (definition.setup === 'staff-playing-coach') {
     const p = w.players[6],
@@ -79,10 +87,12 @@ export function runFixture(definition: FixtureDefinition) {
     detectMediations(w);
   }
   if (definition.policy) w.policy = { ...policyOf(w), ...definition.policy };
+  trace?.('setup', w);
   for (const command of definition.commands) {
     if (command.type === 'advance') for (let i = 0; i < command.rounds; i++) advanceRound(w);
     else if (command.type === 'season') for (let i = 0; i < command.count; i++) simulateSeason(w);
     else operate(w, command);
+    trace?.('command', w, command);
   }
   return facts(w, definition.currentRules);
 }

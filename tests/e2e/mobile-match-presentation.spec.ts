@@ -158,13 +158,9 @@ test('mobile result-only continuation preserves the exiting card position', asyn
 
 /** An early home goal for presentation checks; later goals follow the current model. */
 function goalWorld() {
-  // The club taken over from goal-feedback-6 opens 2′ home, concedes at 22′, scores at 37′ and
-  // concedes at 56′, each goal with its full staged build-up (found by scripts/find-goal-seeds.ts
-  // on the scripted model, T839; goal-feedback-61 on revision 10 after T805's per-club age ladder;
-  // goal-feedback-25 in T687; goal-feedback-2 on a founded career until T687; goal-feedback-28 on
-  // revision 9 with T580's pass side; goal-feedback-15 on revision 8, T561; goal-feedback-14 on
-  // revision 7, T548; goal-feedback-8 on revision 6, T542).
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-6' });
+  // The current seeded record has home goals at 3′, 69′ and 87′, each with its full staged
+  // build-up; scripts/find-goal-seeds.ts verifies the same opening/footage/pause criteria.
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-53' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }
@@ -307,7 +303,7 @@ for (const viewport of [
     const cue = page.getByTestId('goal-cue');
     // The hold lasts one real second, less than the steps below take on a slow runner (CI
     // 41524887826 measured a cue already gone): read the opening goal's cue as the page saw it.
-    // With 1x in real time (→WEB-32) the match plays on to it at 16x, a 2′ goal 7.5 s away rather
+    // With 1x in real time (→WEB-32) the match plays on to its early goal at 16x rather
     // than a minute at the default speed; on CI a frame advances the clock at most
     // FRAME_STEP_LIMIT_MS, and WebKit drew the 1280 pitch at about three frames a second there
     // (CI 43288257211): CI waits three times as long, as playwright.config scales every project's

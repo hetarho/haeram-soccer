@@ -149,19 +149,18 @@ describe('manager-history capture (→HIST-18/19, SAVE-24)', () => {
   });
 
   it('credits a domestic cup as its final is decided in play', () => {
-    // An overwhelming own squad, the cups played out as the close does; the first seeded career
-    // whose final we win is the scene (a strength gap counts with diminishing returns, →MATCH-2,
-    // so even such a squad loses a tie now and then).
-    let won: World | undefined;
-    for (let seed = 2; seed < 14 && !won; seed++) {
-      const w = careerWorld({ seed: `manager-cup-${seed}` });
-      for (const p of w.players)
-        for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[]) p.attrs[key] = 99;
-      finishCups(w);
-      if (w.cups!.some((c) => c.winner === w.playerClub)) won = w;
-    }
-    expect(won).toBeDefined();
-    const w = won!;
+    // A controlled full cup isolates title attribution with real entrants, players and results.
+    const w = careerWorld({ seed: 'manager-cup-2' });
+    const cup = w.cups!.find((one) => one.country === 'ENG')!;
+    expect(cup.clubs).toHaveLength(92);
+    expect(cup.clubs).toContain(w.playerClub);
+    for (const p of w.players)
+      for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[]) p.attrs[key] = 99;
+    for (const club of w.clubs.filter((one) => one.country === 'ENG' && one.id !== w.playerClub))
+      for (const p of w.squads?.[club.id] ?? [])
+        for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[]) p.attrs[key] = 1;
+    finishCups(w);
+    expect(cup.winner).toBe(w.playerClub);
     expect(facts(w).outcomes).toEqual([
       {
         source: { kind: 'cup-title', year: w.year, competition: 'cup' },

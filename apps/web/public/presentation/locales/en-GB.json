@@ -6852,6 +6852,24 @@
     "player.record.representative": "Representative club · {club}",
     "player.record.table": "Record by season and club",
     "player.record.retirementNews": "{player} retires from playing",
-    "player.record.lastClub": "Last club: {club}"
+    "player.record.lastClub": "Last club: {club}",
+    "naturalFootball.title": "Football movement comparison",
+    "naturalFootball.baseline": "Baseline",
+    "naturalFootball.improved": "Improved",
+    "naturalFootball.match": "{home} v {away}",
+    "naturalFootball.provenance": "{seed} · {sha}",
+    "naturalFootball.help": "Space: play/pause · ← →: seek 5 seconds · 1× runs in real time.",
+    "naturalFootball.clock": "{minute}′ {second}″",
+    "naturalFootball.pitch": "{version}: pitch for {home} v {away}",
+    "naturalFootball.pressure2": "Possessions under close pressure lasting 2+ seconds: {count}",
+    "naturalFootball.pressure5": "Possessions under close pressure lasting 5+ seconds: {count}",
+    "naturalFootball.sameFacts": "Comparing the same players and settled match record.",
+    "naturalFootball.usage": "Usage: {command}",
+    "naturalFootball.invalid": "Invalid football comparison data.",
+    "naturalFootball.mismatch": "Comparison inputs differ between versions: {field}",
+    "naturalFootball.noMatch": "Cannot display the first league match for seed {seed}.",
+    "naturalFootball.failed": "Could not prepare the comparison: {detail}",
+    "naturalFootball.step": "Seek {seconds} seconds",
+    "naturalFootball.loading": "Preparing the match view."
   }
 }

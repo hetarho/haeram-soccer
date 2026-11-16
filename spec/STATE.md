@@ -62,40 +62,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T873 | Restore connected build-up and pressure reactions | MATCH ARCH | - | todo |
-| T874 | Wait onside before a free-kick delivery | MATCH ARCH | T873 | todo |
-| T875 | Build a localized synchronized two-pitch HTML comparison | MATCH ARCH | - | todo |
-| T876 | Open supporting passing angles around a defensive screen | MATCH ARCH | T874 | todo |
-| T884 | Retain live verification stages and full failure logs | ARCH | - | todo |
-| T885 | Prepare coherent persisted-player integration fixtures | ARCH CLUB WORLD | - | todo |
-| T886 | Reconcile portable fixtures with reviewed current rules | ARCH WORLD ECON CLUB MATCH | T885 | todo |
-| T887 | Prepare real post-close free agents for promise journeys | ARCH CLUB | T885 | todo |
-| T888 | Find goal scenes through the actual replay adapters | ARCH MATCH | - | todo |
-| T889 | Keep the best-placed defender in central cover | MATCH ARCH | T885 | todo |
-| T890 | Prepare exact replacement and top-up scenarios | ARCH CLUB WORLD | T885 | todo |
-| T891 | Prepare real market candidates and exact registration caps | ARCH CLUB WORLD | T885 | todo |
-| T892 | Prepare explicit founding, employment and legacy identity fixtures | ARCH WORLD SAVE | T885 | todo |
-| T893 | Avoid new identity collisions during supported squad adoption | ARCH WORLD SAVE | T885 | todo |
-| T894 | Prepare exact contract, expiry and refill scenes | ARCH CLUB WORLD ECON | T890 | todo |
-| T895 | Prepare valid buyers and remaining market participants | ARCH CLUB WORLD | T890 | todo |
-| T896 | Prepare affordable academy, pending-decision and discipline scenes | ARCH CLUB WORLD MATCH | T885 | todo |
-| T897 | Preserve regulation facts and exact seeded replay inputs | ARCH MATCH WORLD | T885 | todo |
-| T898 | Preserve actual rosters when conditioning existing tactics | ARCH MATCH WORLD | T885 | todo |
-| T901 | Prove released-player source continuity from actual move history | ARCH WORLD CLUB | T885 | todo |
-| T900 | Evaluate scoped attribution-weight reuse | ARCH MATCH WORLD | T885 | todo |
-| T902 | Prepare a supported ten-season codec career through owner actions | ARCH SAVE OWNER | T885 | todo |
-| T903 | Establish an actual archive seek and bounded promise setup | ARCH MATCH CLUB | T887 T888 | todo |
-| T905 | Expire recovered unavailable rows at season rollover | ARCH MATCH LEAGUE SAVE | T885 | todo |
-| T906 | Prepare exact current-model browser scenes | ARCH WEB CLUB WORLD | T885 | todo |
-| T907 | Normalize prepared manager careers at the writer boundary | ARCH WORLD SAVE WEB | T893 | todo |
-| T908 | Reconcile throughput signatures with proven founding changes | ARCH WORLD MATCH HIST | T885 T889 | todo |
-| T909 | Skip already ineligible sellers before market pool work | ARCH WORLD CLUB | T885 | todo |
-| T910 | Prepare genuine combined-role departure offers | ARCH CLUB STAFF WORLD | T906 | todo |
-| T911 | Observe contract expiry before genuine mandatory rehires | ARCH CLUB WORLD HIST | T885 | todo |
-| T912 | Restore the ordinary owned-loan return notification | ARCH CLUB WORLD HIST | T909 | todo |
-| T913 | Read the specified raw XI strength in the historical division observer | ARCH LEAGUE WORLD | T901 | todo |
-| T914 | Prepare a genuine no-playoff season for exact heat-map reduction | ARCH MATCH HIST LEAGUE | T885 | todo |
-| T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T917 | Run browser journeys only in CI, on Chrome alone | ARCH | - | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | blocked@261116 |
@@ -103,9 +69,12 @@
 | T922 | Keep coaching hires after their actual retirement | ARCH | - | todo |
 | T923 | Prepare fixed-candidate dependencies before the full batch | ARCH | T917 | todo |
 
+## work
+| id | workers | total | done | remaining | running | review | blocked | updated | history |
+|---|---|---|---|---|---|---|---|---|---|
+| natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
+
 ## next
 - Session ws16 implements T922 for the reproduced wartime save blocker; independent review and shared fixed-candidate verification precede push.
-- gusta-implement-task T873 T875 T884
 - Session chslow landed T918 T919 in 0.8.3 (identical worlds, 1950 generation 666.7 s → 199.9 s; reports/261116-chslow); T920 is blocked on an idle-host re-measure of its kept patch and T921 waits for a longer A/B workload.
-- Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
-- T883 and T899 are complete in the pr14 publication candidate; NF14 must include that result and prepare a coherent newer patch if its root version matches main.
+- NF16 lands the natural-football group (T873–T915) with the shared candidate. T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).

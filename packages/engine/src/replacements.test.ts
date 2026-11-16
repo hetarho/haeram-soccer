@@ -9,6 +9,7 @@ import {
   staffSignings,
   noteSigning,
   closeSeason,
+  clubOf,
 } from './index';
 import { currentDay } from './calendar';
 import { movePerson } from './npc-continuity';
@@ -18,6 +19,10 @@ import { lineOf } from './player';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { careerWorld } from './career.testkit';
+import { twentyPlayerFixture } from './player-fixtures.testkit';
+import { joinFreeAgents } from './free-agents';
+import { npcOffer } from './npc-market';
+import { SQUAD_TARGET } from './squad-size';
 const world = (count = 20) => cachedWorld(`world:${count}`, () => found(count));
 /** The club on the released model: replacement needs, not the match model, are the subject. */
 function found(count: number) {
@@ -29,21 +34,47 @@ function found(count: number) {
 function equip(w: World, count: number) {
   w.cash = w.income = '999999999999';
   w.settings!.responsibilities.recruitment = 'delegated';
+  if (activePlayers(w).length > count) expect(twentyPlayerFixture(w)).toHaveLength(SQUAD_TARGET);
   while (activePlayers(w).length < count) {
     const p = makePlayer('ENG', w.seed, `bench:${w.players.length}`, w.year, 1, 'CM', 20);
     p.until = w.year + 5;
     w.players.push(p);
     movePerson(w, p, w.playerClub, true);
   }
+  expect(activePlayers(w)).toHaveLength(count);
   return w;
 }
 function sell(w: World, p: Player) {
+  const fee = '100000';
+  // A buyer must actually need this line and fund the unchanged fee and wages.
+  const vacancy = w.clubs
+    .filter((club) => club.id !== w.playerClub && !club.representative)
+    .map((club) => ({
+      club,
+      departing: w.squads?.[club.id]?.find(
+        (player) => lineOf(player.position) === lineOf(p.position),
+      ),
+    }))
+    .find(({ club, departing }) => {
+      if (!departing) return false;
+      const trial = structuredClone(w);
+      joinFreeAgents(
+        trial,
+        trial.squads![club.id].find((one) => one.id === departing.id)!,
+        w.year,
+      );
+      return !!npcOffer(trial, club, p, clubOf(trial), fee);
+    });
+  expect(vacancy).toBeDefined();
+  const { club, departing } = vacancy!;
+  expect(joinFreeAgents(w, departing!, w.year)).toBe(true);
+  expect(npcOffer(w, club, p, clubOf(w), fee)).toBeDefined();
   const bid: TransferBid = {
     id: `sale:${p.id}`,
     direction: 'in',
     playerId: p.id,
-    club: w.clubs.find((c) => c.id !== w.playerClub && !c.representative)!.id,
-    fee: '100000',
+    club: club.id,
+    fee,
     year: w.year,
     day: currentDay(w),
     due: currentDay(w) + 3,

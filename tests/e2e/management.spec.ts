@@ -1,3 +1,6 @@
+import { releasedMarketPlayer, importPreparedCareer } from '../fixtures/browser-career';
+import { exportWorld } from './club-identity-helpers';
+import { message } from '../../packages/contracts/src/messages';
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse, openClubRecords, openLeague } from './competition-navigation';
 import { openArea } from './office';
@@ -53,6 +56,11 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   const saved = await exported;
   await exportMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   const { world } = await decode(readFileSync((await saved.path())!, 'utf8'));
+  const initialCount = world.players.filter((p) => p.status === 'active').length;
+  const released = await releasedMarketPlayer(world);
+  expect(released?.available && released.freeAgent).toBe(true);
+  await importPreparedCareer(page, world);
+  await openPersonnel(page, 'market');
   // The owner's full market includes real free agents outside the scout's capped shortlist.
   // Keep this season-long fixture's payroll modest while following the UI's signing preview.
   const free = freeAgentsOf(world)
@@ -74,13 +82,26 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
       return preview.eligible && preview.affordable;
     });
   if (!free) throw new Error('The actual save has no eligible, affordable free agent to sign');
+  expect(free.player.id).toBe(released!.player.id);
   await marketCandidate(page, free.player.id, free.player.name);
   await page.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await closeMarketPanel(page, '영입 후보 상세');
-  await expect(await marketInfo(page)).toContainText('선수단 정원 21/40');
+  await expect(await marketInfo(page)).toContainText(
+    message('copy.RecruitmentDesk.f59c136d52', { p0: `${initialCount + 1}/40`, p1: '' }),
+  );
   await closeMarketPanel(page, '영입 정보');
   await openPersonnel(page, 'players');
-  await expect(page.getByText('선수단 21/40', { exact: true })).toBeVisible();
+  await expect(
+    page.getByText(message('copy.Rich.1573cecd98', { p0: `${initialCount + 1}/40` }), {
+      exact: true,
+    }),
+  ).toBeVisible();
+  const signed = await exportWorld(page);
+  expect(signed.players.find((p) => p.id === free.player.id)).toMatchObject({
+    status: 'active',
+    born: free.player.born,
+  });
+  expect(signed.cash).toBe(world.cash);
   await openClubhouse(page);
   await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1931');

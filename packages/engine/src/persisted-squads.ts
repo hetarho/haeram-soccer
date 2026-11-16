@@ -54,6 +54,15 @@ export function foundSquads(w: World) {
   const founding = w.clubs
     .filter((c) => !c.representative && c.id !== w.playerClub)
     .map((c) => ({ c, players: continuousSquad(w, c) }));
+  // Existing people keep their identity even outside a reconstructed first team.
+  const reserved = new Set([
+    ...Object.keys(w.people ?? {}),
+    ...Object.keys(w.playerRecords ?? {}),
+    ...w.players.map((p) => p.id),
+    ...(w.academy?.players ?? []).map((p) => p.id),
+    ...(w.freeAgents ?? []).map((p) => p.id),
+    ...founding.flatMap(({ players }) => players.map((p) => p.id)),
+  ]);
   w.squads = {};
   for (const { c, players } of founding) {
     const style = clubStyle(c),
@@ -62,8 +71,11 @@ export function foundSquads(w: World) {
     while (players.length < NPC_SQUAD.size) {
       const extra = players.length - places.length,
         place = places[11 + (extra % (places.length - 11))]!,
-        age = squadPlaceAge(w.seed, c.id, w.year + 1, 11 + (extra % (places.length - 11))).age,
-        id = `${c.id}:founding:${w.year}:${extra}`;
+        age = squadPlaceAge(w.seed, c.id, w.year + 1, 11 + (extra % (places.length - 11))).age;
+      let suffix = extra,
+        id = `${c.id}:founding:${w.year}:${suffix}`;
+      while (reserved.has(id)) id = `${c.id}:founding:${w.year}:${++suffix}`;
+      reserved.add(id);
       const p = generatedPlayer(
         c.country,
         w.seed,

@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
+import { addEvent } from './events';
 import { playerRecord } from './player-records';
 /** Settled, need-led business between persisted clubs (→WORLD-11/16/17). */
 import type { Club, Line, Player, PlayerMove, World } from '../../contracts/src/types';
@@ -282,6 +284,13 @@ export function returnNpcLoans(w: World) {
         movePerson(w, p, parent.id, borrower?.id === w.playerClub, undefined, borrower?.id);
         delete w.people[id]!.loan;
       } else moveSquadPlayer(w, p, parent.id, borrower?.id);
+      if (borrower!.id === w.playerClub)
+        addEvent(
+          w,
+          'loan-return',
+          sourceMessage('copy.careers.a1549f3110', { p0: p.name }),
+          sourceMessage('copy.season.f3d7a85a92'),
+        );
     }
     delete record.loan;
   }
@@ -395,16 +404,13 @@ export function npcMarket(w: World) {
         for (const listing of orderFor(need)) {
           // Ranked by this slot's rating, so no later listing fills the need either.
           if (floor !== undefined && rating(listing.player, settlement, need.slot) < floor) break;
-          if (
-            listing.club === buyer ||
-            moved.has(listing.player.id) ||
-            !npcCanSell(w, listing.club, listing.player)
-          )
-            continue;
+          if (listing.club === buyer || moved.has(listing.player.id)) continue;
+          // Settlement-local seller facts reject a seller before the squad-rule scan (T909).
           const { limit, bill } = clubFacts(w, listing.club, settlement);
           const sellingDown = limit !== undefined && bill > limit;
           if (listing.sellDown && !sellingDown) continue;
           if (!sellingDown && (counts.get(listing.club.id) ?? 0) >= NPC_MARKET.moves) continue;
+          if (!npcCanSell(w, listing.club, listing.player)) continue;
           const value = marketValueAt(
             listing.club.country,
             w.year,

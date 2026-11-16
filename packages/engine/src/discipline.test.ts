@@ -142,10 +142,25 @@ describe('discipline (→MATCH-19)', () => {
     const [a, b] = activePlayers(w);
     applyDiscipline(w, booked(f, ownSide(w, f), a.id, 'red', 'serious'));
     applyDiscipline(w, booked(f, ownSide(w, f), b.id));
-    w.discipline!.out.push({ player: 'npc', club: f.away, until: { year: w.year, day: 400 } });
+    const trackedClub = w.clubs.find((club) => club.id !== w.playerClub && w.squads?.[club.id])!;
+    const tracked = w.squads![trackedClub.id][0];
+    expect(w.people![tracked.id].club).toBe(trackedClub.id);
+    const untrackedClub = w.clubs.find((club) => club.representative && !w.squads?.[club.id])!;
+    const untracked = squad(w, untrackedClub)[0];
+    expect(w.people?.[untracked.id]).toBeUndefined();
+    const retainedInjury = {
+      player: tracked.id,
+      club: trackedClub.id,
+      until: { year: w.year, day: 400 },
+    };
+    w.discipline!.out.push(retainedInjury, {
+      player: untracked.id,
+      club: untrackedClub.id,
+      until: { year: w.year, day: 400 },
+    });
     w.year++;
     closeDisciplineSeason(w);
-    expect(w.discipline).toMatchObject({ year: w.year, yellows: {}, out: [] });
+    expect(w.discipline).toMatchObject({ year: w.year, yellows: {}, out: [retainedInjury] });
     expect(w.discipline!.bans).toHaveLength(1);
   });
   it('leaves a banned own player out of the XI and the bench', () => {

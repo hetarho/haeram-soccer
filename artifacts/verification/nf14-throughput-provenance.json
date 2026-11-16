@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 2,
+  "task": "T908",
+  "scope": "Historical exact-result provenance; no gameplay policy or performance claim.",
+  "workload": {
+    "seed": "season-archive",
+    "year": 2024,
+    "staffAuthority": 2,
+    "aggregateFixtures": 40,
+    "ordinaryCandidateRoundCalls": 2,
+    "capturedScoreRows": 450
+  },
+  "hashContract": {
+    "algorithm": "sha256",
+    "hexCharacters": 16,
+    "serialization": "JSON.stringify of complete records/facts",
+    "fieldsExcluded": "Only original facts() managerTenure attribution exclusion; no new exclusions. All material and cleanSheets remain in the final hash."
+  },
+  "originalExpected": {
+    "aggregateRecords": "9ad7a73f17eb42d4",
+    "candidateRounds": "6829def1e75ea8f9"
+  },
+  "provenHistoricalCurrent": {
+    "aggregateRecords": "d01e8b16487872a4",
+    "candidateRounds": "aef5e3c0618eb5f2"
+  },
+  "historicalCaptures": [
+    {
+      "key": "T838",
+      "source": "d45937dde0923b4e8f5f1b98513fb2e5a7098f16",
+      "embeddedLabel": "T838-d45937dd",
+      "digests": {
+        "aggregateRecords": "9ad7a73f17eb42d4",
+        "candidateRounds": "6829def1e75ea8f9"
+      },
+      "engine": "0.8.0",
+      "persistedRegistry": false,
+      "ownPlayers": 20,
+      "captureFile": "T838.json.gz",
+      "gzipSha256": "2528739c8f4ffab3e99645a1095de3b79796d0cb27d3af5c2a1cfc43eae037e8",
+      "payloadSha256": "113f0fc8b9baa69cdc1e2fa85746ebac9103bf162c4c6a2e5993d506f4b02971",
+      "gzipBytes": 442465
+    },
+    {
+      "key": "preT861",
+      "source": "b41b8978774506a0344aafd100bf4237ce70046d",
+      "embeddedLabel": "preT861-b41b8978",
+      "digests": {
+        "aggregateRecords": "9ad7a73f17eb42d4",
+        "candidateRounds": "6829def1e75ea8f9"
+      },
+      "engine": "0.8.0",
+      "persistedRegistry": false,
+      "ownPlayers": 20,
+      "captureFile": "preT861.json.gz",
+      "gzipSha256": "f034caed1dc9c899282a1ca867e61b2b83d6c1b7d8531ba2ccc995cc4d7dea7e",
+      "payloadSha256": "dd75b79c85eb9ef5fb4d9c994510e254c949d7713f347a7509e324e7d4f140a1",
+      "gzipBytes": 442467
+    },
+    {
+      "key": "T861",
+      "source": "6e483e5e7830e394a4fd0381eec967b912b58020",
+      "embeddedLabel": "T861-6e483e5e",
+      "digests": {
+        "aggregateRecords": "8c72389c8ad38555",
+        "candidateRounds": "67d3ac5251a40f79"
+      },
+      "engine": "0.8.0",
+      "persistedRegistry": true,
+      "ownPlayers": 22,
+      "captureFile": "T861.json.gz",
+      "gzipSha256": "ecaaa40a849f6bbb58b16de560f630a353b9a23d1e6496829e8d611e75aebf7b",
+      "payloadSha256": "3646e2398fd9520accf3cd1445206ac03c23981971fd76721504cdda9cb22595",
+      "gzipBytes": 444366
+    },
+    {
+      "key": "T863",
+      "source": "935a91df96fb7c90c60a85c3504e77c7d5758894",
+      "embeddedLabel": "T863-935a91df",
+      "digests": {
+        "aggregateRecords": "d01e8b16487872a4",
+        "candidateRounds": "e33e19c15a2a19dc"
+      },
+      "engine": "0.8.0",
+      "persistedRegistry": true,
+      "ownPlayers": 22,
+      "captureFile": "T863.json.gz",
+      "gzipSha256": "fb4d01ed5ee4549d59defa7c478cb485dcb2672fa8ff7e7d7bf16a2678006636",
+      "payloadSha256": "df4175f501cacd7b0474b414d8a6a2b4123c04771e53c4f16c45b1afdfafcdab",
+      "gzipBytes": 444595
+    },
+    {
+      "key": "current",
+      "source": "37d987956774171f41ddef4bee971e703c5f3e86",
+      "embeddedLabel": "current-cb615f03",
+      "digests": {
+        "aggregateRecords": "d01e8b16487872a4",
+        "candidateRounds": "aef5e3c0618eb5f2"
+      },
+      "engine": "0.8.1",
+      "persistedRegistry": true,
+      "ownPlayers": 22,
+      "captureFile": "current.json.gz",
+      "gzipSha256": "ff8b8736ef7427f7e285635c0d57d0cd87484b1fe2a8fdf870702ad42d041174",
+      "payloadSha256": "10f4aad7406155216465e5a3c531f8caeabb5858abd244fb31b50bd6d6ce03bf",
+      "gzipBytes": 446657
+    }
+  ],
+  "currentSourceLabelCaveat": "capture label sayscb615f03;gitdiff proves all packages/engine/src,packages/contracts/src andworlds/releasesfixture bytes identical between cb615f03 and actual frozen37d98795. No runtime source difference.",
+  "causalComparisons": [
+    {
+      "from": "T838",
+      "to": "preT861",
+      "inputChangedFixturesByCategory": {
+        "fixture": 0,
+        "clubs": 0,
+        "squads": 0,
+        "strength": 0,
+        "shift": 0,
+        "profiles": 0,
+        "tactics": 0,
+        "form": 0,
+        "context": 0
+      },
+      "recordChangedFixturesByCategory": {},
+      "changedScoreRows": 0,
+      "fixtureIDsExact": true
+    },
+    {
+      "from": "preT861",
+      "to": "T861",
+      "inputChangedFixturesByCategory": {
+        "fixture": 0,
+        "clubs": 0,
+        "squads": 40,
+        "strength": 4,
+        "shift": 4,
+        "profiles": 40,
+        "tactics": 0,
+        "form": 0,
+        "context": 0
+      },
+      "recordChangedFixturesByCategory": {
+        "score": 35,
+        "metrics": 40,
+        "players": 40,
+        "highlights": 40,
+        "xg": 40,
+        "detail": 40,
+        "incidents": 40,
+        "added": 34
+      },
+      "changedScoreRows": 383,
+      "fixtureIDsExact": true
+    },
+    {
+      "from": "T861",
+      "to": "T863",
+      "inputChangedFixturesByCategory": {
+        "fixture": 0,
+        "clubs": 4,
+        "squads": 0,
+        "strength": 4,
+        "shift": 4,
+        "profiles": 0,
+        "tactics": 0,
+        "form": 0,
+        "context": 4
+      },
+      "recordChangedFixturesByCategory": {
+        "score": 3,
+        "metrics": 4,
+        "players": 4,
+        "highlights": 3,
+        "xg": 3,
+        "detail": 4,
+        "added": 3
+      },
+      "changedScoreRows": 19,
+      "fixtureIDsExact": true
+    },
+    {
+      "from": "T863",
+      "to": "current",
+      "inputChangedFixturesByCategory": {
+        "fixture": 0,
+        "clubs": 0,
+        "squads": 0,
+        "strength": 0,
+        "shift": 0,
+        "profiles": 0,
+        "tactics": 0,
+        "form": 0,
+        "context": 0
+      },
+      "recordChangedFixturesByCategory": {},
+      "changedScoreRows": 0,
+      "fixtureIDsExact": true
+    }
+  ],
+  "changedFactCategories": {
+    "scalarLeaves": {
+      "/npcSeason/competitions/*/players/*/clubs/*/cleanSheets": 540,
+      "/ownMatches/*/material/heat/*": 441,
+      "/ownMatches/*/material/network/*": 526,
+      "/ownMatches/*/material/report/*": 20,
+      "/ownMatches/*/material/shots/*": 31
+    },
+    "arrayLengths": {
+      "/ownMatches/*/material/network": 2
+    },
+    "containerPresence": {}
+  },
+  "causes": [
+    {
+      "boundary": "T8616e483e5e",
+      "evidence": "Both historical digests and fullrecords/facts are unchanged immediately beforeT861. T861 installs real persisted22-player squads, removes generated-slot release/refill selection, and selects actual players. All40selected squads/profiles change; fixtureIDs/tactics/form/context stayexact. This causally explains changedscores,counters,contributors,incidents,discipline and competitionledgers; no new random rule is inferred."
+    },
+    {
+      "boundary": "T863935a91df",
+      "evidence": "world.tsclubStrength stores actualXIstrength and invalidateNpcSquad updates it; clubManager ability derives club.strength, then npcMatchContext=(ability−50)/4. Of40cases,4club/contextstrength inputs change while exactsquads/profiles/tactics/form stayequal. T863first40records exactly reproduce currentd01e8b16487872a4, including allcounter/score/identity fields."
+    },
+    {
+      "boundary": "HIST23/1f4a6be8 playerseasonrecords",
+      "evidence": "RemainingNPCledger difference T863→current is exactly540explicitGKcleanSheets fields. HIST.md90 requires them; npc-stats.ts210–214 sets0andcredits startingkeeper when actualscoreconceded0. OtherNPCledgerfacts equal after onlythisfield is excluded diagnostically."
+    },
+    {
+      "boundary": "approvedscript/stagingchanges T873,T874,T876,T889",
+      "evidence": "Remainingtwoownrecord differences are exclusively material.heat/network/report/shots. Sameinitialandafterbothroundplayer/manager/club snapshots, all450scores, discipline, and allownfacts exceptmaterial are identicalT863/current. After diagnostically excluding onlymaterial andcleanSheets, fullcandidatefacts areEXACT. This is causal category isolation, not permission to removefields fromtest."
+    }
+  ],
+  "unchangedChecks": {
+    "T838AndPreT861CompleteInputsRecordsFacts": true,
+    "T863AndCurrentComplete40InputsRecords": true,
+    "T863AndCurrentAll450Scores": true,
+    "T863AndCurrentAllPlayerManagerClubStages": true,
+    "T863AndCurrentDiscipline": true,
+    "completeFactsExactAfterDiagnosticOnlyTwoCategories": true
+  },
+  "evidence": {
+    "coordinatorDirectory": ".tmp/nf14-evidence/remaining-diagnosis/throughput-history",
+    "provenanceSha256": "eb7d44710e44d40ef38eb4fe05057218b0d97d0328c980049528508110ca917a",
+    "legacyNonExhaustiveChangedNodes": 1500,
+    "exhaustiveFactDiffFile": ".tmp/t908/exhaustive-fact-diff.json",
+    "exhaustiveFactDiffSha256": "3f8da6fd9419b7254123cbc994ae52d33ba12215b27ca7fd15ea259e524b4a9f",
+    "auditScriptSha256": "13118edcea0012639d69c3ab5e9ae40442b1d5d28a170a4034d4f72ec11a2537",
+    "legacyNonExhaustiveDiffSha256": "7768026f6dc17bee625d6822147430d31ef9a4afe092cdd6cb0fa7c6e4a3007a"
+  },
+  "finalScopedConfirmation": {
+    "source": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+    "embeddedLabel": "c5a6650f08d0db7415289a284b59e7cfacdd9c45",
+    "engine": "0.8.2",
+    "digests": {
+      "aggregateRecords": "d01e8b16487872a4",
+      "candidateRounds": "aef5e3c0618eb5f2"
+    },
+    "captureFile": "final-current.json.gz",
+    "gzipSha256": "402af58d4409507462a436f884681d47d48b7b4ccf596936ba19746f2a221e32",
+    "payloadSha256": "e9740b64f7a281e59bc8f6843ce68b72450be2609858fc24b5cc441752e51c3b",
+    "aggregateRecords": 40,
+    "scoredFixtures": 450,
+    "allInputsRecordsFactsStagesExactToHistoricalCurrent": true,
+    "coordinatorElapsedMs": 2961,
+    "scope": "Coordinator executed the unchanged bounded capture on this actual scoped runtime before replacing constants; elapsed is diagnostic, not a performance comparison."
+  },
+  "limits": [
+    "Capture comparisons explain intended different results; no speed comparison is valid across them.",
+    "Diagnostic exclusion isolates causes only and MUST NOT be applied to the production assertion.",
+    "Worker revalidated captured bytes without executing a match, round, season or integration.",
+    "Final scoped capture and unchanged complete integration gate are coordinator-owned."
+  ],
+  "historicalCountCorrection": {
+    "previousSubmittedCommit": "eef2c56a575a4809ef541dcae0afb1c3eef654e6",
+    "previousClaimedChangedNodes": 1500,
+    "previousCategories": {
+      "/npcSeason/competitions/*/players/*/clubs/*/cleanSheets": 540,
+      "/ownMatches/*/material/heat/*": 441,
+      "/ownMatches/*/material/network/length": 2,
+      "/ownMatches/*/material/network/*": 466,
+      "/ownMatches/*/material/report/*": 20,
+      "/ownMatches/*/material/shots/*": 31
+    },
+    "status": "Previous1500-node report is NOT exhaustive and is superseded; it omitted array-tail nested leaves and mixed length events with scalar changes.",
+    "review": "d6184dab-7047-46e1-b9bd-981d7546113b",
+    "cause": "Old diagnostic used zip/common-prefix array traversal. Preserved capture bytes and full stripped-facts equality were valid; count completeness was false."
+  },
+  "exhaustiveAuditMethod": {
+    "definition": "Scalar leaf differences compare every JSON value with explicit MISSING sentinel. Arrays use max(old.length,new.length); objects use union of all keys. Added/removed containers recursively enumerate EVERY scalar leaf. Empty-container presence and container retypes are retained as separate structural events. Array length changes count ONLY two present arrays with unequal lengths; they are NOT scalar leaves.",
+    "javascriptSourceLines": [
+      "function audit(oldValue, newValue) {",
+      "  const MISSING = Symbol('MISSING');",
+      "  const leaves = [], arrayLengths = [], containers = [], types = [];",
+      "  function kind(v) { return v === MISSING ? 'missing' : Array.isArray(v) ? 'array' : v !== null && typeof v === 'object' ? 'object' : 'scalar'; }",
+      "  function encoded(v) { return v === MISSING ? { state: 'missing' } : { state: 'value', value: v }; }",
+      "  function pointer(parts, pattern = false) { return parts.length === 0 ? '' : '/' + parts.map(p => pattern && p.index ? '*' : String(p.key).replaceAll('~', '~0').replaceAll('/', '~1')).join('/'); }",
+      "  function row(parts, before, after) { return { path: pointer(parts), pattern: pointer(parts, true), before: encoded(before), after: encoded(after) }; }",
+      "  function expand(value, parts, added) {",
+      "    const k = kind(value);",
+      "    if (k === 'array' || k === 'object') {",
+      "      containers.push({ path: pointer(parts), pattern: pointer(parts, true), kind: k, change: added ? 'added' : 'removed', empty: Object.keys(value).length === 0 });",
+      "      if (k === 'array') { for (let i = 0; i < value.length; i++) if (Object.hasOwn(value, i)) expand(value[i], [...parts, { key: i, index: true }], added); }",
+      "      else for (const key of Object.keys(value).sort()) expand(value[key], [...parts, { key, index: false }], added);",
+      "    } else leaves.push(row(parts, added ? MISSING : value, added ? value : MISSING));",
+      "  }",
+      "  function walk(a, b, parts) {",
+      "    const ka = kind(a), kb = kind(b);",
+      "    if (ka === 'array' && kb === 'array') {",
+      "      if (a.length !== b.length) arrayLengths.push(row(parts, a.length, b.length));",
+      "      for (let i = 0; i < Math.max(a.length, b.length); i++) walk(Object.hasOwn(a, i) ? a[i] : MISSING, Object.hasOwn(b, i) ? b[i] : MISSING, [...parts, { key: i, index: true }]);",
+      "    } else if (ka === 'object' && kb === 'object') {",
+      "      for (const key of [...new Set([...Object.keys(a), ...Object.keys(b)])].sort()) walk(Object.hasOwn(a, key) ? a[key] : MISSING, Object.hasOwn(b, key) ? b[key] : MISSING, [...parts, { key, index: false }]);",
+      "    } else if (ka === 'array' || ka === 'object' || kb === 'array' || kb === 'object') {",
+      "      if (ka !== 'missing' && kb !== 'missing') types.push({ path: pointer(parts), pattern: pointer(parts, true), before: ka, after: kb });",
+      "      if (ka !== 'missing') expand(a, parts, false);",
+      "      if (kb !== 'missing') expand(b, parts, true);",
+      "    } else if (ka !== kb || a !== b) leaves.push(row(parts, a, b));",
+      "  }",
+      "  walk(oldValue, newValue, []);",
+      "  return { leaves, arrayLengths, containers, types };",
+      "}"
+    ],
+    "javascriptSha256": "db71c3c9f1e9994791221e89e7281f4425416263451ff8ceeca3c58f6cce0180",
+    "selfTestCases": [
+      "added nested tail retains every scalar",
+      "removed nested tail retains every scalar",
+      "all object keys including additions and deletions",
+      "MISSING is distinct from null",
+      "false is distinct from zero",
+      "nested array tail deletion",
+      "empty containers retain structural presence",
+      "equal values and reordered object keys",
+      "container type replacement expands both old and new leaves",
+      "JSON pointer escapes keys"
+    ],
+    "scalarAndStructureCountsAreSeparate": true
+  },
+  "exhaustiveFactAudit": {
+    "scalarLeafChanges": 1558,
+    "arrayLengthChanges": 2,
+    "containerPresenceChanges": 0,
+    "typeChanges": 0,
+    "independentlyCheckedNetworkTailValues": 60,
+    "scalarLeafChangesByPathPattern": {
+      "/npcSeason/competitions/*/players/*/clubs/*/cleanSheets": 540,
+      "/ownMatches/*/material/heat/*": 441,
+      "/ownMatches/*/material/network/*": 526,
+      "/ownMatches/*/material/report/*": 20,
+      "/ownMatches/*/material/shots/*": 31
+    },
+    "arrayLengthChangesByPathPattern": {
+      "/ownMatches/*/material/network": 2
+    },
+    "containerPresenceChangesByPathPattern": {}
+  }
+}

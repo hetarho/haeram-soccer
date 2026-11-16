@@ -9,6 +9,8 @@ import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { expectHomeBounds, horizontalOverflow } from './layout';
 import { startCareer } from './start';
+import { exportWorld } from './club-identity-helpers';
+import { ATTRIBUTES } from '../../packages/contracts/src/player';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
@@ -21,6 +23,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
+  const selected = await exportWorld(page);
   await openClubRecords(page);
   await openCurrentClubSeason(page);
   await page.getByText('분석 데이터 내보내기', { exact: true }).click();
@@ -49,7 +52,44 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await button.click();
   const players = await playerDownload;
   expect(players.suggestedFilename()).toBe('haeram-players-career-1930.csv');
-  expect((await readFile((await players.path())!, 'utf8')).trim().split('\r\n')).toHaveLength(21);
+  const playerCsv = await readFile((await players.path())!, 'utf8');
+  expect(playerCsv.startsWith('\ufeff')).toBe(true);
+  const rows = playerCsv
+    .trim()
+    .split('\r\n')
+    .map((row) =>
+      [...row.matchAll(/"((?:[^"]|"")*)"/g)].map((cell) => cell[1]!.replaceAll('""', '"')),
+    );
+  expect(rows[0]).toEqual([
+    'csv_schema',
+    'world_id',
+    'engine_version',
+    'catalog_version',
+    'snapshot_year',
+    'scope',
+    'player_id',
+    'player_name',
+    'status',
+    'position',
+    'birth_year',
+    'minutes',
+    'goals',
+    'assists',
+    'pass_attempts',
+    'pass_completed',
+    'shots',
+    'on_target',
+    'tackles',
+    'interceptions',
+    'dribbles',
+    'saves',
+    ...ATTRIBUTES,
+    'potential',
+    'fatigue',
+  ]);
+  expect(rows).toHaveLength(selected.players.length + 1);
+  expect(rows.slice(1).map((row) => row[6])).toEqual(selected.players.map((p) => p.id));
+  expect(rows.slice(1).map((row) => row[10])).toEqual(selected.players.map((p) => String(p.born)));
   expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

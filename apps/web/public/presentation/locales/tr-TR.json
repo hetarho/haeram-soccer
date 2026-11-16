@@ -6852,6 +6852,24 @@
     "player.record.representative": "Temsilci kulüp · {club}",
     "player.record.table": "Sezon ve kulüp kayıtları",
     "player.record.retirementNews": "{player} futbolculuğu bıraktı",
-    "player.record.lastClub": "Son kulüp: {club}"
+    "player.record.lastClub": "Son kulüp: {club}",
+    "naturalFootball.title": "Futbol hareketi karşılaştırması",
+    "naturalFootball.baseline": "Mevcut sürüm",
+    "naturalFootball.improved": "İyileştirilmiş",
+    "naturalFootball.match": "{home} - {away}",
+    "naturalFootball.provenance": "{seed} · {sha}",
+    "naturalFootball.help": "Boşluk: oynat/duraklat · ← →: 5 saniye atla · 1× gerçek zamandır.",
+    "naturalFootball.clock": "{minute}′ {second}″",
+    "naturalFootball.pitch": "{version}: {home} - {away} sahası",
+    "naturalFootball.pressure2": "Yakın baskı altında en az 2 saniye top tutma: {count}",
+    "naturalFootball.pressure5": "Yakın baskı altında en az 5 saniye top tutma: {count}",
+    "naturalFootball.sameFacts": "Aynı oyuncular ve kesinleşmiş maç kaydı karşılaştırılıyor.",
+    "naturalFootball.usage": "Kullanım: {command}",
+    "naturalFootball.invalid": "Geçersiz futbol karşılaştırma verileri.",
+    "naturalFootball.mismatch": "Sürümler arasında karşılaştırma koşulları farklı: {field}",
+    "naturalFootball.noMatch": "{seed} tohumu için ilk lig maçı görüntülenemiyor.",
+    "naturalFootball.failed": "Karşılaştırma hazırlanamadı: {detail}",
+    "naturalFootball.step": "{seconds} saniye atla",
+    "naturalFootball.loading": "Maç görünümü hazırlanıyor."
   }
 }

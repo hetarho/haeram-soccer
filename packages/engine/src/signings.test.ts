@@ -20,6 +20,7 @@ import {
   noteSigning,
   ownStarters,
   judgeRequests,
+  makePlayer,
   nextShortlistDraw,
   openShortlistWindow,
   operate,
@@ -39,11 +40,83 @@ import {
   UPGRADE_MEASURE,
   upgradeNeeds,
 } from './index';
-import { holdRows, staffAuthority } from './testing';
+import { buyOffer, holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { careerWorld } from './career.testkit';
 import { holdTemperament } from './delegation.testkit';
 import { scoutReach } from './scout-search';
+import { joinFreeAgents } from './free-agents';
+import { retainPerson, openEmployment } from './person-careers';
+import { movePerson } from './npc-continuity';
+
+/** Release the actual listed club player, keeping his identity and unchanged sporting quality. */
+function releaseListed(w: World, line?: Line) {
+  const listed = transferOffers(w).find(
+    (offer) =>
+      offer.available && !offer.freeAgent && (!line || lineOf(offer.player.position) === line),
+  )!;
+  expect(listed).toBeDefined();
+  expect(listed.source.kind).toBe('club');
+  const origin = listed.source.kind === 'club' ? listed.source.club : '';
+  const player = w.squads![origin].find((one) => one.id === listed.player.id)!;
+  expect(player).toBeDefined();
+  // Persisted players below the coaching threshold need not yet have a retained person row.
+  const person = retainPerson(w, player, origin);
+  openEmployment(w, person.id, 'player', origin);
+  expect(person.club).toBe(origin);
+  expect(joinFreeAgents(w, player, w.year)).toBe(true);
+  const free = transferOffers(w).find(
+    (offer) => offer.available && offer.freeAgent && offer.player.id === player.id,
+  )!;
+  expect(free).toBeDefined();
+  return free;
+}
+/** A distinct registered test person competes freely against an unchanged equal-quality paid row. */
+function equalQualityFree(w: World) {
+  const paid = transferOffers(w).find(
+    (offer) => offer.available && !offer.freeAgent && !offer.foreign,
+  )!;
+  expect(paid).toBeDefined();
+  expect(paid.source.kind).toBe('club');
+  const origin = paid.source.kind === 'club' ? paid.source.club : '';
+  const club = w.clubs.find((one) => one.id === origin)!;
+  const id = 'fixture:signings:equal-quality-free';
+  expect(w.people?.[id]).toBeUndefined();
+  const player = makePlayer(
+    club.country,
+    w.seed,
+    id,
+    w.year,
+    overall(paid.player),
+    paid.player.position,
+    w.year - paid.player.born,
+    club.tier,
+  );
+  player.attrs = { ...paid.player.attrs };
+  player.positions = { ...paid.player.positions };
+  player.potential = paid.player.potential;
+  movePerson(w, player, origin);
+  expect(w.people![id].origin).toBeUndefined();
+  expect(joinFreeAgents(w, player, w.year)).toBe(true);
+  const offers = transferOffers(w),
+    free = offers.find((offer) => offer.available && offer.freeAgent && offer.player.id === id)!;
+  expect(free).toBeDefined();
+  expect(
+    offers.find(
+      (offer) => offer.available && !offer.freeAgent && offer.player.id === paid.player.id,
+    ),
+  ).toBeDefined();
+  expect(free.player.id).not.toBe(paid.player.id);
+  expect(free.player.attrs).toEqual(paid.player.attrs);
+  expect(overall(free.player)).toBe(overall(paid.player));
+  expect(free.player.potential).toBe(paid.player.potential);
+  return free;
+}
+/** A paid fixture purchase completes the real asking-fee bid before testing arrival effects. */
+function signCandidate(w: World, candidate: number) {
+  if (transferOffers(w)[candidate].freeAgent) operate(w, { type: 'recruit', candidate });
+  else buyOffer(w, candidate);
+}
 
 /**
  * A rich level-4 club on the winter window's opening day, half its season played with revenue far
@@ -99,9 +172,7 @@ const clubIndex = (w: World) => transferOffers(w).findIndex((offer) => !offer.fr
 describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it('fills a short role with a free agent on equal sporting quality', () => {
     const w = club(2);
-    const best = transferOffers(w)[0]!;
-    w.freeAgents = [{ ...structuredClone(best.player), id: 'signings:free', freeSince: w.year }];
-    const free = transferOffers(w).find((offer) => offer.freeAgent)!;
+    const free = equalQualityFree(w);
     expect(free.freeAgent).toBe(true);
     keep(w, lineOf(free.player.position), 1);
     expect(shortLines(w)[0]).toMatchObject({
@@ -109,6 +180,13 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
       line: lineOf(free.player.position),
       count: 1,
     });
+    // A previously drawn manager shortlist would give its paid member priority over this tie.
+    delete w.shortlist;
+    expect(signingRequests(w)).toEqual([]);
+    expect(transferOffers(w).find((offer) => offer.player.id === free.player.id)?.available).toBe(
+      true,
+    );
+    expect(signingVerdict(w, free.player, '0', 'short').ok).toBe(true);
     const cash = w.cash;
     staffSignings(w);
     const signed = w.players.find((p) => p.id === free.player.id)!;
@@ -252,7 +330,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     // Over a whole window at level 4 the daily market makes the looks itself: the window opens
     // with the short role requested, and the 단장 moves for the manager's pick first.
     const daily = club();
-    const free = transferOffers(daily).find((offer) => offer.freeAgent)!;
+    const free = releaseListed(daily);
     keep(daily, lineOf(free.player.position), 1);
     daily.calendar = { day: seasonDayOf(daily.year, 12, 31) };
     advanceDays(daily, 2);
@@ -337,7 +415,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     const w = owned(seed);
     drawShortlist(w);
     const [first] = shortlistOffers(w);
-    operate(w, { type: 'recruit', candidate: first.index });
+    signCandidate(w, first.index);
     expect(shortlistOffers(w).some(({ offer }) => offer.player.id === first.offer.player.id)).toBe(
       false,
     );
@@ -447,7 +525,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
 
   it("the 단장 moves for the manager's pick before any other candidate", () => {
     const w = club();
-    const role = lineOf(transferOffers(w).find((offer) => offer.freeAgent)!.player.position);
+    const role = lineOf(releaseListed(w).player.position);
     keep(w, role, 1);
     openShortlistWindow(w);
     const request = w.shortlist!.requests.find((one) => one.line === role)!;
@@ -469,6 +547,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
       // A squad of 99s wants no upgrade, so the goalkeeper is the one request.
       for (const p of activePlayers(w)) rate(p, 99);
       keep(w, 'GK', 1);
+      releaseListed(w, 'GK');
       openShortlistWindow(w);
       expect(w.shortlist!.window).toMatchObject({
         requests: [{ line: 'GK' }],
@@ -490,12 +569,12 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     // The owner signing a goalkeeper meets it; a defender does not.
     const keeper = (w: World) =>
       transferOffers(w).findIndex((offer) => offer.available && offer.player.position === 'GK');
-    expect(window((w) => operate(w, { type: 'recruit', candidate: keeper(w) })).lost).toBe(0);
+    expect(window((w) => signCandidate(w, keeper(w))).lost).toBe(0);
     const defender = (w: World) =>
       transferOffers(w).findIndex(
         (offer) => offer.available && lineOf(offer.player.position) === 'DF',
       );
-    expect(window((w) => operate(w, { type: 'recruit', candidate: defender(w) })).lost).toBe(3);
+    expect(window((w) => signCandidate(w, defender(w))).lost).toBe(3);
     // The 단장 signing for him at level 4 meets it too.
     expect(
       window((w) => {

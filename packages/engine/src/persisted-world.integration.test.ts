@@ -3,15 +3,16 @@ import { COUNTRIES } from '../../catalogs/src/index';
 import type { World } from '../../contracts/src/types';
 import { clubRegistration } from './registration';
 import { historyWorld } from './history';
-import { LINE_MINIMUM, NPC_SQUAD, rating } from './world';
+import { LINE_MINIMUM, NPC_SQUAD, clubStyle, xiRating } from './world';
 import { lineOf } from './player';
 import { advanceDays, advanceRound } from './season';
 import { NPC_WAGE_DECISIONS, npcWageBill, npcWageLimit } from './books';
-import { FREE_AGENT_CONFIG } from './free-agents';
+import { FREE_AGENT_CONFIG, FREE_AGENT_FLOW } from './free-agents';
 import { npcMarketDays, PLAYER_MOVE_FLOW } from './npc-market';
 import { transferWindowDays } from './transfer-window';
 import { SEASON_END_DAY } from './calendar';
 import { SQUAD_MINIMUM } from './squad-size';
+import { freeSigningSourceWitness } from './free-signing-source.testkit';
 
 /** Full lived-world regression: the coordinator runs this only at the integrated batch gate. */
 function firstDay(w: World) {
@@ -19,6 +20,9 @@ function firstDay(w: World) {
   const live = new Set<string>();
   for (const c of w.clubs.filter((c) => !c.representative)) {
     const players = w.squads![c.id]!;
+    expect(c.strength, `${w.year}:${c.id}:strength`).toBe(
+      xiRating(players.slice(0, 11), clubStyle(c)),
+    );
     expect(players.length, `${w.year}:${c.id}`).toBeGreaterThanOrEqual(NPC_SQUAD.size);
     for (const line of Object.keys(LINE_MINIMUM) as (keyof typeof LINE_MINIMUM)[])
       expect(
@@ -41,7 +45,7 @@ function firstDay(w: World) {
   for (const cp of COUNTRIES) {
     const means = cp.groups.map((_, tier) => {
       const clubs = w.clubs.filter((c) => c.country === cp.code && c.tier === tier);
-      return clubs.reduce((n, c) => n + rating(w, c), 0) / clubs.length;
+      return clubs.reduce((n, c) => n + c.strength, 0) / clubs.length;
     });
     for (let tier = 1; tier < means.length; tier++)
       expect(means[tier]!, `${w.year}:${cp.code}:${tier}`).toBeLessThan(means[tier - 1]!);
@@ -59,6 +63,13 @@ describe('the persisted world from 1930 to 1970', () => {
     let decisions = 0;
     const previous = NPC_WAGE_DECISIONS.observe;
     const previousMove = PLAYER_MOVE_FLOW.observe;
+    const previousFree = FREE_AGENT_FLOW.observe;
+    const freeSource = freeSigningSourceWitness();
+    FREE_AGENT_FLOW.observe = (kind, player, club) => {
+      if (kind === 'release') freeSource.release(w, player.id);
+      else freeSource.consume(player.id);
+      previousFree?.(kind, player, club);
+    };
     let moves = 0;
     PLAYER_MOVE_FLOW.observe = (world, id, move) => {
       moves++;
@@ -76,10 +87,12 @@ describe('the persisted world from 1930 to 1970', () => {
         // affiliation. Paid market moves are observed before their squad move instead.
         expect(move.fee, `${id}:${move.from}:${move.to}`).toBe('0');
         expect(held).not.toBe(true);
-        expect(released || last?.to === move.from, `${id}:${move.from}`).toBe(true);
+        expect(released || freeSource.accepts(world, id, move), `${id}:${move.from}`).toBe(true);
         expect(arrived).toHaveLength(1);
       } else {
-        expect(held || released, `${id}:${move.from}`).toBe(true);
+        expect(held || released || freeSource.accepts(world, id, move), `${id}:${move.from}`).toBe(
+          true,
+        );
       }
     };
     const overAtClose = new Set<string>();
@@ -175,6 +188,7 @@ describe('the persisted world from 1930 to 1970', () => {
     } finally {
       NPC_WAGE_DECISIONS.observe = previous;
       PLAYER_MOVE_FLOW.observe = previousMove;
+      FREE_AGENT_FLOW.observe = previousFree;
     }
     expect(decisions).toBeGreaterThan(0);
     expect(moves).toBeGreaterThan(0);

@@ -10,7 +10,7 @@ import { onPitch, presentPlayers } from './types';
 import { add, clamp, dist, dot, lerp, norm, scale, sub } from './vec';
 import { speedAt, timeToReach } from './motion';
 import type { BeatContext } from './perform';
-import type { StageState } from './world';
+import { isBeaten, type StageState } from './world';
 
 const STAGE = STAGING_CONFIG.stage;
 const BALL = STAGING_CONFIG.ball;
@@ -89,16 +89,17 @@ function slowed(
   return { plan: { ...plan, time, margin: arrival - time }, flight: longer };
 }
 
-/** The nearest outfield opponent of player `index` now. */
+/** The nearest outfield opponent of player `index` now; with `unbeaten`, the nearest he has not gone past (`isBeaten`). */
 export function nearestOpponent(
   state: StageState,
   index: number,
+  unbeaten = false,
 ): { index: number; distance: number } {
   const other: TeamId = state.fixture.players[index].team === 0 ? 1 : 0;
   const pos = state.bodies[index].pos;
   let found = { index: -1, distance: Infinity };
   for (const p of presentPlayers(state.fixture, other)) {
-    if (p.slot === 0) continue;
+    if (p.slot === 0 || (unbeaten && isBeaten(state, p.index))) continue;
     const d = dist(state.bodies[p.index].pos, pos);
     if (d < found.distance) found = { index: p.index, distance: d };
   }

@@ -2,16 +2,8 @@ import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { approvalTray, dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
-import {
-  transferOffers,
-  operate,
-  managerCandidates,
-  prepareSeason,
-  transferWindowDays,
-} from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
 import { resolveMediation } from '../../packages/engine/src/mediation';
-import { judgePromises } from '../../packages/engine/src/promises';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
 import { DEFAULT_MARKET_QUERY } from '../../apps/web/src/pages/club/lib/worldMarket';
 import { lineOf } from '../../packages/engine/src/player';
@@ -20,6 +12,8 @@ import {
   importResponsibilityCareer,
   mediationCareer as fixture,
   promiseDeadlineCareer,
+  retainedPromiseCareer,
+  promiseFreeAgent,
 } from './responsibility-fixtures';
 import { horizontalOverflow, settle } from './layout';
 async function market(page: Page, w: World) {
@@ -134,38 +128,22 @@ test('support changes retain the preview and confirm only the latest conditions'
   await expect(preview).toHaveAttribute('aria-busy', 'false');
   await expect(confirm).toBeEnabled();
 });
-test('retained-promise-status', async ({ page }) => {
-  const w = fixture();
-  resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
-  const gk = ask(w, 'GK');
-  resolveMediation(w, gk.id, 'manager', 'delegated');
-  const free = transferOffers(w).findIndex((o) => o.freeAgent);
-  operate(w, { type: 'recruit', candidate: free });
-  w.calendar = { day: transferWindowDays(w.year).winterClose + 1 };
-  w.round = Math.floor(w.calendar.day / 7);
-  delete w.scorerSeason;
-  judgePromises(w);
-  w.year++;
-  prepareSeason(w);
-  w.manager.until = w.year + 3;
-  w.cash = '0';
-  const pending = ask(w, 'MF');
-  resolveMediation(w, pending.id, 'manager', 'delegated');
-  w.cash = '999999999999';
-  operate(w, { type: 'hire', id: managerCandidates(w)[0].id });
-  w.cash = '0';
-  const last = ask(w, 'MF');
-  resolveMediation(w, last.id, 'manager', 'delegated');
-  w.inbox = [];
-  w.events = [];
-  await market(page, w);
-  await marketInfo(page);
-  await page.getByRole('button', { name: '전체 영입 결정 기록', exact: true }).click();
-  const history = page.getByRole('dialog', { name: '영입 결정 기록' });
-  for (const text of ['이행 대기', '이행 완료', '미이행', '취소'])
-    await expect(history).toContainText(text);
-  await expect(history).toContainText('마감');
-  await expect(history).not.toContainText('신뢰 +');
+test.describe('retained promise history', () => {
+  let prepared: World;
+  test.beforeAll(() => {
+    prepared = retainedPromiseCareer();
+  });
+  test('retained-promise-status', async ({ page }) => {
+    const w = structuredClone(prepared);
+    await market(page, w);
+    await marketInfo(page);
+    await page.getByRole('button', { name: '전체 영입 결정 기록', exact: true }).click();
+    const history = page.getByRole('dialog', { name: '영입 결정 기록' });
+    for (const text of ['이행 대기', '이행 완료', '미이행', '취소'])
+      await expect(history).toContainText(text);
+    await expect(history).toContainText('마감');
+    await expect(history).not.toContainText('신뢰 +');
+  });
 });
 
 for (const mode of ['manual', 'automatic'] as const)
@@ -254,7 +232,7 @@ for (const arrival of ['none', 'loan', 'free'] as const)
     if (arrival === 'loan')
       expect(loan, 'seeded paid loan counter on the unchanged promise deadline').toBeDefined();
     await market(page, w);
-    let free: ReturnType<typeof transferOffers>[number] | undefined;
+    let free: ReturnType<typeof promiseFreeAgent>;
     if (loan) {
       await page.getByRole('button', { name: /^이적 협상 ·/ }).click();
       const dialog = page.getByRole('dialog', { name: '이적 협상', exact: true });
@@ -265,14 +243,10 @@ for (const arrival of ['none', 'loan', 'free'] as const)
       ).toBeVisible();
       await closeMarketPanel(page, '이적 협상');
     } else if (arrival === 'free') {
-      free = transferOffers(w).find(
-        (o) =>
-          o.available &&
-          lineOf(o.player.position) === promise.target.line &&
-          o.player.id !== promise.target.pick &&
-          o.freeAgent,
-      )!;
+      free = promiseFreeAgent(w, promise.target.pick)!;
       expect(free).toBeDefined();
+      expect(lineOf(free!.player.position)).toBe(promise.target.line);
+      expect(free!.player.id).not.toBe(promise.target.pick);
       // Full names rarely repeat (→WORLD-12), so the search is a piece of his name that more than
       // a page of other players share: the intended free agent is behind a full page of them. He
       // is a real free agent now (→CLUB-49), able enough to rank high under the default OVR

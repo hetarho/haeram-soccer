@@ -1,4 +1,3 @@
-import { historyWorld } from '../../../../packages/engine/src/history';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../../../packages/contracts/src/index';
 import {
@@ -16,7 +15,7 @@ import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { base64, pack, unbase64, unpack } from './packing';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import type { World } from '../../../../packages/contracts/src/types';
-import type { CareerInput } from '../../../../packages/engine/src/career.testkit';
+import { careerWorld, type CareerInput } from '../../../../packages/engine/src/career.testkit';
 import { packBitColumns } from './bitpacking';
 import { packCareerRows } from './careerPacking';
 import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
@@ -67,14 +66,21 @@ describe('lossless career stream compaction', () => {
       'ownerCapital',
     );
   });
-  it('restores all persisted squad fields in founded and hundredth-attribute worlds', () => {
-    const w = historyWorld('persisted-pack');
+  it('restores all persisted squad fields in owned and hundredth-attribute worlds', () => {
+    const w = careerWorld({ seed: 'persisted-pack' });
     const plain = () => JSON.parse(JSON.stringify(pack(w)));
     expect(unpack(plain()).squads).toEqual(w.squads);
+    expect(canonical(validateWorld(unpack(plain())))).toBe(canonical(w));
     for (const squad of Object.values(w.squads!))
       for (const player of squad) player.attrs.passing = 63.27;
     expect(unpack(plain()).squads).toEqual(w.squads);
+    expect(canonical(validateWorld(unpack(plain())))).toBe(canonical(w));
     expect(plain().world).not.toHaveProperty('squads');
+    for (const owner of ['', 'unknown:club']) {
+      const invalid = structuredClone(w);
+      invalid.playerClub = owner;
+      expect(() => unpack(JSON.parse(JSON.stringify(pack(invalid))))).toThrow();
+    }
   });
   it('retains optional European qualification causes and association totals without rewriting older facts', () => {
     const w = career();

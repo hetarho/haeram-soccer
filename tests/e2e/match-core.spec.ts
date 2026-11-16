@@ -366,15 +366,13 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   test.info().setTimeout(test.info().timeout + 2 * replayMinuteMs);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
-  // A settled own match is replayed from the records room as its record alone, not staged: one
-  // sample a minute, each goal shown in its recorded minute (→WEB-23, SAVE-23). The club taken
-  // over from goal-feedback-6 scores at 2′, concedes at 22′, scores at 37′ and concedes at 56′ on
-  // the scripted model (found by scripts/find-goal-seeds.ts, T839; goal-feedback-389 on revision 1
-  // until then, after T805's per-club age ladder moved goal-feedback-207's 2′, 4′ and 40′ of T687).
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-6' });
+  // A settled own match is replayed as its record alone: one sample per minute (→WEB-23,
+  // SAVE-23). scripts/find-goal-seeds.ts verifies this exact archive adapter and seek: four
+  // distinct home goals at 2′, 4′, 43′ and 61′, retaining both halves and repeated goal crossings.
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-56' });
   world.settings!.responsibilities.sales = 'delegated';
   const played = advanceToNextMatch(world)!.record;
-  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 22, 37, 56]);
+  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 4, 43, 61]);
   // The page's own record replay, read the way it presents it.
   const archive = archivePlayback(played);
   const { samples } = presentationSamples(archive.frames);
@@ -413,7 +411,13 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await replay.getByRole('button', { name: '경기 상세', exact: true }).click();
   const scrubber = matchDetails(page).getByRole('slider', { name: '경기 시간', exact: true });
   await expect(scrubber).toHaveAttribute('max', String(samples.length - 1));
+  const canvas = replay.locator('canvas[data-seconds]');
+  expect(scoredAt(first!) - 1).toBe(0);
+  // An unchanged zero value fires no React seek; establish a real change while paused first.
+  await scrubber.fill('1');
+  await expect(canvas).toHaveAttribute('data-seconds', samples[1]!.time.toFixed(2));
   await scrubber.fill(String(scoredAt(first!) - 1));
+  await expect(canvas).toHaveAttribute('data-seconds', samples[0]!.time.toFixed(2));
   await expect(score).toHaveText('0 : 0');
   await closeMatchDetails(page);
   await replay.getByRole('button', { name: '재생', exact: true }).click();
@@ -435,7 +439,7 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await expect(score).toHaveText(`${played.score.home} : ${played.score.away}`);
   await expect(cue).toHaveCount(0);
   await expect(replay.getByRole('button', { name: '재생', exact: true })).toBeVisible();
-  // Going back before the 22′ goal lets playback cross it again: the minute just before its own.
+  // Going back before the 4′ goal lets playback cross it again: the minute just before its own.
   await scrubber.fill(String(scoredAt(second!) - 1));
   await expect(score).toHaveText(running(first!));
   await closeMatchDetails(page);
