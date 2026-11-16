@@ -131,6 +131,7 @@
 | T924 | nf16 | gusta-session-start-nf16-46eb8aaa | 0747aef346a8 | 2026-11-16T16:41Z |
 
 ## log
+- 261116 fix test: lived-world sell-down check aligned with WORLD-17 r14/ECON-42 and forty-season limit (4cc14729)
 - 261116 T924 done
 - 261116 fix ci: two Chromium workers on four-core runners (1950 generation journey timeout)
 - 261116 gusta-create-task LEAGUE r21 -> T924
@@ -150,4 +151,3 @@
 - 261113 T915 integrated
 - 261113 T914 integrated
 - 261113 T913 integrated
-- 261113 T906 T910 integrated
