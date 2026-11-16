@@ -118,6 +118,7 @@
 - 261116 decided T916: NF16 returned unstarted coordinator exploration T916 to todo instead of running it in this landing; it waits for the owner's annual-order/calibration policy decision. Alternative: run it now unbounded (rejected: no policy, open budget).
 - 261116 decided T922: NF16 landed ready ws16 (T917 T922 T923) with natural-football in one fixed candidate, since ws16 waited only on the nf14 row and the owner asked for main continuation on another device. Alternative: leave ws16 for its own host (rejected: it would stay blocked).
 - 261116 decided SAVE-10: NF16 prepared 0.8.4 from released main 0.8.3 and did not carry ws16's unpublished 0.8.4-0.8.6 labels, which no deployed build ever wrote. Alternative: keep 0.8.6 and add 0.8.7 (rejected: phantom compatible labels).
+- 261116 decided LEAGUE-10: Owner chose the check boundary over a model fix: LEAGUE-10 r21 keeps division order on every season's first day except the 1946-1948 openings after the war gap (T924). Alternatives: model fix of the post-war restart (hours to days, broad fixture churn, uncertain); stop with the failure (rejected by owner).
 
 ## log
 - 261116 gusta-create-task LEAGUE r21 -> T924
