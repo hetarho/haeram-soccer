@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T17:32:02.378Z",
-  "sourceCommit": "94b7206ffe0c7036605959324256de7233b24b67",
+  "snapshotAt": "2026-11-16T17:33:37.532Z",
+  "sourceCommit": "d3e3bf7672296bb436a97beb21d58cfdcfeccbd4",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -20,7 +20,7 @@
       "T927",
       "T921"
     ],
-    "runner": {
+    "lastRun": {
       "id": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
       "adapter": "builtin",
       "providers": {
@@ -43,52 +43,14 @@
         }
       ],
       "startedAt": "2026-11-16T17:08:58.144Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "d8d3a689-2b2d-463a-b4a4-849d595ad4fb",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "route",
-          "model": null,
-          "version": null
-        },
-        "reviewer": {
-          "provider": "route",
-          "model": null,
-          "version": null
-        }
-      },
-      "workers": [
-        {
-          "provider": "route",
-          "model": null,
-          "version": null
-        }
-      ],
-      "startedAt": "2026-11-16T17:02:21.542Z",
-      "stoppedAt": "2026-11-16T17:05:20.532Z",
-      "dispatched": 3,
-      "outcome": "needs-attention",
+      "stoppedAt": "2026-11-16T17:33:35.426Z",
+      "dispatched": 10,
+      "outcome": "completed",
       "failures": [
         {
-          "attempt": "d63de2e0-0291-4558-aed6-7ff87507e8a0",
+          "attempt": "6524f69e-dda6-4625-91bc-2d7e962e269b",
           "role": "worker",
-          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
-        },
-        {
-          "attempt": "742d3a2a-72ae-4916-85af-ea48c5633f44",
-          "submissionId": "bd4a1dd3-ebfb-48b1-b078-c2e2a083642d",
-          "commit": "ae59fc6b37fb1215d3a4d0efa43d16d93931c3d1",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        },
-        {
-          "attempt": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
-          "role": "worker",
-          "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
+          "error": "T921: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
         }
       ],
       "autopilot": true,
@@ -128,6 +90,7 @@
       "submittedAt": "2026-11-16T17:08:49.891Z",
       "integratedCommit": "c8015647fe764308e57456095abe42ed168fe869",
       "integratedAt": "2026-11-16T17:11:56.971Z",
+      "cleanedAt": "2026-11-16T17:33:20.806Z",
       "risk": null,
       "dispatch": {
         "id": "42ea05b2-03de-48d8-a760-1bb46f1a297d",
@@ -225,6 +188,7 @@
       "submittedAt": "2026-11-16T17:20:03.973Z",
       "integratedCommit": "94b7206ffe0c7036605959324256de7233b24b67",
       "integratedAt": "2026-11-16T17:26:09.085Z",
+      "cleanedAt": "2026-11-16T17:33:25.500Z",
       "risk": null,
       "dispatch": {
         "id": "cb5b4259-6c85-42c3-8200-8f5538148525",
@@ -327,6 +291,7 @@
       "submittedAt": "2026-11-16T17:08:04.391Z",
       "integratedCommit": "9df07d8f9f7fb277527d67a22b5e2702a904008a",
       "integratedAt": "2026-11-16T17:10:51.269Z",
+      "cleanedAt": "2026-11-16T17:33:30.682Z",
       "risk": null,
       "dispatch": {
         "id": "b3f47552-bc63-4104-af45-c97cb8463e1b",
@@ -427,6 +392,9 @@
       "submittedBase": "94b7206ffe0c7036605959324256de7233b24b67",
       "submissionId": "93740601-f06c-4f5f-b723-f167a6ffad25",
       "submittedAt": "2026-11-16T17:31:39.478Z",
+      "integratedCommit": "d3e3bf7672296bb436a97beb21d58cfdcfeccbd4",
+      "integratedAt": "2026-11-16T17:33:12.626Z",
+      "cleanedAt": "2026-11-16T17:33:35.418Z",
       "risk": null,
       "dispatch": {
         "id": "99a037f7-4335-4c82-bba3-50aef7fc0f77",
@@ -496,6 +464,13 @@
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-11-16T17:30:14.512Z",
           "finishedAt": "2026-11-16T17:31:39.274Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T17:32:02.574Z",
+          "finishedAt": "2026-11-16T17:33:12.299Z"
         }
       ]
     }
@@ -3484,6 +3459,195 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 609,
+      "at": "2026-11-16T17:33:12.430Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "6524f69e-dda6-4625-91bc-2d7e962e269b",
+      "taskId": "T921",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T17:32:02.574Z",
+            "finishedAt": "2026-11-16T17:33:12.299Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 610,
+      "at": "2026-11-16T17:33:12.626Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "6524f69e-dda6-4625-91bc-2d7e962e269b",
+      "taskId": "T921",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "d3e3bf7672296bb436a97beb21d58cfdcfeccbd4",
+        "integratedAt": "2026-11-16T17:33:12.626Z"
+      }
+    },
+    {
+      "sequence": 611,
+      "at": "2026-11-16T17:33:15.181Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 612,
+      "at": "2026-11-16T17:33:20.806Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T17:33:20.806Z"
+      }
+    },
+    {
+      "sequence": 613,
+      "at": "2026-11-16T17:33:20.825Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "d63de2e0-0291-4558-aed6-7ff87507e8a0",
+      "taskId": "T926",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 614,
+      "at": "2026-11-16T17:33:25.500Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "d63de2e0-0291-4558-aed6-7ff87507e8a0",
+      "taskId": "T926",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T17:33:25.500Z"
+      }
+    },
+    {
+      "sequence": 615,
+      "at": "2026-11-16T17:33:25.521Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 616,
+      "at": "2026-11-16T17:33:30.682Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T17:33:30.682Z"
+      }
+    },
+    {
+      "sequence": 617,
+      "at": "2026-11-16T17:33:30.704Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "6524f69e-dda6-4625-91bc-2d7e962e269b",
+      "taskId": "T921",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 618,
+      "at": "2026-11-16T17:33:35.418Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "6524f69e-dda6-4625-91bc-2d7e962e269b",
+      "taskId": "T921",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T17:33:35.418Z"
+      }
+    },
+    {
+      "sequence": 619,
+      "at": "2026-11-16T17:33:35.426Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T17:08:58.144Z",
+          "stoppedAt": "2026-11-16T17:33:35.426Z",
+          "dispatched": 10,
+          "outcome": "completed",
+          "failures": [
+            {
+              "attempt": "6524f69e-dda6-4625-91bc-2d7e962e269b",
+              "role": "worker",
+              "error": "T921: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
