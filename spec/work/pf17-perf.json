@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T17:33:37.532Z",
-  "sourceCommit": "d3e3bf7672296bb436a97beb21d58cfdcfeccbd4",
+  "snapshotAt": "2026-11-16T18:19:00.492Z",
+  "sourceCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -15,13 +15,15 @@
     "push": null,
     "review": "all",
     "taskScope": [
+      "T921",
       "T925",
       "T926",
       "T927",
-      "T921"
+      "T920",
+      "T928"
     ],
     "lastRun": {
-      "id": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+      "id": "a0aba48f-43f4-42d7-a662-a0d765721464",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -42,15 +44,20 @@
           "version": null
         }
       ],
-      "startedAt": "2026-11-16T17:08:58.144Z",
-      "stoppedAt": "2026-11-16T17:33:35.426Z",
-      "dispatched": 10,
-      "outcome": "completed",
+      "startedAt": "2026-11-16T18:11:38.159Z",
+      "stoppedAt": "2026-11-16T18:18:58.538Z",
+      "dispatched": 2,
+      "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "6524f69e-dda6-4625-91bc-2d7e962e269b",
+          "attempt": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
           "role": "worker",
-          "error": "T921: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+          "error": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+        },
+        {
+          "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+          "role": "worker",
+          "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
         }
       ],
       "autopilot": true,
@@ -58,15 +65,28 @@
     }
   },
   "summary": {
-    "total": 4,
+    "total": 6,
     "completed": 4,
-    "remaining": 0,
+    "remaining": 2,
     "running": 0,
     "review": 0,
-    "blocked": 0,
+    "blocked": 2,
     "unassigned": 0
   },
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "T920",
+      "title": "Reuse known OVR and weight sums in growth steps",
+      "dep": [],
+      "status": "blocked"
+    },
+    {
+      "id": "T928",
+      "title": "Share market ratings and orders between slots of one position and role",
+      "dep": [],
+      "status": "blocked"
+    }
+  ],
   "attempts": [
     {
       "id": "742d3a2a-72ae-4916-85af-ea48c5633f44",
@@ -473,6 +493,66 @@
           "finishedAt": "2026-11-16T17:33:12.299Z"
         }
       ]
+    },
+    {
+      "id": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "group": "pf17-perf",
+      "taskId": "T920",
+      "tasks": [
+        "T920"
+      ],
+      "lane": null,
+      "owner": "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1",
+      "contributors": [
+        "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
+      "createdAt": "2026-11-16T18:11:38.271Z",
+      "startCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2",
+      "dispatch": {
+        "id": "17582434-1482-43d4-955d-3365a7937285",
+        "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": "sonnet",
+        "status": "finished",
+        "startedAt": "2026-11-16T18:11:40.866Z",
+        "finishedAt": "2026-11-16T18:18:58.275Z",
+        "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
+        "summary": null
+      }
+    },
+    {
+      "id": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "group": "pf17-perf",
+      "taskId": "T928",
+      "tasks": [
+        "T928"
+      ],
+      "lane": null,
+      "owner": "a0aba48f-43f4-42d7-a662-a0d765721464/worker-2",
+      "contributors": [
+        "a0aba48f-43f4-42d7-a662-a0d765721464/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "createdAt": "2026-11-16T18:11:41.289Z",
+      "startCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2",
+      "dispatch": {
+        "id": "09e1f281-2507-46ef-9cf2-b8fa52bd6952",
+        "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": "sonnet",
+        "status": "finished",
+        "startedAt": "2026-11-16T18:11:43.803Z",
+        "finishedAt": "2026-11-16T18:16:17.877Z",
+        "error": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+        "summary": "I implemented the semantic slot key, but it measured slower, so I restored the original `npc-market.ts` and its test as the acceptance requires. The change is recorded with no speed claim.\n\n- **Change tried:** the rating cache and the per-line order cache were keyed by a `position:role` string, with main-position OVR on its own empty key. I added a unit for it and all 24 `npc-market` tests passed.\n- **Result:** the paired history A/B gave a CPU ratio of 1.025 (interval 1.0091–1.0384), wall 1.0246, with equal output hash `241652780a3ea62a` on both sides. The interval is above 1, so the candidate is slower. The likely cause is that formation slots are already shared objects, so equal-slot hits are rare and the string key costs more than the Map lookup it replaces.\n- **Hash mismatch:** the task's quoted hashes did not reproduce. This tree prints `8ce690d8…` for `--until=1934` on both baseline and candidate, and the candidate's full run printed `db04c937…`. The quoted `fc424c51…` and `0e509f5d…` were recorded earlier at 0.8.5, so they look stale for this HEAD. Candidate equals baseline, which is the meaningful same-world proof. I did not rerun the full hash on the baseline, so that part rests on the A/B hash equality.\n- **Not run:** no source change remains, so I did not rerun the task-tier checks, and I ran no integration or build.\n- **Files:** `spec/tasks/T928.market-semantic-slot-keys.md` (result written) and the new `artifacts/benchmarks/generation-hotpaths-261117/T928/ab-history.json`."
+      }
     }
   ],
   "history": [
@@ -3643,6 +3723,369 @@
               "attempt": "6524f69e-dda6-4625-91bc-2d7e962e269b",
               "role": "worker",
               "error": "T921: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 620,
+      "at": "2026-11-16T18:11:37.408Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T921",
+          "T925",
+          "T926",
+          "T927",
+          "T920",
+          "T928"
+        ]
+      }
+    },
+    {
+      "sequence": 621,
+      "at": "2026-11-16T18:11:38.165Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "a0aba48f-43f4-42d7-a662-a0d765721464",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:11:38.159Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 622,
+      "at": "2026-11-16T18:11:38.271Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+        "group": "pf17-perf",
+        "taskId": "T920",
+        "tasks": [
+          "T920"
+        ],
+        "lane": null,
+        "owner": "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1",
+        "contributors": [
+          "a0aba48f-43f4-42d7-a662-a0d765721464/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-16T18:11:38.271Z",
+        "startCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2"
+      }
+    },
+    {
+      "sequence": 623,
+      "at": "2026-11-16T18:11:40.418Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 624,
+      "at": "2026-11-16T18:11:40.866Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "17582434-1482-43d4-955d-3365a7937285",
+          "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:11:40.866Z"
+        }
+      }
+    },
+    {
+      "sequence": 625,
+      "at": "2026-11-16T18:11:41.196Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "17582434-1482-43d4-955d-3365a7937285",
+          "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T18:11:40.866Z"
+        }
+      }
+    },
+    {
+      "sequence": 626,
+      "at": "2026-11-16T18:11:41.289Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+        "group": "pf17-perf",
+        "taskId": "T928",
+        "tasks": [
+          "T928"
+        ],
+        "lane": null,
+        "owner": "a0aba48f-43f4-42d7-a662-a0d765721464/worker-2",
+        "contributors": [
+          "a0aba48f-43f4-42d7-a662-a0d765721464/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-16T18:11:41.289Z",
+        "startCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2"
+      }
+    },
+    {
+      "sequence": 627,
+      "at": "2026-11-16T18:11:42.992Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 628,
+      "at": "2026-11-16T18:11:43.803Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "09e1f281-2507-46ef-9cf2-b8fa52bd6952",
+          "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:11:43.803Z"
+        }
+      }
+    },
+    {
+      "sequence": 629,
+      "at": "2026-11-16T18:11:44.107Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "09e1f281-2507-46ef-9cf2-b8fa52bd6952",
+          "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T18:11:43.803Z"
+        }
+      }
+    },
+    {
+      "sequence": 630,
+      "at": "2026-11-16T18:16:17.784Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 631,
+      "at": "2026-11-16T18:16:17.861Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 632,
+      "at": "2026-11-16T18:16:17.877Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+      "taskId": "T928",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "09e1f281-2507-46ef-9cf2-b8fa52bd6952",
+          "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:11:43.803Z",
+          "finishedAt": "2026-11-16T18:16:17.877Z",
+          "error": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "I implemented the semantic slot key, but it measured slower, so I restored the original `npc-market.ts` and its test as the acceptance requires. The change is recorded with no speed claim.\n\n- **Change tried:** the rating cache and the per-line order cache were keyed by a `position:role` string, with main-position OVR on its own empty key. I added a unit for it and all 24 `npc-market` tests passed.\n- **Result:** the paired history A/B gave a CPU ratio of 1.025 (interval 1.0091–1.0384), wall 1.0246, with equal output hash `241652780a3ea62a` on both sides. The interval is above 1, so the candidate is slower. The likely cause is that formation slots are already shared objects, so equal-slot hits are rare and the string key costs more than the Map lookup it replaces.\n- **Hash mismatch:** the task's quoted hashes did not reproduce. This tree prints `8ce690d8…` for `--until=1934` on both baseline and candidate, and the candidate's full run printed `db04c937…`. The quoted `fc424c51…` and `0e509f5d…` were recorded earlier at 0.8.5, so they look stale for this HEAD. Candidate equals baseline, which is the meaningful same-world proof. I did not rerun the full hash on the baseline, so that part rests on the A/B hash equality.\n- **Not run:** no source change remains, so I did not rerun the task-tier checks, and I ran no integration or build.\n- **Files:** `spec/tasks/T928.market-semantic-slot-keys.md` (result written) and the new `artifacts/benchmarks/generation-hotpaths-261117/T928/ab-history.json`."
+        }
+      }
+    },
+    {
+      "sequence": 633,
+      "at": "2026-11-16T18:18:58.267Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
+      }
+    },
+    {
+      "sequence": 634,
+      "at": "2026-11-16T18:18:58.275Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "17582434-1482-43d4-955d-3365a7937285",
+          "runner": "a0aba48f-43f4-42d7-a662-a0d765721464",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:11:40.866Z",
+          "finishedAt": "2026-11-16T18:18:58.275Z",
+          "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
+          "summary": null
+        }
+      }
+    },
+    {
+      "sequence": 635,
+      "at": "2026-11-16T18:18:58.538Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "a0aba48f-43f4-42d7-a662-a0d765721464",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:11:38.159Z",
+          "stoppedAt": "2026-11-16T18:18:58.538Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "89c7f312-78b3-42f7-b6a6-b09418b8f51a",
+              "role": "worker",
+              "error": "T928: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            },
+            {
+              "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+              "role": "worker",
+              "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
             }
           ],
           "autopilot": true,
