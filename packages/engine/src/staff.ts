@@ -5,7 +5,7 @@ import {
   expirePlayingCoachProposals,
 } from './playing-coach';
 import { coachingEntryReady } from './coaching-entry';
-import { closeEmployment, openEmployment, profiledCoaches } from './person-careers';
+import { careerDate, closeEmployment, openEmployment, profiledCoaches } from './person-careers';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import { ATTRIBUTE_LABEL } from './player';
 import { moraleOf } from './morale';
@@ -322,10 +322,11 @@ export function staffMarket(
   const employed = new Set((w.staff || []).map((member) => member.id)),
     ready = new Map<StaffRole, PersonCareer[]>(),
     quotes = new Map<number, { wage: string; fee: string }>(),
-    clubs = poachable(w);
+    clubs = poachable(w),
+    at = careerDate(w);
   for (const person of profiledCoaches(w)) {
     const role = person.coaching?.role;
-    if (!role || !roles.includes(role) || !coachingEntryReady(person)) continue;
+    if (!role || !roles.includes(role) || !coachingEntryReady(person, at)) continue;
     const same = ready.get(role);
     if (same) same.push(person);
     else ready.set(role, [person]);

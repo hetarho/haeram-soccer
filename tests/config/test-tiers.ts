@@ -149,6 +149,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/transfers.test.ts',
   'packages/engine/src/world.capacities.test.ts',
   'packages/engine/src/world.test.ts',
+  'packages/engine/src/wartime-employment.test.ts',
   'scripts/lib/match-parity.test.ts',
   'tests/fixtures/full-model-workload.test.ts',
   'tests/fixtures/identity-workload.test.ts',
