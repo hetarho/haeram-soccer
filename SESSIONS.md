@@ -107,6 +107,7 @@
 - 261116 decided review/generation-market-261116 T918 T919 T920 T921: generation slowdown (T862 x2.9, T863 x2.9, T864 x2.5; 1940 takeover 33.9 s vs 1.06 s a season) → adopt only result-preserving speed-ups with identical world hashes (alt: revert persisted NPC careers/market | change growth cadence or market days)
 - 261116 parked review/generation-market-261116: after the war persisted NPC squads grow to a median 40 players against NPC_SQUAD.size 22 (11.5k → 17.3k); this slows later seasons and changes worlds, so whether it is intended and any growth-cadence or market-day change to meet ARCH-28 need the owner
 - 261116 suggest review/generation-market-261116: add a nine-season (1930→1940 takeover) A/B workload to scripts/perf so engine speed claims see seasons after the free-agent pool fills; the three-season history workload hid a 32x regression
+- 261116 decided WORLD-14: ws16 delegated cycle: correct the reproduced 0.8.2 wartime player/coaching chronology bug and push reviewed, verified results to main (alt: clear saves | relax validation). Preserve storage formats, strict validation, and unrelated chslow T918-T921 work. One bug, 60-minute cycle, maximum 15 minutes per command; Codex implementation and available independent Claude review. No recurring schedule or automatic rewriting of existing exports.
 
 ## unlanded
 | id | tag | branch | commit | at |
