@@ -65,6 +65,21 @@
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "duplicate-session-open"
+    },
+    "2c0e6451d9095ff99d83c89a": {
+      "id": "2c0e6451d9095ff99d83c89a",
+      "owner": "5e24c55a-f79b-4439-8cb3-6738ec521145",
+      "tag": "pf17",
+      "kind": "self-improve",
+      "publication": "merge",
+      "host": "ihaelam-ui-MacBookPro",
+      "branch": "gusta-session-self-improve-pf17-c279c8c5",
+      "head": "995bbb25095cb81780967467f337d4f82bee5c94",
+      "land": "main",
+      "status": "working",
+      "at": "2026-11-16T16:42:32.874Z",
+      "agentChecks": [],
+      "verificationCommands": []
     }
   },
   "gate": null,
