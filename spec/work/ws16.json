@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T09:44:42.833Z",
-  "sourceCommit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
+  "snapshotAt": "2026-11-16T09:56:22.348Z",
+  "sourceCommit": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
   "group": {
     "id": "ws16",
     "branch": "gusta-session-self-improve-ws16-c1384351",
@@ -36,8 +36,35 @@
     "review": "all",
     "taskScope": [
       "T917",
-      "T922"
+      "T922",
+      "T923"
     ],
+    "runner": {
+      "id": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.169.0"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": "sonnet",
+          "version": "2.1.325 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.169.0"
+        }
+      ],
+      "startedAt": "2026-11-16T09:56:01.115Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
     "lastRun": {
       "id": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
       "adapter": "builtin",
@@ -70,8 +97,8 @@
     }
   },
   "summary": {
-    "total": 2,
-    "completed": 2,
+    "total": 3,
+    "completed": 3,
     "remaining": 0,
     "running": 0,
     "review": 0,
@@ -312,6 +339,75 @@
           "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
           "startedAt": "2026-11-16T09:40:58.551Z",
           "finishedAt": "2026-11-16T09:40:59.045Z"
+        }
+      ]
+    },
+    {
+      "id": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "group": "ws16",
+      "taskId": "T923",
+      "tasks": [
+        "T923"
+      ],
+      "lane": null,
+      "owner": "native-t923-worker",
+      "contributors": [
+        "native-t923-worker"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-16T09:49:45.760Z",
+      "startCommit": "8703950d5f6d7049922a56a25f585e093c82f77f",
+      "verifiedCommit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+      "submittedBase": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+      "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+      "submittedAt": "2026-11-16T09:55:17.979Z",
+      "risk": null,
+      "dispatch": {
+        "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
+        "runner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": "sonnet",
+        "status": "finished",
+        "startedAt": "2026-11-16T09:56:04.675Z",
+        "finishedAt": "2026-11-16T09:56:19.222Z",
+        "error": null,
+        "summary": "T923 meets acceptance. The only code change is `scripts.verify:batch` in package.json, now `pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch`. The `&&` means a failed install stops the chain before the runner starts. There are no dependency, lockfile, runner or other script changes, and the version is untouched. The task file's acceptance boxes and result are updated and match the diff. The worker evidence covers the task tier (typecheck, lint, format, i18n, affected unit) and `gusta lint`. The full batch is correctly left to the coordinator on the shared fixed candidate. I did not re-run any checks. Task-file `st:todo` is left for the runner to update."
+      },
+      "review": {
+        "id": "9118eaff-e251-4734-a418-7023039683ed",
+        "owner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T923 meets acceptance. The only code change is `scripts.verify:batch` in package.json, now `pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch`. The `&&` means a failed install stops the chain before the runner starts. There are no dependency, lockfile, runner or other script changes, and the version is untouched. The task file's acceptance boxes and result are updated and match the diff. The worker evidence covers the task tier (typecheck, lint, format, i18n, affected unit) and `gusta lint`. The full batch is correctly left to the coordinator on the shared fixed candidate. I did not re-run any checks. Task-file `st:todo` is left for the runner to update.",
+        "findings": [],
+        "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+        "baseCommit": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+        "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+        "createdAt": "2026-11-16T09:56:01.222Z",
+        "finishedAt": "2026-11-16T09:56:19.215Z"
+      },
+      "steps": [
+        {
+          "taskId": "T923",
+          "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+          "at": "2026-11-16T09:55:17.970Z",
+          "verification": [
+            {
+              "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+              "startedAt": "2026-11-16T09:54:22.505Z",
+              "finishedAt": "2026-11-16T09:55:17.849Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+          "startedAt": "2026-11-16T09:54:22.505Z",
+          "finishedAt": "2026-11-16T09:55:17.849Z"
         }
       ]
     }
@@ -2215,6 +2311,279 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 133,
+      "at": "2026-11-16T09:49:45.481Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T917",
+          "T922",
+          "T923"
+        ]
+      }
+    },
+    {
+      "sequence": 134,
+      "at": "2026-11-16T09:49:45.760Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ae6f5830-9de3-4728-999d-87aa78121edc",
+        "group": "ws16",
+        "taskId": "T923",
+        "tasks": [
+          "T923"
+        ],
+        "lane": null,
+        "owner": "native-t923-worker",
+        "contributors": [
+          "native-t923-worker"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-16T09:49:45.760Z",
+        "startCommit": "8703950d5f6d7049922a56a25f585e093c82f77f"
+      }
+    },
+    {
+      "sequence": 135,
+      "at": "2026-11-16T09:49:48.189Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 136,
+      "at": "2026-11-16T09:54:22.396Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 137,
+      "at": "2026-11-16T09:55:17.979Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+        "submittedBase": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+        "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+        "submittedAt": "2026-11-16T09:55:17.979Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T923",
+            "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+            "at": "2026-11-16T09:55:17.970Z",
+            "verification": [
+              {
+                "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+                "startedAt": "2026-11-16T09:54:22.505Z",
+                "finishedAt": "2026-11-16T09:55:17.849Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+            "startedAt": "2026-11-16T09:54:22.505Z",
+            "finishedAt": "2026-11-16T09:55:17.849Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 138,
+      "at": "2026-11-16T09:56:01.120Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:56:01.115Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 139,
+      "at": "2026-11-16T09:56:01.222Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9118eaff-e251-4734-a418-7023039683ed",
+          "owner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024/reviewer-1",
+          "status": "reviewing",
+          "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+          "baseCommit": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+          "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+          "createdAt": "2026-11-16T09:56:01.222Z"
+        }
+      }
+    },
+    {
+      "sequence": 140,
+      "at": "2026-11-16T09:56:04.675Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
+          "runner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T09:56:04.675Z"
+        }
+      }
+    },
+    {
+      "sequence": 141,
+      "at": "2026-11-16T09:56:04.687Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
+          "runner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T09:56:04.675Z"
+        }
+      }
+    },
+    {
+      "sequence": 142,
+      "at": "2026-11-16T09:56:19.215Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9118eaff-e251-4734-a418-7023039683ed",
+          "owner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T923 meets acceptance. The only code change is `scripts.verify:batch` in package.json, now `pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch`. The `&&` means a failed install stops the chain before the runner starts. There are no dependency, lockfile, runner or other script changes, and the version is untouched. The task file's acceptance boxes and result are updated and match the diff. The worker evidence covers the task tier (typecheck, lint, format, i18n, affected unit) and `gusta lint`. The full batch is correctly left to the coordinator on the shared fixed candidate. I did not re-run any checks. Task-file `st:todo` is left for the runner to update.",
+          "findings": [],
+          "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+          "baseCommit": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+          "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+          "createdAt": "2026-11-16T09:56:01.222Z",
+          "finishedAt": "2026-11-16T09:56:19.215Z"
+        }
+      }
+    },
+    {
+      "sequence": 143,
+      "at": "2026-11-16T09:56:19.222Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
+          "runner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T09:56:04.675Z",
+          "finishedAt": "2026-11-16T09:56:19.222Z",
+          "error": null,
+          "summary": "T923 meets acceptance. The only code change is `scripts.verify:batch` in package.json, now `pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch`. The `&&` means a failed install stops the chain before the runner starts. There are no dependency, lockfile, runner or other script changes, and the version is untouched. The task file's acceptance boxes and result are updated and match the diff. The worker evidence covers the task tier (typecheck, lint, format, i18n, affected unit) and `gusta lint`. The full batch is correctly left to the coordinator on the shared fixed candidate. I did not re-run any checks. Task-file `st:todo` is left for the runner to update."
+        }
+      }
+    },
+    {
+      "sequence": 144,
+      "at": "2026-11-16T09:56:19.249Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
