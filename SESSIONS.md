@@ -120,6 +120,7 @@
 - 261116 decided SAVE-10: NF16 prepared 0.8.4 from released main 0.8.3 and did not carry ws16's unpublished 0.8.4-0.8.6 labels, which no deployed build ever wrote. Alternative: keep 0.8.6 and add 0.8.7 (rejected: phantom compatible labels).
 
 ## log
+- 261116 gusta-update-ssot LEAGUE-10 r21 done; next gusta-create-task LEAGUE
 - 261116 gusta-update-ssot LEAGUE-10 start
 - 261116 fix ci: warm read-only test worlds before integration shards and keep the world cache on failure (e3d5f568)
 - 261116 T923 integrated
@@ -139,4 +140,3 @@
 - 261113 T912 integrated
 - 261113 T908 integrated
 - 261113 T901 integrated
-- 261113 T911 integrated
