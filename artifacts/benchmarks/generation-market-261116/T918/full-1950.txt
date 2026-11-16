@@ -1,0 +1,19 @@
+historyWorld 698 ms clubs=611 players=0
+{"season":1931,"ms":4542,"digestMs":1,"players":0,"heapMB":194}
+{"season":1932,"ms":9733,"digestMs":1,"players":0,"heapMB":311}
+{"season":1933,"ms":11394,"digestMs":1,"players":0,"heapMB":242}
+{"season":1934,"ms":13109,"digestMs":1,"players":0,"heapMB":124}
+{"season":1935,"ms":14026,"digestMs":1,"players":0,"heapMB":340}
+{"season":1936,"ms":15631,"digestMs":1,"players":0,"heapMB":211}
+{"season":1937,"ms":14117,"digestMs":1,"players":0,"heapMB":405}
+{"season":1938,"ms":14024,"digestMs":1,"players":0,"heapMB":271}
+{"season":1946,"ms":19641,"digestMs":1,"players":0,"heapMB":139}
+{"season":1947,"ms":20199,"digestMs":1,"players":0,"heapMB":431}
+{"season":1948,"ms":24015,"digestMs":0,"players":0,"heapMB":298}
+{"season":1949,"ms":20471,"digestMs":1,"players":0,"heapMB":151}
+{"season":1950,"ms":19337,"digestMs":1,"players":0,"heapMB":413}
+{"decade":1950,"seed":"generation-reference","seasons":13,"initMs":698,"generationMs":200952,"perSeasonMeanMs":15404,"listingsMs":81,"takeoverMs":95,"listings":451,"fortune":"5557278880","worldHash":"f6d624fc434b7078682616654ca23651b3c5f12e8a1ee4002785840960c0ba23"}
+
+real	3m23.304s
+user	3m36.313s
+sys	0m3.305s

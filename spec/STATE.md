@@ -96,7 +96,6 @@
 | T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T917 | Run browser journeys only in CI, on Chrome alone | ARCH | T884 | todo |
-| T918 | Walk presorted market listings once per settlement | ARCH | - | todo |
 | T919 | Drop repeated squad scans on NPC renewals and moves | ARCH | - | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | todo |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |

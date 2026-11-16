@@ -29,13 +29,13 @@ import { expireContracts } from './contracts';
 import { operatingExpensesAt } from './finance';
 
 /** Three tiny synthetic NPC squads; no fixture simulation, world generation or time progression. */
-function fixture(year = 1950) {
+function fixture(year = 1950, count = 3) {
   const w = worldMarketFixture();
   w.year = year;
   w.calendar = { day: npcMarketDays(w.year)[0]![0]! };
   w.clubs = [
     w.clubs[0]!,
-    ...[0, 1, 2].map((n): Club => ({
+    ...Array.from({ length: count }, (_, n): Club => ({
       ...w.clubs[1]!,
       id: `ENG:0:0:${n}`,
       country: 'ENG',
@@ -219,6 +219,44 @@ describe('isolated NPC transfer windows', () => {
     w.clubs.reverse();
     npcMarket(w);
     expect(locations(w, p.id)).toEqual([expected.id]);
+  });
+
+  it('skips a sold-out best listing and settles the next keeper in rank for a later buyer', () => {
+    const { w, seller, buyer, other } = fixture(1950, 4);
+    const holder = w.clubs[4]!;
+    other.books!.cash = '999999999999';
+    const [first, later] =
+      stature(w.seed, buyer.id) > stature(w.seed, other.id) ? [buyer, other] : [other, buyer];
+    const best = listedKeeper(w, seller);
+    const refused = { ...structuredClone(best), id: 'refused-keeper' };
+    for (const a of ATTRIBUTES) {
+      best.attrs[a] = 80;
+      refused.attrs[a] = 78;
+    }
+    // One keeper above the line minimum: after the first sale the seller refuses the second.
+    const kept = w.squads![seller.id]!.find((p) => p.position === 'GK')!;
+    w.squads![seller.id] = [
+      ...w.squads![seller.id]!.filter((p) => p.position !== 'GK' || p === kept || p === best),
+      refused,
+    ];
+    seller.books!.openingIncome = npcWageBill(w, seller).toString();
+    const lower = { ...listedKeeper(w, holder), id: 'lower-keeper' };
+    w.squads![holder.id] = [...w.squads![holder.id]!.slice(0, -1), lower];
+    // The holder only sells: its envelope carries its own wages and running costs.
+    holder.books!.openingIncome = '0';
+    holder.books!.cash = (
+      npcWageBill(w, holder) + BigInt(operatingExpensesAt(holder.country, w.year, holder.tier))
+    ).toString();
+    // The first buyer lacks one keeper, the later one both; both rank the same keeper order.
+    const own = w.squads![first.id]!.find((p) => p.position === 'GK')!;
+    w.squads![first.id] = w.squads![first.id]!.filter((p) => p.position !== 'GK' || p === own);
+    invalidateNpcSquad(w, first.id);
+    missingKeeper(w, later);
+    npcMarket(w);
+    expect(locations(w, best.id)).toEqual([first.id]);
+    expect(npcCanSell(w, seller, refused)).toBe(false);
+    expect(locations(w, refused.id)).toEqual([seller.id]);
+    expect(locations(w, lower.id)).toEqual([later.id]);
   });
 
   it('runs only on configured window days, once across reloads and identically for one seed', () => {
