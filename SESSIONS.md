@@ -123,6 +123,7 @@
 - 261116 decided T928: pf17 second cycle: adopted generation-hotpaths F4 as T928 now that T927 is measured, and unblocked T920 to re-measure its kept patch on an idle host; both kept only with identical worlds and a CPU-ratio interval below 1.
 
 ## log
+- 261116 gusta-update-ssot ARCH-23 start
 - 261116 T920 integrated
 - 261116 T928 integrated
 - 261116 T921 integrated
@@ -142,4 +143,3 @@
 - 261116 T922 integrated
 - 261116 T917 integrated
 - 261116 gusta-self-improve ws16 started for confirmed wartime employment overlap; isolated workspace, scout proposal pending; user explicitly authorizes final push.
-- 261116 gusta-create-task review/generation-market-261116 F4 F5 → T920 T921
