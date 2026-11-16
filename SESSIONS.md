@@ -148,6 +148,7 @@
 | T915 | work | codex/natural-football-261114 | 931991c7934a | 2026-11-13T22:55Z |
 
 ## log
+- 261116 gusta-self-improve ws16 started for confirmed wartime employment overlap; isolated workspace, scout proposal pending; user explicitly authorizes final push.
 - 261116 gusta-create-task review/generation-market-261116 F4 F5 → T920 T921
 - 261116 gusta-create-task review/generation-market-261116 → T918 T919 (generation slowdown from T864 npcMarket pool rebuild)
 - 261116 gusta-create-task review/generation-market-261116 start
@@ -167,4 +168,3 @@
 - 261113 T902 integrated
 - 261113 T894 integrated
 - 261113 T895 integrated
-- 261113 T905 integrated
