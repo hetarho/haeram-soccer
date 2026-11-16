@@ -45,8 +45,8 @@
       "branch": "gusta-session-start-nf16-46eb8aaa",
       "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-16T19:59:35.429Z",
+      "status": "ready",
+      "at": "2026-11-16T19:59:40.326Z",
       "agentChecks": [],
       "verificationCommands": []
     },
