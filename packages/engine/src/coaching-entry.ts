@@ -1,6 +1,6 @@
 import type { CareerDate, PersonCareer, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
-import { careerDate, coachingProfiled } from './person-careers';
+import { careerDate, coachingProfiled, compareCareerDates } from './person-careers';
 import { integer, random } from './primitives';
 
 export function personCoachingGrade(person: PersonCareer) {
@@ -31,11 +31,16 @@ export function decideCoachingIntention(w: World, person: PersonCareer) {
     );
   return person.intention;
 }
-export function coachingEntryReady(person: PersonCareer) {
+export function coachingEntryReady(person: PersonCareer, at: CareerDate) {
   return (
     person.playing === 'retired' &&
     !!person.intention?.willing &&
     (personCoachingGrade(person) ?? 0) >= 4 &&
+    (!person.retirement?.at || compareCareerDates(person.retirement.at, at) <= 0) &&
+    (!person.coaching?.at || compareCareerDates(person.coaching.at, at) <= 0) &&
+    !person.employment.some(
+      (job) => job.role === 'player' && job.to && compareCareerDates(job.to, at) > 0,
+    ) &&
     !person.employment.some((job) => !job.to && job.role !== 'player')
   );
 }

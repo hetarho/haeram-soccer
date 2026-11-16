@@ -101,12 +101,11 @@
 | T919 | Drop repeated squad scans on NPC renewals and moves | ARCH | - | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | todo |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |
-| T922 | Keep coaching hires after their actual retirement | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
-| ws16 | 1 | 2 | 1 | 1 | 1 | 0 | 0 | 2026-11-16T09:24:09.374Z | [history](work/ws16.json) |
+| ws16 | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 2026-11-16T09:41:48.535Z | [history](work/ws16.json) |
 
 ## next
 - inspect work board for remaining tasks

@@ -44,14 +44,42 @@ describe('once-only coaching entry', () => {
     decideCoachingIntention(w, person);
     expect(person.intention).toEqual(initial);
     person.intention!.willing = true;
-    expect(coachingEntryReady(person)).toBe(false);
+    expect(coachingEntryReady(person, careerDate(w))).toBe(false);
     retirePerson(w, person);
-    expect(coachingEntryReady(person)).toBe(true);
+    expect(coachingEntryReady(person, careerDate(w))).toBe(true);
     const reload = JSON.parse(JSON.stringify(person)) as PersonCareer;
-    expect(coachingEntryReady(reload)).toBe(true);
+    expect(coachingEntryReady(reload, careerDate(w))).toBe(true);
     expect(reload.intention?.draw).toBe(initial!.draw);
     reload.employment.push({ role: 'goalkeeping', club: w.playerClub, from: careerDate(w) });
-    expect(coachingEntryReady(reload)).toBe(false);
+    expect(coachingEntryReady(reload, careerDate(w))).toBe(false);
+  });
+  it('uses every known actual date and preserves missing legacy dates', () => {
+    const { w, person } = candidate(5);
+    person.playing = 'retired';
+    person.intention = { at: { year: 1937, day: 0 }, draw: 0, willing: true };
+    person.employment = [];
+    const boundary = { year: 1942, day: 10 };
+    person.retirement = { announced: { year: 1941, day: 0 }, year: 1942, at: boundary };
+    person.coaching = { role: 'assistant', ability: 60, potential: 80, at: boundary };
+    person.employment.push({
+      role: 'player',
+      club: w.playerClub,
+      from: { year: 1930, day: 0 },
+      to: boundary,
+    });
+    const earlier = { year: 1942, day: 9 };
+    expect(coachingEntryReady(person, earlier)).toBe(false);
+    expect(coachingEntryReady(person, boundary)).toBe(true);
+    expect(coachingEntryReady(person, { year: 1943, day: 0 })).toBe(true);
+    delete person.retirement.at;
+    expect(coachingEntryReady(person, earlier)).toBe(false);
+    person.coaching.at = earlier;
+    expect(coachingEntryReady(person, earlier)).toBe(false);
+    person.employment = [];
+    expect(coachingEntryReady(person, earlier)).toBe(true);
+    delete person.retirement;
+    delete person.coaching;
+    expect(coachingEntryReady(person, { year: 1938, day: 0 })).toBe(true);
   });
   it('gives low aptitude no intention to enter', () => {
     const { w, p, person } = candidate();

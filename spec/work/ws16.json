@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T09:24:09.374Z",
-  "sourceCommit": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+  "snapshotAt": "2026-11-16T09:41:48.535Z",
+  "sourceCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
   "group": {
     "id": "ws16",
     "branch": "gusta-session-self-improve-ws16-c1384351",
@@ -75,21 +75,14 @@
   },
   "summary": {
     "total": 2,
-    "completed": 1,
-    "remaining": 1,
-    "running": 1,
+    "completed": 2,
+    "remaining": 0,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T922",
-      "title": "Keep coaching hires after their actual retirement",
-      "dep": [],
-      "status": "verifying"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
@@ -104,26 +97,56 @@
         "88cf8411-4b27-4f58-91f8-db15fc8415dd/worker-1",
         "cc872a68-b932-4c87-96d6-cab0e6374221/worker-1"
       ],
-      "status": "verifying",
-      "reason": "interrupted operation; inspect preserved workspace before resubmitting",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-16T07:58:05.312Z",
       "startCommit": "c16b74153364f1dd8da34cada2daf4299b3692ac",
-      "submittedBase": "a0615ff7ca2937787d587597896d0f6dfafa0bb6",
-      "submissionId": "92d40aaa-91a6-4220-929a-2c0aa66112a2",
-      "submittedAt": "2026-11-16T09:04:07.262Z",
+      "verifiedCommit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+      "submittedBase": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+      "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+      "submittedAt": "2026-11-16T09:25:15.609Z",
       "risk": null,
       "dispatch": {
-        "id": "b625c2c9-556a-48cd-aec3-ccd4b6ad100f",
-        "runner": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333",
+        "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
+        "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
         "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": "sonnet",
         "status": "finished",
-        "startedAt": "2026-11-16T09:04:16.975Z",
-        "finishedAt": "2026-11-16T09:04:46.650Z",
+        "startedAt": "2026-11-16T09:41:05.799Z",
+        "finishedAt": "2026-11-16T09:41:45.510Z",
         "error": null,
-        "summary": "T922 is approved. `coachingEntryReady` now takes the settlement date and holds back a person whose recorded retirement, coaching-entry date or player-job end falls after that date. Missing optional legacy dates still fall back to the old behaviour, and no dates are rewritten. All four callers pass `careerDate(w)`: NPC placement in `coaching-market.ts`, owned candidates in `staff.ts`, and the pool count in `club-staff.ts`. I found no other callers. Random streams, ordering, post uniqueness and settlement order are untouched, and `crossWar` is unchanged. The new unit tests cover the 1942 retiree at the 1938 close, the exact boundary, a later date, and missing legacy dates, and they pass `typecheck`, `lint` and the changed-scope unit run per the worker. `wartime-employment.test.ts` is registered as an integration file. It was not run here and I did not run it; the worker handed it to the coordinator. The 1930→1946 `save-overlap-diagnosis` run, the batch/build and the browser CI are also still open for the coordinator, as the result states."
+        "summary": "T922 is implemented as specified. `coachingEntryReady(person, at)` is now date-aware and is the single readiness rule. It is passed `careerDate(w)` at all three call sites: the NPC placement filter in `coaching-market.ts`, the owned `staffMarket` offers in `staff.ts`, and the pool count in `club-staff.ts`. `careerDate(w)` honours the `atCareerDate` settlement date, so the 1938 close sees 1938 and a 1942 retiree is excluded from placement draws, offers and counts. An exact-boundary or later date admits him. Missing optional legacy dates (`retirement.at`, `coaching.at`, player `to`) fall back to the old behaviour, and no dates are fabricated. Draw order, ordering and term logic are unchanged. No other caller of `coachingEntryReady` exists, and `playingCoachDurations` is a different path (an active player). Unit tests cover the boundary, the earlier date, missing dates, no draw or post for the later retiree and the post-retirement hire. The integration regression `wartime-employment.test.ts` is registered in `INTEGRATION_FILES`. It covers the ownerless and owned crossings through takeover, `validateWorld` and a checkpoint/portable round trip. I could not run any tests in this checkout because `node_modules` is missing. This review rests on reading the code and the worker's task-check evidence (1,314 unit tests passed). The integration scenario and the 1930→1946 diagnostic seed are honestly reported as not-run and stay with the coordinator."
+      },
+      "review": {
+        "id": "4b7d8940-2af3-4a7d-ba37-6078176786f1",
+        "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T922 is implemented as specified. `coachingEntryReady(person, at)` is now date-aware and is the single readiness rule. It is passed `careerDate(w)` at all three call sites: the NPC placement filter in `coaching-market.ts`, the owned `staffMarket` offers in `staff.ts`, and the pool count in `club-staff.ts`. `careerDate(w)` honours the `atCareerDate` settlement date, so the 1938 close sees 1938 and a 1942 retiree is excluded from placement draws, offers and counts. An exact-boundary or later date admits him. Missing optional legacy dates (`retirement.at`, `coaching.at`, player `to`) fall back to the old behaviour, and no dates are fabricated. Draw order, ordering and term logic are unchanged. No other caller of `coachingEntryReady` exists, and `playingCoachDurations` is a different path (an active player). Unit tests cover the boundary, the earlier date, missing dates, no draw or post for the later retiree and the post-retirement hire. The integration regression `wartime-employment.test.ts` is registered in `INTEGRATION_FILES`. It covers the ownerless and owned crossings through takeover, `validateWorld` and a checkpoint/portable round trip. I could not run any tests in this checkout because `node_modules` is missing. This review rests on reading the code and the worker's task-check evidence (1,314 unit tests passed). The integration scenario and the 1930→1946 diagnostic seed are honestly reported as not-run and stay with the coordinator.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/coaching-market.test.ts:46",
+            "message": "T922: the hard-coded `toHaveLength(3)` for `w.staffMarket.free.assistant` depends on the `openStaffMarket` pool size and may break if that is retuned. Optional: assert the later retiree is absent from the pool instead of its length."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/config/test-tiers.ts:152",
+            "message": "T922: `wartime-employment.test.ts` is listed after `world.test.ts`, which breaks the otherwise alphabetical order of `INTEGRATION_FILES`. The tier test does not enforce order, so this is cosmetic."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/wartime-employment.test.ts:35",
+            "message": "T922 handoff: this integration regression and the diagnostic run (seed save-overlap-diagnosis, 1930→1946, ENG:3:0:0) must be run by the coordinator before the verdict is final. If the integration test fails on overlaps unrelated to coaching eligibility, report it rather than widening the scope."
+          }
+        ],
+        "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+        "baseCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+        "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+        "createdAt": "2026-11-16T09:41:02.984Z",
+        "finishedAt": "2026-11-16T09:41:45.503Z"
       },
       "reviewHistory": [
         {
@@ -183,21 +206,21 @@
         {
           "taskId": "T922",
           "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
-          "at": "2026-11-16T09:04:07.254Z",
+          "at": "2026-11-16T09:25:15.595Z",
           "verification": [
             {
-              "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
-              "startedAt": "2026-11-16T09:03:13.051Z",
-              "finishedAt": "2026-11-16T09:04:07.137Z"
+              "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --diff-base 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --passWithNoTests --maxWorkers 4'",
+              "startedAt": "2026-11-16T09:23:15.537Z",
+              "finishedAt": "2026-11-16T09:25:15.228Z"
             }
           ]
         }
       ],
       "verification": [
         {
-          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
-          "startedAt": "2026-11-16T09:03:13.051Z",
-          "finishedAt": "2026-11-16T09:04:07.137Z"
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --diff-base 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --passWithNoTests --maxWorkers 4'",
+          "startedAt": "2026-11-16T09:23:15.537Z",
+          "finishedAt": "2026-11-16T09:25:15.228Z"
         }
       ]
     },
@@ -221,6 +244,8 @@
       "submittedBase": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
       "submissionId": "a20104a0-e1d3-42cd-a7b6-4e2077547948",
       "submittedAt": "2026-11-16T09:23:02.821Z",
+      "integratedCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+      "integratedAt": "2026-11-16T09:40:59.283Z",
       "risk": null,
       "dispatch": {
         "id": "0a17925a-e8fe-4ada-afec-08e248028911",
@@ -273,6 +298,13 @@
           "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
           "startedAt": "2026-11-16T09:20:55.926Z",
           "finishedAt": "2026-11-16T09:23:02.327Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+          "startedAt": "2026-11-16T09:40:58.551Z",
+          "finishedAt": "2026-11-16T09:40:59.045Z"
         }
       ]
     }
@@ -1794,6 +1826,225 @@
       "group": "ws16",
       "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
       "taskId": "T917",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 116,
+      "at": "2026-11-16T09:25:15.609Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+        "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+        "submittedAt": "2026-11-16T09:25:15.609Z",
+        "steps": [
+          {
+            "taskId": "T922",
+            "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+            "at": "2026-11-16T09:25:15.595Z",
+            "verification": [
+              {
+                "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --diff-base 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --passWithNoTests --maxWorkers 4'",
+                "startedAt": "2026-11-16T09:23:15.537Z",
+                "finishedAt": "2026-11-16T09:25:15.228Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --diff-base 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --passWithNoTests --maxWorkers 4'",
+            "startedAt": "2026-11-16T09:23:15.537Z",
+            "finishedAt": "2026-11-16T09:25:15.228Z"
+          }
+        ],
+        "verifiedCommit": "939bd51db298fbf5201ded1634f1d600a92017a5"
+      }
+    },
+    {
+      "sequence": 117,
+      "at": "2026-11-16T09:40:59.134Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "startedAt": "2026-11-16T09:40:58.551Z",
+            "finishedAt": "2026-11-16T09:40:59.045Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 118,
+      "at": "2026-11-16T09:40:59.283Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+        "integratedAt": "2026-11-16T09:40:59.283Z"
+      }
+    },
+    {
+      "sequence": 119,
+      "at": "2026-11-16T09:41:02.984Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "4b7d8940-2af3-4a7d-ba37-6078176786f1",
+          "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+          "status": "reviewing",
+          "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+          "baseCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+          "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+          "createdAt": "2026-11-16T09:41:02.984Z"
+        }
+      }
+    },
+    {
+      "sequence": 120,
+      "at": "2026-11-16T09:41:05.799Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T09:41:05.799Z"
+        }
+      }
+    },
+    {
+      "sequence": 121,
+      "at": "2026-11-16T09:41:05.809Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T09:41:05.799Z"
+        }
+      }
+    },
+    {
+      "sequence": 122,
+      "at": "2026-11-16T09:41:45.503Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "4b7d8940-2af3-4a7d-ba37-6078176786f1",
+          "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T922 is implemented as specified. `coachingEntryReady(person, at)` is now date-aware and is the single readiness rule. It is passed `careerDate(w)` at all three call sites: the NPC placement filter in `coaching-market.ts`, the owned `staffMarket` offers in `staff.ts`, and the pool count in `club-staff.ts`. `careerDate(w)` honours the `atCareerDate` settlement date, so the 1938 close sees 1938 and a 1942 retiree is excluded from placement draws, offers and counts. An exact-boundary or later date admits him. Missing optional legacy dates (`retirement.at`, `coaching.at`, player `to`) fall back to the old behaviour, and no dates are fabricated. Draw order, ordering and term logic are unchanged. No other caller of `coachingEntryReady` exists, and `playingCoachDurations` is a different path (an active player). Unit tests cover the boundary, the earlier date, missing dates, no draw or post for the later retiree and the post-retirement hire. The integration regression `wartime-employment.test.ts` is registered in `INTEGRATION_FILES`. It covers the ownerless and owned crossings through takeover, `validateWorld` and a checkpoint/portable round trip. I could not run any tests in this checkout because `node_modules` is missing. This review rests on reading the code and the worker's task-check evidence (1,314 unit tests passed). The integration scenario and the 1930→1946 diagnostic seed are honestly reported as not-run and stay with the coordinator.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/coaching-market.test.ts:46",
+              "message": "T922: the hard-coded `toHaveLength(3)` for `w.staffMarket.free.assistant` depends on the `openStaffMarket` pool size and may break if that is retuned. Optional: assert the later retiree is absent from the pool instead of its length."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/config/test-tiers.ts:152",
+              "message": "T922: `wartime-employment.test.ts` is listed after `world.test.ts`, which breaks the otherwise alphabetical order of `INTEGRATION_FILES`. The tier test does not enforce order, so this is cosmetic."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/wartime-employment.test.ts:35",
+              "message": "T922 handoff: this integration regression and the diagnostic run (seed save-overlap-diagnosis, 1930→1946, ENG:3:0:0) must be run by the coordinator before the verdict is final. If the integration test fails on overlaps unrelated to coaching eligibility, report it rather than widening the scope."
+            }
+          ],
+          "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+          "baseCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+          "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+          "createdAt": "2026-11-16T09:41:02.984Z",
+          "finishedAt": "2026-11-16T09:41:45.503Z"
+        }
+      }
+    },
+    {
+      "sequence": 123,
+      "at": "2026-11-16T09:41:45.510Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T09:41:05.799Z",
+          "finishedAt": "2026-11-16T09:41:45.510Z",
+          "error": null,
+          "summary": "T922 is implemented as specified. `coachingEntryReady(person, at)` is now date-aware and is the single readiness rule. It is passed `careerDate(w)` at all three call sites: the NPC placement filter in `coaching-market.ts`, the owned `staffMarket` offers in `staff.ts`, and the pool count in `club-staff.ts`. `careerDate(w)` honours the `atCareerDate` settlement date, so the 1938 close sees 1938 and a 1942 retiree is excluded from placement draws, offers and counts. An exact-boundary or later date admits him. Missing optional legacy dates (`retirement.at`, `coaching.at`, player `to`) fall back to the old behaviour, and no dates are fabricated. Draw order, ordering and term logic are unchanged. No other caller of `coachingEntryReady` exists, and `playingCoachDurations` is a different path (an active player). Unit tests cover the boundary, the earlier date, missing dates, no draw or post for the later retiree and the post-retirement hire. The integration regression `wartime-employment.test.ts` is registered in `INTEGRATION_FILES`. It covers the ownerless and owned crossings through takeover, `validateWorld` and a checkpoint/portable round trip. I could not run any tests in this checkout because `node_modules` is missing. This review rests on reading the code and the worker's task-check evidence (1,314 unit tests passed). The integration scenario and the 1930→1946 diagnostic seed are honestly reported as not-run and stay with the coordinator."
+        }
+      }
+    },
+    {
+      "sequence": 124,
+      "at": "2026-11-16T09:41:45.535Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { staffCandidates, advanceEconomy } from './index';
 import { coachingMarketPass, refreshCoachingMarket, settleNpcCoaching } from './coaching-market';
-import { careerDate, closeEmployment, coachingService, openEmployment } from './person-careers';
+import {
+  atCareerDate,
+  careerDate,
+  closeEmployment,
+  coachingService,
+  openEmployment,
+} from './person-careers';
 import { initializeCoaching } from './coaching-entry';
 import { coachWage } from './staff';
 import { currency } from '../../catalogs/src/index';
 import { ratio } from './primitives';
-import { clubStaffMember } from './club-staff';
+import { clubStaffMember, openStaffMarket } from './club-staff';
 import type { PersonCareer } from '../../contracts/src/types';
 import { careerWorld } from './career.testkit';
 function world() {
@@ -34,6 +40,37 @@ function candidate(w: ReturnType<typeof careerWorld>, index = 0): PersonCareer {
   return person;
 }
 describe('retained NPC coaching market', () => {
+  it('does not draw, fill a post, offer or count a later wartime retiree at the earlier close', () => {
+    const { w, other } = world();
+    const person = candidate(w);
+    const later = { year: 1942, day: 30 };
+    person.retirement = { announced: { year: 1942, day: 1 }, year: 1942, at: later };
+    person.coaching!.at = later;
+    person.employment.find((job) => job.role === 'player')!.to = later;
+    const previous = structuredClone(person.employment);
+    atCareerDate(w, { year: 1938, day: 324 }, () => {
+      openStaffMarket(w);
+      expect(w.staffMarket!.free.assistant).toHaveLength(3);
+      expect(staffCandidates(w, 'assistant').some((c) => c.id === person.id)).toBe(false);
+      const draws: string[] = [];
+      refreshCoachingMarket(w, (candidate) => {
+        draws.push(candidate.id);
+        return 0;
+      });
+      expect(draws).not.toContain(person.id);
+      expect(person.employment).toEqual(previous);
+      expect(clubStaffMember(w, other, 'assistant').person).not.toBe(person.id);
+    });
+    atCareerDate(w, later, () => {
+      expect(staffCandidates(w, 'assistant').some((c) => c.id === person.id)).toBe(true);
+      refreshCoachingMarket(w, () => 0);
+      expect(person.employment.find((job) => job.role === 'assistant')).toMatchObject({
+        from: later,
+        club: other.id,
+        contractUntil: { year: 1944, day: 30 },
+      });
+    });
+  });
   it('keeps sorted per-role vacancy allocation and still draws for candidates after a role fills', () => {
     const w = careerWorld({ seed: 'ordered-posts' });
     const others = w.clubs
