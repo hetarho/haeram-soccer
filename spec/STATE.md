@@ -96,11 +96,11 @@
 | T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T917 | Run browser journeys only in CI, on Chrome alone | ARCH | T884 | todo |
-| T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | todo |
+| T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | blocked@261116 |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |
 
 ## next
 - gusta-implement-task T873 T875 T884
-- Session chslow (gusta-self-improve) runs T918–T921 to restore generation speed; integrate only with identical world hashes.
+- Session chslow integrated T918 T919 (identical worlds, 1950 generation 666.7 s → 199.9 s); T920 is blocked on an idle-host re-measure of its kept patch and T921 waits for a longer A/B workload.
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
 - T883 and T899 are complete in the pr14 publication candidate; NF14 must include that result and prepare a coherent newer patch if its root version matches main.
