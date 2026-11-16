@@ -108,6 +108,7 @@
 - 261116 parked review/generation-market-261116: after the war persisted NPC squads grow to a median 40 players against NPC_SQUAD.size 22 (11.5k → 17.3k); this slows later seasons and changes worlds, so whether it is intended and any growth-cadence or market-day change to meet ARCH-28 need the owner
 - 261116 suggest review/generation-market-261116: add a nine-season (1930→1940 takeover) A/B workload to scripts/perf so engine speed claims see seasons after the free-agent pool fills; the three-season history workload hid a 32x regression
 - 261116 decided WORLD-14: ws16 delegated cycle: correct the reproduced 0.8.2 wartime player/coaching chronology bug and push reviewed, verified results to main (alt: clear saves | relax validation). Preserve storage formats, strict validation, and unrelated chslow T918-T921 work. One bug, 60-minute cycle, maximum 15 minutes per command; Codex implementation and available independent Claude review. No recurring schedule or automatic rewriting of existing exports.
+- 261116 suggest ARCH-30: Shared integration: ws16 is implementing the confirmed wartime save blocker on its dedicated session branch, disjoint from chslow T918-T921. Please include ws16 when all participants are ready and prepare one coherent patch via pnpm run release:prepare before the fixed candidate gate; do not publish the root-only generic auto bump. Existing natural-football claims and failed CI are not new approvals for this narrow hotfix.
 
 ## unlanded
 | id | tag | branch | commit | at |
