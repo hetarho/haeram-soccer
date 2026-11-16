@@ -38,6 +38,7 @@
 ## review
 | id | st |
 |---|---|
+| wartime-employment-261116 | converted@261116 |
 | generation-market-261116 | converted@261116 |
 | natural-football-261114 | converted@261114 |
 | performance-books-261114 | converted@261114 |
@@ -100,8 +101,10 @@
 | T919 | Drop repeated squad scans on NPC renewals and moves | ARCH | - | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | todo |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |
+| T922 | Keep coaching hires after their actual retirement | ARCH | - | todo |
 
 ## next
+- Session ws16 implements T922 for the reproduced wartime save blocker; independent review and shared fixed-candidate verification precede push.
 - gusta-implement-task T873 T875 T884
 - Session chslow (gusta-self-improve) runs T918–T921 to restore generation speed; integrate only with identical world hashes.
 - Execute approved natural-football T873–T876 and timed repair/cover T884–T889 until 2026-11-14 08:00 Asia/Seoul; preserve a final verification/publication reserve.
