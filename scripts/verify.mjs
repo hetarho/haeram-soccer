@@ -30,7 +30,7 @@ mkdirSync(runDirectory, { recursive: true });
 const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
 const report = {
   started: new Date().toISOString(),
-  scope: batch ? 'batch: Chromium' : 'full: Chromium, Firefox, WebKit',
+  scope: batch ? 'batch: nonbrowser' : 'full: Chromium browser journeys',
   source: {
     commit: git('rev-parse', 'HEAD'),
     tree: git('write-tree'),
@@ -92,13 +92,7 @@ const tests = [
         },
       ]),
 ];
-const browsers = [
-  {
-    stage: 'test:e2e',
-    args: ['run', 'test:e2e', ...(batch ? ['--project=chromium'] : [])],
-    inherit: true,
-  },
-];
+const browsers = batch ? [] : [{ stage: 'test:e2e', args: ['run', 'test:e2e'], inherit: true }];
 const plan = [...checks, ...tests, ...browsers];
 report.stages = plan.map(({ stage, command = 'pnpm', args }) => ({
   stage,

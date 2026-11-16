@@ -81,7 +81,7 @@ export function refreshCoachingMarket(
   const posts = new Map<string, { clubs: typeof clubs; next: number }>();
   // Only someone with a coaching profile can be placed (T450).
   for (const person of profiledCoaches(w)
-    .filter((person) => coachingEntryReady(person) && person.coaching)
+    .filter((person) => coachingEntryReady(person, careerDate(w)) && person.coaching)
     .sort((a, b) => compareIds(a.id, b.id))) {
     if (!coachingMarketPass(draw(person, at))) continue;
     const coaching = person.coaching!;

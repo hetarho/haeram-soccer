@@ -20,6 +20,7 @@ import { personName } from './world';
 import { poachable } from './managerMarket';
 import {
   activeCoachingEmployment,
+  careerDate,
   closeEmployment,
   profiledCoaches,
   retainStaffPerson,
@@ -58,8 +59,9 @@ function poolRange(w: World) {
 /** Former players waiting for a coaching post count toward their department's pool (→STAFF-27). */
 function retainedCount(w: World, role: StaffRole) {
   let count = 0;
+  const at = careerDate(w);
   for (const person of profiledCoaches(w))
-    if (person.coaching?.role === role && coachingEntryReady(person)) count++;
+    if (person.coaching?.role === role && coachingEntryReady(person, at)) count++;
   return count;
 }
 /** The newest `room` of a pool; the oldest leave first. */

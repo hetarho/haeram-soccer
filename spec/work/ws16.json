@@ -1,0 +1,2748 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-11-16T10:09:59.210Z",
+  "sourceCommit": "aeccacfcbcf93317abfd151a27527c50b2a94b77",
+  "group": {
+    "id": "ws16",
+    "branch": "gusta-session-self-improve-ws16-c1384351",
+    "status": "active",
+    "createdAt": "2026-11-16T07:57:57.910Z",
+    "limits": {
+      "workers": 1,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "ready": {
+      "commit": "aeccacfcbcf93317abfd151a27527c50b2a94b77",
+      "at": "2026-11-16T10:09:56.682Z",
+      "verified": false,
+      "owner": {
+        "tag": "ws16",
+        "branch": "gusta-session-self-improve-ws16-c1384351"
+      },
+      "checks": [
+        "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+        "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
+      ],
+      "agentChecks": []
+    },
+    "integration": {
+      "reason": "owning-session-working",
+      "candidate": null,
+      "verified": false,
+      "scope": null
+    },
+    "push": null,
+    "review": "all",
+    "taskScope": [
+      "T917",
+      "T922",
+      "T923"
+    ],
+    "lastRun": {
+      "id": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.169.0"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": "sonnet",
+          "version": "2.1.325 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.169.0"
+        }
+      ],
+      "startedAt": "2026-11-16T09:56:01.115Z",
+      "stoppedAt": "2026-11-16T09:56:53.803Z",
+      "dispatched": 1,
+      "outcome": "completed",
+      "failures": [],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 3,
+    "completed": 3,
+    "remaining": 0,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 0
+  },
+  "tasks": [],
+  "attempts": [
+    {
+      "id": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "group": "ws16",
+      "taskId": "T922",
+      "tasks": [
+        "T922"
+      ],
+      "lane": null,
+      "owner": "cc872a68-b932-4c87-96d6-cab0e6374221/worker-1",
+      "contributors": [
+        "88cf8411-4b27-4f58-91f8-db15fc8415dd/worker-1",
+        "cc872a68-b932-4c87-96d6-cab0e6374221/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-16T07:58:05.312Z",
+      "startCommit": "c16b74153364f1dd8da34cada2daf4299b3692ac",
+      "verifiedCommit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+      "submittedBase": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+      "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+      "submittedAt": "2026-11-16T09:25:15.609Z",
+      "integratedCommit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
+      "integratedAt": "2026-11-16T09:44:30.103Z",
+      "cleanedAt": "2026-11-16T09:44:39.108Z",
+      "risk": null,
+      "dispatch": {
+        "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
+        "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": "sonnet",
+        "status": "finished",
+        "startedAt": "2026-11-16T09:41:05.799Z",
+        "finishedAt": "2026-11-16T09:41:45.510Z",
+        "error": null,
+        "summary": "T922 is implemented as specified. `coachingEntryReady(person, at)` is now date-aware and is the single readiness rule. It is passed `careerDate(w)` at all three call sites: the NPC placement filter in `coaching-market.ts`, the owned `staffMarket` offers in `staff.ts`, and the pool count in `club-staff.ts`. `careerDate(w)` honours the `atCareerDate` settlement date, so the 1938 close sees 1938 and a 1942 retiree is excluded from placement draws, offers and counts. An exact-boundary or later date admits him. Missing optional legacy dates (`retirement.at`, `coaching.at`, player `to`) fall back to the old behaviour, and no dates are fabricated. Draw order, ordering and term logic are unchanged. No other caller of `coachingEntryReady` exists, and `playingCoachDurations` is a different path (an active player). Unit tests cover the boundary, the earlier date, missing dates, no draw or post for the later retiree and the post-retirement hire. The integration regression `wartime-employment.test.ts` is registered in `INTEGRATION_FILES`. It covers the ownerless and owned crossings through takeover, `validateWorld` and a checkpoint/portable round trip. I could not run any tests in this checkout because `node_modules` is missing. This review rests on reading the code and the worker's task-check evidence (1,314 unit tests passed). The integration scenario and the 1930→1946 diagnostic seed are honestly reported as not-run and stay with the coordinator."
+      },
+      "review": {
+        "id": "4b7d8940-2af3-4a7d-ba37-6078176786f1",
+        "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T922 is implemented as specified. `coachingEntryReady(person, at)` is now date-aware and is the single readiness rule. It is passed `careerDate(w)` at all three call sites: the NPC placement filter in `coaching-market.ts`, the owned `staffMarket` offers in `staff.ts`, and the pool count in `club-staff.ts`. `careerDate(w)` honours the `atCareerDate` settlement date, so the 1938 close sees 1938 and a 1942 retiree is excluded from placement draws, offers and counts. An exact-boundary or later date admits him. Missing optional legacy dates (`retirement.at`, `coaching.at`, player `to`) fall back to the old behaviour, and no dates are fabricated. Draw order, ordering and term logic are unchanged. No other caller of `coachingEntryReady` exists, and `playingCoachDurations` is a different path (an active player). Unit tests cover the boundary, the earlier date, missing dates, no draw or post for the later retiree and the post-retirement hire. The integration regression `wartime-employment.test.ts` is registered in `INTEGRATION_FILES`. It covers the ownerless and owned crossings through takeover, `validateWorld` and a checkpoint/portable round trip. I could not run any tests in this checkout because `node_modules` is missing. This review rests on reading the code and the worker's task-check evidence (1,314 unit tests passed). The integration scenario and the 1930→1946 diagnostic seed are honestly reported as not-run and stay with the coordinator.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/coaching-market.test.ts:46",
+            "message": "T922: the hard-coded `toHaveLength(3)` for `w.staffMarket.free.assistant` depends on the `openStaffMarket` pool size and may break if that is retuned. Optional: assert the later retiree is absent from the pool instead of its length."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/config/test-tiers.ts:152",
+            "message": "T922: `wartime-employment.test.ts` is listed after `world.test.ts`, which breaks the otherwise alphabetical order of `INTEGRATION_FILES`. The tier test does not enforce order, so this is cosmetic."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/wartime-employment.test.ts:35",
+            "message": "T922 handoff: this integration regression and the diagnostic run (seed save-overlap-diagnosis, 1930→1946, ENG:3:0:0) must be run by the coordinator before the verdict is final. If the integration test fails on overlaps unrelated to coaching eligibility, report it rather than widening the scope."
+          }
+        ],
+        "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+        "baseCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+        "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+        "createdAt": "2026-11-16T09:41:02.984Z",
+        "finishedAt": "2026-11-16T09:41:45.503Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "0169af05-9d7a-4712-ac4f-781ac63566ab",
+          "owner": "1c7d76e4-4709-4a63-b77c-e6f9026f1385/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T922 meets its acceptance as I read it. `coachingEntryReady(person, at)` now takes the settlement date. A person whose retirement date, coaching-entry date or recorded player-job end is later than that date is not admitted, and missing optional dates keep the old fallback. All three hiring boundaries pass `careerDate(w)`: the NPC coaching market, the owned `staffMarket`, and the retained-count in `club-staff.ts`. Draw order, post uniqueness, two-year terms and the `crossWar` ordering are untouched. No other caller of `coachingEntryReady` exists. The unit tests cover the 1938-versus-1942 case, the exact boundary, post-retirement hires and legacy missing dates. The new whole-world test `wartime-employment.test.ts` is registered as an integration test. I could not run the unit tests here because the review checkout has no installed dependencies (`vitest` not found), so I relied on the worker's recorded task check. The worker did not run the integration test or the diagnostic seed, and the result states that truthfully. The coordinator still has to run both before the final gate.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/coaching-market.ts:84",
+              "message": "T922: `careerDate(w)` is computed again inside the filter, although `const at = careerDate(w)` is already in scope a few lines above. Using `at` would be tidier, with no behaviour change."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/wartime-employment.test.ts:1",
+              "message": "T922: Coordinator handoff. Before the final gate, run `pnpm exec vitest run --project integration packages/engine/src/wartime-employment.test.ts`. Also run the diagnostic seed `save-overlap-diagnosis` from 1930 to 1946 with the ENG:3:0:0 takeover, checking overlap validation and checkpoint/portable decoding. Neither has been run yet."
+            }
+          ],
+          "commit": "6515eaf0b6d8d086d73e57d03f1a472254c26d0c",
+          "baseCommit": "1c0b83cbeb939e5a88cad4b79a5c3ee9fd563378",
+          "submissionId": "d96fc06b-b80a-4fa5-bf4b-3674616975b8",
+          "createdAt": "2026-11-16T08:33:32.891Z",
+          "finishedAt": "2026-11-16T08:34:11.262Z",
+          "invalidatedAt": "2026-11-16T09:01:37.793Z",
+          "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "b9adfccc-0f29-4298-9b34-0618aa211a9e",
+          "owner": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T922 is approved. `coachingEntryReady` now takes the settlement date and holds back a person whose recorded retirement, coaching-entry date or player-job end falls after that date. Missing optional legacy dates still fall back to the old behaviour, and no dates are rewritten. All four callers pass `careerDate(w)`: NPC placement in `coaching-market.ts`, owned candidates in `staff.ts`, and the pool count in `club-staff.ts`. I found no other callers. Random streams, ordering, post uniqueness and settlement order are untouched, and `crossWar` is unchanged. The new unit tests cover the 1942 retiree at the 1938 close, the exact boundary, a later date, and missing legacy dates, and they pass `typecheck`, `lint` and the changed-scope unit run per the worker. `wartime-employment.test.ts` is registered as an integration file. It was not run here and I did not run it; the worker handed it to the coordinator. The 1930→1946 `save-overlap-diagnosis` run, the batch/build and the browser CI are also still open for the coordinator, as the result states.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/coaching-market.ts:84",
+              "message": "`careerDate(w)` is computed again for every person in the filter although `at` is already in scope two lines above. It is behaviourally identical, so reusing `at` would be a small tidy-up and does not block approval."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/wartime-employment.test.ts:1",
+              "message": "This integration test has not been executed by the worker or reviewer. The coordinator should run `pnpm exec vitest run --project integration packages/engine/src/wartime-employment.test.ts`, then the 1930→1946 `save-overlap-diagnosis` run with ENG:3:0:0 takeover, before treating the owned and ownerless crossing as verified."
+            }
+          ],
+          "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+          "baseCommit": "a0615ff7ca2937787d587597896d0f6dfafa0bb6",
+          "submissionId": "92d40aaa-91a6-4220-929a-2c0aa66112a2",
+          "createdAt": "2026-11-16T09:04:13.707Z",
+          "finishedAt": "2026-11-16T09:04:46.641Z",
+          "invalidatedAt": "2026-11-16T09:23:15.155Z",
+          "invalidationReason": "new submission"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T922",
+          "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+          "at": "2026-11-16T09:25:15.595Z",
+          "verification": [
+            {
+              "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --diff-base 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --passWithNoTests --maxWorkers 4'",
+              "startedAt": "2026-11-16T09:23:15.537Z",
+              "finishedAt": "2026-11-16T09:25:15.228Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --diff-base 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --passWithNoTests --maxWorkers 4'",
+          "startedAt": "2026-11-16T09:23:15.537Z",
+          "finishedAt": "2026-11-16T09:25:15.228Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+          "startedAt": "2026-11-16T09:44:29.349Z",
+          "finishedAt": "2026-11-16T09:44:29.881Z"
+        }
+      ]
+    },
+    {
+      "id": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "group": "ws16",
+      "taskId": "T917",
+      "tasks": [
+        "T917"
+      ],
+      "lane": null,
+      "owner": "native-t917-worker",
+      "contributors": [
+        "native-t917-worker"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-16T09:10:04.250Z",
+      "startCommit": "8c022ebfef9cf11bdd8aa0a3947534fe41b2eac1",
+      "verifiedCommit": "50290a75c533056e07d2835f0fb487882d88e272",
+      "submittedBase": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+      "submissionId": "a20104a0-e1d3-42cd-a7b6-4e2077547948",
+      "submittedAt": "2026-11-16T09:23:02.821Z",
+      "integratedCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+      "integratedAt": "2026-11-16T09:40:59.283Z",
+      "cleanedAt": "2026-11-16T09:44:40.206Z",
+      "risk": null,
+      "dispatch": {
+        "id": "0a17925a-e8fe-4ada-afec-08e248028911",
+        "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": "sonnet",
+        "status": "finished",
+        "startedAt": "2026-11-16T09:23:30.730Z",
+        "finishedAt": "2026-11-16T09:24:04.362Z",
+        "error": null,
+        "summary": "T917 matches its acceptance and the ARCH r44 decisions (ARCH-18, ARCH-23, ARCH-30, ARCH-35). I read the diff and the surrounding code. I did not run tests, so batch and browser behavior are inferred from the code and the worker's recorded evidence. `verify:batch` now plans an empty browser phase and records scope \"batch: nonbrowser\". The loop at `scripts/verify.mjs:184` handles an empty stage list: `Promise.all([])` resolves immediately, so the batch gate cannot hang or fail on it. Full `verify` still runs `test:e2e` and records \"full: Chromium browser journeys\". `playwright.config.ts` keeps only the chromium project with its existing worker settings. The `verify.yml` e2e matrix is exactly the three Chromium shards, and the install and `--project=${{ matrix.browser }}` steps still resolve. The README paragraph matches. Only the touched files changed, and the other jobs, time limits and paths-ignore rule are untouched. The worker's `vibe check --tier task` evidence is consistent with a config, workflow and docs change that has no unit tests. Browser execution is correctly left to the first CI run after landing."
+      },
+      "review": {
+        "id": "92c57628-a813-4f55-b1aa-9e467aae566c",
+        "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T917 matches its acceptance and the ARCH r44 decisions (ARCH-18, ARCH-23, ARCH-30, ARCH-35). I read the diff and the surrounding code. I did not run tests, so batch and browser behavior are inferred from the code and the worker's recorded evidence. `verify:batch` now plans an empty browser phase and records scope \"batch: nonbrowser\". The loop at `scripts/verify.mjs:184` handles an empty stage list: `Promise.all([])` resolves immediately, so the batch gate cannot hang or fail on it. Full `verify` still runs `test:e2e` and records \"full: Chromium browser journeys\". `playwright.config.ts` keeps only the chromium project with its existing worker settings. The `verify.yml` e2e matrix is exactly the three Chromium shards, and the install and `--project=${{ matrix.browser }}` steps still resolve. The README paragraph matches. Only the touched files changed, and the other jobs, time limits and paths-ignore rule are untouched. The worker's `vibe check --tier task` evidence is consistent with a config, workflow and docs change that has no unit tests. Browser execution is correctly left to the first CI run after landing.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "tests/e2e/mobile-match-presentation.spec.ts:313",
+            "message": "Optional: the comment still says WebKit drew the pitch slowly and that playwright.config scales \"every project's\" budget. The same stale WebKit wording is in tests/e2e/owner-workflows.spec.ts:288. Neither affects behavior and both are outside T917's touches, so a later cleanup is enough."
+          }
+        ],
+        "commit": "50290a75c533056e07d2835f0fb487882d88e272",
+        "baseCommit": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+        "submissionId": "a20104a0-e1d3-42cd-a7b6-4e2077547948",
+        "createdAt": "2026-11-16T09:23:24.203Z",
+        "finishedAt": "2026-11-16T09:24:04.353Z"
+      },
+      "steps": [
+        {
+          "taskId": "T917",
+          "commit": "50290a75c533056e07d2835f0fb487882d88e272",
+          "at": "2026-11-16T09:23:02.804Z",
+          "verification": [
+            {
+              "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+              "startedAt": "2026-11-16T09:20:55.926Z",
+              "finishedAt": "2026-11-16T09:23:02.327Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+          "startedAt": "2026-11-16T09:20:55.926Z",
+          "finishedAt": "2026-11-16T09:23:02.327Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+          "startedAt": "2026-11-16T09:40:58.551Z",
+          "finishedAt": "2026-11-16T09:40:59.045Z"
+        }
+      ]
+    },
+    {
+      "id": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "group": "ws16",
+      "taskId": "T923",
+      "tasks": [
+        "T923"
+      ],
+      "lane": null,
+      "owner": "native-t923-worker",
+      "contributors": [
+        "native-t923-worker"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-16T09:49:45.760Z",
+      "startCommit": "8703950d5f6d7049922a56a25f585e093c82f77f",
+      "verifiedCommit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+      "submittedBase": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+      "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+      "submittedAt": "2026-11-16T09:55:17.979Z",
+      "integratedCommit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
+      "integratedAt": "2026-11-16T09:56:47.659Z",
+      "cleanedAt": "2026-11-16T09:56:53.795Z",
+      "risk": null,
+      "dispatch": {
+        "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
+        "runner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": "sonnet",
+        "status": "finished",
+        "startedAt": "2026-11-16T09:56:04.675Z",
+        "finishedAt": "2026-11-16T09:56:19.222Z",
+        "error": null,
+        "summary": "T923 meets acceptance. The only code change is `scripts.verify:batch` in package.json, now `pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch`. The `&&` means a failed install stops the chain before the runner starts. There are no dependency, lockfile, runner or other script changes, and the version is untouched. The task file's acceptance boxes and result are updated and match the diff. The worker evidence covers the task tier (typecheck, lint, format, i18n, affected unit) and `gusta lint`. The full batch is correctly left to the coordinator on the shared fixed candidate. I did not re-run any checks. Task-file `st:todo` is left for the runner to update."
+      },
+      "review": {
+        "id": "9118eaff-e251-4734-a418-7023039683ed",
+        "owner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T923 meets acceptance. The only code change is `scripts.verify:batch` in package.json, now `pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch`. The `&&` means a failed install stops the chain before the runner starts. There are no dependency, lockfile, runner or other script changes, and the version is untouched. The task file's acceptance boxes and result are updated and match the diff. The worker evidence covers the task tier (typecheck, lint, format, i18n, affected unit) and `gusta lint`. The full batch is correctly left to the coordinator on the shared fixed candidate. I did not re-run any checks. Task-file `st:todo` is left for the runner to update.",
+        "findings": [],
+        "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+        "baseCommit": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+        "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+        "createdAt": "2026-11-16T09:56:01.222Z",
+        "finishedAt": "2026-11-16T09:56:19.215Z"
+      },
+      "steps": [
+        {
+          "taskId": "T923",
+          "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+          "at": "2026-11-16T09:55:17.970Z",
+          "verification": [
+            {
+              "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+              "startedAt": "2026-11-16T09:54:22.505Z",
+              "finishedAt": "2026-11-16T09:55:17.849Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+          "startedAt": "2026-11-16T09:54:22.505Z",
+          "finishedAt": "2026-11-16T09:55:17.849Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+          "startedAt": "2026-11-16T09:56:46.872Z",
+          "finishedAt": "2026-11-16T09:56:47.397Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 47,
+      "at": "2026-11-16T07:57:57.942Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ws16",
+        "branch": "gusta-session-self-improve-ws16-c1384351",
+        "status": "preparing",
+        "createdAt": "2026-11-16T07:57:57.910Z",
+        "limits": {
+          "workers": 1,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": null,
+        "review": "all",
+        "taskScope": [
+          "T922"
+        ]
+      }
+    },
+    {
+      "sequence": 48,
+      "at": "2026-11-16T07:57:57.971Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 49,
+      "at": "2026-11-16T07:58:05.242Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "88cf8411-4b27-4f58-91f8-db15fc8415dd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T07:58:05.212Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 50,
+      "at": "2026-11-16T07:58:05.312Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+        "group": "ws16",
+        "taskId": "T922",
+        "tasks": [
+          "T922"
+        ],
+        "lane": null,
+        "owner": "88cf8411-4b27-4f58-91f8-db15fc8415dd/worker-1",
+        "contributors": [
+          "88cf8411-4b27-4f58-91f8-db15fc8415dd/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-16T07:58:05.312Z",
+        "startCommit": "c16b74153364f1dd8da34cada2daf4299b3692ac"
+      }
+    },
+    {
+      "sequence": 51,
+      "at": "2026-11-16T07:58:07.757Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 52,
+      "at": "2026-11-16T07:58:08.752Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7ddf6e9b-3ecf-468f-b6e9-0d84ce89c6cf",
+          "runner": "88cf8411-4b27-4f58-91f8-db15fc8415dd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-16T07:58:08.752Z"
+        }
+      }
+    },
+    {
+      "sequence": 53,
+      "at": "2026-11-16T07:58:08.998Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7ddf6e9b-3ecf-468f-b6e9-0d84ce89c6cf",
+          "runner": "88cf8411-4b27-4f58-91f8-db15fc8415dd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-16T07:58:08.752Z"
+        }
+      }
+    },
+    {
+      "sequence": 54,
+      "at": "2026-11-16T08:05:20.548Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 55,
+      "at": "2026-11-16T08:05:20.620Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T922: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 56,
+      "at": "2026-11-16T08:05:20.630Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "7ddf6e9b-3ecf-468f-b6e9-0d84ce89c6cf",
+          "runner": "88cf8411-4b27-4f58-91f8-db15fc8415dd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-16T07:58:08.752Z",
+          "finishedAt": "2026-11-16T08:05:20.630Z",
+          "error": "T922: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T922 구현을 완료했습니다. 코칭 자격 판정에 실제 은퇴일, 코칭 프로필 작성일과 선수 고용 종료일을 적용하고, NPC 배치·소유 구단 후보 목록·후보 수가 같은 판정을 사용하도록 했습니다. 날짜가 없는 기존 기록의 동작은 유지했습니다. 작업 단계 검사는 통과했으며 변경 영향 단위 테스트 144개 파일의 1,314개 테스트가 통과했습니다. 태스크 결과와 수용 기준을 갱신했습니다. 통합 회귀와 1930–1946 진단은 호스트에 인계하며 아직 실행하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 57,
+      "at": "2026-11-16T08:05:20.784Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "88cf8411-4b27-4f58-91f8-db15fc8415dd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T07:58:05.212Z",
+          "stoppedAt": "2026-11-16T08:05:20.784Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+              "role": "worker",
+              "error": "T922: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 58,
+      "at": "2026-11-16T08:06:27.679Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 59,
+      "at": "2026-11-16T08:06:28.093Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "cc872a68-b932-4c87-96d6-cab0e6374221",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T08:06:28.089Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 60,
+      "at": "2026-11-16T08:06:28.104Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "cc872a68-b932-4c87-96d6-cab0e6374221/worker-1",
+        "contributors": [
+          "88cf8411-4b27-4f58-91f8-db15fc8415dd/worker-1",
+          "cc872a68-b932-4c87-96d6-cab0e6374221/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 61,
+      "at": "2026-11-16T08:06:28.135Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 62,
+      "at": "2026-11-16T08:06:28.229Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "cc872a68-b932-4c87-96d6-cab0e6374221",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T08:06:28.089Z",
+          "stoppedAt": "2026-11-16T08:06:28.229Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 63,
+      "at": "2026-11-16T08:07:58.513Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 64,
+      "at": "2026-11-16T08:09:24.333Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 65,
+      "at": "2026-11-16T08:09:25.317Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task"
+      }
+    },
+    {
+      "sequence": 66,
+      "at": "2026-11-16T08:10:34.947Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 67,
+      "at": "2026-11-16T08:10:35.749Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 72,
+      "at": "2026-11-16T08:16:32.328Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests'"
+      }
+    },
+    {
+      "sequence": 73,
+      "at": "2026-11-16T08:18:38.836Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 74,
+      "at": "2026-11-16T08:18:42.761Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 75,
+      "at": "2026-11-16T08:23:58.868Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests'"
+      }
+    },
+    {
+      "sequence": 76,
+      "at": "2026-11-16T08:24:24.711Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "reason": "Configured full task retry failed only progression.runahead x10 case at 30082ms over unchanged 30000ms timeout: 143/144 files and 1313/1314 tests passed, so no complete task pass. Failed check-158af3cc-ec37-47a0-9a8b-cfcd974de7d3 (315473ms). Same isolated case passed check-ca6a34a8 (24581ms command, 21.29s Vitest). Preserve original full pass check-69928d73 and previous failed wrapper check-48aa4104. Fixed SHA 6515eaf0b6d8d086d73e57d03f1a472254c26d0c; no source edits, timeout changes or further retry. Coordinator decision required."
+      }
+    },
+    {
+      "sequence": 77,
+      "at": "2026-11-16T08:25:12.123Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 78,
+      "at": "2026-11-16T08:25:12.525Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 79,
+      "at": "2026-11-16T08:33:03.972Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "6515eaf0b6d8d086d73e57d03f1a472254c26d0c",
+        "submittedBase": "1c0b83cbeb939e5a88cad4b79a5c3ee9fd563378",
+        "submissionId": "d96fc06b-b80a-4fa5-bf4b-3674616975b8",
+        "submittedAt": "2026-11-16T08:33:03.972Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T922",
+            "commit": "6515eaf0b6d8d086d73e57d03f1a472254c26d0c",
+            "at": "2026-11-16T08:33:03.956Z",
+            "verification": [
+              {
+                "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+                "startedAt": "2026-11-16T08:25:12.718Z",
+                "finishedAt": "2026-11-16T08:33:03.639Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+            "startedAt": "2026-11-16T08:25:12.718Z",
+            "finishedAt": "2026-11-16T08:33:03.639Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 80,
+      "at": "2026-11-16T08:33:32.486Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "1c7d76e4-4709-4a63-b77c-e6f9026f1385",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T08:33:32.480Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 81,
+      "at": "2026-11-16T08:33:32.891Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "0169af05-9d7a-4712-ac4f-781ac63566ab",
+          "owner": "1c7d76e4-4709-4a63-b77c-e6f9026f1385/reviewer-1",
+          "status": "reviewing",
+          "commit": "6515eaf0b6d8d086d73e57d03f1a472254c26d0c",
+          "baseCommit": "1c0b83cbeb939e5a88cad4b79a5c3ee9fd563378",
+          "submissionId": "d96fc06b-b80a-4fa5-bf4b-3674616975b8",
+          "createdAt": "2026-11-16T08:33:32.891Z"
+        }
+      }
+    },
+    {
+      "sequence": 82,
+      "at": "2026-11-16T08:33:37.449Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1862a904-455f-4802-8558-2dff4cb20f5f",
+          "runner": "1c7d76e4-4709-4a63-b77c-e6f9026f1385",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T08:33:37.448Z"
+        }
+      }
+    },
+    {
+      "sequence": 83,
+      "at": "2026-11-16T08:33:37.473Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1862a904-455f-4802-8558-2dff4cb20f5f",
+          "runner": "1c7d76e4-4709-4a63-b77c-e6f9026f1385",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T08:33:37.448Z"
+        }
+      }
+    },
+    {
+      "sequence": 84,
+      "at": "2026-11-16T08:34:11.263Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "0169af05-9d7a-4712-ac4f-781ac63566ab",
+          "owner": "1c7d76e4-4709-4a63-b77c-e6f9026f1385/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T922 meets its acceptance as I read it. `coachingEntryReady(person, at)` now takes the settlement date. A person whose retirement date, coaching-entry date or recorded player-job end is later than that date is not admitted, and missing optional dates keep the old fallback. All three hiring boundaries pass `careerDate(w)`: the NPC coaching market, the owned `staffMarket`, and the retained-count in `club-staff.ts`. Draw order, post uniqueness, two-year terms and the `crossWar` ordering are untouched. No other caller of `coachingEntryReady` exists. The unit tests cover the 1938-versus-1942 case, the exact boundary, post-retirement hires and legacy missing dates. The new whole-world test `wartime-employment.test.ts` is registered as an integration test. I could not run the unit tests here because the review checkout has no installed dependencies (`vitest` not found), so I relied on the worker's recorded task check. The worker did not run the integration test or the diagnostic seed, and the result states that truthfully. The coordinator still has to run both before the final gate.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/coaching-market.ts:84",
+              "message": "T922: `careerDate(w)` is computed again inside the filter, although `const at = careerDate(w)` is already in scope a few lines above. Using `at` would be tidier, with no behaviour change."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/wartime-employment.test.ts:1",
+              "message": "T922: Coordinator handoff. Before the final gate, run `pnpm exec vitest run --project integration packages/engine/src/wartime-employment.test.ts`. Also run the diagnostic seed `save-overlap-diagnosis` from 1930 to 1946 with the ENG:3:0:0 takeover, checking overlap validation and checkpoint/portable decoding. Neither has been run yet."
+            }
+          ],
+          "commit": "6515eaf0b6d8d086d73e57d03f1a472254c26d0c",
+          "baseCommit": "1c0b83cbeb939e5a88cad4b79a5c3ee9fd563378",
+          "submissionId": "d96fc06b-b80a-4fa5-bf4b-3674616975b8",
+          "createdAt": "2026-11-16T08:33:32.891Z",
+          "finishedAt": "2026-11-16T08:34:11.262Z"
+        }
+      }
+    },
+    {
+      "sequence": 85,
+      "at": "2026-11-16T08:34:11.271Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "1862a904-455f-4802-8558-2dff4cb20f5f",
+          "runner": "1c7d76e4-4709-4a63-b77c-e6f9026f1385",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T08:33:37.448Z",
+          "finishedAt": "2026-11-16T08:34:11.271Z",
+          "error": null,
+          "summary": "T922 meets its acceptance as I read it. `coachingEntryReady(person, at)` now takes the settlement date. A person whose retirement date, coaching-entry date or recorded player-job end is later than that date is not admitted, and missing optional dates keep the old fallback. All three hiring boundaries pass `careerDate(w)`: the NPC coaching market, the owned `staffMarket`, and the retained-count in `club-staff.ts`. Draw order, post uniqueness, two-year terms and the `crossWar` ordering are untouched. No other caller of `coachingEntryReady` exists. The unit tests cover the 1938-versus-1942 case, the exact boundary, post-retirement hires and legacy missing dates. The new whole-world test `wartime-employment.test.ts` is registered as an integration test. I could not run the unit tests here because the review checkout has no installed dependencies (`vitest` not found), so I relied on the worker's recorded task check. The worker did not run the integration test or the diagnostic seed, and the result states that truthfully. The coordinator still has to run both before the final gate."
+        }
+      }
+    },
+    {
+      "sequence": 86,
+      "at": "2026-11-16T08:34:11.316Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 87,
+      "at": "2026-11-16T08:34:16.510Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 88,
+      "at": "2026-11-16T08:34:16.610Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "1c7d76e4-4709-4a63-b77c-e6f9026f1385",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T08:33:32.480Z",
+          "stoppedAt": "2026-11-16T08:34:16.609Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+              "submissionId": "d96fc06b-b80a-4fa5-bf4b-3674616975b8",
+              "commit": "6515eaf0b6d8d086d73e57d03f1a472254c26d0c",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 89,
+      "at": "2026-11-16T08:41:14.069Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 90,
+      "at": "2026-11-16T09:01:32.663Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrating",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "interrupted operation; inspect preserved workspace before resubmitting"
+      }
+    },
+    {
+      "sequence": 91,
+      "at": "2026-11-16T09:01:37.793Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "0169af05-9d7a-4712-ac4f-781ac63566ab",
+            "owner": "1c7d76e4-4709-4a63-b77c-e6f9026f1385/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T922 meets its acceptance as I read it. `coachingEntryReady(person, at)` now takes the settlement date. A person whose retirement date, coaching-entry date or recorded player-job end is later than that date is not admitted, and missing optional dates keep the old fallback. All three hiring boundaries pass `careerDate(w)`: the NPC coaching market, the owned `staffMarket`, and the retained-count in `club-staff.ts`. Draw order, post uniqueness, two-year terms and the `crossWar` ordering are untouched. No other caller of `coachingEntryReady` exists. The unit tests cover the 1938-versus-1942 case, the exact boundary, post-retirement hires and legacy missing dates. The new whole-world test `wartime-employment.test.ts` is registered as an integration test. I could not run the unit tests here because the review checkout has no installed dependencies (`vitest` not found), so I relied on the worker's recorded task check. The worker did not run the integration test or the diagnostic seed, and the result states that truthfully. The coordinator still has to run both before the final gate.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/coaching-market.ts:84",
+                "message": "T922: `careerDate(w)` is computed again inside the filter, although `const at = careerDate(w)` is already in scope a few lines above. Using `at` would be tidier, with no behaviour change."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/wartime-employment.test.ts:1",
+                "message": "T922: Coordinator handoff. Before the final gate, run `pnpm exec vitest run --project integration packages/engine/src/wartime-employment.test.ts`. Also run the diagnostic seed `save-overlap-diagnosis` from 1930 to 1946 with the ENG:3:0:0 takeover, checking overlap validation and checkpoint/portable decoding. Neither has been run yet."
+              }
+            ],
+            "commit": "6515eaf0b6d8d086d73e57d03f1a472254c26d0c",
+            "baseCommit": "1c0b83cbeb939e5a88cad4b79a5c3ee9fd563378",
+            "submissionId": "d96fc06b-b80a-4fa5-bf4b-3674616975b8",
+            "createdAt": "2026-11-16T08:33:32.891Z",
+            "finishedAt": "2026-11-16T08:34:11.262Z",
+            "invalidatedAt": "2026-11-16T09:01:37.793Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 92,
+      "at": "2026-11-16T09:03:12.941Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 93,
+      "at": "2026-11-16T09:04:07.262Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "a0615ff7ca2937787d587597896d0f6dfafa0bb6",
+        "submissionId": "92d40aaa-91a6-4220-929a-2c0aa66112a2",
+        "submittedAt": "2026-11-16T09:04:07.262Z",
+        "steps": [
+          {
+            "taskId": "T922",
+            "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+            "at": "2026-11-16T09:04:07.254Z",
+            "verification": [
+              {
+                "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+                "startedAt": "2026-11-16T09:03:13.051Z",
+                "finishedAt": "2026-11-16T09:04:07.137Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+            "startedAt": "2026-11-16T09:03:13.051Z",
+            "finishedAt": "2026-11-16T09:04:07.137Z"
+          }
+        ],
+        "verifiedCommit": "939bd51db298fbf5201ded1634f1d600a92017a5"
+      }
+    },
+    {
+      "sequence": 94,
+      "at": "2026-11-16T09:04:13.606Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:04:13.602Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 95,
+      "at": "2026-11-16T09:04:13.708Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b9adfccc-0f29-4298-9b34-0618aa211a9e",
+          "owner": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333/reviewer-1",
+          "status": "reviewing",
+          "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+          "baseCommit": "a0615ff7ca2937787d587597896d0f6dfafa0bb6",
+          "submissionId": "92d40aaa-91a6-4220-929a-2c0aa66112a2",
+          "createdAt": "2026-11-16T09:04:13.707Z"
+        }
+      }
+    },
+    {
+      "sequence": 96,
+      "at": "2026-11-16T09:04:16.975Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "b625c2c9-556a-48cd-aec3-ccd4b6ad100f",
+          "runner": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T09:04:16.975Z"
+        }
+      }
+    },
+    {
+      "sequence": 97,
+      "at": "2026-11-16T09:04:16.988Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "b625c2c9-556a-48cd-aec3-ccd4b6ad100f",
+          "runner": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T09:04:16.975Z"
+        }
+      }
+    },
+    {
+      "sequence": 98,
+      "at": "2026-11-16T09:04:46.641Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b9adfccc-0f29-4298-9b34-0618aa211a9e",
+          "owner": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T922 is approved. `coachingEntryReady` now takes the settlement date and holds back a person whose recorded retirement, coaching-entry date or player-job end falls after that date. Missing optional legacy dates still fall back to the old behaviour, and no dates are rewritten. All four callers pass `careerDate(w)`: NPC placement in `coaching-market.ts`, owned candidates in `staff.ts`, and the pool count in `club-staff.ts`. I found no other callers. Random streams, ordering, post uniqueness and settlement order are untouched, and `crossWar` is unchanged. The new unit tests cover the 1942 retiree at the 1938 close, the exact boundary, a later date, and missing legacy dates, and they pass `typecheck`, `lint` and the changed-scope unit run per the worker. `wartime-employment.test.ts` is registered as an integration file. It was not run here and I did not run it; the worker handed it to the coordinator. The 1930→1946 `save-overlap-diagnosis` run, the batch/build and the browser CI are also still open for the coordinator, as the result states.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/coaching-market.ts:84",
+              "message": "`careerDate(w)` is computed again for every person in the filter although `at` is already in scope two lines above. It is behaviourally identical, so reusing `at` would be a small tidy-up and does not block approval."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/wartime-employment.test.ts:1",
+              "message": "This integration test has not been executed by the worker or reviewer. The coordinator should run `pnpm exec vitest run --project integration packages/engine/src/wartime-employment.test.ts`, then the 1930→1946 `save-overlap-diagnosis` run with ENG:3:0:0 takeover, before treating the owned and ownerless crossing as verified."
+            }
+          ],
+          "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+          "baseCommit": "a0615ff7ca2937787d587597896d0f6dfafa0bb6",
+          "submissionId": "92d40aaa-91a6-4220-929a-2c0aa66112a2",
+          "createdAt": "2026-11-16T09:04:13.707Z",
+          "finishedAt": "2026-11-16T09:04:46.641Z"
+        }
+      }
+    },
+    {
+      "sequence": 99,
+      "at": "2026-11-16T09:04:46.650Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "b625c2c9-556a-48cd-aec3-ccd4b6ad100f",
+          "runner": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T09:04:16.975Z",
+          "finishedAt": "2026-11-16T09:04:46.650Z",
+          "error": null,
+          "summary": "T922 is approved. `coachingEntryReady` now takes the settlement date and holds back a person whose recorded retirement, coaching-entry date or player-job end falls after that date. Missing optional legacy dates still fall back to the old behaviour, and no dates are rewritten. All four callers pass `careerDate(w)`: NPC placement in `coaching-market.ts`, owned candidates in `staff.ts`, and the pool count in `club-staff.ts`. I found no other callers. Random streams, ordering, post uniqueness and settlement order are untouched, and `crossWar` is unchanged. The new unit tests cover the 1942 retiree at the 1938 close, the exact boundary, a later date, and missing legacy dates, and they pass `typecheck`, `lint` and the changed-scope unit run per the worker. `wartime-employment.test.ts` is registered as an integration file. It was not run here and I did not run it; the worker handed it to the coordinator. The 1930→1946 `save-overlap-diagnosis` run, the batch/build and the browser CI are also still open for the coordinator, as the result states."
+        }
+      }
+    },
+    {
+      "sequence": 100,
+      "at": "2026-11-16T09:04:46.700Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 101,
+      "at": "2026-11-16T09:08:22.350Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrating",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "interrupted operation; inspect preserved workspace before resubmitting"
+      }
+    },
+    {
+      "sequence": 102,
+      "at": "2026-11-16T09:09:56.519Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:04:13.602Z",
+          "stoppedAt": "2026-11-16T09:09:56.518Z",
+          "outcome": "recovered",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 103,
+      "at": "2026-11-16T09:10:03.551Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T917",
+          "T922"
+        ]
+      }
+    },
+    {
+      "sequence": 104,
+      "at": "2026-11-16T09:10:04.251Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+        "group": "ws16",
+        "taskId": "T917",
+        "tasks": [
+          "T917"
+        ],
+        "lane": null,
+        "owner": "native-t917-worker",
+        "contributors": [
+          "native-t917-worker"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-16T09:10:04.250Z",
+        "startCommit": "8c022ebfef9cf11bdd8aa0a3947534fe41b2eac1"
+      }
+    },
+    {
+      "sequence": 105,
+      "at": "2026-11-16T09:10:07.731Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 106,
+      "at": "2026-11-16T09:20:55.674Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 107,
+      "at": "2026-11-16T09:23:02.821Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "50290a75c533056e07d2835f0fb487882d88e272",
+        "submittedBase": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+        "submissionId": "a20104a0-e1d3-42cd-a7b6-4e2077547948",
+        "submittedAt": "2026-11-16T09:23:02.821Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T917",
+            "commit": "50290a75c533056e07d2835f0fb487882d88e272",
+            "at": "2026-11-16T09:23:02.804Z",
+            "verification": [
+              {
+                "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+                "startedAt": "2026-11-16T09:20:55.926Z",
+                "finishedAt": "2026-11-16T09:23:02.327Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+            "startedAt": "2026-11-16T09:20:55.926Z",
+            "finishedAt": "2026-11-16T09:23:02.327Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 108,
+      "at": "2026-11-16T09:23:15.156Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "0169af05-9d7a-4712-ac4f-781ac63566ab",
+            "owner": "1c7d76e4-4709-4a63-b77c-e6f9026f1385/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T922 meets its acceptance as I read it. `coachingEntryReady(person, at)` now takes the settlement date. A person whose retirement date, coaching-entry date or recorded player-job end is later than that date is not admitted, and missing optional dates keep the old fallback. All three hiring boundaries pass `careerDate(w)`: the NPC coaching market, the owned `staffMarket`, and the retained-count in `club-staff.ts`. Draw order, post uniqueness, two-year terms and the `crossWar` ordering are untouched. No other caller of `coachingEntryReady` exists. The unit tests cover the 1938-versus-1942 case, the exact boundary, post-retirement hires and legacy missing dates. The new whole-world test `wartime-employment.test.ts` is registered as an integration test. I could not run the unit tests here because the review checkout has no installed dependencies (`vitest` not found), so I relied on the worker's recorded task check. The worker did not run the integration test or the diagnostic seed, and the result states that truthfully. The coordinator still has to run both before the final gate.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/coaching-market.ts:84",
+                "message": "T922: `careerDate(w)` is computed again inside the filter, although `const at = careerDate(w)` is already in scope a few lines above. Using `at` would be tidier, with no behaviour change."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/wartime-employment.test.ts:1",
+                "message": "T922: Coordinator handoff. Before the final gate, run `pnpm exec vitest run --project integration packages/engine/src/wartime-employment.test.ts`. Also run the diagnostic seed `save-overlap-diagnosis` from 1930 to 1946 with the ENG:3:0:0 takeover, checking overlap validation and checkpoint/portable decoding. Neither has been run yet."
+              }
+            ],
+            "commit": "6515eaf0b6d8d086d73e57d03f1a472254c26d0c",
+            "baseCommit": "1c0b83cbeb939e5a88cad4b79a5c3ee9fd563378",
+            "submissionId": "d96fc06b-b80a-4fa5-bf4b-3674616975b8",
+            "createdAt": "2026-11-16T08:33:32.891Z",
+            "finishedAt": "2026-11-16T08:34:11.262Z",
+            "invalidatedAt": "2026-11-16T09:01:37.793Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "b9adfccc-0f29-4298-9b34-0618aa211a9e",
+            "owner": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T922 is approved. `coachingEntryReady` now takes the settlement date and holds back a person whose recorded retirement, coaching-entry date or player-job end falls after that date. Missing optional legacy dates still fall back to the old behaviour, and no dates are rewritten. All four callers pass `careerDate(w)`: NPC placement in `coaching-market.ts`, owned candidates in `staff.ts`, and the pool count in `club-staff.ts`. I found no other callers. Random streams, ordering, post uniqueness and settlement order are untouched, and `crossWar` is unchanged. The new unit tests cover the 1942 retiree at the 1938 close, the exact boundary, a later date, and missing legacy dates, and they pass `typecheck`, `lint` and the changed-scope unit run per the worker. `wartime-employment.test.ts` is registered as an integration file. It was not run here and I did not run it; the worker handed it to the coordinator. The 1930→1946 `save-overlap-diagnosis` run, the batch/build and the browser CI are also still open for the coordinator, as the result states.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/coaching-market.ts:84",
+                "message": "`careerDate(w)` is computed again for every person in the filter although `at` is already in scope two lines above. It is behaviourally identical, so reusing `at` would be a small tidy-up and does not block approval."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/wartime-employment.test.ts:1",
+                "message": "This integration test has not been executed by the worker or reviewer. The coordinator should run `pnpm exec vitest run --project integration packages/engine/src/wartime-employment.test.ts`, then the 1930→1946 `save-overlap-diagnosis` run with ENG:3:0:0 takeover, before treating the owned and ownerless crossing as verified."
+              }
+            ],
+            "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+            "baseCommit": "a0615ff7ca2937787d587597896d0f6dfafa0bb6",
+            "submissionId": "92d40aaa-91a6-4220-929a-2c0aa66112a2",
+            "createdAt": "2026-11-16T09:04:13.707Z",
+            "finishedAt": "2026-11-16T09:04:46.641Z",
+            "invalidatedAt": "2026-11-16T09:23:15.155Z",
+            "invalidationReason": "new submission"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 109,
+      "at": "2026-11-16T09:23:23.972Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:23:23.953Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 110,
+      "at": "2026-11-16T09:23:24.203Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "92c57628-a813-4f55-b1aa-9e467aae566c",
+          "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+          "status": "reviewing",
+          "commit": "50290a75c533056e07d2835f0fb487882d88e272",
+          "baseCommit": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+          "submissionId": "a20104a0-e1d3-42cd-a7b6-4e2077547948",
+          "createdAt": "2026-11-16T09:23:24.203Z"
+        }
+      }
+    },
+    {
+      "sequence": 111,
+      "at": "2026-11-16T09:23:30.730Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "0a17925a-e8fe-4ada-afec-08e248028911",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T09:23:30.730Z"
+        }
+      }
+    },
+    {
+      "sequence": 112,
+      "at": "2026-11-16T09:23:30.764Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "0a17925a-e8fe-4ada-afec-08e248028911",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T09:23:30.730Z"
+        }
+      }
+    },
+    {
+      "sequence": 113,
+      "at": "2026-11-16T09:24:04.353Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "92c57628-a813-4f55-b1aa-9e467aae566c",
+          "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T917 matches its acceptance and the ARCH r44 decisions (ARCH-18, ARCH-23, ARCH-30, ARCH-35). I read the diff and the surrounding code. I did not run tests, so batch and browser behavior are inferred from the code and the worker's recorded evidence. `verify:batch` now plans an empty browser phase and records scope \"batch: nonbrowser\". The loop at `scripts/verify.mjs:184` handles an empty stage list: `Promise.all([])` resolves immediately, so the batch gate cannot hang or fail on it. Full `verify` still runs `test:e2e` and records \"full: Chromium browser journeys\". `playwright.config.ts` keeps only the chromium project with its existing worker settings. The `verify.yml` e2e matrix is exactly the three Chromium shards, and the install and `--project=${{ matrix.browser }}` steps still resolve. The README paragraph matches. Only the touched files changed, and the other jobs, time limits and paths-ignore rule are untouched. The worker's `vibe check --tier task` evidence is consistent with a config, workflow and docs change that has no unit tests. Browser execution is correctly left to the first CI run after landing.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "tests/e2e/mobile-match-presentation.spec.ts:313",
+              "message": "Optional: the comment still says WebKit drew the pitch slowly and that playwright.config scales \"every project's\" budget. The same stale WebKit wording is in tests/e2e/owner-workflows.spec.ts:288. Neither affects behavior and both are outside T917's touches, so a later cleanup is enough."
+            }
+          ],
+          "commit": "50290a75c533056e07d2835f0fb487882d88e272",
+          "baseCommit": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+          "submissionId": "a20104a0-e1d3-42cd-a7b6-4e2077547948",
+          "createdAt": "2026-11-16T09:23:24.203Z",
+          "finishedAt": "2026-11-16T09:24:04.353Z"
+        }
+      }
+    },
+    {
+      "sequence": 114,
+      "at": "2026-11-16T09:24:04.363Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "0a17925a-e8fe-4ada-afec-08e248028911",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T09:23:30.730Z",
+          "finishedAt": "2026-11-16T09:24:04.362Z",
+          "error": null,
+          "summary": "T917 matches its acceptance and the ARCH r44 decisions (ARCH-18, ARCH-23, ARCH-30, ARCH-35). I read the diff and the surrounding code. I did not run tests, so batch and browser behavior are inferred from the code and the worker's recorded evidence. `verify:batch` now plans an empty browser phase and records scope \"batch: nonbrowser\". The loop at `scripts/verify.mjs:184` handles an empty stage list: `Promise.all([])` resolves immediately, so the batch gate cannot hang or fail on it. Full `verify` still runs `test:e2e` and records \"full: Chromium browser journeys\". `playwright.config.ts` keeps only the chromium project with its existing worker settings. The `verify.yml` e2e matrix is exactly the three Chromium shards, and the install and `--project=${{ matrix.browser }}` steps still resolve. The README paragraph matches. Only the touched files changed, and the other jobs, time limits and paths-ignore rule are untouched. The worker's `vibe check --tier task` evidence is consistent with a config, workflow and docs change that has no unit tests. Browser execution is correctly left to the first CI run after landing."
+        }
+      }
+    },
+    {
+      "sequence": 115,
+      "at": "2026-11-16T09:24:04.457Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 116,
+      "at": "2026-11-16T09:25:15.609Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
+        "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+        "submittedAt": "2026-11-16T09:25:15.609Z",
+        "steps": [
+          {
+            "taskId": "T922",
+            "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+            "at": "2026-11-16T09:25:15.595Z",
+            "verification": [
+              {
+                "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --diff-base 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --passWithNoTests --maxWorkers 4'",
+                "startedAt": "2026-11-16T09:23:15.537Z",
+                "finishedAt": "2026-11-16T09:25:15.228Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --diff-base 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed 6515eaf0b6d8d086d73e57d03f1a472254c26d0c --passWithNoTests --maxWorkers 4'",
+            "startedAt": "2026-11-16T09:23:15.537Z",
+            "finishedAt": "2026-11-16T09:25:15.228Z"
+          }
+        ],
+        "verifiedCommit": "939bd51db298fbf5201ded1634f1d600a92017a5"
+      }
+    },
+    {
+      "sequence": 117,
+      "at": "2026-11-16T09:40:59.134Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "startedAt": "2026-11-16T09:40:58.551Z",
+            "finishedAt": "2026-11-16T09:40:59.045Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 118,
+      "at": "2026-11-16T09:40:59.283Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+        "integratedAt": "2026-11-16T09:40:59.283Z"
+      }
+    },
+    {
+      "sequence": 119,
+      "at": "2026-11-16T09:41:02.984Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "4b7d8940-2af3-4a7d-ba37-6078176786f1",
+          "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+          "status": "reviewing",
+          "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+          "baseCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+          "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+          "createdAt": "2026-11-16T09:41:02.984Z"
+        }
+      }
+    },
+    {
+      "sequence": 120,
+      "at": "2026-11-16T09:41:05.799Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T09:41:05.799Z"
+        }
+      }
+    },
+    {
+      "sequence": 121,
+      "at": "2026-11-16T09:41:05.809Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T09:41:05.799Z"
+        }
+      }
+    },
+    {
+      "sequence": 122,
+      "at": "2026-11-16T09:41:45.503Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "4b7d8940-2af3-4a7d-ba37-6078176786f1",
+          "owner": "73634d95-7bec-4d2b-9335-4d7751ae00a7/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T922 is implemented as specified. `coachingEntryReady(person, at)` is now date-aware and is the single readiness rule. It is passed `careerDate(w)` at all three call sites: the NPC placement filter in `coaching-market.ts`, the owned `staffMarket` offers in `staff.ts`, and the pool count in `club-staff.ts`. `careerDate(w)` honours the `atCareerDate` settlement date, so the 1938 close sees 1938 and a 1942 retiree is excluded from placement draws, offers and counts. An exact-boundary or later date admits him. Missing optional legacy dates (`retirement.at`, `coaching.at`, player `to`) fall back to the old behaviour, and no dates are fabricated. Draw order, ordering and term logic are unchanged. No other caller of `coachingEntryReady` exists, and `playingCoachDurations` is a different path (an active player). Unit tests cover the boundary, the earlier date, missing dates, no draw or post for the later retiree and the post-retirement hire. The integration regression `wartime-employment.test.ts` is registered in `INTEGRATION_FILES`. It covers the ownerless and owned crossings through takeover, `validateWorld` and a checkpoint/portable round trip. I could not run any tests in this checkout because `node_modules` is missing. This review rests on reading the code and the worker's task-check evidence (1,314 unit tests passed). The integration scenario and the 1930→1946 diagnostic seed are honestly reported as not-run and stay with the coordinator.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/coaching-market.test.ts:46",
+              "message": "T922: the hard-coded `toHaveLength(3)` for `w.staffMarket.free.assistant` depends on the `openStaffMarket` pool size and may break if that is retuned. Optional: assert the later retiree is absent from the pool instead of its length."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/config/test-tiers.ts:152",
+              "message": "T922: `wartime-employment.test.ts` is listed after `world.test.ts`, which breaks the otherwise alphabetical order of `INTEGRATION_FILES`. The tier test does not enforce order, so this is cosmetic."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/wartime-employment.test.ts:35",
+              "message": "T922 handoff: this integration regression and the diagnostic run (seed save-overlap-diagnosis, 1930→1946, ENG:3:0:0) must be run by the coordinator before the verdict is final. If the integration test fails on overlaps unrelated to coaching eligibility, report it rather than widening the scope."
+            }
+          ],
+          "commit": "939bd51db298fbf5201ded1634f1d600a92017a5",
+          "baseCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+          "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
+          "createdAt": "2026-11-16T09:41:02.984Z",
+          "finishedAt": "2026-11-16T09:41:45.503Z"
+        }
+      }
+    },
+    {
+      "sequence": 123,
+      "at": "2026-11-16T09:41:45.510Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
+          "runner": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T09:41:05.799Z",
+          "finishedAt": "2026-11-16T09:41:45.510Z",
+          "error": null,
+          "summary": "T922 is implemented as specified. `coachingEntryReady(person, at)` is now date-aware and is the single readiness rule. It is passed `careerDate(w)` at all three call sites: the NPC placement filter in `coaching-market.ts`, the owned `staffMarket` offers in `staff.ts`, and the pool count in `club-staff.ts`. `careerDate(w)` honours the `atCareerDate` settlement date, so the 1938 close sees 1938 and a 1942 retiree is excluded from placement draws, offers and counts. An exact-boundary or later date admits him. Missing optional legacy dates (`retirement.at`, `coaching.at`, player `to`) fall back to the old behaviour, and no dates are fabricated. Draw order, ordering and term logic are unchanged. No other caller of `coachingEntryReady` exists, and `playingCoachDurations` is a different path (an active player). Unit tests cover the boundary, the earlier date, missing dates, no draw or post for the later retiree and the post-retirement hire. The integration regression `wartime-employment.test.ts` is registered in `INTEGRATION_FILES`. It covers the ownerless and owned crossings through takeover, `validateWorld` and a checkpoint/portable round trip. I could not run any tests in this checkout because `node_modules` is missing. This review rests on reading the code and the worker's task-check evidence (1,314 unit tests passed). The integration scenario and the 1930→1946 diagnostic seed are honestly reported as not-run and stay with the coordinator."
+        }
+      }
+    },
+    {
+      "sequence": 124,
+      "at": "2026-11-16T09:41:45.535Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 125,
+      "at": "2026-11-16T09:44:29.969Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "startedAt": "2026-11-16T09:44:29.349Z",
+            "finishedAt": "2026-11-16T09:44:29.881Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 126,
+      "at": "2026-11-16T09:44:30.103Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
+        "integratedAt": "2026-11-16T09:44:30.103Z"
+      }
+    },
+    {
+      "sequence": 127,
+      "at": "2026-11-16T09:44:36.986Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
+          "at": "2026-11-16T09:44:36.982Z",
+          "verified": false,
+          "owner": {
+            "tag": "ws16",
+            "branch": "gusta-session-self-improve-ws16-c1384351"
+          },
+          "checks": [
+            "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "node --import tsx /tmp/ws16-verify-world.mjs ."
+          ],
+          "agentChecks": []
+        },
+        "integration": {
+          "reason": "owning-session-working",
+          "candidate": null,
+          "verified": false,
+          "scope": null
+        }
+      }
+    },
+    {
+      "sequence": 128,
+      "at": "2026-11-16T09:44:37.072Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 129,
+      "at": "2026-11-16T09:44:39.108Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T09:44:39.108Z"
+      }
+    },
+    {
+      "sequence": 130,
+      "at": "2026-11-16T09:44:39.133Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 131,
+      "at": "2026-11-16T09:44:40.206Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T09:44:40.206Z"
+      }
+    },
+    {
+      "sequence": 132,
+      "at": "2026-11-16T09:44:40.214Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:23:23.953Z",
+          "stoppedAt": "2026-11-16T09:44:40.214Z",
+          "dispatched": 2,
+          "outcome": "completed",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 133,
+      "at": "2026-11-16T09:49:45.481Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T917",
+          "T922",
+          "T923"
+        ]
+      }
+    },
+    {
+      "sequence": 134,
+      "at": "2026-11-16T09:49:45.760Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ae6f5830-9de3-4728-999d-87aa78121edc",
+        "group": "ws16",
+        "taskId": "T923",
+        "tasks": [
+          "T923"
+        ],
+        "lane": null,
+        "owner": "native-t923-worker",
+        "contributors": [
+          "native-t923-worker"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-16T09:49:45.760Z",
+        "startCommit": "8703950d5f6d7049922a56a25f585e093c82f77f"
+      }
+    },
+    {
+      "sequence": 135,
+      "at": "2026-11-16T09:49:48.189Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 136,
+      "at": "2026-11-16T09:54:22.396Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 137,
+      "at": "2026-11-16T09:55:17.979Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+        "submittedBase": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+        "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+        "submittedAt": "2026-11-16T09:55:17.979Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T923",
+            "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+            "at": "2026-11-16T09:55:17.970Z",
+            "verification": [
+              {
+                "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+                "startedAt": "2026-11-16T09:54:22.505Z",
+                "finishedAt": "2026-11-16T09:55:17.849Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
+            "startedAt": "2026-11-16T09:54:22.505Z",
+            "finishedAt": "2026-11-16T09:55:17.849Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 138,
+      "at": "2026-11-16T09:56:01.120Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:56:01.115Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 139,
+      "at": "2026-11-16T09:56:01.222Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9118eaff-e251-4734-a418-7023039683ed",
+          "owner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024/reviewer-1",
+          "status": "reviewing",
+          "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+          "baseCommit": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+          "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+          "createdAt": "2026-11-16T09:56:01.222Z"
+        }
+      }
+    },
+    {
+      "sequence": 140,
+      "at": "2026-11-16T09:56:04.675Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
+          "runner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-16T09:56:04.675Z"
+        }
+      }
+    },
+    {
+      "sequence": 141,
+      "at": "2026-11-16T09:56:04.687Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
+          "runner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-16T09:56:04.675Z"
+        }
+      }
+    },
+    {
+      "sequence": 142,
+      "at": "2026-11-16T09:56:19.215Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9118eaff-e251-4734-a418-7023039683ed",
+          "owner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T923 meets acceptance. The only code change is `scripts.verify:batch` in package.json, now `pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch`. The `&&` means a failed install stops the chain before the runner starts. There are no dependency, lockfile, runner or other script changes, and the version is untouched. The task file's acceptance boxes and result are updated and match the diff. The worker evidence covers the task tier (typecheck, lint, format, i18n, affected unit) and `gusta lint`. The full batch is correctly left to the coordinator on the shared fixed candidate. I did not re-run any checks. Task-file `st:todo` is left for the runner to update.",
+          "findings": [],
+          "commit": "730812037eb4f48d0e170d14345bff5e0cd63e08",
+          "baseCommit": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+          "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
+          "createdAt": "2026-11-16T09:56:01.222Z",
+          "finishedAt": "2026-11-16T09:56:19.215Z"
+        }
+      }
+    },
+    {
+      "sequence": 143,
+      "at": "2026-11-16T09:56:19.222Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
+          "runner": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-16T09:56:04.675Z",
+          "finishedAt": "2026-11-16T09:56:19.222Z",
+          "error": null,
+          "summary": "T923 meets acceptance. The only code change is `scripts.verify:batch` in package.json, now `pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch`. The `&&` means a failed install stops the chain before the runner starts. There are no dependency, lockfile, runner or other script changes, and the version is untouched. The task file's acceptance boxes and result are updated and match the diff. The worker evidence covers the task tier (typecheck, lint, format, i18n, affected unit) and `gusta lint`. The full batch is correctly left to the coordinator on the shared fixed candidate. I did not re-run any checks. Task-file `st:todo` is left for the runner to update."
+        }
+      }
+    },
+    {
+      "sequence": 144,
+      "at": "2026-11-16T09:56:19.249Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 145,
+      "at": "2026-11-16T09:56:47.497Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "startedAt": "2026-11-16T09:56:46.872Z",
+            "finishedAt": "2026-11-16T09:56:47.397Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 146,
+      "at": "2026-11-16T09:56:47.659Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
+        "integratedAt": "2026-11-16T09:56:47.659Z"
+      }
+    },
+    {
+      "sequence": 147,
+      "at": "2026-11-16T09:56:52.712Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
+          "at": "2026-11-16T09:56:52.707Z",
+          "verified": false,
+          "owner": {
+            "tag": "ws16",
+            "branch": "gusta-session-self-improve-ws16-c1384351"
+          },
+          "checks": [
+            "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "node --import tsx /tmp/ws16-verify-world.mjs ."
+          ],
+          "agentChecks": []
+        }
+      }
+    },
+    {
+      "sequence": 148,
+      "at": "2026-11-16T09:56:52.802Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 149,
+      "at": "2026-11-16T09:56:53.795Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T09:56:53.795Z"
+      }
+    },
+    {
+      "sequence": 150,
+      "at": "2026-11-16T09:56:53.803Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:56:01.115Z",
+          "stoppedAt": "2026-11-16T09:56:53.803Z",
+          "dispatched": 1,
+          "outcome": "completed",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 151,
+      "at": "2026-11-16T10:07:03.837Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "b26d32d9eefe3616b862d5ca3084e9c3c8f46ad4",
+          "at": "2026-11-16T10:07:03.833Z",
+          "verified": false,
+          "owner": {
+            "tag": "ws16",
+            "branch": "gusta-session-self-improve-ws16-c1384351"
+          },
+          "checks": [
+            "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
+          ],
+          "agentChecks": []
+        }
+      }
+    },
+    {
+      "sequence": 152,
+      "at": "2026-11-16T10:09:56.689Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "aeccacfcbcf93317abfd151a27527c50b2a94b77",
+          "at": "2026-11-16T10:09:56.682Z",
+          "verified": false,
+          "owner": {
+            "tag": "ws16",
+            "branch": "gusta-session-self-improve-ws16-c1384351"
+          },
+          "checks": [
+            "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
+          ],
+          "agentChecks": []
+        }
+      }
+    }
+  ]
+}

@@ -29,7 +29,7 @@
     "verify": "node scripts/verify.mjs",
     "benchmark:browser": "node scripts/first-play.mjs",
     "test:integration": "vitest run --project integration",
-    "verify:batch": "node scripts/verify.mjs --batch"
+    "verify:batch": "pnpm install --frozen-lockfile --offline && node scripts/verify.mjs --batch"
   },
   "dependencies": {
     "brotli": "2.1.0",
