@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T09:56:22.348Z",
-  "sourceCommit": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
+  "snapshotAt": "2026-11-16T09:56:56.291Z",
+  "sourceCommit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
   "group": {
     "id": "ws16",
     "branch": "gusta-session-self-improve-ws16-c1384351",
@@ -13,8 +13,8 @@
       "maxPending": 8
     },
     "ready": {
-      "commit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
-      "at": "2026-11-16T09:44:36.982Z",
+      "commit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
+      "at": "2026-11-16T09:56:52.707Z",
       "verified": false,
       "owner": {
         "tag": "ws16",
@@ -39,7 +39,7 @@
       "T922",
       "T923"
     ],
-    "runner": {
+    "lastRun": {
       "id": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
       "adapter": "builtin",
       "providers": {
@@ -62,34 +62,8 @@
         }
       ],
       "startedAt": "2026-11-16T09:56:01.115Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.169.0"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": "sonnet",
-          "version": "2.1.325 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.169.0"
-        }
-      ],
-      "startedAt": "2026-11-16T09:23:23.953Z",
-      "stoppedAt": "2026-11-16T09:44:40.214Z",
-      "dispatched": 2,
+      "stoppedAt": "2026-11-16T09:56:53.803Z",
+      "dispatched": 1,
       "outcome": "completed",
       "failures": [],
       "autopilot": true,
@@ -362,6 +336,9 @@
       "submittedBase": "c407a1ec7cec2f06ecfdba3e60ba5106d260f2b3",
       "submissionId": "10ba08aa-2358-4d4a-956e-32bc879f498c",
       "submittedAt": "2026-11-16T09:55:17.979Z",
+      "integratedCommit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
+      "integratedAt": "2026-11-16T09:56:47.659Z",
+      "cleanedAt": "2026-11-16T09:56:53.795Z",
       "risk": null,
       "dispatch": {
         "id": "d693328a-21f7-4fa2-8e03-cf0c6a0659b0",
@@ -408,6 +385,13 @@
           "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs vibe check --tier task --timeout-ms 900000 -- 'pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests --maxWorkers 4'",
           "startedAt": "2026-11-16T09:54:22.505Z",
           "finishedAt": "2026-11-16T09:55:17.849Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+          "startedAt": "2026-11-16T09:56:46.872Z",
+          "finishedAt": "2026-11-16T09:56:47.397Z"
         }
       ]
     }
@@ -2584,6 +2568,132 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 145,
+      "at": "2026-11-16T09:56:47.497Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "startedAt": "2026-11-16T09:56:46.872Z",
+            "finishedAt": "2026-11-16T09:56:47.397Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 146,
+      "at": "2026-11-16T09:56:47.659Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
+        "integratedAt": "2026-11-16T09:56:47.659Z"
+      }
+    },
+    {
+      "sequence": 147,
+      "at": "2026-11-16T09:56:52.712Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
+          "at": "2026-11-16T09:56:52.707Z",
+          "verified": false,
+          "owner": {
+            "tag": "ws16",
+            "branch": "gusta-session-self-improve-ws16-c1384351"
+          },
+          "checks": [
+            "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "node --import tsx /tmp/ws16-verify-world.mjs ."
+          ],
+          "agentChecks": []
+        }
+      }
+    },
+    {
+      "sequence": 148,
+      "at": "2026-11-16T09:56:52.802Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 149,
+      "at": "2026-11-16T09:56:53.795Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "ae6f5830-9de3-4728-999d-87aa78121edc",
+      "taskId": "T923",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T09:56:53.795Z"
+      }
+    },
+    {
+      "sequence": 150,
+      "at": "2026-11-16T09:56:53.803Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "cc1fbbd3-7d62-4298-a0e0-4f4bdaca1024",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:56:01.115Z",
+          "stoppedAt": "2026-11-16T09:56:53.803Z",
+          "dispatched": 1,
+          "outcome": "completed",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
