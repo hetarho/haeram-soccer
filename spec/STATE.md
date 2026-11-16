@@ -101,6 +101,7 @@
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | blocked@261116 |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |
 | T922 | Keep coaching hires after their actual retirement | ARCH | - | todo |
+| T923 | Prepare fixed-candidate dependencies before the full batch | ARCH | T917 | todo |
 
 ## next
 - Session ws16 implements T922 for the reproduced wartime save blocker; independent review and shared fixed-candidate verification precede push.

@@ -1,11 +1,12 @@
 # REVIEW verification-prerequisite-261116
-> st:converted@261116 | scope:scripts/verify.mjs playwright.config.ts .github/workflows/verify.yml README.md | at:a0615ff7 | base:ARCH@44
+> st:converted@261116 | scope:scripts/verify.mjs playwright.config.ts .github/workflows/verify.yml README.md package.json | at:a0615ff7 | base:ARCH@44
 
 ## summary
 - The requested save repair and push require the actual ARCH-30 final batch. A bounded read-only scout found that the currently landed script still launches local browsers, contrary to the already adopted CI-only policy. The existing unstarted T917 supplies that policy; its T884 dependency is edit serialization rather than a functional prerequisite.
 
 ## findings
 - F1 [o] P1 scripts/verify.mjs:19,81-87,190: bug: `verify:batch` still includes `test:e2e` and records browser scope, although ARCH-30 requires every browser journey to run in CI only. Implement the existing T917 Chromium-only planner/configuration against the current landed runner, preserving every nonbrowser check, phase order, lifecycle, timeout and receipt. ← the mandatory final command cannot currently satisfy its declared contract; no custom command decomposition or aborted browser stage is a substitute →T917
+- F2 [o] P1 package.json:32 and GUSTA integration candidate creation: bug: the required batch command assumes installed dependencies, but the fixed verification worktree is created with Git only. Bootstrap the exact frozen offline dependencies inside the existing `verify:batch` package command before its unchanged runner, preserving the literal ARCH command and all actual checks. ← there is no supported pre-check setup hook; appending installation after the declared batch cannot prepare it →T923
 
 ## notes
 - Adopted by the orchestrator under the owner's local self-improvement, warning-reconciliation, continuation and push authorization, solely to make the required final gate comply with existing ARCH-23/30/35. No gameplay, support-policy or validation-range decision is changed.
@@ -13,3 +14,4 @@
 - Remove only T917's scheduling dependency and update its implementation basis. T884 retains its task, status, touches, acceptance, historical P2 descendant-cancellation finding and author. Its eventual rebase must preserve this no-browser planner and obtain its own fresh review.
 - Allowed source paths are exactly T917's four existing paths. No browser journey, test assertion, timeout, benchmark, unrelated fixture or world rule may be changed. Task-tier checks and bounded planner inspection belong to the worker; the actual complete nonbrowser batch belongs to the fixed shared candidate; browser evidence belongs to post-push CI.
 - One bounded worker and independent review; no long measurement or browser run during implementation. Preserve all previous failed/cancelled verification evidence and the other coordinator's heavy-lock ownership. This prerequisite does not authorize integrating held football work or bypassing the final gate.
+- F2 was independently identified by the read-only final-dependency audit `/tmp/ws16-final-dependency-setup-audit.md`: candidate creation only adds a Git worktree, and participant commands are appended after the declared batch. Adopted under the same explicit completed-main handoff request. T923 changes only the package command's prerequisite setup, with no ARCH revision, dependency/lockfile change, check omission or CLI patch. A frozen installation failure must fail the same command. Keep installation and the real runner in one command so cached installation cannot stand in for missing ignored dependencies.
