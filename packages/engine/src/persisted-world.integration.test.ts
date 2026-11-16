@@ -14,6 +14,12 @@ import { SEASON_END_DAY } from './calendar';
 import { SQUAD_MINIMUM } from './squad-size';
 import { freeSigningSourceWitness } from './free-signing-source.testkit';
 
+/**
+ * The openings after the war gap keep the squads seven summers without a window left (→WORLD-14),
+ * so LEAGUE-10 holds its division order on every other season's first day and from 1949 again.
+ */
+const POST_WAR_OPENINGS = new Set([1946, 1947, 1948]);
+
 /** Full lived-world regression: the coordinator runs this only at the integrated batch gate. */
 function firstDay(w: World) {
   expect(w.round).toBe(0);
@@ -42,6 +48,7 @@ function firstDay(w: World) {
     expect(live.has(p.id)).toBe(false);
     live.add(p.id);
   }
+  if (POST_WAR_OPENINGS.has(w.year)) return;
   for (const cp of COUNTRIES) {
     const means = cp.groups.map((_, tier) => {
       const clubs = w.clubs.filter((c) => c.country === cp.code && c.tier === tier);

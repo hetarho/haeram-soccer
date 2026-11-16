@@ -65,7 +65,7 @@
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | blocked@261116 |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |
-| T924 | Exempt only the post-war openings from the division-order check | LEAGUE WORLD | - | todo |
+| T924 | Exempt only the post-war openings from the division-order check | LEAGUE WORLD | - | doing@261116.nf16 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
