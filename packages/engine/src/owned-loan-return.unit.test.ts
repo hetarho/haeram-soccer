@@ -33,6 +33,12 @@ vi.mock('./primitives', async (importOriginal) => {
   };
 });
 // END DRAW OBSERVATION
+/**
+ * Draws that consume randomness. A club manager is a pure derivation keyed by the seed, club and
+ * manager count, memoized by club strength; whether a squad re-choice finds him cached depends on
+ * earlier work skipped elsewhere (T919), never on what the return settles.
+ */
+const streamDraws = () => draws.filter(([seed]) => !seed.includes(':club-manager:'));
 
 /** The real owned bid/acceptance path, with a persisted parent and player employment. */
 function ownedLoan(age: number, missingParent = false) {
@@ -138,7 +144,7 @@ describe('canonical owned loan return notification', () => {
       const moveAt = w.playerRecords![id]!.moves.length;
       draws.length = 0;
       returnNpcLoans(w);
-      expect(draws).toEqual([]);
+      expect(streamDraws()).toEqual([]);
       expect(w.events.slice(eventAt)).toEqual([
         {
           year: w.year,
@@ -173,7 +179,7 @@ describe('canonical owned loan return notification', () => {
       const once = structuredClone(w);
       returnNpcLoans(w);
       expect(w).toEqual(once);
-      expect(draws).toEqual([]);
+      expect(streamDraws()).toEqual([]);
       closeNpcSummer(w);
       expect(w.events.slice(eventAt).filter((e) => e.kind === 'loan-return')).toHaveLength(1);
       expect(w.playerRecords![id]!.moves).toHaveLength(moveAt + 1);
@@ -192,7 +198,7 @@ describe('canonical owned loan return notification', () => {
     draws.length = 0;
     returnNpcLoans(w);
     expect(w.events.slice(eventAt)).toEqual([]);
-    expect(draws).toEqual([]);
+    expect(streamDraws()).toEqual([]);
     expect(w.squads![parent]!.filter((p) => p.id === id)).toHaveLength(1);
     expect(w.playerRecords![id]!.loan).toBeUndefined();
     expect(digest(facts(w, eventAt))).toBe(BASELINE.npc);
@@ -209,7 +215,7 @@ describe('canonical owned loan return notification', () => {
     draws.length = 0;
     returnNpcLoans(w);
     expect(w.events.slice(eventAt)).toEqual([]);
-    expect(draws).toEqual([]);
+    expect(streamDraws()).toEqual([]);
     expect(w.playerRecords![id]!.moves).toEqual(moves);
     expect(w.players.find((p) => p.id === id)!.status).toBe('active');
     expect(w.playerRecords![id]!.loan).toBeUndefined();
