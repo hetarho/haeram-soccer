@@ -101,6 +101,7 @@
 | T919 | Drop repeated squad scans on NPC renewals and moves | ARCH | - | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | todo |
 | T921 | Sign free agents without searching every squad | ARCH | T919 | todo |
+| T923 | Prepare fixed-candidate dependencies before the full batch | ARCH | T917 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
