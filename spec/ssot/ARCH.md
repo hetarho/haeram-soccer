@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r43 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r44 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -126,8 +126,8 @@
   - Use an exclusive Web Lock for the active save and BroadcastChannel/storage-event notifications for read-only tabs.
   - A second tab explains its read-only state; it does not compete with the first tab's progression.
   - Feature-detect required browser capabilities; unsupported capabilities produce a readable recovery/compatibility path instead of a partial writer.
-- ARCH-18 [o] Web UI supports current stable desktop and mobile browsers with responsive controls.
-  - Browser gate: Chrome/Edge, Firefox, and Safari/WebKit families; exercise touch-sized mobile layouts in browser tests.
+- ARCH-18 [o] Web UI supports the browsers and platforms of →!ARCH-35 with responsive desktop and mobile controls.
+  - Browser tests run only on →!ARCH-35's supported browsers and exercise touch-sized mobile layouts.
   - The web demo starts without account creation; after initial assets/catalogs are available, local play does not depend on a network API.
   - Offline reload/service-worker installation is a later scope; do not claim guaranteed offline startup from ordinary HTTP caching.
   - React escapes user text; imported names are data, not executable HTML.
@@ -167,7 +167,7 @@
   - `verify` runs type/lint/format, unit/integration/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.
   - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.
 - ARCH-23 [o] CI and release use a reproducible static build.
-  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit and integration tests in separate jobs (integration in three shards), each restoring the simulated test worlds (→ARCH-21); built-preview browser tests per browser — Chromium and Firefox in three shards, WebKit in four — each installing only its pinned browser and restoring the simulated test worlds its journeys set up (→ARCH-21). Every job has a time limit (checks and unit 20 min, integration 45 min, browser shards 120 min) so a hung run fails instead of holding main's run queue for the platform's six hours. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
+  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit and integration tests in separate jobs (integration in three shards), each restoring the simulated test worlds (→ARCH-21); built-preview browser tests for each →!ARCH-35 supported browser — Chromium in three shards — each installing only its pinned browser and restoring the simulated test worlds its journeys set up (→ARCH-21). Every job has a time limit (checks and unit 20 min, integration 45 min, browser shards 120 min) so a hung run fails instead of holding main's run queue for the platform's six hours. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
   - The storage and first-play benchmarks against the production build run only on demand, in their own manually dispatched workflow that retains `apps/web/dist` and the benchmark reports; a storage or release gate task (→ARCH-14) runs `pnpm run benchmark` locally or has the owner dispatch that workflow. ← the 100-season benchmark took about 90 minutes on every push once own-league matches played the grid engine
   - Require verification checks on the protected production branch; Netlify production deploys only that branch and uses the pinned install/build commands.
   - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
@@ -208,11 +208,11 @@
 - ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow
   - task, once before each done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm run validate:i18n`, `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests`.
   - Run task commands through `vibe check --tier task`; task acceptance names task-tier checks only. Maintain affected integration and browser tests with the implementation and hand off their commands/specs in result limits; unexecuted checks never count as passed.
-  - batch, before code push or final completion: `pnpm run verify:batch`. It covers unit, integration, contract, catalogs, presentation, build and every journey on Chromium.
-  - Builds, integration, browser specs and full suites belong to the initiating coordinator's final batch gate, including changes to UI, browser journeys, storage and workers.
-  - CI, after code push: the GitHub Actions run of →ARCH-23, every browser. A push touching only `spec/`, `artifacts/` or Markdown starts none.
+  - batch, before code push or final completion: `pnpm run verify:batch`. It covers type/lint/format, i18n, catalogs, presentation, unit, integration, contract, world warm-up and build; it runs no browser spec.
+  - Builds, integration and full suites belong to the initiating coordinator's final batch gate, including changes to UI, browser journeys, storage and workers.
+  - CI, after code push: the GitHub Actions run of →ARCH-23, including every browser journey on →ARCH-35's supported browsers. Browser journeys run only there. A push touching only `spec/`, `artifacts/` or Markdown starts none. ← the Chromium journeys took about 18 minutes of every local gate
   - Reuse successful checks only with unchanged definitions, inputs, environment and scope; recovery checks failed, affected or unrun items. An external script is one check unless an explicit verification plan declares its parts; never infer stage-level reuse from a partial script run.
-  - A session permits at most three failed batch/group gate rounds cumulatively. After the second failure, another repair requires a strictly smaller complete failure set for the same plan. Keep the original session, deadline and unit limits across recovery; cancellation, timeout and unfinished coverage are not passes.
+  - A failed batch/group gate is repaired and run again within the original session, deadline and unit limits; cancellation, timeout and unfinished coverage are not passes.
 
 - ARCH-31 [o] A match-model release has a capacity gate (→SAVE-23); its throughput (→!ARCH-34) and accuracy (→MATCH-28) are measured and reported with the release, not gates. ← the model ships first and its football is calibrated on the released model
   - record a pre-change baseline and final source fingerprint on the same pinned toolchain, machine and fixed worlds. Measure isolated fixture processing, complete season engine time, record settlement, codecs and observation separately; record warm-up, repetitions, medians, samples and memory.
@@ -245,6 +245,15 @@
   - the call: per process the median log-ratio of its pairs, over processes a trimmed mean with a 95% bootstrap interval; faster means the whole interval lies below 1. A small gain that clears the noise counts; a gain inside the noise is not claimed.
   - a result-identical speed-up keeps every workload's output hash (own match, aggregate, staging, day) equal to its baseline's; changing results makes it a model change (→SAVE-23), not a speed-up.
   - a result names the machine, its load, the interval and the hashes; a figure from another machine is context only.
+- ARCH-35 [o] Product stage and support scope. ← the game is not public yet; one browser keeps the gates and CI short until external players arrive
+  - product-stage: alpha
+  - supported-browsers: current stable Google Chrome, verified on the Chromium build Playwright pins
+  - supported-platforms: Chrome on desktop (Windows, macOS, Linux) and Android; mobile layouts are verified with touch-sized viewports in that Chromium, not on devices
+  - supported-app-versions: none; one deployed static web build, and saves follow →~SAVE-10
+  - excluded-support: Firefox, Safari/WebKit (every iOS browser included), Edge and other Chromium-based browsers as separately verified targets, Chrome versions before the current stable
+  - support-review: before beta or the first external players
+  - validation-baseline: Playwright 1.63.0 with Chromium 153.0.8010.12 (r1243), Node 24.22.1, pnpm 10.34.6; observed 261116
+  - The pre-1.0 BETA mark (→~WEB-101) is player-facing naming; it does not widen this stage's support.
 
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → tasks → implementation.
@@ -265,6 +274,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r44 261116 ARCH-18✎ Chrome/Edge, Firefox and Safari/WebKit gate→ARCH-35 supported browsers · ARCH-23✎ Chromium and Firefox three shards, WebKit four→supported browsers, Chromium three shards · ARCH-30✎ batch every journey on Chromium→no browser spec, journeys only in CI; three cumulative failed gates→repair and rerun within limits · ARCH-35+ alpha, current stable Chrome only
 - r43 261114 ARCH-30✎ per-task build and browser acceptance after build→coordinator batch build and task-tier acceptance with handoff; task execution and i18n guidance→once through `vibe check` with mandatory i18n; recovery unspecified→input-valid success reuse and three cumulative failed gates
 - r42 261113 ARCH-32✎ stored-prose recognition without a resource-lifetime rule→retain source IDs, templates and every registered translation while supported saves can contain their prose, even after producer removal
 - r41 261113 ARCH-1✎ product SSOTs derived from `ideation/club-history-reboot.md`→the product SSOTs · constraints✎ product background `spec/ideation/club-history-reboot.md` and project overview `spec/NARRATIVE.md`→rules in `spec/ssot/` only, archived ideation is background (NARRATIVE removed, club-history-reboot archived)

@@ -19,7 +19,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 43 | 43 | - | 2 |
+| ARCH | 44 | 43 | ARCH-18✎ ARCH-23✎ ARCH-30✎ ARCH-35+ | 2 |
 | WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 14 | 14 | - | 0 |
