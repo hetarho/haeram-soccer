@@ -132,8 +132,10 @@
 | T924 | nf16 | gusta-session-start-nf16-46eb8aaa | 0747aef346a8 | 2026-11-16T16:41Z |
 | T927 | work | gusta-session-self-improve-pf17-c279c8c5 | 9df07d8f9f7f | 2026-11-16T17:10Z |
 | T925 | work | gusta-session-self-improve-pf17-c279c8c5 | c8015647fe76 | 2026-11-16T17:11Z |
+| T926 | work | gusta-session-self-improve-pf17-c279c8c5 | 94b7206ffe0c | 2026-11-16T17:26Z |
 
 ## log
+- 261116 T926 integrated
 - 261116 fix test: warmed replay seed keyed the same under tsx and vitest
 - 261116 T925 integrated
 - 261116 T927 integrated
@@ -153,4 +155,3 @@
 - 261116 gusta-create-task review/generation-market-261116 → T918 T919 (generation slowdown from T864 npcMarket pool rebuild)
 - 261116 gusta-create-task review/generation-market-261116 start
 - 261116 gusta-update 0.17.1→0.17.3: FORMAT migrated, ARCH r44, T917 planned
-- 261116 gusta-update-ssot ARCH r44: alpha Chrome-only support (ARCH-35), browser journeys only in CI, failed-gate cap removed
