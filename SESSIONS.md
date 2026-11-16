@@ -121,15 +121,6 @@
 - 261116 decided LEAGUE-10: Owner chose the check boundary over a model fix: LEAGUE-10 r21 keeps division order on every season's first day except the 1946-1948 openings after the war gap (T924). Alternatives: model fix of the post-war restart (hours to days, broad fixture churn, uncertain); stop with the failure (rejected by owner).
 - 261116 decided T925: pf17 orchestrator adopted generation-hotpaths F1-F3 as T925-T927 and runs planned T921 (owner request 261117: autonomous performance work until 06:00 KST). F4 (semantic slot keys) deferred: risk of conflating ratings and same lines as F3. Kept only with identical worlds and a measured CPU-ratio interval below 1.
 
-## unlanded
-| id | tag | branch | commit | at |
-|---|---|---|---|---|
-| T924 | nf16 | gusta-session-start-nf16-46eb8aaa | 0747aef346a8 | 2026-11-16T16:41Z |
-| T927 | work | gusta-session-self-improve-pf17-c279c8c5 | 9df07d8f9f7f | 2026-11-16T17:10Z |
-| T925 | work | gusta-session-self-improve-pf17-c279c8c5 | c8015647fe76 | 2026-11-16T17:11Z |
-| T926 | work | gusta-session-self-improve-pf17-c279c8c5 | 94b7206ffe0c | 2026-11-16T17:26Z |
-| T921 | work | gusta-session-self-improve-pf17-c279c8c5 | d3e3bf767229 | 2026-11-16T17:33Z |
-
 ## log
 - 261116 T921 integrated
 - 261116 T926 integrated
