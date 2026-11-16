@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T17:09:21.356Z",
-  "sourceCommit": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
+  "snapshotAt": "2026-11-16T17:11:21.037Z",
+  "sourceCommit": "9df07d8f9f7fb277527d67a22b5e2702a904008a",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -97,10 +97,10 @@
   },
   "summary": {
     "total": 4,
-    "completed": 1,
-    "remaining": 3,
+    "completed": 2,
+    "remaining": 2,
     "running": 1,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 1
   },
@@ -112,12 +112,6 @@
         "T925"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T925",
-      "title": "Pick each bench player with one scan instead of a sort",
-      "dep": [],
-      "status": "ready"
     },
     {
       "id": "T926",
@@ -139,7 +133,7 @@
       "contributors": [
         "716a7625-cdcf-4060-9427-046922222193/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-16T16:50:12.872Z",
       "startCommit": "e4a60d06cd74f7d6b1e274feb8f435dc214e2e36",
@@ -149,17 +143,30 @@
       "submittedAt": "2026-11-16T17:08:49.891Z",
       "risk": null,
       "dispatch": {
-        "id": "123417a8-7ea3-4b30-8b8c-77f60896a308",
-        "runner": "d8d3a689-2b2d-463a-b4a4-849d595ad4fb",
+        "id": "42ea05b2-03de-48d8-a760-1bb46f1a297d",
+        "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
         "role": "reviewer",
         "slot": 1,
         "provider": "codex",
         "model": "gpt-6.1-terra",
         "status": "finished",
-        "startedAt": "2026-11-16T17:02:49.080Z",
-        "finishedAt": "2026-11-16T17:03:14.363Z",
+        "startedAt": "2026-11-16T17:10:56.418Z",
+        "finishedAt": "2026-11-16T17:11:18.542Z",
         "error": null,
-        "summary": "T925 records the experiment and retains the base implementation because the measured CPU interval does not establish a gain. The candidate patch and worker evidence were reviewed; integration, contract and build verification remain with the coordinator’s final gate."
+        "summary": "T925 records a reproducible candidate patch and an inconclusive benchmark, and correctly retains the base production code. Worker evidence reports matching generation hashes and passing task checks; the coordinator retains the final integration gate."
+      },
+      "review": {
+        "id": "34955b66-fcee-4d55-8cbf-d1a3d873a414",
+        "owner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T925 records a reproducible candidate patch and an inconclusive benchmark, and correctly retains the base production code. Worker evidence reports matching generation hashes and passing task checks; the coordinator retains the final integration gate.",
+        "findings": [],
+        "commit": "4219dcf60ed3f5014ec4d53c1ccd6a2424c585b2",
+        "baseCommit": "9df07d8f9f7fb277527d67a22b5e2702a904008a",
+        "submissionId": "e7248e31-4094-41df-9567-e67359ff287f",
+        "createdAt": "2026-11-16T17:10:53.943Z",
+        "finishedAt": "2026-11-16T17:11:18.534Z"
       },
       "reviewHistory": [
         {
@@ -250,6 +257,8 @@
       "submittedBase": "3777df613e3ec9057d8bae3b2e5f48aa4eda17cb",
       "submissionId": "83ede00b-d479-4218-ba10-6c9ef5c4fdcc",
       "submittedAt": "2026-11-16T17:08:04.391Z",
+      "integratedCommit": "9df07d8f9f7fb277527d67a22b5e2702a904008a",
+      "integratedAt": "2026-11-16T17:10:51.269Z",
       "risk": null,
       "dispatch": {
         "id": "b3f47552-bc63-4104-af45-c97cb8463e1b",
@@ -319,6 +328,13 @@
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-11-16T17:07:39.146Z",
           "finishedAt": "2026-11-16T17:08:04.189Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T17:09:21.535Z",
+          "finishedAt": "2026-11-16T17:10:50.893Z"
         }
       ]
     }
@@ -1885,6 +1901,170 @@
       "group": "pf17-perf",
       "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
       "taskId": "T927",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 544,
+      "at": "2026-11-16T17:10:51.040Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T17:09:21.535Z",
+            "finishedAt": "2026-11-16T17:10:50.893Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 545,
+      "at": "2026-11-16T17:10:51.270Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3efc77fa-8959-4ffd-ae59-13fc63d439dd",
+      "taskId": "T927",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "9df07d8f9f7fb277527d67a22b5e2702a904008a",
+        "integratedAt": "2026-11-16T17:10:51.269Z"
+      }
+    },
+    {
+      "sequence": 546,
+      "at": "2026-11-16T17:10:53.943Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "34955b66-fcee-4d55-8cbf-d1a3d873a414",
+          "owner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/reviewer-1",
+          "status": "reviewing",
+          "commit": "4219dcf60ed3f5014ec4d53c1ccd6a2424c585b2",
+          "baseCommit": "9df07d8f9f7fb277527d67a22b5e2702a904008a",
+          "submissionId": "e7248e31-4094-41df-9567-e67359ff287f",
+          "createdAt": "2026-11-16T17:10:53.943Z"
+        }
+      }
+    },
+    {
+      "sequence": 547,
+      "at": "2026-11-16T17:10:56.418Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "42ea05b2-03de-48d8-a760-1bb46f1a297d",
+          "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-16T17:10:56.418Z"
+        }
+      }
+    },
+    {
+      "sequence": 548,
+      "at": "2026-11-16T17:10:56.427Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "42ea05b2-03de-48d8-a760-1bb46f1a297d",
+          "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-16T17:10:56.418Z"
+        }
+      }
+    },
+    {
+      "sequence": 549,
+      "at": "2026-11-16T17:11:18.534Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "34955b66-fcee-4d55-8cbf-d1a3d873a414",
+          "owner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T925 records a reproducible candidate patch and an inconclusive benchmark, and correctly retains the base production code. Worker evidence reports matching generation hashes and passing task checks; the coordinator retains the final integration gate.",
+          "findings": [],
+          "commit": "4219dcf60ed3f5014ec4d53c1ccd6a2424c585b2",
+          "baseCommit": "9df07d8f9f7fb277527d67a22b5e2702a904008a",
+          "submissionId": "e7248e31-4094-41df-9567-e67359ff287f",
+          "createdAt": "2026-11-16T17:10:53.943Z",
+          "finishedAt": "2026-11-16T17:11:18.534Z"
+        }
+      }
+    },
+    {
+      "sequence": 550,
+      "at": "2026-11-16T17:11:18.542Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "42ea05b2-03de-48d8-a760-1bb46f1a297d",
+          "runner": "672f8c4f-065f-4b8c-8fc6-06d68138a0fb",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-16T17:10:56.418Z",
+          "finishedAt": "2026-11-16T17:11:18.542Z",
+          "error": null,
+          "summary": "T925 records a reproducible candidate patch and an inconclusive benchmark, and correctly retains the base production code. Worker evidence reports matching generation hashes and passing task checks; the coordinator retains the final integration gate."
+        }
+      }
+    },
+    {
+      "sequence": 551,
+      "at": "2026-11-16T17:11:18.568Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "742d3a2a-72ae-4916-85af-ea48c5633f44",
+      "taskId": "T925",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

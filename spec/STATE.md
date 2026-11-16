@@ -66,7 +66,6 @@
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | blocked@261116 |
 | T921 | Sign free agents without searching every squad | ARCH | T925 | todo |
-| T925 | Pick each bench player with one scan instead of a sort | ARCH | - | todo |
 | T926 | Read the sixteen OVR attributes directly | ARCH | - | todo |
 
 ## work
@@ -74,7 +73,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 | natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
-| pf17-perf | 2 | 4 | 1 | 3 | 1 | 1 | 0 | 2026-11-16T17:09:21.356Z | [history](work/pf17-perf.json) |
+| pf17-perf | 2 | 4 | 2 | 2 | 1 | 0 | 0 | 2026-11-16T17:11:21.037Z | [history](work/pf17-perf.json) |
 
 ## next
 - inspect work board for remaining tasks
