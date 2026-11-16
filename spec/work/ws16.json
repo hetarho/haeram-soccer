@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T09:56:56.291Z",
-  "sourceCommit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
+  "snapshotAt": "2026-11-16T10:07:06.210Z",
+  "sourceCommit": "b26d32d9eefe3616b862d5ca3084e9c3c8f46ad4",
   "group": {
     "id": "ws16",
     "branch": "gusta-session-self-improve-ws16-c1384351",
@@ -13,8 +13,8 @@
       "maxPending": 8
     },
     "ready": {
-      "commit": "2afdc00a433cd08ef013f51abd3e574ef63a12d3",
-      "at": "2026-11-16T09:56:52.707Z",
+      "commit": "b26d32d9eefe3616b862d5ca3084e9c3c8f46ad4",
+      "at": "2026-11-16T10:07:03.833Z",
       "verified": false,
       "owner": {
         "tag": "ws16",
@@ -22,7 +22,7 @@
       },
       "checks": [
         "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
-        "node --import tsx /tmp/ws16-verify-world.mjs ."
+        "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
       ],
       "agentChecks": []
     },
@@ -2693,6 +2693,30 @@
           "failures": [],
           "autopilot": true,
           "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 151,
+      "at": "2026-11-16T10:07:03.837Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "b26d32d9eefe3616b862d5ca3084e9c3c8f46ad4",
+          "at": "2026-11-16T10:07:03.833Z",
+          "verified": false,
+          "owner": {
+            "tag": "ws16",
+            "branch": "gusta-session-self-improve-ws16-c1384351"
+          },
+          "checks": [
+            "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
+          ],
+          "agentChecks": []
         }
       }
     }
