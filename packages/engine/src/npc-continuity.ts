@@ -263,7 +263,7 @@ export function movePerson(
       fee: '0',
       ...(loanUntil === undefined ? {} : { loan: true }),
     });
-  moveSquadPlayer(w, p, club, source);
+  const chosenAgain = moveSquadPlayer(w, p, club, source);
   if (
     person.club === club &&
     person.playing === (club ? 'active' : 'released') &&
@@ -279,8 +279,10 @@ export function movePerson(
     person.playing = 'released';
     playingChanged(w);
   }
-  if (previousClub) invalidateNpcSquad(w, previousClub);
-  if (club) invalidateNpcSquad(w, club);
+  // A squad already chosen again by the move is unchanged since: its inputs (players, formation,
+  // the manager's style and trait) are not touched by the employment records above.
+  if (previousClub && !chosenAgain.includes(previousClub)) invalidateNpcSquad(w, previousClub);
+  if (club && !chosenAgain.includes(club)) invalidateNpcSquad(w, club);
   return person;
 }
 export function returnLoan(w: World, p: Player) {

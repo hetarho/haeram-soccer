@@ -173,7 +173,7 @@ export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
       current.length <= SQUAD_MINIMUM ||
       current.filter((q) => lineOf(q.position) === line).length <= LINE_MINIMUM[line];
     if (needed) renewing.push(p);
-    else joinFreeAgents(w, p, year);
+    else joinFreeAgents(w, p, year, c.id);
   }
   for (const p of renewing.reverse()) {
     const wage = marketWageAt(c.country, year, c.tier, p);
@@ -182,7 +182,7 @@ export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
       p.until = year + npcContractTerm(year - p.born) - 1;
       const job = w.people?.[p.id]?.employment.find((j) => j.role === 'player' && !j.to);
       if (job) job.contractUntil = { year: p.until, day: 365 };
-    } else joinFreeAgents(w, p, year);
+    } else joinFreeAgents(w, p, year, c.id);
   }
 }
 
