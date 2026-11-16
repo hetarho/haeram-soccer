@@ -105,6 +105,7 @@
 - 261114 decided T916 review/natural-football-261114: User explicitly chose preserving annual order and requested autonomous completion. Adopt one coordinator-owned four-variant diagnostic: current control, existing age headroom/currentOVR floor, raw NPC youth offset-11, and both. Production stays unchanged pending full original targets, review and final gates; preserve all failed history. Numeric outcome changes in the authorized repair experiment are not a new approval blocker.
 - 261116 decided review/generation-market-261116 T918 T919 T920 T921: generation slowdown (T862 x2.9, T863 x2.9, T864 x2.5; 1940 takeover 33.9 s vs 1.06 s a season) → adopt only result-preserving speed-ups with identical world hashes (alt: revert persisted NPC careers/market | change growth cadence or market days)
 - 261116 parked review/generation-market-261116: after the war persisted NPC squads grow to a median 40 players against NPC_SQUAD.size 22 (11.5k → 17.3k); this slows later seasons and changes worlds, so whether it is intended and any growth-cadence or market-day change to meet ARCH-28 need the owner
+- 261116 suggest review/generation-market-261116: add a nine-season (1930→1940 takeover) A/B workload to scripts/perf so engine speed claims see seasons after the free-agent pool fills; the three-season history workload hid a 32x regression
 
 ## unlanded
 | id | tag | branch | commit | at |
