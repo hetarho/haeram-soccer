@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T09:41:48.535Z",
-  "sourceCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
+  "snapshotAt": "2026-11-16T09:44:42.833Z",
+  "sourceCommit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
   "group": {
     "id": "ws16",
     "branch": "gusta-session-self-improve-ws16-c1384351",
@@ -12,13 +12,33 @@
       "reviewers": 1,
       "maxPending": 8
     },
+    "ready": {
+      "commit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
+      "at": "2026-11-16T09:44:36.982Z",
+      "verified": false,
+      "owner": {
+        "tag": "ws16",
+        "branch": "gusta-session-self-improve-ws16-c1384351"
+      },
+      "checks": [
+        "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+        "node --import tsx /tmp/ws16-verify-world.mjs ."
+      ],
+      "agentChecks": []
+    },
+    "integration": {
+      "reason": "owning-session-working",
+      "candidate": null,
+      "verified": false,
+      "scope": null
+    },
     "push": null,
     "review": "all",
     "taskScope": [
       "T917",
       "T922"
     ],
-    "runner": {
+    "lastRun": {
       "id": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
       "adapter": "builtin",
       "providers": {
@@ -41,34 +61,10 @@
         }
       ],
       "startedAt": "2026-11-16T09:23:23.953Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "ec9f7b3f-6672-4f16-9a0c-b7331feb4333",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.169.0"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": "sonnet",
-          "version": "2.1.325 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.169.0"
-        }
-      ],
-      "startedAt": "2026-11-16T09:04:13.602Z",
-      "stoppedAt": "2026-11-16T09:09:56.518Z",
-      "outcome": "recovered",
+      "stoppedAt": "2026-11-16T09:44:40.214Z",
+      "dispatched": 2,
+      "outcome": "completed",
+      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -105,6 +101,9 @@
       "submittedBase": "0cb7545985226e1d25f6822dd06eed84e6e6239a",
       "submissionId": "bdfa118a-6e9e-47d0-834f-d96db6536753",
       "submittedAt": "2026-11-16T09:25:15.609Z",
+      "integratedCommit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
+      "integratedAt": "2026-11-16T09:44:30.103Z",
+      "cleanedAt": "2026-11-16T09:44:39.108Z",
       "risk": null,
       "dispatch": {
         "id": "a3ee8484-5111-4828-bc79-221af35e2d5f",
@@ -222,6 +221,13 @@
           "startedAt": "2026-11-16T09:23:15.537Z",
           "finishedAt": "2026-11-16T09:25:15.228Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+          "startedAt": "2026-11-16T09:44:29.349Z",
+          "finishedAt": "2026-11-16T09:44:29.881Z"
+        }
       ]
     },
     {
@@ -246,6 +252,7 @@
       "submittedAt": "2026-11-16T09:23:02.821Z",
       "integratedCommit": "7b56b29def03de5a7f3318665012047eaea8dfd9",
       "integratedAt": "2026-11-16T09:40:59.283Z",
+      "cleanedAt": "2026-11-16T09:44:40.206Z",
       "risk": null,
       "dispatch": {
         "id": "0a17925a-e8fe-4ada-afec-08e248028911",
@@ -2049,6 +2056,165 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 125,
+      "at": "2026-11-16T09:44:29.969Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "startedAt": "2026-11-16T09:44:29.349Z",
+            "finishedAt": "2026-11-16T09:44:29.881Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 126,
+      "at": "2026-11-16T09:44:30.103Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
+        "integratedAt": "2026-11-16T09:44:30.103Z"
+      }
+    },
+    {
+      "sequence": 127,
+      "at": "2026-11-16T09:44:36.986Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "bba0106f753b2273514e5956f4b252fcd4ca2100",
+          "at": "2026-11-16T09:44:36.982Z",
+          "verified": false,
+          "owner": {
+            "tag": "ws16",
+            "branch": "gusta-session-self-improve-ws16-c1384351"
+          },
+          "checks": [
+            "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "node --import tsx /tmp/ws16-verify-world.mjs ."
+          ],
+          "agentChecks": []
+        },
+        "integration": {
+          "reason": "owning-session-working",
+          "candidate": null,
+          "verified": false,
+          "scope": null
+        }
+      }
+    },
+    {
+      "sequence": 128,
+      "at": "2026-11-16T09:44:37.072Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 129,
+      "at": "2026-11-16T09:44:39.108Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "2258eda0-a663-46a0-9a2a-741136fcdcbd",
+      "taskId": "T922",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T09:44:39.108Z"
+      }
+    },
+    {
+      "sequence": 130,
+      "at": "2026-11-16T09:44:39.133Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 131,
+      "at": "2026-11-16T09:44:40.206Z",
+      "type": "attempt",
+      "group": "ws16",
+      "attemptId": "d1a17460-574b-4766-ac9b-92d2ca29c1df",
+      "taskId": "T917",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T09:44:40.206Z"
+      }
+    },
+    {
+      "sequence": 132,
+      "at": "2026-11-16T09:44:40.214Z",
+      "type": "group",
+      "group": "ws16",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "73634d95-7bec-4d2b-9335-4d7751ae00a7",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": "sonnet",
+              "version": "2.1.325 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          ],
+          "startedAt": "2026-11-16T09:23:23.953Z",
+          "stoppedAt": "2026-11-16T09:44:40.214Z",
+          "dispatched": 2,
+          "outcome": "completed",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
