@@ -73,6 +73,6 @@
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
 
 ## next
-- NF16 lands natural-football (T873–T915) and ws16 (T917 T922 T923) in one shared candidate as 0.8.4. T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
+- NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
 - Session chslow landed T918 T919 in 0.8.3 (identical worlds, 1950 generation 666.7 s → 199.9 s; reports/261116-chslow); T920 is blocked on an idle-host re-measure of its kept patch and T921 waits for a longer A/B workload.
 - Netlify "Powered by Netlify" badge must be turned off in the account settings to clear the production CSP report (reports/261116-ws16).
