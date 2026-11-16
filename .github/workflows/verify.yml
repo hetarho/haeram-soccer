@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 # The checks, fast units, three integration shards and three Chromium browser shards run as parallel jobs:
 # the run takes as long as its slowest job instead of the sum of every
-# step. Every job has a time limit (checks and unit 20 min, integration 45 min, browser shards 120 min), so a
+# step. Every job has a time limit (checks and unit 20 min, integration 75 min, browser shards 120 min), so a
 # hung run fails instead of holding main's run queue for the platform's six hours. The benchmarks run on
 # demand in benchmark.yml.
 jobs:
@@ -61,7 +61,7 @@ jobs:
   integration:
     name: integration (${{ matrix.shard }})
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75
     strategy:
       fail-fast: false
       matrix:

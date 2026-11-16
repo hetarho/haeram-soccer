@@ -64,7 +64,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
-| T929 | Give integration shards the cold-cache time limit | ARCH | - | todo |
+| T929 | Give integration shards the cold-cache time limit | ARCH | - | doing@261116.pf17 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
