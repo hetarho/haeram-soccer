@@ -123,18 +123,30 @@ export function matchdaySquad(w: World, c: Club, players: Player[]): Player[] {
 }
 
 /**
- * Move the live record; the owner's departed row remains only his history with the club. Returns
+ * Move the live record; the owner's departed row remains only his history with the club. `source`
+ * is the squad he leaves: a club id, null for none, undefined when unknown. Returns
  * the clubs whose matchday squad it chose again, so a caller need not repeat that work.
  */
-export function moveSquadPlayer(w: World, p: Player, club?: string, source?: string): string[] {
+export function moveSquadPlayer(
+  w: World,
+  p: Player,
+  club?: string,
+  source?: string | null,
+): string[] {
   const chosenAgain: string[] = [];
   if (!w.squads) return chosenAgain;
   // Academy enrollment records the club affiliation without promoting the prospect.
   if (club === w.playerClub && w.academy?.players.some((q) => q.id === p.id)) return chosenAgain;
   const live = structuredClone(p);
   live.status = 'active';
-  // A market settlement already knows the source; avoid scanning every other club for each move.
-  const origins = source ? [[source, w.squads[source] ?? []] as const] : Object.entries(w.squads);
+  // A caller that knows the origin avoids scanning every other club for each move: a club id names
+  // his squad, null states he is in none (a free agent); undefined is unknown and keeps the scan.
+  const origins =
+    source === null
+      ? []
+      : source
+        ? [[source, w.squads[source] ?? []] as const]
+        : Object.entries(w.squads);
   for (const [id, players] of origins) {
     if (!players.some((q) => q.id === p.id)) continue;
     // An idempotent affiliation update is not a roster change.

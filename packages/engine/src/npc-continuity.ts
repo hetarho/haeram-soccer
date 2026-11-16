@@ -236,7 +236,7 @@ export function movePerson(
   club?: string,
   own = false,
   loanUntil?: number,
-  source?: string,
+  source?: string | null,
 ) {
   const person = retainPerson(w, p, undefined, own || p.id.startsWith(`${w.playerClub}:`));
   const ownRow = w.players.find((row) => row.id === p.id);
