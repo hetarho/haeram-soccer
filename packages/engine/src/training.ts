@@ -84,18 +84,48 @@ export function growAttributes(
   player: Player,
   gain: number,
   factor: (attribute: Attribute) => number = () => 1,
-  {
-    only,
-    share = GROWTH_SHARE,
-    adaptation = player.adaptation,
-  }: {
-    only?: (a: Attribute) => boolean;
-    share?: number;
-    adaptation?: number;
-  } = {},
+  options: GrowOptions = {},
 ) {
-  if (gain <= 0) return 0;
-  const before = mainOvr(player);
+  return growStep(player, gain, factor, options).rise;
+}
+
+interface GrowOptions {
+  only?: (a: Attribute) => boolean;
+  share?: number;
+  adaptation?: number;
+}
+
+/** Unfiltered weight sums per position: small integers, so the cached sums are exact. */
+const WEIGHT_SUMS = new Map<Player['position'], { total: number; squares: number }>();
+function weightSums(position: Player['position'], weights: Readonly<Record<Attribute, number>>) {
+  let sums = WEIGHT_SUMS.get(position);
+  if (!sums) {
+    let total = 0,
+      squares = 0;
+    for (const a of ATTRIBUTES) {
+      total += weights[a];
+      squares += weights[a] ** 2;
+    }
+    sums = { total, squares };
+    WEIGHT_SUMS.set(position, sums);
+  }
+  return sums;
+}
+
+/**
+ * `growAttributes` with his main OVR as the caller already knows it (`known`, valid only while his
+ * attributes have not changed since it was read). Returns the rise and the main OVR after the step,
+ * or `known` unchanged (possibly undefined, never read) when nothing grew.
+ */
+function growStep(
+  player: Player,
+  gain: number,
+  factor: (attribute: Attribute) => number,
+  { only, share = GROWTH_SHARE, adaptation = player.adaptation }: GrowOptions,
+  known?: number,
+): { rise: number; ovr: number | undefined } {
+  if (gain <= 0) return { rise: 0, ovr: known };
+  const before = known ?? mainOvr(player);
   const excess = before - player.potential;
   const rise =
     excess < 0
@@ -103,16 +133,18 @@ export function growAttributes(
       : adaptation >= OVERSHOOT_ADAPTATION
         ? gain * share * overshootFactor(excess)
         : 0;
-  if (rise <= 0) return 0;
+  if (rise <= 0) return { rise: 0, ovr: before };
   const weights = weightsFor(player.position);
   let total = 0,
     squares = 0;
-  for (const a of ATTRIBUTES) {
-    if (only && !only(a)) continue;
-    total += weights[a];
-    squares += weights[a] ** 2;
-  }
-  if (!squares) return 0;
+  if (only) {
+    for (const a of ATTRIBUTES) {
+      if (!only(a)) continue;
+      total += weights[a];
+      squares += weights[a] ** 2;
+    }
+  } else ({ total, squares } = weightSums(player.position, weights));
+  if (!squares) return { rise: 0, ovr: before };
   // Each attribute's step ∝ its weight, scaled so the main OVR rises by `rise`.
   const scale = (rise * total) / squares;
   for (const a of ATTRIBUTES) {
@@ -120,7 +152,8 @@ export function growAttributes(
     const step = hundredths(scale * weights[a] * factor(a));
     player.attrs[a] = hundredths(Math.min(TOP, Math.max(player.attrs[a], player.attrs[a] + step)));
   }
-  return Math.max(0, hundredths(mainOvr(player) - before));
+  const after = mainOvr(player);
+  return { rise: Math.max(0, hundredths(after - before)), ovr: after };
 }
 
 export function recordDevelopment(player: Player, gain: number) {
@@ -157,12 +190,12 @@ export interface GrowthContext {
 }
 
 /** Shared round math, with no world, staff lookup or random draw. */
-function roundGrowthGain(player: Player, context: GrowthContext) {
+function roundGrowthGain(player: Player, context: GrowthContext, knownOvr?: number) {
   const { age, youth, ground, focus, investment = 1, style = 1, youthDevelopment = 1 } = context;
   if (age >= 27 || player.status !== 'active') return 0;
   const adaptation = context.adaptation ?? player.adaptation;
   const gap = Math.max(
-    player.potential - mainOvr(player),
+    player.potential - (knownOvr ?? mainOvr(player)),
     adaptation >= OVERSHOOT_ADAPTATION ? OVERSHOOT_GAP : 0,
   );
   const ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
@@ -185,13 +218,19 @@ export function settlePlayerGrowth(
   rounds: number,
   factor: (a: Attribute) => number = () => 1,
 ) {
-  for (let round = 0; round < rounds; round++)
-    recordDevelopment(
+  // The main OVR a round leaves is the next round's start: only the attributes feed it.
+  let ovr: number | undefined;
+  for (let round = 0; round < rounds; round++) {
+    const step = growStep(
       player,
-      growAttributes(player, roundGrowthGain(player, context), factor, {
-        adaptation: context.adaptation,
-      }),
+      roundGrowthGain(player, context, ovr),
+      factor,
+      { adaptation: context.adaptation },
+      ovr,
     );
+    ovr = step.ovr;
+    recordDevelopment(player, step.rise);
+  }
 }
 
 function roundGain(

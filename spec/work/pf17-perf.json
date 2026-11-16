@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T18:28:51.636Z",
-  "sourceCommit": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
+  "snapshotAt": "2026-11-16T18:31:19.267Z",
+  "sourceCommit": "da5ea81940fe5e0a5110ad15455c484858722a82",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -22,6 +22,32 @@
       "T920",
       "T928"
     ],
+    "runner": {
+      "id": "da8d01b0-cf95-4469-8648-73540fee770b",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "route",
+          "model": null,
+          "version": null
+        },
+        "reviewer": {
+          "provider": "route",
+          "model": null,
+          "version": null
+        }
+      },
+      "workers": [
+        {
+          "provider": "route",
+          "model": null,
+          "version": null
+        }
+      ],
+      "startedAt": "2026-11-16T18:31:01.459Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
     "lastRun": {
       "id": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
       "adapter": "builtin",
@@ -61,21 +87,14 @@
   },
   "summary": {
     "total": 6,
-    "completed": 5,
-    "remaining": 1,
+    "completed": 6,
+    "remaining": 0,
     "running": 0,
     "review": 0,
-    "blocked": 1,
+    "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T920",
-      "title": "Reuse known OVR and weight sums in growth steps",
-      "dep": [],
-      "status": "blocked"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "742d3a2a-72ae-4916-85af-ea48c5633f44",
@@ -497,26 +516,40 @@
         "a1d93534-ea3d-406f-bc68-8bff660c141a/worker-1",
         "7c32fab5-f6a0-4c6f-8018-8baea8d05561/worker-1"
       ],
-      "status": "blocked",
-      "reason": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-16T18:11:38.271Z",
       "startCommit": "3071f8a4e95b0550292e690eb4e4da431fa270c2",
-      "submittedBase": "9a1e4156a06bbceb48ee905c41eafc09cf2bb10a",
-      "submissionId": "8fa00dd2-9cc6-46d6-9c6b-ac6f8382b272",
-      "submittedAt": "2026-11-16T18:27:59.406Z",
+      "verifiedCommit": "d8ce51862a7e99a987d0ef0e0e484ff11af4f1e5",
+      "submittedBase": "da5ea81940fe5e0a5110ad15455c484858722a82",
+      "submissionId": "2666b7c1-171b-4339-878b-887a22dbbf96",
+      "submittedAt": "2026-11-16T18:30:54.118Z",
       "risk": null,
       "dispatch": {
-        "id": "772e54b1-5ab0-42e8-81d1-c859a68f9b26",
-        "runner": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
-        "role": "worker",
+        "id": "578fc52b-b75a-42a0-92c0-3934d6f62094",
+        "runner": "da8d01b0-cf95-4469-8648-73540fee770b",
+        "role": "reviewer",
         "slot": 1,
-        "provider": "claude",
-        "model": "sonnet",
+        "provider": "codex",
+        "model": "gpt-6.1-terra",
         "status": "finished",
-        "startedAt": "2026-11-16T18:28:29.425Z",
-        "finishedAt": "2026-11-16T18:28:49.778Z",
-        "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다.",
-        "summary": null
+        "startedAt": "2026-11-16T18:31:03.716Z",
+        "finishedAt": "2026-11-16T18:31:16.827Z",
+        "error": null,
+        "summary": "T920 preserves the growth calculation while reusing the previous round’s OVR and cached weight sums. The recorded parity, performance and test evidence supports the change; the coordinator retains the final integration gate."
+      },
+      "review": {
+        "id": "b05b1b66-5255-4dcd-8568-066d7d75ff2b",
+        "owner": "da8d01b0-cf95-4469-8648-73540fee770b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T920 preserves the growth calculation while reusing the previous round’s OVR and cached weight sums. The recorded parity, performance and test evidence supports the change; the coordinator retains the final integration gate.",
+        "findings": [],
+        "commit": "d8ce51862a7e99a987d0ef0e0e484ff11af4f1e5",
+        "baseCommit": "da5ea81940fe5e0a5110ad15455c484858722a82",
+        "submissionId": "2666b7c1-171b-4339-878b-887a22dbbf96",
+        "createdAt": "2026-11-16T18:31:01.665Z",
+        "finishedAt": "2026-11-16T18:31:16.818Z"
       },
       "reviewHistory": [
         {
@@ -565,13 +598,13 @@
       "steps": [
         {
           "taskId": "T920",
-          "commit": "d7f95ffb4da84ceba2ceb1dd886a33d3ebe39bc0",
-          "at": "2026-11-16T18:27:59.393Z",
+          "commit": "d8ce51862a7e99a987d0ef0e0e484ff11af4f1e5",
+          "at": "2026-11-16T18:30:54.104Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-11-16T18:27:34.875Z",
-              "finishedAt": "2026-11-16T18:27:59.220Z"
+              "startedAt": "2026-11-16T18:30:31.309Z",
+              "finishedAt": "2026-11-16T18:30:53.934Z"
             }
           ]
         }
@@ -579,8 +612,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-11-16T18:27:34.875Z",
-          "finishedAt": "2026-11-16T18:27:59.220Z"
+          "startedAt": "2026-11-16T18:30:31.309Z",
+          "finishedAt": "2026-11-16T18:30:53.934Z"
         }
       ]
     },
@@ -5613,6 +5646,237 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 692,
+      "at": "2026-11-16T18:30:30.667Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 693,
+      "at": "2026-11-16T18:30:31.152Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 694,
+      "at": "2026-11-16T18:30:54.118Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "da5ea81940fe5e0a5110ad15455c484858722a82",
+        "submissionId": "2666b7c1-171b-4339-878b-887a22dbbf96",
+        "submittedAt": "2026-11-16T18:30:54.118Z",
+        "steps": [
+          {
+            "taskId": "T920",
+            "commit": "d8ce51862a7e99a987d0ef0e0e484ff11af4f1e5",
+            "at": "2026-11-16T18:30:54.104Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-16T18:30:31.309Z",
+                "finishedAt": "2026-11-16T18:30:53.934Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T18:30:31.309Z",
+            "finishedAt": "2026-11-16T18:30:53.934Z"
+          }
+        ],
+        "verifiedCommit": "d8ce51862a7e99a987d0ef0e0e484ff11af4f1e5"
+      }
+    },
+    {
+      "sequence": 695,
+      "at": "2026-11-16T18:31:01.467Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "da8d01b0-cf95-4469-8648-73540fee770b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:31:01.459Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 696,
+      "at": "2026-11-16T18:31:01.665Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b05b1b66-5255-4dcd-8568-066d7d75ff2b",
+          "owner": "da8d01b0-cf95-4469-8648-73540fee770b/reviewer-1",
+          "status": "reviewing",
+          "commit": "d8ce51862a7e99a987d0ef0e0e484ff11af4f1e5",
+          "baseCommit": "da5ea81940fe5e0a5110ad15455c484858722a82",
+          "submissionId": "2666b7c1-171b-4339-878b-887a22dbbf96",
+          "createdAt": "2026-11-16T18:31:01.665Z"
+        }
+      }
+    },
+    {
+      "sequence": 697,
+      "at": "2026-11-16T18:31:03.716Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "578fc52b-b75a-42a0-92c0-3934d6f62094",
+          "runner": "da8d01b0-cf95-4469-8648-73540fee770b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-16T18:31:03.716Z"
+        }
+      }
+    },
+    {
+      "sequence": 698,
+      "at": "2026-11-16T18:31:03.729Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "578fc52b-b75a-42a0-92c0-3934d6f62094",
+          "runner": "da8d01b0-cf95-4469-8648-73540fee770b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-16T18:31:03.716Z"
+        }
+      }
+    },
+    {
+      "sequence": 699,
+      "at": "2026-11-16T18:31:16.818Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b05b1b66-5255-4dcd-8568-066d7d75ff2b",
+          "owner": "da8d01b0-cf95-4469-8648-73540fee770b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T920 preserves the growth calculation while reusing the previous round’s OVR and cached weight sums. The recorded parity, performance and test evidence supports the change; the coordinator retains the final integration gate.",
+          "findings": [],
+          "commit": "d8ce51862a7e99a987d0ef0e0e484ff11af4f1e5",
+          "baseCommit": "da5ea81940fe5e0a5110ad15455c484858722a82",
+          "submissionId": "2666b7c1-171b-4339-878b-887a22dbbf96",
+          "createdAt": "2026-11-16T18:31:01.665Z",
+          "finishedAt": "2026-11-16T18:31:16.818Z"
+        }
+      }
+    },
+    {
+      "sequence": 700,
+      "at": "2026-11-16T18:31:16.827Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "578fc52b-b75a-42a0-92c0-3934d6f62094",
+          "runner": "da8d01b0-cf95-4469-8648-73540fee770b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-16T18:31:03.716Z",
+          "finishedAt": "2026-11-16T18:31:16.827Z",
+          "error": null,
+          "summary": "T920 preserves the growth calculation while reusing the previous round’s OVR and cached weight sums. The recorded parity, performance and test evidence supports the change; the coordinator retains the final integration gate."
+        }
+      }
+    },
+    {
+      "sequence": 701,
+      "at": "2026-11-16T18:31:16.851Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
