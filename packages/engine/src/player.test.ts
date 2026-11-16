@@ -77,6 +77,12 @@ describe('player model', () => {
     expect(mainOvr({ attrs: unknown, position: 'CB' })).toBeNaN();
   });
 
+  it('ovr propagates a non-finite value on a zero-weight attribute', () => {
+    const w = weightsFor('GK');
+    const zero = ATTRIBUTES.find((a) => w[a] === 0)!;
+    expect(ovrAt({ ...flat(50), [zero]: Number.POSITIVE_INFINITY }, 'GK')).toBeNaN();
+  });
+
   it('adaptation multiplier', () => {
     expect(adaptationMultiplier(1)).toBeCloseTo(1.05);
     expect(adaptationMultiplier(0.9)).toBeCloseTo(1.025);

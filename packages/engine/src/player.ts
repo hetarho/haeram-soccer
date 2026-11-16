@@ -376,8 +376,24 @@ export function weightsFor(position: Position, role?: RoleId): Readonly<Record<A
 /** OVR at a position in a role: the weighted average of its attributes, one 1–99 scale (→PLAYER-6). */
 export function ovrAt(attrs: Attributes, position: Position, role?: RoleId) {
   const { values, total } = weightEntry(position, role);
+  // Explicit reads in ATTRIBUTES order (a test guards the order); same left-to-right sum from zero.
   let sum = 0;
-  for (let i = 0; i < ATTRIBUTES.length; i++) sum += values[i]! * attrs[ATTRIBUTES[i]!];
+  sum += values[0]! * attrs.finishing;
+  sum += values[1]! * attrs.dribbling;
+  sum += values[2]! * attrs.crossing;
+  sum += values[3]! * attrs.passing;
+  sum += values[4]! * attrs.vision;
+  sum += values[5]! * attrs.tackling;
+  sum += values[6]! * attrs.positioning;
+  sum += values[7]! * attrs.heading;
+  sum += values[8]! * attrs.pace;
+  sum += values[9]! * attrs.stamina;
+  sum += values[10]! * attrs.strength;
+  sum += values[11]! * attrs.reflexes;
+  sum += values[12]! * attrs.handling;
+  sum += values[13]! * attrs.distribution;
+  sum += values[14]! * attrs.decisions;
+  sum += values[15]! * attrs.composure;
   return sum / total;
 }
 export function bestRoleAt(attrs: Attributes, position: Position): RoleId {
