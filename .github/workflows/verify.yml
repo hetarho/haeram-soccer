@@ -79,12 +79,22 @@ jobs:
       - run: pnpm install --frozen-lockfile
       # Simulated test worlds (tests/fixtures/worlds.ts) keyed by the source tree: a run whose
       # engine did not change reads them instead of simulating again.
-      - uses: actions/cache@v4
+      - id: worlds
+        uses: actions/cache/restore@v4
         with:
           path: node_modules/.cache/haeram-worlds
           key: haeram-worlds-integration-${{ matrix.slug }}-${{ github.sha }}
           restore-keys: haeram-worlds-integration-${{ matrix.slug }}-
+      # As verify:batch does (T771), build the worlds cases only read outside their timers, so a
+      # cold cache never spends a case's time limit or starves the shard's other cases.
+      - run: node --import tsx scripts/warm-worlds.ts
       - run: pnpm run test:integration --shard=${{ matrix.shard }} --reporter=default --reporter=json --outputFile=.tmp/integration-results.json
+      # Kept even when a case fails, so one red run does not leave the next one cold.
+      - uses: actions/cache/save@v4
+        if: always() && steps.worlds.outputs.cache-hit != 'true'
+        with:
+          path: node_modules/.cache/haeram-worlds
+          key: haeram-worlds-integration-${{ matrix.slug }}-${{ github.sha }}
 
       - uses: actions/upload-artifact@v4
         if: always()
