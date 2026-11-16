@@ -38,6 +38,7 @@
 ## review
 | id | st |
 |---|---|
+| verification-prerequisite-261116 | converted@261116 |
 | wartime-employment-261116 | converted@261116 |
 | generation-market-261116 | converted@261116 |
 | natural-football-261114 | converted@261114 |
@@ -96,7 +97,7 @@
 | T914 | Prepare a genuine no-playoff season for exact heat-map reduction | ARCH MATCH HIST LEAGUE | T885 | todo |
 | T915 | Synchronize scripted-minute observations within the original deadline | ARCH | T888 | todo |
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
-| T917 | Run browser journeys only in CI, on Chrome alone | ARCH | T884 | todo |
+| T917 | Run browser journeys only in CI, on Chrome alone | ARCH | - | todo |
 | T918 | Walk presorted market listings once per settlement | ARCH | - | todo |
 | T919 | Drop repeated squad scans on NPC renewals and moves | ARCH | - | todo |
 | T920 | Reuse known OVR and weight sums in growth steps | ARCH | - | todo |
