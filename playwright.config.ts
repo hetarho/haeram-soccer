@@ -13,8 +13,10 @@ const CI = !!process.env.CI;
  * and engine worker, GPU, browser, test runner; nx10 at 1757 s, 261110), so three left half the
  * host idle. Locally Chromium runs `E2E_WORKERS` workers (default 5; `E2E_WORKERS=3` restores the
  * former width) and schedules case by case, which no spec prevents: none runs serially or shares
- * `beforeAll`/`afterAll` state, and the world cache locks per entry. CI keeps three workers and
- * file-level scheduling, so `--shard` still splits by file.
+ * `beforeAll`/`afterAll` state, and the world cache locks per entry. CI runs two workers, as many
+ * as its four-core runners hold at two cores each (three stretched the 1950 generation journey
+ * from 142–158 s past its 180 s; 261117), and file-level scheduling, so `--shard` still splits by
+ * file.
  */
 const localChromiumWorkers = Math.max(1, Math.trunc(Number(process.env.E2E_WORKERS)) || 5);
 export default defineConfig({
@@ -23,7 +25,7 @@ export default defineConfig({
   globalSetup: './tests/e2e/global-lock.ts',
   timeout: CI ? 150000 : 30000,
   expect: { timeout: CI ? 30000 : 5000 },
-  workers: CI ? 3 : Math.max(3, localChromiumWorkers),
+  workers: CI ? 2 : Math.max(3, localChromiumWorkers),
   // On CI each failing journey also becomes a check annotation, readable on the run page
   // without the job log.
   reporter: [
