@@ -133,8 +133,10 @@
 | T927 | work | gusta-session-self-improve-pf17-c279c8c5 | 9df07d8f9f7f | 2026-11-16T17:10Z |
 | T925 | work | gusta-session-self-improve-pf17-c279c8c5 | c8015647fe76 | 2026-11-16T17:11Z |
 | T926 | work | gusta-session-self-improve-pf17-c279c8c5 | 94b7206ffe0c | 2026-11-16T17:26Z |
+| T921 | work | gusta-session-self-improve-pf17-c279c8c5 | d3e3bf767229 | 2026-11-16T17:33Z |
 
 ## log
+- 261116 T921 integrated
 - 261116 T926 integrated
 - 261116 fix test: warmed replay seed keyed the same under tsx and vitest
 - 261116 T925 integrated
@@ -154,4 +156,3 @@
 - 261116 gusta-create-task review/generation-market-261116 F4 F5 → T920 T921
 - 261116 gusta-create-task review/generation-market-261116 → T918 T919 (generation slowdown from T864 npcMarket pool rebuild)
 - 261116 gusta-create-task review/generation-market-261116 start
-- 261116 gusta-update 0.17.1→0.17.3: FORMAT migrated, ARCH r44, T917 planned
