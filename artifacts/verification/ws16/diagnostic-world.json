@@ -1,0 +1,60 @@
+{
+  "head": "b895fb01b1d0b04604fbbdc7b123ed1c0f420aed",
+  "seed": "save-overlap-diagnosis",
+  "engine": "0.8.5",
+  "year": 1946,
+  "boundaries": [
+    {
+      "year": 1931,
+      "overlaps": 0,
+      "ms": 5115
+    },
+    {
+      "year": 1932,
+      "overlaps": 0,
+      "ms": 22149
+    },
+    {
+      "year": 1933,
+      "overlaps": 0,
+      "ms": 46647
+    },
+    {
+      "year": 1934,
+      "overlaps": 0,
+      "ms": 80859
+    },
+    {
+      "year": 1935,
+      "overlaps": 0,
+      "ms": 119945
+    },
+    {
+      "year": 1936,
+      "overlaps": 0,
+      "ms": 158681
+    },
+    {
+      "year": 1937,
+      "overlaps": 0,
+      "ms": 200651
+    },
+    {
+      "year": 1938,
+      "overlaps": 0,
+      "ms": 242957
+    },
+    {
+      "year": 1946,
+      "overlaps": 0,
+      "ms": 290052
+    }
+  ],
+  "overlaps": 0,
+  "validation": true,
+  "checkpoint": true,
+  "portableDecode": true,
+  "canonicalEqual": true,
+  "bytes": 2845796,
+  "ms": 299205
+}
