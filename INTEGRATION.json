@@ -24,12 +24,15 @@
       "publication": "merge",
       "host": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-self-improve-ws16-c1384351",
-      "head": "f146ee6576784fd5954b193c8e3bb9dca7491179",
+      "head": "bba0106f753b2273514e5956f4b252fcd4ca2100",
       "land": "main",
       "status": "working",
-      "at": "2026-11-16T08:05:11.553Z",
+      "at": "2026-11-16T09:44:35.320Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [
+        "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+        "node --import tsx /tmp/ws16-verify-world.mjs ."
+      ]
     }
   },
   "gate": null,
