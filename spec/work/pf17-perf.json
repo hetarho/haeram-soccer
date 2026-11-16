@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-16T18:31:19.267Z",
-  "sourceCommit": "da5ea81940fe5e0a5110ad15455c484858722a82",
+  "snapshotAt": "2026-11-16T18:32:38.598Z",
+  "sourceCommit": "648c1c046f5ffb72a6332c03bdf7f19e51651e5e",
   "group": {
     "id": "pf17-perf",
     "branch": "gusta-session-self-improve-pf17-c279c8c5",
@@ -22,7 +22,7 @@
       "T920",
       "T928"
     ],
-    "runner": {
+    "lastRun": {
       "id": "da8d01b0-cf95-4469-8648-73540fee770b",
       "adapter": "builtin",
       "providers": {
@@ -45,42 +45,10 @@
         }
       ],
       "startedAt": "2026-11-16T18:31:01.459Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "7c32fab5-f6a0-4c6f-8018-8baea8d05561",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "route",
-          "model": null,
-          "version": null
-        },
-        "reviewer": {
-          "provider": "route",
-          "model": null,
-          "version": null
-        }
-      },
-      "workers": [
-        {
-          "provider": "route",
-          "model": null,
-          "version": null
-        }
-      ],
-      "startedAt": "2026-11-16T18:28:06.290Z",
-      "stoppedAt": "2026-11-16T18:28:50.029Z",
-      "dispatched": 2,
-      "outcome": "needs-attention",
-      "failures": [
-        {
-          "attempt": "3bb40738-509b-4ec5-a4cc-c86660404a63",
-          "role": "worker",
-          "error": "adapter exited 1: 에이전트 인수검증의 id/scenario/steps/expected/status가 올바르지 않습니다."
-        }
-      ],
+      "stoppedAt": "2026-11-16T18:32:36.464Z",
+      "dispatched": 1,
+      "outcome": "completed",
+      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -524,6 +492,9 @@
       "submittedBase": "da5ea81940fe5e0a5110ad15455c484858722a82",
       "submissionId": "2666b7c1-171b-4339-878b-887a22dbbf96",
       "submittedAt": "2026-11-16T18:30:54.118Z",
+      "integratedCommit": "648c1c046f5ffb72a6332c03bdf7f19e51651e5e",
+      "integratedAt": "2026-11-16T18:32:28.514Z",
+      "cleanedAt": "2026-11-16T18:32:36.455Z",
       "risk": null,
       "dispatch": {
         "id": "578fc52b-b75a-42a0-92c0-3934d6f62094",
@@ -614,6 +585,13 @@
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-11-16T18:30:31.309Z",
           "finishedAt": "2026-11-16T18:30:53.934Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-16T18:31:19.434Z",
+          "finishedAt": "2026-11-16T18:32:28.173Z"
         }
       ]
     },
@@ -5877,6 +5855,108 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 702,
+      "at": "2026-11-16T18:32:28.306Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-16T18:31:19.434Z",
+            "finishedAt": "2026-11-16T18:32:28.173Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 703,
+      "at": "2026-11-16T18:32:28.514Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "648c1c046f5ffb72a6332c03bdf7f19e51651e5e",
+        "integratedAt": "2026-11-16T18:32:28.514Z"
+      }
+    },
+    {
+      "sequence": 704,
+      "at": "2026-11-16T18:32:31.368Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 705,
+      "at": "2026-11-16T18:32:36.455Z",
+      "type": "attempt",
+      "group": "pf17-perf",
+      "attemptId": "3bb40738-509b-4ec5-a4cc-c86660404a63",
+      "taskId": "T920",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-16T18:32:36.455Z"
+      }
+    },
+    {
+      "sequence": 706,
+      "at": "2026-11-16T18:32:36.464Z",
+      "type": "group",
+      "group": "pf17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "da8d01b0-cf95-4469-8648-73540fee770b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            },
+            "reviewer": {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          },
+          "workers": [
+            {
+              "provider": "route",
+              "model": null,
+              "version": null
+            }
+          ],
+          "startedAt": "2026-11-16T18:31:01.459Z",
+          "stoppedAt": "2026-11-16T18:32:36.464Z",
+          "dispatched": 1,
+          "outcome": "completed",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
