@@ -76,8 +76,8 @@
       "branch": "gusta-session-self-improve-pf17-c279c8c5",
       "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-16T19:59:09.672Z",
+      "status": "ready",
+      "at": "2026-11-16T19:59:14.123Z",
       "agentChecks": [],
       "verificationCommands": []
     }
