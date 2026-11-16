@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| pf17 | ihaelam-ui-MacBookPro | pair | 2026-11-16T18:59Z | 2026-11-16T18:59Z | T929 | gusta-session-self-improve-pf17-c279c8c5 | 2ac8df207612 | 2c0e6451d9095ff99d83c89a |
+| pf17 | ihaelam-ui-MacBookPro | pair | 2026-11-16T18:59Z | 2026-11-16T18:59Z | - | gusta-session-self-improve-pf17-c279c8c5 | 44a165069f6e | 2c0e6451d9095ff99d83c89a |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -127,7 +127,13 @@
 - 261116 decided T925: pf17 orchestrator adopted generation-hotpaths F1-F3 as T925-T927 and runs planned T921 (owner request 261117: autonomous performance work until 06:00 KST). F4 (semantic slot keys) deferred: risk of conflating ratings and same lines as F3. Kept only with identical worlds and a measured CPU-ratio interval below 1.
 - 261116 decided T928: pf17 second cycle: adopted generation-hotpaths F4 as T928 now that T927 is measured, and unblocked T920 to re-measure its kept patch on an idle host; both kept only with identical worlds and a CPU-ratio interval below 1.
 
+## unlanded
+| id | tag | branch | commit | at |
+|---|---|---|---|---|
+| T929 | pf17 | gusta-session-self-improve-pf17-c279c8c5 | 44a165069f6e | 2026-11-16T18:59Z |
+
 ## log
+- 261116 T929 done
 - 261116 gusta-update-ssot ARCH-23 start
 - 261116 T920 integrated
 - 261116 T928 integrated
@@ -147,4 +153,3 @@
 - 261116 T923 integrated
 - 261116 T922 integrated
 - 261116 T917 integrated
-- 261116 gusta-self-improve ws16 started for confirmed wartime employment overlap; isolated workspace, scout proposal pending; user explicitly authorizes final push.
