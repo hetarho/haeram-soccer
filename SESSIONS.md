@@ -124,6 +124,7 @@
 - 261116 decided T922: NF16 landed ready ws16 (T917 T922 T923) with natural-football in one fixed candidate, since ws16 waited only on the nf14 row and the owner asked for main continuation on another device. Alternative: leave ws16 for its own host (rejected: it would stay blocked).
 - 261116 decided SAVE-10: NF16 prepared 0.8.4 from released main 0.8.3 and did not carry ws16's unpublished 0.8.4-0.8.6 labels, which no deployed build ever wrote. Alternative: keep 0.8.6 and add 0.8.7 (rejected: phantom compatible labels).
 - 261116 decided LEAGUE-10: Owner chose the check boundary over a model fix: LEAGUE-10 r21 keeps division order on every season's first day except the 1946-1948 openings after the war gap (T924). Alternatives: model fix of the post-war restart (hours to days, broad fixture churn, uncertain); stop with the failure (rejected by owner).
+- 261116 decided T925: pf17 orchestrator adopted generation-hotpaths F1-F3 as T925-T927 and runs planned T921 (owner request 261117: autonomous performance work until 06:00 KST). F4 (semantic slot keys) deferred: risk of conflating ratings and same lines as F3. Kept only with identical worlds and a measured CPU-ratio interval below 1.
 
 ## unlanded
 | id | tag | branch | commit | at |
