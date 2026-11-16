@@ -24,6 +24,19 @@ function child(code: string, after?: VerificationStage['after']) {
   );
   return { ...run, directory, updates };
 }
+/** Whether the process is gone within `ms`: a killed process lingers until its parent reaps it. */
+async function goneWithin(pid: number, ms: number) {
+  const until = Date.now() + ms;
+  for (;;) {
+    try {
+      process.kill(pid, 0);
+    } catch {
+      return true;
+    }
+    if (Date.now() >= until) return false;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+}
 
 describe('verification stage receipts and raw logs', () => {
   it('records running PID/command/log paths before completion, then success', async () => {
@@ -95,7 +108,7 @@ describe('verification stage receipts and raw logs', () => {
         descendants: [grandchild],
         escalated: [grandchild],
       });
-      expect(() => process.kill(grandchild, 0)).toThrow();
+      expect(await goneWithin(grandchild, 1000)).toBe(true);
       expect(readFileSync(terminal.stdoutPath, 'utf8')).toContain(String(grandchild));
       expect(run.updates.at(-1)?.status).toBe('cancelled');
     } finally {
