@@ -126,8 +126,10 @@
 | id | tag | branch | commit | at |
 |---|---|---|---|---|
 | T928 | work | gusta-session-self-improve-pf17-c279c8c5 | 9f685c170339 | 2026-11-16T18:25Z |
+| T920 | work | gusta-session-self-improve-pf17-c279c8c5 | 648c1c046f5f | 2026-11-16T18:32Z |
 
 ## log
+- 261116 T920 integrated
 - 261116 T928 integrated
 - 261116 T921 integrated
 - 261116 T926 integrated
@@ -147,4 +149,3 @@
 - 261116 T917 integrated
 - 261116 gusta-self-improve ws16 started for confirmed wartime employment overlap; isolated workspace, scout proposal pending; user explicitly authorizes final push.
 - 261116 gusta-create-task review/generation-market-261116 F4 F5 → T920 T921
-- 261116 gusta-create-task review/generation-market-261116 → T918 T919 (generation slowdown from T864 npcMarket pool rebuild)
