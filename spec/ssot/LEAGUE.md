@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r20 | Define the browser-demo rules for domestic seasons and relegation.
+> r21 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -23,6 +23,7 @@
   - a representative club (→WORLD-1), whose squad is generated (→WORLD-6) and which keeps no books, keeps a scripted strength, the one exception to →WORLD-17: each summer it closes 20% of the gap to 68 + its stature + 2 after a continental title, with a summer's luck (sum of three uniforms, sd ≈ 1.5), a 1.5% takeover (+4 to +8) or crisis (−4 to −8) and a 0.4% project (+8 to +18, fading 15% a summer), within 15–99.
   - worlds lived with persisted players land within the real leagues' spread below: 4–9 different champions per country and the most successful club 7–17 titles over 1980/81–2009/10.
   - they keep each division near its level: the mean strength of a division's clubs stays within ±5 of its founding level (→WORLD-15) in every decade from the 1950s (band estimated). ← wages, values and the owner's balance are priced on the divisions' levels (→CLUB-25, →LEAGUE-13); squads that all grow or fade together would move every one of them
+  - they keep their divisions in order: on every season's first day a country's division means fall tier by tier, except on the three openings after the war gap (1946–1948), whose squads seven summers without a window left to retirements and youth alone (→WORLD-14/16); the order holds again from the 1949 opening. ← the restart opens with the squads the war left, and its windows sort them again
   - measured 261011 on the former scripted strengths (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
   - the real leagues 1980/81–2009/10 (each league's official champions list, titles not awarded left out: Italy 2004/05, France 1992/93; recalled, not yet read against the lists): 4–9 different champions per country, the most successful club 7–17 titles. ← one generic model of giants and big clubs per country should land where real leagues do, from France's nine champions to Portugal's four
     | country | different champions | most titles of one club |
@@ -90,6 +91,7 @@
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r21 261117 LEAGUE-10✎ division order unstated→division means fall tier by tier on every season's first day, except the three openings after the war gap (1946–1948)
 - r20 261113 LEAGUE-10✎ strength read from its players, measure unstated→the mean 실효 OVR of its XI at its slots before 조직력 and fatigue, read again whenever the XI is chosen; +lived worlds keep each division's mean strength within ±5 of its founding level from the 1950s (estimated); +a representative club keeps the scripted strength r19 removed for every club (20% toward 68 + stature + continental success, luck, 1.5% takeover or crisis, 0.4% project, 15–99)
 - r19 261113 LEAGUE-10✎ clubs nobody owns rise or fall by rule (20% toward division midpoint + stature + success, promotion/relegation pulls, means-level selling, 0.4% projects, 1.5% takeovers and crises, summer luck, 15–99)→strength is the squad's, rising and falling with its players; stature sets founding strength, income and preference; the real-league spread stays the target; LEAGUE-12✎ a takeover or project costs 0.15 between seasons→removed; LEAGUE-15✎ unavailability list cleared with the new season's generated squad→injuries and bans carry over by person, representative clubs clear
 - r18 261104 LEAGUE-10✎ means level in force only through CLUB-48's gate→in force with CLUB-48's table and competition money, the gate passed (measured 261104); LEAGUE-13✎ +measured 261104 on the rules in force (석유 재벌 8 of 8 win, none bankrupt; 중견 사업가 1 of 8 wins, 8 reach the top flight), the earlier 261104 table marked before CLUB-48's table
