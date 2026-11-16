@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| nf16 | ihaelam-ui-MacBookPro | pair | 2026-11-16T16:06Z | 2026-11-16T16:06Z | T924 | gusta-session-start-nf16-46eb8aaa | f7ab15a3e2d3 | 7a88e7723e75cfe5a6df9ab7 |
+| nf16 | ihaelam-ui-MacBookPro | pair | 2026-11-16T16:06Z | 2026-11-16T16:41Z | - | gusta-session-start-nf16-46eb8aaa | 0747aef346a8 | 7a88e7723e75cfe5a6df9ab7 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -125,7 +125,13 @@
 - 261116 decided SAVE-10: NF16 prepared 0.8.4 from released main 0.8.3 and did not carry ws16's unpublished 0.8.4-0.8.6 labels, which no deployed build ever wrote. Alternative: keep 0.8.6 and add 0.8.7 (rejected: phantom compatible labels).
 - 261116 decided LEAGUE-10: Owner chose the check boundary over a model fix: LEAGUE-10 r21 keeps division order on every season's first day except the 1946-1948 openings after the war gap (T924). Alternatives: model fix of the post-war restart (hours to days, broad fixture churn, uncertain); stop with the failure (rejected by owner).
 
+## unlanded
+| id | tag | branch | commit | at |
+|---|---|---|---|---|
+| T924 | nf16 | gusta-session-start-nf16-46eb8aaa | 0747aef346a8 | 2026-11-16T16:41Z |
+
 ## log
+- 261116 T924 done
 - 261116 fix ci: two Chromium workers on four-core runners (1950 generation journey timeout)
 - 261116 gusta-create-task LEAGUE r21 -> T924
 - 261116 gusta-create-task LEAGUE start
@@ -145,4 +151,3 @@
 - 261113 T914 integrated
 - 261113 T913 integrated
 - 261113 T906 T910 integrated
-- 261113 gusta-create-task review/natural-football-261114 F39 -> T913; scalar correction only, original strict historical workload retained
