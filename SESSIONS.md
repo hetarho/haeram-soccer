@@ -122,12 +122,6 @@
 - 261116 decided T925: pf17 orchestrator adopted generation-hotpaths F1-F3 as T925-T927 and runs planned T921 (owner request 261117: autonomous performance work until 06:00 KST). F4 (semantic slot keys) deferred: risk of conflating ratings and same lines as F3. Kept only with identical worlds and a measured CPU-ratio interval below 1.
 - 261116 decided T928: pf17 second cycle: adopted generation-hotpaths F4 as T928 now that T927 is measured, and unblocked T920 to re-measure its kept patch on an idle host; both kept only with identical worlds and a CPU-ratio interval below 1.
 
-## unlanded
-| id | tag | branch | commit | at |
-|---|---|---|---|---|
-| T928 | work | gusta-session-self-improve-pf17-c279c8c5 | 9f685c170339 | 2026-11-16T18:25Z |
-| T920 | work | gusta-session-self-improve-pf17-c279c8c5 | 648c1c046f5f | 2026-11-16T18:32Z |
-
 ## log
 - 261116 T920 integrated
 - 261116 T928 integrated
