@@ -75,7 +75,7 @@
 | natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
-| tm17-market | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-11-17T09:47:00.460Z | [history](work/tm17-market.json) |
+| tm17-market | 4 | 4 | 3 | 1 | 0 | 0 | 1 | 2026-11-17T11:09:43.658Z | [history](work/tm17-market.json) |
 | lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
 
 ## next
