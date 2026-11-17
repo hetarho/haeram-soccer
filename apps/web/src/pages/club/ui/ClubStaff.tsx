@@ -40,7 +40,10 @@ import {
   PROSPECT_GROWTH,
   SALE_BARS,
 } from '../../../../../../packages/engine/src/transfers';
-import { SALE_FACTOR_VALUES, SALE_SHARE } from '../../../../../../packages/engine/src/sale-answer';
+import {
+  SALE_FACTOR_VALUES,
+  SALE_SHARE,
+} from '../../../../../../packages/engine/src/transfer-policy';
 import { managerPickPreview } from '../../../../../../packages/engine/src/managerMarket';
 import { buildOf, cardOf } from '../../../../../../packages/engine/src/build';
 import { managerTerm, STYLE_INFO } from '../../../../../../packages/engine/src/styles';

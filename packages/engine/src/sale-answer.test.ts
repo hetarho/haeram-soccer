@@ -12,7 +12,6 @@ import { activePlayers, overall } from './player-state';
 import { compareIds } from './primitives';
 import {
   SALE_FACTORS,
-  SALE_SHARE,
   saleAnswer,
   saleContext,
   saleOutlook,
@@ -20,6 +19,7 @@ import {
   type AnswerFactor,
   type SaleContext,
 } from './sale-answer';
+import { SALE_SHARE } from './transfer-policy';
 import { startingSquad } from './world';
 
 /** A neutral bid: no factor but his place moves the share. */
