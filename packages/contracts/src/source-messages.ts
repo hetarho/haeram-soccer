@@ -7386,6 +7386,17 @@ export const sourceMessages = {
     '재계약과 계약 개선은 인상 뒤에도 지출이 수입 안에 머물 때만 받아들여요.',
   'delegation.flow.contractsShort':
     '지금 보유 자금이 계획 적자를 적자 허용 기간만큼 버티지 못해 연봉 인상은 받아들이지 않고 짠물로 재계약해요.',
+  'delegation.sale.incomeUntouchable':
+    '수입 안에서 운영하는데 선수 연봉과 고정지출이 계획 수입을 넘음 −25%p',
+  'delegation.plan.salesPressedIncome':
+    '선수 연봉과 고정지출이 계획 수입을 넘어 제안을 더 쉽게 받아들여요.',
+  'delegation.plan.salesCalmIncome':
+    '선수 연봉과 고정지출이 계획 수입 안에 머물러 평소 기준으로 제안을 받아요.',
+  'delegation.flow.recruitmentShortIncome':
+    '지금도 선수 연봉과 고정지출이 계획 수입을 넘어 새 연봉이나 이적료를 쓰지 않아요.',
+  'delegation.flow.contractsShortIncome':
+    '지금 선수 연봉과 고정지출이 계획 수입을 넘어 연봉 인상은 받아들이지 않고 짠물로 재계약해요.',
+  'delegation.runway.coversLittle': '계획 적자 연 {loss} · 현금으로 {seasons}시즌분 미만',
   'budget.plans.signingRunway': '적자 허용 {seasons}시즌 · 영입에 쓸 돈 {left}',
   'budget.plans.signingIncome': '수입 안에서 운영 · 영입에 쓸 돈 {left}',
   'delegation.talk.runway':
@@ -7414,9 +7425,6 @@ export const sourceMessages = {
   'market.sale.cash': '자금 위기(고정비 {rounds}라운드분)',
   'market.sale.wages.over': '선수 연봉이 매각 기준선을 넘음(수입의 {share}%)',
   'market.sale.wages.far': '선수 연봉이 매각 기준선을 10%p 넘게 넘음(수입의 {share}%)',
-  'market.sale.runway.over': '현금이 계획 적자 {runway}시즌분을 감당하지 못함',
-  'market.sale.runway.far': '현금이 계획 적자 {runway}시즌분의 절반도 감당하지 못함',
-  'market.sale.runway.income': '선수 연봉과 고정비가 계획 수입을 넘음(수입 안에서 운영)',
   'market.sale.sellDown': '연봉을 줄이려 선수를 파는 구단',
   'market.sale.listed': '이적 명단에 오른 선수',
   'market.sale.request': '이적 요청을 낸 선수',

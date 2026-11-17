@@ -6971,8 +6971,11 @@
     "delegation.verdict.incomeFee": "The fee {fee} would pass the cash of {capital}",
     "delegation.offer.looks": "With signings delegated, the director looks on the window's opening day and every {days} days after, filling the manager's requested and empty slots first until {pending} of his offers are pending; {upgrades} Fees and new wages are spent only while the cash covers the planned loss for the allowed seasons. Money for signings now: {left}.",
     "delegation.offer.upgradesBar": "Each transfer market brings in players at least {margin} better than the starters, up to {upgrades} or, when more starters fall below the money bar, as many as those places.",
-    "market.sale.runway.over": "Cash does not cover {runway} seasons of the planned loss",
-    "market.sale.runway.far": "Cash does not cover half of {runway} seasons of the planned loss",
-    "market.sale.runway.income": "Wages and fixed costs above the planned income (run within income)"
+    "delegation.sale.incomeUntouchable": "Run within income, yet wages and fixed costs are above the planned income −25 pts",
+    "delegation.plan.salesPressedIncome": "Wages and fixed costs are above the planned income, so he accepts offers more readily.",
+    "delegation.plan.salesCalmIncome": "Wages and fixed costs stay within the planned income, so he answers offers on the usual terms.",
+    "delegation.flow.recruitmentShortIncome": "Wages and fixed costs are already above the planned income, so he takes on no new wage or fee.",
+    "delegation.flow.contractsShortIncome": "Wages and fixed costs are above the planned income, so he agrees no raises and renews frugally.",
+    "delegation.runway.coversLittle": "Planned loss {loss} a year · cash covers less than {seasons} seasons"
   }
 }

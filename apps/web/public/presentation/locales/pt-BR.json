@@ -6974,8 +6974,11 @@
     "delegation.verdict.incomeFee": "A transferência de {fee} passaria do caixa de {capital}",
     "delegation.offer.looks": "Com as contratações delegadas, o diretor olha o mercado no dia em que abre e a cada {days} dias depois, e preenche primeiro as posições pedidas pelo técnico e as vagas até ter {pending} propostas pendentes; {upgrades} Transferências e novos salários só são gastos enquanto o caixa cobrir o prejuízo previsto pelas temporadas permitidas. Dinheiro para contratações agora: {left}.",
     "delegation.offer.upgradesBar": "Em cada janela contrata jogadores pelo menos {margin} melhores que os titulares, até {upgrades} ou, se houver mais titulares abaixo da linha financeira, tantos quanto essas posições.",
-    "market.sale.runway.over": "O caixa não cobre {runway} temporadas do prejuízo previsto",
-    "market.sale.runway.far": "O caixa não cobre nem metade de {runway} temporadas do prejuízo previsto",
-    "market.sale.runway.income": "Salários e custos fixos acima da receita prevista (gestão dentro da receita)"
+    "delegation.sale.incomeUntouchable": "Gestão dentro da receita, mas salários e custos fixos passam da receita prevista −25 pts",
+    "delegation.plan.salesPressedIncome": "Salários e custos fixos passam da receita prevista, então ele aceita propostas com mais facilidade.",
+    "delegation.plan.salesCalmIncome": "Salários e custos fixos ficam dentro da receita prevista, então ele responde às propostas pelo critério habitual.",
+    "delegation.flow.recruitmentShortIncome": "Salários e custos fixos já passam da receita prevista, então ele não assume novo salário nem transferência.",
+    "delegation.flow.contractsShortIncome": "Salários e custos fixos passam da receita prevista, então ele não aceita aumentos e renova com critério austero.",
+    "delegation.runway.coversLittle": "Prejuízo previsto de {loss} por ano · o caixa cobre menos de {seasons} temporadas"
   }
 }

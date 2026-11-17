@@ -6968,8 +6968,11 @@
     "delegation.verdict.incomeFee": "移籍金{fee}が手元資金{capital}を超えます",
     "delegation.offer.looks": "選手獲得を任せると、スポーツディレクターは移籍市場が開いた日とその後{days}日ごとに市場を見て、進行中のオファーが{pending}件になるまで監督が求めたポジションと空きポジションを先に埋め、{upgrades} 移籍金と新しい年俸は手元資金が計画赤字を許容期間分まかなえる範囲でのみ使います。現在の補強に使えるお金は{left}です。",
     "delegation.offer.upgradesBar": "主戦より能力が{margin}以上良い選手を移籍市場ごとに{upgrades}人まで、資金ラインを下回る主戦ポジションがそれより多ければその数だけ連れてきます。",
-    "market.sale.runway.over": "現金が計画赤字{runway}シーズン分を賄えない",
-    "market.sale.runway.far": "現金が計画赤字{runway}シーズン分の半分も賄えない",
-    "market.sale.runway.income": "年俸と固定費が計画収入を超過(収入の範囲で運営)"
+    "delegation.sale.incomeUntouchable": "収入の範囲で運営するが、年俸と固定費が計画収入を超過 −25pt",
+    "delegation.plan.salesPressedIncome": "年俸と固定費が計画収入を超えているため、オファーを受け入れやすくなります。",
+    "delegation.plan.salesCalmIncome": "年俸と固定費が計画収入の範囲に収まっているため、通常の基準でオファーに応じます。",
+    "delegation.flow.recruitmentShortIncome": "すでに年俸と固定費が計画収入を超えているため、新たな年俸や移籍金は使いません。",
+    "delegation.flow.contractsShortIncome": "年俸と固定費が計画収入を超えているため、昇給は受け入れず倹約型で再契約します。",
+    "delegation.runway.coversLittle": "計画赤字 年{loss} · 現金で{seasons}シーズン分未満"
   }
 }

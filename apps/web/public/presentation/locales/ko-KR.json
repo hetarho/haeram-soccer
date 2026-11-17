@@ -6968,8 +6968,11 @@
     "delegation.verdict.incomeFee": "이적료 {fee}가 보유 자금 {capital}을 넘어요",
     "delegation.offer.looks": "선수 영입을 위임하면 단장이 이적시장이 열린 날과 그 뒤 {days}일마다 살펴보며, 진행 중인 제안이 {pending}건이 될 때까지 감독이 요청한 자리와 빈 자리를 먼저 채우고, {upgrades} 이적료와 새 연봉은 보유 자금이 계획 적자를 적자 허용 기간만큼 버티는 범위에서만 써요. 지금 영입에 쓸 돈은 {left}예요.",
     "delegation.offer.upgradesBar": "주전보다 능력이 {margin} 이상 나은 선수를 이적시장마다 {upgrades}명까지, 돈 기준선보다 처지는 주전 자리가 더 많으면 그 자리 수만큼 데려와요.",
-    "market.sale.runway.over": "현금이 계획 적자 {runway}시즌분을 감당하지 못함",
-    "market.sale.runway.far": "현금이 계획 적자 {runway}시즌분의 절반도 감당하지 못함",
-    "market.sale.runway.income": "선수 연봉과 고정비가 계획 수입을 넘음(수입 안에서 운영)"
+    "delegation.sale.incomeUntouchable": "수입 안에서 운영하는데 선수 연봉과 고정지출이 계획 수입을 넘음 −25%p",
+    "delegation.plan.salesPressedIncome": "선수 연봉과 고정지출이 계획 수입을 넘어 제안을 더 쉽게 받아들여요.",
+    "delegation.plan.salesCalmIncome": "선수 연봉과 고정지출이 계획 수입 안에 머물러 평소 기준으로 제안을 받아요.",
+    "delegation.flow.recruitmentShortIncome": "지금도 선수 연봉과 고정지출이 계획 수입을 넘어 새 연봉이나 이적료를 쓰지 않아요.",
+    "delegation.flow.contractsShortIncome": "지금 선수 연봉과 고정지출이 계획 수입을 넘어 연봉 인상은 받아들이지 않고 짠물로 재계약해요.",
+    "delegation.runway.coversLittle": "계획 적자 연 {loss} · 현금으로 {seasons}시즌분 미만"
   }
 }

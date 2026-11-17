@@ -616,7 +616,15 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
       break;
     case 'sales':
       lines.push(
-        sourceMessage(plan.over ? 'delegation.plan.salesPressed' : 'delegation.plan.salesCalm'),
+        sourceMessage(
+          plan.runway > 0
+            ? plan.over
+              ? 'delegation.plan.salesPressed'
+              : 'delegation.plan.salesCalm'
+            : plan.over
+              ? 'delegation.plan.salesPressedIncome'
+              : 'delegation.plan.salesCalmIncome',
+        ),
       );
       break;
   }

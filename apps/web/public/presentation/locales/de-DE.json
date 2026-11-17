@@ -6971,8 +6971,11 @@
     "delegation.verdict.incomeFee": "Die Ablöse von {fee} läge über dem Guthaben von {capital}",
     "delegation.offer.looks": "Bei delegierten Verpflichtungen sieht sich der Sportdirektor den Markt am Eröffnungstag des Fensters und danach alle {days} Tage an und besetzt zuerst die vom Trainer gewünschten und freien Positionen, bis {pending} seiner Angebote offen sind; {upgrades} Ablösen und neue Gehälter werden nur ausgegeben, solange das Guthaben den geplanten Verlust für die erlaubten Spielzeiten deckt. Geld für Transfers derzeit: {left}.",
     "delegation.offer.upgradesBar": "In jedem Transferfenster holt er Spieler, die mindestens {margin} besser als die Stammspieler sind, bis zu {upgrades} oder, wenn mehr Stammspieler unter der Geldgrenze liegen, so viele wie diese Positionen.",
-    "market.sale.runway.over": "Das Guthaben deckt {runway} Spielzeiten des geplanten Verlusts nicht",
-    "market.sale.runway.far": "Das Guthaben deckt nicht einmal die Hälfte von {runway} Spielzeiten des geplanten Verlusts",
-    "market.sale.runway.income": "Gehälter und Fixkosten über den geplanten Einnahmen (Wirtschaften im Rahmen der Einnahmen)"
+    "delegation.sale.incomeUntouchable": "Wirtschaften im Rahmen der Einnahmen, doch Gehälter und Fixkosten liegen über den geplanten Einnahmen −25 Pkt.",
+    "delegation.plan.salesPressedIncome": "Gehälter und Fixkosten liegen über den geplanten Einnahmen, daher nimmt er Angebote eher an.",
+    "delegation.plan.salesCalmIncome": "Gehälter und Fixkosten bleiben im Rahmen der geplanten Einnahmen, daher beantwortet er Angebote wie üblich.",
+    "delegation.flow.recruitmentShortIncome": "Gehälter und Fixkosten liegen schon über den geplanten Einnahmen, daher geht er kein neues Gehalt und keine Ablöse ein.",
+    "delegation.flow.contractsShortIncome": "Gehälter und Fixkosten liegen über den geplanten Einnahmen, daher gewährt er keine Erhöhung und verlängert sparsam.",
+    "delegation.runway.coversLittle": "Geplanter Verlust {loss} pro Jahr · das Guthaben deckt weniger als {seasons} Spielzeiten"
   }
 }

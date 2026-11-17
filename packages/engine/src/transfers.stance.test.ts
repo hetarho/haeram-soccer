@@ -138,6 +138,14 @@ describe('transfer stance', () => {
     expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: true });
     expect(untouchableVerdict(w, 175, false).reason).toContain('절반도 버티지 못함');
     expect(untouchableVerdict(w, 174, false)).toMatchObject({ accept: false });
+    // At 적극 매각 (step 1) no loss is allowed: any planned loss lowers the price, however much
+    // cash there is, and the report says the spending is above income, not that cash runs short.
+    w.delegationRequests = { sales: 1 };
+    capital(50n);
+    expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: true });
+    expect(untouchableVerdict(w, 175, false).reason).toContain('계획 수입을 넘음');
+    expect(untouchableVerdict(w, 175, false).reason).not.toContain('절반도 버티지 못함');
+    delete w.delegationRequests;
     delete w.budgetPlan;
     // A cash crisis sells, whatever the card.
     w.build = { market: 'hold' };

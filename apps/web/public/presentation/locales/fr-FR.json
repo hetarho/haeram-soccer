@@ -6974,8 +6974,11 @@
     "delegation.verdict.incomeFee": "L’indemnité de {fee} dépasserait la trésorerie de {capital}",
     "delegation.offer.looks": "Avec le recrutement délégué, le directeur examine le marché le jour de son ouverture puis tous les {days} jours, et comble d’abord les postes demandés par l’entraîneur et les postes vides jusqu’à avoir {pending} offres en attente ; {upgrades} Les indemnités et les nouveaux salaires ne sont dépensés que tant que la trésorerie couvre la perte prévue sur les saisons permises. Argent pour les recrues actuellement : {left}.",
     "delegation.offer.upgradesBar": "À chaque mercato, il recrute des joueurs meilleurs d’au moins {margin} que les titulaires, jusqu’à {upgrades} ou, si davantage de titulaires sont sous la barre financière, autant que ces postes.",
-    "market.sale.runway.over": "La trésorerie ne couvre pas {runway} saisons de la perte prévue",
-    "market.sale.runway.far": "La trésorerie ne couvre pas la moitié de {runway} saisons de la perte prévue",
-    "market.sale.runway.income": "Salaires et coûts fixes au-dessus des recettes prévues (gestion dans les recettes)"
+    "delegation.sale.incomeUntouchable": "Gestion dans les recettes, mais salaires et coûts fixes dépassent les recettes prévues −25 pts",
+    "delegation.plan.salesPressedIncome": "Les salaires et coûts fixes dépassent les recettes prévues : il accepte plus facilement les offres.",
+    "delegation.plan.salesCalmIncome": "Les salaires et coûts fixes restent dans les recettes prévues : il répond aux offres selon les critères habituels.",
+    "delegation.flow.recruitmentShortIncome": "Les salaires et coûts fixes dépassent déjà les recettes prévues : il n’engage ni nouveau salaire ni indemnité.",
+    "delegation.flow.contractsShortIncome": "Les salaires et coûts fixes dépassent les recettes prévues : il n’accorde aucune hausse et renouvelle au plus juste.",
+    "delegation.runway.coversLittle": "Perte prévue de {loss} par an · la trésorerie couvre moins de {seasons} saisons"
   }
 }

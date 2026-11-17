@@ -1216,7 +1216,14 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   let bar = base;
   if (pressure.level === 2) {
     bar -= 25;
-    steps.push(sourceMessage('delegation.sale.runwayUntouchable'));
+    // Within income (step 1) no loss is allowed: any planned loss is what presses him.
+    steps.push(
+      sourceMessage(
+        pressure.runway > 0
+          ? 'delegation.sale.runwayUntouchable'
+          : 'delegation.sale.incomeUntouchable',
+      ),
+    );
   }
   if (essential) {
     bar += 25;

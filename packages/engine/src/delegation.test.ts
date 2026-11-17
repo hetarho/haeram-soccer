@@ -1,4 +1,3 @@
-import { SALE_FACTORS, type SaleContext } from './sale-answer';
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
 import { canonical, validateWorld } from '../../contracts/src/index';
@@ -412,7 +411,7 @@ describe('selling and the plain stop', () => {
     // 균형: four seasons of the loss to cover.
     expect(spendingStance(w, 'sales').runway).toBe(4);
     cashWith(w, 'sales', loss * 4n);
-    expect(wagePressure(w)).toMatchObject({ level: 0, seasons: 4 });
+    expect(wagePressure(w)).toMatchObject({ level: 0, seasons: 4, runway: 4 });
     cashWith(w, 'sales', loss * 3n);
     expect(wagePressure(w)).toMatchObject({ level: 1, seasons: 3 });
     cashWith(w, 'sales', loss);
@@ -426,33 +425,21 @@ describe('selling and the plain stop', () => {
     expect(wagePressure(w).level).toBe(0);
     cashWith(w, 'sales', (loss * 7n) / 10n);
     expect(wagePressure(w).level).toBe(1);
+    // Within income (적극 매각) the plan's sentence names the income, never the cash's seasons.
+    w.delegationRequests = { sales: 1 };
+    cashWith(w, 'sales', loss * 10n);
+    const pressed = planLines(w, delegatePlan(w, 'sales')).join(' ');
+    expect(pressed).toContain('계획 수입을 넘어');
+    expect(pressed).not.toContain('적자 허용 기간');
+    lossOf(w, -1n);
+    expect(planLines(w, delegatePlan(w, 'sales')).join(' ')).toContain('계획 수입 안에 머물러');
+    lossOf(w, loss);
+    w.delegationRequests = { sales: 5 };
     // Without a planned loss nothing presses him, whatever the cash.
     lossOf(w, -1n);
     w.cash = '0';
     expect(wagePressure(w)).toMatchObject({ level: 0 });
     expect(wagePressure(w).seasons).toBeUndefined();
-  });
-
-  it("the sale answer's report names the runway it fails, not a share of income (→CLUB-52)", () => {
-    const wages = SALE_FACTORS.find((factor) => factor.id === 'wages')!,
-      read = (wageLine: 0 | 1 | 2, runwaySeasons: number) =>
-        wages.read({ ownSeller: true, wageLine, wageShare: 90, runwaySeasons } as SaleContext);
-    expect(read(0, 4)).toBeUndefined();
-    expect(read(1, 4)).toMatchObject({
-      delta: -0.05,
-      message: 'market.sale.runway.over',
-      params: { runway: 4 },
-    });
-    expect(read(2, 4)).toMatchObject({
-      delta: -0.1,
-      message: 'market.sale.runway.far',
-      params: { runway: 4 },
-    });
-    // Within income (적극 매각) the runway is none: any planned loss fails at once.
-    expect(read(2, 0)).toMatchObject({ delta: -0.1, message: 'market.sale.runway.income' });
-    // The step's runway reaches the report through the pressure the answer reads.
-    const w = club('delegation-sell');
-    expect(wagePressure(w).runway).toBe(spendingStance(w, 'sales').runway);
   });
 
   it('delegating makes the plan at once; a season and a window re-plan only what changed', () => {

@@ -6971,8 +6971,11 @@
     "delegation.verdict.incomeFee": "De transfersom van {fee} zou boven de kas van {capital} uitkomen",
     "delegation.offer.looks": "Met gedelegeerde aankopen kijkt de technisch directeur op de openingsdag van de transferperiode en daarna elke {days} dagen, en vult hij eerst de door de trainer gevraagde en lege posities tot {pending} van zijn biedingen openstaan; {upgrades} Transfersommen en nieuwe salarissen worden alleen besteed zolang de kas het geplande verlies voor de toegestane seizoenen dekt. Geld voor aankopen nu: {left}.",
     "delegation.offer.upgradesBar": "Elke transferperiode haalt hij spelers die minstens {margin} beter zijn dan de basisspelers, tot {upgrades} of, als meer basisspelers onder de geldgrens zitten, zoveel als die posities.",
-    "market.sale.runway.over": "De kas dekt geen {runway} seizoenen van het geplande verlies",
-    "market.sale.runway.far": "De kas dekt nog niet de helft van {runway} seizoenen van het geplande verlies",
-    "market.sale.runway.income": "Salarissen en vaste kosten boven de geplande inkomsten (binnen de inkomsten blijven)"
+    "delegation.sale.incomeUntouchable": "Binnen de inkomsten blijven, maar salarissen en vaste kosten liggen boven de geplande inkomsten −25 pt",
+    "delegation.plan.salesPressedIncome": "Salarissen en vaste kosten liggen boven de geplande inkomsten, dus hij neemt aanbiedingen sneller aan.",
+    "delegation.plan.salesCalmIncome": "Salarissen en vaste kosten blijven binnen de geplande inkomsten, dus hij beoordeelt aanbiedingen zoals gewoonlijk.",
+    "delegation.flow.recruitmentShortIncome": "Salarissen en vaste kosten liggen al boven de geplande inkomsten, dus hij gaat geen nieuw salaris of transfersom aan.",
+    "delegation.flow.contractsShortIncome": "Salarissen en vaste kosten liggen boven de geplande inkomsten, dus hij geeft geen verhoging en verlengt zuinig.",
+    "delegation.runway.coversLittle": "Gepland verlies van {loss} per jaar · de kas dekt minder dan {seasons} seizoenen"
   }
 }

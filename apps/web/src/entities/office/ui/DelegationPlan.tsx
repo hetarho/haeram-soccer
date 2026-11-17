@@ -90,11 +90,22 @@ function figure(value: number) {
 }
 /** The planned loss now and the seasons of it the available capital covers. */
 function coversLine(w: World, plan: DelegatePlan) {
-  const loss = compactMoney(plan.loss, clubOf(w).country, w.year);
+  return coverageLine(plan, compactMoney(plan.loss, clubOf(w).country, w.year));
+}
+/**
+ * The coverage note for a planned loss already written as `loss`. Coverage is kept to one decimal,
+ * so capital covering less than a tenth of a season reads so, never as no cash at all.
+ */
+export function coverageLine(
+  plan: Pick<DelegatePlan, 'loss' | 'covers' | 'capital'>,
+  loss: string,
+) {
   if (BigInt(plan.loss) === 0n) return sourceMessage('delegation.runway.noLoss');
   return plan.covers
     ? sourceMessage('delegation.runway.covers', { loss, seasons: figure(plan.covers) })
-    : sourceMessage('delegation.runway.coversNone', { loss });
+    : BigInt(plan.capital) > 0n
+      ? sourceMessage('delegation.runway.coversLittle', { loss, seasons: figure(0.1) })
+      : sourceMessage('delegation.runway.coversNone', { loss });
 }
 
 /** The plan's money as steps, for the works the 단장 plans with money. */
@@ -191,13 +202,19 @@ function planSentence(w: World, plan: DelegatePlan): ReactNode {
   switch (plan.key) {
     case 'recruitment':
       return plan.over
-        ? richMessage('delegation.flow.recruitmentShort')
+        ? richMessage(
+            seasons > 0
+              ? 'delegation.flow.recruitmentShort'
+              : 'delegation.flow.recruitmentShortIncome',
+          )
         : seasons > 0
           ? richMessage('delegation.flow.recruitmentRunway', { seasons })
           : richMessage('delegation.flow.recruitmentIncome');
     case 'contracts':
       return plan.over
-        ? richMessage('delegation.flow.contractsShort')
+        ? richMessage(
+            seasons > 0 ? 'delegation.flow.contractsShort' : 'delegation.flow.contractsShortIncome',
+          )
         : seasons > 0
           ? richMessage('delegation.flow.contractsRunway', { seasons })
           : richMessage('delegation.flow.contractsIncome');
@@ -209,9 +226,11 @@ function planSentence(w: World, plan: DelegatePlan): ReactNode {
         </>
       );
     case 'sales':
-      return plan.over
-        ? richMessage('delegation.plan.salesPressed')
-        : richMessage('delegation.plan.salesCalm');
+      return seasons > 0
+        ? richMessage(plan.over ? 'delegation.plan.salesPressed' : 'delegation.plan.salesCalm')
+        : richMessage(
+            plan.over ? 'delegation.plan.salesPressedIncome' : 'delegation.plan.salesCalmIncome',
+          );
     default:
       return undefined;
   }

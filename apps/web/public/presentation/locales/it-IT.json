@@ -6974,8 +6974,11 @@
     "delegation.verdict.incomeFee": "Il cartellino di {fee} supererebbe la cassa di {capital}",
     "delegation.offer.looks": "Con gli acquisti delegati, il direttore esamina il mercato il giorno di apertura e poi ogni {days} giorni, e copre prima i ruoli chiesti dall’allenatore e quelli vuoti finché ha {pending} offerte in sospeso; {upgrades} Cartellini e nuovi stipendi si spendono solo finché la cassa copre la perdita prevista per le stagioni consentite. Fondi per gli acquisti ora: {left}.",
     "delegation.offer.upgradesBar": "A ogni mercato porta giocatori migliori di almeno {margin} rispetto ai titolari, fino a {upgrades} o, se più titolari sono sotto la soglia economica, tanti quanti quei ruoli.",
-    "market.sale.runway.over": "La cassa non copre {runway} stagioni della perdita prevista",
-    "market.sale.runway.far": "La cassa non copre nemmeno metà di {runway} stagioni della perdita prevista",
-    "market.sale.runway.income": "Stipendi e costi fissi sopra le entrate previste (gestione entro le entrate)"
+    "delegation.sale.incomeUntouchable": "Gestione entro le entrate, ma stipendi e costi fissi superano le entrate previste −25 pt",
+    "delegation.plan.salesPressedIncome": "Stipendi e costi fissi superano le entrate previste, quindi accetta le offerte più facilmente.",
+    "delegation.plan.salesCalmIncome": "Stipendi e costi fissi restano entro le entrate previste, quindi risponde alle offerte con il criterio abituale.",
+    "delegation.flow.recruitmentShortIncome": "Stipendi e costi fissi superano già le entrate previste, quindi non assume nuovi stipendi né cartellini.",
+    "delegation.flow.contractsShortIncome": "Stipendi e costi fissi superano le entrate previste, quindi non concede aumenti e rinnova al risparmio.",
+    "delegation.runway.coversLittle": "Perdita prevista di {loss} l’anno · la cassa copre meno di {seasons} stagioni"
   }
 }
