@@ -177,7 +177,113 @@
       "reason": "failed"
     }
   },
-  "gate": null,
+  "gate": {
+    "token": "18274191-503d-4e61-932e-ca822843f7cc",
+    "owner": "cf17",
+    "via": "merge",
+    "executor": {
+      "host": "ihaelam-ui-MacBookPro.local",
+      "pid": 33354
+    },
+    "phase": "preparing",
+    "land": "main",
+    "base": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+    "cohort": [
+      {
+        "id": "8b7b5ad8543dbf211daaa575",
+        "tag": "ws16",
+        "branch": "gusta-session-self-improve-ws16-c1384351",
+        "head": "fdfe2e23fa28bf51b69c130e60013a85ff13d74f",
+        "agentChecks": [],
+        "verificationCommands": [
+          "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+          "node --import tsx /tmp/ws16-verify-world.mjs .",
+          "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
+        ],
+        "publication": "merge"
+      },
+      {
+        "id": "7a88e7723e75cfe5a6df9ab7",
+        "tag": "nf16",
+        "branch": "gusta-session-start-nf16-46eb8aaa",
+        "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
+        "agentChecks": [],
+        "verificationCommands": [],
+        "publication": "merge"
+      },
+      {
+        "id": "2c0e6451d9095ff99d83c89a",
+        "tag": "pf17",
+        "branch": "gusta-session-self-improve-pf17-c279c8c5",
+        "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
+        "agentChecks": [],
+        "verificationCommands": [],
+        "publication": "merge"
+      },
+      {
+        "id": "8a08fb5e0dc073e82af22692",
+        "tag": "44205ffd",
+        "branch": "gusta-session-start-iv17-d1ff7e09",
+        "head": "2ed74c67faca287b1df36b82b0f68a6215b29ee7",
+        "agentChecks": [],
+        "verificationCommands": [],
+        "publication": "merge"
+      },
+      {
+        "id": "27b831eabec55286522b5ec4",
+        "tag": "cf17",
+        "branch": "gusta-session-start-cf17-c5483839",
+        "head": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+        "agentChecks": [],
+        "verificationCommands": [],
+        "publication": "merge"
+      }
+    ],
+    "deferred": [
+      {
+        "id": "9e5ff6a75bd0957f25e20202",
+        "tag": "iv17",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-iv17-8fc58b3e",
+        "status": "working",
+        "at": "2026-11-17T02:50:30.664Z",
+        "reason": "no-signal"
+      },
+      {
+        "id": "ed23b71f67600a8391865160",
+        "tag": "iv17",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-iv17-d1ff7e09",
+        "status": "working",
+        "at": "2026-11-17T03:13:48.704Z",
+        "reason": "no-signal"
+      },
+      {
+        "id": "cb6d2aaafc008c50895c56bb",
+        "tag": "tm17",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-self-improve-tm17-ff4b9f94",
+        "status": "working",
+        "at": "2026-11-17T04:46:07.830Z",
+        "reason": "no-signal"
+      },
+      {
+        "id": "3bfc1d35823365efd50baab5",
+        "tag": "lc17",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-self-improve-lc17-37ba91cb",
+        "status": "working",
+        "at": "2026-11-17T08:28:53.386Z",
+        "reason": "no-signal"
+      }
+    ],
+    "at": "2026-11-17T13:57:36.470Z",
+    "deadline": "2026-11-17T14:57:33.027Z",
+    "candidate": null,
+    "checks": [],
+    "agentChecks": [],
+    "rounds": []
+  },
   "history": [],
   "lastPlanning": {
     "land": "main",
