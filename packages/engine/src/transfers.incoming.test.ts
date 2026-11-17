@@ -10,7 +10,6 @@ import {
   currentDay,
   formationOf,
   operate,
-  operatingCosts,
   overall,
   playerValue,
   respondBid,
@@ -148,66 +147,22 @@ describe('incoming bids', () => {
     expect(() => respondBid(w, minimum.id, true)).toThrow(CLOSED);
   });
 
-  it('sets the staff sale bar from age, contract, a cash crisis, the sales line and prospect status (→CLUB-18, →ECON-33, →ECON-41)', () => {
+  it('sets the staff sale bar, the asking fee, by the card and prospect status (→CLUB-18)', () => {
     const w = world('sale-bar');
     const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
-    const reset = () => {
-      p.born = w.year - 26;
-      p.until = w.year + 3;
-      w.cash = '999999999999';
-    };
-    reset();
-    expect(saleBar(w, p)).toEqual({ percent: 130, base: 130, prospect: false, cuts: [] });
-    p.born = w.year - 31;
-    expect(saleBar(w, p).percent).toBe(115);
+    p.born = w.year - 26;
+    p.until = w.year + 3;
+    w.cash = '999999999999';
+    expect(saleBar(w, p)).toEqual({ percent: 130, prospect: false });
+    // Age, contract, money and the sales line are the selling-club answer's factors now
+    // (→CLUB-52), not cuts of the bar.
     p.born = w.year - 34;
     p.until = w.year + 1;
-    // 130 − 30 − 20, and a crisis would take it below the 80% floor.
-    expect(saleBar(w, p).percent).toBe(80);
     w.cash = '0';
-    expect(saleBar(w, p)).toMatchObject({ percent: 80 });
-    expect(saleBar(w, p).cuts).toEqual([
-      '34세 −30%p',
-      '계약 마지막 시즌 −20%p',
-      '운영자금 위기 −20%p',
-    ]);
-    reset();
-    p.until = w.year + 2;
-    expect(saleBar(w, p).percent).toBe(120);
-    reset();
-    // The retired 재정 기조 runway steps are gone (CLUB-18 r68): only a cash crisis, a fixed-cost
-    // runway under 4 rounds (→ECON-41), cuts the bar for cash.
-    const annual = BigInt(operatingCosts(w).annual);
-    w.cash = ((annual * 4n + 45n) / 46n).toString();
-    expect(saleBar(w, p)).toMatchObject({ percent: 130, cuts: [] });
-    w.cash = ((annual * 4n) / 46n - 1n).toString();
-    expect(saleBar(w, p)).toMatchObject({ percent: 110 });
-    reset();
-    // Test income pressure without capital available above the reserve.
-    w.cash = annual.toString();
-    // The players' wage bill above the 단장's sales line (60% of the planned income at 균형,
-    // →ECON-33) cuts 10 points, more than 10 points above it 20.
-    const wages = BigInt(operatingCosts(w).playerWages),
-      plan = (percent: bigint) =>
-        (w.budgetPlan = {
-          year: w.year,
-          revenue: ((wages * 100n) / percent).toString(),
-          sales: '0',
-        });
-    plan(55n);
-    expect(saleBar(w, p)).toMatchObject({ percent: 130, cuts: [] });
-    plan(65n);
-    expect(saleBar(w, p)).toMatchObject({ percent: 120 });
-    plan(75n);
-    expect(saleBar(w, p)).toMatchObject({ percent: 110 });
-    // A wealthy club can fund that bill from cash without being pressed to sell.
-    w.cash = '999999999999';
-    expect(saleBar(w, p)).toMatchObject({ percent: 130, cuts: [] });
-    delete w.budgetPlan;
-    reset();
+    expect(saleBar(w, p)).toEqual({ percent: 130, prospect: false });
     p.born = w.year - 19;
     p.potential = overall(p) + 20;
-    expect(saleBar(w, p)).toEqual({ percent: 200, base: 200, prospect: true, cuts: [] });
+    expect(saleBar(w, p)).toEqual({ percent: 200, prospect: true });
     p.potential = overall(p) + 3;
     expect(saleBar(w, p).percent).toBe(130);
   });

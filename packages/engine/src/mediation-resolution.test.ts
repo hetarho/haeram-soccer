@@ -1,4 +1,4 @@
-import { afterEach, describe, it, expect, vi } from 'vitest';
+import { afterEach, describe, it, expect, onTestFinished, vi } from 'vitest';
 import { transferOffers } from './index';
 import { detectMediations, resolveMediation, resolveDelegatedMediations } from './mediation';
 import { lineOf } from './player';
@@ -6,6 +6,20 @@ import { requestCandidates, signingVerdict } from './signings';
 import * as signings from './signings';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { careerWorld } from './career.testkit';
+import * as personalTerms from './personal-terms';
+/**
+ * Every candidate is keen on our terms (→CLUB-53): these cases test the 단장's move, not the
+ * player's answer, so his chance is certain at his demand and he always agrees.
+ */
+function willing() {
+  const certain = { chance: 1, logOdds: 9, lines: [] };
+  const chance = vi.spyOn(personalTerms, 'termsChance').mockReturnValue(certain),
+    answer = vi.spyOn(personalTerms, 'termsAnswer').mockReturnValue({ ...certain, accept: true });
+  onTestFinished(() => {
+    chance.mockRestore();
+    answer.mockRestore();
+  });
+}
 function fixture() {
   // A seed whose scout lists a dearer midfielder and a cheaper one: on each club's own age ladder
   // (T805) 'resolution' lists two of one club at the same fee and wage.
@@ -48,6 +62,7 @@ describe('financial mediation resolution', () => {
     validateWorld(w);
   });
   it('balanced pursues the cheapest feasible alternative by a real ordinary move', () => {
+    willing();
     const { w, id, named } = fixture();
     rich(w);
     const pool = requestCandidates(w, w.mediations![0].target)
@@ -79,6 +94,7 @@ describe('financial mediation resolution', () => {
     expect(w.promises).toBeUndefined();
   });
   it('manager-first sends a real named bid, never a fictitious completed arrival', () => {
+    willing();
     const { w, id, named } = fixture();
     rich(w);
     resolveMediation(w, id, 'manager', 'delegated');

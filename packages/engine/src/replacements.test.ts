@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import type { World, Player, TransferBid } from '../../contracts/src/types';
 import { validateWorld, canonical } from '../../contracts/src/index';
 import {
@@ -23,6 +23,20 @@ import { twentyPlayerFixture } from './player-fixtures.testkit';
 import { joinFreeAgents } from './free-agents';
 import { npcOffer } from './npc-market';
 import { SQUAD_TARGET } from './squad-size';
+import * as personalTerms from './personal-terms';
+/**
+ * Every candidate is keen on our terms (→CLUB-53): these cases test that the 단장 moves for a
+ * need, not the player's answer, so his chance is certain and he always agrees.
+ */
+function willing() {
+  const certain = { chance: 1, logOdds: 9, lines: [] };
+  const chance = vi.spyOn(personalTerms, 'termsChance').mockReturnValue(certain),
+    answer = vi.spyOn(personalTerms, 'termsAnswer').mockReturnValue({ ...certain, accept: true });
+  onTestFinished(() => {
+    chance.mockRestore();
+    answer.mockRestore();
+  });
+}
 const world = (count = 20) => cachedWorld(`world:${count}`, () => found(count));
 /** The club on the released model: replacement needs, not the match model, are the subject. */
 function found(count: number) {
@@ -85,6 +99,7 @@ function sell(w: World, p: Player) {
 }
 describe('replacement needs', () => {
   it('opens for a starter sold from twenty-four and pursues the next day outside the weekly gate', () => {
+    willing();
     const w = world(24),
       starter = ownStarters(w).find((p) => p.position !== 'GK')!;
     sell(w, starter);

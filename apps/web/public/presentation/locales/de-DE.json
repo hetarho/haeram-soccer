@@ -3934,7 +3934,7 @@
     "copy.Rich.2d87e0aa1d": "Die Mitarbeiter nehmen eingehende Angebote entgegen und verkaufen sie.",
     "copy.Rich.6fa78664ca": "Der Eigentümer nimmt jeden Vorschlag an oder lehnt ihn ab.",
     "copy.Rich.6aa4d020ff": "Verhandeln Sie, wenn ein anderer Verein zuerst ein Angebot macht.",
-    "copy.Rich.d630d96fa4": "Verkaufen, wenn der Personalbestand mehr als {p0} % des Schätzwertes beträgt · Die Startspieler ersatzlos behalten",
+    "copy.Rich.d630d96fa4": "Der Stab fordert {p0} % des geschätzten Werts und kann je nach Rolle, Vertrag, Alter und Finanzlage ein niedrigeres Angebot annehmen oder kontern",
     "copy.Rich.c1583a64cf": "Vorschläge unter dem Bewertungswert {p0}% ({p1}) werden sofort abgelehnt.",
     "copy.Rich.6c4000e91e": "Wir schützen auch große Angebote · Verkaufspolitik {p0} (Verkauf im Falle einer Finanzkrise)",
     "copy.Rich.7ec00fbab6": "Bei größeren Vorschlägen besprechen die Mitarbeiter mit dem Direktor. Verkaufsbasis: {p1} % basierend auf {p0}, angepasst basierend auf den finanziellen Verhältnissen und der Verfügbarkeit von Startern.",
@@ -6914,6 +6914,8 @@
     "market.answer.player.detail": "Sein Verein willigte bei {fee} ein, doch er lehnte ein Gehalt von {wage} ({percent} % seiner Forderung) ab. Keine Ablöse gezahlt. {terms}",
     "market.answer.free.title": "{name} lehnt unsere Bedingungen als vereinsloser Spieler ab",
     "market.answer.free.detail": "Er lehnte ein Gehalt von {wage} ({percent} % seiner Forderung) ab. {terms}",
+    "market.staff.wageOffer": "Gehaltsangebot {wage} ({percent} % seiner Forderung) · {chance} % Chance auf Zusage",
+    "market.staff.noTerms": "Selbst bei {percent} % seiner Forderung bleibt seine Zusagechance unter {chance} % oder die Finanzprüfung scheitert",
     "market.bid.invalidWage": "Das Gehaltsangebot muss 100 %, 125 %, 150 % oder 200 % seiner Forderung betragen.",
     "market.bid.wageSteps": "Gehaltsangebot",
     "market.bid.wageStep": "{percent} % der Forderung",
@@ -6949,6 +6951,11 @@
     "market.answer.player.detail.club": "Sein Verein willigte bei {fee} ein. {reason}. Doch er lehnte ein Gehalt von {wage} ({percent} % seiner Forderung) ab. Keine Ablöse gezahlt. {terms}",
     "market.answer.accepted": "{position} · {age} Jahre · das Angebot über {fee} wurde angenommen. {reason}.",
     "market.answer.accepted.staff": "{position} · {age} Jahre · das Angebot über {fee} wurde angenommen. {reason}. Es war das Angebot des Sportdirektors.",
-    "market.answer.blocked": "Der abgebende Verein nahm das Angebot über {fee} an. {reason}. Doch der Wechsel kam nicht zustande: {blocker}"
+    "market.answer.blocked": "Der abgebende Verein nahm das Angebot über {fee} an. {reason}. Doch der Wechsel kam nicht zustande: {blocker}",
+    "market.sale.own.accepted": "Forderung {asking} ({bar} % des Werts) · Angebot {fee} ({offered} % des Werts). {reason}. Er nahm das Angebot an und verkaufte den Spieler.",
+    "market.sale.own.counterTaken": "Forderung {asking} ({bar} % des Werts) · Angebot {fee} ({offered} % des Werts). {reason}. Er machte ein Gegenangebot über {counter}; der bietende Verein nahm an und der Spieler wurde verkauft.",
+    "market.sale.own.counterDeclined": "Forderung {asking} ({bar} % des Werts) · Angebot {fee} ({offered} % des Werts). {reason}. Er machte ein Gegenangebot über {counter}, doch der bietende Verein nahm nicht an.",
+    "market.sale.own.refused": "Forderung {asking} ({bar} % des Werts) · Angebot {fee} ({offered} % des Werts). {reason}. Es lag zu weit unter seiner Grenze, daher lehnte er ohne Gegenangebot ab.",
+    "market.sale.own.core": "Der Verein hält seinen Kern: Seine drei besten Stammspieler sind unverkäuflich. Er lehnte das Angebot über {fee} ab ({offered} % des Werts)."
   }
 }

@@ -4281,7 +4281,7 @@ export const sourceMessages = {
   'copy.Rich.6fa78664ca': '제안마다 구단주가 수락·거절해요',
   'copy.Rich.6aa4d020ff': '다른 구단이 먼저 제안해 올 때 협상해요',
   'copy.Rich.d630d96fa4':
-    '스태프가 평가 가치의 {p0}% 이상이면 팔아요 · 대체 선수 없는 주전은 지켜요',
+    '스태프가 평가 가치의 {p0}%를 요구하고, 포지션·계약·나이·자금 사정에 따라 그보다 낮은 제안도 받거나 역제안해요',
   'copy.Rich.c1583a64cf': '평가 가치 {p0}%({p1}) 미만 제안은 바로 거절해요',
   'copy.Rich.6c4000e91e': '거액 제안도 지켜요 · 매각 기조 {p0} (자금 위기면 매각)',
   'copy.Rich.7ec00fbab6':
@@ -7442,6 +7442,9 @@ export const sourceMessages = {
   'market.answer.player.detail.club':
     '구단은 {fee}에 합의했어요. {reason}. 하지만 선수가 연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. 이적료는 내지 않았어요. {terms}',
   'market.answer.free.detail': '연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. {terms}',
+  'market.staff.wageOffer': '연봉 제안 {wage}(요구의 {percent}%) · 선수 수락 가능성 {chance}%',
+  'market.staff.noTerms':
+    '연봉을 요구의 {percent}%까지 올려도 선수가 응할 가능성이 {chance}%에 못 미치거나 자금 점검을 넘지 못해요',
   'market.answer.staffCounter':
     '단장의 제안 {fee} · 요구액 {asking} · 요구액의 {percent}%. {reason}. 판단: {verdict}',
   'market.answer.accepted': '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}.',
@@ -7449,6 +7452,16 @@ export const sourceMessages = {
     '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}. 단장의 제안이에요.',
   'market.answer.blocked':
     '상대 구단은 {fee} 제안을 받아들였어요. {reason}. 그러나 마무리하지 못했어요: {blocker}',
+  'market.sale.own.accepted':
+    '요구액 {asking}(평가 가치의 {bar}%) · 제안 {fee}(평가 가치의 {offered}%). {reason}. 제안을 받아들여 매각했어요.',
+  'market.sale.own.counterTaken':
+    '요구액 {asking}(평가 가치의 {bar}%) · 제안 {fee}(평가 가치의 {offered}%). {reason}. {counter}에 역제안했고 상대 구단이 받아들여 매각했어요.',
+  'market.sale.own.counterDeclined':
+    '요구액 {asking}(평가 가치의 {bar}%) · 제안 {fee}(평가 가치의 {offered}%). {reason}. {counter}에 역제안했지만 상대 구단이 받아들이지 않았어요.',
+  'market.sale.own.refused':
+    '요구액 {asking}(평가 가치의 {bar}%) · 제안 {fee}(평가 가치의 {offered}%). {reason}. 버틴 선에 한참 못 미쳐 역제안 없이 거절했어요.',
+  'market.sale.own.core':
+    '핵심 지키기 방향이라 주전 상위 3명은 팔지 않아요. 제안 {fee}(평가 가치의 {offered}%)를 거절했어요.',
   'market.sale.managerStyle': '데이터 헤드코치 감독의 협상 지원',
   'market.answer.noFactors': '움직인 요인 없음',
   'market.answer.saleFactor': '{factor} — 요구액의 {delta}%p',

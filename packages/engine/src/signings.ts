@@ -20,7 +20,7 @@ import { LINE_MINIMUM, LINE_NAME, lineOf, POSITION_LABEL, requestLabel } from '.
 export { requestLabel } from './player';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import { MARKET_REFRESH_ROUNDS } from './managerMarket';
-import { clamp, compareIds, ratio } from './primitives';
+import { clamp, compareIds, hash, random, ratio } from './primitives';
 import {
   activePlayers,
   clubOf,
@@ -41,14 +41,28 @@ import {
   spendingStance,
   type SpendingStance,
 } from './delegation';
-import { sharePercent } from './delegation-info';
+import { actedLevel, delegateOf, requestOf, sharePercent } from './delegation-info';
+import {
+  termsAnswer,
+  termsChance,
+  termsContext,
+  WAGE_STEPS,
+  type TermsContext,
+} from './personal-terms';
 import { moneyLabel } from './finance';
 import { pushInbox } from './inbox';
 import { isDelegated } from './responsibilities';
 import { signFreeAgent, squadCommand } from './ops-squad';
 import { isForeignCandidate, transferOffers } from './scout-search';
 import { POLICY_INFO, policyOf } from './policy';
-import { placeBid, setTransferStance, transferStance } from './transfers';
+import {
+  fittedDetail,
+  namedTitle,
+  placeBid,
+  setTransferStance,
+  termsReport,
+  transferStance,
+} from './transfers';
 import { transferWindow, transferWindowDays } from './transfer-window';
 
 /**
@@ -81,6 +95,12 @@ export const SIGNING_CONFIG = {
   requestLimit: 3,
   /** Trust a manager loses when a window closes with none of his requests met. */
   unmetTrust: 3,
+  /**
+   * The 단장's wage offer (→CLUB-41): the highest step of a player's demand he offers, by the
+   * 선수 영입 step he acts on (1–5), and the player's chance the smallest step offered must reach.
+   */
+  wageCeiling: [1, 1, 1.25, 1.5, 2] as readonly number[],
+  termsChance: 0.6,
 };
 
 type Offer = ScoutOffer;
@@ -228,6 +248,86 @@ export function signingVerdict(
     }),
   };
 }
+
+/** The highest step of a player's demand the 단장 offers, by the 선수 영입 step he acts on (→CLUB-41). */
+export function wageCeiling(w: World) {
+  const level = actedLevel(requestOf(w, 'recruitment'), delegateOf(w).temperament);
+  return SIGNING_CONFIG.wageCeiling[level - 1]!;
+}
+/** Our offer at a step of his demand, in whole minor units, as a bid reads it (→CLUB-53). */
+const stepWage = (demand: string, step: number) =>
+  ((BigInt(demand) * BigInt(Math.round(step * 10000))) / 10000n).toString();
+/** The 단장's wage offer for a candidate and the player's chance at it, with its money check. */
+export interface WageOffer {
+  step: (typeof WAGE_STEPS)[number];
+  wage: string;
+  chance: number;
+  lines: ReturnType<typeof termsChance>['lines'];
+  /** The money checks with that wage (→`signingVerdict`). */
+  reason: string;
+  /** What his answer reads: our offer at that step of his demand (→CLUB-53). */
+  context: TermsContext;
+}
+/**
+ * The 단장's wage offer (→CLUB-41, →CLUB-53): the smallest step of the player's demand whose chance
+ * is at least `termsChance`, up to his acted 선수 영입 step's ceiling, that passes the money checks
+ * with that wage and `fee`. When no step does, the reason says why, and he moves to the next candidate.
+ */
+export function wageOffer(
+  w: World,
+  offer: Offer,
+  fee: string,
+  need?: SigningNeed['kind'],
+): { ok: true; offer: WageOffer } | { ok: false; reason: string } {
+  const club = offer.source.kind === 'club' ? offer.source.club : undefined,
+    context = termsContext(w, {
+      playerId: offer.player.id,
+      ...(club ? { clubId: club } : {}),
+      step: 1,
+    });
+  if (!context) return { ok: false, reason: sourceMessage('copy.ops_squad.c94b14b4dc') };
+  // His demand is the one the bid pins, the offer's quote (→CLUB-14), as his answer reads it.
+  const demand = offer.player.wage,
+    ceiling = wageCeiling(w);
+  let refused: string | undefined;
+  for (const step of WAGE_STEPS) {
+    if (step > ceiling) break;
+    const wage = stepWage(demand, step),
+      asked = { ...context, demand, offer: wage },
+      read = termsChance(asked);
+    if (read.chance < SIGNING_CONFIG.termsChance) continue;
+    const verdict = signingVerdict(w, { ...offer.player, wage }, fee, need);
+    if (verdict.ok)
+      return {
+        ok: true,
+        offer: {
+          step,
+          wage,
+          chance: read.chance,
+          lines: read.lines,
+          reason: verdict.reason,
+          context: asked,
+        },
+      };
+    refused ??= verdict.reason;
+  }
+  return {
+    ok: false,
+    reason:
+      refused ??
+      sourceMessage('market.staff.noTerms', {
+        percent: Math.round(ceiling * 100),
+        chance: Math.round(SIGNING_CONFIG.termsChance * 100),
+      }),
+  };
+}
+/** The wage he offered and the player's chance at it, for his reports. */
+const wageLine = (w: World, terms: WageOffer) =>
+  sourceMessage('market.staff.wageOffer', {
+    wage: moneyLabel(w, terms.wage),
+    percent: Math.round(terms.step * 100),
+    chance: Math.round(terms.chance * 100),
+  });
 
 /** The need in words, with the row behind it and the manager's request when it is one. */
 export function needLine(w: World, need: SigningNeed) {
@@ -714,26 +814,51 @@ export function upgradeNeeds(
   return [...below, ...needs.filter((need) => !below.includes(need))];
 }
 
-/** The 단장 signs a free agent: he leaves the pool at once on the offer's terms (→CLUB-49). */
-function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
-  const p = signFreeAgent(w, offer),
-    day = currentDay(w);
-  // The signing is kept as a completed staff bid, so the window's count sees it.
-  w.bids = [
-    ...(w.bids || []),
-    {
-      id: `out:${w.year}:${day}:staff:${p.id}`.slice(0, 100),
+/**
+ * The 단장 asks a free agent at once on his wage step (→CLUB-53, free agent +1.0), from the player's
+ * own draw of that day, the one the owner's offer reads (→ARCH-5). Agreeing, he leaves the pool on
+ * that wage (→CLUB-49); refusing, the approach is kept as a staff bid he refused, so the window's
+ * count sees the move and he is not asked again in it, and the report names his factors. Returns
+ * whether he signed.
+ */
+function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, terms: WageOffer) {
+  const day = currentDay(w),
+    id = offer.player.id,
+    draw = random(`${w.seed}:terms:free:${w.year}:${day}:${id.length <= 80 ? id : hash(id)}`)(),
+    agreed = termsAnswer(terms.context, draw).accept,
+    // The approach is kept as a staff bid, so the window's count sees it.
+    bid: TransferBid = {
+      id: `out:${w.year}:${day}:staff:${id}`.slice(0, 100),
       direction: 'out',
-      playerId: p.id,
+      playerId: id,
       fee: '0',
       offer: { player: offer.player, fee: offer.fee, loanFee: offer.loanFee },
       year: w.year,
       day,
       due: day,
-      status: 'completed',
+      status: agreed ? 'completed' : 'rejected',
       staff: need.kind,
-    },
-  ];
+      ...(terms.step !== 1 ? { wage: terms.step } : {}),
+      ...(agreed ? {} : { refusedBy: 'player' as const }),
+    };
+  if (!agreed) {
+    w.bids = [...(w.bids || []), bid];
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: namedTitle('market.answer.free.title', offer.player.name),
+      detail: fittedDetail((room) =>
+        sourceMessage('market.answer.free.detail', {
+          wage: moneyLabel(w, terms.wage),
+          percent: Math.round(terms.step * 100),
+          terms: termsReport(terms.chance, terms.lines, room),
+        }),
+      ),
+      attention: false,
+    });
+    return false;
+  }
+  const p = signFreeAgent(w, offer, terms.wage);
+  w.bids = [...(w.bids || []), bid];
   addEvent(
     w,
     'transfer-in',
@@ -749,7 +874,7 @@ function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, why: 
   pushInbox(w, {
     kind: 'staff-report',
     title: sourceMessage('copy.signings.ce393e327b', { p0: p.name }),
-    detail: sourceMessage('copy.signings.b30a33d536', {
+    detail: `${sourceMessage('copy.signings.b30a33d536', {
       p0: needLine(w, need),
       p1: pickNote(need, offer.player),
       p2: p.position,
@@ -757,10 +882,11 @@ function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, why: 
       p4: overall(p),
       p5: moneyLabel(w, p.wage),
       p6: recruitmentLine(w),
-      p7: why,
-    }).slice(0, 400),
+      p7: terms.reason,
+    })} · ${wageLine(w, terms)}`.slice(0, 1000),
     attention: false,
   });
+  return true;
 }
 
 /**
@@ -878,17 +1004,17 @@ export function staffSignings(w: World) {
   )
     return;
   // A refused negotiator bid gets its next answer-day move outside the weekly look gate.
-  const retry = [...bids]
-    .reverse()
-    .find(
-      (bid) =>
-        directorTrait(w) === 'negotiator' &&
-        bid.staff &&
-        bid.status === 'rejected' &&
-        bid.due < day &&
-        !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
-        BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', BigInt(bidCeiling(w)), 100n)),
-    );
+  const retry = [...bids].reverse().find(
+    (bid) =>
+      directorTrait(w) === 'negotiator' &&
+      bid.staff &&
+      bid.status === 'rejected' &&
+      // A player who refused our terms is not haggled with over the fee (→CLUB-53).
+      bid.refusedBy !== 'player' &&
+      bid.due < day &&
+      !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
+      BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', BigInt(bidCeiling(w)), 100n)),
+  );
   const offers = transferOffers(w);
   if (retry && directorTrait(w) === 'negotiator') {
     const index = offers.findIndex(
@@ -898,17 +1024,17 @@ export function staffSignings(w: World) {
       const offer = offers[index];
       const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
       const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
-      const verdict = signingVerdict(w, offer.player, fee);
+      const terms = wageOffer(w, offer, fee);
       const room = registrationRoom(w, { ...offer.player, joined: w.year });
-      if (verdict.ok && !room) {
-        placeBid(w, index, fee, false, retry.staff);
+      if (terms.ok && !room) {
+        placeBid(w, index, fee, false, retry.staff, terms.offer.step);
         pushInbox(w, {
           kind: 'staff-report',
           title: sourceMessage('copy.signings.6773850ac5', { p0: offer.player.name }),
-          detail: sourceMessage('copy.signings.2bce8a2d24', {
+          detail: `${sourceMessage('copy.signings.2bce8a2d24', {
             p0: staffBidShare(w, previous),
-            p1: verdict.reason,
-          }),
+            p1: terms.offer.reason,
+          })} · ${wageLine(w, terms.offer)}`,
           attention: false,
         });
         return;
@@ -917,7 +1043,7 @@ export function staffSignings(w: World) {
       pushInbox(w, {
         kind: 'staff-report',
         title: sourceMessage('copy.signings.e773f7135a', { p0: offer.player.name }),
-        detail: room ?? verdict.reason,
+        detail: room ?? (terms.ok ? terms.offer.reason : terms.reason),
         attention: false,
       });
     } else retry.status = 'expired';
@@ -972,16 +1098,16 @@ export function staffSignings(w: World) {
   for (const need of needs)
     for (const { offer, index } of candidates(w, offers, need, tried)) {
       const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
-      const verdict = signingVerdict(w, offer.player, fee, need.kind);
-      if (!verdict.ok) continue;
-      if (offer.freeAgent) directorSignsFreeAgent(w, offer, need, verdict.reason);
+      const terms = wageOffer(w, offer, fee, need.kind);
+      if (!terms.ok) continue;
+      if (offer.freeAgent) directorSignsFreeAgent(w, offer, need, terms.offer);
       else {
-        placeBid(w, index, fee, false, need.kind);
+        placeBid(w, index, fee, false, need.kind, terms.offer.step);
         const bid = w.bids!.findLast((one) => one.playerId === offer.player.id)!;
         pushInbox(w, {
           kind: 'staff-report',
           title: sourceMessage('copy.signings.0e14ee5884', { p0: offer.player.name }),
-          detail: sourceMessage('copy.signings.8ca7bd666f', {
+          detail: `${sourceMessage('copy.signings.8ca7bd666f', {
             p0: needLine(w, need),
             p1: pickNote(need, offer.player),
             p2: offer.player.position,
@@ -991,8 +1117,8 @@ export function staffSignings(w: World) {
             p6: staffBidShare(w),
             p7: moneyLabel(w, offer.fee),
             p8: recruitmentLine(w),
-            p9: verdict.reason,
-          }).slice(0, 400),
+            p9: terms.offer.reason,
+          })} · ${wageLine(w, terms.offer)}`.slice(0, 1000),
           attention: false,
           ref: bid.id,
         });
@@ -1025,8 +1151,8 @@ export function pursueRequest(
       windowBids(w, day).some((b) => b.staff && (isOpen(b) || b.day === day))
     )
       return sourceMessage('copy.signings.475daa54a3');
-    const verdict = signingVerdict(w, offer.player, fee);
-    if (!verdict.ok) return verdict.reason;
+    const terms = wageOffer(w, offer, fee);
+    if (!terms.ok) return terms.reason;
     if (offer.freeAgent) {
       const starter = request.slot === undefined ? undefined : ownStarters(w)[request.slot];
       const need: SigningNeed =
@@ -1049,8 +1175,8 @@ export function pursueRequest(
               squad: activePlayers(w).length,
               requested: request,
             };
-      directorSignsFreeAgent(w, offer, need, verdict.reason);
-    } else placeBid(w, index, fee, false, request.kind);
+      directorSignsFreeAgent(w, offer, need, terms.offer);
+    } else placeBid(w, index, fee, false, request.kind, terms.offer.step);
   } else {
     if (BigInt(w.cash) < BigInt(fee)) return sourceMessage('copy.signings.e890653f5c');
     if (offer.freeAgent) squadCommand(w, { type: 'recruit', candidate: index });

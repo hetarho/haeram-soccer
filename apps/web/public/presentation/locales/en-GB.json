@@ -3834,7 +3834,7 @@
     "copy.Rich.2d87e0aa1d": "The staff accepts and sells incoming offers.",
     "copy.Rich.6fa78664ca": "The owner accepts or rejects each proposal.",
     "copy.Rich.6aa4d020ff": "Negotiate when another club makes an offer first.",
-    "copy.Rich.d630d96fa4": "Sell if the staff is more than {p0}% of the assessed value · Keep the starting players without replacement",
+    "copy.Rich.d630d96fa4": "The staff ask {p0}% of the assessed value and, by his place, contract, age and the club’s money, may accept or counter a lower offer",
     "copy.Rich.c1583a64cf": "Proposals below the evaluation value {p0}% ({p1}) will be immediately rejected.",
     "copy.ScorerPanels.80b9b3bc51": "Scoring Trend Player Selection",
     "copy.ScorerPanels.db8a4ec49c": "Our team's top scorer",
@@ -6914,6 +6914,8 @@
     "market.answer.player.detail": "His club agreed at {fee}, but he turned down a wage of {wage} ({percent}% of his demand). No fee was paid. {terms}",
     "market.answer.free.title": "{name} turns down our free-transfer terms",
     "market.answer.free.detail": "He turned down a wage of {wage} ({percent}% of his demand). {terms}",
+    "market.staff.wageOffer": "Wage offer {wage} ({percent}% of his demand) · {chance}% chance he agrees",
+    "market.staff.noTerms": "Even at {percent}% of his demand his chance of agreeing stays below {chance}% or the money checks fail",
     "market.bid.invalidWage": "The wage offer must be 100%, 125%, 150% or 200% of his demand.",
     "market.bid.wageSteps": "Wage offer",
     "market.bid.wageStep": "{percent}% of demand",
@@ -6949,6 +6951,11 @@
     "market.answer.player.detail.club": "His club agreed at {fee}. {reason}. But he turned down a wage of {wage} ({percent}% of his demand). No fee was paid. {terms}",
     "market.answer.accepted": "{position} · age {age} · the {fee} offer was accepted. {reason}.",
     "market.answer.accepted.staff": "{position} · age {age} · the {fee} offer was accepted. {reason}. It was the director’s offer.",
-    "market.answer.blocked": "The selling club accepted the {fee} offer. {reason}. But the deal could not be completed: {blocker}"
+    "market.answer.blocked": "The selling club accepted the {fee} offer. {reason}. But the deal could not be completed: {blocker}",
+    "market.sale.own.accepted": "Asking {asking} ({bar}% of value) · offer {fee} ({offered}% of value). {reason}. He accepted the offer and sold the player.",
+    "market.sale.own.counterTaken": "Asking {asking} ({bar}% of value) · offer {fee} ({offered}% of value). {reason}. He countered at {counter}; the bidding club accepted and the player was sold.",
+    "market.sale.own.counterDeclined": "Asking {asking} ({bar}% of value) · offer {fee} ({offered}% of value). {reason}. He countered at {counter}, but the bidding club did not accept.",
+    "market.sale.own.refused": "Asking {asking} ({bar}% of value) · offer {fee} ({offered}% of value). {reason}. It fell too far short of the line he held out for, so he refused without a counter.",
+    "market.sale.own.core": "The club keeps its core: its three best starters are not for sale. He refused the {fee} offer ({offered}% of value)."
   }
 }

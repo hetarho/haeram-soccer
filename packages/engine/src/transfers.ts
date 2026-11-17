@@ -1,5 +1,5 @@
 import { message as sourceMessage, type SourceMessageId } from '../../contracts/src/messages';
-import { SALE_BARS } from './transfer-policy';
+import { INCOMING_BID_CHANCE, INCOMING_BID_SCALE, SALE_BARS } from './transfer-policy';
 import { worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
@@ -90,8 +90,6 @@ export {
   type TransferWindowState,
 } from './transfer-window';
 
-/** Daily chance that another club bids for one of our players while a window is open. */
-const INCOMING_BID_CHANCE = 0.06;
 const MAX_PENDING_INCOMING = 3;
 const INCOMING_RESPONSE_DAYS = 5;
 import { SQUAD_MINIMUM } from './squad-size';
@@ -410,14 +408,15 @@ function saleBlocker(w: World, p: Player | undefined) {
     return sourceMessage('copy.transfers.6c697e8ad5');
   return undefined;
 }
-function completeSale(w: World, bid: TransferBid, p: Player) {
+/** Our player leaves for the bidding club at `fee`: the bid's own, or the counter it took. */
+function completeSale(w: World, bid: TransferBid, p: Player, fee = bid.fee) {
   const club = w.clubs.find((c) => c.id === bid.club);
-  const offer = club && npcOffer(w, club, p, clubOf(w), bid.fee);
+  const offer = club && npcOffer(w, club, p, clubOf(w), fee);
   if (!offer) throw new Error(sourceMessage('copy.transfers.30aac47a5f'));
-  if (BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, p.id)))
+  if (BigInt(w.cash) + BigInt(fee) < BigInt(playingCoachDepartureCost(w, p.id)))
     throw new Error(sourceMessage('copy.transfers.4c1042837b'));
   const wasStarter = ownStarters(w).some((starter) => starter.id === p.id);
-  credit(w, bid.fee);
+  credit(w, fee);
   endPlayingCoachForDeparture(w, p.id);
   p.status = 'sold';
   delete p.stance;
@@ -433,7 +432,7 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
     day: currentDay(w),
     from: w.playerClub,
     to: club!.id,
-    fee: bid.fee,
+    fee,
   });
   movePerson(w, live, club?.id, true);
   if (wasStarter || activePlayers(w).length < 20) openNeed(w, p);
@@ -442,7 +441,7 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
     loan: false,
     player: p,
     club: bid.club,
-    fee: bid.fee,
+    fee,
   });
   if (fact) fanMoodTransfer(w, fact);
   addEvent(
@@ -454,7 +453,7 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
         ? sourceMessage('copy.transfers.8ef007b0c0', { p0: club.name })
         : sourceMessage('copy.RecruitmentDesk.45b54f8961'),
     }),
-    bid.fee,
+    fee,
   );
   bid.status = 'completed';
 }
@@ -1028,65 +1027,27 @@ function settleBids(w: World, open: boolean) {
     }
   }
 }
-/** A young player with room to grow: the staff hold out for 200% of value (→CLUB-18). */
+/** A young player with room to grow: our asking fee takes the prospect column (→CLUB-18). */
 export const PROSPECT_AGE = 22;
 export const PROSPECT_GROWTH = 8;
 export function isProspect(w: World, p: Player) {
   return w.year - p.born <= PROSPECT_AGE && p.potential - overall(p) >= PROSPECT_GROWTH;
 }
 /**
- * The lowest fee, as a percentage of value, delegated staff accept for a player (→CLUB-18):
- * 130%, or 200% for a prospect, lowered for age, a contract near its end, a wage bill past the
- * 단장's sales lines (`wagePressure`) and a cash crisis (`SAFETY_ROUNDS`), never below 80%. Each cut
- * is listed so the report can say why.
+ * The sale bar (→CLUB-18): the fee, as a percentage of value, our delegated 단장 asks for a player —
+ * the 매각 기조 card's column, a prospect's for a prospect. It is the asking fee of the selling-club
+ * answer (→CLUB-52), whose factors set how far below it he holds out.
  */
 export function saleBar(w: World, p: Player) {
-  const age = w.year - p.born,
-    // Contracts renew when the year turns, so 1 is the final season.
-    seasons = p.until - w.year,
-    runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
-    prospect = isProspect(w, p),
-    base = SALE_BARS[w.build?.market ?? 'standard'][prospect ? 1 : 0],
-    pressure = wagePressure(w),
-    cuts: string[] = [];
-  let percent = base;
-  const cut = (points: number, why: string) => {
-    percent -= points;
-    cuts.push(`${why} −${points}%p`);
-  };
-  if (age >= 33) cut(30, sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: age }));
-  else if (age >= 30) cut(15, sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: age }));
-  if (seasons <= 1) cut(20, sourceMessage('copy.transfers.53f9e38caf'));
-  else if (seasons === 2) cut(10, sourceMessage('copy.transfers.d8bb752fd6'));
-  if (runway < SAFETY_ROUNDS) cut(20, sourceMessage('copy.transfers.c1074e3430'));
-  else if (pressure.level)
-    cut(
-      pressure.level === 2 ? 20 : 10,
-      sourceMessage('delegation.sale.wages', { share: pressure.share }),
-    );
-  return { percent: Math.max(SALE_BAR_FLOOR, percent), base, prospect, cuts };
-}
-/**
- * Whether the delegated staff may sell this player at all (→CLUB-18): a non-starter, or a starter
- * aged 30+ with a bench player of his role within 3 ability — never a starter under 핵심 지키기.
- */
-export function saleAllowed(w: World, starter: boolean, age: number, covered: boolean) {
-  return !starter || (w.build?.market !== 'hold' && age >= 30 && covered);
+  const prospect = isProspect(w, p),
+    bars = SALE_BARS[w.build?.market ?? 'standard'] ?? SALE_BARS.standard!;
+  return { percent: bars[prospect ? 1 : 0], prospect };
 }
 /**
  * The sale bar's base by the 매각 기조 card (→CLUB-18), of value and for a prospect: the club's
- * stance on selling sets how good an offer must be before the staff take it.
+ * stance on selling sets the fee the 단장 asks.
  */
 export { SALE_BARS } from './transfer-policy';
-const SALE_BAR_FLOOR = 80;
-/** "유망주 기준 200%" or "기준 95%(130%에서 31세 −15%p · …)" for the staff report. */
-function saleBarLabel(bar: ReturnType<typeof saleBar>) {
-  const steps = [
-    ...bar.cuts,
-    ...(bar.percent === SALE_BAR_FLOOR ? [sourceMessage('copy.transfers.c7f5debdf7')] : []),
-  ];
-  return `${bar.prospect ? sourceMessage('copy.transfers.bd0e2a77d1') : sourceMessage('copy.LabPage.eaea55bff6')} ${bar.percent}%${steps.length ? sourceMessage('copy.transfers.06ddab0099', { p0: bar.base, p1: steps.join(' · ') }) : ''}`;
-}
 /**
  * A real vacancy and affordable terms within CLUB-18's strength band, from any country.
  * Contenders prefer stature, then the actual offered wage in comparable money (→WORLD-16).
@@ -1334,7 +1295,8 @@ function incomingBid(w: World, day: number, until: number) {
   if (pending.length >= MAX_PENDING_INCOMING) return;
   const r = random(`${w.seed}:incoming:${w.year}:${day}`);
   const build = buildEffects(w);
-  if (r() >= INCOMING_BID_CHANCE * build.incomingBids) return;
+  const scale = INCOMING_BID_SCALE[w.build?.market ?? 'standard'] ?? 1;
+  if (r() >= INCOMING_BID_CHANCE * build.incomingBids * scale) return;
   const wanted = new Set(pending.map((b) => b.playerId));
   const pool = activePlayers(w)
     .filter((p) => !p.loanUntil && p.stance !== 'listed' && !wanted.has(p.id) && !saleBlocker(w, p))
@@ -1402,25 +1364,23 @@ function answerIncoming(
       p2: overall(player),
       p3: moneyLabel(w, value),
     });
-  const report = (
-    accept: boolean,
-    detail: string,
+  const report: SaleReport = (
+    accept,
+    detail,
     who: string = isDelegated(w, 'sales')
       ? sourceMessage('copy.transfers.e744d7026d')
       : sourceMessage('copy.transfers.1654d061b5'),
+    deal = bid.fee,
   ) => {
-    if (accept && !npcOffer(w, club, player, clubOf(w), bid.fee)) {
+    if (accept && !npcOffer(w, club, player, clubOf(w), deal)) {
       accept = false;
       detail = sourceMessage('copy.transfers.30aac47a5f');
     }
-    if (
-      accept &&
-      BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, player.id))
-    ) {
+    if (accept && BigInt(w.cash) + BigInt(deal) < BigInt(playingCoachDepartureCost(w, player.id))) {
       accept = false;
       detail = sourceMessage('copy.transfers.7017097137');
     }
-    if (accept) completeSale(w, bid, player);
+    if (accept) completeSale(w, bid, player, deal);
     else bid.status = 'rejected';
     pushInbox(w, {
       kind: 'staff-report',
@@ -1429,14 +1389,16 @@ function answerIncoming(
           p0: who,
           p1: club.name,
           p2: player.name,
-          p3: moneyLabel(w, fee),
+          p3: moneyLabel(w, deal),
           p4: accept
             ? sourceMessage('copy.RecruitmentDesk.831defcf7a')
             : sourceMessage('copy.EventCenter.cc6314d04d'),
         }),
         160,
       ),
-      detail: `${summary} · ${detail}`,
+      detail: fittedDetail(
+        (room) => `${summary} · ${typeof detail === 'string' ? detail : detail(room)}`,
+      ),
       attention: false,
       ref: bid.id,
     });
@@ -1453,13 +1415,11 @@ function answerIncoming(
       report(!blocker, blocker || sourceMessage('copy.transfers.f3dca7c29b'));
       return;
     }
-    const starters = new Set(ownStarters(w).map((p) => p.id));
-    // A starter leaves only with a bench player ready to play his slot (→CLUB-24).
-    const covered = slotCovered(w, player);
-    const starter = starters.has(player.id),
-      blocker = saleBlocker(w, player);
+    const blocker = saleBlocker(w, player);
     if (untouchable) {
-      const verdict = untouchableVerdict(w, offered, starter && !covered);
+      // A starter nobody on the bench can play makes the manager hold out longer (→CLUB-24).
+      const starter = ownStarters(w).some((p) => p.id === player.id),
+        verdict = untouchableVerdict(w, offered, starter && !slotCovered(w, player));
       report(
         verdict.accept && !blocker,
         sourceMessage('copy.transfers.88db755e4b', { p0: blocker || verdict.reason }),
@@ -1467,27 +1427,11 @@ function answerIncoming(
       );
       return;
     }
-    const bar = saleBar(w, player),
-      premium = BigInt(fee) * 100n >= BigInt(value) * BigInt(bar.percent),
-      expendable = saleAllowed(w, starter, age, covered);
-    const accept = premium && expendable && !blocker;
-    const against = sourceMessage('copy.transfers.4107e9b5df', {
-      p0: offered,
-      p1: saleBarLabel(bar),
-    });
-    report(
-      accept,
-      accept
-        ? sourceMessage('copy.transfers.b9bf12065d', {
-            p0: against,
-            p1: starter ? sourceMessage('copy.transfers.f145fa2aab') : '',
-          })
-        : blocker
-          ? blocker
-          : !premium
-            ? sourceMessage('copy.transfers.18f8d5571f', { p0: against })
-            : sourceMessage('copy.transfers.efb4411288'),
-    );
+    if (blocker) {
+      report(false, blocker);
+      return;
+    }
+    answerAsSeller(w, bid, player, club, offered, report);
     return;
   }
   pushInbox(w, {
@@ -1509,6 +1453,72 @@ function answerIncoming(
     attention: true,
     ref: bid.id,
   });
+}
+/**
+ * How a bid for our player is answered and reported: the decision, its reason (a text, or one built
+ * with a factor's name at most `room` long, →`fittedDetail`), who decided and the fee of the deal.
+ */
+type SaleReport = (
+  accept: boolean,
+  detail: string | ((room: number) => string),
+  who?: string,
+  deal?: string,
+) => void;
+/**
+ * The 단장 answers another club's bid for our player as the selling club (→CLUB-18, →CLUB-52), from
+ * the bid's own draw: his asking fee is the sale bar of value, and his place, contract, age, our
+ * money and the player's wishes set how far below it he holds out, never below 80% of value. A bid
+ * at the reservation sells; one within reach of it draws a counter at it, which the bidder takes
+ * when its books allow (→WORLD-16); a lower one is refused. Under 핵심 지키기 the three best starters
+ * are never sold. The report names the bar and every factor.
+ */
+function answerAsSeller(
+  w: World,
+  bid: TransferBid,
+  player: Player,
+  club: Club,
+  offered: number,
+  report: SaleReport,
+) {
+  const context = saleContext(w, { playerId: player.id, sellerId: w.playerClub, fee: bid.fee });
+  if (!context) {
+    report(false, sourceMessage('copy.transfers.30aac47a5f'));
+    return;
+  }
+  if (w.build?.market === 'hold' && context.place === 'core') {
+    report(false, sourceMessage('market.sale.own.core', { fee: moneyLabel(w, bid.fee), offered }));
+    return;
+  }
+  const answer = saleAnswer(context, random(`${w.seed}:sale:${bid.id}`)()),
+    terms = {
+      asking: moneyLabel(w, context.asking),
+      bar: saleBar(w, player).percent,
+      fee: moneyLabel(w, bid.fee),
+      offered,
+    },
+    detail =
+      (id: SourceMessageId, extra: Record<string, string> = {}) =>
+      (room: number) =>
+        sourceMessage(id, { ...terms, ...extra, reason: saleReason(w, answer, room) });
+  if (answer.kind === 'accept') {
+    report(true, detail('market.sale.own.accepted'));
+    return;
+  }
+  if (answer.kind === 'refuse') {
+    report(false, detail('market.sale.own.refused'));
+    return;
+  }
+  const counter = answer.counter!;
+  bid.counterFee = counter;
+  const taken = !!npcOffer(w, club, player, clubOf(w), counter);
+  report(
+    taken,
+    detail(taken ? 'market.sale.own.counterTaken' : 'market.sale.own.counterDeclined', {
+      counter: moneyLabel(w, counter),
+    }),
+    undefined,
+    taken ? counter : bid.fee,
+  );
 }
 /**
  * Whether a starter has cover (→CLUB-24): a bench player who plays his formation slot within 3 of

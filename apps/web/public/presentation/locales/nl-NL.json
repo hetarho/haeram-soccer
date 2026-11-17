@@ -4298,7 +4298,7 @@
     "copy.Rich.2d87e0aa1d": "Het personeel accepteert en verkoopt binnenkomende aanbiedingen.",
     "copy.Rich.6fa78664ca": "De eigenaar accepteert of wijst elk voorstel af.",
     "copy.Rich.6aa4d020ff": "Onderhandel als een andere club eerst een bod doet.",
-    "copy.Rich.d630d96fa4": "Verkoop als de staf meer is dan {p0}% van de geschatte waarde · Behoud de startspelers zonder vervangingen",
+    "copy.Rich.d630d96fa4": "De staf vraagt {p0}% van de geschatte waarde en kan, naar zijn rol, contract, leeftijd en de clubfinanciën, een lager bod aannemen of een tegenbod doen",
     "copy.Rich.c1583a64cf": "Voorstellen onder de evaluatiewaarde {p0}% ({p1}) worden onmiddellijk afgewezen.",
     "copy.Rich.6c4000e91e": "We beschermen ook grote voorstellen · Verkoopbeleid {p0} (Verkopen in geval van financiële crisis)",
     "copy.Rich.7ec00fbab6": "Bij grote voorstellen overlegt het personeel met de directeur. Verkoopbasis: {p1}% gebaseerd op {p0}, aangepast op basis van financiële omstandigheden en beschikbaarheid van starters.",
@@ -6914,6 +6914,8 @@
     "market.answer.player.detail": "Zijn club ging akkoord met {fee}, maar hij wees een salaris van {wage} ({percent}% van zijn eis) af. Er is geen transfersom betaald. {terms}",
     "market.answer.free.title": "{name} wijst onze voorwaarden als transfervrije speler af",
     "market.answer.free.detail": "Hij wees een salaris van {wage} ({percent}% van zijn eis) af. {terms}",
+    "market.staff.wageOffer": "Salarisbod {wage} ({percent}% van zijn eis) · {chance}% kans dat hij akkoord gaat",
+    "market.staff.noTerms": "Zelfs op {percent}% van zijn eis blijft zijn kans op akkoord onder {chance}% of slagen de financiële controles niet",
     "market.bid.invalidWage": "Het salarisbod moet 100%, 125%, 150% of 200% van zijn eis zijn.",
     "market.bid.wageSteps": "Salarisbod",
     "market.bid.wageStep": "{percent}% van de eis",
@@ -6949,6 +6951,11 @@
     "market.answer.player.detail.club": "Zijn club ging akkoord met {fee}. {reason}. Maar hij wees een salaris van {wage} ({percent}% van zijn eis) af. Er is geen transfersom betaald. {terms}",
     "market.answer.accepted": "{position} · {age} jaar · het bod van {fee} is geaccepteerd. {reason}.",
     "market.answer.accepted.staff": "{position} · {age} jaar · het bod van {fee} is geaccepteerd. {reason}. Het was het bod van de technisch directeur.",
-    "market.answer.blocked": "De verkopende club accepteerde het bod van {fee}. {reason}. Maar de transfer kon niet doorgaan: {blocker}"
+    "market.answer.blocked": "De verkopende club accepteerde het bod van {fee}. {reason}. Maar de transfer kon niet doorgaan: {blocker}",
+    "market.sale.own.accepted": "Vraagprijs {asking} ({bar}% van de waarde) · bod {fee} ({offered}% van de waarde). {reason}. Hij nam het bod aan en verkocht de speler.",
+    "market.sale.own.counterTaken": "Vraagprijs {asking} ({bar}% van de waarde) · bod {fee} ({offered}% van de waarde). {reason}. Hij deed een tegenbod van {counter}; de biedende club ging akkoord en de speler werd verkocht.",
+    "market.sale.own.counterDeclined": "Vraagprijs {asking} ({bar}% van de waarde) · bod {fee} ({offered}% van de waarde). {reason}. Hij deed een tegenbod van {counter}, maar de biedende club ging niet akkoord.",
+    "market.sale.own.refused": "Vraagprijs {asking} ({bar}% van de waarde) · bod {fee} ({offered}% van de waarde). {reason}. Het bleef te ver onder zijn grens, dus wees hij het af zonder tegenbod.",
+    "market.sale.own.core": "De club houdt haar kern: de drie beste basisspelers zijn niet te koop. Hij wees het bod van {fee} af ({offered}% van de waarde)."
   }
 }

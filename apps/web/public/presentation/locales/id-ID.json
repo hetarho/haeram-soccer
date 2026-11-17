@@ -3939,7 +3939,7 @@
     "copy.Rich.2d87e0aa1d": "Staf menerima dan menjual penawaran yang masuk.",
     "copy.Rich.6fa78664ca": "Pemilik menerima atau menolak setiap proposal.",
     "copy.Rich.6aa4d020ff": "Bernegosiasi ketika klub lain mengajukan penawaran terlebih dahulu.",
-    "copy.Rich.d630d96fa4": "Jual jika staf lebih dari {p0}% dari nilai yang dinilai · Pertahankan pemain awal tanpa penggantian",
+    "copy.Rich.d630d96fa4": "Staf meminta {p0}% dari nilai taksiran dan, menurut posisi, kontrak, usia, dan keuangan klub, dapat menerima atau membalas tawaran yang lebih rendah",
     "copy.Rich.c1583a64cf": "Proposal di bawah nilai evaluasi {p0}% ({p1}) akan langsung ditolak.",
     "copy.Rich.6c4000e91e": "Kami juga melindungi proposal besar · Kebijakan penjualan {p0} (Jual jika terjadi krisis keuangan)",
     "copy.Rich.7ec00fbab6": "Untuk proposal berukuran besar, staf berdiskusi dengan direktur. Basis penjualan: {p1}% berdasarkan {p0}, disesuaikan berdasarkan keadaan keuangan dan ketersediaan starter.",
@@ -6911,6 +6911,8 @@
     "market.answer.player.detail": "Klubnya setuju di {fee}, tetapi ia menolak gaji {wage} ({percent}% dari permintaannya). Tidak ada biaya yang dibayar. {terms}",
     "market.answer.free.title": "{name} menolak persyaratan kita sebagai pemain bebas",
     "market.answer.free.detail": "Ia menolak gaji {wage} ({percent}% dari permintaannya). {terms}",
+    "market.staff.wageOffer": "Tawaran gaji {wage} ({percent}% dari permintaannya) · peluang ia setuju {chance}%",
+    "market.staff.noTerms": "Bahkan pada {percent}% dari permintaannya, peluang ia setuju tetap di bawah {chance}% atau pemeriksaan keuangan gagal",
     "market.bid.invalidWage": "Tawaran gaji harus 100%, 125%, 150%, atau 200% dari permintaannya.",
     "market.bid.wageSteps": "Tawaran gaji",
     "market.bid.wageStep": "{percent}% dari permintaan",
@@ -6946,6 +6948,11 @@
     "market.answer.player.detail.club": "Klubnya setuju di {fee}. {reason}. Tetapi ia menolak gaji {wage} ({percent}% dari permintaannya). Tidak ada biaya yang dibayar. {terms}",
     "market.answer.accepted": "{position} · {age} tahun · tawaran {fee} diterima. {reason}.",
     "market.answer.accepted.staff": "{position} · {age} tahun · tawaran {fee} diterima. {reason}. Itu tawaran direktur.",
-    "market.answer.blocked": "Klub penjual menerima tawaran {fee}. {reason}. Namun transfer tidak dapat diselesaikan: {blocker}"
+    "market.answer.blocked": "Klub penjual menerima tawaran {fee}. {reason}. Namun transfer tidak dapat diselesaikan: {blocker}",
+    "market.sale.own.accepted": "Harga minta {asking} ({bar}% dari nilai) · tawaran {fee} ({offered}% dari nilai). {reason}. Ia menerima tawaran dan menjual pemain itu.",
+    "market.sale.own.counterTaken": "Harga minta {asking} ({bar}% dari nilai) · tawaran {fee} ({offered}% dari nilai). {reason}. Ia mengajukan tawaran balik {counter}; klub penawar menerima dan pemain itu terjual.",
+    "market.sale.own.counterDeclined": "Harga minta {asking} ({bar}% dari nilai) · tawaran {fee} ({offered}% dari nilai). {reason}. Ia mengajukan tawaran balik {counter}, tetapi klub penawar tidak menerimanya.",
+    "market.sale.own.refused": "Harga minta {asking} ({bar}% dari nilai) · tawaran {fee} ({offered}% dari nilai). {reason}. Tawaran itu terlalu jauh di bawah batasnya, jadi ia menolak tanpa tawaran balik.",
+    "market.sale.own.core": "Klub mempertahankan intinya: tiga pemain inti terbaiknya tidak dijual. Ia menolak tawaran {fee} ({offered}% dari nilai)."
   }
 }

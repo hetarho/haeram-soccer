@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { staffAuthority } from './testing';
 import type { StaffTrait, TransferBid, World } from '../../contracts/src/types';
 import {
@@ -18,6 +18,20 @@ import { holdTemperament } from './delegation.testkit';
 import { bidOutlook } from './transfers';
 import { termsChance, termsContext } from './personal-terms';
 import type { WorldMarketTarget } from '../../contracts/src/types';
+import * as personalTerms from './personal-terms';
+/**
+ * Every candidate is keen on our terms (→CLUB-53): these cases test the 단장's move, not the
+ * player's answer, so his chance is certain at his demand and he always agrees.
+ */
+function willing() {
+  const certain = { chance: 1, logOdds: 9, lines: [] };
+  const chance = vi.spyOn(personalTerms, 'termsChance').mockReturnValue(certain),
+    answer = vi.spyOn(personalTerms, 'termsAnswer').mockReturnValue({ ...certain, accept: true });
+  onTestFinished(() => {
+    chance.mockRestore();
+    answer.mockRestore();
+  });
+}
 function world(trait?: StaffTrait) {
   const w = careerWorld({ seed: 'director-bids' });
   w.settings = staffAuthority(4);
@@ -83,6 +97,7 @@ describe('director trait bidding', () => {
     expect(staffBidShare(w)).toBe(100);
   });
   it('raises 80→85→…→100 the next day outside weekly looks, then moves on', () => {
+    willing();
     const w = world('negotiator');
     delete w.delegationRequests;
     let last = bid(w, 80);
@@ -132,6 +147,7 @@ describe('director trait bidding', () => {
     },
   );
   it('declines a negotiator counter below the ceiling and raises next day', () => {
+    willing();
     const w = world('negotiator');
     delete w.delegationRequests;
     const first = bid(w, 80);

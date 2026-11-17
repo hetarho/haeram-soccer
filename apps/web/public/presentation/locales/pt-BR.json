@@ -3837,7 +3837,7 @@
     "copy.Rich.2d87e0aa1d": "A equipe aceita e vende ofertas recebidas.",
     "copy.Rich.6fa78664ca": "O proprietário aceita ou rejeita cada proposta.",
     "copy.Rich.6aa4d020ff": "Negocie primeiro quando outro clube fizer uma oferta.",
-    "copy.Rich.d630d96fa4": "Vender se a equipe for superior a {p0}% do valor avaliado · Manter os jogadores iniciais sem reposição",
+    "copy.Rich.d630d96fa4": "A equipe pede {p0}% do valor avaliado e, conforme posição, contrato, idade e finanças do clube, pode aceitar ou contrapor uma oferta menor",
     "copy.Rich.c1583a64cf": "Propostas abaixo do valor de avaliação {p0}% ({p1}) serão imediatamente rejeitadas.",
     "copy.ScorerPanels.80b9b3bc51": "Seleção de Jogadores Tendências de Pontuação",
     "copy.ScorerPanels.db8a4ec49c": "O artilheiro do nosso time",
@@ -6917,6 +6917,8 @@
     "market.answer.player.detail": "O clube aceitou {fee}, mas ele recusou um salário de {wage} ({percent}% do que pede). Nenhuma taxa foi paga. {terms}",
     "market.answer.free.title": "{name} recusa nossos termos como jogador livre",
     "market.answer.free.detail": "Ele recusou um salário de {wage} ({percent}% do que pede). {terms}",
+    "market.staff.wageOffer": "Oferta salarial {wage} ({percent}% da pedida) · {chance}% de chance de aceitar",
+    "market.staff.noTerms": "Mesmo a {percent}% da pedida, a chance de ele aceitar fica abaixo de {chance}% ou as verificações financeiras falham",
     "market.bid.invalidWage": "A proposta salarial deve ser 100%, 125%, 150% ou 200% do que ele pede.",
     "market.bid.wageSteps": "Proposta salarial",
     "market.bid.wageStep": "{percent}% do pedido",
@@ -6952,6 +6954,11 @@
     "market.answer.player.detail.club": "O clube aceitou {fee}. {reason}. Mas ele recusou um salário de {wage} ({percent}% do que pede). Nenhuma taxa foi paga. {terms}",
     "market.answer.accepted": "{position} · {age} anos · a proposta de {fee} foi aceita. {reason}.",
     "market.answer.accepted.staff": "{position} · {age} anos · a proposta de {fee} foi aceita. {reason}. Foi a proposta do diretor.",
-    "market.answer.blocked": "O clube vendedor aceitou a proposta de {fee}. {reason}. Mas não foi possível concluir: {blocker}"
+    "market.answer.blocked": "O clube vendedor aceitou a proposta de {fee}. {reason}. Mas não foi possível concluir: {blocker}",
+    "market.sale.own.accepted": "Pedida {asking} ({bar}% do valor) · oferta {fee} ({offered}% do valor). {reason}. Ele aceitou a oferta e vendeu o jogador.",
+    "market.sale.own.counterTaken": "Pedida {asking} ({bar}% do valor) · oferta {fee} ({offered}% do valor). {reason}. Ele fez uma contraproposta de {counter}; o clube comprador aceitou e o jogador foi vendido.",
+    "market.sale.own.counterDeclined": "Pedida {asking} ({bar}% do valor) · oferta {fee} ({offered}% do valor). {reason}. Ele fez uma contraproposta de {counter}, mas o clube comprador não aceitou.",
+    "market.sale.own.refused": "Pedida {asking} ({bar}% do valor) · oferta {fee} ({offered}% do valor). {reason}. Ficou muito abaixo do limite dele, então recusou sem contraproposta.",
+    "market.sale.own.core": "O clube mantém seu núcleo: seus três melhores titulares não estão à venda. Recusou a oferta de {fee} ({offered}% do valor)."
   }
 }

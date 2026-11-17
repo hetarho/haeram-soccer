@@ -3571,7 +3571,7 @@
     "copy.Rich.2d87e0aa1d": "Personel gelen teklifleri kabul eder ve satar.",
     "copy.Rich.6fa78664ca": "Sahibi her teklifi kabul eder veya reddeder.",
     "copy.Rich.6aa4d020ff": "Başka bir kulüp teklif yaptığında önce pazarlık yapın.",
-    "copy.Rich.d630d96fa4": "Personel, değerlendirilen değerin %{p0}'sinden fazlaysa sat · Başlangıçtaki oyuncuları değiştirmeden tut",
+    "copy.Rich.d630d96fa4": "Ekip tahmini değerin %{p0} kadarını ister; mevkisi, sözleşmesi, yaşı ve kulübün parasına göre daha düşük bir teklifi kabul edebilir veya karşı teklif verebilir",
     "copy.Rich.c1583a64cf": "{p0}% ({p1}) değerlendirme değerinin altındaki teklifler derhal reddedilecektir.",
     "copy.Rich.6c4000e91e": "Ayrıca büyük teklifleri de koruyoruz · Satış politikası {p0} (Finansal kriz durumunda sat)",
     "copy.Rich.7ec00fbab6": "Büyük teklifler için personel müdürle görüşür. Satış bazı: {p1}% {p0} temel alınarak, mali koşullara ve yeni başlayanların mevcudiyetine göre düzeltilmiştir.",
@@ -6914,6 +6914,8 @@
     "market.answer.player.detail": "Kulübü {fee} bedeli kabul etti ama oyuncu {wage} maaşı (talebinin %{percent} kadarı) reddetti. Bonservis ödenmedi. {terms}",
     "market.answer.free.title": "{name} serbest oyuncu şartlarımızı reddetti",
     "market.answer.free.detail": "{wage} maaşı (talebinin %{percent} kadarı) reddetti. {terms}",
+    "market.staff.wageOffer": "Maaş teklifi {wage} (talebinin %{percent}) · kabul etme olasılığı %{chance}",
+    "market.staff.noTerms": "Talebinin %{percent} seviyesinde bile kabul etme olasılığı %{chance} altında kalıyor ya da mali kontroller geçilemiyor",
     "market.bid.invalidWage": "Maaş teklifi talebin %100, %125, %150 ya da %200’ü olmalı.",
     "market.bid.wageSteps": "Maaş teklifi",
     "market.bid.wageStep": "talebin %{percent} kadarı",
@@ -6949,6 +6951,11 @@
     "market.answer.player.detail.club": "Kulübü {fee} bedeli kabul etti. {reason}. Ama oyuncu {wage} maaşı (talebinin %{percent} kadarı) reddetti. Bonservis ödenmedi. {terms}",
     "market.answer.accepted": "{position} · {age} yaşında · {fee} teklifi kabul edildi. {reason}.",
     "market.answer.accepted.staff": "{position} · {age} yaşında · {fee} teklifi kabul edildi. {reason}. Sportif direktörün teklifiydi.",
-    "market.answer.blocked": "Satıcı kulüp {fee} teklifini kabul etti. {reason}. Ancak transfer tamamlanamadı: {blocker}"
+    "market.answer.blocked": "Satıcı kulüp {fee} teklifini kabul etti. {reason}. Ancak transfer tamamlanamadı: {blocker}",
+    "market.sale.own.accepted": "İstenen bedel {asking} (değerin %{bar}) · teklif {fee} (değerin %{offered}). {reason}. Teklifi kabul edip oyuncuyu sattı.",
+    "market.sale.own.counterTaken": "İstenen bedel {asking} (değerin %{bar}) · teklif {fee} (değerin %{offered}). {reason}. {counter} karşı teklif verdi; teklif veren kulüp kabul etti ve oyuncu satıldı.",
+    "market.sale.own.counterDeclined": "İstenen bedel {asking} (değerin %{bar}) · teklif {fee} (değerin %{offered}). {reason}. {counter} karşı teklif verdi, ancak teklif veren kulüp kabul etmedi.",
+    "market.sale.own.refused": "İstenen bedel {asking} (değerin %{bar}) · teklif {fee} (değerin %{offered}). {reason}. Sınırının çok altında kaldığı için karşı teklif vermeden reddetti.",
+    "market.sale.own.core": "Kulüp çekirdeğini koruyor: en iyi üç ilk on bir oyuncusu satılık değil. {fee} teklifini reddetti (değerin %{offered})."
   }
 }

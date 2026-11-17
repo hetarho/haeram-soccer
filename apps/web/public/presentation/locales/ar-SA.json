@@ -4143,7 +4143,7 @@
     "copy.Rich.2d87e0aa1d": "يقبل الموظفون العروض الواردة ويبيعونها.",
     "copy.Rich.6fa78664ca": "يقبل المالك أو يرفض كل اقتراح.",
     "copy.Rich.6aa4d020ff": "تفاوض عندما يقدم نادي آخر عرضًا أولاً.",
-    "copy.Rich.d630d96fa4": "قم بالبيع إذا كانت قيمة طاقم العمل أكثر من {p0}% من القيمة المقدرة · احتفظ باللاعبين الأساسيين بدون بدلاء",
+    "copy.Rich.d630d96fa4": "يطلب الطاقم {p0}% من القيمة المقدّرة، وحسب مكانه وعقده وعمره وأموال النادي قد يقبل عرضًا أقل أو يقدّم عرضًا مضادًا",
     "copy.Rich.c1583a64cf": "سيتم رفض المقترحات التي تقل قيمتها عن قيمة التقييم {p0}% ({p1}) على الفور.",
     "copy.Rich.6c4000e91e": "نحن أيضًا نحمي العروض الكبيرة · سياسة المبيعات {p0} (البيع في حالة الأزمة المالية)",
     "copy.Rich.7ec00fbab6": "بالنسبة للمقترحات الكبيرة، يناقش الموظفون مع المدير. أساس البيع: {p1}% على أساس {p0}، تم تعديله على أساس الظروف المالية وتوافر المبتدئين.",
@@ -6926,6 +6926,8 @@
     "market.answer.player.detail": "وافق ناديه على {fee}، لكنه رفض راتبًا قدره {wage} ({percent}% من مطلبه). لم يُدفع أي مبلغ. {terms}",
     "market.answer.free.title": "{name} يرفض شروطنا كلاعب حر",
     "market.answer.free.detail": "رفض راتبًا قدره {wage} ({percent}% من مطلبه). {terms}",
+    "market.staff.wageOffer": "عرض الراتب {wage} ({percent}% من طلبه) · احتمال موافقته {chance}%",
+    "market.staff.noTerms": "حتى عند {percent}% من طلبه يبقى احتمال موافقته دون {chance}% أو لا تجتاز الفحوص المالية",
     "market.bid.invalidWage": "يجب أن يكون عرض الراتب 100% أو 125% أو 150% أو 200% من مطلبه.",
     "market.bid.wageSteps": "عرض الراتب",
     "market.bid.wageStep": "{percent}% من المطلب",
@@ -6961,6 +6963,11 @@
     "market.answer.player.detail.club": "وافق ناديه على {fee}. {reason}. لكنه رفض راتبًا قدره {wage} ({percent}% من مطلبه). لم يُدفع أي مبلغ. {terms}",
     "market.answer.accepted": "{position} · {age} عامًا · قُبل عرض {fee}. {reason}.",
     "market.answer.accepted.staff": "{position} · {age} عامًا · قُبل عرض {fee}. {reason}. كان عرض المدير الرياضي.",
-    "market.answer.blocked": "قبل النادي البائع عرض {fee}. {reason}. لكن تعذّر إتمام الصفقة: {blocker}"
+    "market.answer.blocked": "قبل النادي البائع عرض {fee}. {reason}. لكن تعذّر إتمام الصفقة: {blocker}",
+    "market.sale.own.accepted": "المبلغ المطلوب {asking} ({bar}% من القيمة) · العرض {fee} ({offered}% من القيمة). {reason}. قبل العرض وباع اللاعب.",
+    "market.sale.own.counterTaken": "المبلغ المطلوب {asking} ({bar}% من القيمة) · العرض {fee} ({offered}% من القيمة). {reason}. قدّم عرضًا مضادًا بقيمة {counter}؛ فقبله النادي المتقدّم وبيع اللاعب.",
+    "market.sale.own.counterDeclined": "المبلغ المطلوب {asking} ({bar}% من القيمة) · العرض {fee} ({offered}% من القيمة). {reason}. قدّم عرضًا مضادًا بقيمة {counter}، لكن النادي المتقدّم لم يقبله.",
+    "market.sale.own.refused": "المبلغ المطلوب {asking} ({bar}% من القيمة) · العرض {fee} ({offered}% من القيمة). {reason}. جاء العرض أقل بكثير من الحد الذي تمسّك به، فرفضه دون عرض مضاد.",
+    "market.sale.own.core": "يحتفظ النادي بنواته: أفضل ثلاثة أساسيين ليسوا للبيع. رفض عرض {fee} ({offered}% من القيمة)."
   }
 }
