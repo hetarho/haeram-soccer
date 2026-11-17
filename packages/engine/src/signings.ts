@@ -584,13 +584,12 @@ export function moneyBar(w: World): number | undefined {
 export const belowBar = (need: SigningNeed, bar: number | undefined) =>
   bar !== undefined && need.kind === 'upgrade' && bar - need.level > need.margin;
 /**
- * The XI slots more than `margin` below the money bar in the window open on `day` (→CLUB-33), each
- * counted once: a slot counts when its measure now stands below the bar (its starter or a signing
- * settling in there, as `upgradeNeeds` reads it) or when one of this window's upgrade signings
- * holds it, and in either case only when it was below the bar before this window's arrivals too.
- * A slot a departure weakened and an arrival filled again (a replacement, the owner's signing) is
- * not below the bar now and was not upgraded, so it does not count; an upgrade for a slot that was
- * never below the bar counts against the cap without raising it.
+ * The XI slots more than `margin` below the money bar now (→CLUB-33), each counted once: every slot
+ * of the current XI measured as `upgradeNeeds` reads it — its starter, or a signing of the window
+ * on `day` still settling in there. Nothing is inferred about the XI before the window, so a slot
+ * an upgrade lifts above the bar stops counting and no departure or signing adds a slot that is
+ * not weak now; repeated signings for one slot, or upgrades for a slot never below the bar, count
+ * against the cap without raising it.
  */
 export function slotsBelowBar(
   w: World,
@@ -599,26 +598,8 @@ export function slotsBelowBar(
   day = currentDay(w),
 ) {
   if (bar === undefined) return 0;
-  const joined = joinedThisWindow(w, day),
-    arrived = new Set(joined.map((p) => p.id)),
-    upgraded = new Set(
-      windowBids(w, day)
-        .filter((bid) => bid.staff === 'upgrade' && bid.status === 'completed')
-        .map((bid) => bid.playerId)
-        .filter((id) => arrived.has(id)),
-    ),
-    before = arrived.size ? { ...w, players: w.players.filter((p) => !arrived.has(p.id)) } : w,
-    wasBelow = new Set(
-      lineStarters(before)
-        .filter((starter) => bar - starter.value > margin)
-        .map((starter) => starter.slot),
-    );
-  return upgradeNeeds(w, margin, joined).filter(
-    (need) =>
-      need.kind === 'upgrade' &&
-      wasBelow.has(need.slot) &&
-      (belowBar(need, bar) || upgraded.has(need.measure.id)),
-  ).length;
+  return upgradeNeeds(w, margin, joinedThisWindow(w, day)).filter((need) => belowBar(need, bar))
+    .length;
 }
 /**
  * The window's upgrade cap (→CLUB-33, →ECON-33): the step's, or at 아낌없이 the XI slots below the
