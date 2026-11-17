@@ -82,6 +82,7 @@
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
 | tm17-market | 4 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-17T11:45:09.928Z | [history](work/tm17-market.json) |
 | lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
+| xf18-market | 3 | 6 | 0 | 6 | 0 | 0 | 6 | 2026-11-17T19:23:34.929Z | [history](work/xf18-market.json) |
 
 ## next
 - Session xf18 (261118, gusta-self-improve until 09:00): review market-levels-261118 → T944–T949 in work group xf18-market (lanes npc-market, levels, owner-market), then T950 calibration in the main session.
