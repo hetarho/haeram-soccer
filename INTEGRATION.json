@@ -170,8 +170,8 @@
       "branch": "gusta-session-start-cf17-c5483839",
       "head": "411eb769e7d278dce928bb4e20ff61dc093263cb",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-17T13:57:08.601Z",
+      "status": "ready",
+      "at": "2026-11-17T13:57:13.310Z",
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "failed"
