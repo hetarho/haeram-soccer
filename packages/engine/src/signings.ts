@@ -1148,7 +1148,11 @@ export function pursueRequest(
   if (actor === 'delegated') {
     if (
       (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0 ||
-      windowBids(w, day).some((b) => b.staff && (isOpen(b) || b.day === day))
+      // A free agent who refused our terms at once leaves the day's move open, so a mediation
+      // can pursue its next alternative (→CLUB-39, →CLUB-53).
+      windowBids(w, day).some(
+        (b) => b.staff && b.refusedBy !== 'player' && (isOpen(b) || b.day === day),
+      )
     )
       return sourceMessage('copy.signings.475daa54a3');
     const terms = wageOffer(w, offer, fee);

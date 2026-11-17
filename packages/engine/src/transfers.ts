@@ -1,5 +1,5 @@
 import { message as sourceMessage, type SourceMessageId } from '../../contracts/src/messages';
-import { INCOMING_BID_CHANCE, INCOMING_BID_SCALE, SALE_BARS } from './transfer-policy';
+import { INCOMING_BID_CHANCE, SALE_BARS } from './transfer-policy';
 import { worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
@@ -1295,8 +1295,7 @@ function incomingBid(w: World, day: number, until: number) {
   if (pending.length >= MAX_PENDING_INCOMING) return;
   const r = random(`${w.seed}:incoming:${w.year}:${day}`);
   const build = buildEffects(w);
-  const scale = INCOMING_BID_SCALE[w.build?.market ?? 'standard'] ?? 1;
-  if (r() >= INCOMING_BID_CHANCE * build.incomingBids * scale) return;
+  if (r() >= INCOMING_BID_CHANCE * build.incomingBids) return;
   const wanted = new Set(pending.map((b) => b.playerId));
   const pool = activePlayers(w)
     .filter((p) => !p.loanUntil && p.stance !== 'listed' && !wanted.has(p.id) && !saleBlocker(w, p))

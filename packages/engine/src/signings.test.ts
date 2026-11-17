@@ -3,6 +3,7 @@ import { lineOf, POSITION_LABEL } from './player';
 import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import type {
   SpendRequest,
+  SigningRequest,
   FreeAgent,
   Line,
   Player,
@@ -67,7 +68,7 @@ import { registration } from './registration';
 import { transferStance } from './transfers';
 import * as personalTerms from './personal-terms';
 import { termsChance, termsContext, WAGE_STEPS } from './personal-terms';
-import { wageCeiling, wageOffer } from './signings';
+import { pursueRequest, requestCandidates, wageCeiling, wageOffer } from './signings';
 import { random } from './primitives';
 
 /** Release the actual listed club player, keeping his identity and unchanged sporting quality. */
@@ -1552,6 +1553,42 @@ describe("the 단장's wage offer (→CLUB-41, CLUB-53)", () => {
     expect(c[index]!).toBeGreaterThanOrEqual(0.6);
     if (index > 0) expect(c[index - 1]!).toBeLessThan(0.6);
     expect(reports(w).at(-1)!.detail).toContain(`요구의 ${Math.round(step * 100)}%`);
+  });
+
+  it("a free agent refusing at once leaves the day open for a mediation's next alternative (→CLUB-39)", () => {
+    const w = club(5);
+    const first = equalQualityFree(w),
+      line = lineOf(first.player.position),
+      second = releaseListed(w, line);
+    const request: SigningRequest = { kind: 'short', line };
+    const free = requestCandidates(w, request)
+      .filter(({ offer }) => offer.freeAgent)
+      .map(({ offer }) => offer.player.id);
+    expect(free).toEqual(expect.arrayContaining([first.player.id, second.player.id]));
+    // The first answers no, the second yes: the 단장's chance is certain, the answers are set.
+    const certain = { chance: 1, logOdds: 9, lines: [] };
+    const chance = vi.spyOn(personalTerms, 'termsChance').mockReturnValue(certain),
+      answer = vi
+        .spyOn(personalTerms, 'termsAnswer')
+        .mockReturnValueOnce({ ...certain, accept: false })
+        .mockReturnValue({ ...certain, accept: true });
+    onTestFinished(() => {
+      chance.mockRestore();
+      answer.mockRestore();
+    });
+    const [a, b] =
+      free.indexOf(first.player.id) < free.indexOf(second.player.id)
+        ? [first, second]
+        : [second, first];
+    expect(pursueRequest(w, request, a.player.id, 'delegated')).toBeUndefined();
+    expect(w.players.some((p) => p.id === a.player.id && p.status === 'active')).toBe(false);
+    expect(staffBids(w).find((bid) => bid.playerId === a.player.id)).toMatchObject({
+      status: 'rejected',
+      refusedBy: 'player',
+    });
+    // The refusal is kept, and the next alternative can still be pursued that day.
+    expect(pursueRequest(w, request, b.player.id, 'delegated')).toBeUndefined();
+    expect(w.players.some((p) => p.id === b.player.id && p.status === 'active')).toBe(true);
   });
 
   it('asks a free agent at once on the same rule: he signs on that wage or refuses', () => {
