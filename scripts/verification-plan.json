@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "checks": [
+    {
+      "id": "typecheck",
+      "tier": "task",
+      "command": "pnpm run typecheck",
+      "inputs": [
+        "apps",
+        "packages",
+        "tests",
+        "scripts",
+        "artifacts",
+        "patches",
+        ".github",
+        "*.json",
+        "*.ts",
+        "*.mjs",
+        "*.yaml",
+        "*.toml",
+        ".gitignore",
+        ".prettierignore",
+        ".node-version"
+      ]
+    },
+    {
+      "id": "lint",
+      "tier": "task",
+      "command": "pnpm run lint",
+      "inputs": [
+        "apps",
+        "packages",
+        "tests",
+        "scripts",
+        "artifacts",
+        "patches",
+        ".github",
+        "*.json",
+        "*.ts",
+        "*.mjs",
+        "*.yaml",
+        "*.toml",
+        ".gitignore",
+        ".prettierignore",
+        ".node-version"
+      ]
+    },
+    {
+      "id": "format",
+      "tier": "task",
+      "command": "pnpm run format:check",
+      "inputs": [
+        "apps",
+        "packages",
+        "tests",
+        "scripts",
+        "artifacts",
+        "patches",
+        ".github",
+        "*.json",
+        "*.ts",
+        "*.mjs",
+        "*.yaml",
+        "*.toml",
+        ".gitignore",
+        ".prettierignore",
+        ".node-version"
+      ]
+    },
+    {
+      "id": "i18n",
+      "tier": "task",
+      "command": "pnpm run validate:i18n",
+      "inputs": [
+        "apps",
+        "packages",
+        "tests",
+        "scripts",
+        "artifacts",
+        "patches",
+        ".github",
+        "*.json",
+        "*.ts",
+        "*.mjs",
+        "*.yaml",
+        "*.toml",
+        ".gitignore",
+        ".prettierignore",
+        ".node-version"
+      ]
+    },
+    {
+      "id": "affected-units",
+      "tier": "task",
+      "command": "pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+      "inputs": [
+        "apps",
+        "packages",
+        "tests",
+        "scripts",
+        "artifacts",
+        "patches",
+        ".github",
+        "*.json",
+        "*.ts",
+        "*.mjs",
+        "*.yaml",
+        "*.toml",
+        ".gitignore",
+        ".prettierignore",
+        ".node-version"
+      ]
+    },
+    {
+      "id": "verify-batch",
+      "tier": "batch",
+      "command": "pnpm run verify:batch",
+      "inputs": [
+        "apps",
+        "packages",
+        "tests",
+        "scripts",
+        "artifacts",
+        "patches",
+        ".github",
+        "*.json",
+        "*.ts",
+        "*.mjs",
+        "*.yaml",
+        "*.toml",
+        ".gitignore",
+        ".prettierignore",
+        ".node-version"
+      ]
+    },
+    {
+      "id": "ci-checks",
+      "tier": "ci",
+      "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:contract && pnpm run validate:catalogs && pnpm run validate:presentation && pnpm run validate:i18n && pnpm run build"
+    },
+    {
+      "id": "ci-unit",
+      "tier": "ci",
+      "command": "pnpm run test:unit"
+    },
+    {
+      "id": "ci-integration-1",
+      "tier": "ci",
+      "command": "pnpm run test:integration --shard=1/3"
+    },
+    {
+      "id": "ci-integration-2",
+      "tier": "ci",
+      "command": "pnpm run test:integration --shard=2/3"
+    },
+    {
+      "id": "ci-integration-3",
+      "tier": "ci",
+      "command": "pnpm run test:integration --shard=3/3"
+    },
+    {
+      "id": "ci-e2e-chromium-1",
+      "tier": "ci",
+      "command": "pnpm exec playwright test --project=chromium --shard=1/3"
+    },
+    {
+      "id": "ci-e2e-chromium-2",
+      "tier": "ci",
+      "command": "pnpm exec playwright test --project=chromium --shard=2/3"
+    },
+    {
+      "id": "ci-e2e-chromium-3",
+      "tier": "ci",
+      "command": "pnpm exec playwright test --project=chromium --shard=3/3"
+    }
+  ]
+}

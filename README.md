@@ -59,7 +59,9 @@ pnpm run validate:i18n
 
 Install the pinned Playwright Chromium browser with `pnpm exec playwright install --with-deps chromium`
 before full verification. `pnpm run verify` runs the complete local check sequence, including
-Chromium browser journeys; `pnpm run verify:batch` runs no browser stage. Storage and first-play measurements
+Chromium browser journeys; `pnpm run verify:batch` runs no browser stage. The task and batch checks
+are declared one by one in `scripts/verification-plan.json` (ARCH-30); `vibe check --tier task`
+or `--tier batch` runs them and reuses each unchanged success. Storage and first-play measurements
 run at the relevant gates with `pnpm run benchmark` and `pnpm run benchmark:browser`; their
 reports are written under `artifacts/benchmarks/`.
 
