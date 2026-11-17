@@ -111,6 +111,31 @@ const BID_STATUS: Record<TransferBid['status'], string> = {
 };
 const delta = (value: number) => (value > 0 ? `+${value}` : value < 0 ? String(value) : '±0');
 // Colour only marks direction: a rise in red, a fall in blue.
+/** A chance as a whole percentage for the bid view. */
+const percentOf = (chance: number) => Math.round(chance * 100);
+type AnswerLine = MarketDetail['bid']['lines'][number];
+/**
+ * An answer's factor lines as the bid view reads them (→CLUB-52/53): a selling club's in points of
+ * the asking fee, the player's as for or against his agreeing; a note when none moves it.
+ */
+function factorText(lines: readonly AnswerLine[], kind: 'sale' | 'terms') {
+  if (!lines.length) return displayMessage('market.answer.noFactors');
+  return lines
+    .map((line) => {
+      const factor = displayMessage(line.message, line.params);
+      if (kind === 'terms')
+        return displayMessage(
+          line.delta > 0 ? 'market.answer.termsFor' : 'market.answer.termsAgainst',
+          { factor },
+        );
+      const points = Math.round(line.delta * 100) || 0;
+      return displayMessage('market.answer.saleFactor', {
+        factor,
+        delta: points > 0 ? `+${points}` : String(points),
+      });
+    })
+    .join(' · ');
+}
 const tone = (value: number) => (value > 0 ? 'rise' : value < 0 ? 'fall' : undefined);
 
 /** The scout's verdict (→CLUB-47): grade, the slot it reads and the facts the gap does not say. */
@@ -646,6 +671,8 @@ export function RecruitmentDesk({
     undefined,
   );
   const [step, setStep] = useTaskState(w.id, 'market-step', 1);
+  // The wage offer's step of his demand (→CLUB-53): 100%, the first, unless the owner picks more.
+  const [wageStep, setWageStep] = useTaskState(w.id, 'market-wage-step', 0);
   const [expanded, setExpanded] = useTaskState(w.id, 'market-expanded', false);
   const registered = squadRegistration(w);
   const blocked = useGameState(gameActionsBlocked) || !!w.critical;
@@ -692,6 +719,8 @@ export function RecruitmentDesk({
     bidDetail.value.revision === w.revision &&
     quoted?.asking === bidding?.asking;
   const outlook = bidCurrent ? quoted : undefined;
+  const wageSteps = outlook?.terms?.steps ?? [],
+    pickedWage = wageSteps[wageStep];
   const activeTerms = useRef({ fee, current: bidCurrent, detail: bidDetail.value });
   activeTerms.current = { fee, current: bidCurrent, detail: bidDetail.value };
   useEffect(() => {
@@ -756,6 +785,20 @@ export function RecruitmentDesk({
       { background: true },
     );
     if (!currentWorld()) return;
+    // A free agent answers our terms at once (→CLUB-53): ok and still in the pool means he refused.
+    const refused =
+      reply?.ok &&
+      candidate.offer.freeAgent &&
+      !client.state.view?.world.players.some(
+        (p) => p.id === candidate.offer.player.id && p.status === 'active',
+      );
+    if (refused) {
+      setMessage({
+        world: w.id,
+        text: sourceMessage('market.recruit.refused', { name: candidate.offer.player.name }),
+      });
+      return;
+    }
     if (reply?.ok && candidate.offer.freeAgent) {
       // He has left the pool for our squad: open cards read him with us, signed (→CLUB-49).
       const signed = candidate.offer.target;
@@ -822,6 +865,7 @@ export function RecruitmentDesk({
         setViewing(undefined);
         setMessage(undefined);
         setStep(1);
+        setWageStep(0);
         setBidding({ target: candidate.offer.target, asking: candidate.offer.fee });
       }}
       pending={pendingFor(candidate.offer.player.id)}
@@ -1762,7 +1806,12 @@ export function RecruitmentDesk({
                     )
                       return;
                     const reply = await client.command(
-                      { type: 'bid', target: bidding.target, fee },
+                      {
+                        type: 'bid',
+                        target: bidding.target,
+                        fee,
+                        ...(pickedWage ? { wage: pickedWage.step } : {}),
+                      },
                       { background: true },
                     );
                     if (!currentWorld() || activeBid.current !== bidding) return;
@@ -1838,15 +1887,57 @@ export function RecruitmentDesk({
                 )),
               )}
             </div>
+            {localizeValue(
+              wageSteps.length > 0 && (
+                <div
+                  className={s.bidSteps}
+                  role="radiogroup"
+                  aria-label={displayMessage('market.bid.wageSteps')}
+                >
+                  {localizeValue(
+                    wageSteps.map((terms, i) => (
+                      <button
+                        key={String(terms.step)}
+                        role="radio"
+                        data-ui={wageStep === i ? 'secondary' : 'tertiary'}
+                        aria-checked={wageStep === i}
+                        className={wageStep === i ? s.bidPicked : undefined}
+                        onClick={() => setWageStep(i)}
+                      >
+                        <b>
+                          {displayMessage('market.bid.wageStep', {
+                            percent: Math.round(terms.step * 100),
+                          })}
+                        </b>
+                        <small>{plain(terms.wage)}</small>
+                      </button>
+                    )),
+                  )}
+                </div>
+              ),
+            )}
             <dl className={s.costs}>
               <div>
-                <dt>{richMessage('copy.RecruitmentDesk.9873423ded')}</dt>
+                <dt>{richMessage('market.bid.clubLabel')}</dt>
                 <dd>
                   {localizeValue(
                     outlook
-                      ? sourceMessage('copy.RecruitmentDesk.7d605cafab', {
-                          p0: outlook.label,
-                          p1: Math.round(outlook.chance * 100),
+                      ? displayMessage('market.bid.clubChance', {
+                          accept: percentOf(outlook.chance),
+                          counter: percentOf(outlook.counter),
+                        })
+                      : sourceMessage('copy.RecruitmentDesk.414f13ede8'),
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>{richMessage('market.bid.playerLabel')}</dt>
+                <dd>
+                  {localizeValue(
+                    pickedWage
+                      ? richMessage('market.bid.playerChance', {
+                          chance: percentOf(pickedWage.chance),
+                          wage: plain(pickedWage.wage),
                         })
                       : sourceMessage('copy.RecruitmentDesk.414f13ede8'),
                   )}
@@ -1859,6 +1950,20 @@ export function RecruitmentDesk({
                 </dd>
               </div>
             </dl>
+            {localizeValue(
+              outlook && (
+                <p className={s.note} data-testid="bid-club-factors">
+                  {factorText(outlook.lines, 'sale')}
+                </p>
+              ),
+            )}
+            {localizeValue(
+              pickedWage && (
+                <p className={s.note} data-testid="bid-player-factors">
+                  {factorText(pickedWage.lines, 'terms')}
+                </p>
+              ),
+            )}
             {localizeValue(
               outlook && BigInt(fee) > BigInt(w.cash) && (
                 <p data-surface="inset" className={s.warning}>

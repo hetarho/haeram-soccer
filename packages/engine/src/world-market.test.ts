@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import * as personalTerms from './personal-terms';
 import * as recruitment from './recruitment';
 import type { WorldMarketQuery } from '../../contracts/src/types';
 import { WORLD_MARKET_PAGE_SIZE } from '../../contracts/src/schema';
@@ -49,6 +50,16 @@ function poolPlayer(w: ReturnType<typeof worldMarketFixture>, n: number, age = 2
 }
 
 // The fixture holds just current squads. Dated cases settle only the market, never fixtures or a whole day.
+/** The player agrees to our terms (→CLUB-53): these cases test the move, not his answer. */
+function agreeing() {
+  const spy = vi
+    .spyOn(personalTerms, 'termsAnswer')
+    .mockImplementation((context, _draw, factors) => ({
+      ...personalTerms.termsChance(context, factors),
+      accept: true,
+    }));
+  onTestFinished(() => spy.mockRestore());
+}
 describe('bounded whole-world market', () => {
   it('finds every represented club and the whole free-agent pool, including our inspectable players', () => {
     const w = worldMarketFixture();
@@ -233,6 +244,7 @@ describe('stable-identity approaches', () => {
   it.each([false, true])(
     'negotiates a non-scout player; loan=%s preserves source, fees, identity and one affiliation',
     (loan) => {
+      agreeing();
       const w = worldMarketFixture(),
         target = foreignTarget(w);
       const offer = worldMarketOffer(w, target)!;
@@ -345,6 +357,7 @@ describe('stable-identity approaches', () => {
   ] as const)(
     'keeps returning-player season totals only in their season (%s, years away=%s)',
     (record, years) => {
+      agreeing();
       const w = worldMarketFixture();
       const original = w.players[0];
       original.career[0] = 123;
@@ -599,6 +612,7 @@ describe('stable-identity approaches', () => {
   );
 
   it('keeps index bids on the found player at his club and lapses saved bids on generated ones', () => {
+    agreeing();
     // 해외 정보원 reaches Spain's top flight (→CLUB-51), the fixture's foreign club.
     const w = worldMarketFixture();
     w.policy = { recruitment: 3, support: 3, globalScouting: 2 };

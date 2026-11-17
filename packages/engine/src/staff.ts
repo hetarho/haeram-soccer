@@ -95,7 +95,10 @@ export interface StaffEffects {
   academyGrowth: number;
   /** Multiplier on asking transfer fees. */
   feeMultiplier: number;
-  /** Added to the chance that a selling club accepts our bid (0–1 scale). */
+  /**
+   * The share of the asking fee a selling club's reservation gives up for our bids (→STAFF-20,
+   * →CLUB-52): its share falls by this much, so positive favours us.
+   */
   bidAcceptance: number;
 }
 
@@ -178,11 +181,12 @@ function applyDepartment(effects: StaffEffects, role: StaffRole, member: Staff |
       ? departmentMultiplier(member.ability) * (member.trait === 'developer' ? 1.3 : 1)
       : VACANT_MULTIPLIER;
   }
-  // The 단장 carries the transfer negotiation (→STAFF-20).
+  // The 단장 carries the transfer negotiation (→STAFF-20): (ability − 50)/250 of the asking fee off
+  // a selling club's reservation, a negotiator 0.05 more and asking fees ×0.9, a vacancy 0.05 on.
   if (role === 'director') {
     effects.feeMultiplier = member?.trait === 'negotiator' ? 0.9 : 1;
     effects.bidAcceptance = member
-      ? (member.ability - NEUTRAL_ABILITY) / 250 + (member.trait === 'negotiator' ? 0.1 : 0)
+      ? (member.ability - NEUTRAL_ABILITY) / 250 + (member.trait === 'negotiator' ? 0.05 : 0)
       : -0.05;
   }
 }

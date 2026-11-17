@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import * as personalTerms from './personal-terms';
 import { createHash } from 'node:crypto';
 import { canonical } from '../../contracts/src/index';
 import { COUNTRIES, CATALOG_HASH, CATALOG_VERSION } from '../../catalogs/src/index';
@@ -106,6 +107,16 @@ function bid(w: World, p: Player, club: string, direction: TransferBid['directio
   return b;
 }
 
+/** The player agrees to our terms (→CLUB-53): these cases test the move, not his answer. */
+function agreeing() {
+  const spy = vi
+    .spyOn(personalTerms, 'termsAnswer')
+    .mockImplementation((context, _draw, factors) => ({
+      ...personalTerms.termsChance(context, factors),
+      accept: true,
+    }));
+  onTestFinished(() => spy.mockRestore());
+}
 describe('persisted playable squads', () => {
   it('enrolls an actual academy intake without adding first-team players or wages', () => {
     const w = worldMarketFixture();
@@ -382,6 +393,7 @@ describe('persisted playable squads', () => {
   });
 
   it('moves the actual live player on purchase, sale, loan out and return, keeping our departed career', () => {
+    agreeing();
     const w = fixture(),
       c = w.clubs[1]!,
       buyer = w.clubs[2]!;

@@ -29,6 +29,7 @@ import {
   budgetResponsibilitySchema,
   gameSettingsSchema,
   spendRequestSchema,
+  wageStep,
 } from '../../../../packages/contracts/src/schema';
 import {
   DIVIDEND_SHARES,
@@ -170,6 +171,7 @@ const command = z.discriminatedUnion('type', [
       target: worldMarketTargetSchema.optional(),
       fee: z.string().regex(/^\d{1,40}$/),
       loan: z.boolean().optional(),
+      wage: wageStep.optional(),
     })
     .refine(
       (c) => (c.candidate === undefined) !== (c.target === undefined),
@@ -203,6 +205,7 @@ const command = z.discriminatedUnion('type', [
       candidate: index.optional(),
       target: worldMarketTargetSchema.optional(),
       loan: z.boolean().optional(),
+      wage: wageStep.optional(),
     })
     .refine(
       (c) => (c.candidate === undefined) !== (c.target === undefined),

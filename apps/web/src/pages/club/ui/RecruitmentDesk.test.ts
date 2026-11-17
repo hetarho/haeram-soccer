@@ -147,7 +147,7 @@ const detail = (): MarketDetail => ({
   offer,
   buy: { ...preview },
   loan: { ...preview, fee: offer.loanFee },
-  bid: { asking: offer.fee, chance: 0.5, label: '보통', counterPossible: true },
+  bid: { asking: offer.fee, chance: 0.5, counter: 0.2, lines: [] },
   verdict: {
     grade: 'B',
     label: '주전 보강',
@@ -787,7 +787,12 @@ async function mountedBid(initial = structuredClone(w)) {
     get world() {
       return world;
     },
-    async resolve(index: number, asking: string, chance = 0.73) {
+    async resolve(
+      index: number,
+      asking: string,
+      chance = 0.73,
+      terms?: MarketDetail['bid']['terms'],
+    ) {
       const request = requests[index]!;
       await act(async () => {
         request.resolve({
@@ -796,12 +801,7 @@ async function mountedBid(initial = structuredClone(w)) {
           revision: request.revision,
           offer: { ...offer, target: request.target, fee: asking },
           buy: { ...preview, fee: asking },
-          bid: {
-            asking,
-            chance,
-            label: chance >= 0.6 ? '높음' : chance >= 0.35 ? '보통' : '낮음',
-            counterPossible: true,
-          },
+          bid: { asking, chance, counter: 0.1, lines: [], ...(terms ? { terms } : {}) },
         });
         await request.promise;
         await Promise.resolve();
@@ -840,7 +840,7 @@ describe('verified bid quote lifecycle', () => {
       expect(f.send()?.querySelector('[data-money]')?.getAttribute('title')).toBe(
         money(fee, 'ENG', f.world.year),
       );
-      expect(f.container.textContent).toContain('약 73%');
+      expect(f.container.textContent).toContain('수락 73%');
       await act(async () => f.send()!.click());
       expect(f.command).toHaveBeenCalledExactlyOnceWith(
         { type: 'bid', target: f.target, fee },
@@ -874,10 +874,10 @@ describe('verified bid quote lifecycle', () => {
     await f.resolve(1, '1000', 0.11);
     expect(f.requests[2]?.fee).toBe('1150');
     expect(f.send()?.disabled).toBe(true);
-    expect(f.container.textContent).not.toContain('약 11%');
+    expect(f.container.textContent).not.toContain('수락 11%');
     await f.resolve(2, '1000', 0.77);
     expect(f.send()?.disabled).toBe(false);
-    expect(f.container.textContent).toContain('약 77%');
+    expect(f.container.textContent).toContain('수락 77%');
     await act(async () => f.send()!.click());
     expect(f.command).toHaveBeenCalledExactlyOnceWith(
       { type: 'bid', target: f.target, fee: '1150' },
@@ -895,7 +895,7 @@ describe('verified bid quote lifecycle', () => {
     expect(f.requests[2]?.fee).toBe('2600');
     await f.resolve(2, '2000', 0.66);
     expect(f.send()?.disabled).toBe(false);
-    expect(f.container.textContent).toContain('약 66%');
+    expect(f.container.textContent).toContain('수락 66%');
   });
 
   it('refreshes currency-era amounts without reinterpreting an old asking as the new fee', async () => {
@@ -924,11 +924,51 @@ describe('verified bid quote lifecycle', () => {
         .querySelector('[data-testid="candidate-source"] [data-money]')
         ?.getAttribute('title'),
     ).toBe(money('600', 'ESP', 2002));
-    expect(f.container.textContent).toContain('약 62%');
+    expect(f.container.textContent).toContain('수락 62%');
     expect(f.world).toEqual(snapshot);
     await act(async () => f.send()!.click());
     expect(f.command).toHaveBeenCalledExactlyOnceWith(
       { type: 'bid', target: f.target, fee: '780' },
+      { background: true },
+    );
+  });
+
+  it('offers the wage steps with each answer’s chance and factors and sends the picked step', async () => {
+    const f = await mountedBid();
+    const wouldStart = {
+      factor: 'playingTime',
+      delta: 0.4,
+      message: 'market.terms.wouldStart' as const,
+      params: {},
+    };
+    await f.resolve(0, '1000', 0.73, {
+      demand: '100',
+      steps: [
+        { step: 1, wage: '100', chance: 0.55, lines: [wouldStart] },
+        { step: 1.25, wage: '125', chance: 0.7, lines: [wouldStart] },
+        { step: 1.5, wage: '150', chance: 0.8, lines: [wouldStart] },
+        { step: 2, wage: '200', chance: 0.9, lines: [wouldStart] },
+      ],
+    });
+    const wages = () => f.radios().slice(4);
+    expect(wages()).toHaveLength(4);
+    expect(wages()[0]?.getAttribute('aria-checked')).toBe('true');
+    expect(f.container.textContent).toContain('수락 73% · 역제안 10%');
+    expect(f.container.textContent).toContain('수락 가능성 55%');
+    expect(f.container.querySelector('[data-testid="bid-player-factors"]')?.textContent).toBe(
+      '우리 팀에서 주전으로 뛸 수 있음 — 유리',
+    );
+    expect(f.container.querySelector('[data-testid="bid-club-factors"]')?.textContent).toBe(
+      '움직인 요인 없음',
+    );
+    await act(async () => wages()[2]!.click());
+    expect(wages()[2]?.getAttribute('aria-checked')).toBe('true');
+    expect(f.container.textContent).toContain('수락 가능성 80%');
+    // The terms come with the quote: a wage step reads no new odds.
+    expect(f.requests).toHaveLength(1);
+    await act(async () => f.send()!.click());
+    expect(f.command).toHaveBeenCalledExactlyOnceWith(
+      { type: 'bid', target: f.target, fee: '1300', wage: 1.5 },
       { background: true },
     );
   });

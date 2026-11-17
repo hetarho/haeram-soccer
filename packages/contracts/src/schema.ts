@@ -720,6 +720,8 @@ const staff = z.strictObject({
   strain: z.strictObject({ year: season, count: z.number().int().min(1).max(40) }).optional(),
   asked: z.strictObject({ year: season, round: z.number().int().min(0).max(46) }).optional(),
 });
+/** A wage offer's step of the player's demand (→CLUB-53). */
+export const wageStep = z.union([z.literal(1), z.literal(1.25), z.literal(1.5), z.literal(2)]);
 const bid = z.strictObject({
   id,
   direction: z.enum(['out', 'in']),
@@ -734,6 +736,8 @@ const bid = z.strictObject({
   status: z.enum(['pending', 'accepted', 'rejected', 'countered', 'expired', 'completed']),
   counterFee: money.optional(),
   staff: z.enum(['short', 'replacement', 'upgrade']).optional(),
+  wage: wageStep.optional(),
+  refusedBy: z.enum(['club', 'player']).optional(),
 });
 const request = z.strictObject({
   line,
