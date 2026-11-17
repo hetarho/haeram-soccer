@@ -77,15 +77,26 @@ export function readCopy(w: World): FixtureReadCopy {
 }
 
 /**
- * Inputs of stored matchday selection and representative squad generation, in registry order.
- * Changes to those builders must update this signature and its parity cases. Stored player
- * changes require a fresh matchday choice.
+ * Inputs of stored matchday selection and representative squad generation, in registry order:
+ * `rosterContext` and the stored squads. Changes to those builders must update this signature
+ * and its parity cases. Stored player changes require a fresh matchday choice.
  */
 export function fixtureRosterKey(copy: FixtureReadCopy): string {
-  return JSON.stringify([
+  return JSON.stringify([...rosterContext(copy), copy.squads]);
+}
+/**
+ * `fixtureRosterKey` without the squads' contents: equal context and equal per-club squad texts in
+ * equal order are exactly an equal key, so a writer that already serialized each squad compares
+ * those texts instead of serializing every squad again (whether squads exist stays in here).
+ */
+export function fixtureRosterContext(copy: FixtureReadCopy): string {
+  return JSON.stringify(rosterContext(copy));
+}
+function rosterContext(copy: FixtureReadCopy) {
+  return [
     copy.seed,
     copy.year,
-    copy.squads,
+    copy.squads !== undefined,
     copy.clubs.map((c) => [c.id, c.country, c.strength, c.tier]),
     Object.values(copy.people ?? {}).map((p) =>
       p.playing === 'active'
@@ -93,5 +104,5 @@ export function fixtureRosterKey(copy: FixtureReadCopy): string {
         : [p.id, p.playing],
     ),
     (copy.freeAgents ?? []).map((p) => p.id),
-  ]);
+  ];
 }
