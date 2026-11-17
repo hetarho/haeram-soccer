@@ -16,6 +16,7 @@ import {
   advanceDays,
   compareIds,
   currentDay,
+  dailyMarket,
   drawShortlist,
   formationOf,
   noteSigning,
@@ -457,6 +458,9 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   });
 
   it('makes no signings below level 4 or outside windows', () => {
+    // Every player is keen (→CLUB-53): the listed players of the divisions above ours would refuse
+    // our terms, and only the window, the level and the pick are under test.
+    willing();
     const below = club();
     below.settings = staffAuthority(3);
     staffSignings(below);
@@ -537,20 +541,18 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
 
   it('drops a listed player who joins us or leaves the market list', () => {
     willing();
-    // A shortlist none of whose players recruitment level 5's search (ages 26–33, →ECON-16) also
-    // finds, so changing the row takes every entry off the list. Since each club's own age ladder
-    // (→WORLD-6) spread the ages of the players clubs let go, a free agent aged 26–30 can sit in
-    // both searches (`shortlist` lists one): the first market where none does.
+    // A shortlist some of whose players recruitment level 5's search (ages 26–33, →ECON-16) does
+    // not find, so changing the row takes them off the list; a player both searches find stays.
     const seed = ['shortlist', ...Array.from({ length: 40 }, (_, i) => `shortlist-${i}`)].find(
       (one) => {
         const trial = owned(one);
         drawShortlist(trial);
         holdRows(trial, { policy: { recruitment: 5 } });
         const listed = new Set(transferOffers(trial).map((offer) => offer.player.id));
-        return trial.shortlist!.entries.every((entry) => !listed.has(entry.playerId));
+        return trial.shortlist!.entries.some((entry) => !listed.has(entry.playerId));
       },
     );
-    if (!seed) throw new Error('every shortlist in 41 markets holds a player recruitment 5 finds');
+    if (!seed) throw new Error('every shortlist in 41 markets is found by recruitment 5 too');
     const w = owned(seed);
     drawShortlist(w);
     // He joins only when he agrees to our terms too (→CLUB-53), on his own seeded answer: the first
@@ -564,9 +566,18 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     expect(signingRequests(w).every((request) => request.pick !== first.offer.player.id)).toBe(
       true,
     );
-    // Another recruitment row draws another list: none of the shortlist is on it.
+    // Another recruitment row draws another list: the shortlisted players it does not find drop off.
     holdRows(w, { policy: { recruitment: 5 } });
-    expect(shortlistOffers(w)).toEqual([]);
+    const listed = new Set(transferOffers(w).map((offer) => offer.player.id)),
+      gone = w.shortlist!.entries.filter((entry) => !listed.has(entry.playerId));
+    expect(gone.length).toBeGreaterThan(0);
+    expect(shortlistOffers(w).map(({ offer }) => offer.player.id)).toEqual(
+      w
+        .shortlist!.entries.filter(
+          (entry) => listed.has(entry.playerId) && entry.playerId !== first.offer.player.id,
+        )
+        .map((entry) => entry.playerId),
+    );
     // Last season's shortlist reads as empty.
     const old = owned();
     drawShortlist(old);
@@ -612,14 +623,18 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     drawShortlist(strong);
     expect(strong.shortlist!.requests).toHaveLength(1);
     expect(strong.shortlist!.requests[0]).toMatchObject({ line: 'DF', kind: 'upgrade' });
-    // Under the margin of 5 he asks for nothing.
-    const best = Math.max(
-      ...shortlistOffers(strong)
-        .filter(({ offer }) => lineOf(offer.player.position) === 'DF')
-        .map(({ offer }) => overall(offer.player)),
-    );
+    // Under the margin of 5 he asks for nothing: no listed player who plays a defensive slot's
+    // position beats its starter there by 5 (OVR at the slot × level).
+    const slots = formationOf(strong.tactic).filter((slot) => lineOf(slot.position) === 'DF'),
+      best = Math.max(
+        ...shortlistOffers(strong).flatMap(({ offer }) =>
+          slots
+            .filter((slot) => (offer.player.positions[slot.position] ?? 0) >= 2)
+            .map((slot) => slotOvr(offer.player, slot)),
+        ),
+      );
     for (const p of activePlayers(strong).filter((one) => lineOf(one.position) === 'DF'))
-      rate(p, best - 4);
+      rate(p, Math.ceil(best) - 4);
     drawShortlist(strong);
     expect(strong.shortlist!.requests).toEqual([]);
   });
@@ -683,6 +698,9 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
   });
 
   it('costs the manager 3 trust when a window closes with none of his requests met', () => {
+    // Every player is keen (→CLUB-53): the released top-flight goalkeeper would refuse a lower
+    // division's terms, and the requests, not his answer, are under test.
+    willing();
     const close = transferWindowDays(1951).winterClose;
     /** The winter window opens with a goalkeeper short; `during` acts inside it. */
     function window(during?: (w: World) => void) {
@@ -1264,7 +1282,8 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(BigInt(delegatePlan(bought, 'recruitment').left)).toBeLessThan(
       BigInt(delegatePlan(sold, 'recruitment').left),
     );
-    expect(moneyBar(bought)!).toBeLessThanOrEqual(fromSales);
+    // Less money buys a lower bar, or none once nothing is left.
+    expect(moneyBar(bought) ?? 0).toBeLessThanOrEqual(fromSales);
   });
 
   it('puts every slot more than the margin below the bar first, the weakest first', () => {
@@ -1862,21 +1881,29 @@ describe('a pending player covers what his arrival would meet (→CLUB-33, CLUB-
     willing();
     // Income just meets the fixed costs, so every wage added is a planned loss (→ECON-33), and the
     // cash is tight: the look with the owner's midfielder pending moves as it does once he joined
-    // and his fee was paid, its own bids' wages counted move by move.
-    for (const cash of ['120000', '160000']) {
+    // and his fee was paid, its own bids' wages counted move by move. A countered bid of his pays the
+    // counter when he accepts it (→CLUB-52), and the look reads that.
+    for (const [cash, countered] of [
+      ['200000', false],
+      ['250000', false],
+      ['200000', true],
+      ['250000', true],
+    ] as const) {
       const w = club(5),
         look = currentDay(w) + SIGNING_CONFIG.lookDays;
       w.shortlist = { ...w.shortlist!, requests: [] };
       passReachFree(w);
       w.cash = cash;
       w.budgetPlan = { year: w.year, revenue: operatingCosts(w).annual, sales: '0' };
-      const owner = pendingFor(w, 'MF'),
-        joined = structuredClone(w);
+      const owner = pendingFor(w, 'MF');
+      if (countered)
+        Object.assign(owner, { status: 'countered', counterFee: ratio(owner.fee, 125n, 100n) });
+      const joined = structuredClone(w);
       arrive(
         joined,
         joined.bids!.find((bid) => bid.id === owner.id)!,
       );
-      joined.cash = (BigInt(joined.cash) - BigInt(owner.fee)).toString();
+      joined.cash = (BigInt(joined.cash) - BigInt(owner.counterFee ?? owner.fee)).toString();
       const moves = (one: World) => {
         const before = new Set(one.bids!.map((bid) => bid.id));
         one.calendar = { day: look };
@@ -1889,6 +1916,41 @@ describe('a pending player covers what his arrival would meet (→CLUB-33, CLUB-
       expect(pending.length).toBeGreaterThan(0);
       expect(pending).toEqual(moves(joined));
     }
+  });
+
+  it("keeps the window's refusals past the closed-bid history: nobody is asked twice in it", () => {
+    willing();
+    const w = club(5),
+      opening = currentDay(w);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    keep(w, 'FW', 3);
+    // Every free agent within the reach refused at the opening, then 61 more refusals at once.
+    passReachFree(w);
+    for (let i = 0; i < 61; i++)
+      w.bids!.push({
+        id: `out:test:refused:${i}`,
+        direction: 'out',
+        playerId: `test:refused:${i}`,
+        fee: '0',
+        year: w.year,
+        day: opening,
+        due: opening,
+        status: 'rejected',
+        staff: 'short',
+        refusedBy: 'player',
+      });
+    const asked = new Set(w.bids!.map((bid) => bid.playerId));
+    expect(w.bids!.length).toBeLessThanOrEqual(200);
+    // The daily market keeps them through its pruning, so the next look asks none of them again.
+    for (const day of [opening + 1, opening + SIGNING_CONFIG.lookDays]) {
+      w.calendar = { day };
+      dailyMarket(w, false);
+    }
+    for (const id of asked) expect(w.bids!.some((bid) => bid.playerId === id)).toBe(true);
+    expect(
+      w.bids!.filter((bid) => bid.staff && bid.day > opening && asked.has(bid.playerId)),
+    ).toEqual([]);
+    expect(staffBids(w).some((bid) => bid.day > opening)).toBe(true);
   });
 
   it("registers each candidate against the squad the window's bids will leave (→CLUB-44)", () => {

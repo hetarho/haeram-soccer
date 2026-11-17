@@ -1119,7 +1119,15 @@ function projection(w: World, day: number, raising?: TransferBid) {
       joinClub(p, isForeignCandidate(w, p.id, bid.club) ? 'abroad' : 'domestic', w.year);
       return [p];
     }),
-    ownerFees = open.reduce((total, bid) => total + (bid.staff ? 0n : BigInt(bid.fee)), 0n);
+    // An owner's countered bid pays the counter if he accepts it (→CLUB-52).
+    ownerFees = open.reduce(
+      (total, bid) =>
+        total +
+        (bid.staff
+          ? 0n
+          : BigInt(bid.status === 'countered' ? (bid.counterFee ?? bid.fee) : bid.fee)),
+      0n,
+    );
   return {
     club: {
       ...w,
