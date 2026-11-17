@@ -148,8 +148,8 @@
   "history": [],
   "lastPlanning": {
     "land": "main",
-    "base": "7d3dae42ff20b6ed8441521dc81757a0ef5c873d",
-    "candidate": "95f34bdd0c0fba55d7679c9fb75557fddb4561c4",
-    "at": "2026-11-17T05:08:08.570Z"
+    "base": "95f34bdd0c0fba55d7679c9fb75557fddb4561c4",
+    "candidate": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+    "at": "2026-11-17T05:49:33.777Z"
   }
 }
