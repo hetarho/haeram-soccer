@@ -6592,7 +6592,6 @@
     "delegation.details.open": "{page}のページを見る",
     "delegation.rules.title": "運営方針",
     "delegation.rules.meta": "担当者が従う細かい項目",
-    "delegation.offer.signings": "選手獲得を任せると、スポーツディレクターは移籍市場が開いた日とその後7日ごとに監督が求めたポジションと空きポジションを先に埋め、{upgrades} 移籍金と新しい年俸は補強に使えるお金 {left} の範囲でのみ使います。",
     "delegation.offer.noUpgrades": "主力の補強はしません。",
     "delegation.detail.manager": "監督の選任・再契約と監督基調・好む学派",
     "delegation.detail.staff": "スポーツディレクター・スカウト・コーチ陣の選任・再契約とコーチ基調",
@@ -6962,6 +6961,12 @@
     "budget.plans.signingIncome": "収入の範囲で運営・補強に使うお金{left}",
     "delegation.talk.runway": "資金：昇給後の計画赤字を手元資金が{seasons}シーズンまかなえ、現金が尽きない場合にだけ下限を提示します。",
     "delegation.talk.income": "資金：昇給後も支出が収入の範囲に収まり、現金が尽きない場合にだけ下限を提示します。",
-    "delegation.offer.salesFactors": "それより低い提案は、チーム内の立場、契約、年齢、移籍要求・不満の有無、球団の資金事情（手元資金が計画赤字を許容期間またはその半分まかなえない、固定費の余力{rounds}節未満）、移籍市場の最後の{days}日かどうかによって受け入れるか要求額を下げて逆提案し、低すぎれば断ります。評価値の{floor}%未満では売りません。"
+    "delegation.offer.salesFactors": "それより低い提案は、チーム内の立場、契約、年齢、移籍要求・不満の有無、球団の資金事情（手元資金が計画赤字を許容期間またはその半分まかなえない、固定費の余力{rounds}節未満）、移籍市場の最後の{days}日かどうかによって受け入れるか要求額を下げて逆提案し、低すぎれば断ります。評価値の{floor}%未満では売りません。",
+    "delegation.verdict.wageRoom": "選手年俸総額{bill}が、現金で負担できる選手年俸{budget}を超えます",
+    "delegation.verdict.runwayFee": "移籍金{fee}と年俸{wage}を加えると、移籍金と年{loss}の計画赤字{seasons}シーズン分が手元資金{capital}を超えます",
+    "delegation.verdict.incomeLoss": "収入の範囲で運営します：年俸{wage}を加えると年{loss}の計画赤字が出ます",
+    "delegation.verdict.incomeFee": "移籍金{fee}が手元資金{capital}を超えます",
+    "delegation.offer.looks": "選手獲得を任せると、スポーツディレクターは移籍市場が開いた日とその後{days}日ごとに市場を見て、進行中のオファーが{pending}件になるまで監督が求めたポジションと空きポジションを先に埋め、{upgrades} 移籍金と新しい年俸は手元資金が計画赤字を許容期間分まかなえる範囲でのみ使います。現在の補強に使えるお金は{left}です。",
+    "delegation.offer.upgradesBar": "主戦より能力が{margin}以上良い選手を移籍市場ごとに{upgrades}人まで、資金ラインを下回る主戦ポジションがそれより多ければその数だけ連れてきます。"
   }
 }

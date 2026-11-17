@@ -34,6 +34,15 @@ export const LOSS_RUNWAY: Readonly<Record<SpendRequest, number>> = {
   4: 2,
   5: 1,
 };
+/**
+ * The 단장's looks with recruitment delegated (→CLUB-33): on a window's opening day and every
+ * `lookDays`th day after it, making moves until his pending bids reach `pendingByStep` by the 선수
+ * 영입 step he acts on (1–5). Read by the signings and by the pages that explain them.
+ */
+export const RECRUITMENT_LOOKS = {
+  lookDays: 3,
+  pendingByStep: [1, 1, 1, 2, 3] as readonly number[],
+};
 /** The loss runway, in seasons, of the step acted on; 0 means none: no planned loss at all. */
 export const planRunway = (level: SpendRequest) => LOSS_RUNWAY[level];
 /**

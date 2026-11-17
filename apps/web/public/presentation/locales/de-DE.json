@@ -6595,7 +6595,6 @@
     "delegation.details.open": "Seite {page} ansehen",
     "delegation.rules.title": "Arbeitsregeln",
     "delegation.rules.meta": "Die Details, nach denen der Stab arbeitet",
-    "delegation.offer.signings": "Bei delegierten Transfers besetzt der Sportdirektor am Öffnungstag des Fensters und danach alle 7 Tage zuerst die vom Trainer gewünschten und freien Positionen; {upgrades} Ablösen und neue Gehälter kommen nur aus dem für Transfers Übrigen, {left}.",
     "delegation.offer.noUpgrades": "Keine Verstärkung der Stammelf.",
     "delegation.detail.manager": "Ernennung und Verlängerung des Trainers, Profil und Schule",
     "delegation.detail.staff": "Einstellung und Verlängerung von Sportdirektor, Scout und Trainern sowie das Trainerniveau",
@@ -6965,6 +6964,12 @@
     "budget.plans.signingIncome": "Im Rahmen der Einnahmen · Geld für Transfers {left}",
     "delegation.talk.runway": "Geld: Die Untergrenze wird nur angeboten, wenn das Guthaben den geplanten Verlust nach der Erhöhung {seasons} Spielzeiten lang deckt und nicht ausgeht.",
     "delegation.talk.income": "Geld: Die Untergrenze wird nur angeboten, wenn die Ausgaben nach der Erhöhung im Rahmen der Einnahmen bleiben und das Geld nicht ausgeht.",
-    "delegation.offer.salesFactors": "Darunter nimmt er je nach Stellung des Spielers im Team, Vertrag, Alter, Wechselwunsch oder Unzufriedenheit, Finanzlage des Vereins (Guthaben deckt den geplanten Verlust nicht für die erlaubten Spielzeiten oder deren Hälfte, Fixkostenreichweite unter {rounds} Spieltagen) und danach, ob es die letzten {days} Tage des Transferfensters sind, an oder macht ein Gegenangebot mit niedrigerer Forderung; zu niedrige Angebote lehnt er ab. Unter {floor} % des Werts verkauft er nie."
+    "delegation.offer.salesFactors": "Darunter nimmt er je nach Stellung des Spielers im Team, Vertrag, Alter, Wechselwunsch oder Unzufriedenheit, Finanzlage des Vereins (Guthaben deckt den geplanten Verlust nicht für die erlaubten Spielzeiten oder deren Hälfte, Fixkostenreichweite unter {rounds} Spieltagen) und danach, ob es die letzten {days} Tage des Transferfensters sind, an oder macht ein Gegenangebot mit niedrigerer Forderung; zu niedrige Angebote lehnt er ab. Unter {floor} % des Werts verkauft er nie.",
+    "delegation.verdict.wageRoom": "Die Spielergehaltssumme von {bill} läge über den {budget}, die das Guthaben tragen kann",
+    "delegation.verdict.runwayFee": "Mit der Ablöse von {fee} und seinem Gehalt von {wage} lägen die Ablöse und {seasons} Spielzeiten des geplanten Verlusts von {loss} pro Jahr über dem Guthaben von {capital}",
+    "delegation.verdict.incomeLoss": "Er wirtschaftet im Rahmen der Einnahmen: Sein Gehalt von {wage} brächte einen geplanten Verlust von {loss} pro Jahr",
+    "delegation.verdict.incomeFee": "Die Ablöse von {fee} läge über dem Guthaben von {capital}",
+    "delegation.offer.looks": "Bei delegierten Verpflichtungen sieht sich der Sportdirektor den Markt am Eröffnungstag des Fensters und danach alle {days} Tage an und besetzt zuerst die vom Trainer gewünschten und freien Positionen, bis {pending} seiner Angebote offen sind; {upgrades} Ablösen und neue Gehälter werden nur ausgegeben, solange das Guthaben den geplanten Verlust für die erlaubten Spielzeiten deckt. Geld für Transfers derzeit: {left}.",
+    "delegation.offer.upgradesBar": "In jedem Transferfenster holt er Spieler, die mindestens {margin} besser als die Stammspieler sind, bis zu {upgrades} oder, wenn mehr Stammspieler unter der Geldgrenze liegen, so viele wie diese Positionen."
   }
 }

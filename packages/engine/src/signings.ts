@@ -42,7 +42,7 @@ import {
   spendingStance,
   type SpendingStance,
 } from './delegation';
-import { actedLevel, delegateOf, requestOf } from './delegation-info';
+import { actedLevel, delegateOf, RECRUITMENT_LOOKS, requestOf } from './delegation-info';
 import {
   termsAnswer,
   termsChance,
@@ -71,13 +71,13 @@ import { transferWindow, transferWindowDays } from './transfer-window';
  * looks for upgrades, and how often he looks while a window is open.
  */
 export const SIGNING_CONFIG = {
-  /** He looks on a window's opening day and every `lookDays`th day after it (→CLUB-33). */
-  lookDays: 3,
   /**
-   * A look makes moves until his pending bids reach this count, by the 선수 영입 step he acts on
-   * (1–5): 1 at 적당히 and below, 2 at 넉넉히, 3 at 아낌없이 (→CLUB-33).
+   * He looks on a window's opening day and every `lookDays`th day after it, and a look makes moves
+   * until his pending bids reach `pendingByStep` by the 선수 영입 step he acts on (1–5): 1 at 적당히
+   * and below, 2 at 넉넉히, 3 at 아낌없이 (→CLUB-33). The numbers live in the read leaf the pages
+   * explaining them share.
    */
-  pendingByStep: [1, 1, 1, 2, 3] as readonly number[],
+  ...RECRUITMENT_LOOKS,
   /** However many moves a look could make, it makes at most this many. */
   movesPerLook: 8,
   lineMinimum: LINE_MINIMUM,
@@ -232,18 +232,31 @@ export function signingVerdict(
   const bill = BigInt(plan.committed) + wage;
   if (wage > 0n && bill > BigInt(plan.budget))
     return no(
-      sourceMessage('delegation.verdict.fundedWages', {
+      sourceMessage('delegation.verdict.wageRoom', {
         bill: moneyLabel(w, bill.toString()),
         budget: moneyLabel(w, plan.budget),
       }),
     );
-  if (!runwayTest(planning, plan, { fee: BigInt(fee), wage }).ok)
+  const check = runwayTest(planning, plan, { fee: BigInt(fee), wage });
+  if (!check.ok)
     return no(
-      sourceMessage('delegation.verdict.squadBudget', {
-        fee: moneyLabel(w, fee),
-        wage: moneyLabel(w, player.wage),
-        left: moneyLabel(w, plan.left),
-      }),
+      check.runway === 0
+        ? check.loss > 0n
+          ? sourceMessage('delegation.verdict.incomeLoss', {
+              wage: moneyLabel(w, player.wage),
+              loss: moneyLabel(w, check.loss.toString()),
+            })
+          : sourceMessage('delegation.verdict.incomeFee', {
+              fee: moneyLabel(w, fee),
+              capital: moneyLabel(w, check.capital.toString()),
+            })
+        : sourceMessage('delegation.verdict.runwayFee', {
+            fee: moneyLabel(w, fee),
+            wage: moneyLabel(w, player.wage),
+            loss: moneyLabel(w, check.loss.toString()),
+            seasons: check.runway,
+            capital: moneyLabel(w, check.capital.toString()),
+          }),
     );
   const stop = insolvencyStop(planning, BigInt(fee), wage);
   if (stop) return no(stop);
@@ -417,7 +430,7 @@ function candidates(
       ...entry,
       gain:
         byGain && need.kind === 'upgrade'
-          ? Math.round(atSlot(w, entry.offer.player, need.slot) - need.level)
+          ? atSlot(w, entry.offer.player, need.slot) - need.level
           : 0,
     }))
     .sort(
@@ -677,8 +690,8 @@ export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'si
  * wage bill (the recruitment plan's fee room), and the seasons a new wage must be carried for: the
  * step's runway plus one. None at the steps without a bar or when nothing is left.
  */
-function barMoney(w: World, refunded = 0n) {
-  const plan = delegatePlan(w, 'recruitment', undefined, undefined, refunded),
+function barMoney(w: World) {
+  const plan = delegatePlan(w, 'recruitment'),
     money = BigInt(plan.left);
   return plan.stance.signing.bar && money > 0n
     ? { money, seasons: BigInt(plan.runway + 1) }
@@ -691,8 +704,8 @@ function barMoney(w: World, refunded = 0n) {
  * wage bill; none at the other steps or when not even the lowest fits. As NPC clubs read the level
  * a place can carry (`affordableLevel`), on money.
  */
-export function moneyBar(w: World, refunded = 0n): number | undefined {
-  const read = barMoney(w, refunded),
+export function moneyBar(w: World): number | undefined {
+  const read = barMoney(w),
     template = activePlayers(w)[0];
   if (read === undefined || !template) return undefined;
   const club = clubOf(w),
@@ -774,7 +787,7 @@ export function windowBar(w: World, day = currentDay(w)): number | undefined {
     players: w.players.map((p) => (arrived.has(p.id) ? { ...p, status: 'sold' as const } : p)),
     bids: bids.filter((bid) => !(inWindow(bid) && isOpen(bid))),
   };
-  const before = moneyBar(undone, refunded);
+  const before = moneyBar(undone);
   return before === undefined ? now : now === undefined ? before : Math.max(now, before);
 }
 /**

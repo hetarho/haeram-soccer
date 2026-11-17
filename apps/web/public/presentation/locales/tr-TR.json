@@ -6595,7 +6595,6 @@
     "delegation.details.open": "{page} sayfasını gör",
     "delegation.rules.title": "Çalışma ilkeleri",
     "delegation.rules.meta": "Ekibin izlediği ayrıntılar",
-    "delegation.offer.signings": "Transferler devredildiğinde sportif direktör pencerenin açıldığı gün ve sonra her 7 günde bir önce teknik direktörün istediği ve boş yerleri doldurur; {upgrades} Bonservisler ve yeni maaşlar yalnızca transfer için kalan {left} tutarından ödenir.",
     "delegation.offer.noUpgrades": "As kadroya takviye yapılmaz.",
     "delegation.detail.manager": "Teknik direktör ataması, yenilemesi, profili ve ekolü",
     "delegation.detail.staff": "Direktör, gözlemci ve antrenörlerin alımı, yenilemesi ve antrenör düzeyi",
@@ -6965,6 +6964,12 @@
     "budget.plans.signingIncome": "Gelir içinde yönetim · transfer parası {left}",
     "delegation.talk.runway": "Para: alt sınır yalnızca nakit zamdan sonraki planlanan zararı {seasons} sezon karşılıyor ve tükenmiyorsa önerilir.",
     "delegation.talk.income": "Para: alt sınır yalnızca zamdan sonra harcama gelir içinde kalıyor ve nakit tükenmiyorsa önerilir.",
-    "delegation.offer.salesFactors": "Bunun altındaki teklifleri oyuncunun takımdaki yeri, sözleşmesi, yaşı, transfer talebi ya da mutsuzluğu, kulübün mali durumu (nakdin planlanan zararı izin verilen sezon boyunca ya da yarısı kadar karşılayamaması, {rounds} haftadan az sabit gider payı) ve transfer döneminin son {days} günü olup olmadığına göre kabul eder ya da daha düşük bedelle karşı teklif verir; çok düşük teklifi reddeder. Değerin %{floor} altına asla satmaz."
+    "delegation.offer.salesFactors": "Bunun altındaki teklifleri oyuncunun takımdaki yeri, sözleşmesi, yaşı, transfer talebi ya da mutsuzluğu, kulübün mali durumu (nakdin planlanan zararı izin verilen sezon boyunca ya da yarısı kadar karşılayamaması, {rounds} haftadan az sabit gider payı) ve transfer döneminin son {days} günü olup olmadığına göre kabul eder ya da daha düşük bedelle karşı teklif verir; çok düşük teklifi reddeder. Değerin %{floor} altına asla satmaz.",
+    "delegation.verdict.wageRoom": "{bill} oyuncu maaş toplamı, nakdin taşıyabileceği {budget} tutarını aşar",
+    "delegation.verdict.runwayFee": "{fee} bonservis ve {wage} maaşla, bonservis ile yıllık {loss} planlanan zararın {seasons} sezonluk tutarı {capital} nakdi aşar",
+    "delegation.verdict.incomeLoss": "Gelir içinde yönetiyor: {wage} maaş yıllık {loss} planlanan zarar doğurur",
+    "delegation.verdict.incomeFee": "{fee} bonservis {capital} nakdi aşar",
+    "delegation.offer.looks": "Transferler devredildiğinde sportif direktör, transfer döneminin açıldığı gün ve sonra her {days} günde bir piyasaya bakar; bekleyen {pending} teklifi olana kadar önce teknik direktörün istediği ve boş mevkileri doldurur; {upgrades} Bonservis ve yeni maaşlar, nakit planlanan zararı izin verilen sezon boyunca karşıladığı sürece harcanır. Şu anki transfer parası: {left}.",
+    "delegation.offer.upgradesBar": "Her transfer döneminde ilk on birden en az {margin} daha iyi oyuncuları {upgrades} kişiye kadar ya da para çizgisinin altında kalan daha fazla ilk on bir mevkisi varsa o mevki sayısı kadar getirir."
   }
 }

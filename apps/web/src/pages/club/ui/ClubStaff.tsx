@@ -33,7 +33,10 @@ import {
 import { managerRenewal, managerTermLimit } from '../../../../../../packages/engine/src/ops-staff';
 import { coachCriteriaOf, coachDelegated } from '../../../../../../packages/engine/src/hiring';
 import { directionOption } from '../../../../../../packages/engine/src/direction';
-import { SAFETY_ROUNDS } from '../../../../../../packages/engine/src/delegation-info';
+import {
+  RECRUITMENT_LOOKS,
+  SAFETY_ROUNDS,
+} from '../../../../../../packages/engine/src/delegation-info';
 import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import {
   PROSPECT_AGE,
@@ -1362,14 +1365,21 @@ export function OfferAnswers({ w }: { w: World }) {
         )}
         <li>{richMessage('copy.ClubStaff.5909c8a6d1', { p0: <b>{localizeValue(card)}</b> })}</li>
         <li>
-          {richMessage('delegation.offer.signings', {
+          {richMessage('delegation.offer.looks', {
+            days: RECRUITMENT_LOOKS.lookDays,
+            pending: recruitment.stance.pending,
             upgrades:
               signing.margin === undefined
                 ? sourceMessage('delegation.offer.noUpgrades')
-                : sourceMessage('copy.ClubStaff.42b9e5f546', {
-                    p0: signing.margin,
-                    p1: signing.upgrades,
-                  }),
+                : signing.barCap
+                  ? sourceMessage('delegation.offer.upgradesBar', {
+                      margin: signing.margin,
+                      upgrades: signing.upgrades,
+                    })
+                  : sourceMessage('copy.ClubStaff.42b9e5f546', {
+                      p0: signing.margin,
+                      p1: signing.upgrades,
+                    }),
             left: compactMoney(recruitment.left, code, w.year),
           })}
         </li>

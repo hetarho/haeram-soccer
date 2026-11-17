@@ -1424,7 +1424,8 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     if (need.kind !== 'upgrade') return;
     const reach = reachOffers(w),
       listed = new Set(transferOffers(w).map((offer) => offer.player.id)),
-      gain = (p: Player) => Math.round(slotOvr(p, slots[need.slot]!) - need.level),
+      // Ranked by the actual slot value, not a rounded gain: 55.73 and 56.27 must not tie.
+      gain = (p: Player) => slotOvr(p, slots[need.slot]!) - need.level,
       fitting = reach.filter(
         (offer) =>
           offer.available &&

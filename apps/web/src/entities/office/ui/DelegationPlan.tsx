@@ -19,7 +19,7 @@ import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import { openDecisionSettings } from '../../../shared/routing/state';
 import { Card } from '../../../shared/ui/Card';
 import { Money } from '../../../shared/ui/Money';
-import { compactMoney } from '../../../presentation/format';
+import { compactMoney, decimal } from '../../../presentation/format';
 import { DeskStats, type DeskStat } from './OfficeDesk';
 import s from './DelegationPlan.module.css';
 
@@ -81,12 +81,19 @@ export function runwayLine(plan: Pick<DelegatePlan, 'runway'>) {
     ? sourceMessage('delegation.runway.allowed', { seasons: plan.runway })
     : sourceMessage('delegation.runway.withinIncome');
 }
+/** A count of seasons or years with the decimals it has (at most two), in the reader's locale. */
+function figure(value: number) {
+  const places = [0, 1, 2].find(
+    (digits) => Math.abs(value * 10 ** digits - Math.round(value * 10 ** digits)) < 1e-9,
+  );
+  return decimal(value, places ?? 2);
+}
 /** The planned loss now and the seasons of it the available capital covers. */
 function coversLine(w: World, plan: DelegatePlan) {
   const loss = compactMoney(plan.loss, clubOf(w).country, w.year);
   if (BigInt(plan.loss) === 0n) return sourceMessage('delegation.runway.noLoss');
   return plan.covers
-    ? sourceMessage('delegation.runway.covers', { loss, seasons: plan.covers })
+    ? sourceMessage('delegation.runway.covers', { loss, seasons: figure(plan.covers) })
     : sourceMessage('delegation.runway.coversNone', { loss });
 }
 
@@ -105,7 +112,7 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
     capital: FlowStep = {
       label: sourceMessage('delegation.flow.capital'),
       value: amount(plan.capital),
-      note: sourceMessage('delegation.flow.reserve', { years: plan.reserveYears }),
+      note: sourceMessage('delegation.flow.reserve', { years: figure(plan.reserveYears) }),
     },
     carried: FlowStep = {
       label: sourceMessage('delegation.flow.wageRoom'),

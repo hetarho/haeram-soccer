@@ -6595,7 +6595,6 @@
     "delegation.details.open": "View the {page} page",
     "delegation.rules.title": "Working rules",
     "delegation.rules.meta": "The details the staff follow",
-    "delegation.offer.signings": "With signings delegated, the director fills the manager's requested and empty slots first on the window's opening day and every 7 days after; {upgrades} Fees and new wages come only from what is left for signings, {left}.",
     "delegation.offer.noUpgrades": "No upgrades on the starters.",
     "delegation.detail.manager": "Appointing and renewing the manager, his profile and school",
     "delegation.detail.staff": "Hiring and renewing the director, scout and coaches, and the coaching level",
@@ -6965,6 +6964,12 @@
     "budget.plans.signingIncome": "Run within income · money for signings {left}",
     "delegation.talk.runway": "Money: the floor is offered only if the cash covers the planned loss after the raise for {seasons} seasons and the cash does not run out.",
     "delegation.talk.income": "Money: the floor is offered only if spending stays within income after the raise and the cash does not run out.",
-    "delegation.offer.salesFactors": "Below that, he accepts or counters with a lower asking fee depending on the player's place in the team, contract, age, any transfer request or unhappiness, the club's finances (cash unable to cover the planned loss for the allowed seasons or half of them, fixed-cost runway under {rounds} rounds) and whether it is the window's last {days} days, and refuses an offer that is too low. He never sells below {floor}% of value."
+    "delegation.offer.salesFactors": "Below that, he accepts or counters with a lower asking fee depending on the player's place in the team, contract, age, any transfer request or unhappiness, the club's finances (cash unable to cover the planned loss for the allowed seasons or half of them, fixed-cost runway under {rounds} rounds) and whether it is the window's last {days} days, and refuses an offer that is too low. He never sells below {floor}% of value.",
+    "delegation.verdict.wageRoom": "The player wage bill of {bill} would pass the {budget} the cash can carry",
+    "delegation.verdict.runwayFee": "With the fee {fee} and his wage {wage}, the fee and {seasons} seasons of the planned loss of {loss} a year would pass the cash of {capital}",
+    "delegation.verdict.incomeLoss": "He runs within income: his wage of {wage} would make a planned loss of {loss} a year",
+    "delegation.verdict.incomeFee": "The fee {fee} would pass the cash of {capital}",
+    "delegation.offer.looks": "With signings delegated, the director looks on the window's opening day and every {days} days after, filling the manager's requested and empty slots first until {pending} of his offers are pending; {upgrades} Fees and new wages are spent only while the cash covers the planned loss for the allowed seasons. Money for signings now: {left}.",
+    "delegation.offer.upgradesBar": "Each transfer market brings in players at least {margin} better than the starters, up to {upgrades} or, when more starters fall below the money bar, as many as those places."
   }
 }

@@ -26,13 +26,11 @@ import {
   type Temperament,
 } from './delegation-info';
 import {
-  availableCapital,
   applyDelegatePlans,
   delegatePlan,
   insolvencyStop,
   planLines,
   planRevenue,
-  planRoomAfterWage,
   replanIfMoved,
   runwayTest,
   spendingStance,
@@ -104,7 +102,8 @@ describe('the 단장 plans on a loss runway, not a share of income (→ECON-33)'
       runway: 2,
     });
     w.cash = '-1';
-    expect(availableCapital(w, 0)).toBe(0n);
+    // Negative cash releases no capital.
+    expect(delegatePlan(w, 'recruitment', 5).capital).toBe('0');
   });
 
   it('at 최소한만 refuses a signing that would make a planned loss and lets one within income pass', () => {
@@ -144,14 +143,34 @@ describe('the 단장 plans on a loss runway, not a share of income (→ECON-33)'
     const wage = income * 10n,
       fee = cash - (annual + wage - income);
     expect(runwayTest(w, plan, { fee, wage }).ok).toBe(true);
-    expect(fee + wage).toBeLessThanOrEqual(planRoomAfterWage(w, plan, wage));
     expect(runwayTest(w, plan, { fee: fee + 1n, wage }).ok).toBe(false);
-    expect(fee + 1n + wage).toBeGreaterThan(planRoomAfterWage(w, plan, wage));
+    // The wage bill he shows as carried is exactly what the test lets through.
+    const room = BigInt(plan.budget) - BigInt(plan.committed);
+    expect(room).toBeGreaterThan(wage);
+    expect(runwayTest(w, plan, { wage: room }).ok).toBe(true);
+    expect(runwayTest(w, plan, { wage: room + 1n }).ok).toBe(false);
     // No share of income caps the wage bill: the signing passes the whole of his checks.
     const star = { ...structuredClone(w.players[0]), id: 'delegation:star', wage: wage.toString() };
     expect(signingVerdict(w, star, (fee / 2n).toString()).ok).toBe(true);
     expect(signingVerdict(w, star, (fee + 1n).toString()).ok).toBe(false);
     expect(planLines(w, plan).join(' ')).toContain('현금으로 1시즌');
+  });
+
+  it("shows the room for raises the runway test accepts, the raise's added reserve counted", () => {
+    // Income equal to the fixed costs, 아껴서 (six seasons, half a year back for a 균형형 단장)
+    // and a little capital: each unit of raise adds a unit of loss and half a unit of reserve.
+    const w = club('delegation-raise-room');
+    w.delegationRequests = { contracts: 2 };
+    lossOf(w, 0n);
+    cashWith(w, 'contracts', 10_000n);
+    const plan = delegatePlan(w, 'contracts'),
+      left = BigInt(plan.left);
+    expect(plan).toMatchObject({ runway: 6, reserveYears: 0.5, capital: '10000' });
+    expect(BigInt(plan.budget) - BigInt(plan.committed)).toBe(left);
+    expect(runwayTest(w, plan, { wage: left }).ok).toBe(true);
+    expect(runwayTest(w, plan, { wage: left + 1n }).ok).toBe(false);
+    // 10,000 / 6.5 rounded down, not the 1,666 that ignores the reserve the raise adds.
+    expect(left).toBe(1538n);
   });
 
   it('reserves live bid fees once and releases the current bid reservation when settling it', () => {
@@ -173,11 +192,12 @@ describe('the 단장 plans on a loss runway, not a share of income (→ECON-33)'
         staff: 'upgrade',
       },
     ];
-    expect(availableCapital(w, 1)).toBe(annual * 3n);
+    // 균형형 at 최소한만 keeps a year back; the open bid's fee is reserved too.
+    expect(BigInt(delegatePlan(w, 'recruitment', 1).capital)).toBe(annual * 3n);
     expect(signingVerdict(w, candidate, fee.toString()).ok).toBe(false);
     expect(signingVerdict(w, candidate, fee.toString(), undefined, 'reserved-bid').ok).toBe(true);
     w.bids[0].status = 'rejected';
-    expect(availableCapital(w, 1)).toBe(annual * 9n);
+    expect(BigInt(delegatePlan(w, 'recruitment', 1).capital)).toBe(annual * 9n);
   });
 
   it('stops a spend that would run the club out of cash whatever the plan allows', () => {
@@ -274,7 +294,7 @@ describe('the 단장 plans on a loss runway, not a share of income (→ECON-33)'
     expect(BigInt(plan.left)).toBe(BigInt(plan.capital) - (annualOf(w) / 10n) * 2n);
     expect(signingVerdict(w, incoming, plan.left).ok).toBe(true);
     expect(signingVerdict(w, incoming, (BigInt(plan.left) + 1n).toString()).reason).toContain(
-      '영입에 쓸 돈',
+      '시즌분',
     );
     // A wage past the bill the runway carries is refused whatever the fee.
     const room = BigInt(plan.budget) - BigInt(plan.committed);

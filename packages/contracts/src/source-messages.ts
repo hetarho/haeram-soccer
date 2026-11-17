@@ -7202,8 +7202,6 @@ export const sourceMessages = {
   'delegation.details.open': '{page} 페이지 보기',
   'delegation.rules.title': '운영 방침',
   'delegation.rules.meta': '담당자가 따르는 세부 항목',
-  'delegation.offer.signings':
-    '선수 영입을 위임하면 단장이 이적시장이 열린 날과 그 뒤 7일마다 감독이 요청한 자리와 빈 자리를 먼저 채우고, {upgrades} 이적료와 새 연봉은 영입에 쓸 돈 {left} 안에서만 써요.',
   'delegation.offer.noUpgrades': '주전 보강은 하지 않아요.',
   'delegation.detail.manager': '감독 선임·재계약과 감독 기조·선호 학파',
   'delegation.detail.staff': '단장·스카우트·코치진 선임·재계약과 코치 기조',
@@ -7396,6 +7394,17 @@ export const sourceMessages = {
     '자금: 인상 뒤에도 지출이 수입 안에 머물고 현금이 바닥나지 않을 때만 하한을 제시해요.',
   'delegation.offer.salesFactors':
     '그보다 낮은 제안은 선수의 팀 내 위치, 계약, 나이, 이적 요청·언해피 여부, 구단 자금 사정(보유 자금이 계획 적자를 적자 허용 기간 또는 그 절반만큼 버티지 못함, 고정비 여력 {rounds}라운드 미만), 이적시장 마지막 {days}일 여부에 따라 받아들이거나 요구액을 낮춰 역제안하고, 너무 낮으면 거절해요. 평가 가치의 {floor}% 밑으로는 팔지 않아요.',
+  'delegation.verdict.wageRoom':
+    '선수 연봉 총액 {bill}이 현금이 감당할 선수 연봉 {budget}을 넘어요',
+  'delegation.verdict.runwayFee':
+    '이적료 {fee}와 연봉 {wage}을 더하면 이적료와 계획 적자 연 {loss}의 {seasons}시즌분이 보유 자금 {capital}을 넘어요',
+  'delegation.verdict.incomeLoss':
+    '수입 안에서만 운영해요: 연봉 {wage}을 더하면 계획 적자가 연 {loss} 생겨요',
+  'delegation.verdict.incomeFee': '이적료 {fee}가 보유 자금 {capital}을 넘어요',
+  'delegation.offer.looks':
+    '선수 영입을 위임하면 단장이 이적시장이 열린 날과 그 뒤 {days}일마다 살펴보며, 진행 중인 제안이 {pending}건이 될 때까지 감독이 요청한 자리와 빈 자리를 먼저 채우고, {upgrades} 이적료와 새 연봉은 보유 자금이 계획 적자를 적자 허용 기간만큼 버티는 범위에서만 써요. 지금 영입에 쓸 돈은 {left}예요.',
+  'delegation.offer.upgradesBar':
+    '주전보다 능력이 {margin} 이상 나은 선수를 이적시장마다 {upgrades}명까지, 돈 기준선보다 처지는 주전 자리가 더 많으면 그 자리 수만큼 데려와요.',
   'market.sale.place.core': '팀의 핵심 주전 세 명 중 한 명',
   'market.sale.place.starter': '주전 선수',
   'market.sale.place.outside': '주전이 아닌 선수',

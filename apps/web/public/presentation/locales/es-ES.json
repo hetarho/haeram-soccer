@@ -6598,7 +6598,6 @@
     "delegation.details.open": "Ver la página {page}",
     "delegation.rules.title": "Criterios de trabajo",
     "delegation.rules.meta": "Los detalles que sigue el personal",
-    "delegation.offer.signings": "Con los fichajes delegados, el director deportivo cubre primero los puestos pedidos por el entrenador y los vacíos el día que abre el mercado y cada 7 días; {upgrades} Traspasos y nuevos salarios salen solo de lo disponible para fichajes, {left}.",
     "delegation.offer.noUpgrades": "No refuerza a los titulares.",
     "delegation.detail.manager": "Nombramiento y renovación del entrenador, su perfil y escuela",
     "delegation.detail.staff": "Contratación y renovación del director, ojeador y técnicos, y el nivel del cuerpo técnico",
@@ -6968,6 +6967,12 @@
     "budget.plans.signingIncome": "Gestión dentro de los ingresos · dinero para fichajes {left}",
     "delegation.talk.runway": "Dinero: el mínimo solo se ofrece si la caja cubre la pérdida prevista tras el aumento durante {seasons} temporadas y no se agota.",
     "delegation.talk.income": "Dinero: el mínimo solo se ofrece si el gasto sigue dentro de los ingresos tras el aumento y la caja no se agota.",
-    "delegation.offer.salesFactors": "Por debajo de eso, acepta o contraoferta con un precio menor según el lugar del jugador en el equipo, su contrato, edad, petición de traspaso o descontento, las finanzas del club (caja que no cubre la pérdida prevista durante las temporadas permitidas o la mitad, margen de gastos fijos inferior a {rounds} jornadas) y si son los últimos {days} días del mercado, y rechaza una oferta demasiado baja. Nunca vende por debajo del {floor}% del valor."
+    "delegation.offer.salesFactors": "Por debajo de eso, acepta o contraoferta con un precio menor según el lugar del jugador en el equipo, su contrato, edad, petición de traspaso o descontento, las finanzas del club (caja que no cubre la pérdida prevista durante las temporadas permitidas o la mitad, margen de gastos fijos inferior a {rounds} jornadas) y si son los últimos {days} días del mercado, y rechaza una oferta demasiado baja. Nunca vende por debajo del {floor}% del valor.",
+    "delegation.verdict.wageRoom": "La masa salarial de {bill} superaría los {budget} que la caja puede asumir",
+    "delegation.verdict.runwayFee": "Con el traspaso de {fee} y su salario de {wage}, el traspaso y {seasons} temporadas de la pérdida prevista de {loss} al año superarían la caja de {capital}",
+    "delegation.verdict.incomeLoss": "Gestiona dentro de los ingresos: su salario de {wage} causaría una pérdida prevista de {loss} al año",
+    "delegation.verdict.incomeFee": "El traspaso de {fee} superaría la caja de {capital}",
+    "delegation.offer.looks": "Con los fichajes delegados, el director revisa el mercado el día que abre y cada {days} días después, y cubre primero los puestos pedidos por el entrenador y los vacíos hasta tener {pending} ofertas pendientes; {upgrades} Los traspasos y los nuevos salarios solo se gastan mientras la caja cubra la pérdida prevista durante las temporadas permitidas. Dinero para fichajes ahora: {left}.",
+    "delegation.offer.upgradesBar": "En cada mercado ficha jugadores al menos {margin} mejores que los titulares, hasta {upgrades} o, si hay más titulares por debajo del listón económico, tantos como esos puestos."
   }
 }

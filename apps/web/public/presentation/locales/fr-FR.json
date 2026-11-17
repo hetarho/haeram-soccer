@@ -6598,7 +6598,6 @@
     "delegation.details.open": "Voir la page {page}",
     "delegation.rules.title": "Règles de travail",
     "delegation.rules.meta": "Les détails que suit le staff",
-    "delegation.offer.signings": "Avec les recrues déléguées, le directeur sportif comble d'abord les postes demandés par l'entraîneur et les postes vides le jour de l'ouverture du mercato puis tous les 7 jours ; {upgrades} Indemnités et nouveaux salaires ne viennent que de ce qui reste pour les recrues, {left}.",
     "delegation.offer.noUpgrades": "Pas de renfort des titulaires.",
     "delegation.detail.manager": "Nomination et prolongation de l'entraîneur, son profil et son école",
     "delegation.detail.staff": "Recrutement et prolongation du directeur, du recruteur et des entraîneurs, et leur niveau",
@@ -6968,6 +6967,12 @@
     "budget.plans.signingIncome": "Gestion dans les recettes · argent pour les recrues {left}",
     "delegation.talk.runway": "Argent : le plancher n’est proposé que si la trésorerie couvre la perte prévue après l’augmentation sur {seasons} saisons et ne s’épuise pas.",
     "delegation.talk.income": "Argent : le plancher n’est proposé que si les dépenses restent dans les recettes après l’augmentation et que la trésorerie ne s’épuise pas.",
-    "delegation.offer.salesFactors": "En dessous, il accepte ou fait une contre-offre à un prix plus bas selon la place du joueur dans l’équipe, son contrat, son âge, une demande de transfert ou un mécontentement, les finances du club (trésorerie incapable de couvrir la perte prévue sur les saisons permises ou leur moitié, réserve de charges fixes inférieure à {rounds} journées) et s’il s’agit des {days} derniers jours du mercato, et refuse une offre trop basse. Il ne vend jamais sous {floor} % de la valeur."
+    "delegation.offer.salesFactors": "En dessous, il accepte ou fait une contre-offre à un prix plus bas selon la place du joueur dans l’équipe, son contrat, son âge, une demande de transfert ou un mécontentement, les finances du club (trésorerie incapable de couvrir la perte prévue sur les saisons permises ou leur moitié, réserve de charges fixes inférieure à {rounds} journées) et s’il s’agit des {days} derniers jours du mercato, et refuse une offre trop basse. Il ne vend jamais sous {floor} % de la valeur.",
+    "delegation.verdict.wageRoom": "La masse salariale de {bill} dépasserait les {budget} que la trésorerie peut supporter",
+    "delegation.verdict.runwayFee": "Avec l’indemnité de {fee} et son salaire de {wage}, l’indemnité et {seasons} saisons de la perte prévue de {loss} par an dépasseraient la trésorerie de {capital}",
+    "delegation.verdict.incomeLoss": "Il gère dans les limites des recettes : son salaire de {wage} créerait une perte prévue de {loss} par an",
+    "delegation.verdict.incomeFee": "L’indemnité de {fee} dépasserait la trésorerie de {capital}",
+    "delegation.offer.looks": "Avec le recrutement délégué, le directeur examine le marché le jour de son ouverture puis tous les {days} jours, et comble d’abord les postes demandés par l’entraîneur et les postes vides jusqu’à avoir {pending} offres en attente ; {upgrades} Les indemnités et les nouveaux salaires ne sont dépensés que tant que la trésorerie couvre la perte prévue sur les saisons permises. Argent pour les recrues actuellement : {left}.",
+    "delegation.offer.upgradesBar": "À chaque mercato, il recrute des joueurs meilleurs d’au moins {margin} que les titulaires, jusqu’à {upgrades} ou, si davantage de titulaires sont sous la barre financière, autant que ces postes."
   }
 }

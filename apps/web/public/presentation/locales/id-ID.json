@@ -6592,7 +6592,6 @@
     "delegation.details.open": "Lihat halaman {page}",
     "delegation.rules.title": "Aturan kerja",
     "delegation.rules.meta": "Rincian yang diikuti staf",
-    "delegation.offer.signings": "Bila rekrutmen didelegasikan, direktur mengisi dulu posisi yang diminta pelatih dan posisi kosong pada hari bursa dibuka dan setiap 7 hari; {upgrades} Biaya transfer dan gaji baru hanya dari sisa untuk rekrutan, {left}.",
     "delegation.offer.noUpgrades": "Tidak ada penguatan pemain inti.",
     "delegation.detail.manager": "Penunjukan dan perpanjangan pelatih, profil dan alirannya",
     "delegation.detail.staff": "Perekrutan dan perpanjangan direktur, pemandu bakat dan pelatih, serta tingkat pelatih",
@@ -6962,6 +6961,12 @@
     "budget.plans.signingIncome": "Dalam batas pendapatan · dana perekrutan {left}",
     "delegation.talk.runway": "Dana: batas bawah hanya ditawarkan jika kas sanggup menutup rencana rugi setelah kenaikan selama {seasons} musim dan kas tidak habis.",
     "delegation.talk.income": "Dana: batas bawah hanya ditawarkan jika pengeluaran tetap dalam batas pendapatan setelah kenaikan dan kas tidak habis.",
-    "delegation.offer.salesFactors": "Di bawah itu, ia menerima atau mengajukan tawaran balik dengan harga lebih rendah tergantung posisi pemain di tim, kontrak, usia, permintaan transfer atau ketidakpuasan, keuangan klub (kas tidak sanggup menutup rencana rugi selama musim yang diizinkan atau separuhnya, cadangan biaya tetap kurang dari {rounds} pekan) dan apakah ini {days} hari terakhir bursa transfer, serta menolak tawaran yang terlalu rendah. Ia tidak pernah menjual di bawah {floor}% nilai."
+    "delegation.offer.salesFactors": "Di bawah itu, ia menerima atau mengajukan tawaran balik dengan harga lebih rendah tergantung posisi pemain di tim, kontrak, usia, permintaan transfer atau ketidakpuasan, keuangan klub (kas tidak sanggup menutup rencana rugi selama musim yang diizinkan atau separuhnya, cadangan biaya tetap kurang dari {rounds} pekan) dan apakah ini {days} hari terakhir bursa transfer, serta menolak tawaran yang terlalu rendah. Ia tidak pernah menjual di bawah {floor}% nilai.",
+    "delegation.verdict.wageRoom": "Total gaji pemain {bill} akan melampaui {budget} yang sanggup ditanggung kas",
+    "delegation.verdict.runwayFee": "Dengan biaya transfer {fee} dan gajinya {wage}, biaya itu dan {seasons} musim rencana rugi {loss} per tahun akan melampaui kas {capital}",
+    "delegation.verdict.incomeLoss": "Ia mengelola dalam batas pendapatan: gaji {wage} akan menimbulkan rencana rugi {loss} per tahun",
+    "delegation.verdict.incomeFee": "Biaya transfer {fee} akan melampaui kas {capital}",
+    "delegation.offer.looks": "Jika perekrutan didelegasikan, direktur meninjau pasar pada hari bursa transfer dibuka dan setiap {days} hari sesudahnya, lalu mengisi lebih dulu posisi yang diminta pelatih dan posisi kosong sampai ada {pending} tawarannya yang tertunda; {upgrades} Biaya transfer dan gaji baru hanya dikeluarkan selama kas sanggup menutup rencana rugi selama musim yang diizinkan. Dana perekrutan saat ini: {left}.",
+    "delegation.offer.upgradesBar": "Di setiap bursa transfer ia mendatangkan pemain yang setidaknya {margin} lebih baik dari pemain inti, hingga {upgrades} orang atau, jika lebih banyak posisi inti di bawah batas dana, sebanyak posisi itu."
   }
 }

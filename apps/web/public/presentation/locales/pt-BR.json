@@ -6598,7 +6598,6 @@
     "delegation.details.open": "Ver a página {page}",
     "delegation.rules.title": "Critérios de trabalho",
     "delegation.rules.meta": "Os detalhes que a equipe segue",
-    "delegation.offer.signings": "Com as contratações delegadas, o diretor preenche primeiro as vagas pedidas pelo treinador e as vazias no dia em que a janela abre e a cada 7 dias; {upgrades} Taxas e novos salários saem só do disponível para contratações, {left}.",
     "delegation.offer.noUpgrades": "Não reforça os titulares.",
     "delegation.detail.manager": "Nomeação e renovação do treinador, seu perfil e escola",
     "delegation.detail.staff": "Contratação e renovação do diretor, olheiro e treinadores, e o nível da comissão",
@@ -6968,6 +6967,12 @@
     "budget.plans.signingIncome": "Gestão dentro da receita · dinheiro para contratações {left}",
     "delegation.talk.runway": "Dinheiro: o piso só é oferecido se o caixa cobrir o prejuízo previsto após o aumento por {seasons} temporadas e não se esgotar.",
     "delegation.talk.income": "Dinheiro: o piso só é oferecido se os gastos continuarem dentro da receita após o aumento e o caixa não se esgotar.",
-    "delegation.offer.salesFactors": "Abaixo disso, aceita ou faz contraproposta com um preço menor conforme o lugar do jogador no time, contrato, idade, pedido de transferência ou insatisfação, as finanças do clube (caixa que não cobre o prejuízo previsto pelas temporadas permitidas ou metade delas, folga de custos fixos abaixo de {rounds} rodadas) e se são os últimos {days} dias da janela, e recusa uma proposta baixa demais. Nunca vende abaixo de {floor}% do valor."
+    "delegation.offer.salesFactors": "Abaixo disso, aceita ou faz contraproposta com um preço menor conforme o lugar do jogador no time, contrato, idade, pedido de transferência ou insatisfação, as finanças do clube (caixa que não cobre o prejuízo previsto pelas temporadas permitidas ou metade delas, folga de custos fixos abaixo de {rounds} rodadas) e se são os últimos {days} dias da janela, e recusa uma proposta baixa demais. Nunca vende abaixo de {floor}% do valor.",
+    "delegation.verdict.wageRoom": "A folha salarial de {bill} passaria dos {budget} que o caixa suporta",
+    "delegation.verdict.runwayFee": "Com a transferência de {fee} e o salário de {wage}, a transferência e {seasons} temporadas do prejuízo previsto de {loss} por ano passariam do caixa de {capital}",
+    "delegation.verdict.incomeLoss": "Ele gere dentro da receita: o salário de {wage} causaria um prejuízo previsto de {loss} por ano",
+    "delegation.verdict.incomeFee": "A transferência de {fee} passaria do caixa de {capital}",
+    "delegation.offer.looks": "Com as contratações delegadas, o diretor olha o mercado no dia em que abre e a cada {days} dias depois, e preenche primeiro as posições pedidas pelo técnico e as vagas até ter {pending} propostas pendentes; {upgrades} Transferências e novos salários só são gastos enquanto o caixa cobrir o prejuízo previsto pelas temporadas permitidas. Dinheiro para contratações agora: {left}.",
+    "delegation.offer.upgradesBar": "Em cada janela contrata jogadores pelo menos {margin} melhores que os titulares, até {upgrades} ou, se houver mais titulares abaixo da linha financeira, tantos quanto essas posições."
   }
 }

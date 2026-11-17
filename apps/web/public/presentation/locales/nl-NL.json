@@ -6595,7 +6595,6 @@
     "delegation.details.open": "Pagina {page} bekijken",
     "delegation.rules.title": "Werkregels",
     "delegation.rules.meta": "De details die de staf volgt",
-    "delegation.offer.signings": "Met aankopen gedelegeerd vult de technisch directeur op de openingsdag van de transferperiode en daarna elke 7 dagen eerst de door de trainer gevraagde en lege plekken; {upgrades} Transfersommen en nieuwe salarissen komen alleen uit wat over is voor aankopen, {left}.",
     "delegation.offer.noUpgrades": "Geen versterking van de basisspelers.",
     "delegation.detail.manager": "Aanstelling en verlenging van de trainer, profiel en school",
     "delegation.detail.staff": "Aanstelling en verlenging van directeur, scout en trainers, en hun niveau",
@@ -6965,6 +6964,12 @@
     "budget.plans.signingIncome": "Binnen de inkomsten · geld voor aankopen {left}",
     "delegation.talk.runway": "Geld: de ondergrens wordt alleen geboden als de kas het geplande verlies na de verhoging {seasons} seizoenen dekt en niet opraakt.",
     "delegation.talk.income": "Geld: de ondergrens wordt alleen geboden als de uitgaven na de verhoging binnen de inkomsten blijven en de kas niet opraakt.",
-    "delegation.offer.salesFactors": "Daaronder aanvaardt hij of doet een tegenbod met een lagere vraagprijs, afhankelijk van de plaats van de speler in het team, contract, leeftijd, transferverzoek of ontevredenheid, de financiën van de club (kas die het geplande verlies niet dekt voor de toegestane seizoenen of de helft ervan, vaste-kostenbuffer onder {rounds} speelrondes) en of het de laatste {days} dagen van de transferperiode zijn, en weigert een te laag bod. Hij verkoopt nooit onder {floor}% van de waarde."
+    "delegation.offer.salesFactors": "Daaronder aanvaardt hij of doet een tegenbod met een lagere vraagprijs, afhankelijk van de plaats van de speler in het team, contract, leeftijd, transferverzoek of ontevredenheid, de financiën van de club (kas die het geplande verlies niet dekt voor de toegestane seizoenen of de helft ervan, vaste-kostenbuffer onder {rounds} speelrondes) en of het de laatste {days} dagen van de transferperiode zijn, en weigert een te laag bod. Hij verkoopt nooit onder {floor}% van de waarde.",
+    "delegation.verdict.wageRoom": "De salarismassa van {bill} zou boven de {budget} uitkomen die de kas kan dragen",
+    "delegation.verdict.runwayFee": "Met de transfersom van {fee} en zijn salaris van {wage} zouden de transfersom en {seasons} seizoenen van het geplande verlies van {loss} per jaar boven de kas van {capital} uitkomen",
+    "delegation.verdict.incomeLoss": "Hij blijft binnen de inkomsten: zijn salaris van {wage} zou een gepland verlies van {loss} per jaar opleveren",
+    "delegation.verdict.incomeFee": "De transfersom van {fee} zou boven de kas van {capital} uitkomen",
+    "delegation.offer.looks": "Met gedelegeerde aankopen kijkt de technisch directeur op de openingsdag van de transferperiode en daarna elke {days} dagen, en vult hij eerst de door de trainer gevraagde en lege posities tot {pending} van zijn biedingen openstaan; {upgrades} Transfersommen en nieuwe salarissen worden alleen besteed zolang de kas het geplande verlies voor de toegestane seizoenen dekt. Geld voor aankopen nu: {left}.",
+    "delegation.offer.upgradesBar": "Elke transferperiode haalt hij spelers die minstens {margin} beter zijn dan de basisspelers, tot {upgrades} of, als meer basisspelers onder de geldgrens zitten, zoveel als die posities."
   }
 }

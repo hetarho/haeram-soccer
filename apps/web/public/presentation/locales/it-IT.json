@@ -6598,7 +6598,6 @@
     "delegation.details.open": "Vedi la pagina {page}",
     "delegation.rules.title": "Criteri di lavoro",
     "delegation.rules.meta": "I dettagli che segue lo staff",
-    "delegation.offer.signings": "Con gli acquisti delegati, il direttore sportivo copre prima i ruoli chiesti dall’allenatore e quelli vuoti il giorno di apertura del mercato e ogni 7 giorni; {upgrades} Cartellini e nuovi stipendi escono solo da quanto resta per gli acquisti, {left}.",
     "delegation.offer.noUpgrades": "Nessun rinforzo dei titolari.",
     "delegation.detail.manager": "Nomina e rinnovo dell'allenatore, profilo e scuola",
     "delegation.detail.staff": "Assunzione e rinnovo di direttore, osservatore e allenatori, e il loro livello",
@@ -6968,6 +6967,12 @@
     "budget.plans.signingIncome": "Gestione entro le entrate · fondi per gli acquisti {left}",
     "delegation.talk.runway": "Denaro: il minimo viene offerto solo se la cassa copre la perdita prevista dopo l’aumento per {seasons} stagioni e non si esaurisce.",
     "delegation.talk.income": "Denaro: il minimo viene offerto solo se la spesa resta entro le entrate dopo l’aumento e la cassa non si esaurisce.",
-    "delegation.offer.salesFactors": "Al di sotto, accetta o controfferta a un prezzo più basso in base al ruolo del giocatore in squadra, al contratto, all’età, a richieste di cessione o malumori, alle finanze del club (cassa che non copre la perdita prevista per le stagioni consentite o per metà, margine di costi fissi sotto le {rounds} giornate) e se sono gli ultimi {days} giorni del mercato, e rifiuta un’offerta troppo bassa. Non vende mai sotto il {floor}% del valore."
+    "delegation.offer.salesFactors": "Al di sotto, accetta o controfferta a un prezzo più basso in base al ruolo del giocatore in squadra, al contratto, all’età, a richieste di cessione o malumori, alle finanze del club (cassa che non copre la perdita prevista per le stagioni consentite o per metà, margine di costi fissi sotto le {rounds} giornate) e se sono gli ultimi {days} giorni del mercato, e rifiuta un’offerta troppo bassa. Non vende mai sotto il {floor}% del valore.",
+    "delegation.verdict.wageRoom": "Il monte ingaggi di {bill} supererebbe i {budget} che la cassa può sostenere",
+    "delegation.verdict.runwayFee": "Con il cartellino di {fee} e lo stipendio di {wage}, il cartellino e {seasons} stagioni della perdita prevista di {loss} l’anno supererebbero la cassa di {capital}",
+    "delegation.verdict.incomeLoss": "Gestisce entro le entrate: lo stipendio di {wage} creerebbe una perdita prevista di {loss} l’anno",
+    "delegation.verdict.incomeFee": "Il cartellino di {fee} supererebbe la cassa di {capital}",
+    "delegation.offer.looks": "Con gli acquisti delegati, il direttore esamina il mercato il giorno di apertura e poi ogni {days} giorni, e copre prima i ruoli chiesti dall’allenatore e quelli vuoti finché ha {pending} offerte in sospeso; {upgrades} Cartellini e nuovi stipendi si spendono solo finché la cassa copre la perdita prevista per le stagioni consentite. Fondi per gli acquisti ora: {left}.",
+    "delegation.offer.upgradesBar": "A ogni mercato porta giocatori migliori di almeno {margin} rispetto ai titolari, fino a {upgrades} o, se più titolari sono sotto la soglia economica, tanti quanti quei ruoli."
   }
 }
