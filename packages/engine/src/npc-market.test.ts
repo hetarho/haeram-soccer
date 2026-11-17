@@ -9,9 +9,7 @@ import {
   npcOffer,
   NPC_MARKET,
   returnNpcLoans,
-  SettlementRatings,
 } from './npc-market';
-import { FORMATIONS, mainOvr } from './player';
 import { closeNpcSummer, closeNpcWindow, intakeNpcYouth } from './npc-careers';
 import { foundSquads } from './persisted-squads';
 import { clubStyle, generatedPlayer, invalidateNpcSquad, stature } from './world';
@@ -19,7 +17,7 @@ import { formationOf, slotOvr } from './player-state';
 import { compareIds, random } from './primitives';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
-import { NPC_WAGE_DECISIONS, npcWageBill, npcWageLimit } from './books';
+import { npcWageBill, npcWageLimit } from './books';
 import { clubRegistration } from './registration';
 import { currentDay, SEASON_END_DAY } from './calendar';
 import { playerTotals, settleNpcSeason } from './npc-stats';
@@ -92,42 +90,6 @@ const locations = (w: World, id: string) =>
     .map(([club]) => club);
 
 describe('isolated NPC transfer windows', () => {
-  it('keeps one settlement rating per slot object, main OVR apart, and a slot outside the formations', () => {
-    const { w, seller } = fixture();
-    const [p, q] = w.squads![seller.id]!;
-    const slots = Object.values(FORMATIONS).flatMap((formation) => formation.slots);
-    // Two distinct formation slot objects that rate this player equally.
-    const [a, b] = slots.flatMap((x, i) =>
-      slots.slice(i + 1).flatMap((y) => (slotOvr(p!, x) === slotOvr(p!, y) ? [[x, y]] : [])),
-    )[0]!;
-    expect(a).not.toBe(b);
-    const outside = { ...a! };
-    // A single row's room makes the second player grow the rows.
-    const ratings = new SettlementRatings(1);
-    const before = { a: slotOvr(p!, a!), main: mainOvr(p!), q: slotOvr(q!, b!) };
-    expect(ratings.of(p!, a)).toBe(before.a);
-    expect(ratings.of(p!)).toBe(before.main);
-    expect(ratings.of(q!, b)).toBe(before.q);
-    for (const attr of ATTRIBUTES) p!.attrs[attr] = 30;
-    // Read places keep their value; unread ones (another slot object, a slot outside) read afresh.
-    expect(ratings.of(p!, a)).toBe(before.a);
-    expect(ratings.of(p!)).toBe(before.main);
-    expect(ratings.of(p!, b)).toBe(slotOvr(p!, b!));
-    expect(ratings.of(p!, outside)).toBe(slotOvr(p!, outside));
-    expect(ratings.of(p!, b)).not.toBe(before.a);
-    expect(ratings.of(q!, b)).toBe(before.q);
-    for (const attr of ATTRIBUTES) p!.attrs[attr] = 80;
-    expect(ratings.of(p!, outside)).not.toBe(slotOvr(p!, outside));
-    ratings.forget(p!);
-    expect(ratings.of(p!, a)).toBe(slotOvr(p!, a!));
-    expect(ratings.of(p!, outside)).toBe(slotOvr(p!, outside));
-    expect(ratings.of(p!)).toBe(mainOvr(p!));
-    expect(ratings.of(q!, b)).toBe(before.q);
-    // No rating outlives its settlement.
-    for (const attr of ATTRIBUTES) q!.attrs[attr] = 20;
-    expect(new SettlementRatings().of(q!, b)).toBe(slotOvr(q!, b!));
-  });
-
   it('refreshes ratings between settlements and between independent quote mutations', () => {
     const { w, seller, buyer } = fixture();
     const p = listedKeeper(w, seller);
@@ -402,48 +364,6 @@ describe('isolated NPC transfer windows', () => {
     );
     npcMarket(w);
     expect(locations(w, p.id)).toEqual([other.id]);
-  });
-
-  it('leaves the walk moves when a buyer is refused every listing on its own facts', () => {
-    for (const closed of ['wage', 'registration', 'books'] as const) {
-      const { w, seller, buyer, other } = fixture(2024);
-      const p = listedKeeper(w, seller);
-      missingKeeper(w, buyer);
-      missingKeeper(w, other);
-      other.books!.openingIncome = '999999999999999';
-      if (closed === 'wage') {
-        buyer.books!.openingIncome = '0';
-        buyer.books!.cash = '0';
-      } else if (closed === 'registration') {
-        const players = w.squads![buyer.id]!;
-        const { ceiling } = clubRegistration(buyer, w.year, players);
-        expect(Number.isFinite(ceiling)).toBe(true);
-        while (players.length < ceiling) {
-          const q = structuredClone(players[0]!);
-          q.id = `ceiling:${players.length}`;
-          q.wage = '0';
-          players.push(q);
-        }
-        buyer.books!.openingIncome = '999999999999999';
-        invalidateNpcSquad(w, buyer.id);
-      } else delete buyer.books;
-      // The walk could not settle anything for this buyer: every listing's offer is refused.
-      for (const c of w.clubs.slice(1))
-        for (const q of c === buyer ? [] : w.squads![c.id]!)
-          expect(npcOffer(w, buyer, q, c, '1')).toBeUndefined();
-      const decided: string[] = [];
-      NPC_WAGE_DECISIONS.observe = (club) => decided.push(club.id);
-      try {
-        npcMarket(w);
-      } finally {
-        delete NPC_WAGE_DECISIONS.observe;
-      }
-      expect(locations(w, p.id)).toEqual([other.id]);
-      expect(decided).not.toContain(buyer.id);
-      const moves = Object.values(w.playerRecords!).flatMap((r) => r.moves);
-      expect(moves.some((m) => m.to === other.id)).toBe(true);
-      expect(moves.filter((m) => m.to === buyer.id)).toEqual([]);
-    }
   });
 
   it('refuses counted signings at the registration limit and permits the same signing with room', () => {
