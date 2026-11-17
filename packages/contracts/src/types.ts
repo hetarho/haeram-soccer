@@ -349,6 +349,8 @@ export interface Club {
     coaching: number;
     /** Fractional investment/decay carried until a whole level is reached. */
     progress?: number;
+    /** The closing season's books invested a surplus (→WORLD-17), until the levels move. */
+    invested?: true;
   };
 }
 export interface Player {

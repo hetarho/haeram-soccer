@@ -205,3 +205,18 @@ describe('a war-gap summer (→WORLD-14/16)', () => {
     expect(players.length).toBe(NPC_SQUAD.size + NPC_YOUTH.byAcademy[c.levels!.academy]!.count);
   });
 });
+
+describe("the owner's academy across the war gap (→WORLD-14)", () => {
+  it('takes no prodigy for a season the war skips, and takes them again from the 1946 restart', () => {
+    const w = fixture();
+    // Our academy weighs 6 against the other club's 1, so most placements would be ours.
+    w.academyFacility = 5;
+    w.clubs.find((c) => c.id === 'foreign')!.levels!.academy = 0;
+    // The 1938 close draws for 1939 and the skipped summers for 1940–1946.
+    const war = summers(w, 1939, 7).filter((s) => s.year < 1946);
+    expect(war.flatMap((s) => s.drawn).length).toBeGreaterThan(0);
+    for (const { drawn } of war) for (const p of drawn) expect(p.id.startsWith('own:')).toBe(false);
+    const after = summers(w, 1946, 20).flatMap((s) => s.drawn);
+    expect(after.some((p) => p.id.startsWith('own:'))).toBe(true);
+  });
+});

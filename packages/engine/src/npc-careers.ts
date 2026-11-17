@@ -6,7 +6,7 @@ import { atCareerDate } from './person-careers';
 import { announceNpcRetirements, RETIREMENT, retirePerson, retirementAnnounceDay } from './careers';
 import { TRAINING_GROUND } from './facility-model';
 import { clubManager } from './managerMarket';
-import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads';
+import { CLUB_LEVELS, enrollSquadPlayer, followLevels, foundSquads } from './persisted-squads';
 import { lineOf, mainOvr } from './player';
 import { clamp, integer, random } from './primitives';
 import { CLUB_TAKEOVER } from './owner-config';
@@ -253,6 +253,9 @@ export function closeNpcWindow(w: World) {
 export function closeNpcSummer(w: World, afterRetirements?: () => void, matches = true) {
   if (w.npcSummerAt !== undefined && w.npcSummerAt >= w.year) return;
   foundSquads(w);
+  // Promotion and relegation are known: the levels follow the division each club plays next
+  // (→WORLD-17), before the season's development and the intake read them.
+  if (matches) for (const c of w.clubs) if (w.squads?.[c.id]) followLevels(w, c);
   if (matches) settleNpcGrowth(w);
   // Normal play already made this decision on 1 April; old checkpoints and skipped summers use
   // the very same date and stream, not a second draw at the close.

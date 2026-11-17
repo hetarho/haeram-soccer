@@ -14,6 +14,7 @@ import { formationOf } from './player-state';
 import { clamp, integer, random } from './primitives';
 import { clubRegistration, registrationExempt } from './registration';
 import { clubStyle } from './tactics';
+import { seasonFrom } from './season-years';
 import { generatedPlayer, invalidateNpcSquad, PRESS_LOAD_FATIGUE, stature } from './world';
 import { mainOvr } from './player';
 
@@ -49,6 +50,10 @@ function candidates(w: World, year: number) {
     if (c.representative) continue;
     const own = c.id === w.playerClub;
     if (own) {
+      // The owner's academy plays no season the war skips (→WORLD-14): a prodigy placed there for
+      // 1939–1945 would neither train nor be promoted and would leave at the 1946 restart aged 21,
+      // so those summers' prodigies go to clubs nobody owns, whose squads develop each summer.
+      if (seasonFrom(year) !== year) continue;
       if ((w.academy?.players.length ?? 0) >= ACADEMY_LIMIT) continue;
     } else {
       const players = w.squads?.[c.id];

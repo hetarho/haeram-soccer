@@ -53,20 +53,35 @@ export function levelTargets(w: World, c: Club): Record<LevelKey, number> {
 }
 
 /**
- * A season's move of a club's levels at its books' close (→WORLD-17): a level below its target
- * rises toward it, one above it falls back, by at most `moveAfterChange` a season; surplus
- * investment (`spent` of `income`) accumulates progress that lifts a level at most `aboveTarget`
- * above its target and holds it there while the club keeps investing.
+ * The books' close records a season's surplus investment in a club's levels (→WORLD-17, →ECON-36):
+ * `spent` of `income` accumulates progress toward a level (at most one funded level a season),
+ * a season without it lets the progress decay, and `invested` marks the season for
+ * `followLevels`, which moves the levels once promotion and relegation are known.
  */
-export function followLevels(w: World, c: Club, spent: bigint, income: bigint) {
+export function investLevels(c: Club, spent: bigint, income: bigint) {
   const levels = c.levels;
   if (!levels) return;
   const investing = spent > 0n;
   const share = investing && income > 0n ? Number((spent * 10000n) / income) / 10000 : 0;
   const progress = investing
-    ? (levels.progress ?? 0) + Math.min(5, share * CLUB_LEVELS.investment)
+    ? (levels.progress ?? 0) + share * CLUB_LEVELS.investment
     : Math.max(0, (levels.progress ?? 0) - CLUB_LEVELS.decay);
-  const funded = progress >= 1;
+  levels.progress = Math.round(Math.min(1, progress) * 10000) / 10000;
+  if (investing) levels.invested = true;
+  else delete levels.invested;
+}
+
+/**
+ * A season's move of a club's levels at the summer close, after promotion and relegation, so the
+ * target is its new division's (→WORLD-17): a level below its target rises toward it, one above it
+ * falls back, by at most `moveAfterChange` a season; a funded level (`investLevels`) lifts a level
+ * at most `aboveTarget` above its target, held there while the club keeps investing.
+ */
+export function followLevels(w: World, c: Club) {
+  const levels = c.levels;
+  if (!levels) return;
+  const investing = !!levels.invested,
+    funded = (levels.progress ?? 0) >= 1;
   const targets = levelTargets(w, c),
     step = CLUB_LEVELS.moveAfterChange;
   for (const key of LEVEL_KEYS) {
@@ -83,7 +98,8 @@ export function followLevels(w: World, c: Club, spent: bigint, income: bigint) {
             : level;
     levels[key] = clamp(next, 0, MAX_LEVEL);
   }
-  levels.progress = Math.round((progress - Math.trunc(progress)) * 10000) / 10000;
+  if (funded) levels.progress = 0;
+  delete levels.invested;
 }
 
 export function enrollSquadPlayer(w: World, c: Club, p: Player) {

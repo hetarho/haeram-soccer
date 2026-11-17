@@ -4,7 +4,7 @@ import { emptyPlayerDetail } from '../../contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
 import { announceRetirements, retirementAnnounceDay, retirementChanceWithContext } from './careers';
 import { worldMarketFixture } from './world-market.testkit';
-import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads';
+import { CLUB_LEVELS, enrollSquadPlayer, foundSquads, levelTargets } from './persisted-squads';
 import {
   closeNpcSummer,
   intakeNpcYouth,
@@ -406,5 +406,24 @@ describe('academy intakes around the division level (→WORLD-16)', () => {
     c.tier = 3;
     expect(youthCentre(c, 0, false)).toBe(50);
     expect(youthCentre(c, 0, true)).toBe(40);
+  });
+});
+
+describe('levels at the summer close (→WORLD-17)', () => {
+  it('move after promotion toward the new division, one a season, and not in a war summer', () => {
+    const { w, c } = fixture();
+    c.tier = 3;
+    const bottom = levelTargets(w, c);
+    c.levels = { ...bottom };
+    // Promoted at this close: the books settled on the old division, then the club went up.
+    c.tier = 0;
+    const top = levelTargets(w, c);
+    closeNpcSummer(w);
+    expect(c.levels!.academy).toBe(Math.min(top.academy, bottom.academy + 1));
+    // A skipped war summer keeps books and levels standing still (→WORLD-14).
+    const held = { ...c.levels! };
+    w.year++;
+    closeNpcSummer(w, undefined, false);
+    expect(c.levels).toEqual(held);
   });
 });

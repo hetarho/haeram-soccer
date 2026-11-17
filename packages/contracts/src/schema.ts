@@ -176,6 +176,7 @@ const club = z.object({
       ground: z.number().int().min(0).max(5),
       coaching: z.number().int().min(0).max(5),
       progress: z.number().finite().min(-1).max(1).optional(),
+      invested: z.literal(true).optional(),
     })
     .optional(),
 });

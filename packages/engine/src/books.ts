@@ -28,7 +28,7 @@ import { sponsorOffers, sponsorSlotOpen } from './sponsors';
 import { ranked } from './season';
 import { groupKey } from './league-fixtures';
 import { clubPlayers, stature } from './world';
-import { followLevels } from './persisted-squads';
+import { investLevels } from './persisted-squads';
 import { clubFollowing, facilityStage } from './club-value';
 import { DEFAULT_TICKET } from './presets';
 import { ratio, scaleBy } from './primitives';
@@ -222,7 +222,7 @@ export function settleNpcBooks(w: World, club: Club, season: SeasonIndex = seaso
   const next = currencyChange(club.country, w.year, seasonAfter(w.year));
   const carried = next ? next(balance.toString()) : balance.toString();
   if (club.books && keepsBooks(w, club)) {
-    followLevels(w, club, result > ceiling ? result - ceiling : 0n, BigInt(book.income));
+    investLevels(club, result > ceiling ? result - ceiling : 0n, BigInt(book.income));
     if (next) for (const p of clubPlayers(w, club)) p.wage = next(p.wage);
   }
   club.books = {
