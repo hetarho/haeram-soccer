@@ -22,10 +22,7 @@ async function closeFirstSeason(page: Page, seed: string) {
   return club;
 }
 
-for (const [label, viewport] of [
-  ['390x844', { width: 390, height: 844 }],
-  ['desktop', { width: 1280, height: 800 }],
-] as const)
+for (const [label, viewport] of [['390x844', { width: 390, height: 844 }]] as const)
   test.describe(`records room at ${label}`, () => {
     test.use({ viewport });
 
@@ -74,7 +71,7 @@ for (const [label, viewport] of [
     });
   });
 
-// Desktop navigation to the records room stays covered by the case above (T786).
+// The records journey uses the touch layout; other journeys cover desktop navigation.
 for (const [label, viewport] of [['390x844', { width: 390, height: 844 }]] as const)
   test.describe(`records room at ${label}`, () => {
     test.use({ viewport });

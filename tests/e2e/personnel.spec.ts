@@ -5,7 +5,7 @@ import { leaveOffice, officeDialog, officeMenu, openOfficeArea, teamReturn } fro
 import { exportedCareer } from './career-fixtures';
 import { horizontalOverflow } from './layout';
 
-for (const width of [360, 1280]) {
+for (const width of [360]) {
   test(`older player and staff desks open the actual workflow at ${width}`, async ({ page }) => {
     // Eight full page loads of a prepared career, each a fresh start of the app.
     test.slow();

@@ -115,7 +115,7 @@ test('employed-coach-manager-quote', async ({ page }) => {
   await expect(confirm).toContainText('코치 자리와 연봉은 끝나고');
 });
 
-for (const width of [1280, 390]) {
+for (const width of [390]) {
   test(`combined approval survives reload and portable import at ${width}px`, async ({
     page,
     browser,

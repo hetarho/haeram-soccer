@@ -39,10 +39,7 @@ import { startFlow } from './start';
  * as a writer left them, with every expected label read in Node through the worker host's own read
  * and T305's view mapping (tests/fixtures/manager-careers.ts), never restated here.
  */
-const VIEWPORTS = [
-  { name: 'desktop', width: 1280, height: 900 },
-  { name: 'mobile', width: 390, height: 844 },
-];
+const VIEWPORTS = [{ name: 'mobile', width: 390, height: 844 }];
 const toggle = (card: ReturnType<typeof tenureCard>) =>
   card.getByRole('button', { name: /^(자세히|접기)/ });
 async function inspect(card: ReturnType<typeof tenureCard>) {

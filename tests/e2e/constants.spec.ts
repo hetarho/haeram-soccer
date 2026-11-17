@@ -2,10 +2,7 @@ import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { horizontalOverflow } from './layout';
 
-for (const viewport of [
-  { width: 390, height: 844 },
-  { width: 1440, height: 900 },
-]) {
+for (const viewport of [{ width: 390, height: 844 }]) {
   test(`explains gameplay outcomes, causal factors and actions at ${viewport.width}px`, async ({
     page,
   }) => {

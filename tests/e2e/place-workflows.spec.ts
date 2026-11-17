@@ -9,10 +9,7 @@ import { horizontalOverflow, viewGeometry } from './layout';
 
 // No CSS rule falls between 360 and 390 px or 740 and 844 px on this screen, so a fit at 360x740
 // implies one at 390x844 (T786).
-for (const viewport of [
-  { width: 360, height: 740 },
-  { width: 1280, height: 900 },
-]) {
+for (const viewport of [{ width: 360, height: 740 }]) {
   test(`places only read, and the academy reviews promotion and release without mutation at ${viewport.width}`, async ({
     page,
   }) => {

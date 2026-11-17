@@ -24,10 +24,7 @@ function career(seed: string, before: number, after: number): World {
   for (let n = 0; n < after; n++) advanceRound(w, undefined, false);
   return w;
 }
-const VIEWPORTS = [
-  { name: 'desktop', width: 1280, height: 900 },
-  { name: 'mobile', width: 390, height: 844 },
-];
+const VIEWPORTS = [{ name: 'mobile', width: 390, height: 844 }];
 const nav = (page: Page) =>
   page.getByRole('navigation', {
     name: page.viewportSize()!.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴',

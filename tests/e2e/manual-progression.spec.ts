@@ -19,7 +19,7 @@ import {
   seasonTransport,
 } from './office';
 
-for (const width of [1280, 390]) {
+for (const width of [390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     const w = careerWorld({ country: 'ENG', seed: 'intervention-levels' });

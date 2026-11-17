@@ -70,7 +70,6 @@ function abilities(w: World) {
 // offers too (level 2), and an offer card would cover home's controls.
 for (const { seed: worldSeed, ...viewport } of [
   { width: 360, height: 740, seed: 'training-ui-360' },
-  { width: 390, height: 844, seed: 'training-ui-b' },
 ]) {
   test(`saves actual training without free growth and keeps home compact at ${viewport.width}x${viewport.height}`, async ({
     page,

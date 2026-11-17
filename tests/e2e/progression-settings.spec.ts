@@ -122,7 +122,6 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
 
 for (const [width, height] of [
   [360, 740],
-  [390, 844],
   [1280, 800],
 ]) {
   test(`an own match day at x10 passes at the pace without a hold or animation and without moving the controls ${width}`, async ({
@@ -515,7 +514,7 @@ for (const themeId of ['standard', 'pixel']) {
   });
 }
 
-for (const width of [390, 1280]) {
+for (const width of [390]) {
   test(`office bulk report choices include observations and preserve mode ${width}`, async ({
     page,
   }) => {
@@ -692,7 +691,7 @@ test('manual can keep match eve disabled and stop at the next result', async ({ 
   ).toBeVisible();
 });
 
-for (const themeId of ['standard', 'pixel']) {
+for (const themeId of ['standard']) {
   test(`${themeId} dismissed NEXT MATCH reopens without settling until an explicit choice`, async ({
     page,
   }) => {

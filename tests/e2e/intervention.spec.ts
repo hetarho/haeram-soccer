@@ -71,7 +71,6 @@ test("reads the manager's XI on the mobile report, plays it and shows earned fin
 // full menu, and must still keep the player's context and never interrupt the shared clock.
 for (const viewport of [
   { width: 360, height: 740 },
-  { width: 390, height: 844 },
   { width: 1440, height: 1000 },
 ]) {
   test(`intervenes over the league without losing filters or interrupting progress at ${viewport.width}`, async ({
