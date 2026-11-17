@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r76 | Define the browser-demo rules for squad and growth.
+> r77 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its squad (→WORLD-16) becomes its own players, each as the player he was with his contract, filled to 20 with players generated at its level when it holds fewer (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -348,7 +348,7 @@
     | our bid: the 단장's ability (→STAFF-20) | −(ability − 50)/250, a negotiator −0.05 more, a vacant post +0.05 |
     | our bid: a 데이터 헤드코치 manager (→STAFF-14) | −0.05 |
     | the window's last 3 days | −0.05 |
-  - one seeded draw per answer (`<seed>:sale:<bid id>`; between clubs nobody owns `<seed>:npc-sale:<year>:<day>:<buyer id>:<player id>`) sets the spread; a factor changes the share, never the draw, so adding one keeps every other answer's draw. The bid view's chances of acceptance and of a counter are the exact probabilities under that draw (→CLUB-14).
+  - one seeded draw per answer (`<seed>:sale:<bid id>`; between clubs nobody owns `<seed>:npc-sale:<year>:<window>:<buyer id>:<player id>`, one draw per pair and window, so a pair asked again in the window meets the same spread) sets the spread; a factor changes the share, never the draw, so adding one keeps every other answer's draw. The bid view's chances of acceptance and of a counter are the exact probabilities under that draw (→CLUB-14).
   - each answer's report names the factors that moved its reservation.
 - CLUB-53 [o] Personal terms (선수 개인 조건): when the selling club agrees, or at once for a free agent, the player answers the buying club's wage offer with chance σ(1.5 + the sum of his factors), one seeded draw per answer (`<seed>:terms:<bid id>`); a refusal ends the bid (rejected by the player, no fee paid) and its report names the factors. ← the player chooses his club too: money, the stage and playing time move him, and a later prestige or club-history factor is one more line
   - his demand is today's quote: his market wage at our club (→CLUB-25). Our offer is a step of it — 100%, 125%, 150% or 200% — and the wage he signs on is the offer.
@@ -364,7 +364,7 @@
     | a free agent | +1.0 |
     - ambition weight by his 야망 (→PLAYER-18) 1–5: 0.6, 0.8, 1, 1.25, 1.5; halved from age 31.
   - the owner picks the wage step in the bid view, which shows the player's chance and its factors before the bid (→CLUB-14); a counter he accepts keeps his wage step.
-  - between clubs nobody owns (→WORLD-16) the buyer offers his market wage at its club (100%), "our" in the factors reads the buying club, and the draw is keyed `<seed>:npc-terms:<year>:<day>:<buyer id>:<player id>`.
+  - between clubs nobody owns (→WORLD-16) the buyer offers his market wage at its club (100%), "our" in the factors reads the buying club, and the draw is keyed `<seed>:npc-terms:<year>:<window>:<buyer id>:<player id>`, one per pair and window.
 - CLUB-51 [o] The chief scout finds players among those who exist (→!CLUB-50); his ability sets how many he lists and how far he looks at home, 해외 스카우트망 (→ECON-16) how far abroad. ← the scout's two jobs are reading a player exactly (→PLAYER-18/24) and finding the right one
   | chief scout | searched at home | listed per line |
   |---|---|---|
@@ -380,6 +380,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r77 261118 CLUB-52/53✎ NPC draw keys per day→per window (`<year>:<window>:<buyer id>:<player id>`), so a pair retried on a later settlement day meets the same draw
 - r76 261118 CLUB-33✎ looks every 7th day, one move a look, none while a bid is pending→every 3rd day, pending bids up to 1/2/3 by step; money-bar upgrade cap at 아낌없이→at 넉넉히 and 아낌없이; money bar ×25 within the season's money→for the runway plus one season within the capital the runway test leaves; money-bar listing at once→once a signing for his line has joined in the window; upgrade candidates the shortlist then the reach→at 넉넉히/아낌없이 everyone within reach by slot gain after the manager's pick; money check squad share→runway test; CLUB-52✎ ours and another club's to us→+one club nobody owns's to another, sales-line factor→runway-test factor, +relegated starter −0.10, +player 5+ above his division bid from higher −0.10, final-season factors halved before 1995, +NPC draw key; CLUB-24✎ wage bill 10 points above the sales line→the runway test failing at half the runway; CLUB-26✎ delegated raise within the squad share→the runway test; CLUB-53✎ clubs nobody owns are not asked→they ask at the market wage with their own draw key
 - r75 261117 CLUB-52✎ factors without our manager→+our bid with a 데이터 헤드코치 manager −0.05 (STAFF-14's +5 points of bid acceptance)
 - r74 261117 CLUB-18✎ acceptance chance from fee, 단장 and reputation, counters at 110–125% of asking, delegated sales only of non-starters or covered 30+ starters→the selling club's answer (CLUB-52) then the player's (CLUB-53), our sale bar as the asking fee with sales targets; CLUB-41✎ +wage offer steps by the acted step (100/125/150/200%); CLUB-33✎ +money bar at 넉넉히/아낌없이 (every XI slot below it an upgrade need, 아낌없이 cap up to those slots, make-room lists non-XI 24+ players 8 below it); CLUB-52+ selling-club answer (always at asking, reservation share 0.85 + factors ± 0.08, counter at R within 0.25 of A); CLUB-53+ personal terms (σ(1.5 + factors): wage, stage, Europe, playing time, free agent)
