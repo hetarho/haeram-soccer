@@ -9,12 +9,14 @@
       "publication": "merge",
       "host": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-self-improve-chslow-f6269159",
-      "head": "b431c2c1c7d3bd797fe4dea939be95034b50db41",
+      "head": "d6c3caf7a4a2170c4b79f918b6e0bf61027c45a3",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-16T06:30:00.632Z",
+      "status": "landed",
+      "at": "2026-11-17T00:37:49.437Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "landed": "d6c3caf7a4a2170c4b79f918b6e0bf61027c45a3",
+      "reason": "landed-outside-gate: fast-forward push 261116 under owner instruction (reports/261116-chslow); recorded as landed 261117"
     },
     "8b7b5ad8543dbf211daaa575": {
       "id": "8b7b5ad8543dbf211daaa575",
