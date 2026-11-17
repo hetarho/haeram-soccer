@@ -22,7 +22,7 @@
 | ARCH | 48 | 48 | - | 2 |
 | WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
-| WORLD | 15 | 15 | - | 0 |
+| WORLD | 16 | 16 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 77 | 77 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
@@ -70,7 +70,9 @@
 | T945 | NPC pull market | WORLD CLUB LEAGUE | T944 | todo |
 | T948 | Loss-runway plan | ECON CLUB STAFF ARCH | - | todo |
 | T949 | Funded club buys the best | CLUB ECON | T948 | todo |
-| T950 | Calibrate market and levels | WORLD LEAGUE CLUB ECON | T945 T947 T949 | todo |
+| T951 | Market value ranking and paid moves down | WORLD CLUB LEAGUE ECON ARCH | T945 T948 | todo |
+| T952 | War-gap refills ready to play | WORLD LEAGUE | T947 | todo |
+| T950 | Calibrate market and levels | WORLD LEAGUE CLUB ECON | T945 T947 T949 T951 T952 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
