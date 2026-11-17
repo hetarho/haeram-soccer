@@ -62,12 +62,20 @@ const repo = resolve(here, '../..');
 const artifacts = join(repo, 'artifacts/benchmarks/T916');
 const manifestFile = join(artifacts, 'manifest.json');
 const RUN = 'scripts/natural-football/generation-repair-run.ts';
-const RECIPE_FILES = [
-  'scripts/natural-football/generation-repair.mjs',
-  'scripts/natural-football/generation-repair-recipe.ts',
-  RUN,
-  ...VARIANTS.map((v) => `artifacts/benchmarks/T916/${v.patch}`),
-];
+const ORCHESTRATOR = 'scripts/natural-football/generation-repair.mjs';
+/**
+ * Every file the recipe's behaviour depends on: the orchestrator's transitive local imports (the
+ * owned-child runner, identity and graph helpers included, so a changed runner changes the hash a
+ * review names), the child run and the patches.
+ */
+const recipeFiles = () =>
+  [
+    ...new Set([
+      ...dependencies(sourceGraph(repo), [ORCHESTRATOR]).map((file) => relative(repo, file)),
+      RUN,
+      ...VARIANTS.map((v) => `artifacts/benchmarks/T916/${v.patch}`),
+    ]),
+  ].sort();
 const EXPORT_PATHS = [...RUNTIME_INPUTS];
 
 const git = (args, options = {}) => execFileSync('git', args, { cwd: repo, ...options });
@@ -201,7 +209,7 @@ async function prepare() {
   );
   const identity = measurementIdentity(RUN, root);
   const recipe = Object.fromEntries(
-    RECIPE_FILES.map((file) => [file, readFileSync(join(repo, file))]),
+    recipeFiles().map((file) => [file, readFileSync(join(repo, file))]),
   );
   const manifest = {
     schema: 't943-generation-repair-manifest-v1',
@@ -247,6 +255,25 @@ async function prepare() {
   };
   rmSync(scratch, { recursive: true, force: true });
   return { failures, manifest };
+}
+
+/** The boundaries an owned run persisted as it reached them; null before its first. */
+function observed(run) {
+  if (!existsSync(run.observationsFile)) return null;
+  const bytes = readFileSync(run.observationsFile);
+  try {
+    const data = JSON.parse(bytes.toString('utf8'));
+    return {
+      file: run.observationsFile,
+      sha256: sha256(bytes),
+      complete: data.complete,
+      through: data.through,
+      years: data.years.map((entry) => entry.year),
+      orderFailures: data.orderFailures,
+    };
+  } catch {
+    return { file: run.observationsFile, sha256: sha256(bytes), unreadable: true };
+  }
 }
 
 async function execute() {
@@ -299,6 +326,7 @@ async function execute() {
         patch,
         dir,
         receiptFile: join(dir, 'receipt.json'),
+        observationsFile: join(dir, 'observations.json'),
         inputs: {
           bundleSha256: sha256(readFileSync(bundle)),
           patched: Object.fromEntries(
@@ -308,24 +336,55 @@ async function execute() {
         bundle,
       });
     }
+    // Every stage entry, cancellation and cleanup receipt included, is written as it changes, so an
+    // interrupted coordinator still leaves the children's evidence on disk.
     const entries = {};
-    const children = runs.map((run) =>
-      runVerificationStage(
-        {
-          stage: run.variant.id,
-          command: process.execPath,
-          args: [run.bundle, run.variant.id, run.receiptFile],
-        },
-        { directory: run.dir, onUpdate: (entry) => (entries[run.variant.id] = entry) },
-      ),
-    );
-    let timedOut = false;
-    const timer = setTimeout(() => {
-      timedOut = true;
+    const stagesFile = join(out, 'stages.json');
+    const record = (id, entry) => {
+      entries[id] = entry;
+      writeFileSync(stagesFile, `${JSON.stringify(entries, null, 1)}\n`);
+    };
+    // A signal to this coordinator cancels and awaits every owned child before the heavy lock is
+    // released; so does any exceptional exit after the children start.
+    let interrupted = null;
+    let children = [];
+    const cancelAll = () => {
       for (const child of children) child.cancel();
-    }, TIMEBOX_MS);
-    const done = await Promise.all(children.map((child) => child.done));
-    clearTimeout(timer);
+    };
+    const onSignal = (signal) => {
+      interrupted ??= signal;
+      cancelAll();
+    };
+    const SIGNALS = ['SIGTERM', 'SIGINT', 'SIGHUP'];
+    for (const signal of SIGNALS) process.on(signal, onSignal);
+    let timedOut = false;
+    let timer;
+    let done;
+    try {
+      children = runs.map((run) =>
+        runVerificationStage(
+          {
+            stage: run.variant.id,
+            command: process.execPath,
+            args: [run.bundle, run.variant.id, run.receiptFile, run.observationsFile],
+          },
+          { directory: run.dir, onUpdate: (entry) => record(run.variant.id, entry) },
+        ),
+      );
+      if (interrupted) cancelAll();
+      timer = setTimeout(() => {
+        timedOut = true;
+        cancelAll();
+      }, TIMEBOX_MS);
+      done = await Promise.all(children.map((child) => child.done));
+    } finally {
+      clearTimeout(timer);
+      if (!done) {
+        cancelAll();
+        await Promise.allSettled(children.map((child) => child.done));
+      }
+      for (const signal of SIGNALS) process.off(signal, onSignal);
+    }
     const results = runs.map((run, index) => {
       const entry = done[index];
       const result =
@@ -345,6 +404,8 @@ async function execute() {
       finished: new Date().toISOString(),
       timeboxMs: TIMEBOX_MS,
       timedOut,
+      interrupted,
+      stages: { file: stagesFile, sha256: sha256(readFileSync(stagesFile)) },
       oracle: {
         expected: ORACLE.sha256,
         serializer: control?.oracle?.reproduced ? 'proved-by-control-reproduction' : 'unresolved',
@@ -355,14 +416,22 @@ async function execute() {
         inputs: run.inputs,
         completion: {
           status: entry.status,
+          pid: entry.pid ?? null,
+          started: entry.started,
+          finished: entry.finished ?? null,
           exitCode: entry.exitCode,
           signal: entry.signal ?? null,
           elapsedMs: entry.elapsedMs,
           cancelRequested: entry.cancelRequested ?? null,
+          cancellationCleanup: entry.cancellationCleanup ?? null,
           failure: entry.failure ?? null,
+          stdoutPath: entry.stdoutPath,
+          stderrPath: entry.stderrPath,
         },
         finished: !!result,
         receiptSha256: result ? sha256(readFileSync(run.receiptFile)) : null,
+        // An unfinished run keeps every boundary it reached; these are not completion.
+        observations: observed(run),
         endpoint: result?.endpoint ?? null,
         orderFailures: result?.orderFailures ?? null,
         baselineEqualsControl:
@@ -374,7 +443,11 @@ async function execute() {
       timingClaimed: false,
     };
     writeFileSync(join(out, 'execution.json'), `${JSON.stringify(summary, null, 1)}\n`);
-    emit({ status: timedOut ? 'unfinished' : 'completed', execution: join(out, 'execution.json') });
+    emit({
+      status: interrupted ? 'interrupted' : timedOut ? 'unfinished' : 'completed',
+      execution: join(out, 'execution.json'),
+    });
+    if (interrupted) process.exitCode = 1;
   });
 }
 

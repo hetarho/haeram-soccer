@@ -7,9 +7,13 @@
  * and value sums the variants are meant to move, all 1950 cells against the 1930 baseline and the
  * full canonical endpoint hash. It claims no model pass and no timing.
  *
- *   node <bundle> <variant> <receipt.json>
+ *   node <bundle> <variant> <receipt.json> <observations.json>
+ *
+ * Every boundary is also written to <observations.json> as it is reached (atomically, marked
+ * incomplete), so a run cut off by the timebox still leaves each year it observed; only the
+ * receipt marks completion.
  */
-import { writeFileSync } from 'node:fs';
+import { renameSync, writeFileSync } from 'node:fs';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
 import type { World } from '../../packages/contracts/src/types';
 import { historyWorld } from '../../packages/engine/src/history';
@@ -27,8 +31,8 @@ import {
   type DivisionRow,
 } from './generation-repair-recipe';
 
-const [variant, out] = process.argv.slice(2);
-if (!variant || !out) throw new Error('generation-repair-run:arguments');
+const [variant, out, progress] = process.argv.slice(2);
+if (!variant || !out || !progress) throw new Error('generation-repair-run:arguments');
 const countries = COUNTRIES.map((c) => ({ code: c.code, tiers: c.groups.length }));
 
 /** Potential and value sums per country/tier: the differences C1 and C2 intend, read honestly. */
@@ -68,6 +72,23 @@ const observe = () => {
   const rows = divisionRows(w.clubs, countries);
   years.push({ year: w.year, day: w.calendar!.day, round: w.round, rows, sums: squadSums(w) });
   failures.push(...orderFailures(w.year, rows));
+  const partial = `${progress}.tmp`;
+  writeFileSync(
+    partial,
+    `${JSON.stringify(
+      {
+        variant,
+        seed: SEED,
+        complete: false,
+        through: { year: w.year, day: w.calendar!.day },
+        years,
+        orderFailures: failures,
+      },
+      null,
+      1,
+    )}\n`,
+  );
+  renameSync(partial, progress);
 };
 observe();
 advanceRound(w, undefined, false);

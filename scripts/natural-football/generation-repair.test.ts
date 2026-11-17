@@ -76,6 +76,20 @@ describe('T943 generation repair recipe', () => {
     expect(manifestFailures({ a: 1 }, { a: 2 }).map((f) => f.code)).toEqual(['manifest-differs']);
   });
 
+  it('hashes the execution helpers with the recipe, so a changed runner needs a new review', () => {
+    const manifest = JSON.parse(readFileSync(join(artifacts, 'manifest.json'), 'utf8'));
+    expect(Object.keys(manifest.recipe.files)).toEqual(
+      expect.arrayContaining([
+        'scripts/lib/measurement-identity.ts',
+        'scripts/lib/source-graph.ts',
+        'scripts/lib/verification-runner.ts',
+        'scripts/natural-football/generation-repair-recipe.ts',
+        'scripts/natural-football/generation-repair-run.ts',
+        'scripts/natural-football/generation-repair.mjs',
+      ]),
+    );
+  });
+
   it('retains every strict-order failure and every 1950 cell against the 1930 baseline', () => {
     const countries = [{ code: 'AAA', tiers: 3 }];
     const base = divisionRows(

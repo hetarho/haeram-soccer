@@ -255,11 +255,11 @@
    "packages/engine/src/world-market.ts": "fb2543836ff038a29522508f76e96ed2d03ffe21e20d6b970496b61d7a61d06e",
    "packages/engine/src/world.ts": "59405eea5be354f8e327e678f988a7ae469d2a33121ca050fa1fb3aeef9cca2f",
    "scripts/natural-football/generation-repair-recipe.ts": "ff7dbfad20a021577837e28f85d9b50c3828f68fe631c699ebef3631388edfd9",
-   "scripts/natural-football/generation-repair-run.ts": "7b6b010419e814acbe3660759f12233fd3ae2815e4f21c28be23e920e9335443"
+   "scripts/natural-football/generation-repair-run.ts": "36f50213f4ec275f6bce12aec4ec34031e6669eec267d2a0e4d023a33f9a5680"
   },
   "closureFingerprint": {
    "algorithm": "sha256",
-   "sha256": "94c7ed359b86d7f7c618287c75724c7d757b9f02340bc709c01ce09343fe4545",
+   "sha256": "e2fc776a2c13c3225bd3b1e59923048c0042d32420b1ac47ec601b779a4d87f5",
    "files": 220,
    "entry": "scripts/natural-football/generation-repair-run.ts",
    "scope": "runtime dependency closure and declared inputs"
@@ -317,14 +317,17 @@
  ],
  "recipe": {
   "files": {
-   "scripts/natural-football/generation-repair.mjs": "008b8cf9d057d578822633a9907ab52d8793b5036f46cc196651e5b9eaea1bcb",
-   "scripts/natural-football/generation-repair-recipe.ts": "ff7dbfad20a021577837e28f85d9b50c3828f68fe631c699ebef3631388edfd9",
-   "scripts/natural-football/generation-repair-run.ts": "7b6b010419e814acbe3660759f12233fd3ae2815e4f21c28be23e920e9335443",
-   "artifacts/benchmarks/T916/control.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "artifacts/benchmarks/T916/c1-c2.patch": "1e026a6e337b34a63286118f2c616fed779bcc6be53ab398bc1e508297f32e8b",
    "artifacts/benchmarks/T916/c1.patch": "eb09a8a9fe1ba3d15969a119bd5369edc04567956492fe54890e8f737d749a7f",
    "artifacts/benchmarks/T916/c2.patch": "413ba80a9b32f7e18da5182e2b47838ab1268c6b9e8e8a94d6b957ddc191a7aa",
-   "artifacts/benchmarks/T916/c1-c2.patch": "1e026a6e337b34a63286118f2c616fed779bcc6be53ab398bc1e508297f32e8b"
+   "artifacts/benchmarks/T916/control.patch": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "scripts/lib/measurement-identity.ts": "7f52562816620b85520aeffef57adfc8fea47e9dfb639c30ce16df7abd0deb62",
+   "scripts/lib/source-graph.ts": "f5f87e9f37ec8387acf8f1610aa17935bd2ec1ced423d4573086461d7a7786b9",
+   "scripts/lib/verification-runner.ts": "7a64ca4d9e7dd98ec0d6abe6eaac4a7b15a90b3f07aee01835b46e4cc1feeaff",
+   "scripts/natural-football/generation-repair-recipe.ts": "ff7dbfad20a021577837e28f85d9b50c3828f68fe631c699ebef3631388edfd9",
+   "scripts/natural-football/generation-repair-run.ts": "36f50213f4ec275f6bce12aec4ec34031e6669eec267d2a0e4d023a33f9a5680",
+   "scripts/natural-football/generation-repair.mjs": "4d18ba8bd7a52fca3a03eddb598024e5526831a5389b4181b673c76a0303bce9"
   },
-  "hash": "9bab8a5364768a83e298b190c234b3bcc8402edc68164ab7951061ed56ca26ac"
+  "hash": "89750e266795b92ae96f9222b8397274739b72b4e50972b2a21758b17285c1f4"
  }
 }

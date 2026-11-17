@@ -16,6 +16,14 @@ claimed.
 The recipe hash and the manifest hash a review must name are printed by
 `pnpm exec tsx scripts/natural-football/generation-repair.mjs prepare`. The manifest records the
 recipe hash. The manifest hash is the SHA-256 of the manifest's canonical JSON (sorted keys).
+The recipe hash covers the orchestrator's transitive local imports (the owned-child runner,
+identity and graph helpers in `scripts/lib`), the child run and the four patches, so a changed
+runner or helper changes the hash a review names (`recipe.files` in the manifest lists them).
+
+The first review (`review-1.json`, codex, not approved) found four defects in an earlier recipe:
+coordinator signals did not cancel owned children, unfinished runs lost their annual observations,
+cleanup receipts were not kept, and the helpers were outside the hash. All four are corrected in
+this recipe, which needs a new review.
 
 ## Review receipt
 
@@ -56,7 +64,10 @@ Patch hashes must be the full values in `manifest.json`. The surviving reviews o
    one `advanceRound(w, undefined, false)`, then `advanceDays(w, 1, undefined, false)` until 1950
    day 0. Every first-day country/tier row is kept, along with the potential, wage and value sums.
    Every strict-order failure is kept, with no 1946–1948 exception. All 1950 cells are compared with
-   the control's original 1930 baseline at ±5. A missing cell counts as outside the band.
+   the control's original 1930 baseline at ±5. A missing cell counts as outside the band. Each
+   boundary is also written atomically to the run's `observations.json` as it is reached, marked
+   incomplete, so a run the timebox cuts off still keeps every year it observed. Only the receipt
+   marks completion.
 7. Endpoint: `sha256(utf8(JSON.stringify(world)))` with its byte count. The oracle is
    `9a3d6e96…568be2` (26,404,832 bytes). This serializer is declared, not proved. Only an exact
    control reproduction proves it. A mismatch is recorded as unresolved and the oracle never
@@ -67,9 +78,14 @@ Patch hashes must be the full values in `manifest.json`. The surviving reviews o
 9. Execution: `execute --review <receipt> --heavy-lock <installed gusta src/check-cache.mjs> --out
    <fresh dir>` takes the CLI's own shared `withHeavyLock` (a flag alone is not a lock). It runs at
    most four owned children through `runVerificationStage`, which cleans up descendants, within
-   T916's 30-minute cap. A timeout cancels the children and leaves them unfinished. Each run
-   records its inputs, completion, endpoint and order failures. The execution report records
-   whether each variant's 1930 baseline equals the control's, plus the cells.
+   T916's 30-minute cap. A timeout cancels the children and leaves them unfinished. A SIGTERM,
+   SIGINT or SIGHUP to the coordinator, or any exceptional exit after the children start, cancels
+   and awaits every owned child before the lock is released. Each stage entry, with its pid,
+   cancellation request and `cancellationCleanup` (descendants, escalations), is written to
+   `stages.json` as it changes. Each run records its inputs, completion (with that cleanup
+   evidence), endpoint, order failures and persisted observations. The execution report records
+   whether each variant's 1930 baseline equals the control's, plus the cells, and whether the
+   coordinator was interrupted.
 
 ## Limits
 
