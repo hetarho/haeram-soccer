@@ -1,8 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { afterEach, describe, it, expect, vi } from 'vitest';
 import { transferOffers } from './index';
 import { detectMediations, resolveMediation, resolveDelegatedMediations } from './mediation';
 import { lineOf } from './player';
 import { requestCandidates, signingVerdict } from './signings';
+import * as signings from './signings';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { careerWorld } from './career.testkit';
 function fixture() {
@@ -166,5 +167,42 @@ describe('financial mediation resolution', () => {
     resolveMediation(w, id, 'manager', 'delegated');
     expect(w.bids).toHaveLength(1);
     expect(w.promises).toHaveLength(1);
+  });
+});
+
+describe('a free agent who refuses our terms in a mediation (→CLUB-53)', () => {
+  afterEach(() => vi.restoreAllMocks());
+  /** The manager's pick offered as a free agent, the move started as the owner's recruit starts it. */
+  function freeAgentPick(joins: boolean) {
+    const { w, id, named } = fixture();
+    rich(w);
+    const offer = { ...named, freeAgent: true, fee: '0' };
+    vi.spyOn(signings, 'requestCandidates').mockReturnValue([
+      { offer, index: 0 } as ReturnType<typeof requestCandidates>[number],
+    ]);
+    // A refusal returns as the recruit command does, with the player still in the pool.
+    vi.spyOn(signings, 'pursueRequest').mockImplementation((trial) => {
+      if (joins) trial.players.push({ ...structuredClone(named.player), status: 'active' });
+      return undefined;
+    });
+    return { w, id, named };
+  }
+
+  it('records his refusal and a promise, never a completed signing', () => {
+    const { w, id, named } = freeAgentPick(false);
+    const record = resolveMediation(w, id, 'manager');
+    expect(record.resolution!.result).toContain(named.player.name);
+    expect(record.resolution!.result).not.toContain('자유계약 영입을 완료했어요');
+    expect(record.resolution!.promise).toBeDefined();
+    expect(w.promises).toHaveLength(1);
+    expect(w.players.some((p) => p.id === named.player.id && p.status === 'active')).toBe(false);
+  });
+
+  it('still reports the signing when he agrees and joins', () => {
+    const { w, id, named } = freeAgentPick(true);
+    const record = resolveMediation(w, id, 'manager');
+    expect(record.resolution!.result).toContain('자유계약 영입을 완료했어요');
+    expect(record.resolution!.promise).toBeUndefined();
+    expect(w.players.some((p) => p.id === named.player.id)).toBe(true);
   });
 });

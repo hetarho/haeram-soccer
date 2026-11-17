@@ -16,7 +16,7 @@ import { isDelegated } from './responsibilities';
 import { pushInbox } from './inbox';
 import { lineOf } from './player';
 import { compareIds, ratio } from './primitives';
-import { overall } from './player-state';
+import { activePlayers, overall } from './player-state';
 import { transferOffers } from './scout-search';
 export const requestTargetKey = (request: SigningRequest) =>
   request.kind === 'short' ? `line:${request.line}` : `slot:${request.slot}:${request.position}`;
@@ -202,6 +202,12 @@ export function resolveMediation(
         const blocked = pursueRequest(trial, mediation.target, offer.player.id, actor);
         if (blocked) {
           failure = blocked;
+          continue;
+        }
+        // A free agent answers our terms at once and may refuse them (→CLUB-53): only one who
+        // actually joined is a signing; a refusal is this choice's failure, and the next is tried.
+        if (offer.freeAgent && !activePlayers(trial).some((p) => p.id === offer.player.id)) {
+          failure = sourceMessage('market.recruit.refused', { name: offer.player.name });
           continue;
         }
         result = `${offer.player.name} ${offer.freeAgent ? sourceMessage('copy.mediation.dd65eaeca5') : sourceMessage('copy.mediation.c62513bb19')}`;
