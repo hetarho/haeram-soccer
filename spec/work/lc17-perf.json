@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T07:16:11.583Z",
-  "sourceCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+  "snapshotAt": "2026-11-17T07:40:59.038Z",
+  "sourceCommit": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
   "group": {
     "id": "lc17-perf",
     "branch": "gusta-session-self-improve-lc17-37ba91cb",
@@ -25,10 +25,10 @@
   },
   "summary": {
     "total": 6,
-    "completed": 1,
-    "remaining": 5,
+    "completed": 2,
+    "remaining": 4,
     "running": 3,
-    "review": 2,
+    "review": 1,
     "blocked": 0,
     "unassigned": 0
   },
@@ -37,25 +37,19 @@
       "id": "T937",
       "title": "Index market ratings by slot and skip buyers rejected for every listing",
       "dep": [],
-      "status": "ready"
+      "status": "verifying"
     },
     {
       "id": "T938",
       "title": "Index the clubs that want each line for free-agent offers",
       "dep": [],
-      "status": "doing"
-    },
-    {
-      "id": "T939",
-      "title": "Hand the autosave world to the codec worker as JSON text",
-      "dep": [],
-      "status": "reviewing"
+      "status": "ready"
     },
     {
       "id": "T940",
       "title": "Build the fixture replica's roster key from texts it already serialized",
       "dep": [],
-      "status": "doing"
+      "status": "verifying"
     },
     {
       "id": "T941",
@@ -85,6 +79,8 @@
       "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
       "submissionId": "38512725-2742-4621-8367-a8daf3179002",
       "submittedAt": "2026-11-17T06:55:15.640Z",
+      "integratedCommit": "6aaa6aa407b679d3d426152b21873ddf9f2bc88a",
+      "integratedAt": "2026-11-17T07:37:12.877Z",
       "risk": null,
       "review": {
         "id": "2a994761-d952-42aa-8ba6-fa7db7d0c79f",
@@ -119,6 +115,13 @@
           "startedAt": "2026-11-17T06:51:22.685Z",
           "finishedAt": "2026-11-17T06:55:15.442Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+          "startedAt": "2026-11-17T07:33:56.113Z",
+          "finishedAt": "2026-11-17T07:37:12.343Z"
+        }
       ]
     },
     {
@@ -133,11 +136,10 @@
       "contributors": [
         "lc17-wb"
       ],
-      "status": "ready",
+      "status": "verifying",
       "reason": null,
       "createdAt": "2026-11-17T06:31:45.566Z",
       "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31",
-      "verifiedCommit": "76f8853d5df6ecfe54bdf0f3b9532f378d2bd88a",
       "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
       "submissionId": "98c57d46-10d0-4f4d-ac27-648d74a89728",
       "submittedAt": "2026-11-17T07:13:06.101Z",
@@ -176,7 +178,7 @@
       "contributors": [
         "lc17-wc"
       ],
-      "status": "reviewing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-17T06:31:49.291Z",
       "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31",
@@ -188,11 +190,15 @@
       "review": {
         "id": "9aadf8ca-8535-426d-879f-fb613a79684d",
         "owner": "lc17-rv-codex",
-        "status": "reviewing",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T939 satisfies the re-planned recorded-experiment contract. Only handoff.mjs, handoff.json, text-handoff.patch and the task file differ from the assigned base; production code is unchanged. The script isolates synchronous sender serialization/postMessage time from receiver deserialization, using 15 alternating paired measurements per method. Recorded medians, intervals and 96.484375% order-statistic coverage recompute correctly: postMessage text/object is 1.303 [1.278, 1.318], so rejecting the change is supported. The archived patch applies to base and contains sensible checkpoint-equivalence, failure-response and queue-order units. Acceptance marks and result accurately report the negative outcome, proxy-only gate and Node/browser limitation. Submitted-commit task-tier records pass all five checks. Review ran only fast static, arithmetic, syntax and patch checks; no long benchmarks or suites.",
+        "findings": [],
         "commit": "ecc25735611ad8e37c30e9a2e9e0ecd502c26276",
         "baseCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
         "submissionId": "c08b6e00-caf5-4e63-997d-f1cd5edb5920",
-        "createdAt": "2026-11-17T07:15:29.717Z"
+        "createdAt": "2026-11-17T07:15:29.717Z",
+        "finishedAt": "2026-11-17T07:40:32.145Z"
       },
       "steps": [
         {
@@ -244,9 +250,36 @@
       "contributors": [
         "lc17-wa2"
       ],
-      "status": "doing",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-11-17T06:57:07.719Z",
-      "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7"
+      "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+      "verifiedCommit": "83c0e7caaf0af738cb52f11b4c594dafb9098fab",
+      "submittedBase": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+      "submissionId": "09914321-b139-4d3a-8938-8e94a67a702e",
+      "submittedAt": "2026-11-17T07:40:34.695Z",
+      "risk": null,
+      "steps": [
+        {
+          "taskId": "T938",
+          "commit": "83c0e7caaf0af738cb52f11b4c594dafb9098fab",
+          "at": "2026-11-17T07:40:34.667Z",
+          "verification": [
+            {
+              "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+              "startedAt": "2026-11-17T07:38:15.330Z",
+              "finishedAt": "2026-11-17T07:40:34.437Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+          "startedAt": "2026-11-17T07:38:15.330Z",
+          "finishedAt": "2026-11-17T07:40:34.437Z"
+        }
+      ]
     },
     {
       "id": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
@@ -260,7 +293,7 @@
       "contributors": [
         "lc17-wc2"
       ],
-      "status": "doing",
+      "status": "verifying",
       "createdAt": "2026-11-17T07:13:38.082Z",
       "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7"
     }
@@ -900,6 +933,254 @@
       "group": "lc17-perf",
       "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
       "taskId": "T936",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 373,
+      "at": "2026-11-17T07:32:25.442Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 374,
+      "at": "2026-11-17T07:37:00.150Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: npx --yes @haeram/gusta@latest vibe check --tier task"
+      }
+    },
+    {
+      "sequence": 375,
+      "at": "2026-11-17T07:37:12.579Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+            "startedAt": "2026-11-17T07:33:56.113Z",
+            "finishedAt": "2026-11-17T07:37:12.343Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 376,
+      "at": "2026-11-17T07:37:12.877Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "6aaa6aa407b679d3d426152b21873ddf9f2bc88a",
+        "integratedAt": "2026-11-17T07:37:12.877Z"
+      }
+    },
+    {
+      "sequence": 377,
+      "at": "2026-11-17T07:37:47.510Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "ready",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 378,
+      "at": "2026-11-17T07:37:56.172Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 379,
+      "at": "2026-11-17T07:37:56.376Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T937: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 380,
+      "at": "2026-11-17T07:38:08.453Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 381,
+      "at": "2026-11-17T07:38:15.195Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 382,
+      "at": "2026-11-17T07:38:23.249Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+      "taskId": "T940",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 383,
+      "at": "2026-11-17T07:40:32.146Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9aadf8ca-8535-426d-879f-fb613a79684d",
+          "owner": "lc17-rv-codex",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T939 satisfies the re-planned recorded-experiment contract. Only handoff.mjs, handoff.json, text-handoff.patch and the task file differ from the assigned base; production code is unchanged. The script isolates synchronous sender serialization/postMessage time from receiver deserialization, using 15 alternating paired measurements per method. Recorded medians, intervals and 96.484375% order-statistic coverage recompute correctly: postMessage text/object is 1.303 [1.278, 1.318], so rejecting the change is supported. The archived patch applies to base and contains sensible checkpoint-equivalence, failure-response and queue-order units. Acceptance marks and result accurately report the negative outcome, proxy-only gate and Node/browser limitation. Submitted-commit task-tier records pass all five checks. Review ran only fast static, arithmetic, syntax and patch checks; no long benchmarks or suites.",
+          "findings": [],
+          "commit": "ecc25735611ad8e37c30e9a2e9e0ecd502c26276",
+          "baseCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+          "submissionId": "c08b6e00-caf5-4e63-997d-f1cd5edb5920",
+          "createdAt": "2026-11-17T07:15:29.717Z",
+          "finishedAt": "2026-11-17T07:40:32.145Z"
+        }
+      }
+    },
+    {
+      "sequence": 384,
+      "at": "2026-11-17T07:40:34.695Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "83c0e7caaf0af738cb52f11b4c594dafb9098fab",
+        "submittedBase": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+        "submissionId": "09914321-b139-4d3a-8938-8e94a67a702e",
+        "submittedAt": "2026-11-17T07:40:34.695Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T938",
+            "commit": "83c0e7caaf0af738cb52f11b4c594dafb9098fab",
+            "at": "2026-11-17T07:40:34.667Z",
+            "verification": [
+              {
+                "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+                "startedAt": "2026-11-17T07:38:15.330Z",
+                "finishedAt": "2026-11-17T07:40:34.437Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+            "startedAt": "2026-11-17T07:38:15.330Z",
+            "finishedAt": "2026-11-17T07:40:34.437Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 385,
+      "at": "2026-11-17T07:40:38.940Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 386,
+      "at": "2026-11-17T07:40:42.274Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 387,
+      "at": "2026-11-17T07:40:51.371Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
