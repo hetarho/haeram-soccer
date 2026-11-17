@@ -67,7 +67,7 @@ const UPGRADES: readonly SpendingStance['signing'][] = [
   { upgrades: 0 },
   { upgrades: 0 },
   { margin: 5, upgrades: 1, room: 24 },
-  { margin: 3, upgrades: 2, room: 28, makeRoom: true, bar: true },
+  { margin: 3, upgrades: 2, room: 28, makeRoom: true, bar: true, barCap: true },
   { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true },
 ];
 function stanceOf(level: SpendRequest): SpendingStance {

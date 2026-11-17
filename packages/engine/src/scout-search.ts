@@ -212,10 +212,11 @@ function abilities(players: readonly Player[]) {
 /**
  * The players within the reach (→CLUB-51) whose age and ability fit the search, ranked
  * by ability and potential (potential first where the search says so), then free status and
- * id; per line the reach's count, keeping its places abroad for the ablest found there. Our
+ * id; per line the reach's count (all of them when `everyone`), keeping its places abroad for the
+ * ablest found there. Our
  * players, players on loan at their club and announced retirements are never listed.
  */
-function search(w: World, reach: ScoutReach): ScoutOffer[] {
+function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
   const own = clubOf(w).country,
     owned = new Set(activePlayers(w).map((p) => p.id)),
     found: Found[] = [];
@@ -256,6 +257,7 @@ function search(w: World, reach: ScoutReach): ScoutOffer[] {
     listedClubs = new Set<string>();
   return LINES.flatMap((line) => {
     const ranked = found.filter((f) => f.line === line).sort(byRank);
+    if (everyone) return ranked.map((f) => offerOf(w, f, multiplier, graduates));
     if (spread === 'none') {
       const kept = new Set(ranked.filter((f) => f.abroad).slice(0, reach.abroadPlaces));
       for (const f of ranked) if (kept.size < reach.perLine) kept.add(f);
@@ -326,6 +328,25 @@ export function transferOffers(w: World): ScoutOffer[] {
   if (cached && cached.key === key && cached.pool === w.freeAgents) return cached.offers;
   const offers = search(w, reach);
   lists.set(w, { key, pool: w.freeAgents, offers });
+  return offers;
+}
+
+const reaches = new WeakMap<
+  World,
+  { key: string; pool: readonly FreeAgent[] | undefined; offers: ScoutOffer[] }
+>();
+/**
+ * Everyone within the chief scout's reach (→CLUB-51) whose age and ability fit the search, not only
+ * the count he lists: the 단장's candidates after the shortlist (→CLUB-33), line by line in line
+ * order and by the list's ranking, each carrying his source. Kept per world like the list.
+ */
+export function reachOffers(w: World): ScoutOffer[] {
+  const reach = scoutReach(w),
+    key = listKey(w, reach),
+    cached = reaches.get(w);
+  if (cached && cached.key === key && cached.pool === w.freeAgents) return cached.offers;
+  const offers = search(w, reach, true);
+  reaches.set(w, { key, pool: w.freeAgents, offers });
   return offers;
 }
 
