@@ -4,7 +4,6 @@ import type { Club, Player, PlayerMove, SeasonArchive, World } from '../../contr
 import {
   bidsOnDay,
   compareSellDown,
-  npcBidDay,
   npcBidFee,
   npcMarket,
   npcMarketDays,
@@ -19,7 +18,14 @@ import { foundSquads } from './persisted-squads';
 import { lineOf } from './player';
 import { formationOf, slotOvr } from './player-state';
 import { clubStyle } from './tactics';
-import { generatedPlayer, invalidateNpcSquad, NPC_SQUAD, startingSquad, tierLevel } from './world';
+import {
+  generatedPlayer,
+  invalidateNpcSquad,
+  NPC_SQUAD,
+  startingSquad,
+  stature,
+  tierLevel,
+} from './world';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
 import { npcWageBill, npcWageLimit } from './books';
@@ -29,31 +35,54 @@ import { npcTermsContext, termsChance } from './personal-terms';
 import { NPC_MARKET_ERA, npcMarketCaps } from './transfer-policy';
 import { SEASON_END_DAY } from './calendar';
 
+/** A case's draw: one value for every key of its kind, or a value read from the key. */
+type Draw = number | ((key: string) => number);
+type Answered = { draw: number; answer: unknown }[];
 /**
- * The bid share, the seller's answer and the player's answer are seeded draws keyed by the bid
- * (→CLUB-52/53); each case sets them, and every key the market reads is recorded.
+ * The bid share, the seller's answer and the player's answer are seeded draws keyed by the pair
+ * and window (→CLUB-52/53); each case sets them, and every key the market reads is recorded, with
+ * every answer and the draw it read.
  */
 const draws = vi.hoisted(() => ({
-  sale: 0,
-  terms: 0,
-  bid: 1,
-  day: 0 as number | ((key: string) => number),
+  sale: 0 as Draw,
+  terms: 0 as Draw,
+  bid: 1 as Draw,
   keys: [] as string[],
+  answers: { sale: [] as Answered, terms: [] as Answered },
 }));
 vi.mock('./primitives', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./primitives')>();
+  const of = (draw: Draw, seed: string) => () => (typeof draw === 'number' ? draw : draw(seed));
   return {
     ...actual,
     random(seed: string) {
       draws.keys.push(seed);
-      if (seed.includes(':npc-sale:')) return () => draws.sale;
-      if (seed.includes(':npc-terms:')) return () => draws.terms;
-      if (seed.includes(':npc-bid:')) return () => draws.bid;
-      if (seed.includes(':npc-bid-day:')) {
-        const day = draws.day;
-        return () => (typeof day === 'number' ? day : day(seed));
-      }
+      if (seed.includes(':npc-sale:')) return of(draws.sale, seed);
+      if (seed.includes(':npc-terms:')) return of(draws.terms, seed);
+      if (seed.includes(':npc-bid:')) return of(draws.bid, seed);
       return actual.random(seed);
+    },
+  };
+});
+vi.mock('./sale-answer', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./sale-answer')>();
+  return {
+    ...actual,
+    saleAnswer(...args: Parameters<typeof actual.saleAnswer>) {
+      const answer = actual.saleAnswer(...args);
+      draws.answers.sale.push({ draw: args[1], answer });
+      return answer;
+    },
+  };
+});
+vi.mock('./personal-terms', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./personal-terms')>();
+  return {
+    ...actual,
+    termsAnswer(...args: Parameters<typeof actual.termsAnswer>) {
+      const answer = actual.termsAnswer(...args);
+      draws.answers.terms.push({ draw: args[1], answer });
+      return answer;
     },
   };
 });
@@ -99,7 +128,8 @@ function fixture(year = 1950) {
   draws.sale = 0;
   draws.terms = 0;
   draws.bid = 1;
-  draws.day = 0;
+  draws.answers.sale.length = 0;
+  draws.answers.terms.length = 0;
   return { w, seller, buyer };
 }
 /** The seller's one keeper on offer: its own keepers announce retirement, which keeps them off it. */
@@ -125,6 +155,17 @@ function modestBuyer(w: World, buyer: Club, p: Player, seller: Club) {
   buyer.books!.cash = (asking + BigInt(operatingExpensesAt('ENG', w.year, buyer.tier))).toString();
   expect(npcWageLimit(w, buyer)! - npcWageBill(w, buyer)).toBeLessThan(asking * 3n);
   return asking;
+}
+/** The draw keys of one kind read for a buyer and a player, in order. */
+const asked = (kind: string, buyer: Club, p: Player) =>
+  draws.keys.filter((k) => k.includes(`:${kind}:`) && k.endsWith(`:${buyer.id}:${p.id}`));
+/** Runs the market on each of `days`. */
+function settle(w: World, days: readonly number[], before?: () => void) {
+  for (const day of days) {
+    w.calendar!.day = day;
+    before?.();
+    npcMarket(w);
+  }
 }
 const at = (w: World, id: string) =>
   Object.entries(w.squads ?? {})
@@ -255,19 +296,14 @@ describe('the pull market (→WORLD-16)', () => {
       w.squads![seller.id]!.push({ ...structuredClone(first), id: `keeper:${n}` });
     seller.books!.openingIncome = npcWageBill(w, seller).toString();
     invalidateNpcSquad(w, seller.id);
-    const window = npcMarketDays(w.year)[0]!;
-    // The buyer meets the first keeper on the window's first day and each other on a later one.
-    draws.day = (key) => (key.endsWith(`:${first.id}`) ? 0 : Number(key.at(-1)) / 3 + 0.1);
     draws.keys.length = 0;
-    const seen = observe(() => {
-      for (const day of window) {
-        w.calendar!.day = day;
+    const seen = observe(() =>
+      settle(w, npcMarketDays(w.year)[0]!, () => {
         // Sell the keeper he bought on: the need stays open every day.
         w.squads![buyer.id] = w.squads![buyer.id]!.filter((p) => p.position !== 'GK');
         invalidateNpcSquad(w, buyer.id);
-        npcMarket(w);
-      }
-    });
+      }),
+    );
     expect(seen.filter((s) => s.move.to === buyer.id)).toHaveLength(npcMarketCaps(1950).buys);
     const bids = draws.keys.filter((k) => k.includes(':npc-sale:') && k.includes(`:${buyer.id}:`));
     expect(bids.length).toBeLessThanOrEqual(npcMarketCaps(1950).bids);
@@ -483,37 +519,117 @@ describe('move reasons reach the observer and nothing else', () => {
     ]);
     expect(JSON.stringify(w)).not.toContain('"reason"');
   });
+});
 
-  it('bids for a target once a window, on its seeded day, with the same draws in both windows', () => {
+describe('asking again in a window (→CLUB-52/53)', () => {
+  it('bids for its best target on a later settlement day when its need opens then', () => {
     const { w, seller, buyer } = fixture();
     const p = target(w, seller);
-    draws.terms = 0.999999; // the player refuses: the buyer may not ask again in this window
+    // On the window's first day the buyer holds two keepers as able as him: no need, no bid.
+    for (const id of ['own-keeper', 'other-keeper'])
+      w.squads![buyer.id]!.push({ ...structuredClone(p), id });
+    buyer.books!.openingIncome = npcWageBill(w, buyer).toString();
+    invalidateNpcSquad(w, buyer.id);
+    const [first, ...later] = npcMarketDays(w.year)[0]!;
     draws.keys.length = 0;
-    const [summer, winter] = npcMarketDays(w.year);
-    for (const day of summer!) {
-      w.calendar!.day = day;
-      npcMarket(w);
-    }
-    for (const day of winter!) {
-      w.calendar!.day = day;
-      npcMarket(w);
-    }
-    const pair = `${buyer.id}:${p.id}`;
-    const asked = (kind: string) =>
-      draws.keys.filter((k) => k.includes(`:${kind}:`) && k.endsWith(pair));
-    for (const kind of ['npc-sale', 'npc-terms'])
-      expect(asked(kind)).toEqual([
-        `${w.seed}:${kind}:${w.year}:summer:${pair}`,
-        `${w.seed}:${kind}:${w.year}:winter:${pair}`,
-      ]);
-    expect(at(w, p.id)).toEqual([seller.id]);
+    settle(w, [first!]);
+    expect(asked('npc-sale', buyer, p)).toEqual([]);
+    // One of them is gone by the next settlement day: the need opens and reaches the player.
+    w.squads![buyer.id] = w.squads![buyer.id]!.filter((q) => q.id !== 'own-keeper');
+    invalidateNpcSquad(w, buyer.id);
+    settle(w, later.slice(0, 1));
+    expect(asked('npc-sale', buyer, p)).toEqual([
+      `${w.seed}:npc-sale:${w.year}:summer:${buyer.id}:${p.id}`,
+    ]);
+    expect(at(w, p.id)).toEqual([buyer.id]);
   });
 
-  it('meets a target on one open settlement day of the window', () => {
-    expect(npcBidDay(0, [0, 1, 2])).toBe(0);
-    expect(npcBidDay(0.5, [0, 1, 2])).toBe(1);
-    expect(npcBidDay(0.999999, [0, 1, 2])).toBe(2);
-    expect(npcBidDay(0.7, [1, 2])).toBe(2);
-    expect(npcBidDay(0.3, [])).toBe(-1);
+  it("meets the same seller's and player's answers when it asks again on a later day", () => {
+    const { w, seller, buyer } = fixture();
+    const p = target(w, seller);
+    modestBuyer(w, buyer, p, seller);
+    const pair = `${buyer.id}:${p.id}`,
+      summerKey = (kind: string) => `${w.seed}:${kind}:${w.year}:summer:${pair}`;
+    // 80% of the asking fee; in the summer the seller counters at its fee and the player refuses.
+    draws.bid = 0.6;
+    draws.sale = (key) => (key === summerKey('npc-sale') ? 1 : 0);
+    draws.terms = (key) => (key === summerKey('npc-terms') ? 0.999999 : 0);
+    draws.keys.length = 0;
+    const [summer, winter] = npcMarketDays(w.year);
+    settle(w, summer!);
+    // One bid a settlement day in 1950: the buyer asks again each day and meets the same draws.
+    for (const kind of ['npc-bid', 'npc-sale', 'npc-terms'])
+      expect(asked(kind, buyer, p)).toEqual(Array(summer!.length).fill(summerKey(kind)));
+    const [sale, terms] = [draws.answers.sale, draws.answers.terms];
+    expect(sale.map((a) => a.draw)).toEqual([1, 1, 1]);
+    expect(sale[0]!.answer).toMatchObject({ kind: 'counter' });
+    expect(terms.map((a) => (a.answer as { accept: boolean }).accept)).toEqual([
+      false,
+      false,
+      false,
+    ]);
+    // With no factor changed, the second day's answers are the first day's.
+    expect(sale[1]).toEqual(sale[0]);
+    expect(terms[1]).toEqual(terms[0]);
+    // The window's last day adds its deadline row, which moves the reservation, not the draw.
+    expect(
+      (sale[2]!.answer as { lines: { factor: string }[] }).lines.map((l) => l.factor),
+    ).toContain('deadline');
+    expect(at(w, p.id)).toEqual([seller.id]);
+    // The next window draws afresh.
+    settle(w, winter!.slice(0, 1));
+    expect(asked('npc-terms', buyer, p).at(-1)).toBe(
+      `${w.seed}:npc-terms:${w.year}:winter:${pair}`,
+    );
+    expect(at(w, p.id)).toEqual([buyer.id]);
+  });
+
+  it('lets the higher-stature club have a player two clubs want, whatever day they meet him', () => {
+    const window = npcMarketDays(1950)[0]!;
+    for (const from of window.keys())
+      for (const rivalFirst of [false, true]) {
+        const { w, seller, buyer } = fixture();
+        const p = target(w, seller);
+        // A second club without keepers, of another stature, listed before or after the buyer.
+        const id = Array.from({ length: 18 }, (_, n) => `ENG:0:0:${n + 2}`).find(
+          (one) => stature(w.seed, one) !== stature(w.seed, buyer.id),
+        )!;
+        const rival: Club = { ...buyer, id, books: { ...buyer.books! } };
+        w.squads![rival.id] = w.squads![buyer.id]!.map((q) => ({
+          ...structuredClone(q),
+          id: `rival-${q.id}`,
+        }));
+        w.clubs.splice(rivalFirst ? 1 : w.clubs.length, 0, rival);
+        rival.books!.openingIncome = npcWageBill(w, rival).toString();
+        invalidateNpcSquad(w, rival.id);
+        const [high, low] =
+          stature(w.seed, rival.id) > stature(w.seed, buyer.id) ? [rival, buyer] : [buyer, rival];
+        draws.keys.length = 0;
+        settle(w, window.slice(from));
+        expect(at(w, p.id)).toEqual([high.id]);
+        expect(asked('npc-sale', low, p)).toEqual([]);
+      }
+  });
+
+  it("counts a re-bid against the era's bids", () => {
+    const { w, seller, buyer } = fixture();
+    const best = target(w, seller, {}, 76);
+    // A second keeper, a point below him.
+    const next = { ...structuredClone(best), id: 'next-keeper' };
+    for (const a of ATTRIBUTES) next.attrs[a] = 75;
+    next.potential = 75;
+    next.wage = marketWageAt('ENG', w.year, seller.tier, next);
+    w.squads![seller.id]!.push(next);
+    seller.books!.openingIncome = npcWageBill(w, seller).toString();
+    invalidateNpcSquad(w, seller.id);
+    // The abler keeper refuses this buyer all summer.
+    draws.terms = (key) => (key.endsWith(`:${buyer.id}:${best.id}`) ? 0.999999 : 0);
+    draws.keys.length = 0;
+    settle(w, npcMarketDays(w.year)[0]!);
+    // Each day's one bid goes to him again; the second keeper is never asked.
+    expect(asked('npc-sale', buyer, best)).toHaveLength(npcMarketCaps(w.year).bids);
+    expect(asked('npc-sale', buyer, next)).toEqual([]);
+    expect(at(w, best.id)).toEqual([seller.id]);
+    expect(at(w, next.id)).toEqual([seller.id]);
   });
 });

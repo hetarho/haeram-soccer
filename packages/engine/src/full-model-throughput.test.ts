@@ -183,10 +183,11 @@ const facts = (w: World) => ({
 // moves (aef5e3c0618eb5f2 before it, a05cbbd0c13eeb52 with draws keyed by day before its
 // window-keyed draws and CLUB-52's pre-1995 half for every seller, 9322bc0149c21767 before each
 // buyer met a target on one seeded day of the window, 9581b43fe497276a before the search read its
-// actual wage ceiling and every candidate a slot could rank); the aggregate records keep theirs.
+// actual wage ceiling and every candidate a slot could rank, 8268a8e9573aa5ea before every buyer
+// read every target each settlement day); the aggregate records keep theirs.
 const BEFORE = {
   aggregateRecords: 'd01e8b16487872a4',
-  candidateRounds: '8268a8e9573aa5ea',
+  candidateRounds: '584b9c18455f88bb',
 };
 
 describe('complete-result throughput (T285)', () => {

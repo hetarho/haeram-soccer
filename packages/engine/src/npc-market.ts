@@ -583,10 +583,6 @@ function windowMoves(w: World, days: readonly number[]) {
 export function bidsOnDay(bids: number, at: number, days: number) {
   return Math.floor((bids * (at + 1)) / days) - Math.floor((bids * at) / days);
 }
-/** The settlement day, of `open` (indices into the window's days), a buyer meets a target on. */
-export function npcBidDay(draw: number, open: readonly number[]) {
-  return open[Math.min(open.length - 1, Math.floor(draw * open.length))] ?? -1;
-}
 /** A bid's fee: the asking fee times the drawn share, at least one whole minor unit. */
 export function npcBidFee(asking: string, rich: boolean, draw: number) {
   const ask = BigInt(asking);
@@ -604,7 +600,10 @@ type Attempt = 'skipped' | 'bid' | 'moved';
  * means, in stature order, bids for its best-fitting reachable targets, listed or not — its own
  * country's division and those below, the top flight also abroad on a seeded day — within the
  * era's caps for the window. The seller answers through CLUB-52 and the player through CLUB-53,
- * one seeded draw each keyed by the bid; reasons reach the move observer only.
+ * one seeded draw each keyed by the pair and window; reasons reach the move observer only. Every
+ * buyer reads every target each settlement day, so a need opening later in the window still
+ * reaches him; a pair asked again on a later day meets the same draws, and the re-bid counts
+ * against the era's bids.
  */
 export function npcMarket(w: World) {
   const day = currentDay(w);
@@ -620,19 +619,8 @@ export function npcMarket(w: World) {
     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
   );
   const caps = npcMarketCaps(w.year);
-  const dayAt = days.indexOf(day);
-  const bidsToday = bidsOnDay(caps.bids, dayAt, days.length);
+  const bidsToday = bidsOnDay(caps.bids, days.indexOf(day), days.length);
   if (bidsToday <= 0) return;
-  // One bid per target a window, kept without stored state: each buyer meets each target on one
-  // seeded settlement day of the window, among the days the era's caps open to bids.
-  const openDays = days
-    .map((_, at) => at)
-    .filter((at) => bidsOnDay(caps.bids, at, days.length) > 0);
-  const meetsToday = (buyer: Club, p: Player) =>
-    npcBidDay(
-      random(`${w.seed}:npc-bid-day:${w.year}:${windowName}:${buyer.id}:${p.id}`)(),
-      openDays,
-    ) === dayAt;
   const settlement: Settlement = {
     clubs: new Map(),
     returns: new Map(),
@@ -704,6 +692,7 @@ export function npcMarket(w: World) {
     const least = npcBidFee(askingOf(seller, p, loan), false, 0);
     return bill + wage + BigInt(convertFee(w, seller, buyer, least)) <= limit;
   };
+  // The pairs asked today: a buyer asks for a player once a settlement day.
   const moved = new Set<string>(),
     tried = new Set<string>(),
     bids = new Map<string, number>();
@@ -764,10 +753,9 @@ export function npcMarket(w: World) {
         const listing = listed.get(cand.player.id),
           loan = listing?.loan ?? false;
         if (loanOnly && !loan) continue;
-        // A player his club cannot sell now, whom the buyer meets on another day of the window or
-        // whom it cannot pay for never takes a target's place.
+        // A player his club cannot sell now, or whom the buyer cannot pay for, never takes a
+        // target's place.
         if (salesLeft(cand.club) <= 0 || !npcCanSell(w, cand.club, cand.player)) continue;
-        if (!meetsToday(buyer, cand.player)) continue;
         const score = need.slot ? rating(cand.player, settlement, need.slot) : cand.ovr;
         if (score < bound()) continue;
         if (!affords(buyer, cand.club, cand.player, loan)) continue;
@@ -826,7 +814,7 @@ export function npcMarket(w: World) {
       if (statureOf(rival) !== statureOf(buyer) || rival === buyer || rival === seller) continue;
       if (bidsLeft(rival) <= 0 || buysLeft(rival) <= 0 || tried.has(`${rival.id}|${p.id}`))
         continue;
-      if (!reaches(rival, seller, loan) || !meetsToday(rival, p)) continue;
+      if (!reaches(rival, seller, loan)) continue;
       const theirs = bidOf(rival, p, seller, asking, loan);
       if (
         theirs &&

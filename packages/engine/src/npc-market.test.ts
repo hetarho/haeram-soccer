@@ -36,10 +36,9 @@ import { operatingExpensesAt } from './finance';
 /**
  * The seller's and the player's answers are seeded draws (→CLUB-52/53); these mechanics cases pin
  * them so a bid the seller and the player would take is taken: the lowest reservation spread and a
- * player who agrees whenever his chance is above zero, and every buyer meets every target on the
- * window's first open settlement day. Answer models have their own tests below.
+ * player who agrees whenever his chance is above zero. Answer models have their own tests below.
  */
-const answerDraws = vi.hoisted(() => ({ sale: 0, terms: 0, bid: 0.5, day: 0 }));
+const answerDraws = vi.hoisted(() => ({ sale: 0, terms: 0, bid: 0.5 }));
 vi.mock('./primitives', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./primitives')>();
   return {
@@ -48,7 +47,6 @@ vi.mock('./primitives', async (importOriginal) => {
       if (seed.includes(':npc-sale:')) return () => answerDraws.sale;
       if (seed.includes(':npc-terms:')) return () => answerDraws.terms;
       if (seed.includes(':npc-bid:')) return () => answerDraws.bid;
-      if (seed.includes(':npc-bid-day:')) return () => answerDraws.day;
       return actual.random(seed);
     },
   };
@@ -183,13 +181,7 @@ describe('isolated NPC transfer windows', () => {
     expect(npcOffer(w, buyer, p, seller, '0')).toBeUndefined();
     for (const a of ATTRIBUTES) p.attrs[a] = 90;
     w.calendar!.day = npcMarketDays(w.year)[0]![1]!;
-    // The buyer meets him again only on a later day of the window drawn for the pair.
-    answerDraws.day = 0.5;
-    try {
-      npcMarket(w);
-    } finally {
-      answerDraws.day = 0;
-    }
+    npcMarket(w);
     expect(locations(w, p.id)).toEqual([buyer.id]);
     expect(locations(w, alternative.id)).toEqual([seller.id]);
   });
