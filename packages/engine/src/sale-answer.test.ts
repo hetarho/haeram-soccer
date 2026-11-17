@@ -269,6 +269,23 @@ describe('saleContext reads a bid from a world', () => {
       expect(read(withBooks(w.year, { seasons: [], cash, debt: '0' })).cashCrisis).toBe(false);
     });
 
+    it("counts this season's fees received and paid beside the cash", () => {
+      const annual = bill(seller) + BigInt(operatingExpensesAt('ENG', w.year, seller.tier));
+      const rounds = BigInt(SEASON_ROUNDS);
+      const enough = (annual * BigInt(SAFETY_ROUNDS) + rounds - 1n) / rounds,
+        short = (annual * BigInt(SAFETY_ROUNDS - 1)) / rounds,
+        gap = (enough - short).toString();
+      const at = (cash: bigint, fees: Partial<ClubBooks>) =>
+        read(withBooks(w.year, { seasons: [], cash: cash.toString(), debt: '0', ...fees }));
+      expect(at(short, {}).cashCrisis).toBe(true);
+      expect(at(short, { transfersReceived: gap }).cashCrisis).toBe(false);
+      expect(at(enough, {}).cashCrisis).toBe(false);
+      expect(at(enough, { transfersPaid: gap }).cashCrisis).toBe(true);
+      const spent = at(enough, { transfersPaid: (enough + 1n).toString() });
+      expect(spent).toMatchObject({ cashCrisis: true, runway: 0 });
+      expect(at(enough, { debt: (enough * 2n).toString() })).toMatchObject({ runway: 0 });
+    });
+
     it('keeps cash and costs in one money across a currency change', () => {
       const fra = careerWorld({ seed: 'answer-models', country: 'FRA' });
       const club = fra.clubs.find(

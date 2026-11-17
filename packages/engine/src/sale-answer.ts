@@ -328,9 +328,9 @@ function placeIn(xi: readonly Player[], id: string): SalePlace {
 }
 
 /**
- * A club nobody owns in a cash crisis (→ECON-41): in debt, or its cash short of 4 rounds of this
- * season's fixed costs — its players' wages and its operating expenses (→ECON-30), all in this
- * season's money. A close carries the books into the next season's money before the year turns.
+ * A club nobody owns in a cash crisis (→ECON-41): its cash less debt, with this season's fees
+ * received and paid, below zero or short of 4 rounds of this season's fixed costs — its players'
+ * wages and its operating expenses (→ECON-30), all in this season's money. A close carries the books into the next season's money before the year turns.
  */
 function npcCash(w: World, club: Club) {
   const books = club.books;
@@ -339,9 +339,15 @@ function npcCash(w: World, club: Club) {
     liveYear = last?.year === w.year ? seasonAfter(w.year) : w.year,
     toNow = currencyChange(club.country, liveYear, w.year),
     live = (amount: string) => (toNow ? toNow(amount) : amount);
-  if (BigInt(live(books.debt)) > 0n) return { cashCrisis: true, runway: 0 };
+  // This season's fees settle into cash at the close; until then they sit beside it (→ECON-36).
+  const balance =
+    BigInt(live(books.cash)) -
+    BigInt(live(books.debt)) +
+    BigInt(live(books.transfersReceived ?? '0')) -
+    BigInt(live(books.transfersPaid ?? '0'));
+  if (balance < 0n) return { cashCrisis: true, runway: 0 };
   const runway = fixedCostRunway(
-    live(books.cash),
+    balance.toString(),
     (npcWageBill(w, club) + npcOperatingExpenses(w, club)).toString(),
   );
   return { cashCrisis: runway < SAFETY_ROUNDS, runway };
