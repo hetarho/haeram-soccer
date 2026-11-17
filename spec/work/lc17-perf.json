@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T08:18:03.928Z",
-  "sourceCommit": "7510676d1ca536833c5831ea5ce84001f560e70d",
+  "snapshotAt": "2026-11-17T08:28:58.113Z",
+  "sourceCommit": "31b56599ef95da379565d28b55e1b0018bd3484b",
   "group": {
     "id": "lc17-perf",
     "branch": "gusta-session-self-improve-lc17-37ba91cb",
@@ -11,6 +11,25 @@
       "workers": 3,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "ready": {
+      "commit": "31b56599ef95da379565d28b55e1b0018bd3484b",
+      "at": "2026-11-17T08:28:55.108Z",
+      "verified": false,
+      "owner": {
+        "tag": "lc17",
+        "branch": "gusta-session-self-improve-lc17-37ba91cb"
+      },
+      "checks": [
+        "pnpm install --frozen-lockfile --offline && pnpm run typecheck"
+      ],
+      "agentChecks": []
+    },
+    "integration": {
+      "reason": "owning-session-working",
+      "candidate": null,
+      "verified": false,
+      "scope": null
     },
     "push": null,
     "review": "all",
@@ -119,6 +138,8 @@
       "submittedBase": "7510676d1ca536833c5831ea5ce84001f560e70d",
       "submissionId": "3364ce07-d5b4-4222-9160-b1edca1ebc40",
       "submittedAt": "2026-11-17T08:14:35.233Z",
+      "integratedCommit": "71e620a4c58ce675006f253fbc5dba87abe86785",
+      "integratedAt": "2026-11-17T08:22:12.303Z",
       "risk": null,
       "review": {
         "id": "ddee32e5-ccc5-47f4-a11e-f0211c9af73a",
@@ -196,6 +217,13 @@
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit packages/engine/src/npc-market.test.ts packages/engine/src/npc-careers.test.ts packages/engine/src/free-agents.test.ts packages/engine/src/persisted-squads.test.ts",
           "startedAt": "2026-11-17T08:11:17.705Z",
           "finishedAt": "2026-11-17T08:14:34.567Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+          "startedAt": "2026-11-17T08:18:05.064Z",
+          "finishedAt": "2026-11-17T08:22:10.878Z"
         }
       ]
     },
@@ -2291,6 +2319,69 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 458,
+      "at": "2026-11-17T08:22:11.419Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+            "startedAt": "2026-11-17T08:18:05.064Z",
+            "finishedAt": "2026-11-17T08:22:10.878Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 459,
+      "at": "2026-11-17T08:22:12.303Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "71e620a4c58ce675006f253fbc5dba87abe86785",
+        "integratedAt": "2026-11-17T08:22:12.303Z"
+      }
+    },
+    {
+      "sequence": 460,
+      "at": "2026-11-17T08:28:55.123Z",
+      "type": "group",
+      "group": "lc17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "31b56599ef95da379565d28b55e1b0018bd3484b",
+          "at": "2026-11-17T08:28:55.108Z",
+          "verified": false,
+          "owner": {
+            "tag": "lc17",
+            "branch": "gusta-session-self-improve-lc17-37ba91cb"
+          },
+          "checks": [
+            "pnpm install --frozen-lockfile --offline && pnpm run typecheck"
+          ],
+          "agentChecks": []
+        },
+        "integration": {
+          "reason": "owning-session-working",
+          "candidate": null,
+          "verified": false,
+          "scope": null
+        }
       }
     }
   ]
