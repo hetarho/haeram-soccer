@@ -184,12 +184,13 @@
       "publication": "merge",
       "host": "ihaelam-ui-MacBookPro",
       "branch": "gusta-session-self-improve-xf18-607e3688",
-      "head": "779ae5291b3e7e052efc7674259588927c0913e4",
+      "head": "a147a4783e368c4cfbc8a4b2b3321db4bdd2d66f",
       "land": "main",
       "status": "working",
-      "at": "2026-11-17T16:26:31.845Z",
+      "at": "2026-11-17T20:16:32.665Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "device": "ihaelam-ui-MacBookPro"
     }
   },
   "gate": {
