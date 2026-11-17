@@ -76,6 +76,7 @@
 | T938 | Index the clubs that want each line for free-agent offers | ARCH | - | todo |
 | T939 | Hand the autosave world to the codec worker as JSON text | SAVE ARCH | - | todo |
 | T940 | Build the fixture replica's roster key from texts it already serialized | ARCH | - | todo |
+| T941 | Share place terms and normalisers in NPC match attribution | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
