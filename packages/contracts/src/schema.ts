@@ -784,7 +784,7 @@ const inboxItem = z.strictObject({
     'sponsor-ending',
   ]),
   title: text,
-  detail: z.string().max(400),
+  detail: z.string().max(1000),
   attention: z.boolean(),
   read: z.boolean().optional(),
   ref: id.optional(),

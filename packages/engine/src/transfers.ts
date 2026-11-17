@@ -188,58 +188,70 @@ const TERMS_REPORT = [
   'market.answer.terms.6',
   'market.answer.terms.7',
 ] as const satisfies readonly SourceMessageId[];
-/** The factor lines as a report's named slots f1, f2, …, at most `slots` of them. */
-function factorSlots(lines: readonly FactorLine[], slots: number) {
+/**
+ * The factor lines as a report's named slots f1, f2, …, every one of them (→CLUB-52/53): a name
+ * a factor carries (the 단장's) runs at most `room` characters, so a long one shortens rather than
+ * pushing a factor out of the report.
+ */
+function factorSlots(lines: readonly FactorLine[], slots: number, room: number) {
   return Object.fromEntries(
-    lines.slice(0, slots).map((line, i) => [`f${i + 1}`, sourceMessage(line.message, line.params)]),
+    lines.slice(0, slots).map((line, i) => {
+      const name = line.params?.name;
+      const params =
+        typeof name === 'string' && name.length > room
+          ? { ...line.params, name: clip(name, room) }
+          : line.params;
+      return [`f${i + 1}`, sourceMessage(line.message, params)];
+    }),
   );
 }
 /**
  * The selling club's reservation and each factor that moved it, for its answer's report
- * (→CLUB-52); `reservation` is the money label of R.
+ * (→CLUB-52); `reservation` is the money label of R, `room` the longest a factor's name runs.
  */
 export function reservationReport(
   reservation: string,
   share: number,
   lines: readonly FactorLine[],
-  cap = RESERVATION_REPORT.length - 1,
+  room = Infinity,
 ) {
-  const shown = Math.min(lines.length, cap, RESERVATION_REPORT.length - 1);
+  const shown = Math.min(lines.length, RESERVATION_REPORT.length - 1);
   return sourceMessage(RESERVATION_REPORT[shown]!, {
     reservation,
     share: Math.round(share * 100),
-    ...factorSlots(lines, shown),
+    ...factorSlots(lines, shown, room),
   });
 }
 /** The player's chance of agreeing and each factor behind it, for his answer's report (→CLUB-53). */
-export function termsReport(
-  chance: number,
-  lines: readonly FactorLine[],
-  cap = TERMS_REPORT.length - 1,
-) {
-  const shown = Math.min(lines.length, cap, TERMS_REPORT.length - 1);
+export function termsReport(chance: number, lines: readonly FactorLine[], room = Infinity) {
+  const shown = Math.min(lines.length, TERMS_REPORT.length - 1);
   return sourceMessage(TERMS_REPORT[shown]!, {
     chance: Math.round(chance * 100),
-    ...factorSlots(lines, shown),
+    ...factorSlots(lines, shown, room),
   });
 }
 /** The selling club's reservation and the factors behind it, for its answer's report. */
-function saleReason(w: World, answer: SaleAnswer, cap?: number) {
-  return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines, cap);
+function saleReason(w: World, answer: SaleAnswer, room?: number) {
+  return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines, room);
 }
 /** An inbox item's longest title and detail (the save schema's bounds, →SAVE-5). */
 const TITLE_MAX = 160,
-  DETAIL_MAX = 400;
+  DETAIL_MAX = 1000;
+/** How long a factor's name may run, longest first, while a report outgrows the inbox's bound. */
+const NAME_ROOMS = [Infinity, 60, 30, 16, 8] as const;
 /**
- * A report detail naming at most `cap` factors of each answer, within the inbox's bound: the last
- * factors are left out first, and only a detail too long with none is clipped, so a save stays valid.
+ * A report detail naming every factor of each answer within the inbox's bound (→CLUB-52/53, →SAVE-5):
+ * `make` builds it with a factor's name at most `room` characters long, and a name shortens until
+ * the report fits. Every factor sentence fits with room to spare, so the last clip only guards a
+ * money check's own reason running long, which the report puts last.
  */
-export function fittedDetail(make: (cap: number) => string) {
-  for (let cap = RESERVATION_REPORT.length - 1; cap >= 0; cap--) {
-    const detail = make(cap);
+export function fittedDetail(make: (room: number) => string) {
+  let detail = '';
+  for (const room of NAME_ROOMS) {
+    detail = make(room);
     if (detail.length <= DETAIL_MAX) return detail;
   }
-  return clip(make(0), DETAIL_MAX);
+  return clip(detail, DETAIL_MAX);
 }
 /** A title naming a player, his name clipped so the whole sentence fits the inbox's bound. */
 export function namedTitle(id: SourceMessageId, name: string) {
@@ -770,20 +782,20 @@ function closeDeal(
     title: namedTitle('market.answer.player.title', p.name),
     // An answer given at once names the club's reservation too (→CLUB-52); a counter's own
     // report already named it.
-    detail: fittedDetail((cap) =>
+    detail: fittedDetail((room) =>
       club
         ? sourceMessage('market.answer.player.detail.club', {
             fee: moneyLabel(w, fee),
-            reason: saleReason(w, club, cap),
+            reason: saleReason(w, club, room),
             wage: moneyLabel(w, terms.wage),
             percent: Math.round((bid.wage ?? 1) * 100),
-            terms: termsReport(terms.chance, terms.lines, cap),
+            terms: termsReport(terms.chance, terms.lines, room),
           })
         : sourceMessage('market.answer.player.detail', {
             fee: moneyLabel(w, fee),
             wage: moneyLabel(w, terms.wage),
             percent: Math.round((bid.wage ?? 1) * 100),
-            terms: termsReport(terms.chance, terms.lines, cap),
+            terms: termsReport(terms.chance, terms.lines, room),
           }),
     ),
     attention,
@@ -826,10 +838,10 @@ function decideOutgoing(w: World, bid: TransferBid) {
       pushInbox(w, {
         kind: 'bid-response',
         title: clip(sourceMessage('copy.transfers.138ea75077', { p0: p.name, p1: move }), 160),
-        detail: fittedDetail((cap) =>
+        detail: fittedDetail((room) =>
           sourceMessage('market.answer.blocked', {
             fee: moneyLabel(w, bid.fee),
-            reason: saleReason(w, answer, cap),
+            reason: saleReason(w, answer, room),
             blocker,
           }),
         ),
@@ -842,12 +854,12 @@ function decideOutgoing(w: World, bid: TransferBid) {
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(sourceMessage('copy.transfers.4bd8c1ff7d', { p0: p.name, p1: move }), 160),
-      detail: fittedDetail((cap) =>
+      detail: fittedDetail((room) =>
         sourceMessage(bid.staff ? 'market.answer.accepted.staff' : 'market.answer.accepted', {
           position: p.position,
           age: w.year - p.born,
           fee: moneyLabel(w, bid.fee),
-          reason: saleReason(w, answer, cap),
+          reason: saleReason(w, answer, room),
         }),
       ),
       attention,
@@ -869,11 +881,11 @@ function decideOutgoing(w: World, bid: TransferBid) {
         }),
         160,
       ),
-      detail: fittedDetail((cap) =>
+      detail: fittedDetail((room) =>
         sourceMessage('market.answer.counter', {
           fee: moneyLabel(w, bid.fee),
           asking: moneyLabel(w, asking),
-          reason: saleReason(w, answer, cap),
+          reason: saleReason(w, answer, room),
         }),
       ),
       attention: true,
@@ -885,11 +897,11 @@ function decideOutgoing(w: World, bid: TransferBid) {
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(sourceMessage('copy.transfers.9f030caf7e', { p0: p.name, p1: move }), 160),
-      detail: fittedDetail((cap) =>
+      detail: fittedDetail((room) =>
         sourceMessage(bid.staff ? 'market.answer.refused.staff' : 'market.answer.refused', {
           fee: moneyLabel(w, bid.fee),
           asking: moneyLabel(w, asking),
-          reason: saleReason(w, answer, cap),
+          reason: saleReason(w, answer, room),
         }),
       ),
       attention,
@@ -938,13 +950,13 @@ function answerStaffCounter(
       160,
     ),
     detail: answer
-      ? fittedDetail((cap) =>
+      ? fittedDetail((room) =>
           sourceMessage('market.answer.staffCounter', {
             fee: moneyLabel(w, bid.fee),
             asking: moneyLabel(w, asking),
             percent: Math.round(feeRatio(bid.fee, asking) * 100),
             verdict: reason,
-            reason: saleReason(w, answer, cap),
+            reason: saleReason(w, answer, room),
           }),
         )
       : sourceMessage('copy.transfers.4a233f3fc1', {

@@ -79,11 +79,11 @@ function freeAgentTerms(w: World, player: Player, step: number) {
     pushInbox(w, {
       kind: 'bid-response',
       title: namedTitle('market.answer.free.title', player.name),
-      detail: fittedDetail((cap) =>
+      detail: fittedDetail((room) =>
         sourceMessage('market.answer.free.detail', {
           wage: moneyLabel(w, context.offer),
           percent: Math.round(step * 100),
-          terms: termsReport(answer.chance, answer.lines, cap),
+          terms: termsReport(answer.chance, answer.lines, room),
         }),
       ),
       attention: true,

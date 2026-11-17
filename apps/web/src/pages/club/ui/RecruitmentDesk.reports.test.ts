@@ -121,19 +121,41 @@ describe('bid answer reports read in every locale (→ARCH-32, →CLUB-52/53)', 
       expect(title).toContain('N'.repeat(100));
       expect(localizeText(title), title).not.toMatch(hangul);
     }
-    const sale = [...SALE, line('market.sale.director', { name, ability: 99 })],
-      detail = fittedDetail((cap) =>
+    // A combined refusal names the club's every factor and the player's (→CLUB-52/53), the
+    // 단장's long name shortened rather than any factor left out.
+    const director = line('market.sale.director', { name, ability: 99 }),
+      sale = [...SALE.slice(0, 6), director, ...SALE.slice(7)],
+      terms = TERMS,
+      detail = fittedDetail((room) =>
         message('market.answer.player.detail.club', {
           fee: '£123M',
-          reason: reservationReport('£98.7M', 0.87, sale, cap),
+          reason: reservationReport('£98.7M', 0.87, sale, room),
           wage: '£12.3M',
           percent: 200,
-          terms: termsReport(0.12, TERMS, cap),
+          terms: termsReport(0.12, terms, room),
         }),
       );
-    expect(detail.length).toBeLessThanOrEqual(400);
-    // The last factors are left out whole, so what remains still translates.
-    expect(localizeText(detail), detail).not.toMatch(hangul);
-    expect(localizeText(detail)).toContain(displayMessage(SALE[0]!.message, SALE[0]!.params));
+    expect(detail.length).toBeLessThanOrEqual(1000);
+    const shown = localizeText(detail);
+    expect(shown, detail).not.toMatch(hangul);
+    for (const factor of [...sale, ...terms].filter((f) => f !== director))
+      expect(shown).toContain(displayMessage(factor.message, factor.params));
+    expect(shown).toContain('N'.repeat(50));
+    expect(shown).toContain('99');
+    // Past the bound a name shortens and every factor stays (the mechanism, beyond valid names).
+    const huge = line('market.sale.director', { name: 'M'.repeat(2000), ability: 99 }),
+      fitted = fittedDetail((room) =>
+        message('market.answer.player.detail.club', {
+          fee: '£123M',
+          reason: reservationReport('£98.7M', 0.87, [...sale.slice(0, 6), huge], room),
+          wage: '£12.3M',
+          percent: 200,
+          terms: termsReport(0.12, terms, room),
+        }),
+      );
+    expect(fitted.length).toBeLessThanOrEqual(1000);
+    for (const factor of [...sale.slice(0, 6), ...terms])
+      expect(localizeText(fitted)).toContain(displayMessage(factor.message, factor.params));
+    expect(localizeText(fitted)).toContain('M'.repeat(50));
   });
 });
