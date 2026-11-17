@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T07:40:59.038Z",
-  "sourceCommit": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+  "snapshotAt": "2026-11-17T07:49:59.502Z",
+  "sourceCommit": "e1f7f79470dbc654a9b21b5a27eba8b5196a0f21",
   "group": {
     "id": "lc17-perf",
     "branch": "gusta-session-self-improve-lc17-37ba91cb",
@@ -25,9 +25,9 @@
   },
   "summary": {
     "total": 6,
-    "completed": 2,
-    "remaining": 4,
-    "running": 3,
+    "completed": 3,
+    "remaining": 3,
+    "running": 2,
     "review": 1,
     "blocked": 0,
     "unassigned": 0
@@ -40,22 +40,16 @@
       "status": "verifying"
     },
     {
-      "id": "T938",
-      "title": "Index the clubs that want each line for free-agent offers",
-      "dep": [],
-      "status": "ready"
-    },
-    {
       "id": "T940",
       "title": "Build the fixture replica's roster key from texts it already serialized",
       "dep": [],
-      "status": "verifying"
+      "status": "approved"
     },
     {
       "id": "T941",
       "title": "Share place terms and normalisers in NPC match attribution",
       "dep": [],
-      "status": "doing"
+      "status": "verifying"
     }
   ],
   "attempts": [
@@ -186,6 +180,8 @@
       "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
       "submissionId": "c08b6e00-caf5-4e63-997d-f1cd5edb5920",
       "submittedAt": "2026-11-17T06:56:59.165Z",
+      "integratedCommit": "e1f7f79470dbc654a9b21b5a27eba8b5196a0f21",
+      "integratedAt": "2026-11-17T07:49:18.472Z",
       "risk": null,
       "review": {
         "id": "9aadf8ca-8535-426d-879f-fb613a79684d",
@@ -220,6 +216,13 @@
           "startedAt": "2026-11-17T06:55:42.941Z",
           "finishedAt": "2026-11-17T06:56:58.980Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+          "startedAt": "2026-11-17T07:44:48.514Z",
+          "finishedAt": "2026-11-17T07:49:16.140Z"
+        }
       ]
     },
     {
@@ -234,7 +237,7 @@
       "contributors": [
         "lc17-wd"
       ],
-      "status": "doing",
+      "status": "verifying",
       "createdAt": "2026-11-17T06:49:32.818Z",
       "startCommit": "c9dfd49e72f4d7cb99d7d3129caea70f031583aa"
     },
@@ -250,7 +253,7 @@
       "contributors": [
         "lc17-wa2"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-17T06:57:07.719Z",
       "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
@@ -259,6 +262,19 @@
       "submissionId": "09914321-b139-4d3a-8938-8e94a67a702e",
       "submittedAt": "2026-11-17T07:40:34.695Z",
       "risk": null,
+      "review": {
+        "id": "f2a8bfc8-f18b-4557-93ff-764609323ec0",
+        "owner": "lc17-rv-codex",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T938 at 83c0e7caaf0af738cb52f11b4c594dafb9098fab is approved. The per-line index exactly tracks cached settlementFacts.wanted, preserves club order through insertion and removal, and is refreshed after each destination-club facts recomputation, including across passes. Other clubs retain the same cached facts as before. Registration, affordability observers, offer ordering and signing operations remain unchanged; stature is deterministic from seed and club ID. The added regression compares events and the complete world with the reference implementation and covers newly wanted outfield signings on a later pass plus keeper-list removal. Reviewer-run free-agents and npc-careers units passed: 37/37. Runtime verification for the exact submitted commit records all five task checks passing, including 1360 affected unit tests. Stored generation hashes match the required 1934 and 1950 hashes, and the recorded source trees have identical production sources to the submission. Recomputed A/B statistics match the artifact: six processes, four pairs each, CPU ratio 0.9649 with 95% interval 0.9423-0.9967 and equal output hashes. The benchmark baseline is the attempt start commit 9bfd5e5ac; the later review-base lineup change is separate and presents no conflicting interaction. Changes stay within the authorized files. Final integration, contract and build verification remain with the coordinator.",
+        "findings": [],
+        "commit": "83c0e7caaf0af738cb52f11b4c594dafb9098fab",
+        "baseCommit": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+        "submissionId": "09914321-b139-4d3a-8938-8e94a67a702e",
+        "createdAt": "2026-11-17T07:41:03.582Z",
+        "finishedAt": "2026-11-17T07:44:15.470Z"
+      },
       "steps": [
         {
           "taskId": "T938",
@@ -293,9 +309,49 @@
       "contributors": [
         "lc17-wc2"
       ],
-      "status": "verifying",
+      "status": "approved",
+      "reason": null,
       "createdAt": "2026-11-17T07:13:38.082Z",
-      "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7"
+      "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+      "verifiedCommit": "8a1cf5db91e653121b1aeda68154f597d51f8aff",
+      "submittedBase": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+      "submissionId": "ebb1abff-7cda-47ba-b745-770b24e4b0d1",
+      "submittedAt": "2026-11-17T07:43:11.717Z",
+      "risk": null,
+      "review": {
+        "id": "53669e1c-37f5-4a9e-890a-b027de4f45bd",
+        "owner": "lc17-rv-codex",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T940 approved at 8a1cf5db91e653121b1aeda68154f597d51f8aff, comparing task changes against worker base 9bfd5e5ac and checking the group-base interaction. For valid fixture copies, ordered squad keys plus each complete squad JSON text preserve exactly the old squads serialization equality. The writer captures puts/drops/reorders before attribute-column filtering, while the shared context retains squads presence and all original non-squad inputs, including registry order. Snapshot, identity and reset behavior, reader/helper code, and the parity/registry comment remain intact. Changes stay within declared touches plus T940. Independent focused Vitest: 3 files, 36 tests passed; an in-memory baseline/candidate comparison passed 33 mutation/reset cases with identical patches and invalidation. Submitted task-tier verification records pass for this exact commit, including lint and i18n. The frozen benchmark writer/key match the worker base; 36 alternating paired samples across four rounds assert identical patches and rosterChanged. Saved timings reproduce median ratio 0.664 and interval [0.648, 0.719], with gains in both orders and every round. Despite reported host load and execution outside the heavy lock, this is acceptable evidence for the paired relative-performance claim. Integration, contract, build and final batch checks remain with the coordinator.",
+        "findings": [],
+        "commit": "8a1cf5db91e653121b1aeda68154f597d51f8aff",
+        "baseCommit": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+        "submissionId": "ebb1abff-7cda-47ba-b745-770b24e4b0d1",
+        "createdAt": "2026-11-17T07:44:47.362Z",
+        "finishedAt": "2026-11-17T07:48:35.969Z"
+      },
+      "steps": [
+        {
+          "taskId": "T940",
+          "commit": "8a1cf5db91e653121b1aeda68154f597d51f8aff",
+          "at": "2026-11-17T07:43:11.691Z",
+          "verification": [
+            {
+              "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+              "startedAt": "2026-11-17T07:38:23.398Z",
+              "finishedAt": "2026-11-17T07:43:11.470Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+          "startedAt": "2026-11-17T07:38:23.398Z",
+          "finishedAt": "2026-11-17T07:43:11.470Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -1181,6 +1237,243 @@
       "group": "lc17-perf",
       "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
       "taskId": "T939",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 388,
+      "at": "2026-11-17T07:41:03.582Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "f2a8bfc8-f18b-4557-93ff-764609323ec0",
+          "owner": "lc17-rv-codex",
+          "status": "reviewing",
+          "commit": "83c0e7caaf0af738cb52f11b4c594dafb9098fab",
+          "baseCommit": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+          "submissionId": "09914321-b139-4d3a-8938-8e94a67a702e",
+          "createdAt": "2026-11-17T07:41:03.582Z"
+        }
+      }
+    },
+    {
+      "sequence": 389,
+      "at": "2026-11-17T07:43:11.717Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+      "taskId": "T940",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "8a1cf5db91e653121b1aeda68154f597d51f8aff",
+        "submittedBase": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+        "submissionId": "ebb1abff-7cda-47ba-b745-770b24e4b0d1",
+        "submittedAt": "2026-11-17T07:43:11.717Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T940",
+            "commit": "8a1cf5db91e653121b1aeda68154f597d51f8aff",
+            "at": "2026-11-17T07:43:11.691Z",
+            "verification": [
+              {
+                "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+                "startedAt": "2026-11-17T07:38:23.398Z",
+                "finishedAt": "2026-11-17T07:43:11.470Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+            "startedAt": "2026-11-17T07:38:23.398Z",
+            "finishedAt": "2026-11-17T07:43:11.470Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 390,
+      "at": "2026-11-17T07:44:15.471Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "f2a8bfc8-f18b-4557-93ff-764609323ec0",
+          "owner": "lc17-rv-codex",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T938 at 83c0e7caaf0af738cb52f11b4c594dafb9098fab is approved. The per-line index exactly tracks cached settlementFacts.wanted, preserves club order through insertion and removal, and is refreshed after each destination-club facts recomputation, including across passes. Other clubs retain the same cached facts as before. Registration, affordability observers, offer ordering and signing operations remain unchanged; stature is deterministic from seed and club ID. The added regression compares events and the complete world with the reference implementation and covers newly wanted outfield signings on a later pass plus keeper-list removal. Reviewer-run free-agents and npc-careers units passed: 37/37. Runtime verification for the exact submitted commit records all five task checks passing, including 1360 affected unit tests. Stored generation hashes match the required 1934 and 1950 hashes, and the recorded source trees have identical production sources to the submission. Recomputed A/B statistics match the artifact: six processes, four pairs each, CPU ratio 0.9649 with 95% interval 0.9423-0.9967 and equal output hashes. The benchmark baseline is the attempt start commit 9bfd5e5ac; the later review-base lineup change is separate and presents no conflicting interaction. Changes stay within the authorized files. Final integration, contract and build verification remain with the coordinator.",
+          "findings": [],
+          "commit": "83c0e7caaf0af738cb52f11b4c594dafb9098fab",
+          "baseCommit": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+          "submissionId": "09914321-b139-4d3a-8938-8e94a67a702e",
+          "createdAt": "2026-11-17T07:41:03.582Z",
+          "finishedAt": "2026-11-17T07:44:15.470Z"
+        }
+      }
+    },
+    {
+      "sequence": 391,
+      "at": "2026-11-17T07:44:47.362Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+      "taskId": "T940",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "53669e1c-37f5-4a9e-890a-b027de4f45bd",
+          "owner": "lc17-rv-codex",
+          "status": "reviewing",
+          "commit": "8a1cf5db91e653121b1aeda68154f597d51f8aff",
+          "baseCommit": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+          "submissionId": "ebb1abff-7cda-47ba-b745-770b24e4b0d1",
+          "createdAt": "2026-11-17T07:44:47.362Z"
+        }
+      }
+    },
+    {
+      "sequence": 392,
+      "at": "2026-11-17T07:45:05.925Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "taskId": "T941",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 393,
+      "at": "2026-11-17T07:47:18.737Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: npx --yes @haeram/gusta@latest vibe check --tier task"
+      }
+    },
+    {
+      "sequence": 394,
+      "at": "2026-11-17T07:47:36.052Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 395,
+      "at": "2026-11-17T07:47:40.152Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 396,
+      "at": "2026-11-17T07:48:35.969Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+      "taskId": "T940",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "53669e1c-37f5-4a9e-890a-b027de4f45bd",
+          "owner": "lc17-rv-codex",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T940 approved at 8a1cf5db91e653121b1aeda68154f597d51f8aff, comparing task changes against worker base 9bfd5e5ac and checking the group-base interaction. For valid fixture copies, ordered squad keys plus each complete squad JSON text preserve exactly the old squads serialization equality. The writer captures puts/drops/reorders before attribute-column filtering, while the shared context retains squads presence and all original non-squad inputs, including registry order. Snapshot, identity and reset behavior, reader/helper code, and the parity/registry comment remain intact. Changes stay within declared touches plus T940. Independent focused Vitest: 3 files, 36 tests passed; an in-memory baseline/candidate comparison passed 33 mutation/reset cases with identical patches and invalidation. Submitted task-tier verification records pass for this exact commit, including lint and i18n. The frozen benchmark writer/key match the worker base; 36 alternating paired samples across four rounds assert identical patches and rosterChanged. Saved timings reproduce median ratio 0.664 and interval [0.648, 0.719], with gains in both orders and every round. Despite reported host load and execution outside the heavy lock, this is acceptable evidence for the paired relative-performance claim. Integration, contract, build and final batch checks remain with the coordinator.",
+          "findings": [],
+          "commit": "8a1cf5db91e653121b1aeda68154f597d51f8aff",
+          "baseCommit": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
+          "submissionId": "ebb1abff-7cda-47ba-b745-770b24e4b0d1",
+          "createdAt": "2026-11-17T07:44:47.362Z",
+          "finishedAt": "2026-11-17T07:48:35.969Z"
+        }
+      }
+    },
+    {
+      "sequence": 397,
+      "at": "2026-11-17T07:49:17.096Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+            "startedAt": "2026-11-17T07:44:48.514Z",
+            "finishedAt": "2026-11-17T07:49:16.140Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 398,
+      "at": "2026-11-17T07:49:18.472Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "e1f7f79470dbc654a9b21b5a27eba8b5196a0f21",
+        "integratedAt": "2026-11-17T07:49:18.472Z"
+      }
+    },
+    {
+      "sequence": 399,
+      "at": "2026-11-17T07:49:44.923Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
