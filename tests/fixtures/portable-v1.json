@@ -16065,19 +16065,71 @@
               }
             ],
             "mentors": []
+          },
+          {
+            "id": "ENG:2:0:21:p:11:109",
+            "name": "Lewis Baker",
+            "born": 1929,
+            "position": "GK",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 2,
+              "teaching": 3,
+              "judgement": 4
+            },
+            "playing": "active",
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:2:0:21",
+                "from": {
+                  "year": 1950,
+                  "day": 11
+                },
+                "to": {
+                  "year": 1950,
+                  "day": 11
+                }
+              },
+              {
+                "role": "player",
+                "club": "ENG:3:0:0",
+                "from": {
+                  "year": 1950,
+                  "day": 11
+                }
+              }
+            ],
+            "mentors": [],
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "club": "ENG:3:0:0"
           }
         ],
         "playingCoachProposals": {},
         "mediations": [],
         "promises": [],
-        "recruitmentArrivals": [],
+        "recruitmentArrivals": [
+          {
+            "player": "ENG:2:0:21:p:11:109",
+            "name": "Lewis Baker",
+            "position": "GK",
+            "positions": {
+              "GK": 3
+            },
+            "at": {
+              "year": 1950,
+              "day": 11
+            }
+          }
+        ],
         "year": 1950,
         "round": 1,
         "revision": 16,
-        "cash": "1076701",
+        "cash": "1032790",
         "currency": "GBP-LSD",
         "income": "190360",
-        "expense": "353515",
+        "expense": "397426",
         "tactic": "balanced",
         "manager": {
           "id": "coach:1950:1:4025576267",
@@ -16228,6 +16280,12 @@
             "status": "active",
             "wage": "3312",
             "career": [0, 0, 32, 24, 0, 0, 0, 0, 1, 0, 90, 0]
+          },
+          {
+            "id": "ENG:2:0:21:p:11:109",
+            "status": "active",
+            "wage": "10236",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           }
         ],
         "matches": [
@@ -16425,13 +16483,13 @@
           },
           {
             "kind": "transfer-bid",
-            "title": "Cyril Davis 영입 제안",
+            "title": "Lewis Baker 영입 제안",
             "amount": null
           },
           {
-            "kind": "transfer-bid",
-            "title": "Cyril Davis 영입 제안",
-            "amount": null
+            "kind": "transfer-in",
+            "title": "Lewis Baker 영입",
+            "amount": "43911"
           }
         ],
         "euro": []
