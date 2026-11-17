@@ -10,7 +10,8 @@ import { overall } from './player-state';
 import { closeNpcSummer, intakeNpcYouth, NPC_YOUTH, youthCentre } from './npc-careers';
 import { crossWar } from './wartime';
 import { LINE_MINIMUM, NPC_SQUAD } from './world';
-import { TRAINING_GROUND } from './facility-model';
+import { TRAINING_GROUND, trainingGroundTerms } from './facility-model';
+import { random } from './primitives';
 
 /** Two playable clubs (ours and one nobody owns) and a representative one; no world generation. */
 function fixture() {
@@ -18,6 +19,33 @@ function fixture() {
   w.clubs[2]!.representative = true;
   foundSquads(w);
   return w;
+}
+
+/** The same clubs before anyone owns one: ours too is a squad nobody owns. */
+function ownerless() {
+  const w = worldMarketFixture();
+  w.clubs[2]!.representative = true;
+  w.playerClub = '';
+  w.players = [];
+  foundSquads(w);
+  return w;
+}
+
+/** How many prodigies `year`'s draw asks for (its stream's first number, →WORLD-18). */
+function drawnCount(w: World, year: number) {
+  return random(`${w.seed}:prodigy:${year}`)() < PRODIGY.twoChance ? 2 : 1;
+}
+
+/** A prodigy drawn into our academy, aged 14 in `year`: the other club stands at its 40-player
+ * ceiling (→CLUB-44) for the draw, then back at its size. */
+function academyProdigy(w: World, year: number) {
+  const players = w.squads!.foreign!,
+    size = players.length;
+  while (players.length < 40) players.push({ ...players[0]!, id: `filler-${players.length}` });
+  const [p] = drawProdigies(w, year);
+  players.length = size;
+  expect(p!.id.startsWith('own:academy:')).toBe(true);
+  return p!;
 }
 
 /** Each summer's prodigies over `summers` seasons, taken out again so every summer has room. */
@@ -208,71 +236,140 @@ describe('a war-gap summer (→WORLD-14/16)', () => {
 });
 
 describe("a war-gap summer's prodigies (→WORLD-14/16/18)", () => {
-  it("join only a squad below its standing size, the owner's academy included", () => {
+  it('join a squad at or above its standing size too; only a full registration or academy excludes', () => {
     const w = fixture();
-    const c = w.clubs.find((club) => club.id === 'foreign')!;
-    const players = w.squads![c.id]!;
-    // The other club weighs 6 against our 1, but its squad stands at its size.
-    c.levels!.academy = 5;
-    w.academyFacility = 0;
-    expect(players.length).toBe(NPC_SQUAD.size);
-    const war: Player[] = [];
+    // A placement reorders the squad into a new list (→CLUB-6), so it is read again each time.
+    const squad = () => w.squads!.foreign!;
+    expect(squad()).toHaveLength(NPC_SQUAD.size);
+    // Our academy is full, so every war summer's prodigies join the other club's full squad.
+    w.academy = {
+      players: Array.from({ length: ACADEMY_LIMIT }, (_, i) => ({
+        ...structuredClone(squad()[0]!),
+        id: `own:academy:filler:${i}`,
+      })),
+    };
     for (let year = 1940; year < 1946; year++) {
       w.year = year - 1;
-      war.push(...drawProdigies(w, year, true));
-      w.academy = { players: [] };
+      const drawn = drawProdigies(w, year);
+      expect(drawn).toHaveLength(drawnCount(w, year));
+      for (const p of drawn) expect(squad()).toContain(p);
     }
-    expect(war.length).toBeGreaterThanOrEqual(6);
-    for (const p of war) expect(p.id.startsWith('own:academy:')).toBe(true);
-    expect(players.length).toBe(NPC_SQUAD.size);
-    // With our academy full too, a full squad still takes none.
-    w.year = 1940;
-    w.academy = { players: Array.from({ length: ACADEMY_LIMIT }, () => structuredClone(war[0]!)) };
-    expect(drawProdigies(w, 1941, true)).toEqual([]);
-    expect(players.length).toBe(NPC_SQUAD.size);
-    // One place below the size takes at most one, as one of the refills.
-    players.pop();
-    for (let year = 1941; year < 1946; year++) {
-      w.year = year - 1;
-      drawProdigies(w, year, true);
-      expect(players.length).toBeLessThanOrEqual(NPC_SQUAD.size);
-      for (let k = players.length - 1; k >= 0; k--) if (players[k]!.prodigy) players.splice(k, 1);
-    }
+    expect(squad().length).toBeGreaterThan(NPC_SQUAD.size);
+    // At the 40-player ceiling (→CLUB-44) the other club is left out too, and nobody takes one.
+    const players = squad();
+    while (players.length < 40) players.push({ ...players[0]!, id: `filler-${players.length}` });
+    w.year = 1945;
+    expect(drawProdigies(w, 1946)).toEqual([]);
+    expect(squad()).toHaveLength(40);
   });
 
-  it('come before the refills, so a skipped summer ends with squads at their standing size', () => {
-    const w = fixture();
-    let drawn = 0;
-    for (let year = 1939; year < 1946; year++) {
+  it('are placed every summer in a world nobody owns whose squads stand at their size', () => {
+    const w = ownerless();
+    for (const players of Object.values(w.squads!)) expect(players).toHaveLength(NPC_SQUAD.size);
+    const summer = (year: number, matches: boolean) => {
+      const before = Object.fromEntries(
+        Object.entries(w.squads!).map(([id, players]) => [id, players.length]),
+      );
       w.year = year;
-      closeNpcSummer(w, undefined, false);
-      for (const players of Object.values(w.squads ?? {})) {
-        expect(players.length).toBe(NPC_SQUAD.size);
-        drawn += players.filter((p) => p.prodigy && p.born === year + 1 - PRODIGY.age).length;
+      closeNpcSummer(w, undefined, matches);
+      let placed = 0;
+      for (const [id, players] of Object.entries(w.squads!)) {
+        const drawn = players.filter((p) => p.prodigy && p.born === year + 1 - PRODIGY.age).length;
+        placed += drawn;
+        expect(players.length).toBeGreaterThanOrEqual(NPC_SQUAD.size);
+        // A skipped summer's youth only refill the standing size; its prodigies come on top.
+        if (!matches)
+          expect(players.length - drawn).toBeLessThanOrEqual(Math.max(NPC_SQUAD.size, before[id]!));
       }
-      drawn += (w.academy?.players ?? []).filter(
-        (p) => p.prodigy && p.born === year + 1 - PRODIGY.age,
-      ).length;
+      expect(placed).toBe(drawnCount(w, year + 1));
+    };
+    for (let year = 1939; year < 1946; year++) summer(year, false);
+    summer(1946, true);
+  });
+
+  it("never take a club at its league's counted limit in a world nobody owns (→CLUB-44)", () => {
+    // Italy's third tier from 2020 counts every player up to 24, with no youth exemption.
+    const w = ownerless();
+    const c = w.clubs.find((club) => club.id === 'foreign')!;
+    c.country = 'ITA';
+    c.tier = 2;
+    c.levels!.academy = 5;
+    const players = w.squads![c.id]!;
+    while (players.length < 24) players.push({ ...players[0]!, id: `filler-${players.length}` });
+    for (let year = 2021; year < 2061; year++) {
+      w.year = year - 1;
+      const drawn = drawProdigies(w, year);
+      expect(drawn).toHaveLength(drawnCount(w, year));
+      for (const p of drawn) expect(w.squads!.own).toContain(p);
+      // Taken out again, so the other club always has room.
+      w.squads!.own = w.squads!.own!.filter((p) => !p.prodigy);
     }
-    // Every skipped summer draws one or two.
-    expect(drawn).toBeGreaterThanOrEqual(7);
+    expect(w.squads!.foreign).toHaveLength(24);
+  });
+});
+
+describe("a skipped season's development (→WORLD-14, PLAYER-15)", () => {
+  /** His OVR after one skipped summer at `age` in it, and his plain twin's under the same draws. */
+  function squadSummer(age: number) {
+    const w = ownerless();
+    w.year = 1939;
+    const [p] = drawProdigies(w, 1939);
+    p!.born = 1939 - age;
+    const twin = structuredClone(w);
+    const plain = Object.values(twin.squads!)
+      .flat()
+      .find((q) => q.id === p!.id)!;
+    delete plain.prodigy;
+    closeNpcSummer(w, undefined, false);
+    closeNpcSummer(twin, undefined, false);
+    return [p!, plain] as const;
+  }
+
+  it('grows a squad prodigy ×3 in a season he is 17 in, normally in one he is 18 in', () => {
+    const [young, youngPlain] = squadSummer(17);
+    expect(mainOvr(young) - mainOvr(youngPlain)).toBeGreaterThan(1);
+    const [grown, grownPlain] = squadSummer(18);
+    expect(grown.attrs).toEqual(grownPlain.attrs);
+  });
+
+  it("grows a prodigy in the owner's academy ×3 in a season he is 17 in, normally at 18", () => {
+    for (const age of [17, 18]) {
+      const w = fixture();
+      w.year = 1938;
+      const p = academyProdigy(w, 1939);
+      p.born = 1939 - age;
+      // The development he would take without the rule: the same draws, read as anyone's.
+      const plain = structuredClone(p);
+      delete plain.prodigy;
+      developAnnually(structuredClone(w), plain, {
+        year: 1940,
+        youth: w.manager.youth,
+        ground: trainingGroundTerms(w).growth,
+        adaptation: p.adaptation,
+        report: false,
+      });
+      // One skipped season, 1939/40.
+      w.year = 1940;
+      crossWar(w, 1938);
+      expect(w.academy!.players).toContain(p);
+      if (age === 17) expect(mainOvr(p) - mainOvr(plain)).toBeGreaterThan(1);
+      else expect(p.attrs).toEqual(plain.attrs);
+    }
   });
 });
 
 describe("the owner's academy across the war gap (→WORLD-14)", () => {
   it('develops a prodigy each skipped summer and keeps him through the restart season', () => {
     const w = fixture();
-    // Aged 14 in 1938/39, the last season played before the war; the other club's squad is full,
-    // so a refill-only draw places him in our academy.
+    // Aged 14 in 1938/39, the last season played before the war.
     w.year = 1937;
-    const [p] = drawProdigies(w, 1938, true);
-    expect(p!.id.startsWith('own:academy:')).toBe(true);
+    const p = academyProdigy(w, 1938);
     expect(w.academy!.players).toEqual([p]);
-    const before = mainOvr(p!);
+    const before = mainOvr(p);
     w.year = 1946;
     crossWar(w, 1938);
     expect(w.academy!.players).toContain(p);
-    expect(mainOvr(p!) - before).toBeGreaterThan(15);
+    expect(mainOvr(p) - before).toBeGreaterThan(15);
     // Aged 22 at the restart, he stays its season for the club to promote (→CLUB-16).
     seasonAcademy(w);
     expect(w.academy!.players).toContain(p);

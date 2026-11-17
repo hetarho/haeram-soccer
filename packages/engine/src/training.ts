@@ -318,7 +318,18 @@ export function settleTraining(w: World) {
 export function developAnnually(
   w: World,
   player: Player,
-  context = {
+  context: {
+    year: number;
+    youth: number;
+    ground: number;
+    adaptation: number;
+    report: boolean;
+    /**
+     * The season whose age a prodigy's rule reads, `year` when absent: a skipped war season
+     * (→WORLD-14) has no rounds, so its development stands for it and reads his age in it.
+     */
+    season?: number | undefined;
+  } = {
     year: w.year,
     youth: w.manager.youth,
     ground: trainingGroundTerms(w).growth,
@@ -330,7 +341,7 @@ export function developAnnually(
     gap = Math.max(0, player.potential - mainOvr(player)),
     variation = random(`${w.seed}:growth:${player.id}:${context.year}`);
   // A prodigy takes three times the season's growth and its limit until 18 (→PLAYER-15).
-  const prodigy = prodigyGrowth(player, age);
+  const prodigy = prodigyGrowth(player, (context.season ?? context.year) - player.born);
   const growth =
     age < 27
       ? Math.min(3 * prodigy, (gap / 20 + context.youth / 100) * context.ground * prodigy)

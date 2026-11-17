@@ -277,6 +277,8 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     for (const p of players)
       if (retiring(p) && retirePlayerRecord(w, p, id)) recordRetirementNews(w, p, id);
     const manager = clubManager(w, c);
+    // A skipped summer's development stands for its whole season, which has no rounds, so a
+    // prodigy's rule reads his age in that season (→WORLD-14, PLAYER-15).
     for (const p of players)
       developAnnually(w, p, {
         year: w.year + 1,
@@ -284,6 +286,7 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
         ground: TRAINING_GROUND[c.levels.ground]!.growth,
         adaptation: c.cohesion ?? 0.8,
         report: false,
+        season: matches ? undefined : w.year,
       });
   }
   for (const [id, players] of Object.entries(w.squads ?? {})) {
@@ -303,9 +306,6 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     refreshFreeAgents(w, w.year + 1);
   }
   afterRetirements?.();
-  // A skipped summer's prodigies join squads below the standing size before its refills fill
-  // them (→WORLD-14/16/18); a played summer's join after the intake.
-  if (!matches) drawProdigies(w, w.year + 1, true);
   const used = npcYouthIds(w);
   for (const id of Object.keys(w.squads ?? {})) {
     const c = clubById(w, id);
@@ -314,7 +314,9 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     intakeNpcYouth(w, c, w.year + 1, used, !matches);
     invalidateNpcSquad(w, id);
   }
-  if (matches) drawProdigies(w);
+  // Every summer, a skipped one included, draws its one or two prodigies after the intake: the
+  // war refill limit bounds youth, not them (→WORLD-14/16/18).
+  drawProdigies(w);
   if (matches) capFreeAgents(w);
   settleAbsentPlayerRecords(w);
   w.npcSummerAt = w.year;

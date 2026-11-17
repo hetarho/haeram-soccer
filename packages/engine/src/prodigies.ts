@@ -14,13 +14,7 @@ import { formationOf } from './player-state';
 import { clamp, integer, random } from './primitives';
 import { clubRegistration, registrationExempt } from './registration';
 import { clubStyle } from './tactics';
-import {
-  generatedPlayer,
-  invalidateNpcSquad,
-  NPC_SQUAD,
-  PRESS_LOAD_FATIGUE,
-  stature,
-} from './world';
+import { generatedPlayer, invalidateNpcSquad, PRESS_LOAD_FATIGUE, stature } from './world';
 import { mainOvr } from './player';
 
 /** The goalkeeping three, which an outfielder's OVR never reads (→PLAYER-2). */
@@ -48,8 +42,13 @@ export function prodigyWeight(academy: number, size: number) {
   return (academy + 1) * (1 + Math.max(0, size) / 10);
 }
 
-/** Every club a prodigy may join this summer, with its weight, in the clubs' stable order. */
-function candidates(w: World, year: number, refillOnly: boolean) {
+/**
+ * Every club a prodigy may join this summer, with its weight, in the clubs' stable order. A squad
+ * at or above its standing size still takes one, in a skipped war summer too: WORLD-16's war
+ * refill limit bounds the youth intake, not the prodigies. Only a club at its registration limit
+ * or the owner's full academy is left out.
+ */
+function candidates(w: World, year: number) {
   const out: { club: Club; weight: number }[] = [];
   for (const c of w.clubs) {
     if (c.representative) continue;
@@ -59,9 +58,6 @@ function candidates(w: World, year: number, refillOnly: boolean) {
     } else {
       const players = w.squads?.[c.id];
       if (!players || !c.levels) continue;
-      // A skipped war summer brings youth only to the standing size (→WORLD-14/16): there a
-      // prodigy joins only a squad below it, as one of the youngsters that refill it.
-      if (refillOnly && players.length >= NPC_SQUAD.size) continue;
       // He arrives within the league's registration rule (→CLUB-44), as an intake's youngster
       // does: under the ceiling, and counted only where his age and academy are not exempt. His
       // position is drawn after the club, so he is read as an outfielder.
@@ -84,16 +80,15 @@ function candidates(w: World, year: number, refillOnly: boolean) {
 /**
  * The summer's prodigies, aged 14 in `year` (the season that opens after this close), drawn from
  * their own stream (`<seed>:prodigy:<year>`) so no other draw moves. Each joins a club drawn by its
- * weight; called once at each summer close after the youth intake, and in a war-gap summer
- * (`refillOnly`) before its refills, so a prodigy is one of the youngsters that bring a squad back
- * to its standing size (→WORLD-14/16).
+ * weight; called once at every summer close after the youth intake, a skipped war summer's
+ * included (→WORLD-14/18).
  */
-export function drawProdigies(w: World, year = w.year + 1, refillOnly = false): Player[] {
+export function drawProdigies(w: World, year = w.year + 1): Player[] {
   const r = random(`${w.seed}:prodigy:${year}`);
   const count = r() < PRODIGY.twoChance ? 2 : 1;
   const drawn: Player[] = [];
   for (let i = 0; i < count; i++) {
-    const pool = candidates(w, year, refillOnly);
+    const pool = candidates(w, year);
     const total = pool.reduce((sum, entry) => sum + entry.weight, 0);
     let pick = r() * total;
     const chosen = pool.find((entry) => (pick -= entry.weight) < 0) ?? pool.at(-1);

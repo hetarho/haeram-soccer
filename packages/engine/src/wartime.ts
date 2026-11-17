@@ -55,7 +55,8 @@ export function crossWar(w: World, closed: number) {
             job.contractUntil = { ...job.contractUntil, year: job.contractUntil.year + 1 };
       }
       // The owner's academy plays no skipped season, but a prodigy there (→WORLD-18) ages and
-      // develops each skipped summer, as every persisted player does (→WORLD-14, PLAYER-15).
+      // develops each skipped summer, as every persisted player does (→WORLD-14, PLAYER-15), by
+      // his age in the season it skips.
       if (hasOwner(w))
         for (const p of w.academy?.players ?? [])
           if (p.prodigy)
@@ -65,6 +66,7 @@ export function crossWar(w: World, closed: number) {
               ground: trainingGroundTerms(w).growth,
               adaptation: p.adaptation,
               report: false,
+              season: year,
             });
       w.calendar = { day: retirementAnnounceDay(year) };
       announceNpcRetirements(w);

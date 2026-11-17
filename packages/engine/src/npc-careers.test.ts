@@ -375,8 +375,13 @@ describe('persisted NPC careers on isolated squads', () => {
     expect(w.fixtures).toEqual([]);
     expect(w.history).toEqual([]);
     // Skipped summers bring youth only to the standing size (→WORLD-14/16): one refill, no more.
-    expect(w.squads![c.id]!.length).toBe(NPC_SQUAD.size);
-    const youth = w.squads![c.id]!.filter((q) => q.id.includes(':y:'));
+    // Each summer's one or two prodigies (→WORLD-18) join on top; this is the only squad.
+    const squad = w.squads![c.id]!,
+      prodigies = squad.filter((q) => q.prodigy).length;
+    expect(prodigies).toBeGreaterThanOrEqual(7);
+    expect(prodigies).toBeLessThanOrEqual(14);
+    expect(squad.length).toBe(NPC_SQUAD.size + prodigies);
+    const youth = squad.filter((q) => q.id.includes(':y:') && !q.prodigy);
     expect(youth).toHaveLength(1);
     expect(youth[0]!.id.startsWith(`${c.id}:y:194`)).toBe(true);
     expect(youth[0]!.until - 1946).toBeGreaterThanOrEqual(1);
