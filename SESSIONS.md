@@ -155,6 +155,7 @@
 - 261117 decided WORLD-18 PLAYER-15 T947: Elite prospects → 1–2 prodigies a year world-wide (14, OVR 57–63, potential 88–96) placed by academy level × stature, own academy included, growing ×3 with ×3 the season limit until 18 (alt: lower NPC youth ages for everyone | a breakthrough-only rule).
 - 261117 suggest T949 CLUB-33: Follow-up from T949's review audit: mediation.ts requestMet reads arrivals only, so a delegated mediation can pursue a request a pending bid already covers and bid for a second player; count open bids' players in requestMet/detectMediations (a small task touching mediation.ts).
 - 261117 suggest CLUB-51 CLUB-53: Game feel after the 80/70/60/50 levels: a third-tier club's country-wide scout now lists mostly top-flight players, who nearly all refuse a lower division's terms (CLUB-53 stage factor). The shortlist could rank by realistic interest (stage, playing time) so a small club's scout finds players who would come.
+- 261117 suggest MATCH-22: Pre-existing knockout bug found during the xf18 gate: tieRule (packages/engine/src/knockout.ts:124) recognises a second leg only by an id ending in ':2', so the first leg of the tie at index 2 (e.g. 1990:cwc:k2:2) plays as a single match and a draw goes to penalties; tie results stay right on aggregate. Fixing it moves simulation results and goldens — its own task.
 
 ## unlanded
 | id | tag | branch | commit | at |
