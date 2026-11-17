@@ -24,11 +24,11 @@
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 14 | 14 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 73 | 73 | - | 0 |
+| CLUB | 74 | 74 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
 | LEAGUE | 21 | 21 | - | 0 |
-| STAFF | 42 | 42 | - | 0 |
-| ECON | 59 | 59 | - | 0 |
+| STAFF | 43 | 43 | - | 0 |
+| ECON | 60 | 60 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
 | SAVE | 70 | 70 | - | 0 |
@@ -56,6 +56,7 @@
 | engine-architecture-261030 | converted@261031 |
 | gusta-self-improve-261109 | open@261109 |
 | test-gate-time-261110 | converted@261117 |
+| transfer-market-261117 | converted@261117 |
 | test-value-261110 | converted@261110 |
 | game-runtime-speed-261110 | converted@261110 |
 | match-engine-split-261110 | converted@261111 |
@@ -65,6 +66,10 @@
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T930 | Keep one browser journey instance per distinct path or layout | ARCH | - | todo |
+| T932 | Selling-club answer and personal-terms models with factor registries | CLUB STAFF | - | todo |
+| T933 | Answer our bids by the selling club, then the player, with a wage offer | CLUB STAFF ECON | T932 | todo |
+| T934 | Sell our players through the selling-club answer, with realistic volumes | CLUB ECON | T933 | todo |
+| T935 | A money bar for the 단장: replace every weak starter and list the weak bench | CLUB ECON | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |

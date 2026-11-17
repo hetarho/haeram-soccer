@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r59 | Define the browser-demo rules for historical club economy.
+> r60 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -202,7 +202,7 @@
   - renewals and improved contracts: a raise passes when it fits the room the squad share leaves above the players' wage bill.
   - youth: the youth director's pay comes first, a new one at most the whole youth share; the academy runs at the aim or the highest level the rest pays for (→ECON-39).
   - sales: a players' wage bill as a share of income plus available capital above the sales line, or more than 10 points above it, makes the staff sell harder (→CLUB-18, →CLUB-24).
-  - by the 선수 영입 step: no upgrades at 1–2, margin 5 and 1 a window at 3, margin 3 and 2 at 4, margin 2 and 3 at 5 (→CLUB-33); +10 points to every bid at 5 (→CLUB-41).
+  - by the 선수 영입 step: no upgrades at 1–2, margin 5 and 1 a window at 3, margin 3 and 2 at 4, margin 2 and 3 at 5 (→CLUB-33); +10 points to every bid at 5 (→CLUB-41); his wage offer up to 100% of a player's demand at 1–2, 125% at 3, 150% at 4, 200% at 5 (→CLUB-41); a money bar at 4–5 (→CLUB-33).
   - the manager's and the coaches' posts have no share: their pay follows the rows the 단장 sets (→ECON-39), checked only by →ECON-41.
   - there is no per-person wage cap; a request applies to later automatic decisions, never to signed contracts.
 - ECON-39 [o] While a decision is delegated its settings are set at each plan (→ECON-40) — by the 단장 from the step he acts on (→ECON-33), his temperament and his plan's money, and for the academy's football rows by the youth director — and the owner reads them on their area pages (→WEB-14); his change is refused, naming whose they are: the youth director's for 육성 목표 and 데뷔 시점, the 단장's for the rest. Taken back, they stay as they were left until the owner changes them. Build cards, the ticket price, 선수단 투자 and the other dials stay the owner's. ← whoever runs a work chooses how it runs; two hands on one setting leave neither answerable
@@ -248,6 +248,7 @@
   - funded operating deficits and wages above turnover are permitted. Exhausted backing and unsupported commitments remain observable. No support is chosen to force a title or strength target.
 
 ## chg
+- r60 261117 ECON-33✎ the 선수 영입 step sets margins, caps and bid points→+wage offer ceilings 100/125/150/200% and the money bar at 4–5
 - r59 261117 ECON-33✎ reserve years at steps 4/5 안정 지향 20/10, 균형형 10/5, 공격형 5/0→2/1, 1/0, 0/0
 - r58 261114 ECON-36✎ opaque income/no owner capital→income components, separate actual capital and cash reconciliation · ECON-42+ bounded estimated annual backing drawn only for a shortfall
 - r57 261113 ECON-36✎ wage bill on strength and division→its players' contracts with transfer fees; competition money in force with LEAGUE-10's means level→with WORLD-17's wage limit; a takeover or project clears debt→removed; cash spent on the club→raises its academy, training ground and coaching levels

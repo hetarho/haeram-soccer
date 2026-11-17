@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r42 | Define the browser-demo rules for manager demands and personality.
+> r43 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -97,7 +97,7 @@
 
 - STAFF-20 [o] The 단장 runs the club's player and manager business between the owner and the manager: when their separate responsibilities are delegated (→WEB-45) he takes contract talks (→CLUB-26), the manager post (→STAFF-18) and transfers — offers (→CLUB-18), stances (→CLUB-22) and signings (→CLUB-33) — and his reports name him. ← as at clubs with a sporting director, the head coach asks for players and the director decides; our manager picks and trains the team and never buys
   - he is hired, renewed and released like a coach (→STAFF-11, →STAFF-15, →STAFF-16), from the 단장 market (→STAFF-49); a new club starts with an unpaid ability-50 volunteer, and with the coaching departments delegated the staff fill his post by 코치 기조.
-  - he carries the transfer negotiation the chief scout carried before: a selling club's acceptance (→CLUB-18) + (ability − 50)/250, and as a negotiator +0.1 more and asking fees ×0.9; a vacant post −0.05. His trait is negotiator, closer or none, and it sets how he bids (→CLUB-41).
+  - he carries the transfer negotiation the chief scout carried before: a selling club's reservation (→CLUB-52) − (ability − 50)/250 of the asking fee, as a negotiator 0.05 less again and asking fees ×0.9; a vacant post +0.05. His trait is negotiator, closer or none, and it sets how he bids (→CLUB-41).
   - a decision its responsibility keeps with the owner is never his; while one is delegated he sets its settings (→ECON-39), and he plans the money of every delegated decision (→ECON-33).
   - 사람's 코치진 shows his card first, with the responsibilities currently delegated to him (→WEB-43).
 
@@ -279,6 +279,7 @@
 - Second career: active-player aptitude evaluation → retirement announcement → playing-coach appointment or retirement/coaching candidacy → actual coaching employment for at least three cumulative years → management candidacy only with managerial aptitude → direct/delegated appointment.
 
 ## chg
+- r43 261117 STAFF-20✎ the 단장 raises a selling club's acceptance (ability − 50)/250, negotiator +0.1, vacant −0.05→lowers its reservation share by (ability − 50)/250, negotiator 0.05 more, vacant +0.05
 - r42 261113 STAFF-13✎ rows and 재정 기조, promotion floor→delegate's settings, 단장 plans all money, promotions held by the insolvency stop; STAFF-15/18✎ 재정 기조 runway→insolvency stop (+youth pay ≤ youth share), 코치 기조 not owner-edited→owner's while direct, 단장's while delegated; STAFF-20✎ no direction row→sets delegated settings; STAFF-26✎ not owner-edited→owner's or the 단장's; STAFF-51+ temperament
 - r41 261111 STAFF-14✎ a style's effects bend the grid engine's decision tables and duels→act on the result path through the side's profile
 - r40 261104 STAFF-11✎ three seeded candidates a season per department (마당발 four, +5)→the post's free agents and other clubs' holders; chief scout market size and potential→how far the shortlist looks and how exactly others read; spotter higher potential found→young players ranked by potential; STAFF-15✎ the season's three generated candidates→the post's market, compensation in the money check, free agents first at equal standing; STAFF-20✎ 단장 from three candidates a season→the 단장 market; STAFF-27✎ in addition to three generated candidates→among the department's free agents; STAFF-43✎ a vacant training post at another club→a post of a club nobody owns, replacing its holder; STAFF-49+ every club's 단장, chief scout and coaches derived and poachable for one annual wage, free-agent pools of 3–6 per post; STAFF-50+ careers recorded only on a move, tenure results read from archived standings
