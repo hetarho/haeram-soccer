@@ -1198,8 +1198,8 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
 export const UNTOUCHABLE_PRICE = { standard: 200, selling: 150, showcase: 175, hardball: 225 };
 /**
  * The staff and manager's answer to a big offer for an untouchable player when transfers are
- * delegated: the market card sets the price, a wage bill past the 단장's second sales line lowers
- * it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
+ * delegated: the market card sets the price, the 단장's runway test failing at half the runway at
+ * the current wage bill (→ECON-33) lowers it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
  * nobody can replace.
  */
 export function untouchableVerdict(w: World, offered: number, essential: boolean) {
@@ -1216,7 +1216,7 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   let bar = base;
   if (pressure.level === 2) {
     bar -= 25;
-    steps.push(sourceMessage('delegation.sale.wagesUntouchable', { share: pressure.share }));
+    steps.push(sourceMessage('delegation.sale.runwayUntouchable'));
   }
   if (essential) {
     bar += 25;

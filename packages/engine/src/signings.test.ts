@@ -289,24 +289,25 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it("keeps the 단장's money checks", () => {
     const w = club();
     const offer = transferOffers(w)[clubIndex(w)]!;
-    // A season's income at which the fee and a year of his wage fit 80% of it after the wages
-    // already paid, but not 62%.
-    const wages = BigInt(operatingCosts(w).playerWages),
-      cost = BigInt(offer.fee) + BigInt(offer.player.wage),
-      planned = { year: w.year, revenue: (((cost + wages) * 10n) / 7n).toString(), sales: '0' };
-    // Keep cash below the reserve while covering the fee and actual obligations.
-    w.operatingExpenses = cost.toString();
-    w.cash = (cost * 3n).toString();
+    // A planned loss as large as the signing, and cash that covers it with his wage for two
+    // seasons above the quarter year a 균형형 단장 keeps back at 적당히: short of its four-season
+    // runway, inside 아낌없이's one season with nothing kept back (→ECON-33).
+    const annual = BigInt(operatingCosts(w).annual),
+      fee = BigInt(offer.fee),
+      wage = BigInt(offer.player.wage),
+      loss = fee + wage,
+      planned = { year: w.year, revenue: (annual - loss).toString(), sales: '0' };
     w.budgetPlan = planned;
-    const standard = signingVerdict(w, offer.player, offer.fee);
-    expect(standard.ok).toBe(false);
-    expect(standard.reason).toContain('영입에 쓸 돈');
+    w.cash = (fee + (loss + wage) * 2n + (annual + wage) / 4n + 1n).toString();
+    expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(false);
     w.delegationRequests = { recruitment: 5 };
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(true);
-    // Whatever the plan allows, the plain stop keeps a month of fixed costs in cash.
+    // Whatever the plan allows, the plain stop keeps a month of fixed costs in cash: income past
+    // every cost with his wage, and cash for the fee alone.
+    w.budgetPlan = { ...planned, revenue: (annual + wage * 2n).toString() };
     w.cash = BigInt(offer.fee).toString();
     expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('현금이 바닥나지');
-    // Without income the wage bill has no room.
+    // Without income a year of cash cannot carry four seasons of the loss: the wage bill has no room.
     const poor = club();
     poor.cash = operatingCosts(poor).annual;
     poor.budgetPlan = { ...planned, revenue: '0' };
@@ -314,7 +315,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     passFree(poor);
     staffSignings(poor);
     expect(staffBids(poor)).toEqual([]);
-    // Zero planned income is not a refusal when surplus cash funds the commitment.
+    // Zero planned income is not a refusal when the cash covers the loss for the runway.
     const funded = club();
     funded.budgetPlan = { ...planned, revenue: '0' };
     expect(signingVerdict(funded, offer.player, offer.fee).ok).toBe(true);
@@ -1128,7 +1129,9 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
   it('is the highest OVR whose 27-year-old wage × 25 fits the money; higher when richer, none at 1–3', () => {
     const rich = club(5),
       modest = club(5);
-    poor(modest, BigInt(operatingCosts(modest).playerWages) * 2n);
+    // Income past every fixed cost: no planned loss, and the cash is the money for signings.
+    poor(modest, BigInt(operatingCosts(modest).annual) * 2n);
+    modest.cash = (BigInt(operatingCosts(modest).playerWages) * 2n).toString();
     const high = moneyBar(rich)!,
       low = moneyBar(modest)!;
     expect(high).toBeGreaterThan(low);
@@ -1146,30 +1149,33 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(moneyBar(cautious)).toBeUndefined();
   });
 
-  it('reads the money left for signings: none when wages take the share, raised by sales and capital', () => {
-    const wages = BigInt(operatingCosts(club(5)).playerWages);
-    // At 아낌없이 the squad share is 80% of income: the wage bill alone takes all of it.
+  it('reads the money left for signings: none while the loss is uncovered, raised by sales and capital', () => {
+    const wages = BigInt(operatingCosts(club(5)).playerWages),
+      annual = BigInt(operatingCosts(club(5)).annual);
+    // Income that pays only the wages and no cash: the planned loss is uncovered.
     const spent = club(5);
     poor(spent, wages);
     expect(BigInt(delegatePlan(spent, 'recruitment').left)).toBe(0n);
     expect(moneyBar(spent)).toBeUndefined();
-    // A season's player sales reinvest 70% of their fee into signings.
+    // A player sale reaches the cash, and so the capital past a season of the loss.
     const sold = club(5);
     poor(sold, wages);
-    addEvent(sold, 'transfer-out', 'sale', 'sale', (wages * 4n).toString());
+    addEvent(sold, 'transfer-out', 'sale', 'sale', (annual * 2n).toString());
+    sold.cash = (annual * 2n).toString();
     expect(BigInt(delegatePlan(sold, 'recruitment').left)).toBeGreaterThan(0n);
     const fromSales = moneyBar(sold)!;
     expect(fromSales).toBeGreaterThan(0);
-    // Cash above the reserve (none for a 균형형 단장 at 아낌없이) is capital for signings too.
+    // More cash above the reserve (none for a 균형형 단장 at 아낌없이) buys more.
     const funded = club(5);
     poor(funded, wages);
-    funded.cash = (wages * 40n).toString();
+    funded.cash = (annual * 40n).toString();
     expect(moneyBar(funded)!).toBeGreaterThan(fromSales);
-    // This season's fees spend the income-based money (paid fees already left the cash).
+    // A fee paid leaves the cash, and the money for signings with it.
     const bought = club(5);
     poor(bought, wages);
-    addEvent(bought, 'transfer-out', 'sale', 'sale', (wages * 4n).toString());
+    addEvent(bought, 'transfer-out', 'sale', 'sale', (annual * 2n).toString());
     addEvent(bought, 'transfer-in', 'buy', 'buy', wages.toString());
+    bought.cash = (annual * 2n - wages).toString();
     expect(BigInt(delegatePlan(bought, 'recruitment').left)).toBeLessThan(
       BigInt(delegatePlan(sold, 'recruitment').left),
     );
@@ -1325,8 +1331,8 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
   it('keeps the window cap while its own signings, accepted counters included, spend the money the bar reads', () => {
     const w = club(5);
     const wages = BigInt(operatingCosts(w).playerWages);
-    // Income whose squad share just carries the wage bill: the plan's money is the cash.
-    poor(w, (wages * 125n) / 100n);
+    // Income past every fixed cost: no planned loss, the plan's money is the cash.
+    poor(w, BigInt(operatingCosts(w).annual) * 2n + wages * 10n);
     const plain = (upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[]).sort(
       (a, b) => a.level - b.level || a.slot - b.slot,
     );

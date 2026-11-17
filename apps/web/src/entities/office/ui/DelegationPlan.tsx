@@ -52,7 +52,7 @@ export interface FlowStep {
 
 /**
  * A plan's money read left to right as one sentence (→`PlanPreview`): the season's income, the
- * work's share of it, what that share already pays, and what is left to spend. The steps are the
+ * capital above the reserve, the work's money, what it already pays, and what is left to spend. The steps are the
  * shared stat tiles joined by arrows; on a phone they stack two by two.
  */
 export function PlanFlow({ label, steps }: { label: string; steps: readonly FlowStep[] }) {
@@ -72,12 +72,29 @@ export function PlanFlow({ label, steps }: { label: string; steps: readonly Flow
   );
 }
 
-/** The plan's money as steps, for the works the 단장 plans with a share of the income. */
+/**
+ * The plan's loss runway in words (→ECON-33): the seasons of planned loss the cash must cover, or
+ * that the plan stays within income.
+ */
+export function runwayLine(plan: Pick<DelegatePlan, 'runway'>) {
+  return plan.runway > 0
+    ? sourceMessage('delegation.runway.allowed', { seasons: plan.runway })
+    : sourceMessage('delegation.runway.withinIncome');
+}
+/** The planned loss now and the seasons of it the available capital covers. */
+function coversLine(w: World, plan: DelegatePlan) {
+  const loss = compactMoney(plan.loss, clubOf(w).country, w.year);
+  if (BigInt(plan.loss) === 0n) return sourceMessage('delegation.runway.noLoss');
+  return plan.covers
+    ? sourceMessage('delegation.runway.covers', { loss, seasons: plan.covers })
+    : sourceMessage('delegation.runway.coversNone', { loss });
+}
+
+/** The plan's money as steps, for the works the 단장 plans with money. */
 export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined {
   const code = clubOf(w).country,
     amount = (value: string) => <Money value={value} code={code} year={w.year} plain />,
     money = (value: string) => compactMoney(value, code, w.year),
-    share = sharePercent(plan.share),
     revenue: FlowStep = {
       label: sourceMessage('delegation.flow.revenue'),
       value: amount(plan.revenue),
@@ -90,12 +107,15 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
       value: amount(plan.capital),
       note: sourceMessage('delegation.flow.reserve', { years: plan.reserveYears }),
     },
+    carried: FlowStep = {
+      label: sourceMessage('delegation.flow.wageRoom'),
+      value: amount(plan.budget),
+      note: runwayLine(plan),
+    },
     wages: FlowStep = {
       label: sourceMessage('delegation.flow.wages'),
       value: amount(plan.committed),
-      note: sourceMessage('delegation.flow.wagesNote', {
-        share: shareOf(plan.committed, plan.revenue),
-      }),
+      note: coversLine(w, plan),
       tone: 'minus',
     };
   switch (plan.key) {
@@ -103,19 +123,11 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
       return [
         revenue,
         capital,
-        {
-          label: sourceMessage('delegation.flow.budget'),
-          value: amount(plan.budget),
-          note: sourceMessage('delegation.flow.squadNote'),
-        },
+        carried,
         wages,
         {
           label: sourceMessage('delegation.flow.signings'),
           value: amount(plan.left),
-          note: sourceMessage('delegation.flow.signingsNote', {
-            reinvest: money(plan.reinvest),
-            spent: money(plan.spent),
-          }),
           tone: BigInt(plan.left) > 0n ? 'result' : 'empty',
         },
       ];
@@ -123,10 +135,7 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
       return [
         revenue,
         capital,
-        {
-          label: sourceMessage('delegation.flow.budget'),
-          value: amount(plan.budget),
-        },
+        carried,
         wages,
         {
           label: sourceMessage('delegation.flow.raises'),
@@ -161,11 +170,7 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
       return [
         revenue,
         capital,
-        {
-          label: sourceMessage('delegation.flow.sellLine', { share }),
-          value: amount(plan.budget),
-          note: sourceMessage('delegation.flow.sellLineNote'),
-        },
+        carried,
         { ...wages, label: sourceMessage('delegation.flow.wagesNow'), tone: undefined },
       ];
     default:
@@ -175,31 +180,20 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
 
 /** The plan in one or two plain sentences under its steps. */
 function planSentence(w: World, plan: DelegatePlan): ReactNode {
-  const share = sharePercent(plan.share),
-    now = shareOf(
-      plan.committed,
-      (BigInt(plan.revenue) + (plan.key === 'sales' ? BigInt(plan.capital) : 0n)).toString(),
-    );
-  if ((plan.key === 'recruitment' || plan.key === 'contracts') && BigInt(plan.capital) > 0n) {
-    const code = clubOf(w).country;
-    return richMessage('delegation.plan.capital', {
-      years: plan.reserveYears,
-      capital: compactMoney(plan.capital, code, w.year),
-    });
-  }
+  const seasons = plan.runway;
   switch (plan.key) {
     case 'recruitment':
       return plan.over
-        ? richMessage('delegation.flow.recruitmentOver', {
-            now,
-            share,
-            reinvest: plan.reinvestShare,
-          })
-        : richMessage('delegation.flow.recruitmentLine', { share, reinvest: plan.reinvestShare });
+        ? richMessage('delegation.flow.recruitmentShort')
+        : seasons > 0
+          ? richMessage('delegation.flow.recruitmentRunway', { seasons })
+          : richMessage('delegation.flow.recruitmentIncome');
     case 'contracts':
       return plan.over
-        ? richMessage('delegation.flow.contractsOver', { now, share })
-        : richMessage('delegation.flow.contractsLine', { share });
+        ? richMessage('delegation.flow.contractsShort')
+        : seasons > 0
+          ? richMessage('delegation.flow.contractsRunway', { seasons })
+          : richMessage('delegation.flow.contractsIncome');
     case 'academy':
       return (
         <>
@@ -207,10 +201,10 @@ function planSentence(w: World, plan: DelegatePlan): ReactNode {
           {richMessage('delegation.flow.youthCoach', { name: personOf(w, 'youth').name })}
         </>
       );
-    case 'sales': {
-      const [first, second] = plan.stance.sellAbove;
-      return richMessage('delegation.plan.fundedSellLine', { first, second, now });
-    }
+    case 'sales':
+      return plan.over
+        ? richMessage('delegation.plan.salesPressed')
+        : richMessage('delegation.plan.salesCalm');
     default:
       return undefined;
   }
@@ -245,8 +239,8 @@ function pending(w: World, plan: DelegatePlan) {
 }
 
 /**
- * The 단장's plan for a request (→`delegatePlan`): how he heard it, the money as income → share →
- * already committed → left to spend, one plain sentence, and the settings he sets. The delegation
+ * The 단장's plan for a request (→`delegatePlan`): how he heard it, the money as income → capital →
+ * the wage bill the runway carries → already committed → left to spend, one plain sentence, and the settings he sets. The delegation
  * page shows it for the request being chosen; a work's page for the request in force.
  */
 export function PlanPreview({

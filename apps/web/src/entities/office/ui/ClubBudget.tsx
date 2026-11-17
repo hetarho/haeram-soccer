@@ -8,7 +8,6 @@ import {
   BUDGET_RESPONSIBILITIES,
   requestLabel,
   RESPONSIBILITY_NAMES,
-  sharePercent,
 } from '../../../../../../packages/engine/src/delegation-info';
 import { POLICY_INFO } from '../../../../../../packages/engine/src/policy';
 import { isDelegated } from '../../../../../../packages/engine/src/responsibilities';
@@ -21,7 +20,7 @@ import { Money } from '../../../shared/ui/Money';
 import { SeasonStepper } from '../../../shared/ui/SeasonStepper';
 import { compactMoney, number, percent, seasonName } from '../../../presentation/format';
 import { fixedCosts } from '../../player/@x/office';
-import { PlanFlow, planSteps, type DelegatePlan } from './DelegationPlan';
+import { PlanFlow, planSteps, runwayLine, type DelegatePlan } from './DelegationPlan';
 import s from './ClubBudget.module.css';
 
 /** A part of one of the two flow bars, coloured by what it is. */
@@ -223,26 +222,26 @@ function MoneyFlow({ budget, code }: { budget: SeasonBudget; code: string }) {
   );
 }
 
-/** One work's plan in a few words for the list (→`delegatePlan`). */
+/** One work's plan in a few words for the list (→`delegatePlan`): its loss runway first. */
 function planSummary(w: World, plan: DelegatePlan) {
   const code = clubOf(w).country,
-    money = (value: string) => compactMoney(value, code, w.year),
-    share = sharePercent(plan.share);
+    money = (value: string) => compactMoney(value, code, w.year);
   switch (plan.key) {
     case 'recruitment':
-      return displayMessage('budget.plans.signings', {
-        budget: money(plan.budget),
-        left: money(plan.left),
-      });
+      return plan.runway > 0
+        ? displayMessage('budget.plans.signingRunway', {
+            seasons: plan.runway,
+            left: money(plan.left),
+          })
+        : displayMessage('budget.plans.signingIncome', { left: money(plan.left) });
     case 'contracts':
-      return displayMessage('budget.plans.wageCap', { share });
+    case 'sales':
+      return localizeValue(runwayLine(plan));
     case 'academy':
       return displayMessage('budget.plans.academy', {
         level: POLICY_INFO.academy.levels[plan.youth!.level - 1].name,
         budget: money(plan.budget),
       });
-    case 'sales':
-      return displayMessage('budget.plans.sellLine', { share });
     default: {
       const choice = plan.choices[0];
       return choice
@@ -254,7 +253,7 @@ function planSummary(w: World, plan: DelegatePlan) {
 
 /**
  * The 단장's plan for this season (→`delegatePlan`): for each money work he holds, his income →
- * share → committed → left steps, then every work with who decides it and his plan in a few words.
+ * capital → budget → committed → left steps, then every work with who decides it and his plan in a few words.
  * Read only; who decides and the request change on the delegation page.
  */
 function SeasonPlan({ w, office }: { w: World; office: OfficeRead }) {

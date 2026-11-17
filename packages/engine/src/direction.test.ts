@@ -31,7 +31,6 @@ import {
   untouchableVerdict,
 } from './index';
 import { careerWorld } from './career.testkit';
-import { seasonRevenue } from './projection';
 import { spendingStance } from './delegation';
 import { holdTemperament } from './delegation.testkit';
 
@@ -90,7 +89,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(coachCriteriaOf(w).volunteer).toBe(true);
   });
 
-  it('only the plain insolvency stop reads the cash; the wage bill against the income sets the sale steps', () => {
+  it('only the plain insolvency stop reads the cash; the runway test sets the sale steps', () => {
     const w = world('direction-finance');
     // Five rounds of costs pass the stop (a month), three do not, whoever the 단장 is.
     for (const temperament of ['balanced', 'cautious', 'bold'] as const) {
@@ -101,9 +100,9 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
       expect(affordable(w, 0n, 0n)).toBe(false);
     }
 
-    // The wage bill past the 단장's sales line (60% of the income for 적당히) is a factor of his
-    // answer as the selling club, more than ten points above it a stronger one; a cash crisis too
-    // (→CLUB-52): 0 below the line, 1 above it, 2 ten points above, 'crisis' in a crisis.
+    // The 단장's runway test (→ECON-33) failing at the current wage bill is a factor of his answer
+    // as the selling club, failing at half the runway a stronger one; a cash crisis too
+    // (→CLUB-52): 0 while it passes, 1 failing, 2 failing at half, 'crisis' in a crisis.
     const pressure = () => {
       const context = saleContext(w, { playerId: p.id, sellerId: w.playerClub, fee: '1' })!;
       return context.cashCrisis ? 'crisis' : context.wageLine;
@@ -111,40 +110,34 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
     p.born = w.year - 26;
     p.until = w.year + 3;
-    w.cash = cashFor(w, 25);
     holdTemperament(w, 'director', 'balanced');
-    const revenue = BigInt(seasonRevenue(w)),
-      wagesAt = (percent: bigint) => {
-        const now = BigInt(operatingCosts(w).playerWages),
-          target = (revenue * percent) / 100n;
-        for (const player of activePlayers(w))
-          player.wage = ((BigInt(player.wage) * target) / now).toString();
-      };
-    wagesAt(50n);
+    const annual = BigInt(operatingCosts(w).annual),
+      loss = annual / 5n;
+    w.budgetPlan = { year: w.year, revenue: (annual - loss).toString(), sales: '0' };
+    // 적당히 at 균형: four seasons of the loss to cover above a quarter of a year kept back.
+    const capital = (seasons: bigint) => (w.cash = (loss * seasons + annual / 4n).toString());
+    capital(4n);
     expect(pressure()).toBe(0);
-    wagesAt(65n);
+    capital(3n);
     expect(pressure()).toBe(1);
-    wagesAt(75n);
+    capital(1n);
     expect(pressure()).toBe(2);
-    // Asked to hold at all costs a cautious 단장 still draws his line a step lower (68%, 78%);
-    // asked to sell readily, at 45% and 55%.
+    // Asked to hold at all costs a 균형형 단장 allows one season of the loss; asked to sell
+    // readily, none at all.
     w.delegationRequests = { sales: 5 };
-    holdTemperament(w, 'director', 'cautious');
-    expect(pressure()).toBe(1);
+    expect(pressure()).toBe(0);
     w.delegationRequests = { sales: 1 };
+    capital(10n);
     expect(pressure()).toBe(2);
     delete w.delegationRequests;
-    wagesAt(50n);
     w.cash = cashFor(w, 3);
     expect(pressure()).toBe('crisis');
-    // An untouchable star: the wage burden past the second line lowers the price by 25.
-    w.cash = cashFor(w, 25);
-    holdTemperament(w, 'director', 'balanced');
+    // An untouchable star: the runway test failing at half the runway lowers the price by 25.
+    capital(4n);
     expect(untouchableVerdict(w, 180, false).accept).toBe(false);
-    wagesAt(75n);
+    capital(1n);
     expect(untouchableVerdict(w, 180, false).accept).toBe(true);
     // A cash crisis sells.
-    wagesAt(50n);
     w.cash = cashFor(w, 3);
     expect(untouchableVerdict(w, 100, false).accept).toBe(true);
   });
