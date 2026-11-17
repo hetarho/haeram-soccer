@@ -57,8 +57,8 @@ export const SIGNING_CONFIG = {
   lineMinimum: LINE_MINIMUM,
   squadMinimum: SQUAD_TARGET,
   /**
-   * Above this many players less the listed, a 단장 who makes room lists one surplus player a
-   * regular look (→CLUB-33); each step's upgrade room is its stance's (→ECON-33).
+   * Above this many players less the listed, a 단장 who makes room lists surplus players down to
+   * it at a regular look (→CLUB-33); each step's upgrade room is its stance's (→ECON-33).
    */
   trimSquad: 24,
   /** The youngest a player he lists to make room may be. */
@@ -619,9 +619,9 @@ function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, why: 
 
 /**
  * At 넉넉히 and 아낌없이 with sales delegated too, a regular look over `trimSquad` players less the
- * listed lists one surplus player at 협상 가능 (→CLUB-33, →CLUB-22): outside the manager's XI, aged
- * `trimAge` or over, never loaned, retiring or joined in this window; the least able, then the
- * oldest, then by id. Listing is no move: it does not wait for his bids.
+ * listed lists surplus players at 협상 가능 down to it (→CLUB-33, →CLUB-22): outside the manager's XI,
+ * aged `trimAge` or over, never loaned, retiring or joined in this window; the least able, then the
+ * oldest, then by id, in one report. Listing is no move: it does not wait for his bids.
  */
 export function makeRoom(w: World, day = currentDay(w)) {
   if (!spendingStance(w, 'recruitment').signing.makeRoom || !isDelegated(w, 'sales')) return;
@@ -640,19 +640,18 @@ export function makeRoom(w: World, day = currentDay(w)) {
         !joined.has(p.id) &&
         w.year - p.born >= SIGNING_CONFIG.trimAge,
     )
-    .sort((a, b) => overall(a) - overall(b) || a.born - b.born || compareIds(a.id, b.id))[0];
-  if (!surplus) return;
-  setTransferStance(w, surplus.id, 'listed');
+    .sort((a, b) => overall(a) - overall(b) || a.born - b.born || compareIds(a.id, b.id))
+    .slice(0, unlisted - SIGNING_CONFIG.trimSquad);
+  if (!surplus.length) return;
+  for (const p of surplus) setTransferStance(w, p.id, 'listed');
   pushInbox(w, {
     kind: 'staff-report',
-    title: sourceMessage('copy.signings.036411ae66', { p0: surplus.name }),
-    detail: sourceMessage('copy.signings.5ebc835a55', {
+    title: sourceMessage('copy.signings.d5ae34d4e2', { p0: surplus.length }),
+    detail: sourceMessage('copy.signings.fd697db2c6', {
       p0: unlisted,
       p1: SIGNING_CONFIG.trimSquad,
-      p2: surplus.position,
-      p3: w.year - surplus.born,
-      p4: overall(surplus),
-    }),
+      p2: surplus.map((p) => p.name).join(' · '),
+    }).slice(0, 400),
     attention: false,
   });
 }

@@ -868,7 +868,7 @@ describe('a signing still settling in closes the slot he was bought for (→CLUB
 describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)', () => {
   const listed = (w: World) => activePlayers(w).filter((p) => transferStance(p) === 'listed');
   const roomReports = (w: World) =>
-    (w.inbox || []).filter((item) => item.title.startsWith('단장 이적 명단 등록'));
+    (w.inbox || []).filter((item) => item.title.endsWith('이적 명단에 올렸어요'));
   /** Pads the squad to `size` with copies of its weakest non-starter, five points less able. */
   function pad(w: World, size: number) {
     const starters = new Set(ownStarters(w).map((p) => p.id)),
@@ -916,9 +916,9 @@ describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)',
     expect(roomReports(moderate)).toEqual([]);
   });
 
-  it('lists the least able, then the oldest, non-starter aged 24+ a regular look', () => {
+  it('lists the least able non-starters aged 24+ down to 24 at a regular look, in one report', () => {
     const w = club(5);
-    const [younger, older, youth, loaned, retiring] = pad(w, 30);
+    const [, older, youth, loaned, retiring] = pad(w, 30);
     older!.born = w.year - 31;
     // Even less able, but never listed: aged 23, on loan, or retiring.
     for (const p of [youth!, loaned!, retiring!])
@@ -929,25 +929,39 @@ describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)',
     loaned!.loanUntil = w.year + 1;
     retiring!.retiring = w.year;
     staffSignings(w);
-    expect(listed(w).map((p) => p.id)).toEqual([older!.id]);
-    expect(roomReports(w).at(-1)).toMatchObject({
+    const starters = new Set(ownStarters(w).map((p) => p.id)),
+      chosen = listed(w);
+    expect(chosen).toHaveLength(6);
+    expect(chosen.map((p) => p.id)).toContain(older!.id);
+    for (const p of [youth!, loaned!, retiring!]) expect(transferStance(p)).toBe('open');
+    for (const p of chosen) {
+      expect(starters.has(p.id)).toBe(false);
+      expect(w.year - p.born).toBeGreaterThanOrEqual(24);
+    }
+    // The least able go first: every eligible player left is at least as able as any listed.
+    const left = activePlayers(w).filter(
+      (p) =>
+        transferStance(p) === 'open' &&
+        !p.loanUntil &&
+        p.retiring === undefined &&
+        !starters.has(p.id) &&
+        w.year - p.born >= 24,
+    );
+    expect(Math.min(...left.map((p) => overall(p)))).toBeGreaterThanOrEqual(
+      Math.max(...chosen.map((p) => overall(p))),
+    );
+    expect(roomReports(w)).toHaveLength(1);
+    expect(roomReports(w)[0]).toMatchObject({
       kind: 'staff-report',
-      title: `단장 이적 명단 등록 · ${older!.name}`,
+      title: '단장이 6명을 이적 명단에 올렸어요',
     });
-    expect(roomReports(w).at(-1)!.detail).toContain('30명이 24명을 넘어');
+    expect(roomReports(w)[0]!.detail).toContain('30명이 24명을 넘어');
+    expect(roomReports(w)[0]!.detail).toContain(older!.name);
     // Not on a day between regular looks.
+    const listedIds = listed(w).map((p) => p.id);
     w.calendar = { day: currentDay(w) + 1 };
     staffSignings(w);
-    expect(listed(w)).toHaveLength(1);
-    // The next regular look lists the next one.
-    w.calendar = { day: currentDay(w) + 6 };
-    staffSignings(w);
-    expect(
-      listed(w)
-        .map((p) => p.id)
-        .sort(),
-    ).toEqual([older!.id, younger!.id].sort());
-    expect(roomReports(w).at(-1)!.title).toBe(`단장 이적 명단 등록 · ${younger!.name}`);
+    expect(listed(w).map((p) => p.id)).toEqual(listedIds);
   });
 
   it('lists nobody with sales direct, at 적당히 or with 24 left', () => {
