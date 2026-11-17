@@ -25,6 +25,75 @@ export function placeTerm(distance: number): number {
   return Math.max(AC.place.floor, exp(-((distance / AC.place.reach) ** 2) / 2));
 }
 
+/** Rows a place table holds: one per cell and possession, at `placeKey`. */
+export const PLACE_ROWS = (BAND_EDGES.length - 1) * (LANE_EDGES.length - 1) * 2;
+/** A cell and possession's row in a place table. */
+export const placeKey = (cell: number, inPossession: boolean) => cell * 2 + Number(inPossession);
+
+/**
+ * One side's place terms for one pairing of shapes: each row, by cell and possession, is every
+ * slot's `placeTerm(placeDistance(...))`, filled when first asked and shared by every match of
+ * the same shapes in the process (T941).
+ */
+export interface PlaceTable {
+  readonly sides: readonly [ShapeSide, ShapeSide];
+  readonly side: 0 | 1;
+  readonly slots: number;
+  readonly rows: (readonly number[] | undefined)[];
+}
+
+/** Every field `placeFor` can read from a shape (its tactic, roles, presence and freedom). */
+const shapeKey = (shape: ShapeSide) =>
+  `${shape.tactic}/${shape.roles.join(',')}/${shape.present?.join(',') ?? ''}/${shape.freedom?.join(',') ?? ''}`;
+
+const PLACE_TABLES = new Map<string, PlaceTable>();
+
+/**
+ * The process's table for these shapes, side and slot count. The terms also read the attribution
+ * and staging configuration: `clearPlaceTables` (through `refreshAttributionRoles`) drops every
+ * table when a lab override changes it.
+ */
+export function placeTable(
+  sides: readonly [ShapeSide, ShapeSide],
+  side: 0 | 1,
+  slots: number,
+): PlaceTable {
+  const key = `${shapeKey(sides[0])}|${shapeKey(sides[1])}|${side}|${slots}`;
+  let table = PLACE_TABLES.get(key);
+  if (!table) {
+    table = {
+      sides,
+      side,
+      slots,
+      rows: Array<readonly number[] | undefined>(PLACE_ROWS).fill(undefined),
+    };
+    PLACE_TABLES.set(key, table);
+  }
+  return table;
+}
+
+/** Every slot's place term in this cell, on or off the ball, computed once per table. */
+export function placeRow(
+  table: PlaceTable,
+  cell: number,
+  inPossession: boolean,
+): readonly number[] {
+  const at = placeKey(cell, inPossession);
+  let row = table.rows[at];
+  if (!row) {
+    row = Array.from({ length: table.slots }, (_, slot) =>
+      placeTerm(placeDistance(table.sides, table.side, slot, cell, inPossession)),
+    );
+    table.rows[at] = row;
+  }
+  return row;
+}
+
+/** Drops every place table, so the next match reads the current configuration again. */
+export function clearPlaceTables() {
+  PLACE_TABLES.clear();
+}
+
 /** Both the band and lane reverse when a ledger cell is read by the other side. */
 export const opposingCell = (cell: number) => 39 - cell;
 
