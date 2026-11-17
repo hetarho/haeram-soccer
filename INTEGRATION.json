@@ -168,10 +168,10 @@
       "publication": "merge",
       "host": "ihaelam-ui-MacBookPro",
       "branch": "gusta-session-start-cf17-c5483839",
-      "head": "0f6bb3291f63ac0e7b11cbf230c81e33e631dabb",
+      "head": "411eb769e7d278dce928bb4e20ff61dc093263cb",
       "land": "main",
-      "status": "withdrawn",
-      "at": "2026-11-17T13:55:27.782Z",
+      "status": "working",
+      "at": "2026-11-17T13:57:08.601Z",
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "failed"
