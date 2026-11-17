@@ -69,13 +69,14 @@
 | T930 | Keep one browser journey instance per distinct path or layout | ARCH | - | todo |
 | T932 | Selling-club answer and personal-terms models with factor registries | CLUB STAFF | - | todo |
 | T933 | Answer our bids by the selling club, then the player, with a wage offer | CLUB STAFF ECON | T932 | todo |
-| T934 | Sell our players through the selling-club answer, with realistic volumes | CLUB ECON | T933 | todo |
+| T934 | Sell our players through the selling-club answer, and let the 단장 offer wage steps | CLUB ECON | T933 T935 | todo |
 | T935 | A money bar for the 단장: replace every weak starter and list the weak bench | CLUB ECON | - | todo |
 | T936 | Choose the automatic XI by scanning stored pair values | ARCH | - | todo |
 | T937 | Index market ratings by slot and skip buyers rejected for every listing | ARCH | - | todo |
 | T938 | Index the clubs that want each line for free-agent offers | ARCH | - | todo |
 | T939 | Hand the autosave world to the codec worker as JSON text | SAVE ARCH | - | todo |
 | T940 | Build the fixture replica's roster key from texts it already serialized | ARCH | - | todo |
+| T941 | Share place terms and normalisers in NPC match attribution | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
