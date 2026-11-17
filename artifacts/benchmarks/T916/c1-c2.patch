@@ -1,0 +1,48 @@
+--- a/packages/engine/src/world.ts
++++ b/packages/engine/src/world.ts
+@@ -28,6 +28,7 @@
+   generateProfile,
+   LINE_MINIMUM,
+   lineOf,
++  mainOvr,
+   type Joined,
+   type Slot,
+ } from './player';
+@@ -143,8 +144,8 @@
+   role?: RoleId,
+   surname?: number,
+ ): Player {
+-  const headroom = SQUAD_SPREAD.inForce === 'spread' ? spreadHeadroom(age) : RELEASED_HEADROOM;
+-  return drawPlayer(code, seed, id, year, level, position, age, division, role, surname, headroom);
++  const headroom = spreadHeadroom(age);
++  return drawPlayer(code, seed, id, year, level, position, age, division, role, surname, headroom, true);
+ }
+ function drawPlayer(
+   code: string,
+@@ -158,6 +159,7 @@
+   role: RoleId | undefined,
+   surname: number | undefined,
+   headroom: readonly [number, number],
++  generated = false,
+ ): Player {
+   const r = random(`${seed}:${id}`);
+   // The profile has a stream of its own, so the name, potential and agent stay as they were drawn.
+@@ -188,6 +190,7 @@
+     career: zeroMetrics(),
+     season: zeroMetrics(),
+   };
++  if (generated) player.potential = Math.max(mainOvr(player), player.potential);
+   // His overall, read once: it moves with his attributes alone (T669).
+   const ovr = overall(player);
+   player.wage = marketWageAt(code, year, division ?? divisionFor(code, ovr), player, ovr);
+--- a/packages/engine/src/npc-careers.ts
++++ b/packages/engine/src/npc-careers.ts
+@@ -121,7 +121,7 @@
+     if (used.has(id)) continue;
+     const r = random(`${w.seed}:youth:${id}`);
+     const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
+-    const potential = integer(r, config.potential[0], config.potential[1]);
++    const potential = integer(r, config.potential[0], config.potential[1]) - 11;
+     const level = clamp(
+       potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]),
+       15,

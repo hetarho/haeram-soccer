@@ -66,7 +66,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 T943 | todo |
-| T943 | Prepare a durable isolated generation repair recipe for independent review | ARCH | T915 | todo |
+| T943 | Prepare a durable isolated generation repair recipe for independent review | ARCH | T915 | doing@261117.cf17 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
