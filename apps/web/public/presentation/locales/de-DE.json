@@ -6895,6 +6895,8 @@
     "market.sale.cash": "Finanzkrise ({rounds} Spieltage Fixkosten)",
     "market.sale.wages.over": "Gehaltssumme über der Verkaufsgrenze ({share} % der Einnahmen)",
     "market.sale.wages.far": "Gehaltssumme mehr als 10 Punkte über der Verkaufsgrenze ({share} % der Einnahmen)",
+    "market.sale.runway.over": "Bei der aktuellen Gehaltssumme deckt das Geld den geplanten Verlust nicht für die erlaubten Spielzeiten",
+    "market.sale.runway.far": "Das Geld deckt den geplanten Verlust nicht einmal für die Hälfte der erlaubten Spielzeiten",
     "market.sale.sellDown": "Verein, der zur Gehaltssenkung verkauft",
     "market.sale.relegated": "Stammspieler eines in der letzten Saison abgestiegenen Vereins",
     "market.sale.aboveDivision": "Spieler mindestens 5 über dem Niveau seiner Liga, von einem Verein einer höheren Liga umworben",

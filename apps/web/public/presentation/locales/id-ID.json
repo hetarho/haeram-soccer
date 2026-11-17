@@ -6892,6 +6892,8 @@
     "market.sale.cash": "Krisis kas ({rounds} pekan biaya tetap)",
     "market.sale.wages.over": "Beban gaji di atas batas penjualan ({share}% dari pendapatan)",
     "market.sale.wages.far": "Beban gaji lebih dari 10 poin di atas batas penjualan ({share}% dari pendapatan)",
+    "market.sale.runway.over": "Dengan beban gaji saat ini, kas tidak menutup kerugian terencana selama musim yang diizinkan",
+    "market.sale.runway.far": "Kas tidak menutup kerugian terencana bahkan untuk separuh musim yang diizinkan",
     "market.sale.sellDown": "Klub yang menjual untuk mengurangi beban gaji",
     "market.sale.relegated": "Pemain inti klub yang terdegradasi musim lalu",
     "market.sale.aboveDivision": "Pemain minimal 5 di atas level divisinya, diincar klub dari divisi lebih tinggi",

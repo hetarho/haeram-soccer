@@ -218,6 +218,18 @@ describe('the selling club answer (→CLUB-52)', () => {
     expect(new Set(lines.map((l) => l.factor))).toEqual(new Set(SALE_FACTORS.map((f) => f.id)));
     for (const l of lines) expect(message(l.message, l.params)).not.toMatch(/\{/);
   });
+
+  it("names our 단장's runway test on the wage rows, not the retired sales line", () => {
+    const row = (wageLine: 0 | 1 | 2) =>
+      saleShare(ctx({ ownSeller: true, value: '900000', wageLine, wageShare: 80 })).lines.find(
+        (l) => l.factor === 'wages',
+      );
+    expect(row(0)).toBeUndefined();
+    expect(row(1)).toMatchObject({ delta: -0.05, message: 'market.sale.runway.over' });
+    expect(row(2)).toMatchObject({ delta: -0.1, message: 'market.sale.runway.far' });
+    // A seller nobody owns has no 단장 of ours, so no runway row.
+    expect(saleShare(ctx({ wageLine: 2 })).lines.some((l) => l.factor === 'wages')).toBe(false);
+  });
 });
 
 describe('saleContext reads a bid from a world', () => {

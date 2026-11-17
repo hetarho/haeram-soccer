@@ -6892,6 +6892,8 @@
     "market.sale.cash": "資金難(固定費{rounds}節分)",
     "market.sale.wages.over": "選手年俸が売却基準線を超過(収入の{share}%)",
     "market.sale.wages.far": "選手年俸が売却基準線を10ポイント超過(収入の{share}%)",
+    "market.sale.runway.over": "現在の選手年俸では、保有資金が計画赤字を許容期間分まかなえない",
+    "market.sale.runway.far": "保有資金が計画赤字を許容期間の半分もまかなえない",
     "market.sale.sellDown": "年俸削減のため選手を売る球団",
     "market.sale.relegated": "昨季降格した球団のレギュラー",
     "market.sale.aboveDivision": "所属ディビジョンの水準を5以上上回り、上位ディビジョンの球団が求める選手",

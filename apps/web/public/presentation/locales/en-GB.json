@@ -6895,6 +6895,8 @@
     "market.sale.cash": "Cash crisis ({rounds} rounds of fixed costs)",
     "market.sale.wages.over": "Wage bill above the sales line ({share}% of income)",
     "market.sale.wages.far": "Wage bill more than 10 points above the sales line ({share}% of income)",
+    "market.sale.runway.over": "At the current wage bill, the cash cannot cover the planned loss for the allowed seasons",
+    "market.sale.runway.far": "The cash cannot cover the planned loss for even half the allowed seasons",
     "market.sale.sellDown": "A club selling down its wage bill",
     "market.sale.relegated": "A starter at a club relegated last season",
     "market.sale.aboveDivision": "A player 5 or more above his division's level, wanted by a club from a higher division",

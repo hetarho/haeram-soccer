@@ -9,6 +9,7 @@ import {
   currencyChange,
   npcCanPay,
   npcWageBill,
+  npcWageBudget,
   npcWageLimit,
   recordNpcTransferFee,
 } from './books';
@@ -59,6 +60,15 @@ export const NPC_MARKET = {
   searchSlack: 6,
   /** Affordable targets a need keeps per targetsPerNeed, so a bid failing on its drawn fee has a next. */
   searchSpare: 2,
+  /**
+   * The value rule's share of a slot target's score (→WORLD-16): 0 ranks by slot gain alone, 1 by
+   * slot gain for what he would cost against what a regular's share of the budget buys.
+   */
+  valueWeight: 0.5,
+  /** Seasons of his wage a target's cost counts, beside the fee. */
+  valueYears: 3,
+  /** The seasons a club's cash above debt is spread over in its season wage budget. */
+  cashRunway: 3,
 };
 
 export function npcMarketDays(year: number) {
@@ -190,11 +200,26 @@ function reservedReturns(w: World, club: string, settlement?: Settlement) {
 const convertFee = (w: World, from: Club, to: Club, fee: string) =>
   fromPounds(to.country, w.year, inPounds(from.country, w.year, fee));
 
-/** The level an ordinary place can carry, on the same wage curve as an actual signing. */
-function affordableLevel(w: World, c: Club, players: Player[]) {
-  const limit = npcWageLimit(w, c);
-  if (limit === undefined || !players.length) return c.strength;
-  return levelWithin(w, c, players[0]!, limit / BigInt(NPC_SQUAD.size));
+/**
+ * The level an ordinary place can carry, on the same wage curve as an actual signing: a regular's
+ * share of the season wage budget (→WORLD-16), not the whole funded envelope, so cash a club could
+ * spend once does not read as a squad of internationals it could pay every season.
+ */
+export function affordableLevel(w: World, c: Club, players: Player[]) {
+  const budget = npcWageBudget(w, c, NPC_MARKET.cashRunway);
+  if (budget === undefined || !players.length) return c.strength;
+  return levelWithin(w, c, players[0]!, budget / BigInt(NPC_SQUAD.size));
+}
+/**
+ * A slot target's score by the value rule (→WORLD-16): his slot gain, blended by
+ * `NPC_MARKET.valueWeight` with that gain for what he would cost (the asking fee and
+ * `valueYears` of his wage) against `reference`, what a regular's share of the buyer's season wage
+ * budget buys over those years. A target costing exactly the reference scores his gain.
+ */
+export function npcValueScore(gain: number, cost: bigint, reference: bigint) {
+  const weight = NPC_MARKET.valueWeight;
+  if (weight <= 0 || cost <= 0n || reference <= 0n) return gain;
+  return gain * (1 - weight + (weight * Number(reference)) / Number(cost));
 }
 /** The highest level a regular's market wage at the club fits within `budget`. */
 function levelWithin(w: World, c: Club, sample: Player, budget: bigint) {
@@ -322,10 +347,12 @@ function refusesEveryBid(w: World, buyer: Club, settlement: Settlement) {
 
 /**
  * Why a move happened (→WORLD-16), reported to measurement only and never stored: a pull bid for an
- * unlisted player, one for a listed player under its listing's reason, a loan, a loan's return, a
+ * unlisted player, one for a listed player under its listing's reason (`listed-down` when a lower
+ * division's club pays a fee for a higher division's listed player), a loan, a loan's return, a
  * free agent's signing, or another club's accepted offer for our player.
  */
-export type MoveReason = 'pull' | ListingReason | 'loan' | 'loan-return' | 'free-signing' | 'offer';
+export type MoveReason =
+  'pull' | ListingReason | 'listed-down' | 'loan' | 'loan-return' | 'free-signing' | 'offer';
 /** Observation only for measurement; no observer changes settlement inputs or stores the reason. */
 export const PLAYER_MOVE_FLOW: {
   observe?: (w: World, id: string, move: PlayerMove, reason: MoveReason) => void;
@@ -603,7 +630,11 @@ type Attempt = 'skipped' | 'bid' | 'moved';
  * one seeded draw each keyed by the pair and window; reasons reach the move observer only. Every
  * buyer reads every target each settlement day, so a need opening later in the window still
  * reaches him; a pair asked again on a later day meets the same draws, and the re-bid counts
- * against the era's bids.
+ * against the era's bids. A slot need's targets rank by the value rule (`npcValueScore`); a lower
+ * division's club also reaches a higher division's listed players (surplus, blocked, final season,
+ * aged 30 or over) for a fee; from a window's second settlement day a bidder skips a player whose
+ * answers under this window's draws, read with today's factors, would refuse it, without spending a
+ * bid, while the first day bids blind.
  */
 export function npcMarket(w: World) {
   const day = currentDay(w);
@@ -619,7 +650,9 @@ export function npcMarket(w: World) {
     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
   );
   const caps = npcMarketCaps(w.year);
-  const bidsToday = bidsOnDay(caps.bids, days.indexOf(day), days.length);
+  const dayAt = days.indexOf(day),
+    later = dayAt > 0;
+  const bidsToday = bidsOnDay(caps.bids, dayAt, days.length);
   if (bidsToday <= 0) return;
   const settlement: Settlement = {
     clubs: new Map(),
@@ -681,17 +714,43 @@ export function npcMarket(w: World) {
     const value = marketValueAt(seller.country, w.year, seller.tier, p);
     return loan ? ratio(value, BigInt(Math.round(MARKET_CONFIG.loan * 1000)), 1000n) : value;
   };
+  /** A target's price to the buyer, in its money: his wage at the club, the asking and least fees. */
+  const priceOf = (buyer: Club, seller: Club, p: Player, loan: boolean) => {
+    const asking = askingOf(seller, p, loan);
+    return {
+      wage: BigInt(marketWageAt(buyer.country, w.year, buyer.tier, p)),
+      fee: BigInt(convertFee(w, seller, buyer, asking)),
+      least: BigInt(convertFee(w, seller, buyer, npcBidFee(asking, false, 0))),
+    };
+  };
   /**
    * Whether the buyer's funded envelope holds his wage at the club and the lowest bid it could
    * make: read without the wage-decision observer, which only a bid reaches.
    */
-  const affords = (buyer: Club, seller: Club, p: Player, loan: boolean) => {
+  const affords = (buyer: Club, price: ReturnType<typeof priceOf>) => {
     const { limit, bill } = clubFacts(w, buyer, settlement);
-    if (limit === undefined) return true;
-    const wage = BigInt(marketWageAt(buyer.country, w.year, buyer.tier, p));
-    const least = npcBidFee(askingOf(seller, p, loan), false, 0);
-    return bill + wage + BigInt(convertFee(w, seller, buyer, least)) <= limit;
+    return limit === undefined || bill + price.wage + price.least <= limit;
   };
+  const references = new Map<string, bigint>();
+  /** What a regular's share of the buyer's season wage budget buys over the value rule's years. */
+  const referenceOf = (c: Club) => {
+    let reference = references.get(c.id);
+    if (reference === undefined) {
+      const budget = npcWageBudget(w, c, NPC_MARKET.cashRunway) ?? 0n;
+      reference = (budget * BigInt(NPC_MARKET.valueYears)) / BigInt(NPC_SQUAD.size);
+      references.set(c.id, reference);
+    }
+    return reference;
+  };
+  /**
+   * A higher division's player comes down only when listed (→WORLD-16): on loan as listed, or for a
+   * fee when surplus, blocked, in his final season or aged 30 or over.
+   */
+  const listedDown = (listing: Listing | undefined) =>
+    !!listing &&
+    (listing.loan ||
+      listing.reason !== 'sell-down' ||
+      w.year - listing.player.born >= SALE_FACTOR_VALUES.veteranAge);
   // The pairs asked today: a buyer asks for a player once a settlement day.
   const moved = new Set<string>(),
     tried = new Set<string>(),
@@ -714,36 +773,44 @@ export function npcMarket(w: World) {
     return looks;
   };
   /** Whether a seller's player is within a club's reach: as `reach` lists the divisions. */
-  const reaches = (c: Club, seller: Club, loan: boolean) =>
+  const reaches = (c: Club, seller: Club, listing: Listing | undefined) =>
     seller.country === c.country
-      ? seller.tier >= c.tier || loan
+      ? seller.tier >= c.tier || listedDown(listing)
       : seller.tier === 0 && looksAbroad(c);
-  /** The divisions a buyer reaches for a line: its own and those below, the top flight abroad too. */
+  /**
+   * The divisions a buyer reaches for a line: its own and those below, the top flight abroad too,
+   * and the higher divisions for their listed players only.
+   */
   const reach = (buyer: Club) => {
-    const out: { country: string; tier: number; loanOnly: boolean }[] = [];
+    const out: { country: string; tier: number; listedOnly: boolean }[] = [];
     for (const tier of [...(tiers.get(buyer.country) ?? [])].sort((a, b) => a - b))
-      // A higher division's player comes down only on loan.
-      out.push({ country: buyer.country, tier, loanOnly: tier < buyer.tier });
+      out.push({ country: buyer.country, tier, listedOnly: tier < buyer.tier });
     if (looksAbroad(buyer))
       for (const country of [...tiers.keys()].sort())
         if (country !== buyer.country && tiers.get(country)!.has(0))
-          out.push({ country, tier: 0, loanOnly: false });
+          out.push({ country, tier: 0, listedOnly: false });
     return out;
   };
   /**
-   * A need's targets within reach and means, by slot gain; a listed player first only on a tie.
-   * Each division's list runs from the ablest down, from the buyer's wage ceiling, and stops once
-   * no one left can rate at the slot above both the need's threshold and the kept targets: a
-   * player's slot rating stands at most `searchSlack` above his main OVR.
+   * A need's targets within reach and means; a listed player first only on a tie. A slot need ranks
+   * them by the value rule (`npcValueScore`), a line need by OVR. Each division's list runs from the
+   * ablest down, from the buyer's wage ceiling, and stops once no one left can rate at the slot
+   * above the need's threshold (and, ranked by OVR, above the kept targets): a player's slot rating
+   * stands at most `searchSlack` above his main OVR. Valued targets keep no such bound, since a
+   * cheaper player below the kept ones can outscore them.
    */
   const targetsFor = (buyer: Club, need: Need) => {
     const threshold = need.slot ? need.best + NPC_MARKET.upgrade : -Infinity,
       slack = need.slot ? NPC_MARKET.searchSlack : 0,
-      keep = NPC_MARKET.targetsPerNeed * NPC_MARKET.searchSpare;
+      keep = NPC_MARKET.targetsPerNeed * NPC_MARKET.searchSpare,
+      valued = !!need.slot && NPC_MARKET.valueWeight > 0;
     const found: { cand: Candidate; score: number; listed: boolean }[] = [];
     const scores: number[] = [];
-    const bound = () => Math.max(threshold, scores.length >= keep ? scores[keep - 1]! : -Infinity);
-    for (const { country, tier, loanOnly } of reach(buyer)) {
+    const bound = () =>
+      valued
+        ? threshold
+        : Math.max(threshold, scores.length >= keep ? scores[keep - 1]! : -Infinity);
+    for (const { country, tier, listedOnly } of reach(buyer)) {
       const list = index.get(indexKey(country, tier, need.line)) ?? [];
       for (let i = firstAtMost(list, levelOf(buyer)); i < list.length; i++) {
         const cand = list[i]!;
@@ -752,14 +819,23 @@ export function npcMarket(w: World) {
         if (tried.has(`${buyer.id}|${cand.player.id}`)) continue;
         const listing = listed.get(cand.player.id),
           loan = listing?.loan ?? false;
-        if (loanOnly && !loan) continue;
+        if (listedOnly && !listedDown(listing)) continue;
         // A player his club cannot sell now, or whom the buyer cannot pay for, never takes a
         // target's place.
         if (salesLeft(cand.club) <= 0 || !npcCanSell(w, cand.club, cand.player)) continue;
-        const score = need.slot ? rating(cand.player, settlement, need.slot) : cand.ovr;
-        if (score < bound()) continue;
-        if (!affords(buyer, cand.club, cand.player, loan)) continue;
+        const rated = need.slot ? rating(cand.player, settlement, need.slot) : cand.ovr;
+        if (rated < bound()) continue;
+        const price = priceOf(buyer, cand.club, cand.player, loan);
+        if (!affords(buyer, price)) continue;
+        const score = valued
+          ? npcValueScore(
+              rated - need.best,
+              price.fee + price.wage * BigInt(NPC_MARKET.valueYears),
+              referenceOf(buyer),
+            )
+          : rated;
         found.push({ cand, score, listed: !!listing });
+        if (valued) continue;
         const at = scores.findIndex((kept) => kept < score);
         scores.splice(at < 0 ? scores.length : at, 0, score);
       }
@@ -796,37 +872,21 @@ export function npcMarket(w: World) {
     const offer = npcOffer(w, bidder, p, seller, fee, loan, wanted.get(bidder.id), settlement);
     return offer ? { fee, offer } : undefined;
   };
-  /** One target: the bid (or an equal-stature rival's who pays him more), both answers, the move. */
-  const attempt = (buyer: Club, cand: Candidate): Attempt => {
-    const { player: p, club: seller } = cand;
-    if (moved.has(p.id) || salesLeft(seller) <= 0 || !npcCanSell(w, seller, p)) return 'skipped';
-    const listing = listed.get(p.id),
-      loan = listing?.loan ?? false;
-    const asking = askingOf(seller, p, loan);
-    const own = bidOf(buyer, p, seller, asking, loan);
-    tried.add(`${buyer.id}|${p.id}`);
-    if (!own) return 'skipped';
-    // A player two clubs want joins the one of higher stature, then the higher wage (→WORLD-16):
-    // higher statures have had their turn, so only an equal-stature rival can outbid here.
-    let bidder = buyer,
-      bid = own;
-    for (const rival of buyers) {
-      if (statureOf(rival) !== statureOf(buyer) || rival === buyer || rival === seller) continue;
-      if (bidsLeft(rival) <= 0 || buysLeft(rival) <= 0 || tried.has(`${rival.id}|${p.id}`))
-        continue;
-      if (!reaches(rival, seller, loan)) continue;
-      const theirs = bidOf(rival, p, seller, asking, loan);
-      if (
-        theirs &&
-        (compareMoney(theirs.offer.pounds, bid.offer.pounds) < 0 ||
-          (theirs.offer.pounds === bid.offer.pounds && compareIds(rival.id, bidder.id) < 0))
-      ) {
-        bidder = rival;
-        bid = theirs;
-      }
-    }
-    tried.add(`${bidder.id}|${p.id}`);
-    bids.set(bidder.id, (bids.get(bidder.id) ?? 0) + 1);
+  type Bid = NonNullable<ReturnType<typeof bidOf>>;
+  /**
+   * The seller's answer (→CLUB-52) and the player's (→CLUB-53) to a bid under this window's draws,
+   * read with today's factors: the fee and offer it settles on, or undefined when either refuses or
+   * the seller's counter is beyond the bidder. A counter is checked against the bidder's envelope
+   * before its offer, so a refused reading reaches no wage-decision observer.
+   */
+  const answered = (
+    bidder: Club,
+    p: Player,
+    seller: Club,
+    asking: string,
+    loan: boolean,
+    bid: Bid,
+  ) => {
     const { limit, bill } = clubFacts(w, seller, settlement);
     const answer = saleAnswer(
       npcSaleContext(w, {
@@ -839,11 +899,17 @@ export function npcMarket(w: World) {
       }),
       random(`${w.seed}:npc-sale:${w.year}:${windowName}:${bidder.id}:${p.id}`)(),
     );
-    if (answer.kind === 'refuse') return 'bid';
+    if (answer.kind === 'refuse') return undefined;
     let fee = bid.fee,
       offer = bid.offer;
     if (answer.kind === 'counter') {
       // A counter at R is taken when the buyer can pay it.
+      if (later) {
+        const facts = clubFacts(w, bidder, settlement),
+          paid = BigInt(convertFee(w, seller, bidder, answer.counter!));
+        if (facts.limit !== undefined && facts.bill + BigInt(offer.wage) + paid > facts.limit)
+          return undefined;
+      }
       const countered = npcOffer(
         w,
         bidder,
@@ -854,7 +920,7 @@ export function npcMarket(w: World) {
         wanted.get(bidder.id),
         settlement,
       );
-      if (!countered) return 'bid';
+      if (!countered) return undefined;
       fee = answer.counter!;
       offer = countered;
     }
@@ -869,14 +935,61 @@ export function npcMarket(w: World) {
       }),
       random(`${w.seed}:npc-terms:${w.year}:${windowName}:${bidder.id}:${p.id}`)(),
     );
-    if (!terms.accept) return 'bid';
+    return terms.accept ? { fee, offer } : undefined;
+  };
+  /**
+   * One target: the bid (or an equal-stature rival's who pays him more), both answers, the move.
+   * From the window's second settlement day a bidder whose answers would refuse it skips the
+   * player without spending a bid; the first day bids blind.
+   */
+  const attempt = (buyer: Club, cand: Candidate): Attempt => {
+    const { player: p, club: seller } = cand;
+    if (moved.has(p.id) || salesLeft(seller) <= 0 || !npcCanSell(w, seller, p)) return 'skipped';
+    const listing = listed.get(p.id),
+      loan = listing?.loan ?? false;
+    const asking = askingOf(seller, p, loan);
+    const own = bidOf(buyer, p, seller, asking, loan);
+    tried.add(`${buyer.id}|${p.id}`);
+    if (!own) return 'skipped';
+    let result = later ? answered(buyer, p, seller, asking, loan, own) : undefined;
+    if (later && !result) return 'skipped';
+    // A player two clubs want joins the one of higher stature, then the higher wage (→WORLD-16):
+    // higher statures have had their turn, so only an equal-stature rival can outbid here.
+    let bidder = buyer,
+      bid = own;
+    for (const rival of buyers) {
+      if (statureOf(rival) !== statureOf(buyer) || rival === buyer || rival === seller) continue;
+      if (bidsLeft(rival) <= 0 || buysLeft(rival) <= 0 || tried.has(`${rival.id}|${p.id}`))
+        continue;
+      if (!reaches(rival, seller, listing)) continue;
+      const theirs = bidOf(rival, p, seller, asking, loan);
+      if (
+        theirs &&
+        (compareMoney(theirs.offer.pounds, bid.offer.pounds) < 0 ||
+          (theirs.offer.pounds === bid.offer.pounds && compareIds(rival.id, bidder.id) < 0))
+      ) {
+        if (later) {
+          const theirResult = answered(rival, p, seller, asking, loan, theirs);
+          if (!theirResult) continue;
+          result = theirResult;
+        }
+        bidder = rival;
+        bid = theirs;
+      }
+    }
+    tried.add(`${bidder.id}|${p.id}`);
+    bids.set(bidder.id, (bids.get(bidder.id) ?? 0) + 1);
+    if (!later) result = answered(bidder, p, seller, asking, loan, bid);
+    if (!result) return 'bid';
+    const { fee, offer } = result;
+    const down = seller.country === bidder.country && seller.tier < bidder.tier;
     settleMove(
       w,
       {
         club: seller,
         player: p,
         loan,
-        reason: listing ? (loan ? 'loan' : listing.reason) : 'pull',
+        reason: listing ? (loan ? 'loan' : down ? 'listed-down' : listing.reason) : 'pull',
       },
       offer,
       fee,
