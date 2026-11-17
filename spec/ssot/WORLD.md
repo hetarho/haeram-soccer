@@ -1,5 +1,5 @@
 # WORLD Fictional world and catalogs
-> r16 | Define the browser-demo rules for fictional world and catalogs.
+> r17 | Define the browser-demo rules for fictional world and catalogs.
 
 ## decisions
 - WORLD-1 [o] Playable associations: ENG ESP GER ITA FRA POR NED BEL. Other UEFA associations appear as representative clubs only.
@@ -70,7 +70,7 @@
     - wages above turnover are allowed when those resources cover them. List highest-paid players only while commitments exceed that funded envelope, keeping squad/line minima and a goalkeeper (→!CLUB-5, →!WORLD-16); turnover alone never triggers sell-down.
     - renewals, free-agent signings, NPC offers, fee signings and sell-down share one funding calculation. A fee and wage cannot spend the same headroom twice.
   - stature (→LEAGUE-10) adds nothing directly to strength: it raises gate and commercial income (→ECON-8/9), sizes backing (→!ECON-42) and wins a contested player (→WORLD-16).
-  - academy, ground and coaching levels follow the club's division: each has a target, its division's ladder value plus its stature's shift; actual surplus investment (→!ECON-36) holds it at most 1 level above that target, otherwise it moves back toward it, and after promotion or relegation the target moves with the division, at most one level a season. ← unbounded investment lifted lower divisions' academies to the top flight's founding level by 1938 and erased the divisions' gap in youth quality (measured 261118: intake potential 81.4/71.8/60.9/53.6 by division in 1931, 82.7/79.5/78.7/77.9 in 1938)
+  - academy, ground and coaching levels follow the club's division: each has a target, its division's ladder value plus its stature's shift; levels move toward that target whatever the club invests (surplus investment →!ECON-36 never lifts them above it), and after promotion or relegation the target moves with the division, at most one level a season. ← investment that could hold levels even one above the target let every division drift 3–10 above its level by 1965 (measured 261118, 1930→1975 on 3 seeds); unbounded investment lifted lower divisions' academies to the top flight's founding level by 1938 and erased the divisions' gap in youth quality (measured 261118: intake potential 81.4/71.8/60.9/53.6 by division in 1931, 82.7/79.5/78.7/77.9 in 1938)
   - no project, takeover or crisis changes a club nobody owns; a rare rise comes from youth, results, funded business and the market.
 
 - WORLD-18 [o] Prodigies (신동): each summer the world draws one or two prodigies, about 1.5 a year on average, aged 14 with an OVR near 60 and a potential of 88–96, each joining a club with a chance weighted by its academy level and stature — a club nobody owns as a squad player, the owner's club into its academy (→CLUB-16). A prodigy grows faster until 18 (→PLAYER-15), so one can pass 80 by 16. ← one or two teenagers a year in the world reach a top-flight level while still at school age, as in football; nobody else can
@@ -80,6 +80,7 @@
 - Player career: founding squad or youth intake → development and ageing → contracts and transfer windows → retirement → kept when a record links him (→HIST-23), or coaching → the same person in staff/manager candidacy → linked actual career facts.
 
 ## chg
+- r17 261118 WORLD-17✎ surplus investment holds levels at most 1 above the division target→never above it
 - r16 261118 WORLD-16✎ refills at bench level 10 below→a refill margin starting 10, tuned; transfers ranked by slot fit within means→by slot gain for fee and wages, means from the season wage budget, later settlement days skip players who would refuse, +lower divisions buy higher divisions' listed players for a fee; war-gap refills youth→ready to play, aged 19–24 near the division's level
 - r15 261118 WORLD-15✎ founding level 77−11t→90−10t (80/70/60/50); WORLD-16✎ youth by academy level→drawn around the division's level, skewed below it, refills at bench level (−10); transfers settled at once without negotiation at market value for need→buyers bid for listed or unlisted targets, the seller (CLUB-52) and the player (CLUB-53) answer, era caps per window, reasons reported to measurement only; sell-down highest-paid→lowest value per wage, 30+, final season, then highest-paid; war gap youth→only to the standing size; WORLD-17✎ levels rise through investment and decay slowly→follow the division's ladder value plus stature, at most +1 by investment, moving with promotion or relegation one level a season; WORLD-18+ prodigies 1–2 a year (14, ~60, potential 88–96)
 - r14 261114 WORLD-17✎ turnover-minus-cost wage cap and ratio-led sell-down→shared cash/debt, operating income, net fees and finite-backing envelope
