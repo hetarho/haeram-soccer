@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { message } from '../../contracts/src/messages';
+import type { ClubBooks, ClubSeasonBook } from '../../contracts/src/owner';
+import type { Club, World } from '../../contracts/src/types';
+import { currencyChange } from './books';
+import { SEASON_ROUNDS } from './calendar';
+import { SAFETY_ROUNDS } from './delegation-info';
+import { operatingExpensesAt } from './finance';
+import { fixedCostRunway } from './investment';
 import { careerWorld } from './career.testkit';
 import { activePlayers, overall } from './player-state';
 import { compareIds } from './primitives';
@@ -107,6 +114,34 @@ describe('the selling club answer (→CLUB-52)', () => {
       }
   });
 
+  it('states the chances on the integer fees the answers use, small amounts included', () => {
+    const grid = draws(4000);
+    expect(saleOutlook(ctx({ asking: '3', fee: '2', place: 'outside' }))).toMatchObject({
+      accept: 0,
+      counter: 0,
+    });
+    expect(saleAnswer(ctx({ asking: '3', fee: '2', place: 'outside' }), 0.999).kind).toBe('refuse');
+    for (const c of [ctx({ place: 'outside' }), ctx({ place: 'core' }), VARIANTS[2]!])
+      for (let asking = 1; asking <= 16; asking++)
+        for (let fee = 0; fee <= asking; fee++) {
+          const bid = { ...c, asking: String(asking), fee: String(fee) },
+            outlook = saleOutlook(bid),
+            kinds = grid.map((u) => saleAnswer(bid, u).kind);
+          const share = (kind: string) => kinds.filter((k) => k === kind).length / grid.length;
+          expect(Math.abs(share('accept') - outlook.accept)).toBeLessThanOrEqual(2 / grid.length);
+          expect(Math.abs(share('counter') - outlook.counter)).toBeLessThanOrEqual(2 / grid.length);
+        }
+    const own = { ...VARIANTS[3]!, asking: '11', value: '10' };
+    for (let fee = 0; fee <= 11; fee++) {
+      const bid = { ...own, fee: String(fee) },
+        outlook = saleOutlook(bid),
+        kinds = grid.map((u) => saleAnswer(bid, u).kind);
+      const share = (kind: string) => kinds.filter((k) => k === kind).length / grid.length;
+      expect(Math.abs(share('accept') - outlook.accept)).toBeLessThanOrEqual(2 / grid.length);
+      expect(Math.abs(share('counter') - outlook.counter)).toBeLessThanOrEqual(2 / grid.length);
+    }
+  });
+
   it('is monotone in the fee', () => {
     for (const c of VARIANTS) {
       let last = 0;
@@ -200,6 +235,65 @@ describe('saleContext reads a bid from a world', () => {
     expect(c.director).toBeUndefined();
     expect(BigInt(c.asking)).toBeGreaterThan(BigInt(c.value!));
     expect(saleShare(c).lines.some((l) => l.factor === 'stance')).toBe(true);
+  });
+
+  describe("a club nobody owns: this season's fixed costs in this season's money", () => {
+    const bill = (club: Club) =>
+      (w.squads![club.id] ?? []).reduce((sum, p) => sum + BigInt(p.wage), 0n);
+    const withBooks = (year: number, books: ClubBooks): World => {
+      const world = structuredClone(w);
+      world.year = year;
+      world.clubs.find((c) => c.id === seller.id)!.books = books;
+      return world;
+    };
+    const book = (year: number, money: string): ClubSeasonBook => ({
+      year,
+      income: '0',
+      wages: money,
+      costs: money,
+      result: '0',
+    });
+    const read = (world: World) =>
+      saleContext(world, { playerId: core.id, sellerId: seller.id, fee: '1' })!;
+
+    it('reads a first season without a closed book from its wages and costs', () => {
+      const first = read(withBooks(w.year, { seasons: [], cash: '0', debt: '0' }));
+      expect(first.cashCrisis).toBe(true);
+      expect(first.runway).toBe(0);
+      expect(saleShare(first).lines.some((l) => l.factor === 'cash')).toBe(true);
+      const annual = bill(seller) + BigInt(operatingExpensesAt('ENG', w.year, seller.tier));
+      const cash = (
+        (annual * BigInt(SAFETY_ROUNDS) + BigInt(SEASON_ROUNDS) - 1n) /
+        BigInt(SEASON_ROUNDS)
+      ).toString();
+      expect(read(withBooks(w.year, { seasons: [], cash, debt: '0' })).cashCrisis).toBe(false);
+    });
+
+    it('keeps cash and costs in one money across a currency change', () => {
+      const fra = careerWorld({ seed: 'answer-models', country: 'FRA' });
+      const club = fra.clubs.find(
+        (c) => c.country === 'FRA' && c.tier === 1 && fra.squads?.[c.id],
+      )!;
+      const player = startingSquad(fra, club)[0]!;
+      const at = (year: number, books: ClubBooks) => {
+        const world = structuredClone(fra);
+        world.year = year;
+        world.clubs.find((c) => c.id === club.id)!.books = books;
+        return saleContext(world, { playerId: player.id, sellerId: club.id, fee: '1' })!;
+      };
+      const annual = (year: number) =>
+        bill(club) + BigInt(operatingExpensesAt('FRA', year, club.tier));
+      // A 1999 season after a franc book: last season's francs are never set against euros.
+      const euros = ((annual(1999) * 10n) / BigInt(SEASON_ROUNDS)).toString();
+      const after = at(1999, { seasons: [book(1998, '999999999999999')], cash: euros, debt: '0' });
+      expect(after.runway).toBe(fixedCostRunway(euros, annual(1999).toString()));
+      // Closed but not yet turned: the carried euros are read back in the season's francs.
+      const toFrancs = currencyChange('FRA', 1999, 1998)!;
+      const carried = at(1998, { seasons: [book(1998, '1')], cash: euros, debt: '0' });
+      expect(toFrancs).toBeDefined();
+      expect(carried.runway).toBe(fixedCostRunway(toFrancs(euros), annual(1998).toString()));
+      expect(carried.runway).not.toBe(fixedCostRunway(euros, annual(1998).toString()));
+    });
   });
 
   it('is undefined for a player the seller does not hold', () => {

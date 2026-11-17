@@ -10,16 +10,17 @@
  */
 import type { SourceMessageId } from '../../contracts/src/messages';
 import type { Club, Player, TransferStance, World } from '../../contracts/src/types';
-import { npcWageBill, npcWageLimit } from './books';
+import { currencyChange, npcWageBill, npcWageLimit } from './books';
 import { wagePressure } from './delegation';
 import { SAFETY_ROUNDS } from './delegation-info';
-import { operatingCosts } from './finance';
+import { EXPENSE_CONFIG, operatingCosts, operatingExpensesAt } from './finance';
 import { fixedCostRunway } from './investment';
 import { activePlayers, overall } from './player-state';
-import { compareIds } from './primitives';
+import { compareIds, scaleBy } from './primitives';
 import { seasonsLeft, staffMember } from './staff-info';
 import { SALE_BARS } from './transfer-policy';
 import { transferWindow } from './transfer-window';
+import { seasonAfter } from './wartime';
 import { isProspect, playerValue, transferStance } from './transfers';
 import { clubById, ownStarters, startingSquad } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
@@ -238,6 +239,10 @@ function ownFloor(context: SaleContext) {
   return ceilDiv(BigInt(context.value) * BigInt(Math.round(SALE_SHARE.ownFloor * 100)), 100n);
 }
 
+/** How far below R a bid still draws a counter: 0.25 of the asking fee, in whole minor units. */
+const counterReach = (asking: bigint) =>
+  (asking * BigInt(Math.round(SALE_SHARE.counterReach * 100))) / 100n;
+
 export type SaleAnswerKind = 'accept' | 'counter' | 'refuse';
 export interface SaleAnswer {
   kind: SaleAnswerKind;
@@ -271,8 +276,7 @@ export function saleAnswer(
   if (reservation > asking) reservation = asking;
   const answer = { reservation: reservation.toString(), share, spread, lines };
   if (fee >= asking || fee >= reservation) return { kind: 'accept', ...answer };
-  const reach = (asking * BigInt(Math.round(SALE_SHARE.counterReach * 100))) / 100n;
-  if (fee >= reservation - reach)
+  if (fee >= reservation - counterReach(asking))
     return { kind: 'counter', counter: reservation.toString(), ...answer };
   return { kind: 'refuse', ...answer };
 }
@@ -287,20 +291,22 @@ export function saleOutlook(
 ) {
   const { base, lines } = saleShare(context, factors),
     asking = BigInt(context.asking),
-    fee = BigInt(context.fee);
-  if (asking <= 0n || fee >= asking) return { accept: 1, counter: 0, lines };
-  const ratio = (amount: bigint) => Number((amount * PPB) / asking) / Number(PPB),
-    x = ratio(fee),
-    floor = ratio(ownFloor(context)),
+    fee = BigInt(context.fee),
+    floor = ownFloor(context),
     s = SALE_SHARE.spread;
-  // P(reservation share ≤ t): the share is base + a uniform spread, clamped, and our floor holds.
-  const atMost = (t: number) => {
-    if (t >= SALE_SHARE.max) return 1;
-    if (t < floor || t < SALE_SHARE.min) return 0;
-    return Math.min(1, Math.max(0, (t - base + s) / (2 * s)));
+  // P(R ≤ x) over the draw, read on the integers `saleAnswer` uses: R = max(floor, ⌈A × p / 10⁹⌉)
+  // within A, p = round(share × 10⁹), so R ≤ x exactly when p ≤ ⌊x × 10⁹ / A⌋, that is when the
+  // share, base plus the uniform spread clamped to 0.5–1, falls below that bound plus a half.
+  const reservedAtMost = (x: bigint) => {
+    if (x >= asking) return 1;
+    if (floor > x) return 0;
+    const bound = (Number((x * PPB) / asking) + 0.5) / Number(PPB);
+    if (bound > SALE_SHARE.max) return 1;
+    if (bound <= SALE_SHARE.min) return 0;
+    return Math.min(1, Math.max(0, (bound - base + s) / (2 * s)));
   };
-  const accept = atMost(x);
-  return { accept, counter: atMost(x + SALE_SHARE.counterReach) - accept, lines };
+  const accept = reservedAtMost(fee);
+  return { accept, counter: reservedAtMost(fee + counterReach(asking)) - accept, lines };
 }
 
 /** The bid a world context is read for: the player, the club selling him and the fee offered. */
@@ -321,16 +327,43 @@ function placeIn(xi: readonly Player[], id: string): SalePlace {
   return core.some((p) => p.id === id) ? 'core' : 'starter';
 }
 
-/** A club nobody owns in a cash crisis: in debt, or its cash short of 4 rounds of its costs. */
-function npcCash(club: Club) {
-  const books = club.books,
-    last = books?.seasons[0];
+/**
+ * A club nobody owns in a cash crisis (→ECON-41): in debt, or its cash short of 4 rounds of this
+ * season's fixed costs — its players' wages and its operating expenses (→ECON-30), all in this
+ * season's money. A close carries the books into the next season's money before the year turns.
+ */
+function npcCash(w: World, club: Club) {
+  const books = club.books;
   if (!books) return { cashCrisis: false, runway: 999 };
-  if (BigInt(books.debt) > 0n) return { cashCrisis: true, runway: 0 };
-  const runway = last
-    ? fixedCostRunway(books.cash, (BigInt(last.wages) + BigInt(last.costs)).toString())
-    : 999;
+  const last = books.seasons[0],
+    liveYear = last?.year === w.year ? seasonAfter(w.year) : w.year,
+    toNow = currencyChange(club.country, liveYear, w.year),
+    live = (amount: string) => (toNow ? toNow(amount) : amount);
+  if (BigInt(live(books.debt)) > 0n) return { cashCrisis: true, runway: 0 };
+  const runway = fixedCostRunway(
+    live(books.cash),
+    (npcWageBill(w, club) + npcOperatingExpenses(w, club)).toString(),
+  );
   return { cashCrisis: runway < SAFETY_ROUNDS, runway };
+}
+/**
+ * This season's operating expenses of a club nobody owns, as its books charge them (→ECON-30): the
+ * division amount, or a share of last season's turnover in this season's money when larger, the
+ * division amount after a relegation or with no closed season, as `books.ts` reads them.
+ */
+function npcOperatingExpenses(w: World, club: Club) {
+  const floor = BigInt(operatingExpensesAt(club.country, w.year, club.tier)),
+    last = club.books?.seasons[0];
+  if (!last) return floor;
+  const index = w.clubs.indexOf(club),
+    tierBefore = w.history
+      .find((h) => h.year === last.year)
+      ?.standings.find((row) => row[0] === index)?.[1];
+  if (tierBefore === undefined || tierBefore < club.tier) return floor;
+  const toNow = currencyChange(club.country, last.year, w.year),
+    turnover = toNow ? toNow(last.income) : last.income,
+    share = BigInt(scaleBy(turnover, EXPENSE_CONFIG.share, 10000n));
+  return share > floor ? share : floor;
 }
 
 /** Our 단장 as a bid's buyer reads him (→STAFF-20); absent staff in older saves are neutral. */
@@ -399,7 +432,7 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     ...common,
     asking,
     ownSeller,
-    ...npcCash(seller),
+    ...npcCash(w, seller),
     wageLine: 0,
     wageShare: 0,
     sellingDown: limit !== undefined && npcWageBill(w, seller) > limit,
