@@ -1,0 +1,376 @@
+{
+  "task": "T939",
+  "measured": "2026-11-17T06:43:00.090Z",
+  "node": "v24.22.1",
+  "world": {
+    "file": "world-1950.bin",
+    "year": 1950,
+    "clubs": 611,
+    "players": 31,
+    "people": 21363,
+    "jsonChars": 26341245,
+    "roundTripEqual": true
+  },
+  "gc": true,
+  "handoff": {
+    "pairs": 15,
+    "medianMs": {
+      "current": 697.1,
+      "text": 432.4
+    },
+    "ratio": {
+      "median": 0.627,
+      "low": 0.598,
+      "high": 0.643,
+      "coverage": 0.9648
+    },
+    "rows": [
+      {
+        "pair": 1,
+        "first": "current",
+        "current": 770.8,
+        "text": 425.1,
+        "ratio": 0.551
+      },
+      {
+        "pair": 2,
+        "first": "text",
+        "current": 699.6,
+        "text": 418,
+        "ratio": 0.598
+      },
+      {
+        "pair": 3,
+        "first": "current",
+        "current": 796.6,
+        "text": 481,
+        "ratio": 0.604
+      },
+      {
+        "pair": 4,
+        "first": "text",
+        "current": 688.1,
+        "text": 433.7,
+        "ratio": 0.63
+      },
+      {
+        "pair": 5,
+        "first": "current",
+        "current": 677,
+        "text": 413.6,
+        "ratio": 0.611
+      },
+      {
+        "pair": 6,
+        "first": "text",
+        "current": 680.6,
+        "text": 437.5,
+        "ratio": 0.643
+      },
+      {
+        "pair": 7,
+        "first": "current",
+        "current": 686.1,
+        "text": 432.4,
+        "ratio": 0.63
+      },
+      {
+        "pair": 8,
+        "first": "text",
+        "current": 668.1,
+        "text": 433.4,
+        "ratio": 0.649
+      },
+      {
+        "pair": 9,
+        "first": "current",
+        "current": 680.6,
+        "text": 426.5,
+        "ratio": 0.627
+      },
+      {
+        "pair": 10,
+        "first": "text",
+        "current": 663.4,
+        "text": 423.5,
+        "ratio": 0.638
+      },
+      {
+        "pair": 11,
+        "first": "current",
+        "current": 697.1,
+        "text": 433.6,
+        "ratio": 0.622
+      },
+      {
+        "pair": 12,
+        "first": "text",
+        "current": 723.8,
+        "text": 432,
+        "ratio": 0.597
+      },
+      {
+        "pair": 13,
+        "first": "current",
+        "current": 830.6,
+        "text": 559.7,
+        "ratio": 0.674
+      },
+      {
+        "pair": 14,
+        "first": "text",
+        "current": 804,
+        "text": 528.2,
+        "ratio": 0.657
+      },
+      {
+        "pair": 15,
+        "first": "current",
+        "current": 783.7,
+        "text": 429.2,
+        "ratio": 0.548
+      }
+    ]
+  },
+  "senderSerialize": {
+    "pairs": 15,
+    "medianMs": {
+      "currentSerialize": 287.6,
+      "textSerialize": 375.4
+    },
+    "ratio": {
+      "median": 1.306,
+      "low": 1.294,
+      "high": 1.335,
+      "coverage": 0.9648
+    },
+    "rows": [
+      {
+        "pair": 1,
+        "first": "currentSerialize",
+        "currentSerialize": 286.7,
+        "textSerialize": 378.8,
+        "ratio": 1.321
+      },
+      {
+        "pair": 2,
+        "first": "textSerialize",
+        "currentSerialize": 291.9,
+        "textSerialize": 377.7,
+        "ratio": 1.294
+      },
+      {
+        "pair": 3,
+        "first": "currentSerialize",
+        "currentSerialize": 288.1,
+        "textSerialize": 399.8,
+        "ratio": 1.388
+      },
+      {
+        "pair": 4,
+        "first": "textSerialize",
+        "currentSerialize": 312,
+        "textSerialize": 394.8,
+        "ratio": 1.265
+      },
+      {
+        "pair": 5,
+        "first": "currentSerialize",
+        "currentSerialize": 286.8,
+        "textSerialize": 369.2,
+        "ratio": 1.287
+      },
+      {
+        "pair": 6,
+        "first": "textSerialize",
+        "currentSerialize": 309.7,
+        "textSerialize": 433.1,
+        "ratio": 1.399
+      },
+      {
+        "pair": 7,
+        "first": "currentSerialize",
+        "currentSerialize": 302.8,
+        "textSerialize": 407.6,
+        "ratio": 1.346
+      },
+      {
+        "pair": 8,
+        "first": "textSerialize",
+        "currentSerialize": 302.3,
+        "textSerialize": 391.8,
+        "ratio": 1.296
+      },
+      {
+        "pair": 9,
+        "first": "currentSerialize",
+        "currentSerialize": 287.6,
+        "textSerialize": 375.4,
+        "ratio": 1.305
+      },
+      {
+        "pair": 10,
+        "first": "textSerialize",
+        "currentSerialize": 281.7,
+        "textSerialize": 368,
+        "ratio": 1.306
+      },
+      {
+        "pair": 11,
+        "first": "currentSerialize",
+        "currentSerialize": 277.4,
+        "textSerialize": 363.8,
+        "ratio": 1.312
+      },
+      {
+        "pair": 12,
+        "first": "textSerialize",
+        "currentSerialize": 280.9,
+        "textSerialize": 367,
+        "ratio": 1.306
+      },
+      {
+        "pair": 13,
+        "first": "currentSerialize",
+        "currentSerialize": 294.7,
+        "textSerialize": 364.2,
+        "ratio": 1.236
+      },
+      {
+        "pair": 14,
+        "first": "textSerialize",
+        "currentSerialize": 269,
+        "textSerialize": 359,
+        "ratio": 1.335
+      },
+      {
+        "pair": 15,
+        "first": "currentSerialize",
+        "currentSerialize": 277.7,
+        "textSerialize": 359.8,
+        "ratio": 1.296
+      }
+    ]
+  },
+  "senderPostMessage": {
+    "pairs": 15,
+    "medianMs": {
+      "currentPost": 284,
+      "textPost": 369.4
+    },
+    "ratio": {
+      "median": 1.303,
+      "low": 1.278,
+      "high": 1.318,
+      "coverage": 0.9648
+    },
+    "rows": [
+      {
+        "pair": 1,
+        "first": "currentPost",
+        "currentPost": 278.3,
+        "textPost": 377.8,
+        "ratio": 1.357
+      },
+      {
+        "pair": 2,
+        "first": "textPost",
+        "currentPost": 271.5,
+        "textPost": 375.2,
+        "ratio": 1.382
+      },
+      {
+        "pair": 3,
+        "first": "currentPost",
+        "currentPost": 289.8,
+        "textPost": 381.8,
+        "ratio": 1.318
+      },
+      {
+        "pair": 4,
+        "first": "textPost",
+        "currentPost": 301.7,
+        "textPost": 385.7,
+        "ratio": 1.278
+      },
+      {
+        "pair": 5,
+        "first": "currentPost",
+        "currentPost": 292.9,
+        "textPost": 378.9,
+        "ratio": 1.294
+      },
+      {
+        "pair": 6,
+        "first": "textPost",
+        "currentPost": 285.8,
+        "textPost": 375.6,
+        "ratio": 1.314
+      },
+      {
+        "pair": 7,
+        "first": "currentPost",
+        "currentPost": 293.1,
+        "textPost": 369.4,
+        "ratio": 1.26
+      },
+      {
+        "pair": 8,
+        "first": "textPost",
+        "currentPost": 284,
+        "textPost": 370.1,
+        "ratio": 1.303
+      },
+      {
+        "pair": 9,
+        "first": "currentPost",
+        "currentPost": 285,
+        "textPost": 367.8,
+        "ratio": 1.291
+      },
+      {
+        "pair": 10,
+        "first": "textPost",
+        "currentPost": 274.3,
+        "textPost": 367.6,
+        "ratio": 1.34
+      },
+      {
+        "pair": 11,
+        "first": "currentPost",
+        "currentPost": 278.1,
+        "textPost": 366.4,
+        "ratio": 1.317
+      },
+      {
+        "pair": 12,
+        "first": "textPost",
+        "currentPost": 283.5,
+        "textPost": 360.6,
+        "ratio": 1.272
+      },
+      {
+        "pair": 13,
+        "first": "currentPost",
+        "currentPost": 279.5,
+        "textPost": 362.7,
+        "ratio": 1.298
+      },
+      {
+        "pair": 14,
+        "first": "textPost",
+        "currentPost": 304.2,
+        "textPost": 367.7,
+        "ratio": 1.209
+      },
+      {
+        "pair": 15,
+        "first": "currentPost",
+        "currentPost": 277.4,
+        "textPost": 363.4,
+        "ratio": 1.31
+      }
+    ]
+  },
+  "gate": true
+}

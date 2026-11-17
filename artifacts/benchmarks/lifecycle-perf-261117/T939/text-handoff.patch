@@ -1,0 +1,190 @@
+diff --git a/apps/web/src/runtime/codec.test.ts b/apps/web/src/runtime/codec.test.ts
+new file mode 100644
+index 000000000..0ce18dac4
+--- /dev/null
++++ b/apps/web/src/runtime/codec.test.ts
+@@ -0,0 +1,57 @@
++import { describe, expect, it } from 'vitest';
++import type { World } from '../../../../packages/contracts/src/types';
++import { simulatedWorld } from '../../../../tests/fixtures/worlds';
++import { build, serve, type CodecTextJob } from './codec';
++import type { CodecResult } from './protocol';
++import { startedWorld } from './host.testkit';
++
++const JOB = { id: 'save', generation: 3, parentGeneration: 2 };
++const text = (world: World): CodecTextJob => ({ ...JOB, text: JSON.stringify(world) });
++
++describe('codec text jobs (→SAVE-8, ARCH-13)', () => {
++  it('builds the same checkpoint from the world JSON text as from the world', async () => {
++    const fresh = startedWorld();
++    const played = simulatedWorld({ country: 'ENG', seed: 'season-archive' }, { seasons: 1 });
++    // The second career carries what an autosave hands over at length: NPC careers, closed
++    // seasons and free agents.
++    expect(Object.keys(played.squads ?? {}).length).toBeGreaterThan(0);
++    expect(Object.keys(played.playerRecords ?? {}).length).toBeGreaterThan(0);
++    expect(played.history.length).toBeGreaterThan(0);
++    expect(played.freeAgents?.length).toBeGreaterThan(0);
++    for (const world of [fresh, played]) {
++      const fromWorld = await build({ ...JOB, world });
++      const fromText = await build(text(world));
++      if (!fromWorld.ok) throw new Error(fromWorld.error);
++      expect(fromText).toEqual(fromWorld);
++    }
++  });
++  it('answers a world that fails validation or text that is no world, never throwing', async () => {
++    const world = startedWorld();
++    world.rankHistory![0]!.rows[0]![0] = world.clubs.length;
++    const fromWorld = await build({ ...JOB, world });
++    expect(fromWorld.ok).toBe(false);
++    expect(await build(text(world))).toEqual(fromWorld);
++    for (const unreadable of ['', '{', 'null'])
++      expect(await build({ ...JOB, text: unreadable })).toMatchObject({
++        id: 'save',
++        ok: false,
++      });
++  });
++  it('serves text jobs from its port one at a time', async () => {
++    const world = startedWorld();
++    const channel = new MessageChannel();
++    const answers: CodecResult[] = [];
++    const answered = new Promise<void>((resolve) =>
++      serve(channel.port1, (result) => answers.push(result) === 2 && resolve()),
++    );
++    channel.port2.postMessage({ ...text(world), id: 'first' });
++    channel.port2.postMessage({ ...JOB, id: 'second', text: '{' });
++    await answered;
++    channel.port1.close();
++    expect(answers.map((answer) => [answer.id, answer.ok])).toEqual([
++      ['first', true],
++      ['second', false],
++    ]);
++    expect(answers[0]).toEqual({ ...(await build({ ...JOB, world })), id: 'first' });
++  });
++});
+diff --git a/apps/web/src/runtime/codec.ts b/apps/web/src/runtime/codec.ts
+index 241f5cb67..cd0e10e4a 100644
+--- a/apps/web/src/runtime/codec.ts
++++ b/apps/web/src/runtime/codec.ts
+@@ -1,11 +1,25 @@
+ import { isSaveCompatibilityError } from '../../../../packages/contracts/src/versions';
++import type { World } from '../../../../packages/contracts/src/types';
+ import { checkpoint } from '../adapters/persistence';
+ import type { CodecJob, CodecResult } from './protocol';
+-/** Builds and validates one checkpoint; a failure is answered, never thrown, and nothing is written. */
+-export async function build(job: CodecJob): Promise<CodecResult> {
++/**
++ * A snapshot the engine worker posts to the codec worker as the world's JSON text (→ARCH-13): one
++ * string clones far faster than the world object, so an autosave stalls the engine thread less
++ * (→SAVE-8), and parsing it moves to the codec worker.
++ */
++export interface CodecTextJob extends Omit<CodecJob, 'world'> {
++  /** `JSON.stringify` of the world to save. */
++  text: string;
++}
++/**
++ * Builds and validates one checkpoint, from a text job's parsed world as from a world; a failure,
++ * unreadable text included, is answered, never thrown, and nothing is written.
++ */
++export async function build(job: CodecJob | CodecTextJob): Promise<CodecResult> {
+   try {
+-    const { raw, envelope } = await checkpoint(job.world, job.generation, job.parentGeneration);
+-    return { id: job.id, ok: true, revision: job.world.revision, raw, envelope };
++    const world: World = 'text' in job ? JSON.parse(job.text) : job.world;
++    const { raw, envelope } = await checkpoint(world, job.generation, job.parentGeneration);
++    return { id: job.id, ok: true, revision: world.revision, raw, envelope };
+   } catch (error) {
+     return {
+       id: job.id,
+@@ -21,7 +35,7 @@ export async function build(job: CodecJob): Promise<CodecResult> {
+  */
+ export function serve(port: MessagePort, answer: (result: CodecResult) => void) {
+   let queue = Promise.resolve();
+-  port.onmessage = (event: MessageEvent<CodecJob>) => {
++  port.onmessage = (event: MessageEvent<CodecJob | CodecTextJob>) => {
+     queue = queue.then(async () => answer(await build(event.data))).catch(() => {});
+   };
+ }
+diff --git a/apps/web/src/runtime/host.test.ts b/apps/web/src/runtime/host.test.ts
+index 2955547a1..5b394ffb7 100644
+--- a/apps/web/src/runtime/host.test.ts
++++ b/apps/web/src/runtime/host.test.ts
+@@ -6,8 +6,8 @@ import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src
+ import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
+ import { describe, it, expect, vi } from 'vitest';
+ import { Host, VIEW_PATCH } from './host';
+-import { build } from './codec';
+-import { applyViewDelta, type CodecJob, type View } from './protocol';
++import { build, type CodecTextJob } from './codec';
++import { applyViewDelta, type View } from './protocol';
+ import { canonical } from '../../../../packages/contracts/src/index';
+ import { decode, encode } from '../adapters/persistence';
+ import { currentDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
+@@ -56,7 +56,7 @@ import { persistedFixturePlayer } from '../../../../packages/engine/src/player-f
+ import { joinFreeAgents } from '../../../../packages/engine/src/free-agents';
+ /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
+ function withCodec() {
+-  const jobs: CodecJob[] = [];
++  const jobs: CodecTextJob[] = [];
+   const host = new Host();
+   host.codec = { postMessage: (job) => jobs.push(structuredClone(job)) };
+   return { host, jobs };
+@@ -372,7 +372,7 @@ describe('worker command protocol', () => {
+     expect((await unwired.handle(req('save', 0, { type: 'save' }))).error).toContain('저장 Worker');
+   });
+   it('returns a restorable checkpoint when next-match progression is cancelled between days', async () => {
+-    const jobs: CodecJob[] = [];
++    const jobs: CodecTextJob[] = [];
+     const h = new Host(() => {
+       h.cancelled = true;
+     });
+diff --git a/apps/web/src/runtime/host.ts b/apps/web/src/runtime/host.ts
+index e2a25e93c..c79d9299a 100644
+--- a/apps/web/src/runtime/host.ts
++++ b/apps/web/src/runtime/host.ts
+@@ -72,14 +72,9 @@ import { financialBreakdown } from '../../../../packages/engine/src/finance';
+ import { transferLedger } from '../../../../packages/engine/src/transfer-records';
+ import { seasonsBeforeOwner } from '../../../../packages/engine/src/club-past';
+ import { ownSeasons } from '../../../../packages/engine/src/player-state';
+-import {
+-  requestSchema,
+-  worldMetadataOf,
+-  type CodecJob,
+-  type Request,
+-  type Reply,
+-  type View,
+-} from './protocol';
++import { requestSchema, worldMetadataOf, type Request, type Reply, type View } from './protocol';
++// Type only: a value import would run the codec worker's listener in the engine worker.
++import type { CodecTextJob } from './codec';
+ import { ViewPublisher } from './viewPublisher';
+ import { playDay, type DaySteps, type HelperPool } from './helperPool';
+ const DAY_STEPS: DaySteps = { prepareRound, completeRound, advanceDays };
+@@ -293,7 +288,7 @@ export class Host {
+   private views = new ViewPublisher();
+   cancelled = false;
+   /** The port to the client's codec worker, which builds every checkpoint (→ARCH-13). */
+-  codec?: { postMessage(job: CodecJob): void };
++  codec?: { postMessage(job: CodecTextJob): void };
+   /** The client's fixture helpers, when it created them (→ARCH-6); without, every fixture plays here. */
+   helpers?: HelperPool;
+   /** An own match day waiting for its helpers: the world is mid-day, so reads wait for it. */
+@@ -662,7 +657,9 @@ export class Host {
+   }
+   /**
+    * Posts the world as it stands after every earlier command to the codec worker, whatever revision
+-   * the client last saw; posting copies it, so the next command never waits for the checkpoint.
++   * the client last saw; posting copies it, so the next command never waits for the checkpoint. The
++   * world goes as its JSON text, which the codec parses: one string clones far faster than the
++   * world object (→SAVE-8).
+    */
+   private save(r: Request): Reply {
+     const w = this.world;
+@@ -670,7 +667,7 @@ export class Host {
+     if (!this.codec) throw new Error(sourceMessage('copy.host.c64421732a'));
+     this.codec.postMessage({
+       id: r.requestId,
+-      world: w,
++      text: JSON.stringify(w),
+       generation: r.generation,
+       parentGeneration: r.parentGeneration,
+     });
