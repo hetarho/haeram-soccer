@@ -8,7 +8,8 @@ import {
   nextOwnFixture,
 } from '../../../../packages/engine/src/calendar';
 import { transferOffers } from '../../../../packages/engine/src/scout-search';
-import { ratio, random } from '../../../../packages/engine/src/primitives';
+import { ratio } from '../../../../packages/engine/src/primitives';
+import { bidOutlook } from '../../../../packages/engine/src/transfers';
 import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
 import { req, startedHost } from './host.testkit';
 async function host() {
@@ -87,29 +88,38 @@ describe('manual next-event sole-writer protocol', () => {
     const { h } = await host(),
       w = h.world!;
     w.settings!.responsibilities.recruitment = 'direct';
-    const offers = transferOffers(w)
-      .filter((o) => o.available && BigInt(o.fee) > 0n)
-      .slice(0, 2);
-    expect(offers).toHaveLength(2);
-    w.bids = offers.map((o, i) => {
-      let id = '';
-      for (let salt = 0; salt < 10000; salt++) {
-        id = `counter:${i}:${salt}`;
-        const roll = random(`${w.seed}:bid:${id}`)();
-        if (roll > 0.5 && roll < 0.55) break;
+    // A bid at or above the asking fee is always accepted, so a real counter needs a fee below it
+    // that every draw of the seller's reservation answers with a counter: the middle of that band,
+    // read in hundredths of the asking fee as the bid view reads it (→CLUB-18, CLUB-52).
+    const counterFee = (index: number, asking: string) => {
+      const band: string[] = [];
+      for (let k = 25n; k < 100n; k++) {
+        const fee = ratio(asking, k, 100n);
+        if (bidOutlook(w, index, fee).counter === 1) band.push(fee);
+        else if (band.length) break;
       }
-      return {
-        id,
-        direction: 'out' as const,
-        playerId: o.player.id,
-        offer: { player: o.player, fee: o.fee, loanFee: o.loanFee },
-        fee: ratio(o.fee, 8n, 10n),
-        year: w.year,
-        day: 0,
-        due: 6,
-        status: 'pending' as const,
-      };
-    });
+      return band[Math.floor(band.length / 2)];
+    };
+    const all = transferOffers(w),
+      offers: { o: (typeof all)[number]; fee: string }[] = [];
+    for (const [index, o] of all.entries()) {
+      if (offers.length === 2) break;
+      if (!o.available || BigInt(o.fee) <= 0n) continue;
+      const fee = counterFee(index, o.fee);
+      if (fee) offers.push({ o, fee });
+    }
+    expect(offers).toHaveLength(2);
+    w.bids = offers.map(({ o, fee }, i) => ({
+      id: `counter:${i}`,
+      direction: 'out' as const,
+      playerId: o.player.id,
+      offer: { player: o.player, fee: o.fee, loanFee: o.loanFee },
+      fee,
+      year: w.year,
+      day: 0,
+      due: 6,
+      status: 'pending' as const,
+    }));
     const reply = await h.handle(
       req('group', w.revision, { type: 'command', command: { type: 'next-event' } }),
     );
