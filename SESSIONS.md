@@ -164,6 +164,7 @@
 | T934 | work | gusta-session-self-improve-tm17-ff4b9f94 | 4ba930627cbb | 2026-11-17T11:46Z |
 
 ## log
+- 261117 T916 recovery planning committed 56be9e10: ARCH r48 and runnable T943; task checks passed; T916 remains todo, original acceptance unchanged; host owns review, claim cleanup and deferred publication
 - 261117 ARCH r48 consumed into T943; T916 original acceptance and measurement cap preserved; T942 base-only freshness update has no recipe impact
 - 261117 gusta-create-task ARCH r48 start: split T916 recipe preparation from unchanged diagnostic execution
 - 261117 gusta-update-ssot ARCH-33 start: T916 recipe provenance recovery only
@@ -183,4 +184,3 @@
 - 261117 T939 integrated
 - 261117 T936 integrated
 - 261117 T932 integrated
-- 261117 T931 done
