@@ -39,7 +39,15 @@ import {
   transferWindowDays,
   UPGRADE_MEASURE,
   upgradeNeeds,
+  moneyBar,
+  belowBar,
+  upgradeCap,
+  makeRoom,
 } from './index';
+import { delegatePlan } from './delegation';
+import { marketWageAt } from './market-prices';
+import { clubOf, slotOvr } from './player-state';
+import type { SigningNeed } from './signings';
 import { buyOffer, holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { careerWorld } from './career.testkit';
@@ -134,6 +142,14 @@ function club(request?: SpendRequest, seed = 'staff-signings') {
   holdTemperament(w, 'director', 'balanced');
   if (request) w.delegationRequests = { recruitment: request };
   return w;
+}
+/**
+ * Every player joined this season or last, outside the takeover's: the money bar lists none of
+ * them (→CLUB-33), so only the 24-player room is read.
+ */
+function settled(w: World) {
+  const year = [w.year, w.year - 1].find((one) => one !== w.owner?.takeover?.year)!;
+  for (const p of w.players) p.joined = year;
 }
 /** The club as founded, built once per seed, on the released model: signings are the subject. */
 const founded = (seed: string) => cachedWorld(`founded:${seed}`, () => careerWorld({ seed }));
@@ -918,6 +934,7 @@ describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)',
 
   it('lists the least able non-starters aged 24+ down to 24 at a regular look, in one report', () => {
     const w = club(5);
+    settled(w);
     const [, older, youth, loaned, retiring] = pad(w, 30);
     older!.born = w.year - 31;
     // Even less able, but never listed: aged 23, on loan, or retiring.
@@ -977,11 +994,226 @@ describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)',
     expect(listed(moderate)).toEqual([]);
 
     const trimmed = club(5);
+    settled(trimmed);
     pad(trimmed, 25);
     const starters = new Set(ownStarters(trimmed).map((p) => p.id));
     activePlayers(trimmed).find((p) => !starters.has(p.id))!.stance = 'listed';
     staffSignings(trimmed);
     expect(listed(trimmed)).toHaveLength(1);
     expect(roomReports(trimmed)).toEqual([]);
+  });
+});
+
+describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON-33)', () => {
+  const listed = (w: World) => activePlayers(w).filter((p) => transferStance(p) === 'listed');
+  const roomReports = (w: World) =>
+    (w.inbox || []).filter((item) => item.title.endsWith('이적 명단에 올렸어요'));
+  /** A plan resting on `revenue` with no cash to draw on. */
+  function poor(w: World, revenue: bigint) {
+    w.cash = '0';
+    w.budgetPlan = { year: w.year, revenue: revenue.toString(), sales: '0' };
+  }
+  const wageAt = (w: World, ovr: number) => {
+    const c = clubOf(w),
+      regular = { ...activePlayers(w)[0]!, born: w.year - 27, potential: 0 };
+    return BigInt(marketWageAt(c.country, w.year, c.tier, regular, ovr));
+  };
+
+  it('is the highest OVR whose 27-year-old wage × 25 fits the money; higher when richer, none at 1–3', () => {
+    const rich = club(5),
+      modest = club(5);
+    poor(modest, BigInt(operatingCosts(modest).playerWages) * 2n);
+    const high = moneyBar(rich)!,
+      low = moneyBar(modest)!;
+    expect(high).toBeGreaterThan(low);
+    // The bar is the highest OVR that fits: the plan's budget less this season's fees.
+    const plan = delegatePlan(modest, 'recruitment'),
+      money = BigInt(plan.budget) - BigInt(plan.spent);
+    expect(wageAt(modest, low) * 25n).toBeLessThanOrEqual(money);
+    expect(wageAt(modest, low + 1) * 25n).toBeGreaterThan(money);
+    // 넉넉히 has one too; 적당히, 아껴서 and 최소한만 none.
+    expect(moneyBar(club(4))).toBe(high);
+    for (const step of [1, 2, 3] as const) expect(moneyBar(club(step))).toBeUndefined();
+    // A 안정 지향 단장 asked 넉넉히 acts on 적당히: no bar.
+    const cautious = club(4);
+    holdTemperament(cautious, 'director', 'cautious');
+    expect(moneyBar(cautious)).toBeUndefined();
+  });
+
+  it('puts every slot more than the margin below the bar first, the weakest first', () => {
+    const w = club(5);
+    const plain = upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[];
+    const levels = [...new Set(plain.map((need) => need.level))].sort((a, b) => a - b);
+    expect(levels.length).toBeGreaterThan(1);
+    // A bar that leaves the weaker slots more than 2 below it, between two measures.
+    const mid = Math.floor((levels.length - 1) / 2),
+      bar = (levels[mid]! + levels[mid + 1]!) / 2 + 2;
+    const barred = upgradeNeeds(w, 2, [], bar) as typeof plain;
+    const below = plain.filter((need) => bar - need.level > 2);
+    expect(below.length).toBeGreaterThan(0);
+    expect(below.length).toBeLessThan(plain.length);
+    expect(barred.slice(0, below.length).map((need) => need.slot)).toEqual(
+      [...below].sort((a, b) => a.level - b.level || a.slot - b.slot).map((need) => need.slot),
+    );
+    for (const need of barred.slice(0, below.length)) expect(belowBar(need, bar)).toBe(true);
+    for (const need of barred.slice(below.length)) expect(belowBar(need, bar)).toBe(false);
+    // The same slots, measures and margins: the bar orders the needs, never adds a measure.
+    expect([...barred].sort((a, b) => a.slot - b.slot)).toEqual(
+      [...plain].sort((a, b) => a.slot - b.slot),
+    );
+    expect(upgradeNeeds(w, 2, [], undefined)).toEqual(plain);
+  });
+
+  it('at 아낌없이 the window cap is the larger of 3 and the slots below the bar', () => {
+    const w = club(5),
+      needs = upgradeNeeds(w, 2),
+      levels = needs.map((need) => (need.kind === 'upgrade' ? need.level : 0));
+    const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true },
+      ample = { margin: 3, upgrades: 2, room: 28, makeRoom: true, bar: true };
+    const allBelow = Math.max(...levels) + 10,
+      noneBelow = Math.min(...levels);
+    expect(upgradeCap(generous, 0, needs, allBelow)).toBe(needs.length);
+    expect(upgradeCap(generous, 4, needs, allBelow)).toBe(needs.length + 4);
+    expect(upgradeCap(generous, 0, needs, noneBelow)).toBe(3);
+    expect(upgradeCap(generous, 0, needs, undefined)).toBe(3);
+    expect(upgradeCap(ample, 0, needs, allBelow)).toBe(2);
+  });
+
+  it('a rich 아낌없이 club bids for a fourth upgrade in a window; 넉넉히 stops at its two', () => {
+    const upgraded = (w: World, count: number) => {
+      const day = currentDay(w);
+      for (let i = 0; i < count; i++)
+        w.bids = [
+          ...(w.bids || []),
+          {
+            id: `out:test:upgrade:${i}`,
+            direction: 'out',
+            playerId: `test:upgrade:${i}`,
+            fee: '1',
+            year: w.year,
+            day,
+            due: day,
+            status: 'completed',
+            staff: 'upgrade',
+          },
+        ];
+      w.calendar = { day: day + 7 };
+    };
+    const generous = club(5);
+    upgraded(generous, 3);
+    passFree(generous);
+    const bar = moneyBar(generous)!;
+    staffSignings(generous);
+    const bid = staffBids(generous).at(-1)!;
+    expect(bid).toMatchObject({ staff: 'upgrade', status: 'pending' });
+    // A slot below the bar he fits, and he still beats its measure there by the margin.
+    const player = transferOffers(generous).find(
+        (offer) => offer.player.id === bid.playerId,
+      )!.player,
+      slots = formationOf(generous.tactic);
+    expect(
+      upgradeNeeds(generous, 2, [], bar).some(
+        (need) =>
+          need.kind === 'upgrade' &&
+          belowBar(need, bar) &&
+          (player.positions[need.position] ?? 0) >= 2 &&
+          slotOvr(player, slots[need.slot]!) >= need.level + need.margin,
+      ),
+    ).toBe(true);
+
+    const ample = club(4);
+    upgraded(ample, 2);
+    passFree(ample);
+    staffSignings(ample);
+    expect(
+      staffBids(ample).filter((one) => one.staff === 'upgrade' && !one.id.startsWith('out:test:')),
+    ).toEqual([]);
+  });
+
+  it('lists non-starters aged 24+ more than 8 below the bar even at 24 or fewer, in one report', () => {
+    const w = club(5);
+    const players = activePlayers(w);
+    expect(players.length).toBeLessThanOrEqual(24);
+    const bar = moneyBar(w)!;
+    const starters = new Set(ownStarters(w).map((p) => p.id));
+    const bench = players
+      .filter((p) => !starters.has(p.id) && overall(p) < bar - 8)
+      .sort((a, b) => overall(a) - overall(b));
+    expect(bench.length).toBeGreaterThanOrEqual(3);
+    // Aged 24+, but signed last season or this one: never listed.
+    const [signedLast, joinedNow, youth] = bench;
+    for (const p of [signedLast!, joinedNow!]) p.born = Math.min(p.born, w.year - 26);
+    w.recruitmentArrivals = [
+      ...(w.recruitmentArrivals ?? []),
+      {
+        player: signedLast!.id,
+        name: signedLast!.name,
+        position: signedLast!.position,
+        positions: { ...signedLast!.positions },
+        at: { year: w.year - 1, day: 40 },
+      },
+    ];
+    // Joined in a recent season other than the takeover's (the squad bought then was already here).
+    joinedNow!.joined = [w.year, w.year - 1].find((year) => year !== w.owner?.takeover?.year)!;
+    youth!.born = w.year - 23;
+    staffSignings(w);
+    const chosen = listed(w);
+    expect(chosen.length).toBeGreaterThan(0);
+    for (const p of [signedLast!, joinedNow!, youth!]) expect(transferStance(p)).toBe('open');
+    for (const p of chosen) {
+      expect(starters.has(p.id)).toBe(false);
+      expect(w.year - p.born).toBeGreaterThanOrEqual(24);
+      expect(overall(p)).toBeLessThan(bar - 8);
+    }
+    // No line's unlisted players fall below its minimum.
+    for (const line of ['GK', 'DF', 'MF', 'FW'] as const)
+      expect(
+        activePlayers(w).filter(
+          (p) => transferStance(p) !== 'listed' && lineOf(p.position) === line,
+        ).length,
+      ).toBeGreaterThanOrEqual(
+        Math.min(
+          { GK: 2, DF: 6, MF: 6, FW: 4 }[line],
+          players.filter((p) => lineOf(p.position) === line).length,
+        ),
+      );
+    // Every other eligible non-starter is blocked by his line's minimum.
+    const left = activePlayers(w).filter(
+      (p) =>
+        transferStance(p) === 'open' &&
+        !starters.has(p.id) &&
+        !p.loanUntil &&
+        p.retiring === undefined &&
+        w.year - p.born >= 24 &&
+        overall(p) < bar - 8 &&
+        ![signedLast!.id, joinedNow!.id].includes(p.id),
+    );
+    for (const p of left) {
+      const line = lineOf(p.position);
+      expect(
+        activePlayers(w).filter(
+          (one) => transferStance(one) !== 'listed' && lineOf(one.position) === line,
+        ).length,
+      ).toBeLessThanOrEqual({ GK: 2, DF: 6, MF: 6, FW: 4 }[line]);
+    }
+    expect(roomReports(w)).toHaveLength(1);
+    expect(roomReports(w)[0]!.title).toBe(`단장이 ${chosen.length}명을 이적 명단에 올렸어요`);
+    for (const p of chosen) expect(roomReports(w)[0]!.detail).toContain(p.name);
+  });
+
+  it('lists nobody for the bar at 적당히, with sales direct, or without money', () => {
+    const moderate = club(3);
+    staffSignings(moderate);
+    expect(listed(moderate)).toEqual([]);
+    const direct = club(5);
+    direct.settings!.responsibilities.sales = 'direct';
+    staffSignings(direct);
+    expect(listed(direct)).toEqual([]);
+    const broke = club(5);
+    broke.cash = '0';
+    broke.budgetPlan = { year: broke.year, revenue: '0', sales: '0' };
+    expect(moneyBar(broke)).toBeUndefined();
+    makeRoom(broke);
+    expect(listed(broke)).toEqual([]);
   });
 });

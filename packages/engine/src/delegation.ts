@@ -50,10 +50,18 @@ export interface SpendingStance {
   sellAbove: readonly [number, number];
   /**
    * The 단장's upgrades (→CLUB-33): a margin over a starter (none: no upgrades), a cap a window, the
-   * squad less its listed players they stop above (none: the registration limit) and whether he
-   * lists surplus players to make room.
+   * squad less its listed players they stop above (none: the registration limit), whether he
+   * lists surplus players to make room, whether he measures the squad against the money bar and
+   * whether the slots below that bar raise the window's cap.
    */
-  signing: { margin?: number; upgrades: number; room?: number; makeRoom?: boolean };
+  signing: {
+    margin?: number;
+    upgrades: number;
+    room?: number;
+    makeRoom?: boolean;
+    bar?: boolean;
+    barCap?: boolean;
+  };
   /** Points the 단장's bids add to the asking share (→CLUB-41). */
   bidExtra: number;
 }
@@ -61,8 +69,8 @@ const UPGRADES: readonly SpendingStance['signing'][] = [
   { upgrades: 0 },
   { upgrades: 0 },
   { margin: 5, upgrades: 1, room: 24 },
-  { margin: 3, upgrades: 2, room: 28, makeRoom: true },
-  { margin: 2, upgrades: 3, makeRoom: true },
+  { margin: 3, upgrades: 2, room: 28, makeRoom: true, bar: true },
+  { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true },
 ];
 function stanceOf(level: SpendRequest): SpendingStance {
   const line = SELL_LINE[level];
