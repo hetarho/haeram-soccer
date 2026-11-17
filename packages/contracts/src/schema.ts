@@ -193,6 +193,7 @@ const playerShape = {
   born: z.number().int(),
   joined: season.optional(),
   graduate: z.literal(true).optional(),
+  prodigy: z.literal(true).optional(),
   attrs: attributes,
   personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
   qualities: z.strictObject({ understanding: grade, teaching: grade, judgement: grade }).optional(),

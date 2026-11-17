@@ -10,6 +10,7 @@ import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads'
 import { lineOf, mainOvr } from './player';
 import { clamp, integer, random } from './primitives';
 import { CLUB_TAKEOVER } from './owner-config';
+import { drawProdigies } from './prodigies';
 import { clubRegistration, registrationExempt } from './registration';
 import { departmentMultiplier } from './staff';
 import { clubStyle } from './tactics';
@@ -144,14 +145,24 @@ function npcYouthIds(w: World) {
     ...Object.keys(w.playerRecords ?? {}),
   ]);
 }
-export function intakeNpcYouth(w: World, c: Club, year = w.year + 1, used = npcYouthIds(w)) {
+/**
+ * A club's youth intake (→WORLD-16): its academy's count, then any youngsters its standing size or
+ * a line needs. A war-gap summer (`refillOnly`) takes only the refills (→WORLD-14).
+ */
+export function intakeNpcYouth(
+  w: World,
+  c: Club,
+  year = w.year + 1,
+  used = npcYouthIds(w),
+  refillOnly = false,
+) {
   const players = w.squads?.[c.id];
   if (!players || !c.levels) return;
-  const config = NPC_YOUTH.byAcademy[c.levels.academy]!;
+  const count = refillOnly ? 0 : NPC_YOUTH.byAcademy[c.levels.academy]!.count;
   let added = 0;
   for (
     let serial = 0;
-    added < config.count || players.length < NPC_SQUAD.size || lacksLine(players);
+    added < count || players.length < NPC_SQUAD.size || lacksLine(players);
     serial++
   ) {
     const state = clubRegistration(c, year, players);
@@ -160,7 +171,7 @@ export function intakeNpcYouth(w: World, c: Club, year = w.year + 1, used = npcY
     if (used.has(id)) continue;
     const r = random(`${w.seed}:youth:${id}`);
     const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
-    const centre = youthCentre(c, c.levels.academy, added >= config.count);
+    const centre = youthCentre(c, c.levels.academy, added >= count);
     const potential = clamp(Math.round(centre + youthSkew(r())), 15, 99);
     const level = clamp(
       potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]),
@@ -293,9 +304,11 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
   for (const id of Object.keys(w.squads ?? {})) {
     const c = clubById(w, id);
     if (!c) continue;
-    intakeNpcYouth(w, c, w.year + 1, used);
+    // A skipped war summer brings youth only to the standing size (→WORLD-14/16).
+    intakeNpcYouth(w, c, w.year + 1, used, !matches);
     invalidateNpcSquad(w, id);
   }
+  drawProdigies(w);
   if (matches) capFreeAgents(w);
   settleAbsentPlayerRecords(w);
   w.npcSummerAt = w.year;

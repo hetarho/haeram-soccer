@@ -366,6 +366,8 @@ export interface Player {
   /** Season of joining our first team; absent history never grants bandiera places. */
   joined?: number;
   graduate?: true;
+  /** A prodigy (신동, →WORLD-18), growing three times faster until 18 (→PLAYER-15). */
+  prodigy?: true;
   traits: PlayTrait[];
   /** How well he fits the club under its manager, 0.3–1.0 (→PLAYER-10). */
   adaptation: number;

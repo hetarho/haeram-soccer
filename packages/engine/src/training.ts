@@ -27,6 +27,7 @@ import {
   staffMember,
 } from './staff';
 import { developAcademy } from './academy';
+import { prodigyGrowth } from './prodigies';
 import { settleMorale } from './morale';
 import { managerStyleEffects, STYLE_INFO } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
@@ -199,7 +200,12 @@ function roundGrowthGain(player: Player, context: GrowthContext, knownOvr?: numb
     adaptation >= OVERSHOOT_ADAPTATION ? OVERSHOOT_GAP : 0,
   );
   const ageWeight = age < 21 ? 1 : age < 24 ? 0.85 : 0.65;
-  const base = Math.min(0.12, (gap / 400) * developmentFromYouth(youth) * ageWeight);
+  // A prodigy's rate and its cap are three times another's until 18 (→PLAYER-15, WORLD-18).
+  const prodigy = prodigyGrowth(player, age);
+  const base = Math.min(
+    0.12 * prodigy,
+    (gap / 400) * developmentFromYouth(youth) * ageWeight * prodigy,
+  );
   return hundredths(
     base *
       trainingFocusInfo[focus].developmentMultiplier *
@@ -323,8 +329,14 @@ export function developAnnually(
   const age = context.year - player.born,
     gap = Math.max(0, player.potential - mainOvr(player)),
     variation = random(`${w.seed}:growth:${player.id}:${context.year}`);
+  // A prodigy takes three times the season's growth and its limit until 18 (→PLAYER-15).
+  const prodigy = prodigyGrowth(player, age);
   const growth =
-    age < 27 ? Math.min(3, (gap / 20 + context.youth / 100) * context.ground) : age <= 30 ? 0.3 : 0;
+    age < 27
+      ? Math.min(3 * prodigy, (gap / 20 + context.youth / 100) * context.ground * prodigy)
+      : age <= 30
+        ? 0.3
+        : 0;
   const growing = (a: Attribute) => age <= AGEING[a].growUntil;
   const before = mainOvr(player);
   // A season's growth reaches the main OVR whole. Under 27 its noise rides inside it, so it never
