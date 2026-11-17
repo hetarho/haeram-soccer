@@ -6898,7 +6898,7 @@
     "market.terms.wouldStart": "우리 팀에서 주전으로 뛸 수 있음",
     "market.terms.losesPlace": "지금은 주전이지만 우리 팀에서는 주전이 아님",
     "market.terms.freeAgent": "자유계약 선수",
-    "market.sale.managerStyle": "감독 유형의 협상 지원",
+    "market.sale.managerStyle": "데이터 헤드코치 감독의 협상 지원",
     "market.answer.noFactors": "움직인 요인 없음",
     "market.answer.saleFactor": "{factor} — 요구액의 {delta}%p",
     "market.answer.termsFor": "{factor} — 유리",

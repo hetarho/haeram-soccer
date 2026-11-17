@@ -6904,7 +6904,7 @@
     "market.terms.wouldStart": "Sarebbe titolare da noi",
     "market.terms.losesPlace": "Ora è titolare, da noi non lo sarebbe",
     "market.terms.freeAgent": "Svincolato",
-    "market.sale.managerStyle": "Lo stile dell’allenatore aiuta la trattativa",
+    "market.sale.managerStyle": "L’allenatore capo dei dati aiuta la trattativa",
     "market.answer.noFactors": "nessun fattore ha influito",
     "market.answer.saleFactor": "{factor} — {delta} punti della richiesta",
     "market.answer.termsFor": "{factor} — a favore",

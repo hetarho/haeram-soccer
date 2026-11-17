@@ -6901,7 +6901,7 @@
     "market.terms.wouldStart": "Bizde ilk 11’de oynar",
     "market.terms.losesPlace": "Şu an ilk 11’de ama bizde olmaz",
     "market.terms.freeAgent": "Serbest oyuncu",
-    "market.sale.managerStyle": "Teknik direktörün ekolü pazarlığa yardım ediyor",
+    "market.sale.managerStyle": "Veri Baş Koçu teknik direktör pazarlığa yardım ediyor",
     "market.answer.noFactors": "etkileyen bir etken yok",
     "market.answer.saleFactor": "{factor} — istenen bedelin {delta} puanı",
     "market.answer.termsFor": "{factor} — lehte",

@@ -6904,7 +6904,7 @@
     "market.terms.wouldStart": "Sería titular con nosotros",
     "market.terms.losesPlace": "Es titular ahora, pero no lo sería con nosotros",
     "market.terms.freeAgent": "Agente libre",
-    "market.sale.managerStyle": "El estilo del entrenador ayuda en la negociación",
+    "market.sale.managerStyle": "El entrenador jefe de datos ayuda en la negociación",
     "market.answer.noFactors": "ningún factor influyó",
     "market.answer.saleFactor": "{factor} — {delta} pts del precio pedido",
     "market.answer.termsFor": "{factor} — a favor",

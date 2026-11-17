@@ -121,9 +121,9 @@ function feeRatio(fee: string, asking: string) {
   return a <= 0n ? 2 : Number((BigInt(fee) * 10000n) / a) / 10000;
 }
 /**
- * The selling club's factors for our bids (→CLUB-52): its registry, and the manager school whose
- * negotiating help (데이터 헤드코치, →STAFF-14) takes its points of the asking fee off the
- * reservation as the 단장's ability does (→STAFF-20). Read when a bid is answered, never at load.
+ * The selling club's factors for our bids (→CLUB-52): its registry, and the share −0.05 a
+ * 데이터 헤드코치 manager takes off the reservation (CLUB-52's row, →STAFF-14), named in the
+ * report like the 단장's ability (→STAFF-20). Read when a bid is answered, never at load.
  */
 function bidFactors(w: World): readonly AnswerFactor<SaleContext>[] {
   const help = managerStyleEffects(w).bidAcceptance;

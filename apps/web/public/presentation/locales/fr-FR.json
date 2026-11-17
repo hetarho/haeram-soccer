@@ -6904,7 +6904,7 @@
     "market.terms.wouldStart": "Serait titulaire chez nous",
     "market.terms.losesPlace": "Titulaire aujourd’hui, il ne le serait pas chez nous",
     "market.terms.freeAgent": "Joueur libre",
-    "market.sale.managerStyle": "Le style de l’entraîneur aide la négociation",
+    "market.sale.managerStyle": "Le coach en chef des données aide la négociation",
     "market.answer.noFactors": "aucun facteur n’a joué",
     "market.answer.saleFactor": "{factor} — {delta} pts du prix demandé",
     "market.answer.termsFor": "{factor} — pour",

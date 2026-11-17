@@ -6901,7 +6901,7 @@
     "market.terms.wouldStart": "Would start for us",
     "market.terms.losesPlace": "Starts now but would not for us",
     "market.terms.freeAgent": "A free agent",
-    "market.sale.managerStyle": "The manager’s school helps the negotiation",
+    "market.sale.managerStyle": "The Data Head Coach manager helps the negotiation",
     "market.answer.noFactors": "no factor moved it",
     "market.answer.saleFactor": "{factor} — {delta} pts of the asking fee",
     "market.answer.termsFor": "{factor} — for",

@@ -7449,7 +7449,7 @@ export const sourceMessages = {
     '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}. 단장의 제안이에요.',
   'market.answer.blocked':
     '상대 구단은 {fee} 제안을 받아들였어요. {reason}. 그러나 마무리하지 못했어요: {blocker}',
-  'market.sale.managerStyle': '감독 유형의 협상 지원',
+  'market.sale.managerStyle': '데이터 헤드코치 감독의 협상 지원',
   'market.answer.noFactors': '움직인 요인 없음',
   'market.answer.saleFactor': '{factor} — 요구액의 {delta}%p',
   'market.answer.termsFor': '{factor} — 유리',
