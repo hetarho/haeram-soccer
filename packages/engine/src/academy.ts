@@ -13,6 +13,7 @@ import { marketWage, signingClauses } from './contracts';
 import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
 import { growAttributes, recordDevelopment } from './training';
+import { prodigyGrowth } from './prodigies';
 import { moneyLabel } from './finance';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
@@ -22,6 +23,7 @@ import { debutRule, directionOf, directionOption, releaseRule } from './directio
 import { insolvencyStop } from './delegation';
 import { academyFacilityTerms } from './facilities';
 import { intakePotential } from './owner-traits';
+import { WARTIME } from './season-years';
 
 /** First-team squad limit shared with signings. */
 /** Prospects held at once; intakes stop while the academy is full. */
@@ -212,10 +214,15 @@ export function developAcademy(w: World): void {
   const growth = academyGrowth(w),
     focus = YOUTH_FOCUS_INFO[youthFocus(w)];
   for (const player of players) {
+    // A prodigy grows at three times the rate and its cap until 18 (→PLAYER-15, WORLD-18).
     const group = ageGroupOf(w, player),
+      prodigy = prodigyGrowth(player, w.year - player.born),
       gap = Math.max(0, player.potential - overall(player)),
       gain = hundredths(
-        Math.min(0.3, gap / 150) * growth * ageGroupGrowth(w, group) * focus.growth[group],
+        Math.min(0.3 * prodigy, (gap / 150) * prodigy) *
+          growth *
+          ageGroupGrowth(w, group) *
+          focus.growth[group],
       );
     if (gain <= 0) continue;
     recordDevelopment(player, growAttributes(player, gain));
@@ -414,9 +421,13 @@ function staffReport(w: World, title: string, detail: string, ref?: string) {
 /** Season boundary: academy ages, and delegated staff promote or release prospects. */
 export function seasonAcademy(w: World): void {
   if (!w.academy?.players.length) return;
-  // Academy football ends at 21 whoever decides; this also bounds the academy.
+  // Academy football ends at 21 whoever decides; this also bounds the academy. A prodigy
+  // (→WORLD-18) whom the war gap aged past it unseen stays through the restart season, so the
+  // club can still promote him (→WORLD-14).
   for (const player of w.academy.players.filter(
-    (prospect) => w.year - prospect.born >= ACADEMY_LEAVE_AGE,
+    (prospect) =>
+      w.year - prospect.born >= ACADEMY_LEAVE_AGE &&
+      !(prospect.prodigy && w.year === WARTIME.restart),
   )) {
     releaseYouth(w, player.id);
     staffReport(

@@ -7,7 +7,7 @@ import { seasonFrom, WARTIME } from './wartime';
 import { closeSeason, prepareSeason } from './season';
 import { currentDay, SEASON_END_DAY } from './calendar';
 import { clamp } from './primitives';
-import { generateClubs, stature, tierLevel, xiRating } from './world';
+import { divisionLevel, generateClubs, stature, xiRating } from './world';
 import { clubStyle } from './tactics';
 import { evolveClubs } from './dynamics';
 import { ownerSettleGap } from './owner';
@@ -66,8 +66,9 @@ describe('the world before the takeover (→WORLD-13)', () => {
     );
     for (const club of generated.filter((c) => !c.id.startsWith('euro:'))) {
       expect(club.tier).toBeLessThan(country(club.country).groups.length);
-      const base = tierLevel(club.tier) + stature('history-made', club.id);
-      expect(tierLevel(club.tier)).toBe(77 - 11 * club.tier);
+      const base = divisionLevel(club.tier) + stature('history-made', club.id);
+      // Professional tier t at 90 − 10t: 80, 70, 60 and 50 for the top four (→WORLD-15).
+      expect(divisionLevel(club.tier)).toBe(90 - 10 * (club.tier + 1));
       expect(club.strength).toBeGreaterThanOrEqual(clamp(Math.round(base - 3), 15, 92));
       expect(club.strength).toBeLessThanOrEqual(clamp(Math.round(base + 3), 15, 92));
     }

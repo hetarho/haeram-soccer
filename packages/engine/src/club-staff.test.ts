@@ -21,7 +21,7 @@ import { careerWorld } from './career.testkit';
 import { SAFETY_ROUNDS } from './delegation-info';
 import { operatingCosts } from './finance';
 import { ownLeagueClubs } from './season';
-import { random } from './primitives';
+import { random, ratio } from './primitives';
 import { holdRows } from './testing';
 import { world } from './staff.testkit';
 import {
@@ -259,7 +259,8 @@ describe('hiring from the staff markets (→STAFF-49, STAFF-15)', () => {
     expect(offer.compensation).toBe(
       (BigInt(offer.wage) * BigInt(STAFF_MARKET_CONFIG.compensationWages)).toString(),
     );
-    expect(offer.fee).toBe((BigInt(offer.wage) / 4n).toString());
+    // A quarter of his wage, rounded as the going signing fee is (`ratio`).
+    expect(offer.fee).toBe(ratio(offer.wage, 1n, 4n));
     const cash = BigInt(w.cash);
     operate(w, { type: 'hire-staff', role: 'attack', candidate: index, term: 2 });
     const hired = w.staff!.find((m) => m.role === 'attack')!;

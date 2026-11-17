@@ -4,7 +4,8 @@ import { continuousSquad } from './npc-continuity';
 import { coachingGrade } from './aptitude';
 import { clubManager } from './managerMarket';
 import { openEmployment, retainPerson } from './person-careers';
-import { compareIds, integer, random, zeroMetrics } from './primitives';
+import { clamp, compareIds, integer, random, zeroMetrics } from './primitives';
+import { MAX_LEVEL } from './facility-model';
 import { facilityStage } from './club-value';
 import { lineOf } from './player';
 import { formationOf } from './player-state';
@@ -21,15 +22,85 @@ import {
 } from './world';
 import { message } from '../../contracts/src/messages';
 
-/** Initial levels depend on division and the fixed founding stature, never current results. */
+/**
+ * Academy, ground and coaching levels follow the club's division (→WORLD-17): each has a target,
+ * its division's ladder value plus its stature's shift (`facilityStage`), at founding too.
+ */
 export const CLUB_LEVELS = {
   founding: facilityStage,
   coachingAbility: [30, 40, 50, 60, 70, 80],
-  /** Level points per season of income invested; T866 calibrates these starting values. */
+  /** Level progress per season of income invested above the cash ceiling; T950 tunes it. */
   investment: 0.5,
-  /** Level points lost in a season without investment. */
+  /** Progress toward the next level lost in a season without investment. */
   decay: 0.05,
+  /** How far above its target actual surplus investment holds a level. */
+  aboveTarget: 1,
+  /** Levels a season a level moves toward its target, after promotion or relegation too. */
+  moveAfterChange: 1,
 } as const;
+
+type LevelKey = 'academy' | 'ground' | 'coaching';
+const LEVEL_KEYS: readonly LevelKey[] = ['academy', 'ground', 'coaching'];
+
+/** Each level's target: its division's ladder value plus its stature's shift (→WORLD-17). */
+export function levelTargets(w: World, c: Club): Record<LevelKey, number> {
+  const stage = CLUB_LEVELS.founding(w, c);
+  return {
+    academy: stage.academyFacility,
+    ground: stage.trainingGround,
+    coaching: stage.trainingGround,
+  };
+}
+
+/**
+ * The books' close records a season's surplus investment in a club's levels (→WORLD-17, →ECON-36):
+ * `spent` of `income` accumulates progress toward a level (at most one funded level a season),
+ * a season without it lets the progress decay, and `invested` marks the season for
+ * `followLevels`, which moves the levels once promotion and relegation are known.
+ */
+export function investLevels(c: Club, spent: bigint, income: bigint) {
+  const levels = c.levels;
+  if (!levels) return;
+  const investing = spent > 0n;
+  const share = investing && income > 0n ? Number((spent * 10000n) / income) / 10000 : 0;
+  const progress = investing
+    ? (levels.progress ?? 0) + share * CLUB_LEVELS.investment
+    : Math.max(0, (levels.progress ?? 0) - CLUB_LEVELS.decay);
+  levels.progress = Math.round(Math.min(1, progress) * 10000) / 10000;
+  if (investing) levels.invested = true;
+  else delete levels.invested;
+}
+
+/**
+ * A season's move of a club's levels at the summer close, after promotion and relegation, so the
+ * target is its new division's (→WORLD-17): a level below its target rises toward it, one above it
+ * falls back, by at most `moveAfterChange` a season; a funded level (`investLevels`) lifts a level
+ * at most `aboveTarget` above its target, held there while the club keeps investing.
+ */
+export function followLevels(w: World, c: Club) {
+  const levels = c.levels;
+  if (!levels) return;
+  const investing = !!levels.invested,
+    funded = (levels.progress ?? 0) >= 1;
+  const targets = levelTargets(w, c),
+    step = CLUB_LEVELS.moveAfterChange;
+  for (const key of LEVEL_KEYS) {
+    const target = targets[key],
+      held = target + (investing ? CLUB_LEVELS.aboveTarget : 0),
+      level = levels[key];
+    const next =
+      level < target
+        ? Math.min(target, level + step)
+        : level > held
+          ? Math.max(held, level - step)
+          : funded && level < held
+            ? level + 1
+            : level;
+    levels[key] = clamp(next, 0, MAX_LEVEL);
+  }
+  if (funded) levels.progress = 0;
+  delete levels.invested;
+}
 
 export function enrollSquadPlayer(w: World, c: Club, p: Player) {
   if ((coachingGrade(p) ?? 0) < 4) return;

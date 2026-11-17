@@ -189,7 +189,10 @@ describe('closed season archive', () => {
       left = founders.filter((p) => p.status === 'sold');
     expect(founders).toHaveLength(before.size);
     expect(left.length).toBeGreaterThan(0);
-    expect(returned).toHaveLength(13);
+    // Some come back, only as the close's top-up signs them from the pool (→CLUB-3, CLUB-40); how
+    // many depends on whom the world's clubs release into it and sign from it first.
+    expect(returned.length).toBeGreaterThan(0);
+    expect(returned.length).toBeLessThan(before.size);
     expect(arrivals.map(({ player }) => player.id).sort()).toEqual(
       returned.map((p) => p.id).sort(),
     );
@@ -265,7 +268,15 @@ describe('closed season archive', () => {
         .filter((move) => move.from === w.playerClub && move.to !== w.playerClub)
         .map((move) => ({ row, move }));
     });
-    expect(compensated).toHaveLength(6);
+    // Exactly the founders another club took at the expiry, each once; a free agent or a retiree
+    // brings none. How many clubs take one depends on their needs that summer.
+    const moved = boundary.after.filter(
+      ({ person }) => !!person.club && person.club !== w.playerClub,
+    );
+    expect(moved.length).toBeGreaterThan(0);
+    expect(compensated.map(({ row }) => row.player.id)).toEqual(
+      moved.map(({ player }) => player.id),
+    );
     for (const { row, move } of compensated) {
       expect(move).toMatchObject({
         ...boundary.at,

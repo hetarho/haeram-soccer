@@ -239,8 +239,15 @@ export function makeManager(
 import { initialElo } from './elo';
 export { initialElo } from './elo';
 export { EUROPEAN_CUP_START } from './calendar';
-import { tierLevel } from './tier-levels';
 export { tierLevel, tierStrengthRange } from './tier-levels';
+/**
+ * A division's level (→WORLD-15): professional tier t (1 the top flight) at 90 − 10t, so 80, 70,
+ * 60 and 50 for the top four; `tier` counts from 0 as clubs store it. Founding strength, the
+ * divisions' band (→LEAGUE-10) and academy intakes (→WORLD-16) are read against it.
+ */
+export function divisionLevel(tier: number) {
+  return 90 - 10 * (tier + 1);
+}
 /**
  * Long-run size of each club relative to its division, stable for the career (→LEAGUE-10). Every
  * country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from
@@ -294,7 +301,7 @@ const colorOf = (r: () => number) =>
     .padStart(6, '0');
 /**
  * Every generated club of the playable countries (→WORLD-15): each professional club at its
- * division's level (tier t: 77 − 11t) + its stature (→LEAGUE-10) ± 3, within 15–92.
+ * division's level (`divisionLevel`) + its stature (→LEAGUE-10) ± 3, within 15–92.
  */
 export function generateClubs(seed: string): Club[] {
   const clubs: Club[] = [];
@@ -308,7 +315,7 @@ export function generateClubs(seed: string): Club[] {
             term = c.terms[integer(r, 0, c.terms.length - 1)];
           // Clubs start near their division's level, giants above it and small clubs below.
           const strength = clamp(
-            Math.round(tierLevel(tier) + stature(seed, id) + integer(r, -3, 3)),
+            Math.round(divisionLevel(tier) + stature(seed, id) + integer(r, -3, 3)),
             15,
             92,
           );

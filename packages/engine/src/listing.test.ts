@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { COUNTRIES, currency } from '../../catalogs/src/index';
 import { clubListings } from './listing';
 import { clubValue, fromPounds, inPounds, tierFortune } from './club-value';
-import { rating } from './world';
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
 
 describe('the takeover list (→WEB-15)', () => {
@@ -25,7 +24,8 @@ describe('the takeover list (→WEB-15)', () => {
         currency: currency(club.country, w.year).code,
         price: clubValue(w, club),
         pricePounds: inPounds(club.country, w.year, listing.price),
-        strength: rating(w, club),
+        // A club nobody owns lists its stored strength (→LEAGUE-10).
+        strength: club.strength,
         affordable: false,
       });
     }

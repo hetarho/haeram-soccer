@@ -1,7 +1,7 @@
 /**
  * The takeover list (→WEB-15): every club of the playable countries with its price (→ECON-37) in
  * its own money and in pounds (→ECON-35), its cash and debt, last season's income and wage bill
- * (→ECON-36), its squad's strength and whether the chosen tier's fortune pays for it (→OWNER-3).
+ * (→ECON-36), its squad's stored strength (→LEAGUE-10) and whether the chosen tier's fortune pays for it (→OWNER-3).
  */
 import { COUNTRIES, currency } from '../../catalogs/src/index';
 import type { Club, ClubListing, WealthTier, World } from '../../contracts/src/types';
@@ -52,7 +52,8 @@ export function clubListings(w: World, tier?: WealthTier): ClubListing[] {
         debt: club.books?.debt ?? '0',
         lastIncome: last?.income ?? '0',
         lastWages: last?.wages ?? '0',
-        strength: rating(w, club),
+        // A club nobody owns is as strong as its squad's stored XI (→LEAGUE-10).
+        strength: club.id === w.playerClub ? rating(w, club) : club.strength,
         affordable: fortune !== undefined && pays(w, entry, fortune),
       };
     });
