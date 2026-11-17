@@ -23,12 +23,14 @@ import { MARKET_REFRESH_ROUNDS } from './managerMarket';
 import { clamp, compareIds, ratio } from './primitives';
 import {
   activePlayers,
+  clubOf,
   lineOfPlayer,
   overall,
   formationOf,
   slotOvr,
   unhappyPenalty,
 } from './player-state';
+import { marketWageAt } from './market-prices';
 import { addEvent } from './events';
 import { joinClub, ownStarters } from './world';
 import {
@@ -37,6 +39,7 @@ import {
   planLabel,
   planRoomAfterWage,
   spendingStance,
+  type SpendingStance,
 } from './delegation';
 import { sharePercent } from './delegation-info';
 import { moneyLabel } from './finance';
@@ -63,6 +66,14 @@ export const SIGNING_CONFIG = {
   trimSquad: 24,
   /** The youngest a player he lists to make room may be. */
   trimAge: 24,
+  /**
+   * The money bar (→CLUB-33): the highest OVR whose market wage at our division for a player aged
+   * `barAge`, times `barYears`, fits the season's money for signings.
+   */
+  barAge: 27,
+  barYears: 25,
+  /** A non-starter more than this far below the bar is listed to make room for a dearer one. */
+  barGap: 8,
   /** A shortlisted candidate must beat a slot's starter there by this much to be requested. */
   requestMargin: 5,
   /** The level a candidate must play a slot's position at to fit it: 준수 (→PLAYER-4). */
@@ -129,6 +140,7 @@ export function joinedThisWindow(w: World, day = currentDay(w)): Player[] {
 }
 
 type ShortNeed = Extract<SigningNeed, { kind: 'short' }>;
+type UpgradeNeed = Extract<SigningNeed, { kind: 'upgrade' }>;
 /**
  * Every short role in role order: fewer than its minimum, or, with the squad under 20 and every
  * role at its minimum, the role furthest below its share of a 20-player squad.
@@ -533,20 +545,149 @@ function lineStarters(w: World) {
  */
 export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'signed' };
 /**
+ * The season's money for signings the bar reads (→ECON-33): the recruitment plan's money left, the
+ * squad share above the players' wage bill with the reinvested sales, less this season's fees and
+ * open bids, then the available capital.
+ */
+function barMoney(w: World, refunded = 0n) {
+  const plan = delegatePlan(w, 'recruitment', undefined, undefined, refunded),
+    money = BigInt(plan.left);
+  return plan.stance.signing.bar && money > 0n ? money : undefined;
+}
+/**
+ * The 단장's money bar (→CLUB-33, →ECON-33), at the 선수 영입 steps he acts on with one (넉넉히,
+ * 아낌없이): the highest OVR whose market wage at our division for a player aged `barAge` (→CLUB-25),
+ * times `barYears`, fits the season's money for signings; none at the other steps or when not even
+ * the lowest fits. As NPC clubs read the level a place can carry (`affordableLevel`), on money.
+ */
+export function moneyBar(w: World, refunded = 0n): number | undefined {
+  const money = barMoney(w, refunded),
+    template = activePlayers(w)[0];
+  if (money === undefined || !template) return undefined;
+  const club = clubOf(w),
+    regular: Player = { ...template, born: w.year - SIGNING_CONFIG.barAge, potential: 0 },
+    fits = (ovr: number) =>
+      BigInt(marketWageAt(club.country, w.year, club.tier, regular, ovr)) *
+        BigInt(SIGNING_CONFIG.barYears) <=
+      money;
+  let low = 1,
+    high = 99;
+  if (!fits(low)) return undefined;
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+    if (fits(mid)) low = mid;
+    else high = mid - 1;
+  }
+  return low;
+}
+/** Whether an upgrade need's measure stands more than its margin below the money bar (→CLUB-33). */
+export const belowBar = (need: SigningNeed, bar: number | undefined) =>
+  bar !== undefined && need.kind === 'upgrade' && bar - need.level > need.margin;
+/**
+ * The squad as the window open on `day` found it: this window's arrivals taken out and the players
+ * sold in it back, read from their recorded moves. Injuries, unhappiness and the tactic stay as now.
+ */
+function squadAtOpening(w: World, day: number): World {
+  const opening = windowOpening(w, day),
+    inWindow = ({ year, day: at }: { year: number; day: number }) =>
+      year === w.year && at >= opening && at <= day,
+    arrived = new Set(
+      (w.recruitmentArrivals ?? []).filter(({ at }) => inWindow(at)).map(({ player }) => player),
+    ),
+    left = (p: Player) =>
+      p.status === 'sold' &&
+      (w.playerRecords?.[p.id]?.moves ?? []).some(
+        (move) => move.from === w.playerClub && !move.loan && inWindow(move),
+      );
+  return {
+    ...w,
+    players: w.players.map((p) =>
+      arrived.has(p.id)
+        ? { ...p, status: 'sold' as const }
+        : left(p)
+          ? { ...p, status: 'active' as const }
+          : p,
+    ),
+  };
+}
+/**
+ * The money bar the window open on `day` is capped by (→CLUB-33): the bar now, or the bar with this
+ * window's signings undone when that is higher — the fees they actually paid (a counter's included,
+ * read from the recorded transfer facts) back in the cash and out of the season's fees, their wages
+ * off the bill, the 단장's open bids withdrawn. What the window's own
+ * signings spent never lowers its cap; money the plan lost otherwise (a re-plan on lower income)
+ * does, and money it gained raises it.
+ */
+export function windowBar(w: World, day = currentDay(w)): number | undefined {
+  const now = moneyBar(w),
+    opening = windowOpening(w, day),
+    inWindow = (bid: TransferBid) =>
+      bid.direction === 'out' && bid.year === w.year && bid.day >= opening && bid.day <= day,
+    bids = w.bids ?? [],
+    arrived = new Set(joinedThisWindow(w, day).map((p) => p.id));
+  if (!arrived.size && !bids.some((bid) => inWindow(bid) && isOpen(bid))) return now;
+  // The fee a signing paid is its recorded fact's: an accepted counter pays `counterFee`, not the bid.
+  const refunded = (w.transfers?.facts ?? []).reduce(
+    (total, fact) =>
+      fact.direction === 'in' &&
+      fact.year === w.year &&
+      fact.day >= opening &&
+      fact.day <= day &&
+      fact.currency === w.currency
+        ? total + BigInt(fact.fee)
+        : total,
+    0n,
+  );
+  const undone: World = {
+    ...w,
+    cash: (BigInt(w.cash) + refunded).toString(),
+    players: w.players.map((p) => (arrived.has(p.id) ? { ...p, status: 'sold' as const } : p)),
+    bids: bids.filter((bid) => !(inWindow(bid) && isOpen(bid))),
+  };
+  const before = moneyBar(undone, refunded);
+  return before === undefined ? now : now === undefined ? before : Math.max(now, before);
+}
+/**
+ * The XI slots more than `margin` below the money bar (→CLUB-33), each counted once: the slots of the
+ * XI the window open on `day` found (`squadAtOpening`), measured by their starters against `bar`
+ * (the window's, `windowBar`). An upgrade that lifts one of them leaves it counted, and the money it
+ * spent does not lower that bar, so the cap holds through the window; a slot a departure weakened,
+ * a signing for a slot never below the bar and a repeated signing for one slot add nothing.
+ */
+export function slotsBelowBar(
+  w: World,
+  margin: number,
+  bar: number | undefined,
+  day = currentDay(w),
+) {
+  if (bar === undefined) return 0;
+  return lineStarters(squadAtOpening(w, day)).filter((s) => bar - s.value > margin).length;
+}
+/**
+ * The window's upgrade cap (→CLUB-33, →ECON-33): the step's, or at 아낌없이 the XI slots below the
+ * money bar (`slotsBelowBar`) when that is more.
+ */
+export function upgradeCap(signing: SpendingStance['signing'], belowSlots: number) {
+  return signing.barCap ? Math.max(signing.upgrades, belowSlots) : signing.upgrades;
+}
+/**
  * The upgrade needs (→CLUB-33): every outfield and keeper slot, the weakest starter there first,
  * each measured by its starter or by one of `joined` (this window's arrivals) who beats him there.
+ * With a money `bar`, every slot whose measure is more than the margin below it comes first, the
+ * weakest first, before the others; a candidate for any of them still beats its measure by the margin.
  */
 export function upgradeNeeds(
   w: World,
   margin: number,
   joined: readonly Player[] = [],
+  bar?: number,
 ): SigningNeed[] {
   const slots = formationOf(w.tactic),
     starters = lineStarters(w),
     starting = new Set(starters.map((s) => s.p.id)),
     fresh = UPGRADE_MEASURE.inForce === 'signed' ? joined.filter((p) => !starting.has(p.id)) : [],
     counted = new Set<string>();
-  return starters
+  const needs: UpgradeNeed[] = starters
     .sort((a, b) => a.value - b.value || a.slot - b.slot)
     .map((starter) => {
       const position = slots[starter.slot]!.position;
@@ -557,7 +698,7 @@ export function upgradeNeeds(
       const settling = arrival && arrival.value > starter.value ? arrival : undefined;
       if (settling) counted.add(settling.p.id);
       return {
-        kind: 'upgrade',
+        kind: 'upgrade' as const,
         line: starter.line,
         slot: starter.slot,
         position,
@@ -566,6 +707,11 @@ export function upgradeNeeds(
         margin,
       };
     });
+  if (bar === undefined) return needs;
+  const below = needs
+    .filter((need) => belowBar(need, bar))
+    .sort((a, b) => a.level - b.level || a.slot - b.slot);
+  return [...below, ...needs.filter((need) => !below.includes(need))];
 }
 
 /** The 단장 signs a free agent: he leaves the pool at once on the offer's terms (→CLUB-49). */
@@ -618,19 +764,40 @@ function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, why: 
 }
 
 /**
+ * Our players who joined this season or last (→CLUB-33): every recorded arrival of those seasons,
+ * and any player whose joining season is one of them, except the squad the owner took over, who
+ * were at the club before him.
+ */
+function recentJoiners(w: World) {
+  const since = w.year - 1,
+    takeover = w.owner?.takeover?.year,
+    recent = new Set(
+      (w.recruitmentArrivals ?? [])
+        .filter(({ at }) => at.year >= since)
+        .map(({ player }) => player),
+    );
+  for (const p of activePlayers(w))
+    if (p.joined !== undefined && p.joined >= since && p.joined !== takeover) recent.add(p.id);
+  return recent;
+}
+/**
  * At 넉넉히 and 아낌없이 with sales delegated too, a regular look over `trimSquad` players less the
  * listed lists surplus players at 협상 가능 down to it (→CLUB-33, →CLUB-22): outside the manager's XI,
  * aged `trimAge` or over, never loaned, retiring or joined in this window; the least able, then the
- * oldest, then by id, in one report. Listing is no move: it does not wait for his bids.
+ * oldest, then by id. With a money bar (`moneyBar`) the same look also lists, at any squad size,
+ * the non-starters aged `trimAge` or over more than `barGap` below it who did not join this season or
+ * last, never leaving a line's unlisted players below its minimum (→CLUB-40). One report names the
+ * look's listings. Listing is no move: it does not wait for his bids.
  */
 export function makeRoom(w: World, day = currentDay(w)) {
   if (!spendingStance(w, 'recruitment').signing.makeRoom || !isDelegated(w, 'sales')) return;
   const players = activePlayers(w),
-    unlisted = players.filter((p) => transferStance(p) !== 'listed').length;
-  if (unlisted <= SIGNING_CONFIG.trimSquad) return;
+    unlisted = players.filter((p) => transferStance(p) !== 'listed').length,
+    bar = moneyBar(w);
+  if (unlisted <= SIGNING_CONFIG.trimSquad && bar === undefined) return;
   const starters = new Set(ownStarters(w).map((p) => p.id)),
     joined = new Set(joinedThisWindow(w, day).map((p) => p.id));
-  const surplus = players
+  const eligible = players
     .filter(
       (p) =>
         transferStance(p) === 'open' &&
@@ -640,18 +807,46 @@ export function makeRoom(w: World, day = currentDay(w)) {
         !joined.has(p.id) &&
         w.year - p.born >= SIGNING_CONFIG.trimAge,
     )
-    .sort((a, b) => overall(a) - overall(b) || a.born - b.born || compareIds(a.id, b.id))
-    .slice(0, unlisted - SIGNING_CONFIG.trimSquad);
-  if (!surplus.length) return;
-  for (const p of surplus) setTransferStance(w, p.id, 'listed');
+    .sort((a, b) => overall(a) - overall(b) || a.born - b.born || compareIds(a.id, b.id));
+  const surplus = eligible.slice(0, Math.max(0, unlisted - SIGNING_CONFIG.trimSquad));
+  const lineCount = (line: Line) =>
+    players.filter(
+      (p) => transferStance(p) !== 'listed' && !surplus.includes(p) && lineOfPlayer(p) === line,
+    ).length;
+  const left = Object.fromEntries(LINES.map((line) => [line, lineCount(line)])) as Record<
+    Line,
+    number
+  >;
+  const weak: Player[] = [],
+    recent = recentJoiners(w);
+  if (bar !== undefined)
+    for (const p of eligible) {
+      const line = lineOfPlayer(p);
+      if (
+        surplus.includes(p) ||
+        overall(p) >= bar - SIGNING_CONFIG.barGap ||
+        recent.has(p.id) ||
+        left[line] <= SIGNING_CONFIG.lineMinimum[line]
+      )
+        continue;
+      left[line]--;
+      weak.push(p);
+    }
+  const listing = [...surplus, ...weak];
+  if (!listing.length) return;
+  for (const p of listing) setTransferStance(w, p.id, 'listed');
+  const names = listing.map((p) => p.name).join(' · ');
   pushInbox(w, {
     kind: 'staff-report',
-    title: sourceMessage('copy.signings.d5ae34d4e2', { p0: surplus.length }),
-    detail: sourceMessage('copy.signings.fd697db2c6', {
-      p0: unlisted,
-      p1: SIGNING_CONFIG.trimSquad,
-      p2: surplus.map((p) => p.name).join(' · '),
-    }).slice(0, 400),
+    title: sourceMessage('copy.signings.d5ae34d4e2', { p0: listing.length }),
+    detail: (surplus.length
+      ? sourceMessage('copy.signings.fd697db2c6', {
+          p0: unlisted,
+          p1: SIGNING_CONFIG.trimSquad,
+          p2: names,
+        })
+      : names
+    ).slice(0, 400),
     attention: false,
   });
 }
@@ -741,17 +936,21 @@ export function staffSignings(w: World) {
     ).length,
     tried = new Set(bids.map((bid) => bid.playerId)),
     joined = joinedThisWindow(w, day);
+  const margin = stance.signing.margin,
+    bar = margin !== undefined && stance.signing.bar ? moneyBar(w) : undefined,
+    upgradeList =
+      margin !== undefined && (stance.signing.room === undefined || unlisted <= stance.signing.room)
+        ? upgradeNeeds(w, margin, joined, bar)
+        : [];
+  const cap = upgradeCap(
+    stance.signing,
+    stance.signing.barCap && margin !== undefined
+      ? slotsBelowBar(w, margin, windowBar(w, day), day)
+      : 0,
+  );
   const requests = signingRequests(w),
     short = shortLines(w),
-    found: SigningNeed[] = [
-      ...short,
-      ...replacements,
-      ...(stance.signing.margin !== undefined &&
-      upgrades < stance.signing.upgrades &&
-      (stance.signing.room === undefined || unlisted <= stance.signing.room)
-        ? upgradeNeeds(w, stance.signing.margin, joined)
-        : []),
-    ];
+    found: SigningNeed[] = [...short, ...replacements, ...(upgrades < cap ? upgradeList : [])];
   const needs = found
     .map((need) => {
       const requested = requests.find((request) =>
