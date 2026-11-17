@@ -35,7 +35,12 @@ import { coachCriteriaOf, coachDelegated } from '../../../../../../packages/engi
 import { directionOption } from '../../../../../../packages/engine/src/direction';
 import { SAFETY_ROUNDS, sharePercent } from '../../../../../../packages/engine/src/delegation-info';
 import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
-import { SALE_BARS } from '../../../../../../packages/engine/src/transfers';
+import {
+  PROSPECT_AGE,
+  PROSPECT_GROWTH,
+  SALE_BARS,
+} from '../../../../../../packages/engine/src/transfers';
+import { SALE_FACTOR_VALUES, SALE_SHARE } from '../../../../../../packages/engine/src/sale-answer';
 import { managerPickPreview } from '../../../../../../packages/engine/src/managerMarket';
 import { buildOf, cardOf } from '../../../../../../packages/engine/src/build';
 import { managerTerm, STYLE_INFO } from '../../../../../../packages/engine/src/styles';
@@ -1289,7 +1294,8 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
 }
 
 /**
- * 제안 응답 (→CLUB-18, CLUB-24): who answers and the sale bar the staff apply, in words.
+ * 제안 응답 (→CLUB-18, CLUB-24, CLUB-52): who answers and the selling-club answer the 단장
+ * gives, in words.
  */
 export function OfferAnswers({ w }: { w: World }) {
   useTextLocale();
@@ -1329,17 +1335,27 @@ export function OfferAnswers({ w }: { w: World }) {
       <ul className={s.fixed}>
         <li>{richMessage('copy.ClubStaff.169f48d4c7')}</li>
         <li>
-          {richMessage('copy.ClubStaff.f2a314f736', {
-            p0: bar,
-            p1: ' ',
-            p2: prospect,
-            p3: ' ',
-            p4: hold
-              ? sourceMessage('copy.ClubStaff.f18edf288b')
-              : sourceMessage('copy.ClubStaff.131f1f83e6'),
+          {richMessage('copy.ClubStaff.18e3339ea9', {
+            bar,
+            prospect,
+            age: PROSPECT_AGE,
+            growth: PROSPECT_GROWTH,
           })}
         </li>
-        <li>{richMessage('delegation.offer.cuts', { first, second, weeks: SAFETY_ROUNDS })}</li>
+        <li>
+          {richMessage('copy.ClubStaff.cb6ab20e9f', {
+            first,
+            second,
+            rounds: SAFETY_ROUNDS,
+            days: SALE_FACTOR_VALUES.deadlineDays,
+            floor: Math.round(SALE_SHARE.ownFloor * 100),
+          })}
+        </li>
+        {hold && (
+          <li>
+            {richMessage('copy.ClubStaff.eb0c46bdeb', { card: <b>{localizeValue(card)}</b> })}
+          </li>
+        )}
         <li>{richMessage('copy.ClubStaff.5909c8a6d1', { p0: <b>{localizeValue(card)}</b> })}</li>
         <li>
           {richMessage('delegation.offer.signings', {

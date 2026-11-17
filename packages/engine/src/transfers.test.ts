@@ -22,7 +22,13 @@ import {
   transferOffers,
   transferWindow,
 } from './index';
-import { holdRows, sellPlayer, staffAuthority, unreadAttention } from './testing';
+import { holdRows, prepareSaleBuyer, sellPlayer, staffAuthority, unreadAttention } from './testing';
+import { handoverSales, saleBar } from './transfers';
+import { saleAnswer, saleContext } from './sale-answer';
+import { random } from './primitives';
+import { openNeeds } from './replacements';
+import { ownStarters } from './world';
+import { overall } from './player-state';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { CLOSED, incoming, on, world } from './transfers.testkit';
 import { CAREER_YEAR, careerWorld } from './career.testkit';
@@ -765,5 +771,162 @@ describe('market identity', () => {
     );
     expect(w.players.some((p) => p.id === ghost.playerId)).toBe(false);
     expect(validateWorld(w).id).toBe(w.id);
+  });
+});
+
+describe('delegated sales answered as the selling club (→CLUB-18, CLUB-52)', () => {
+  /** The market's club with every decision delegated, in the summer window. */
+  function selling(seed = 'delegated-sales') {
+    const w = world(seed);
+    w.settings = staffAuthority(4);
+    on(w, 8, 10);
+    expect(transferWindow(w).open).toBe(true);
+    return w;
+  }
+  let serial = 0;
+  /** Another club's pending bid for `p` at `fee`, from a buyer able to pay (→WORLD-16). */
+  function bidFor(w: World, p: Player, fee: string) {
+    const club = prepareSaleBuyer(w, p),
+      day = currentDay(w);
+    const bid: TransferBid = {
+      id: `in:test:sale:${serial++}:${p.id}`,
+      direction: 'in',
+      playerId: p.id,
+      club: club.id,
+      fee,
+      year: w.year,
+      day,
+      due: day + 5,
+      status: 'pending',
+    };
+    w.bids = [...(w.bids || []), bid];
+    return { bid, club };
+  }
+  /** The selling-club answer the 단장 gives to `bid`, read as the engine reads it. */
+  const expected = (w: World, bid: TransferBid) =>
+    saleAnswer(
+      saleContext(w, { playerId: bid.playerId, sellerId: w.playerClub, fee: bid.fee })!,
+      random(`${w.seed}:sale:${bid.id}`)(),
+    );
+  const report = (w: World, bid: TransferBid) => w.inbox!.find((item) => item.ref === bid.id)!;
+  const status = (w: World, p: Player) => w.players.find((one) => one.id === p.id)!.status;
+  const value = (w: World, p: Player) => BigInt(playerValue(w, p));
+  /** A player outside the XI, so his place lowers the reservation and leaves room for a counter. */
+  const benchPlayer = (w: World) => {
+    const xi = new Set(ownStarters(w).map((p) => p.id));
+    return activePlayers(w).find((p) => !xi.has(p.id) && p.position !== 'GK' && !p.loanUntil)!;
+  };
+
+  it('sells at the asking fee, the sale bar of value, and names the bar and its factors', () => {
+    const w = selling();
+    const p = benchPlayer(w),
+      bar = saleBar(w, p).percent,
+      asking = ((value(w, p) * BigInt(bar)) / 100n).toString(),
+      cash = BigInt(w.cash);
+    expect(bar).toBe(saleBar(w, p).prospect ? 200 : 130);
+    const { bid } = bidFor(w, p, asking);
+    expect(expected(w, bid).kind).toBe('accept');
+    handoverSales(w);
+    expect(bid.status).toBe('completed');
+    expect(status(w, p)).toBe('sold');
+    expect(BigInt(w.cash)).toBe(cash + BigInt(asking));
+    const item = report(w, bid);
+    expect(item).toMatchObject({ kind: 'staff-report', attention: false });
+    expect(item.title).toMatch(/^단장이 /);
+    expect(item.detail).toContain(`평가 가치의 ${bar}%`);
+    expect(item.detail).toContain('구단이 버틴 선');
+    // His place outside the XI is one of the factors the report names.
+    expect(item.detail).toContain('주전이 아닌 선수');
+    expect(item.detail).toContain('제안을 받아들여 매각했어요');
+  });
+
+  it('counters below the reservation; the bidder takes it when its books allow, else not', () => {
+    const w = selling();
+    const p = benchPlayer(w);
+    const probe = bidFor(structuredClone(w), p, '1').bid;
+    const reservation = BigInt(expected(w, probe).reservation),
+      fee = (reservation - 1n).toString();
+    // Taken: the sale completes at the counter, not the bid.
+    const taken = structuredClone(w),
+      { bid } = bidFor(taken, p, fee);
+    bid.id = probe.id;
+    const answer = expected(taken, bid);
+    expect(answer.kind).toBe('counter');
+    const cash = BigInt(taken.cash);
+    handoverSales(taken);
+    expect(bid).toMatchObject({ status: 'completed', counterFee: answer.counter });
+    expect(BigInt(taken.cash)).toBe(cash + BigInt(answer.counter!));
+    expect(status(taken, p)).toBe('sold');
+    expect(report(taken, bid).detail).toContain('역제안했고 상대 구단이 받아들여 매각했어요');
+    // Declined: a bidder without the money for the counter walks away; he stays.
+    const declined = structuredClone(w),
+      other = bidFor(declined, p, fee);
+    other.bid.id = probe.id;
+    other.club.books = { seasons: [], cash: '0', debt: '999999999999', openingIncome: '0' };
+    handoverSales(declined);
+    expect(other.bid).toMatchObject({ status: 'rejected', counterFee: answer.counter });
+    expect(status(declined, p)).toBe('active');
+    expect(report(declined, other.bid).detail).toContain('상대 구단이 받아들이지 않았어요');
+  });
+
+  it('refuses a bid far below the reservation and is deterministic', () => {
+    const w = selling();
+    const p = benchPlayer(w);
+    const { bid } = bidFor(w, p, (value(w, p) / 10n).toString());
+    expect(expected(w, bid).kind).toBe('refuse');
+    const copy = structuredClone(w);
+    handoverSales(w);
+    handoverSales(copy);
+    expect(canonical(copy)).toBe(canonical(w));
+    expect(bid.status).toBe('rejected');
+    expect(status(w, p)).toBe('active');
+    expect(report(w, bid).detail).toContain('역제안 없이 거절했어요');
+  });
+
+  it('sells a starter, even one of the three best, and opens a replacement need (→CLUB-42)', () => {
+    const w = selling();
+    const best = [...ownStarters(w)].sort((a, b) => overall(b) - overall(a))[0]!;
+    const asking = ((value(w, best) * BigInt(saleBar(w, best).percent)) / 100n).toString();
+    const { bid } = bidFor(w, best, asking);
+    handoverSales(w);
+    expect(bid.status).toBe('completed');
+    expect(status(w, best)).toBe('sold');
+    expect(openNeeds(w).some((need) => need.playerId === best.id)).toBe(true);
+    expect(report(w, bid).detail).toContain('핵심 주전');
+  });
+
+  it("keeps the vetoes: 이적 불가 below 150%, 핵심 지키기's three best starters; listed players sell", () => {
+    const w = selling();
+    const [best] = [...ownStarters(w)].sort((a, b) => overall(b) - overall(a));
+    // 핵심 지키기: no fee buys one of the three best starters.
+    const hold = structuredClone(w);
+    holdRows(hold, { build: { market: 'hold' } });
+    const core = bidFor(hold, best!, (value(hold, best!) * 5n).toString()).bid;
+    handoverSales(hold);
+    expect(core.status).toBe('rejected');
+    expect(report(hold, core).detail).toContain('주전 상위 3명은 팔지 않아요');
+    // 이적 불가: refused unseen below 150% of value.
+    const locked = structuredClone(w),
+      p = benchPlayer(locked);
+    locked.players.find((one) => one.id === p.id)!.stance = 'untouchable';
+    const firm = bidFor(locked, p, ((value(locked, p) * 140n) / 100n).toString()).bid;
+    handoverSales(locked);
+    expect(firm.status).toBe('rejected');
+    expect(status(locked, p)).toBe('active');
+    // A listed player takes his offer (→CLUB-22).
+    const listed = structuredClone(w),
+      q = benchPlayer(listed);
+    listed.players.find((one) => one.id === q.id)!.stance = 'listed';
+    const low = bidFor(listed, q, ((value(listed, q) * 85n) / 100n).toString()).bid;
+    handoverSales(listed);
+    expect(low.status).toBe('completed');
+    expect(report(listed, low).detail).toContain('이적 명단에 오른 선수라 매각했어요.');
+    // Held by the owner, the bid waits in the inbox for his answer.
+    const owner = structuredClone(w);
+    owner.settings = staffAuthority(3);
+    const held = bidFor(owner, benchPlayer(owner), playerValue(owner, benchPlayer(owner))).bid;
+    handoverSales(owner);
+    expect(held.status).toBe('pending');
+    expect(report(owner, held)).toMatchObject({ kind: 'incoming-bid', attention: true });
   });
 });

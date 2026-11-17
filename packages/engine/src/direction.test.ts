@@ -21,8 +21,8 @@ import {
   ownStarters,
   releaseStaff,
   renewalDay,
-  saleAllowed,
   saleBar,
+  saleContext,
   seasonStaff,
   staffStances,
   TALK_RULE_DEFAULT,
@@ -101,8 +101,13 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
       expect(affordable(w, 0n, 0n)).toBe(false);
     }
 
-    // The sale bar drops 10 points once the wage bill passes the 단장's sales line (60% of the
-    // income for 적당히) and 20 points ten points above it; a cash crisis drops it 20 as well.
+    // The wage bill past the 단장's sales line (60% of the income for 적당히) is a factor of his
+    // answer as the selling club, more than ten points above it a stronger one; a cash crisis too
+    // (→CLUB-52): 0 below the line, 1 above it, 2 ten points above, 'crisis' in a crisis.
+    const pressure = () => {
+      const context = saleContext(w, { playerId: p.id, sellerId: w.playerClub, fee: '1' })!;
+      return context.cashCrisis ? 'crisis' : context.wageLine;
+    };
     const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
     p.born = w.year - 26;
     p.until = w.year + 3;
@@ -116,22 +121,22 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
           player.wage = ((BigInt(player.wage) * target) / now).toString();
       };
     wagesAt(50n);
-    expect(saleBar(w, p).percent).toBe(130);
+    expect(pressure()).toBe(0);
     wagesAt(65n);
-    expect(saleBar(w, p).percent).toBe(120);
+    expect(pressure()).toBe(1);
     wagesAt(75n);
-    expect(saleBar(w, p).percent).toBe(110);
+    expect(pressure()).toBe(2);
     // Asked to hold at all costs a cautious 단장 still draws his line a step lower (68%, 78%);
     // asked to sell readily, at 45% and 55%.
     w.delegationRequests = { sales: 5 };
     holdTemperament(w, 'director', 'cautious');
-    expect(saleBar(w, p).percent).toBe(120);
+    expect(pressure()).toBe(1);
     w.delegationRequests = { sales: 1 };
-    expect(saleBar(w, p).percent).toBe(110);
+    expect(pressure()).toBe(2);
     delete w.delegationRequests;
     wagesAt(50n);
     w.cash = cashFor(w, 3);
-    expect(saleBar(w, p).percent).toBe(110);
+    expect(pressure()).toBe('crisis');
     // An untouchable star: the wage burden past the second line lowers the price by 25.
     w.cash = cashFor(w, 25);
     holdTemperament(w, 'director', 'balanced');
@@ -144,7 +149,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(untouchableVerdict(w, 100, false).accept).toBe(true);
   });
 
-  it('매각 기조 sets the sale bar, and 핵심 지키기 never sells a starter', () => {
+  it('매각 기조 sets the sale bar, the asking fee of value and for a prospect', () => {
     const w = world('direction-market');
     w.cash = '999999999999';
     const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
@@ -159,20 +164,13 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     ];
     for (const [market, base] of bars) {
       holdRows(w, { build: market ? { market: market as never } : {} });
-      expect(saleBar(w, p)).toMatchObject({ base, percent: base });
+      expect(saleBar(w, p)).toMatchObject({ percent: base, prospect: false });
     }
     p.born = w.year - 19;
     p.potential = 99;
-    expect(saleBar(w, p).base).toBe(250);
+    expect(saleBar(w, p)).toEqual({ percent: 250, prospect: true });
     holdRows(w, { build: { market: 'selling' } });
-    expect(saleBar(w, p).base).toBe(160);
-    // An ageing starter with a ready bench player can go, except under 핵심 지키기.
-    expect(saleAllowed(w, true, 31, true)).toBe(true);
-    expect(saleAllowed(w, true, 29, true)).toBe(false);
-    expect(saleAllowed(w, false, 22, false)).toBe(true);
-    holdRows(w, { build: { market: 'hold' } });
-    expect(saleAllowed(w, true, 31, true)).toBe(false);
-    expect(saleAllowed(w, false, 22, false)).toBe(true);
+    expect(saleBar(w, p).percent).toBe(160);
   });
 
   it('staff given the coaching posts refill vacancies and renew expiring coaches', () => {

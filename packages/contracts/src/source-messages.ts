@@ -2824,11 +2824,11 @@ export const sourceMessages = {
     '단장이 스카우트 명단과 감독의 요청을 보고 영입 방침과 재정 기조에 따라 영입해요.',
   'copy.ClubStaff.093dbc6ce0': '구단주가 영입과 영입 협상을 직접 결정해요.',
   'copy.ClubStaff.169f48d4c7': '이적 명단 선수는 들어오는 제안을 받아들여 매각해요.',
-  'copy.ClubStaff.f18edf288b': '주전은 팔지 않아요.',
-  'copy.ClubStaff.131f1f83e6':
-    '주전은 같은 역할에 능력 3 안쪽의 후보가 있는 30세 이상일 때만 팔아요.',
-  'copy.ClubStaff.f2a314f736':
-    '협상 가능 선수는 평가 가치의 {p0}%(유망주: 22세 이하·잠재력이 능력보다 8 이상 높으면{p1}{p2}%) 이상이면 팔아요.{p3}{p4}',
+  'copy.ClubStaff.18e3339ea9':
+    '협상 가능 선수는 평가 가치의 {bar}%(유망주: {age}세 이하·잠재력이 능력보다 {growth} 이상 높으면 {prospect}%)를 요구하고, 그 이상인 제안은 받아들여요.',
+  'copy.ClubStaff.cb6ab20e9f':
+    '그보다 낮은 제안은 선수의 팀 내 위치, 계약, 나이, 이적 요청·언해피 여부, 구단 자금 사정(선수 연봉이 수입의 {first}%·{second}% 초과, 고정비 여력 {rounds}라운드 미만), 이적시장 마지막 {days}일 여부에 따라 받아들이거나 요구액을 낮춰 역제안하고, 너무 낮으면 거절해요. 평가 가치의 {floor}% 밑으로는 팔지 않아요.',
+  'copy.ClubStaff.eb0c46bdeb': '매각 기조가 {card}라서 가장 뛰어난 주전 세 명은 팔지 않아요.',
   'copy.ClubStaff.5909c8a6d1':
     '이적 불가 선수의 거액 제안은 감독과 상의해 매각 기조 {p0}와 자금 사정으로 정해요.',
   'copy.ClubStaff.42b9e5f546':
@@ -4281,7 +4281,7 @@ export const sourceMessages = {
   'copy.Rich.6fa78664ca': '제안마다 구단주가 수락·거절해요',
   'copy.Rich.6aa4d020ff': '다른 구단이 먼저 제안해 올 때 협상해요',
   'copy.Rich.d630d96fa4':
-    '스태프가 평가 가치의 {p0}% 이상이면 팔아요 · 대체 선수 없는 주전은 지켜요',
+    '스태프가 평가 가치의 {p0}%를 요구하고, 포지션·계약·나이·자금 사정에 따라 그보다 낮은 제안도 받거나 역제안해요',
   'copy.Rich.c1583a64cf': '평가 가치 {p0}%({p1}) 미만 제안은 바로 거절해요',
   'copy.Rich.6c4000e91e': '거액 제안도 지켜요 · 매각 기조 {p0} (자금 위기면 매각)',
   'copy.Rich.7ec00fbab6':
@@ -7265,8 +7265,6 @@ export const sourceMessages = {
     '{reason}. 다음 시즌에 다시 검토해요. 직접 올리려면 아카데미에서 승격하세요.',
   'delegation.sale.wages': '연봉 부담(수입의 {share}%)',
   'delegation.sale.wagesUntouchable': '연봉 부담(수입의 {share}%) −25%p',
-  'delegation.offer.cuts':
-    '나이(30–32세 −15%p, 33세 이상 −30%p), 계약(마지막 시즌 −20%p, 1년 남음 −10%p), 연봉 부담(선수 연봉이 수입의 {first}%를 넘으면 −10%p, {second}%를 넘으면 −20%p), 운영자금 위기(자금 여력 {weeks}주 미만 −20%p)만큼 낮추되 80% 밑으로는 내리지 않아요.',
   'delegation.flow.revenue': '이번 시즌 수입 예상',
   'delegation.flow.revenueLast': '지난 시즌 {amount}',
   'delegation.flow.squad': '선수단 몫 {share}%',
@@ -7442,6 +7440,9 @@ export const sourceMessages = {
   'market.answer.player.detail.club':
     '구단은 {fee}에 합의했어요. {reason}. 하지만 선수가 연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. 이적료는 내지 않았어요. {terms}',
   'market.answer.free.detail': '연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. {terms}',
+  'market.staff.wageOffer': '연봉 제안 {wage}(요구의 {percent}%) · 선수 수락 가능성 {chance}%',
+  'market.staff.noTerms':
+    '연봉을 요구의 {percent}%까지 올려도 선수가 응할 가능성이 {chance}%에 못 미치거나 자금 점검을 넘지 못해요',
   'market.answer.staffCounter':
     '단장의 제안 {fee} · 요구액 {asking} · 요구액의 {percent}%. {reason}. 판단: {verdict}',
   'market.answer.accepted': '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}.',
@@ -7449,6 +7450,16 @@ export const sourceMessages = {
     '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}. 단장의 제안이에요.',
   'market.answer.blocked':
     '상대 구단은 {fee} 제안을 받아들였어요. {reason}. 그러나 마무리하지 못했어요: {blocker}',
+  'market.sale.own.accepted':
+    '요구액 {asking}(평가 가치의 {bar}%) · 제안 {fee}(평가 가치의 {offered}%). {reason}. 제안을 받아들여 매각했어요.',
+  'market.sale.own.counterTaken':
+    '요구액 {asking}(평가 가치의 {bar}%) · 제안 {fee}(평가 가치의 {offered}%). {reason}. {counter}에 역제안했고 상대 구단이 받아들여 매각했어요.',
+  'market.sale.own.counterDeclined':
+    '요구액 {asking}(평가 가치의 {bar}%) · 제안 {fee}(평가 가치의 {offered}%). {reason}. {counter}에 역제안했지만 상대 구단이 받아들이지 않았어요.',
+  'market.sale.own.refused':
+    '요구액 {asking}(평가 가치의 {bar}%) · 제안 {fee}(평가 가치의 {offered}%). {reason}. 버틴 선에 한참 못 미쳐 역제안 없이 거절했어요.',
+  'market.sale.own.core':
+    '핵심 지키기 방향이라 주전 상위 3명은 팔지 않아요. 제안 {fee}(평가 가치의 {offered}%)를 거절했어요.',
   'market.sale.managerStyle': '데이터 헤드코치 감독의 협상 지원',
   'market.answer.noFactors': '움직인 요인 없음',
   'market.answer.saleFactor': '{factor} — 요구액의 {delta}%p',

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T11:09:43.658Z",
-  "sourceCommit": "bf79ccea8494550921c09d5b8929997275c523db",
+  "snapshotAt": "2026-11-17T11:45:09.928Z",
+  "sourceCommit": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
   "group": {
     "id": "tm17-market",
     "branch": "gusta-session-self-improve-tm17-ff4b9f94",
@@ -357,25 +357,14 @@
   },
   "summary": {
     "total": 4,
-    "completed": 3,
-    "remaining": 1,
+    "completed": 4,
+    "remaining": 0,
     "running": 0,
     "review": 0,
-    "blocked": 1,
+    "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T934",
-      "title": "Sell our players through the selling-club answer, and let the 단장 offer wage steps",
-      "dep": [
-        "T933",
-        "T935"
-      ],
-      "lane": "sales",
-      "status": "blocked"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
@@ -1308,13 +1297,14 @@
       "contributors": [
         "2d3d1de2-5763-4d8f-bf2e-ea52b2b841d1/worker-1"
       ],
-      "status": "blocked",
-      "reason": "T934: 태스크 계약(quote)이 상위 브랜치와 다릅니다. 워커는 acceptance 체크([v])·result만 바꿉니다. 기획 변경이면 작업을 동기화하세요.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-17T09:48:43.290Z",
       "startCommit": "529f38ffc153578e641d384d6d5ae3b76632bafc",
-      "submittedBase": "70a63897fc24f6c366bc1f20f0dd35d5e2f701e8",
-      "submissionId": "31680451-9d2b-46e0-b5a6-c0e339990935",
-      "submittedAt": "2026-11-17T10:52:51.116Z",
+      "verifiedCommit": "3c54712f1881d891172580a59f98985431b8ada7",
+      "submittedBase": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+      "submissionId": "aac23d1b-47f5-4bbf-a0e7-8c6314dd6123",
+      "submittedAt": "2026-11-17T11:41:54.819Z",
       "risk": null,
       "agentChecks": [
         {
@@ -1351,6 +1341,19 @@
         "error": "T934: 태스크 계약(quote)이 상위 브랜치와 다릅니다. 워커는 acceptance 체크([v])·result만 바꿉니다. 기획 변경이면 작업을 동기화하세요.",
         "summary": "Both review findings are fixed, and the task-tier check passes on tree 2a380f245cc7: typecheck, lint, format, i18n and all 2660 affected unit tests.\n\n**Finding 1 (selling card rate):** I removed the extra per-card bid scale. A 셀링 클럽 now draws ECON-22's ×1.6 incoming offers, matching what the effect ledger shows, and the daily bid chance stays at 0.08 in `transfer-policy.ts`. Re-measured with the probe (1960 world, two seasons, season-start XI sold by fee):\n\n| setting | standard card | 셀링 클럽 + 적극 매각 |\n|---|---|---|\n| 0.08 + extra ×2 (withdrawn) | 1, 1 | 4, 7 |\n| 0.12, card ×1.6 only | 1, 5 | 3, 2 |\n| **0.08, card ×1.6 only (final)** | **1, 1** | **1, 5** |\n\nThe final numbers meet both targets: standard averages 1.0 (target 1–2) and one selling season reaches 5. The probe swings a lot from season to season (0.12 gave 1 then 5 at the standard card), so treat these as one world, two seasons.\n\n**Finding 2 (mediation stopping after a refusal):** a free agent who refuses our terms on the spot no longer uses up the 단장's one move for the day. The same-day check in `pursueRequest` now skips approaches the player refused, so balanced mediation goes on to its next alternative instead of falling back to a next-window promise. The refusal is still recorded as a rejected staff bid. A new `signings.test.ts` case has the first alternative refuse and the second sign on the same day; it fails without the fix and passes with it.\n\nRun by hand: integration `signings.test.ts -t \"refusing at once|wage offer\"`, 5 of 5. The result section of the task file records the measurements and this correction.\n\nLeft for the shared final gate: the full integration suites and the CI browser journeys, as already noted in the task's limits."
       },
+      "review": {
+        "id": "8af90955-7118-45b8-b5f2-38049c5c3b1f",
+        "owner": "tm17-native-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T934 engine work was approved in the previous round apart from one copy P2; correction 3c54712f1 fixes it: the 제안 응답 panel states the sale bar as the asking fee, the factors that may accept or counter lower, the 80% floor and the 핵심 지키기 three-best veto, each value a parameter from the engine's constants, three whole-sentence message IDs in all 12 packs, the removed IDs unreferenced, validate:i18n passes.",
+        "findings": [],
+        "commit": "3c54712f1881d891172580a59f98985431b8ada7",
+        "baseCommit": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+        "submissionId": "aac23d1b-47f5-4bbf-a0e7-8c6314dd6123",
+        "createdAt": "2026-11-17T11:41:56.140Z",
+        "finishedAt": "2026-11-17T11:45:05.444Z"
+      },
       "reviewHistory": [
         {
           "id": "72beccf0-b255-4b95-8337-d0f097362d94",
@@ -1377,13 +1380,44 @@
           "finishedAt": "2026-11-17T10:53:41.047Z",
           "invalidatedAt": "2026-11-17T10:53:41.159Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "2d7f48f0-b33e-40ae-a1d7-86963127e529",
+          "owner": "tm17-native-reviewer",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T934's engine work matches the contract and the earlier asks are fixed (selling card 3.2 at an 8% base, no hidden scale; mediation tries the next alternative after a refusal); vetoes, seeding, counter settlement and the 단장's wage step hold, 6 targeted files pass (99/99). One P2: owner-facing copy still describes the removed sale gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/pages/club/ui/ClubStaff.tsx:1332",
+              "message": "The 제안 응답 panel (OfferAnswers on RecruitmentDesk) still states the removed CLUB-18 gate: copy.ClubStaff.f2a314f736 (sold only at {p0}% of value or more), copy.ClubStaff.131f1f83e6 (starters only when 30+ with a covering bench player), copy.ClubStaff.f18edf288b under hold (no starter sold; now only the three best are kept), and delegation.offer.cuts at line 1342 lists the deleted saleBar cuts. Rewrite in all 12 packs: the 단장 asks the card's bar of value (prospect column for a prospect) and, by place, contract, age, money, stance and deadline, may accept or counter lower, never below 80% of value; under 핵심 지키기 the three best starters are never sold. Use new message IDs unless saved text needs the old ones."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:1531",
+              "message": "An incoming bid completed at the 단장's counter keeps fee = the bid and counterFee = R; lists show counterFee only for 'countered', so a sale shows the lower bid while cash and records show R."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/signings.ts:258",
+              "message": "stepWage repeats transfers.ts's private stepWage and personal-terms' offer computation; export one helper so rounding cannot drift."
+            }
+          ],
+          "commit": "6b23d7006cf5224f51de6042d11a16e0154758cc",
+          "baseCommit": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+          "submissionId": "37c071dd-40bd-4791-8819-90f0cb4793fb",
+          "createdAt": "2026-11-17T11:26:44.460Z",
+          "finishedAt": "2026-11-17T11:34:22.586Z",
+          "invalidatedAt": "2026-11-17T11:41:51.959Z",
+          "invalidationReason": "worker resumed or blocked"
         }
       ],
       "steps": [
         {
           "taskId": "T934",
-          "commit": "7c7b5f824f58c3c9bd533fdb36a9a6a1ff13cb9b",
-          "at": "2026-11-17T10:52:51.089Z",
+          "commit": "3c54712f1881d891172580a59f98985431b8ada7",
+          "at": "2026-11-17T11:41:54.795Z",
           "verification": []
         }
       ],
@@ -12461,6 +12495,296 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 617,
+      "at": "2026-11-17T11:26:41.556Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 618,
+      "at": "2026-11-17T11:26:42.869Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 619,
+      "at": "2026-11-17T11:26:43.021Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+        "submissionId": "37c071dd-40bd-4791-8819-90f0cb4793fb",
+        "submittedAt": "2026-11-17T11:26:43.021Z",
+        "steps": [
+          {
+            "taskId": "T934",
+            "commit": "6b23d7006cf5224f51de6042d11a16e0154758cc",
+            "at": "2026-11-17T11:26:42.997Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "6b23d7006cf5224f51de6042d11a16e0154758cc"
+      }
+    },
+    {
+      "sequence": 620,
+      "at": "2026-11-17T11:26:44.460Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2d7f48f0-b33e-40ae-a1d7-86963127e529",
+          "owner": "tm17-native-reviewer",
+          "status": "reviewing",
+          "commit": "6b23d7006cf5224f51de6042d11a16e0154758cc",
+          "baseCommit": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+          "submissionId": "37c071dd-40bd-4791-8819-90f0cb4793fb",
+          "createdAt": "2026-11-17T11:26:44.460Z"
+        }
+      }
+    },
+    {
+      "sequence": 621,
+      "at": "2026-11-17T11:34:22.587Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T934's engine work matches the contract and the earlier asks are fixed (selling card 3.2 at an 8% base, no hidden scale; mediation tries the next alternative after a refusal); vetoes, seeding, counter settlement and the 단장's wage step hold, 6 targeted files pass (99/99). One P2: owner-facing copy still describes the removed sale gate.",
+        "review": {
+          "id": "2d7f48f0-b33e-40ae-a1d7-86963127e529",
+          "owner": "tm17-native-reviewer",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T934's engine work matches the contract and the earlier asks are fixed (selling card 3.2 at an 8% base, no hidden scale; mediation tries the next alternative after a refusal); vetoes, seeding, counter settlement and the 단장's wage step hold, 6 targeted files pass (99/99). One P2: owner-facing copy still describes the removed sale gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/pages/club/ui/ClubStaff.tsx:1332",
+              "message": "The 제안 응답 panel (OfferAnswers on RecruitmentDesk) still states the removed CLUB-18 gate: copy.ClubStaff.f2a314f736 (sold only at {p0}% of value or more), copy.ClubStaff.131f1f83e6 (starters only when 30+ with a covering bench player), copy.ClubStaff.f18edf288b under hold (no starter sold; now only the three best are kept), and delegation.offer.cuts at line 1342 lists the deleted saleBar cuts. Rewrite in all 12 packs: the 단장 asks the card's bar of value (prospect column for a prospect) and, by place, contract, age, money, stance and deadline, may accept or counter lower, never below 80% of value; under 핵심 지키기 the three best starters are never sold. Use new message IDs unless saved text needs the old ones."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:1531",
+              "message": "An incoming bid completed at the 단장's counter keeps fee = the bid and counterFee = R; lists show counterFee only for 'countered', so a sale shows the lower bid while cash and records show R."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/signings.ts:258",
+              "message": "stepWage repeats transfers.ts's private stepWage and personal-terms' offer computation; export one helper so rounding cannot drift."
+            }
+          ],
+          "commit": "6b23d7006cf5224f51de6042d11a16e0154758cc",
+          "baseCommit": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+          "submissionId": "37c071dd-40bd-4791-8819-90f0cb4793fb",
+          "createdAt": "2026-11-17T11:26:44.460Z",
+          "finishedAt": "2026-11-17T11:34:22.586Z"
+        }
+      }
+    },
+    {
+      "sequence": 622,
+      "at": "2026-11-17T11:41:51.959Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "72beccf0-b255-4b95-8337-d0f097362d94",
+            "owner": "2d3d1de2-5763-4d8f-bf2e-ea52b2b841d1/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T934 introduces a selling-club offer-rate contract violation and prevents balanced mediation from trying another candidate after a free agent refuses. The coordinator retains the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:1299",
+                "message": "T934: For the selling-club card, the new scale doubles the existing 1.6 incoming-offer factor, producing 3.2 times the standard chance. ECON-22 specifies 1.6 times, and the effect ledger still reports 1.6, so both the behavior and displayed effect diverge from the SSOT. Tune within the specified factor or hand the conflict back for an SSOT decision before changing the card's effect."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:845",
+                "message": "T934: When the first free-agent alternative refuses terms during delegated balanced mediation, this records a rejected staff bid for the current day. The next alternative is then blocked by pursueRequest's same-day staff-bid check, so mediation creates a next-window promise even when another eligible alternative could proceed. Allow mediation to continue to another candidate after an immediate refusal while retaining the refusal record, and cover that path."
+              }
+            ],
+            "commit": "7c7b5f824f58c3c9bd533fdb36a9a6a1ff13cb9b",
+            "baseCommit": "70a63897fc24f6c366bc1f20f0dd35d5e2f701e8",
+            "submissionId": "31680451-9d2b-46e0-b5a6-c0e339990935",
+            "createdAt": "2026-11-17T10:52:51.748Z",
+            "finishedAt": "2026-11-17T10:53:41.047Z",
+            "invalidatedAt": "2026-11-17T10:53:41.159Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "2d7f48f0-b33e-40ae-a1d7-86963127e529",
+            "owner": "tm17-native-reviewer",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T934's engine work matches the contract and the earlier asks are fixed (selling card 3.2 at an 8% base, no hidden scale; mediation tries the next alternative after a refusal); vetoes, seeding, counter settlement and the 단장's wage step hold, 6 targeted files pass (99/99). One P2: owner-facing copy still describes the removed sale gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/ClubStaff.tsx:1332",
+                "message": "The 제안 응답 panel (OfferAnswers on RecruitmentDesk) still states the removed CLUB-18 gate: copy.ClubStaff.f2a314f736 (sold only at {p0}% of value or more), copy.ClubStaff.131f1f83e6 (starters only when 30+ with a covering bench player), copy.ClubStaff.f18edf288b under hold (no starter sold; now only the three best are kept), and delegation.offer.cuts at line 1342 lists the deleted saleBar cuts. Rewrite in all 12 packs: the 단장 asks the card's bar of value (prospect column for a prospect) and, by place, contract, age, money, stance and deadline, may accept or counter lower, never below 80% of value; under 핵심 지키기 the three best starters are never sold. Use new message IDs unless saved text needs the old ones."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:1531",
+                "message": "An incoming bid completed at the 단장's counter keeps fee = the bid and counterFee = R; lists show counterFee only for 'countered', so a sale shows the lower bid while cash and records show R."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/signings.ts:258",
+                "message": "stepWage repeats transfers.ts's private stepWage and personal-terms' offer computation; export one helper so rounding cannot drift."
+              }
+            ],
+            "commit": "6b23d7006cf5224f51de6042d11a16e0154758cc",
+            "baseCommit": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+            "submissionId": "37c071dd-40bd-4791-8819-90f0cb4793fb",
+            "createdAt": "2026-11-17T11:26:44.460Z",
+            "finishedAt": "2026-11-17T11:34:22.586Z",
+            "invalidatedAt": "2026-11-17T11:41:51.959Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 623,
+      "at": "2026-11-17T11:41:54.681Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 624,
+      "at": "2026-11-17T11:41:54.819Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "aac23d1b-47f5-4bbf-a0e7-8c6314dd6123",
+        "submittedAt": "2026-11-17T11:41:54.819Z",
+        "steps": [
+          {
+            "taskId": "T934",
+            "commit": "3c54712f1881d891172580a59f98985431b8ada7",
+            "at": "2026-11-17T11:41:54.795Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "3c54712f1881d891172580a59f98985431b8ada7"
+      }
+    },
+    {
+      "sequence": 625,
+      "at": "2026-11-17T11:41:56.140Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "8af90955-7118-45b8-b5f2-38049c5c3b1f",
+          "owner": "tm17-native-reviewer",
+          "status": "reviewing",
+          "commit": "3c54712f1881d891172580a59f98985431b8ada7",
+          "baseCommit": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+          "submissionId": "aac23d1b-47f5-4bbf-a0e7-8c6314dd6123",
+          "createdAt": "2026-11-17T11:41:56.140Z"
+        }
+      }
+    },
+    {
+      "sequence": 626,
+      "at": "2026-11-17T11:45:05.444Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "8af90955-7118-45b8-b5f2-38049c5c3b1f",
+          "owner": "tm17-native-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T934 engine work was approved in the previous round apart from one copy P2; correction 3c54712f1 fixes it: the 제안 응답 panel states the sale bar as the asking fee, the factors that may accept or counter lower, the 80% floor and the 핵심 지키기 three-best veto, each value a parameter from the engine's constants, three whole-sentence message IDs in all 12 packs, the removed IDs unreferenced, validate:i18n passes.",
+          "findings": [],
+          "commit": "3c54712f1881d891172580a59f98985431b8ada7",
+          "baseCommit": "bed08783d67169e0342ca179dcf8f5b31779d9bb",
+          "submissionId": "aac23d1b-47f5-4bbf-a0e7-8c6314dd6123",
+          "createdAt": "2026-11-17T11:41:56.140Z",
+          "finishedAt": "2026-11-17T11:45:05.444Z"
+        }
+      }
+    },
+    {
+      "sequence": 627,
+      "at": "2026-11-17T11:45:06.687Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d8508cd8-d179-4a79-90a2-12b9edb3afa0",
+      "taskId": "T934",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

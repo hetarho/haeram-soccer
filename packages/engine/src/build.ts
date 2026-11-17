@@ -138,7 +138,7 @@ export const BUILD_CARDS: {
   market: {
     selling: {
       label: sourceMessage('copy.build.7f0539dbda'),
-      effects: { incomingBids: 1.6, saleFee: 1.25, moraleBaseline: -2 },
+      effects: { incomingBids: 3.2, saleFee: 1.25, moraleBaseline: -2 },
     },
     showcase: {
       label: sourceMessage('copy.build.9a48da1a5a'),

@@ -1,8 +1,9 @@
 import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import { lineOf, POSITION_LABEL } from './player';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import type {
   SpendRequest,
+  SigningRequest,
   FreeAgent,
   Line,
   Player,
@@ -63,6 +64,10 @@ import { retainPerson, openEmployment } from './person-careers';
 import { movePerson } from './npc-continuity';
 import { registration } from './registration';
 import { bidOutlook, transferStance } from './transfers';
+import * as personalTerms from './personal-terms';
+import { termsChance, termsContext, WAGE_STEPS } from './personal-terms';
+import { pursueRequest, requestCandidates, wageCeiling, wageOffer } from './signings';
+import { random } from './primitives';
 
 /** Release the actual listed club player, keeping his identity and unchanged sporting quality. */
 function releaseListed(w: World, line?: Line) {
@@ -203,6 +208,19 @@ function tried(w: World, playerId: string) {
 /** Marks every free agent the scout lists as tried, so the 단장 moves for a fee-bearing player. */
 function passFree(w: World) {
   for (const offer of transferOffers(w).filter((one) => one.freeAgent)) tried(w, offer.player.id);
+}
+/**
+ * Every player is keen on our terms (→CLUB-53): these cases test which move the 단장 makes, not
+ * the player's answer, so his chance is certain at his demand and he always agrees.
+ */
+function willing() {
+  const certain = { chance: 1, logOdds: 9, lines: [] };
+  const chance = vi.spyOn(personalTerms, 'termsChance').mockReturnValue(certain),
+    answer = vi.spyOn(personalTerms, 'termsAnswer').mockReturnValue({ ...certain, accept: true });
+  onTestFinished(() => {
+    chance.mockRestore();
+    answer.mockRestore();
+  });
 }
 /** The first of another club's players on the scout's list. */
 const clubIndex = (w: World) => transferOffers(w).findIndex((offer) => !offer.freeAgent);
@@ -470,6 +488,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
   });
 
   it('drops a listed player who joins us or leaves the market list', () => {
+    willing();
     // A shortlist none of whose players recruitment level 5's search (ages 26–33, →ECON-16) also
     // finds, so changing the row takes every entry off the list. Since each club's own age ladder
     // (→WORLD-6) spread the ages of the players clubs let go, a free agent aged 26–30 can sit in
@@ -599,6 +618,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
   });
 
   it("the 단장 moves for the manager's pick before any other candidate", () => {
+    willing();
     const w = club();
     const role = lineOf(releaseListed(w).player.position);
     keep(w, role, 1);
@@ -791,6 +811,7 @@ describe('a signing still settling in closes the slot he was bought for (→CLUB
    * keepers given; other clubs' keepers on the list are passed by, so the moves are the test's.
    */
   function keeperNeed(starter: number, ...pool: [string, number][]) {
+    willing();
     const w = club(5);
     for (const p of activePlayers(w)) {
       const goal = p.position === 'GK';
@@ -901,6 +922,7 @@ describe('a signing still settling in closes the slot he was bought for (→CLUB
   });
 
   it('a short line and a replacement need are met as under the released reading', () => {
+    willing();
     const moves = (open: (w: World) => void) =>
       (['signed', 'starter'] as const).map((reading) => {
         const w = keeperNeed(80, ['settling:a', 85], ['settling:b', 84]);
@@ -1484,5 +1506,168 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(moneyBar(broke)).toBeUndefined();
     makeRoom(broke);
     expect(listed(broke)).toEqual([]);
+  });
+});
+
+describe("the 단장's wage offer (→CLUB-41, CLUB-53)", () => {
+  type Offer = ReturnType<typeof transferOffers>[number];
+  /** The player's chance at each wage step of his pinned demand, as his answer reads it. */
+  function chances(w: World, offer: Offer) {
+    const club = offer.source.kind === 'club' ? offer.source.club : undefined,
+      context = termsContext(w, {
+        playerId: offer.player.id,
+        ...(club ? { clubId: club } : {}),
+        step: 1,
+      })!,
+      demand = offer.player.wage;
+    return WAGE_STEPS.map(
+      (step) =>
+        termsChance({
+          ...context,
+          demand,
+          offer: ((BigInt(demand) * BigInt(step * 100)) / 100n).toString(),
+        }).chance,
+    );
+  }
+  /**
+   * Another club's player on the list whose first step reaching 60% is `step` (none: no step does),
+   * our reputation moved until one is found: the stage factor shifts every step's chance alike.
+   */
+  function candidate(w: World, step: number | undefined) {
+    const at = (c: number[]) => WAGE_STEPS.find((_, i) => c[i]! >= 0.6);
+    for (let reputation = 0; reputation <= 100; reputation += 2) {
+      clubOf(w).reputation = reputation;
+      const found = transferOffers(w).find(
+        (offer) => offer.available && !offer.freeAgent && at(chances(w, offer)) === step,
+      );
+      if (found) return found;
+    }
+    throw new Error(`no candidate first reaching 60% at ${step}`);
+  }
+
+  it('a rich 아낌없이 club offers above 100%: the smallest step his chance reaches 60% at', () => {
+    const w = club(5);
+    expect(wageCeiling(w)).toBe(2);
+    const offer = candidate(w, 2),
+      read = wageOffer(w, offer, offer.fee);
+    expect(read.ok).toBe(true);
+    if (!read.ok) return;
+    expect(read.offer.step).toBe(2);
+    expect(read.offer.wage).toBe((BigInt(offer.player.wage) * 2n).toString());
+    expect(read.offer.chance).toBeGreaterThanOrEqual(0.6);
+    // One already keen at his demand is offered no more.
+    const keen = candidate(w, 1),
+      plain = wageOffer(w, keen, keen.fee);
+    expect(plain.ok && plain.offer.step).toBe(1);
+    // A step the money checks refuse with that wage is not offered (→ECON-33).
+    const poor = club(5);
+    poor.cash = '0';
+    expect(wageOffer(poor, offer, offer.fee).ok).toBe(false);
+  });
+
+  it('a 적당히 club stops at 125%: a player who needs more is passed over', () => {
+    const w = club(3);
+    expect(wageCeiling(w)).toBe(1.25);
+    const reach = candidate(w, 1.25),
+      read = wageOffer(w, reach, reach.fee);
+    expect(read.ok && read.offer.step).toBe(1.25);
+    const dear = candidate(w, 1.5),
+      capped = wageOffer(w, dear, dear.fee);
+    expect(capped.ok).toBe(false);
+    if (!capped.ok) expect(capped.reason).toContain('125%');
+    // His bids carry the step he chose; a 1–2 step 단장 offers the demand at most.
+    expect(wageCeiling(club(2))).toBe(1);
+  });
+
+  it('bids at the chosen step: every staff bid offers the smallest step reaching 60%', () => {
+    const w = club(5);
+    passFree(w);
+    staffSignings(w);
+    const [bid] = staffBids(w);
+    expect(bid).toBeDefined();
+    const offer = transferOffers(w).find((one) => one.player.id === bid!.playerId)!,
+      c = chances(w, offer),
+      step = bid!.wage ?? 1,
+      index = WAGE_STEPS.indexOf(step);
+    expect(step).toBeLessThanOrEqual(2);
+    expect(c[index]!).toBeGreaterThanOrEqual(0.6);
+    if (index > 0) expect(c[index - 1]!).toBeLessThan(0.6);
+    expect(reports(w).at(-1)!.detail).toContain(`요구의 ${Math.round(step * 100)}%`);
+  });
+
+  it("a free agent refusing at once leaves the day open for a mediation's next alternative (→CLUB-39)", () => {
+    const w = club(5);
+    const first = equalQualityFree(w),
+      line = lineOf(first.player.position),
+      second = releaseListed(w, line);
+    const request: SigningRequest = { kind: 'short', line };
+    const free = requestCandidates(w, request)
+      .filter(({ offer }) => offer.freeAgent)
+      .map(({ offer }) => offer.player.id);
+    expect(free).toEqual(expect.arrayContaining([first.player.id, second.player.id]));
+    // The first answers no, the second yes: the 단장's chance is certain, the answers are set.
+    const certain = { chance: 1, logOdds: 9, lines: [] };
+    const chance = vi.spyOn(personalTerms, 'termsChance').mockReturnValue(certain),
+      answer = vi
+        .spyOn(personalTerms, 'termsAnswer')
+        .mockReturnValueOnce({ ...certain, accept: false })
+        .mockReturnValue({ ...certain, accept: true });
+    onTestFinished(() => {
+      chance.mockRestore();
+      answer.mockRestore();
+    });
+    const [a, b] =
+      free.indexOf(first.player.id) < free.indexOf(second.player.id)
+        ? [first, second]
+        : [second, first];
+    expect(pursueRequest(w, request, a.player.id, 'delegated')).toBeUndefined();
+    expect(w.players.some((p) => p.id === a.player.id && p.status === 'active')).toBe(false);
+    expect(staffBids(w).find((bid) => bid.playerId === a.player.id)).toMatchObject({
+      status: 'rejected',
+      refusedBy: 'player',
+    });
+    // The refusal is kept, and the next alternative can still be pursued that day.
+    expect(pursueRequest(w, request, b.player.id, 'delegated')).toBeUndefined();
+    expect(w.players.some((p) => p.id === b.player.id && p.status === 'active')).toBe(true);
+  });
+
+  it('asks a free agent at once on the same rule: he signs on that wage or refuses', () => {
+    const outcomes = new Set<string>();
+    for (let k = 0; k < 40 && outcomes.size < 2; k++) {
+      const w = club(5);
+      w.seed = `${w.seed}:free-terms:${k}`;
+      const free = equalQualityFree(w);
+      keep(w, lineOf(free.player.position), 1);
+      delete w.shortlist;
+      const read = wageOffer(w, free, '0', 'short');
+      if (!read.ok) continue;
+      const id = free.player.id,
+        draw = random(`${w.seed}:terms:free:${w.year}:${currentDay(w)}:${id}`)();
+      staffSignings(w);
+      const signedRow = w.players.find((p) => p.id === id && p.status === 'active');
+      const bid = staffBids(w).find((one) => one.playerId === id);
+      if (!bid) continue;
+      if (draw < read.offer.chance) {
+        expect(signedRow?.wage).toBe(read.offer.wage);
+        expect(bid).toMatchObject({ status: 'completed', fee: '0' });
+        expect(reports(w).at(-1)!.detail).toContain(`요구의 ${Math.round(read.offer.step * 100)}%`);
+        outcomes.add('signed');
+      } else {
+        expect(signedRow).toBeUndefined();
+        expect(bid).toMatchObject({ status: 'rejected', refusedBy: 'player', fee: '0' });
+        expect(
+          (w.inbox || []).some(
+            (item) => item.title.includes('자유계약 조건 거절') && !item.attention,
+          ),
+        ).toBe(true);
+        // He is not asked again in the window, nor haggled with over a fee.
+        const before = staffBids(w).length;
+        staffSignings(w);
+        expect(staffBids(w).filter((one) => one.playerId === id)).toHaveLength(1);
+        expect(staffBids(w).length).toBeGreaterThanOrEqual(before);
+        outcomes.add('refused');
+      }
+    }
+    expect([...outcomes].sort()).toEqual(['refused', 'signed']);
   });
 });
