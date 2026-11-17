@@ -68,8 +68,6 @@
 |---|---|---|---|---|
 | T944 | Market-season harness | ARCH | - | todo |
 | T945 | NPC pull market | WORLD CLUB LEAGUE | T944 | todo |
-| T946 | Division-anchored talent supply | WORLD LEAGUE | - | todo |
-| T947 | Prodigies and war-gap intake | WORLD PLAYER CLUB | T946 | todo |
 | T948 | Loss-runway plan | ECON CLUB STAFF ARCH | - | todo |
 | T949 | Funded club buys the best | CLUB ECON | T948 | todo |
 | T950 | Calibrate market and levels | WORLD LEAGUE CLUB ECON | T945 T947 T949 | todo |
@@ -82,9 +80,7 @@
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
 | tm17-market | 4 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-17T11:45:09.928Z | [history](work/tm17-market.json) |
 | lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
-| xf18-market | 3 | 6 | 0 | 6 | 0 | 0 | 6 | 2026-11-17T19:23:34.929Z | [history](work/xf18-market.json) |
+| xf18-market | 3 | 6 | 2 | 4 | 0 | 0 | 4 | 2026-11-17T19:41:49.570Z | [history](work/xf18-market.json) |
 
 ## next
-- Session xf18 (261118, gusta-self-improve until 09:00): review market-levels-261118 → T944–T949 in work group xf18-market (lanes npc-market, levels, owner-market), then T950 calibration in the main session.
-- Session tm17 landed T932–T935 as 0.8.9 (reports/261117-tm17): selling-club answer and personal terms as factor registries, wage steps, money bar, delegated sales; the NPC pull market (review transfer-market-261117 F4) waits for the owner.
 - inspect work board for remaining tasks

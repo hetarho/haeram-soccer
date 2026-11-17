@@ -11,7 +11,7 @@ import {
   settleNpcBooks,
 } from './books';
 import { npcBooksFixture } from './npc-books.testkit';
-import { CLUB_LEVELS } from './persisted-squads';
+import { CLUB_LEVELS, followLevels, levelTargets } from './persisted-squads';
 import { CLUB_BOOKS } from './owner-config';
 import { scaleBy } from './primitives';
 import { marketWageAt } from './market-prices';
@@ -116,21 +116,31 @@ describe('NPC contract books on an isolated squad', () => {
     expect(settleNpcBooks(w, c).seasons[0]!.transfersPaid).toBe('0');
   });
 
-  it('caps invested levels and leaves cash at the seasonal ceiling', () => {
+  it('holds invested levels at most one above their division target, cash at the ceiling', () => {
     const { w, c } = npcBooksFixture();
-    c.levels = { academy: 1, ground: 2, coaching: 3 };
-    c.books = { seasons: [], cash: '999999999999999999999', debt: '0' };
-    const book = settleNpcBooks(w, c).seasons[0]!;
-    expect(c.levels.academy).toBeGreaterThan(1);
-    expect(c.levels.ground).toBeGreaterThan(2);
-    expect(c.levels.coaching).toBeGreaterThan(3);
-    expect(Object.values(c.levels).every((n) => n <= 5)).toBe(true);
-    expect(c.books!.cash).toBe(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n));
+    c.tier = 2;
+    const target = levelTargets(w, c);
+    c.levels = { ...target };
+    for (let year = 1950; year < 1955; year++) {
+      w.year = year;
+      c.books = { seasons: [], cash: '999999999999999999999', debt: '0' };
+      const book = settleNpcBooks(w, c).seasons[0]!;
+      followLevels(w, c);
+      expect(c.books!.cash).toBe(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n));
+    }
+    // Surplus investment holds every level `aboveTarget` above its target (→WORLD-17).
+    expect(c.levels).toMatchObject({
+      academy: target.academy + CLUB_LEVELS.aboveTarget,
+      ground: target.ground + CLUB_LEVELS.aboveTarget,
+      coaching: target.coaching + CLUB_LEVELS.aboveTarget,
+    });
   });
 
   it('carries half-level investments until a whole level has been funded', () => {
     const { w, c } = npcBooksFixture();
-    c.levels = { academy: 1, ground: 2, coaching: 3 };
+    c.tier = 2;
+    const target = levelTargets(w, c);
+    c.levels = { ...target };
     for (let year = 1950; year <= 1951; year++) {
       w.year = year;
       c.books = { seasons: [], cash: '0', debt: '0' };
@@ -143,21 +153,70 @@ describe('NPC contract books on an isolated squad', () => {
         BigInt(book.result)
       ).toString();
       settleNpcBooks(w, c);
-      if (year === 1950)
-        expect(c.levels).toEqual({ academy: 1, ground: 2, coaching: 3, progress: 0.5 });
+      followLevels(w, c);
+      if (year === 1950) expect(c.levels).toEqual({ ...target, progress: 0.5 });
     }
-    expect(c.levels).toEqual({ academy: 2, ground: 3, coaching: 4, progress: 0 });
+    expect(c.levels).toEqual({
+      academy: target.academy + 1,
+      ground: target.ground + 1,
+      coaching: target.coaching + 1,
+      progress: 0,
+    });
   });
 
-  it('decays by the named setting, crossing a whole level after accumulated seasons', () => {
+  it('moves levels back toward the division target one a season without investment', () => {
     const { w, c } = npcBooksFixture();
-    c.levels = { academy: 2, ground: 2, coaching: 2, progress: -1 + CLUB_LEVELS.decay };
+    c.tier = 3;
+    const target = levelTargets(w, c);
+    c.levels = { academy: 5, ground: 5, coaching: 5, progress: CLUB_LEVELS.decay * 1.5 };
     c.books = { seasons: [], cash: '0', debt: '999999999999999999999' };
     settleNpcBooks(w, c);
-    expect(c.levels).toEqual({ academy: 1, ground: 1, coaching: 1, progress: 0 });
-    w.year++;
-    settleNpcBooks(w, c);
-    expect(c.levels.progress).toBe(-CLUB_LEVELS.decay);
+    followLevels(w, c);
+    expect(c.levels).toEqual({
+      academy: 4,
+      ground: 4,
+      coaching: 4,
+      progress: CLUB_LEVELS.decay / 2,
+    });
+    for (let n = 0; n < 6; n++) {
+      w.year++;
+      c.books = { seasons: [], cash: '0', debt: '999999999999999999999' };
+      settleNpcBooks(w, c);
+      followLevels(w, c);
+    }
+    expect(c.levels).toEqual({ ...target, progress: 0 });
+  });
+
+  it('moves levels after promotion, toward the division the club plays next', () => {
+    // The season close settles the books on the division played, then promotes, then moves the
+    // levels (→WORLD-17): the books alone move nothing, the move reads the new division.
+    const { w, c } = npcBooksFixture();
+    c.tier = 3;
+    const bottom = levelTargets(w, c);
+    c.levels = { ...bottom };
+    c.tier = 0;
+    const top = levelTargets(w, c);
+    c.tier = 3;
+    const seen: number[] = [];
+    for (let n = 0; n < 6; n++) {
+      w.year++;
+      c.books = { seasons: [], cash: '0', debt: '999999999999999999999' };
+      const before = { ...c.levels };
+      settleNpcBooks(w, c);
+      expect(c.levels).toMatchObject({ academy: before.academy, ground: before.ground });
+      c.tier = 0;
+      followLevels(w, c);
+      expect(c.levels.academy - before.academy).toBeLessThanOrEqual(CLUB_LEVELS.moveAfterChange);
+      expect(c.levels.academy).toBeGreaterThanOrEqual(before.academy);
+      seen.push(c.levels.academy);
+    }
+    expect(seen.at(-1)).toBe(top.academy);
+    expect(c.levels.ground).toBe(top.ground);
+    // Relegated straight back, they fall one a season toward the bottom division's target.
+    c.tier = 3;
+    const before = c.levels.academy;
+    followLevels(w, c);
+    expect(c.levels.academy).toBe(Math.max(bottom.academy, before - CLUB_LEVELS.moveAfterChange));
   });
 
   it('converts every stored squad wage with carried cash, leaving the historical book unchanged', () => {
