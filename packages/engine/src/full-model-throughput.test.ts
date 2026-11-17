@@ -179,9 +179,11 @@ const facts = (w: World) => ({
 // confirms these full-field signatures. Neither material nor cleanSheets is excluded here, and
 // changed results establish no throughput speed claim.
 // The evidence audit expands every missing array tail; scalar leaves and array lengths are separate.
+// T946's division-anchored talent (founding at 80/70/60/50 by division, →WORLD-15) changed both
+// through every founding squad's strength; d01e8b16487872a4 and aef5e3c0618eb5f2 before.
 const BEFORE = {
-  aggregateRecords: 'd01e8b16487872a4',
-  candidateRounds: 'aef5e3c0618eb5f2',
+  aggregateRecords: 'efb1b0e2dc8517ba',
+  candidateRounds: 'a00032e27765d38e',
 };
 
 describe('complete-result throughput (T285)', () => {

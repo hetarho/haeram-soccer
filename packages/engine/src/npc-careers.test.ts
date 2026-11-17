@@ -5,7 +5,14 @@ import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
 import { announceRetirements, retirementAnnounceDay, retirementChanceWithContext } from './careers';
 import { worldMarketFixture } from './world-market.testkit';
 import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads';
-import { closeNpcSummer, intakeNpcYouth, NPC_YOUTH, settleNpcGrowth } from './npc-careers';
+import {
+  closeNpcSummer,
+  intakeNpcYouth,
+  NPC_YOUTH,
+  settleNpcGrowth,
+  youthCentre,
+  youthSkew,
+} from './npc-careers';
 import { clubManager } from './managerMarket';
 import {
   clubPlayers,
@@ -302,13 +309,18 @@ describe('persisted NPC careers on isolated squads', () => {
         LINE_MINIMUM[line],
       );
     expect(new Set(players.map((p) => p.id)).size).toBe(players.length);
-    for (const p of players) {
+    const [low, high] = [NPC_YOUTH.skew[0]![1], NPC_YOUTH.skew.at(-1)![1]];
+    for (const [i, p] of players.entries()) {
       expect(p.id).toMatch(new RegExp(`^${c.id}:y:${w.year + 1}:\\d+$`));
       expect([17, 18]).toContain(w.year + 1 - p.born);
-      expect(p.potential).toBeGreaterThanOrEqual(
-        NPC_YOUTH.byAcademy[c.levels!.academy]!.potential[0],
+      // The academy's count is centred on the division, the rest on its bench (→WORLD-16).
+      const centre = youthCentre(
+        c,
+        c.levels!.academy,
+        i >= NPC_YOUTH.byAcademy[c.levels!.academy]!.count,
       );
-      expect(p.potential).toBeLessThanOrEqual(NPC_YOUTH.byAcademy[c.levels!.academy]!.potential[1]);
+      expect(p.potential).toBeGreaterThanOrEqual(Math.max(mainOvr(p), Math.round(centre + low)));
+      expect(p.potential).toBeLessThanOrEqual(Math.max(mainOvr(p), Math.round(centre + high)));
       if ((coachingGrade(p) ?? 0) >= 4)
         expect(w.people![p.id]).toMatchObject({ id: p.id, born: p.born, name: p.name, club: c.id });
     }
@@ -369,5 +381,30 @@ describe('persisted NPC careers on isolated squads', () => {
     const after = structuredClone(w);
     crossWar(w, 1938);
     expect(w).toEqual(after);
+  });
+});
+
+describe('academy intakes around the division level (→WORLD-16)', () => {
+  it('skews potential: most below the centre, about a third at or above, about 5% 10 above', () => {
+    const draws = Array.from({ length: 10000 }, (_, i) => Math.round(youthSkew((i + 0.5) / 10000)));
+    const share = (test: (v: number) => boolean) => draws.filter(test).length / draws.length;
+    expect(share((v) => v < 0)).toBeGreaterThan(0.5);
+    expect(share((v) => v >= 0)).toBeCloseTo(1 / 3, 1);
+    expect(share((v) => v >= 10)).toBeCloseTo(0.05, 2);
+    expect(youthSkew(0)).toBe(NPC_YOUTH.skew[0]![1]);
+    expect(youthSkew(1)).toBe(NPC_YOUTH.skew.at(-1)![1]);
+  });
+
+  it('centres on the division level shifted by the academy distance, refills at its bench', () => {
+    const { c } = fixture();
+    c.tier = 0;
+    // The top flight's ladder academy is 3 (CLUB_TAKEOVER.facilities).
+    expect(youthCentre(c, 3, false)).toBe(80);
+    expect(youthCentre(c, 4, false)).toBe(80 + NPC_YOUTH.divisionCentre);
+    expect(youthCentre(c, 1, false)).toBe(80 - 2 * NPC_YOUTH.divisionCentre);
+    expect(youthCentre(c, 5, true)).toBe(80 - NPC_YOUTH.refillBelow);
+    c.tier = 3;
+    expect(youthCentre(c, 0, false)).toBe(50);
+    expect(youthCentre(c, 0, true)).toBe(40);
   });
 });

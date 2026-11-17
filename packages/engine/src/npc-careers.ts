@@ -9,6 +9,7 @@ import { clubManager } from './managerMarket';
 import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads';
 import { lineOf, mainOvr } from './player';
 import { clamp, integer, random } from './primitives';
+import { CLUB_TAKEOVER } from './owner-config';
 import { clubRegistration, registrationExempt } from './registration';
 import { departmentMultiplier } from './staff';
 import { clubStyle } from './tactics';
@@ -29,6 +30,7 @@ import { npcNeedsRefill, returnNpcLoans } from './npc-market';
 import { developAnnually, settlePlayerGrowth } from './training';
 import {
   clubById,
+  divisionLevel,
   generatedPlayer,
   invalidateNpcSquad,
   invalidateNpcSquads,
@@ -41,19 +43,56 @@ import {
   refillPlace,
 } from './world';
 
-/** Starting calibration; T866 measures the division and century distributions. */
+/**
+ * Youth intakes of clubs nobody owns (→WORLD-16): an academy level's count of youngsters, and any
+ * more the standing size or a line needs. Starting values; T950 tunes them.
+ */
 export const NPC_YOUTH = {
   ages: [17, 18],
-  byAcademy: [
-    { count: 2, potential: [44, 65] },
-    { count: 2, potential: [54, 75] },
-    { count: 3, potential: [64, 85] },
-    { count: 3, potential: [74, 95] },
-    { count: 4, potential: [78, 99] },
-    { count: 5, potential: [83, 99] },
+  byAcademy: [{ count: 2 }, { count: 2 }, { count: 3 }, { count: 3 }, { count: 4 }, { count: 5 }],
+  /** Potential points per academy level above or below its division's ladder value. */
+  divisionCentre: 3,
+  /**
+   * The spread of an intake's potential around its centre, as a quantile table of one uniform
+   * draw: most end below it, about a third at or above and about 5% 10 or more above (the
+   * anchors sit half a point low, so the rounded potential splits at them).
+   */
+  skew: [
+    [0, -20],
+    [2 / 3, -0.5],
+    [0.95, 9.5],
+    [1, 14],
   ],
+  /** A youngster taken only to refill the standing size is centred this far below the level. */
+  refillBelow: 10,
   headroom: [12, 24],
 } as const;
+
+/** The potential offset at quantile `u` of `NPC_YOUTH.skew`, linear between its anchors. */
+export function youthSkew(u: number) {
+  const table = NPC_YOUTH.skew;
+  for (let i = 1; i < table.length; i++) {
+    const [u1, v1] = table[i]!;
+    if (u <= u1 || i === table.length - 1) {
+      const [u0, v0] = table[i - 1]!;
+      return v0 + ((v1 - v0) * (Math.min(u, u1) - u0)) / (u1 - u0);
+    }
+  }
+  return 0;
+}
+
+/**
+ * Where an intake's potential centres (→WORLD-16): its division's level (→WORLD-15), moved
+ * `divisionCentre` points for each level its academy stands from its division's ladder value
+ * (→WORLD-17); a refill youngster's at the division's bench level, `refillBelow` under it.
+ */
+export function youthCentre(c: Club, academy: number, refill: boolean) {
+  const level = divisionLevel(c.tier);
+  if (refill) return level - NPC_YOUTH.refillBelow;
+  const ladder = CLUB_TAKEOVER.facilities.division;
+  const value = ladder[Math.min(c.tier, ladder.length - 1)]!.academy;
+  return level + (academy - value) * NPC_YOUTH.divisionCentre;
+}
 
 /** Called at the market cadence and at close; the marker survives a save/load. */
 export function settleNpcGrowth(w: World) {
@@ -121,7 +160,8 @@ export function intakeNpcYouth(w: World, c: Club, year = w.year + 1, used = npcY
     if (used.has(id)) continue;
     const r = random(`${w.seed}:youth:${id}`);
     const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
-    const potential = integer(r, config.potential[0], config.potential[1]);
+    const centre = youthCentre(c, c.levels.academy, added >= config.count);
+    const potential = clamp(Math.round(centre + youthSkew(r())), 15, 99);
     const level = clamp(
       potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]),
       15,

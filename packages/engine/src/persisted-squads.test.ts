@@ -15,6 +15,8 @@ import { TRAINING_GROUND } from './facility-model';
 import {
   clubPlayers,
   clubStyle,
+  divisionLevel,
+  generateClubs,
   invalidateNpcSquad,
   invalidateNpcSquads,
   lineup,
@@ -27,6 +29,7 @@ import {
   squad,
   squadPlaces,
   startingSquad,
+  stature,
 } from './world';
 import { clubManager } from './managerMarket';
 import { continuousSquad, materializePeople, movePerson, returnLoan } from './npc-continuity';
@@ -647,5 +650,21 @@ describe('persisted playable squads', () => {
     invalidateNpcSquad(w, c.id);
     expect(rating(w, c)).toBeGreaterThan(before);
     expect(overall(clubPlayers(w, c)[0]!)).toBeGreaterThan(before);
+  });
+});
+
+describe('founding strength by division (→WORLD-15)', () => {
+  it('founds tiers 1–4 at 80/70/60/50, plus stature ± 3, within 15–92', () => {
+    expect([0, 1, 2, 3].map(divisionLevel)).toEqual([80, 70, 60, 50]);
+    const clubs = generateClubs('founding-levels');
+    for (const club of clubs) {
+      const base = divisionLevel(club.tier) + stature('founding-levels', club.id);
+      expect(club.strength).toBeGreaterThanOrEqual(Math.max(15, Math.min(92, base - 3)));
+      expect(club.strength).toBeLessThanOrEqual(Math.max(15, Math.min(92, base + 3)));
+    }
+    // Ordinary clubs (stature −1 to +1) stand within 4 of their division's level.
+    const ordinary = clubs.filter((c) => Math.abs(stature('founding-levels', c.id)) <= 1);
+    for (const club of ordinary)
+      expect(Math.abs(club.strength - divisionLevel(club.tier))).toBeLessThanOrEqual(4);
   });
 });
