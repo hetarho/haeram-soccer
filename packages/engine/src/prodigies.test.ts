@@ -85,6 +85,32 @@ describe('prodigies (→WORLD-18)', () => {
     expect(npc && w.squads!.foreign!.includes(npc)).toBe(true);
     expect(npc!.graduate).toBe(true);
   });
+  it("never takes a club past its league's counted-player limit (→CLUB-44)", () => {
+    // Italy's third tier from 2020 counts every player up to 24, with no youth exemption.
+    const w = fixture();
+    const c = w.clubs.find((club) => club.id === 'foreign')!;
+    c.country = 'ITA';
+    c.tier = 2;
+    c.levels!.academy = 5;
+    w.academyFacility = 0;
+    const players = w.squads![c.id]!;
+    while (players.length < 24) players.push({ ...players[0]!, id: `filler-${players.length}` });
+    for (let year = 2021; year < 2061; year++) {
+      w.year = year - 1;
+      for (const p of drawProdigies(w, year)) expect(p.id.startsWith('own:')).toBe(true);
+      w.academy = { players: [] };
+    }
+    expect(players).toHaveLength(24);
+    // One place left takes at most one of a summer's two, the other going elsewhere.
+    players.pop();
+    for (let year = 2021; year < 2061; year++) {
+      w.year = year - 1;
+      drawProdigies(w, year);
+      expect(players.length).toBeLessThanOrEqual(24);
+      for (let k = players.length - 1; k >= 0; k--) if (players[k]!.prodigy) players.splice(k, 1);
+      w.academy = { players: [] };
+    }
+  });
 });
 
 describe("a prodigy's growth (→PLAYER-15)", () => {

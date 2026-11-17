@@ -12,7 +12,7 @@ import { enrollSquadPlayer } from './persisted-squads';
 import { movePerson } from './npc-continuity';
 import { formationOf } from './player-state';
 import { clamp, integer, random } from './primitives';
-import { clubRegistration } from './registration';
+import { clubRegistration, registrationExempt } from './registration';
 import { clubStyle } from './tactics';
 import { generatedPlayer, invalidateNpcSquad, PRESS_LOAD_FATIGUE, stature } from './world';
 import { mainOvr } from './player';
@@ -53,8 +53,18 @@ function candidates(w: World, year: number) {
     } else {
       const players = w.squads?.[c.id];
       if (!players || !c.levels) continue;
+      // He arrives within the league's registration rule (→CLUB-44), as an intake's youngster
+      // does: under the ceiling, and counted only where his age and academy are not exempt. His
+      // position is drawn after the club, so he is read as an outfielder.
       const state = clubRegistration(c, year, players);
       if (state.total >= state.ceiling) continue;
+      const arrival = {
+        born: year - PRODIGY.age,
+        position: 'CM' as const,
+        graduate: true as const,
+      };
+      if (!registrationExempt(state.rule, year, arrival) && state.counted >= state.allowed)
+        continue;
     }
     const academy = own ? w.academyFacility : c.levels!.academy;
     out.push({ club: c, weight: prodigyWeight(academy, stature(w.seed, c.id)) });
