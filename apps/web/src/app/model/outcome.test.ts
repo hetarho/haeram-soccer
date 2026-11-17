@@ -69,6 +69,19 @@ describe('action outcome summaries', () => {
     expect(labels).not.toContain('날짜');
   });
 
+  it('shows no signing card for a free agent who refused our terms, and one when he signs', () => {
+    const before = world();
+    const recruit = { type: 'recruit' as const, candidate: 0, wage: 2 as const };
+    // A refusal leaves the squad as it was (→CLUB-53).
+    expect(describeOutcome(recruit, before, structuredClone(before))).toBeUndefined();
+    const signed = after(before, (w) => {
+      const p = structuredClone(w.players.find((player) => player.status === 'active')!);
+      p.id = `${p.id}-signed`;
+      w.players.push(p);
+    });
+    expect(describeOutcome(recruit, before, signed)?.title).toBe('선수를 영입했어요');
+  });
+
   it('never summarizes a match that live playback has yet to reveal', () => {
     const before = world();
     expect(describeOutcome({ type: 'next-match' }, before, before)).toBeUndefined();

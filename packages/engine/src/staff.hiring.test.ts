@@ -609,34 +609,40 @@ describe('the 단장 (STAFF-20)', () => {
   });
 
   it('carries the transfer negotiation the chief scout carried', () => {
-    // The chance of a bid at a club player's asking fee, whomever the scout finds.
+    // The 단장's line in a selling club's answer to a bid below a club player's asking fee
+    // (→CLUB-52, →STAFF-20), whomever the scout finds.
     const club = (w: World) => transferOffers(w).findIndex((offer) => !offer.freeAgent);
     const base = world('director-talks'),
       asking = transferOffers(base)[club(base)]!.fee,
-      chance = (w: World) => bidOutlook(w, club(w), transferOffers(w)[club(w)]!.fee).chance;
+      director = (w: World) =>
+        bidOutlook(
+          w,
+          club(w),
+          ((BigInt(transferOffers(w)[club(w)]!.fee) * 9n) / 10n).toString(),
+        ).lines.find((line) => line.factor === 'director')?.delta ?? 0;
     const set = (w: World, role: StaffRole, ability: number, trait?: StaffTrait) => {
       w.staff = w.staff!.map((member) =>
         member.role === role ? { ...member, ability, ...(trait ? { trait } : {}) } : member,
       );
       return w;
     };
-    // His ability alone keeps the list as it is and moves the chance by (ability − 50)/250.
+    // His ability alone keeps the list as it is and takes (ability − 50)/250 off the reservation.
     const able = set(world('director-talks'), 'director', 75);
     expect(transferOffers(able)[club(able)]!.fee).toBe(asking);
-    expect(chance(able)).toBeCloseTo(chance(base) + 0.1, 10);
+    expect(director(able)).toBeCloseTo(director(base) - 0.1, 10);
     // A chief scout of any ability or trait no longer negotiates.
     const scout = set(world('director-talks'), 'scout', 90, 'negotiator');
     expect(staffEffects(scout)).toMatchObject({ feeMultiplier: 1, bidAcceptance: 0 });
-    expect(chance(scout)).toBe(chance(base));
+    expect(director(scout)).toBe(director(base));
     // A negotiator asks less of every selling club: the list's fees fall by a tenth.
     const negotiator = set(world('director-talks'), 'director', 50, 'negotiator');
     const fees = (w: World) =>
       transferOffers(w).reduce((sum, offer) => sum + BigInt(offer.fee), 0n);
-    expect(staffEffects(negotiator)).toMatchObject({ feeMultiplier: 0.9, bidAcceptance: 0.1 });
+    expect(staffEffects(negotiator)).toMatchObject({ feeMultiplier: 0.9, bidAcceptance: 0.05 });
     expect(Number((fees(negotiator) * 1000n) / fees(base)) / 1000).toBeLessThan(1);
-    // A vacant post costs 5 points.
+    // A vacant post adds 0.05 to the reservation.
     const vacant = world('director-talks');
     vacant.staff = vacant.staff!.filter((member) => member.role !== 'director');
-    expect(chance(vacant)).toBeCloseTo(chance(base) - 0.05, 10);
+    expect(director(vacant)).toBeCloseTo(director(base) + 0.05, 10);
   });
 });

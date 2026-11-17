@@ -16,7 +16,7 @@ import { isDelegated } from './responsibilities';
 import { pushInbox } from './inbox';
 import { lineOf } from './player';
 import { compareIds, ratio } from './primitives';
-import { overall } from './player-state';
+import { activePlayers, overall } from './player-state';
 import { transferOffers } from './scout-search';
 export const requestTargetKey = (request: SigningRequest) =>
   request.kind === 'short' ? `line:${request.line}` : `slot:${request.slot}:${request.position}`;
@@ -141,6 +141,22 @@ export function promiseForMediation(w: World, mediation: RecruitmentMediation) {
   (w.promises ??= []).push(promise);
   return promise;
 }
+/** A resolution's result is a save text, at most this long (→SAVE-5). */
+const RESULT_MAX = 160;
+/**
+ * A free agent's refusal as a mediation's failure (→CLUB-53), his name shortened when a long one
+ * would carry the promise sentence it ends up in past the save's bound.
+ */
+function refusalFailure(name: string) {
+  const room =
+    RESULT_MAX -
+    sourceMessage('copy.mediation.411b483fc6', {
+      p0: sourceMessage('market.recruit.refused', { name: '' }),
+    }).length;
+  return sourceMessage('market.recruit.refused', {
+    name: name.length > room ? `${name.slice(0, room - 1)}…` : name,
+  });
+}
 export function resolveMediation(
   w: World,
   id: string,
@@ -202,6 +218,12 @@ export function resolveMediation(
         const blocked = pursueRequest(trial, mediation.target, offer.player.id, actor);
         if (blocked) {
           failure = blocked;
+          continue;
+        }
+        // A free agent answers our terms at once and may refuse them (→CLUB-53): only one who
+        // actually joined is a signing; a refusal is this choice's failure, and the next is tried.
+        if (offer.freeAgent && !activePlayers(trial).some((p) => p.id === offer.player.id)) {
+          failure = refusalFailure(offer.player.name);
           continue;
         }
         result = `${offer.player.name} ${offer.freeAgent ? sourceMessage('copy.mediation.dd65eaeca5') : sourceMessage('copy.mediation.c62513bb19')}`;

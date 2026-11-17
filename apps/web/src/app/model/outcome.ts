@@ -166,6 +166,12 @@ export function describeOutcome(
     command.type === 'redraw-designs'
   )
     return undefined;
+  // A free agent who refused our terms signed nothing (→CLUB-53): his refusal is the inbox report,
+  // so no card claims a signing that never happened.
+  if (command.type === 'recruit') {
+    const had = new Set(activePlayers(before).map((p) => p.id));
+    if (!activePlayers(after).some((p) => !had.has(p.id))) return undefined;
+  }
   const club = clubOf(after),
     previous = clubOf(before);
   // An outcome card carries recorded values as text, in the app's notation (→WEB-67).

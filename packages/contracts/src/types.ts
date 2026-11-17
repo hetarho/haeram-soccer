@@ -602,7 +602,13 @@ export interface TransferBid {
   counterFee?: string;
   /** The 단장's bid or free-agent signing with transfers delegated (→CLUB-33), by its need. */
   staff?: 'short' | 'replacement' | 'upgrade';
+  /** An `out` bid's wage offer as a step of his demand (→CLUB-53); absent is the 100% step. */
+  wage?: WageStep;
+  /** Who ended a rejected `out` bid: the selling club, or the player on our terms (→CLUB-18). */
+  refusedBy?: 'club' | 'player';
 }
+/** Our wage offer as a share of a player's demand (→CLUB-53): 100%, 125%, 150% or 200%. */
+export type WageStep = 1 | 1.25 | 1.5 | 2;
 export interface InboxItem {
   id: string;
   year: number;
@@ -1505,7 +1511,15 @@ export type Command =
   | { type: 'promote-youth'; id: string }
   | { type: 'release-youth'; id: string }
   /** Exactly one of the legacy index or stable target is required at the boundary. */
-  | { type: 'bid'; candidate?: number; target?: WorldMarketTarget; fee: string; loan?: boolean }
+  /** `wage`: our wage offer as a step of his demand (→CLUB-53); absent is the 100% step. */
+  | {
+      type: 'bid';
+      candidate?: number;
+      target?: WorldMarketTarget;
+      fee: string;
+      loan?: boolean;
+      wage?: WageStep;
+    }
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
   | { type: 'resolve-mediation'; id: string; support: MediationSupport }
@@ -1523,7 +1537,14 @@ export type Command =
   | { type: 'contract-decline'; player: string }
   /** Signs a slot's offer, by its index among that slot's offers (→ECON-8). */
   | { type: 'sign-sponsor'; slot: SponsorSlot; offer: number }
-  | { type: 'recruit'; candidate?: number; target?: WorldMarketTarget; loan?: boolean }
+  /** A free agent answers our `wage` step at once (→CLUB-53); another club's player is bid for. */
+  | {
+      type: 'recruit';
+      candidate?: number;
+      target?: WorldMarketTarget;
+      loan?: boolean;
+      wage?: WageStep;
+    }
   /** Lists a player, opens him to offers or declares him untouchable. */
   | { type: 'transfer-stance'; id: string; stance: TransferStance }
   /** Pays a designer from operating funds for fresh drafts in the owner's colours. */

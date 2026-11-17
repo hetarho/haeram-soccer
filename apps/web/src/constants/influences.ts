@@ -354,12 +354,15 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.26f7e290d0'),
           ),
           f(
-            sourceMessage('copy.influences.d030ac91b8'),
-            sourceMessage('copy.influences.d44015bda6'),
+            sourceMessage('influences.bid.situation'),
+            sourceMessage('influences.bid.situation.note'),
           ),
+          f(sourceMessage('influences.bid.terms'), sourceMessage('influences.bid.terms.note')),
         ],
         [
-          ...src('transfers', 'acceptanceChance', 'decideOutgoing'),
+          ...src('transfers', 'decideOutgoing', 'clubAnswer', 'playerAnswer'),
+          ...src('sale-answer', 'saleAnswer', 'saleContext'),
+          ...src('personal-terms', 'termsAnswer', 'termsContext'),
           ...src('staff', 'applyDepartment'),
         ],
         [link('signing-completion', sourceMessage('copy.influences.8cab7784b6'))],

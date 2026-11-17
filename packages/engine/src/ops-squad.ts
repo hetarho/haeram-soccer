@@ -8,7 +8,19 @@ import { fanMoodTransfer } from './fan-mood';
 import { declineContract, offerContract, signingClauses } from './contracts';
 import { moneyLabel } from './finance';
 import { promoteYouth, releaseYouth } from './academy';
-import { placeBid, respondBid, setTransferStance } from './transfers';
+import {
+  fittedDetail,
+  isWageStep,
+  namedTitle,
+  termsReport,
+  placeBid,
+  respondBid,
+  setTransferStance,
+} from './transfers';
+import { termsAnswer, termsContext } from './personal-terms';
+import { currentDay } from './calendar';
+import { pushInbox } from './inbox';
+import { hash, random } from './primitives';
 import { assertTransferWindow } from './transfer-window';
 import { noteSigning } from './signings';
 import { debit } from './transactions';
@@ -33,13 +45,15 @@ export type SquadCommand = Extract<
 
 /**
  * A free agent signs at once (→CLUB-4, →CLUB-49): he leaves the pool and joins on the offer's
- * terms with his signing's clauses (→CLUB-29); a former player of ours returns to his own row
- * with his career. The caller has checked registration and the window.
+ * terms, or the `wage` he agreed to (→CLUB-53), with his signing's clauses (→CLUB-29); a former
+ * player of ours returns to his own row with his career. The caller has checked registration and
+ * the window.
  */
-export function signFreeAgent(w: World, offer: { player: Player }): Player {
+export function signFreeAgent(w: World, offer: { player: Player }, wage?: string): Player {
   if (!takeFreeAgent(w, offer.player.id))
     throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
   const p = structuredClone(offer.player);
+  if (wage !== undefined) p.wage = wage;
   p.clauses = signingClauses(w, p);
   const prior = w.players.findIndex((row) => row.id === p.id);
   if (prior >= 0) {
@@ -49,6 +63,33 @@ export function signFreeAgent(w: World, offer: { player: Player }): Player {
   } else w.players.push(p);
   noteSigning(w, p);
   return p;
+}
+/**
+ * A free agent answers our wage step at once (→CLUB-53, free agent +1.0), from his own draw named
+ * by the day and the player (→ARCH-5), so asking again that day at the same step gets the same
+ * answer. A refusal reaches the inbox naming his factors.
+ */
+function freeAgentTerms(w: World, player: Player, step: number) {
+  const context = termsContext(w, { playerId: player.id, step });
+  if (!context) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
+  const day = currentDay(w),
+    ref = `free:${w.year}:${day}:${player.id.length <= 80 ? player.id : hash(player.id)}`,
+    answer = termsAnswer(context, random(`${w.seed}:terms:${ref}`)());
+  if (!answer.accept)
+    pushInbox(w, {
+      kind: 'bid-response',
+      title: namedTitle('market.answer.free.title', player.name),
+      detail: fittedDetail((room) =>
+        sourceMessage('market.answer.free.detail', {
+          wage: moneyLabel(w, context.offer),
+          percent: Math.round(step * 100),
+          terms: termsReport(answer.chance, answer.lines, room),
+        }),
+      ),
+      attention: true,
+      ref: player.id,
+    });
+  return { ...answer, offer: context.offer };
 }
 export function squadCommand(w: World, cmd: SquadCommand) {
   switch (cmd.type) {
@@ -68,7 +109,7 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       const target = cmd.target ?? cmd.candidate;
       if (target === undefined || (cmd.target && cmd.candidate !== undefined))
         throw new Error(sourceMessage('copy.ops_squad.ca6b698a89'));
-      placeBid(w, target, cmd.fee, cmd.loan);
+      placeBid(w, target, cmd.fee, cmd.loan, undefined, cmd.wage);
       break;
     }
     case 'respond-bid':
@@ -81,16 +122,27 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       if (!o?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
       // Another club's player joins only through a negotiated bid, at his asking fee (→CLUB-4).
       if (!o.freeAgent) {
-        placeBid(w, cmd.target ?? cmd.candidate!, cmd.loan ? o.loanFee : o.fee, cmd.loan);
+        placeBid(
+          w,
+          cmd.target ?? cmd.candidate!,
+          cmd.loan ? o.loanFee : o.fee,
+          cmd.loan,
+          undefined,
+          cmd.wage,
+        );
         break;
       }
       if (cmd.loan) throw new Error(sourceMessage('copy.ops_squad.a2b1b34469'));
+      if (cmd.wage !== undefined && !isWageStep(cmd.wage))
+        throw new Error(sourceMessage('market.bid.invalidWage'));
       const room = registrationRoom(w, { ...o.player, joined: w.year });
       if (room) throw new Error(room);
       assertTransferWindow(w, true);
       // No fee, yet a club already in debt signs nobody, as the preview says.
       debit(w, o.fee);
-      const p = signFreeAgent(w, o);
+      const terms = freeAgentTerms(w, o.player, cmd.wage ?? 1);
+      if (!terms.accept) break;
+      const p = signFreeAgent(w, o, terms.offer);
       // A free agent costs nothing and keeps no fee fact (→HIST-20).
       const fact = recordTransfer(w, { direction: 'in', loan: false, player: p, fee: '0' });
       if (fact) fanMoodTransfer(w, fact);

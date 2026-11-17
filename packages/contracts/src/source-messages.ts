@@ -589,10 +589,10 @@ export const sourceMessages = {
   'copy.influences.0bbeefc854': '유스 승격에도 등록 조건 적용',
   'copy.influences.08b77af5d3': '상대 구단의 이적료 제안 수락 확률',
   'copy.influences.5d932797ee':
-    '요구 이적료 대비 제시 금액에 협상 담당자와 구단 평판의 보정을 더합니다.',
+    '구단 사정과 선수의 처지로 정한 최저선(요구액 대비)에 제시액이 닿으면 받아들이고, 요구액의 4분의 1 안쪽으로 모자라면 그 선에서 역제안합니다.',
   'copy.influences.057a24531e': '요구 이적료 대비 제시 이적료',
   'copy.influences.30606ecc8f':
-    '제시 비율이 높을수록 수락에 유리합니다. 확률 상하한 때문에 일반 제안이 무조건 성공하는 것은 아닙니다.',
+    '요구액 이상이면 언제나 받아들입니다. 그보다 낮으면 구단이 버티는 선에 닿아야 합니다.',
   'copy.influences.bd4f4df5ef': '단장 능력·협상가 특성·공석',
   'copy.influences.26d0d00f6c': '유능한 단장과 협상가는 유리하고 공석은 불리합니다.',
   'copy.influences.efc030c146': '감독 유형의 협상 효과',
@@ -651,7 +651,7 @@ export const sourceMessages = {
   'copy.influences.d191a83cd1': '구단 기록을 넘는 영입은 팬 반응 발생',
   'copy.influences.4ed9b818d3': '자유계약·유상 영입·임대의 차이',
   'copy.influences.4f1cc58a88':
-    '자유계약에는 협상 없이 즉시 영입하는 경로가 있고, 임대는 기간 뒤 복귀합니다.',
+    '자유계약 선수는 이적료 협상 없이 연봉 조건에만 바로 답하고, 임대는 기간 뒤 복귀합니다.',
   'copy.influences.c9ccbdc9c8': '계약 형태 선택',
   'copy.influences.45fb021c6b': '초기 비용·연봉·종료 시점과 복귀 여부가 달라집니다.',
   'copy.influences.92ffb09b6b': '이적시장 개방 여부',
@@ -6378,7 +6378,7 @@ export const sourceMessages = {
   'copy.staff.d9633a4a27': '라운드 피로 회복 {p0}',
   'copy.staff.a90e5fd56d': '입단 잠재력 {p0}',
   'copy.staff.3bdb44c221': '아카데미 성장 {p0}',
-  'copy.staff.9861fae062': '협상 성공률 {p0}%p',
+  'copy.staff.9861fae062': '상대 구단 양보 {p0}%p',
   'copy.staff.90c032fb75': '공석 · ',
   'copy.staff.ccee77b460': '계약 기간은 1–5시즌이어야 합니다.',
   'copy.staff.505336b8a6': '유효하지 않은 스태프 후보입니다.',
@@ -6522,7 +6522,7 @@ export const sourceMessages = {
   'copy.styles.a2d77f7a98': '시즌 종료까지 단기 계약 · 재계약하지 않으면 시즌이 끝날 때 떠나요',
   'copy.styles.9639eba604': '데이터 헤드코치',
   'copy.styles.5caf1bd651': '스포츠 디렉터 체계 안에서 데이터로 일하는 실무형 헤드코치',
-  'copy.styles.80f5cc051c': '영입 협상 수락 확률 +5%p',
+  'copy.styles.80f5cc051c': '영입 협상에서 상대 구단 양보 +5%p',
   'copy.styles.3a3ef16722': '카리스마 부족: 분위기 기준점 −2',
   'copy.synergy.b97b998386': '게겐프레스 엔진',
   'copy.synergy.c334cee875':
@@ -7026,8 +7026,8 @@ export const sourceMessages = {
   'office.effect.scoutAbility.note': '수석 스카우트가 찾는 능력 범위의 양 끝에 더해져요.',
   'office.effect.transferFee': '이적료 배율',
   'office.effect.transferFee.note': '영입 후보의 이적료에 곱해져요.',
-  'office.effect.bidAcceptance': '영입 제안 수락 보정',
-  'office.effect.bidAcceptance.note': '상대 구단이 우리 제안을 받아들일 확률에 더해져요.',
+  'office.effect.bidAcceptance': '상대 구단 양보 폭',
+  'office.effect.bidAcceptance.note': '상대 구단이 버티는 최저 이적료를 요구액의 이만큼 낮춰요.',
   'office.effect.wage': '연봉 요구 배율',
   'office.effect.wage.note': '계약 협상에서 선수가 요구하는 연봉에 곱해져요.',
   'office.effect.incomingBids': '이적 제안 빈도',
@@ -7384,7 +7384,7 @@ export const sourceMessages = {
   'market.sale.place.starter': '주전 선수',
   'market.sale.place.outside': '주전이 아닌 선수',
   'market.sale.contract.next': '계약 만료 한 시즌 전',
-  'market.sale.age': '{age}세',
+  'market.sale.age': '나이 {age}세',
   'market.sale.prospect': '유망주',
   'market.sale.cash': '자금 위기(고정비 {rounds}라운드분)',
   'market.sale.wages.over': '선수 연봉이 매각 기준선을 넘음(수입의 {share}%)',
@@ -7408,4 +7408,72 @@ export const sourceMessages = {
   'market.terms.wouldStart': '우리 팀에서 주전으로 뛸 수 있음',
   'market.terms.losesPlace': '지금은 주전이지만 우리 팀에서는 주전이 아님',
   'market.terms.freeAgent': '자유계약 선수',
+  'market.answer.reservation.0': '구단이 버틴 선 {reservation}(요구액의 {share}%)',
+  'market.answer.reservation.1': '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1}',
+  'market.answer.reservation.2': '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2}',
+  'market.answer.reservation.3':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3}',
+  'market.answer.reservation.4':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4}',
+  'market.answer.reservation.5':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5}',
+  'market.answer.reservation.6':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6}',
+  'market.answer.reservation.7':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7}',
+  'market.answer.reservation.8':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7} · {f8}',
+  'market.answer.reservation.9':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7} · {f8} · {f9}',
+  'market.answer.reservation.10':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7} · {f8} · {f9} · {f10}',
+  'market.answer.reservation.11':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7} · {f8} · {f9} · {f10} · {f11}',
+  'market.answer.terms.0': '수락 가능성 {chance}%',
+  'market.answer.terms.1': '수락 가능성 {chance}%: {f1}',
+  'market.answer.terms.2': '수락 가능성 {chance}%: {f1} · {f2}',
+  'market.answer.terms.3': '수락 가능성 {chance}%: {f1} · {f2} · {f3}',
+  'market.answer.terms.4': '수락 가능성 {chance}%: {f1} · {f2} · {f3} · {f4}',
+  'market.answer.terms.5': '수락 가능성 {chance}%: {f1} · {f2} · {f3} · {f4} · {f5}',
+  'market.answer.terms.6': '수락 가능성 {chance}%: {f1} · {f2} · {f3} · {f4} · {f5} · {f6}',
+  'market.answer.terms.7': '수락 가능성 {chance}%: {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7}',
+  'market.answer.player.detail':
+    '구단은 {fee}에 합의했지만 선수가 연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. 이적료는 내지 않았어요. {terms}',
+  'market.answer.player.detail.club':
+    '구단은 {fee}에 합의했어요. {reason}. 하지만 선수가 연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. 이적료는 내지 않았어요. {terms}',
+  'market.answer.free.detail': '연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. {terms}',
+  'market.answer.staffCounter':
+    '단장의 제안 {fee} · 요구액 {asking} · 요구액의 {percent}%. {reason}. 판단: {verdict}',
+  'market.answer.accepted': '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}.',
+  'market.answer.accepted.staff':
+    '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}. 단장의 제안이에요.',
+  'market.answer.blocked':
+    '상대 구단은 {fee} 제안을 받아들였어요. {reason}. 그러나 마무리하지 못했어요: {blocker}',
+  'market.sale.managerStyle': '데이터 헤드코치 감독의 협상 지원',
+  'market.answer.noFactors': '움직인 요인 없음',
+  'market.answer.saleFactor': '{factor} — 요구액의 {delta}%p',
+  'market.answer.termsFor': '{factor} — 유리',
+  'market.answer.termsAgainst': '{factor} — 불리',
+  'market.answer.counter':
+    '우리 제안 {fee} · 요구액 {asking}. {reason}. 이적시장이 닫히기 전에 수락하거나 거절하세요.',
+  'market.answer.refused':
+    '우리 제안 {fee} · 요구액 {asking}. {reason}. 더 높은 금액으로 다시 제안할 수 있어요.',
+  'market.answer.refused.staff':
+    '단장의 제안 {fee} · 요구액 {asking}. {reason}. 다음에 다른 선수를 찾아요.',
+  'market.answer.player.title': '{name}, 개인 조건 거절',
+  'market.answer.free.title': '{name}, 자유계약 조건 거절',
+  'market.bid.invalidWage': '연봉 제안은 요구액의 100%, 125%, 150%, 200% 중 하나여야 해요.',
+  'market.bid.wageSteps': '연봉 제안',
+  'market.bid.wageStep': '요구의 {percent}%',
+  'market.bid.clubLabel': '상대 구단의 판단',
+  'market.bid.clubChance': '수락 {accept}% · 역제안 {counter}%',
+  'market.bid.playerLabel': '선수 개인 조건',
+  'market.bid.playerChance': '수락 가능성 {chance}% · 연봉 {wage}',
+  'market.recruit.refused': '{name} 선수가 연봉 조건을 거절했어요.',
+  'influences.bid.situation': '선수의 팀 내 위치·계약·나이와 판매 구단의 사정',
+  'influences.bid.situation.note':
+    '핵심 주전과 유망주는 더 버티고, 계약 말년·노장·자금난 구단·마감 직전은 덜 버팁니다.',
+  'influences.bid.terms': '선수 개인 조건',
+  'influences.bid.terms.note':
+    '구단이 합의하면 선수가 연봉 제안(요구의 100·125·150·200%), 리그와 명성, 유럽 대회, 출전 시간을 보고 답합니다. 연봉을 올릴수록 수락 가능성이 커집니다.',
 } as const;

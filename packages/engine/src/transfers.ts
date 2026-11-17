@@ -1,4 +1,4 @@
-import { message as sourceMessage } from '../../contracts/src/messages';
+import { message as sourceMessage, type SourceMessageId } from '../../contracts/src/messages';
 import { SALE_BARS } from './transfer-policy';
 import { worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
@@ -18,9 +18,21 @@ import type {
   ScoutOffer,
   TransferBid,
   TransferStance,
+  WageStep,
   World,
   WorldMarketTarget,
 } from '../../contracts/src/types';
+import {
+  saleAnswer,
+  saleContext,
+  saleOutlook,
+  SALE_FACTORS,
+  type AnswerFactor,
+  type FactorLine,
+  type SaleAnswer,
+  type SaleContext,
+} from './sale-answer';
+import { termsAnswer, termsChance, termsContext, WAGE_STEPS } from './personal-terms';
 import { currency } from '../../catalogs/src/index';
 import { currentDay, dayCountedFrom, seasonDayLabel } from './calendar';
 import {
@@ -58,7 +70,6 @@ import { applyDelegatePlans, wagePressure } from './delegation';
 import { SAFETY_ROUNDS } from './delegation-info';
 import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
-import { staffEffects } from './staff';
 import { managerStyleEffects } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
 import { pushInbox } from './inbox';
@@ -109,16 +120,168 @@ function feeRatio(fee: string, asking: string) {
   const a = BigInt(asking);
   return a <= 0n ? 2 : Number((BigInt(fee) * 10000n) / a) / 10000;
 }
-function acceptanceChance(w: World, fee: string, asking: string) {
-  return clamp(
-    0.35 +
-      (feeRatio(fee, asking) - 1) * 1.2 +
-      staffEffects(w).bidAcceptance +
-      managerStyleEffects(w).bidAcceptance +
-      (clubOf(w).reputation - 40) / 400,
-    0.05,
-    0.95,
+/**
+ * The selling club's factors for our bids (→CLUB-52): its registry, and the share −0.05 a
+ * 데이터 헤드코치 manager takes off the reservation (CLUB-52's row, →STAFF-14), named in the
+ * report like the 단장's ability (→STAFF-20). Read when a bid is answered, never at load.
+ */
+function bidFactors(w: World): readonly AnswerFactor<SaleContext>[] {
+  const help = managerStyleEffects(w).bidAcceptance;
+  if (!help) return SALE_FACTORS;
+  return [
+    ...SALE_FACTORS,
+    {
+      id: 'managerStyle',
+      read: (c) =>
+        c.ownSeller
+          ? undefined
+          : {
+              factor: 'managerStyle',
+              delta: -help,
+              message: 'market.sale.managerStyle',
+              params: {},
+            },
+    },
+  ];
+}
+/** The club selling him: the one a bid names, else where the list found him (older saves). */
+function sellerOf(bid: TransferBid, offer: MarketOffer | undefined) {
+  return bid.club ?? (offer?.source.kind === 'club' ? offer.source.club : undefined);
+}
+/** The selling club's answer to an `out` bid from its own draw (→CLUB-52); undefined when gone. */
+function clubAnswer(w: World, bid: TransferBid, offer: MarketOffer, asking: string) {
+  const seller = sellerOf(bid, offer);
+  const context =
+    seller && saleContext(w, { playerId: bid.playerId, sellerId: seller, fee: bid.fee, asking });
+  if (!context) return undefined;
+  return saleAnswer(context, random(`${w.seed}:sale:${bid.id}`)(), bidFactors(w));
+}
+/** Our offer at a wage step of his demand, in whole minor units, as `termsContext` reads it. */
+function stepWage(demand: string, step: number) {
+  return ((BigInt(demand) * BigInt(Math.round(step * 10000))) / 10000n).toString();
+}
+/**
+ * The player as the 단장's money checks must read him: on the wage the bid offers, the one he signs
+ * on when he agrees (→CLUB-53), not his quoted demand, so a raised step cannot pass the plan and the
+ * insolvency stop at 100% and then commit more (→ECON-33, →ECON-41).
+ */
+function atOfferedWage(bid: TransferBid, player: Player): Player {
+  const step = bid.wage ?? 1;
+  return step === 1 ? player : { ...player, wage: stepWage(player.wage, step) };
+}
+/**
+ * A report's factors, one message per count so each factor stays its own localizable slot (→ARCH-32):
+ * prose joined into one parameter would leave a translation unable to tell the factors apart.
+ */
+const RESERVATION_REPORT = [
+  'market.answer.reservation.0',
+  'market.answer.reservation.1',
+  'market.answer.reservation.2',
+  'market.answer.reservation.3',
+  'market.answer.reservation.4',
+  'market.answer.reservation.5',
+  'market.answer.reservation.6',
+  'market.answer.reservation.7',
+  'market.answer.reservation.8',
+  'market.answer.reservation.9',
+  'market.answer.reservation.10',
+  'market.answer.reservation.11',
+] as const satisfies readonly SourceMessageId[];
+const TERMS_REPORT = [
+  'market.answer.terms.0',
+  'market.answer.terms.1',
+  'market.answer.terms.2',
+  'market.answer.terms.3',
+  'market.answer.terms.4',
+  'market.answer.terms.5',
+  'market.answer.terms.6',
+  'market.answer.terms.7',
+] as const satisfies readonly SourceMessageId[];
+/**
+ * The factor lines as a report's named slots f1, f2, …, every one of them (→CLUB-52/53): a name
+ * a factor carries (the 단장's) runs at most `room` characters, so a long one shortens rather than
+ * pushing a factor out of the report.
+ */
+function factorSlots(lines: readonly FactorLine[], slots: number, room: number) {
+  return Object.fromEntries(
+    lines.slice(0, slots).map((line, i) => {
+      const name = line.params?.name;
+      const params =
+        typeof name === 'string' && name.length > room
+          ? { ...line.params, name: clip(name, room) }
+          : line.params;
+      return [`f${i + 1}`, sourceMessage(line.message, params)];
+    }),
   );
+}
+/**
+ * The selling club's reservation and each factor that moved it, for its answer's report
+ * (→CLUB-52); `reservation` is the money label of R, `room` the longest a factor's name runs.
+ */
+export function reservationReport(
+  reservation: string,
+  share: number,
+  lines: readonly FactorLine[],
+  room = Infinity,
+) {
+  const shown = Math.min(lines.length, RESERVATION_REPORT.length - 1);
+  return sourceMessage(RESERVATION_REPORT[shown]!, {
+    reservation,
+    share: Math.round(share * 100),
+    ...factorSlots(lines, shown, room),
+  });
+}
+/** The player's chance of agreeing and each factor behind it, for his answer's report (→CLUB-53). */
+export function termsReport(chance: number, lines: readonly FactorLine[], room = Infinity) {
+  const shown = Math.min(lines.length, TERMS_REPORT.length - 1);
+  return sourceMessage(TERMS_REPORT[shown]!, {
+    chance: Math.round(chance * 100),
+    ...factorSlots(lines, shown, room),
+  });
+}
+/** The selling club's reservation and the factors behind it, for its answer's report. */
+function saleReason(w: World, answer: SaleAnswer, room?: number) {
+  return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines, room);
+}
+/** An inbox item's longest title and detail (the save schema's bounds, →SAVE-5). */
+const TITLE_MAX = 160,
+  DETAIL_MAX = 1000;
+/** How long a factor's name may run, longest first, while a report outgrows the inbox's bound. */
+const NAME_ROOMS = [Infinity, 60, 30, 16, 8] as const;
+/**
+ * A report detail naming every factor of each answer within the inbox's bound (→CLUB-52/53, →SAVE-5):
+ * `make` builds it with a factor's name at most `room` characters long, and a name shortens until
+ * the report fits. Every factor sentence fits with room to spare, so the last clip only guards a
+ * money check's own reason running long, which the report puts last.
+ */
+export function fittedDetail(make: (room: number) => string) {
+  let detail = '';
+  for (const room of NAME_ROOMS) {
+    detail = make(room);
+    if (detail.length <= DETAIL_MAX) return detail;
+  }
+  return clip(detail, DETAIL_MAX);
+}
+/** A title naming a player, his name clipped so the whole sentence fits the inbox's bound. */
+export function namedTitle(id: SourceMessageId, name: string) {
+  const room = TITLE_MAX - sourceMessage(id, { name: '' }).length;
+  return sourceMessage(id, { name: clip(name, room) });
+}
+/**
+ * The player's answer to our terms once his club agreed (→CLUB-53), from his own draw: our step of
+ * the demand the bid was made for (→CLUB-14), the rest read from the world as it stands.
+ */
+function playerAnswer(w: World, bid: TransferBid, offer: MarketOffer) {
+  const step = bid.wage ?? 1,
+    context = termsContext(w, { playerId: bid.playerId, clubId: sellerOf(bid, offer), step });
+  if (!context) return undefined;
+  const demand = offer.player.wage,
+    wage = stepWage(demand, step);
+  return {
+    ...termsAnswer({ ...context, demand, offer: wage }, random(`${w.seed}:terms:${bid.id}`)()),
+    demand,
+    wage,
+  };
 }
 type MarketOffer = ScoutOffer;
 /**
@@ -156,9 +319,16 @@ function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string, l
   if (BigInt(w.cash) < BigInt(fee)) return sourceMessage('copy.playing_coach.8791d586e5');
   return undefined;
 }
-function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: string) {
-  // The bid keeps its record of him; the squad gets its own copy.
+function completeSigning(
+  w: World,
+  bid: TransferBid,
+  offer: MarketOffer,
+  fee: string,
+  wage = offer.player.wage,
+) {
+  // The bid keeps its record of him; the squad gets its own copy, on the wage he agreed to.
   const p = structuredClone(offer.player);
+  p.wage = wage;
   const prior = w.players.findIndex((player) => player.id === p.id);
   if (prior >= 0) {
     // Inactive rows are not reset at rollover. Only restore minutes earned in this season;
@@ -295,14 +465,24 @@ function markRelatedRead(w: World, id: string) {
 const clip = (text: string, max: number) =>
   text.length > max ? `${text.slice(0, max - 1)}…` : text;
 
-/** Our offer for a market player; the selling club answers in two to four days. */
+/** Whether `step` is one of the wage steps our offers are made at (→CLUB-53). */
+export function isWageStep(step: unknown): step is WageStep {
+  return (WAGE_STEPS as readonly unknown[]).includes(step);
+}
+/**
+ * Our offer for a market player at `fee`, with our wage offer a step of his demand (→CLUB-53,
+ * the 100% step when absent); the selling club answers in two to four days.
+ */
 export function placeBid(
   w: World,
   candidate: number | WorldMarketTarget,
   fee: string,
   loan = false,
   staff?: TransferBid['staff'],
+  wage?: WageStep,
 ): void {
+  if (wage !== undefined && !isWageStep(wage))
+    throw new Error(sourceMessage('market.bid.invalidWage'));
   const scouted = typeof candidate === 'number' ? transferOffers(w)[candidate] : undefined;
   const offer = typeof candidate === 'number' ? scouted : worldMarketOffer(w, candidate);
   if (!offer?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
@@ -351,6 +531,7 @@ export function placeBid(
     due: Math.min(day + wait, window.until ?? day + wait),
     status: 'pending',
     ...(staff ? { staff } : {}),
+    ...(wage !== undefined ? { wage } : {}),
   };
   w.bids = [...(w.bids || []), bid];
   addEvent(
@@ -383,7 +564,11 @@ export function respondBid(w: World, id: string, accept: boolean): void {
         fee = bid.counterFee || bid.fee,
         blocker = signingBlocker(w, offer, fee, bid.loan);
       if (blocker) throw new Error(blocker);
-      completeSigning(w, bid, offer!, fee);
+      // The counter answered, the player answers the wage step the bid carried (→CLUB-53); his
+      // refusal's report stays unread.
+      markRelatedRead(w, id);
+      closeDeal(w, bid, offer!, fee, true);
+      return;
     } else bid.status = 'rejected';
   } else if (bid.direction === 'in' && bid.status === 'pending') {
     const p = w.players.find((x) => x.id === bid.playerId);
@@ -399,39 +584,83 @@ export function respondBid(w: World, id: string, accept: boolean): void {
   } else throw new Error(sourceMessage('copy.transfers.c5ab3adae5'));
   markRelatedRead(w, id);
 }
-export interface BidOutlook {
-  /** Rounded acceptance probability, 0.05–0.95. */
+/** The player's answer to one wage step (→CLUB-53): our offer, his chance and its factors. */
+export interface TermsStepOutlook {
+  step: WageStep;
+  wage: string;
   chance: number;
-  label: '높음' | '보통' | '낮음';
-  asking: string;
-  /** Whether a refusal may come back as a counter offer (70–100% of asking). */
-  counterPossible: boolean;
+  lines: FactorLine[];
 }
-/** Read model for the bid form; never a guarantee. */
+export interface BidOutlook {
+  /** The selling club's exact chance of accepting the fee (→CLUB-52); 0 when no bid can be made. */
+  chance: number;
+  /** Its exact chance of a counter at its reservation instead. */
+  counter: number;
+  asking: string;
+  /** The factors that move its reservation, as the answer will read them. */
+  lines: FactorLine[];
+  /** The player's answer to each wage step of his demand (→CLUB-53), when he can be asked. */
+  terms?: { demand: string; steps: TermsStepOutlook[] };
+}
+/**
+ * The player's chance at every wage step (→CLUB-53), for the bid view and a free agent's signing;
+ * `clubId` is his club, absent for a free agent.
+ */
+function termsOutlook(w: World, playerId: string, clubId?: string): BidOutlook['terms'] {
+  const context = termsContext(w, { playerId, ...(clubId ? { clubId } : {}), step: 1 });
+  if (!context) return undefined;
+  return {
+    demand: context.demand,
+    steps: WAGE_STEPS.map((step) => {
+      const wage = stepWage(context.demand, step),
+        read = termsChance({ ...context, offer: wage });
+      return { step, wage, chance: read.chance, lines: read.lines };
+    }),
+  };
+}
+/**
+ * Read model for the bid form: the selling club's exact chances of accepting and of countering
+ * under its seeded draw, and the player's chance at each wage step, with their factors. It reads
+ * no randomness and changes nothing; it never guarantees an answer.
+ */
 export function bidOutlook(
   w: World,
   candidate: number | WorldMarketTarget,
   fee: string,
   loan = false,
 ): BidOutlook {
-  const offer =
-    typeof candidate === 'number' ? transferOffers(w)[candidate] : worldMarketOffer(w, candidate);
+  const scouted = typeof candidate === 'number' ? transferOffers(w)[candidate] : undefined;
+  const offer = typeof candidate === 'number' ? scouted : worldMarketOffer(w, candidate);
   const asking = offer ? askingFee(offer, loan) : '0';
-  const valid =
-    !!offer?.available && !offer.freeAgent && /^\d{1,80}$/.test(fee) && BigInt(fee) >= 1n;
-  const chance = valid ? Math.round(acceptanceChance(w, fee, asking) * 100) / 100 : 0;
-  const r = valid ? feeRatio(fee, asking) : 0;
-  return {
-    chance,
-    label:
-      chance >= 0.6
-        ? sourceMessage('copy.player.5327dee9ab')
-        : chance >= 0.35
-          ? sourceMessage('copy.teamState.666599febd')
-          : sourceMessage('copy.player.9f07b9bc5f'),
+  // The selling club, whichever list named him (→CLUB-14).
+  const seller =
+    typeof candidate === 'number'
+      ? scouted?.source.kind === 'club'
+        ? scouted.source.club
+        : undefined
+      : candidate.kind === 'club'
+        ? candidate.clubId
+        : undefined;
+  const terms = offer?.available ? termsOutlook(w, offer.player.id, seller) : undefined;
+  const none: BidOutlook = {
+    chance: 0,
+    counter: 0,
     asking,
-    counterPossible: valid && r >= 0.7 && r <= 1,
+    lines: [],
+    ...(terms ? { terms } : {}),
   };
+  if (
+    !offer?.available ||
+    offer.freeAgent ||
+    !seller ||
+    !/^\d{1,80}$/.test(fee) ||
+    BigInt(fee) < 1n
+  )
+    return none;
+  const context = saleContext(w, { playerId: offer.player.id, sellerId: seller, fee, asking });
+  if (!context) return none;
+  const read = saleOutlook(context, bidFactors(w));
+  return { ...none, chance: read.accept, counter: read.counter, lines: read.lines };
 }
 export interface BidDetails {
   bid: TransferBid;
@@ -532,6 +761,62 @@ function expire(w: World, bid: TransferBid, name: string, reason: string) {
     ref: bid.id,
   });
 }
+/**
+ * Once the selling club agrees at `fee`, the player answers our terms (→CLUB-53): agreeing, he signs
+ * on the offered wage; refusing, he ends the bid with nothing paid, and the report names his
+ * factors. Returns whether he signed.
+ */
+function closeDeal(
+  w: World,
+  bid: TransferBid,
+  offer: MarketOffer,
+  fee: string,
+  attention: boolean,
+  club?: SaleAnswer,
+): boolean {
+  const p = offer.player,
+    terms = playerAnswer(w, bid, offer);
+  if (!terms) {
+    expire(w, bid, p.name, sourceMessage('copy.transfers.131637770d'));
+    return false;
+  }
+  if (terms.accept) {
+    completeSigning(w, bid, offer, fee, terms.wage);
+    return true;
+  }
+  bid.status = 'rejected';
+  bid.refusedBy = 'player';
+  pushInbox(w, {
+    kind: 'bid-response',
+    title: namedTitle('market.answer.player.title', p.name),
+    // An answer given at once names the club's reservation too (→CLUB-52); a counter's own
+    // report already named it.
+    detail: fittedDetail((room) =>
+      club
+        ? sourceMessage('market.answer.player.detail.club', {
+            fee: moneyLabel(w, fee),
+            reason: saleReason(w, club, room),
+            wage: moneyLabel(w, terms.wage),
+            percent: Math.round((bid.wage ?? 1) * 100),
+            terms: termsReport(terms.chance, terms.lines, room),
+          })
+        : sourceMessage('market.answer.player.detail', {
+            fee: moneyLabel(w, fee),
+            wage: moneyLabel(w, terms.wage),
+            percent: Math.round((bid.wage ?? 1) * 100),
+            terms: termsReport(terms.chance, terms.lines, room),
+          }),
+    ),
+    attention,
+    ref: bid.id,
+  });
+  return false;
+}
+/**
+ * The selling club answers our bid (→CLUB-18, →CLUB-52): accepted at or above its reservation,
+ * countered at it within a quarter of the asking fee, else refused; an agreed bid then goes to the
+ * player's terms (→CLUB-53). The report names the factors behind the answer.
+ */
 function decideOutgoing(w: World, bid: TransferBid) {
   const offer = marketOffer(w, bid);
   if (!offer?.available) {
@@ -545,49 +830,57 @@ function decideOutgoing(w: World, bid: TransferBid) {
   }
   const p = offer.player,
     asking = askingFee(offer, bid.loan),
-    move = bid.loan ? sourceMessage('team.loan') : sourceMessage('copy.areas.60be4d7b53');
-  const r = random(`${w.seed}:bid:${bid.id}`),
-    roll = r(),
-    chance = acceptanceChance(w, bid.fee, asking),
-    feeShare = feeRatio(bid.fee, asking);
-  if (roll < chance) {
-    const financial = bid.staff ? signingVerdict(w, p, bid.fee, undefined, bid.id) : undefined;
+    move = bid.loan ? sourceMessage('team.loan') : sourceMessage('copy.areas.60be4d7b53'),
+    answer = clubAnswer(w, bid, offer, asking);
+  if (!answer) {
+    expire(w, bid, p.name, sourceMessage('copy.transfers.131637770d'));
+    return;
+  }
+  // The 단장's bids are his to follow up; their answers only report (→CLUB-33).
+  const attention = !bid.staff;
+  if (answer.kind === 'accept') {
+    const financial = bid.staff
+      ? signingVerdict(w, atOfferedWage(bid, p), bid.fee, undefined, bid.id)
+      : undefined;
     const blocker =
       financial && !financial.ok ? financial.reason : signingBlocker(w, offer, bid.fee, bid.loan);
-    // The 단장's bids are his to follow up; their answers only report (→CLUB-33).
-    const attention = !bid.staff;
     if (blocker) {
       bid.status = 'rejected';
       pushInbox(w, {
         kind: 'bid-response',
         title: clip(sourceMessage('copy.transfers.138ea75077', { p0: p.name, p1: move }), 160),
-        detail: sourceMessage('copy.transfers.6b0ecd8998', {
-          p0: moneyLabel(w, bid.fee),
-          p1: blocker,
-        }),
+        detail: fittedDetail((room) =>
+          sourceMessage('market.answer.blocked', {
+            fee: moneyLabel(w, bid.fee),
+            reason: saleReason(w, answer, room),
+            blocker,
+          }),
+        ),
         attention,
         ref: bid.id,
       });
       return;
     }
-    completeSigning(w, bid, offer, bid.fee);
+    if (!closeDeal(w, bid, offer, bid.fee, attention, answer)) return;
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(sourceMessage('copy.transfers.4bd8c1ff7d', { p0: p.name, p1: move }), 160),
-      detail: sourceMessage('copy.transfers.500d09e6f8', {
-        p0: p.position,
-        p1: w.year - p.born,
-        p2: moneyLabel(w, bid.fee),
-        p3: bid.staff ? sourceMessage('copy.transfers.fba4d72f3f') : '',
-      }),
+      detail: fittedDetail((room) =>
+        sourceMessage(bid.staff ? 'market.answer.accepted.staff' : 'market.answer.accepted', {
+          position: p.position,
+          age: w.year - p.born,
+          fee: moneyLabel(w, bid.fee),
+          reason: saleReason(w, answer, room),
+        }),
+      ),
       attention,
       ref: bid.id,
     });
-  } else if (feeShare >= 0.7 && feeShare <= 1 && roll < chance + (1 - chance) * 0.7) {
+  } else if (answer.kind === 'counter') {
     bid.status = 'countered';
-    bid.counterFee = ratio(asking, BigInt(integer(r, 110, 125)), 100n);
+    bid.counterFee = answer.counter!;
     if (bid.staff) {
-      answerStaffCounter(w, bid, offer, asking);
+      answerStaffCounter(w, bid, offer, asking, answer);
       return;
     }
     pushInbox(w, {
@@ -599,46 +892,62 @@ function decideOutgoing(w: World, bid: TransferBid) {
         }),
         160,
       ),
-      detail: sourceMessage('copy.transfers.4806c94809', {
-        p0: moneyLabel(w, bid.fee),
-        p1: moneyLabel(w, asking),
-      }),
+      detail: fittedDetail((room) =>
+        sourceMessage('market.answer.counter', {
+          fee: moneyLabel(w, bid.fee),
+          asking: moneyLabel(w, asking),
+          reason: saleReason(w, answer, room),
+        }),
+      ),
       attention: true,
       ref: bid.id,
     });
   } else {
     bid.status = 'rejected';
+    bid.refusedBy = 'club';
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(sourceMessage('copy.transfers.9f030caf7e', { p0: p.name, p1: move }), 160),
-      detail: bid.staff
-        ? sourceMessage('copy.transfers.328d32d40e', {
-            p0: moneyLabel(w, bid.fee),
-            p1: moneyLabel(w, asking),
-          })
-        : sourceMessage('copy.transfers.964210f510', {
-            p0: moneyLabel(w, bid.fee),
-            p1: moneyLabel(w, asking),
-          }),
-      attention: !bid.staff,
+      detail: fittedDetail((room) =>
+        sourceMessage(bid.staff ? 'market.answer.refused.staff' : 'market.answer.refused', {
+          fee: moneyLabel(w, bid.fee),
+          asking: moneyLabel(w, asking),
+          reason: saleReason(w, answer, room),
+        }),
+      ),
+      attention,
       ref: bid.id,
     });
   }
 }
 /**
- * The 단장 answers a counter to his own bid at once (→CLUB-33, →STAFF-20): he accepts while it still
- * passes 재정 기조's money checks, else declines; the report says which and why.
+ * The 단장 answers a counter to his own bid at once (→CLUB-41, →STAFF-20): he takes it while it
+ * passes the money checks, else declines (a negotiator haggles on instead); a counter he takes
+ * goes to the player's terms (→CLUB-53). The report says which and why.
  */
-function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, asking: string) {
+function answerStaffCounter(
+  w: World,
+  bid: TransferBid,
+  offer: MarketOffer,
+  asking: string,
+  answer?: SaleAnswer,
+) {
   const p = offer.player,
     fee = bid.counterFee!,
-    verdict = signingVerdict(w, p, fee, undefined, bid.id),
+    verdict = signingVerdict(w, atOfferedWage(bid, p), fee, undefined, bid.id),
     blocker = signingBlocker(w, offer, fee, bid.loan),
     belowCeiling = BigInt(bid.fee) < BigInt(ratio(asking, BigInt(bidCeiling(w)), 100n)),
     bargaining = haggling(w) && belowCeiling,
-    accept = !bargaining && verdict.ok && !blocker;
-  if (accept) completeSigning(w, bid, offer, fee);
-  else bid.status = bargaining || (verdict.ok && !blocker) ? 'rejected' : 'expired';
+    accept = !bargaining && verdict.ok && !blocker,
+    reason = bargaining
+      ? sourceMessage('copy.transfers.c294c4e9ad')
+      : accept
+        ? verdict.reason
+        : (blocker ?? verdict.reason);
+  if (accept) {
+    // His refusal reports itself; only a signing or a declined counter reports the counter.
+    if (!closeDeal(w, bid, offer, fee, false, answer)) return;
+  } else bid.status = bargaining || (verdict.ok && !blocker) ? 'rejected' : 'expired';
   pushInbox(w, {
     kind: 'bid-response',
     title: clip(
@@ -651,16 +960,22 @@ function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, aski
       }),
       160,
     ),
-    detail: sourceMessage('copy.transfers.4a233f3fc1', {
-      p0: moneyLabel(w, bid.fee),
-      p1: moneyLabel(w, asking),
-      p2: Math.round(feeRatio(bid.fee, asking) * 100),
-      p3: bargaining
-        ? sourceMessage('copy.transfers.c294c4e9ad')
-        : accept
-          ? verdict.reason
-          : (blocker ?? verdict.reason),
-    }),
+    detail: answer
+      ? fittedDetail((room) =>
+          sourceMessage('market.answer.staffCounter', {
+            fee: moneyLabel(w, bid.fee),
+            asking: moneyLabel(w, asking),
+            percent: Math.round(feeRatio(bid.fee, asking) * 100),
+            verdict: reason,
+            reason: saleReason(w, answer, room),
+          }),
+        )
+      : sourceMessage('copy.transfers.4a233f3fc1', {
+          p0: moneyLabel(w, bid.fee),
+          p1: moneyLabel(w, asking),
+          p2: Math.round(feeRatio(bid.fee, asking) * 100),
+          p3: reason,
+        }),
     attention: false,
     ref: bid.id,
   });

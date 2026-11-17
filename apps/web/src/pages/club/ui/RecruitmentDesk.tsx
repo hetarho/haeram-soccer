@@ -12,6 +12,7 @@ import type {
   Line,
   Position,
   TransferBid,
+  WageStep,
   World,
   WorldMarketTarget,
 } from '../../../../../../packages/contracts/src/types';
@@ -32,6 +33,7 @@ import { transferWindow } from '../../../../../../packages/engine/src/transfer-w
 import { bidKind, freeSigning, visibleBids } from '../lib/bids';
 import { activePlayers, clubOf, overall } from '../../../../../../packages/engine/src/player-state';
 import { recruitmentLineNeed } from '../../../../../../packages/engine/src/recruitment';
+import { SEASON_ROUNDS } from '../../../../../../packages/engine/src/calendar';
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { Dialog } from '../../../shared/ui/Dialog';
@@ -63,6 +65,23 @@ import { PlayerCompare, type CompareSide } from './PlayerCompare';
 import s from './RecruitmentDesk.module.css';
 
 type Candidate = MarketDetail;
+type Preview = Candidate['buy'];
+/**
+ * A signing's preview at the wage our step offers (→CLUB-53): his wage, the year's fixed costs and
+ * the fixed-cost runway after the move count the offered wage, not his demand (→CLUB-15).
+ */
+export function atWage<T extends Preview>(preview: T, wage?: string): T {
+  if (wage === undefined || wage === preview.wage) return preview;
+  const annual = BigInt(preview.annualAfter) - BigInt(preview.wage) + BigInt(wage),
+    cashAfter = BigInt(preview.cashAfter),
+    runway = cashAfter > 0n && annual > 0n ? (cashAfter * BigInt(SEASON_ROUNDS)) / annual : 0n;
+  return {
+    ...preview,
+    wage,
+    annualAfter: annual.toString(),
+    runwayRounds: Number(runway > 999n ? 999n : runway),
+  };
+}
 /**
  * A market row as one side of a comparison (→WEB-43). The market lists our own players too; one
  * of ours has no market terms (→WEB-109), so no fee, loan or cash after a signing shows for him.
@@ -111,6 +130,31 @@ const BID_STATUS: Record<TransferBid['status'], string> = {
 };
 const delta = (value: number) => (value > 0 ? `+${value}` : value < 0 ? String(value) : '±0');
 // Colour only marks direction: a rise in red, a fall in blue.
+/** A chance as a whole percentage for the bid view. */
+const percentOf = (chance: number) => Math.round(chance * 100);
+type AnswerLine = MarketDetail['bid']['lines'][number];
+/**
+ * An answer's factor lines as the bid view reads them (→CLUB-52/53): a selling club's in points of
+ * the asking fee, the player's as for or against his agreeing; a note when none moves it.
+ */
+function factorText(lines: readonly AnswerLine[], kind: 'sale' | 'terms') {
+  if (!lines.length) return displayMessage('market.answer.noFactors');
+  return lines
+    .map((line) => {
+      const factor = displayMessage(line.message, line.params);
+      if (kind === 'terms')
+        return displayMessage(
+          line.delta > 0 ? 'market.answer.termsFor' : 'market.answer.termsAgainst',
+          { factor },
+        );
+      const points = Math.round(line.delta * 100) || 0;
+      return displayMessage('market.answer.saleFactor', {
+        factor,
+        delta: points > 0 ? `+${points}` : String(points),
+      });
+    })
+    .join(' · ');
+}
 const tone = (value: number) => (value > 0 ? 'rise' : value < 0 ? 'fall' : undefined);
 
 /** The scout's verdict (→CLUB-47): grade, the slot it reads and the facts the gap does not say. */
@@ -210,6 +254,7 @@ function CandidateCard({
   pending,
   money,
   bid = false,
+  offered,
 }: {
   w: World;
   candidate: Candidate;
@@ -223,9 +268,13 @@ function CandidateCard({
   pending?: TransferBid;
   money: MarketMoney | null;
   bid?: boolean;
+  /** The wage our picked step offers, when it differs from his demand (→CLUB-53). */
+  offered?: string;
 }) {
   useTextLocale();
-  const { offer, buy, loan, verdict } = candidate,
+  const { offer, verdict } = candidate,
+    buy = atWage(candidate.buy, offered),
+    loan = atWage(candidate.loan, offered),
     player = offer.player,
     club = clubOf(w);
   const unavailable = sourceMessage('copy.RecruitmentDesk.414f13ede8');
@@ -389,7 +438,7 @@ function CandidateCard({
               p0: free
                 ? sourceMessage('copy.RecruitmentDesk.6a7f3133c2')
                 : sourceMessage('copy.RecruitmentDesk.73bc6c6e24', { p0: short(offer.fee) }),
-              p1: short(player.wage),
+              p1: short(buy.wage),
             })}
             open
           >
@@ -404,7 +453,7 @@ function CandidateCard({
               </div>
               <div>
                 <dt>{richMessage('team.column.wage')}</dt>
-                <dd>{localizeValue(cash(player.wage))}</dd>
+                <dd>{localizeValue(cash(buy.wage))}</dd>
               </div>
               <div>
                 <dt>{richMessage('copy.RecruitmentDesk.c549ab659c')}</dt>
@@ -646,6 +695,17 @@ export function RecruitmentDesk({
     undefined,
   );
   const [step, setStep] = useTaskState(w.id, 'market-step', 1);
+  // The wage offer's step of his demand (→CLUB-53): 100%, the first, unless the owner picks more.
+  const [wageStep, setWageStep] = useTaskState(w.id, 'market-wage-step', 0);
+  // Another player's detail starts again at 100%, so a step picked for one is never offered to
+  // the next by accident; returning to the page keeps the step picked for the same player.
+  const viewedPlayer = viewing?.playerId,
+    lastViewed = useRef(viewedPlayer);
+  useEffect(() => {
+    if (lastViewed.current === viewedPlayer) return;
+    lastViewed.current = viewedPlayer;
+    if (viewedPlayer) setWageStep(0);
+  }, [viewedPlayer, setWageStep]);
   const [expanded, setExpanded] = useTaskState(w.id, 'market-expanded', false);
   const registered = squadRegistration(w);
   const blocked = useGameState(gameActionsBlocked) || !!w.critical;
@@ -692,6 +752,11 @@ export function RecruitmentDesk({
     bidDetail.value.revision === w.revision &&
     quoted?.asking === bidding?.asking;
   const outlook = bidCurrent ? quoted : undefined;
+  const wageSteps = outlook?.terms?.steps ?? [],
+    pickedWage = wageSteps[wageStep];
+  // A free agent's signing and a loan carry the wage step picked in the detail too (→CLUB-53).
+  const detailSteps = (detail.current && detail.value?.bid.terms?.steps) || [],
+    detailWage = detailSteps[wageStep];
   const activeTerms = useRef({ fee, current: bidCurrent, detail: bidDetail.value });
   activeTerms.current = { fee, current: bidCurrent, detail: bidDetail.value };
   useEffect(() => {
@@ -731,7 +796,7 @@ export function RecruitmentDesk({
   const currentWorld = () => client.state.view?.world.id === w.id;
   const currentActionsBlocked = () =>
     blocked || gameActionsBlocked(client.state) || !!client.state.view?.world.critical;
-  const recruit = async (candidate: Candidate, loan: boolean) => {
+  const recruit = async (candidate: Candidate, loan: boolean, wage?: WageStep) => {
     const preview = loan ? candidate.loan : candidate.buy;
     if (
       currentActionsBlocked() ||
@@ -746,16 +811,36 @@ export function RecruitmentDesk({
       return;
     const reply = await client.command(
       candidate.offer.freeAgent
-        ? { type: 'recruit', target: candidate.offer.target, loan: false }
+        ? {
+            type: 'recruit',
+            target: candidate.offer.target,
+            loan: false,
+            ...(wage ? { wage } : {}),
+          }
         : {
             type: 'bid',
             target: candidate.offer.target,
             fee: loan ? candidate.offer.loanFee : candidate.offer.fee,
             loan,
+            ...(wage ? { wage } : {}),
           },
       { background: true },
     );
     if (!currentWorld()) return;
+    // A free agent answers our terms at once (→CLUB-53): ok and still in the pool means he refused.
+    const refused =
+      reply?.ok &&
+      candidate.offer.freeAgent &&
+      !client.state.view?.world.players.some(
+        (p) => p.id === candidate.offer.player.id && p.status === 'active',
+      );
+    if (refused) {
+      setMessage({
+        world: w.id,
+        text: sourceMessage('market.recruit.refused', { name: candidate.offer.player.name }),
+      });
+      return;
+    }
     if (reply?.ok && candidate.offer.freeAgent) {
       // He has left the pool for our squad: open cards read him with us, signed (→CLUB-49).
       const signed = candidate.offer.target;
@@ -792,11 +877,43 @@ export function RecruitmentDesk({
     ) : (
       sourceMessage('copy.RecruitmentDesk.414f13ede8')
     );
+  /** The wage steps of his demand we can offer, each with its wage (→CLUB-53). */
+  const wageChoices = (steps: typeof wageSteps) =>
+    localizeValue(
+      steps.length > 0 && (
+        <div
+          className={s.bidSteps}
+          role="radiogroup"
+          aria-label={displayMessage('market.bid.wageSteps')}
+        >
+          {localizeValue(
+            steps.map((terms, i) => (
+              <button
+                key={String(terms.step)}
+                role="radio"
+                data-ui={wageStep === i ? 'secondary' : 'tertiary'}
+                aria-checked={wageStep === i}
+                className={wageStep === i ? s.bidPicked : undefined}
+                onClick={() => setWageStep(i)}
+              >
+                <b>
+                  {displayMessage('market.bid.wageStep', {
+                    percent: Math.round(terms.step * 100),
+                  })}
+                </b>
+                <small>{plain(terms.wage)}</small>
+              </button>
+            )),
+          )}
+        </div>
+      ),
+    );
   const render = (
     candidate: Candidate,
     current: boolean,
     money: MarketMoney | null,
     bid = false,
+    wage?: { step: WageStep; wage: string },
   ) => (
     <CandidateCard
       key={candidate.offer.player.id}
@@ -804,6 +921,7 @@ export function RecruitmentDesk({
       candidate={candidate}
       money={money}
       bid={bid}
+      offered={wage?.wage}
       blocked={
         blocked ||
         !current ||
@@ -815,13 +933,15 @@ export function RecruitmentDesk({
       onCompare={() => toggle(candidate.offer.target)}
       onCompareOwn={() => setOwnCompare({ target: candidate.offer.target })}
       onRecruit={(loan) => {
-        if (current && sameMarketMoney(money, currentMoney)) void recruit(candidate, loan);
+        if (current && sameMarketMoney(money, currentMoney))
+          void recruit(candidate, loan, wage?.step);
       }}
       onBid={() => {
         setComparing(false);
         setViewing(undefined);
         setMessage(undefined);
         setStep(1);
+        setWageStep(0);
         setBidding({ target: candidate.offer.target, asking: candidate.offer.fee });
       }}
       pending={pendingFor(candidate.offer.player.id)}
@@ -1762,7 +1882,12 @@ export function RecruitmentDesk({
                     )
                       return;
                     const reply = await client.command(
-                      { type: 'bid', target: bidding.target, fee },
+                      {
+                        type: 'bid',
+                        target: bidding.target,
+                        fee,
+                        ...(pickedWage ? { wage: pickedWage.step } : {}),
+                      },
                       { background: true },
                     );
                     if (!currentWorld() || activeBid.current !== bidding) return;
@@ -1838,15 +1963,29 @@ export function RecruitmentDesk({
                 )),
               )}
             </div>
+            {wageChoices(wageSteps)}
             <dl className={s.costs}>
               <div>
-                <dt>{richMessage('copy.RecruitmentDesk.9873423ded')}</dt>
+                <dt>{richMessage('market.bid.clubLabel')}</dt>
                 <dd>
                   {localizeValue(
                     outlook
-                      ? sourceMessage('copy.RecruitmentDesk.7d605cafab', {
-                          p0: outlook.label,
-                          p1: Math.round(outlook.chance * 100),
+                      ? displayMessage('market.bid.clubChance', {
+                          accept: percentOf(outlook.chance),
+                          counter: percentOf(outlook.counter),
+                        })
+                      : sourceMessage('copy.RecruitmentDesk.414f13ede8'),
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>{richMessage('market.bid.playerLabel')}</dt>
+                <dd>
+                  {localizeValue(
+                    pickedWage
+                      ? richMessage('market.bid.playerChance', {
+                          chance: percentOf(pickedWage.chance),
+                          wage: plain(pickedWage.wage),
                         })
                       : sourceMessage('copy.RecruitmentDesk.414f13ede8'),
                   )}
@@ -1859,6 +1998,20 @@ export function RecruitmentDesk({
                 </dd>
               </div>
             </dl>
+            {localizeValue(
+              outlook && (
+                <p className={s.note} data-testid="bid-club-factors">
+                  {factorText(outlook.lines, 'sale')}
+                </p>
+              ),
+            )}
+            {localizeValue(
+              pickedWage && (
+                <p className={s.note} data-testid="bid-player-factors">
+                  {factorText(pickedWage.lines, 'terms')}
+                </p>
+              ),
+            )}
             {localizeValue(
               outlook && BigInt(fee) > BigInt(w.cash) && (
                 <p data-surface="inset" className={s.warning}>
@@ -1884,11 +2037,30 @@ export function RecruitmentDesk({
             )}
             {localizeValue(
               detail.value ? (
-                render(detail.value, detail.current, detail.money)
+                render(detail.value, detail.current, detail.money, false, detailWage)
               ) : (
                 <p role="status">
                   {localizeValue(detail.error ?? sourceMessage('copy.RecruitmentDesk.965c4d30c9'))}
                 </p>
+              ),
+            )}
+            {localizeValue(
+              detail.value && !detail.value.offer.own && detailWage && (
+                <div data-testid="detail-wage">
+                  {wageChoices(detailSteps)}
+                  <dl className={s.costs}>
+                    <div>
+                      <dt>{richMessage('market.bid.playerLabel')}</dt>
+                      <dd>
+                        {richMessage('market.bid.playerChance', {
+                          chance: percentOf(detailWage.chance),
+                          wage: plain(detailWage.wage),
+                        })}
+                      </dd>
+                    </div>
+                  </dl>
+                  <p className={s.note}>{factorText(detailWage.lines, 'terms')}</p>
+                </div>
               ),
             )}
             {localizeValue(

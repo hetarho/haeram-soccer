@@ -503,21 +503,20 @@ export function effectLedger(w: World): EffectLedger {
       ...traitFactor(w, 'negotiator', askedFeeFactor(w)),
     ],
   });
-  // As `acceptanceChance` adds them to a bid's chance, in percentage points.
-  const reputation = ((club.reputation - 40) / 400) * 100;
+  // The points of the asking fee a selling club's reservation gives up for our bids, as the
+  // 단장 and the manager's school move it (→CLUB-52, →STAFF-20, →STAFF-14).
   add({
     id: 'bidAcceptance',
     group: 'market',
     unit: 'percent',
     op: 'plus',
-    value: (staff.bidAcceptance + style.bidAcceptance) * 100 + reputation,
+    value: (staff.bidAcceptance + style.bidAcceptance) * 100,
     factors: [
       {
         source: { kind: 'staff', role: 'director' },
         value: department('director').bidAcceptance * 100,
       },
       { source: manager('style'), value: style.bidAcceptance * 100 },
-      { source: fact('reputation'), value: reputation },
     ],
   });
   add({

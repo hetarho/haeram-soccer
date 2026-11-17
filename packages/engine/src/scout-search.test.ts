@@ -1,4 +1,5 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import * as personalTerms from './personal-terms';
 import type {
   Line,
   PolicyLevel,
@@ -74,6 +75,16 @@ function expectRanked(w: World, potentialFirst: (offer: ScoutOffer) => boolean) 
   }
 }
 
+/** The player agrees to our terms (→CLUB-53): these cases test the move, not his answer. */
+function agreeing() {
+  const spy = vi
+    .spyOn(personalTerms, 'termsAnswer')
+    .mockImplementation((context, _draw, factors) => ({
+      ...personalTerms.termsChance(context, factors),
+      accept: true,
+    }));
+  onTestFinished(() => spy.mockRestore());
+}
 describe('the chief scout reach (CLUB-51)', () => {
   it('reads home reach and per-line count from his ability: vacant/<60, 60–79, 80+', () => {
     for (const [ability, home, count] of [
@@ -373,6 +384,7 @@ describe('found players (CLUB-50)', () => {
   });
 
   it('signs a free agent out of the pool at once and never loans or bids for him', () => {
+    agreeing();
     const w = world();
     const index = transferOffers(w).findIndex((offer) => offer.freeAgent);
     const offer = transferOffers(w)[index]!;

@@ -195,19 +195,20 @@ describe('coaching staff', () => {
     expect(staffImpact(coach(world(), 'scout', 85, 'spotter'), 'scout')).toBe(
       '탐색 국내 전체 리그 · 라인마다 4명 · 23세 이하 잠재력 우선',
     );
-    // The 단장 carries the negotiation: (ability − 50)/250, a negotiator +0.1 and fees ×0.9.
+    // The 단장 carries the negotiation (→STAFF-20): (ability − 50)/250 of the asking fee off a
+    // seller's reservation, a negotiator 0.05 more and fees ×0.9.
     expect(at('director', 50)).toMatchObject({ feeMultiplier: 1, bidAcceptance: 0 });
     expect(at('director', 70).bidAcceptance).toBeCloseTo(0.08, 10);
     expect(at('director', 50, 'negotiator')).toMatchObject({
       feeMultiplier: 0.9,
-      bidAcceptance: 0.1,
+      bidAcceptance: 0.05,
     });
-    expect(at('director', 70, 'negotiator').bidAcceptance).toBeCloseTo(0.18, 10);
+    expect(at('director', 70, 'negotiator').bidAcceptance).toBeCloseTo(0.13, 10);
     expect(at('scout', 90, 'spotter')).toMatchObject({ feeMultiplier: 1, bidAcceptance: 0 });
     expect(staffImpact(coach(world(), 'director', 70, 'negotiator'), 'director')).toBe(
-      '협상 성공률 +18%p · 이적료 ×0.90',
+      '상대 구단 양보 +13%p · 이적료 ×0.90',
     );
-    expect(staffImpact(world(), 'director')).toBe('협상 성공률 0%p');
+    expect(staffImpact(world(), 'director')).toBe('상대 구단 양보 0%p');
     expect(staffImpact(coach(world(), 'attack', 90, 'specialist'), 'attack')).toContain('×1.38');
   });
 
@@ -245,7 +246,7 @@ describe('coaching staff', () => {
     expect(() => releaseStaff(w, 'scout')).toThrow('비어 있는');
     expect(staffImpact(w, 'scout')).toBe('공석 · 탐색 우리 리그와 위아래 리그 · 라인마다 2명');
     expect(scoutReach(w)).toMatchObject({ home: 'adjacent', perLine: 2 });
-    expect(staffImpact(w, 'director')).toBe('공석 · 협상 성공률 -5%p');
+    expect(staffImpact(w, 'director')).toBe('공석 · 상대 구단 양보 -5%p');
     const fwd = (x: World) => activePlayers(x).find((player) => player.position === 'ST')!;
     const vacant = trainingWorld();
     vacant.staff = [];

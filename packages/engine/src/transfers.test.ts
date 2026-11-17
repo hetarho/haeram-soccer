@@ -37,6 +37,37 @@ const clubIndexes = (w: World) =>
   transferOffers(w).flatMap((offer, i) => (offer.freeAgent ? [] : [i]));
 const clubIndex = (w: World) => clubIndexes(w)[0]!;
 const freeIndex = (w: World) => transferOffers(w).findIndex((offer) => offer.freeAgent);
+const freeIndexes = (w: World) =>
+  transferOffers(w).flatMap((offer, i) => (offer.freeAgent ? [i] : []));
+/**
+ * Our club as a top-flight one: the pool's free agents are top-flight players, who would not drop
+ * three divisions for a lowest-division club on any wage (→CLUB-53).
+ */
+const topFlight = (w: World) => {
+  clubOf(w).tier = 0;
+  return w;
+};
+const signed = (w: World, id: string) =>
+  w.players.some((p) => p.id === id && p.status === 'active');
+/**
+ * The first of `indexes` whose player answers `act` as wanted, tried on a copy of the world: each
+ * player's terms are his own seeded draw (→CLUB-53), so a test picks one who agrees or refuses.
+ */
+function whoAnswers(
+  w: World,
+  indexes: number[],
+  act: (w: World, index: number) => void,
+  agrees: boolean,
+) {
+  const id = (i: number) => transferOffers(w)[i]!.player.id;
+  const found = indexes.find((i) => {
+    const trial = structuredClone(w);
+    act(trial, i);
+    return signed(trial, id(i)) === agrees;
+  });
+  if (found === undefined) throw new Error(`no candidate who ${agrees ? 'agrees' : 'refuses'}`);
+  return found;
+}
 
 /** The default world after 45 unobserved rounds, one round before the season's last. */
 const round45 = () =>
@@ -145,7 +176,7 @@ describe('transfer windows', () => {
   });
 
   it('refuses fee-bearing purchases, loans and sales while closed but signs free agents', () => {
-    const w = on(world(), 10, 1);
+    const w = topFlight(on(world(), 10, 1));
     const offers = transferOffers(w),
       free = freeIndex(w),
       [club, other] = clubIndexes(w);
@@ -161,8 +192,15 @@ describe('transfer windows', () => {
       CLOSED,
     );
     expect(canonical(w)).toBe(before);
-    operate(w, { type: 'recruit', candidate: free });
-    expect(w.players.some((p) => p.id === offers[free]!.player.id)).toBe(true);
+    // He answers our terms at once (→CLUB-53): one who agrees signs outside the window.
+    const keen = whoAnswers(
+      w,
+      freeIndexes(w),
+      (trial, i) => operate(trial, { type: 'recruit', candidate: i, wage: 2 }),
+      true,
+    );
+    operate(w, { type: 'recruit', candidate: keen, wage: 2 });
+    expect(signed(w, offers[keen]!.player.id)).toBe(true);
     on(w, 1, 15);
     sellPlayer(w, seller.id);
     // Another club's player is approached with a bid at his asking fee, never bought outright.
@@ -262,7 +300,11 @@ describe('outgoing bids', () => {
   it('completes generous bids like a recruitment, paying only at completion', () => {
     const { w, offers, cash } = bidEvery(biddingMarket(), 500);
     const completed = outBids(w).filter((b) => b.status === 'completed');
-    expect(completed.length).toBeGreaterThanOrEqual(5);
+    // A bid above the asking fee is always accepted (→CLUB-52); only a player's refusal of our
+    // terms ends one, with nothing paid (→CLUB-53).
+    expect(completed.length).toBeGreaterThanOrEqual(1);
+    for (const bid of outBids(w).filter((b) => b.status !== 'completed'))
+      expect(bid).toMatchObject({ status: 'rejected', refusedBy: 'player' });
     // No match is played in the first four days, so the fees are the only movement.
     const paid = completed.reduce((sum, b) => sum + BigInt(b.fee), 0n);
     expect(cash - BigInt(w.cash)).toBe(paid);
@@ -283,6 +325,7 @@ describe('outgoing bids', () => {
       expect(w.inbox?.find((item) => item.ref === bid.id)?.title).toBe(
         `${offer.player.name} 영입 완료`,
       );
+      expect(w.inbox?.find((item) => item.ref === bid.id)?.detail).toContain('구단이 버틴 선');
     }
   });
 
@@ -309,11 +352,19 @@ describe('outgoing bids', () => {
 
   it('completes an accepted counter at the counter fee and lets the owner refuse another', () => {
     const { w, offers } = bidAll(80);
-    const [accepted, refused] = outBids(w).filter((b) => b.status === 'countered');
+    const countered = outBids(w).filter((b) => b.status === 'countered');
+    // The counter whose player agrees to our terms, and another to refuse.
+    const accepted = countered.find((bid) => {
+      const trial = structuredClone(w);
+      respondBid(trial, bid.id, true);
+      return signed(trial, bid.playerId);
+    })!;
+    const refused = countered.find((bid) => bid !== accepted);
     const asking = BigInt(offers.find((o) => o.player.id === accepted.playerId)!.fee);
     const counter = BigInt(accepted.counterFee!);
-    expect(counter * 100n).toBeGreaterThanOrEqual(asking * 110n - 100n);
-    expect(counter * 100n).toBeLessThanOrEqual(asking * 125n + 100n);
+    // The seller counters at its reservation: above the bid, never above its asking fee (→CLUB-52).
+    expect(counter).toBeGreaterThan(BigInt(accepted.fee));
+    expect(counter).toBeLessThanOrEqual(asking);
     const board = bidBoard(w).find((entry) => entry.bid.id === accepted.id)!;
     expect(board).toMatchObject({ actionable: true, asking: asking.toString() });
     expect(unreadAttention(w).some((item) => item.ref === accepted.id)).toBe(true);
@@ -437,14 +488,28 @@ describe('outgoing bids', () => {
       before = canonical(w),
       asking = transferOffers(w)[club]!.fee;
     const low = bidOutlook(w, club, share(asking, 50)),
+      near = bidOutlook(w, club, share(asking, 85)),
       even = bidOutlook(w, club, asking),
       high = bidOutlook(w, club, share(asking, 200));
     expect(canonical(w)).toBe(before);
-    expect(low).toMatchObject({ label: '낮음', asking, counterPossible: false, chance: 0.05 });
-    expect(even.counterPossible).toBe(true);
-    expect(even.chance).toBeGreaterThan(low.chance);
-    expect(high).toMatchObject({ label: '높음', chance: 0.95 });
-    expect(bidOutlook(w, freeIndex(w), '100').chance).toBe(0);
+    // At or above the asking fee the seller always accepts (→CLUB-52); below it the chances fall.
+    expect(even).toMatchObject({ asking, chance: 1, counter: 0 });
+    expect(high).toMatchObject({ chance: 1, counter: 0 });
+    expect(near.chance).toBeLessThanOrEqual(even.chance);
+    expect(low.chance).toBeLessThanOrEqual(near.chance);
+    expect(low.chance + low.counter).toBeLessThanOrEqual(near.chance + near.counter);
+    for (const read of [low, near, even]) expect(read.chance + read.counter).toBeLessThanOrEqual(1);
+    expect(near.lines.some((line) => line.factor === 'place')).toBe(true);
+    // The player's chance at each wage step, higher the more we offer (→CLUB-53).
+    const steps = even.terms!.steps;
+    expect(steps.map((step) => step.step)).toEqual([1, 1.25, 1.5, 2]);
+    expect(steps[0]!.wage).toBe(even.terms!.demand);
+    for (let i = 1; i < steps.length; i++)
+      expect(steps[i]!.chance).toBeGreaterThan(steps[i - 1]!.chance);
+    // A free agent has no seller to answer, only his terms, with the free agent's lift.
+    const free = bidOutlook(w, freeIndex(w), '100');
+    expect(free.chance).toBe(0);
+    expect(free.terms!.steps[0]!.lines.some((line) => line.factor === 'freeAgent')).toBe(true);
     expect(bidOutlook(w, club, 'abc').chance).toBe(0);
     expect(bidOutlook(w, club, transferOffers(w)[club]!.loanFee, true).asking).toBe(
       transferOffers(w)[club]!.loanFee,
@@ -501,6 +566,118 @@ describe('outgoing bids', () => {
       expect(bid.loan).toBe(true);
       expect(w.players.find((p) => p.id === bid.playerId)?.loanUntil).toBe(w.year + 1);
     }
+  });
+});
+
+describe('personal terms (→CLUB-53)', () => {
+  /** A bid above the asking fee, so the seller surely agrees, at a wage step, answered on day 4. */
+  const generous = (w: World, i: number, wage?: 1 | 1.25 | 1.5 | 2) => {
+    operate(w, {
+      type: 'bid',
+      candidate: i,
+      fee: share(transferOffers(w)[i]!.fee, 500),
+      ...(wage ? { wage } : {}),
+    });
+    advanceDays(w, 4);
+  };
+
+  it('signs a player who agrees on the wage step offered, his demand times the step', () => {
+    const w = world(),
+      i = whoAnswers(w, clubIndexes(w), (trial, j) => generous(trial, j, 1.5), true),
+      offer = transferOffers(w)[i]!,
+      cash = BigInt(w.cash);
+    generous(w, i, 1.5);
+    const [bid] = outBids(w);
+    expect(bid).toMatchObject({ status: 'completed', wage: 1.5 });
+    expect(BigInt(w.cash)).toBe(cash - BigInt(bid.fee));
+    const p = w.players.find((x) => x.id === offer.player.id)!;
+    expect(BigInt(p.wage)).toBe((BigInt(offer.player.wage) * 15000n) / 10000n);
+    expect(validateWorld(w).id).toBe(w.id);
+  });
+
+  it('ends the bid when he refuses: no fee paid, no player, a report naming his factors', () => {
+    const w = world(),
+      i = whoAnswers(w, clubIndexes(w), (trial, j) => generous(trial, j), false),
+      offer = transferOffers(w)[i]!,
+      cash = w.cash;
+    generous(w, i);
+    const [bid] = outBids(w);
+    expect(bid).toMatchObject({ status: 'rejected', refusedBy: 'player' });
+    expect(bid.wage).toBeUndefined();
+    expect(w.cash).toBe(cash);
+    expect(signed(w, offer.player.id)).toBe(false);
+    const report = w.inbox!.find((item) => item.ref === bid.id)!;
+    expect(report).toMatchObject({ kind: 'bid-response', attention: true });
+    expect(report.title).toContain('개인 조건 거절');
+    expect(report.detail).toContain('이적료는 내지 않았어요');
+    // His chance and factors, and the club's reservation with its own factors (→CLUB-52/53).
+    expect(report.detail).toContain('수락 가능성');
+    expect(report.detail).toContain('구단이 버틴 선');
+    expect(validateWorld(w).id).toBe(w.id);
+  });
+
+  it('answers the same terms the same way and a bigger step can win him', () => {
+    const w = world(),
+      i = whoAnswers(w, clubIndexes(w), (trial, j) => generous(trial, j), false);
+    const again = world();
+    generous(again, i);
+    generous(w, i);
+    expect(canonical(outBids(again))).toBe(canonical(outBids(w)));
+    // His chance rises with the step; the draw stays his own.
+    const steps = bidOutlook(world(), i, '1').terms!.steps;
+    expect(steps[3]!.chance).toBeGreaterThan(steps[0]!.chance);
+  });
+
+  it('refuses a wage step that is not one of the four', () => {
+    const w = world(),
+      i = clubIndex(w);
+    expect(() =>
+      operate(w, {
+        type: 'bid',
+        candidate: i,
+        fee: transferOffers(w)[i]!.fee,
+        wage: 1.3 as unknown as 1.25,
+      }),
+    ).toThrow('100%');
+    expect(outBids(w)).toEqual([]);
+  });
+
+  it('asks a free agent at once: he signs on the step or stays free with a report', () => {
+    const w = topFlight(world()),
+      frees = freeIndexes(w),
+      recruit = (trial: World, i: number, wage: 1 | 2) =>
+        operate(trial, { type: 'recruit', candidate: i, wage });
+    const keen = whoAnswers(w, frees, (trial, i) => recruit(trial, i, 2), true);
+    const offer = transferOffers(w)[keen]!;
+    const ok = structuredClone(w),
+      cash = ok.cash;
+    recruit(ok, keen, 2);
+    expect(ok.cash).toBe(cash);
+    expect(ok.players.find((p) => p.id === offer.player.id)!.wage).toBe(
+      (BigInt(offer.player.wage) * 2n).toString(),
+    );
+    expect(ok.freeAgents!.some((p) => p.id === offer.player.id)).toBe(false);
+    // At a lowest-division club one refuses and stays in the pool, cash and squad as they were;
+    // asked again that day at the same step he answers the same.
+    const low = world(),
+      cold = whoAnswers(low, freeIndexes(low), (trial, i) => recruit(trial, i, 1), false),
+      id = transferOffers(low)[cold]!.player.id,
+      before = { cash: low.cash, players: low.players.length };
+    recruit(low, cold, 1);
+    expect(signed(low, id)).toBe(false);
+    expect({ cash: low.cash, players: low.players.length }).toEqual(before);
+    expect(low.freeAgents!.some((p) => p.id === id)).toBe(true);
+    expect(low.inbox!.at(-1)!.title).toContain('자유계약 조건 거절');
+    expect(low.inbox!.at(-1)!.detail).toMatch(/수락 가능성 \d+%: .*자유계약 선수/);
+    recruit(low, cold, 1);
+    expect(signed(low, id)).toBe(false);
+    // A name as long as a save allows still leaves a valid report naming him (→SAVE-5).
+    low.freeAgents!.find((p) => p.id === id)!.name = 'N'.repeat(160);
+    recruit(low, cold, 1);
+    expect(signed(low, id)).toBe(false);
+    expect(low.inbox!.at(-1)!.title.length).toBeLessThanOrEqual(160);
+    expect(low.inbox!.at(-1)!.title).toContain('N'.repeat(100));
+    expect(validateWorld(low).id).toBe(low.id);
   });
 });
 
