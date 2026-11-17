@@ -158,6 +158,7 @@
 | T934 | work | gusta-session-self-improve-tm17-ff4b9f94 | 4ba930627cbb | 2026-11-17T11:46Z |
 
 ## log
+- 261117 gusta-update-ssot ARCH start
 - 261117 T934 integrated
 - 261117 T933 integrated
 - 261117 T937 integrated
@@ -177,4 +178,3 @@
 - 261116 T928 integrated
 - 261116 T921 integrated
 - 261116 T926 integrated
-- 261116 fix test: warmed replay seed keyed the same under tsx and vitest
