@@ -258,8 +258,10 @@ export function promiseDeadlineCareer(arrival: 'none' | 'loan' | 'free') {
       }
       expect(careerOrdinal(careerDate(w))).toBe(target);
       let loan: { id: string; player: string; name: string; fee: string } | undefined;
+      // The selling club's reservation is a factor registry (CLUB-18): a bid at or above it is
+      // accepted outright, so the search lowers the offer until a club counters it.
       if (arrival === 'loan')
-        for (const offer of worldMarketPage(w, {
+        search: for (const offer of worldMarketPage(w, {
           world: w.id,
           line: promise.target.line,
           sort: 'fee',
@@ -271,28 +273,29 @@ export function promiseDeadlineCareer(arrival: 'none' | 'loan' | 'free') {
             BigInt(one.loanFee) >= 2n &&
             lineOf(one.player.position) === promise.target.line &&
             one.player.id !== promise.target.pick,
-        )) {
-          const copy = structuredClone(w);
-          operate(copy, {
-            type: 'bid',
-            target: offer.target,
-            loan: true,
-            fee: ((BigInt(offer.loanFee) * 80n) / 100n).toString(),
-          });
-          advanceDays(copy, 4, undefined, false);
-          const bid = copy.bids?.find(
-            (bid) => bid.playerId === offer.player.id && bid.loan && bid.status === 'countered',
-          );
-          if (!bid) continue;
-          Object.assign(w, copy);
-          loan = {
-            id: bid.id,
-            player: bid.playerId,
-            name: offer.player.name,
-            fee: bid.counterFee!,
-          };
-          break;
-        }
+        ))
+          for (const percent of [80n, 60n, 40n]) {
+            const copy = structuredClone(w);
+            operate(copy, {
+              type: 'bid',
+              target: offer.target,
+              loan: true,
+              fee: ((BigInt(offer.loanFee) * percent) / 100n).toString(),
+            });
+            advanceDays(copy, 4, undefined, false);
+            const bid = copy.bids?.find(
+              (bid) => bid.playerId === offer.player.id && bid.loan && bid.status === 'countered',
+            );
+            if (!bid) continue;
+            Object.assign(w, copy);
+            loan = {
+              id: bid.id,
+              player: bid.playerId,
+              name: offer.player.name,
+              fee: bid.counterFee!,
+            };
+            break search;
+          }
       // Other real winter-window conflicts are explicitly postponed; the original promise stays.
       for (const record of w.mediations!.filter((m) => m.status === 'pending'))
         operate(w, { type: 'resolve-mediation', id: record.id, support: 'director' });
