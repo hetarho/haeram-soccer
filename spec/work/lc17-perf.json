@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T08:06:00.661Z",
-  "sourceCommit": "0a9e01ee09a3de031e7b314d5202db1d30dc2e3a",
+  "snapshotAt": "2026-11-17T08:18:03.928Z",
+  "sourceCommit": "7510676d1ca536833c5831ea5ce84001f560e70d",
   "group": {
     "id": "lc17-perf",
     "branch": "gusta-session-self-improve-lc17-37ba91cb",
@@ -25,21 +25,14 @@
   },
   "summary": {
     "total": 6,
-    "completed": 5,
-    "remaining": 1,
+    "completed": 6,
+    "remaining": 0,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T937",
-      "title": "Index market ratings by slot and skip buyers rejected for every listing",
-      "dep": [],
-      "status": "reviewing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "7b45668c-a688-49a3-9939-2fce147fe4c9",
@@ -118,23 +111,27 @@
       "contributors": [
         "lc17-wb"
       ],
-      "status": "reviewing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-17T06:31:45.566Z",
       "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31",
-      "verifiedCommit": "a4bdb0818c167bebf2264151ca165c08fbcec27e",
-      "submittedBase": "0a9e01ee09a3de031e7b314d5202db1d30dc2e3a",
-      "submissionId": "a01d6034-f303-4c45-a8e8-ff663ae8c865",
-      "submittedAt": "2026-11-17T08:05:36.006Z",
+      "verifiedCommit": "d8ab8b53e505fd2c4d1c995b0241446e2f715030",
+      "submittedBase": "7510676d1ca536833c5831ea5ce84001f560e70d",
+      "submissionId": "3364ce07-d5b4-4222-9160-b1edca1ebc40",
+      "submittedAt": "2026-11-17T08:14:35.233Z",
       "risk": null,
       "review": {
-        "id": "98520559-89a0-4e89-b298-aad7cc77dd65",
+        "id": "ddee32e5-ccc5-47f4-a11e-f0211c9af73a",
         "owner": "lc17-rv-codex",
-        "status": "reviewing",
-        "commit": "a4bdb0818c167bebf2264151ca165c08fbcec27e",
-        "baseCommit": "0a9e01ee09a3de031e7b314d5202db1d30dc2e3a",
-        "submissionId": "a01d6034-f303-4c45-a8e8-ff663ae8c865",
-        "createdAt": "2026-11-17T08:05:40.827Z"
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T937 approved at d8ab8b53e505fd2c4d1c995b0241446e2f715030 against review base 7510676d1ca536833c5831ea5ce84001f560e70d and planner contract e6e7c92ff. Production code and market tests are unchanged from both earlier reviews and match measured 49b7a5c2c. The revised contract resolves both prior P2 findings. The skip at npc-market.ts:490 covers only no books, registration ceiling including reserved returns, and bill strictly above limit; npcOffer rejects these before npcCanPay and NPC_WAGE_DECISIONS. An undefined ownOffer also prevents contender evaluation and settleMove / PLAYER_MOVE_FLOW. Listing tie draws occur before the buyer walks. Unmoved players retain every main/slot rating input; each move forgets the moved rating and invalidates both participating clubs facts. Delayed order construction uses the fixed listing pool and unchanged survivor scores, precomputed ties and ID comparison, so it preserves the original order on every unmoved listing. The walk explicitly skips moved listings at line 497 before seller facts, offer decisions and observers. Its preceding score-floor break is also equivalent: any later survivor has no higher score and cannot fill the need. Thus the earlier raw-array mismatch is permitted and cannot change decisions. Acceptance marks and result now accurately state this survivor-order guarantee and the authorized omitted settlement memos; no earlier issue remains in Part 1 or the unchanged market behavior. Independent focused market units passed: 1 file, 25 tests. Prior review 98520559s 30-settlement comparison and 123 matching observer events remain applicable to identical production code; that experiment was not rerun. Both saved reference world hashes match the task. Independently recomputed CPU and wall statistics match all three A/B artifacts, including combined CPU 0.8867 [0.8138, 0.9382], six processes / 12 pairs and equal output hashes; neither individual part claims a resolved gain. Exact-submission verification records passing typecheck, lint, format, i18n and 90 focused unit tests, alongside the documented prior task-tier pass. Long benchmarks, full suites and browser checks were not rerun. Integration, contract, build and final batch remain coordinator gates.",
+        "findings": [],
+        "commit": "d8ab8b53e505fd2c4d1c995b0241446e2f715030",
+        "baseCommit": "7510676d1ca536833c5831ea5ce84001f560e70d",
+        "submissionId": "3364ce07-d5b4-4222-9160-b1edca1ebc40",
+        "createdAt": "2026-11-17T08:14:39.794Z",
+        "finishedAt": "2026-11-17T08:17:32.602Z"
       },
       "reviewHistory": [
         {
@@ -157,18 +154,39 @@
           "finishedAt": "2026-11-17T08:00:42.853Z",
           "invalidatedAt": "2026-11-17T08:02:19.967Z",
           "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "98520559-89a0-4e89-b298-aad7cc77dd65",
+          "owner": "lc17-rv-codex",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T937 re-reviewed at a4bdb0818c167bebf2264151ca165c08fbcec27e against review base 0a9e01ee09a3de031e7b314d5202db1d30dc2e3a and planner contract 2261339f2. Production code and market tests are unchanged from review 81070492 and match measured 49b7a5c2c. The planner resolved the previous blanket prohibition on omitted cache writes, but one P2 remains under the new same-memo-value condition: delayed listing-order construction depends on the changing moved set and does not necessarily reproduce the original cached array. The Part 2 acceptance mark and result's identical-fresh-read claim are therefore inaccurate. Independent focused market units passed (1 file, 25 tests). An additional in-memory comparison of the candidate against the identical code with only the skip disabled passed 30 six-club synthetic settlements: complete worlds and all 123 NPC_WAGE_DECISIONS / PLAYER_MOVE_FLOW events matched. It recorded 84 raw-order differences, with equal order/score/tie sequences after filtering moved players from both sides. This supports decision equivalence under a survivor-projection contract, but does not establish the explicitly required memo-value identity. The skip otherwise precedes both observers; no walk draw is removed, and settlement tie draws occur before either walk. Unmoved rating inputs remain unchanged; moved ratings are forgotten, and both participating clubs' facts are invalidated on each move. No additional issue was found in Part 1, existing market behavior, or the unchanged benchmark evidence: both reference world hashes and the combined CPU ratio 0.8867 [0.8138, 0.9382] are preserved in the saved artifacts, with no individual-part gain claimed. The exact submitted commit has recorded passing typecheck, lint, format, i18n and 90 focused unit tests; prior task-tier evidence remains documented. Long benchmarks, full suites and browser checks were not rerun; integration, contract, build and final batch remain coordinator gates.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/npc-market.ts:470 (T937; spec/tasks/T937.market-rating-slots.md:9,20,27)",
+              "message": "The revised Part 2 contract permits skipping memo writes only when later fresh computation yields the same value, and the task marks this complete and claims identical fresh reads. However, orderFor builds from fixed byLine listings filtered by the live moved set, and its cached order is never invalidated. If rejected buyer A would initialize (GK, undefined), buyer B then signs a GK using a different slot order, and buyer C first requests (GK, undefined), the original cached array retains that moved player while the candidate's delayed array omits him. Reproduced in memory with the existing fixture(2024, 6), seed order-review-0: buyer ENG:0:0:1 has no books and no keeper; ENG:0:0:2 signs listed-keeper from ENG:0:0:3; later keeper-less ENG:0:0:0 reads the main-GK order. The original walk's array is [listed-keeper, ENG:0:0:3:founding:2024:0], whereas the candidate's first-built array is [ENG:0:0:3:founding:2024:0]. Their surviving-player projection and resulting decisions match, but the memo values do not. Return this narrower gap to the planner: explicitly authorize equivalence after excluding moved listings, document the stable surviving-order proof and correct the acceptance/result claims (with this interleaved-move case as evidence), or preserve the original walk and apply the combined-retention rule. The current identical-memo-value precondition cannot be marked satisfied solely from equal world hashes or equal final moves."
+            }
+          ],
+          "commit": "a4bdb0818c167bebf2264151ca165c08fbcec27e",
+          "baseCommit": "0a9e01ee09a3de031e7b314d5202db1d30dc2e3a",
+          "submissionId": "a01d6034-f303-4c45-a8e8-ff663ae8c865",
+          "createdAt": "2026-11-17T08:05:40.827Z",
+          "finishedAt": "2026-11-17T08:09:29.391Z",
+          "invalidatedAt": "2026-11-17T08:11:01.368Z",
+          "invalidationReason": "worker resumed or blocked"
         }
       ],
       "steps": [
         {
           "taskId": "T937",
-          "commit": "a4bdb0818c167bebf2264151ca165c08fbcec27e",
-          "at": "2026-11-17T08:05:35.955Z",
+          "commit": "d8ab8b53e505fd2c4d1c995b0241446e2f715030",
+          "at": "2026-11-17T08:14:35.164Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit packages/engine/src/npc-market.test.ts packages/engine/src/npc-careers.test.ts packages/engine/src/free-agents.test.ts packages/engine/src/persisted-squads.test.ts",
-              "startedAt": "2026-11-17T08:02:25.216Z",
-              "finishedAt": "2026-11-17T08:05:35.334Z"
+              "startedAt": "2026-11-17T08:11:17.705Z",
+              "finishedAt": "2026-11-17T08:14:34.567Z"
             }
           ]
         }
@@ -176,8 +194,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit packages/engine/src/npc-market.test.ts packages/engine/src/npc-careers.test.ts packages/engine/src/free-agents.test.ts packages/engine/src/persisted-squads.test.ts",
-          "startedAt": "2026-11-17T08:02:25.216Z",
-          "finishedAt": "2026-11-17T08:05:35.334Z"
+          "startedAt": "2026-11-17T08:11:17.705Z",
+          "finishedAt": "2026-11-17T08:14:34.567Z"
         }
       ]
     },
@@ -266,6 +284,8 @@
       "submittedBase": "c117ffb23d17d2a6ad7bfb0928fa2cf3efe2521e",
       "submissionId": "cb27d178-e15b-47c4-8e8a-7e9f0de39531",
       "submittedAt": "2026-11-17T07:57:54.138Z",
+      "integratedCommit": "c0202d1c544463ff9664cb8dbd84fe6ddf6d707a",
+      "integratedAt": "2026-11-17T08:10:10.847Z",
       "risk": null,
       "review": {
         "id": "dacd5983-fcab-49f6-b86e-c2c6080709a9",
@@ -299,6 +319,13 @@
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit packages/engine/src/aggregate packages/engine/src/tunables.test.ts apps/web/src/lab && pnpm exec vitest run --project integration packages/engine/src/aggregate",
           "startedAt": "2026-11-17T07:54:33.787Z",
           "finishedAt": "2026-11-17T07:57:53.932Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+          "startedAt": "2026-11-17T08:06:01.648Z",
+          "finishedAt": "2026-11-17T08:10:09.013Z"
         }
       ]
     },
@@ -2021,6 +2048,245 @@
       "group": "lc17-perf",
       "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
       "taskId": "T941",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 431,
+      "at": "2026-11-17T08:09:29.392Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T937 re-reviewed at a4bdb0818c167bebf2264151ca165c08fbcec27e against review base 0a9e01ee09a3de031e7b314d5202db1d30dc2e3a and planner contract 2261339f2. Production code and market tests are unchanged from review 81070492 and match measured 49b7a5c2c. The planner resolved the previous blanket prohibition on omitted cache writes, but one P2 remains under the new same-memo-value condition: delayed listing-order construction depends on the changing moved set and does not necessarily reproduce the original cached array. The Part 2 acceptance mark and result's identical-fresh-read claim are therefore inaccurate. Independent focused market units passed (1 file, 25 tests). An additional in-memory comparison of the candidate against the identical code with only the skip disabled passed 30 six-club synthetic settlements: complete worlds and all 123 NPC_WAGE_DECISIONS / PLAYER_MOVE_FLOW events matched. It recorded 84 raw-order differences, with equal order/score/tie sequences after filtering moved players from both sides. This supports decision equivalence under a survivor-projection contract, but does not establish the explicitly required memo-value identity. The skip otherwise precedes both observers; no walk draw is removed, and settlement tie draws occur before either walk. Unmoved rating inputs remain unchanged; moved ratings are forgotten, and both participating clubs' facts are invalidated on each move. No additional issue was found in Part 1, existing market behavior, or the unchanged benchmark evidence: both reference world hashes and the combined CPU ratio 0.8867 [0.8138, 0.9382] are preserved in the saved artifacts, with no individual-part gain claimed. The exact submitted commit has recorded passing typecheck, lint, format, i18n and 90 focused unit tests; prior task-tier evidence remains documented. Long benchmarks, full suites and browser checks were not rerun; integration, contract, build and final batch remain coordinator gates.",
+        "review": {
+          "id": "98520559-89a0-4e89-b298-aad7cc77dd65",
+          "owner": "lc17-rv-codex",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T937 re-reviewed at a4bdb0818c167bebf2264151ca165c08fbcec27e against review base 0a9e01ee09a3de031e7b314d5202db1d30dc2e3a and planner contract 2261339f2. Production code and market tests are unchanged from review 81070492 and match measured 49b7a5c2c. The planner resolved the previous blanket prohibition on omitted cache writes, but one P2 remains under the new same-memo-value condition: delayed listing-order construction depends on the changing moved set and does not necessarily reproduce the original cached array. The Part 2 acceptance mark and result's identical-fresh-read claim are therefore inaccurate. Independent focused market units passed (1 file, 25 tests). An additional in-memory comparison of the candidate against the identical code with only the skip disabled passed 30 six-club synthetic settlements: complete worlds and all 123 NPC_WAGE_DECISIONS / PLAYER_MOVE_FLOW events matched. It recorded 84 raw-order differences, with equal order/score/tie sequences after filtering moved players from both sides. This supports decision equivalence under a survivor-projection contract, but does not establish the explicitly required memo-value identity. The skip otherwise precedes both observers; no walk draw is removed, and settlement tie draws occur before either walk. Unmoved rating inputs remain unchanged; moved ratings are forgotten, and both participating clubs' facts are invalidated on each move. No additional issue was found in Part 1, existing market behavior, or the unchanged benchmark evidence: both reference world hashes and the combined CPU ratio 0.8867 [0.8138, 0.9382] are preserved in the saved artifacts, with no individual-part gain claimed. The exact submitted commit has recorded passing typecheck, lint, format, i18n and 90 focused unit tests; prior task-tier evidence remains documented. Long benchmarks, full suites and browser checks were not rerun; integration, contract, build and final batch remain coordinator gates.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/npc-market.ts:470 (T937; spec/tasks/T937.market-rating-slots.md:9,20,27)",
+              "message": "The revised Part 2 contract permits skipping memo writes only when later fresh computation yields the same value, and the task marks this complete and claims identical fresh reads. However, orderFor builds from fixed byLine listings filtered by the live moved set, and its cached order is never invalidated. If rejected buyer A would initialize (GK, undefined), buyer B then signs a GK using a different slot order, and buyer C first requests (GK, undefined), the original cached array retains that moved player while the candidate's delayed array omits him. Reproduced in memory with the existing fixture(2024, 6), seed order-review-0: buyer ENG:0:0:1 has no books and no keeper; ENG:0:0:2 signs listed-keeper from ENG:0:0:3; later keeper-less ENG:0:0:0 reads the main-GK order. The original walk's array is [listed-keeper, ENG:0:0:3:founding:2024:0], whereas the candidate's first-built array is [ENG:0:0:3:founding:2024:0]. Their surviving-player projection and resulting decisions match, but the memo values do not. Return this narrower gap to the planner: explicitly authorize equivalence after excluding moved listings, document the stable surviving-order proof and correct the acceptance/result claims (with this interleaved-move case as evidence), or preserve the original walk and apply the combined-retention rule. The current identical-memo-value precondition cannot be marked satisfied solely from equal world hashes or equal final moves."
+            }
+          ],
+          "commit": "a4bdb0818c167bebf2264151ca165c08fbcec27e",
+          "baseCommit": "0a9e01ee09a3de031e7b314d5202db1d30dc2e3a",
+          "submissionId": "a01d6034-f303-4c45-a8e8-ff663ae8c865",
+          "createdAt": "2026-11-17T08:05:40.827Z",
+          "finishedAt": "2026-11-17T08:09:29.391Z"
+        }
+      }
+    },
+    {
+      "sequence": 432,
+      "at": "2026-11-17T08:10:09.658Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "taskId": "T941",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+            "startedAt": "2026-11-17T08:06:01.648Z",
+            "finishedAt": "2026-11-17T08:10:09.013Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 433,
+      "at": "2026-11-17T08:10:10.847Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "taskId": "T941",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "c0202d1c544463ff9664cb8dbd84fe6ddf6d707a",
+        "integratedAt": "2026-11-17T08:10:10.847Z"
+      }
+    },
+    {
+      "sequence": 434,
+      "at": "2026-11-17T08:11:01.368Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "81070492-5a11-4cc1-bff2-d5ddbad63719",
+            "owner": "lc17-rv-codex",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T937 reviewed at 9165ceb2f220f9cd8934d73ea55c13ca3f44575f against original market base 79a417ccd and the current re-planned task on b68b0bffd. One P2 contract gap remains: Part 2 bypasses cache writes even though its unchanged acceptance requires the rejection to precede any cache write in the current walk. No behavioral regression was observed. Independent affected units passed: 3 files / 61 tests. An in-memory baseline/candidate comparison matched full worlds and exact NPC_WAGE_DECISIONS / PLAYER_MOVE_FLOW event traces in 54 tiny cases (252 events), including no books, wage excess, registration ceilings with reserved returns, available room, and equality at the wage limit. Part 1 preserves Slot and Player object identity, separate main OVR, fallback slots, Float64 precision, growth, and forget behavior; 1,288 additional cache reads matched the original map for zero, fractional, finite, NaN and infinite values on unchanged players and after forget. Source and tests match measured 49b7a5c2c. Saved world hashes match both required references; recomputed A/B statistics match all three artifacts, including combined CPU 0.8867 [0.8138, 0.9382], 12 pairs across 6 processes and equal hashes. Neither individual part claims a resolved gain. Submitted exact-commit verification passed typecheck, lint, format, i18n and 94 explicitly affected unit tests; broader host-load timing failures were not treated as passes. Long benchmarks, full suites and browser checks were not rerun; final integration, contract, build and batch remain coordinator gates.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/npc-market.ts:490 (T937; spec/tasks/T937.market-rating-slots.md:9)",
+                "message": "T937 explicitly permits Part 2 only when the original rejection precedes any observer call, draw or cache write in the current walk, and otherwise requires leaving Part 2 unchanged. That precondition is not met for a rejected buyer with a need and cold settlement caches: orderFor first writes the line/slot order and listing ratings (lines 465-482), and the registration/wage rejection in npcOffer also follows clubFacts storing its memo (line 146, reached through canRegister / npcOffer). The new break bypasses those writes, while refusesEveryListing itself can populate the buyer facts before rejecting it (line 267). The task result acknowledges the omitted memos, but the b68b0bffd re-plan changed the combined performance gate without allowing this exception. World hashes and differential tests support harmlessness for the checked cases; they do not satisfy the explicit no-cache-write precondition. Hand this gap to the planner to explicitly authorize bypassing proven equivalent settlement memo writes and document why delayed order construction cannot affect later decisions, or retain the original Part 2 walk and apply the task's combined-retention rule. Do not mark this acceptance complete under the current wording."
+              }
+            ],
+            "commit": "9165ceb2f220f9cd8934d73ea55c13ca3f44575f",
+            "baseCommit": "c117ffb23d17d2a6ad7bfb0928fa2cf3efe2521e",
+            "submissionId": "1f8844be-bcb9-4226-be55-163272d499f0",
+            "createdAt": "2026-11-17T07:55:33.543Z",
+            "finishedAt": "2026-11-17T08:00:42.853Z",
+            "invalidatedAt": "2026-11-17T08:02:19.967Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "98520559-89a0-4e89-b298-aad7cc77dd65",
+            "owner": "lc17-rv-codex",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T937 re-reviewed at a4bdb0818c167bebf2264151ca165c08fbcec27e against review base 0a9e01ee09a3de031e7b314d5202db1d30dc2e3a and planner contract 2261339f2. Production code and market tests are unchanged from review 81070492 and match measured 49b7a5c2c. The planner resolved the previous blanket prohibition on omitted cache writes, but one P2 remains under the new same-memo-value condition: delayed listing-order construction depends on the changing moved set and does not necessarily reproduce the original cached array. The Part 2 acceptance mark and result's identical-fresh-read claim are therefore inaccurate. Independent focused market units passed (1 file, 25 tests). An additional in-memory comparison of the candidate against the identical code with only the skip disabled passed 30 six-club synthetic settlements: complete worlds and all 123 NPC_WAGE_DECISIONS / PLAYER_MOVE_FLOW events matched. It recorded 84 raw-order differences, with equal order/score/tie sequences after filtering moved players from both sides. This supports decision equivalence under a survivor-projection contract, but does not establish the explicitly required memo-value identity. The skip otherwise precedes both observers; no walk draw is removed, and settlement tie draws occur before either walk. Unmoved rating inputs remain unchanged; moved ratings are forgotten, and both participating clubs' facts are invalidated on each move. No additional issue was found in Part 1, existing market behavior, or the unchanged benchmark evidence: both reference world hashes and the combined CPU ratio 0.8867 [0.8138, 0.9382] are preserved in the saved artifacts, with no individual-part gain claimed. The exact submitted commit has recorded passing typecheck, lint, format, i18n and 90 focused unit tests; prior task-tier evidence remains documented. Long benchmarks, full suites and browser checks were not rerun; integration, contract, build and final batch remain coordinator gates.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/npc-market.ts:470 (T937; spec/tasks/T937.market-rating-slots.md:9,20,27)",
+                "message": "The revised Part 2 contract permits skipping memo writes only when later fresh computation yields the same value, and the task marks this complete and claims identical fresh reads. However, orderFor builds from fixed byLine listings filtered by the live moved set, and its cached order is never invalidated. If rejected buyer A would initialize (GK, undefined), buyer B then signs a GK using a different slot order, and buyer C first requests (GK, undefined), the original cached array retains that moved player while the candidate's delayed array omits him. Reproduced in memory with the existing fixture(2024, 6), seed order-review-0: buyer ENG:0:0:1 has no books and no keeper; ENG:0:0:2 signs listed-keeper from ENG:0:0:3; later keeper-less ENG:0:0:0 reads the main-GK order. The original walk's array is [listed-keeper, ENG:0:0:3:founding:2024:0], whereas the candidate's first-built array is [ENG:0:0:3:founding:2024:0]. Their surviving-player projection and resulting decisions match, but the memo values do not. Return this narrower gap to the planner: explicitly authorize equivalence after excluding moved listings, document the stable surviving-order proof and correct the acceptance/result claims (with this interleaved-move case as evidence), or preserve the original walk and apply the combined-retention rule. The current identical-memo-value precondition cannot be marked satisfied solely from equal world hashes or equal final moves."
+              }
+            ],
+            "commit": "a4bdb0818c167bebf2264151ca165c08fbcec27e",
+            "baseCommit": "0a9e01ee09a3de031e7b314d5202db1d30dc2e3a",
+            "submissionId": "a01d6034-f303-4c45-a8e8-ff663ae8c865",
+            "createdAt": "2026-11-17T08:05:40.827Z",
+            "finishedAt": "2026-11-17T08:09:29.391Z",
+            "invalidatedAt": "2026-11-17T08:11:01.368Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 435,
+      "at": "2026-11-17T08:11:16.981Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 436,
+      "at": "2026-11-17T08:14:35.233Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "7510676d1ca536833c5831ea5ce84001f560e70d",
+        "submissionId": "3364ce07-d5b4-4222-9160-b1edca1ebc40",
+        "submittedAt": "2026-11-17T08:14:35.233Z",
+        "steps": [
+          {
+            "taskId": "T937",
+            "commit": "d8ab8b53e505fd2c4d1c995b0241446e2f715030",
+            "at": "2026-11-17T08:14:35.164Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit packages/engine/src/npc-market.test.ts packages/engine/src/npc-careers.test.ts packages/engine/src/free-agents.test.ts packages/engine/src/persisted-squads.test.ts",
+                "startedAt": "2026-11-17T08:11:17.705Z",
+                "finishedAt": "2026-11-17T08:14:34.567Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit packages/engine/src/npc-market.test.ts packages/engine/src/npc-careers.test.ts packages/engine/src/free-agents.test.ts packages/engine/src/persisted-squads.test.ts",
+            "startedAt": "2026-11-17T08:11:17.705Z",
+            "finishedAt": "2026-11-17T08:14:34.567Z"
+          }
+        ],
+        "verifiedCommit": "d8ab8b53e505fd2c4d1c995b0241446e2f715030"
+      }
+    },
+    {
+      "sequence": 437,
+      "at": "2026-11-17T08:14:39.795Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "ddee32e5-ccc5-47f4-a11e-f0211c9af73a",
+          "owner": "lc17-rv-codex",
+          "status": "reviewing",
+          "commit": "d8ab8b53e505fd2c4d1c995b0241446e2f715030",
+          "baseCommit": "7510676d1ca536833c5831ea5ce84001f560e70d",
+          "submissionId": "3364ce07-d5b4-4222-9160-b1edca1ebc40",
+          "createdAt": "2026-11-17T08:14:39.794Z"
+        }
+      }
+    },
+    {
+      "sequence": 456,
+      "at": "2026-11-17T08:17:32.602Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "ddee32e5-ccc5-47f4-a11e-f0211c9af73a",
+          "owner": "lc17-rv-codex",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T937 approved at d8ab8b53e505fd2c4d1c995b0241446e2f715030 against review base 7510676d1ca536833c5831ea5ce84001f560e70d and planner contract e6e7c92ff. Production code and market tests are unchanged from both earlier reviews and match measured 49b7a5c2c. The revised contract resolves both prior P2 findings. The skip at npc-market.ts:490 covers only no books, registration ceiling including reserved returns, and bill strictly above limit; npcOffer rejects these before npcCanPay and NPC_WAGE_DECISIONS. An undefined ownOffer also prevents contender evaluation and settleMove / PLAYER_MOVE_FLOW. Listing tie draws occur before the buyer walks. Unmoved players retain every main/slot rating input; each move forgets the moved rating and invalidates both participating clubs facts. Delayed order construction uses the fixed listing pool and unchanged survivor scores, precomputed ties and ID comparison, so it preserves the original order on every unmoved listing. The walk explicitly skips moved listings at line 497 before seller facts, offer decisions and observers. Its preceding score-floor break is also equivalent: any later survivor has no higher score and cannot fill the need. Thus the earlier raw-array mismatch is permitted and cannot change decisions. Acceptance marks and result now accurately state this survivor-order guarantee and the authorized omitted settlement memos; no earlier issue remains in Part 1 or the unchanged market behavior. Independent focused market units passed: 1 file, 25 tests. Prior review 98520559s 30-settlement comparison and 123 matching observer events remain applicable to identical production code; that experiment was not rerun. Both saved reference world hashes match the task. Independently recomputed CPU and wall statistics match all three A/B artifacts, including combined CPU 0.8867 [0.8138, 0.9382], six processes / 12 pairs and equal output hashes; neither individual part claims a resolved gain. Exact-submission verification records passing typecheck, lint, format, i18n and 90 focused unit tests, alongside the documented prior task-tier pass. Long benchmarks, full suites and browser checks were not rerun. Integration, contract, build and final batch remain coordinator gates.",
+          "findings": [],
+          "commit": "d8ab8b53e505fd2c4d1c995b0241446e2f715030",
+          "baseCommit": "7510676d1ca536833c5831ea5ce84001f560e70d",
+          "submissionId": "3364ce07-d5b4-4222-9160-b1edca1ebc40",
+          "createdAt": "2026-11-17T08:14:39.794Z",
+          "finishedAt": "2026-11-17T08:17:32.602Z"
+        }
+      }
+    },
+    {
+      "sequence": 457,
+      "at": "2026-11-17T08:17:58.315Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
