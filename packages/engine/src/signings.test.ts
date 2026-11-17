@@ -53,7 +53,7 @@ import { playerRecord } from './player-records';
 import { marketWageAt } from './market-prices';
 import { clubOf, slotOvr } from './player-state';
 import type { SigningNeed } from './signings';
-import { buyOffer, holdRows, staffAuthority } from './testing';
+import { handTo, holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { careerWorld } from './career.testkit';
 import { holdTemperament } from './delegation.testkit';
@@ -62,7 +62,7 @@ import { joinFreeAgents } from './free-agents';
 import { retainPerson, openEmployment } from './person-careers';
 import { movePerson } from './npc-continuity';
 import { registration } from './registration';
-import { transferStance } from './transfers';
+import { bidOutlook, transferStance } from './transfers';
 
 /** Release the actual listed club player, keeping his identity and unchanged sporting quality. */
 function releaseListed(w: World, line?: Line) {
@@ -127,10 +127,25 @@ function equalQualityFree(w: World) {
   expect(free.player.potential).toBe(paid.player.potential);
   return free;
 }
-/** A paid fixture purchase completes the real asking-fee bid before testing arrival effects. */
+/**
+ * The owner signs a candidate at the highest wage step (→CLUB-53), so the player's own seeded answer
+ * is likeliest yes: a free agent answers at once; another club's player is bid for at his asking
+ * fee, which his club always accepts (→CLUB-52), and the bid is closed at once as `buyOffer` closes
+ * it. Returns whether he joined: he can still refuse our terms.
+ */
 function signCandidate(w: World, candidate: number) {
-  if (transferOffers(w)[candidate].freeAgent) operate(w, { type: 'recruit', candidate });
-  else buyOffer(w, candidate);
+  const offer = transferOffers(w)[candidate]!;
+  if (offer.freeAgent) operate(w, { type: 'recruit', candidate, wage: 2 });
+  else {
+    operate(w, { type: 'bid', candidate, fee: offer.fee, wage: 2 });
+    const bid = w.bids!.findLast((one) => one.playerId === offer.player.id)!;
+    if (bid.status === 'pending') {
+      bid.status = 'countered';
+      bid.counterFee = offer.fee;
+      operate(w, { type: 'respond-bid', id: bid.id, accept: true });
+    }
+  }
+  return activePlayers(w).some((p) => p.id === offer.player.id);
 }
 
 /**
@@ -288,40 +303,74 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   });
 
   it("answers its own counters, never the owner's", () => {
-    // The selling clubs counter some bids at the asking fee: find a staff bid they countered.
-    for (let seed = 0; seed < 40; seed++) {
-      const w = club(undefined, `counter-${seed}`);
-      passFree(w);
-      staffSignings(w);
-      const [bid] = staffBids(w);
-      if (!bid) continue;
-      advanceDays(w, 4);
-      const answer = (w.inbox || []).find(
-        (item) => item.ref === bid.id && /역제안/.test(item.title),
-      );
-      if (!answer) continue;
-      expect(['completed', 'rejected']).toContain(bid.status);
-      expect(answer.attention).toBe(false);
-      expect(answer.detail).toContain('단장');
-      return;
+    // Only a bid below the asking fee draws a counter (→CLUB-52): a negotiator's first bid, 80% of
+    // it (→CLUB-41), for a club candidate whose club surely counters it; the rest are passed by.
+    // The staff fill the 단장's post first, so he is the one who answers (→STAFF-15): a negotiator
+    // of low ability, so the clubs he bids at hold out (→STAFF-20).
+    const w = handTo(club(), 4);
+    const director = w.staff?.find((member) => member.role === 'director');
+    expect(director).toBeDefined();
+    director!.trait = 'negotiator';
+    director!.ability = 30;
+    passFree(w);
+    transferOffers(w).forEach((offer, index) => {
+      if (!offer.freeAgent && bidOutlook(w, index, ratio(offer.fee, 80n, 100n)).counter < 1)
+        tried(w, offer.player.id);
+    });
+    staffSignings(w);
+    const [bid] = staffBids(w);
+    expect(bid).toBeDefined();
+    expect(bid).toMatchObject({ status: 'pending', fee: ratio(bid.offer!.fee, 80n, 100n) });
+    const late = structuredClone(w);
+    // While he haggles he declines the counter himself, to bid 5 points more the next day.
+    advanceDays(w, 4);
+    expect(bid).toMatchObject({ status: 'rejected' });
+    expect(BigInt(bid.counterFee!)).toBeGreaterThan(BigInt(bid.fee));
+    const declined = w.inbox!.find((item) => item.ref === bid.id && /역제안/.test(item.title))!;
+    expect(declined.title).toContain('단장이 거절');
+    expect(declined.attention).toBe(false);
+    expect(declined.detail).toContain('단장');
+    // Answered six days before the deadline, when he haggles no more, he takes the counter, which
+    // passes the money checks; the player then answers our terms (→CLUB-53), and either way the
+    // report asks nothing of the owner.
+    late.calendar = { day: transferWindowDays(late.year).winterClose - 7 };
+    advanceDays(late, 1);
+    const taken = late.bids!.find((one) => one.id === bid.id)!;
+    expect(BigInt(taken.counterFee!)).toBeGreaterThan(BigInt(bid.fee));
+    const report = late.inbox!.findLast((item) => item.ref === bid.id)!;
+    expect(report.attention).toBe(false);
+    if (taken.status === 'completed') {
+      expect(late.players.some((p) => p.id === bid.playerId)).toBe(true);
+      expect(report.title).toContain('단장이 수락');
+    } else {
+      expect(taken).toMatchObject({ status: 'rejected', refusedBy: 'player' });
+      expect(report.title).toContain('개인 조건 거절');
     }
-    throw new Error('no countered staff bid in 40 seeds');
   });
 
   it("leaves the owner's countered bid to the owner", () => {
-    for (let seed = 0; seed < 40; seed++) {
-      const w = club(undefined, `owner-${seed}`);
-      w.settings = staffAuthority(3);
-      const offers = transferOffers(w);
-      placeBid(w, clubIndex(w), offers[clubIndex(w)]!.fee);
-      w.settings = staffAuthority(4);
-      advanceDays(w, 4);
-      const own = (w.bids || []).find((bid) => !bid.staff && bid.direction === 'out')!;
-      if (own.status !== 'countered') continue;
-      expect(own.counterFee).toBeDefined();
-      return;
-    }
-    throw new Error('no countered owner bid in 40 seeds');
+    // The owner bids below the asking fee, at a fee the selling club surely counters (→CLUB-52),
+    // then hands recruitment to the 단장: the counter still waits for the owner. The staff fill
+    // their posts first, so the 단장 the answer reads stays the same (→STAFF-15).
+    const w = handTo(club(), 3);
+    const index = clubIndex(w),
+      asking = transferOffers(w)[index]!.fee;
+    const fee = [95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40]
+      .map((percent) => ratio(asking, BigInt(percent), 100n))
+      .find((one) => bidOutlook(w, index, one).counter === 1);
+    expect(fee).toBeDefined();
+    placeBid(w, index, fee!);
+    w.settings = staffAuthority(4);
+    advanceDays(w, 4);
+    const own = (w.bids || []).find((bid) => !bid.staff && bid.direction === 'out')!;
+    expect(own).toMatchObject({ status: 'countered', fee });
+    expect(BigInt(own.counterFee!)).toBeGreaterThan(BigInt(fee!));
+    const counter = w.inbox!.find((item) => item.ref === own.id)!;
+    expect(counter.attention).toBe(true);
+    expect(counter.title).not.toContain('단장');
+    // The owner answers it himself.
+    operate(w, { type: 'respond-bid', id: own.id, accept: false });
+    expect(own.status).toBe('rejected');
   });
 
   it('looks on the opening day and every 7th day after, and waits for a pending bid', () => {
@@ -437,8 +486,11 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     if (!seed) throw new Error('every shortlist in 41 markets holds a player recruitment 5 finds');
     const w = owned(seed);
     drawShortlist(w);
-    const [first] = shortlistOffers(w);
-    signCandidate(w, first.index);
+    // He joins only when he agrees to our terms too (→CLUB-53), on his own seeded answer: the first
+    // listed player who does.
+    const first = shortlistOffers(w).find(({ index }) => signCandidate(structuredClone(w), index))!;
+    expect(first).toBeDefined();
+    expect(signCandidate(w, first.index)).toBe(true);
     expect(shortlistOffers(w).some(({ offer }) => offer.player.id === first.offer.player.id)).toBe(
       false,
     );
