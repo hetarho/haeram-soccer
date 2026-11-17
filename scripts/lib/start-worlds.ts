@@ -31,13 +31,17 @@ export interface StartWorldKey {
   year: number;
 }
 
-/** A file-name-safe key: identity prefix, seed and year. */
+const sha256 = (bytes: Uint8Array | string) => createHash('sha256').update(bytes).digest('hex');
+
+/**
+ * A file-name-safe key: identity prefix, a readable seed, the complete seed's hash and the year.
+ * The readable part folds characters a file name cannot hold, so the hash keeps two seeds that
+ * fold alike ('a/0' and 'a_0') apart.
+ */
 export function startWorldName(key: StartWorldKey): string {
   const seed = key.seed.replace(/[^A-Za-z0-9_-]/g, '_');
-  return `${key.identity.slice(0, 16)}-${seed}-${key.year}`;
+  return `${key.identity.slice(0, 16)}-${seed}-${sha256(key.seed).slice(0, 16)}-${key.year}`;
 }
-
-const sha256 = (bytes: Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 const dataPath = (dir: string, key: StartWorldKey) => join(dir, `${startWorldName(key)}.json.gz`);
 const sumPath = (dir: string, key: StartWorldKey) => join(dir, `${startWorldName(key)}.sha256`);
 

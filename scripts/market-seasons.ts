@@ -14,14 +14,17 @@
  * --seed-prefix (default market-); --lucks K (K reruns per seed: luck 0 is the released draw, the
  * others redraw every season's results); --config file.json (tunables merged over the defaults, a
  * lived or file start applies them after the start world is built); --jobs N (child processes, each
- * loading the engine once; default 7); --out file.json. Wrap long runs in `caffeinate -ims`.
- * An owner world (`--owner <club id>`) is not supported yet.
+ * loading the engine once; default 7); --out file.json; --owner <club id> (an owner takes the club
+ * over on the start world's first day, every business responsibility delegated, and his club
+ * plays on the full model, about 27 s a season; used sparingly) with --owner-tier <wealth tier>
+ * (default oil). Measurement reads the clubs nobody owns. Wrap long runs in `caffeinate -ims`.
  */
 import { fork } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { currency } from '../packages/catalogs/src/index';
+import { careerEnded, WEALTH_TIER_IDS, type WealthTier } from '../packages/contracts/src/owner';
 import type { World } from '../packages/contracts/src/types';
 import { currentDay, SEASON_END_DAY } from '../packages/engine/src/calendar';
 import { FREE_AGENT_FLOW } from '../packages/engine/src/free-agents';
@@ -32,8 +35,10 @@ import { npcWageBill, npcWageLimit } from '../packages/engine/src/books';
 import { NPC_MARKET, PLAYER_MOVE_FLOW } from '../packages/engine/src/npc-market';
 import { LINE_MINIMUM, lineOf, mainOvr } from '../packages/engine/src/player';
 import { overall } from '../packages/engine/src/player-state';
+import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
 import { RESULTS_LUCK } from '../packages/engine/src/results-only';
 import { advanceDays } from '../packages/engine/src/season';
+import { takeOver } from '../packages/engine/src/takeover';
 import { transferWindowDays } from '../packages/engine/src/transfer-window';
 import { clubById, NPC_SQUAD, squad } from '../packages/engine/src/world';
 import { measurementIdentity } from './lib/measurement-identity';
@@ -161,6 +166,17 @@ const ownerless = (w: World) => w.clubs.filter((c) => !c.representative && w.squ
 const poundsOf = (country: string, year: number, amount: string) =>
   Number(inPounds(country, year, amount)) / currency('ENG', year).units;
 
+/**
+ * Lives `days` days; an owner world whose career ended or that a critical alert holds would stand
+ * still, so it stops the run instead of looping.
+ */
+function advance(w: World, days: number) {
+  if (days < 1) return;
+  advanceDays(w, days, undefined, false);
+  if (w.critical || careerEnded(w))
+    throw new Error(toolMessage('marketSeasons.ownerStopped', { year: String(w.year) }));
+}
+
 function playSeason(w: World, salt: string): SeasonStats {
   const year = w.year;
   const clubs = ownerless(w);
@@ -184,8 +200,21 @@ function playSeason(w: World, salt: string): SeasonStats {
   collector = { moves: [], releases: 0 };
   RESULTS_LUCK.salt = salt;
   RESULTS_LUCK.season = year;
-  advanceDays(w, SEASON_END_DAY - currentDay(w), undefined, false);
+  advance(w, SEASON_END_DAY - currentDay(w));
 
+  const before = new Set([
+    ...clubs.flatMap((c) => w.squads![c.id]!.map((p) => p.id)),
+    ...(w.freeAgents ?? []).map((p) => p.id),
+  ]);
+  const expiring = new Map<string, string>();
+  for (const c of clubs)
+    for (const p of w.squads![c.id]!) if (p.until <= year && !p.loanUntil) expiring.set(p.id, c.id);
+
+  // Exactly to the close (→LEAGUE-9), as liveHistory lives a season.
+  while (w.year === year) advance(w, SEASON_END_DAY + 1 - currentDay(w));
+
+  // The season-start XI read after the close, so a starter who retires, is released or goes
+  // back from a loan at it counts as lost to the club he started the season at.
   const heldNow = new Map<string, string>();
   for (const c of clubs) for (const p of w.squads![c.id]!) heldNow.set(p.id, c.id);
   const xiLost = clubs.flatMap((c) =>
@@ -194,12 +223,6 @@ function playSeason(w: World, salt: string): SeasonStats {
       player: id,
     })),
   );
-  const before = new Set([...heldNow.keys(), ...(w.freeAgents ?? []).map((p) => p.id)]);
-  const expiring = new Map<string, string>();
-  for (const c of clubs)
-    for (const p of w.squads![c.id]!) if (p.until <= year && !p.loanUntil) expiring.set(p.id, c.id);
-
-  liveHistory(w, year + 1);
 
   const after = new Map<string, { club: string; tier: number; until: number; potential: number }>();
   for (const c of clubs)
@@ -278,11 +301,20 @@ interface Plan {
   burnIn: number;
   seasons: number;
   config: Record<string, unknown>;
+  owner?: { club: string; tier: WealthTier };
+}
+
+/** The owner takes his club over, leaving every business responsibility to his staff. */
+function takeOwnerClub(w: World, owner: NonNullable<Plan['owner']>) {
+  takeOver(w, owner.club, { tier: owner.tier, traits: [] });
+  w.settings = defaultSettings();
+  for (const key of RESPONSIBILITY_KEYS) w.settings.responsibilities[key] = 'delegated';
 }
 
 function runOne(plan: Plan, job: RunJob): RunResult {
   const spec = parseStart(plan.start, plan.burnIn);
   const w = startWorld(spec, job.seed, plan.config);
+  if (plan.owner) takeOwnerClub(w, plan.owner);
   const salt = luckSalt(job.luck);
   const burnIn: SeasonStats[] = [],
     seasons: SeasonStats[] = [];
@@ -333,7 +365,16 @@ if (args.includes('--child')) {
   const runs: RunResult[] = files.flatMap((f) => JSON.parse(readFileSync(f, 'utf8')).runs ?? []);
   writeOut(option('out', ''), { meta: { merged: files }, merged: mergeRuns(runs) });
 } else {
-  if (args.includes('--owner')) throw usageError(toolMessage('marketSeasons.ownerUnsupported'));
+  const ownerClub = option('owner', ''),
+    ownerTier = option('owner-tier', 'oil');
+  if (args.includes('--owner') && (!ownerClub || ownerClub.startsWith('--'))) throw usageError();
+  if (!(WEALTH_TIER_IDS as readonly string[]).includes(ownerTier))
+    throw usageError(
+      toolMessage('marketSeasons.badOwnerTier', {
+        tier: ownerTier,
+        tiers: WEALTH_TIER_IDS.join(', '),
+      }),
+    );
   const start = option('start', '');
   if (!start) throw usageError();
   const kind = start.split(':')[0];
@@ -348,7 +389,13 @@ if (args.includes('--child')) {
   )
     throw usageError(toolMessage('marketSeasons.badOptions'));
   const configFile = option('config', '');
-  const plan: Plan = { start, burnIn, seasons, config: readConfig(configFile) };
+  const plan: Plan = {
+    start,
+    burnIn,
+    seasons,
+    config: readConfig(configFile),
+    ...(ownerClub ? { owner: { club: ownerClub, tier: ownerTier as WealthTier } } : {}),
+  };
   // Validated and echoed before any world is built; each run sets them again in its own process.
   const inForce = setTunables(plan.config);
   setTunables({});
@@ -399,6 +446,7 @@ if (args.includes('--child')) {
       seasons,
       seeds,
       lucks,
+      owner: plan.owner ?? null,
       appliedConfig: plan.config,
       tunablesInForce: inForce,
       reasons:

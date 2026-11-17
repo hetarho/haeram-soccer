@@ -181,10 +181,11 @@ const facts = (w: World) => ({
 // The evidence audit expands every missing array tail; scalar leaves and array lengths are separate.
 // T945's pull market changes which players clubs nobody owns hold, so the candidate rounds' signature
 // moves (aef5e3c0618eb5f2 before it, a05cbbd0c13eeb52 with draws keyed by day before its
-// window-keyed draws and CLUB-52's pre-1995 half for every seller); the aggregate records keep theirs.
+// window-keyed draws and CLUB-52's pre-1995 half for every seller, 9322bc0149c21767 before each
+// buyer met a target on one seeded day of the window); the aggregate records keep theirs.
 const BEFORE = {
   aggregateRecords: 'd01e8b16487872a4',
-  candidateRounds: '9322bc0149c21767',
+  candidateRounds: '9581b43fe497276a',
 };
 
 describe('complete-result throughput (T285)', () => {

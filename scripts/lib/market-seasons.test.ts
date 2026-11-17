@@ -353,6 +353,18 @@ describe('start world store', () => {
     expect(loadStartWorld(dir, key)).toEqual({ a: 1 });
   });
 
+  it('keeps seeds that fold to one file-name spelling apart', () => {
+    const dir = scratch();
+    const slash = { ...key, seed: 'a/0' },
+      underscore = { ...key, seed: 'a_0' };
+    expect(startWorldName(slash)).not.toBe(startWorldName(underscore));
+    saveStartWorld(dir, slash, { seed: 'a/0' });
+    expect(loadStartWorld(dir, underscore)).toBeUndefined();
+    saveStartWorld(dir, underscore, { seed: 'a_0' });
+    expect(loadStartWorld(dir, slash)).toEqual({ seed: 'a/0' });
+    expect(loadStartWorld(dir, underscore)).toEqual({ seed: 'a_0' });
+  });
+
   it('removes an entry whose bytes fail the sha256 check', () => {
     const dir = scratch();
     const path = saveStartWorld(dir, key, { a: 1 });

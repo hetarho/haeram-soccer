@@ -16,6 +16,8 @@ export const verbatimParameters: Readonly<Record<string, readonly string[]>> = {
   'marketSeasons.stored': ['seed', 'year'],
   'marketSeasons.progress': ['seed'],
   'marketSeasons.wrote': ['path'],
+  'marketSeasons.ownerStopped': ['year'],
+  'marketSeasons.badOwnerTier': ['tier', 'tiers'],
   'copy.Workbench.35e64f9ea2': ['p0'],
   'copy.LabPage.cf0cfa5890': ['p0'],
   'copy.LabPage.603fcd2e31': ['p0'],
