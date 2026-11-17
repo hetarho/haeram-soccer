@@ -135,6 +135,7 @@
 - 261117 decided CLUB-41 ECON-33 T933: The 단장 offers the smallest wage step reaching a 60% chance within 100% (steps 1–2), 125% (적당히), 150% (넉넉히), 200% (아낌없이) → a rich club wins players a thrifty one cannot (alt: always the demand | the ceiling at once)
 - 261117 decided CLUB-33 T935: Rich clubs replace weak players → money bar at 넉넉히/아낌없이: highest OVR whose 27-year-old wage × 25 fits the signing money; every XI slot more than the margin below it an upgrade need, 아낌없이 cap up to those slots; non-XI 24+ players 8 below it listed (alt: raise caps only | sell by a fixed OVR)
 - 261117 parked review/transfer-market-261117: F4 NPC pull market held: clubs nobody owns sell only listed players at value, 3 moves a window; measured 2000 ENG 0.38–0.75 season-start starters sold a season (1960 0.9–1.55), short of 1–2 and of selling clubs losing 5–7. A pull model reprices every generated world, the portable golden and the CLUB-46/LEAGUE-10/T866 calibrations and the generation budget; needs the owner's go-ahead via /gusta-sketch
+- 261117 decided T932 T933 T934 T935: Providers: claude implements (this orchestrator's provider), codex reviews when it has headroom, else a separate claude review session (AGENTS.md); review all, no per-unit push
 
 ## unlanded
 | id | tag | branch | commit | at |
