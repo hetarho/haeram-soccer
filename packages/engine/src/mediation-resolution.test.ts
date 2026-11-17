@@ -173,9 +173,10 @@ describe('financial mediation resolution', () => {
 describe('a free agent who refuses our terms in a mediation (→CLUB-53)', () => {
   afterEach(() => vi.restoreAllMocks());
   /** The manager's pick offered as a free agent, the move started as the owner's recruit starts it. */
-  function freeAgentPick(joins: boolean) {
+  function freeAgentPick(joins: boolean, name?: string) {
+    // No money check runs here: the move itself is stubbed, so the world stays a valid save.
     const { w, id, named } = fixture();
-    rich(w);
+    if (name) named.player = { ...named.player, name };
     const offer = { ...named, freeAgent: true, fee: '0' };
     vi.spyOn(signings, 'requestCandidates').mockReturnValue([
       { offer, index: 0 } as ReturnType<typeof requestCandidates>[number],
@@ -196,6 +197,16 @@ describe('a free agent who refuses our terms in a mediation (→CLUB-53)', () =>
     expect(record.resolution!.promise).toBeDefined();
     expect(w.promises).toHaveLength(1);
     expect(w.players.some((p) => p.id === named.player.id && p.status === 'active')).toBe(false);
+  });
+
+  it('keeps the refusal and the promise within the save bound for a long valid name', () => {
+    const name = 'N'.repeat(160),
+      { w, id } = freeAgentPick(false, name);
+    const record = resolveMediation(w, id, 'manager');
+    expect(record.resolution!.result.length).toBeLessThanOrEqual(160);
+    expect(record.resolution!.result).toContain('N'.repeat(100));
+    expect(record.resolution!.promise).toBeDefined();
+    validateWorld(w);
   });
 
   it('still reports the signing when he agrees and joins', () => {
