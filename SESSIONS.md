@@ -142,8 +142,10 @@
 | T932 | work | gusta-session-self-improve-tm17-ff4b9f94 | a73163d2e40a | 2026-11-17T06:10Z |
 | T936 | work | gusta-session-self-improve-lc17-37ba91cb | 6aaa6aa407b6 | 2026-11-17T07:37Z |
 | T939 | work | gusta-session-self-improve-lc17-37ba91cb | e1f7f79470db | 2026-11-17T07:49Z |
+| T938 | work | gusta-session-self-improve-lc17-37ba91cb | c117ffb23d17 | 2026-11-17T07:54Z |
 
 ## log
+- 261117 T938 integrated
 - 261117 T939 integrated
 - 261117 T936 integrated
 - 261117 T932 integrated
@@ -163,4 +165,3 @@
 - 261116 T924 done
 - 261116 fix ci: two Chromium workers on four-core runners (1950 generation journey timeout)
 - 261116 gusta-create-task LEAGUE r21 -> T924
-- 261116 gusta-create-task LEAGUE start
