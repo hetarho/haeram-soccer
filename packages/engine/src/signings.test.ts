@@ -1512,6 +1512,26 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(pending.every((bid) => !free.includes(bid.playerId))).toBe(true);
   });
 
+  it('a funded 3-5-2 short of two forwards bids for both before any upgrade', () => {
+    willing();
+    const w = club(5);
+    w.tactic = 'balanced';
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    keep(w, 'FW', 2);
+    // Every free agent within the reach is passed by: each forward stays a bid until answered.
+    for (const offer of reachOffers(w)) if (offer.freeAgent) tried(w, offer.player.id);
+    expect(formationOf(w.tactic).filter((slot) => lineOf(slot.position) === 'FW')).toHaveLength(2);
+    expect(shortLines(w)).toEqual([
+      expect.objectContaining({ kind: 'short', line: 'FW', count: 2, minimum: 4 }),
+    ]);
+    staffSignings(w);
+    // One pending forward covers one of the two places the line lacks (→CLUB-33).
+    const pending = staffBids(w).filter((bid) => bid.status === 'pending');
+    expect(pending).toHaveLength(pendingLimit(w));
+    expect(pending.map((bid) => bid.staff)).toEqual(['short', 'short', 'upgrade']);
+    for (const bid of pending.slice(0, 2)) expect(lineOf(bid.offer!.player.position)).toBe('FW');
+  });
+
   it('a rich 아낌없이 club bids for a fourth upgrade in a window; 넉넉히 stops at its two', () => {
     const upgraded = (w: World, count: number) => {
       const day = currentDay(w);

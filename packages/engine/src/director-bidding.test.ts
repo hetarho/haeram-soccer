@@ -135,6 +135,35 @@ describe('director trait bidding', () => {
     expect(raised.map((b) => b.playerId)).toEqual([first.playerId, second.playerId]);
     for (const next of raised) expect(next.fee).toBe(ratio(next.offer!.fee, 95n, 100n));
   });
+  it('keeps the places of bids refused on a look day for their raises the next day', () => {
+    willing();
+    // 균형형 at 아낌없이 keeps three places (→CLUB-33). Two bids refused on a look day hold theirs,
+    // so that look's ordinary moves take only the third, and both are raised the day after the
+    // answer (→CLUB-41), not crowded out until another place frees.
+    const w = world('negotiator'),
+      look = w.calendar!.day + signings.SIGNING_CONFIG.lookDays,
+      club = transferOffers(w).flatMap((offer, i) =>
+        offer.available && !offer.freeAgent ? [i] : [],
+      );
+    expect(signings.pendingLimit(w)).toBe(3);
+    const first = bid(w, 90, club[0]),
+      second = bid(w, 90, club[1]);
+    for (const refused of [first, second])
+      Object.assign(refused, { status: 'rejected', refusedBy: 'club', due: look });
+    const open = () =>
+      w.bids!.filter((b) => b.staff && (b.status === 'pending' || b.status === 'countered'));
+    w.calendar!.day = look;
+    staffSignings(w);
+    expect(open()).toHaveLength(1);
+    const ordinary = open()[0]!.playerId,
+      count = w.bids!.length;
+    w.calendar!.day = look + 1;
+    staffSignings(w);
+    const raised = w.bids!.slice(count);
+    expect(raised.map((b) => b.playerId)).toEqual([first.playerId, second.playerId]);
+    for (const next of raised) expect(next.fee).toBe(ratio(next.offer!.fee, 95n, 100n));
+    expect(open().map((b) => b.playerId)).toEqual([ordinary, first.playerId, second.playerId]);
+  });
   it('jumps to the ceiling in the final seven days', () => {
     const w = world('negotiator');
     delete w.delegationRequests;

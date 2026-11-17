@@ -1033,6 +1033,30 @@ export function pendingLimit(w: World) {
 /** His bids of this window still waiting for an answer. */
 const pendingStaffBids = (w: World, day: number) =>
   windowBids(w, day).filter((bid) => bid.staff && isOpen(bid));
+/**
+ * A negotiator's haggles (→CLUB-41): his latest refused bid for each player, below the bid ceiling
+ * and not refused by the player himself (→CLUB-53), which he raises the day after the answer.
+ */
+function haggles(w: World, bids: TransferBid[]) {
+  if (directorTrait(w) !== 'negotiator') return [];
+  const ceiling = BigInt(bidCeiling(w));
+  return bids.filter(
+    (bid) =>
+      bid.staff &&
+      bid.status === 'rejected' &&
+      bid.refusedBy !== 'player' &&
+      !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
+      BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', ceiling, 100n)),
+  );
+}
+/**
+ * The places his bids hold against the step's count (→CLUB-33): those waiting for an answer and a
+ * negotiator's haggles waiting for their raise, so no other move takes a raise's place.
+ */
+function heldStaffBids(w: World, day: number) {
+  const bids = windowBids(w, day);
+  return [...bids.filter((bid) => bid.staff && isOpen(bid)), ...haggles(w, bids)];
+}
 /** Where a bid for a candidate goes: his place on the list, else the player at his club. */
 function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
   const index = transferOffers(w).findIndex((one) => one.player.id === offer.player.id);
@@ -1040,20 +1064,26 @@ function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
   return { world: w.id, kind: 'club', clubId: offer.source.club, playerId: offer.player.id };
 }
 /**
- * Whether a pending bid's player would meet a need when he joins: one of its line for a short line
- * or a replacement, one who beats the slot's measure by the margin for an upgrade. Each pending
- * player covers one need, so the 단장 does not bid twice for one place.
+ * Whether a held bid's player would meet a need when he joins: one of its line for a short line
+ * or a replacement, one who beats the slot's measure by the margin for an upgrade. Each such player
+ * covers one need, a short line taking as many as it lacks, so the 단장 neither bids twice for one
+ * place nor moves on to upgrades while a line is still short (→CLUB-33).
  */
-function uncovered(w: World, needs: SigningNeed[], pending: TransferBid[]) {
-  const waiting = pending.flatMap((bid) => (bid.offer ? [bid.offer.player] : []));
+function uncovered(w: World, needs: SigningNeed[], held: TransferBid[]) {
+  const waiting = held.flatMap((bid) => (bid.offer ? [bid.offer.player] : []));
   return needs.filter((need) => {
-    const i = waiting.findIndex((p) =>
-      need.kind === 'upgrade'
-        ? playsAt(p, need.position) && atSlot(w, p, need.slot) >= need.level + need.margin
-        : lineOfPlayer(p) === need.line,
-    );
-    if (i < 0) return true;
-    waiting.splice(i, 1);
+    // A squad short of 20 with every line at its minimum asks for one player at a time.
+    let lacking = need.kind === 'short' ? Math.max(1, need.minimum - need.count) : 1;
+    while (lacking > 0) {
+      const i = waiting.findIndex((p) =>
+        need.kind === 'upgrade'
+          ? playsAt(p, need.position) && atSlot(w, p, need.slot) >= need.level + need.margin
+          : lineOfPlayer(p) === need.line,
+      );
+      if (i < 0) return true;
+      waiting.splice(i, 1);
+      lacking--;
+    }
     return false;
   });
 }
@@ -1061,11 +1091,12 @@ function uncovered(w: World, needs: SigningNeed[], pending: TransferBid[]) {
 /**
  * The 단장's look (→CLUB-33): with transfers delegated and a window open, on its opening day and
  * every `lookDays`th day after it, every day while a replacement need is open (plus a negotiator's
- * next-day raises), he makes moves — a free agent signed or a trait-priced bid — until his pending
- * bids reach the step's count (`pendingLimit`), each for the first need not already covered by a
- * pending bid that a candidate meets within the runway test, each pending fee reserved (→ECON-33).
- * Short roles come before replacements and upgrades, and the manager's requested roles before
- * the others.
+ * next-day raises), he makes moves — a free agent signed or a trait-priced bid — until the places
+ * his bids hold reach the step's count (`pendingLimit`), each for the first need not already
+ * covered by a held bid that a candidate meets within the runway test, each pending fee reserved
+ * (→ECON-33). A negotiator's haggle keeps its place until its raise the day after the answer
+ * (→CLUB-41). Short roles come before replacements and upgrades, and the manager's requested roles
+ * before the others.
  */
 export function staffSignings(w: World) {
   const day = currentDay(w),
@@ -1074,34 +1105,39 @@ export function staffSignings(w: World) {
   const regular = (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays === 0;
   if (regular) {
     detectMediations(w);
-    if (resolveDelegatedMediations(w)) return;
+    // A mediation's decision is this look's move; his haggles are still raised (→CLUB-41).
+    if (resolveDelegatedMediations(w)) {
+      raiseHaggles(w, day);
+      return;
+    }
   }
   if (!isDelegated(w, 'recruitment')) return;
   if (regular) makeRoom(w, day);
+  const limit = pendingLimit(w);
+  // Today's moves are made: a second call on the same day changes nothing.
+  if (windowBids(w, day).some((bid) => bid.staff && bid.day === day)) return;
+  const ended = raiseHaggles(w, day);
+  if (heldStaffBids(w, day).length >= limit) return;
+  const replacing = openNeeds(w).some((need) => need.day < day);
+  // Off a regular look he moves only for a replacement, or past a negotiator's ended haggle.
+  if (!regular && !replacing && !ended) return;
+  // Every move records a bid for its player, who is never asked again in the window, so the look
+  // ends when the places his bids hold reach the step's count or no candidate is left to move for.
+  while (staffMove(w, day)) if (heldStaffBids(w, day).length >= limit) return;
+}
+
+/**
+ * A negotiator's raises (→CLUB-41): each haggle answered on an earlier day is bid for again 5
+ * points higher, outside the regular look gate and before any other move, into the place it held,
+ * while his bids waiting for an answer stay under the step's count. Whether a haggle ended without a
+ * raise, so he moves on to the next candidate.
+ */
+function raiseHaggles(w: World, day: number) {
   const bids = windowBids(w, day),
     limit = pendingLimit(w);
-  // Today's moves are made: a second call on the same day changes nothing.
-  if (bids.some((bid) => bid.staff && bid.day === day)) return;
-  if (pendingStaffBids(w, day).length >= limit) return;
-  // Every refused negotiator bid gets its next answer-day move outside the regular look gate,
-  // before any other move, while his pending bids stay under the step's count (→CLUB-41).
-  const retries =
-    directorTrait(w) === 'negotiator'
-      ? bids.filter(
-          (bid) =>
-            bid.staff &&
-            bid.status === 'rejected' &&
-            // A player who refused our terms is not haggled with over the fee (→CLUB-53).
-            bid.refusedBy !== 'player' &&
-            bid.due < day &&
-            !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
-            BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', BigInt(bidCeiling(w)), 100n)),
-        )
-      : [];
-  // Whether a haggle ended today without a raise: he then moves on to the next candidate.
   let ended = false;
-  for (const retry of retries) {
-    if (pendingStaffBids(w, day).length >= limit) return;
+  for (const retry of haggles(w, bids).filter((bid) => bid.due < day)) {
+    if (pendingStaffBids(w, day).length >= limit) break;
     const offers = transferOffers(w),
       index = offers.findIndex((offer) => offer.available && offer.player.id === retry.playerId),
       offer = index >= 0 ? offers[index] : locateOffer(w, retry.playerId, retry.club);
@@ -1136,17 +1172,11 @@ export function staffSignings(w: World) {
       });
     }
   }
-  if (pendingStaffBids(w, day).length >= limit) return;
-  const replacing = openNeeds(w).some((need) => need.day < day);
-  // Off a regular look he moves only for a replacement, or past a negotiator's ended haggle.
-  if (!regular && !replacing && !ended) return;
-  // Every move records a bid for its player, who is never asked again in the window, so the look
-  // ends when his pending bids reach the step's count or no candidate is left to move for.
-  while (staffMove(w, day)) if (pendingStaffBids(w, day).length >= limit) return;
+  return ended;
 }
 
 /**
- * One move of a look (→CLUB-33): the first need no pending bid covers that a candidate meets —
+ * One move of a look (→CLUB-33): the first need no held bid covers that a candidate meets —
  * the manager's pick, the shortlist, then the players within the scout's reach, an upgrade at
  * 넉넉히 and 아낌없이 by slot gain — with a wage step and fee inside the money checks. Whether a
  * move was made.
@@ -1202,7 +1232,7 @@ function staffMove(w: World, day: number) {
           a.order - b.order,
       )
       .map(({ need }) => need),
-    pendingStaffBids(w, day),
+    heldStaffBids(w, day),
   );
   if (!needs.length) return false;
   const offers = reachOffers(w),
@@ -1275,7 +1305,7 @@ export function pursueRequest(
       (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0 ||
       // A free agent who refused our terms at once leaves the day's move open, so a mediation
       // can pursue its next alternative (→CLUB-39, →CLUB-53).
-      pendingStaffBids(w, day).length >= pendingLimit(w) ||
+      heldStaffBids(w, day).length >= pendingLimit(w) ||
       windowBids(w, day).some((b) => b.staff && b.refusedBy !== 'player' && b.day === day)
     )
       return sourceMessage('copy.signings.475daa54a3');
