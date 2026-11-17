@@ -61,10 +61,15 @@ export interface SaleContext {
   /** The seller's cash crisis or fixed-cost runway under 4 rounds (→ECON-41), with that runway. */
   cashCrisis: boolean;
   runway: number;
-  /** Our players' wage bill against the 단장's sales line: 1 above it, 2 more than 10 points above. */
+  /**
+   * Our 단장's runway test at the current wage bill (→ECON-33): 1 failing at the step's runway, 2
+   * failing at half of it.
+   */
   wageLine: 0 | 1 | 2;
-  /** The wage bill as a percentage of planned income, for the line's report. */
+  /** The wage bill as a percentage of planned income. */
   wageShare: number;
+  /** The step's loss runway in seasons the test reads, 0 for none (within income), for the report. */
+  runwaySeasons?: number;
   /** A club nobody owns selling down its wage bill (→WORLD-17). */
   sellingDown: boolean;
   /** Our player's stance (→CLUB-22) and his unhappiness (→CLUB-27); open at other clubs. */
@@ -130,11 +135,18 @@ export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
   {
     id: 'wages',
     read: (c) =>
-      c.ownSeller && c.wageLine === 2
-        ? line('wages', V.wageLine.far, 'market.sale.wages.far', { share: c.wageShare })
-        : c.ownSeller && c.wageLine === 1
-          ? line('wages', V.wageLine.over, 'market.sale.wages.over', { share: c.wageShare })
-          : undefined,
+      !c.ownSeller || !c.wageLine
+        ? undefined
+        : line(
+            'wages',
+            c.wageLine === 2 ? V.wageLine.far : V.wageLine.over,
+            !c.runwaySeasons
+              ? 'market.sale.runway.income'
+              : c.wageLine === 2
+                ? 'market.sale.runway.far'
+                : 'market.sale.runway.over',
+            c.runwaySeasons ? { runway: c.runwaySeasons } : {},
+          ),
   },
   {
     id: 'sellDown',
@@ -389,6 +401,7 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
       runway,
       wageLine: pressure.level as 0 | 1 | 2,
       wageShare: pressure.share,
+      runwaySeasons: pressure.runway,
       sellingDown: false,
       stance: transferStance(player),
       transferRequest: !!player.transferRequest,

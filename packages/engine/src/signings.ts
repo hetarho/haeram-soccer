@@ -78,8 +78,6 @@ export const SIGNING_CONFIG = {
    * explaining them share.
    */
   ...RECRUITMENT_LOOKS,
-  /** However many moves a look could make, it makes at most this many. */
-  movesPerLook: 8,
   lineMinimum: LINE_MINIMUM,
   squadMinimum: SQUAD_TARGET,
   /**
@@ -1134,10 +1132,9 @@ export function staffSignings(w: World) {
   const replacing = openNeeds(w).some((need) => need.day < day);
   // Off a regular look he moves only for a replacement, or past a negotiator's ended haggle.
   if (!regular && !replacing && (!retry || retried)) return;
-  for (let move = 0; move < SIGNING_CONFIG.movesPerLook; move++) {
-    if (!staffMove(w, day)) return;
-    if (pendingStaffBids(w, day).length >= limit) return;
-  }
+  // Every move records a bid for its player, who is never asked again in the window, so the look
+  // ends when his pending bids reach the step's count or no candidate is left to move for.
+  while (staffMove(w, day)) if (pendingStaffBids(w, day).length >= limit) return;
 }
 
 /**

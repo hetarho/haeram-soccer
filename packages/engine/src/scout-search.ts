@@ -212,9 +212,10 @@ function abilities(players: readonly Player[]) {
 /**
  * The players within the reach (→CLUB-51) whose age and ability fit the search, ranked
  * by ability and potential (potential first where the search says so), then free status and
- * id; per line the reach's count (all of them when `everyone`), keeping its places abroad for the
- * ablest found there. Our
- * players, players on loan at their club and announced retirements are never listed.
+ * id; per line the reach's count, keeping its places abroad for the ablest found there. With
+ * `everyone`, every player within the reach whatever his age and ability (the search's bands
+ * shape the list alone, →ECON-16), all of them. Our players, players on loan at their club and
+ * announced retirements are never listed.
  */
 function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
   const own = clubOf(w).country,
@@ -222,8 +223,9 @@ function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
     found: Found[] = [];
   const consider = (player: Player, ovr: number, club: Club | undefined, country: string) => {
     const age = w.year - player.born;
-    if (age < reach.age[0] || age > reach.age[1] || owned.has(player.id)) return;
-    if (ovr < reach.ability[0] || ovr > reach.ability[1]) return;
+    if (owned.has(player.id)) return;
+    if (!everyone && (age < reach.age[0] || age > reach.age[1])) return;
+    if (!everyone && (ovr < reach.ability[0] || ovr > reach.ability[1])) return;
     const potentialFirst =
       reach.potentialFirst === 'all' ||
       (reach.potentialFirst === 'young' && age <= SCOUT_CONFIG.youngAge);
@@ -336,9 +338,10 @@ const reaches = new WeakMap<
   { key: string; pool: readonly FreeAgent[] | undefined; offers: ScoutOffer[] }
 >();
 /**
- * Everyone within the chief scout's reach (→CLUB-51) whose age and ability fit the search, not only
- * the count he lists: the 단장's candidates after the shortlist (→CLUB-33), line by line in line
- * order and by the list's ranking, each carrying his source. Kept per world like the list.
+ * Everyone within the chief scout's reach (→CLUB-51), not only the count he lists and whatever the
+ * search's age and ability bands (they shape the list alone, →ECON-16): the 단장's candidates after
+ * the shortlist (→CLUB-33), line by line in line order and by the list's ranking, each carrying his
+ * source. Kept per world like the list.
  */
 export function reachOffers(w: World): ScoutOffer[] {
   const reach = scoutReach(w),

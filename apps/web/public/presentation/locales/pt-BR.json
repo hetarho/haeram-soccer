@@ -6973,6 +6973,9 @@
     "delegation.verdict.incomeLoss": "Ele gere dentro da receita: o salário de {wage} causaria um prejuízo previsto de {loss} por ano",
     "delegation.verdict.incomeFee": "A transferência de {fee} passaria do caixa de {capital}",
     "delegation.offer.looks": "Com as contratações delegadas, o diretor olha o mercado no dia em que abre e a cada {days} dias depois, e preenche primeiro as posições pedidas pelo técnico e as vagas até ter {pending} propostas pendentes; {upgrades} Transferências e novos salários só são gastos enquanto o caixa cobrir o prejuízo previsto pelas temporadas permitidas. Dinheiro para contratações agora: {left}.",
-    "delegation.offer.upgradesBar": "Em cada janela contrata jogadores pelo menos {margin} melhores que os titulares, até {upgrades} ou, se houver mais titulares abaixo da linha financeira, tantos quanto essas posições."
+    "delegation.offer.upgradesBar": "Em cada janela contrata jogadores pelo menos {margin} melhores que os titulares, até {upgrades} ou, se houver mais titulares abaixo da linha financeira, tantos quanto essas posições.",
+    "market.sale.runway.over": "O caixa não cobre {runway} temporadas do prejuízo previsto",
+    "market.sale.runway.far": "O caixa não cobre nem metade de {runway} temporadas do prejuízo previsto",
+    "market.sale.runway.income": "Salários e custos fixos acima da receita prevista (gestão dentro da receita)"
   }
 }

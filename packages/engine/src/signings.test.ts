@@ -1449,6 +1449,69 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     }
   });
 
+  /** A free agent of our country made for the case, at the OVR, position and age given. */
+  function freeAgent(w: World, id: string, ovr: number, position: Player['position'], age: number) {
+    const own = clubOf(w),
+      origin = w.clubs.find((one) => one.country === own.country && one.id !== own.id)!;
+    const player = makePlayer(own.country, w.seed, id, w.year, ovr, position, age, own.tier);
+    movePerson(w, player, origin.id);
+    expect(joinFreeAgents(w, player, w.year)).toBe(true);
+    return player;
+  }
+
+  it("reaches past the search's age and ability bands: they shape the list alone (→ECON-16)", () => {
+    willing();
+    const w = club(5);
+    passFree(w);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    const reach = scoutReach(w),
+      need = upgradeNeeds(w, 2, [], moneyBar(w))[0]!;
+    expect(need.kind).toBe('upgrade');
+    if (need.kind !== 'upgrade') return;
+    // Younger than the search's ages and above its ability ceiling, the ablest at the slot.
+    const id = 'fixture:signings:outside-bands',
+      player = freeAgent(w, id, 99, need.position, reach.age[0] - 1);
+    expect(w.year - player.born).toBeLessThan(reach.age[0]);
+    expect(overall(player)).toBeGreaterThan(reach.ability[1]);
+    expect(transferOffers(w).some((offer) => offer.player.id === id)).toBe(false);
+    expect(reachOffers(w).some((offer) => offer.player.id === id)).toBe(true);
+    staffSignings(w);
+    expect(staffBids(w).find((bid) => bid.playerId === id)).toMatchObject({
+      status: 'completed',
+      fee: '0',
+    });
+  });
+
+  it('a look moves on past more than eight free agents refusing at once, up to its pending bids', () => {
+    const certain = { chance: 1, logOdds: 9, lines: [] };
+    const chance = vi.spyOn(personalTerms, 'termsChance').mockReturnValue(certain),
+      answer = vi
+        .spyOn(personalTerms, 'termsAnswer')
+        .mockReturnValue({ ...certain, accept: false });
+    onTestFinished(() => {
+      chance.mockRestore();
+      answer.mockRestore();
+    });
+    const w = club(5);
+    keep(w, 'FW', 1);
+    delete w.shortlist;
+    // Ten free forwards abler than anyone else within the reach are asked first; all refuse.
+    const free = Array.from({ length: 10 }, (_, i) =>
+      freeAgent(w, `fixture:signings:refusing-${i}`, 97, 'ST', 27),
+    ).map((player) => player.id);
+    staffSignings(w);
+    const bids = staffBids(w);
+    for (const id of free)
+      expect(bids.find((bid) => bid.playerId === id)).toMatchObject({
+        status: 'rejected',
+        refusedBy: 'player',
+      });
+    // The same look goes on to bid for other clubs' forwards until its pending count is reached.
+    const pending = bids.filter((bid) => bid.status === 'pending');
+    expect(pending).toHaveLength(pendingLimit(w));
+    expect(pending.every((bid) => !free.includes(bid.playerId))).toBe(true);
+  });
+
   it('a rich 아낌없이 club bids for a fourth upgrade in a window; 넉넉히 stops at its two', () => {
     const upgraded = (w: World, count: number) => {
       const day = currentDay(w);

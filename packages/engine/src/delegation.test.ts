@@ -1,3 +1,4 @@
+import { SALE_FACTORS, type SaleContext } from './sale-answer';
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
 import { canonical, validateWorld } from '../../contracts/src/index';
@@ -430,6 +431,28 @@ describe('selling and the plain stop', () => {
     w.cash = '0';
     expect(wagePressure(w)).toMatchObject({ level: 0 });
     expect(wagePressure(w).seasons).toBeUndefined();
+  });
+
+  it("the sale answer's report names the runway it fails, not a share of income (→CLUB-52)", () => {
+    const wages = SALE_FACTORS.find((factor) => factor.id === 'wages')!,
+      read = (wageLine: 0 | 1 | 2, runwaySeasons: number) =>
+        wages.read({ ownSeller: true, wageLine, wageShare: 90, runwaySeasons } as SaleContext);
+    expect(read(0, 4)).toBeUndefined();
+    expect(read(1, 4)).toMatchObject({
+      delta: -0.05,
+      message: 'market.sale.runway.over',
+      params: { runway: 4 },
+    });
+    expect(read(2, 4)).toMatchObject({
+      delta: -0.1,
+      message: 'market.sale.runway.far',
+      params: { runway: 4 },
+    });
+    // Within income (적극 매각) the runway is none: any planned loss fails at once.
+    expect(read(2, 0)).toMatchObject({ delta: -0.1, message: 'market.sale.runway.income' });
+    // The step's runway reaches the report through the pressure the answer reads.
+    const w = club('delegation-sell');
+    expect(wagePressure(w).runway).toBe(spendingStance(w, 'sales').runway);
   });
 
   it('delegating makes the plan at once; a season and a window re-plan only what changed', () => {

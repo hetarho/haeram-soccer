@@ -6970,6 +6970,9 @@
     "delegation.verdict.incomeLoss": "He runs within income: his wage of {wage} would make a planned loss of {loss} a year",
     "delegation.verdict.incomeFee": "The fee {fee} would pass the cash of {capital}",
     "delegation.offer.looks": "With signings delegated, the director looks on the window's opening day and every {days} days after, filling the manager's requested and empty slots first until {pending} of his offers are pending; {upgrades} Fees and new wages are spent only while the cash covers the planned loss for the allowed seasons. Money for signings now: {left}.",
-    "delegation.offer.upgradesBar": "Each transfer market brings in players at least {margin} better than the starters, up to {upgrades} or, when more starters fall below the money bar, as many as those places."
+    "delegation.offer.upgradesBar": "Each transfer market brings in players at least {margin} better than the starters, up to {upgrades} or, when more starters fall below the money bar, as many as those places.",
+    "market.sale.runway.over": "Cash does not cover {runway} seasons of the planned loss",
+    "market.sale.runway.far": "Cash does not cover half of {runway} seasons of the planned loss",
+    "market.sale.runway.income": "Wages and fixed costs above the planned income (run within income)"
   }
 }

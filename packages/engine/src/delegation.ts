@@ -491,7 +491,7 @@ export function delegatePlan(
  * the runway test of the sales step fails at half its runway at the current wage bill, 1 while it
  * fails at the full runway, else 0; with the wage bill's share of the planned income in percent
  * (`share`) and the seasons of planned loss available capital covers (`seasons`, none without a
- * loss).
+ * loss) and the step's runway in seasons (`runway`).
  */
 export function wagePressure(w: World) {
   const plan = delegatePlan(w, 'sales'),
@@ -504,6 +504,7 @@ export function wagePressure(w: World) {
       revenue > 0n ? Number((wages * 10000n) / revenue) : wages > 0n ? 999990 : 0,
     ),
     seasons: plan.covers,
+    runway: plan.runway,
   };
 }
 

@@ -211,7 +211,7 @@ describe('the chief scout reach (CLUB-51)', () => {
 });
 
 describe('everyone within the reach (CLUB-33, CLUB-51)', () => {
-  it('holds every listed player and more, under the same search, ranked line by line', () => {
+  it("holds every listed player and more, whatever the search's age and ability bands", () => {
     const w = holdRows(scoutAt(world(), 85), { policy: { globalScouting: 3 } }),
       reach = scoutReach(w),
       listed = transferOffers(w),
@@ -225,12 +225,19 @@ describe('everyone within the reach (CLUB-33, CLUB-51)', () => {
       const top = listed.filter((offer) => lineOfPlayer(offer.player) === line);
       expect(all.length).toBeGreaterThanOrEqual(top.length);
     }
-    for (const offer of everyone) {
-      const age = w.year - offer.player.born;
-      expect(age).toBeGreaterThanOrEqual(reach.age[0]);
-      expect(age).toBeLessThanOrEqual(reach.age[1]);
-      expect(overall(offer.player)).toBeLessThanOrEqual(reach.ability[1]);
-    }
+    // The bands shape the list alone (→ECON-16): the reach holds players outside them too.
+    const outside = (offer: (typeof everyone)[number]) => {
+      const age = w.year - offer.player.born,
+        ovr = overall(offer.player);
+      return (
+        age < reach.age[0] || age > reach.age[1] || ovr < reach.ability[0] || ovr > reach.ability[1]
+      );
+    };
+    expect(listed.some(outside)).toBe(false);
+    expect(everyone.some(outside)).toBe(true);
+    // Never our own players.
+    const ours = new Set(activePlayers(w).map((p) => p.id));
+    expect(everyone.some((offer) => ours.has(offer.player.id))).toBe(false);
     // The same world state reads the same list again.
     expect(scoutSearch.reachOffers(w)).toBe(everyone);
   });

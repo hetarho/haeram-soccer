@@ -6970,6 +6970,9 @@
     "delegation.verdict.incomeLoss": "Er wirtschaftet im Rahmen der Einnahmen: Sein Gehalt von {wage} brächte einen geplanten Verlust von {loss} pro Jahr",
     "delegation.verdict.incomeFee": "Die Ablöse von {fee} läge über dem Guthaben von {capital}",
     "delegation.offer.looks": "Bei delegierten Verpflichtungen sieht sich der Sportdirektor den Markt am Eröffnungstag des Fensters und danach alle {days} Tage an und besetzt zuerst die vom Trainer gewünschten und freien Positionen, bis {pending} seiner Angebote offen sind; {upgrades} Ablösen und neue Gehälter werden nur ausgegeben, solange das Guthaben den geplanten Verlust für die erlaubten Spielzeiten deckt. Geld für Transfers derzeit: {left}.",
-    "delegation.offer.upgradesBar": "In jedem Transferfenster holt er Spieler, die mindestens {margin} besser als die Stammspieler sind, bis zu {upgrades} oder, wenn mehr Stammspieler unter der Geldgrenze liegen, so viele wie diese Positionen."
+    "delegation.offer.upgradesBar": "In jedem Transferfenster holt er Spieler, die mindestens {margin} besser als die Stammspieler sind, bis zu {upgrades} oder, wenn mehr Stammspieler unter der Geldgrenze liegen, so viele wie diese Positionen.",
+    "market.sale.runway.over": "Das Guthaben deckt {runway} Spielzeiten des geplanten Verlusts nicht",
+    "market.sale.runway.far": "Das Guthaben deckt nicht einmal die Hälfte von {runway} Spielzeiten des geplanten Verlusts",
+    "market.sale.runway.income": "Gehälter und Fixkosten über den geplanten Einnahmen (Wirtschaften im Rahmen der Einnahmen)"
   }
 }

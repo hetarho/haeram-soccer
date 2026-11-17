@@ -6967,6 +6967,9 @@
     "delegation.verdict.incomeLoss": "Ia mengelola dalam batas pendapatan: gaji {wage} akan menimbulkan rencana rugi {loss} per tahun",
     "delegation.verdict.incomeFee": "Biaya transfer {fee} akan melampaui kas {capital}",
     "delegation.offer.looks": "Jika perekrutan didelegasikan, direktur meninjau pasar pada hari bursa transfer dibuka dan setiap {days} hari sesudahnya, lalu mengisi lebih dulu posisi yang diminta pelatih dan posisi kosong sampai ada {pending} tawarannya yang tertunda; {upgrades} Biaya transfer dan gaji baru hanya dikeluarkan selama kas sanggup menutup rencana rugi selama musim yang diizinkan. Dana perekrutan saat ini: {left}.",
-    "delegation.offer.upgradesBar": "Di setiap bursa transfer ia mendatangkan pemain yang setidaknya {margin} lebih baik dari pemain inti, hingga {upgrades} orang atau, jika lebih banyak posisi inti di bawah batas dana, sebanyak posisi itu."
+    "delegation.offer.upgradesBar": "Di setiap bursa transfer ia mendatangkan pemain yang setidaknya {margin} lebih baik dari pemain inti, hingga {upgrades} orang atau, jika lebih banyak posisi inti di bawah batas dana, sebanyak posisi itu.",
+    "market.sale.runway.over": "Kas tidak menutup {runway} musim rencana rugi",
+    "market.sale.runway.far": "Kas tidak menutup separuh dari {runway} musim rencana rugi",
+    "market.sale.runway.income": "Gaji dan biaya tetap di atas rencana pemasukan (dikelola dalam batas pemasukan)"
   }
 }
