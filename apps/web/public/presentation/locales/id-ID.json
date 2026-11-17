@@ -6966,6 +6966,7 @@
     "delegation.verdict.runwayFee": "Dengan biaya transfer {fee} dan gajinya {wage}, biaya itu dan {seasons} musim rencana rugi {loss} per tahun akan melampaui kas {capital}",
     "delegation.verdict.incomeLoss": "Ia mengelola dalam batas pendapatan: gaji {wage} akan menimbulkan rencana rugi {loss} per tahun",
     "delegation.verdict.incomeFee": "Biaya transfer {fee} akan melampaui kas {capital}",
+    "delegation.verdict.upgradeCap": "Batas penguatan pemain inti di bursa transfer ini ({cap}) sudah tercapai",
     "delegation.offer.looks": "Jika perekrutan didelegasikan, direktur meninjau pasar pada hari bursa transfer dibuka dan setiap {days} hari sesudahnya, lalu mengisi lebih dulu posisi yang diminta pelatih dan posisi kosong sampai ada {pending} tawarannya yang tertunda; {upgrades} Biaya transfer dan gaji baru hanya dikeluarkan selama kas sanggup menutup rencana rugi selama musim yang diizinkan. Dana perekrutan saat ini: {left}.",
     "delegation.offer.upgradesBar": "Di setiap bursa transfer ia mendatangkan pemain yang setidaknya {margin} lebih baik dari pemain inti, hingga {upgrades} orang atau, jika lebih banyak posisi inti di bawah batas dana, sebanyak posisi itu.",
     "delegation.sale.incomeUntouchable": "Dikelola dalam batas pemasukan, tetapi gaji dan biaya tetap melampaui rencana pemasukan −25 poin",

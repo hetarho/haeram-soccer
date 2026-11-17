@@ -6972,6 +6972,7 @@
     "delegation.verdict.runwayFee": "Com a transferência de {fee} e o salário de {wage}, a transferência e {seasons} temporadas do prejuízo previsto de {loss} por ano passariam do caixa de {capital}",
     "delegation.verdict.incomeLoss": "Ele gere dentro da receita: o salário de {wage} causaria um prejuízo previsto de {loss} por ano",
     "delegation.verdict.incomeFee": "A transferência de {fee} passaria do caixa de {capital}",
+    "delegation.verdict.upgradeCap": "O limite de reforços de titulares desta janela ({cap}) já foi atingido",
     "delegation.offer.looks": "Com as contratações delegadas, o diretor olha o mercado no dia em que abre e a cada {days} dias depois, e preenche primeiro as posições pedidas pelo técnico e as vagas até ter {pending} propostas pendentes; {upgrades} Transferências e novos salários só são gastos enquanto o caixa cobrir o prejuízo previsto pelas temporadas permitidas. Dinheiro para contratações agora: {left}.",
     "delegation.offer.upgradesBar": "Em cada janela contrata jogadores pelo menos {margin} melhores que os titulares, até {upgrades} ou, se houver mais titulares abaixo da linha financeira, tantos quanto essas posições.",
     "delegation.sale.incomeUntouchable": "Gestão dentro da receita, mas salários e custos fixos passam da receita prevista −25 pts",

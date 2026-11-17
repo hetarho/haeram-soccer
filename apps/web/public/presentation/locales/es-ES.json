@@ -6972,6 +6972,7 @@
     "delegation.verdict.runwayFee": "Con el traspaso de {fee} y su salario de {wage}, el traspaso y {seasons} temporadas de la pérdida prevista de {loss} al año superarían la caja de {capital}",
     "delegation.verdict.incomeLoss": "Gestiona dentro de los ingresos: su salario de {wage} causaría una pérdida prevista de {loss} al año",
     "delegation.verdict.incomeFee": "El traspaso de {fee} superaría la caja de {capital}",
+    "delegation.verdict.upgradeCap": "Ya se alcanzó el límite de refuerzos de titulares de este mercado ({cap})",
     "delegation.offer.looks": "Con los fichajes delegados, el director revisa el mercado el día que abre y cada {days} días después, y cubre primero los puestos pedidos por el entrenador y los vacíos hasta tener {pending} ofertas pendientes; {upgrades} Los traspasos y los nuevos salarios solo se gastan mientras la caja cubra la pérdida prevista durante las temporadas permitidas. Dinero para fichajes ahora: {left}.",
     "delegation.offer.upgradesBar": "En cada mercado ficha jugadores al menos {margin} mejores que los titulares, hasta {upgrades} o, si hay más titulares por debajo del listón económico, tantos como esos puestos.",
     "delegation.sale.incomeUntouchable": "Gestión dentro de los ingresos, pero salarios y costes fijos superan los ingresos previstos −25 pts",

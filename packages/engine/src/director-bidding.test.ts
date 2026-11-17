@@ -15,6 +15,7 @@ import * as signings from './signings';
 import { spendingStance } from './delegation';
 import { detectMediations } from './mediation';
 import { lineOf } from './player';
+import { message } from '../../contracts/src/messages';
 import { STAFF_INFO, STAFF_TRAIT_INFO } from './staff';
 import { careerWorld } from './career.testkit';
 import { holdTemperament } from './delegation.testkit';
@@ -210,14 +211,13 @@ describe('director trait bidding', () => {
       resolution: { promise: expect.any(String) },
     });
   });
-  it('counts a held upgrade haggle against the window cap, so its raise never passes it', () => {
-    willing();
-    // At 아낌없이 the window takes `cap` upgrades (→CLUB-33). With cap − 1 signed and one upgrade
-    // bid refused on the look day, that look opens no other upgrade, and the haggle's raise the
-    // next day (→CLUB-41) makes the cap, never one more.
-    const w = world('negotiator'),
-      opening = w.calendar!.day,
-      look = opening + signings.SIGNING_CONFIG.lookDays,
+  /**
+   * At 아낌없이 the window takes `cap` upgrades (→CLUB-33): `cap` − 1 signed on the opening day and
+   * one upgrade bid of his refused with its answer on `answered`, a haggle he raises the day after
+   * (→CLUB-41). `upgrades` reads the window's signed and open upgrades.
+   */
+  function oneUpgradeLeft(w: World, answered: number) {
+    const opening = w.calendar!.day,
       stance = spendingStance(w, 'recruitment').signing,
       cap = signings.upgradeCap(
         stance,
@@ -239,11 +239,20 @@ describe('director trait bidding', () => {
         },
       ];
     const held = bid(w, 90);
-    Object.assign(held, { staff: 'upgrade', status: 'rejected', refusedBy: 'club', due: look });
+    Object.assign(held, { staff: 'upgrade', status: 'rejected', refusedBy: 'club', due: answered });
     const upgrades = () =>
       w.bids!.filter(
         (b) => b.staff === 'upgrade' && ['completed', 'pending', 'countered'].includes(b.status),
       );
+    return { cap, held, upgrades };
+  }
+  it('counts a held upgrade haggle against the window cap, so its raise never passes it', () => {
+    willing();
+    // With one upgrade left and an upgrade bid refused on the look day, that look opens no other
+    // upgrade, and the haggle's raise the next day makes the cap, never one more.
+    const w = world('negotiator'),
+      look = w.calendar!.day + signings.SIGNING_CONFIG.lookDays,
+      { cap, held, upgrades } = oneUpgradeLeft(w, look);
     w.calendar!.day = look;
     staffSignings(w);
     expect(w.bids!.filter((b) => b.day === look && b.staff === 'upgrade')).toEqual([]);
@@ -253,6 +262,55 @@ describe('director trait bidding', () => {
       expect.objectContaining({ playerId: held.playerId, staff: 'upgrade', status: 'pending' }),
     ]);
     expect(upgrades()).toHaveLength(cap);
+  });
+  it("puts a mediation's upgrade through the same cap check after a raise fills it", () => {
+    willing();
+    // With one upgrade left, a haggle answered the day before the look and an upgrade mediation
+    // pending since the opening (→CLUB-39): the raise comes first and makes the cap (→CLUB-41), and
+    // the mediation's pursuit meets the cap a look meets (→CLUB-33), ending in a promise.
+    const w = world('negotiator'),
+      look = w.calendar!.day + signings.SIGNING_CONFIG.lookDays,
+      request = w.shortlist?.requests.find((one) => one.kind === 'upgrade');
+    expect(request).toBeDefined();
+    w.shortlist = { ...w.shortlist!, requests: [request!] };
+    const { cap, held, upgrades } = oneUpgradeLeft(w, look - 1),
+      cash = w.cash;
+    w.cash = '0';
+    detectMediations(w);
+    expect(w.mediations).toEqual([expect.objectContaining({ status: 'pending', target: request })]);
+    w.cash = cash;
+    w.calendar!.day = look;
+    staffSignings(w);
+    expect(w.bids!.filter((b) => b.day === look)).toEqual([
+      expect.objectContaining({ playerId: held.playerId, staff: 'upgrade', status: 'pending' }),
+    ]);
+    expect(upgrades()).toHaveLength(cap);
+    expect(w.mediations![0]).toMatchObject({
+      status: 'resolved',
+      resolution: {
+        promise: expect.any(String),
+        result: expect.stringContaining(message('delegation.verdict.upgradeCap', { cap })),
+      },
+    });
+  });
+  it('ends an upgrade haggle when the cap has no room left for its raise', () => {
+    willing();
+    // The same check bars a raise: with the cap already full of signed upgrades (a cap read lower
+    // since the bid), the haggle ends the day after the answer, naming the cap (→CLUB-33, CLUB-41).
+    const w = world('negotiator'),
+      look = w.calendar!.day + signings.SIGNING_CONFIG.lookDays,
+      { cap, held, upgrades } = oneUpgradeLeft(w, look - 1);
+    w.bids!.push({ ...upgrades()[0]!, id: 'out:test:upgrade:full', playerId: 'test:upgrade:full' });
+    w.calendar!.day = look;
+    staffSignings(w);
+    expect(w.bids!.filter((b) => b.playerId === held.playerId)).toEqual([
+      expect.objectContaining({ status: 'expired' }),
+    ]);
+    expect(upgrades()).toHaveLength(cap);
+    const ended = message('copy.signings.e773f7135a', { p0: held.offer!.player.name });
+    expect(w.inbox!.find((item) => item.title === ended)?.detail).toContain(
+      message('delegation.verdict.upgradeCap', { cap }),
+    );
   });
   it('jumps to the ceiling in the final seven days', () => {
     const w = world('negotiator');

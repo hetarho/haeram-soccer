@@ -6969,6 +6969,7 @@
     "delegation.verdict.runwayFee": "With the fee {fee} and his wage {wage}, the fee and {seasons} seasons of the planned loss of {loss} a year would pass the cash of {capital}",
     "delegation.verdict.incomeLoss": "He runs within income: his wage of {wage} would make a planned loss of {loss} a year",
     "delegation.verdict.incomeFee": "The fee {fee} would pass the cash of {capital}",
+    "delegation.verdict.upgradeCap": "This transfer window's limit on starter upgrades ({cap}) is already reached",
     "delegation.offer.looks": "With signings delegated, the director looks on the window's opening day and every {days} days after, filling the manager's requested and empty slots first until {pending} of his offers are pending; {upgrades} Fees and new wages are spent only while the cash covers the planned loss for the allowed seasons. Money for signings now: {left}.",
     "delegation.offer.upgradesBar": "Each transfer market brings in players at least {margin} better than the starters, up to {upgrades} or, when more starters fall below the money bar, as many as those places.",
     "delegation.sale.incomeUntouchable": "Run within income, yet wages and fixed costs are above the planned income −25 pts",

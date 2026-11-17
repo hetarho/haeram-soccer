@@ -6972,6 +6972,7 @@
     "delegation.verdict.runwayFee": "Avec l’indemnité de {fee} et son salaire de {wage}, l’indemnité et {seasons} saisons de la perte prévue de {loss} par an dépasseraient la trésorerie de {capital}",
     "delegation.verdict.incomeLoss": "Il gère dans les limites des recettes : son salaire de {wage} créerait une perte prévue de {loss} par an",
     "delegation.verdict.incomeFee": "L’indemnité de {fee} dépasserait la trésorerie de {capital}",
+    "delegation.verdict.upgradeCap": "La limite de renforts des titulaires de ce mercato ({cap}) est déjà atteinte",
     "delegation.offer.looks": "Avec le recrutement délégué, le directeur examine le marché le jour de son ouverture puis tous les {days} jours, et comble d’abord les postes demandés par l’entraîneur et les postes vides jusqu’à avoir {pending} offres en attente ; {upgrades} Les indemnités et les nouveaux salaires ne sont dépensés que tant que la trésorerie couvre la perte prévue sur les saisons permises. Argent pour les recrues actuellement : {left}.",
     "delegation.offer.upgradesBar": "À chaque mercato, il recrute des joueurs meilleurs d’au moins {margin} que les titulaires, jusqu’à {upgrades} ou, si davantage de titulaires sont sous la barre financière, autant que ces postes.",
     "delegation.sale.incomeUntouchable": "Gestion dans les recettes, mais salaires et coûts fixes dépassent les recettes prévues −25 pts",

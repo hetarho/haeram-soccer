@@ -6972,6 +6972,7 @@
     "delegation.verdict.runwayFee": "Con il cartellino di {fee} e lo stipendio di {wage}, il cartellino e {seasons} stagioni della perdita prevista di {loss} l’anno supererebbero la cassa di {capital}",
     "delegation.verdict.incomeLoss": "Gestisce entro le entrate: lo stipendio di {wage} creerebbe una perdita prevista di {loss} l’anno",
     "delegation.verdict.incomeFee": "Il cartellino di {fee} supererebbe la cassa di {capital}",
+    "delegation.verdict.upgradeCap": "Il limite di rinforzi dei titolari di questo mercato ({cap}) è già raggiunto",
     "delegation.offer.looks": "Con gli acquisti delegati, il direttore esamina il mercato il giorno di apertura e poi ogni {days} giorni, e copre prima i ruoli chiesti dall’allenatore e quelli vuoti finché ha {pending} offerte in sospeso; {upgrades} Cartellini e nuovi stipendi si spendono solo finché la cassa copre la perdita prevista per le stagioni consentite. Fondi per gli acquisti ora: {left}.",
     "delegation.offer.upgradesBar": "A ogni mercato porta giocatori migliori di almeno {margin} rispetto ai titolari, fino a {upgrades} o, se più titolari sono sotto la soglia economica, tanti quanti quei ruoli.",
     "delegation.sale.incomeUntouchable": "Gestione entro le entrate, ma stipendi e costi fissi superano le entrate previste −25 pt",

@@ -6969,6 +6969,7 @@
     "delegation.verdict.runwayFee": "{fee} bonservis ve {wage} maaşla, bonservis ile yıllık {loss} planlanan zararın {seasons} sezonluk tutarı {capital} nakdi aşar",
     "delegation.verdict.incomeLoss": "Gelir içinde yönetiyor: {wage} maaş yıllık {loss} planlanan zarar doğurur",
     "delegation.verdict.incomeFee": "{fee} bonservis {capital} nakdi aşar",
+    "delegation.verdict.upgradeCap": "Bu transfer dönemindeki as kadro takviye sınırına ({cap}) zaten ulaşıldı",
     "delegation.offer.looks": "Transferler devredildiğinde sportif direktör, transfer döneminin açıldığı gün ve sonra her {days} günde bir piyasaya bakar; bekleyen {pending} teklifi olana kadar önce teknik direktörün istediği ve boş mevkileri doldurur; {upgrades} Bonservis ve yeni maaşlar, nakit planlanan zararı izin verilen sezon boyunca karşıladığı sürece harcanır. Şu anki transfer parası: {left}.",
     "delegation.offer.upgradesBar": "Her transfer döneminde ilk on birden en az {margin} daha iyi oyuncuları {upgrades} kişiye kadar ya da para çizgisinin altında kalan daha fazla ilk on bir mevkisi varsa o mevki sayısı kadar getirir.",
     "delegation.sale.incomeUntouchable": "Gelir içinde yönetim, ancak maaşlar ve sabit giderler planlanan geliri aşıyor −25 puan",

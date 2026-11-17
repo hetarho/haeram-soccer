@@ -1062,6 +1062,34 @@ function heldStaffBids(w: World, day: number) {
   const bids = windowBids(w, day);
   return [...bids.filter((bid) => bid.staff && isOpen(bid)), ...haggles(w, bids)];
 }
+/**
+ * The one check on the window's upgrade cap (→CLUB-33) that every move opening an upgrade passes —
+ * a look's, a negotiator's raise (→CLUB-41) and a mediation's pursuit (→CLUB-39): the upgrades the
+ * window holds, signed, waiting for an answer or a haggle waiting for its raise, stay under the cap
+ * of the step he acts on. A raise leaves out its own haggle (`raising`), whose upgrade it
+ * continues. The refusal when the cap is reached, else undefined.
+ */
+function upgradeCapReached(w: World, day: number, raising?: TransferBid) {
+  const signing = spendingStance(w, 'recruitment').signing,
+    margin = signing.margin,
+    cap = upgradeCap(
+      signing,
+      signing.barCap && margin !== undefined ? slotsBelowBar(w, margin, windowBar(w, day), day) : 0,
+    ),
+    bids = windowBids(w, day),
+    held = [
+      ...bids.filter((bid) => bid.status === 'completed' || isOpen(bid)),
+      ...haggles(w, bids),
+    ];
+  if (held.filter((bid) => bid.staff === 'upgrade' && bid !== raising).length < cap)
+    return undefined;
+  // At 최소한만 and 아껴서 he never upgrades.
+  if (!cap) return sourceMessage('delegation.offer.noUpgrades');
+  return sourceMessage('delegation.verdict.wrap', {
+    reason: sourceMessage('delegation.verdict.upgradeCap', { cap }),
+    plan: planLabel(w, 'recruitment'),
+  });
+}
 /** Where a bid for a candidate goes: his place on the list, else the player at his club. */
 function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
   const index = transferOffers(w).findIndex((one) => one.player.id === offer.player.id);
@@ -1153,7 +1181,9 @@ function raiseHaggles(w: World, day: number) {
     const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
     const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
     const terms = wageOffer(w, offer, fee);
-    const room = registrationRoom(w, { ...offer.player, joined: w.year });
+    const room =
+      registrationRoom(w, { ...offer.player, joined: w.year }) ??
+      (retry.staff === 'upgrade' ? upgradeCapReached(w, day, retry) : undefined);
     if (terms.ok && !room) {
       placeBid(w, targetOf(w, offer), fee, false, retry.staff, terms.offer.step);
       pushInbox(w, {
@@ -1191,12 +1221,6 @@ function staffMove(w: World, day: number) {
   const bids = windowBids(w, day),
     stance = spendingStance(w, 'recruitment'),
     unlisted = players.filter((p) => transferStance(p) !== 'listed').length,
-    // The window's upgrades against its cap: signed, waiting for an answer, or a haggle waiting
-    // for its raise, which continues the same upgrade and never adds one (→CLUB-33, CLUB-41).
-    upgrades = [
-      ...bids.filter((bid) => bid.status === 'completed' || isOpen(bid)),
-      ...haggles(w, bids),
-    ].filter((bid) => bid.staff === 'upgrade').length,
     tried = new Set(bids.map((bid) => bid.playerId)),
     joined = joinedThisWindow(w, day),
     replacements: SigningNeed[] = openNeeds(w)
@@ -1208,17 +1232,11 @@ function staffMove(w: World, day: number) {
       margin !== undefined && (stance.signing.room === undefined || unlisted <= stance.signing.room)
         ? upgradeNeeds(w, margin, joined, bar)
         : [];
-  const cap = upgradeCap(
-    stance.signing,
-    stance.signing.barCap && margin !== undefined
-      ? slotsBelowBar(w, margin, windowBar(w, day), day)
-      : 0,
-  );
   const requests = signingRequests(w),
     found: SigningNeed[] = [
       ...shortLines(w),
       ...replacements,
-      ...(upgrades < cap ? upgradeList : []),
+      ...(upgradeCapReached(w, day) ? [] : upgradeList),
     ];
   const needs = uncovered(
     w,
@@ -1319,6 +1337,9 @@ export function pursueRequest(
       )
     )
       return sourceMessage('copy.signings.475daa54a3');
+    // A mediated upgrade is one of the window's upgrades, whoever asked for it (→CLUB-33, CLUB-39).
+    const capped = request.kind === 'upgrade' ? upgradeCapReached(w, day) : undefined;
+    if (capped) return capped;
     const terms = wageOffer(w, offer, fee);
     if (!terms.ok) return terms.reason;
     if (offer.freeAgent) {
