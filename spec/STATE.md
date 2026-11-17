@@ -22,18 +22,18 @@
 | ARCH | 48 | 48 | - | 2 |
 | WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
-| WORLD | 14 | 14 | - | 0 |
+| WORLD | 15 | 15 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 75 | 75 | - | 0 |
+| CLUB | 76 | 76 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
-| LEAGUE | 21 | 21 | - | 0 |
+| LEAGUE | 22 | 22 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
-| ECON | 61 | 61 | - | 0 |
+| ECON | 62 | 62 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
 | SAVE | 70 | 70 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
-| PLAYER | 18 | 18 | - | 0 |
+| PLAYER | 19 | 19 | - | 0 |
 
 ## review
 | id | st |
@@ -61,10 +61,18 @@
 | test-value-261110 | converted@261110 |
 | game-runtime-speed-261110 | converted@261110 |
 | match-engine-split-261110 | converted@261111 |
+| market-levels-261118 | converted@261118 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T944 | Market-season harness | ARCH | - | todo |
+| T945 | NPC pull market | WORLD CLUB LEAGUE | T944 | todo |
+| T946 | Division-anchored talent supply | WORLD LEAGUE | - | todo |
+| T947 | Prodigies and war-gap intake | WORLD PLAYER CLUB | T946 | todo |
+| T948 | Loss-runway plan | ECON CLUB STAFF ARCH | - | todo |
+| T949 | Funded club buys the best | CLUB ECON | T948 | todo |
+| T950 | Calibrate market and levels | WORLD LEAGUE CLUB ECON | T945 T947 T949 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -76,5 +84,6 @@
 | lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
 
 ## next
+- Session xf18 (261118, gusta-self-improve until 09:00): review market-levels-261118 → T944–T949 in work group xf18-market (lanes npc-market, levels, owner-market), then T950 calibration in the main session.
 - Session tm17 landed T932–T935 as 0.8.9 (reports/261117-tm17): selling-club answer and personal terms as factor registries, wage steps, money bar, delegated sales; the NPC pull market (review transfer-market-261117 F4) waits for the owner.
 - inspect work board for remaining tasks

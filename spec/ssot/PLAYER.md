@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r18 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r19 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Every player of a playable association's club is a persisted person who develops and ages by the rules below wherever he plays (→WORLD-16); only representative clubs field squads generated each season (→WORLD-6). A player of a club nobody owns plays at his club's 조직력 (→LEAGUE-12) in place of his own adaptation; cross-role person continuity and retirement eligibility are →WORLD-10/11. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -139,6 +139,7 @@
   - potential is the OVR at his main position he grows toward; growth spreads over his attributes by that position's weights (→PLAYER-6), so primary attributes grow fastest.
   - each coaching department scales the attributes it owns (→STAFF-11): the assistant 패스, 시야, 판단력 and 침착성, the attack coach 슈팅, 드리블 and 크로스, the defence coach 태클, 위치선정 and 공중볼, the goalkeeping coach the three GK attributes, the fitness coach 속도, 체력 and 몸싸움.
   - each summer a player aged 23 or younger may break through (5%: potential +5 to +9) or stall (5%: −4 to −7); otherwise potential moves by at most 2; never below his OVR or above 99. Changes of 4+ are events and news.
+  - a prodigy (→WORLD-18) grows at three times his rate until he turns 18, with three times the season's growth limit; the other rules hold. ← one in a world can rate 80 at 16, as football's rare teenage starters do
 - PLAYER-16 [o] With his adaptation at 0.90 or more a player grows past his potential, with no cap but 99, on a curve that flattens sharply: growth at +1 over potential runs ×0.25 of the rate below it, +3 ×0.10, +5 ×0.05, +10 ×0.02 (log-like between); the age rules still hold. ← a player who suits his manager can outgrow his potential, rarely and slowly
   - "the rate below it" is his rate 2 under potential: a settled player's round growth never falls below that rate, nearing potential or past it; an unsettled player's still shrinks with the gap and stops at potential.
 - PLAYER-17 [o] Attributes age by group: ← veterans drop back into playmaking or centre back as their legs go
@@ -198,6 +199,7 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r19 261118 PLAYER-15✎ one growth rate for every player→+a prodigy (WORLD-18) grows ×3, with ×3 the season's limit, until 18
 - r18 261113 PLAYER-1✎ other clubs' squads generated each season, development and ageing for own players only→every playable-country player persisted and developing by the same rules, generated squads for representative clubs only
 - r17 261111 PLAYER-5✎ phase movement and role tendencies implemented in `grid/shape.ts` and `grid/tendencies.ts`→a role's place is the staging's shape, its action weights the result path's
 - r16 261110 PLAYER-27✎ team honours and league place in full for every teammate→in full for a club's best player by individual points, ×0.55 the next, ×0.35 each other; existing podiums retained

@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r61 | Define the browser-demo rules for historical club economy.
+> r62 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -187,22 +187,23 @@
   - each round's payment is multiplied by the squad investment's factor in force that round (→ECON-16); the default level's ×1 leaves ECON-29's reference club as calibrated.
 - ECON-31 [o] A broadcasting index per country and year scales league distributions (→ECON-28) and cup and continental prizes with their result bonuses (→LEAGUE-5, →EURO-7): flat with prices until television paid the league, growing with each country's rights deals and, through the broadcasting boom of the 1990s–2010s, far faster than the football index. ← the 1950s game lived on the gate and the 2000s game on television; one index for distributions and tickets could not give both income mixes (measured 261013: 1950s matchday 21–35% whenever the 2000s top-flight mix held)
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
-- ECON-33 [o] Every delegated decision that spends money — 감독 인사, 스태프 인사, 선수 계약, 선수 영입, 선수 매각 and 유소년 운영 (→WEB-45) — carries the owner's spending request (위임 요청), one of five steps: 최소한만, 아껴서, 적당히 (default), 넉넉히, 아낌없이; for 선수 매각 how readily to sell: 적극 매각, 팔 만하면 팔기, 균형 (default), 웬만하면 지키기, 끝까지 지키기. The 단장 plans on this season's income and permits drawing down cash above a reserve determined by his temperament and the request: he acts on the request at the step his temperament gives it (→STAFF-51). 스폰서 계약 takes no request; the owner's own decisions are never bounded by it. ← wealthy clubs may invest through operating losses while their reserves support it
+- ECON-33 [o] Every delegated decision that spends money — 감독 인사, 스태프 인사, 선수 계약, 선수 영입, 선수 매각 and 유소년 운영 (→WEB-45) — carries the owner's spending request (위임 요청), one of five steps: 최소한만, 아껴서, 적당히 (default), 넉넉히, 아낌없이; for 선수 매각 how readily to sell: 적극 매각, 팔 만하면 팔기, 균형 (default), 웬만하면 지키기, 끝까지 지키기. The 단장 plans on this season's income and on the club's cash: spending may run beyond income — a planned loss — while cash above a reserve covers that loss for the seasons the request allows (its loss runway); he acts on the request at the step his temperament gives it (→STAFF-51). 스폰서 계약 takes no request; the owner's own decisions are never bounded by it. ← clubs run losses on their reserves and their owners' money, and a wealthy club invests through them while its cash lasts
   - the income he plans on: this season's turnover so far (no player sales or owner money, →ECON-30) plus the rest of the season at the middle of the cash projection's income lines — gate, league share and merit payment, parachute, sponsor contracts and their bonuses (→ECON-18); before this season's league fixtures exist, last season's turnover, or in a takeover season the bought club's last season income (→ECON-38). Each plan fixes it until the next (→ECON-40).
-  | step acted on | squad share (players' wages + the season's fees) | sales reinvested in signings | youth share (academy investment + youth director's pay) | academy aim | sales line (players' wage bill / income) |
-  |---|---|---|---|---|---|
-  | 1 | 45% | 10% | 0.5% | 기본 운영 | 45% |
-  | 2 | 55% | 25% | 1% | 육성 강화 | 52% |
-  | 3 | 62% | 40% | 1.6% | 집중 투자 | 60% |
-  | 4 | 70% | 55% | 2.4% | 엘리트 아카데미 | 68% |
-  | 5 | 80% | 70% | 3.5% | 최고 수준 아카데미 | 80% |
-  - reserve years of current annual fixed costs by the step acted on (1–5): 안정 지향 50/40/30/2/1, 균형형 40/30/20/1/0, 공격형 30/20/10/0/0. Cash above that reserve, less fees reserved by open delegated bids, is available capital; negative cash releases none. An injection changes it immediately. This is a shared balance, recalculated from live cash and costs, not a fresh grant at each plan. ← at 20/10/5 years a funded club asked for 넉넉히 or 아낌없이 kept most of the owner's money back (measured 261117: three funded takeovers signed 0–1 players a season while holding £1m–£60m)
-  - the squad budget adds all available capital to its income share; youth adds its youth share of available capital. Fees already paid reduce only the income-based signing money, since they have already left live cash; pending bids also reserve capital. Added annual wages reduce capital by their reserve-years cost before affordability is tested. These plans may spend more than income or player sales, with negative transfer cash flow.
-  - signings: the income-based money for them is the squad share less the players' wage bill (never below zero), plus the reinvested share of this season's player sales, less this season's fees and the 단장's open bids (never below zero), then available capital is added. A signing passes when, with his wage, the players' wage bill stays within the squad share and the fee plus a year of his wage fit that money; a short line filled with a free agent reads only →ECON-41.
-  - renewals and improved contracts: a raise passes when it fits the room the squad share leaves above the players' wage bill.
-  - youth: the youth director's pay comes first, a new one at most the whole youth share; the academy runs at the aim or the highest level the rest pays for (→ECON-39).
-  - sales: a players' wage bill as a share of income plus available capital above the sales line, or more than 10 points above it, makes the staff sell harder (→CLUB-18, →CLUB-24).
-  - by the 선수 영입 step: no upgrades at 1–2, margin 5 and 1 a window at 3, margin 3 and 2 at 4, margin 2 and 3 at 5 (→CLUB-33); +10 points to every bid at 5 (→CLUB-41); his wage offer up to 100% of a player's demand at 1–2, 125% at 3, 150% at 4, 200% at 5 (→CLUB-41); a money bar at 4–5 (→CLUB-33).
+  | step acted on | loss runway (seasons of planned loss available capital must cover) | youth share (academy investment + youth director's pay) | academy aim |
+  |---|---|---|---|
+  | 1 | none: wages and costs within income | 0.5% | 기본 운영 |
+  | 2 | 6 | 1% | 육성 강화 |
+  | 3 | 4 | 1.6% | 집중 투자 |
+  | 4 | 2 | 2.4% | 엘리트 아카데미 |
+  | 5 | 1 | 3.5% | 최고 수준 아카데미 |
+  - reserve, in years of current annual fixed costs by the step acted on (1–5): 안정 지향 1/1/0.5/0.5/0.25, 균형형 1/0.5/0.25/0/0, 공격형 0.5/0.25/0/0/0. Cash above that reserve, less fees reserved by open delegated bids, is available capital; negative cash releases none. An injection changes it immediately. This is a shared balance, recalculated from live cash and costs, not a fresh grant at each plan. ← at 10–50 years a funded club held the owner's money back and income stayed the real ceiling (measured 261118: a 1951/52 club holding a £15.7m injection signed 10 players for £92,831 and sold 13)
+  - the planned loss: the players' wage bill plus the club's other annual fixed costs (→ECON-30) less the income he plans on, never below zero.
+  - the runway test: a commitment passes when its fee plus the planned loss after it, times the step's runway, fits available capital; at step 1 the planned loss after it must be zero and its fee must fit available capital. Player sales reach cash and so capital; there is no share of income for the squad and no wage ceiling. ← a club spends what its money allows, not a share of what it earns
+  - signings: the runway test with his wage and his fee; a short line filled with a free agent reads only →ECON-41.
+  - renewals and improved contracts: the runway test with the raise.
+  - youth: youth share of income plus the youth share of available capital; the youth director's pay comes first, a new one at most the whole youth share; the academy runs at the aim or the highest level the rest pays for (→ECON-39).
+  - sales: while the runway test fails at the current wage bill, or fails at half the runway, the staff sell harder (→CLUB-18, →CLUB-24).
+  - by the 선수 영입 step: no upgrades at 1–2, margin 5 and 1 a window at 3, margin 3 and 2 at 4, margin 2 and 3 at 5, at 4–5 raised to the XI slots below the money bar when that is more (→CLUB-33); +10 points to every bid at 5 (→CLUB-41); his wage offer up to 100% of a player's demand at 1–2, 125% at 3, 150% at 4, 200% at 5 (→CLUB-41); a money bar at 4–5 (→CLUB-33).
   - the manager's and the coaches' posts have no share: their pay follows the rows the 단장 sets (→ECON-39), checked only by →ECON-41.
   - there is no per-person wage cap; a request applies to later automatic decisions, never to signed contracts.
 - ECON-39 [o] While a decision is delegated its settings are set at each plan (→ECON-40) — by the 단장 from the step he acts on (→ECON-33), his temperament and his plan's money, and for the academy's football rows by the youth director — and the owner reads them on their area pages (→WEB-14); his change is refused, naming whose they are: the youth director's for 육성 목표 and 데뷔 시점, the 단장's for the rest. Taken back, they stay as they were left until the owner changes them. Build cards, the ticket price, 선수단 투자 and the other dials stay the owner's. ← whoever runs a work chooses how it runs; two hands on one setting leave neither answerable
@@ -210,7 +211,7 @@
   |---|---|
   | 감독 인사 | 감독 기조: 저비용 at steps 1–2, 검증된 승부사 at 5, else 표준; 선호 학파 any |
   | 스태프 인사 | 코치 기조: 저비용 at 1–2, 최고 수준 at 5, else 표준 |
-  | 선수 계약 | 재계약 기조: 짠물 at 1 or while the players' wage bill is above the squad share, 핵심만 붙잡기 at 2, 모두 붙잡기 at 5, else 표준 |
+  | 선수 계약 | 재계약 기조: 짠물 at 1 or while the runway test fails at the current wage bill (→ECON-33), 핵심만 붙잡기 at 2, 모두 붙잡기 at 5, else 표준 |
   | 선수 영입 | 영입 기조 at the step (유망주 발굴, 젊은 선수 위주, 균형, 경험 위주, 즉시 전력); director/manager support by the 단장's temperament: 단장 우선 for 안정 지향, 감독 우선 for 공격형, else 균형 |
   | 선수 매각 | - |
   | 유소년 운영 | the 단장: 유소년 투자 from the youth share (→ECON-33); the youth director: 육성 목표 1군 공급 if he is a developer, else 표준, and 데뷔 시점 by his temperament: 빠른 데뷔 for 공격형, 준비된 뒤 for 안정 지향 or a vacant post, else 표준 |
@@ -248,6 +249,7 @@
   - funded operating deficits and wages above turnover are permitted. Exhausted backing and unsupported commitments remain observable. No support is chosen to force a title or strength target.
 
 ## chg
+- r62 261118 ECON-33✎ squad share of income 45/55/62/70/80%, sales reinvested 10–70%, sales line 45–80% of income, reserve 50/40/30/2/1 · 40/30/20/1/0 · 30/20/10/0/0 years→no income share or wage ceiling: a loss runway of none/6/4/2/1 seasons that available capital must cover, reserve 1/1/0.5/0.5/0.25 · 1/0.5/0.25/0/0 · 0.5/0.25/0/0/0 years, selling harder when the runway test fails; upgrades at 4–5 up to the slots below the money bar; ECON-39✎ 짠물 while the wage bill is above the squad share→while the runway test fails
 - r61 261117 ECON-22✎ 셀링 클럽 other clubs' offers ×1.6→×3.2 (with CLUB-18's sales targets: some seasons sell 5–7 of the starters a season began with)
 - r60 261117 ECON-33✎ the 선수 영입 step sets margins, caps and bid points→+wage offer ceilings 100/125/150/200% and the money bar at 4–5
 - r59 261117 ECON-33✎ reserve years at steps 4/5 안정 지향 20/10, 균형형 10/5, 공격형 5/0→2/1, 1/0, 0/0
