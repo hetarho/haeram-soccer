@@ -63,3 +63,5 @@ export * from './club-staff';
 
 export * from './economy';
 export * from './europe';
+export * from './sale-answer';
+export * from './personal-terms';

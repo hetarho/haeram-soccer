@@ -1,0 +1,411 @@
+/**
+ * The selling club's answer to a bid (매각 판단, →CLUB-52): one model for every bid a club
+ * receives, ours to a club nobody owns and another club's to us while sales are delegated. A bid at
+ * or above the asking fee is accepted; below it the seller holds out for a reservation, the asking
+ * fee times a share that its factors and one seeded spread set. Each factor is one registry entry,
+ * so a later one (prestige, club history) is one more line and no caller changes.
+ *
+ * The model itself is pure: `saleAnswer` takes the context and a uniform draw, which the caller
+ * reads from `random(\`${w.seed}:sale:${bidId}\`)` (→ARCH-5). `saleContext` reads one from a world.
+ */
+import type { SourceMessageId } from '../../contracts/src/messages';
+import type { Club, Player, TransferStance, World } from '../../contracts/src/types';
+import { npcWageBill, npcWageLimit } from './books';
+import { wagePressure } from './delegation';
+import { SAFETY_ROUNDS } from './delegation-info';
+import { operatingCosts } from './finance';
+import { fixedCostRunway } from './investment';
+import { activePlayers, overall } from './player-state';
+import { compareIds } from './primitives';
+import { seasonsLeft, staffMember } from './staff-info';
+import { SALE_BARS } from './transfer-policy';
+import { transferWindow } from './transfer-window';
+import { isProspect, playerValue, transferStance } from './transfers';
+import { clubById, ownStarters, startingSquad } from './world';
+import { clubPlayer, worldMarketOffer } from './world-market';
+
+/** One factor's line: what it adds and the message, with its named parameters, that names it. */
+export interface FactorLine {
+  /** The registry entry that wrote it. */
+  factor: string;
+  /** Added to the reservation share (sale) or to the log-odds (terms). */
+  delta: number;
+  message: SourceMessageId;
+  params: Readonly<Record<string, string | number>>;
+}
+/** A registry entry: a small read of the context, a line when it moves the answer. */
+export interface AnswerFactor<C> {
+  id: string;
+  read(context: C): FactorLine | undefined;
+}
+
+/** His place in the seller's XI: one of its three best starters, another starter or outside. */
+export type SalePlace = 'core' | 'starter' | 'outside';
+/** Everything the selling club's answer reads, in plain values (→CLUB-52). */
+export interface SaleContext {
+  /** The bid, in minor units of the money the asking fee is in. */
+  fee: string;
+  /** The asking fee A. */
+  asking: string;
+  /** The seller is our club. */
+  ownSeller: boolean;
+  /** Our player's value: our reservation never falls below 80% of it. Absent at other clubs. */
+  value?: string;
+  place: SalePlace;
+  /** Seasons left on his contract, this one included: 1 is its final season. */
+  contractSeasons: number;
+  age: number;
+  /** A prospect (aged 22 or under, potential 8+ above ability); counts at a club nobody owns. */
+  prospect: boolean;
+  /** The seller's cash crisis or fixed-cost runway under 4 rounds (→ECON-41), with that runway. */
+  cashCrisis: boolean;
+  runway: number;
+  /** Our players' wage bill against the 단장's sales line: 1 above it, 2 more than 10 points above. */
+  wageLine: 0 | 1 | 2;
+  /** The wage bill as a percentage of planned income, for the line's report. */
+  wageShare: number;
+  /** A club nobody owns selling down its wage bill (→WORLD-17). */
+  sellingDown: boolean;
+  /** Our player's stance (→CLUB-22) and his unhappiness (→CLUB-27); open at other clubs. */
+  stance: TransferStance;
+  transferRequest: boolean;
+  unhappy: boolean;
+  /** Our 단장 when the bid is ours (→STAFF-20); `vacant` when the post is empty. */
+  director?:
+    { vacant: true } | { vacant: false; name: string; ability: number; negotiator: boolean };
+  /** Days left in the open window, the deadline day 0; absent outside a window. */
+  windowDaysLeft?: number;
+}
+
+/** CLUB-52's share and its bounds; starting values, tuned by measurement. */
+export const SALE_SHARE = {
+  base: 0.85,
+  spread: 0.08,
+  min: 0.5,
+  max: 1,
+  /** Our reservation never below this share of value. */
+  ownFloor: 0.8,
+  /** A bid at least R − this × A gets a counter at R. */
+  counterReach: 0.25,
+} as const;
+/** CLUB-52's factor table: what each one adds to the share. */
+export const SALE_FACTOR_VALUES = {
+  place: { core: 0.1, starter: 0.05, outside: -0.1 },
+  contract: { final: -0.15, next: -0.05 },
+  age: { veteran: -0.1, old: -0.2 },
+  veteranAge: 30,
+  oldAge: 33,
+  prospect: 0.05,
+  cashCrisis: -0.15,
+  wageLine: { over: -0.05, far: -0.1 },
+  sellingDown: -0.1,
+  listed: -0.15,
+  requestOrUnhappy: -0.1,
+  /** −(ability − 50)/250, a negotiator 0.05 more, a vacant post +0.05. */
+  directorNeutral: 50,
+  directorScale: 250,
+  negotiator: -0.05,
+  vacant: 0.05,
+  /** The window's last days: the deadline day and the two before it. */
+  deadlineDays: 3,
+  deadline: -0.05,
+} as const;
+
+const V = SALE_FACTOR_VALUES;
+const line = (
+  factor: string,
+  delta: number,
+  message: SourceMessageId,
+  params: Record<string, string | number> = {},
+): FactorLine => ({ factor, delta, message, params });
+
+/** CLUB-52's starting registry; the answer only sums it. */
+export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
+  {
+    id: 'place',
+    read: (c) =>
+      c.place === 'core'
+        ? line('place', V.place.core, 'market.sale.place.core')
+        : c.place === 'starter'
+          ? line('place', V.place.starter, 'market.sale.place.starter')
+          : line('place', V.place.outside, 'market.sale.place.outside'),
+  },
+  {
+    id: 'contract',
+    read: (c) =>
+      c.contractSeasons <= 1
+        ? line('contract', V.contract.final, 'copy.transfers.53f9e38caf')
+        : c.contractSeasons === 2
+          ? line('contract', V.contract.next, 'market.sale.contract.next')
+          : undefined,
+  },
+  {
+    id: 'age',
+    read: (c) =>
+      c.age >= V.oldAge
+        ? line('age', V.age.old, 'market.sale.age', { age: c.age })
+        : c.age >= V.veteranAge
+          ? line('age', V.age.veteran, 'market.sale.age', { age: c.age })
+          : undefined,
+  },
+  {
+    id: 'prospect',
+    read: (c) =>
+      c.prospect && !c.ownSeller ? line('prospect', V.prospect, 'market.sale.prospect') : undefined,
+  },
+  {
+    id: 'cash',
+    read: (c) =>
+      c.cashCrisis
+        ? line('cash', V.cashCrisis, 'market.sale.cash', { rounds: c.runway })
+        : undefined,
+  },
+  {
+    id: 'wages',
+    read: (c) =>
+      c.ownSeller && c.wageLine === 2
+        ? line('wages', V.wageLine.far, 'market.sale.wages.far', { share: c.wageShare })
+        : c.ownSeller && c.wageLine === 1
+          ? line('wages', V.wageLine.over, 'market.sale.wages.over', { share: c.wageShare })
+          : undefined,
+  },
+  {
+    id: 'sellDown',
+    read: (c) =>
+      c.sellingDown && !c.ownSeller
+        ? line('sellDown', V.sellingDown, 'market.sale.sellDown')
+        : undefined,
+  },
+  {
+    id: 'stance',
+    read: (c) =>
+      !c.ownSeller
+        ? undefined
+        : c.stance === 'listed'
+          ? line('stance', V.listed, 'market.sale.listed')
+          : c.transferRequest
+            ? line('stance', V.requestOrUnhappy, 'market.sale.request')
+            : c.unhappy
+              ? line('stance', V.requestOrUnhappy, 'market.sale.unhappy')
+              : undefined,
+  },
+  {
+    id: 'director',
+    read: (c) => {
+      const d = c.director;
+      if (!d) return undefined;
+      if (d.vacant) return line('director', V.vacant, 'market.sale.director.vacant');
+      const delta =
+        -(d.ability - V.directorNeutral) / V.directorScale + (d.negotiator ? V.negotiator : 0);
+      if (delta === 0) return undefined;
+      return d.negotiator
+        ? line('director', delta, 'market.sale.director.negotiator', {
+            name: d.name,
+            ability: d.ability,
+          })
+        : line('director', delta, 'market.sale.director', { name: d.name, ability: d.ability });
+    },
+  },
+  {
+    id: 'deadline',
+    read: (c) =>
+      c.windowDaysLeft !== undefined && c.windowDaysLeft < V.deadlineDays
+        ? line('deadline', V.deadline, 'market.sale.deadline', { days: c.windowDaysLeft })
+        : undefined,
+  },
+];
+
+/** The factors' lines and the share they set before the spread. */
+export function saleShare(
+  context: SaleContext,
+  factors: readonly AnswerFactor<SaleContext>[] = SALE_FACTORS,
+) {
+  const lines = factors.flatMap((f) => {
+    const read = f.read(context);
+    return read ? [read] : [];
+  });
+  return { base: lines.reduce<number>((sum, l) => sum + l.delta, SALE_SHARE.base), lines };
+}
+
+/** Shares are carried in parts per billion so fees stay exact integers. */
+const PPB = 1_000_000_000n;
+const ceilDiv = (a: bigint, b: bigint) => (a + b - 1n) / b;
+const shareOf = (base: number, draw: number) =>
+  Math.min(SALE_SHARE.max, Math.max(SALE_SHARE.min, base + (2 * draw - 1) * SALE_SHARE.spread));
+/** Our floor: 80% of value, rounded up; zero at other clubs. */
+function ownFloor(context: SaleContext) {
+  if (!context.ownSeller || !context.value) return 0n;
+  return ceilDiv(BigInt(context.value) * BigInt(Math.round(SALE_SHARE.ownFloor * 100)), 100n);
+}
+
+export type SaleAnswerKind = 'accept' | 'counter' | 'refuse';
+export interface SaleAnswer {
+  kind: SaleAnswerKind;
+  /** The counter's fee, R: never below the bid, never above the asking fee. */
+  counter?: string;
+  /** The reservation R and the share it was read at, the spread included. */
+  reservation: string;
+  share: number;
+  /** The seeded spread the draw set, ±0.08; a factor never changes it. */
+  spread: number;
+  lines: FactorLine[];
+}
+
+/**
+ * The seller's answer to `context.fee` for a uniform `draw` in [0, 1): accepted at or above the
+ * asking fee or the reservation R, a counter at R for a bid at least R − 0.25 × A, else refused.
+ */
+export function saleAnswer(
+  context: SaleContext,
+  draw: number,
+  factors: readonly AnswerFactor<SaleContext>[] = SALE_FACTORS,
+): SaleAnswer {
+  const { base, lines } = saleShare(context, factors),
+    share = shareOf(base, draw),
+    spread = (2 * draw - 1) * SALE_SHARE.spread,
+    asking = BigInt(context.asking),
+    fee = BigInt(context.fee);
+  let reservation = ceilDiv(asking * BigInt(Math.round(share * Number(PPB))), PPB);
+  const floor = ownFloor(context);
+  if (reservation < floor) reservation = floor;
+  if (reservation > asking) reservation = asking;
+  const answer = { reservation: reservation.toString(), share, spread, lines };
+  if (fee >= asking || fee >= reservation) return { kind: 'accept', ...answer };
+  const reach = (asking * BigInt(Math.round(SALE_SHARE.counterReach * 100))) / 100n;
+  if (fee >= reservation - reach)
+    return { kind: 'counter', counter: reservation.toString(), ...answer };
+  return { kind: 'refuse', ...answer };
+}
+
+/**
+ * The exact chances, under the uniform draw, that the seller accepts `context.fee` and that it
+ * counters, for the bid view (→CLUB-14). They read the same factors as `saleAnswer`.
+ */
+export function saleOutlook(
+  context: SaleContext,
+  factors: readonly AnswerFactor<SaleContext>[] = SALE_FACTORS,
+) {
+  const { base, lines } = saleShare(context, factors),
+    asking = BigInt(context.asking),
+    fee = BigInt(context.fee);
+  if (asking <= 0n || fee >= asking) return { accept: 1, counter: 0, lines };
+  const ratio = (amount: bigint) => Number((amount * PPB) / asking) / Number(PPB),
+    x = ratio(fee),
+    floor = ratio(ownFloor(context)),
+    s = SALE_SHARE.spread;
+  // P(reservation share ≤ t): the share is base + a uniform spread, clamped, and our floor holds.
+  const atMost = (t: number) => {
+    if (t >= SALE_SHARE.max) return 1;
+    if (t < floor || t < SALE_SHARE.min) return 0;
+    return Math.min(1, Math.max(0, (t - base + s) / (2 * s)));
+  };
+  const accept = atMost(x);
+  return { accept, counter: atMost(x + SALE_SHARE.counterReach) - accept, lines };
+}
+
+/** The bid a world context is read for: the player, the club selling him and the fee offered. */
+export interface SaleBid {
+  playerId: string;
+  sellerId: string;
+  fee: string;
+  /** The asking fee the bidder faces; read from the market when absent at another club. */
+  asking?: string;
+}
+
+/** The seller's XI and whether the player is one of its three best starters, a starter or outside. */
+function placeIn(xi: readonly Player[], id: string): SalePlace {
+  if (!xi.some((p) => p.id === id)) return 'outside';
+  const core = [...xi]
+    .sort((a, b) => overall(b) - overall(a) || compareIds(a.id, b.id))
+    .slice(0, 3);
+  return core.some((p) => p.id === id) ? 'core' : 'starter';
+}
+
+/** A club nobody owns in a cash crisis: in debt, or its cash short of 4 rounds of its costs. */
+function npcCash(club: Club) {
+  const books = club.books,
+    last = books?.seasons[0];
+  if (!books) return { cashCrisis: false, runway: 999 };
+  if (BigInt(books.debt) > 0n) return { cashCrisis: true, runway: 0 };
+  const runway = last
+    ? fixedCostRunway(books.cash, (BigInt(last.wages) + BigInt(last.costs)).toString())
+    : 999;
+  return { cashCrisis: runway < SAFETY_ROUNDS, runway };
+}
+
+/** Our 단장 as a bid's buyer reads him (→STAFF-20); absent staff in older saves are neutral. */
+function buyingDirector(w: World): SaleContext['director'] {
+  if (!w.staff) return { vacant: false, name: '', ability: 50, negotiator: false };
+  const member = staffMember(w, 'director');
+  return member
+    ? {
+        vacant: false,
+        name: member.name,
+        ability: member.ability,
+        negotiator: member.trait === 'negotiator',
+      }
+    : { vacant: true };
+}
+
+/**
+ * The context of a bid from the world as it stands: his place in the seller's XI, contract, age and
+ * promise, the seller's money and stance, our 단장 when the bid is ours, and the window's days left.
+ * Undefined when the seller or the player is not found.
+ */
+export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
+  const seller = clubById(w, bid.sellerId);
+  if (!seller) return undefined;
+  const ownSeller = seller.id === w.playerClub;
+  const player = ownSeller
+    ? activePlayers(w).find((p) => p.id === bid.playerId)
+    : clubPlayer(w, seller, bid.playerId);
+  if (!player) return undefined;
+  const window = transferWindow(w),
+    prospect = isProspect(w, player),
+    common = {
+      fee: bid.fee,
+      place: placeIn(ownSeller ? ownStarters(w) : startingSquad(w, seller), player.id),
+      contractSeasons: seasonsLeft(w, player.until),
+      age: w.year - player.born,
+      prospect,
+      ...(window.open ? { windowDaysLeft: window.daysLeft } : {}),
+    };
+  if (ownSeller) {
+    const value = playerValue(w, player),
+      bar = SALE_BARS[w.build?.market ?? 'standard'] ?? SALE_BARS.standard!,
+      runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
+      pressure = wagePressure(w);
+    return {
+      ...common,
+      asking: bid.asking ?? ((BigInt(value) * BigInt(bar[prospect ? 1 : 0])) / 100n).toString(),
+      ownSeller,
+      value,
+      cashCrisis: runway < SAFETY_ROUNDS,
+      runway,
+      wageLine: pressure.level as 0 | 1 | 2,
+      wageShare: pressure.share,
+      sellingDown: false,
+      stance: transferStance(player),
+      transferRequest: !!player.transferRequest,
+      unhappy: !!player.unhappy,
+    };
+  }
+  const asking =
+    bid.asking ??
+    worldMarketOffer(w, { world: w.id, kind: 'club', clubId: seller.id, playerId: player.id })?.fee;
+  if (asking === undefined) return undefined;
+  const limit = npcWageLimit(w, seller);
+  return {
+    ...common,
+    asking,
+    ownSeller,
+    ...npcCash(seller),
+    wageLine: 0,
+    wageShare: 0,
+    sellingDown: limit !== undefined && npcWageBill(w, seller) > limit,
+    stance: 'open',
+    transferRequest: false,
+    unhappy: false,
+    director: buyingDirector(w),
+  };
+}
