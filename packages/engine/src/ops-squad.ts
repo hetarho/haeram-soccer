@@ -8,7 +8,15 @@ import { fanMoodTransfer } from './fan-mood';
 import { declineContract, offerContract, signingClauses } from './contracts';
 import { moneyLabel } from './finance';
 import { promoteYouth, releaseYouth } from './academy';
-import { isWageStep, termsReport, placeBid, respondBid, setTransferStance } from './transfers';
+import {
+  fittedDetail,
+  isWageStep,
+  namedTitle,
+  termsReport,
+  placeBid,
+  respondBid,
+  setTransferStance,
+} from './transfers';
 import { termsAnswer, termsContext } from './personal-terms';
 import { currentDay } from './calendar';
 import { pushInbox } from './inbox';
@@ -70,12 +78,14 @@ function freeAgentTerms(w: World, player: Player, step: number) {
   if (!answer.accept)
     pushInbox(w, {
       kind: 'bid-response',
-      title: sourceMessage('market.answer.free.title', { name: player.name }),
-      detail: sourceMessage('market.answer.free.detail', {
-        wage: moneyLabel(w, context.offer),
-        percent: Math.round(step * 100),
-        terms: termsReport(answer.chance, answer.lines),
-      }),
+      title: namedTitle('market.answer.free.title', player.name),
+      detail: fittedDetail((cap) =>
+        sourceMessage('market.answer.free.detail', {
+          wage: moneyLabel(w, context.offer),
+          percent: Math.round(step * 100),
+          terms: termsReport(answer.chance, answer.lines, cap),
+        }),
+      ),
       attention: true,
       ref: player.id,
     });

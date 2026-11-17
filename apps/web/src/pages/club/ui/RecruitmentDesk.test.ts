@@ -17,7 +17,7 @@ import korean from '../../../../public/presentation/locales/ko-KR.json';
 import { PositionBadge } from '../../../entities/player';
 import { useTaskMemory } from '../../../shared/routing/taskMemory';
 import { money } from '../../../presentation/format';
-import { candidateSide, RecruitmentDesk } from './RecruitmentDesk';
+import { atWage, candidateSide, RecruitmentDesk } from './RecruitmentDesk';
 import {
   DEFAULT_MARKET_QUERY,
   createMarketReader,
@@ -589,6 +589,8 @@ describe('paged whole-world recruitment desk', () => {
     expect(markup).toContain('data-testid="detail-wage"');
     expect(markup).toContain('수락 가능성 90%');
     const card = () => elements(tree).find((node) => node.props.candidate)!;
+    // The card's money reads the picked step's wage (→CLUB-15).
+    expect(card().props.offered).toBe('200');
     (card().props.onRecruit as (loan: boolean) => void)(true);
     expect(client.command).toHaveBeenLastCalledWith(
       { type: 'bid', target: offer.target, fee: offer.loanFee, loan: true, wage: 2 },
@@ -607,6 +609,23 @@ describe('paged whole-world recruitment desk', () => {
       { type: 'recruit', target: reads.detail.offer.target, loan: false, wage: 2 },
       { background: true },
     );
+  });
+  it('prices a preview at the offered wage: his wage, the year’s costs and the runway (→CLUB-15)', () => {
+    const preview = {
+      ...detail().buy,
+      wage: '100',
+      annualAfter: '1000',
+      cashAfter: '500',
+      runwayRounds: 23,
+    };
+    expect(atWage(preview)).toBe(preview);
+    expect(atWage(preview, '100')).toBe(preview);
+    expect(atWage(preview, '200')).toMatchObject({
+      wage: '200',
+      annualAfter: '1100',
+      cashAfter: '500',
+      runwayRounds: 20,
+    });
   });
   it.each([true, false])(
     'offers only a permanent signing for a free agent with window open=%s',

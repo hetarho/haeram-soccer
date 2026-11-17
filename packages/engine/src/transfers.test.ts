@@ -671,6 +671,12 @@ describe('personal terms (→CLUB-53)', () => {
     expect(low.inbox!.at(-1)!.detail).toMatch(/수락 가능성 \d+%: .*자유계약 선수/);
     recruit(low, cold, 1);
     expect(signed(low, id)).toBe(false);
+    // A name as long as a save allows still leaves a valid report naming him (→SAVE-5).
+    low.freeAgents!.find((p) => p.id === id)!.name = 'N'.repeat(160);
+    recruit(low, cold, 1);
+    expect(signed(low, id)).toBe(false);
+    expect(low.inbox!.at(-1)!.title.length).toBeLessThanOrEqual(160);
+    expect(low.inbox!.at(-1)!.title).toContain('N'.repeat(100));
     expect(validateWorld(low).id).toBe(low.id);
   });
 });

@@ -2,7 +2,12 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { message, type SourceMessageId } from '../../../../../../packages/contracts/src/messages';
 import type { FactorLine } from '../../../../../../packages/engine/src/sale-answer';
-import { reservationReport, termsReport } from '../../../../../../packages/engine/src/transfers';
+import {
+  fittedDetail,
+  namedTitle,
+  reservationReport,
+  termsReport,
+} from '../../../../../../packages/engine/src/transfers';
 import { createLoadedLocale } from '../../../presentation/locale';
 import { displayMessage, localizeText, setTextLocale } from '../../../presentation/text';
 
@@ -105,5 +110,30 @@ describe('bid answer reports read in every locale (→ARCH-32, →CLUB-52/53)', 
     const name = '자유계약 선수';
     expect(localizeText(message('market.answer.player.title', { name }))).toContain(name);
     expect(localizeText(message('market.answer.free.title', { name }))).toContain(name);
+  });
+
+  it('keeps every report within the inbox’s bounds, a long name and every factor included (→SAVE-5)', () => {
+    english();
+    const name = 'N'.repeat(160);
+    for (const id of ['market.answer.player.title', 'market.answer.free.title'] as const) {
+      const title = namedTitle(id, name);
+      expect(title.length).toBeLessThanOrEqual(160);
+      expect(title).toContain('N'.repeat(100));
+      expect(localizeText(title), title).not.toMatch(hangul);
+    }
+    const sale = [...SALE, line('market.sale.director', { name, ability: 99 })],
+      detail = fittedDetail((cap) =>
+        message('market.answer.player.detail.club', {
+          fee: '£123M',
+          reason: reservationReport('£98.7M', 0.87, sale, cap),
+          wage: '£12.3M',
+          percent: 200,
+          terms: termsReport(0.12, TERMS, cap),
+        }),
+      );
+    expect(detail.length).toBeLessThanOrEqual(400);
+    // The last factors are left out whole, so what remains still translates.
+    expect(localizeText(detail), detail).not.toMatch(hangul);
+    expect(localizeText(detail)).toContain(displayMessage(SALE[0]!.message, SALE[0]!.params));
   });
 });

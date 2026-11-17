@@ -33,6 +33,7 @@ import { transferWindow } from '../../../../../../packages/engine/src/transfer-w
 import { bidKind, freeSigning, visibleBids } from '../lib/bids';
 import { activePlayers, clubOf, overall } from '../../../../../../packages/engine/src/player-state';
 import { recruitmentLineNeed } from '../../../../../../packages/engine/src/recruitment';
+import { SEASON_ROUNDS } from '../../../../../../packages/engine/src/calendar';
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { Dialog } from '../../../shared/ui/Dialog';
@@ -64,6 +65,23 @@ import { PlayerCompare, type CompareSide } from './PlayerCompare';
 import s from './RecruitmentDesk.module.css';
 
 type Candidate = MarketDetail;
+type Preview = Candidate['buy'];
+/**
+ * A signing's preview at the wage our step offers (→CLUB-53): his wage, the year's fixed costs and
+ * the fixed-cost runway after the move count the offered wage, not his demand (→CLUB-15).
+ */
+export function atWage<T extends Preview>(preview: T, wage?: string): T {
+  if (wage === undefined || wage === preview.wage) return preview;
+  const annual = BigInt(preview.annualAfter) - BigInt(preview.wage) + BigInt(wage),
+    cashAfter = BigInt(preview.cashAfter),
+    runway = cashAfter > 0n && annual > 0n ? (cashAfter * BigInt(SEASON_ROUNDS)) / annual : 0n;
+  return {
+    ...preview,
+    wage,
+    annualAfter: annual.toString(),
+    runwayRounds: Number(runway > 999n ? 999n : runway),
+  };
+}
 /**
  * A market row as one side of a comparison (→WEB-43). The market lists our own players too; one
  * of ours has no market terms (→WEB-109), so no fee, loan or cash after a signing shows for him.
@@ -236,6 +254,7 @@ function CandidateCard({
   pending,
   money,
   bid = false,
+  offered,
 }: {
   w: World;
   candidate: Candidate;
@@ -249,9 +268,13 @@ function CandidateCard({
   pending?: TransferBid;
   money: MarketMoney | null;
   bid?: boolean;
+  /** The wage our picked step offers, when it differs from his demand (→CLUB-53). */
+  offered?: string;
 }) {
   useTextLocale();
-  const { offer, buy, loan, verdict } = candidate,
+  const { offer, verdict } = candidate,
+    buy = atWage(candidate.buy, offered),
+    loan = atWage(candidate.loan, offered),
     player = offer.player,
     club = clubOf(w);
   const unavailable = sourceMessage('copy.RecruitmentDesk.414f13ede8');
@@ -415,7 +438,7 @@ function CandidateCard({
               p0: free
                 ? sourceMessage('copy.RecruitmentDesk.6a7f3133c2')
                 : sourceMessage('copy.RecruitmentDesk.73bc6c6e24', { p0: short(offer.fee) }),
-              p1: short(player.wage),
+              p1: short(buy.wage),
             })}
             open
           >
@@ -430,7 +453,7 @@ function CandidateCard({
               </div>
               <div>
                 <dt>{richMessage('team.column.wage')}</dt>
-                <dd>{localizeValue(cash(player.wage))}</dd>
+                <dd>{localizeValue(cash(buy.wage))}</dd>
               </div>
               <div>
                 <dt>{richMessage('copy.RecruitmentDesk.c549ab659c')}</dt>
@@ -881,7 +904,7 @@ export function RecruitmentDesk({
     current: boolean,
     money: MarketMoney | null,
     bid = false,
-    wage?: WageStep,
+    wage?: { step: WageStep; wage: string },
   ) => (
     <CandidateCard
       key={candidate.offer.player.id}
@@ -889,6 +912,7 @@ export function RecruitmentDesk({
       candidate={candidate}
       money={money}
       bid={bid}
+      offered={wage?.wage}
       blocked={
         blocked ||
         !current ||
@@ -900,7 +924,8 @@ export function RecruitmentDesk({
       onCompare={() => toggle(candidate.offer.target)}
       onCompareOwn={() => setOwnCompare({ target: candidate.offer.target })}
       onRecruit={(loan) => {
-        if (current && sameMarketMoney(money, currentMoney)) void recruit(candidate, loan, wage);
+        if (current && sameMarketMoney(money, currentMoney))
+          void recruit(candidate, loan, wage?.step);
       }}
       onBid={() => {
         setComparing(false);
@@ -2003,7 +2028,7 @@ export function RecruitmentDesk({
             )}
             {localizeValue(
               detail.value ? (
-                render(detail.value, detail.current, detail.money, false, detailWage?.step)
+                render(detail.value, detail.current, detail.money, false, detailWage)
               ) : (
                 <p role="status">
                   {localizeValue(detail.error ?? sourceMessage('copy.RecruitmentDesk.965c4d30c9'))}

@@ -202,8 +202,9 @@ export function reservationReport(
   reservation: string,
   share: number,
   lines: readonly FactorLine[],
+  cap = RESERVATION_REPORT.length - 1,
 ) {
-  const shown = Math.min(lines.length, RESERVATION_REPORT.length - 1);
+  const shown = Math.min(lines.length, cap, RESERVATION_REPORT.length - 1);
   return sourceMessage(RESERVATION_REPORT[shown]!, {
     reservation,
     share: Math.round(share * 100),
@@ -211,16 +212,39 @@ export function reservationReport(
   });
 }
 /** The player's chance of agreeing and each factor behind it, for his answer's report (→CLUB-53). */
-export function termsReport(chance: number, lines: readonly FactorLine[]) {
-  const shown = Math.min(lines.length, TERMS_REPORT.length - 1);
+export function termsReport(
+  chance: number,
+  lines: readonly FactorLine[],
+  cap = TERMS_REPORT.length - 1,
+) {
+  const shown = Math.min(lines.length, cap, TERMS_REPORT.length - 1);
   return sourceMessage(TERMS_REPORT[shown]!, {
     chance: Math.round(chance * 100),
     ...factorSlots(lines, shown),
   });
 }
 /** The selling club's reservation and the factors behind it, for its answer's report. */
-function saleReason(w: World, answer: SaleAnswer) {
-  return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines);
+function saleReason(w: World, answer: SaleAnswer, cap?: number) {
+  return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines, cap);
+}
+/** An inbox item's longest title and detail (the save schema's bounds, →SAVE-5). */
+const TITLE_MAX = 160,
+  DETAIL_MAX = 400;
+/**
+ * A report detail naming at most `cap` factors of each answer, within the inbox's bound: the last
+ * factors are left out first, and only a detail too long with none is clipped, so a save stays valid.
+ */
+export function fittedDetail(make: (cap: number) => string) {
+  for (let cap = RESERVATION_REPORT.length - 1; cap >= 0; cap--) {
+    const detail = make(cap);
+    if (detail.length <= DETAIL_MAX) return detail;
+  }
+  return clip(make(0), DETAIL_MAX);
+}
+/** A title naming a player, his name clipped so the whole sentence fits the inbox's bound. */
+export function namedTitle(id: SourceMessageId, name: string) {
+  const room = TITLE_MAX - sourceMessage(id, { name: '' }).length;
+  return sourceMessage(id, { name: clip(name, room) });
 }
 /**
  * The player's answer to our terms once his club agreed (→CLUB-53), from his own draw: our step of
@@ -743,23 +767,25 @@ function closeDeal(
   bid.refusedBy = 'player';
   pushInbox(w, {
     kind: 'bid-response',
-    title: clip(sourceMessage('market.answer.player.title', { name: p.name }), 160),
+    title: namedTitle('market.answer.player.title', p.name),
     // An answer given at once names the club's reservation too (→CLUB-52); a counter's own
     // report already named it.
-    detail: club
-      ? sourceMessage('market.answer.player.detail.club', {
-          fee: moneyLabel(w, fee),
-          reason: saleReason(w, club),
-          wage: moneyLabel(w, terms.wage),
-          percent: Math.round((bid.wage ?? 1) * 100),
-          terms: termsReport(terms.chance, terms.lines),
-        })
-      : sourceMessage('market.answer.player.detail', {
-          fee: moneyLabel(w, fee),
-          wage: moneyLabel(w, terms.wage),
-          percent: Math.round((bid.wage ?? 1) * 100),
-          terms: termsReport(terms.chance, terms.lines),
-        }),
+    detail: fittedDetail((cap) =>
+      club
+        ? sourceMessage('market.answer.player.detail.club', {
+            fee: moneyLabel(w, fee),
+            reason: saleReason(w, club, cap),
+            wage: moneyLabel(w, terms.wage),
+            percent: Math.round((bid.wage ?? 1) * 100),
+            terms: termsReport(terms.chance, terms.lines, cap),
+          })
+        : sourceMessage('market.answer.player.detail', {
+            fee: moneyLabel(w, fee),
+            wage: moneyLabel(w, terms.wage),
+            percent: Math.round((bid.wage ?? 1) * 100),
+            terms: termsReport(terms.chance, terms.lines, cap),
+          }),
+    ),
     attention,
     ref: bid.id,
   });
@@ -800,11 +826,13 @@ function decideOutgoing(w: World, bid: TransferBid) {
       pushInbox(w, {
         kind: 'bid-response',
         title: clip(sourceMessage('copy.transfers.138ea75077', { p0: p.name, p1: move }), 160),
-        detail: sourceMessage('market.answer.blocked', {
-          fee: moneyLabel(w, bid.fee),
-          reason: saleReason(w, answer),
-          blocker,
-        }),
+        detail: fittedDetail((cap) =>
+          sourceMessage('market.answer.blocked', {
+            fee: moneyLabel(w, bid.fee),
+            reason: saleReason(w, answer, cap),
+            blocker,
+          }),
+        ),
         attention,
         ref: bid.id,
       });
@@ -814,12 +842,14 @@ function decideOutgoing(w: World, bid: TransferBid) {
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(sourceMessage('copy.transfers.4bd8c1ff7d', { p0: p.name, p1: move }), 160),
-      detail: sourceMessage(bid.staff ? 'market.answer.accepted.staff' : 'market.answer.accepted', {
-        position: p.position,
-        age: w.year - p.born,
-        fee: moneyLabel(w, bid.fee),
-        reason: saleReason(w, answer),
-      }),
+      detail: fittedDetail((cap) =>
+        sourceMessage(bid.staff ? 'market.answer.accepted.staff' : 'market.answer.accepted', {
+          position: p.position,
+          age: w.year - p.born,
+          fee: moneyLabel(w, bid.fee),
+          reason: saleReason(w, answer, cap),
+        }),
+      ),
       attention,
       ref: bid.id,
     });
@@ -839,11 +869,13 @@ function decideOutgoing(w: World, bid: TransferBid) {
         }),
         160,
       ),
-      detail: sourceMessage('market.answer.counter', {
-        fee: moneyLabel(w, bid.fee),
-        asking: moneyLabel(w, asking),
-        reason: saleReason(w, answer),
-      }),
+      detail: fittedDetail((cap) =>
+        sourceMessage('market.answer.counter', {
+          fee: moneyLabel(w, bid.fee),
+          asking: moneyLabel(w, asking),
+          reason: saleReason(w, answer, cap),
+        }),
+      ),
       attention: true,
       ref: bid.id,
     });
@@ -853,11 +885,13 @@ function decideOutgoing(w: World, bid: TransferBid) {
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(sourceMessage('copy.transfers.9f030caf7e', { p0: p.name, p1: move }), 160),
-      detail: sourceMessage(bid.staff ? 'market.answer.refused.staff' : 'market.answer.refused', {
-        fee: moneyLabel(w, bid.fee),
-        asking: moneyLabel(w, asking),
-        reason: saleReason(w, answer),
-      }),
+      detail: fittedDetail((cap) =>
+        sourceMessage(bid.staff ? 'market.answer.refused.staff' : 'market.answer.refused', {
+          fee: moneyLabel(w, bid.fee),
+          asking: moneyLabel(w, asking),
+          reason: saleReason(w, answer, cap),
+        }),
+      ),
       attention,
       ref: bid.id,
     });
@@ -904,13 +938,15 @@ function answerStaffCounter(
       160,
     ),
     detail: answer
-      ? sourceMessage('market.answer.staffCounter', {
-          fee: moneyLabel(w, bid.fee),
-          asking: moneyLabel(w, asking),
-          percent: Math.round(feeRatio(bid.fee, asking) * 100),
-          verdict: reason,
-          reason: saleReason(w, answer),
-        })
+      ? fittedDetail((cap) =>
+          sourceMessage('market.answer.staffCounter', {
+            fee: moneyLabel(w, bid.fee),
+            asking: moneyLabel(w, asking),
+            percent: Math.round(feeRatio(bid.fee, asking) * 100),
+            verdict: reason,
+            reason: saleReason(w, answer, cap),
+          }),
+        )
       : sourceMessage('copy.transfers.4a233f3fc1', {
           p0: moneyLabel(w, bid.fee),
           p1: moneyLabel(w, asking),
