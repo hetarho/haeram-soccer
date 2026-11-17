@@ -161,6 +161,15 @@ function stepWage(demand: string, step: number) {
   return ((BigInt(demand) * BigInt(Math.round(step * 10000))) / 10000n).toString();
 }
 /**
+ * The player as the 단장's money checks must read him: on the wage the bid offers, the one he signs
+ * on when he agrees (→CLUB-53), not his quoted demand, so a raised step cannot pass the plan and the
+ * insolvency stop at 100% and then commit more (→ECON-33, →ECON-41).
+ */
+function atOfferedWage(bid: TransferBid, player: Player): Player {
+  const step = bid.wage ?? 1;
+  return step === 1 ? player : { ...player, wage: stepWage(player.wage, step) };
+}
+/**
  * A report's factors, one message per count so each factor stays its own localizable slot (→ARCH-32):
  * prose joined into one parameter would leave a translation unable to tell the factors apart.
  */
@@ -830,7 +839,9 @@ function decideOutgoing(w: World, bid: TransferBid) {
   // The 단장's bids are his to follow up; their answers only report (→CLUB-33).
   const attention = !bid.staff;
   if (answer.kind === 'accept') {
-    const financial = bid.staff ? signingVerdict(w, p, bid.fee, undefined, bid.id) : undefined;
+    const financial = bid.staff
+      ? signingVerdict(w, atOfferedWage(bid, p), bid.fee, undefined, bid.id)
+      : undefined;
     const blocker =
       financial && !financial.ok ? financial.reason : signingBlocker(w, offer, bid.fee, bid.loan);
     if (blocker) {
@@ -923,7 +934,7 @@ function answerStaffCounter(
 ) {
   const p = offer.player,
     fee = bid.counterFee!,
-    verdict = signingVerdict(w, p, fee, undefined, bid.id),
+    verdict = signingVerdict(w, atOfferedWage(bid, p), fee, undefined, bid.id),
     blocker = signingBlocker(w, offer, fee, bid.loan),
     belowCeiling = BigInt(bid.fee) < BigInt(ratio(asking, BigInt(bidCeiling(w)), 100n)),
     bargaining = haggling(w) && belowCeiling,

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { staffAuthority } from './testing';
 import type { StaffTrait, TransferBid, World } from '../../contracts/src/types';
 import {
@@ -11,6 +11,7 @@ import {
   transferWindowDays,
 } from './index';
 import { staffBidShare } from './director-bidding';
+import * as signings from './signings';
 import { STAFF_INFO, STAFF_TRAIT_INFO } from './staff';
 import { careerWorld } from './career.testkit';
 import { holdTemperament } from './delegation.testkit';
@@ -241,5 +242,60 @@ describe('the selling club answers the 단장 and the owner (→CLUB-52)', () =>
       return bidOutlook(w, target(w, index), percentOf(w, index, 85)).chance;
     };
     expect(chance(director(deadline(), 90))).toBeGreaterThan(chance(director(deadline(), 30)));
+  });
+});
+
+describe('the 단장’s money checks read the wage his bid offers (→ECON-33, →CLUB-53)', () => {
+  afterEach(() => vi.restoreAllMocks());
+  /** A window's last day, so a bid is answered at once, with the 단장's plan in force. */
+  function deadline() {
+    const w = world();
+    w.calendar = { day: transferWindowDays(w.year).winterClose };
+    return w;
+  }
+  /** Money checks that pass any wage up to the player's demand and refuse anything above it. */
+  function demandOnly(demand: Map<string, bigint>) {
+    const real = signings.signingVerdict;
+    return vi.spyOn(signings, 'signingVerdict').mockImplementation((w, player, ...rest) => {
+      const quoted = demand.get(player.id);
+      if (quoted !== undefined && BigInt(player.wage) > quoted)
+        return { ok: false as const, reason: 'over the plan' };
+      return real(w, player, ...rest);
+    });
+  }
+
+  it('refuses an accepted bid whose 200% wage the plan cannot carry, signing nobody', () => {
+    const w = deadline(),
+      index = keenest(w),
+      offer = transferOffers(w)[index]!,
+      cash = w.cash;
+    const verdict = demandOnly(new Map([[offer.player.id, BigInt(offer.player.wage)]]));
+    placeBid(w, target(w, index), offer.fee, false, 'short', 2);
+    const answered = w.bids!.at(-1)!;
+    expect(verdict).toHaveBeenCalled();
+    expect(verdict.mock.calls.at(-1)![1].wage).toBe((BigInt(offer.player.wage) * 2n).toString());
+    expect(answered.status).toBe('rejected');
+    expect(w.players.some((p) => p.id === offer.player.id)).toBe(false);
+    expect(w.cash).toBe(cash);
+  });
+
+  it('declines a counter whose 150% wage the plan cannot carry, signing nobody', () => {
+    const w = deadline(),
+      index = keenest(w),
+      offer = transferOffers(w)[index]!,
+      cash = w.cash;
+    const percent = [95, 90, 85, 80, 75, 70, 65, 60].find(
+      (p) => bidOutlook(w, target(w, index), ratio(offer.fee, BigInt(p), 100n)).counter === 1,
+    );
+    expect(percent).toBeDefined();
+    const verdict = demandOnly(new Map([[offer.player.id, BigInt(offer.player.wage)]]));
+    placeBid(w, target(w, index), ratio(offer.fee, BigInt(percent!), 100n), false, 'short', 1.5);
+    const answered = w.bids!.at(-1)!;
+    expect(verdict.mock.calls.at(-1)![1].wage).toBe(
+      ((BigInt(offer.player.wage) * 15000n) / 10000n).toString(),
+    );
+    expect(answered.status).not.toBe('completed');
+    expect(w.players.some((p) => p.id === offer.player.id)).toBe(false);
+    expect(w.cash).toBe(cash);
   });
 });
