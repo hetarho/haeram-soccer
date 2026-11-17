@@ -205,12 +205,11 @@ export function intakeNpcYouth(
       age,
       c.tier,
     );
-    if (refillOnly) {
-      // A war refill's OVR lands on its drawn value, as a prodigy's does (→WORLD-18).
-      landOnOvr(p, level);
-      p.wage = marketWageAt(c.country, year, c.tier, p);
-    }
+    // A war refill's OVR lands on its drawn value, as a prodigy's does (→WORLD-18).
+    if (refillOnly) landOnOvr(p, level);
     p.potential = Math.max(mainOvr(p), potential);
+    // Its wage is quoted on that final OVR and potential: a young player's quote reads both.
+    if (refillOnly) p.wage = marketWageAt(c.country, year, c.tier, p);
     p.graduate = true;
     p.joined = year;
     p.fatigue = clubStyle(c) === 'press' ? PRESS_LOAD_FATIGUE : 0;

@@ -15,6 +15,7 @@ import {
   youthSkew,
 } from './npc-careers';
 import { clubManager } from './managerMarket';
+import { marketWageAt } from './market-prices';
 import { PRODIGY } from './prodigies';
 import {
   clubPlayers,
@@ -450,6 +451,8 @@ describe('war-gap refills ready to play (→WORLD-14/16)', () => {
         expect(age).toBe(integer(random(`${w.seed}:war-refill:${p.id}`), ages[0], ages[1]));
         expect(mainOvr(p)).toBeCloseTo(ovr, 1);
         expect(p.potential).toBe(ovr + headroom);
+        // His wage is his market quote on his final OVR and potential (a young quote reads both).
+        expect(p.wage).toBe(marketWageAt(c.country, w.year + 1, tier, p));
         expect(p.until - (w.year + 1)).toBeGreaterThanOrEqual(1);
         expect(p.until - (w.year + 1)).toBeLessThanOrEqual(5);
       }
