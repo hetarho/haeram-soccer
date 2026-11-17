@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T08:42:50.312Z",
-  "sourceCommit": "9b6fc9411be886e627e22e6076c7c6e5852b49ee",
+  "snapshotAt": "2026-11-17T09:17:53.545Z",
+  "sourceCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
   "group": {
     "id": "tm17-market",
     "branch": "gusta-session-self-improve-tm17-ff4b9f94",
@@ -224,6 +224,64 @@
         "owner": "coordinator",
         "candidate": null,
         "duplicationReason": ""
+      },
+      {
+        "id": "T933-report-factors",
+        "scenario": "A combined club-and-player refusal report with every applicable factor and a long valid 단장 name keeps all factors within the inbox detail limit",
+        "steps": [
+          "Run pnpm exec vitest run --project unit apps/web/src/pages/club/ui/RecruitmentDesk.reports.test.ts"
+        ],
+        "expected": "Every factor's en-GB text is present, the detail is at most 1000 characters, the name keeps 50+ characters, and a 2000-character name shortens while every factor stays",
+        "observed": "4/4 tests passed (also inside the affected-units check)",
+        "evidence": [
+          "vitest unit run: Tests 4 passed"
+        ],
+        "status": "pass",
+        "reason": "",
+        "replaces": [],
+        "stage": "unit",
+        "required": true,
+        "owner": "implementer",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T933-task-tier",
+        "scenario": "Task-tier checks on the correction",
+        "steps": [
+          "vibe check --tier task --diff-base 412a5efdc --task T933"
+        ],
+        "expected": "typecheck, lint, format, i18n and affected units all pass",
+        "observed": "ok:true on tree cda00f35011b; affected units 301 files/2672 tests passed; i18n 12 locales/6930 messages",
+        "evidence": [
+          "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-50e26c82-aac2-415a-bb58-3c34d257e22c.log"
+        ],
+        "status": "pass",
+        "reason": "",
+        "replaces": [],
+        "stage": "unit",
+        "required": true,
+        "owner": "implementer",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T933-integration-browser",
+        "scenario": "Integration bid tests and browser recruitment journeys",
+        "steps": [
+          "Shared final batch gate and CI Chromium journeys (ARCH-30)"
+        ],
+        "expected": "Pass on the integration candidate",
+        "observed": "Not run by the worker",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "Integration tests and browser journeys belong to the coordinator's final gate and CI; the worker has no integration candidate",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "coordinator",
+        "candidate": null,
+        "duplicationReason": ""
       }
     ],
     "push": null,
@@ -235,7 +293,7 @@
       "T935"
     ],
     "lastRun": {
-      "id": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
+      "id": "65e2369f-e1bf-424c-8153-08f2b756b9be",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -256,15 +314,19 @@
           "version": "2.1.326 (Claude Code)"
         }
       ],
-      "startedAt": "2026-11-17T08:36:45.203Z",
-      "stoppedAt": "2026-11-17T08:42:47.280Z",
-      "dispatched": 1,
+      "startedAt": "2026-11-17T08:43:45.204Z",
+      "stoppedAt": "2026-11-17T09:17:49.680Z",
+      "dispatched": 6,
       "outcome": "needs-attention",
       "failures": [
         {
           "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
           "role": "worker",
-          "error": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+          "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T933-task-tier"
+        },
+        {
+          "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
+          "error": "review retry limit"
         }
       ],
       "autopilot": true,
@@ -902,32 +964,94 @@
         "T933"
       ],
       "lane": "bids",
-      "owner": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4/worker-1",
+      "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/worker-1",
       "contributors": [
         "8ef6f49b-7aa2-4742-9fef-491e94f92964/worker-1",
         "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1",
-        "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4/worker-1"
+        "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4/worker-1",
+        "65e2369f-e1bf-424c-8153-08f2b756b9be/worker-1"
       ],
       "status": "blocked",
-      "reason": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요.",
+      "reason": "review retry limit; inspect submission",
       "createdAt": "2026-11-17T07:05:20.624Z",
       "startCommit": "412a5efdc1619b73016872dc9d004b08be7c5ef2",
-      "submittedBase": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
-      "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
-      "submittedAt": "2026-11-17T08:16:09.409Z",
+      "verifiedCommit": "d63c8a445a2c40223a5a0d4617407f46144c51db",
+      "submittedBase": "84aefff86df1d298e6368643128f8a3673feaed2",
+      "submissionId": "ce52106b-36da-4472-9fef-d6b5cddfeeaa",
+      "submittedAt": "2026-11-17T09:17:45.034Z",
       "risk": null,
+      "agentChecks": [
+        {
+          "id": "T933-report-factors",
+          "scenario": "A combined club-and-player refusal report with every applicable factor and a long valid 단장 name keeps all factors within the inbox detail limit",
+          "steps": [
+            "Run pnpm exec vitest run --project unit apps/web/src/pages/club/ui/RecruitmentDesk.reports.test.ts"
+          ],
+          "expected": "Every factor's en-GB text is present, the detail is at most 1000 characters, the name keeps 50+ characters, and a 2000-character name shortens while every factor stays",
+          "observed": "4/4 tests passed (also inside the affected-units check)",
+          "evidence": [
+            "vitest unit run: Tests 4 passed"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T933-task-tier",
+          "scenario": "Task-tier checks on the correction",
+          "steps": [
+            "vibe check --tier task --diff-base 412a5efdc --task T933"
+          ],
+          "expected": "typecheck, lint, format, i18n and affected units all pass",
+          "observed": "ok:true on tree cda00f35011b; affected units 301 files/2672 tests passed; i18n 12 locales/6930 messages",
+          "evidence": [
+            "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-50e26c82-aac2-415a-bb58-3c34d257e22c.log"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T933-integration-browser",
+          "scenario": "Integration bid tests and browser recruitment journeys",
+          "steps": [
+            "Shared final batch gate and CI Chromium journeys (ARCH-30)"
+          ],
+          "expected": "Pass on the integration candidate",
+          "observed": "Not run by the worker",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "Integration tests and browser journeys belong to the coordinator's final gate and CI; the worker has no integration candidate",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "coordinator",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
       "dispatch": {
-        "id": "f374c1cf-db22-4424-a546-c18bb9ee1124",
-        "runner": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
+        "id": "58b8bd53-8c7e-4f2d-b75a-6fdb11b5c456",
+        "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": "opus",
         "status": "finished",
-        "startedAt": "2026-11-17T08:36:45.763Z",
-        "finishedAt": "2026-11-17T08:42:46.655Z",
-        "error": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요.",
-        "summary": "T933이 끝났고 `vibe check --tier task`(typecheck, lint, format, i18n, 영향받는 유닛 테스트 300개 파일·2643건)가 트리 684cca9806e6에서 통과했습니다.\n\n이번 디스패치에서 한 일은 기획 결정(CLUB r75, STAFF r44) 반영입니다. 데이터 헤드코치는 우리 입찰에 대한 매각 판단(CLUB-52)의 share 요인 −0.05입니다. 기존 `managerStyle` −0.05 요인(transfers.ts `bidFactors`)은 그대로 두고, 리포트에 그 이름이 나오도록 문구만 바꿨습니다. `market.sale.managerStyle`이 '데이터 헤드코치 감독의 협상 지원'으로 바뀌었고 원본 메시지와 12개 언어 팩을 모두 고쳤습니다. 함수 주석도 CLUB-52의 행을 가리키게 정리했습니다.\n\nT933 수락 항목은 [v]로 표시했고 result의 at, verified, limits를 갱신했습니다. limits의 (0)·(4)·(5)는 해결로 바꿨습니다.\n\n공동 최종 게이트로 넘기는 것:\n- 통합 테스트 `signings.test.ts`, `replacements.test.ts`, `transfers.delegated.test.ts`, `transfers.incoming.test.ts`와 나머지 `staff.test.ts`\n- 브라우저 여정 `tests/e2e/recruitment.spec.ts`: 자유계약 선수가 이제 100% 조건을 거절할 수 있고, 입찰 시트의 확률 문구가 '수락 n% · 역제안 m%'로 바뀌었습니다.\n\n변경은 커밋하지 않은 상태로 워크트리에 있습니다."
+        "startedAt": "2026-11-17T09:09:27.256Z",
+        "finishedAt": "2026-11-17T09:17:45.184Z",
+        "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T933-task-tier",
+        "summary": "I fixed review finding 6d4c5787: when the 단장 bids at a raised wage step, the money checks now test the wage his bid offers. The task-tier check passes.\n\n**The fix:** a new helper `atOfferedWage` in `packages/engine/src/transfers.ts` gives `signingVerdict` the player at his demand times the bid's wage step. Both of the 단장's paths use it: the accepted-bid path in `decideOutgoing` and the counter path in `answerStaffCounter`. Before, both read the player's quoted demand, so a bid at 150% or 200% could pass the plan and the insolvency stop at 100% and then sign at the higher wage (ECON-33, ECON-41).\n\n**Tests:** I added 2 cases to `director-bidding.test.ts`. Both are 단장 bids on a window's last day, so they are answered at once. A stub on the money check refuses any wage above the player's demand.\n- A bid at the asking fee on the 200% step: the check receives twice the demand. The bid is rejected, nobody signs and cash is unchanged.\n- A bid the seller is certain to counter, on the 150% step: the check receives 1.5× the demand. The bid does not complete, nobody signs and cash is unchanged.\n\nThe file passes 17/17 with the fix. With the fix temporarily reverted, both new cases fail.\n\n**Task-tier check:** `vibe check --tier task --diff-base 412a5efdc --task T933` passed on tree `07af95d18dc1`: typecheck, lint, format, i18n and affected units (301 files, 2674 tests). The first run failed only on formatting in the test file, which I fixed with prettier.\n\n**Task file:** the result records correction (i), the hand-run evidence and this check run. The verified-line edit is Markdown only, so it doesn't change the checked inputs.\n\nIntegration bid tests and browser journeys are left to the shared final gate."
       },
       "reviewHistory": [
         {
@@ -970,13 +1094,92 @@
           "finishedAt": "2026-11-17T08:17:15.289Z",
           "invalidatedAt": "2026-11-17T08:17:15.542Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "938d573c-3ff2-4f64-836c-933b4f134e32",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T933 implements the two-stage answers, but the selected wage is missing from financial previews and a free-agent refusal can create an invalid save. The coordinator retains the integration and browser gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:2006",
+              "message": "T933: Selecting a 125%, 150% or 200% wage changes the offer sent for a free agent or loan, but the card still displays the 100% wage, annual cost and fixed-cost runway from the unchanged recruitment preview. This understates the commitment and violates CLUB-15's wage-inclusive runway requirement. Recalculate the displayed wage and financial preview for the selected step before submission."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/ops-squad.ts:73",
+              "message": "T933: A free agent with a valid name near the 160-character schema limit can refuse terms, causing this unbounded title to exceed the inbox title's 160-character limit. The resulting world fails save validation. Bound the title while preserving the identity and add coverage for a long valid name."
+            }
+          ],
+          "commit": "a30194a434906650d3ba45a59b663ca89a706c14",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "f6b1da18-5fa8-487e-90ac-d5d6819325cd",
+          "createdAt": "2026-11-17T08:43:45.738Z",
+          "finishedAt": "2026-11-17T08:45:01.559Z",
+          "invalidatedAt": "2026-11-17T08:45:01.653Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "ff94b4c9-cab3-4e33-86fe-b8c16b99ef38",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T933’s wage preview and title corrections address the previous findings, but the report-length correction can omit required decision factors. The coordinator retains the final integration and browser gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:237",
+              "message": "T933: When a combined club and player refusal report exceeds 400 characters, fittedDetail reduces the factor cap and silently removes the last factors from both answers. A valid long director name together with applicable club and player factors can trigger this, omitting factors such as deadline or manager support even though they affected the decision. CLUB-52 and CLUB-53 require the reports to name the factors. Preserve all applicable factors within valid save bounds, and cover a report containing both answers and a long valid name."
+            }
+          ],
+          "commit": "b639e1c2917767dd2e50b39bc9381052b16e9787",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "c69ac576-b262-44a7-9986-f301e8a40029",
+          "createdAt": "2026-11-17T08:59:22.324Z",
+          "finishedAt": "2026-11-17T09:00:32.362Z",
+          "invalidatedAt": "2026-11-17T09:00:32.485Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "6d4c5787-7b90-42cd-8332-4d44ba96d592",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T933 preserves the decision factors in the corrected reports, but delegated bids can bypass wage-based financial checks when they carry an increased wage step. The coordinator retains the final integration and browser gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:833",
+              "message": "T933: A delegated bid can carry a wage step above 100% through placeBid, but both the direct acceptance path here and the counter path at line 926 pass the original quoted player to signingVerdict. The verdict therefore checks the demand rather than the wage actually signed in closeDeal. A bid can pass the director's budget and insolvency checks at 100% and then commit 150% or 200%, violating ECON-33. Run both checks with the bid's offered wage and cover acceptance and counter settlement when the increased wage exceeds the permitted budget."
+            }
+          ],
+          "commit": "7ef7413d796c34c78f19d9c885cd4c7eef78d3cb",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "0999cdfc-1754-412a-9394-1e3c3edf23ab",
+          "createdAt": "2026-11-17T09:08:05.014Z",
+          "finishedAt": "2026-11-17T09:09:27.078Z",
+          "invalidatedAt": "2026-11-17T09:09:27.173Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "28b01a87-2747-4fad-a30b-44e48f475b80",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "reviewing",
+          "commit": "d63c8a445a2c40223a5a0d4617407f46144c51db",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "ce52106b-36da-4472-9fef-d6b5cddfeeaa",
+          "createdAt": "2026-11-17T09:17:46.023Z",
+          "invalidatedAt": "2026-11-17T09:17:49.490Z",
+          "invalidationReason": "review retry limit"
         }
       ],
       "steps": [
         {
           "taskId": "T933",
-          "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
-          "at": "2026-11-17T08:16:09.378Z",
+          "commit": "d63c8a445a2c40223a5a0d4617407f46144c51db",
+          "at": "2026-11-17T09:17:45.004Z",
           "verification": []
         }
       ],
@@ -7081,6 +7284,1769 @@
               "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
               "role": "worker",
               "error": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 486,
+      "at": "2026-11-17T08:43:36.059Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 487,
+      "at": "2026-11-17T08:43:37.337Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 488,
+      "at": "2026-11-17T08:43:37.517Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "84aefff86df1d298e6368643128f8a3673feaed2",
+        "submissionId": "f6b1da18-5fa8-487e-90ac-d5d6819325cd",
+        "submittedAt": "2026-11-17T08:43:37.517Z",
+        "steps": [
+          {
+            "taskId": "T933",
+            "commit": "a30194a434906650d3ba45a59b663ca89a706c14",
+            "at": "2026-11-17T08:43:37.489Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "a30194a434906650d3ba45a59b663ca89a706c14"
+      }
+    },
+    {
+      "sequence": 489,
+      "at": "2026-11-17T08:43:45.222Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-17T08:43:45.204Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 490,
+      "at": "2026-11-17T08:43:45.738Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "938d573c-3ff2-4f64-836c-933b4f134e32",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "reviewing",
+          "commit": "a30194a434906650d3ba45a59b663ca89a706c14",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "f6b1da18-5fa8-487e-90ac-d5d6819325cd",
+          "createdAt": "2026-11-17T08:43:45.738Z"
+        }
+      }
+    },
+    {
+      "sequence": 491,
+      "at": "2026-11-17T08:43:50.117Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ada500e9-50ee-4eb8-8c08-fbfd4368a842",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-17T08:43:50.117Z"
+        }
+      }
+    },
+    {
+      "sequence": 492,
+      "at": "2026-11-17T08:43:50.164Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ada500e9-50ee-4eb8-8c08-fbfd4368a842",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-17T08:43:50.117Z"
+        }
+      }
+    },
+    {
+      "sequence": 493,
+      "at": "2026-11-17T08:45:01.559Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T933 implements the two-stage answers, but the selected wage is missing from financial previews and a free-agent refusal can create an invalid save. The coordinator retains the integration and browser gate.",
+        "review": {
+          "id": "938d573c-3ff2-4f64-836c-933b4f134e32",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T933 implements the two-stage answers, but the selected wage is missing from financial previews and a free-agent refusal can create an invalid save. The coordinator retains the integration and browser gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:2006",
+              "message": "T933: Selecting a 125%, 150% or 200% wage changes the offer sent for a free agent or loan, but the card still displays the 100% wage, annual cost and fixed-cost runway from the unchanged recruitment preview. This understates the commitment and violates CLUB-15's wage-inclusive runway requirement. Recalculate the displayed wage and financial preview for the selected step before submission."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/ops-squad.ts:73",
+              "message": "T933: A free agent with a valid name near the 160-character schema limit can refuse terms, causing this unbounded title to exceed the inbox title's 160-character limit. The resulting world fails save validation. Bound the title while preserving the identity and add coverage for a long valid name."
+            }
+          ],
+          "commit": "a30194a434906650d3ba45a59b663ca89a706c14",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "f6b1da18-5fa8-487e-90ac-d5d6819325cd",
+          "createdAt": "2026-11-17T08:43:45.738Z",
+          "finishedAt": "2026-11-17T08:45:01.559Z"
+        }
+      }
+    },
+    {
+      "sequence": 494,
+      "at": "2026-11-17T08:45:01.599Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "ada500e9-50ee-4eb8-8c08-fbfd4368a842",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-17T08:43:50.117Z",
+          "finishedAt": "2026-11-17T08:45:01.599Z",
+          "error": null,
+          "summary": "T933 implements the two-stage answers, but the selected wage is missing from financial previews and a free-agent refusal can create an invalid save. The coordinator retains the integration and browser gate."
+        }
+      }
+    },
+    {
+      "sequence": 495,
+      "at": "2026-11-17T08:45:01.654Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/worker-1",
+        "contributors": [
+          "8ef6f49b-7aa2-4742-9fef-491e94f92964/worker-1",
+          "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1",
+          "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4/worker-1",
+          "65e2369f-e1bf-424c-8153-08f2b756b9be/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "18885f0a-8b7a-4c53-8aa4-3d5f572240cf",
+            "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:776",
+                "message": "T933: Free-agent recruitment and loan offers submit directly without a wage step or a terms preview. Both therefore always offer 100%, and a free agent who refuses cannot be offered a higher step through the UI. Provide the wage choices and player chance for these paths and submit the selected step."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:767",
+                "message": "T933: When the selling club accepts, the success report does not include its reservation or factors; if the player then refuses, only the player’s factors are reported. CLUB-52 requires each selling-club answer’s report to name the factors that moved its reservation. Preserve that information for accepted answers as well."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:169",
+                "message": "T933: Joining source-language factor sentences into one string prevents localizeText from resolving each factor independently. With multiple factors, non-Korean inbox reports retain Korean factor text even though the outer report is translated. Preserve a localizable structure or use a message representation that resolves each factor separately."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: The new player-name parameters are absent from verbatimParameters for market.answer.free.title, market.answer.player.title, and market.recruit.refused. A name matching source display text can consequently be translated when the report or status is displayed, contrary to the identity localization rule. Mark those name parameters verbatim."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:128",
+                "message": "T933: The manager style’s STAFF-14 benefit is changed from five points of bid acceptance probability to five points of the asking fee off the seller’s reservation. These produce different probabilities, and CLUB-52 does not specify this extra share factor. Resolve the STAFF-14/CLUB-52 policy conflict with the planner before implementing the chosen behavior."
+              }
+            ],
+            "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+            "baseCommit": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+            "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+            "createdAt": "2026-11-17T08:16:22.579Z",
+            "finishedAt": "2026-11-17T08:17:15.289Z",
+            "invalidatedAt": "2026-11-17T08:17:15.542Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "938d573c-3ff2-4f64-836c-933b4f134e32",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage answers, but the selected wage is missing from financial previews and a free-agent refusal can create an invalid save. The coordinator retains the integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:2006",
+                "message": "T933: Selecting a 125%, 150% or 200% wage changes the offer sent for a free agent or loan, but the card still displays the 100% wage, annual cost and fixed-cost runway from the unchanged recruitment preview. This understates the commitment and violates CLUB-15's wage-inclusive runway requirement. Recalculate the displayed wage and financial preview for the selected step before submission."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: A free agent with a valid name near the 160-character schema limit can refuse terms, causing this unbounded title to exceed the inbox title's 160-character limit. The resulting world fails save validation. Bound the title while preserving the identity and add coverage for a long valid name."
+              }
+            ],
+            "commit": "a30194a434906650d3ba45a59b663ca89a706c14",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "f6b1da18-5fa8-487e-90ac-d5d6819325cd",
+            "createdAt": "2026-11-17T08:43:45.738Z",
+            "finishedAt": "2026-11-17T08:45:01.559Z",
+            "invalidatedAt": "2026-11-17T08:45:01.653Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 496,
+      "at": "2026-11-17T08:45:01.786Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "22b3db83-2607-4985-9ec8-0c7e5f30d9fc",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-17T08:45:01.786Z"
+        }
+      }
+    },
+    {
+      "sequence": 497,
+      "at": "2026-11-17T08:45:02.065Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "22b3db83-2607-4985-9ec8-0c7e5f30d9fc",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-17T08:45:01.786Z"
+        }
+      }
+    },
+    {
+      "sequence": 498,
+      "at": "2026-11-17T08:59:20.852Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 499,
+      "at": "2026-11-17T08:59:21.206Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 500,
+      "at": "2026-11-17T08:59:21.250Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 501,
+      "at": "2026-11-17T08:59:21.490Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "c69ac576-b262-44a7-9986-f301e8a40029",
+        "submittedAt": "2026-11-17T08:59:21.490Z",
+        "steps": [
+          {
+            "taskId": "T933",
+            "commit": "b639e1c2917767dd2e50b39bc9381052b16e9787",
+            "at": "2026-11-17T08:59:21.369Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "b639e1c2917767dd2e50b39bc9381052b16e9787"
+      }
+    },
+    {
+      "sequence": 502,
+      "at": "2026-11-17T08:59:21.533Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "22b3db83-2607-4985-9ec8-0c7e5f30d9fc",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-17T08:45:01.786Z",
+          "finishedAt": "2026-11-17T08:59:21.533Z",
+          "error": null,
+          "summary": "리뷰 938d573c의 지적 두 가지를 고쳤고, `vibe check --tier task`가 트리 4b7456ec9d7e에서 통과했습니다(typecheck, lint, format, i18n, 영향받는 유닛 테스트). 첫 실행은 format에서만 실패해 prettier로 고친 뒤 다시 돌렸습니다.\n\n**1. 선택한 연봉 단계가 카드 금액에 반영되지 않던 문제 (RecruitmentDesk.tsx)**\n- 자유계약 영입과 임대 카드가 이제 고른 연봉 단계 기준으로 연봉, 영입 후 연간 고정비, 고정비 런웨이를 보여줍니다(CLUB-15). 새 함수 `atWage`가 다시 계산합니다.\n- 예: 연봉 100을 200%로 올리면 연간 비용 1,000이 1,100으로, 현금 500 기준 런웨이가 20라운드로 표시됩니다.\n\n**2. 긴 이름 때문에 세이브가 깨질 수 있던 문제 (transfers.ts, ops-squad.ts)**\n- 제목: `namedTitle`이 선수 이름만 잘라 제목 전체가 160자 안에 들어가게 합니다. 개인 조건 거절과 자유계약 조건 거절 제목 모두 적용했습니다.\n- 상세: 리뷰에는 없었지만 같은 문제가 상세 문구(400자 한도)에도 있었습니다. 고치기 전에 재어 보니 요인이 많은 거절 상세가 단장 이름 20자로 471자, 160자로 611자였습니다. 그래서 새로 넣은 응답 리포트 상세를 모두 `fittedDetail`로 감쌌습니다. 한도를 넘으면 뒤쪽 요인부터 통째로 빼서, 남은 문장은 그대로 번역됩니다. 요인을 다 빼도 넘칠 때만 문자열을 자릅니다.\n\n**추가한 테스트 (모두 통과)**\n- `RecruitmentDesk.reports.test.ts` 4/4: 160자 이름의 제목과 요인이 최대인 상세가 한도 안에 들어가고 영어로 번역됩니다.\n- `RecruitmentDesk.test.ts` 48/48: `atWage` 계산과, 카드가 고른 단계의 연봉을 받는지 확인합니다.\n- `transfers.test.ts`(통합 테스트) 26/26: 이름이 160자인 자유계약 선수가 거절해도 제목이 160자 이하이고 `validateWorld`를 통과합니다.\n\n**최종 게이트로 넘기는 것** (태스크 result의 limits에 그대로 있음)\n- 통합 테스트 `signings`, `replacements`, `transfers.delegated`, `transfers.incoming`와 나머지 `staff.test.ts`\n- 브라우저 여정 `tests/e2e/recruitment.spec.ts`\n\n수락 항목은 [v]로 두었고, 변경은 커밋하지 않은 상태로 워크트리에 있습니다."
+        }
+      }
+    },
+    {
+      "sequence": 503,
+      "at": "2026-11-17T08:59:22.324Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "ff94b4c9-cab3-4e33-86fe-b8c16b99ef38",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "reviewing",
+          "commit": "b639e1c2917767dd2e50b39bc9381052b16e9787",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "c69ac576-b262-44a7-9986-f301e8a40029",
+          "createdAt": "2026-11-17T08:59:22.324Z"
+        }
+      }
+    },
+    {
+      "sequence": 504,
+      "at": "2026-11-17T08:59:29.274Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "14567a05-e15a-4ab8-96de-19b1ca52b9b6",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-17T08:59:29.273Z"
+        }
+      }
+    },
+    {
+      "sequence": 505,
+      "at": "2026-11-17T08:59:29.373Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "14567a05-e15a-4ab8-96de-19b1ca52b9b6",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-17T08:59:29.273Z"
+        }
+      }
+    },
+    {
+      "sequence": 506,
+      "at": "2026-11-17T09:00:32.362Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T933’s wage preview and title corrections address the previous findings, but the report-length correction can omit required decision factors. The coordinator retains the final integration and browser gate.",
+        "review": {
+          "id": "ff94b4c9-cab3-4e33-86fe-b8c16b99ef38",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T933’s wage preview and title corrections address the previous findings, but the report-length correction can omit required decision factors. The coordinator retains the final integration and browser gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:237",
+              "message": "T933: When a combined club and player refusal report exceeds 400 characters, fittedDetail reduces the factor cap and silently removes the last factors from both answers. A valid long director name together with applicable club and player factors can trigger this, omitting factors such as deadline or manager support even though they affected the decision. CLUB-52 and CLUB-53 require the reports to name the factors. Preserve all applicable factors within valid save bounds, and cover a report containing both answers and a long valid name."
+            }
+          ],
+          "commit": "b639e1c2917767dd2e50b39bc9381052b16e9787",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "c69ac576-b262-44a7-9986-f301e8a40029",
+          "createdAt": "2026-11-17T08:59:22.324Z",
+          "finishedAt": "2026-11-17T09:00:32.362Z"
+        }
+      }
+    },
+    {
+      "sequence": 507,
+      "at": "2026-11-17T09:00:32.428Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "14567a05-e15a-4ab8-96de-19b1ca52b9b6",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-17T08:59:29.273Z",
+          "finishedAt": "2026-11-17T09:00:32.428Z",
+          "error": null,
+          "summary": "T933’s wage preview and title corrections address the previous findings, but the report-length correction can omit required decision factors. The coordinator retains the final integration and browser gate."
+        }
+      }
+    },
+    {
+      "sequence": 508,
+      "at": "2026-11-17T09:00:32.485Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "18885f0a-8b7a-4c53-8aa4-3d5f572240cf",
+            "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:776",
+                "message": "T933: Free-agent recruitment and loan offers submit directly without a wage step or a terms preview. Both therefore always offer 100%, and a free agent who refuses cannot be offered a higher step through the UI. Provide the wage choices and player chance for these paths and submit the selected step."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:767",
+                "message": "T933: When the selling club accepts, the success report does not include its reservation or factors; if the player then refuses, only the player’s factors are reported. CLUB-52 requires each selling-club answer’s report to name the factors that moved its reservation. Preserve that information for accepted answers as well."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:169",
+                "message": "T933: Joining source-language factor sentences into one string prevents localizeText from resolving each factor independently. With multiple factors, non-Korean inbox reports retain Korean factor text even though the outer report is translated. Preserve a localizable structure or use a message representation that resolves each factor separately."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: The new player-name parameters are absent from verbatimParameters for market.answer.free.title, market.answer.player.title, and market.recruit.refused. A name matching source display text can consequently be translated when the report or status is displayed, contrary to the identity localization rule. Mark those name parameters verbatim."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:128",
+                "message": "T933: The manager style’s STAFF-14 benefit is changed from five points of bid acceptance probability to five points of the asking fee off the seller’s reservation. These produce different probabilities, and CLUB-52 does not specify this extra share factor. Resolve the STAFF-14/CLUB-52 policy conflict with the planner before implementing the chosen behavior."
+              }
+            ],
+            "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+            "baseCommit": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+            "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+            "createdAt": "2026-11-17T08:16:22.579Z",
+            "finishedAt": "2026-11-17T08:17:15.289Z",
+            "invalidatedAt": "2026-11-17T08:17:15.542Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "938d573c-3ff2-4f64-836c-933b4f134e32",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage answers, but the selected wage is missing from financial previews and a free-agent refusal can create an invalid save. The coordinator retains the integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:2006",
+                "message": "T933: Selecting a 125%, 150% or 200% wage changes the offer sent for a free agent or loan, but the card still displays the 100% wage, annual cost and fixed-cost runway from the unchanged recruitment preview. This understates the commitment and violates CLUB-15's wage-inclusive runway requirement. Recalculate the displayed wage and financial preview for the selected step before submission."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: A free agent with a valid name near the 160-character schema limit can refuse terms, causing this unbounded title to exceed the inbox title's 160-character limit. The resulting world fails save validation. Bound the title while preserving the identity and add coverage for a long valid name."
+              }
+            ],
+            "commit": "a30194a434906650d3ba45a59b663ca89a706c14",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "f6b1da18-5fa8-487e-90ac-d5d6819325cd",
+            "createdAt": "2026-11-17T08:43:45.738Z",
+            "finishedAt": "2026-11-17T08:45:01.559Z",
+            "invalidatedAt": "2026-11-17T08:45:01.653Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "ff94b4c9-cab3-4e33-86fe-b8c16b99ef38",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933’s wage preview and title corrections address the previous findings, but the report-length correction can omit required decision factors. The coordinator retains the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:237",
+                "message": "T933: When a combined club and player refusal report exceeds 400 characters, fittedDetail reduces the factor cap and silently removes the last factors from both answers. A valid long director name together with applicable club and player factors can trigger this, omitting factors such as deadline or manager support even though they affected the decision. CLUB-52 and CLUB-53 require the reports to name the factors. Preserve all applicable factors within valid save bounds, and cover a report containing both answers and a long valid name."
+              }
+            ],
+            "commit": "b639e1c2917767dd2e50b39bc9381052b16e9787",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "c69ac576-b262-44a7-9986-f301e8a40029",
+            "createdAt": "2026-11-17T08:59:22.324Z",
+            "finishedAt": "2026-11-17T09:00:32.362Z",
+            "invalidatedAt": "2026-11-17T09:00:32.485Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 509,
+      "at": "2026-11-17T09:00:32.581Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "40398e2f-6b28-4a7a-8d26-5e9dbf25cea2",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-17T09:00:32.581Z"
+        }
+      }
+    },
+    {
+      "sequence": 510,
+      "at": "2026-11-17T09:00:32.987Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "40398e2f-6b28-4a7a-8d26-5e9dbf25cea2",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-17T09:00:32.581Z"
+        }
+      }
+    },
+    {
+      "sequence": 511,
+      "at": "2026-11-17T09:08:03.664Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 512,
+      "at": "2026-11-17T09:08:04.119Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 513,
+      "at": "2026-11-17T09:08:04.204Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 514,
+      "at": "2026-11-17T09:08:04.368Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "0999cdfc-1754-412a-9394-1e3c3edf23ab",
+        "submittedAt": "2026-11-17T09:08:04.368Z",
+        "steps": [
+          {
+            "taskId": "T933",
+            "commit": "7ef7413d796c34c78f19d9c885cd4c7eef78d3cb",
+            "at": "2026-11-17T09:08:04.348Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "7ef7413d796c34c78f19d9c885cd4c7eef78d3cb"
+      }
+    },
+    {
+      "sequence": 515,
+      "at": "2026-11-17T09:08:04.397Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "agentChecks": [
+          {
+            "id": "T932-agent-na",
+            "scenario": "Agent acceptance for pure engine answer models (no UI or caller in this task)",
+            "steps": [
+              "Task declares agent-acceptance: not applicable; every acceptance criterion is a deterministic unit-stage check owned by the implementer"
+            ],
+            "expected": "No computer-use scenario exists for this task; UI and bid-flow observation belongs to T933–T934",
+            "observed": "Not run: no screen or player-facing flow changed; unit checks covered the criteria and review c29b2c46's fix (vibe check --tier task, all 5 checks passed)",
+            "evidence": [
+              "vibe check --tier task: typecheck, lint, format, i18n and affected-units passed after the c29b2c46 correction"
+            ],
+            "status": "not-run",
+            "reason": "Task has no UI or integration surface; agent acceptance is not applicable per the task file",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "host runner (shared final gate)",
+            "candidate": null,
+            "duplicationReason": "No automated e2e or agent scenario covers these models yet, so nothing is duplicated"
+          },
+          {
+            "id": "T935-AC1",
+            "scenario": "moneyBar(w) at acted steps 4–5 is the highest OVR whose 27-year-old market wage × 25 fits the plan's money for signings (plan.left); none at steps 1–3; none when wages take the share; raised by sales and capital, lowered by fees",
+            "steps": [
+              "club(5) rich vs poor plan; check wage(bar)×25 ≤ plan.left < wage(bar+1)×25",
+              "poor plan whose wage bill takes the 80% share: left 0, no bar",
+              "add a season sale: bar appears; add cash above reserve: bar higher; add a fee: left and bar lower",
+              "steps 1–3 and a cautious 단장 asked 넉넉히: undefined"
+            ],
+            "expected": "bar follows ECON-33's signing money",
+            "observed": "all assertions pass",
+            "evidence": [
+              "signings.test.ts 'is the highest OVR…' and 'reads the money left for signings…'",
+              "vitest --project integration signings.test.ts 35/35"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC2",
+            "scenario": "below-bar slots ordered first weakest first; candidates beat by the margin; 아낌없이 cap max(3, distinct slots below the bar) not inflated by repeated signings or signings for slots never below",
+            "steps": [
+              "upgradeNeeds with a bar between measures",
+              "upgradeCap unit cases",
+              "slotsBelowBar unchanged after two arrivals for the weak slot and one for a strong slot; cap stays 3",
+              "rich 아낌없이 club with 3 completed upgrades bids a 4th for a below-bar slot it beats by the margin; 넉넉히 with 2 bids none"
+            ],
+            "expected": "ordering and cap as CLUB-33 states",
+            "observed": "all pass",
+            "evidence": [
+              "signings.test.ts money-bar describe block",
+              "vitest integration signings.test.ts 35/35"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC3",
+            "scenario": "makeRoom at steps 4–5 lists bench players aged 24+ more than 8 below the bar at any squad size, never recent joiners or under-24s, never below a line minimum, in one report",
+            "steps": [
+              "rich club(5) ≤24 players with a last-season arrival, a recent joiner and a 23-year-old",
+              "staffSignings regular look",
+              "check listings, line minimums and the single report; 적당히, sales direct and no money list nobody"
+            ],
+            "expected": "only eligible weak bench players listed, one report",
+            "observed": "all pass",
+            "evidence": [
+              "signings.test.ts 'lists non-starters aged 24+…' and 'lists nobody for the bar…'"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC4",
+            "scenario": "vibe check --tier task",
+            "steps": [
+              "vibe check --tier task --diff-base 64dab2ef4 --task T935"
+            ],
+            "expected": "all task checks pass",
+            "observed": "typecheck, lint, format, i18n, affected-units (1359 tests) passed, tree a5d09cf2",
+            "evidence": [
+              "vibe check JSON ok:true, failedCheckIds []"
+            ],
+            "status": "pass",
+            "reason": "executed",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-HANDOFF",
+            "scenario": "1950/1960 reference careers after integration: fee signings a season, finishes, dearest signing, valid saves",
+            "steps": [
+              "coordinator runs the reference-career measurement on the integrated candidate"
+            ],
+            "expected": "rich delegated clubs replace weak players with dearer ones; saves valid",
+            "observed": "not run by this worker",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "integration-stage measurement owned by the coordinator after integration; not a task acceptance",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "coordinator",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-cap-holds-through-window",
+            "scenario": "At 아낌없이, a window that opens with five or more XI slots below the money bar keeps its cap while upgrade signings lift those slots one by one",
+            "steps": [
+              "club(5); choose a bar between two measures that leaves at least 5 slots more than 2 below it",
+              "sign a far abler player for each weak slot in turn (recorded arrival + completed staff upgrade bid)",
+              "after each signing, read slotsBelowBar and upgradeCap"
+            ],
+            "expected": "The count stays at the opening's weak-slot count (5 or more) and the cap allows the next upgrade until every weak slot is filled",
+            "observed": "The count stayed at the opening count after every signing; completed upgrades stayed below the cap until the last slot; at the end no slot is below the bar",
+            "evidence": [
+              "packages/engine/src/signings.test.ts 'a window opening with more than three weak slots keeps its cap through successive upgrades'",
+              "vitest signings/delegation/transfers 77/77 passed"
+            ],
+            "status": "pass",
+            "reason": "Deterministic engine test",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-cap-no-new-eligibility",
+            "scenario": "Repeated signings, signings for a strong slot, and departures refilled by upgrades do not add eligible slots",
+            "steps": [
+              "two upgrade signings for the one weak slot and one for a slot never below the bar; read slotsBelowBar",
+              "in another club, sell the three ablest starters with recorded moves, then sign three upgrades for their slots; read slotsBelowBar and upgradeCap"
+            ],
+            "expected": "The count stays at the opening's weak slots; the cap stays 3",
+            "observed": "The count equalled the opening's weak slots in both cases; cap 3",
+            "evidence": [
+              "signings.test.ts 'counts each slot below the bar once, however many signings the window makes'",
+              "signings.test.ts 'does not count slots departures weakened and upgrades filled again beside a weak slot'"
+            ],
+            "status": "pass",
+            "reason": "Deterministic engine test",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-task-tier",
+            "scenario": "Task-tier checks on the changed tree",
+            "steps": [
+              "gusta vibe check --tier task --diff-base 5a6188b18d251cf5a97cf76ed511f96c20ef2a5c --task T935"
+            ],
+            "expected": "typecheck, lint, format, i18n and affected units pass",
+            "observed": "ok:true; affected units 151 files / 1386 tests passed; tree 1f200cfc",
+            "evidence": [
+              "check log check-e88e0666-d6ad-4846-9246-ca35477fc742.log"
+            ],
+            "status": "pass",
+            "reason": "Ran once after the edits",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-reference-careers",
+            "scenario": "1950/1960 reference careers after integration: fee signings per season, finishes, dearest signing, valid saves",
+            "steps": [
+              "integrate the tm17-market group",
+              "run the reference careers and compare against the baseline"
+            ],
+            "expected": "Rich 아낌없이 clubs replace weak starters within the money bar; saves stay valid",
+            "observed": "Not run in this unit",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "Integration-stage measurement needs the integrated group; the host runner and coordinator own it",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "coordinator",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T933-report-factors",
+            "scenario": "A combined club-and-player refusal report with every applicable factor and a long valid 단장 name keeps all factors within the inbox detail limit",
+            "steps": [
+              "Run pnpm exec vitest run --project unit apps/web/src/pages/club/ui/RecruitmentDesk.reports.test.ts"
+            ],
+            "expected": "Every factor's en-GB text is present, the detail is at most 1000 characters, the name keeps 50+ characters, and a 2000-character name shortens while every factor stays",
+            "observed": "4/4 tests passed (also inside the affected-units check)",
+            "evidence": [
+              "vitest unit run: Tests 4 passed"
+            ],
+            "status": "pass",
+            "reason": "",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T933-task-tier",
+            "scenario": "Task-tier checks on the correction",
+            "steps": [
+              "vibe check --tier task --diff-base 412a5efdc --task T933"
+            ],
+            "expected": "typecheck, lint, format, i18n and affected units all pass",
+            "observed": "ok:true on tree cda00f35011b; affected units 301 files/2672 tests passed; i18n 12 locales/6930 messages",
+            "evidence": [
+              "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-50e26c82-aac2-415a-bb58-3c34d257e22c.log"
+            ],
+            "status": "pass",
+            "reason": "",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T933-integration-browser",
+            "scenario": "Integration bid tests and browser recruitment journeys",
+            "steps": [
+              "Shared final batch gate and CI Chromium journeys (ARCH-30)"
+            ],
+            "expected": "Pass on the integration candidate",
+            "observed": "Not run by the worker",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "Integration tests and browser journeys belong to the coordinator's final gate and CI; the worker has no integration candidate",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "coordinator",
+            "candidate": null,
+            "duplicationReason": ""
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 516,
+      "at": "2026-11-17T09:08:04.397Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "agentChecks": [
+          {
+            "id": "T933-report-factors",
+            "scenario": "A combined club-and-player refusal report with every applicable factor and a long valid 단장 name keeps all factors within the inbox detail limit",
+            "steps": [
+              "Run pnpm exec vitest run --project unit apps/web/src/pages/club/ui/RecruitmentDesk.reports.test.ts"
+            ],
+            "expected": "Every factor's en-GB text is present, the detail is at most 1000 characters, the name keeps 50+ characters, and a 2000-character name shortens while every factor stays",
+            "observed": "4/4 tests passed (also inside the affected-units check)",
+            "evidence": [
+              "vitest unit run: Tests 4 passed"
+            ],
+            "status": "pass",
+            "reason": "",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T933-task-tier",
+            "scenario": "Task-tier checks on the correction",
+            "steps": [
+              "vibe check --tier task --diff-base 412a5efdc --task T933"
+            ],
+            "expected": "typecheck, lint, format, i18n and affected units all pass",
+            "observed": "ok:true on tree cda00f35011b; affected units 301 files/2672 tests passed; i18n 12 locales/6930 messages",
+            "evidence": [
+              "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-50e26c82-aac2-415a-bb58-3c34d257e22c.log"
+            ],
+            "status": "pass",
+            "reason": "",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T933-integration-browser",
+            "scenario": "Integration bid tests and browser recruitment journeys",
+            "steps": [
+              "Shared final batch gate and CI Chromium journeys (ARCH-30)"
+            ],
+            "expected": "Pass on the integration candidate",
+            "observed": "Not run by the worker",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "Integration tests and browser journeys belong to the coordinator's final gate and CI; the worker has no integration candidate",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "coordinator",
+            "candidate": null,
+            "duplicationReason": ""
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 517,
+      "at": "2026-11-17T09:08:04.424Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "40398e2f-6b28-4a7a-8d26-5e9dbf25cea2",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-17T09:00:32.581Z",
+          "finishedAt": "2026-11-17T09:08:04.424Z",
+          "error": null,
+          "summary": "I fixed review finding ff94b4c9: a long bid report no longer drops factors. The task-tier check now passes.\n\n- **No factor is dropped.** `fittedDetail` in `packages/engine/src/transfers.ts` keeps every factor of both the club's and the player's answer. When a report is too long, it shortens only a name inside a factor (the 단장's), stepping through ∞, 60, 30, 16 and 8 characters via a new `room` argument through `reservationReport`, `termsReport` and `saleReason`. Callers in `ops-squad.ts` were updated. The final clip can only cut a money-check reason, which every report puts last.\n- **Inbox detail limit raised from 400 to 1000** in `packages/contracts/src/schema.ts`, the limit event details already use. 400 was too small even with a short name: a combined refusal with 8 club and 6 player factors measured 471 characters with a 20-character name. Older saves still load because the limit only got wider.\n- **Test:** `RecruitmentDesk.reports.test.ts` now builds a combined club-and-player refusal with every club factor, all 7 player factors and a 160-character 단장 name. It checks every factor's English text is present, the name keeps at least 50 characters, and the report fits in 1000. A second case with a 2000-character name checks that the name shortens and every factor stays.\n- **Task result:** updated with correction (h) and the check result.\n\n`vibe check --tier task --diff-base 412a5efdc --task T933` passed on tree cda00f35011b: typecheck, lint, format, i18n (12 locales, 6930 messages) and affected units (301 files, 2672 tests). After that run I edited only the task file's verified line, which is Markdown and not a check input. Integration tests and browser journeys are handed to the shared final gate."
+        }
+      }
+    },
+    {
+      "sequence": 518,
+      "at": "2026-11-17T09:08:05.014Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "6d4c5787-7b90-42cd-8332-4d44ba96d592",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "reviewing",
+          "commit": "7ef7413d796c34c78f19d9c885cd4c7eef78d3cb",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "0999cdfc-1754-412a-9394-1e3c3edf23ab",
+          "createdAt": "2026-11-17T09:08:05.014Z"
+        }
+      }
+    },
+    {
+      "sequence": 519,
+      "at": "2026-11-17T09:08:08.881Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "0ece68e9-49b3-4037-a2ac-01037c98e042",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-17T09:08:08.881Z"
+        }
+      }
+    },
+    {
+      "sequence": 520,
+      "at": "2026-11-17T09:08:08.952Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "0ece68e9-49b3-4037-a2ac-01037c98e042",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-17T09:08:08.881Z"
+        }
+      }
+    },
+    {
+      "sequence": 521,
+      "at": "2026-11-17T09:09:27.078Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T933 preserves the decision factors in the corrected reports, but delegated bids can bypass wage-based financial checks when they carry an increased wage step. The coordinator retains the final integration and browser gate.",
+        "review": {
+          "id": "6d4c5787-7b90-42cd-8332-4d44ba96d592",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T933 preserves the decision factors in the corrected reports, but delegated bids can bypass wage-based financial checks when they carry an increased wage step. The coordinator retains the final integration and browser gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:833",
+              "message": "T933: A delegated bid can carry a wage step above 100% through placeBid, but both the direct acceptance path here and the counter path at line 926 pass the original quoted player to signingVerdict. The verdict therefore checks the demand rather than the wage actually signed in closeDeal. A bid can pass the director's budget and insolvency checks at 100% and then commit 150% or 200%, violating ECON-33. Run both checks with the bid's offered wage and cover acceptance and counter settlement when the increased wage exceeds the permitted budget."
+            }
+          ],
+          "commit": "7ef7413d796c34c78f19d9c885cd4c7eef78d3cb",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "0999cdfc-1754-412a-9394-1e3c3edf23ab",
+          "createdAt": "2026-11-17T09:08:05.014Z",
+          "finishedAt": "2026-11-17T09:09:27.078Z"
+        }
+      }
+    },
+    {
+      "sequence": 522,
+      "at": "2026-11-17T09:09:27.112Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "0ece68e9-49b3-4037-a2ac-01037c98e042",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-17T09:08:08.881Z",
+          "finishedAt": "2026-11-17T09:09:27.112Z",
+          "error": null,
+          "summary": "T933 preserves the decision factors in the corrected reports, but delegated bids can bypass wage-based financial checks when they carry an increased wage step. The coordinator retains the final integration and browser gate."
+        }
+      }
+    },
+    {
+      "sequence": 523,
+      "at": "2026-11-17T09:09:27.173Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "18885f0a-8b7a-4c53-8aa4-3d5f572240cf",
+            "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:776",
+                "message": "T933: Free-agent recruitment and loan offers submit directly without a wage step or a terms preview. Both therefore always offer 100%, and a free agent who refuses cannot be offered a higher step through the UI. Provide the wage choices and player chance for these paths and submit the selected step."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:767",
+                "message": "T933: When the selling club accepts, the success report does not include its reservation or factors; if the player then refuses, only the player’s factors are reported. CLUB-52 requires each selling-club answer’s report to name the factors that moved its reservation. Preserve that information for accepted answers as well."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:169",
+                "message": "T933: Joining source-language factor sentences into one string prevents localizeText from resolving each factor independently. With multiple factors, non-Korean inbox reports retain Korean factor text even though the outer report is translated. Preserve a localizable structure or use a message representation that resolves each factor separately."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: The new player-name parameters are absent from verbatimParameters for market.answer.free.title, market.answer.player.title, and market.recruit.refused. A name matching source display text can consequently be translated when the report or status is displayed, contrary to the identity localization rule. Mark those name parameters verbatim."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:128",
+                "message": "T933: The manager style’s STAFF-14 benefit is changed from five points of bid acceptance probability to five points of the asking fee off the seller’s reservation. These produce different probabilities, and CLUB-52 does not specify this extra share factor. Resolve the STAFF-14/CLUB-52 policy conflict with the planner before implementing the chosen behavior."
+              }
+            ],
+            "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+            "baseCommit": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+            "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+            "createdAt": "2026-11-17T08:16:22.579Z",
+            "finishedAt": "2026-11-17T08:17:15.289Z",
+            "invalidatedAt": "2026-11-17T08:17:15.542Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "938d573c-3ff2-4f64-836c-933b4f134e32",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage answers, but the selected wage is missing from financial previews and a free-agent refusal can create an invalid save. The coordinator retains the integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:2006",
+                "message": "T933: Selecting a 125%, 150% or 200% wage changes the offer sent for a free agent or loan, but the card still displays the 100% wage, annual cost and fixed-cost runway from the unchanged recruitment preview. This understates the commitment and violates CLUB-15's wage-inclusive runway requirement. Recalculate the displayed wage and financial preview for the selected step before submission."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: A free agent with a valid name near the 160-character schema limit can refuse terms, causing this unbounded title to exceed the inbox title's 160-character limit. The resulting world fails save validation. Bound the title while preserving the identity and add coverage for a long valid name."
+              }
+            ],
+            "commit": "a30194a434906650d3ba45a59b663ca89a706c14",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "f6b1da18-5fa8-487e-90ac-d5d6819325cd",
+            "createdAt": "2026-11-17T08:43:45.738Z",
+            "finishedAt": "2026-11-17T08:45:01.559Z",
+            "invalidatedAt": "2026-11-17T08:45:01.653Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "ff94b4c9-cab3-4e33-86fe-b8c16b99ef38",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933’s wage preview and title corrections address the previous findings, but the report-length correction can omit required decision factors. The coordinator retains the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:237",
+                "message": "T933: When a combined club and player refusal report exceeds 400 characters, fittedDetail reduces the factor cap and silently removes the last factors from both answers. A valid long director name together with applicable club and player factors can trigger this, omitting factors such as deadline or manager support even though they affected the decision. CLUB-52 and CLUB-53 require the reports to name the factors. Preserve all applicable factors within valid save bounds, and cover a report containing both answers and a long valid name."
+              }
+            ],
+            "commit": "b639e1c2917767dd2e50b39bc9381052b16e9787",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "c69ac576-b262-44a7-9986-f301e8a40029",
+            "createdAt": "2026-11-17T08:59:22.324Z",
+            "finishedAt": "2026-11-17T09:00:32.362Z",
+            "invalidatedAt": "2026-11-17T09:00:32.485Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "6d4c5787-7b90-42cd-8332-4d44ba96d592",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 preserves the decision factors in the corrected reports, but delegated bids can bypass wage-based financial checks when they carry an increased wage step. The coordinator retains the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:833",
+                "message": "T933: A delegated bid can carry a wage step above 100% through placeBid, but both the direct acceptance path here and the counter path at line 926 pass the original quoted player to signingVerdict. The verdict therefore checks the demand rather than the wage actually signed in closeDeal. A bid can pass the director's budget and insolvency checks at 100% and then commit 150% or 200%, violating ECON-33. Run both checks with the bid's offered wage and cover acceptance and counter settlement when the increased wage exceeds the permitted budget."
+              }
+            ],
+            "commit": "7ef7413d796c34c78f19d9c885cd4c7eef78d3cb",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "0999cdfc-1754-412a-9394-1e3c3edf23ab",
+            "createdAt": "2026-11-17T09:08:05.014Z",
+            "finishedAt": "2026-11-17T09:09:27.078Z",
+            "invalidatedAt": "2026-11-17T09:09:27.173Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 524,
+      "at": "2026-11-17T09:09:27.256Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "58b8bd53-8c7e-4f2d-b75a-6fdb11b5c456",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-17T09:09:27.256Z"
+        }
+      }
+    },
+    {
+      "sequence": 525,
+      "at": "2026-11-17T09:09:27.598Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "58b8bd53-8c7e-4f2d-b75a-6fdb11b5c456",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-17T09:09:27.256Z"
+        }
+      }
+    },
+    {
+      "sequence": 526,
+      "at": "2026-11-17T09:17:44.404Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 527,
+      "at": "2026-11-17T09:17:44.804Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 528,
+      "at": "2026-11-17T09:17:44.877Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 529,
+      "at": "2026-11-17T09:17:45.034Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "ce52106b-36da-4472-9fef-d6b5cddfeeaa",
+        "submittedAt": "2026-11-17T09:17:45.034Z",
+        "steps": [
+          {
+            "taskId": "T933",
+            "commit": "d63c8a445a2c40223a5a0d4617407f46144c51db",
+            "at": "2026-11-17T09:17:45.004Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "d63c8a445a2c40223a5a0d4617407f46144c51db"
+      }
+    },
+    {
+      "sequence": 530,
+      "at": "2026-11-17T09:17:45.184Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "58b8bd53-8c7e-4f2d-b75a-6fdb11b5c456",
+          "runner": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-17T09:09:27.256Z",
+          "finishedAt": "2026-11-17T09:17:45.184Z",
+          "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T933-task-tier",
+          "summary": "I fixed review finding 6d4c5787: when the 단장 bids at a raised wage step, the money checks now test the wage his bid offers. The task-tier check passes.\n\n**The fix:** a new helper `atOfferedWage` in `packages/engine/src/transfers.ts` gives `signingVerdict` the player at his demand times the bid's wage step. Both of the 단장's paths use it: the accepted-bid path in `decideOutgoing` and the counter path in `answerStaffCounter`. Before, both read the player's quoted demand, so a bid at 150% or 200% could pass the plan and the insolvency stop at 100% and then sign at the higher wage (ECON-33, ECON-41).\n\n**Tests:** I added 2 cases to `director-bidding.test.ts`. Both are 단장 bids on a window's last day, so they are answered at once. A stub on the money check refuses any wage above the player's demand.\n- A bid at the asking fee on the 200% step: the check receives twice the demand. The bid is rejected, nobody signs and cash is unchanged.\n- A bid the seller is certain to counter, on the 150% step: the check receives 1.5× the demand. The bid does not complete, nobody signs and cash is unchanged.\n\nThe file passes 17/17 with the fix. With the fix temporarily reverted, both new cases fail.\n\n**Task-tier check:** `vibe check --tier task --diff-base 412a5efdc --task T933` passed on tree `07af95d18dc1`: typecheck, lint, format, i18n and affected units (301 files, 2674 tests). The first run failed only on formatting in the test file, which I fixed with prettier.\n\n**Task file:** the result records correction (i), the hand-run evidence and this check run. The verified-line edit is Markdown only, so it doesn't change the checked inputs.\n\nIntegration bid tests and browser journeys are left to the shared final gate."
+        }
+      }
+    },
+    {
+      "sequence": 531,
+      "at": "2026-11-17T09:17:46.023Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "28b01a87-2747-4fad-a30b-44e48f475b80",
+          "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+          "status": "reviewing",
+          "commit": "d63c8a445a2c40223a5a0d4617407f46144c51db",
+          "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+          "submissionId": "ce52106b-36da-4472-9fef-d6b5cddfeeaa",
+          "createdAt": "2026-11-17T09:17:46.023Z"
+        }
+      }
+    },
+    {
+      "sequence": 532,
+      "at": "2026-11-17T09:17:49.490Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "18885f0a-8b7a-4c53-8aa4-3d5f572240cf",
+            "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:776",
+                "message": "T933: Free-agent recruitment and loan offers submit directly without a wage step or a terms preview. Both therefore always offer 100%, and a free agent who refuses cannot be offered a higher step through the UI. Provide the wage choices and player chance for these paths and submit the selected step."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:767",
+                "message": "T933: When the selling club accepts, the success report does not include its reservation or factors; if the player then refuses, only the player’s factors are reported. CLUB-52 requires each selling-club answer’s report to name the factors that moved its reservation. Preserve that information for accepted answers as well."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:169",
+                "message": "T933: Joining source-language factor sentences into one string prevents localizeText from resolving each factor independently. With multiple factors, non-Korean inbox reports retain Korean factor text even though the outer report is translated. Preserve a localizable structure or use a message representation that resolves each factor separately."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: The new player-name parameters are absent from verbatimParameters for market.answer.free.title, market.answer.player.title, and market.recruit.refused. A name matching source display text can consequently be translated when the report or status is displayed, contrary to the identity localization rule. Mark those name parameters verbatim."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:128",
+                "message": "T933: The manager style’s STAFF-14 benefit is changed from five points of bid acceptance probability to five points of the asking fee off the seller’s reservation. These produce different probabilities, and CLUB-52 does not specify this extra share factor. Resolve the STAFF-14/CLUB-52 policy conflict with the planner before implementing the chosen behavior."
+              }
+            ],
+            "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+            "baseCommit": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+            "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+            "createdAt": "2026-11-17T08:16:22.579Z",
+            "finishedAt": "2026-11-17T08:17:15.289Z",
+            "invalidatedAt": "2026-11-17T08:17:15.542Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "938d573c-3ff2-4f64-836c-933b4f134e32",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage answers, but the selected wage is missing from financial previews and a free-agent refusal can create an invalid save. The coordinator retains the integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:2006",
+                "message": "T933: Selecting a 125%, 150% or 200% wage changes the offer sent for a free agent or loan, but the card still displays the 100% wage, annual cost and fixed-cost runway from the unchanged recruitment preview. This understates the commitment and violates CLUB-15's wage-inclusive runway requirement. Recalculate the displayed wage and financial preview for the selected step before submission."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: A free agent with a valid name near the 160-character schema limit can refuse terms, causing this unbounded title to exceed the inbox title's 160-character limit. The resulting world fails save validation. Bound the title while preserving the identity and add coverage for a long valid name."
+              }
+            ],
+            "commit": "a30194a434906650d3ba45a59b663ca89a706c14",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "f6b1da18-5fa8-487e-90ac-d5d6819325cd",
+            "createdAt": "2026-11-17T08:43:45.738Z",
+            "finishedAt": "2026-11-17T08:45:01.559Z",
+            "invalidatedAt": "2026-11-17T08:45:01.653Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "ff94b4c9-cab3-4e33-86fe-b8c16b99ef38",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933’s wage preview and title corrections address the previous findings, but the report-length correction can omit required decision factors. The coordinator retains the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:237",
+                "message": "T933: When a combined club and player refusal report exceeds 400 characters, fittedDetail reduces the factor cap and silently removes the last factors from both answers. A valid long director name together with applicable club and player factors can trigger this, omitting factors such as deadline or manager support even though they affected the decision. CLUB-52 and CLUB-53 require the reports to name the factors. Preserve all applicable factors within valid save bounds, and cover a report containing both answers and a long valid name."
+              }
+            ],
+            "commit": "b639e1c2917767dd2e50b39bc9381052b16e9787",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "c69ac576-b262-44a7-9986-f301e8a40029",
+            "createdAt": "2026-11-17T08:59:22.324Z",
+            "finishedAt": "2026-11-17T09:00:32.362Z",
+            "invalidatedAt": "2026-11-17T09:00:32.485Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "6d4c5787-7b90-42cd-8332-4d44ba96d592",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 preserves the decision factors in the corrected reports, but delegated bids can bypass wage-based financial checks when they carry an increased wage step. The coordinator retains the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:833",
+                "message": "T933: A delegated bid can carry a wage step above 100% through placeBid, but both the direct acceptance path here and the counter path at line 926 pass the original quoted player to signingVerdict. The verdict therefore checks the demand rather than the wage actually signed in closeDeal. A bid can pass the director's budget and insolvency checks at 100% and then commit 150% or 200%, violating ECON-33. Run both checks with the bid's offered wage and cover acceptance and counter settlement when the increased wage exceeds the permitted budget."
+              }
+            ],
+            "commit": "7ef7413d796c34c78f19d9c885cd4c7eef78d3cb",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "0999cdfc-1754-412a-9394-1e3c3edf23ab",
+            "createdAt": "2026-11-17T09:08:05.014Z",
+            "finishedAt": "2026-11-17T09:09:27.078Z",
+            "invalidatedAt": "2026-11-17T09:09:27.173Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "28b01a87-2747-4fad-a30b-44e48f475b80",
+            "owner": "65e2369f-e1bf-424c-8153-08f2b756b9be/reviewer-1",
+            "status": "reviewing",
+            "commit": "d63c8a445a2c40223a5a0d4617407f46144c51db",
+            "baseCommit": "84aefff86df1d298e6368643128f8a3673feaed2",
+            "submissionId": "ce52106b-36da-4472-9fef-d6b5cddfeeaa",
+            "createdAt": "2026-11-17T09:17:46.023Z",
+            "invalidatedAt": "2026-11-17T09:17:49.490Z",
+            "invalidationReason": "review retry limit"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 533,
+      "at": "2026-11-17T09:17:49.552Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "review retry limit; inspect submission"
+      }
+    },
+    {
+      "sequence": 534,
+      "at": "2026-11-17T09:17:49.680Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "65e2369f-e1bf-424c-8153-08f2b756b9be",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-17T08:43:45.204Z",
+          "stoppedAt": "2026-11-17T09:17:49.680Z",
+          "dispatched": 6,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
+              "role": "worker",
+              "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T933-task-tier"
+            },
+            {
+              "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
+              "error": "review retry limit"
             }
           ],
           "autopilot": true,
