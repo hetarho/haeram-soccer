@@ -269,4 +269,9 @@ export const verbatimParameters: Readonly<Record<string, readonly string[]>> = {
   'office.area.factor': ['effect', 'source'],
   'market.source.club': ['club'],
   'staff.source.club': ['club'],
+  'market.sale.director': ['name'],
+  'market.sale.director.negotiator': ['name'],
+  'market.answer.player.title': ['name'],
+  'market.answer.free.title': ['name'],
+  'market.recruit.refused': ['name'],
 };

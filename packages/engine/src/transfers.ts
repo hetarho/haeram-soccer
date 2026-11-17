@@ -1,4 +1,4 @@
-import { message as sourceMessage } from '../../contracts/src/messages';
+import { message as sourceMessage, type SourceMessageId } from '../../contracts/src/messages';
 import { SALE_BARS } from './transfer-policy';
 import { worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
@@ -160,32 +160,67 @@ function clubAnswer(w: World, bid: TransferBid, offer: MarketOffer, asking: stri
 function stepWage(demand: string, step: number) {
   return ((BigInt(demand) * BigInt(Math.round(step * 10000))) / 10000n).toString();
 }
-/** A sale factor's points of the asking fee, signed: +10 holds out for more, −15 gives way. */
-function sharePoints(delta: number) {
-  const points = Math.round(delta * 100) || 0;
-  return points > 0 ? `+${points}` : `${points}`;
+/**
+ * A report's factors, one message per count so each factor stays its own localizable slot (→ARCH-32):
+ * prose joined into one parameter would leave a translation unable to tell the factors apart.
+ */
+const RESERVATION_REPORT = [
+  'market.answer.reservation.0',
+  'market.answer.reservation.1',
+  'market.answer.reservation.2',
+  'market.answer.reservation.3',
+  'market.answer.reservation.4',
+  'market.answer.reservation.5',
+  'market.answer.reservation.6',
+  'market.answer.reservation.7',
+  'market.answer.reservation.8',
+  'market.answer.reservation.9',
+  'market.answer.reservation.10',
+  'market.answer.reservation.11',
+] as const satisfies readonly SourceMessageId[];
+const TERMS_REPORT = [
+  'market.answer.terms.0',
+  'market.answer.terms.1',
+  'market.answer.terms.2',
+  'market.answer.terms.3',
+  'market.answer.terms.4',
+  'market.answer.terms.5',
+  'market.answer.terms.6',
+  'market.answer.terms.7',
+] as const satisfies readonly SourceMessageId[];
+/** The factor lines as a report's named slots f1, f2, …, at most `slots` of them. */
+function factorSlots(lines: readonly FactorLine[], slots: number) {
+  return Object.fromEntries(
+    lines.slice(0, slots).map((line, i) => [`f${i + 1}`, sourceMessage(line.message, line.params)]),
+  );
 }
-/** An answer's factor lines for a report, or a note that none moved it. */
-export function factorList(lines: readonly FactorLine[], kind: 'sale' | 'terms') {
-  if (!lines.length) return sourceMessage('market.answer.noFactors');
-  return lines
-    .map((line) => {
-      const factor = sourceMessage(line.message, line.params);
-      return kind === 'sale'
-        ? sourceMessage('market.answer.saleFactor', { factor, delta: sharePoints(line.delta) })
-        : line.delta > 0
-          ? sourceMessage('market.answer.termsFor', { factor })
-          : sourceMessage('market.answer.termsAgainst', { factor });
-    })
-    .join(' · ');
+/**
+ * The selling club's reservation and each factor that moved it, for its answer's report
+ * (→CLUB-52); `reservation` is the money label of R.
+ */
+export function reservationReport(
+  reservation: string,
+  share: number,
+  lines: readonly FactorLine[],
+) {
+  const shown = Math.min(lines.length, RESERVATION_REPORT.length - 1);
+  return sourceMessage(RESERVATION_REPORT[shown]!, {
+    reservation,
+    share: Math.round(share * 100),
+    ...factorSlots(lines, shown),
+  });
+}
+/** The player's chance of agreeing and each factor behind it, for his answer's report (→CLUB-53). */
+export function termsReport(chance: number, lines: readonly FactorLine[]) {
+  const shown = Math.min(lines.length, TERMS_REPORT.length - 1);
+  return sourceMessage(TERMS_REPORT[shown]!, {
+    chance: Math.round(chance * 100),
+    ...factorSlots(lines, shown),
+  });
 }
 /** The selling club's reservation and the factors behind it, for its answer's report. */
 function saleReason(w: World, answer: SaleAnswer) {
-  return sourceMessage('market.answer.reservation', {
-    reservation: moneyLabel(w, answer.reservation),
-    share: Math.round(answer.share * 100),
-    factors: factorList(answer.lines, 'sale'),
-  });
+  return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines);
 }
 /**
  * The player's answer to our terms once his club agreed (→CLUB-53), from his own draw: our step of
@@ -692,6 +727,7 @@ function closeDeal(
   offer: MarketOffer,
   fee: string,
   attention: boolean,
+  club?: SaleAnswer,
 ): boolean {
   const p = offer.player,
     terms = playerAnswer(w, bid, offer);
@@ -708,13 +744,22 @@ function closeDeal(
   pushInbox(w, {
     kind: 'bid-response',
     title: clip(sourceMessage('market.answer.player.title', { name: p.name }), 160),
-    detail: sourceMessage('market.answer.player.detail', {
-      fee: moneyLabel(w, fee),
-      wage: moneyLabel(w, terms.wage),
-      percent: Math.round((bid.wage ?? 1) * 100),
-      chance: Math.round(terms.chance * 100),
-      factors: factorList(terms.lines, 'terms'),
-    }),
+    // An answer given at once names the club's reservation too (→CLUB-52); a counter's own
+    // report already named it.
+    detail: club
+      ? sourceMessage('market.answer.player.detail.club', {
+          fee: moneyLabel(w, fee),
+          reason: saleReason(w, club),
+          wage: moneyLabel(w, terms.wage),
+          percent: Math.round((bid.wage ?? 1) * 100),
+          terms: termsReport(terms.chance, terms.lines),
+        })
+      : sourceMessage('market.answer.player.detail', {
+          fee: moneyLabel(w, fee),
+          wage: moneyLabel(w, terms.wage),
+          percent: Math.round((bid.wage ?? 1) * 100),
+          terms: termsReport(terms.chance, terms.lines),
+        }),
     attention,
     ref: bid.id,
   });
@@ -755,24 +800,25 @@ function decideOutgoing(w: World, bid: TransferBid) {
       pushInbox(w, {
         kind: 'bid-response',
         title: clip(sourceMessage('copy.transfers.138ea75077', { p0: p.name, p1: move }), 160),
-        detail: sourceMessage('copy.transfers.6b0ecd8998', {
-          p0: moneyLabel(w, bid.fee),
-          p1: blocker,
+        detail: sourceMessage('market.answer.blocked', {
+          fee: moneyLabel(w, bid.fee),
+          reason: saleReason(w, answer),
+          blocker,
         }),
         attention,
         ref: bid.id,
       });
       return;
     }
-    if (!closeDeal(w, bid, offer, bid.fee, attention)) return;
+    if (!closeDeal(w, bid, offer, bid.fee, attention, answer)) return;
     pushInbox(w, {
       kind: 'bid-response',
       title: clip(sourceMessage('copy.transfers.4bd8c1ff7d', { p0: p.name, p1: move }), 160),
-      detail: sourceMessage('copy.transfers.500d09e6f8', {
-        p0: p.position,
-        p1: w.year - p.born,
-        p2: moneyLabel(w, bid.fee),
-        p3: bid.staff ? sourceMessage('copy.transfers.fba4d72f3f') : '',
+      detail: sourceMessage(bid.staff ? 'market.answer.accepted.staff' : 'market.answer.accepted', {
+        position: p.position,
+        age: w.year - p.born,
+        fee: moneyLabel(w, bid.fee),
+        reason: saleReason(w, answer),
       }),
       attention,
       ref: bid.id,
@@ -843,7 +889,7 @@ function answerStaffCounter(
         : (blocker ?? verdict.reason);
   if (accept) {
     // His refusal reports itself; only a signing or a declined counter reports the counter.
-    if (!closeDeal(w, bid, offer, fee, false)) return;
+    if (!closeDeal(w, bid, offer, fee, false, answer)) return;
   } else bid.status = bargaining || (verdict.ok && !blocker) ? 'rejected' : 'expired';
   pushInbox(w, {
     kind: 'bid-response',

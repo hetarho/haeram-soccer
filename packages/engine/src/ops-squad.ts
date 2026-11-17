@@ -8,7 +8,7 @@ import { fanMoodTransfer } from './fan-mood';
 import { declineContract, offerContract, signingClauses } from './contracts';
 import { moneyLabel } from './finance';
 import { promoteYouth, releaseYouth } from './academy';
-import { factorList, isWageStep, placeBid, respondBid, setTransferStance } from './transfers';
+import { isWageStep, termsReport, placeBid, respondBid, setTransferStance } from './transfers';
 import { termsAnswer, termsContext } from './personal-terms';
 import { currentDay } from './calendar';
 import { pushInbox } from './inbox';
@@ -74,8 +74,7 @@ function freeAgentTerms(w: World, player: Player, step: number) {
       detail: sourceMessage('market.answer.free.detail', {
         wage: moneyLabel(w, context.offer),
         percent: Math.round(step * 100),
-        chance: Math.round(answer.chance * 100),
-        factors: factorList(answer.lines, 'terms'),
+        terms: termsReport(answer.chance, answer.lines),
       }),
       attention: true,
       ref: player.id,

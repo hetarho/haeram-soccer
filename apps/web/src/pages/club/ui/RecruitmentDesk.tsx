@@ -12,6 +12,7 @@ import type {
   Line,
   Position,
   TransferBid,
+  WageStep,
   World,
   WorldMarketTarget,
 } from '../../../../../../packages/contracts/src/types';
@@ -721,6 +722,9 @@ export function RecruitmentDesk({
   const outlook = bidCurrent ? quoted : undefined;
   const wageSteps = outlook?.terms?.steps ?? [],
     pickedWage = wageSteps[wageStep];
+  // A free agent's signing and a loan carry the wage step picked in the detail too (→CLUB-53).
+  const detailSteps = (detail.current && detail.value?.bid.terms?.steps) || [],
+    detailWage = detailSteps[wageStep];
   const activeTerms = useRef({ fee, current: bidCurrent, detail: bidDetail.value });
   activeTerms.current = { fee, current: bidCurrent, detail: bidDetail.value };
   useEffect(() => {
@@ -760,7 +764,7 @@ export function RecruitmentDesk({
   const currentWorld = () => client.state.view?.world.id === w.id;
   const currentActionsBlocked = () =>
     blocked || gameActionsBlocked(client.state) || !!client.state.view?.world.critical;
-  const recruit = async (candidate: Candidate, loan: boolean) => {
+  const recruit = async (candidate: Candidate, loan: boolean, wage?: WageStep) => {
     const preview = loan ? candidate.loan : candidate.buy;
     if (
       currentActionsBlocked() ||
@@ -775,12 +779,18 @@ export function RecruitmentDesk({
       return;
     const reply = await client.command(
       candidate.offer.freeAgent
-        ? { type: 'recruit', target: candidate.offer.target, loan: false }
+        ? {
+            type: 'recruit',
+            target: candidate.offer.target,
+            loan: false,
+            ...(wage ? { wage } : {}),
+          }
         : {
             type: 'bid',
             target: candidate.offer.target,
             fee: loan ? candidate.offer.loanFee : candidate.offer.fee,
             loan,
+            ...(wage ? { wage } : {}),
           },
       { background: true },
     );
@@ -835,11 +845,43 @@ export function RecruitmentDesk({
     ) : (
       sourceMessage('copy.RecruitmentDesk.414f13ede8')
     );
+  /** The wage steps of his demand we can offer, each with its wage (→CLUB-53). */
+  const wageChoices = (steps: typeof wageSteps) =>
+    localizeValue(
+      steps.length > 0 && (
+        <div
+          className={s.bidSteps}
+          role="radiogroup"
+          aria-label={displayMessage('market.bid.wageSteps')}
+        >
+          {localizeValue(
+            steps.map((terms, i) => (
+              <button
+                key={String(terms.step)}
+                role="radio"
+                data-ui={wageStep === i ? 'secondary' : 'tertiary'}
+                aria-checked={wageStep === i}
+                className={wageStep === i ? s.bidPicked : undefined}
+                onClick={() => setWageStep(i)}
+              >
+                <b>
+                  {displayMessage('market.bid.wageStep', {
+                    percent: Math.round(terms.step * 100),
+                  })}
+                </b>
+                <small>{plain(terms.wage)}</small>
+              </button>
+            )),
+          )}
+        </div>
+      ),
+    );
   const render = (
     candidate: Candidate,
     current: boolean,
     money: MarketMoney | null,
     bid = false,
+    wage?: WageStep,
   ) => (
     <CandidateCard
       key={candidate.offer.player.id}
@@ -858,7 +900,7 @@ export function RecruitmentDesk({
       onCompare={() => toggle(candidate.offer.target)}
       onCompareOwn={() => setOwnCompare({ target: candidate.offer.target })}
       onRecruit={(loan) => {
-        if (current && sameMarketMoney(money, currentMoney)) void recruit(candidate, loan);
+        if (current && sameMarketMoney(money, currentMoney)) void recruit(candidate, loan, wage);
       }}
       onBid={() => {
         setComparing(false);
@@ -1887,35 +1929,7 @@ export function RecruitmentDesk({
                 )),
               )}
             </div>
-            {localizeValue(
-              wageSteps.length > 0 && (
-                <div
-                  className={s.bidSteps}
-                  role="radiogroup"
-                  aria-label={displayMessage('market.bid.wageSteps')}
-                >
-                  {localizeValue(
-                    wageSteps.map((terms, i) => (
-                      <button
-                        key={String(terms.step)}
-                        role="radio"
-                        data-ui={wageStep === i ? 'secondary' : 'tertiary'}
-                        aria-checked={wageStep === i}
-                        className={wageStep === i ? s.bidPicked : undefined}
-                        onClick={() => setWageStep(i)}
-                      >
-                        <b>
-                          {displayMessage('market.bid.wageStep', {
-                            percent: Math.round(terms.step * 100),
-                          })}
-                        </b>
-                        <small>{plain(terms.wage)}</small>
-                      </button>
-                    )),
-                  )}
-                </div>
-              ),
-            )}
+            {wageChoices(wageSteps)}
             <dl className={s.costs}>
               <div>
                 <dt>{richMessage('market.bid.clubLabel')}</dt>
@@ -1989,11 +2003,30 @@ export function RecruitmentDesk({
             )}
             {localizeValue(
               detail.value ? (
-                render(detail.value, detail.current, detail.money)
+                render(detail.value, detail.current, detail.money, false, detailWage?.step)
               ) : (
                 <p role="status">
                   {localizeValue(detail.error ?? sourceMessage('copy.RecruitmentDesk.965c4d30c9'))}
                 </p>
+              ),
+            )}
+            {localizeValue(
+              detail.value && !detail.value.offer.own && detailWage && (
+                <div data-testid="detail-wage">
+                  {wageChoices(detailSteps)}
+                  <dl className={s.costs}>
+                    <div>
+                      <dt>{richMessage('market.bid.playerLabel')}</dt>
+                      <dd>
+                        {richMessage('market.bid.playerChance', {
+                          chance: percentOf(detailWage.chance),
+                          wage: plain(detailWage.wage),
+                        })}
+                      </dd>
+                    </div>
+                  </dl>
+                  <p className={s.note}>{factorText(detailWage.lines, 'terms')}</p>
+                </div>
               ),
             )}
             {localizeValue(

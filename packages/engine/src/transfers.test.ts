@@ -325,6 +325,7 @@ describe('outgoing bids', () => {
       expect(w.inbox?.find((item) => item.ref === bid.id)?.title).toBe(
         `${offer.player.name} 영입 완료`,
       );
+      expect(w.inbox?.find((item) => item.ref === bid.id)?.detail).toContain('구단이 버틴 선');
     }
   });
 
@@ -609,7 +610,9 @@ describe('personal terms (→CLUB-53)', () => {
     expect(report).toMatchObject({ kind: 'bid-response', attention: true });
     expect(report.title).toContain('개인 조건 거절');
     expect(report.detail).toContain('이적료는 내지 않았어요');
-    expect(report.detail).toMatch(/— (유리|불리)/);
+    // His chance and factors, and the club's reservation with its own factors (→CLUB-52/53).
+    expect(report.detail).toContain('수락 가능성');
+    expect(report.detail).toContain('구단이 버틴 선');
     expect(validateWorld(w).id).toBe(w.id);
   });
 
@@ -665,7 +668,7 @@ describe('personal terms (→CLUB-53)', () => {
     expect({ cash: low.cash, players: low.players.length }).toEqual(before);
     expect(low.freeAgents!.some((p) => p.id === id)).toBe(true);
     expect(low.inbox!.at(-1)!.title).toContain('자유계약 조건 거절');
-    expect(low.inbox!.at(-1)!.detail).toContain('자유계약 선수 — 유리');
+    expect(low.inbox!.at(-1)!.detail).toMatch(/수락 가능성 \d+%: .*자유계약 선수/);
     recruit(low, cold, 1);
     expect(signed(low, id)).toBe(false);
     expect(validateWorld(low).id).toBe(low.id);

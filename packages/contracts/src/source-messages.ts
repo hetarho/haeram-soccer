@@ -7384,7 +7384,7 @@ export const sourceMessages = {
   'market.sale.place.starter': '주전 선수',
   'market.sale.place.outside': '주전이 아닌 선수',
   'market.sale.contract.next': '계약 만료 한 시즌 전',
-  'market.sale.age': '{age}세',
+  'market.sale.age': '나이 {age}세',
   'market.sale.prospect': '유망주',
   'market.sale.cash': '자금 위기(고정비 {rounds}라운드분)',
   'market.sale.wages.over': '선수 연봉이 매각 기준선을 넘음(수입의 {share}%)',
@@ -7408,26 +7408,60 @@ export const sourceMessages = {
   'market.terms.wouldStart': '우리 팀에서 주전으로 뛸 수 있음',
   'market.terms.losesPlace': '지금은 주전이지만 우리 팀에서는 주전이 아님',
   'market.terms.freeAgent': '자유계약 선수',
+  'market.answer.reservation.0': '구단이 버틴 선 {reservation}(요구액의 {share}%)',
+  'market.answer.reservation.1': '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1}',
+  'market.answer.reservation.2': '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2}',
+  'market.answer.reservation.3':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3}',
+  'market.answer.reservation.4':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4}',
+  'market.answer.reservation.5':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5}',
+  'market.answer.reservation.6':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6}',
+  'market.answer.reservation.7':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7}',
+  'market.answer.reservation.8':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7} · {f8}',
+  'market.answer.reservation.9':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7} · {f8} · {f9}',
+  'market.answer.reservation.10':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7} · {f8} · {f9} · {f10}',
+  'market.answer.reservation.11':
+    '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7} · {f8} · {f9} · {f10} · {f11}',
+  'market.answer.terms.0': '수락 가능성 {chance}%',
+  'market.answer.terms.1': '수락 가능성 {chance}%: {f1}',
+  'market.answer.terms.2': '수락 가능성 {chance}%: {f1} · {f2}',
+  'market.answer.terms.3': '수락 가능성 {chance}%: {f1} · {f2} · {f3}',
+  'market.answer.terms.4': '수락 가능성 {chance}%: {f1} · {f2} · {f3} · {f4}',
+  'market.answer.terms.5': '수락 가능성 {chance}%: {f1} · {f2} · {f3} · {f4} · {f5}',
+  'market.answer.terms.6': '수락 가능성 {chance}%: {f1} · {f2} · {f3} · {f4} · {f5} · {f6}',
+  'market.answer.terms.7': '수락 가능성 {chance}%: {f1} · {f2} · {f3} · {f4} · {f5} · {f6} · {f7}',
+  'market.answer.player.detail':
+    '구단은 {fee}에 합의했지만 선수가 연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. 이적료는 내지 않았어요. {terms}',
+  'market.answer.player.detail.club':
+    '구단은 {fee}에 합의했어요. {reason}. 하지만 선수가 연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. 이적료는 내지 않았어요. {terms}',
+  'market.answer.free.detail': '연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. {terms}',
+  'market.answer.staffCounter':
+    '단장의 제안 {fee} · 요구액 {asking} · 요구액의 {percent}%. {reason}. 판단: {verdict}',
+  'market.answer.accepted': '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}.',
+  'market.answer.accepted.staff':
+    '{position} · {age}세 · {fee} 제안이 받아들여졌어요. {reason}. 단장의 제안이에요.',
+  'market.answer.blocked':
+    '상대 구단은 {fee} 제안을 받아들였어요. {reason}. 그러나 마무리하지 못했어요: {blocker}',
   'market.sale.managerStyle': '감독 유형의 협상 지원',
   'market.answer.noFactors': '움직인 요인 없음',
   'market.answer.saleFactor': '{factor} — 요구액의 {delta}%p',
   'market.answer.termsFor': '{factor} — 유리',
   'market.answer.termsAgainst': '{factor} — 불리',
-  'market.answer.reservation': '구단이 버틴 선 {reservation}(요구액의 {share}%): {factors}',
   'market.answer.counter':
     '우리 제안 {fee} · 요구액 {asking}. {reason}. 이적시장이 닫히기 전에 수락하거나 거절하세요.',
   'market.answer.refused':
     '우리 제안 {fee} · 요구액 {asking}. {reason}. 더 높은 금액으로 다시 제안할 수 있어요.',
   'market.answer.refused.staff':
     '단장의 제안 {fee} · 요구액 {asking}. {reason}. 다음에 다른 선수를 찾아요.',
-  'market.answer.staffCounter':
-    '단장의 제안 {fee} · 요구액 {asking} · 요구액의 {percent}% · {verdict}. {reason}',
   'market.answer.player.title': '{name}, 개인 조건 거절',
-  'market.answer.player.detail':
-    '구단은 {fee}에 합의했지만 선수가 연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. 이적료는 내지 않았어요. 수락 가능성 {chance}%: {factors}',
   'market.answer.free.title': '{name}, 자유계약 조건 거절',
-  'market.answer.free.detail':
-    '연봉 {wage}(요구의 {percent}%) 제안을 거절했어요. 수락 가능성 {chance}%: {factors}',
   'market.bid.invalidWage': '연봉 제안은 요구액의 100%, 125%, 150%, 200% 중 하나여야 해요.',
   'market.bid.wageSteps': '연봉 제안',
   'market.bid.wageStep': '요구의 {percent}%',

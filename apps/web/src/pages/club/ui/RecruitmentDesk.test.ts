@@ -571,6 +571,43 @@ describe('paged whole-world recruitment desk', () => {
       { background: true },
     );
   });
+  it('sends the wage step picked in the detail with a free agent’s signing and a loan', () => {
+    const terms: MarketDetail['bid']['terms'] = {
+      demand: '100',
+      steps: [
+        { step: 1, wage: '100', chance: 0.4, lines: [] },
+        { step: 1.25, wage: '125', chance: 0.6, lines: [] },
+        { step: 1.5, wage: '150', chance: 0.75, lines: [] },
+        { step: 2, wage: '200', chance: 0.9, lines: [] },
+      ],
+    };
+    choices['world-market-viewing'] = offer.target;
+    choices['market-wage-step'] = 3;
+    reads.detail = detail();
+    reads.detail.bid = { ...reads.detail.bid, terms };
+    const markup = render();
+    expect(markup).toContain('data-testid="detail-wage"');
+    expect(markup).toContain('수락 가능성 90%');
+    const card = () => elements(tree).find((node) => node.props.candidate)!;
+    (card().props.onRecruit as (loan: boolean) => void)(true);
+    expect(client.command).toHaveBeenLastCalledWith(
+      { type: 'bid', target: offer.target, fee: offer.loanFee, loan: true, wage: 2 },
+      { background: true },
+    );
+    reads.detail.offer = {
+      ...offer,
+      freeAgent: true,
+      fee: '0',
+      source: undefined,
+      target: { world: w.id, kind: 'offer', playerId: offer.player.id },
+    };
+    render();
+    (card().props.onRecruit as (loan: boolean) => void)(false);
+    expect(client.command).toHaveBeenLastCalledWith(
+      { type: 'recruit', target: reads.detail.offer.target, loan: false, wage: 2 },
+      { background: true },
+    );
+  });
   it.each([true, false])(
     'offers only a permanent signing for a free agent with window open=%s',
     (open) => {
