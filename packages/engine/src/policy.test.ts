@@ -27,7 +27,7 @@ import {
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { buyOffer } from './testing';
+import { buyOffer, wouldJoin } from './testing';
 import { marketValueAt } from './market-prices';
 import { clubById } from './world';
 
@@ -262,17 +262,24 @@ describe('club operating policy', () => {
         expect(offer.player.potential).toBeGreaterThanOrEqual(overall(offer.player));
       }
 
-    // Another club's prospect joins through his club's accepted bid, as found (→CLUB-4).
-    const index = transferOffers(prospects).findIndex((o) => !o.freeAgent),
-      offer = transferOffers(prospects)[index]!;
-    buyOffer(prospects, index);
+    // Another club's prospect joins through his club's accepted bid, as found (→CLUB-4), when he
+    // agrees to our terms too (→CLUB-53): the first whose seeded answer to the 200% step does.
+    const offers = transferOffers(prospects),
+      index = offers.findIndex(
+        (o, i) =>
+          !o.freeAgent && wouldJoin(prospects, o.player.id, (c) => buyOffer(c, i, false, 2)),
+      ),
+      offer = offers[index]!;
+    expect(offer).toMatchObject({ freeAgent: false, available: true });
+    buyOffer(prospects, index, false, 2);
     const signed = prospects.players.find((player) => player.id === offer.player.id)!;
-    // He signs as offered, with the clauses his signing settles (→CLUB-29), starting to settle
-    // at his 적응력's start (→PLAYER-11).
+    // He signs as offered, on twice his demand, with the clauses his signing settles (→CLUB-29),
+    // starting to settle at his 적응력's start (→PLAYER-11).
     expect(signed.clauses).toBeDefined();
     expect(canonical(signed)).toBe(
       canonical({
         ...offer.player,
+        wage: (BigInt(offer.player.wage) * 2n).toString(),
         joined: prospects.year,
         clauses: signed.clauses,
         adaptation: signed.adaptation,

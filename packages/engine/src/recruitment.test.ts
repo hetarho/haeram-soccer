@@ -22,7 +22,7 @@ import {
   transferOffers,
 } from './index';
 import { careerWorld } from './career.testkit';
-import { buyOffer } from './testing';
+import { buyOffer, wouldJoin } from './testing';
 import { releaseFixturePlayers } from './player-fixtures.testkit';
 import { movePerson } from './npc-continuity';
 
@@ -78,11 +78,18 @@ describe('recruitment build and budget previews', () => {
   });
 
   it('discloses wages for a free bench transfer even with zero cash', () => {
-    const w = world(true, true),
-      index = freeIndex(w),
+    // The preview prices his demand, the 100% step he signs on when he agrees to it (→CLUB-53):
+    // the first free agent whose seeded answer does.
+    const w = world(true, true);
+    w.cash = '0';
+    const index = transferOffers(w).findIndex(
+        (o, i) =>
+          o.freeAgent &&
+          wouldJoin(w, o.player.id, (c) => operate(c, { type: 'recruit', candidate: i })),
+      ),
       offer = transferOffers(w)[index]!,
       annual = operatingCost(w);
-    w.cash = '0';
+    expect(offer).toMatchObject({ freeAgent: true, available: true });
     const preview = recruitmentPreview(w, offer);
     expect(offer.fee).toBe('0');
     expect(preview.affordable).toBe(true);

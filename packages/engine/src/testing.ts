@@ -12,6 +12,7 @@ import type {
   OwnerState,
   Player,
   TransferBid,
+  WageStep,
   World,
 } from '../../contracts/src/types';
 import { clubOf } from './player-state';
@@ -142,12 +143,13 @@ export function sellPlayer(w: World, id: string) {
 /**
  * Signs another club's player from the chief scout's list as his club's yes to our bid at the
  * asking fee would (→CLUB-4): no instant purchase exists, so the bid is answered with a counter at
- * the same fee and accepted (window must be open). Returns the completed bid.
+ * the same fee and accepted (window must be open). The player then answers our `wage` step of his
+ * demand (→CLUB-53, 100% when absent) and may refuse it. Returns the bid, completed when he agreed.
  */
-export function buyOffer(w: World, candidate: number, loan = false) {
+export function buyOffer(w: World, candidate: number, loan = false, wage?: WageStep) {
   const offer = transferOffers(w)[candidate]!;
   const fee = loan ? offer.loanFee : offer.fee;
-  placeBid(w, candidate, fee, loan);
+  placeBid(w, candidate, fee, loan, undefined, wage);
   const bid = w.bids!.findLast((one) => one.playerId === offer.player.id)!;
   if (bid.status !== 'completed') {
     bid.status = 'countered';
@@ -155,6 +157,15 @@ export function buyOffer(w: World, candidate: number, loan = false) {
     respondBid(w, bid.id, true);
   }
   return bid;
+}
+/**
+ * Whether player `id` joins our squad when `sign` runs on a copy of the world: his seeded answer to
+ * our terms (→CLUB-53) reads the world, so the copy answers as the world itself would.
+ */
+export function wouldJoin(w: World, id: string, sign: (copy: World) => unknown) {
+  const copy = structuredClone(w);
+  sign(copy);
+  return copy.players.some((p) => p.id === id && p.status === 'active');
 }
 
 /**

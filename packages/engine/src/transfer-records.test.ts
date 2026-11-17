@@ -5,12 +5,11 @@ import { activePlayers, advanceDays, currentDay, operate, placeBid, transferOffe
 import { addEvent } from './events';
 import { inTodayMoney, transferLedger, transferRanking } from './transfer-records';
 import { incoming, world } from './transfers.testkit';
-import { buyOffer } from './testing';
+import { buyOffer, wouldJoin } from './testing';
 
 /** The scout's list positions of other clubs' players, who join only through a bid (→CLUB-4). */
 const clubIndexes = (w: World) =>
   transferOffers(w).flatMap((offer, i) => (offer.freeAgent ? [] : [i]));
-const at = (w: World, id: string) => transferOffers(w).findIndex((o) => o.player.id === id);
 const clubOfOffer = (offer: { source: { kind: string; club?: string } }) => offer.source.club!;
 
 const fact = (w: World, year: number, fee: string, name: string): TransferFact => ({
@@ -27,13 +26,25 @@ const fact = (w: World, year: number, fee: string, name: string): TransferFact =
 describe('own-club transfer facts (→HIST-20)', () => {
   it('records a fee signing, a loan and a sale', () => {
     const w = world();
+    // Each joins when he agrees to our terms at the 200% step too (→CLUB-53): the first and then the
+    // next of the list whose seeded answers do.
     const offers = transferOffers(w),
-      [first, second] = clubIndexes(w),
+      first = clubIndexes(w).find((i) =>
+        wouldJoin(w, offers[i]!.player.id, (c) => buyOffer(c, i, false, 2)),
+      ),
       bought = offers[first!]!,
-      loaned = offers[second!]!,
       day = currentDay(w);
-    buyOffer(w, first!);
-    buyOffer(w, at(w, loaned.player.id), true);
+    expect(bought).toMatchObject({ freeAgent: false, available: true });
+    buyOffer(w, first!, false, 2);
+    const listed = transferOffers(w),
+      second = clubIndexes(w).find(
+        (i) =>
+          listed[i]!.player.id !== bought.player.id &&
+          wouldJoin(w, listed[i]!.player.id, (c) => buyOffer(c, i, true, 2)),
+      ),
+      loaned = listed[second!]!;
+    expect(loaned).toMatchObject({ freeAgent: false, available: true });
+    buyOffer(w, second!, true, 2);
     const sold = activePlayers(w).find((p) => p.position !== 'GK')!;
     const bid = incoming(w, sold.id, '12345');
     operate(w, { type: 'respond-bid', id: bid.id, accept: true });
@@ -100,9 +111,21 @@ describe('own-club transfer facts (→HIST-20)', () => {
 
   it('records nothing for a free agent', () => {
     const w = world();
-    const free = transferOffers(w).findIndex((offer) => offer.freeAgent);
+    // A free agent answers our terms at once, on a draw of the day (→CLUB-53). This list's free
+    // agents suit divisions far above ours, so each says yes to the 200% step only now and then:
+    // the season's first day one of them does, and the first who does that day.
+    const recruit = (copy: World, candidate: number) =>
+      operate(copy, { type: 'recruit', candidate, wage: 2 });
+    let free = -1;
+    for (let day = 0; free < 0 && day < 30; day++) {
+      w.calendar = { day };
+      free = transferOffers(w).findIndex(
+        (offer, i) => offer.freeAgent && wouldJoin(w, offer.player.id, (c) => recruit(c, i)),
+      );
+    }
+    expect(free).toBeGreaterThanOrEqual(0);
     expect(transferOffers(w)[free]!.fee).toBe('0');
-    operate(w, { type: 'recruit', candidate: free });
+    recruit(w, free);
     expect(w.events.at(-1)).toMatchObject({ kind: 'transfer-in' });
     expect(w.transfers).toBeUndefined();
   });

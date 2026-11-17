@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buyOffer, handTo, staffAuthority } from './testing';
+import { buyOffer, handTo, staffAuthority, wouldJoin } from './testing';
 import {
   advanceRound,
   contractSeason,
@@ -38,15 +38,20 @@ describe('club decisions', () => {
     expect(w).toEqual(before);
   });
   /**
-   * Another club's player on loan (his club accepting our bid at the loan fee) and the local
-   * sponsor, each signed once; the second signing is refused.
+   * Another club's player on loan (his club accepting our bid at the loan fee, he our terms at the
+   * 200% step: the first whose seeded answer agrees, →CLUB-53) and the local sponsor, each signed
+   * once; the second signing is refused.
    */
   const loanAndSponsor = (w: ReturnType<typeof world>) => {
     w.cash = '999999999';
-    const index = transferOffers(w).findIndex((o) => !o.freeAgent),
-      offer = transferOffers(w)[index]!;
+    const offers = transferOffers(w),
+      index = offers.findIndex(
+        (o, i) => !o.freeAgent && wouldJoin(w, o.player.id, (c) => buyOffer(c, i, true, 2)),
+      ),
+      offer = offers[index]!;
+    expect(offer).toMatchObject({ freeAgent: false, available: true });
     const before = BigInt(w.cash);
-    buyOffer(w, index, true);
+    buyOffer(w, index, true, 2);
     expect(BigInt(w.cash)).toBe(before - BigInt(offer.loanFee));
     const club = offer.source.kind === 'club' ? offer.source.club : '';
     const target = { world: w.id, kind: 'club' as const, clubId: club, playerId: offer.player.id };
@@ -137,15 +142,22 @@ describe('club decisions', () => {
     const w = world();
     w.cash = '999999999';
     releaseFixturePlayers(w);
-    // A free agent signs at once, so his signing's line is the last event.
-    const free = transferOffers(w).findIndex((o) => o.freeAgent),
+    // A free agent signs at once, so his signing's line is the last event: the first who agrees to
+    // our terms at the 200% step (→CLUB-53), signing on twice his demand.
+    const recruit = (copy: typeof w, candidate: number) =>
+        operate(copy, { type: 'recruit', candidate, wage: 2 }),
+      free = transferOffers(w).findIndex(
+        (o, i) => o.freeAgent && wouldJoin(w, o.player.id, (c) => recruit(c, i)),
+      ),
       signing = transferOffers(w)[free]!;
     expect(free).toBeGreaterThanOrEqual(0);
     expect(signing).toMatchObject({ available: true, freeAgent: true, fee: '0' });
-    operate(w, { type: 'recruit', candidate: free });
+    recruit(w, free);
+    const wage = (BigInt(signing.player.wage) * 2n).toString();
+    expect(w.players.find((p) => p.id === signing.player.id)?.wage).toBe(wage);
     const signed = w.events.at(-1)!.detail;
-    expect(signed).toContain(`연봉 ${moneyLabel(w, signing.player.wage)}`);
-    expect(signed).not.toContain(`연봉 ${signing.player.wage}`);
+    expect(signed).toContain(`연봉 ${moneyLabel(w, wage)}`);
+    expect(signed).not.toContain(`연봉 ${wage}`);
     const coach = staffCandidates(w, 'attack')[2];
     operate(w, { type: 'hire-staff', role: 'attack', candidate: 2 });
     expect(w.events.at(-1)!.detail).toContain(

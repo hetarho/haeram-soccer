@@ -110,8 +110,9 @@ describe('selected NPC continuity', () => {
       (offer) => offer.available && offer.freeAgent && offer.player.id === free.id,
     );
     expect(candidate).toBeGreaterThanOrEqual(0);
-    // A free agent of the pool: no club to record as his seller.
-    operate(w, { type: 'recruit', candidate });
+    // A free agent of the pool: no club to record as his seller. He joins at the 200% step, which
+    // his seeded answer to our terms agrees to (→CLUB-53).
+    operate(w, { type: 'recruit', candidate, wage: 2 });
     const player = w.players.at(-1)!;
     expect(player.id).toBe(free.id);
     expect(w.playerRecords?.[player.id]?.lines ?? []).toEqual([]);
