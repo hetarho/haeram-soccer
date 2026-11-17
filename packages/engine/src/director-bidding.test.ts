@@ -12,6 +12,9 @@ import {
 } from './index';
 import { staffBidShare } from './director-bidding';
 import * as signings from './signings';
+import { spendingStance } from './delegation';
+import { detectMediations } from './mediation';
+import { lineOf } from './player';
 import { STAFF_INFO, STAFF_TRAIT_INFO } from './staff';
 import { careerWorld } from './career.testkit';
 import { holdTemperament } from './delegation.testkit';
@@ -163,6 +166,93 @@ describe('director trait bidding', () => {
     expect(raised.map((b) => b.playerId)).toEqual([first.playerId, second.playerId]);
     for (const next of raised) expect(next.fee).toBe(ratio(next.offer!.fee, 95n, 100n));
     expect(open().map((b) => b.playerId)).toEqual([ordinary, first.playerId, second.playerId]);
+  });
+  it("raises a due haggle before a pending mediation's move can spend its money", () => {
+    willing();
+    // 균형형 at 아낌없이 with a midfield mediation pending since the opening (→CLUB-39). On the look
+    // day the raise the day after the answer comes first (→CLUB-41): the cash pays for it or for the
+    // mediation's cheaper midfielder, not both, so the mediation ends in a promise.
+    const w = world('negotiator'),
+      look = w.calendar!.day + signings.SIGNING_CONFIG.lookDays,
+      offers = transferOffers(w),
+      haggled = offers.findIndex(
+        (offer) => offer.available && !offer.freeAgent && lineOf(offer.player.position) !== 'MF',
+      ),
+      pick = offers
+        .filter((offer) => offer.available && lineOf(offer.player.position) === 'MF')
+        .sort((a, b) => (BigInt(a.fee) > BigInt(b.fee) ? -1 : 1))[0]!;
+    const first = bid(w, 90, haggled);
+    Object.assign(first, { status: 'rejected', refusedBy: 'club', due: look - 1 });
+    w.shortlist = {
+      ...w.shortlist!,
+      entries: [{ playerId: pick.player.id, line: 'MF' }],
+      requests: [{ kind: 'short', line: 'MF', pick: pick.player.id }],
+    };
+    w.cash = '0';
+    detectMediations(w);
+    expect(w.mediations).toEqual([expect.objectContaining({ status: 'pending' })]);
+    w.cash = '120674';
+    w.calendar!.day = look;
+    // Without the haggle the same cash buys the mediation's midfielder.
+    const alone = structuredClone(w);
+    alone.bids!.find((b) => b.id === first.id)!.status = 'expired';
+    staffSignings(alone);
+    expect(alone.bids!.filter((b) => b.staff && b.day === look)).toHaveLength(1);
+    expect(alone.mediations![0].resolution?.promise).toBeUndefined();
+    staffSignings(w);
+    const today = w.bids!.filter((b) => b.staff && b.day === look);
+    expect(today).toEqual([
+      expect.objectContaining({ playerId: first.playerId, status: 'pending' }),
+    ]);
+    expect(today[0]!.fee).toBe(ratio(today[0]!.offer!.fee, 95n, 100n));
+    expect(w.mediations![0]).toMatchObject({
+      status: 'resolved',
+      resolution: { promise: expect.any(String) },
+    });
+  });
+  it('counts a held upgrade haggle against the window cap, so its raise never passes it', () => {
+    willing();
+    // At 아낌없이 the window takes `cap` upgrades (→CLUB-33). With cap − 1 signed and one upgrade
+    // bid refused on the look day, that look opens no other upgrade, and the haggle's raise the
+    // next day (→CLUB-41) makes the cap, never one more.
+    const w = world('negotiator'),
+      opening = w.calendar!.day,
+      look = opening + signings.SIGNING_CONFIG.lookDays,
+      stance = spendingStance(w, 'recruitment').signing,
+      cap = signings.upgradeCap(
+        stance,
+        signings.slotsBelowBar(w, stance.margin!, signings.windowBar(w, opening), opening),
+      );
+    for (let i = 0; i < cap - 1; i++)
+      w.bids = [
+        ...(w.bids || []),
+        {
+          id: `out:test:upgrade:${i}`,
+          direction: 'out',
+          playerId: `test:upgrade:${i}`,
+          fee: '1',
+          year: w.year,
+          day: opening,
+          due: opening,
+          status: 'completed',
+          staff: 'upgrade',
+        },
+      ];
+    const held = bid(w, 90);
+    Object.assign(held, { staff: 'upgrade', status: 'rejected', refusedBy: 'club', due: look });
+    const upgrades = () =>
+      w.bids!.filter(
+        (b) => b.staff === 'upgrade' && ['completed', 'pending', 'countered'].includes(b.status),
+      );
+    w.calendar!.day = look;
+    staffSignings(w);
+    expect(w.bids!.filter((b) => b.day === look && b.staff === 'upgrade')).toEqual([]);
+    w.calendar!.day = look + 1;
+    staffSignings(w);
+    expect(w.bids!.filter((b) => b.day === look + 1)).toEqual([
+      expect.objectContaining({ playerId: held.playerId, staff: 'upgrade', status: 'pending' }),
+    ]);
+    expect(upgrades()).toHaveLength(cap);
   });
   it('jumps to the ceiling in the final seven days', () => {
     const w = world('negotiator');

@@ -1049,6 +1049,11 @@ function haggles(w: World, bids: TransferBid[]) {
       BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', ceiling, 100n)),
   );
 }
+/** Whether a bid of his raises his earlier bid for the same player in the window (→CLUB-41). */
+const raises = (bids: TransferBid[], bid: TransferBid) =>
+  bids.some(
+    (earlier) => earlier.staff && earlier.playerId === bid.playerId && earlier.day < bid.day,
+  );
 /**
  * The places his bids hold against the step's count (→CLUB-33): those waiting for an answer and a
  * negotiator's haggles waiting for their raise, so no other move takes a raise's place.
@@ -1095,29 +1100,28 @@ function uncovered(w: World, needs: SigningNeed[], held: TransferBid[]) {
  * his bids hold reach the step's count (`pendingLimit`), each for the first need not already
  * covered by a held bid that a candidate meets within the runway test, each pending fee reserved
  * (→ECON-33). A negotiator's haggle keeps its place until its raise the day after the answer
- * (→CLUB-41). Short roles come before replacements and upgrades, and the manager's requested roles
- * before the others.
+ * (→CLUB-41), which comes before a mediation's move and the look's. Short roles come before
+ * replacements and upgrades, and the manager's requested roles before the others.
  */
 export function staffSignings(w: World) {
   const day = currentDay(w),
     window = transferWindow(w, day);
   if (!window.open) return;
-  const regular = (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays === 0;
+  const regular = (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays === 0,
+    delegated = isDelegated(w, 'recruitment'),
+    // Today's moves are made: a second call on the same day changes nothing.
+    moved = delegated && windowBids(w, day).some((bid) => bid.staff && bid.day === day);
+  // His raises come first, so no other move spends the money a raise needs (→CLUB-41).
+  const ended = delegated && !moved && raiseHaggles(w, day);
   if (regular) {
     detectMediations(w);
-    // A mediation's decision is this look's move; his haggles are still raised (→CLUB-41).
-    if (resolveDelegatedMediations(w)) {
-      raiseHaggles(w, day);
-      return;
-    }
+    // A mediation's decision is this look's move (→CLUB-39).
+    if (resolveDelegatedMediations(w)) return;
   }
-  if (!isDelegated(w, 'recruitment')) return;
+  if (!delegated) return;
   if (regular) makeRoom(w, day);
   const limit = pendingLimit(w);
-  // Today's moves are made: a second call on the same day changes nothing.
-  if (windowBids(w, day).some((bid) => bid.staff && bid.day === day)) return;
-  const ended = raiseHaggles(w, day);
-  if (heldStaffBids(w, day).length >= limit) return;
+  if (moved || heldStaffBids(w, day).length >= limit) return;
   const replacing = openNeeds(w).some((need) => need.day < day);
   // Off a regular look he moves only for a replacement, or past a negotiator's ended haggle.
   if (!regular && !replacing && !ended) return;
@@ -1187,9 +1191,12 @@ function staffMove(w: World, day: number) {
   const bids = windowBids(w, day),
     stance = spendingStance(w, 'recruitment'),
     unlisted = players.filter((p) => transferStance(p) !== 'listed').length,
-    upgrades = bids.filter(
-      (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
-    ).length,
+    // The window's upgrades against its cap: signed, waiting for an answer, or a haggle waiting
+    // for its raise, which continues the same upgrade and never adds one (→CLUB-33, CLUB-41).
+    upgrades = [
+      ...bids.filter((bid) => bid.status === 'completed' || isOpen(bid)),
+      ...haggles(w, bids),
+    ].filter((bid) => bid.staff === 'upgrade').length,
     tried = new Set(bids.map((bid) => bid.playerId)),
     joined = joinedThisWindow(w, day),
     replacements: SigningNeed[] = openNeeds(w)
@@ -1306,7 +1313,10 @@ export function pursueRequest(
       // A free agent who refused our terms at once leaves the day's move open, so a mediation
       // can pursue its next alternative (→CLUB-39, →CLUB-53).
       heldStaffBids(w, day).length >= pendingLimit(w) ||
-      windowBids(w, day).some((b) => b.staff && b.refusedBy !== 'player' && b.day === day)
+      // A negotiator's raise is made before the look's move and is not one (→CLUB-41).
+      windowBids(w, day).some(
+        (b, _, bids) => b.staff && b.refusedBy !== 'player' && b.day === day && !raises(bids, b),
+      )
     )
       return sourceMessage('copy.signings.475daa54a3');
     const terms = wageOffer(w, offer, fee);
