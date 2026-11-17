@@ -544,10 +544,14 @@ function lineStarters(w: World) {
  * for measurement scripts (`scripts/seller-spread.ts --setting starter`).
  */
 export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'signed' };
-/** The season's money for signings the bar reads: the recruitment plan's budget less this season's fees. */
+/**
+ * The season's money for signings the bar reads (→ECON-33): the recruitment plan's money left, the
+ * squad share above the players' wage bill with the reinvested sales, less this season's fees and
+ * open bids, then the available capital.
+ */
 function barMoney(w: World) {
   const plan = delegatePlan(w, 'recruitment'),
-    money = BigInt(plan.budget) - BigInt(plan.spent);
+    money = BigInt(plan.left);
   return plan.stance.signing.bar && money > 0n ? money : undefined;
 }
 /**
@@ -580,19 +584,27 @@ export function moneyBar(w: World): number | undefined {
 export const belowBar = (need: SigningNeed, bar: number | undefined) =>
   bar !== undefined && need.kind === 'upgrade' && bar - need.level > need.margin;
 /**
- * The window's upgrade cap (→CLUB-33, →ECON-33): the step's, or at 아낌없이 the XI slots below the
- * money bar when that is more, counting those still below it now and the upgrades already made in
- * this window (a slot an upgrade lifted above the bar was one of them).
+ * The XI slots more than `margin` below the money bar in the window open on `day` (→CLUB-33): read
+ * on the squad as it stood before this window's arrivals, so each slot counts once however many
+ * signings the window has made, for it or for any other slot.
  */
-export function upgradeCap(
-  signing: SpendingStance['signing'],
-  upgrades: number,
-  needs: readonly SigningNeed[],
+export function slotsBelowBar(
+  w: World,
+  margin: number,
   bar: number | undefined,
+  day = currentDay(w),
 ) {
-  return signing.barCap
-    ? Math.max(signing.upgrades, upgrades + needs.filter((need) => belowBar(need, bar)).length)
-    : signing.upgrades;
+  if (bar === undefined) return 0;
+  const arrived = new Set(joinedThisWindow(w, day).map((p) => p.id)),
+    before = arrived.size ? { ...w, players: w.players.filter((p) => !arrived.has(p.id)) } : w;
+  return lineStarters(before).filter((starter) => bar - starter.value > margin).length;
+}
+/**
+ * The window's upgrade cap (→CLUB-33, →ECON-33): the step's, or at 아낌없이 the XI slots below the
+ * money bar (`slotsBelowBar`) when that is more.
+ */
+export function upgradeCap(signing: SpendingStance['signing'], belowSlots: number) {
+  return signing.barCap ? Math.max(signing.upgrades, belowSlots) : signing.upgrades;
 }
 /**
  * The upgrade needs (→CLUB-33): every outfield and keeper slot, the weakest starter there first,
@@ -866,7 +878,10 @@ export function staffSignings(w: World) {
       margin !== undefined && (stance.signing.room === undefined || unlisted <= stance.signing.room)
         ? upgradeNeeds(w, margin, joined, bar)
         : [];
-  const cap = upgradeCap(stance.signing, upgrades, upgradeList, bar);
+  const cap = upgradeCap(
+    stance.signing,
+    stance.signing.barCap && margin !== undefined ? slotsBelowBar(w, margin, bar, day) : 0,
+  );
   const requests = signingRequests(w),
     short = shortLines(w),
     found: SigningNeed[] = [...short, ...replacements, ...(upgrades < cap ? upgradeList : [])];

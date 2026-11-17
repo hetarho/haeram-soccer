@@ -43,7 +43,9 @@ import {
   belowBar,
   upgradeCap,
   makeRoom,
+  slotsBelowBar,
 } from './index';
+import { addEvent } from './events';
 import { delegatePlan } from './delegation';
 import { marketWageAt } from './market-prices';
 import { clubOf, slotOvr } from './player-state';
@@ -1026,9 +1028,9 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     const high = moneyBar(rich)!,
       low = moneyBar(modest)!;
     expect(high).toBeGreaterThan(low);
-    // The bar is the highest OVR that fits: the plan's budget less this season's fees.
+    // The bar is the highest OVR that fits the plan's money for signings (→ECON-33).
     const plan = delegatePlan(modest, 'recruitment'),
-      money = BigInt(plan.budget) - BigInt(plan.spent);
+      money = BigInt(plan.left);
     expect(wageAt(modest, low) * 25n).toBeLessThanOrEqual(money);
     expect(wageAt(modest, low + 1) * 25n).toBeGreaterThan(money);
     // 넉넉히 has one too; 적당히, 아껴서 and 최소한만 none.
@@ -1038,6 +1040,36 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     const cautious = club(4);
     holdTemperament(cautious, 'director', 'cautious');
     expect(moneyBar(cautious)).toBeUndefined();
+  });
+
+  it('reads the money left for signings: none when wages take the share, raised by sales and capital', () => {
+    const wages = BigInt(operatingCosts(club(5)).playerWages);
+    // At 아낌없이 the squad share is 80% of income: the wage bill alone takes all of it.
+    const spent = club(5);
+    poor(spent, wages);
+    expect(BigInt(delegatePlan(spent, 'recruitment').left)).toBe(0n);
+    expect(moneyBar(spent)).toBeUndefined();
+    // A season's player sales reinvest 70% of their fee into signings.
+    const sold = club(5);
+    poor(sold, wages);
+    addEvent(sold, 'transfer-out', 'sale', 'sale', (wages * 4n).toString());
+    expect(BigInt(delegatePlan(sold, 'recruitment').left)).toBeGreaterThan(0n);
+    const fromSales = moneyBar(sold)!;
+    expect(fromSales).toBeGreaterThan(0);
+    // Cash above the reserve (none for a 균형형 단장 at 아낌없이) is capital for signings too.
+    const funded = club(5);
+    poor(funded, wages);
+    funded.cash = (wages * 40n).toString();
+    expect(moneyBar(funded)!).toBeGreaterThan(fromSales);
+    // This season's fees spend the income-based money (paid fees already left the cash).
+    const bought = club(5);
+    poor(bought, wages);
+    addEvent(bought, 'transfer-out', 'sale', 'sale', (wages * 4n).toString());
+    addEvent(bought, 'transfer-in', 'buy', 'buy', wages.toString());
+    expect(BigInt(delegatePlan(bought, 'recruitment').left)).toBeLessThan(
+      BigInt(delegatePlan(sold, 'recruitment').left),
+    );
+    expect(moneyBar(bought)!).toBeLessThanOrEqual(fromSales);
   });
 
   it('puts every slot more than the margin below the bar first, the weakest first', () => {
@@ -1065,18 +1097,50 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
   });
 
   it('at 아낌없이 the window cap is the larger of 3 and the slots below the bar', () => {
-    const w = club(5),
-      needs = upgradeNeeds(w, 2),
-      levels = needs.map((need) => (need.kind === 'upgrade' ? need.level : 0));
     const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true },
       ample = { margin: 3, upgrades: 2, room: 28, makeRoom: true, bar: true };
-    const allBelow = Math.max(...levels) + 10,
-      noneBelow = Math.min(...levels);
-    expect(upgradeCap(generous, 0, needs, allBelow)).toBe(needs.length);
-    expect(upgradeCap(generous, 4, needs, allBelow)).toBe(needs.length + 4);
-    expect(upgradeCap(generous, 0, needs, noneBelow)).toBe(3);
-    expect(upgradeCap(generous, 0, needs, undefined)).toBe(3);
-    expect(upgradeCap(ample, 0, needs, allBelow)).toBe(2);
+    expect(upgradeCap(generous, 11)).toBe(11);
+    expect(upgradeCap(generous, 1)).toBe(3);
+    expect(upgradeCap(generous, 0)).toBe(3);
+    expect(upgradeCap(ample, 11)).toBe(2);
+  });
+
+  it('counts each slot below the bar once, however many signings the window makes', () => {
+    const w = club(5);
+    const plain = upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[];
+    const levels = [...new Set(plain.map((need) => need.level))].sort((a, b) => a - b);
+    expect(levels.length).toBeGreaterThan(1);
+    // A bar that leaves only the weakest measure more than 2 below it.
+    const bar = (levels[0]! + levels[1]!) / 2 + 2,
+      below = plain.filter((need) => bar - need.level > 2);
+    expect(below.length).toBeGreaterThan(0);
+    expect(below.length).toBeLessThan(3);
+    expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
+    expect(slotsBelowBar(w, 2, undefined)).toBe(0);
+    /** A far abler copy of a slot's starter who joins in this window. */
+    const arrive = (slot: number, id: string) => {
+      const p: Player = { ...structuredClone(ownStarters(w)[slot]!), id };
+      p.attrs = Object.fromEntries(ATTRIBUTES.map((key) => [key, 99])) as Player['attrs'];
+      delete p.stance;
+      w.players.push(p);
+      noteSigning(w, p);
+      return p;
+    };
+    // A signing for the weak slot, then another for it, then one for a slot never below the bar.
+    arrive(below[0]!.slot, 'cap:weak:1');
+    arrive(below[0]!.slot, 'cap:weak:2');
+    const strong = plain.find((need) => !below.includes(need))!;
+    arrive(strong.slot, 'cap:strong');
+    expect(joinedThisWindow(w).map((p) => p.id)).toEqual([
+      'cap:weak:1',
+      'cap:weak:2',
+      'cap:strong',
+    ]);
+    // The newcomers start or stand as measures, yet the window still counts the same slots.
+    expect(ownStarters(w).some((p) => p.id.startsWith('cap:'))).toBe(true);
+    expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
+    const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true };
+    expect(upgradeCap(generous, slotsBelowBar(w, 2, bar))).toBe(3);
   });
 
   it('a rich 아낌없이 club bids for a fourth upgrade in a window; 넉넉히 stops at its two', () => {
