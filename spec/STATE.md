@@ -24,10 +24,10 @@
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 14 | 14 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 74 | 74 | - | 0 |
+| CLUB | 75 | 75 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
 | LEAGUE | 21 | 21 | - | 0 |
-| STAFF | 43 | 43 | - | 0 |
+| STAFF | 44 | 44 | - | 0 |
 | ECON | 60 | 60 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
@@ -82,7 +82,7 @@
 | natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
-| tm17-market | 4 | 4 | 2 | 2 | 0 | 0 | 1 | 2026-11-17T08:15:39.588Z | [history](work/tm17-market.json) |
+| tm17-market | 4 | 4 | 2 | 2 | 1 | 0 | 0 | 2026-11-17T08:36:35.184Z | [history](work/tm17-market.json) |
 
 ## next
 - inspect work board for remaining tasks

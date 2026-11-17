@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r43 | Define the browser-demo rules for manager demands and personality.
+> r44 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -40,7 +40,7 @@
   | 동기부여형 | own | morale baseline +6, defeats cost 2 less |
   | 육성형 | own | growth of players aged ≤ 21 ×1.3; selects them like the youth trait |
   | 소방수 | own | strength +1.5, morale baseline +3, morale +10 on arrival; growth ×0.85; one-season contract |
-  | 데이터 헤드코치 | own | bid acceptance +5 points; morale baseline −2 |
+  | 데이터 헤드코치 | own | a selling club's reservation share −0.05 on our bids (→CLUB-52); morale baseline −2 |
   - a style with a tactic sets the manager's philosophy; the owner chooses a term of 1–5 seasons when hiring or renewing, never past the manager's 70th year, and the firefighter signs for 1; the wage is fixed for the term.
   - candidates fit their school: youth/flexibility/pride bands positional 50–80/15–45/60–95, gegenpress 55–85/25–55/45–80 (ages 34–58), counter 40–65/45–80/50–90, organizer 40–65/25–55/40–75, motivator 45–75/50–85/35–70, developer 70–90/40–75/25–60, firefighter 35–55/55–90/45–80 with level 55–85 and ages 50–64 (a veteran at or past his prime, OVR = POT), data head coach 50–80/60–90/25–50 (ages 32–48); other levels 45–85. The draws keep their order, so names, ids and philosophies stay put; the founding manager and interims are unbanded.
   - no manager renews himself: on 1 April the owner is reminded of a contract ending at the close (연봉 · 계약금 · term) and may renew while the manager is not interim, at quote(120 + ability) a year with a 10% fee, for 1–5 seasons (the firefighter 1); with the manager post delegated the staff decide (→STAFF-18); an unrenewed manager leaves at the close (interim, departure choice). The reminder settles when he renews, leaves or is replaced.
@@ -279,6 +279,7 @@
 - Second career: active-player aptitude evaluation → retirement announcement → playing-coach appointment or retirement/coaching candidacy → actual coaching employment for at least three cumulative years → management candidacy only with managerial aptitude → direct/delegated appointment.
 
 ## chg
+- r44 261117 STAFF-14✎ 데이터 헤드코치 bid acceptance +5 points→the selling club's reservation share −0.05 on our bids (CLUB-52)
 - r43 261117 STAFF-20✎ the 단장 raises a selling club's acceptance (ability − 50)/250, negotiator +0.1, vacant −0.05→lowers its reservation share by (ability − 50)/250, negotiator 0.05 more, vacant +0.05
 - r42 261113 STAFF-13✎ rows and 재정 기조, promotion floor→delegate's settings, 단장 plans all money, promotions held by the insolvency stop; STAFF-15/18✎ 재정 기조 runway→insolvency stop (+youth pay ≤ youth share), 코치 기조 not owner-edited→owner's while direct, 단장's while delegated; STAFF-20✎ no direction row→sets delegated settings; STAFF-26✎ not owner-edited→owner's or the 단장's; STAFF-51+ temperament
 - r41 261111 STAFF-14✎ a style's effects bend the grid engine's decision tables and duels→act on the result path through the side's profile
