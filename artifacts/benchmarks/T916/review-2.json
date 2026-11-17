@@ -1,0 +1,34 @@
+{
+  "task": "T943",
+  "recipeHash": "89750e266795b92ae96f9222b8397274739b72b4e50972b2a21758b17285c1f4",
+  "manifestHash": "c585b3bb7d15525a41380bedcfd8e3fe9cbe1da2f04094c4b3ec6a6252cca178",
+  "patches": {
+    "control": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "c1": "eb09a8a9fe1ba3d15969a119bd5369edc04567956492fe54890e8f737d749a7f",
+    "c2": "413ba80a9b32f7e18da5182e2b47838ab1268c6b9e8e8a94d6b957ddc191a7aa",
+    "c1-c2": "1e026a6e337b34a63286118f2c616fed779bcc6be53ab398bc1e508297f32e8b"
+  },
+  "reviewer": {
+    "provider": "codex",
+    "session": "cf17-review-2-codex-gpt-6.1-sol"
+  },
+  "author": {
+    "provider": "claude",
+    "session": "cf17 loop dispatch f1194a5b-df33-40c3-be00-3bcd352abf5e + cf17 host corrections 4b6012ea"
+  },
+  "approved": false,
+  "checklist": {
+    "1": "pass: Requested prepare command returned ok with both exact hashes; anchor, patch, manifest and review guards fail closed, and helper content changes alter the recipe hash.",
+    "2": "pass: Git diff and independent ls-tree comparison of 584 files per historical tree found only the two allowed test-file differences.",
+    "3": "pass: Both historical anchor blob IDs and SHA-256 values match Git objects and retained continuation evidence.",
+    "4": "pass: C1 uses existing spreadHeadroom and mainOvr floor only for generated players before wages; makePlayer, flat initial ability, attributes, identities and random draw count remain unchanged.",
+    "5": "pass: C2 subtracts exactly 11 from the existing single raw academy potential draw; all other intake code is unchanged, and C1+C2 exactly concatenates both patches.",
+    "6": "pass: Fresh 1930 worlds follow the original initial advanceRound and daily advanceDays through 1950; annual rows and strict failures persist atomically, and execution compares endpoints against the common control baseline.",
+    "7": "pass: Endpoint serialization uses JSON.stringify(world), UTF-8 byte count and SHA-256; the original oracle remains fixed and reproduction mismatches remain unresolved.",
+    "8": "pass: Every variant uses a fresh historical archive and isolated bundle; all 216 closure hashes match, with no checkpoint, cached world, borrowed output or production-source mutation.",
+    "9": "fail: Receipt guards, real CLI shared-lock path, durable cleanup receipts, timeout handling and coordinator signals are correct; startup exceptions can still bypass owned-child cleanup."
+  },
+  "findings": [
+    "scripts/natural-football/generation-repair.mjs:364 — P1: The earlier exception-cleanup finding remains partially open. children is assigned only after runs.map completes. If starting a later stage throws synchronously, previously started children are absent from children, so finally cancels and awaits none before withHeavyLock releases ownership. A temp-only reproduction using the extracted launch/cleanup block and real runner caused second-stage EEXIST; the first child remained alive with status running and no cancelRequested after finally. Register each child as it starts and ensure post-spawn initialization errors also retain ownership for cleanup."
+  ]
+}

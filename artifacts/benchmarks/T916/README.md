@@ -22,8 +22,11 @@ runner or helper changes the hash a review names (`recipe.files` in the manifest
 
 The first review (`review-1.json`, codex, not approved) found four defects in an earlier recipe:
 coordinator signals did not cancel owned children, unfinished runs lost their annual observations,
-cleanup receipts were not kept, and the helpers were outside the hash. All four are corrected in
-this recipe, which needs a new review.
+cleanup receipts were not kept, and the helpers were outside the hash. The second review
+(`review-2.json`, codex, not approved) found three of those resolved. The cleanup fix was still
+incomplete, because a later child's failed start could leave earlier children unowned. Launch
+and cleanup now live in `generation-repair-owned.ts` (`runOwned`), which owns each child as soon
+as it starts and has unit tests for that case. This recipe needs a new review.
 
 ## Review receipt
 
@@ -78,9 +81,12 @@ Patch hashes must be the full values in `manifest.json`. The surviving reviews o
 9. Execution: `execute --review <receipt> --heavy-lock <installed gusta src/check-cache.mjs> --out
    <fresh dir>` takes the CLI's own shared `withHeavyLock` (a flag alone is not a lock). It runs at
    most four owned children through `runVerificationStage`, which cleans up descendants, within
-   T916's 30-minute cap. A timeout cancels the children and leaves them unfinished. A SIGTERM,
-   SIGINT or SIGHUP to the coordinator, or any exceptional exit after the children start, cancels
-   and awaits every owned child before the lock is released. Each stage entry, with its pid,
+   T916's 30-minute cap. A timeout cancels the children and leaves them unfinished. Each child is
+   owned as soon as it starts (`runOwned`). A SIGTERM, SIGINT or SIGHUP to the coordinator, or any
+   exceptional exit after a child starts (a later child's failed start included), cancels and
+   awaits every started child before the lock is released. A run the interruption reached before
+   it started is recorded as not started. The stage recorder never throws after a spawn; failed
+   writes are kept as `recordFailures`. Each stage entry, with its pid,
    cancellation request and `cancellationCleanup` (descendants, escalations), is written to
    `stages.json` as it changes. Each run records its inputs, completion (with that cleanup
    evidence), endpoint, order failures and persisted observations. The execution report records

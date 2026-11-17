@@ -324,10 +324,11 @@
    "scripts/lib/measurement-identity.ts": "7f52562816620b85520aeffef57adfc8fea47e9dfb639c30ce16df7abd0deb62",
    "scripts/lib/source-graph.ts": "f5f87e9f37ec8387acf8f1610aa17935bd2ec1ced423d4573086461d7a7786b9",
    "scripts/lib/verification-runner.ts": "7a64ca4d9e7dd98ec0d6abe6eaac4a7b15a90b3f07aee01835b46e4cc1feeaff",
+   "scripts/natural-football/generation-repair-owned.ts": "1f259c6b882ced3e54b883d989c92162e64e6128f0b03ab654f99cd8101e887e",
    "scripts/natural-football/generation-repair-recipe.ts": "ff7dbfad20a021577837e28f85d9b50c3828f68fe631c699ebef3631388edfd9",
    "scripts/natural-football/generation-repair-run.ts": "36f50213f4ec275f6bce12aec4ec34031e6669eec267d2a0e4d023a33f9a5680",
-   "scripts/natural-football/generation-repair.mjs": "4d18ba8bd7a52fca3a03eddb598024e5526831a5389b4181b673c76a0303bce9"
+   "scripts/natural-football/generation-repair.mjs": "334873c0e33a8892376ef59d51d45deac1843fc75414bf441aa76404f46a27ba"
   },
-  "hash": "89750e266795b92ae96f9222b8397274739b72b4e50972b2a21758b17285c1f4"
+  "hash": "41c3c8e35dddf73bbf28e3b4625a1d25f675d61adb206f0f74d466ceef70bfd4"
  }
 }

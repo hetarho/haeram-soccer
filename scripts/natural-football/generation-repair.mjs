@@ -35,6 +35,7 @@ import { build, version as esbuildVersion } from 'esbuild';
 import { dependencies, sourceGraph, typescriptVersion } from '../lib/source-graph.ts';
 import { measurementIdentity } from '../lib/measurement-identity.ts';
 import { runVerificationStage } from '../lib/verification-runner.ts';
+import { runOwned } from './generation-repair-owned.ts';
 import {
   ANCHORS,
   CONTROL,
@@ -338,55 +339,39 @@ async function execute() {
     }
     // Every stage entry, cancellation and cleanup receipt included, is written as it changes, so an
     // interrupted coordinator still leaves the children's evidence on disk.
+    // The runner calls `record` right after spawning; it never throws there, so a started child is
+    // always returned to this coordinator and owned for cleanup. A failed write is kept as evidence.
     const entries = {};
     const stagesFile = join(out, 'stages.json');
+    const recordFailures = [];
     const record = (id, entry) => {
       entries[id] = entry;
-      writeFileSync(stagesFile, `${JSON.stringify(entries, null, 1)}\n`);
-    };
-    // A signal to this coordinator cancels and awaits every owned child before the heavy lock is
-    // released; so does any exceptional exit after the children start.
-    let interrupted = null;
-    let children = [];
-    const cancelAll = () => {
-      for (const child of children) child.cancel();
-    };
-    const onSignal = (signal) => {
-      interrupted ??= signal;
-      cancelAll();
-    };
-    const SIGNALS = ['SIGTERM', 'SIGINT', 'SIGHUP'];
-    for (const signal of SIGNALS) process.on(signal, onSignal);
-    let timedOut = false;
-    let timer;
-    let done;
-    try {
-      children = runs.map((run) =>
-        runVerificationStage(
-          {
-            stage: run.variant.id,
-            command: process.execPath,
-            args: [run.bundle, run.variant.id, run.receiptFile, run.observationsFile],
-          },
-          { directory: run.dir, onUpdate: (entry) => record(run.variant.id, entry) },
-        ),
-      );
-      if (interrupted) cancelAll();
-      timer = setTimeout(() => {
-        timedOut = true;
-        cancelAll();
-      }, TIMEBOX_MS);
-      done = await Promise.all(children.map((child) => child.done));
-    } finally {
-      clearTimeout(timer);
-      if (!done) {
-        cancelAll();
-        await Promise.allSettled(children.map((child) => child.done));
+      try {
+        writeFileSync(stagesFile, `${JSON.stringify(entries, null, 1)}\n`);
+      } catch (error) {
+        recordFailures.push({ stage: id, at: new Date().toISOString(), message: String(error) });
       }
-      for (const signal of SIGNALS) process.off(signal, onSignal);
-    }
+    };
+    // Each child is owned as soon as it starts: a coordinator signal, the timebox or an exceptional
+    // exit (a later child's failed start included) cancels and awaits every started child before
+    // the heavy lock is released (`runOwned`).
+    const { done, timedOut, interrupted } = await runOwned(
+      runs.map(
+        (run) => () =>
+          runVerificationStage(
+            {
+              stage: run.variant.id,
+              command: process.execPath,
+              args: [run.bundle, run.variant.id, run.receiptFile, run.observationsFile],
+            },
+            { directory: run.dir, onUpdate: (entry) => record(run.variant.id, entry) },
+          ),
+      ),
+      { timeoutMs: TIMEBOX_MS },
+    );
     const results = runs.map((run, index) => {
-      const entry = done[index];
+      // A run the interruption reached before it started stays unstarted, never passed.
+      const entry = done[index] ?? { status: 'not-started', exitCode: null };
       const result =
         entry.status === 'passed' && existsSync(run.receiptFile)
           ? JSON.parse(readFileSync(run.receiptFile, 'utf8'))
@@ -405,7 +390,11 @@ async function execute() {
       timeboxMs: TIMEBOX_MS,
       timedOut,
       interrupted,
-      stages: { file: stagesFile, sha256: sha256(readFileSync(stagesFile)) },
+      stages: {
+        file: stagesFile,
+        sha256: existsSync(stagesFile) ? sha256(readFileSync(stagesFile)) : null,
+        recordFailures,
+      },
       oracle: {
         expected: ORACLE.sha256,
         serializer: control?.oracle?.reproduced ? 'proved-by-control-reproduction' : 'unresolved',
