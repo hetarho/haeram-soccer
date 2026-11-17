@@ -133,6 +133,7 @@
 - 261117 decided T932 T933 T934 T935: Providers: claude implements (this orchestrator's provider), codex reviews when it has headroom, else a separate claude review session (AGENTS.md); review all, no per-unit push
 - 261117 decided review/lifecycle-perf-261117 T936 T937 T938 T939 T940: which lifecycle-slowdown proposals run under the owner's 261117 self-improve request (until 18:00, result-preserving speed-ups) → F1–F4 generation hot paths (lineup scan, slot-indexed market ratings with a measured buyer precheck, free-agent line index) and F6–F7 autoplay (autosave JSON text hand-off, replica roster key), each kept only with identical worlds/bytes and a paired interval below 1 (alt: F5 selection-value cache | F8 view memo, deferred for unknown invalidation keys)
 - 261117 parked review/lifecycle-perf-261117: F9 brotli quality/window for saves above the gzip budget changes stored bytes (SAVE-2): needs the owner's decision; gzip is 0.48 s of a 4.6 s codec job and not the engine stall
+- 261117 decided T937 T939: unit outcomes that needed a coordinator call → T939 kept as a recorded experiment (real postMessage send cost 1.30× slower; F6 rejected); T937's parts judged on their combined A/B (0.887, per-part intervals spanned 1 under load) and Part 2 allowed to leave pure per-settlement memos unwritten after review 81070492 P2 (alt: drop T937 | keep only Part 1 without a measured gain)
 
 ## unlanded
 | id | tag | branch | commit | at |
