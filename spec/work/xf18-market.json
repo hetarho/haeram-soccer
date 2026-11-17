@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T20:13:36.621Z",
-  "sourceCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+  "snapshotAt": "2026-11-17T22:03:36.102Z",
+  "sourceCommit": "6c2dab767f6dfb96beeb6b2a32cf8ff45a05f875",
   "group": {
     "id": "xf18-market",
     "branch": "gusta-session-self-improve-xf18-607e3688",
@@ -404,31 +404,14 @@
   },
   "summary": {
     "total": 6,
-    "completed": 4,
-    "remaining": 2,
+    "completed": 6,
+    "remaining": 0,
     "running": 0,
-    "review": 2,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T948",
-      "title": "The 단장 plans on a loss runway, not a share of income",
-      "dep": [],
-      "lane": "owner-market",
-      "status": "ready"
-    },
-    {
-      "id": "T949",
-      "title": "A funded delegated club bids for the best players it can afford",
-      "dep": [
-        "T948"
-      ],
-      "lane": "owner-market",
-      "status": "ready"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "f379138e-2261-4734-9b65-7312e1c2e353",
@@ -452,6 +435,8 @@
       "submittedBase": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
       "submissionId": "fdd37ebd-e68e-4a9c-bf16-632a1f6f2e05",
       "submittedAt": "2026-11-17T20:08:45.529Z",
+      "integratedCommit": "6fc7951b8831677686db0d6b81193a55a87fb521",
+      "integratedAt": "2026-11-17T20:15:33.379Z",
       "risk": null,
       "agentChecks": [
         {
@@ -794,6 +779,13 @@
           "startedAt": "2026-11-17T20:07:11.955Z",
           "finishedAt": "2026-11-17T20:08:45.322Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "npx @haeram/gusta vibe check --tier task",
+          "startedAt": "2026-11-17T20:13:39.471Z",
+          "finishedAt": "2026-11-17T20:15:32.927Z"
+        }
       ]
     },
     {
@@ -1058,14 +1050,14 @@
         "1b9f256d-1a9a-471b-9cf1-6b6469353286/worker-3",
         "1b9f256d-1a9a-471b-9cf1-6b6469353286/worker-2"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-17T16:25:07.255Z",
       "startCommit": "779ae5291b3e7e052efc7674259588927c0913e4",
-      "verifiedCommit": "7be644a485ec9e5065f353fa35d763a8429d6926",
-      "submittedBase": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
-      "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
-      "submittedAt": "2026-11-17T20:10:10.327Z",
+      "verifiedCommit": "795625f2a06d730ec18229a44486a49a7648c101",
+      "submittedBase": "6c2dab767f6dfb96beeb6b2a32cf8ff45a05f875",
+      "submissionId": "8d9f1ba0-74d3-4b89-8243-fb8f6003c0b2",
+      "submittedAt": "2026-11-17T21:58:15.087Z",
       "risk": null,
       "agentChecks": [
         {
@@ -1204,6 +1196,19 @@
         "finishedAt": "2026-11-17T19:23:26.819Z",
         "error": null,
         "summary": "I fixed both review findings (bd209107), and the task-tier check passes on the uncommitted tree.\n\n**F1 (T948, `delegation.ts`):** `runwayCheck` now keeps the reserve on current annual fixed costs, as ECON-33 says. A new commitment's wage only raises the planned loss; it no longer adds to the reserve as well. `wageRoom` follows from this, so the plan's carried wage bill and the room for raises also change. In the review's example (step 2, a 균형형 단장, income equal to fixed costs, 10,000 of capital), the raise room is now 1,666 and 1,667 fails. That replaces the earlier 1,538. I updated the test in `delegation.test.ts`, and the cash set-up in `signings.test.ts` no longer puts the wage into the reserve.\n\n**F2 (T949, `signings.ts`):** each day, before any ordinary move, `staffSignings` now raises every negotiator bid that was refused on an earlier day: one per player, on his latest bid. It stops when the pending bids reach the step's count, and any left over wait for the next day. Off a regular look, the 단장 goes on to ordinary moves only when one of those haggles ended without a raise. A new test in `director-bidding.test.ts` refuses two bids on the same day at 아낌없이. It checks that both are raised to 95% the next day, ahead of ordinary moves.\n\n**A failing integration test I also fixed:** `transfers.delegated.test.ts` already failed on 81046c88 and passes on the base 689ba861. With the lane's buying every 3 days from the scout's whole reach, seed `market-1`'s season gets 8 incoming bids and all are accepted, so there is no refusal to check. I moved the scenario to seed `market-3` (8 accepted, 2 refused) and left the assertions unchanged. That file is outside the tasks' touches.\n\n**Checks run:**\n- The task tier check (`vibe check --tier task --diff-base 81046c88 --task T949`) passed: typecheck, lint, format, i18n and 1419 affected unit tests.\n- Integration tests run once:\n  - Day-loop equivalence tests passed, and no fixture moved: calendar.progression-eng, season, full-model-throughput.\n  - These also passed: signings, mediation-resolution, replacements, responsibility-routing, contracts, transfers.stance and transfers.delegated.\n- I did not re-run the reference careers. The coordinator re-measures them on the integrated candidate in T950.\n- Both task results are updated."
+      },
+      "review": {
+        "id": "68a42908-a3b0-48d2-a635-eecac7943f6d",
+        "owner": "codex-rv-owner9",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T948/T949: no new P1/P2 findings. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:430); displayed wage/raise room (packages/engine/src/delegation.ts:418); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); runway refusal (packages/engine/src/signings.ts:238); look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); fractional figures (apps/web/src/entities/office/ui/DelegationPlan.tsx:89) and report decimals (apps/web/src/presentation/text.ts:122); unrestricted reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1191); held haggles (packages/engine/src/signings.ts:1062), retry precedence (packages/engine/src/signings.ts:1174), and shared upgrade cap (packages/engine/src/signings.ts:1073). Pending arrivals share one projection (packages/engine/src/signings.ts:1111), including replacement coverage (packages/engine/src/signings.ts:1144), needs/registration/money checks (packages/engine/src/signings.ts:1255), raises (packages/engine/src/signings.ts:1216), and delegated pursuits (packages/engine/src/signings.ts:1353). The documented real-club reads are justified. Owner counters use counterFee (packages/engine/src/signings.ts:1123); pruning preserves current-window history within the 200-bid bound (packages/engine/src/transfers.ts:1571). Updated mocks, seeds and cash values retain their tests' stated purpose. All 133 targeted tests, i18n validation and targeted lint passed. Coordinator follow-ups remain as assigned.",
+        "findings": [],
+        "commit": "795625f2a06d730ec18229a44486a49a7648c101",
+        "baseCommit": "6c2dab767f6dfb96beeb6b2a32cf8ff45a05f875",
+        "submissionId": "8d9f1ba0-74d3-4b89-8243-fb8f6003c0b2",
+        "createdAt": "2026-11-17T21:58:15.640Z",
+        "finishedAt": "2026-11-17T22:03:28.720Z"
       },
       "reviewHistory": [
         {
@@ -1407,6 +1412,95 @@
           "finishedAt": "2026-11-17T19:57:42.941Z",
           "invalidatedAt": "2026-11-17T19:57:43.441Z",
           "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "7264a6be-f559-4ebf-840e-b58e64cc02c0",
+          "owner": "codex-rv-owner5",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Earlier fixes verified: unrounded gains (packages/engine/src/signings.ts:430); matching displayed wage/raise room (packages/engine/src/delegation.ts:418); runway refusal copy (packages/engine/src/signings.ts:233); three-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); localized fractions (apps/web/src/entities/office/ui/DelegationPlan.tsx:85); unbanded reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1130); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); all due retries (packages/engine/src/signings.ts:1143); held haggle places (packages/engine/src/signings.ts:1061); pending short-line coverage (packages/engine/src/signings.ts:1081); report decimal formatting (apps/web/src/presentation/text.ts:77); raises before mediation (packages/engine/src/signings.ts:1115); held upgrades counted for ordinary moves (packages/engine/src/signings.ts:1196). All 72 selected unit tests passed. A separate isolated reproduction exposed the remaining mediation cap bypass.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1315 (T949)",
+              "message": "Delegated mediation can exceed the window upgrade cap after a haggle is raised. With cap − 1 completed upgrades and one due upgrade haggle, the raise fills the cap, but pursueRequest ignores raises in its same-day gate and checks only pending-bid capacity. A pending upgrade mediation then opens another upgrade. An isolated director-bids fixture at step 5 produced 12 upgrades against a cap of 11. Apply the shared window upgrade-cap check, including held haggles, to delegated mediation pursuits and cover this sequence with a regression test (CLUB-33)."
+            }
+          ],
+          "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+          "baseCommit": "a147a4783e368c4cfbc8a4b2b3321db4bdd2d66f",
+          "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+          "createdAt": "2026-11-17T20:15:49.392Z",
+          "finishedAt": "2026-11-17T20:20:43.651Z",
+          "invalidatedAt": "2026-11-17T20:20:44.182Z",
+          "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "4cf3627b-7e95-4a31-b9c9-fa667130fa88",
+          "owner": "codex-rv-owner6",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Prior fixes verified: unrounded gain ordering (packages/engine/src/signings.ts:431); shared wage/raise-room calculation and current-cost reserve with post-commitment loss (packages/engine/src/delegation.ts:196, :208, :435); runway-specific refusal (packages/engine/src/signings.ts:238); 3-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); fractional seasons/years formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:85, :126); unrestricted reach bands (packages/engine/src/scout-search.ts:227, :262); uncapped look termination (packages/engine/src/signings.ts:1158); all due retries before ordinary and mediation moves (:1143, :1171); held-haggle places (:1061); pending arrivals counted against short-line deficits (:1109); report decimals formatted at presentation (apps/web/src/presentation/text.ts:122); held upgrades counted and one shared cap check across looks, raises and mediation (packages/engine/src/signings.ts:1072, :1082, :1186, :1239, :1341). All 121 targeted tests, lint and i18n validation passed. One additional T949 correctness issue remains. T950/T951 handoffs were excluded.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1117 (T949)",
+              "message": "Consuming a pending player while covering a short-line deficit prevents that same arrival from covering an overlapping replacement need. Reproduced with seed staff-signings, step 5, three forwards and one open FW replacement need: the look opens both a short FW bid and a replacement FW bid. Completing just the first arrival clears both shortLines and replacementNeeds, so the second bid duplicates an already-covered vacancy and consumes cash and pending capacity. Account for overlapping short/replacement needs when projecting pending arrivals, and add a regression for a departure that also takes its line below the minimum."
+            }
+          ],
+          "commit": "22fec5b498b392232bcda4de42e16533d355d96c",
+          "baseCommit": "84ebb60179993a8cfbfd10dbf11f7c17ceaa7551",
+          "submissionId": "06e0429c-8cd4-411b-85a2-5a36b04523a2",
+          "createdAt": "2026-11-17T20:34:15.195Z",
+          "finishedAt": "2026-11-17T20:39:21.209Z",
+          "invalidatedAt": "2026-11-17T20:39:21.975Z",
+          "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "619b797f-9458-4c24-956f-057102a3be9f",
+          "owner": "codex-rv-owner7",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Earlier fixes verified; 127 existing targeted tests pass. One T949 registration regression was reproduced.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1273 (T949)",
+              "message": "staffMove computes the projected club but passes the original w into candidates, whose registrationRoom check therefore ignores pending arrivals. Only the overall 40-player ceiling uses the projection. Reproduced with a funded 2020 English top-flight club holding 24 counted players: one look bids for three non-exempt adults despite the 25-player limit. All three sellers accept; after the first arrival, the other two deals fail registration. This reserves money and bid places for arrivals the projection cannot accommodate. Apply candidate registration checks to the projected squad, preserving age exemptions, and add a regression covering the counted limit."
+            }
+          ],
+          "commit": "7854b375a4693332a23313e6bc76645463686da7",
+          "baseCommit": "50e541f9996d21ee0bf22c1f3ebd657f2eeb10b1",
+          "submissionId": "8a4e9b0c-25a2-4fb2-b468-2832d2d13b62",
+          "createdAt": "2026-11-17T21:01:59.970Z",
+          "finishedAt": "2026-11-17T21:06:52.188Z",
+          "invalidatedAt": "2026-11-17T21:06:52.717Z",
+          "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "2c78141b-80c6-4d8a-ad42-2fde6e81d6a4",
+          "owner": "codex-rv-owner8",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Earlier fixes verified: unrounded gains (signings.ts:432); exact wage/raise room and current-cost reserve (delegation.ts:196,208,432); runway refusals (signings.ts:238); look/pending copy (ClubStaff.tsx:1368); localized fractions (DelegationPlan.tsx:85; presentation/text.ts:122); unrestricted reach (scout-search.ts:227,262); uncapped look termination (signings.ts:1183); held haggles and all due raises before mediation (signings.ts:1062,1167,1196); shared upgrade cap (signings.ts:1073,1212,1264,1366); combined arrival projection and short deficits (signings.ts:1111,1262); projected registration, money, raises and pursuits (signings.ts:426,1208,1255,1285,1368). The documented actual-club reads are justified for current-player listings, opening-window caps, request selection and mutations. Two T949 contract problems remain. All 98 focused tests, i18n validation and lint passed; tracked files remain unchanged.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1122 (T949)",
+              "message": "For an owner's countered bid, projection subtracts the original bid.fee, although accepting it pays counterFee (transfers.ts:563). This overstates the cash available for delegated moves. Reproduced with cash 100000, original fee 28457 and counter 35571: the projected club opens an 11640 staff bid that fails the four-round cash-buffer check once the owner actually pays the counter. Subtract the payable counter amount and cover countered arrivals in the projection regression."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1253 (T949)",
+              "message": "The expanded look can record more than 60 immediate player refusals, but its tried set depends entirely on w.bids. dailyMarket then calls pruneBids (transfers.ts:1564), which removes current-window refusals once closed history exceeds 60. Reproduced with 61 free agents refusing in one look: the earliest refusal disappears and that player is approached again on the next regular look, violating CLUB-33's no-repeat rule. Preserve current-window attempt facts through pruning, or retain a separate window-scoped tried set, and add a regression across dailyMarket calls."
+            }
+          ],
+          "commit": "788f36e7e6d236360dad40d71b8cb8f7b6443c0b",
+          "baseCommit": "1eeb25cb0f991dfc06d41fd48b78965a55b1ac85",
+          "submissionId": "8546659b-ac2a-490f-8f0a-329516ff3777",
+          "createdAt": "2026-11-17T21:35:30.952Z",
+          "finishedAt": "2026-11-17T21:42:18.839Z",
+          "invalidatedAt": "2026-11-17T21:42:19.327Z",
+          "invalidationReason": "worker resumed or blocked"
         }
       ],
       "steps": [
@@ -1424,13 +1518,13 @@
         },
         {
           "taskId": "T949",
-          "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
-          "at": "2026-11-17T20:10:10.310Z",
+          "commit": "795625f2a06d730ec18229a44486a49a7648c101",
+          "at": "2026-11-17T21:58:15.070Z",
           "verification": [
             {
               "command": "npx @haeram/gusta vibe check --tier task",
-              "startedAt": "2026-11-17T20:09:07.817Z",
-              "finishedAt": "2026-11-17T20:10:10.124Z"
+              "startedAt": "2026-11-17T21:57:04.423Z",
+              "finishedAt": "2026-11-17T21:58:14.880Z"
             }
           ]
         }
@@ -1438,8 +1532,8 @@
       "verification": [
         {
           "command": "npx @haeram/gusta vibe check --tier task",
-          "startedAt": "2026-11-17T20:09:07.817Z",
-          "finishedAt": "2026-11-17T20:10:10.124Z"
+          "startedAt": "2026-11-17T21:57:04.423Z",
+          "finishedAt": "2026-11-17T21:58:14.880Z"
         }
       ]
     }
@@ -15499,6 +15593,1845 @@
       "tasks": [
         "T944",
         "T945"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 973,
+      "at": "2026-11-17T20:15:33.079Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T20:13:39.471Z",
+            "finishedAt": "2026-11-17T20:15:32.927Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 974,
+      "at": "2026-11-17T20:15:33.379Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "6fc7951b8831677686db0d6b81193a55a87fb521",
+        "integratedAt": "2026-11-17T20:15:33.379Z"
+      }
+    },
+    {
+      "sequence": 975,
+      "at": "2026-11-17T20:15:49.392Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7264a6be-f559-4ebf-840e-b58e64cc02c0",
+          "owner": "codex-rv-owner5",
+          "status": "reviewing",
+          "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+          "baseCommit": "a147a4783e368c4cfbc8a4b2b3321db4bdd2d66f",
+          "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+          "createdAt": "2026-11-17T20:15:49.392Z"
+        }
+      }
+    },
+    {
+      "sequence": 976,
+      "at": "2026-11-17T20:20:43.651Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "Earlier fixes verified: unrounded gains (packages/engine/src/signings.ts:430); matching displayed wage/raise room (packages/engine/src/delegation.ts:418); runway refusal copy (packages/engine/src/signings.ts:233); three-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); localized fractions (apps/web/src/entities/office/ui/DelegationPlan.tsx:85); unbanded reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1130); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); all due retries (packages/engine/src/signings.ts:1143); held haggle places (packages/engine/src/signings.ts:1061); pending short-line coverage (packages/engine/src/signings.ts:1081); report decimal formatting (apps/web/src/presentation/text.ts:77); raises before mediation (packages/engine/src/signings.ts:1115); held upgrades counted for ordinary moves (packages/engine/src/signings.ts:1196). All 72 selected unit tests passed. A separate isolated reproduction exposed the remaining mediation cap bypass.",
+        "review": {
+          "id": "7264a6be-f559-4ebf-840e-b58e64cc02c0",
+          "owner": "codex-rv-owner5",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Earlier fixes verified: unrounded gains (packages/engine/src/signings.ts:430); matching displayed wage/raise room (packages/engine/src/delegation.ts:418); runway refusal copy (packages/engine/src/signings.ts:233); three-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); localized fractions (apps/web/src/entities/office/ui/DelegationPlan.tsx:85); unbanded reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1130); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); all due retries (packages/engine/src/signings.ts:1143); held haggle places (packages/engine/src/signings.ts:1061); pending short-line coverage (packages/engine/src/signings.ts:1081); report decimal formatting (apps/web/src/presentation/text.ts:77); raises before mediation (packages/engine/src/signings.ts:1115); held upgrades counted for ordinary moves (packages/engine/src/signings.ts:1196). All 72 selected unit tests passed. A separate isolated reproduction exposed the remaining mediation cap bypass.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1315 (T949)",
+              "message": "Delegated mediation can exceed the window upgrade cap after a haggle is raised. With cap − 1 completed upgrades and one due upgrade haggle, the raise fills the cap, but pursueRequest ignores raises in its same-day gate and checks only pending-bid capacity. A pending upgrade mediation then opens another upgrade. An isolated director-bids fixture at step 5 produced 12 upgrades against a cap of 11. Apply the shared window upgrade-cap check, including held haggles, to delegated mediation pursuits and cover this sequence with a regression test (CLUB-33)."
+            }
+          ],
+          "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+          "baseCommit": "a147a4783e368c4cfbc8a4b2b3321db4bdd2d66f",
+          "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+          "createdAt": "2026-11-17T20:15:49.392Z",
+          "finishedAt": "2026-11-17T20:20:43.651Z"
+        }
+      }
+    },
+    {
+      "sequence": 977,
+      "at": "2026-11-17T20:20:44.182Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "coordinator native correction (review round 6) in progress",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "c08fa13c-3bdb-46d1-a6f5-156d691a7aa9",
+            "owner": "codex-rv-owner",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Found candidate-ranking and financial-display contract violations. All 70 focused tests, lint and i18n validation passed. No tracked files changed.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:420 (T949)",
+                "message": "Rounding slot gain changes CLUB-33's candidate order. With seed 'staff-signings', no manager pick and recruitment at step 5, the director bids for a player rated 55.73 at the slot while an affordable 56.27 candidate remains available: both gains round to 15. Rank by the unrounded gain and make the regression test compare actual slot values."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:399 (T948)",
+                "message": "The displayed wage budget and contracts raise room ignore the additional reserve required by the raise. With income equal to current fixed costs, step 2, a balanced director and 10,000 minor units of available capital, contracts.left reports 1,666, but runwayTest rejects that raise; the actual maximum is 1,538. Derive the advertised room from the same commitment calculation used for acceptance."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:240 (T948)",
+                "message": "A runway refusal still uses delegation.verdict.squadBudget, which claims fee plus one year's wage exceeds plan.left. Reproduced at step 2 with left=10,000, fee=5,000 and wage=1,500: rejection correctly follows the six-season runway, but the explanation falsely says 6,500 exceeds 10,000. Add a runway-specific refusal resource in every locale, retaining the historical resource for supported saves."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/contracts/src/source-messages.ts:7205 (T949)",
+                "message": "Confirmed delegation.offer.signings still says '7일마다', with the equivalent seven-day claim in all 12 locale packs. OfferAnswers also supplies the fixed upgrade count despite the new money-bar cap. Update this live explanation to describe three-day looks, the step's pending-bid limit and the expanded upgrade cap, using named parameters and translations throughout."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:89 (T948)",
+                "message": "New fractional coverage and reserve values bypass the shared number formatters here and at line 108. sourceMessage stringifies them before localizeValue, so de-DE displays '3.5 Spielzeiten' and '0.25 Jahre' instead of localized decimal separators. Format these numbers at the presentation boundary with the shared decimal formatter."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/delegation.ts:216 (T948)",
+                "message": "planRoomAfterWage has no production callers after this lane; only tests exercise it. The refunded parameter chain also remains despite becoming a documented no-op. Consider removing these obsolete interfaces to avoid maintaining redundant budget APIs."
+              }
+            ],
+            "commit": "610f169e64f82f5f5c0244d282d846531beea3cd",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "9ce41fc7-b0a9-4788-8cfa-848022f56481",
+            "createdAt": "2026-11-17T17:45:20.319Z",
+            "finishedAt": "2026-11-17T17:52:21.595Z",
+            "invalidatedAt": "2026-11-17T18:06:34.020Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "2546fd3c-bf16-4193-b91b-ceb99053afec",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior review corrections are present, but the submission still violates recruitment and sale-explanation contracts. The reference-career measurements also predate the assigned commit; the coordinator host should run the final gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/scout-search.ts:223 (T949)",
+                "message": "The reach-wide candidate search still applies the shortlist's age and ability bands. For example, at recruitment step 5 it excludes players younger than 26 and those above the ability ceiling, even when they are geographically within the scout's reach and are the best affordable upgrade. CLUB-33 requires ranking everyone within that reach after the manager's pick, while ECON-16 says the setting shapes the shortlist draw. Separate the reach-wide pool from the shortlist filters and verify ranking with an otherwise eligible player outside those bands."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1137 (T949)",
+                "message": "The new eight-move limit can end a look with no pending bids and unfilled needs: immediate free-agent signings and refusals each consume a move, so after eight such approaches the director waits for a later look even when another candidate is available. CLUB-33 requires the look to continue until the pending-bid limit is reached or no move can be made. Remove the arbitrary cap or make termination follow those conditions, and cover more than eight immediate approaches."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:496 (T948)",
+                "message": "Changing wagePressure to runway-based levels leaves the sale-answer consumer reporting the old income-share thresholds. A sale can now be discounted because cash cannot cover planned losses while its report says wages exceed a sales line by 10 percentage points, a line that no longer exists. Update the live sale-answer explanations to describe the runway condition, retaining the historical resources for saved prose; coordinate this change with T945, which owns that consumer."
+              },
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T949.funded-club-buys-best.md (T949)",
+                "message": "The required two-season reference-career results were measured before the correction, not on commit 029f8fd. The correction changes candidate ordering, which can alter later signings, sales and cash through the simulation, so the recorded direction cannot establish the acceptance result for this candidate. Have the coordinator host measure both reference careers on the pinned candidate and record the results before the final gate."
+              }
+            ],
+            "commit": "029f8fd78e72362f50259d7fc3cc313644402ded",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "e3d25fc9-344a-410c-a828-40575d69a069",
+            "createdAt": "2026-11-17T18:23:39.129Z",
+            "finishedAt": "2026-11-17T18:24:36.962Z",
+            "invalidatedAt": "2026-11-17T18:24:37.073Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "6a392ece-3de7-480c-bb94-a787e2919168",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The reach-wide search and look termination corrections are present, and the worker’s task-tier checks passed on the assigned commit. Two runway explanations still misstate the club’s finances. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:1219 (T948)",
+                "message": "At sales step 1, any planned loss makes wagePressure level 2 because the plan permits no loss, even if the club has ample cash. The untouchable-sale explanation nevertheless says cash cannot cover half the allowed seasons, although there are no allowed seasons. The recruitment, contracts and sales plan-over explanations similarly describe insufficient cash at step 1. Use income-based explanations when the runway is zero, and cover that case in the affected reports."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:98 (T948)",
+                "message": "A positive coverage below 0.1 seasons is rounded down to zero in delegatePlan, so coversLine selects coversNone and tells the user there is no cash available even when plan.capital is positive. Distinguish zero capital from positive coverage that rounds to zero, and display an accurate coverage or less-than-0.1 message."
+              }
+            ],
+            "commit": "a696eb955615e5defafd9a838c64dd69483d3db3",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "6a145b27-1b32-4ce1-9bff-c535dbb03504",
+            "createdAt": "2026-11-17T18:43:54.144Z",
+            "finishedAt": "2026-11-17T18:44:40.627Z",
+            "invalidatedAt": "2026-11-17T18:44:40.707Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "bd209107-77ce-44e6-8d10-fdead9eb0ba4",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior explanation fixes are present, and the worker’s task-tier checks passed on the pinned commit. Two contract violations remain in the runway calculation and negotiator retries. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:195 (T948)",
+                "message": "ECON-33 defines the reserve from current annual fixed costs, then tests the planned loss after the commitment against that available capital. Adding the proposed wage to the reserve prematurely rejects affordable signings and raises. For example, at step 2 with a balanced director, current costs equal to income and 10,000 above the current reserve, a fee-free raise of 1,666 has a six-season loss of 9,996 and should pass; this calculation rejects it because it also reserves half the proposed raise. Calculate the reserve from current costs and use the post-commitment costs for the planned loss; align the displayed wage room and tests with that rule."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1087 (T949)",
+                "message": "When multiple negotiator bids are rejected on the same day and capacity is available, this selects and retries only one. The remaining rejected bids are delayed, and subsequent ordinary moves can fill the pending limit before they are retried. CLUB-41 requires each negotiator’s raised bid the day after its answer. Process all due retries within the applicable pending limit before making ordinary moves, and cover simultaneous rejections."
+              }
+            ],
+            "commit": "81046c88f185f0cc787dac26e088064051add2ac",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "b5b8b05f-9827-4ebb-9e86-7a44b4517d24",
+            "createdAt": "2026-11-17T18:54:20.709Z",
+            "finishedAt": "2026-11-17T18:55:07.419Z",
+            "invalidatedAt": "2026-11-17T18:55:07.568Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "0a487db6-e88a-4a80-a735-e1db8a5ed7cb",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "reviewing",
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "d9ffde7f62ba1112a7989220210b0fe22765b3aa",
+            "submissionId": "d29305c3-67bc-4c8f-9047-39d313ef53de",
+            "createdAt": "2026-11-17T19:23:27.619Z",
+            "invalidatedAt": "2026-11-17T19:23:31.000Z",
+            "invalidationReason": "review retry limit"
+          },
+          {
+            "id": "1a197f65-928a-4e1a-9e67-a8a417247d30",
+            "owner": "codex-rv-owner3",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes confirmed: unrounded gain (packages/engine/src/signings.ts:429), exact displayed room (packages/engine/src/delegation.ts:208), runway refusals (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), preview decimal formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:105), unrestricted reach (packages/engine/src/scout-search.ts:227), uncapped look loop (packages/engine/src/signings.ts:1145), and current-cost reserve (packages/engine/src/delegation.ts:197). Multiple retries are processed at packages/engine/src/signings.ts:1103, but normal answer-day scheduling still blocks them. Three remaining issues were reproduced. 62 unit tests, four focused integration tests, i18n validation and lint passed. T951/T950 handoffs accepted; tracked files unchanged.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1085 (T949)",
+                "message": "Next-day negotiator retries can still be displaced by ordinary bids. When three haggles are rejected or counters declined on regular look day D, they are ineligible for retry until D+1, so the ordinary loop fills all three pending slots on D. On D+1 this guard returns before retrying any original player. Reproduced with the director-bids fixture, balanced temperament and recruitment step 5. Preserve capacity for scheduled haggles and add a regression that invokes staffSignings on both the answer day and the following day (CLUB-41)."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1049 (T949)",
+                "message": "One pending player removes an entire short-line need regardless of its deficit. shortLines emits one need per line, so two forwards against a minimum of four are treated as covered after only one forward bid. In a funded 3-5-2 case with two strong forwards, the look makes one short-FW bid followed by two DF upgrade bids while another affordable forward is still needed. Account for pending arrivals against count/minimum before advancing to upgrades, preserving CLUB-33's short-line priority."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:595 (T948)",
+                "message": "Fractional reserve years remain unformatted in generated plan reports. The preview uses the shared decimal formatter, but planLines interpolates reserveYears directly; translating the balanced step-3 runway line into de-DE produces 'Guthaben über 0.25 Jahren' instead of '0,25'. localizeValue preserves that captured string. Format this recognized numeric parameter at the presentation boundary while keeping saved source prose locale-independent, as required by ARCH-32."
+              }
+            ],
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
+            "submissionId": "68f2e94d-60a2-4152-b17c-ea42696567ad",
+            "createdAt": "2026-11-17T19:23:59.531Z",
+            "finishedAt": "2026-11-17T19:31:06.621Z",
+            "invalidatedAt": "2026-11-17T19:31:07.515Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7d2239e1-4e82-4d5e-85d9-70b892efc82d",
+            "owner": "codex-rv-owner4",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "117 existing targeted tests passed; two isolated probes reproduced T949 defects. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:431), displayed wage/raise room (packages/engine/src/delegation.ts:418), runway refusal (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), fractional seasons/years (apps/web/src/entities/office/ui/DelegationPlan.tsx:85), unrestricted reach pool (packages/engine/src/scout-search.ts:227), uncapped look termination (packages/engine/src/signings.ts:1126), current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196), held haggle places (packages/engine/src/signings.ts:1057), pending short-line coverage (packages/engine/src/signings.ts:1077), and report decimal formatting (apps/web/src/presentation/text.ts:122). Retry precedence remains incomplete. T950/T951 handoffs were respected.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1109 (T949)",
+                "message": "Delegated mediation spends before raiseHaggles runs, so a mediated ordinary bid can consume funds needed by a due retry. An isolated director-bids fixture with balanced temperament, step 5, a pending midfield mediation and cash 120674 made either bid independently affordable; staffSignings placed the mediation bid first and expired the due haggle instead of raising it. Process due retries before mediated ordinary moves, as required by the earlier CLUB-41 finding."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1190 (T949)",
+                "message": "The upgrade count includes completed/open bids but excludes refused haggles that now retain their places. With cap minus one completed upgrades and one held upgrade, an ordinary look therefore opens another upgrade; the held bid is raised tomorrow without checking the cap. An isolated probe produced 12 completed/pending upgrades against an 11-upgrade window cap. Include outstanding upgrade haggles in the cap accounting so their retries cannot exceed CLUB-33's window limit."
+              }
+            ],
+            "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+            "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+            "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+            "createdAt": "2026-11-17T19:51:17.641Z",
+            "finishedAt": "2026-11-17T19:57:42.941Z",
+            "invalidatedAt": "2026-11-17T19:57:43.441Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7264a6be-f559-4ebf-840e-b58e64cc02c0",
+            "owner": "codex-rv-owner5",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes verified: unrounded gains (packages/engine/src/signings.ts:430); matching displayed wage/raise room (packages/engine/src/delegation.ts:418); runway refusal copy (packages/engine/src/signings.ts:233); three-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); localized fractions (apps/web/src/entities/office/ui/DelegationPlan.tsx:85); unbanded reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1130); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); all due retries (packages/engine/src/signings.ts:1143); held haggle places (packages/engine/src/signings.ts:1061); pending short-line coverage (packages/engine/src/signings.ts:1081); report decimal formatting (apps/web/src/presentation/text.ts:77); raises before mediation (packages/engine/src/signings.ts:1115); held upgrades counted for ordinary moves (packages/engine/src/signings.ts:1196). All 72 selected unit tests passed. A separate isolated reproduction exposed the remaining mediation cap bypass.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1315 (T949)",
+                "message": "Delegated mediation can exceed the window upgrade cap after a haggle is raised. With cap − 1 completed upgrades and one due upgrade haggle, the raise fills the cap, but pursueRequest ignores raises in its same-day gate and checks only pending-bid capacity. A pending upgrade mediation then opens another upgrade. An isolated director-bids fixture at step 5 produced 12 upgrades against a cap of 11. Apply the shared window upgrade-cap check, including held haggles, to delegated mediation pursuits and cover this sequence with a regression test (CLUB-33)."
+              }
+            ],
+            "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+            "baseCommit": "a147a4783e368c4cfbc8a4b2b3321db4bdd2d66f",
+            "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+            "createdAt": "2026-11-17T20:15:49.392Z",
+            "finishedAt": "2026-11-17T20:20:43.651Z",
+            "invalidatedAt": "2026-11-17T20:20:44.182Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 978,
+      "at": "2026-11-17T20:32:31.105Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 979,
+      "at": "2026-11-17T20:32:31.847Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 980,
+      "at": "2026-11-17T20:34:14.302Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "84ebb60179993a8cfbfd10dbf11f7c17ceaa7551",
+        "submissionId": "06e0429c-8cd4-411b-85a2-5a36b04523a2",
+        "submittedAt": "2026-11-17T20:34:14.302Z",
+        "steps": [
+          {
+            "taskId": "T948",
+            "commit": "1b6a9e4cf4b8c7043fb84f9df5f1b9029ca62297",
+            "at": "2026-11-17T16:51:00.435Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T16:49:39.183Z",
+                "finishedAt": "2026-11-17T16:51:00.198Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T949",
+            "commit": "22fec5b498b392232bcda4de42e16533d355d96c",
+            "at": "2026-11-17T20:34:14.276Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T20:32:32.101Z",
+                "finishedAt": "2026-11-17T20:34:14.007Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T20:32:32.101Z",
+            "finishedAt": "2026-11-17T20:34:14.007Z"
+          }
+        ],
+        "verifiedCommit": "22fec5b498b392232bcda4de42e16533d355d96c"
+      }
+    },
+    {
+      "sequence": 981,
+      "at": "2026-11-17T20:34:15.195Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "4cf3627b-7e95-4a31-b9c9-fa667130fa88",
+          "owner": "codex-rv-owner6",
+          "status": "reviewing",
+          "commit": "22fec5b498b392232bcda4de42e16533d355d96c",
+          "baseCommit": "84ebb60179993a8cfbfd10dbf11f7c17ceaa7551",
+          "submissionId": "06e0429c-8cd4-411b-85a2-5a36b04523a2",
+          "createdAt": "2026-11-17T20:34:15.195Z"
+        }
+      }
+    },
+    {
+      "sequence": 982,
+      "at": "2026-11-17T20:39:21.209Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "Prior fixes verified: unrounded gain ordering (packages/engine/src/signings.ts:431); shared wage/raise-room calculation and current-cost reserve with post-commitment loss (packages/engine/src/delegation.ts:196, :208, :435); runway-specific refusal (packages/engine/src/signings.ts:238); 3-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); fractional seasons/years formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:85, :126); unrestricted reach bands (packages/engine/src/scout-search.ts:227, :262); uncapped look termination (packages/engine/src/signings.ts:1158); all due retries before ordinary and mediation moves (:1143, :1171); held-haggle places (:1061); pending arrivals counted against short-line deficits (:1109); report decimals formatted at presentation (apps/web/src/presentation/text.ts:122); held upgrades counted and one shared cap check across looks, raises and mediation (packages/engine/src/signings.ts:1072, :1082, :1186, :1239, :1341). All 121 targeted tests, lint and i18n validation passed. One additional T949 correctness issue remains. T950/T951 handoffs were excluded.",
+        "review": {
+          "id": "4cf3627b-7e95-4a31-b9c9-fa667130fa88",
+          "owner": "codex-rv-owner6",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Prior fixes verified: unrounded gain ordering (packages/engine/src/signings.ts:431); shared wage/raise-room calculation and current-cost reserve with post-commitment loss (packages/engine/src/delegation.ts:196, :208, :435); runway-specific refusal (packages/engine/src/signings.ts:238); 3-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); fractional seasons/years formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:85, :126); unrestricted reach bands (packages/engine/src/scout-search.ts:227, :262); uncapped look termination (packages/engine/src/signings.ts:1158); all due retries before ordinary and mediation moves (:1143, :1171); held-haggle places (:1061); pending arrivals counted against short-line deficits (:1109); report decimals formatted at presentation (apps/web/src/presentation/text.ts:122); held upgrades counted and one shared cap check across looks, raises and mediation (packages/engine/src/signings.ts:1072, :1082, :1186, :1239, :1341). All 121 targeted tests, lint and i18n validation passed. One additional T949 correctness issue remains. T950/T951 handoffs were excluded.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1117 (T949)",
+              "message": "Consuming a pending player while covering a short-line deficit prevents that same arrival from covering an overlapping replacement need. Reproduced with seed staff-signings, step 5, three forwards and one open FW replacement need: the look opens both a short FW bid and a replacement FW bid. Completing just the first arrival clears both shortLines and replacementNeeds, so the second bid duplicates an already-covered vacancy and consumes cash and pending capacity. Account for overlapping short/replacement needs when projecting pending arrivals, and add a regression for a departure that also takes its line below the minimum."
+            }
+          ],
+          "commit": "22fec5b498b392232bcda4de42e16533d355d96c",
+          "baseCommit": "84ebb60179993a8cfbfd10dbf11f7c17ceaa7551",
+          "submissionId": "06e0429c-8cd4-411b-85a2-5a36b04523a2",
+          "createdAt": "2026-11-17T20:34:15.195Z",
+          "finishedAt": "2026-11-17T20:39:21.209Z"
+        }
+      }
+    },
+    {
+      "sequence": 983,
+      "at": "2026-11-17T20:39:21.975Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "coordinator native correction (review round 7) in progress",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "c08fa13c-3bdb-46d1-a6f5-156d691a7aa9",
+            "owner": "codex-rv-owner",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Found candidate-ranking and financial-display contract violations. All 70 focused tests, lint and i18n validation passed. No tracked files changed.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:420 (T949)",
+                "message": "Rounding slot gain changes CLUB-33's candidate order. With seed 'staff-signings', no manager pick and recruitment at step 5, the director bids for a player rated 55.73 at the slot while an affordable 56.27 candidate remains available: both gains round to 15. Rank by the unrounded gain and make the regression test compare actual slot values."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:399 (T948)",
+                "message": "The displayed wage budget and contracts raise room ignore the additional reserve required by the raise. With income equal to current fixed costs, step 2, a balanced director and 10,000 minor units of available capital, contracts.left reports 1,666, but runwayTest rejects that raise; the actual maximum is 1,538. Derive the advertised room from the same commitment calculation used for acceptance."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:240 (T948)",
+                "message": "A runway refusal still uses delegation.verdict.squadBudget, which claims fee plus one year's wage exceeds plan.left. Reproduced at step 2 with left=10,000, fee=5,000 and wage=1,500: rejection correctly follows the six-season runway, but the explanation falsely says 6,500 exceeds 10,000. Add a runway-specific refusal resource in every locale, retaining the historical resource for supported saves."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/contracts/src/source-messages.ts:7205 (T949)",
+                "message": "Confirmed delegation.offer.signings still says '7일마다', with the equivalent seven-day claim in all 12 locale packs. OfferAnswers also supplies the fixed upgrade count despite the new money-bar cap. Update this live explanation to describe three-day looks, the step's pending-bid limit and the expanded upgrade cap, using named parameters and translations throughout."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:89 (T948)",
+                "message": "New fractional coverage and reserve values bypass the shared number formatters here and at line 108. sourceMessage stringifies them before localizeValue, so de-DE displays '3.5 Spielzeiten' and '0.25 Jahre' instead of localized decimal separators. Format these numbers at the presentation boundary with the shared decimal formatter."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/delegation.ts:216 (T948)",
+                "message": "planRoomAfterWage has no production callers after this lane; only tests exercise it. The refunded parameter chain also remains despite becoming a documented no-op. Consider removing these obsolete interfaces to avoid maintaining redundant budget APIs."
+              }
+            ],
+            "commit": "610f169e64f82f5f5c0244d282d846531beea3cd",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "9ce41fc7-b0a9-4788-8cfa-848022f56481",
+            "createdAt": "2026-11-17T17:45:20.319Z",
+            "finishedAt": "2026-11-17T17:52:21.595Z",
+            "invalidatedAt": "2026-11-17T18:06:34.020Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "2546fd3c-bf16-4193-b91b-ceb99053afec",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior review corrections are present, but the submission still violates recruitment and sale-explanation contracts. The reference-career measurements also predate the assigned commit; the coordinator host should run the final gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/scout-search.ts:223 (T949)",
+                "message": "The reach-wide candidate search still applies the shortlist's age and ability bands. For example, at recruitment step 5 it excludes players younger than 26 and those above the ability ceiling, even when they are geographically within the scout's reach and are the best affordable upgrade. CLUB-33 requires ranking everyone within that reach after the manager's pick, while ECON-16 says the setting shapes the shortlist draw. Separate the reach-wide pool from the shortlist filters and verify ranking with an otherwise eligible player outside those bands."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1137 (T949)",
+                "message": "The new eight-move limit can end a look with no pending bids and unfilled needs: immediate free-agent signings and refusals each consume a move, so after eight such approaches the director waits for a later look even when another candidate is available. CLUB-33 requires the look to continue until the pending-bid limit is reached or no move can be made. Remove the arbitrary cap or make termination follow those conditions, and cover more than eight immediate approaches."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:496 (T948)",
+                "message": "Changing wagePressure to runway-based levels leaves the sale-answer consumer reporting the old income-share thresholds. A sale can now be discounted because cash cannot cover planned losses while its report says wages exceed a sales line by 10 percentage points, a line that no longer exists. Update the live sale-answer explanations to describe the runway condition, retaining the historical resources for saved prose; coordinate this change with T945, which owns that consumer."
+              },
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T949.funded-club-buys-best.md (T949)",
+                "message": "The required two-season reference-career results were measured before the correction, not on commit 029f8fd. The correction changes candidate ordering, which can alter later signings, sales and cash through the simulation, so the recorded direction cannot establish the acceptance result for this candidate. Have the coordinator host measure both reference careers on the pinned candidate and record the results before the final gate."
+              }
+            ],
+            "commit": "029f8fd78e72362f50259d7fc3cc313644402ded",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "e3d25fc9-344a-410c-a828-40575d69a069",
+            "createdAt": "2026-11-17T18:23:39.129Z",
+            "finishedAt": "2026-11-17T18:24:36.962Z",
+            "invalidatedAt": "2026-11-17T18:24:37.073Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "6a392ece-3de7-480c-bb94-a787e2919168",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The reach-wide search and look termination corrections are present, and the worker’s task-tier checks passed on the assigned commit. Two runway explanations still misstate the club’s finances. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:1219 (T948)",
+                "message": "At sales step 1, any planned loss makes wagePressure level 2 because the plan permits no loss, even if the club has ample cash. The untouchable-sale explanation nevertheless says cash cannot cover half the allowed seasons, although there are no allowed seasons. The recruitment, contracts and sales plan-over explanations similarly describe insufficient cash at step 1. Use income-based explanations when the runway is zero, and cover that case in the affected reports."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:98 (T948)",
+                "message": "A positive coverage below 0.1 seasons is rounded down to zero in delegatePlan, so coversLine selects coversNone and tells the user there is no cash available even when plan.capital is positive. Distinguish zero capital from positive coverage that rounds to zero, and display an accurate coverage or less-than-0.1 message."
+              }
+            ],
+            "commit": "a696eb955615e5defafd9a838c64dd69483d3db3",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "6a145b27-1b32-4ce1-9bff-c535dbb03504",
+            "createdAt": "2026-11-17T18:43:54.144Z",
+            "finishedAt": "2026-11-17T18:44:40.627Z",
+            "invalidatedAt": "2026-11-17T18:44:40.707Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "bd209107-77ce-44e6-8d10-fdead9eb0ba4",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior explanation fixes are present, and the worker’s task-tier checks passed on the pinned commit. Two contract violations remain in the runway calculation and negotiator retries. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:195 (T948)",
+                "message": "ECON-33 defines the reserve from current annual fixed costs, then tests the planned loss after the commitment against that available capital. Adding the proposed wage to the reserve prematurely rejects affordable signings and raises. For example, at step 2 with a balanced director, current costs equal to income and 10,000 above the current reserve, a fee-free raise of 1,666 has a six-season loss of 9,996 and should pass; this calculation rejects it because it also reserves half the proposed raise. Calculate the reserve from current costs and use the post-commitment costs for the planned loss; align the displayed wage room and tests with that rule."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1087 (T949)",
+                "message": "When multiple negotiator bids are rejected on the same day and capacity is available, this selects and retries only one. The remaining rejected bids are delayed, and subsequent ordinary moves can fill the pending limit before they are retried. CLUB-41 requires each negotiator’s raised bid the day after its answer. Process all due retries within the applicable pending limit before making ordinary moves, and cover simultaneous rejections."
+              }
+            ],
+            "commit": "81046c88f185f0cc787dac26e088064051add2ac",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "b5b8b05f-9827-4ebb-9e86-7a44b4517d24",
+            "createdAt": "2026-11-17T18:54:20.709Z",
+            "finishedAt": "2026-11-17T18:55:07.419Z",
+            "invalidatedAt": "2026-11-17T18:55:07.568Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "0a487db6-e88a-4a80-a735-e1db8a5ed7cb",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "reviewing",
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "d9ffde7f62ba1112a7989220210b0fe22765b3aa",
+            "submissionId": "d29305c3-67bc-4c8f-9047-39d313ef53de",
+            "createdAt": "2026-11-17T19:23:27.619Z",
+            "invalidatedAt": "2026-11-17T19:23:31.000Z",
+            "invalidationReason": "review retry limit"
+          },
+          {
+            "id": "1a197f65-928a-4e1a-9e67-a8a417247d30",
+            "owner": "codex-rv-owner3",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes confirmed: unrounded gain (packages/engine/src/signings.ts:429), exact displayed room (packages/engine/src/delegation.ts:208), runway refusals (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), preview decimal formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:105), unrestricted reach (packages/engine/src/scout-search.ts:227), uncapped look loop (packages/engine/src/signings.ts:1145), and current-cost reserve (packages/engine/src/delegation.ts:197). Multiple retries are processed at packages/engine/src/signings.ts:1103, but normal answer-day scheduling still blocks them. Three remaining issues were reproduced. 62 unit tests, four focused integration tests, i18n validation and lint passed. T951/T950 handoffs accepted; tracked files unchanged.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1085 (T949)",
+                "message": "Next-day negotiator retries can still be displaced by ordinary bids. When three haggles are rejected or counters declined on regular look day D, they are ineligible for retry until D+1, so the ordinary loop fills all three pending slots on D. On D+1 this guard returns before retrying any original player. Reproduced with the director-bids fixture, balanced temperament and recruitment step 5. Preserve capacity for scheduled haggles and add a regression that invokes staffSignings on both the answer day and the following day (CLUB-41)."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1049 (T949)",
+                "message": "One pending player removes an entire short-line need regardless of its deficit. shortLines emits one need per line, so two forwards against a minimum of four are treated as covered after only one forward bid. In a funded 3-5-2 case with two strong forwards, the look makes one short-FW bid followed by two DF upgrade bids while another affordable forward is still needed. Account for pending arrivals against count/minimum before advancing to upgrades, preserving CLUB-33's short-line priority."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:595 (T948)",
+                "message": "Fractional reserve years remain unformatted in generated plan reports. The preview uses the shared decimal formatter, but planLines interpolates reserveYears directly; translating the balanced step-3 runway line into de-DE produces 'Guthaben über 0.25 Jahren' instead of '0,25'. localizeValue preserves that captured string. Format this recognized numeric parameter at the presentation boundary while keeping saved source prose locale-independent, as required by ARCH-32."
+              }
+            ],
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
+            "submissionId": "68f2e94d-60a2-4152-b17c-ea42696567ad",
+            "createdAt": "2026-11-17T19:23:59.531Z",
+            "finishedAt": "2026-11-17T19:31:06.621Z",
+            "invalidatedAt": "2026-11-17T19:31:07.515Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7d2239e1-4e82-4d5e-85d9-70b892efc82d",
+            "owner": "codex-rv-owner4",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "117 existing targeted tests passed; two isolated probes reproduced T949 defects. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:431), displayed wage/raise room (packages/engine/src/delegation.ts:418), runway refusal (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), fractional seasons/years (apps/web/src/entities/office/ui/DelegationPlan.tsx:85), unrestricted reach pool (packages/engine/src/scout-search.ts:227), uncapped look termination (packages/engine/src/signings.ts:1126), current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196), held haggle places (packages/engine/src/signings.ts:1057), pending short-line coverage (packages/engine/src/signings.ts:1077), and report decimal formatting (apps/web/src/presentation/text.ts:122). Retry precedence remains incomplete. T950/T951 handoffs were respected.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1109 (T949)",
+                "message": "Delegated mediation spends before raiseHaggles runs, so a mediated ordinary bid can consume funds needed by a due retry. An isolated director-bids fixture with balanced temperament, step 5, a pending midfield mediation and cash 120674 made either bid independently affordable; staffSignings placed the mediation bid first and expired the due haggle instead of raising it. Process due retries before mediated ordinary moves, as required by the earlier CLUB-41 finding."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1190 (T949)",
+                "message": "The upgrade count includes completed/open bids but excludes refused haggles that now retain their places. With cap minus one completed upgrades and one held upgrade, an ordinary look therefore opens another upgrade; the held bid is raised tomorrow without checking the cap. An isolated probe produced 12 completed/pending upgrades against an 11-upgrade window cap. Include outstanding upgrade haggles in the cap accounting so their retries cannot exceed CLUB-33's window limit."
+              }
+            ],
+            "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+            "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+            "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+            "createdAt": "2026-11-17T19:51:17.641Z",
+            "finishedAt": "2026-11-17T19:57:42.941Z",
+            "invalidatedAt": "2026-11-17T19:57:43.441Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7264a6be-f559-4ebf-840e-b58e64cc02c0",
+            "owner": "codex-rv-owner5",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes verified: unrounded gains (packages/engine/src/signings.ts:430); matching displayed wage/raise room (packages/engine/src/delegation.ts:418); runway refusal copy (packages/engine/src/signings.ts:233); three-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); localized fractions (apps/web/src/entities/office/ui/DelegationPlan.tsx:85); unbanded reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1130); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); all due retries (packages/engine/src/signings.ts:1143); held haggle places (packages/engine/src/signings.ts:1061); pending short-line coverage (packages/engine/src/signings.ts:1081); report decimal formatting (apps/web/src/presentation/text.ts:77); raises before mediation (packages/engine/src/signings.ts:1115); held upgrades counted for ordinary moves (packages/engine/src/signings.ts:1196). All 72 selected unit tests passed. A separate isolated reproduction exposed the remaining mediation cap bypass.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1315 (T949)",
+                "message": "Delegated mediation can exceed the window upgrade cap after a haggle is raised. With cap − 1 completed upgrades and one due upgrade haggle, the raise fills the cap, but pursueRequest ignores raises in its same-day gate and checks only pending-bid capacity. A pending upgrade mediation then opens another upgrade. An isolated director-bids fixture at step 5 produced 12 upgrades against a cap of 11. Apply the shared window upgrade-cap check, including held haggles, to delegated mediation pursuits and cover this sequence with a regression test (CLUB-33)."
+              }
+            ],
+            "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+            "baseCommit": "a147a4783e368c4cfbc8a4b2b3321db4bdd2d66f",
+            "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+            "createdAt": "2026-11-17T20:15:49.392Z",
+            "finishedAt": "2026-11-17T20:20:43.651Z",
+            "invalidatedAt": "2026-11-17T20:20:44.182Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "4cf3627b-7e95-4a31-b9c9-fa667130fa88",
+            "owner": "codex-rv-owner6",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Prior fixes verified: unrounded gain ordering (packages/engine/src/signings.ts:431); shared wage/raise-room calculation and current-cost reserve with post-commitment loss (packages/engine/src/delegation.ts:196, :208, :435); runway-specific refusal (packages/engine/src/signings.ts:238); 3-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); fractional seasons/years formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:85, :126); unrestricted reach bands (packages/engine/src/scout-search.ts:227, :262); uncapped look termination (packages/engine/src/signings.ts:1158); all due retries before ordinary and mediation moves (:1143, :1171); held-haggle places (:1061); pending arrivals counted against short-line deficits (:1109); report decimals formatted at presentation (apps/web/src/presentation/text.ts:122); held upgrades counted and one shared cap check across looks, raises and mediation (packages/engine/src/signings.ts:1072, :1082, :1186, :1239, :1341). All 121 targeted tests, lint and i18n validation passed. One additional T949 correctness issue remains. T950/T951 handoffs were excluded.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1117 (T949)",
+                "message": "Consuming a pending player while covering a short-line deficit prevents that same arrival from covering an overlapping replacement need. Reproduced with seed staff-signings, step 5, three forwards and one open FW replacement need: the look opens both a short FW bid and a replacement FW bid. Completing just the first arrival clears both shortLines and replacementNeeds, so the second bid duplicates an already-covered vacancy and consumes cash and pending capacity. Account for overlapping short/replacement needs when projecting pending arrivals, and add a regression for a departure that also takes its line below the minimum."
+              }
+            ],
+            "commit": "22fec5b498b392232bcda4de42e16533d355d96c",
+            "baseCommit": "84ebb60179993a8cfbfd10dbf11f7c17ceaa7551",
+            "submissionId": "06e0429c-8cd4-411b-85a2-5a36b04523a2",
+            "createdAt": "2026-11-17T20:34:15.195Z",
+            "finishedAt": "2026-11-17T20:39:21.209Z",
+            "invalidatedAt": "2026-11-17T20:39:21.975Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 984,
+      "at": "2026-11-17T21:00:21.826Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 985,
+      "at": "2026-11-17T21:00:22.460Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 986,
+      "at": "2026-11-17T21:01:58.748Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "50e541f9996d21ee0bf22c1f3ebd657f2eeb10b1",
+        "submissionId": "8a4e9b0c-25a2-4fb2-b468-2832d2d13b62",
+        "submittedAt": "2026-11-17T21:01:58.748Z",
+        "steps": [
+          {
+            "taskId": "T948",
+            "commit": "1b6a9e4cf4b8c7043fb84f9df5f1b9029ca62297",
+            "at": "2026-11-17T16:51:00.435Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T16:49:39.183Z",
+                "finishedAt": "2026-11-17T16:51:00.198Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T949",
+            "commit": "7854b375a4693332a23313e6bc76645463686da7",
+            "at": "2026-11-17T21:01:58.714Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T21:00:22.700Z",
+                "finishedAt": "2026-11-17T21:01:58.287Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T21:00:22.700Z",
+            "finishedAt": "2026-11-17T21:01:58.287Z"
+          }
+        ],
+        "verifiedCommit": "7854b375a4693332a23313e6bc76645463686da7"
+      }
+    },
+    {
+      "sequence": 987,
+      "at": "2026-11-17T21:01:59.970Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "619b797f-9458-4c24-956f-057102a3be9f",
+          "owner": "codex-rv-owner7",
+          "status": "reviewing",
+          "commit": "7854b375a4693332a23313e6bc76645463686da7",
+          "baseCommit": "50e541f9996d21ee0bf22c1f3ebd657f2eeb10b1",
+          "submissionId": "8a4e9b0c-25a2-4fb2-b468-2832d2d13b62",
+          "createdAt": "2026-11-17T21:01:59.970Z"
+        }
+      }
+    },
+    {
+      "sequence": 988,
+      "at": "2026-11-17T21:06:52.188Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "Earlier fixes verified; 127 existing targeted tests pass. One T949 registration regression was reproduced.",
+        "review": {
+          "id": "619b797f-9458-4c24-956f-057102a3be9f",
+          "owner": "codex-rv-owner7",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Earlier fixes verified; 127 existing targeted tests pass. One T949 registration regression was reproduced.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1273 (T949)",
+              "message": "staffMove computes the projected club but passes the original w into candidates, whose registrationRoom check therefore ignores pending arrivals. Only the overall 40-player ceiling uses the projection. Reproduced with a funded 2020 English top-flight club holding 24 counted players: one look bids for three non-exempt adults despite the 25-player limit. All three sellers accept; after the first arrival, the other two deals fail registration. This reserves money and bid places for arrivals the projection cannot accommodate. Apply candidate registration checks to the projected squad, preserving age exemptions, and add a regression covering the counted limit."
+            }
+          ],
+          "commit": "7854b375a4693332a23313e6bc76645463686da7",
+          "baseCommit": "50e541f9996d21ee0bf22c1f3ebd657f2eeb10b1",
+          "submissionId": "8a4e9b0c-25a2-4fb2-b468-2832d2d13b62",
+          "createdAt": "2026-11-17T21:01:59.970Z",
+          "finishedAt": "2026-11-17T21:06:52.188Z"
+        }
+      }
+    },
+    {
+      "sequence": 989,
+      "at": "2026-11-17T21:06:52.717Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "coordinator native correction (review round 8) in progress",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "c08fa13c-3bdb-46d1-a6f5-156d691a7aa9",
+            "owner": "codex-rv-owner",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Found candidate-ranking and financial-display contract violations. All 70 focused tests, lint and i18n validation passed. No tracked files changed.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:420 (T949)",
+                "message": "Rounding slot gain changes CLUB-33's candidate order. With seed 'staff-signings', no manager pick and recruitment at step 5, the director bids for a player rated 55.73 at the slot while an affordable 56.27 candidate remains available: both gains round to 15. Rank by the unrounded gain and make the regression test compare actual slot values."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:399 (T948)",
+                "message": "The displayed wage budget and contracts raise room ignore the additional reserve required by the raise. With income equal to current fixed costs, step 2, a balanced director and 10,000 minor units of available capital, contracts.left reports 1,666, but runwayTest rejects that raise; the actual maximum is 1,538. Derive the advertised room from the same commitment calculation used for acceptance."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:240 (T948)",
+                "message": "A runway refusal still uses delegation.verdict.squadBudget, which claims fee plus one year's wage exceeds plan.left. Reproduced at step 2 with left=10,000, fee=5,000 and wage=1,500: rejection correctly follows the six-season runway, but the explanation falsely says 6,500 exceeds 10,000. Add a runway-specific refusal resource in every locale, retaining the historical resource for supported saves."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/contracts/src/source-messages.ts:7205 (T949)",
+                "message": "Confirmed delegation.offer.signings still says '7일마다', with the equivalent seven-day claim in all 12 locale packs. OfferAnswers also supplies the fixed upgrade count despite the new money-bar cap. Update this live explanation to describe three-day looks, the step's pending-bid limit and the expanded upgrade cap, using named parameters and translations throughout."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:89 (T948)",
+                "message": "New fractional coverage and reserve values bypass the shared number formatters here and at line 108. sourceMessage stringifies them before localizeValue, so de-DE displays '3.5 Spielzeiten' and '0.25 Jahre' instead of localized decimal separators. Format these numbers at the presentation boundary with the shared decimal formatter."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/delegation.ts:216 (T948)",
+                "message": "planRoomAfterWage has no production callers after this lane; only tests exercise it. The refunded parameter chain also remains despite becoming a documented no-op. Consider removing these obsolete interfaces to avoid maintaining redundant budget APIs."
+              }
+            ],
+            "commit": "610f169e64f82f5f5c0244d282d846531beea3cd",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "9ce41fc7-b0a9-4788-8cfa-848022f56481",
+            "createdAt": "2026-11-17T17:45:20.319Z",
+            "finishedAt": "2026-11-17T17:52:21.595Z",
+            "invalidatedAt": "2026-11-17T18:06:34.020Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "2546fd3c-bf16-4193-b91b-ceb99053afec",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior review corrections are present, but the submission still violates recruitment and sale-explanation contracts. The reference-career measurements also predate the assigned commit; the coordinator host should run the final gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/scout-search.ts:223 (T949)",
+                "message": "The reach-wide candidate search still applies the shortlist's age and ability bands. For example, at recruitment step 5 it excludes players younger than 26 and those above the ability ceiling, even when they are geographically within the scout's reach and are the best affordable upgrade. CLUB-33 requires ranking everyone within that reach after the manager's pick, while ECON-16 says the setting shapes the shortlist draw. Separate the reach-wide pool from the shortlist filters and verify ranking with an otherwise eligible player outside those bands."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1137 (T949)",
+                "message": "The new eight-move limit can end a look with no pending bids and unfilled needs: immediate free-agent signings and refusals each consume a move, so after eight such approaches the director waits for a later look even when another candidate is available. CLUB-33 requires the look to continue until the pending-bid limit is reached or no move can be made. Remove the arbitrary cap or make termination follow those conditions, and cover more than eight immediate approaches."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:496 (T948)",
+                "message": "Changing wagePressure to runway-based levels leaves the sale-answer consumer reporting the old income-share thresholds. A sale can now be discounted because cash cannot cover planned losses while its report says wages exceed a sales line by 10 percentage points, a line that no longer exists. Update the live sale-answer explanations to describe the runway condition, retaining the historical resources for saved prose; coordinate this change with T945, which owns that consumer."
+              },
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T949.funded-club-buys-best.md (T949)",
+                "message": "The required two-season reference-career results were measured before the correction, not on commit 029f8fd. The correction changes candidate ordering, which can alter later signings, sales and cash through the simulation, so the recorded direction cannot establish the acceptance result for this candidate. Have the coordinator host measure both reference careers on the pinned candidate and record the results before the final gate."
+              }
+            ],
+            "commit": "029f8fd78e72362f50259d7fc3cc313644402ded",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "e3d25fc9-344a-410c-a828-40575d69a069",
+            "createdAt": "2026-11-17T18:23:39.129Z",
+            "finishedAt": "2026-11-17T18:24:36.962Z",
+            "invalidatedAt": "2026-11-17T18:24:37.073Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "6a392ece-3de7-480c-bb94-a787e2919168",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The reach-wide search and look termination corrections are present, and the worker’s task-tier checks passed on the assigned commit. Two runway explanations still misstate the club’s finances. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:1219 (T948)",
+                "message": "At sales step 1, any planned loss makes wagePressure level 2 because the plan permits no loss, even if the club has ample cash. The untouchable-sale explanation nevertheless says cash cannot cover half the allowed seasons, although there are no allowed seasons. The recruitment, contracts and sales plan-over explanations similarly describe insufficient cash at step 1. Use income-based explanations when the runway is zero, and cover that case in the affected reports."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:98 (T948)",
+                "message": "A positive coverage below 0.1 seasons is rounded down to zero in delegatePlan, so coversLine selects coversNone and tells the user there is no cash available even when plan.capital is positive. Distinguish zero capital from positive coverage that rounds to zero, and display an accurate coverage or less-than-0.1 message."
+              }
+            ],
+            "commit": "a696eb955615e5defafd9a838c64dd69483d3db3",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "6a145b27-1b32-4ce1-9bff-c535dbb03504",
+            "createdAt": "2026-11-17T18:43:54.144Z",
+            "finishedAt": "2026-11-17T18:44:40.627Z",
+            "invalidatedAt": "2026-11-17T18:44:40.707Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "bd209107-77ce-44e6-8d10-fdead9eb0ba4",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior explanation fixes are present, and the worker’s task-tier checks passed on the pinned commit. Two contract violations remain in the runway calculation and negotiator retries. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:195 (T948)",
+                "message": "ECON-33 defines the reserve from current annual fixed costs, then tests the planned loss after the commitment against that available capital. Adding the proposed wage to the reserve prematurely rejects affordable signings and raises. For example, at step 2 with a balanced director, current costs equal to income and 10,000 above the current reserve, a fee-free raise of 1,666 has a six-season loss of 9,996 and should pass; this calculation rejects it because it also reserves half the proposed raise. Calculate the reserve from current costs and use the post-commitment costs for the planned loss; align the displayed wage room and tests with that rule."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1087 (T949)",
+                "message": "When multiple negotiator bids are rejected on the same day and capacity is available, this selects and retries only one. The remaining rejected bids are delayed, and subsequent ordinary moves can fill the pending limit before they are retried. CLUB-41 requires each negotiator’s raised bid the day after its answer. Process all due retries within the applicable pending limit before making ordinary moves, and cover simultaneous rejections."
+              }
+            ],
+            "commit": "81046c88f185f0cc787dac26e088064051add2ac",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "b5b8b05f-9827-4ebb-9e86-7a44b4517d24",
+            "createdAt": "2026-11-17T18:54:20.709Z",
+            "finishedAt": "2026-11-17T18:55:07.419Z",
+            "invalidatedAt": "2026-11-17T18:55:07.568Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "0a487db6-e88a-4a80-a735-e1db8a5ed7cb",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "reviewing",
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "d9ffde7f62ba1112a7989220210b0fe22765b3aa",
+            "submissionId": "d29305c3-67bc-4c8f-9047-39d313ef53de",
+            "createdAt": "2026-11-17T19:23:27.619Z",
+            "invalidatedAt": "2026-11-17T19:23:31.000Z",
+            "invalidationReason": "review retry limit"
+          },
+          {
+            "id": "1a197f65-928a-4e1a-9e67-a8a417247d30",
+            "owner": "codex-rv-owner3",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes confirmed: unrounded gain (packages/engine/src/signings.ts:429), exact displayed room (packages/engine/src/delegation.ts:208), runway refusals (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), preview decimal formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:105), unrestricted reach (packages/engine/src/scout-search.ts:227), uncapped look loop (packages/engine/src/signings.ts:1145), and current-cost reserve (packages/engine/src/delegation.ts:197). Multiple retries are processed at packages/engine/src/signings.ts:1103, but normal answer-day scheduling still blocks them. Three remaining issues were reproduced. 62 unit tests, four focused integration tests, i18n validation and lint passed. T951/T950 handoffs accepted; tracked files unchanged.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1085 (T949)",
+                "message": "Next-day negotiator retries can still be displaced by ordinary bids. When three haggles are rejected or counters declined on regular look day D, they are ineligible for retry until D+1, so the ordinary loop fills all three pending slots on D. On D+1 this guard returns before retrying any original player. Reproduced with the director-bids fixture, balanced temperament and recruitment step 5. Preserve capacity for scheduled haggles and add a regression that invokes staffSignings on both the answer day and the following day (CLUB-41)."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1049 (T949)",
+                "message": "One pending player removes an entire short-line need regardless of its deficit. shortLines emits one need per line, so two forwards against a minimum of four are treated as covered after only one forward bid. In a funded 3-5-2 case with two strong forwards, the look makes one short-FW bid followed by two DF upgrade bids while another affordable forward is still needed. Account for pending arrivals against count/minimum before advancing to upgrades, preserving CLUB-33's short-line priority."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:595 (T948)",
+                "message": "Fractional reserve years remain unformatted in generated plan reports. The preview uses the shared decimal formatter, but planLines interpolates reserveYears directly; translating the balanced step-3 runway line into de-DE produces 'Guthaben über 0.25 Jahren' instead of '0,25'. localizeValue preserves that captured string. Format this recognized numeric parameter at the presentation boundary while keeping saved source prose locale-independent, as required by ARCH-32."
+              }
+            ],
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
+            "submissionId": "68f2e94d-60a2-4152-b17c-ea42696567ad",
+            "createdAt": "2026-11-17T19:23:59.531Z",
+            "finishedAt": "2026-11-17T19:31:06.621Z",
+            "invalidatedAt": "2026-11-17T19:31:07.515Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7d2239e1-4e82-4d5e-85d9-70b892efc82d",
+            "owner": "codex-rv-owner4",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "117 existing targeted tests passed; two isolated probes reproduced T949 defects. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:431), displayed wage/raise room (packages/engine/src/delegation.ts:418), runway refusal (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), fractional seasons/years (apps/web/src/entities/office/ui/DelegationPlan.tsx:85), unrestricted reach pool (packages/engine/src/scout-search.ts:227), uncapped look termination (packages/engine/src/signings.ts:1126), current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196), held haggle places (packages/engine/src/signings.ts:1057), pending short-line coverage (packages/engine/src/signings.ts:1077), and report decimal formatting (apps/web/src/presentation/text.ts:122). Retry precedence remains incomplete. T950/T951 handoffs were respected.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1109 (T949)",
+                "message": "Delegated mediation spends before raiseHaggles runs, so a mediated ordinary bid can consume funds needed by a due retry. An isolated director-bids fixture with balanced temperament, step 5, a pending midfield mediation and cash 120674 made either bid independently affordable; staffSignings placed the mediation bid first and expired the due haggle instead of raising it. Process due retries before mediated ordinary moves, as required by the earlier CLUB-41 finding."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1190 (T949)",
+                "message": "The upgrade count includes completed/open bids but excludes refused haggles that now retain their places. With cap minus one completed upgrades and one held upgrade, an ordinary look therefore opens another upgrade; the held bid is raised tomorrow without checking the cap. An isolated probe produced 12 completed/pending upgrades against an 11-upgrade window cap. Include outstanding upgrade haggles in the cap accounting so their retries cannot exceed CLUB-33's window limit."
+              }
+            ],
+            "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+            "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+            "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+            "createdAt": "2026-11-17T19:51:17.641Z",
+            "finishedAt": "2026-11-17T19:57:42.941Z",
+            "invalidatedAt": "2026-11-17T19:57:43.441Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7264a6be-f559-4ebf-840e-b58e64cc02c0",
+            "owner": "codex-rv-owner5",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes verified: unrounded gains (packages/engine/src/signings.ts:430); matching displayed wage/raise room (packages/engine/src/delegation.ts:418); runway refusal copy (packages/engine/src/signings.ts:233); three-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); localized fractions (apps/web/src/entities/office/ui/DelegationPlan.tsx:85); unbanded reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1130); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); all due retries (packages/engine/src/signings.ts:1143); held haggle places (packages/engine/src/signings.ts:1061); pending short-line coverage (packages/engine/src/signings.ts:1081); report decimal formatting (apps/web/src/presentation/text.ts:77); raises before mediation (packages/engine/src/signings.ts:1115); held upgrades counted for ordinary moves (packages/engine/src/signings.ts:1196). All 72 selected unit tests passed. A separate isolated reproduction exposed the remaining mediation cap bypass.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1315 (T949)",
+                "message": "Delegated mediation can exceed the window upgrade cap after a haggle is raised. With cap − 1 completed upgrades and one due upgrade haggle, the raise fills the cap, but pursueRequest ignores raises in its same-day gate and checks only pending-bid capacity. A pending upgrade mediation then opens another upgrade. An isolated director-bids fixture at step 5 produced 12 upgrades against a cap of 11. Apply the shared window upgrade-cap check, including held haggles, to delegated mediation pursuits and cover this sequence with a regression test (CLUB-33)."
+              }
+            ],
+            "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+            "baseCommit": "a147a4783e368c4cfbc8a4b2b3321db4bdd2d66f",
+            "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+            "createdAt": "2026-11-17T20:15:49.392Z",
+            "finishedAt": "2026-11-17T20:20:43.651Z",
+            "invalidatedAt": "2026-11-17T20:20:44.182Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "4cf3627b-7e95-4a31-b9c9-fa667130fa88",
+            "owner": "codex-rv-owner6",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Prior fixes verified: unrounded gain ordering (packages/engine/src/signings.ts:431); shared wage/raise-room calculation and current-cost reserve with post-commitment loss (packages/engine/src/delegation.ts:196, :208, :435); runway-specific refusal (packages/engine/src/signings.ts:238); 3-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); fractional seasons/years formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:85, :126); unrestricted reach bands (packages/engine/src/scout-search.ts:227, :262); uncapped look termination (packages/engine/src/signings.ts:1158); all due retries before ordinary and mediation moves (:1143, :1171); held-haggle places (:1061); pending arrivals counted against short-line deficits (:1109); report decimals formatted at presentation (apps/web/src/presentation/text.ts:122); held upgrades counted and one shared cap check across looks, raises and mediation (packages/engine/src/signings.ts:1072, :1082, :1186, :1239, :1341). All 121 targeted tests, lint and i18n validation passed. One additional T949 correctness issue remains. T950/T951 handoffs were excluded.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1117 (T949)",
+                "message": "Consuming a pending player while covering a short-line deficit prevents that same arrival from covering an overlapping replacement need. Reproduced with seed staff-signings, step 5, three forwards and one open FW replacement need: the look opens both a short FW bid and a replacement FW bid. Completing just the first arrival clears both shortLines and replacementNeeds, so the second bid duplicates an already-covered vacancy and consumes cash and pending capacity. Account for overlapping short/replacement needs when projecting pending arrivals, and add a regression for a departure that also takes its line below the minimum."
+              }
+            ],
+            "commit": "22fec5b498b392232bcda4de42e16533d355d96c",
+            "baseCommit": "84ebb60179993a8cfbfd10dbf11f7c17ceaa7551",
+            "submissionId": "06e0429c-8cd4-411b-85a2-5a36b04523a2",
+            "createdAt": "2026-11-17T20:34:15.195Z",
+            "finishedAt": "2026-11-17T20:39:21.209Z",
+            "invalidatedAt": "2026-11-17T20:39:21.975Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "619b797f-9458-4c24-956f-057102a3be9f",
+            "owner": "codex-rv-owner7",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes verified; 127 existing targeted tests pass. One T949 registration regression was reproduced.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1273 (T949)",
+                "message": "staffMove computes the projected club but passes the original w into candidates, whose registrationRoom check therefore ignores pending arrivals. Only the overall 40-player ceiling uses the projection. Reproduced with a funded 2020 English top-flight club holding 24 counted players: one look bids for three non-exempt adults despite the 25-player limit. All three sellers accept; after the first arrival, the other two deals fail registration. This reserves money and bid places for arrivals the projection cannot accommodate. Apply candidate registration checks to the projected squad, preserving age exemptions, and add a regression covering the counted limit."
+              }
+            ],
+            "commit": "7854b375a4693332a23313e6bc76645463686da7",
+            "baseCommit": "50e541f9996d21ee0bf22c1f3ebd657f2eeb10b1",
+            "submissionId": "8a4e9b0c-25a2-4fb2-b468-2832d2d13b62",
+            "createdAt": "2026-11-17T21:01:59.970Z",
+            "finishedAt": "2026-11-17T21:06:52.188Z",
+            "invalidatedAt": "2026-11-17T21:06:52.717Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 990,
+      "at": "2026-11-17T21:32:57.143Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 991,
+      "at": "2026-11-17T21:32:58.417Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 992,
+      "at": "2026-11-17T21:35:28.947Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "1eeb25cb0f991dfc06d41fd48b78965a55b1ac85",
+        "submissionId": "8546659b-ac2a-490f-8f0a-329516ff3777",
+        "submittedAt": "2026-11-17T21:35:28.947Z",
+        "steps": [
+          {
+            "taskId": "T948",
+            "commit": "1b6a9e4cf4b8c7043fb84f9df5f1b9029ca62297",
+            "at": "2026-11-17T16:51:00.435Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T16:49:39.183Z",
+                "finishedAt": "2026-11-17T16:51:00.198Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T949",
+            "commit": "788f36e7e6d236360dad40d71b8cb8f7b6443c0b",
+            "at": "2026-11-17T21:35:28.915Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T21:32:58.773Z",
+                "finishedAt": "2026-11-17T21:35:28.496Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T21:32:58.773Z",
+            "finishedAt": "2026-11-17T21:35:28.496Z"
+          }
+        ],
+        "verifiedCommit": "788f36e7e6d236360dad40d71b8cb8f7b6443c0b"
+      }
+    },
+    {
+      "sequence": 993,
+      "at": "2026-11-17T21:35:30.952Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2c78141b-80c6-4d8a-ad42-2fde6e81d6a4",
+          "owner": "codex-rv-owner8",
+          "status": "reviewing",
+          "commit": "788f36e7e6d236360dad40d71b8cb8f7b6443c0b",
+          "baseCommit": "1eeb25cb0f991dfc06d41fd48b78965a55b1ac85",
+          "submissionId": "8546659b-ac2a-490f-8f0a-329516ff3777",
+          "createdAt": "2026-11-17T21:35:30.952Z"
+        }
+      }
+    },
+    {
+      "sequence": 994,
+      "at": "2026-11-17T21:42:18.839Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "Earlier fixes verified: unrounded gains (signings.ts:432); exact wage/raise room and current-cost reserve (delegation.ts:196,208,432); runway refusals (signings.ts:238); look/pending copy (ClubStaff.tsx:1368); localized fractions (DelegationPlan.tsx:85; presentation/text.ts:122); unrestricted reach (scout-search.ts:227,262); uncapped look termination (signings.ts:1183); held haggles and all due raises before mediation (signings.ts:1062,1167,1196); shared upgrade cap (signings.ts:1073,1212,1264,1366); combined arrival projection and short deficits (signings.ts:1111,1262); projected registration, money, raises and pursuits (signings.ts:426,1208,1255,1285,1368). The documented actual-club reads are justified for current-player listings, opening-window caps, request selection and mutations. Two T949 contract problems remain. All 98 focused tests, i18n validation and lint passed; tracked files remain unchanged.",
+        "review": {
+          "id": "2c78141b-80c6-4d8a-ad42-2fde6e81d6a4",
+          "owner": "codex-rv-owner8",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Earlier fixes verified: unrounded gains (signings.ts:432); exact wage/raise room and current-cost reserve (delegation.ts:196,208,432); runway refusals (signings.ts:238); look/pending copy (ClubStaff.tsx:1368); localized fractions (DelegationPlan.tsx:85; presentation/text.ts:122); unrestricted reach (scout-search.ts:227,262); uncapped look termination (signings.ts:1183); held haggles and all due raises before mediation (signings.ts:1062,1167,1196); shared upgrade cap (signings.ts:1073,1212,1264,1366); combined arrival projection and short deficits (signings.ts:1111,1262); projected registration, money, raises and pursuits (signings.ts:426,1208,1255,1285,1368). The documented actual-club reads are justified for current-player listings, opening-window caps, request selection and mutations. Two T949 contract problems remain. All 98 focused tests, i18n validation and lint passed; tracked files remain unchanged.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1122 (T949)",
+              "message": "For an owner's countered bid, projection subtracts the original bid.fee, although accepting it pays counterFee (transfers.ts:563). This overstates the cash available for delegated moves. Reproduced with cash 100000, original fee 28457 and counter 35571: the projected club opens an 11640 staff bid that fails the four-round cash-buffer check once the owner actually pays the counter. Subtract the payable counter amount and cover countered arrivals in the projection regression."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1253 (T949)",
+              "message": "The expanded look can record more than 60 immediate player refusals, but its tried set depends entirely on w.bids. dailyMarket then calls pruneBids (transfers.ts:1564), which removes current-window refusals once closed history exceeds 60. Reproduced with 61 free agents refusing in one look: the earliest refusal disappears and that player is approached again on the next regular look, violating CLUB-33's no-repeat rule. Preserve current-window attempt facts through pruning, or retain a separate window-scoped tried set, and add a regression across dailyMarket calls."
+            }
+          ],
+          "commit": "788f36e7e6d236360dad40d71b8cb8f7b6443c0b",
+          "baseCommit": "1eeb25cb0f991dfc06d41fd48b78965a55b1ac85",
+          "submissionId": "8546659b-ac2a-490f-8f0a-329516ff3777",
+          "createdAt": "2026-11-17T21:35:30.952Z",
+          "finishedAt": "2026-11-17T21:42:18.839Z"
+        }
+      }
+    },
+    {
+      "sequence": 995,
+      "at": "2026-11-17T21:42:19.327Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "coordinator native correction (review round 9 + session merge) in progress",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "c08fa13c-3bdb-46d1-a6f5-156d691a7aa9",
+            "owner": "codex-rv-owner",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Found candidate-ranking and financial-display contract violations. All 70 focused tests, lint and i18n validation passed. No tracked files changed.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:420 (T949)",
+                "message": "Rounding slot gain changes CLUB-33's candidate order. With seed 'staff-signings', no manager pick and recruitment at step 5, the director bids for a player rated 55.73 at the slot while an affordable 56.27 candidate remains available: both gains round to 15. Rank by the unrounded gain and make the regression test compare actual slot values."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:399 (T948)",
+                "message": "The displayed wage budget and contracts raise room ignore the additional reserve required by the raise. With income equal to current fixed costs, step 2, a balanced director and 10,000 minor units of available capital, contracts.left reports 1,666, but runwayTest rejects that raise; the actual maximum is 1,538. Derive the advertised room from the same commitment calculation used for acceptance."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:240 (T948)",
+                "message": "A runway refusal still uses delegation.verdict.squadBudget, which claims fee plus one year's wage exceeds plan.left. Reproduced at step 2 with left=10,000, fee=5,000 and wage=1,500: rejection correctly follows the six-season runway, but the explanation falsely says 6,500 exceeds 10,000. Add a runway-specific refusal resource in every locale, retaining the historical resource for supported saves."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/contracts/src/source-messages.ts:7205 (T949)",
+                "message": "Confirmed delegation.offer.signings still says '7일마다', with the equivalent seven-day claim in all 12 locale packs. OfferAnswers also supplies the fixed upgrade count despite the new money-bar cap. Update this live explanation to describe three-day looks, the step's pending-bid limit and the expanded upgrade cap, using named parameters and translations throughout."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:89 (T948)",
+                "message": "New fractional coverage and reserve values bypass the shared number formatters here and at line 108. sourceMessage stringifies them before localizeValue, so de-DE displays '3.5 Spielzeiten' and '0.25 Jahre' instead of localized decimal separators. Format these numbers at the presentation boundary with the shared decimal formatter."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/delegation.ts:216 (T948)",
+                "message": "planRoomAfterWage has no production callers after this lane; only tests exercise it. The refunded parameter chain also remains despite becoming a documented no-op. Consider removing these obsolete interfaces to avoid maintaining redundant budget APIs."
+              }
+            ],
+            "commit": "610f169e64f82f5f5c0244d282d846531beea3cd",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "9ce41fc7-b0a9-4788-8cfa-848022f56481",
+            "createdAt": "2026-11-17T17:45:20.319Z",
+            "finishedAt": "2026-11-17T17:52:21.595Z",
+            "invalidatedAt": "2026-11-17T18:06:34.020Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "2546fd3c-bf16-4193-b91b-ceb99053afec",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior review corrections are present, but the submission still violates recruitment and sale-explanation contracts. The reference-career measurements also predate the assigned commit; the coordinator host should run the final gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/scout-search.ts:223 (T949)",
+                "message": "The reach-wide candidate search still applies the shortlist's age and ability bands. For example, at recruitment step 5 it excludes players younger than 26 and those above the ability ceiling, even when they are geographically within the scout's reach and are the best affordable upgrade. CLUB-33 requires ranking everyone within that reach after the manager's pick, while ECON-16 says the setting shapes the shortlist draw. Separate the reach-wide pool from the shortlist filters and verify ranking with an otherwise eligible player outside those bands."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1137 (T949)",
+                "message": "The new eight-move limit can end a look with no pending bids and unfilled needs: immediate free-agent signings and refusals each consume a move, so after eight such approaches the director waits for a later look even when another candidate is available. CLUB-33 requires the look to continue until the pending-bid limit is reached or no move can be made. Remove the arbitrary cap or make termination follow those conditions, and cover more than eight immediate approaches."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:496 (T948)",
+                "message": "Changing wagePressure to runway-based levels leaves the sale-answer consumer reporting the old income-share thresholds. A sale can now be discounted because cash cannot cover planned losses while its report says wages exceed a sales line by 10 percentage points, a line that no longer exists. Update the live sale-answer explanations to describe the runway condition, retaining the historical resources for saved prose; coordinate this change with T945, which owns that consumer."
+              },
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T949.funded-club-buys-best.md (T949)",
+                "message": "The required two-season reference-career results were measured before the correction, not on commit 029f8fd. The correction changes candidate ordering, which can alter later signings, sales and cash through the simulation, so the recorded direction cannot establish the acceptance result for this candidate. Have the coordinator host measure both reference careers on the pinned candidate and record the results before the final gate."
+              }
+            ],
+            "commit": "029f8fd78e72362f50259d7fc3cc313644402ded",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "e3d25fc9-344a-410c-a828-40575d69a069",
+            "createdAt": "2026-11-17T18:23:39.129Z",
+            "finishedAt": "2026-11-17T18:24:36.962Z",
+            "invalidatedAt": "2026-11-17T18:24:37.073Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "6a392ece-3de7-480c-bb94-a787e2919168",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The reach-wide search and look termination corrections are present, and the worker’s task-tier checks passed on the assigned commit. Two runway explanations still misstate the club’s finances. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:1219 (T948)",
+                "message": "At sales step 1, any planned loss makes wagePressure level 2 because the plan permits no loss, even if the club has ample cash. The untouchable-sale explanation nevertheless says cash cannot cover half the allowed seasons, although there are no allowed seasons. The recruitment, contracts and sales plan-over explanations similarly describe insufficient cash at step 1. Use income-based explanations when the runway is zero, and cover that case in the affected reports."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:98 (T948)",
+                "message": "A positive coverage below 0.1 seasons is rounded down to zero in delegatePlan, so coversLine selects coversNone and tells the user there is no cash available even when plan.capital is positive. Distinguish zero capital from positive coverage that rounds to zero, and display an accurate coverage or less-than-0.1 message."
+              }
+            ],
+            "commit": "a696eb955615e5defafd9a838c64dd69483d3db3",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "6a145b27-1b32-4ce1-9bff-c535dbb03504",
+            "createdAt": "2026-11-17T18:43:54.144Z",
+            "finishedAt": "2026-11-17T18:44:40.627Z",
+            "invalidatedAt": "2026-11-17T18:44:40.707Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "bd209107-77ce-44e6-8d10-fdead9eb0ba4",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior explanation fixes are present, and the worker’s task-tier checks passed on the pinned commit. Two contract violations remain in the runway calculation and negotiator retries. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:195 (T948)",
+                "message": "ECON-33 defines the reserve from current annual fixed costs, then tests the planned loss after the commitment against that available capital. Adding the proposed wage to the reserve prematurely rejects affordable signings and raises. For example, at step 2 with a balanced director, current costs equal to income and 10,000 above the current reserve, a fee-free raise of 1,666 has a six-season loss of 9,996 and should pass; this calculation rejects it because it also reserves half the proposed raise. Calculate the reserve from current costs and use the post-commitment costs for the planned loss; align the displayed wage room and tests with that rule."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1087 (T949)",
+                "message": "When multiple negotiator bids are rejected on the same day and capacity is available, this selects and retries only one. The remaining rejected bids are delayed, and subsequent ordinary moves can fill the pending limit before they are retried. CLUB-41 requires each negotiator’s raised bid the day after its answer. Process all due retries within the applicable pending limit before making ordinary moves, and cover simultaneous rejections."
+              }
+            ],
+            "commit": "81046c88f185f0cc787dac26e088064051add2ac",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "b5b8b05f-9827-4ebb-9e86-7a44b4517d24",
+            "createdAt": "2026-11-17T18:54:20.709Z",
+            "finishedAt": "2026-11-17T18:55:07.419Z",
+            "invalidatedAt": "2026-11-17T18:55:07.568Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "0a487db6-e88a-4a80-a735-e1db8a5ed7cb",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "reviewing",
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "d9ffde7f62ba1112a7989220210b0fe22765b3aa",
+            "submissionId": "d29305c3-67bc-4c8f-9047-39d313ef53de",
+            "createdAt": "2026-11-17T19:23:27.619Z",
+            "invalidatedAt": "2026-11-17T19:23:31.000Z",
+            "invalidationReason": "review retry limit"
+          },
+          {
+            "id": "1a197f65-928a-4e1a-9e67-a8a417247d30",
+            "owner": "codex-rv-owner3",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes confirmed: unrounded gain (packages/engine/src/signings.ts:429), exact displayed room (packages/engine/src/delegation.ts:208), runway refusals (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), preview decimal formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:105), unrestricted reach (packages/engine/src/scout-search.ts:227), uncapped look loop (packages/engine/src/signings.ts:1145), and current-cost reserve (packages/engine/src/delegation.ts:197). Multiple retries are processed at packages/engine/src/signings.ts:1103, but normal answer-day scheduling still blocks them. Three remaining issues were reproduced. 62 unit tests, four focused integration tests, i18n validation and lint passed. T951/T950 handoffs accepted; tracked files unchanged.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1085 (T949)",
+                "message": "Next-day negotiator retries can still be displaced by ordinary bids. When three haggles are rejected or counters declined on regular look day D, they are ineligible for retry until D+1, so the ordinary loop fills all three pending slots on D. On D+1 this guard returns before retrying any original player. Reproduced with the director-bids fixture, balanced temperament and recruitment step 5. Preserve capacity for scheduled haggles and add a regression that invokes staffSignings on both the answer day and the following day (CLUB-41)."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1049 (T949)",
+                "message": "One pending player removes an entire short-line need regardless of its deficit. shortLines emits one need per line, so two forwards against a minimum of four are treated as covered after only one forward bid. In a funded 3-5-2 case with two strong forwards, the look makes one short-FW bid followed by two DF upgrade bids while another affordable forward is still needed. Account for pending arrivals against count/minimum before advancing to upgrades, preserving CLUB-33's short-line priority."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:595 (T948)",
+                "message": "Fractional reserve years remain unformatted in generated plan reports. The preview uses the shared decimal formatter, but planLines interpolates reserveYears directly; translating the balanced step-3 runway line into de-DE produces 'Guthaben über 0.25 Jahren' instead of '0,25'. localizeValue preserves that captured string. Format this recognized numeric parameter at the presentation boundary while keeping saved source prose locale-independent, as required by ARCH-32."
+              }
+            ],
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
+            "submissionId": "68f2e94d-60a2-4152-b17c-ea42696567ad",
+            "createdAt": "2026-11-17T19:23:59.531Z",
+            "finishedAt": "2026-11-17T19:31:06.621Z",
+            "invalidatedAt": "2026-11-17T19:31:07.515Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7d2239e1-4e82-4d5e-85d9-70b892efc82d",
+            "owner": "codex-rv-owner4",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "117 existing targeted tests passed; two isolated probes reproduced T949 defects. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:431), displayed wage/raise room (packages/engine/src/delegation.ts:418), runway refusal (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), fractional seasons/years (apps/web/src/entities/office/ui/DelegationPlan.tsx:85), unrestricted reach pool (packages/engine/src/scout-search.ts:227), uncapped look termination (packages/engine/src/signings.ts:1126), current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196), held haggle places (packages/engine/src/signings.ts:1057), pending short-line coverage (packages/engine/src/signings.ts:1077), and report decimal formatting (apps/web/src/presentation/text.ts:122). Retry precedence remains incomplete. T950/T951 handoffs were respected.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1109 (T949)",
+                "message": "Delegated mediation spends before raiseHaggles runs, so a mediated ordinary bid can consume funds needed by a due retry. An isolated director-bids fixture with balanced temperament, step 5, a pending midfield mediation and cash 120674 made either bid independently affordable; staffSignings placed the mediation bid first and expired the due haggle instead of raising it. Process due retries before mediated ordinary moves, as required by the earlier CLUB-41 finding."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1190 (T949)",
+                "message": "The upgrade count includes completed/open bids but excludes refused haggles that now retain their places. With cap minus one completed upgrades and one held upgrade, an ordinary look therefore opens another upgrade; the held bid is raised tomorrow without checking the cap. An isolated probe produced 12 completed/pending upgrades against an 11-upgrade window cap. Include outstanding upgrade haggles in the cap accounting so their retries cannot exceed CLUB-33's window limit."
+              }
+            ],
+            "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+            "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+            "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+            "createdAt": "2026-11-17T19:51:17.641Z",
+            "finishedAt": "2026-11-17T19:57:42.941Z",
+            "invalidatedAt": "2026-11-17T19:57:43.441Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7264a6be-f559-4ebf-840e-b58e64cc02c0",
+            "owner": "codex-rv-owner5",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes verified: unrounded gains (packages/engine/src/signings.ts:430); matching displayed wage/raise room (packages/engine/src/delegation.ts:418); runway refusal copy (packages/engine/src/signings.ts:233); three-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); localized fractions (apps/web/src/entities/office/ui/DelegationPlan.tsx:85); unbanded reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1130); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); all due retries (packages/engine/src/signings.ts:1143); held haggle places (packages/engine/src/signings.ts:1061); pending short-line coverage (packages/engine/src/signings.ts:1081); report decimal formatting (apps/web/src/presentation/text.ts:77); raises before mediation (packages/engine/src/signings.ts:1115); held upgrades counted for ordinary moves (packages/engine/src/signings.ts:1196). All 72 selected unit tests passed. A separate isolated reproduction exposed the remaining mediation cap bypass.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1315 (T949)",
+                "message": "Delegated mediation can exceed the window upgrade cap after a haggle is raised. With cap − 1 completed upgrades and one due upgrade haggle, the raise fills the cap, but pursueRequest ignores raises in its same-day gate and checks only pending-bid capacity. A pending upgrade mediation then opens another upgrade. An isolated director-bids fixture at step 5 produced 12 upgrades against a cap of 11. Apply the shared window upgrade-cap check, including held haggles, to delegated mediation pursuits and cover this sequence with a regression test (CLUB-33)."
+              }
+            ],
+            "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+            "baseCommit": "a147a4783e368c4cfbc8a4b2b3321db4bdd2d66f",
+            "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+            "createdAt": "2026-11-17T20:15:49.392Z",
+            "finishedAt": "2026-11-17T20:20:43.651Z",
+            "invalidatedAt": "2026-11-17T20:20:44.182Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "4cf3627b-7e95-4a31-b9c9-fa667130fa88",
+            "owner": "codex-rv-owner6",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Prior fixes verified: unrounded gain ordering (packages/engine/src/signings.ts:431); shared wage/raise-room calculation and current-cost reserve with post-commitment loss (packages/engine/src/delegation.ts:196, :208, :435); runway-specific refusal (packages/engine/src/signings.ts:238); 3-day/pending-bid copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); fractional seasons/years formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:85, :126); unrestricted reach bands (packages/engine/src/scout-search.ts:227, :262); uncapped look termination (packages/engine/src/signings.ts:1158); all due retries before ordinary and mediation moves (:1143, :1171); held-haggle places (:1061); pending arrivals counted against short-line deficits (:1109); report decimals formatted at presentation (apps/web/src/presentation/text.ts:122); held upgrades counted and one shared cap check across looks, raises and mediation (packages/engine/src/signings.ts:1072, :1082, :1186, :1239, :1341). All 121 targeted tests, lint and i18n validation passed. One additional T949 correctness issue remains. T950/T951 handoffs were excluded.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1117 (T949)",
+                "message": "Consuming a pending player while covering a short-line deficit prevents that same arrival from covering an overlapping replacement need. Reproduced with seed staff-signings, step 5, three forwards and one open FW replacement need: the look opens both a short FW bid and a replacement FW bid. Completing just the first arrival clears both shortLines and replacementNeeds, so the second bid duplicates an already-covered vacancy and consumes cash and pending capacity. Account for overlapping short/replacement needs when projecting pending arrivals, and add a regression for a departure that also takes its line below the minimum."
+              }
+            ],
+            "commit": "22fec5b498b392232bcda4de42e16533d355d96c",
+            "baseCommit": "84ebb60179993a8cfbfd10dbf11f7c17ceaa7551",
+            "submissionId": "06e0429c-8cd4-411b-85a2-5a36b04523a2",
+            "createdAt": "2026-11-17T20:34:15.195Z",
+            "finishedAt": "2026-11-17T20:39:21.209Z",
+            "invalidatedAt": "2026-11-17T20:39:21.975Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "619b797f-9458-4c24-956f-057102a3be9f",
+            "owner": "codex-rv-owner7",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes verified; 127 existing targeted tests pass. One T949 registration regression was reproduced.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1273 (T949)",
+                "message": "staffMove computes the projected club but passes the original w into candidates, whose registrationRoom check therefore ignores pending arrivals. Only the overall 40-player ceiling uses the projection. Reproduced with a funded 2020 English top-flight club holding 24 counted players: one look bids for three non-exempt adults despite the 25-player limit. All three sellers accept; after the first arrival, the other two deals fail registration. This reserves money and bid places for arrivals the projection cannot accommodate. Apply candidate registration checks to the projected squad, preserving age exemptions, and add a regression covering the counted limit."
+              }
+            ],
+            "commit": "7854b375a4693332a23313e6bc76645463686da7",
+            "baseCommit": "50e541f9996d21ee0bf22c1f3ebd657f2eeb10b1",
+            "submissionId": "8a4e9b0c-25a2-4fb2-b468-2832d2d13b62",
+            "createdAt": "2026-11-17T21:01:59.970Z",
+            "finishedAt": "2026-11-17T21:06:52.188Z",
+            "invalidatedAt": "2026-11-17T21:06:52.717Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "2c78141b-80c6-4d8a-ad42-2fde6e81d6a4",
+            "owner": "codex-rv-owner8",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes verified: unrounded gains (signings.ts:432); exact wage/raise room and current-cost reserve (delegation.ts:196,208,432); runway refusals (signings.ts:238); look/pending copy (ClubStaff.tsx:1368); localized fractions (DelegationPlan.tsx:85; presentation/text.ts:122); unrestricted reach (scout-search.ts:227,262); uncapped look termination (signings.ts:1183); held haggles and all due raises before mediation (signings.ts:1062,1167,1196); shared upgrade cap (signings.ts:1073,1212,1264,1366); combined arrival projection and short deficits (signings.ts:1111,1262); projected registration, money, raises and pursuits (signings.ts:426,1208,1255,1285,1368). The documented actual-club reads are justified for current-player listings, opening-window caps, request selection and mutations. Two T949 contract problems remain. All 98 focused tests, i18n validation and lint passed; tracked files remain unchanged.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1122 (T949)",
+                "message": "For an owner's countered bid, projection subtracts the original bid.fee, although accepting it pays counterFee (transfers.ts:563). This overstates the cash available for delegated moves. Reproduced with cash 100000, original fee 28457 and counter 35571: the projected club opens an 11640 staff bid that fails the four-round cash-buffer check once the owner actually pays the counter. Subtract the payable counter amount and cover countered arrivals in the projection regression."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1253 (T949)",
+                "message": "The expanded look can record more than 60 immediate player refusals, but its tried set depends entirely on w.bids. dailyMarket then calls pruneBids (transfers.ts:1564), which removes current-window refusals once closed history exceeds 60. Reproduced with 61 free agents refusing in one look: the earliest refusal disappears and that player is approached again on the next regular look, violating CLUB-33's no-repeat rule. Preserve current-window attempt facts through pruning, or retain a separate window-scoped tried set, and add a regression across dailyMarket calls."
+              }
+            ],
+            "commit": "788f36e7e6d236360dad40d71b8cb8f7b6443c0b",
+            "baseCommit": "1eeb25cb0f991dfc06d41fd48b78965a55b1ac85",
+            "submissionId": "8546659b-ac2a-490f-8f0a-329516ff3777",
+            "createdAt": "2026-11-17T21:35:30.952Z",
+            "finishedAt": "2026-11-17T21:42:18.839Z",
+            "invalidatedAt": "2026-11-17T21:42:19.327Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 996,
+      "at": "2026-11-17T21:57:03.761Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 997,
+      "at": "2026-11-17T21:57:04.257Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 998,
+      "at": "2026-11-17T21:58:15.087Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "6c2dab767f6dfb96beeb6b2a32cf8ff45a05f875",
+        "submissionId": "8d9f1ba0-74d3-4b89-8243-fb8f6003c0b2",
+        "submittedAt": "2026-11-17T21:58:15.087Z",
+        "steps": [
+          {
+            "taskId": "T948",
+            "commit": "1b6a9e4cf4b8c7043fb84f9df5f1b9029ca62297",
+            "at": "2026-11-17T16:51:00.435Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T16:49:39.183Z",
+                "finishedAt": "2026-11-17T16:51:00.198Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T949",
+            "commit": "795625f2a06d730ec18229a44486a49a7648c101",
+            "at": "2026-11-17T21:58:15.070Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T21:57:04.423Z",
+                "finishedAt": "2026-11-17T21:58:14.880Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T21:57:04.423Z",
+            "finishedAt": "2026-11-17T21:58:14.880Z"
+          }
+        ],
+        "verifiedCommit": "795625f2a06d730ec18229a44486a49a7648c101"
+      }
+    },
+    {
+      "sequence": 999,
+      "at": "2026-11-17T21:58:15.640Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "68a42908-a3b0-48d2-a635-eecac7943f6d",
+          "owner": "codex-rv-owner9",
+          "status": "reviewing",
+          "commit": "795625f2a06d730ec18229a44486a49a7648c101",
+          "baseCommit": "6c2dab767f6dfb96beeb6b2a32cf8ff45a05f875",
+          "submissionId": "8d9f1ba0-74d3-4b89-8243-fb8f6003c0b2",
+          "createdAt": "2026-11-17T21:58:15.640Z"
+        }
+      }
+    },
+    {
+      "sequence": 1000,
+      "at": "2026-11-17T22:03:28.720Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "68a42908-a3b0-48d2-a635-eecac7943f6d",
+          "owner": "codex-rv-owner9",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T948/T949: no new P1/P2 findings. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:430); displayed wage/raise room (packages/engine/src/delegation.ts:418); current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196); runway refusal (packages/engine/src/signings.ts:238); look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368); fractional figures (apps/web/src/entities/office/ui/DelegationPlan.tsx:89) and report decimals (apps/web/src/presentation/text.ts:122); unrestricted reach (packages/engine/src/scout-search.ts:226); uncapped look termination (packages/engine/src/signings.ts:1191); held haggles (packages/engine/src/signings.ts:1062), retry precedence (packages/engine/src/signings.ts:1174), and shared upgrade cap (packages/engine/src/signings.ts:1073). Pending arrivals share one projection (packages/engine/src/signings.ts:1111), including replacement coverage (packages/engine/src/signings.ts:1144), needs/registration/money checks (packages/engine/src/signings.ts:1255), raises (packages/engine/src/signings.ts:1216), and delegated pursuits (packages/engine/src/signings.ts:1353). The documented real-club reads are justified. Owner counters use counterFee (packages/engine/src/signings.ts:1123); pruning preserves current-window history within the 200-bid bound (packages/engine/src/transfers.ts:1571). Updated mocks, seeds and cash values retain their tests' stated purpose. All 133 targeted tests, i18n validation and targeted lint passed. Coordinator follow-ups remain as assigned.",
+          "findings": [],
+          "commit": "795625f2a06d730ec18229a44486a49a7648c101",
+          "baseCommit": "6c2dab767f6dfb96beeb6b2a32cf8ff45a05f875",
+          "submissionId": "8d9f1ba0-74d3-4b89-8243-fb8f6003c0b2",
+          "createdAt": "2026-11-17T21:58:15.640Z",
+          "finishedAt": "2026-11-17T22:03:28.720Z"
+        }
+      }
+    },
+    {
+      "sequence": 1001,
+      "at": "2026-11-17T22:03:30.080Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
       ],
       "previousStatus": "approved",
       "status": "integrating",

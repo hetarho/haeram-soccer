@@ -210,6 +210,39 @@ describe('the chief scout reach (CLUB-51)', () => {
   });
 });
 
+describe('everyone within the reach (CLUB-33, CLUB-51)', () => {
+  it("holds every listed player and more, whatever the search's age and ability bands", () => {
+    const w = holdRows(scoutAt(world(), 85), { policy: { globalScouting: 3 } }),
+      reach = scoutReach(w),
+      listed = transferOffers(w),
+      everyone = scoutSearch.reachOffers(w),
+      ids = new Set(everyone.map((offer) => offer.player.id));
+    for (const offer of listed) expect(ids.has(offer.player.id)).toBe(true);
+    expect(everyone.length).toBeGreaterThan(listed.length);
+    // The list is each line's first players of the reach, in its order.
+    for (const line of LINES) {
+      const all = everyone.filter((offer) => lineOfPlayer(offer.player) === line);
+      const top = listed.filter((offer) => lineOfPlayer(offer.player) === line);
+      expect(all.length).toBeGreaterThanOrEqual(top.length);
+    }
+    // The bands shape the list alone (→ECON-16): the reach holds players outside them too.
+    const outside = (offer: (typeof everyone)[number]) => {
+      const age = w.year - offer.player.born,
+        ovr = overall(offer.player);
+      return (
+        age < reach.age[0] || age > reach.age[1] || ovr < reach.ability[0] || ovr > reach.ability[1]
+      );
+    };
+    expect(listed.some(outside)).toBe(false);
+    expect(everyone.some(outside)).toBe(true);
+    // Never our own players.
+    const ours = new Set(activePlayers(w).map((p) => p.id));
+    expect(everyone.some((offer) => ours.has(offer.player.id))).toBe(false);
+    // The same world state reads the same list again.
+    expect(scoutSearch.reachOffers(w)).toBe(everyone);
+  });
+});
+
 describe('ranking (CLUB-33, ECON-16)', () => {
   it('keeps a materially better paid player before weak free players at the per-line cap', () => {
     const w = scoutAt(world(), 85);
@@ -276,7 +309,8 @@ describe('ranking (CLUB-33, ECON-16)', () => {
     };
     const dear: ScoutOffer = { ...paid, fee: '999999999999999' };
     // This isolates director ordering from the scout's independent cap and ranking.
-    const search = vi.spyOn(scoutSearch, 'transferOffers').mockReturnValue([free, dear]);
+    const search = vi.spyOn(scoutSearch, 'transferOffers').mockReturnValue([free, dear]),
+      reach = vi.spyOn(scoutSearch, 'reachOffers').mockReturnValue([free, dear]);
     try {
       expect(
         requestCandidates(w, { kind: 'short', line: 'GK' }).map(({ offer }) => offer.player.id),
@@ -296,6 +330,7 @@ describe('ranking (CLUB-33, ECON-16)', () => {
       });
     } finally {
       search.mockRestore();
+      reach.mockRestore();
     }
   });
 

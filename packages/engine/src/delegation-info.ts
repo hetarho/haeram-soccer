@@ -1,6 +1,6 @@
 /**
  * Delegation's vocabulary, a read leaf the UI may import (→ARCH-4): the owner's spending request
- * per responsibility, the share of the season's income each request asks the 단장 to plan for, the
+ * per responsibility, the loss runway and cash reserve each request asks the 단장 to plan with, the
  * person each responsibility goes to once delegated and that person's temperament, and which club
  * settings a delegated person sets in the owner's place. The plans built from them live in
  * `delegation.ts`.
@@ -22,27 +22,29 @@ import { staffMember, STAFF_INFO } from './staff-info';
 
 export const SPEND_REQUESTS: readonly SpendRequest[] = [1, 2, 3, 4, 5];
 /**
- * The 단장's base plan rests on the season's income; reserve capital supplements it (→`delegation.ts`).
- * Each table gives, by the level he acts on (최소한만 … 아낌없이), a share of that income in basis
- * points (1/100 of a percent). Squad cost — the players' wages and the season's transfer fees —
- * may take `SQUAD` of it, the way UEFA's squad-cost rule caps it at 70 % and prudent clubs aim at
- * 50–60 %; renewals keep the players' wage bill inside the same line.
+ * The 단장 plans on the season's income and on the club's cash (→ECON-33): spending may run past
+ * income — a planned loss — while the cash above a reserve covers that loss for the seasons the
+ * step he acts on allows, its loss runway: none at 최소한만 (wages and costs within income), then
+ * 6, 4, 2 and 1 seasons. A longer runway is the more careful plan.
  */
-export const SQUAD_SHARE: Readonly<Record<SpendRequest, number>> = {
-  1: 4500,
-  2: 5500,
-  3: 6200,
-  4: 7000,
-  5: 8000,
+export const LOSS_RUNWAY: Readonly<Record<SpendRequest, number>> = {
+  1: 0,
+  2: 6,
+  3: 4,
+  4: 2,
+  5: 1,
 };
-/** The share of this season's player sales (in percent) he puts back into signings. */
-export const REINVEST_SHARE: Readonly<Record<SpendRequest, number>> = {
-  1: 10,
-  2: 25,
-  3: 40,
-  4: 55,
-  5: 70,
+/**
+ * The 단장's looks with recruitment delegated (→CLUB-33): on a window's opening day and every
+ * `lookDays`th day after it, making moves until his pending bids reach `pendingByStep` by the 선수
+ * 영입 step he acts on (1–5). Read by the signings and by the pages that explain them.
+ */
+export const RECRUITMENT_LOOKS = {
+  lookDays: 3,
+  pendingByStep: [1, 1, 1, 2, 3] as readonly number[],
 };
+/** The loss runway, in seasons, of the step acted on; 0 means none: no planned loss at all. */
+export const planRunway = (level: SpendRequest) => LOSS_RUNWAY[level];
 /**
  * Youth money: the youth director's pay and the academy investment, a share of income in basis
  * points. The youth director is paid first — the 단장 may hire one up to the whole share — and the
@@ -63,27 +65,17 @@ export const ACADEMY_AIM: Readonly<Record<SpendRequest, PolicyLevel>> = {
   4: 4,
   5: 5,
 };
-/**
- * The wage bill's share of income (basis points) above which the 단장 sells more readily, by the
- * sales request's level: from 적극 매각 (1) to 끝까지 지키기 (5). A second line `SELL_STEP` higher
- * cuts the asking bar again (→CLUB-18).
- */
-export const SELL_LINE: Readonly<Record<SpendRequest, number>> = {
-  1: 4500,
-  2: 5200,
-  3: 6000,
-  4: 6800,
-  5: 8000,
-};
-export const SELL_STEP = 1000;
 /** Rounds of fixed costs the plain insolvency stop keeps in cash after any delegated spend. */
 export const SAFETY_ROUNDS = 4;
-/** Years of fixed costs kept before drawing capital, indexed by the step acted on (→ECON-33). */
+/**
+ * Years of current annual fixed costs kept in cash before any is available capital, by the
+ * temperament and the step acted on (→ECON-33).
+ */
 export const RESERVE_YEARS: Readonly<Record<Temperament, Readonly<Record<SpendRequest, number>>>> =
   {
-    cautious: { 1: 50, 2: 40, 3: 30, 4: 2, 5: 1 },
-    balanced: { 1: 40, 2: 30, 3: 20, 4: 1, 5: 0 },
-    bold: { 1: 30, 2: 20, 3: 10, 4: 0, 5: 0 },
+    cautious: { 1: 1, 2: 1, 3: 0.5, 4: 0.5, 5: 0.25 },
+    balanced: { 1: 1, 2: 0.5, 3: 0.25, 4: 0, 5: 0 },
+    bold: { 1: 0.5, 2: 0.25, 3: 0, 4: 0, 5: 0 },
   };
 /** The cash buffer is waived only for the bold director's most expansive request. */
 export function safetyRounds(w: World, key: BudgetResponsibility): number {

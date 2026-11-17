@@ -14,6 +14,7 @@ import {
   untouchableVerdict,
 } from './index';
 import { inBids, world } from './transfers.testkit';
+import { holdTemperament } from './delegation.testkit';
 import { CAREER_YEAR } from './career.testkit';
 
 describe('transfer stance', () => {
@@ -107,7 +108,7 @@ describe('transfer stance', () => {
     }
   });
 
-  it('lets delegated staff and the manager weigh big offers by market card, the sales line, a cash crisis and the XI (→CLUB-24, →ECON-33, →ECON-41)', () => {
+  it('lets delegated staff and the manager weigh big offers by market card, the runway test, a cash crisis and the XI (→CLUB-24, →ECON-33, →ECON-41)', () => {
     const w = world('stance-verdict');
     expect(untouchableVerdict(w, 199, false).accept).toBe(false);
     expect(untouchableVerdict(w, 200, false).accept).toBe(true);
@@ -120,25 +121,31 @@ describe('transfer stance', () => {
     expect(untouchableVerdict(w, 224, false).accept).toBe(false);
     w.build = { market: 'hold' };
     expect(untouchableVerdict(w, 400, false).accept).toBe(false);
-    // The retired 재정 기조 runway step is gone (CLUB-24 r68): twenty weeks of fixed costs move
-    // nothing; a players' wage bill more than 10 points above the 단장's sales line (60% of the
-    // planned income at 균형, →ECON-33) lowers the price 25 points.
+    // The 단장's runway test failing at half the runway at the current wage bill (→ECON-33) lowers
+    // the price 25 points; failing only at the full runway moves nothing. 균형 at 적당히: four
+    // seasons of the planned loss to cover, a quarter of a year's fixed costs kept back.
     w.build = {};
-    const annual = BigInt(operatingCosts(w).annual);
-    w.cash = ((annual * 20n) / 46n).toString();
+    holdTemperament(w, 'director', 'balanced');
+    const annual = BigInt(operatingCosts(w).annual),
+      loss = annual / 5n;
+    w.budgetPlan = { year: w.year, revenue: (annual - loss).toString(), sales: '0' };
+    const capital = (seasons: bigint) => (w.cash = (loss * seasons + annual / 4n).toString());
+    capital(5n);
     expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: false });
-    const wages = BigInt(operatingCosts(w).playerWages),
-      plan = (percent: bigint) =>
-        (w.budgetPlan = {
-          year: w.year,
-          revenue: ((wages * 100n) / percent).toString(),
-          sales: '0',
-        });
-    plan(65n);
+    capital(3n);
     expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: false });
-    plan(75n);
+    capital(1n);
     expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: true });
+    expect(untouchableVerdict(w, 175, false).reason).toContain('절반도 버티지 못함');
     expect(untouchableVerdict(w, 174, false)).toMatchObject({ accept: false });
+    // At 적극 매각 (step 1) no loss is allowed: any planned loss lowers the price, however much
+    // cash there is, and the report says the spending is above income, not that cash runs short.
+    w.delegationRequests = { sales: 1 };
+    capital(50n);
+    expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: true });
+    expect(untouchableVerdict(w, 175, false).reason).toContain('계획 수입을 넘음');
+    expect(untouchableVerdict(w, 175, false).reason).not.toContain('절반도 버티지 못함');
+    delete w.delegationRequests;
     delete w.budgetPlan;
     // A cash crisis sells, whatever the card.
     w.build = { market: 'hold' };

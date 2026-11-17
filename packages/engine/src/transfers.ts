@@ -1198,8 +1198,8 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
 export const UNTOUCHABLE_PRICE = { standard: 200, selling: 150, showcase: 175, hardball: 225 };
 /**
  * The staff and manager's answer to a big offer for an untouchable player when transfers are
- * delegated: the market card sets the price, a wage bill past the 단장's second sales line lowers
- * it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
+ * delegated: the market card sets the price, the 단장's runway test failing at half the runway at
+ * the current wage bill (→ECON-33) lowers it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
  * nobody can replace.
  */
 export function untouchableVerdict(w: World, offered: number, essential: boolean) {
@@ -1216,7 +1216,14 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   let bar = base;
   if (pressure.level === 2) {
     bar -= 25;
-    steps.push(sourceMessage('delegation.sale.wagesUntouchable', { share: pressure.share }));
+    // Within income (step 1) no loss is allowed: any planned loss is what presses him.
+    steps.push(
+      sourceMessage(
+        pressure.runway > 0
+          ? 'delegation.sale.runwayUntouchable'
+          : 'delegation.sale.incomeUntouchable',
+      ),
+    );
   }
   if (essential) {
     bar += 25;
@@ -1554,12 +1561,31 @@ function resent(w: World, bid: TransferBid, p: Player | undefined) {
   if (bigger && BigInt(bid.fee) >= BigInt(playerValue(w, p)))
     ambitionAfterDecline(w, p, bid.id, club.name);
 }
+/** The most bids a save keeps (the save schema's bound). */
+const BID_LIMIT = 200;
+/**
+ * Closed bids beyond the history kept are dropped, oldest first, except the open window's own: they
+ * are whom the 단장 asked in it, never asked again in the window (→CLUB-33), so they stay while it
+ * is open, within the save's bound.
+ */
 function pruneBids(w: World) {
   const bids = w.bids;
   if (!bids) return;
-  const closed = bids.filter((b) => !isOpen(b));
-  if (closed.length <= CLOSED_BID_HISTORY) return;
-  const drop = new Set(closed.slice(0, closed.length - CLOSED_BID_HISTORY));
+  const day = currentDay(w),
+    window = transferWindow(w, day),
+    days = transferWindowDays(w.year),
+    opening = !window.open
+      ? undefined
+      : day <= days.summerClose
+        ? days.summerOpen
+        : days.winterOpen,
+    current = (b: TransferBid) =>
+      opening !== undefined && b.direction === 'out' && b.year === w.year && b.day >= opening;
+  const closed = bids.filter((b) => !isOpen(b)),
+    older = closed.filter((b) => !current(b)),
+    over = Math.max(older.length - CLOSED_BID_HISTORY, bids.length - BID_LIMIT, 0);
+  if (!over) return;
+  const drop = new Set([...older, ...closed.filter(current)].slice(0, over));
   w.bids = bids.filter((b) => !drop.has(b));
 }
 /** Each day: answer due bids, receive other clubs' offers, open/close windows. */

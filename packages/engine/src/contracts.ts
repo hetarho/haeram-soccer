@@ -45,7 +45,7 @@ import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
 import { moneyLabel } from './finance';
 import { directionOption } from './direction';
-import { delegatePlan, insolvencyStop, planLabel, planRoomAfterWage } from './delegation';
+import { delegatePlan, insolvencyStop, planLabel, runwayTest } from './delegation';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom } from './calendar';
 import { credit } from './transactions';
@@ -631,8 +631,8 @@ function declineTalk(w: World, p: Player, reason: string) {
  * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
  * ending before the running contract (→staffTerm), when 재계약 기조 keeps the player (the floor
  * within its wage cap, a starter when it keeps only the XI, younger than its age limit) and
- * the 단장's plan allows the raise (`delegatePlan`): the players' wage bill after it stays inside
- * the squad's share of the season's income, and the plain insolvency stop lets it through;
+ * the 단장's plan allows the raise (`delegatePlan`): the runway test passes with the raise
+ * (→`runwayTest`, ECON-33), and the plain insolvency stop lets it through;
  * otherwise they decline. Either way the talk's inbox item says why.
  */
 export function staffTalkVerdict(w: World, p: Player) {
@@ -678,15 +678,22 @@ export function staffTalkVerdict(w: World, p: Player) {
       reason: sourceMessage('copy.contracts.129ed2f743', { p0: age, p1: renewal, p2: rule.maxAge }),
     };
   if (raise > 0n) {
-    const plan = delegatePlan(w, 'contracts');
-    if (raise > planRoomAfterWage(w, plan, raise))
+    const check = runwayTest(w, delegatePlan(w, 'contracts'), { wage: raise });
+    if (!check.ok)
       return {
         accept: false as const,
-        reason: sourceMessage('delegation.verdict.fundedRaise', {
-          bill: moneyLabel(w, (BigInt(plan.committed) + raise).toString()),
-          budget: moneyLabel(w, plan.budget),
-          plan: finance,
-        }),
+        reason:
+          check.runway === 0
+            ? sourceMessage('delegation.verdict.incomeRaise', {
+                loss: moneyLabel(w, check.loss.toString()),
+                plan: finance,
+              })
+            : sourceMessage('delegation.verdict.runwayRaise', {
+                loss: moneyLabel(w, check.loss.toString()),
+                capital: moneyLabel(w, check.capital.toString()),
+                seasons: check.runway,
+                plan: finance,
+              }),
       };
   }
   const stop = insolvencyStop(w, 0n, raise > 0n ? raise : 0n, false, 'contracts');

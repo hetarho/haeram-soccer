@@ -14,6 +14,7 @@ import type {
   SigningRequest,
   TransferBid,
   World,
+  WorldMarketTarget,
 } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { LINE_MINIMUM, LINE_NAME, lineOf, POSITION_LABEL, requestLabel } from './player';
@@ -37,11 +38,11 @@ import {
   delegatePlan,
   insolvencyStop,
   planLabel,
-  planRoomAfterWage,
+  runwayTest,
   spendingStance,
   type SpendingStance,
 } from './delegation';
-import { actedLevel, delegateOf, requestOf, sharePercent } from './delegation-info';
+import { actedLevel, delegateOf, RECRUITMENT_LOOKS, requestOf } from './delegation-info';
 import {
   termsAnswer,
   termsChance,
@@ -53,7 +54,7 @@ import { moneyLabel } from './finance';
 import { pushInbox } from './inbox';
 import { isDelegated } from './responsibilities';
 import { signFreeAgent, squadCommand } from './ops-squad';
-import { isForeignCandidate, transferOffers } from './scout-search';
+import { isForeignCandidate, locateOffer, reachOffers, transferOffers } from './scout-search';
 import { POLICY_INFO, policyOf } from './policy';
 import {
   fittedDetail,
@@ -70,7 +71,13 @@ import { transferWindow, transferWindowDays } from './transfer-window';
  * looks for upgrades, and how often he looks while a window is open.
  */
 export const SIGNING_CONFIG = {
-  lookDays: 7,
+  /**
+   * He looks on a window's opening day and every `lookDays`th day after it, and a look makes moves
+   * until his pending bids reach `pendingByStep` by the 선수 영입 step he acts on (1–5): 1 at 적당히
+   * and below, 2 at 넉넉히, 3 at 아낌없이 (→CLUB-33). The numbers live in the read leaf the pages
+   * explaining them share.
+   */
+  ...RECRUITMENT_LOOKS,
   lineMinimum: LINE_MINIMUM,
   squadMinimum: SQUAD_TARGET,
   /**
@@ -82,10 +89,9 @@ export const SIGNING_CONFIG = {
   trimAge: 24,
   /**
    * The money bar (→CLUB-33): the highest OVR whose market wage at our division for a player aged
-   * `barAge`, times `barYears`, fits the season's money for signings.
+   * `barAge`, for the step's loss runway plus one season, fits the capital the runway test leaves.
    */
   barAge: 27,
-  barYears: 25,
   /** A non-starter more than this far below the bar is listed to make room for a dearer one. */
   barGap: 8,
   /** A shortlisted candidate must beat a slot's starter there by this much to be requested. */
@@ -189,11 +195,12 @@ export function shortLines(w: World): ShortNeed[] {
 }
 
 /**
- * The 단장's plan's checks on a signing (→`delegatePlan`): with his wage the players' wage bill
- * stays inside the squad's share of the season's income, the fee and a year of his wage fit what is
- * left of the season's squad money, and the plain insolvency stop lets it through. A line the team
- * cannot field (`need` short) is filled with a free agent whatever the plan's ratio, as any
- * director must put out a side: only the insolvency stop reads that one.
+ * The 단장's plan's checks on a signing (→`delegatePlan`, ECON-33): the runway test with his wage
+ * and his fee — with his wage the players' wage bill stays within what the cash carries for the
+ * step's runway, and the fee plus the planned loss after it, times the runway, fits available
+ * capital — and the plain insolvency stop lets it through. A line the team cannot field (`need`
+ * short) is filled with a free agent whatever the plan says, as any director must put out a side:
+ * only the insolvency stop reads that one.
  */
 export function signingVerdict(
   w: World,
@@ -206,8 +213,7 @@ export function signingVerdict(
   const planning = bidId ? { ...w, bids: w.bids?.filter((bid) => bid.id !== bidId) } : w;
   const plan = delegatePlan(planning, 'recruitment'),
     label = planLabel(w, 'recruitment'),
-    wage = BigInt(player.wage),
-    share = sharePercent(plan.share);
+    wage = BigInt(player.wage);
   const no = (reason: string) => ({
     ok: false as const,
     reason: sourceMessage('delegation.verdict.wrap', { reason, plan: label }),
@@ -224,26 +230,41 @@ export function signingVerdict(
   const bill = BigInt(plan.committed) + wage;
   if (wage > 0n && bill > BigInt(plan.budget))
     return no(
-      sourceMessage('delegation.verdict.fundedWages', {
+      sourceMessage('delegation.verdict.wageRoom', {
         bill: moneyLabel(w, bill.toString()),
         budget: moneyLabel(w, plan.budget),
       }),
     );
-  if (BigInt(fee) + wage > planRoomAfterWage(planning, plan, wage))
+  const check = runwayTest(planning, plan, { fee: BigInt(fee), wage });
+  if (!check.ok)
     return no(
-      sourceMessage('delegation.verdict.squadBudget', {
-        fee: moneyLabel(w, fee),
-        wage: moneyLabel(w, player.wage),
-        left: moneyLabel(w, plan.left),
-      }),
+      check.runway === 0
+        ? check.loss > 0n
+          ? sourceMessage('delegation.verdict.incomeLoss', {
+              wage: moneyLabel(w, player.wage),
+              loss: moneyLabel(w, check.loss.toString()),
+            })
+          : sourceMessage('delegation.verdict.incomeFee', {
+              fee: moneyLabel(w, fee),
+              capital: moneyLabel(w, check.capital.toString()),
+            })
+        : sourceMessage('delegation.verdict.runwayFee', {
+            fee: moneyLabel(w, fee),
+            wage: moneyLabel(w, player.wage),
+            loss: moneyLabel(w, check.loss.toString()),
+            seasons: check.runway,
+            capital: moneyLabel(w, check.capital.toString()),
+          }),
     );
   const stop = insolvencyStop(planning, BigInt(fee), wage);
   if (stop) return no(stop);
   return {
     ok: true as const,
-    reason: sourceMessage('delegation.verdict.signingOk', {
-      left: moneyLabel(w, plan.left),
-      share,
+    reason: sourceMessage('delegation.verdict.wrap', {
+      reason: sourceMessage('delegation.plan.signingRoom', {
+        budget: moneyLabel(w, plan.budget),
+        left: moneyLabel(w, plan.left),
+      }),
       plan: label,
     }),
   };
@@ -375,26 +396,45 @@ const byCandidate = (a: Offer, b: Offer) =>
   compareIds(a.player.id, b.player.id);
 /**
  * The candidates for a need (→CLUB-33): the manager's pick, then the rest of the shortlist, then
- * the market list, each by ability, potential, free status and id.
+ * the others of `offers` (the players within the scout's reach), each by ability, potential, free
+ * status and id. With `byGain` (an upgrade at 넉넉히 and 아낌없이) everyone after the manager's pick
+ * comes by how far he beats the slot's measure there, then in that order.
  */
-function candidates(w: World, offers: Offer[], need: SigningNeed, tried: Set<string>) {
+function candidates(
+  w: World,
+  offers: Offer[],
+  need: SigningNeed,
+  tried: Set<string>,
+  byGain = false,
+  squad: World = w,
+) {
   const listed = new Set(shortlistOffers(w).map(({ offer }) => offer.player.id)),
     pick = need.requested?.pick,
-    rank = (offer: Offer) => (offer.player.id === pick ? 0 : listed.has(offer.player.id) ? 1 : 2);
+    rank = (offer: Offer) =>
+      offer.player.id === pick ? 0 : byGain || listed.has(offer.player.id) ? 1 : 2;
   return offers
     .map((offer, index) => ({ offer, index }))
     .filter(
       ({ offer }) =>
         offer.available &&
-        !registrationRoom(w, { ...offer.player, joined: w.year }) &&
         !offer.player.loanUntil &&
         !tried.has(offer.player.id) &&
         (need.kind !== 'upgrade'
           ? lineOfPlayer(offer.player) === need.line
           : playsAt(offer.player, need.position) &&
-            atSlot(w, offer.player, need.slot) >= need.level + need.margin),
+            atSlot(w, offer.player, need.slot) >= need.level + need.margin) &&
+        !registrationRoom(squad, { ...offer.player, joined: w.year }),
     )
-    .sort((a, b) => rank(a.offer) - rank(b.offer) || byCandidate(a.offer, b.offer));
+    .map((entry) => ({
+      ...entry,
+      gain:
+        byGain && need.kind === 'upgrade'
+          ? atSlot(w, entry.offer.player, need.slot) - need.level
+          : 0,
+    }))
+    .sort(
+      (a, b) => rank(a.offer) - rank(b.offer) || b.gain - a.gain || byCandidate(a.offer, b.offer),
+    );
 }
 
 /** Existing suitability/availability ordering for a logical manager request. */
@@ -645,31 +685,33 @@ function lineStarters(w: World) {
  */
 export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'signed' };
 /**
- * The season's money for signings the bar reads (→ECON-33): the recruitment plan's money left, the
- * squad share above the players' wage bill with the reinvested sales, less this season's fees and
- * open bids, then the available capital.
+ * The money the bar reads (→ECON-33, →CLUB-33): the capital the runway test leaves at the current
+ * wage bill (the recruitment plan's fee room), and the seasons a new wage must be carried for: the
+ * step's runway plus one. None at the steps without a bar or when nothing is left.
  */
-function barMoney(w: World, refunded = 0n) {
-  const plan = delegatePlan(w, 'recruitment', undefined, undefined, refunded),
+function barMoney(w: World) {
+  const plan = delegatePlan(w, 'recruitment'),
     money = BigInt(plan.left);
-  return plan.stance.signing.bar && money > 0n ? money : undefined;
+  return plan.stance.signing.bar && money > 0n
+    ? { money, seasons: BigInt(plan.runway + 1) }
+    : undefined;
 }
 /**
  * The 단장's money bar (→CLUB-33, →ECON-33), at the 선수 영입 steps he acts on with one (넉넉히,
  * 아낌없이): the highest OVR whose market wage at our division for a player aged `barAge` (→CLUB-25),
- * times `barYears`, fits the season's money for signings; none at the other steps or when not even
- * the lowest fits. As NPC clubs read the level a place can carry (`affordableLevel`), on money.
+ * for the step's runway plus one season, fits the capital the runway test leaves at the current
+ * wage bill; none at the other steps or when not even the lowest fits. As NPC clubs read the level
+ * a place can carry (`affordableLevel`), on money.
  */
-export function moneyBar(w: World, refunded = 0n): number | undefined {
-  const money = barMoney(w, refunded),
+export function moneyBar(w: World): number | undefined {
+  const read = barMoney(w),
     template = activePlayers(w)[0];
-  if (money === undefined || !template) return undefined;
+  if (read === undefined || !template) return undefined;
   const club = clubOf(w),
     regular: Player = { ...template, born: w.year - SIGNING_CONFIG.barAge, potential: 0 },
     fits = (ovr: number) =>
-      BigInt(marketWageAt(club.country, w.year, club.tier, regular, ovr)) *
-        BigInt(SIGNING_CONFIG.barYears) <=
-      money;
+      BigInt(marketWageAt(club.country, w.year, club.tier, regular, ovr)) * read.seasons <=
+      read.money;
   let low = 1,
     high = 99;
   if (!fits(low)) return undefined;
@@ -744,7 +786,7 @@ export function windowBar(w: World, day = currentDay(w)): number | undefined {
     players: w.players.map((p) => (arrived.has(p.id) ? { ...p, status: 'sold' as const } : p)),
     bids: bids.filter((bid) => !(inWindow(bid) && isOpen(bid))),
   };
-  const before = moneyBar(undone, refunded);
+  const before = moneyBar(undone);
   return before === undefined ? now : now === undefined ? before : Math.max(now, before);
 }
 /**
@@ -764,8 +806,8 @@ export function slotsBelowBar(
   return lineStarters(squadAtOpening(w, day)).filter((s) => bar - s.value > margin).length;
 }
 /**
- * The window's upgrade cap (→CLUB-33, →ECON-33): the step's, or at 아낌없이 the XI slots below the
- * money bar (`slotsBelowBar`) when that is more.
+ * The window's upgrade cap (→CLUB-33, →ECON-33): the step's, or at 넉넉히 and 아낌없이 the XI slots
+ * below the money bar (`slotsBelowBar`) when that is more.
  */
 export function upgradeCap(signing: SpendingStance['signing'], belowSlots: number) {
   return signing.barCap ? Math.max(signing.upgrades, belowSlots) : signing.upgrades;
@@ -912,7 +954,8 @@ function recentJoiners(w: World) {
  * aged `trimAge` or over, never loaned, retiring or joined in this window; the least able, then the
  * oldest, then by id. With a money bar (`moneyBar`) the same look also lists, at any squad size,
  * the non-starters aged `trimAge` or over more than `barGap` below it who did not join this season or
- * last, never leaving a line's unlisted players below its minimum (→CLUB-40). One report names the
+ * last, once a signing for their line has joined in this window, never leaving a line's unlisted
+ * players below its minimum (→CLUB-40). One report names the
  * look's listings. Listing is no move: it does not wait for his bids.
  */
 export function makeRoom(w: World, day = currentDay(w)) {
@@ -922,7 +965,10 @@ export function makeRoom(w: World, day = currentDay(w)) {
     bar = moneyBar(w);
   if (unlisted <= SIGNING_CONFIG.trimSquad && bar === undefined) return;
   const starters = new Set(ownStarters(w).map((p) => p.id)),
-    joined = new Set(joinedThisWindow(w, day).map((p) => p.id));
+    arrivals = joinedThisWindow(w, day),
+    joined = new Set(arrivals.map((p) => p.id)),
+    // The bar lists a weak player only once a signing for his line has joined in this window.
+    replaced = new Set(arrivals.map(lineOfPlayer));
   const eligible = players
     .filter(
       (p) =>
@@ -950,6 +996,7 @@ export function makeRoom(w: World, day = currentDay(w)) {
       const line = lineOfPlayer(p);
       if (
         surplus.includes(p) ||
+        !replaced.has(line) ||
         overall(p) >= bar - SIGNING_CONFIG.barGap ||
         recent.has(p.id) ||
         left[line] <= SIGNING_CONFIG.lineMinimum[line]
@@ -977,106 +1024,253 @@ export function makeRoom(w: World, day = currentDay(w)) {
   });
 }
 
+/** Short roles first, then replacements, then upgrades (→CLUB-33). */
+const NEED_ORDER = { short: 0, replacement: 1, upgrade: 2 } as const;
+/** How many bids the 단장 may keep pending, by the 선수 영입 step he acts on (→CLUB-33). */
+export function pendingLimit(w: World) {
+  const level = actedLevel(requestOf(w, 'recruitment'), delegateOf(w).temperament);
+  return SIGNING_CONFIG.pendingByStep[level - 1]!;
+}
+/** His bids of this window still waiting for an answer. */
+const pendingStaffBids = (w: World, day: number) =>
+  windowBids(w, day).filter((bid) => bid.staff && isOpen(bid));
 /**
- * The 단장's look (→CLUB-33): with transfers delegated and a window open, on its opening
- * day and every 7th day after it (plus a negotiator's next-day raises), at most one move —
- * a free agent signed or a trait-priced bid — for the first need a candidate meets within 재정 기조; none while one of his bids is open.
- * Short roles come before upgrades, and the manager's requested roles before the others.
+ * A negotiator's haggles (→CLUB-41): his latest refused bid for each player, below the bid ceiling
+ * and not refused by the player himself (→CLUB-53), which he raises the day after the answer.
+ */
+function haggles(w: World, bids: TransferBid[]) {
+  if (directorTrait(w) !== 'negotiator') return [];
+  const ceiling = BigInt(bidCeiling(w));
+  return bids.filter(
+    (bid) =>
+      bid.staff &&
+      bid.status === 'rejected' &&
+      bid.refusedBy !== 'player' &&
+      !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
+      BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', ceiling, 100n)),
+  );
+}
+/** Whether a bid of his raises his earlier bid for the same player in the window (→CLUB-41). */
+const raises = (bids: TransferBid[], bid: TransferBid) =>
+  bids.some(
+    (earlier) => earlier.staff && earlier.playerId === bid.playerId && earlier.day < bid.day,
+  );
+/**
+ * The places his bids hold against the step's count (→CLUB-33): those waiting for an answer and a
+ * negotiator's haggles waiting for their raise, so no other move takes a raise's place.
+ */
+function heldStaffBids(w: World, day: number) {
+  const bids = windowBids(w, day);
+  return [...bids.filter((bid) => bid.staff && isOpen(bid)), ...haggles(w, bids)];
+}
+/**
+ * The one check on the window's upgrade cap (→CLUB-33) that every move opening an upgrade passes —
+ * a look's, a negotiator's raise (→CLUB-41) and a mediation's pursuit (→CLUB-39): the upgrades the
+ * window holds, signed, waiting for an answer or a haggle waiting for its raise, stay under the cap
+ * of the step he acts on. A raise leaves out its own haggle (`raising`), whose upgrade it
+ * continues. The refusal when the cap is reached, else undefined.
+ */
+function upgradeCapReached(w: World, day: number, raising?: TransferBid) {
+  const signing = spendingStance(w, 'recruitment').signing,
+    margin = signing.margin,
+    cap = upgradeCap(
+      signing,
+      signing.barCap && margin !== undefined ? slotsBelowBar(w, margin, windowBar(w, day), day) : 0,
+    ),
+    bids = windowBids(w, day),
+    held = [
+      ...bids.filter((bid) => bid.status === 'completed' || isOpen(bid)),
+      ...haggles(w, bids),
+    ];
+  if (held.filter((bid) => bid.staff === 'upgrade' && bid !== raising).length < cap)
+    return undefined;
+  // At 최소한만 and 아껴서 he never upgrades.
+  if (!cap) return sourceMessage('delegation.offer.noUpgrades');
+  return sourceMessage('delegation.verdict.wrap', {
+    reason: sourceMessage('delegation.verdict.upgradeCap', { cap }),
+    plan: planLabel(w, 'recruitment'),
+  });
+}
+/** Where a bid for a candidate goes: his place on the list, else the player at his club. */
+function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
+  const index = transferOffers(w).findIndex((one) => one.player.id === offer.player.id);
+  if (index >= 0 || offer.source.kind !== 'club') return index;
+  return { world: w.id, kind: 'club', clubId: offer.source.club, playerId: offer.player.id };
+}
+/**
+ * The club as it stands once the window's bids go through (→CLUB-33): the player of every open bid,
+ * the owner's as well as his, and of each of his haggles awaiting a raise, joined as a completed
+ * move joins him (`noteSigning`). A look reads its needs there, since an arrival at once counts in
+ * his line and the squad, closes a replacement need of his line (→CLUB-42) and stands in the XI or
+ * as the measure of a slot he beats, on the wage the bid offers (→CLUB-53), so one pending player
+ * covers every need his arrival would meet and no other, and the registration and money checks of
+ * the next move read the squad, the wage bill and the cash they will be: his own open fees are
+ * reserved already (→ECON-33), the owner's come out of the cash as his deals would pay them.
+ * `raising`: a haggle left out, as its raise is checked as his move.
+ */
+function projection(w: World, day: number, raising?: TransferBid) {
+  const bids = windowBids(w, day),
+    open = bids.filter(isOpen),
+    arriving = [...open, ...haggles(w, bids)].flatMap((bid) => {
+      if (!bid.offer || bid === raising) return [];
+      const p = structuredClone(bid.offer.player);
+      p.wage = stepWage(p.wage, bid.wage ?? 1);
+      if (bid.loan) p.loanUntil = w.year + 1;
+      joinClub(p, isForeignCandidate(w, p.id, bid.club) ? 'abroad' : 'domestic', w.year);
+      return [p];
+    }),
+    // An owner's countered bid pays the counter if he accepts it (→CLUB-52).
+    ownerFees = open.reduce(
+      (total, bid) =>
+        total +
+        (bid.staff
+          ? 0n
+          : BigInt(bid.status === 'countered' ? (bid.counterFee ?? bid.fee) : bid.fee)),
+      0n,
+    );
+  return {
+    club: {
+      ...w,
+      cash: (BigInt(w.cash) - ownerFees).toString(),
+      players: [...w.players, ...arriving],
+    },
+    arriving,
+  };
+}
+/**
+ * The replacement needs a look moves for (→CLUB-42): open since before today and not closed by an
+ * arrival, each of which closes the earliest open need of his line as `closeNeedFor` does.
+ */
+function replacementNeeds(w: World, day: number, arriving: readonly Player[]): SigningNeed[] {
+  const open = openNeeds(w);
+  for (const p of arriving) {
+    const i = open.findIndex((need) => need.line === lineOfPlayer(p));
+    if (i >= 0) open.splice(i, 1);
+  }
+  return open
+    .filter((need) => need.day < day)
+    .map((need) => ({ kind: 'replacement', line: need.line, playerId: need.playerId }));
+}
+
+/**
+ * The 단장's look (→CLUB-33): with transfers delegated and a window open, on its opening day and
+ * every `lookDays`th day after it, every day while a replacement need no pending player would close
+ * is open (plus a negotiator's next-day raises), he makes moves — a free agent signed or a
+ * trait-priced bid — until the places his bids hold reach the step's count (`pendingLimit`), each
+ * for the first need of the club as the window's bids would leave it (`projection`) that a
+ * candidate meets within the runway test, each pending fee reserved (→ECON-33). A negotiator's
+ * haggle keeps its place until its raise the day after the answer (→CLUB-41), which comes before a
+ * mediation's move and the look's. Short roles come before replacements and upgrades, and the
+ * manager's requested roles before the others.
  */
 export function staffSignings(w: World) {
   const day = currentDay(w),
     window = transferWindow(w, day);
   if (!window.open) return;
-  const regular = (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays === 0;
+  const regular = (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays === 0,
+    delegated = isDelegated(w, 'recruitment'),
+    // Today's moves are made: a second call on the same day changes nothing.
+    moved = delegated && windowBids(w, day).some((bid) => bid.staff && bid.day === day);
+  // His raises come first, so no other move spends the money a raise needs (→CLUB-41).
+  const ended = delegated && !moved && raiseHaggles(w, day);
   if (regular) {
     detectMediations(w);
+    // A mediation's decision is this look's move (→CLUB-39).
     if (resolveDelegatedMediations(w)) return;
   }
-  if (!isDelegated(w, 'recruitment')) return;
+  if (!delegated) return;
   if (regular) makeRoom(w, day);
-  const bids = windowBids(w, day);
-  if (
-    bids.some(
-      (bid) =>
-        bid.staff &&
-        (isOpen(bid) || bid.day === day || (bid.status === 'completed' && bid.due === day)),
-    )
-  )
-    return;
-  // A refused negotiator bid gets its next answer-day move outside the weekly look gate.
-  const retry = [...bids].reverse().find(
-    (bid) =>
-      directorTrait(w) === 'negotiator' &&
-      bid.staff &&
-      bid.status === 'rejected' &&
-      // A player who refused our terms is not haggled with over the fee (→CLUB-53).
-      bid.refusedBy !== 'player' &&
-      bid.due < day &&
-      !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
-      BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', BigInt(bidCeiling(w)), 100n)),
-  );
-  const offers = transferOffers(w);
-  if (retry && directorTrait(w) === 'negotiator') {
-    const index = offers.findIndex(
-      (offer) => offer.available && offer.player.id === retry.playerId,
-    );
-    if (index >= 0) {
-      const offer = offers[index];
-      const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
-      const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
-      const terms = wageOffer(w, offer, fee);
-      const room = registrationRoom(w, { ...offer.player, joined: w.year });
-      if (terms.ok && !room) {
-        placeBid(w, index, fee, false, retry.staff, terms.offer.step);
-        pushInbox(w, {
-          kind: 'staff-report',
-          title: sourceMessage('copy.signings.6773850ac5', { p0: offer.player.name }),
-          detail: `${sourceMessage('copy.signings.2bce8a2d24', {
-            p0: staffBidShare(w, previous),
-            p1: terms.offer.reason,
-          })} · ${wageLine(w, terms.offer)}`,
-          attention: false,
-        });
-        return;
-      }
+  const limit = pendingLimit(w);
+  if (moved || heldStaffBids(w, day).length >= limit) return;
+  // Off a regular look he looks while a replacement need no pending player would close is open
+  // (→CLUB-42), or past a negotiator's ended haggle.
+  const replacing = replacementNeeds(w, day, projection(w, day).arriving).length > 0;
+  if (!regular && !replacing && !ended) return;
+  // Every move records a bid for its player, who is never asked again in the window, so the look
+  // ends when the places his bids hold reach the step's count or no candidate is left to move for.
+  while (staffMove(w, day)) if (heldStaffBids(w, day).length >= limit) return;
+}
+
+/**
+ * A negotiator's raises (→CLUB-41): each haggle answered on an earlier day is bid for again 5
+ * points higher, outside the regular look gate and before any other move, into the place it held,
+ * while his bids waiting for an answer stay under the step's count. Whether a haggle ended without a
+ * raise, so he moves on to the next candidate.
+ */
+function raiseHaggles(w: World, day: number) {
+  const bids = windowBids(w, day),
+    limit = pendingLimit(w);
+  let ended = false;
+  for (const retry of haggles(w, bids).filter((bid) => bid.due < day)) {
+    if (pendingStaffBids(w, day).length >= limit) break;
+    const offers = transferOffers(w),
+      index = offers.findIndex((offer) => offer.available && offer.player.id === retry.playerId),
+      offer = index >= 0 ? offers[index] : locateOffer(w, retry.playerId, retry.club);
+    if (!offer?.available) {
       retry.status = 'expired';
+      ended = true;
+      continue;
+    }
+    const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
+    const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
+    const { club } = projection(w, day, retry),
+      terms = wageOffer(club, offer, fee);
+    const room =
+      registrationRoom(club, { ...offer.player, joined: w.year }) ??
+      (retry.staff === 'upgrade' ? upgradeCapReached(w, day, retry) : undefined);
+    if (terms.ok && !room) {
+      placeBid(w, targetOf(w, offer), fee, false, retry.staff, terms.offer.step);
+      pushInbox(w, {
+        kind: 'staff-report',
+        title: sourceMessage('copy.signings.6773850ac5', { p0: offer.player.name }),
+        detail: `${sourceMessage('copy.signings.2bce8a2d24', {
+          p0: staffBidShare(w, previous),
+          p1: terms.offer.reason,
+        })} · ${wageLine(w, terms.offer)}`,
+        attention: false,
+      });
+    } else {
+      retry.status = 'expired';
+      ended = true;
       pushInbox(w, {
         kind: 'staff-report',
         title: sourceMessage('copy.signings.e773f7135a', { p0: offer.player.name }),
         detail: room ?? (terms.ok ? terms.offer.reason : terms.reason),
         attention: false,
       });
-    } else retry.status = 'expired';
+    }
   }
-  const replacements: SigningNeed[] = openNeeds(w)
-    .filter((need) => need.day < day)
-    .map((need) => ({ kind: 'replacement', line: need.line, playerId: need.playerId }));
-  if (!regular && !retry && !replacements.length) return;
-  const players = activePlayers(w),
-    squad = players.length;
-  if (squad >= registration(w).ceiling) return;
-  const stance = spendingStance(w, 'recruitment'),
+  return ended;
+}
+
+/**
+ * One move of a look (→CLUB-33): the first need left once the window's bids go through that a
+ * candidate meets — the manager's pick, the shortlist, then the players within the scout's reach,
+ * an upgrade at 넉넉히 and 아낌없이 by slot gain — with a wage step and fee inside the money checks.
+ * Whether a move was made.
+ */
+function staffMove(w: World, day: number) {
+  // Every need, the registration ceiling and the step's room read the club as it stands once the
+  // window's bids go through, so a pending player covers what his arrival would.
+  const { club, arriving } = projection(w, day),
+    players = activePlayers(club);
+  if (players.length >= registration(club).ceiling) return false;
+  const bids = windowBids(w, day),
+    stance = spendingStance(w, 'recruitment'),
     unlisted = players.filter((p) => transferStance(p) !== 'listed').length,
-    upgrades = bids.filter(
-      (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
-    ).length,
-    tried = new Set(bids.map((bid) => bid.playerId)),
-    joined = joinedThisWindow(w, day);
+    tried = new Set(bids.map((bid) => bid.playerId));
   const margin = stance.signing.margin,
-    bar = margin !== undefined && stance.signing.bar ? moneyBar(w) : undefined,
+    bar = margin !== undefined && stance.signing.bar ? moneyBar(club) : undefined,
     upgradeList =
       margin !== undefined && (stance.signing.room === undefined || unlisted <= stance.signing.room)
-        ? upgradeNeeds(w, margin, joined, bar)
+        ? upgradeNeeds(club, margin, [...joinedThisWindow(w, day), ...arriving], bar)
         : [];
-  const cap = upgradeCap(
-    stance.signing,
-    stance.signing.barCap && margin !== undefined
-      ? slotsBelowBar(w, margin, windowBar(w, day), day)
-      : 0,
-  );
   const requests = signingRequests(w),
-    short = shortLines(w),
-    found: SigningNeed[] = [...short, ...replacements, ...(upgrades < cap ? upgradeList : [])];
+    found: SigningNeed[] = [
+      ...shortLines(club),
+      ...replacementNeeds(w, day, arriving),
+      ...(upgradeCapReached(w, day) ? [] : upgradeList),
+    ];
   const needs = found
     .map((need) => {
       const requested = requests.find((request) =>
@@ -1089,20 +1283,35 @@ export function staffSignings(w: World) {
     .map((need, order) => ({ need, order }))
     .sort(
       (a, b) =>
-        ({ short: 0, replacement: 1, upgrade: 2 })[a.need.kind] -
-          { short: 0, replacement: 1, upgrade: 2 }[b.need.kind] ||
+        NEED_ORDER[a.need.kind] - NEED_ORDER[b.need.kind] ||
         Number(!a.need.requested) - Number(!b.need.requested) ||
         a.order - b.order,
     )
     .map(({ need }) => need);
+  if (!needs.length) return false;
+  const offers = reachOffers(w),
+    plan = delegatePlan(club, 'recruitment');
   for (const need of needs)
-    for (const { offer, index } of candidates(w, offers, need, tried)) {
+    for (const { offer } of candidates(
+      w,
+      offers,
+      need,
+      tried,
+      need.kind === 'upgrade' && !!stance.signing.bar,
+      club,
+    )) {
       const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
-      const terms = wageOffer(w, offer, fee, need.kind);
+      // His lowest wage step already failing the runway test rules out every higher one.
+      if (
+        !(need.kind === 'short' && offer.freeAgent) &&
+        !runwayTest(club, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }).ok
+      )
+        continue;
+      const terms = wageOffer(club, offer, fee, need.kind);
       if (!terms.ok) continue;
       if (offer.freeAgent) directorSignsFreeAgent(w, offer, need, terms.offer);
       else {
-        placeBid(w, index, fee, false, need.kind, terms.offer.step);
+        placeBid(w, targetOf(w, offer), fee, false, need.kind, terms.offer.step);
         const bid = w.bids!.findLast((one) => one.playerId === offer.player.id)!;
         pushInbox(w, {
           kind: 'staff-report',
@@ -1123,8 +1332,9 @@ export function staffSignings(w: World) {
           ref: bid.id,
         });
       }
-      return;
+      return true;
     }
+  return false;
 }
 
 /** Start one real ordinary move for a mediated request; owner decisions retain owner spending permissions. */
@@ -1137,8 +1347,11 @@ export function pursueRequest(
   const picked = requestCandidates(w, request).find(({ offer }) => offer.player.id === person);
   if (!picked || !transferWindow(w).open) return sourceMessage('copy.signings.b38bc71204');
   const day = currentDay(w),
-    { offer, index } = picked;
-  const room = registrationRoom(w, { ...offer.player, joined: w.year });
+    { offer, index } = picked,
+    // His pursuit is his move: it reads the squad and wage bill the window's bids will leave; the
+    // owner's own move reads the club as it is (→CLUB-33).
+    squad = actor === 'delegated' ? projection(w, day).club : w;
+  const room = registrationRoom(squad, { ...offer.player, joined: w.year });
   if (room) return room;
   const fee = offer.freeAgent
     ? '0'
@@ -1150,12 +1363,17 @@ export function pursueRequest(
       (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0 ||
       // A free agent who refused our terms at once leaves the day's move open, so a mediation
       // can pursue its next alternative (→CLUB-39, →CLUB-53).
+      heldStaffBids(w, day).length >= pendingLimit(w) ||
+      // A negotiator's raise is made before the look's move and is not one (→CLUB-41).
       windowBids(w, day).some(
-        (b) => b.staff && b.refusedBy !== 'player' && (isOpen(b) || b.day === day),
+        (b, _, bids) => b.staff && b.refusedBy !== 'player' && b.day === day && !raises(bids, b),
       )
     )
       return sourceMessage('copy.signings.475daa54a3');
-    const terms = wageOffer(w, offer, fee);
+    // A mediated upgrade is one of the window's upgrades, whoever asked for it (→CLUB-33, CLUB-39).
+    const capped = request.kind === 'upgrade' ? upgradeCapReached(w, day) : undefined;
+    if (capped) return capped;
+    const terms = wageOffer(squad, offer, fee);
     if (!terms.ok) return terms.reason;
     if (offer.freeAgent) {
       const starter = request.slot === undefined ? undefined : ownStarters(w)[request.slot];

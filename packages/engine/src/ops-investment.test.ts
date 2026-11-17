@@ -76,7 +76,8 @@ describe('owner office instructions and investment', () => {
       fee = (BigInt(delegatePlan(w, 'recruitment').left) + 1n).toString();
     expect(signingVerdict(w, candidate, fee)).toMatchObject({
       ok: false,
-      reason: expect.stringContaining('영입에 쓸 돈'),
+      // At 최소한만 the runway test refuses a fee past the cash or a planned loss (→ECON-33).
+      reason: expect.stringMatching(/보유 자금|수입 안에서만/),
     });
     operate(w, { type: 'delegation-request', responsibility: 'recruitment', level: 5 });
     expect(signingVerdict(w, candidate, fee)).toMatchObject({ ok: true });

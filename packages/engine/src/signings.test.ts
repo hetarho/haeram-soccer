@@ -16,6 +16,7 @@ import {
   advanceDays,
   compareIds,
   currentDay,
+  dailyMarket,
   drawShortlist,
   formationOf,
   noteSigning,
@@ -35,6 +36,8 @@ import {
   shortLines,
   signingRequests,
   signingVerdict,
+  pendingLimit,
+  SIGNING_CONFIG,
   staffSignings,
   transferOffers,
   transferWindowDays,
@@ -49,7 +52,7 @@ import {
 } from './index';
 import { addEvent } from './events';
 import { recordTransfer } from './transfer-records';
-import { delegatePlan } from './delegation';
+import { delegatePlan, spendingStance } from './delegation';
 import { playerRecord } from './player-records';
 import { marketWageAt } from './market-prices';
 import { clubOf, slotOvr } from './player-state';
@@ -58,16 +61,19 @@ import { handTo, holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { careerWorld } from './career.testkit';
 import { holdTemperament } from './delegation.testkit';
-import { scoutReach } from './scout-search';
+import { reachOffers, scoutReach } from './scout-search';
 import { joinFreeAgents } from './free-agents';
 import { retainPerson, openEmployment } from './person-careers';
 import { movePerson } from './npc-continuity';
 import { registration } from './registration';
+import * as catalogs from '../../catalogs/src/index';
 import { bidOutlook, transferStance } from './transfers';
 import * as personalTerms from './personal-terms';
 import { termsChance, termsContext, WAGE_STEPS } from './personal-terms';
 import { pursueRequest, requestCandidates, wageCeiling, wageOffer } from './signings';
 import { random } from './primitives';
+import { staffBidShare } from './director-bidding';
+import { openNeed, openNeeds } from './replacements';
 
 /** Release the actual listed club player, keeping his identity and unchanged sporting quality. */
 function releaseListed(w: World, line?: Line) {
@@ -205,6 +211,29 @@ function tried(w: World, playerId: string) {
   };
   w.bids = [...(w.bids || []), bid];
 }
+/** Marks every free agent within the scout's reach as tried: each move is then a pending bid. */
+function passReachFree(w: World) {
+  for (const offer of reachOffers(w)) if (offer.freeAgent) tried(w, offer.player.id);
+}
+/** The player of a bid joins as a completed move joins him (`noteSigning`), the fee aside. */
+function arrive(w: World, bid: TransferBid) {
+  const player = structuredClone(bid.offer!.player);
+  bid.status = 'completed';
+  w.players.push(player);
+  noteSigning(w, player, bid.club);
+}
+/** A bid for the first available club player of `line` on the list, waiting for its answer. */
+function pendingFor(w: World, line: Line, staff?: TransferBid['staff']) {
+  const offers = transferOffers(w),
+    index = offers.findIndex(
+      (offer) => offer.available && !offer.freeAgent && lineOf(offer.player.position) === line,
+    );
+  expect(index).toBeGreaterThanOrEqual(0);
+  placeBid(w, index, offers[index]!.fee, false, staff);
+  const bid = w.bids!.at(-1)!;
+  bid.due = currentDay(w) + 20;
+  return bid;
+}
 /** Marks every free agent the scout lists as tried, so the 단장 moves for a fee-bearing player. */
 function passFree(w: World) {
   for (const offer of transferOffers(w).filter((one) => one.freeAgent)) tried(w, offer.player.id);
@@ -289,24 +318,25 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it("keeps the 단장's money checks", () => {
     const w = club();
     const offer = transferOffers(w)[clubIndex(w)]!;
-    // A season's income at which the fee and a year of his wage fit 80% of it after the wages
-    // already paid, but not 62%.
-    const wages = BigInt(operatingCosts(w).playerWages),
-      cost = BigInt(offer.fee) + BigInt(offer.player.wage),
-      planned = { year: w.year, revenue: (((cost + wages) * 10n) / 7n).toString(), sales: '0' };
-    // Keep cash below the reserve while covering the fee and actual obligations.
-    w.operatingExpenses = cost.toString();
-    w.cash = (cost * 3n).toString();
+    // A planned loss as large as the signing, and cash that covers it with his wage for two
+    // seasons above the quarter year a 균형형 단장 keeps back at 적당히: short of its four-season
+    // runway, inside 아낌없이's one season with nothing kept back (→ECON-33).
+    const annual = BigInt(operatingCosts(w).annual),
+      fee = BigInt(offer.fee),
+      wage = BigInt(offer.player.wage),
+      loss = fee + wage,
+      planned = { year: w.year, revenue: (annual - loss).toString(), sales: '0' };
     w.budgetPlan = planned;
-    const standard = signingVerdict(w, offer.player, offer.fee);
-    expect(standard.ok).toBe(false);
-    expect(standard.reason).toContain('영입에 쓸 돈');
+    w.cash = (fee + (loss + wage) * 2n + annual / 4n + 1n).toString();
+    expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(false);
     w.delegationRequests = { recruitment: 5 };
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(true);
-    // Whatever the plan allows, the plain stop keeps a month of fixed costs in cash.
+    // Whatever the plan allows, the plain stop keeps a month of fixed costs in cash: income past
+    // every cost with his wage, and cash for the fee alone.
+    w.budgetPlan = { ...planned, revenue: (annual + wage * 2n).toString() };
     w.cash = BigInt(offer.fee).toString();
     expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('현금이 바닥나지');
-    // Without income the wage bill has no room.
+    // Without income a year of cash cannot carry four seasons of the loss: the wage bill has no room.
     const poor = club();
     poor.cash = operatingCosts(poor).annual;
     poor.budgetPlan = { ...planned, revenue: '0' };
@@ -314,7 +344,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     passFree(poor);
     staffSignings(poor);
     expect(staffBids(poor)).toEqual([]);
-    // Zero planned income is not a refusal when surplus cash funds the commitment.
+    // Zero planned income is not a refusal when the cash covers the loss for the runway.
     const funded = club();
     funded.budgetPlan = { ...planned, revenue: '0' };
     expect(signingVerdict(funded, offer.player, offer.fee).ok).toBe(true);
@@ -391,24 +421,46 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     expect(own.status).toBe('rejected');
   });
 
-  it('looks on the opening day and every 7th day after, and waits for a pending bid', () => {
+  it("looks on the opening day and every 3rd day after, keeping up to the step's count of bids pending", () => {
     const w = club();
     passFree(w);
     const opening = currentDay(w);
-    w.calendar = { day: opening + 3 };
+    w.calendar = { day: opening + 1 };
     staffSignings(w);
     expect(staffBids(w)).toEqual([]);
-    w.calendar = { day: opening + 7 };
+    w.calendar = { day: opening + 3 };
     staffSignings(w);
+    // 적당히: one bid pending at most.
+    expect(pendingLimit(w)).toBe(1);
     expect(staffBids(w)).toHaveLength(1);
-    // A week later his bid is still open: he waits.
+    // Three days later his bid is still open: he waits.
     staffBids(w)[0].due = opening + 20;
-    w.calendar = { day: opening + 14 };
+    w.calendar = { day: opening + 6 };
     staffSignings(w);
     expect(staffBids(w)).toHaveLength(1);
+    // 넉넉히 keeps two pending and 아낌없이 three, each fee reserved from the capital.
+    expect(pendingLimit(club(4))).toBe(2);
+    const rich = club(5);
+    passFree(rich);
+    expect(pendingLimit(rich)).toBe(3);
+    rich.calendar = { day: opening + 3 };
+    const capital = BigInt(delegatePlan(rich, 'recruitment').capital);
+    staffSignings(rich);
+    const pending = staffBids(rich).filter((bid) => bid.status === 'pending');
+    expect(pending.length).toBeGreaterThan(1);
+    expect(pending.length).toBeLessThanOrEqual(3);
+    const reserved = pending.reduce((sum, bid) => sum + BigInt(bid.fee), 0n);
+    expect(BigInt(delegatePlan(rich, 'recruitment').capital)).toBe(capital - reserved);
+    // A second call on the same day makes no move.
+    const count = staffBids(rich).length;
+    staffSignings(rich);
+    expect(staffBids(rich)).toHaveLength(count);
   });
 
   it('makes no signings below level 4 or outside windows', () => {
+    // Every player is keen (→CLUB-53): the listed players of the divisions above ours would refuse
+    // our terms, and only the window, the level and the pick are under test.
+    willing();
     const below = club();
     below.settings = staffAuthority(3);
     staffSignings(below);
@@ -489,20 +541,18 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
 
   it('drops a listed player who joins us or leaves the market list', () => {
     willing();
-    // A shortlist none of whose players recruitment level 5's search (ages 26–33, →ECON-16) also
-    // finds, so changing the row takes every entry off the list. Since each club's own age ladder
-    // (→WORLD-6) spread the ages of the players clubs let go, a free agent aged 26–30 can sit in
-    // both searches (`shortlist` lists one): the first market where none does.
+    // A shortlist some of whose players recruitment level 5's search (ages 26–33, →ECON-16) does
+    // not find, so changing the row takes them off the list; a player both searches find stays.
     const seed = ['shortlist', ...Array.from({ length: 40 }, (_, i) => `shortlist-${i}`)].find(
       (one) => {
         const trial = owned(one);
         drawShortlist(trial);
         holdRows(trial, { policy: { recruitment: 5 } });
         const listed = new Set(transferOffers(trial).map((offer) => offer.player.id));
-        return trial.shortlist!.entries.every((entry) => !listed.has(entry.playerId));
+        return trial.shortlist!.entries.some((entry) => !listed.has(entry.playerId));
       },
     );
-    if (!seed) throw new Error('every shortlist in 41 markets holds a player recruitment 5 finds');
+    if (!seed) throw new Error('every shortlist in 41 markets is found by recruitment 5 too');
     const w = owned(seed);
     drawShortlist(w);
     // He joins only when he agrees to our terms too (→CLUB-53), on his own seeded answer: the first
@@ -516,9 +566,18 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     expect(signingRequests(w).every((request) => request.pick !== first.offer.player.id)).toBe(
       true,
     );
-    // Another recruitment row draws another list: none of the shortlist is on it.
+    // Another recruitment row draws another list: the shortlisted players it does not find drop off.
     holdRows(w, { policy: { recruitment: 5 } });
-    expect(shortlistOffers(w)).toEqual([]);
+    const listed = new Set(transferOffers(w).map((offer) => offer.player.id)),
+      gone = w.shortlist!.entries.filter((entry) => !listed.has(entry.playerId));
+    expect(gone.length).toBeGreaterThan(0);
+    expect(shortlistOffers(w).map(({ offer }) => offer.player.id)).toEqual(
+      w
+        .shortlist!.entries.filter(
+          (entry) => listed.has(entry.playerId) && entry.playerId !== first.offer.player.id,
+        )
+        .map((entry) => entry.playerId),
+    );
     // Last season's shortlist reads as empty.
     const old = owned();
     drawShortlist(old);
@@ -564,14 +623,18 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     drawShortlist(strong);
     expect(strong.shortlist!.requests).toHaveLength(1);
     expect(strong.shortlist!.requests[0]).toMatchObject({ line: 'DF', kind: 'upgrade' });
-    // Under the margin of 5 he asks for nothing.
-    const best = Math.max(
-      ...shortlistOffers(strong)
-        .filter(({ offer }) => lineOf(offer.player.position) === 'DF')
-        .map(({ offer }) => overall(offer.player)),
-    );
+    // Under the margin of 5 he asks for nothing: no listed player who plays a defensive slot's
+    // position beats its starter there by 5 (OVR at the slot × level).
+    const slots = formationOf(strong.tactic).filter((slot) => lineOf(slot.position) === 'DF'),
+      best = Math.max(
+        ...shortlistOffers(strong).flatMap(({ offer }) =>
+          slots
+            .filter((slot) => (offer.player.positions[slot.position] ?? 0) >= 2)
+            .map((slot) => slotOvr(offer.player, slot)),
+        ),
+      );
     for (const p of activePlayers(strong).filter((one) => lineOf(one.position) === 'DF'))
-      rate(p, best - 4);
+      rate(p, Math.ceil(best) - 4);
     drawShortlist(strong);
     expect(strong.shortlist!.requests).toEqual([]);
   });
@@ -635,6 +698,9 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
   });
 
   it('costs the manager 3 trust when a window closes with none of his requests met', () => {
+    // Every player is keen (→CLUB-53): the released top-flight goalkeeper would refuse a lower
+    // division's terms, and the requests, not his answer, are under test.
+    willing();
     const close = transferWindowDays(1951).winterClose;
     /** The winter window opens with a goalkeeper short; `during` acts inside it. */
     function window(during?: (w: World) => void) {
@@ -823,14 +889,14 @@ describe('a signing still settling in closes the slot he was bought for (→CLUB
     w.freeAgents = pool.map(([id, level]) => keeper(w, id, level));
     return w;
   }
-  /** Marks other clubs' keepers on the list as tried, then lets the 단장 look. */
+  /** Marks other clubs' keepers within the reach as tried, then lets the 단장 look. */
   function look(w: World) {
-    for (const offer of transferOffers(w))
+    for (const offer of reachOffers(w))
       if (offer.player.position === 'GK' && !offer.freeAgent) tried(w, offer.player.id);
     staffSignings(w);
   }
   const upgradeBids = (w: World) => staffBids(w).filter((bid) => bid.staff === 'upgrade');
-  const nextLook = (w: World) => (w.calendar = { day: currentDay(w) + 7 });
+  const nextLook = (w: World) => (w.calendar = { day: currentDay(w) + SIGNING_CONFIG.lookDays });
 
   it('a keeper bought for the keeper slot closes it: no second upgrade bid there while he settles', () => {
     expect(UPGRADE_MEASURE.inForce).toBe('signed');
@@ -935,8 +1001,10 @@ describe('a signing still settling in closes the slot he was bought for (→CLUB
         } finally {
           UPGRADE_MEASURE.inForce = 'signed';
         }
+        // The same look may go on to the keeper slot, which the readings measure apart.
         return staffBids(w)
           .slice(1)
+          .filter((bid) => bid.staff !== 'upgrade')
           .map((bid) => ({ staff: bid.staff, playerId: bid.playerId }));
       });
     const short = moves((w) => keep(w, 'FW', 3));
@@ -992,7 +1060,11 @@ describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)',
     expect(activePlayers(generous).length).toBeLessThan(registration(generous).ceiling);
     passFree(generous);
     staffSignings(generous);
-    expect(staffBids(generous)).toMatchObject([{ staff: 'upgrade', status: 'pending' }]);
+    // 아낌없이 keeps up to three bids pending, every one an upgrade.
+    const moves = staffBids(generous);
+    expect(moves.length).toBeGreaterThan(0);
+    expect(moves.length).toBeLessThanOrEqual(3);
+    for (const bid of moves) expect(bid).toMatchObject({ staff: 'upgrade', status: 'pending' });
 
     const moderate = club(3);
     pad(moderate, 30);
@@ -1060,6 +1132,33 @@ describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)',
     expect(listed(w).map((p) => p.id)).toEqual(listedIds);
   });
 
+  it("reads the step's room and the registration ceiling with the window's pending players in", () => {
+    willing();
+    /** A look three days after the opening, with and without a bid placed at the opening. */
+    const look = (w: World, size: number) => {
+      const opening = currentDay(w);
+      w.settings!.responsibilities.sales = 'direct';
+      w.shortlist = { ...w.shortlist!, requests: [] };
+      pad(w, size);
+      passReachFree(w);
+      const alone = structuredClone(w);
+      pendingFor(w, 'MF', 'upgrade');
+      for (const one of [w, alone]) {
+        one.calendar = { day: opening + SIGNING_CONFIG.lookDays };
+        staffSignings(one);
+      }
+      return { pending: staffBids(w), alone: staffBids(alone) };
+    };
+    // 넉넉히's room is 28 players less the listed: 28 can take an upgrade, 28 and one pending not.
+    const ample = look(club(4), 28);
+    expect(ample.alone).toEqual([expect.objectContaining({ staff: 'upgrade' })]);
+    expect(ample.pending).toHaveLength(1);
+    // 아낌없이 reads the 40-player ceiling: 39 can take one more, 39 and one pending not.
+    const generous = look(club(5), 39);
+    expect(generous.alone.length).toBeGreaterThan(0);
+    expect(generous.pending).toHaveLength(1);
+  });
+
   it('lists nobody with sales direct, at 적당히 or with 24 left', () => {
     const direct = club(5);
     direct.settings!.responsibilities.sales = 'direct';
@@ -1125,18 +1224,24 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     return BigInt(marketWageAt(c.country, w.year, c.tier, regular, ovr));
   };
 
-  it('is the highest OVR whose 27-year-old wage × 25 fits the money; higher when richer, none at 1–3', () => {
+  it('is the highest OVR whose 27-year-old wage for the runway plus one season fits the capital the runway test leaves; higher when richer, none at 1–3', () => {
     const rich = club(5),
       modest = club(5);
-    poor(modest, BigInt(operatingCosts(modest).playerWages) * 2n);
+    // Income past every fixed cost: no planned loss, and the cash is the money for signings.
+    poor(modest, BigInt(operatingCosts(modest).annual) * 2n);
+    modest.cash = (wageAt(modest, 70) * 2n).toString();
     const high = moneyBar(rich)!,
       low = moneyBar(modest)!;
     expect(high).toBeGreaterThan(low);
-    // The bar is the highest OVR that fits the plan's money for signings (→ECON-33).
+    // The bar is the highest OVR whose wage, for the runway (one season at 아낌없이) plus one,
+    // fits the capital the runway test leaves (→ECON-33).
     const plan = delegatePlan(modest, 'recruitment'),
-      money = BigInt(plan.left);
-    expect(wageAt(modest, low) * 25n).toBeLessThanOrEqual(money);
-    expect(wageAt(modest, low + 1) * 25n).toBeGreaterThan(money);
+      money = BigInt(plan.left),
+      seasons = BigInt(plan.runway + 1);
+    expect(seasons).toBe(2n);
+    expect(low).toBe(70);
+    expect(wageAt(modest, low) * seasons).toBeLessThanOrEqual(money);
+    expect(wageAt(modest, low + 1) * seasons).toBeGreaterThan(money);
     // 넉넉히 has one too; 적당히, 아껴서 and 최소한만 none.
     expect(moneyBar(club(4))).toBe(high);
     for (const step of [1, 2, 3] as const) expect(moneyBar(club(step))).toBeUndefined();
@@ -1146,34 +1251,39 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(moneyBar(cautious)).toBeUndefined();
   });
 
-  it('reads the money left for signings: none when wages take the share, raised by sales and capital', () => {
-    const wages = BigInt(operatingCosts(club(5)).playerWages);
-    // At 아낌없이 the squad share is 80% of income: the wage bill alone takes all of it.
+  it('reads the money left for signings: none while the loss is uncovered, raised by sales and capital', () => {
+    const wages = BigInt(operatingCosts(club(5)).playerWages),
+      annual = BigInt(operatingCosts(club(5)).annual);
+    // Income that pays only the wages and no cash: the planned loss is uncovered.
     const spent = club(5);
     poor(spent, wages);
     expect(BigInt(delegatePlan(spent, 'recruitment').left)).toBe(0n);
     expect(moneyBar(spent)).toBeUndefined();
-    // A season's player sales reinvest 70% of their fee into signings.
-    const sold = club(5);
+    // A player sale reaches the cash, and so the capital past a season of the loss.
+    const loss = annual - wages,
+      sold = club(5);
     poor(sold, wages);
-    addEvent(sold, 'transfer-out', 'sale', 'sale', (wages * 4n).toString());
+    addEvent(sold, 'transfer-out', 'sale', 'sale', (loss + wageAt(sold, 70) * 2n).toString());
+    sold.cash = (loss + wageAt(sold, 70) * 2n).toString();
     expect(BigInt(delegatePlan(sold, 'recruitment').left)).toBeGreaterThan(0n);
     const fromSales = moneyBar(sold)!;
-    expect(fromSales).toBeGreaterThan(0);
-    // Cash above the reserve (none for a 균형형 단장 at 아낌없이) is capital for signings too.
+    expect(fromSales).toBe(70);
+    // More cash above the reserve (none for a 균형형 단장 at 아낌없이) buys more.
     const funded = club(5);
     poor(funded, wages);
-    funded.cash = (wages * 40n).toString();
+    funded.cash = (loss + wageAt(funded, 85) * 2n).toString();
     expect(moneyBar(funded)!).toBeGreaterThan(fromSales);
-    // This season's fees spend the income-based money (paid fees already left the cash).
+    // A fee paid leaves the cash, and the money for signings with it.
     const bought = club(5);
     poor(bought, wages);
-    addEvent(bought, 'transfer-out', 'sale', 'sale', (wages * 4n).toString());
+    addEvent(bought, 'transfer-out', 'sale', 'sale', (loss + wageAt(bought, 70) * 2n).toString());
     addEvent(bought, 'transfer-in', 'buy', 'buy', wages.toString());
+    bought.cash = (loss + wageAt(bought, 70) * 2n - wages).toString();
     expect(BigInt(delegatePlan(bought, 'recruitment').left)).toBeLessThan(
       BigInt(delegatePlan(sold, 'recruitment').left),
     );
-    expect(moneyBar(bought)!).toBeLessThanOrEqual(fromSales);
+    // Less money buys a lower bar, or none once nothing is left.
+    expect(moneyBar(bought) ?? 0).toBeLessThanOrEqual(fromSales);
   });
 
   it('puts every slot more than the margin below the bar first, the weakest first', () => {
@@ -1325,12 +1435,12 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
   it('keeps the window cap while its own signings, accepted counters included, spend the money the bar reads', () => {
     const w = club(5);
     const wages = BigInt(operatingCosts(w).playerWages);
-    // Income whose squad share just carries the wage bill: the plan's money is the cash.
-    poor(w, (wages * 125n) / 100n);
+    // Income past every fixed cost: no planned loss, the plan's money is the cash.
+    poor(w, BigInt(operatingCosts(w).annual) * 2n + wages * 10n);
     const plain = (upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[]).sort(
       (a, b) => a.level - b.level || a.slot - b.slot,
     );
-    w.cash = (wageAt(w, Math.floor(plain[4]!.level) + 3) * 25n).toString();
+    w.cash = (wageAt(w, Math.floor(plain[4]!.level) + 3) * 2n).toString();
     const bar = moneyBar(w)!,
       below = plain.filter((need) => bar - need.level > 2);
     expect(below.length).toBeGreaterThanOrEqual(5);
@@ -1370,6 +1480,129 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(fell).toBe(true);
   });
 
+  it('at 넉넉히 and 아낌없이 ranks everyone within the reach by slot gain for an upgrade', () => {
+    // At 넉넉히 the slots below the bar lift the window's cap as at 아낌없이 (→CLUB-33).
+    expect(upgradeCap(spendingStance(club(4), 'recruitment').signing, 5)).toBe(5);
+    expect(upgradeCap(spendingStance(club(3), 'recruitment').signing, 5)).toBe(1);
+    const w = club(5);
+    passFree(w);
+    // No manager's pick: everyone within the reach competes on slot gain alone.
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    const bar = moneyBar(w)!,
+      need = upgradeNeeds(w, 2, [], bar)[0]!,
+      slots = formationOf(w.tactic);
+    expect(need.kind).toBe('upgrade');
+    if (need.kind !== 'upgrade') return;
+    const reach = reachOffers(w),
+      listed = new Set(transferOffers(w).map((offer) => offer.player.id)),
+      // Ranked by the actual slot value, not a rounded gain: 55.73 and 56.27 must not tie.
+      gain = (p: Player) => slotOvr(p, slots[need.slot]!) - need.level,
+      fitting = reach.filter(
+        (offer) =>
+          offer.available &&
+          !offer.player.loanUntil &&
+          (offer.player.positions[need.position] ?? 0) >= 2 &&
+          slotOvr(offer.player, slots[need.slot]!) >= need.level + need.margin,
+      );
+    // The reach holds more players for the slot than the list.
+    expect(fitting.some((offer) => !listed.has(offer.player.id))).toBe(true);
+    staffSignings(w);
+    const bid = staffBids(w).find((one) => one.staff === 'upgrade')!;
+    expect(bid).toBeDefined();
+    const chosen = fitting.find((offer) => offer.player.id === bid.playerId)!;
+    expect(chosen).toBeDefined();
+    // Nobody fitting the slot who would sign within his money beats the chosen one there.
+    const bidFor = new Set(staffBids(w).map((one) => one.playerId));
+    for (const offer of fitting) {
+      if (gain(offer.player) <= gain(chosen.player) || bidFor.has(offer.player.id)) continue;
+      const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
+      expect(wageOffer(w, offer, fee, 'upgrade').ok).toBe(false);
+    }
+  });
+
+  /** A free agent of our country made for the case, at the OVR, position and age given. */
+  function freeAgent(w: World, id: string, ovr: number, position: Player['position'], age: number) {
+    const own = clubOf(w),
+      origin = w.clubs.find((one) => one.country === own.country && one.id !== own.id)!;
+    const player = makePlayer(own.country, w.seed, id, w.year, ovr, position, age, own.tier);
+    movePerson(w, player, origin.id);
+    expect(joinFreeAgents(w, player, w.year)).toBe(true);
+    return player;
+  }
+
+  it("reaches past the search's age and ability bands: they shape the list alone (→ECON-16)", () => {
+    willing();
+    const w = club(5);
+    passFree(w);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    const reach = scoutReach(w),
+      need = upgradeNeeds(w, 2, [], moneyBar(w))[0]!;
+    expect(need.kind).toBe('upgrade');
+    if (need.kind !== 'upgrade') return;
+    // Younger than the search's ages and above its ability ceiling, the ablest at the slot.
+    const id = 'fixture:signings:outside-bands',
+      player = freeAgent(w, id, 99, need.position, reach.age[0] - 1);
+    expect(w.year - player.born).toBeLessThan(reach.age[0]);
+    expect(overall(player)).toBeGreaterThan(reach.ability[1]);
+    expect(transferOffers(w).some((offer) => offer.player.id === id)).toBe(false);
+    expect(reachOffers(w).some((offer) => offer.player.id === id)).toBe(true);
+    staffSignings(w);
+    expect(staffBids(w).find((bid) => bid.playerId === id)).toMatchObject({
+      status: 'completed',
+      fee: '0',
+    });
+  });
+
+  it('a look moves on past more than eight free agents refusing at once, up to its pending bids', () => {
+    const certain = { chance: 1, logOdds: 9, lines: [] };
+    const chance = vi.spyOn(personalTerms, 'termsChance').mockReturnValue(certain),
+      answer = vi
+        .spyOn(personalTerms, 'termsAnswer')
+        .mockReturnValue({ ...certain, accept: false });
+    onTestFinished(() => {
+      chance.mockRestore();
+      answer.mockRestore();
+    });
+    const w = club(5);
+    keep(w, 'FW', 1);
+    delete w.shortlist;
+    // Ten free forwards abler than anyone else within the reach are asked first; all refuse.
+    const free = Array.from({ length: 10 }, (_, i) =>
+      freeAgent(w, `fixture:signings:refusing-${i}`, 97, 'ST', 27),
+    ).map((player) => player.id);
+    staffSignings(w);
+    const bids = staffBids(w);
+    for (const id of free)
+      expect(bids.find((bid) => bid.playerId === id)).toMatchObject({
+        status: 'rejected',
+        refusedBy: 'player',
+      });
+    // The same look goes on to bid for other clubs' forwards until its pending count is reached.
+    const pending = bids.filter((bid) => bid.status === 'pending');
+    expect(pending).toHaveLength(pendingLimit(w));
+    expect(pending.every((bid) => !free.includes(bid.playerId))).toBe(true);
+  });
+
+  it('a funded 3-5-2 short of two forwards bids for both before any upgrade', () => {
+    willing();
+    const w = club(5);
+    w.tactic = 'balanced';
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    keep(w, 'FW', 2);
+    // Every free agent within the reach is passed by: each forward stays a bid until answered.
+    for (const offer of reachOffers(w)) if (offer.freeAgent) tried(w, offer.player.id);
+    expect(formationOf(w.tactic).filter((slot) => lineOf(slot.position) === 'FW')).toHaveLength(2);
+    expect(shortLines(w)).toEqual([
+      expect.objectContaining({ kind: 'short', line: 'FW', count: 2, minimum: 4 }),
+    ]);
+    staffSignings(w);
+    // One pending forward covers one of the two places the line lacks (→CLUB-33).
+    const pending = staffBids(w).filter((bid) => bid.status === 'pending');
+    expect(pending).toHaveLength(pendingLimit(w));
+    expect(pending.map((bid) => bid.staff)).toEqual(['short', 'short', 'upgrade']);
+    for (const bid of pending.slice(0, 2)) expect(lineOf(bid.offer!.player.position)).toBe('FW');
+  });
+
   it('a rich 아낌없이 club bids for a fourth upgrade in a window; 넉넉히 stops at its two', () => {
     const upgraded = (w: World, count: number) => {
       const day = currentDay(w);
@@ -1388,7 +1621,7 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
             staff: 'upgrade',
           },
         ];
-      w.calendar = { day: day + 7 };
+      w.calendar = { day: day + SIGNING_CONFIG.lookDays };
     };
     const generous = club(5);
     upgraded(generous, 3);
@@ -1398,9 +1631,7 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     const bid = staffBids(generous).at(-1)!;
     expect(bid).toMatchObject({ staff: 'upgrade', status: 'pending' });
     // A slot below the bar he fits, and he still beats its measure there by the margin.
-    const player = transferOffers(generous).find(
-        (offer) => offer.player.id === bid.playerId,
-      )!.player,
+    const player = reachOffers(generous).find((offer) => offer.player.id === bid.playerId)!.player,
       slots = formationOf(generous.tactic);
     expect(
       upgradeNeeds(generous, 2, [], bar).some(
@@ -1412,13 +1643,20 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
       ),
     ).toBe(true);
 
+    // 넉넉히 stops at its two unless more XI slots stand below its bar (→CLUB-33).
     const ample = club(4);
     upgraded(ample, 2);
     passFree(ample);
+    const below = slotsBelowBar(ample, 3, windowBar(ample));
     staffSignings(ample);
-    expect(
-      staffBids(ample).filter((one) => one.staff === 'upgrade' && !one.id.startsWith('out:test:')),
-    ).toEqual([]);
+    const more = staffBids(ample).filter(
+      (one) => one.staff === 'upgrade' && !one.id.startsWith('out:test:'),
+    );
+    if (below <= 2) expect(more).toEqual([]);
+    else expect(more.length).toBeGreaterThan(0);
+    expect(upgradeCap(spendingStance(ample, 'recruitment').signing, below)).toBe(
+      Math.max(2, below),
+    );
   });
 
   it('lists non-starters aged 24+ more than 8 below the bar even at 24 or fewer, in one report', () => {
@@ -1447,6 +1685,25 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     // Joined in a recent season other than the takeover's (the squad bought then was already here).
     joinedNow!.joined = [w.year, w.year - 1].find((year) => year !== w.owner?.takeover?.year)!;
     youth!.born = w.year - 23;
+    // Before any signing for their line has joined in this window, the bar lists nobody.
+    makeRoom(w);
+    expect(listed(w)).toEqual([]);
+    // A signing in every line joined in this window: the weak non-starters behind them go.
+    for (const line of ['GK', 'DF', 'MF', 'FW'] as const) {
+      const arrival = [...starters]
+        .map((id) => players.find((p) => p.id === id)!)
+        .find((p) => lineOf(p.position) === line)!;
+      w.recruitmentArrivals = [
+        ...(w.recruitmentArrivals ?? []),
+        {
+          player: arrival.id,
+          name: arrival.name,
+          position: arrival.position,
+          positions: { ...arrival.positions },
+          at: { year: w.year, day: currentDay(w) },
+        },
+      ];
+    }
     staffSignings(w);
     const chosen = listed(w);
     expect(chosen.length).toBeGreaterThan(0);
@@ -1506,6 +1763,221 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(moneyBar(broke)).toBeUndefined();
     makeRoom(broke);
     expect(listed(broke)).toEqual([]);
+  });
+});
+
+describe('a pending player covers what his arrival would meet (→CLUB-33, CLUB-42)', () => {
+  /** A rich 아낌없이 club with three forwards, the fourth gone on the opening day. */
+  function forwardGone() {
+    const w = club(5),
+      opening = currentDay(w),
+      forwards = activePlayers(w).filter((p) => lineOf(p.position) === 'FW');
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    expect(forwards).toHaveLength(4);
+    keep(w, 'FW', 3);
+    // His departure opened a replacement need for his line, now below its minimum too.
+    expect(openNeed(w, forwards[3]!, opening)).toBeDefined();
+    passReachFree(w);
+    return { w, look: opening + SIGNING_CONFIG.lookDays };
+  }
+
+  it('one forward covers the short line and the replacement need a departure opened', () => {
+    willing();
+    const { w, look } = forwardGone();
+    w.calendar = { day: look };
+    expect(shortLines(w)).toEqual([expect.objectContaining({ line: 'FW', count: 3, minimum: 4 })]);
+    expect(openNeeds(w)).toEqual([expect.objectContaining({ line: 'FW' })]);
+    staffSignings(w);
+    const forward = staffBids(w).filter((bid) => bid.staff !== 'upgrade');
+    expect(forward).toEqual([expect.objectContaining({ staff: 'short', status: 'pending' })]);
+    // His arrival clears both, as the look read it.
+    arrive(w, forward[0]!);
+    expect(shortLines(w)).toEqual([]);
+    expect(openNeeds(w)).toEqual([]);
+  });
+
+  it('a look with a forward pending moves as it would once he had joined', () => {
+    willing();
+    // The same club twice: a forward bid for at the opening still pending, or already joined. The
+    // look reads the pending one as joined, in his line, the replacement need and the XI alike.
+    const { w, look } = forwardGone(),
+      bid = pendingFor(w, 'FW', 'short'),
+      joined = structuredClone(w);
+    arrive(
+      joined,
+      joined.bids!.find((one) => one.id === bid.id)!,
+    );
+    const moves = (one: World) => {
+      const before = new Set(one.bids!.map((b) => b.id));
+      one.calendar = { day: look };
+      staffSignings(one);
+      return staffBids(one)
+        .filter((b) => !before.has(b.id))
+        .map((b) => [b.playerId, b.staff]);
+    };
+    // The pending bid holds one of his three places, so its look makes one move fewer.
+    const pending = moves(w);
+    expect(pending.length).toBeGreaterThan(0);
+    expect(moves(joined).slice(0, pending.length)).toEqual(pending);
+  });
+
+  it('looks between regular days only while a replacement need is left uncovered', () => {
+    willing();
+    const { w, look } = forwardGone(),
+      after = look - SIGNING_CONFIG.lookDays + 1,
+      open = structuredClone(w);
+    // With the need open the day after the departure is a look day (→CLUB-42) ...
+    open.calendar = { day: after };
+    staffSignings(open);
+    expect(staffBids(open)).toContainEqual(expect.objectContaining({ staff: 'short' }));
+    // ... but not once a forward is pending, whose arrival would close it.
+    pendingFor(w, 'FW', 'short');
+    const count = w.bids!.length;
+    w.calendar = { day: after };
+    staffSignings(w);
+    expect(w.bids!.slice(count)).toEqual([]);
+  });
+
+  it('a squad short of 20 counts a pending player of any line toward it', () => {
+    willing();
+    const w = club(5),
+      opening = currentDay(w);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    // Every line at its minimum but one defender over: 19 players, the keepers asked for first.
+    for (const [line, count] of [
+      ['GK', 2],
+      ['DF', 7],
+      ['MF', 6],
+      ['FW', 4],
+    ] as const)
+      keep(w, line, count);
+    expect(shortLines(w)).toEqual([expect.objectContaining({ line: 'GK', squad: 19 })]);
+    passReachFree(w);
+    const defender = pendingFor(w, 'DF', 'upgrade');
+    w.calendar = { day: opening + SIGNING_CONFIG.lookDays };
+    staffSignings(w);
+    expect(staffBids(w).filter((bid) => bid.staff === 'short')).toEqual([]);
+    arrive(w, defender);
+    expect(shortLines(w)).toEqual([]);
+  });
+
+  it("an owner's pending bid counts as the arrival it would be", () => {
+    willing();
+    const w = club(5),
+      opening = currentDay(w);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    keep(w, 'FW', 3);
+    passReachFree(w);
+    const owner = pendingFor(w, 'FW');
+    expect(owner.staff).toBeUndefined();
+    w.calendar = { day: opening + SIGNING_CONFIG.lookDays };
+    staffSignings(w);
+    expect(staffBids(w).filter((bid) => bid.staff === 'short')).toEqual([]);
+    arrive(w, owner);
+    expect(shortLines(w)).toEqual([]);
+  });
+
+  it("an owner's pending deal leaves a look the money, wage bill and squad his arrival would", () => {
+    willing();
+    // Income just meets the fixed costs, so every wage added is a planned loss (→ECON-33), and the
+    // cash is tight: the look with the owner's midfielder pending moves as it does once he joined
+    // and his fee was paid, its own bids' wages counted move by move. A countered bid of his pays the
+    // counter when he accepts it (→CLUB-52), and the look reads that.
+    for (const [cash, countered] of [
+      ['200000', false],
+      ['250000', false],
+      ['200000', true],
+      ['250000', true],
+    ] as const) {
+      const w = club(5),
+        look = currentDay(w) + SIGNING_CONFIG.lookDays;
+      w.shortlist = { ...w.shortlist!, requests: [] };
+      passReachFree(w);
+      w.cash = cash;
+      w.budgetPlan = { year: w.year, revenue: operatingCosts(w).annual, sales: '0' };
+      const owner = pendingFor(w, 'MF');
+      if (countered)
+        Object.assign(owner, { status: 'countered', counterFee: ratio(owner.fee, 125n, 100n) });
+      const joined = structuredClone(w);
+      arrive(
+        joined,
+        joined.bids!.find((bid) => bid.id === owner.id)!,
+      );
+      joined.cash = (BigInt(joined.cash) - BigInt(owner.counterFee ?? owner.fee)).toString();
+      const moves = (one: World) => {
+        const before = new Set(one.bids!.map((bid) => bid.id));
+        one.calendar = { day: look };
+        staffSignings(one);
+        return staffBids(one)
+          .filter((bid) => !before.has(bid.id))
+          .map((bid) => [bid.playerId, bid.staff, bid.fee]);
+      };
+      const pending = moves(w);
+      expect(pending.length).toBeGreaterThan(0);
+      expect(pending).toEqual(moves(joined));
+    }
+  });
+
+  it("keeps the window's refusals past the closed-bid history: nobody is asked twice in it", () => {
+    willing();
+    const w = club(5),
+      opening = currentDay(w);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    keep(w, 'FW', 3);
+    // Every free agent within the reach refused at the opening, then 61 more refusals at once.
+    passReachFree(w);
+    for (let i = 0; i < 61; i++)
+      w.bids!.push({
+        id: `out:test:refused:${i}`,
+        direction: 'out',
+        playerId: `test:refused:${i}`,
+        fee: '0',
+        year: w.year,
+        day: opening,
+        due: opening,
+        status: 'rejected',
+        staff: 'short',
+        refusedBy: 'player',
+      });
+    const asked = new Set(w.bids!.map((bid) => bid.playerId));
+    expect(w.bids!.length).toBeLessThanOrEqual(200);
+    // The daily market keeps them through its pruning, so the next look asks none of them again.
+    for (const day of [opening + 1, opening + SIGNING_CONFIG.lookDays]) {
+      w.calendar = { day };
+      dailyMarket(w, false);
+    }
+    for (const id of asked) expect(w.bids!.some((bid) => bid.playerId === id)).toBe(true);
+    expect(
+      w.bids!.filter((bid) => bid.staff && bid.day > opening && asked.has(bid.playerId)),
+    ).toEqual([]);
+    expect(staffBids(w).some((bid) => bid.day > opening)).toBe(true);
+  });
+
+  it("registers each candidate against the squad the window's bids will leave (→CLUB-44)", () => {
+    willing();
+    // A 25-player limit with those aged 21 or under exempt, as the English top flight registers.
+    const rule = vi.spyOn(catalogs, 'registrationRule').mockReturnValue({
+      max: 25,
+      ceiling: 40,
+      exempt: { ageAtMost: 21 },
+      status: 'observed',
+      sources: [],
+    });
+    onTestFinished(() => rule.mockRestore());
+    const w = club(5);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    // 24 counted players: room for one adult more.
+    const adult = activePlayers(w).find((p) => w.year - p.born > 21)!;
+    for (let i = 0; registration(w).counted < 24; i++)
+      w.players.push({ ...structuredClone(adult), id: `fixture:signings:counted:${i}` });
+    expect(registration(w)).toMatchObject({ counted: 24, allowed: 25 });
+    passReachFree(w);
+    staffSignings(w);
+    const pending = staffBids(w).filter((bid) => bid.status === 'pending'),
+      counted = pending.filter((bid) => w.year - bid.offer!.player.born > 21);
+    // One adult takes the last place; any other move is for a player the limit exempts.
+    expect(pending.length).toBeGreaterThan(0);
+    expect(counted).toHaveLength(1);
   });
 });
 
@@ -1585,14 +2057,17 @@ describe("the 단장's wage offer (→CLUB-41, CLUB-53)", () => {
     staffSignings(w);
     const [bid] = staffBids(w);
     expect(bid).toBeDefined();
-    const offer = transferOffers(w).find((one) => one.player.id === bid!.playerId)!,
+    const offer = reachOffers(w).find((one) => one.player.id === bid!.playerId)!,
       c = chances(w, offer),
       step = bid!.wage ?? 1,
       index = WAGE_STEPS.indexOf(step);
     expect(step).toBeLessThanOrEqual(2);
     expect(c[index]!).toBeGreaterThanOrEqual(0.6);
     if (index > 0) expect(c[index - 1]!).toBeLessThan(0.6);
-    expect(reports(w).at(-1)!.detail).toContain(`요구의 ${Math.round(step * 100)}%`);
+    // A look makes several moves: the report is the one this bid refers to.
+    expect(reports(w).find((item) => item.ref === bid!.id)!.detail).toContain(
+      `요구의 ${Math.round(step * 100)}%`,
+    );
   });
 
   it("a free agent refusing at once leaves the day open for a mediation's next alternative (→CLUB-39)", () => {
@@ -1650,7 +2125,9 @@ describe("the 단장's wage offer (→CLUB-41, CLUB-53)", () => {
       if (draw < read.offer.chance) {
         expect(signedRow?.wage).toBe(read.offer.wage);
         expect(bid).toMatchObject({ status: 'completed', fee: '0' });
-        expect(reports(w).at(-1)!.detail).toContain(`요구의 ${Math.round(read.offer.step * 100)}%`);
+        expect(reports(w).find((item) => item.title.includes(signedRow!.name))!.detail).toContain(
+          `요구의 ${Math.round(read.offer.step * 100)}%`,
+        );
         outcomes.add('signed');
       } else {
         expect(signedRow).toBeUndefined();

@@ -458,15 +458,11 @@ describe('contract talks (→CLUB-26)', () => {
     ).toMatchObject({ kind: 'contract-decline' });
   });
 
-  it('declines a raise that does not fit the squad share of the planned income (→CLUB-26, →ECON-33)', () => {
-    // The retired 65%-of-12-months ceiling is gone (CLUB-26 r68): the 단장 lets a raise through
-    // when it fits the room the squad share of this season's planned income leaves above the
-    // players' wage bill.
-    /** The talk answered with this season's plan resting on `revenue(bill, raise, share)`. */
-    const verdict = (
-      revenue: (bill: bigint, raise: bigint, share: bigint) => bigint,
-      cashYears = 2n,
-    ) => {
+  it('declines a raise whose planned loss the cash cannot cover for the runway (→CLUB-26, →ECON-33)', () => {
+    // No share of income caps the wage bill (ECON-33 r62): the 단장 lets a raise through when the
+    // planned loss after it, times the runway of the step he acts on, fits the available capital.
+    /** The talk answered with this season's plan resting on `revenue(annual, raise)`. */
+    const verdict = (revenue: (annual: bigint, raise: bigint) => bigint, cashYears = 2n) => {
       const { w, p } = talking(80);
       // Only this player's raise is being decided against the exact pre-talk wage bill.
       for (const other of activePlayers(w)) {
@@ -474,35 +470,34 @@ describe('contract talks (→CLUB-26)', () => {
         other.until = w.year + TALK_CONFIG.improveSeasons + 1;
         delete other.talk;
       }
-      w.cash = (BigInt(operatingCosts(w).annual) * cashYears).toString();
+      const annual = BigInt(operatingCosts(w).annual);
+      w.cash = (annual * cashYears).toString();
       holdRows(w, { direction: { renewal: 'keepAll' } });
-      const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage),
-        bill = BigInt(operatingCosts(w).playerWages),
-        share = BigInt(delegatePlan(w, 'contracts').share);
+      const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage);
       expect(raise).toBeGreaterThan(0n);
-      w.budgetPlan = { year: w.year, revenue: revenue(bill, raise, share).toString(), sales: '0' };
+      w.budgetPlan = { year: w.year, revenue: revenue(annual, raise).toString(), sales: '0' };
       const plan = delegatePlan(w, 'contracts');
       const events = newYear(w);
       return { w, p, raise, plan, item: talkItems(w, p.id)[0], events };
     };
-    // The squad share just covers the wage bill with the raise: signed.
-    const within = verdict((bill, raise, share) => ((bill + raise) * 10000n + share - 1n) / share);
+    // The income covers every fixed cost with the raise: no planned loss, signed.
+    const within = verdict((annual, raise) => annual + raise);
     expect(BigInt(within.plan.left)).toBeGreaterThanOrEqual(within.raise);
     expect(within.item.title).toContain('받아들였어요');
-    // A little less planned income and the room is short of the raise: the 단장 declines, saying why.
-    const past = verdict((bill, raise, share) => ((bill + raise) * 10000n) / share - 10n);
+    // A loss of half a year's costs: at 적당히 the cash must cover it four seasons, and a year of
+    // costs does not, whatever his temperament: the 단장 declines, saying why.
+    const past = verdict((annual, raise) => annual + raise - annual / 2n, 1n);
     expect(BigInt(past.plan.left)).toBeLessThan(past.raise);
     expect(past.item.title).toContain('거절했어요');
-    expect(past.plan.capital).toBe('0');
-    expect(past.item.detail).toContain('보유 자금을 포함한 예산');
+    expect(past.item.detail).toContain('시즌 버티지 못해');
     expect(
       past.events.find((e) => e.title.includes(past.p.name) && e.kind === 'contract-decline'),
     ).toMatchObject({ kind: 'contract-decline' });
-    // The same income shortfall is allowed when surplus reserves fund the raise.
-    const funded = verdict((bill, raise, share) => ((bill + raise) * 10000n) / share - 10n, 40n);
+    // The same loss is allowed when the cash covers it for the runway.
+    const funded = verdict((annual, raise) => annual + raise - annual / 2n, 40n);
     expect(BigInt(funded.plan.capital)).toBeGreaterThan(0n);
     expect(funded.item.title).toContain('받아들였어요');
-    // Only the players' wages fill the squad share; the staff's are not part of it.
+    // The plan's wage bill is the players' alone; the staff's sit in the other fixed costs.
     expect(past.plan.committed).toBe(operatingCosts(past.w).playerWages);
     expect(BigInt(wageBill(past.w))).toBe(
       BigInt(operatingCosts(past.w).playerWages) +

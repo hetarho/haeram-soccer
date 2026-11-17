@@ -33,7 +33,10 @@ import {
 import { managerRenewal, managerTermLimit } from '../../../../../../packages/engine/src/ops-staff';
 import { coachCriteriaOf, coachDelegated } from '../../../../../../packages/engine/src/hiring';
 import { directionOption } from '../../../../../../packages/engine/src/direction';
-import { SAFETY_ROUNDS, sharePercent } from '../../../../../../packages/engine/src/delegation-info';
+import {
+  RECRUITMENT_LOOKS,
+  SAFETY_ROUNDS,
+} from '../../../../../../packages/engine/src/delegation-info';
 import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import {
   PROSPECT_AGE,
@@ -1289,7 +1292,11 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
       <ul className={s.fixed}>
         <li>{localizeValue(directionOption(w, 'renewal').summary)}</li>
         <li>{richMessage('copy.ClubStaff.9d5c92492d')}</li>
-        <li>{richMessage('delegation.talk.money', { share: sharePercent(plan.share) })}</li>
+        <li>
+          {plan.runway > 0
+            ? richMessage('delegation.talk.runway', { seasons: plan.runway })
+            : richMessage('delegation.talk.income')}
+        </li>
         <li>{richMessage('copy.ClubStaff.e257a74a0b')}</li>
       </ul>
     </section>
@@ -1306,7 +1313,6 @@ export function OfferAnswers({ w }: { w: World }) {
   if (!office) return null;
   const card = cardOf(buildOf(w), 'market').label,
     [bar, prospect] = SALE_BARS[w.build?.market ?? 'standard'],
-    [first, second] = office.delegation.sales.plan.stance.sellAbove,
     recruitment = office.delegation.recruitment.plan,
     signing = recruitment.stance.signing,
     code = clubOf(w).country,
@@ -1346,9 +1352,7 @@ export function OfferAnswers({ w }: { w: World }) {
           })}
         </li>
         <li>
-          {richMessage('copy.ClubStaff.cb6ab20e9f', {
-            first,
-            second,
+          {richMessage('delegation.offer.salesFactors', {
             rounds: SAFETY_ROUNDS,
             days: SALE_FACTOR_VALUES.deadlineDays,
             floor: Math.round(SALE_SHARE.ownFloor * 100),
@@ -1361,14 +1365,21 @@ export function OfferAnswers({ w }: { w: World }) {
         )}
         <li>{richMessage('copy.ClubStaff.5909c8a6d1', { p0: <b>{localizeValue(card)}</b> })}</li>
         <li>
-          {richMessage('delegation.offer.signings', {
+          {richMessage('delegation.offer.looks', {
+            days: RECRUITMENT_LOOKS.lookDays,
+            pending: recruitment.stance.pending,
             upgrades:
               signing.margin === undefined
                 ? sourceMessage('delegation.offer.noUpgrades')
-                : sourceMessage('copy.ClubStaff.42b9e5f546', {
-                    p0: signing.margin,
-                    p1: signing.upgrades,
-                  }),
+                : signing.barCap
+                  ? sourceMessage('delegation.offer.upgradesBar', {
+                      margin: signing.margin,
+                      upgrades: signing.upgrades,
+                    })
+                  : sourceMessage('copy.ClubStaff.42b9e5f546', {
+                      p0: signing.margin,
+                      p1: signing.upgrades,
+                    }),
             left: compactMoney(recruitment.left, code, w.year),
           })}
         </li>

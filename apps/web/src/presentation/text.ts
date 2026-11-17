@@ -70,6 +70,28 @@ for (const [id, source] of Object.entries(sourceMessages)) {
 }
 patterns.sort((a, b) => b.weight - a.weight);
 
+/**
+ * Fractional parameters the engine writes into generated prose in source digits ("0.25"): saved
+ * prose stays locale-independent, and the reader sees them through the shared decimal formatter.
+ */
+export const decimalParameters: Readonly<Record<string, readonly string[]>> = {
+  'delegation.plan.capital': ['years'],
+  'delegation.plan.runway': ['years'],
+  'delegation.plan.runwayNone': ['years'],
+  'delegation.plan.youth': ['share'],
+};
+/** A source-digit number in the locale's notation, with the decimal places it was written with. */
+function localDecimal(locale: LoadedLocale, value: string) {
+  const digits = /^-?\d+(?:\.(\d+))?$/.exec(value);
+  if (!digits) return value;
+  const places = digits[1]?.length ?? 0;
+  return locale.formatters.decimal(Number(value), {
+    useGrouping: false,
+    minimumFractionDigits: places,
+    maximumFractionDigits: places,
+  });
+}
+
 /** Resolve source labels and historical/generated prose without rewriting saved strings. */
 export function localizeText(source: string, depth = 0): string {
   if (!selected || selected.id === selected.defaultPack.id || depth > 8) return source;
@@ -97,7 +119,9 @@ export function localizeText(source: string, depth = 0): string {
     });
     if (!consistent) continue;
     for (const name of Object.keys(parameters))
-      if (!verbatimParameters[pattern.id]?.includes(name))
+      if (decimalParameters[pattern.id]?.includes(name))
+        parameters[name] = localDecimal(selected, parameters[name]);
+      else if (!verbatimParameters[pattern.id]?.includes(name))
         parameters[name] = localizeText(parameters[name], depth + 1);
     return selected.t(pattern.id, parameters);
   }

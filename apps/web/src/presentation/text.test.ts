@@ -7,7 +7,13 @@ import { message, type SourceMessageId } from '../../../../packages/contracts/sr
 import { verbatimParameters } from '../../../../packages/contracts/src/message-parameters';
 import { createLoadedLocale } from './locale';
 import { LocalizedMessage } from './LocalizedMessage';
-import { displayMessage, localizeText, localizeValue, setTextLocale } from './text';
+import {
+  decimalParameters,
+  displayMessage,
+  localizeText,
+  localizeValue,
+  setTextLocale,
+} from './text';
 import type { LocalePack } from './contracts';
 import { validateRegistry } from './registry';
 
@@ -102,6 +108,46 @@ describe('source prose and display translation', () => {
     const id = 'copy.cups.f3b8bcee16';
     expect(displayMessage(id, { p0: '국내 컵' })).not.toMatch(/[가-힣]/);
     expect(localizeText(message(id, { p0: '국내 컵' }))).not.toMatch(/[가-힣]/);
+  });
+
+  it("shows a generated plan report's fractional figures in the reader's decimal notation", () => {
+    const directory = new URL('../../public/presentation/locales/', import.meta.url);
+    const registry = validateRegistry(
+      JSON.parse(readFileSync(new URL('index.json', directory), 'utf8')),
+      'locale',
+    );
+    const pack = (resource: string): LocalePack =>
+      JSON.parse(readFileSync(new URL(resource, directory), 'utf8'));
+    for (const [id, names] of Object.entries(decimalParameters))
+      for (const name of names)
+        expect(sourceMessages[id as SourceMessageId]).toContain(`{${name}}`);
+    // The engine writes source digits, so the saved report reads the same in every locale.
+    const runway = message('delegation.plan.runway', {
+        years: 0.25,
+        capital: '£9,000',
+        seasons: 1,
+      }),
+      youth = message('delegation.plan.youth', {
+        share: 0.5,
+        budget: '£100',
+        pay: '£50',
+        level: '기본 운영',
+        cost: '£50',
+      });
+    expect(runway).toContain('0.25');
+    setTextLocale(createLoadedLocale(registry, pack('de-DE.json'), korean));
+    expect(localizeText(runway)).toContain('0,25');
+    expect(localizeText(runway)).not.toContain('0.25');
+    expect(localizeText(runway)).toContain('£9,000');
+    expect(localizeText(youth)).toContain('0,5');
+    // A whole number of years reads as written.
+    expect(localizeText(message('delegation.plan.runwayNone', { years: 1, capital: '£0' }))).toBe(
+      (pack('de-DE.json').messages['delegation.plan.runwayNone'] as string)
+        .replace('{years}', '1')
+        .replace('{capital}', '£0'),
+    );
+    setTextLocale(createLoadedLocale(registry, pack('en-GB.json'), korean));
+    expect(localizeText(runway)).toContain('0.25');
   });
 
   it('preserves identity parameters even when a name happens to equal a translated label', () => {
