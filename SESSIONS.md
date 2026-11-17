@@ -150,8 +150,10 @@
 | T940 | work | gusta-session-self-improve-lc17-37ba91cb | 6de16f223ced | 2026-11-17T07:59Z |
 | T941 | work | gusta-session-self-improve-lc17-37ba91cb | c0202d1c5444 | 2026-11-17T08:10Z |
 | T937 | work | gusta-session-self-improve-lc17-37ba91cb | 71e620a4c58c | 2026-11-17T08:22Z |
+| T933 | work | gusta-session-self-improve-tm17-ff4b9f94 | 529f38ffc153 | 2026-11-17T09:48Z |
 
 ## log
+- 261117 T933 integrated
 - 261117 T937 integrated
 - 261117 T941 integrated
 - 261117 T940 integrated
@@ -171,4 +173,3 @@
 - 261116 T926 integrated
 - 261116 fix test: warmed replay seed keyed the same under tsx and vitest
 - 261116 T925 integrated
-- 261116 T927 integrated
