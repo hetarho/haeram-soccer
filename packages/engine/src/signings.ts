@@ -584,12 +584,38 @@ export function moneyBar(w: World): number | undefined {
 export const belowBar = (need: SigningNeed, bar: number | undefined) =>
   bar !== undefined && need.kind === 'upgrade' && bar - need.level > need.margin;
 /**
- * The XI slots more than `margin` below the money bar now (→CLUB-33), each counted once: every slot
- * of the current XI measured as `upgradeNeeds` reads it — its starter, or a signing of the window
- * on `day` still settling in there. Nothing is inferred about the XI before the window, so a slot
- * an upgrade lifts above the bar stops counting and no departure or signing adds a slot that is
- * not weak now; repeated signings for one slot, or upgrades for a slot never below the bar, count
- * against the cap without raising it.
+ * The squad as the window open on `day` found it: this window's arrivals taken out and the players
+ * sold in it back, read from their recorded moves. Injuries, unhappiness and the tactic stay as now.
+ */
+function squadAtOpening(w: World, day: number): World {
+  const opening = windowOpening(w, day),
+    inWindow = ({ year, day: at }: { year: number; day: number }) =>
+      year === w.year && at >= opening && at <= day,
+    arrived = new Set(
+      (w.recruitmentArrivals ?? []).filter(({ at }) => inWindow(at)).map(({ player }) => player),
+    ),
+    left = (p: Player) =>
+      p.status === 'sold' &&
+      (w.playerRecords?.[p.id]?.moves ?? []).some(
+        (move) => move.from === w.playerClub && !move.loan && inWindow(move),
+      );
+  return {
+    ...w,
+    players: w.players.map((p) =>
+      arrived.has(p.id)
+        ? { ...p, status: 'sold' as const }
+        : left(p)
+          ? { ...p, status: 'active' as const }
+          : p,
+    ),
+  };
+}
+/**
+ * The XI slots more than `margin` below the money bar (→CLUB-33), each counted once: the slots of the
+ * XI the window open on `day` found (`squadAtOpening`), measured by their starters against the bar
+ * now. An upgrade that lifts one of them leaves it counted, so the cap holds through the window;
+ * a slot a departure weakened, a signing for a slot never below the bar and a repeated signing for
+ * one slot add nothing.
  */
 export function slotsBelowBar(
   w: World,
@@ -598,8 +624,7 @@ export function slotsBelowBar(
   day = currentDay(w),
 ) {
   if (bar === undefined) return 0;
-  return upgradeNeeds(w, margin, joinedThisWindow(w, day)).filter((need) => belowBar(need, bar))
-    .length;
+  return lineStarters(squadAtOpening(w, day)).filter((s) => bar - s.value > margin).length;
 }
 /**
  * The window's upgrade cap (→CLUB-33, →ECON-33): the step's, or at 아낌없이 the XI slots below the

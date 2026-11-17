@@ -47,6 +47,7 @@ import {
 } from './index';
 import { addEvent } from './events';
 import { delegatePlan } from './delegation';
+import { playerRecord } from './player-records';
 import { marketWageAt } from './market-prices';
 import { clubOf, slotOvr } from './player-state';
 import type { SigningNeed } from './signings';
@@ -1160,10 +1161,13 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
       'cap:weak:2',
       'cap:strong',
     ]);
-    // The newcomers start or stand as measures: the weak slot they fill stops counting, and the
-    // signing for a slot never below the bar adds nothing.
+    // The newcomers start or stand as measures: the weak slot they fill still counts once, and
+    // neither the repeat nor the signing for a slot never below the bar adds one.
     expect(ownStarters(w).some((p) => p.id.startsWith('cap:'))).toBe(true);
-    expect(slotsBelowBar(w, 2, bar)).toBeLessThan(below.length);
+    expect(
+      upgradeNeeds(w, 2, joinedThisWindow(w)).filter((need) => belowBar(need, bar)).length,
+    ).toBeLessThan(below.length);
+    expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
     const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true };
     expect(upgradeCap(generous, slotsBelowBar(w, 2, bar))).toBe(3);
   });
@@ -1180,18 +1184,66 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
     // The three ablest starters leave: the bench now holds their slots, weak while it does.
     const sold = [...ownStarters(w)].sort((a, b) => overall(b) - overall(a)).slice(0, 3);
-    for (const p of sold) p.status = 'sold';
-    expect(slotsBelowBar(w, 2, bar)).toBeGreaterThanOrEqual(below.length);
+    const buyer = w.clubs.find((c) => c.id !== w.playerClub)!.id;
+    for (const p of sold) {
+      p.status = 'sold';
+      playerRecord(w, p.id).moves.push({
+        year: w.year,
+        day: currentDay(w),
+        from: w.playerClub,
+        to: buyer,
+        fee: '1',
+      });
+    }
+    expect(upgradeNeeds(w, 2).filter((need) => belowBar(need, bar)).length).toBeGreaterThan(
+      below.length,
+    );
+    expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
     // Three upgrade signings, far abler, take those slots in the same window.
     for (const [i, p] of sold.entries()) {
       joinAble(w, p, `cap:back:${i}`);
       upgradeSigned(w, `cap:back:${i}`);
     }
     expect(joinedThisWindow(w)).toHaveLength(3);
-    // Only the slot that is weak now counts: the cap stays 3, so a fourth upgrade waits.
-    expect(slotsBelowBar(w, 2, bar)).toBeLessThanOrEqual(below.length);
+    // Only the slot weak when the window opened counts: the cap stays 3, so a fourth upgrade waits.
+    expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
     const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true };
     expect(upgradeCap(generous, slotsBelowBar(w, 2, bar))).toBe(3);
+  });
+
+  it('a window opening with more than three weak slots keeps its cap through successive upgrades', () => {
+    const w = club(5);
+    const plain = upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[];
+    const levels = [...new Set(plain.map((need) => need.level))].sort((a, b) => a - b);
+    // A bar between two measures that leaves at least five slots more than 2 below it.
+    const at = levels.findIndex(
+      (_, i) => plain.filter((need) => need.level <= levels[i]!).length >= 5,
+    );
+    expect(at).toBeGreaterThanOrEqual(0);
+    expect(at).toBeLessThan(levels.length - 1);
+    const bar = (levels[at]! + levels[at + 1]!) / 2 + 2,
+      below = plain
+        .filter((need) => bar - need.level > 2)
+        .sort((a, b) => a.level - b.level || a.slot - b.slot);
+    expect(below.length).toBeGreaterThanOrEqual(5);
+    expect(below.length).toBeLessThan(plain.length);
+    const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true };
+    const capNow = () => upgradeCap(generous, slotsBelowBar(w, 2, bar));
+    expect(capNow()).toBe(below.length);
+    // The 단장 fills the weak slots one by one, each with a far abler signing who starts there.
+    for (const [i, need] of below.entries()) {
+      const p = joinAble(w, need.measure, `cap:many:${i}`);
+      upgradeSigned(w, p.id);
+      expect(ownStarters(w).some((starter) => starter.id === p.id)).toBe(true);
+      const done = (w.bids || []).filter((bid) => bid.staff === 'upgrade').length;
+      // Every slot weak at the opening still counts, so the next weak slot stays open to him.
+      expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
+      expect(done < capNow()).toBe(i < below.length - 1);
+    }
+    // Every weak slot is lifted now: none of them is still below the bar.
+    expect(upgradeNeeds(w, 2, joinedThisWindow(w)).filter((need) => belowBar(need, bar))).toEqual(
+      [],
+    );
   });
 
   it('a rich 아낌없이 club bids for a fourth upgrade in a window; 넉넉히 stops at its two', () => {
