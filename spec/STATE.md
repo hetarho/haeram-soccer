@@ -65,7 +65,6 @@
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T930 | Keep one browser journey instance per distinct path or layout | ARCH | - | todo |
-| T931 | Let a funded 단장 at 넉넉히 and 아낌없이 spend the owner's money on a full squad | CLUB ECON | - | doing@261117.iv17 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -75,6 +74,6 @@
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
 
 ## next
-- gusta-implement-task T930
+- gusta-implement-task T916 T930
 - Session pf17 landed T920 T921 T926 T927 (identical worlds; history CPU about 3476 → 2293 ms a season, reports/261117-pf17); T925 and T928 recorded no gain.
 - NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
