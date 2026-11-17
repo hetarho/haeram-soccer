@@ -69,7 +69,6 @@
 | T948 | Loss-runway plan | ECON CLUB STAFF ARCH | - | todo |
 | T949 | Funded club buys the best | CLUB ECON | T948 | todo |
 | T951 | Market value ranking and paid moves down | WORLD CLUB LEAGUE ECON ARCH | T945 T948 | todo |
-| T952 | War-gap refills ready to play | WORLD LEAGUE | T947 | todo |
 | T950 | Calibrate market and levels | WORLD LEAGUE CLUB ECON | T945 T947 T949 T951 T952 | todo |
 
 ## work
@@ -83,4 +82,5 @@
 | xf18-market | 3 | 6 | 4 | 2 | 0 | 2 | 0 | 2026-11-17T20:13:36.621Z | [history](work/xf18-market.json) |
 
 ## next
+- gusta-implement-task T948
 - inspect work board for remaining tasks
