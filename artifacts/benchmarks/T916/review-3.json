@@ -1,0 +1,32 @@
+{
+  "task": "T943",
+  "recipeHash": "41c3c8e35dddf73bbf28e3b4625a1d25f675d61adb206f0f74d466ceef70bfd4",
+  "manifestHash": "b1b18f9c429a7391d6f25151354449afb6328286952f05d63c4561b7edf972db",
+  "patches": {
+    "control": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "c1": "eb09a8a9fe1ba3d15969a119bd5369edc04567956492fe54890e8f737d749a7f",
+    "c2": "413ba80a9b32f7e18da5182e2b47838ab1268c6b9e8e8a94d6b957ddc191a7aa",
+    "c1-c2": "1e026a6e337b34a63286118f2c616fed779bcc6be53ab398bc1e508297f32e8b"
+  },
+  "reviewer": {
+    "provider": "codex",
+    "session": "cf17-review-3-codex-gpt-6.1-sol"
+  },
+  "author": {
+    "provider": "claude",
+    "session": "cf17 loop dispatch f1194a5b-df33-40c3-be00-3bcd352abf5e + cf17 host corrections 4b6012ea and second corrections"
+  },
+  "approved": true,
+  "checklist": {
+    "1": "pass: Requested prepare returned ok with both exact hashes; commit, anchor, patch, runtime and manifest guards fail closed, and recipe identity covers transitive local execution helpers.",
+    "2": "pass: Independent Git ls-tree comparison of 584 files per historical tree and git diff confirmed only material.test.ts and persisted-world.integration.test.ts differ.",
+    "3": "pass: Historical anchor blob IDs and SHA-256 values match Git objects, the manifest and retained continuation evidence.",
+    "4": "pass: C1 uses existing spreadHeadroom and an actual mainOvr floor only for generated players before wages; makePlayer, flat initial ability, attributes, identities and draw count remain unchanged.",
+    "5": "pass: C2 subtracts exactly 11 from the existing single raw academy potential draw; remaining intake logic is unchanged, and C1+C2 exactly concatenates both patches.",
+    "6": "pass: Fresh 1930 worlds use the original initial advanceRound then daily advanceDays through 1950; annual rows, sums and all strict-order failures persist atomically, and all 21 endpoint cells use the control's original baseline.",
+    "7": "pass: Endpoint hashing uses UTF-8 JSON.stringify(world) and byte count; the fixed oracle remains unchanged, with serializer reproduction explicitly unresolved until measured.",
+    "8": "pass: Each variant receives its own historical archive and isolated bundle; historical closure hashes match, with no checkpoint, cached world, borrowed output or production-source mutation.",
+    "9": "pass: Matching independent receipt and CLI shared lock are required; runOwned handles signals, timeout and later startup failure, awaits cleanup before lock release, and preserves stage cleanup receipts; focused tests and a real-runner EEXIST reproduction passed."
+  },
+  "findings": []
+}
