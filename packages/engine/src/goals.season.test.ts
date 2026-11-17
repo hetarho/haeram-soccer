@@ -4,7 +4,7 @@ import { canonical } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { advanceRound, clubMilestones, clubOf, simulateSeason } from './index';
-import { holdRows, startWork } from './testing';
+import { holdRows, setNpcLevel, startWork } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { byId, world } from './goals.testkit';
 
@@ -37,13 +37,15 @@ describe('milestones from retained club facts', () => {
     let restored = (await decode(await encode(w, 1, 0))).world;
     expect(clubMilestones(restored)).toEqual(milestones);
     expect(canonical(restored)).toBe(canonical(w));
-    // Force a losing roster, then let the real league close and archive its relegation.
+    // Force a losing roster, then let the real league close and archive its relegation. A club
+    // nobody owns is as strong as its persisted squad (→LEAGUE-10), so its squad is made strong;
+    // the summer's youth intake alone (→WORLD-16) does not reliably outrate a roster of 5s.
     const losing = (w: World) => {
       for (const player of w.players) {
         for (const a of ATTRIBUTES) player.attrs[a] = 5;
         player.potential = 5;
       }
-      for (const club of w.clubs) if (club.id !== w.playerClub) club.strength = 95;
+      for (const club of w.clubs) if (club.id !== w.playerClub) setNpcLevel(w, club, 95);
       w.manager.ability = 0;
     };
     losing(restored);
