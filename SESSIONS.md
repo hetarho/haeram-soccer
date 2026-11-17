@@ -133,6 +133,7 @@
 - 261117 suggest CLUB-33 T931: A funded 1960 top-flight takeover still signs about one player a season: its cautious 단장 spends every summer look on a short line whose bids are refused in turn (one move a look, none while a bid is pending), leaving £41m–£61m unspent → consider parallel bids or a higher short-line bid at 넉넉히/아낌없이 via /gusta-sketch
 - 261117 decided CLUB-52 CLUB-53 T932: Owner asked for structured, probabilistic, extensible bid answers → selling-club answer (always at asking, reservation share 0.85 + factors ± 0.08, counter at R within 0.25 of asking, refuse below) and personal terms (σ(1.5 + factors): wage 3·ln r below / 1.5·ln min(r, 2.5) above, −1.2 a division × ambition, reputation gap ÷ 20, Europe +0.6/+0.3/+0.15, leaving Europe −0.4, would start +0.4, loses his place −0.9, free agent +1.0), starting values as tunable module constants (alt: one combined roll | a per-path formula)
 - 261117 decided CLUB-41 ECON-33 T933: The 단장 offers the smallest wage step reaching a 60% chance within 100% (steps 1–2), 125% (적당히), 150% (넉넉히), 200% (아낌없이) → a rich club wins players a thrifty one cannot (alt: always the demand | the ceiling at once)
+- 261117 decided CLUB-33 T935: Rich clubs replace weak players → money bar at 넉넉히/아낌없이: highest OVR whose 27-year-old wage × 25 fits the signing money; every XI slot more than the margin below it an upgrade need, 아낌없이 cap up to those slots; non-XI 24+ players 8 below it listed (alt: raise caps only | sell by a fixed OVR)
 
 ## unlanded
 | id | tag | branch | commit | at |
