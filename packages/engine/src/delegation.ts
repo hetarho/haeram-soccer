@@ -48,17 +48,21 @@ import { pushInbox } from './inbox';
 export interface SpendingStance {
   /** The wage bill's shares of income (percent) above which the staff sell harder (→CLUB-18). */
   sellAbove: readonly [number, number];
-  /** The chief scout's upgrades (→CLUB-33): a margin over a starter (none: no upgrades), a cap. */
-  signing: { margin?: number; upgrades: number };
+  /**
+   * The 단장's upgrades (→CLUB-33): a margin over a starter (none: no upgrades), a cap a window, the
+   * squad less its listed players they stop above (none: the registration limit) and whether he
+   * lists surplus players to make room.
+   */
+  signing: { margin?: number; upgrades: number; room?: number; makeRoom?: boolean };
   /** Points the 단장's bids add to the asking share (→CLUB-41). */
   bidExtra: number;
 }
 const UPGRADES: readonly SpendingStance['signing'][] = [
   { upgrades: 0 },
   { upgrades: 0 },
-  { margin: 5, upgrades: 1 },
-  { margin: 3, upgrades: 2 },
-  { margin: 2, upgrades: 3 },
+  { margin: 5, upgrades: 1, room: 24 },
+  { margin: 3, upgrades: 2, room: 28, makeRoom: true },
+  { margin: 2, upgrades: 3, makeRoom: true },
 ];
 function stanceOf(level: SpendRequest): SpendingStance {
   const line = SELL_LINE[level];

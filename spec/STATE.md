@@ -65,7 +65,7 @@
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T930 | Keep one browser journey instance per distinct path or layout | ARCH | - | todo |
-| T931 | Let a funded 단장 at 넉넉히 and 아낌없이 spend the owner's money on a full squad | CLUB ECON | - | todo |
+| T931 | Let a funded 단장 at 넉넉히 and 아낌없이 spend the owner's money on a full squad | CLUB ECON | - | doing@261117.iv17 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |

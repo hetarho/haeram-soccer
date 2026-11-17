@@ -81,9 +81,9 @@ export const SAFETY_ROUNDS = 4;
 /** Years of fixed costs kept before drawing capital, indexed by the step acted on (→ECON-33). */
 export const RESERVE_YEARS: Readonly<Record<Temperament, Readonly<Record<SpendRequest, number>>>> =
   {
-    cautious: { 1: 50, 2: 40, 3: 30, 4: 20, 5: 10 },
-    balanced: { 1: 40, 2: 30, 3: 20, 4: 10, 5: 5 },
-    bold: { 1: 30, 2: 20, 3: 10, 4: 5, 5: 0 },
+    cautious: { 1: 50, 2: 40, 3: 30, 4: 2, 5: 1 },
+    balanced: { 1: 40, 2: 30, 3: 20, 4: 1, 5: 0 },
+    bold: { 1: 30, 2: 20, 3: 10, 4: 0, 5: 0 },
   };
 /** The cash buffer is waived only for the bold director's most expansive request. */
 export function safetyRounds(w: World, key: BudgetResponsibility): number {

@@ -45,7 +45,7 @@ import { isDelegated } from './responsibilities';
 import { signFreeAgent, squadCommand } from './ops-squad';
 import { isForeignCandidate, transferOffers } from './scout-search';
 import { POLICY_INFO, policyOf } from './policy';
-import { placeBid } from './transfers';
+import { placeBid, setTransferStance, transferStance } from './transfers';
 import { transferWindow, transferWindowDays } from './transfer-window';
 
 /**
@@ -56,8 +56,13 @@ export const SIGNING_CONFIG = {
   lookDays: 7,
   lineMinimum: LINE_MINIMUM,
   squadMinimum: SQUAD_TARGET,
-  /** He looks for upgrades only while the squad has at most this many players. */
-  upgradeSquad: 24,
+  /**
+   * Above this many players less the listed, a 단장 who makes room lists one surplus player a
+   * regular look (→CLUB-33); each step's upgrade room is its stance's (→ECON-33).
+   */
+  trimSquad: 24,
+  /** The youngest a player he lists to make room may be. */
+  trimAge: 24,
   /** A shortlisted candidate must beat a slot's starter there by this much to be requested. */
   requestMargin: 5,
   /** The level a candidate must play a slot's position at to fit it: 준수 (→PLAYER-4). */
@@ -613,6 +618,46 @@ function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, why: 
 }
 
 /**
+ * At 넉넉히 and 아낌없이 with sales delegated too, a regular look over `trimSquad` players less the
+ * listed lists one surplus player at 협상 가능 (→CLUB-33, →CLUB-22): outside the manager's XI, aged
+ * `trimAge` or over, never loaned, retiring or joined in this window; the least able, then the
+ * oldest, then by id. Listing is no move: it does not wait for his bids.
+ */
+export function makeRoom(w: World, day = currentDay(w)) {
+  if (!spendingStance(w, 'recruitment').signing.makeRoom || !isDelegated(w, 'sales')) return;
+  const players = activePlayers(w),
+    unlisted = players.filter((p) => transferStance(p) !== 'listed').length;
+  if (unlisted <= SIGNING_CONFIG.trimSquad) return;
+  const starters = new Set(ownStarters(w).map((p) => p.id)),
+    joined = new Set(joinedThisWindow(w, day).map((p) => p.id));
+  const surplus = players
+    .filter(
+      (p) =>
+        transferStance(p) === 'open' &&
+        !p.loanUntil &&
+        p.retiring === undefined &&
+        !starters.has(p.id) &&
+        !joined.has(p.id) &&
+        w.year - p.born >= SIGNING_CONFIG.trimAge,
+    )
+    .sort((a, b) => overall(a) - overall(b) || a.born - b.born || compareIds(a.id, b.id))[0];
+  if (!surplus) return;
+  setTransferStance(w, surplus.id, 'listed');
+  pushInbox(w, {
+    kind: 'staff-report',
+    title: sourceMessage('copy.signings.036411ae66', { p0: surplus.name }),
+    detail: sourceMessage('copy.signings.5ebc835a55', {
+      p0: unlisted,
+      p1: SIGNING_CONFIG.trimSquad,
+      p2: surplus.position,
+      p3: w.year - surplus.born,
+      p4: overall(surplus),
+    }),
+    attention: false,
+  });
+}
+
+/**
  * The 단장's look (→CLUB-33): with transfers delegated and a window open, on its opening
  * day and every 7th day after it (plus a negotiator's next-day raises), at most one move —
  * a free agent signed or a trait-priced bid — for the first need a candidate meets within 재정 기조; none while one of his bids is open.
@@ -628,6 +673,7 @@ export function staffSignings(w: World) {
     if (resolveDelegatedMediations(w)) return;
   }
   if (!isDelegated(w, 'recruitment')) return;
+  if (regular) makeRoom(w, day);
   const bids = windowBids(w, day);
   if (
     bids.some(
@@ -686,9 +732,11 @@ export function staffSignings(w: World) {
     .filter((need) => need.day < day)
     .map((need) => ({ kind: 'replacement', line: need.line, playerId: need.playerId }));
   if (!regular && !retry && !replacements.length) return;
-  const squad = activePlayers(w).length;
+  const players = activePlayers(w),
+    squad = players.length;
   if (squad >= registration(w).ceiling) return;
   const stance = spendingStance(w, 'recruitment'),
+    unlisted = players.filter((p) => transferStance(p) !== 'listed').length,
     upgrades = bids.filter(
       (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
     ).length,
@@ -701,7 +749,7 @@ export function staffSignings(w: World) {
       ...replacements,
       ...(stance.signing.margin !== undefined &&
       upgrades < stance.signing.upgrades &&
-      squad <= SIGNING_CONFIG.upgradeSquad
+      (stance.signing.room === undefined || unlisted <= stance.signing.room)
         ? upgradeNeeds(w, stance.signing.margin, joined)
         : []),
     ];

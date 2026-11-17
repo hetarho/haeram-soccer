@@ -5741,6 +5741,8 @@
     "copy.signings.2bce8a2d24": "Talep edilen miktarın %{p0}'si {p1}",
     "copy.signings.e773f7135a": "Yöneticinin görüşmesi sona erdi · {p0}",
     "copy.signings.0e14ee5884": "{p0} genel müdürü işe alma teklifi",
+    "copy.signings.036411ae66": "Genel müdür transfer listesine koydu · {p0}",
+    "copy.signings.5ebc835a55": "Transfer listesi dışındaki {p0} oyuncu {p1} sınırını aşıyor, bu yüzden yer açıyor · {p2} · {p3} yaş · OVR {p4}",
     "copy.signings.b38bc71204": "Şu anda aday, transfer piyasası ve kadro şartlarıyla ilerleyemeyiz.",
     "copy.signings.475daa54a3": "Önce bu haftanın işe alım incelemesini veya devam eden müzakereleri bitirmem gerekiyor.",
     "copy.signings.e890653f5c": "Yeterli param yok.",

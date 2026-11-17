@@ -5826,6 +5826,8 @@
     "copy.signings.2bce8a2d24": "要求額の{p0}%・{p1}",
     "copy.signings.e773f7135a": "団長興政終了・{p0}",
     "copy.signings.0e14ee5884": "団長獲得提案・{p0}",
+    "copy.signings.036411ae66": "団長が移籍リストに登録・{p0}",
+    "copy.signings.5ebc835a55": "移籍リスト外の選手{p0}人が{p1}人を超えたため枠を空けます・{p2}・{p3}歳・OVR {p4}",
     "copy.signings.b38bc71204": "現在候補・移籍市場・選手団条件で進行できません。",
     "copy.signings.475daa54a3": "今週の入社審査または進行中の交渉を先に終えなければなりません。",
     "copy.signings.e890653f5c": "保有資金が不足しています。",

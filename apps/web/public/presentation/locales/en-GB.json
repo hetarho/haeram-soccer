@@ -6339,6 +6339,8 @@
     "copy.signings.2bce8a2d24": "{p0}% of the requested amount · {p1}",
     "copy.signings.e773f7135a": "Leader's Negotiation Ended {p0}",
     "copy.signings.0e14ee5884": "Proposal to recruit general manager · {p0}",
+    "copy.signings.036411ae66": "General manager transfer-lists · {p0}",
+    "copy.signings.5ebc835a55": "{p0} players off the transfer list exceed {p1}, so he makes room · {p2} · age {p3} · OVR {p4}",
     "copy.ConstantsPage.3f81234726": "HAERAM SOCCER / GAMEPLAY RELATIONSHIPS",
     "copy.ConstantsPage.d23e534306": "GAMEPLAY / {p0}",
     "copy.Workbench.44bd7ae60f": "H",

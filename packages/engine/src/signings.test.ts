@@ -48,6 +48,8 @@ import { scoutReach } from './scout-search';
 import { joinFreeAgents } from './free-agents';
 import { retainPerson, openEmployment } from './person-careers';
 import { movePerson } from './npc-continuity';
+import { registration } from './registration';
+import { transferStance } from './transfers';
 
 /** Release the actual listed club player, keeping his identity and unchanged sporting quality. */
 function releaseListed(w: World, line?: Line) {
@@ -860,5 +862,112 @@ describe('a signing still settling in closes the slot he was bought for (→CLUB
     );
     expect(replacement[0]).toEqual(replacement[1]);
     expect(replacement[0]).toMatchObject([{ staff: 'replacement' }]);
+  });
+});
+
+describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)', () => {
+  const listed = (w: World) => activePlayers(w).filter((p) => transferStance(p) === 'listed');
+  const roomReports = (w: World) =>
+    (w.inbox || []).filter((item) => item.title.startsWith('단장 이적 명단 등록'));
+  /** Pads the squad to `size` with copies of its weakest non-starter, five points less able. */
+  function pad(w: World, size: number) {
+    const starters = new Set(ownStarters(w).map((p) => p.id)),
+      base = activePlayers(w)
+        .filter((p) => !starters.has(p.id))
+        .sort((a, b) => overall(a) - overall(b))[0]!;
+    const weaker = Object.fromEntries(
+      Object.entries(base.attrs).map(([key, value]) => [key, Math.max(1, value - 5)]),
+    ) as Player['attrs'];
+    const added: Player[] = [];
+    const count = size - activePlayers(w).length;
+    for (let i = 0; i < count; i++) {
+      const p = { ...structuredClone(base), id: `pad:${String(i).padStart(2, '0')}` };
+      p.attrs = { ...weaker };
+      p.born = w.year - 26;
+      delete p.stance;
+      w.players.push(p);
+      added.push(p);
+    }
+    return added;
+  }
+
+  it('upgrades a 30-player squad at 아낌없이, at 적당히 only once the listed leave it 24', () => {
+    const generous = club(5);
+    pad(generous, 30);
+    expect(activePlayers(generous).length).toBeLessThan(registration(generous).ceiling);
+    passFree(generous);
+    staffSignings(generous);
+    expect(staffBids(generous)).toMatchObject([{ staff: 'upgrade', status: 'pending' }]);
+
+    const moderate = club(3);
+    pad(moderate, 30);
+    passFree(moderate);
+    staffSignings(moderate);
+    expect(staffBids(moderate)).toEqual([]);
+    // Listed players do not count: six listed leave 24.
+    const starters = new Set(ownStarters(moderate).map((p) => p.id));
+    for (const p of activePlayers(moderate)
+      .filter((one) => !starters.has(one.id))
+      .slice(0, 6))
+      p.stance = 'listed';
+    staffSignings(moderate);
+    expect(staffBids(moderate)).toMatchObject([{ staff: 'upgrade', status: 'pending' }]);
+    // 적당히 lists nobody to make room.
+    expect(roomReports(moderate)).toEqual([]);
+  });
+
+  it('lists the least able, then the oldest, non-starter aged 24+ a regular look', () => {
+    const w = club(5);
+    const [younger, older, youth, loaned, retiring] = pad(w, 30);
+    older!.born = w.year - 31;
+    // Even less able, but never listed: aged 23, on loan, or retiring.
+    for (const p of [youth!, loaned!, retiring!])
+      p.attrs = Object.fromEntries(
+        Object.entries(p.attrs).map(([key, value]) => [key, Math.max(1, value - 5)]),
+      ) as Player['attrs'];
+    youth!.born = w.year - 23;
+    loaned!.loanUntil = w.year + 1;
+    retiring!.retiring = w.year;
+    staffSignings(w);
+    expect(listed(w).map((p) => p.id)).toEqual([older!.id]);
+    expect(roomReports(w).at(-1)).toMatchObject({
+      kind: 'staff-report',
+      title: `단장 이적 명단 등록 · ${older!.name}`,
+    });
+    expect(roomReports(w).at(-1)!.detail).toContain('30명이 24명을 넘어');
+    // Not on a day between regular looks.
+    w.calendar = { day: currentDay(w) + 1 };
+    staffSignings(w);
+    expect(listed(w)).toHaveLength(1);
+    // The next regular look lists the next one.
+    w.calendar = { day: currentDay(w) + 6 };
+    staffSignings(w);
+    expect(
+      listed(w)
+        .map((p) => p.id)
+        .sort(),
+    ).toEqual([older!.id, younger!.id].sort());
+    expect(roomReports(w).at(-1)!.title).toBe(`단장 이적 명단 등록 · ${younger!.name}`);
+  });
+
+  it('lists nobody with sales direct, at 적당히 or with 24 left', () => {
+    const direct = club(5);
+    direct.settings.responsibilities.sales = 'direct';
+    pad(direct, 30);
+    staffSignings(direct);
+    expect(listed(direct)).toEqual([]);
+
+    const moderate = club(3);
+    pad(moderate, 30);
+    staffSignings(moderate);
+    expect(listed(moderate)).toEqual([]);
+
+    const trimmed = club(5);
+    pad(trimmed, 25);
+    const starters = new Set(ownStarters(trimmed).map((p) => p.id));
+    activePlayers(trimmed).find((p) => !starters.has(p.id))!.stance = 'listed';
+    staffSignings(trimmed);
+    expect(listed(trimmed)).toHaveLength(1);
+    expect(roomReports(trimmed)).toEqual([]);
   });
 });

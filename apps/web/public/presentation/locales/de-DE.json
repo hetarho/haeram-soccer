@@ -6006,6 +6006,8 @@
     "copy.signings.2bce8a2d24": "{p0} % des angeforderten Betrags {p1}",
     "copy.signings.e773f7135a": "Verhandlung des Managers endet · {p0}",
     "copy.signings.0e14ee5884": "Vorschlag zur Einstellung des General Managers {p0}",
+    "copy.signings.036411ae66": "General Manager setzt auf die Transferliste · {p0}",
+    "copy.signings.5ebc835a55": "{p0} Spieler außerhalb der Transferliste übersteigen {p1}, daher schafft er Platz · {p2} · {p3} Jahre · OVR {p4}",
     "copy.signings.b38bc71204": "Derzeit können wir nicht mit den Kandidaten-, Transfermarkt- und Kaderbedingungen fortfahren.",
     "copy.signings.475daa54a3": "Ich muss zuerst die Einstellungsüberprüfung dieser Woche oder die laufenden Verhandlungen abschließen.",
     "copy.signings.e890653f5c": "Ich habe nicht genug Geld.",

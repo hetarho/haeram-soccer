@@ -18,6 +18,7 @@ import {
   delegateOf,
   personOf,
   requestOf,
+  RESERVE_YEARS,
   settingDelegate,
   settingPerson,
   temperamentOf,
@@ -66,13 +67,17 @@ describe('the 단장 plans income and reserve-funded investment', () => {
       lot = delegatePlan(w, 'recruitment', 5);
     expect(BigInt(little.revenue)).toBeGreaterThan(0n);
     expect(little.revenue).toBe(seasonRevenue(w));
-    // Squad cost (wages and fees) may take 45% of the income asked for the minimum, 80% freely.
+    // Squad cost (wages and fees) may take 45% of the income asked for the minimum, 80% freely;
+    // freely, a balanced 단장 keeps no cash back, so all of it is added as capital.
+    expect(little.capital).toBe('0');
+    expect(lot).toMatchObject({ reserveYears: 0, capital: w.cash });
+    const fromIncome = (amount: string) => (BigInt(amount) - BigInt(lot.capital)).toString();
     expect(share(little.budget, little.revenue)).toBeCloseTo(45, 0);
-    expect(share(lot.budget, lot.revenue)).toBeCloseTo(80, 0);
+    expect(share(fromIncome(lot.budget), lot.revenue)).toBeCloseTo(80, 0);
     // The wages already take 52%: nothing is left for fees at 45%, 28% of the income at 80%.
     expect(little).toMatchObject({ over: true, left: '0', response: 'followed' });
     expect(lot.over).toBe(false);
-    expect(share(lot.left, lot.revenue)).toBeCloseTo(28, 0);
+    expect(share(fromIncome(lot.left), lot.revenue)).toBeCloseTo(28, 0);
     // Each step between them leaves at least as much.
     const left = ([1, 2, 3, 4, 5] as const).map((level) =>
       BigInt(delegatePlan(w, 'recruitment', level).left),
@@ -90,9 +95,9 @@ describe('the 단장 plans income and reserve-funded investment', () => {
 
   it('keeps income budgets unchanged below reserves and stops unaffordable cash spending', () => {
     const w = club('delegation-cash'),
-      rich = delegatePlan(w, 'recruitment', 5);
+      rich = delegatePlan(w, 'recruitment', 3);
     w.cash = (BigInt(w.cash) / 20n).toString();
-    expect(delegatePlan(w, 'recruitment', 5)).toEqual(rich);
+    expect(delegatePlan(w, 'recruitment', 3)).toEqual(rich);
     // With almost no cash, the stop holds a spend the plan would allow.
     w.cash = '1';
     expect(insolvencyStop(w, 0n, 0n)).toContain('현금이 바닥나지 않게');
@@ -146,6 +151,25 @@ describe('the 단장 plans income and reserve-funded investment', () => {
     expect(insolvencyStop(w, BigInt(w.cash), 0n, true, 'staff')).toBeDefined();
     w.cash = '-1';
     expect(availableCapital(w, 0)).toBe(0n);
+  });
+
+  it('keeps at most two years back at 넉넉히 and 아낌없이, so funded cash is spent (→ECON-33)', () => {
+    expect(RESERVE_YEARS).toEqual({
+      cautious: { 1: 50, 2: 40, 3: 30, 4: 2, 5: 1 },
+      balanced: { 1: 40, 2: 30, 3: 20, 4: 1, 5: 0 },
+      bold: { 1: 30, 2: 20, 3: 10, 4: 0, 5: 0 },
+    });
+    const w = club('delegation-generous'),
+      annual = BigInt(operatingCosts(w).annual);
+    w.cash = (annual * 25n).toString();
+    // A cautious 단장 acts on 아낌없이 one step lower, at 넉넉히: two years kept back.
+    holdTemperament(w, 'director', 'cautious');
+    expect(delegatePlan(w, 'recruitment', 5)).toMatchObject({ reserveYears: 2 });
+    expect(BigInt(delegatePlan(w, 'recruitment', 5).capital)).toBe(annual * 23n);
+    expect(delegatePlan(w, 'recruitment', 3)).toMatchObject({ reserveYears: 30, capital: '0' });
+    holdTemperament(w, 'director', 'balanced');
+    expect(BigInt(delegatePlan(w, 'recruitment', 4).capital)).toBe(annual * 24n);
+    expect(BigInt(delegatePlan(w, 'recruitment', 5).capital)).toBe(annual * 25n);
   });
 
   it('allows a wealthy loss-making club to sign rather than enforcing a revenue-only wage cap', () => {
@@ -250,6 +274,8 @@ describe('the 단장 plans income and reserve-funded investment', () => {
 
   it("measures the season's fees once: each signing spends what is left, never the base", () => {
     const w = club('delegation-spent');
+    // A cautious 단장 keeps two years back at 아낌없이: the 1.6 years of cash add no capital.
+    holdTemperament(w, 'director', 'cautious');
     w.delegationRequests = { recruitment: 5 };
     const before = delegatePlan(w, 'recruitment'),
       fee = BigInt(before.left) / 4n;
@@ -263,6 +289,8 @@ describe('the 단장 plans income and reserve-funded investment', () => {
 
   it("the engine runs on his numbers: signings and renewals inside the squad's share", () => {
     const w = club('delegation-verdicts');
+    // A cautious 단장 acts on 아낌없이 at 넉넉히 and keeps two years back: no capital is added.
+    holdTemperament(w, 'director', 'cautious');
     w.delegationRequests = { recruitment: 5 };
     const plan = delegatePlan(w, 'recruitment'),
       incoming = { ...structuredClone(w.players[0]), id: 'delegation:incoming', wage: '0' };
@@ -270,7 +298,7 @@ describe('the 단장 plans income and reserve-funded investment', () => {
     expect(signingVerdict(w, incoming, (BigInt(plan.left) + 1n).toString()).reason).toContain(
       '영입에 쓸 돈',
     );
-    // A wage that takes the bill past 80% of the income is refused whatever the fee.
+    // A wage that takes the bill past the squad share of the income is refused whatever the fee.
     const room = BigInt(plan.budget) - BigInt(plan.committed);
     expect(signingVerdict(w, { ...incoming, wage: (room + 1n).toString() }, '0').reason).toContain(
       '연봉 총액',

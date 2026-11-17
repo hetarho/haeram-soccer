@@ -5765,6 +5765,8 @@
     "copy.signings.2bce8a2d24": "요구액의 {p0}% · {p1}",
     "copy.signings.e773f7135a": "단장 흥정 종료 · {p0}",
     "copy.signings.0e14ee5884": "단장 영입 제안 · {p0}",
+    "copy.signings.036411ae66": "단장 이적 명단 등록 · {p0}",
+    "copy.signings.5ebc835a55": "이적 명단 밖 선수 {p0}명이 {p1}명을 넘어 자리를 비워요 · {p2} · {p3}세 · OVR {p4}",
     "copy.signings.8ca7bd666f": "{p0}{p1} · {p2} · {p3}세 · OVR {p4} · 제안 {p5} · {p6}% (요구액 {p7}) · {p8} · {p9}",
     "copy.signings.b38bc71204": "현재 후보·이적시장·선수단 조건으로 진행할 수 없어요.",
     "copy.signings.475daa54a3": "이번 주 영입 검토 또는 진행 중인 협상을 먼저 마쳐야 해요.",

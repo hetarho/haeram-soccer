@@ -5762,6 +5762,8 @@
     "copy.signings.2bce8a2d24": "{p0}% du montant demandé {p1}",
     "copy.signings.e773f7135a": "Fin des négociations avec le manager · {p0}",
     "copy.signings.0e14ee5884": "Proposition de recrutement du directeur général {p0}",
+    "copy.signings.036411ae66": "Le directeur général place sur la liste des transferts · {p0}",
+    "copy.signings.5ebc835a55": "{p0} joueurs hors de la liste des transferts dépassent {p1}, il fait donc de la place · {p2} · {p3} ans · OVR {p4}",
     "copy.signings.b38bc71204": "Actuellement, nous ne pouvons pas procéder avec les conditions des candidats, du marché des transferts et de l’équipe.",
     "copy.signings.475daa54a3": "Je dois d'abord terminer l'examen du recrutement de cette semaine ou les négociations en cours.",
     "copy.signings.e890653f5c": "Je n'ai pas assez de fonds.",
