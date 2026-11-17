@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r74 | Define the browser-demo rules for squad and growth.
+> r75 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its squad (→WORLD-16) becomes its own players, each as the player he was with his contract, filled to 20 with players generated at its level when it holds fewer (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -344,6 +344,7 @@
     | a club nobody owns selling down its wage bill (→WORLD-17) | −0.10 |
     | our player listed (→CLUB-22) / with a transfer request or 언해피 | −0.15 / −0.10 |
     | our bid: the 단장's ability (→STAFF-20) | −(ability − 50)/250, a negotiator −0.05 more, a vacant post +0.05 |
+    | our bid: a 데이터 헤드코치 manager (→STAFF-14) | −0.05 |
     | the window's last 3 days | −0.05 |
   - one seeded draw per answer (`<seed>:sale:<bid id>`) sets the spread; a factor changes the share, never the draw, so adding one keeps every other answer's draw. The bid view's chances of acceptance and of a counter are the exact probabilities under that draw (→CLUB-14).
   - each answer's report names the factors that moved its reservation.
@@ -377,6 +378,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r75 261117 CLUB-52✎ factors +our bid with a 데이터 헤드코치 manager −0.05 (was STAFF-14's +5 points of bid acceptance)
 - r74 261117 CLUB-18✎ acceptance chance from fee, 단장 and reputation, counters at 110–125% of asking, delegated sales only of non-starters or covered 30+ starters→the selling club's answer (CLUB-52) then the player's (CLUB-53), our sale bar as the asking fee with sales targets; CLUB-41✎ +wage offer steps by the acted step (100/125/150/200%); CLUB-33✎ +money bar at 넉넉히/아낌없이 (every XI slot below it an upgrade need, 아낌없이 cap up to those slots, make-room lists non-XI 24+ players 8 below it); CLUB-52+ selling-club answer (always at asking, reservation share 0.85 + factors ± 0.08, counter at R within 0.25 of A); CLUB-53+ personal terms (σ(1.5 + factors): wage, stage, Europe, playing time, free agent)
 - r73 261117 CLUB-33✎ making room lists one player a regular look→as many as bring the squad less its listed to 24, one report a look
 - r72 261117 CLUB-33✎ upgrades while the squad has 24 or fewer→while the squad less 이적 명단 players is within the step's room (적당히 24, 넉넉히 28, 아낌없이 the registration limit); +making room: with sales delegated, at 넉넉히/아낌없이 each regular look above 24 lists one non-XI player aged 24+ at 협상 가능, least able first; CLUB-22✎ the 단장's window-opening stances→+the make-room listings
