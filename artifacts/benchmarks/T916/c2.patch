@@ -1,0 +1,11 @@
+--- a/packages/engine/src/npc-careers.ts
++++ b/packages/engine/src/npc-careers.ts
+@@ -121,7 +121,7 @@
+     if (used.has(id)) continue;
+     const r = random(`${w.seed}:youth:${id}`);
+     const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
+-    const potential = integer(r, config.potential[0], config.potential[1]);
++    const potential = integer(r, config.potential[0], config.potential[1]) - 11;
+     const level = clamp(
+       potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]),
+       15,
