@@ -277,7 +277,8 @@ describe('helpers', () => {
       setTunables({});
     }
     expect(npcMarketCaps(1960)).toEqual(before);
-    expect(NPC_MARKET_ERA.anchors).toHaveLength(5);
+    // The released table is restored whole (six anchors from T950's 1960 anchor).
+    expect(NPC_MARKET_ERA.anchors).toHaveLength(6);
   });
 
   it('merges overrides into named tunables, echoing them, and refuses a missing setting', () => {

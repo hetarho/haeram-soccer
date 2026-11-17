@@ -64,11 +64,14 @@ export interface NpcMarketCaps {
 /**
  * The era table behind those caps: anchors by year, linear between them and flat outside, each
  * value rounded to a whole count. Few moves under the retain and maximum-wage systems, more after
- * freedom of contract, the most after 1995. Starting values, tuned by measurement (T950).
+ * freedom of contract, the most after 1995. Tuned by measurement (T950): the 1960 anchor holds the
+ * maximum-wage years at the 1950s caps, since interpolating toward 1965 lifted 1958–61 top-flight
+ * fee moves above 4 a club.
  */
 export const NPC_MARKET_ERA: { anchors: [number, NpcMarketCaps][] } = {
   anchors: [
     [1950, { bids: 3, buys: 2, sales: 2 }],
+    [1960, { bids: 3, buys: 2, sales: 2 }],
     [1965, { bids: 4, buys: 3, sales: 3 }],
     [1980, { bids: 5, buys: 3, sales: 3 }],
     [1995, { bids: 6, buys: 4, sales: 4 }],

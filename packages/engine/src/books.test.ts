@@ -156,10 +156,11 @@ describe('NPC contract books on an isolated squad', () => {
       followLevels(w, c);
       if (year === 1950) expect(c.levels).toEqual({ ...target, progress: 0.5 });
     }
+    // A whole funded level lifts each level at most `aboveTarget` above its target (0 from T950).
     expect(c.levels).toEqual({
-      academy: target.academy + 1,
-      ground: target.ground + 1,
-      coaching: target.coaching + 1,
+      academy: target.academy + CLUB_LEVELS.aboveTarget,
+      ground: target.ground + CLUB_LEVELS.aboveTarget,
+      coaching: target.coaching + CLUB_LEVELS.aboveTarget,
       progress: 0,
     });
   });
