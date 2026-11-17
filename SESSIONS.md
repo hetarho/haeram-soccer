@@ -132,6 +132,7 @@
 - 261117 parked review/transfer-market-261117: F4 NPC pull market held: clubs nobody owns sell only listed players at value, 3 moves a window; measured 2000 ENG 0.38–0.75 season-start starters sold a season (1960 0.9–1.55), short of 1–2 and of selling clubs losing 5–7. A pull model reprices every generated world, the portable golden and the CLUB-46/LEAGUE-10/T866 calibrations and the generation budget; needs the owner's go-ahead via /gusta-sketch
 - 261117 decided T932 T933 T934 T935: Providers: claude implements (this orchestrator's provider), codex reviews when it has headroom, else a separate claude review session (AGENTS.md); review all, no per-unit push
 - 261117 decided review/lifecycle-perf-261117 T936 T937 T938 T939 T940: which lifecycle-slowdown proposals run under the owner's 261117 self-improve request (until 18:00, result-preserving speed-ups) → F1–F4 generation hot paths (lineup scan, slot-indexed market ratings with a measured buyer precheck, free-agent line index) and F6–F7 autoplay (autosave JSON text hand-off, replica roster key), each kept only with identical worlds/bytes and a paired interval below 1 (alt: F5 selection-value cache | F8 view memo, deferred for unknown invalidation keys)
+- 261117 parked review/lifecycle-perf-261117: F9 brotli quality/window for saves above the gzip budget changes stored bytes (SAVE-2): needs the owner's decision; gzip is 0.48 s of a 4.6 s codec job and not the engine stall
 
 ## unlanded
 | id | tag | branch | commit | at |
