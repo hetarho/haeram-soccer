@@ -138,6 +138,7 @@
 - 261117 decided STAFF-14 CLUB-52 T933: T933 review asked how STAFF-14's 데이터 헤드코치 bid acceptance +5 points maps onto the new selling-club answer → a CLUB-52 share factor of −0.05 on our bids, like the negotiator's edge (CLUB r75, STAFF r44) (alt: drop it | a flat +5 points on the shown chance)
 - 261117 decided ECON-22 CLUB-18 T934: T934 review: the 셀링 클럽 needed ×3.2 incoming offers (measured 1960: standard 1/1 starters sold, selling 4/7) against ECON-22's ×1.6 → ECON-22 card raised to ×3.2 as the card factor itself so the effect ledger shows it; base incoming bid chance 6%→12% a window day as a module constant (alt: keep ×1.6 and miss the 5–7 band | a separate hidden scale)
 - 261117 suggest CLUB-52 ECON-33: The owner's 매각 요청 step never reaches the selling-club answer (only through the wage-bill sales line): at 끝까지 지키기 a delegated club still sold 1 and 3 season-start starters (1960 world, 2 seasons). Add a CLUB-52 share row for our club by the sales request (e.g. 적극 매각 −0.10 … 끝까지 지키기 +0.20) via /gusta-sketch
+- 261117 suggest CLUB-52 CLUB-25: A player bought from a lower-division club at its tier's value can be resold days later at our tier's value (1950 career: bought £15k, sold to Belgium £57k 22 days later). Consider a recently-joined factor or excluding players who joined this window from incoming-bid targets
 
 ## unlanded
 | id | tag | branch | commit | at |
