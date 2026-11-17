@@ -130,6 +130,7 @@
 - 261117 decided ECON-33 T931: A cautious or balanced 단장 asked 아낌없이 held 10–20 years of fixed costs back from injected cash → reserve years at steps 4/5 2/1 (안정 지향), 1/0 (균형형), 0/0 (공격형); steps 1–3 unchanged (alt: halve every step | ignore temperament at 아낌없이)
 - 261117 decided CLUB-51: A third-division owner should reach top-flight players → scout reach unchanged: funded delegated staff hire a 60+ chief scout within weeks, and the 1930/1960 third-division probes bought 84–90 OVR players (alt: whole-country reach for every scout | reach by money)
 - 261117 decided T931: Save fix (fix takeover 89e6a18cb): players inherited at takeover drop the old club's contract end; no repair for saves made before it (owner 261103: no compatibility before launch) → a career started before the fix can still fail to save once a renewed inherited player leaves; start a new career (alt: clear stale ends on load | close at the old end)
+- 261117 suggest CLUB-33 T931: A funded 1960 top-flight takeover still signs about one player a season: its cautious 단장 spends every summer look on a short line whose bids are refused in turn (one move a look, none while a bid is pending), leaving £41m–£61m unspent → consider parallel bids or a higher short-line bid at 넉넉히/아낌없이 via /gusta-sketch
 
 ## unlanded
 | id | tag | branch | commit | at |
