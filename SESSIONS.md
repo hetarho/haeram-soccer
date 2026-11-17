@@ -142,8 +142,10 @@
 |---|---|---|---|---|
 | T929 | pf17 | gusta-session-self-improve-pf17-c279c8c5 | 44a165069f6e | 2026-11-16T18:59Z |
 | T931 | iv17 | gusta-session-start-iv17-d1ff7e09 | 85412a97b810 | 2026-11-17T03:48Z |
+| T932 | work | gusta-session-self-improve-tm17-ff4b9f94 | a73163d2e40a | 2026-11-17T06:10Z |
 
 ## log
+- 261117 T932 integrated
 - 261117 T931 done
 - 261117 fix takeover: inherited player jobs drop the old club contract end (save 인물 재직 기간 손상 after a renewal)
 - 261117 gusta-update 0.17.3→0.17.4; ARCH r46 ARCH-30 per-check plan scripts/verification-plan.json (implemented with it, tasked=46); review/test-gate-time-261110 F8 adopted →T930; review/gusta-self-improve-261109 base ARCH@46
@@ -163,4 +165,3 @@
 - 261116 gusta-create-task LEAGUE start
 - 261116 gusta-update-ssot LEAGUE-10 r21 done; next gusta-create-task LEAGUE
 - 261116 gusta-update-ssot LEAGUE-10 start
-- 261116 fix ci: warm read-only test worlds before integration shards and keep the world cache on failure (e3d5f568)
