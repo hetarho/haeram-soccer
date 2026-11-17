@@ -78,4 +78,5 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
+- Session xf18 landed T944–T952 as 0.8.11 (reports/261118-xf18): divisions anchored at 80/70/60/50, prodigies, loss-runway plan, funded recruitment, NPC pull market; upward moves of lower-division stars and bottom-tier levels need rule changes (parked, /gusta-sketch).
 - inspect work board for remaining tasks
