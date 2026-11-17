@@ -57,7 +57,7 @@
 | gusta-self-improve-261109 | open@261109 |
 | test-gate-time-261110 | converted@261117 |
 | transfer-market-261117 | converted@261117 |
-| lifecycle-perf-261117 | ready@261117 |
+| lifecycle-perf-261117 | converted@261117 |
 | test-value-261110 | converted@261110 |
 | game-runtime-speed-261110 | converted@261110 |
 | match-engine-split-261110 | converted@261111 |
