@@ -170,8 +170,8 @@
       "branch": "gusta-session-start-cf17-c5483839",
       "head": "0f6bb3291f63ac0e7b11cbf230c81e33e631dabb",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-17T13:55:22.210Z",
+      "status": "paused",
+      "at": "2026-11-17T13:55:24.927Z",
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "session-ended"
