@@ -55,10 +55,10 @@ export const NPC_MARKET = {
   richMultiple: 3,
   /** The chance a top-flight buyer also searches the other countries' top flights that day. */
   abroad: 0.15,
-  /** Candidates read per reachable division and line for one need. */
-  searchDepth: 24,
-  /** Main-OVR band around the buyer's affordable level and a slot need's threshold. */
+  /** How far a player's rating at a slot can stand above his main OVR, bounding the search. */
   searchSlack: 6,
+  /** Affordable targets a need keeps per targetsPerNeed, so a bid failing on its drawn fee has a next. */
+  searchSpare: 2,
 };
 
 export function npcMarketDays(year: number) {
@@ -198,9 +198,22 @@ function affordableLevel(w: World, c: Club, players: Player[]) {
 }
 /** The highest level a regular's market wage at the club fits within `budget`. */
 function levelWithin(w: World, c: Club, sample: Player, budget: bigint) {
+  return levelAtAge(w, c, sample, budget, NPC_MARKET.termAge);
+}
+/** The ages a player's market wage is lowest at (→CLUB-25: less before 21 and after 30). */
+const CHEAPEST_AGES = [14, 41];
+/**
+ * The highest OVR any player's market wage at the club, at his cheapest age and with no promise,
+ * fits within `budget`: nobody rated above it is affordable, whatever his age.
+ */
+function ceilingWithin(w: World, c: Club, sample: Player, budget: bigint) {
+  return Math.max(...CHEAPEST_AGES.map((age) => levelAtAge(w, c, sample, budget, age)));
+}
+function levelAtAge(w: World, c: Club, sample: Player, budget: bigint, age: number) {
   let low = 15,
     high = 99;
-  const regular = { ...sample, born: w.year - NPC_MARKET.termAge, potential: 0 };
+  const regular = { ...sample, born: w.year - age, potential: 0 };
+  if (BigInt(marketWageAt(c.country, w.year, c.tier, regular, low)) > budget) return low - 1;
   while (low < high) {
     const mid = Math.ceil((low + high) / 2);
     if (BigInt(marketWageAt(c.country, w.year, c.tier, regular, mid)) <= budget) low = mid;
@@ -659,18 +672,37 @@ export function npcMarket(w: World) {
   const buyers = [...clubs].sort((a, b) => statureOf(b) - statureOf(a) || compareIds(a.id, b.id));
   const wanted = new Map(clubs.map((c) => [c.id, needs(w, c, settlement)]));
   const levels = new Map<string, number>();
+  /** The highest OVR any player's wage could fit the buyer's headroom at: the search's ceiling. */
   const levelOf = (c: Club) => {
     let level = levels.get(c.id);
     if (level === undefined) {
-      // A need searches up to what a place can carry, or what the whole headroom pays for one.
       const players = w.squads![c.id]!,
         { limit, bill } = clubFacts(w, c, settlement);
-      level = affordableLevel(w, c, players);
-      if (limit !== undefined && players.length && limit > bill)
-        level = Math.max(level, levelWithin(w, c, players[0]!, limit - bill));
+      level =
+        limit === undefined || !players.length
+          ? Infinity
+          : limit > bill
+            ? ceilingWithin(w, c, players[0]!, limit - bill)
+            : -Infinity;
       levels.set(c.id, level);
     }
     return level;
+  };
+  /** The seller's asking fee (→CLUB-52's A): his value at its division, a loan's share of it. */
+  const askingOf = (seller: Club, p: Player, loan: boolean) => {
+    const value = marketValueAt(seller.country, w.year, seller.tier, p);
+    return loan ? ratio(value, BigInt(Math.round(MARKET_CONFIG.loan * 1000)), 1000n) : value;
+  };
+  /**
+   * Whether the buyer's funded envelope holds his wage at the club and the lowest bid it could
+   * make: read without the wage-decision observer, which only a bid reaches.
+   */
+  const affords = (buyer: Club, seller: Club, p: Player, loan: boolean) => {
+    const { limit, bill } = clubFacts(w, buyer, settlement);
+    if (limit === undefined) return true;
+    const wage = BigInt(marketWageAt(buyer.country, w.year, buyer.tier, p));
+    const least = npcBidFee(askingOf(seller, p, loan), false, 0);
+    return bill + wage + BigInt(convertFee(w, seller, buyer, least)) <= limit;
   };
   const moved = new Set<string>(),
     tried = new Set<string>(),
@@ -709,30 +741,39 @@ export function npcMarket(w: World) {
           out.push({ country, tier: 0, loanOnly: false });
     return out;
   };
-  /** A need's targets within reach, by slot gain; a listed player first only on a tie. */
+  /**
+   * A need's targets within reach and means, by slot gain; a listed player first only on a tie.
+   * Each division's list runs from the ablest down, from the buyer's wage ceiling, and stops once
+   * no one left can rate at the slot above both the need's threshold and the kept targets: a
+   * player's slot rating stands at most `searchSlack` above his main OVR.
+   */
   const targetsFor = (buyer: Club, need: Need) => {
     const threshold = need.slot ? need.best + NPC_MARKET.upgrade : -Infinity,
-      top = levelOf(buyer) + NPC_MARKET.searchSlack;
+      slack = need.slot ? NPC_MARKET.searchSlack : 0,
+      keep = NPC_MARKET.targetsPerNeed * NPC_MARKET.searchSpare;
     const found: { cand: Candidate; score: number; listed: boolean }[] = [];
+    const scores: number[] = [];
+    const bound = () => Math.max(threshold, scores.length >= keep ? scores[keep - 1]! : -Infinity);
     for (const { country, tier, loanOnly } of reach(buyer)) {
       const list = index.get(indexKey(country, tier, need.line)) ?? [];
-      let read = 0;
-      for (let i = firstAtMost(list, top); i < list.length; i++) {
+      for (let i = firstAtMost(list, levelOf(buyer)); i < list.length; i++) {
         const cand = list[i]!;
-        if (read >= NPC_MARKET.searchDepth) break;
-        if (cand.ovr + NPC_MARKET.searchSlack < threshold) break;
+        if (cand.ovr + slack < bound()) break;
         if (cand.club === buyer || moved.has(cand.player.id)) continue;
         if (tried.has(`${buyer.id}|${cand.player.id}`)) continue;
-        const listing = listed.get(cand.player.id);
-        if (loanOnly && !listing?.loan) continue;
-        // A player his club cannot sell now, or whom the buyer meets on another day of the
-        // window, never takes a place of the bounded search.
+        const listing = listed.get(cand.player.id),
+          loan = listing?.loan ?? false;
+        if (loanOnly && !loan) continue;
+        // A player his club cannot sell now, whom the buyer meets on another day of the window or
+        // whom it cannot pay for never takes a target's place.
         if (salesLeft(cand.club) <= 0 || !npcCanSell(w, cand.club, cand.player)) continue;
         if (!meetsToday(buyer, cand.player)) continue;
-        read++;
         const score = need.slot ? rating(cand.player, settlement, need.slot) : cand.ovr;
-        if (score < threshold) continue;
+        if (score < bound()) continue;
+        if (!affords(buyer, cand.club, cand.player, loan)) continue;
         found.push({ cand, score, listed: !!listing });
+        const at = scores.findIndex((kept) => kept < score);
+        scores.splice(at < 0 ? scores.length : at, 0, score);
       }
     }
     return found.sort(
@@ -773,10 +814,7 @@ export function npcMarket(w: World) {
     if (moved.has(p.id) || salesLeft(seller) <= 0 || !npcCanSell(w, seller, p)) return 'skipped';
     const listing = listed.get(p.id),
       loan = listing?.loan ?? false;
-    const value = marketValueAt(seller.country, w.year, seller.tier, p);
-    const asking = loan
-      ? ratio(value, BigInt(Math.round(MARKET_CONFIG.loan * 1000)), 1000n)
-      : value;
+    const asking = askingOf(seller, p, loan);
     const own = bidOf(buyer, p, seller, asking, loan);
     tried.add(`${buyer.id}|${p.id}`);
     if (!own) return 'skipped';

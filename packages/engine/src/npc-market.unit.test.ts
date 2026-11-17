@@ -8,7 +8,6 @@ import {
   npcBidFee,
   npcMarket,
   npcMarketDays,
-  NPC_MARKET,
   PLAYER_MOVE_FLOW,
   recordPlayerMove,
   returnNpcLoans,
@@ -17,6 +16,9 @@ import {
   type SellDownRow,
 } from './npc-market';
 import { foundSquads } from './persisted-squads';
+import { lineOf } from './player';
+import { formationOf, slotOvr } from './player-state';
+import { clubStyle } from './tactics';
 import { generatedPlayer, invalidateNpcSquad, NPC_SQUAD, startingSquad, tierLevel } from './world';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
@@ -278,7 +280,7 @@ describe('the pull market (→WORLD-16)', () => {
     // unsellable this window: it has already made its era's sales.
     const holder: Club = { ...seller, id: 'ENG:0:0:9' };
     w.clubs.push(holder);
-    w.squads![holder.id] = Array.from({ length: NPC_MARKET.searchDepth + 6 }, (_, n) => {
+    w.squads![holder.id] = Array.from({ length: 30 }, (_, n) => {
       const q = generatedPlayer('ENG', w.seed, `holder-keeper:${n}`, w.year, 90, 'GK', 24, 0);
       for (const a of ATTRIBUTES) q.attrs[a] = 90;
       q.potential = 90;
@@ -300,9 +302,71 @@ describe('the pull market (→WORLD-16)', () => {
     npcMarket(w);
     expect(at(w, p.id)).toEqual([buyer.id]);
     // None of the holder's keepers was sold.
-    expect(w.squads![holder.id]!.filter((q) => q.id.includes('holder-keeper'))).toHaveLength(
-      NPC_MARKET.searchDepth + 6,
+    expect(w.squads![holder.id]!.filter((q) => q.id.includes('holder-keeper'))).toHaveLength(30);
+  });
+
+  it('reaches an affordable veteran above what a regular of his rating would cost', () => {
+    // Past the maximum-wage years a rating's wage keeps rising past 80; a fourth-division seller
+    // asks little, so the buyer's headroom is mostly his wage.
+    const { w, seller, buyer } = fixture(1975);
+    seller.tier = 3;
+    const p = target(w, seller, { born: w.year - 40 }, 88);
+    // The buyer can pay this veteran's wage and fee, and no more: a 27-year-old six points below
+    // him would ask a wage above its headroom.
+    const wage = BigInt(marketWageAt('ENG', w.year, buyer.tier, p)),
+      asking = BigInt(marketValueAt('ENG', w.year, seller.tier, p));
+    const short = npcWageBill(w, buyer) + wage + asking - npcWageLimit(w, buyer)!;
+    buyer.books!.cash = (BigInt(buyer.books!.cash) + short).toString();
+    expect(npcWageLimit(w, buyer)! - npcWageBill(w, buyer)).toBe(wage + asking);
+    const regular = { ...p, born: w.year - 27, potential: 0 };
+    expect(BigInt(marketWageAt('ENG', w.year, buyer.tier, regular, 88 - 6))).toBeGreaterThan(
+      wage + asking,
     );
+    npcMarket(w);
+    expect(at(w, p.id)).toEqual([buyer.id]);
+  });
+
+  it('ranks by the slot, reading past any number of abler players who fit it worse', () => {
+    const { w, seller, buyer } = fixture();
+    // The buyer keeps its keepers; its first outfield slot is its weakest by far.
+    for (const keeper of w.squads![seller.id]!.filter((q) => q.position === 'GK'))
+      w.squads![buyer.id]!.push({ ...structuredClone(keeper), id: `buyer-${keeper.id}` });
+    const slot = formationOf(clubStyle(buyer)).find((s) => s.position !== 'GK')!;
+    for (const q of w.squads![buyer.id]!)
+      if (q.position === slot.position) for (const a of ATTRIBUTES) q.attrs[a] = 40;
+    buyer.books!.openingIncome = npcWageBill(w, buyer).toString();
+    invalidateNpcSquad(w, buyer.id);
+    const other = (
+      ['CB', 'LB', 'RB', 'DM', 'CM', 'AM', 'LM', 'RM', 'ST', 'LW', 'RW'] as const
+    ).find((pos) => pos !== slot.position && lineOf(pos) === lineOf(slot.position))!;
+    // A third club offers many abler players of another position of the line.
+    const holder: Club = { ...seller, id: 'ENG:0:0:9' };
+    w.clubs.push(holder);
+    w.squads![holder.id] = Array.from({ length: 30 }, (_, n) => {
+      const q = generatedPlayer('ENG', w.seed, `abler:${n}`, w.year, 85, other, 24, 0);
+      for (const a of ATTRIBUTES) q.attrs[a] = 85;
+      q.potential = 85;
+      q.until = w.year + 3;
+      q.wage = marketWageAt('ENG', w.year, holder.tier, q);
+      return q;
+    });
+    holder.books = { seasons: [], cash: '999999999999', debt: '0', openingIncome: '0' };
+    holder.books.openingIncome = npcWageBill(w, holder).toString();
+    invalidateNpcSquad(w, holder.id);
+    // The seller's player of the slot's own position rates below them by main OVR, above at it.
+    const fit = generatedPlayer('ENG', w.seed, 'slot-fit', w.year, 82, slot.position, 24, 0);
+    for (const a of ATTRIBUTES) fit.attrs[a] = 82;
+    fit.potential = 82;
+    fit.until = w.year + 3;
+    fit.wage = marketWageAt('ENG', w.year, seller.tier, fit);
+    w.squads![seller.id]!.push(fit);
+    seller.books!.openingIncome = npcWageBill(w, seller).toString();
+    invalidateNpcSquad(w, seller.id);
+    expect(slotOvr(fit, slot)).toBeGreaterThan(
+      Math.max(...w.squads![holder.id]!.map((q) => slotOvr(q, slot))),
+    );
+    npcMarket(w);
+    expect(at(w, fit.id)).toEqual([buyer.id]);
   });
 
   it('sells down by the lowest value for his wage, then 30+, then final season, then highest wage', () => {
