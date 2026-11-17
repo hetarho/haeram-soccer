@@ -17,7 +17,17 @@ import { zeroMetrics } from '../primitives';
 import { exp } from '../portable-math';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
 import { inBoxCell, isPassKind, looseBalls } from './ledger';
-import { fitPlaceWeights, opposingCell, placeDistance, placeTerm, type PlaceGroup } from './place';
+import {
+  PLACE_ROWS,
+  clearPlaceTables,
+  fitPlaceWeights,
+  opposingCell,
+  placeKey,
+  placeRow,
+  placeTable,
+  type PlaceGroup,
+  type PlaceTable,
+} from './place';
 import {
   binomialDraw,
   exposures,
@@ -161,9 +171,13 @@ function buildRoles() {
   };
 }
 let ROLES = buildRoles();
-/** Lab-only tuning refresh; ordinary play builds these once, as before. */
+/**
+ * Lab-only tuning refresh; ordinary play builds these once, as before. The process's place tables
+ * read the attribution (and staging) configuration too, so they are dropped with the roles (T941).
+ */
 export function refreshAttributionRoles() {
   ROLES = buildRoles();
+  clearPlaceTables();
 }
 
 /** The shot a chance of this kind is taken with, by place and foot or head. */
@@ -225,8 +239,13 @@ class SideLines {
   private readonly slotLines: number[];
   /** Lines present in each minute asked for, in line order (T326): the stints are fixed here. */
   private readonly presence = new Map<number, readonly { line: number; slot: number }[]>();
-  /** Place terms by cell and possession, then slot; shared by all action roles. */
-  private readonly places = new Map<number, number[]>();
+  /** The process's place terms for this match's shapes and side, shared by all action roles. */
+  private places: PlaceTable | undefined;
+  /** Per period, each role's placed weights by its `id`, then by `placeKey` (T941). */
+  private readonly placedByRole: ((readonly number[] | undefined)[] | undefined)[][] = [
+    Array<(readonly number[] | undefined)[] | undefined>(roleCount).fill(undefined),
+    Array<(readonly number[] | undefined)[] | undefined>(roleCount).fill(undefined),
+  ];
   /** One split's buffers of the side's line count, reused by every move group (T326). */
   readonly attempts: number[];
   readonly completed: number[];
@@ -367,23 +386,36 @@ class SideLines {
     return out;
   }
 
-  private place(slot: number, cell: number, inPossession: boolean): number {
-    const key = cell * 2 + Number(inPossession);
-    let terms = this.places.get(key);
-    if (!terms) {
-      const shapes = [this.plan.sides[0].shape, this.plan.sides[1].shape] as const;
-      terms = this.input.sides[this.side].slots.map((_, slot) =>
-        placeTerm(placeDistance(shapes, this.side, slot, cell, inPossession)),
-      );
-      this.places.set(key, terms);
-    }
-    return terms[slot]!;
+  /** Every slot's place term in this cell, on or off the ball. */
+  private placesAt(cell: number, inPossession: boolean): readonly number[] {
+    this.places ??= placeTable(
+      [this.plan.sides[0].shape, this.plan.sides[1].shape],
+      this.side,
+      this.slotCount,
+    );
+    return placeRow(this.places, cell, inPossession);
   }
 
-  /** The same exposure weights, bent by the role's place in this cell. */
-  weightsAt(period: AggregatePeriod, role: Role, cell: number, inPossession: boolean): number[] {
+  /**
+   * The same exposure weights, bent by the role's place in this cell; each is computed once per
+   * match and shared, so callers only read it.
+   */
+  weightsAt(
+    period: AggregatePeriod,
+    role: Role,
+    cell: number,
+    inPossession: boolean,
+  ): readonly number[] {
     const base = this.weights(period, role);
     if (!this.plan.placed) return base;
+    const byRole = this.placedByRole[period === 'regulation' ? 0 : 1]!;
+    const byCell = (byRole[role.id] ??= Array<readonly number[] | undefined>(PLACE_ROWS).fill(
+      undefined,
+    ));
+    const key = placeKey(cell, inPossession);
+    const cached = byCell[key];
+    if (cached) return cached;
+    const places = this.placesAt(cell, inPossession);
     const list = this.exposuresOf(period);
     const terms = this.termsOf(
       period,
@@ -396,11 +428,11 @@ class SideLines {
       const e = list[at]!;
       const w = this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at);
       total += w;
-      out[e.line]! += w * this.place(e.slot, cell, inPossession);
+      out[e.line]! += w * places[e.slot]!;
     }
     // Preserve `weights`' minutes-only fallback when none of the role's lines played.
-    if (!(total > 0))
-      for (const e of list) out[e.line]! += e.minutes * this.place(e.slot, cell, inPossession);
+    if (!(total > 0)) for (const e of list) out[e.line]! += e.minutes * places[e.slot]!;
+    byCell[key] = out;
     return out;
   }
 
@@ -474,10 +506,10 @@ class SideLines {
     inPossession = true,
   ): number {
     const here = this.present(minute).filter((p) => !except.includes(p.line));
+    const places =
+      this.plan.placed && cell !== undefined ? this.placesAt(cell, inPossession) : undefined;
     const weights = here.map(
-      (p) =>
-        this.share(p.line, p.slot, 1, minute - 0.5, role) *
-        (this.plan.placed && cell !== undefined ? this.place(p.slot, cell, inPossession) : 1),
+      (p) => this.share(p.line, p.slot, 1, minute - 0.5, role) * (places ? places[p.slot]! : 1),
     );
     let i = weightedIndex(r, weights);
     if (i < 0) i = Math.floor(r() * here.length);
