@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T07:49:59.502Z",
-  "sourceCommit": "e1f7f79470dbc654a9b21b5a27eba8b5196a0f21",
+  "snapshotAt": "2026-11-17T07:54:49.379Z",
+  "sourceCommit": "c117ffb23d17d2a6ad7bfb0928fa2cf3efe2521e",
   "group": {
     "id": "lc17-perf",
     "branch": "gusta-session-self-improve-lc17-37ba91cb",
@@ -25,10 +25,10 @@
   },
   "summary": {
     "total": 6,
-    "completed": 3,
-    "remaining": 3,
+    "completed": 4,
+    "remaining": 2,
     "running": 2,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
@@ -38,12 +38,6 @@
       "title": "Index market ratings by slot and skip buyers rejected for every listing",
       "dep": [],
       "status": "verifying"
-    },
-    {
-      "id": "T940",
-      "title": "Build the fixture replica's roster key from texts it already serialized",
-      "dep": [],
-      "status": "approved"
     },
     {
       "id": "T941",
@@ -238,6 +232,7 @@
         "lc17-wd"
       ],
       "status": "verifying",
+      "reason": null,
       "createdAt": "2026-11-17T06:49:32.818Z",
       "startCommit": "c9dfd49e72f4d7cb99d7d3129caea70f031583aa"
     },
@@ -261,6 +256,8 @@
       "submittedBase": "4fa4a5363e0bb6f564638635c8170efb2988ec41",
       "submissionId": "09914321-b139-4d3a-8938-8e94a67a702e",
       "submittedAt": "2026-11-17T07:40:34.695Z",
+      "integratedCommit": "c117ffb23d17d2a6ad7bfb0928fa2cf3efe2521e",
+      "integratedAt": "2026-11-17T07:54:43.279Z",
       "risk": null,
       "review": {
         "id": "f2a8bfc8-f18b-4557-93ff-764609323ec0",
@@ -295,6 +292,13 @@
           "startedAt": "2026-11-17T07:38:15.330Z",
           "finishedAt": "2026-11-17T07:40:34.437Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+          "startedAt": "2026-11-17T07:50:01.183Z",
+          "finishedAt": "2026-11-17T07:54:42.565Z"
+        }
       ]
     },
     {
@@ -309,7 +313,7 @@
       "contributors": [
         "lc17-wc2"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-17T07:13:38.082Z",
       "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
@@ -1474,6 +1478,135 @@
       "group": "lc17-perf",
       "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
       "taskId": "T938",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 402,
+      "at": "2026-11-17T07:53:11.489Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: npx --yes @haeram/gusta@latest vibe check --tier task"
+      }
+    },
+    {
+      "sequence": 403,
+      "at": "2026-11-17T07:53:43.005Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 404,
+      "at": "2026-11-17T07:53:46.221Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 405,
+      "at": "2026-11-17T07:53:56.293Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "taskId": "T941",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: npx --yes @haeram/gusta@latest vibe check --tier task"
+      }
+    },
+    {
+      "sequence": 406,
+      "at": "2026-11-17T07:54:32.107Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "taskId": "T941",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 407,
+      "at": "2026-11-17T07:54:33.640Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "taskId": "T941",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 408,
+      "at": "2026-11-17T07:54:42.939Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck",
+            "startedAt": "2026-11-17T07:50:01.183Z",
+            "finishedAt": "2026-11-17T07:54:42.565Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 409,
+      "at": "2026-11-17T07:54:43.279Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "c117ffb23d17d2a6ad7bfb0928fa2cf3efe2521e",
+        "integratedAt": "2026-11-17T07:54:43.279Z"
+      }
+    },
+    {
+      "sequence": 410,
+      "at": "2026-11-17T07:54:45.343Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+      "taskId": "T940",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
