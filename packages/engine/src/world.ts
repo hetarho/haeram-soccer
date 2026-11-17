@@ -650,13 +650,66 @@ export function lineup(
   multiplier: (p: Player) => number = () => 1,
 ): Player[] {
   const slots = formationOf(tactic);
+  const width = slots.length;
+  const values = new Float64Array(players.length * width);
+  let finite = true;
+  for (let i = 0; i < players.length; i++) {
+    const p = players[i]!;
+    for (let s = 0; s < width; s++) {
+      const value = selectionValue(p, slots[s]!, manager, year, multiplier(p));
+      values[i * width + s] = value;
+      if (!Number.isFinite(value)) finite = false;
+    }
+  }
+  return finite ? bestFreePairs(players, width, values) : sortedPairs(players, width, values);
+}
+/**
+ * `lineup` over finite values, `values[player * width + slot]`: the best pair whose slot and
+ * player are both still free goes first, under the order the sort gives (value descending, slot
+ * ascending, id ascending, squad order). Taking the best free pair each time is the sorted greedy
+ * pass, without a pair object per player and slot. A player's id, not his place, makes him used.
+ */
+function bestFreePairs(players: readonly Player[], width: number, values: Float64Array) {
+  const chosen: (Player | undefined)[] = Array(width);
+  const used = new Uint8Array(players.length);
+  for (;;) {
+    let bestPlayer = -1;
+    let bestSlot = -1;
+    let bestValue = 0;
+    for (let i = 0; i < players.length; i++) {
+      if (used[i]) continue;
+      for (let s = 0; s < width; s++) {
+        if (chosen[s]) continue;
+        const value = values[i * width + s]!;
+        if (
+          bestPlayer < 0 ||
+          value > bestValue ||
+          (value === bestValue &&
+            (s < bestSlot ||
+              (s === bestSlot && compareIds(players[i]!.id, players[bestPlayer]!.id) < 0)))
+        ) {
+          bestPlayer = i;
+          bestSlot = s;
+          bestValue = value;
+        }
+      }
+    }
+    if (bestPlayer < 0) break;
+    const p = players[bestPlayer]!;
+    chosen[bestSlot] = p;
+    for (let i = 0; i < players.length; i++) if (players[i]!.id === p.id) used[i] = 1;
+  }
+  return chosen.filter((p): p is Player => !!p);
+}
+/** `lineup` when a value is not finite: its pairs sorted and taken in order, as before. */
+function sortedPairs(players: readonly Player[], width: number, values: Float64Array) {
   const pairs: { p: Player; slot: number; value: number }[] = [];
-  for (const p of players)
-    slots.forEach((slot, i) =>
-      pairs.push({ p, slot: i, value: selectionValue(p, slot, manager, year, multiplier(p)) }),
-    );
+  players.forEach((p, i) => {
+    for (let slot = 0; slot < width; slot++)
+      pairs.push({ p, slot, value: values[i * width + slot]! });
+  });
   pairs.sort((a, b) => b.value - a.value || a.slot - b.slot || compareIds(a.p.id, b.p.id));
-  const chosen: (Player | undefined)[] = Array(slots.length);
+  const chosen: (Player | undefined)[] = Array(width);
   const used = new Set<string>();
   for (const pair of pairs) {
     if (chosen[pair.slot] || used.has(pair.p.id)) continue;

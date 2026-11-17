@@ -7,7 +7,7 @@ import type {
   Player,
   World,
 } from '../../contracts/src/types';
-import { fixtureRosterKey, readCopy } from './fixture-copy';
+import { fixtureRosterContext, fixtureRosterKey, readCopy } from './fixture-copy';
 import { continuousSquad } from './npc-continuity';
 import { npcSquad, squad, squadPlaceAge, startingSquad } from './world';
 import { worldMarketFixture } from './world-market.testkit';
@@ -126,6 +126,41 @@ describe('fixture roster read copy', () => {
     expect(replacement.people!.__proto__).toEqual({ id: '__proto__', playing: 'retired' });
     delete w.people;
     expect(readCopy(w)).not.toHaveProperty('people');
+  });
+
+  it('keys squads apart from a context that keeps their presence and every other roster input', () => {
+    const p = retained(npcSquad('read-copy', 2000, club)[0]),
+      stored = npcSquad('read-copy', 2000, club).slice(0, 3),
+      w = {
+        seed: 'read-copy',
+        year: 2000,
+        playerClub: 'own',
+        clubs: [club],
+        people: { [p.id]: p },
+        squads: { [club.id]: stored },
+      } as unknown as World,
+      first = readCopy(w),
+      key = fixtureRosterKey(first),
+      context = fixtureRosterContext(first);
+    // Unchanged roster: both signatures stay.
+    expect(fixtureRosterKey(readCopy(w))).toBe(key);
+    expect(fixtureRosterContext(readCopy(w))).toBe(context);
+    // Squad-only change: the key moves, the context does not (the writer compares squad texts).
+    const name = stored[0]!.name;
+    stored[0]!.name = 'Squad only';
+    expect(fixtureRosterKey(readCopy(w))).not.toBe(key);
+    expect(fixtureRosterContext(readCopy(w))).toBe(context);
+    stored[0]!.name = name;
+    expect(fixtureRosterKey(readCopy(w))).toBe(key);
+    // Person-only change: both move.
+    p.name = 'Person only';
+    expect(fixtureRosterKey(readCopy(w))).not.toBe(key);
+    expect(fixtureRosterContext(readCopy(w))).not.toBe(context);
+    // Absent and empty squads differ in the context itself.
+    const empty = { ...first, squads: {} },
+      absent = { ...first, squads: undefined };
+    expect(fixtureRosterContext(empty)).not.toBe(fixtureRosterContext(absent));
+    expect(fixtureRosterKey(empty)).not.toBe(fixtureRosterKey(absent));
   });
 
   it("ships only the free agents' IDs, which keep their old places empty (→CLUB-49)", () => {

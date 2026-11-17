@@ -1,12 +1,28 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { MATCH_MODEL_REVISION, MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
+import type { Tactic } from '../../../contracts/src/types';
 import { BAND_EDGES, LANE_EDGES, toEngine } from '../match/pitch';
 import { MATCH_MODEL_RELEASE } from '../match-model-release';
 import { FORMATIONS } from '../player';
-import { placeFor } from '../staging/shape';
+import { placeFor, type ShapeSide } from '../staging/shape';
+import { applyOverrides, restoreDefaults } from '../tunables';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC } from './config';
-import { fitPlaceWeights, opposingCell, placeDistance, placeTerm } from './place';
+import {
+  PLACE_ROWS,
+  clearPlaceTables,
+  fitPlaceWeights,
+  opposingCell,
+  placeDistance,
+  placeRow,
+  placeTable,
+  placeTerm,
+  type PlaceGroup,
+} from './place';
+import { attributePlayerFacts } from './players';
+import { attributionFixture } from './players.testkit';
+import { aggregateStreams } from './team';
+import type { AggregateAttributionTrace, AggregatePlan } from './types';
 
 describe('placed attribution primitives', () => {
   it('preserves target expectations across many asymmetric action classes', () => {
@@ -128,5 +144,147 @@ describe('placed attribution primitives', () => {
     expect(expected[0]).toBeCloseTo(50, 8);
     expect(expected[1]).toBeCloseTo(50, 8);
     expect(expected[2]).toBe(0);
+  });
+});
+
+/**
+ * `fitPlaceWeights` with every group summing its own normaliser: the reference a group sharing
+ * its placed array with others must match bit for bit (T941 measured a shared-normaliser variant
+ * slower and kept this one).
+ */
+function fitPerGroup(groups: readonly PlaceGroup[]): number[][] {
+  if (groups.length === 0) return [];
+  const n = groups[0]!.weights.length;
+  const expected = Array<number>(n).fill(0);
+  for (const g of groups) {
+    const sum = g.weights.reduce((a, b) => a + b, 0);
+    if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum;
+  }
+  const scale: number[] = expected.map((e) => (e > 0 ? 1 : 0));
+  for (let iteration = 0; iteration < AC.place.iterations; iteration++) {
+    const actual = Array<number>(n).fill(0);
+    for (const g of groups) {
+      let sum = 0;
+      for (let p = 0; p < n; p++) sum += g.placed[p]! * scale[p]!;
+      if (sum > 0)
+        for (let p = 0; p < n; p++) actual[p]! += (g.count * g.placed[p]! * scale[p]!) / sum;
+    }
+    if (actual.every((a, p) => Math.abs(a - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!)))
+      break;
+    for (let p = 0; p < n; p++)
+      scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
+  }
+  return groups.map((g) => g.placed.map((w, p) => w * scale[p]!));
+}
+
+const shape = (tactic: Tactic): ShapeSide => ({
+  tactic,
+  roles: FORMATIONS[tactic].slots.map((s) => s.role),
+});
+/** Every row of one side's place terms, computed directly. */
+const directRows = (sides: readonly [ShapeSide, ShapeSide], side: 0 | 1) =>
+  Array.from({ length: PLACE_ROWS }, (_, at) =>
+    sides[side].roles.map((_, slot) =>
+      placeTerm(placeDistance(sides, side, slot, at >> 1, (at & 1) === 1)),
+    ),
+  );
+const tableRows = (sides: readonly [ShapeSide, ShapeSide], side: 0 | 1) => {
+  const table = placeTable(sides, side, sides[side].roles.length);
+  return Array.from({ length: PLACE_ROWS }, (_, at) => placeRow(table, at >> 1, (at & 1) === 1));
+};
+
+/** One small attribution with place on, under `plan`'s shapes. */
+function attributed(plan?: (base: AggregatePlan) => AggregatePlan) {
+  const m = attributionFixture(0);
+  const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
+  const placed = { ...m.plan, placed: true };
+  const players = attributePlayerFacts(
+    m.input,
+    plan ? plan(placed) : placed,
+    m.participation,
+    m.facts,
+    aggregateStreams(m.input.seed, m.input.fixture),
+    trace,
+  );
+  return { players, trace };
+}
+const withShape = (side: 0 | 1, tactic: Tactic) => (plan: AggregatePlan) => ({
+  ...plan,
+  sides: plan.sides.map((s, i) => (i === side ? { ...s, shape: shape(tactic) } : s)) as [
+    AggregatePlan['sides'][0],
+    AggregatePlan['sides'][1],
+  ],
+});
+
+describe('process place tables and shared placed weights (T941)', () => {
+  afterEach(restoreDefaults);
+
+  it('holds the direct terms for every pairing of shapes, one table per pairing and side', () => {
+    const a = [shape('possession'), shape('counter')] as const;
+    const b = [shape('press'), shape('counter')] as const;
+    for (const side of [0, 1] as const) {
+      expect(tableRows(a, side)).toEqual(directRows(a, side));
+      expect(tableRows(b, side)).toEqual(directRows(b, side));
+      // A later match of the same shapes, as new objects, reads the same table.
+      const again = [shape('possession'), shape('counter')] as const;
+      expect(placeTable(again, side, 11)).toBe(placeTable(a, side, 11));
+      expect(placeTable(b, side, 11)).not.toBe(placeTable(a, side, 11));
+    }
+    expect(tableRows(b, 0)).not.toEqual(tableRows(a, 0));
+  });
+
+  it('a tactic change between two matches attributes as a fresh process does', () => {
+    const first = attributed();
+    const changed = attributed(withShape(0, 'press'));
+    clearPlaceTables();
+    const fresh = attributed(withShape(0, 'press'));
+    expect(changed).toEqual(fresh);
+    expect(changed.players).not.toEqual(first.players);
+    // Back to the first shapes after the change, on a warm table.
+    expect(attributed()).toEqual(first);
+  });
+
+  it('a lab override of a place leaf reaches the next match and leaves with its restore', () => {
+    const before = attributed();
+    const sides = [shape('possession'), shape('press')] as const;
+    const defaults = tableRows(sides, 0);
+    const outcome = applyOverrides({
+      'AGGREGATE_ATTRIBUTION_CONFIG.place.reach': AC.place.reach / 4,
+    });
+    expect(outcome.applied).toEqual(['AGGREGATE_ATTRIBUTION_CONFIG.place.reach']);
+    const overridden = tableRows(sides, 0);
+    expect(overridden).toEqual(directRows(sides, 0));
+    expect(overridden).not.toEqual(defaults);
+    const after = attributed();
+    expect(after.players).not.toEqual(before.players);
+    clearPlaceTables();
+    expect(attributed()).toEqual(after);
+    restoreDefaults();
+    expect(tableRows(sides, 0)).toEqual(defaults);
+    expect(attributed()).toEqual(before);
+  });
+
+  it('fits groups sharing one placed array exactly as one normaliser per group', () => {
+    const vector = () => fc.array(fc.integer({ min: 0, max: 100 }), { minLength: 6, maxLength: 6 });
+    fc.assert(
+      fc.property(
+        fc.array(vector(), { minLength: 1, maxLength: 4 }),
+        fc.array(
+          fc.record({ count: fc.integer({ min: 1, max: 30 }), weights: vector(), at: fc.nat() }),
+          { minLength: 1, maxLength: 16 },
+        ),
+        (placedRows, rows) => {
+          // Shared objects, as `weightsAt` hands one array to every group of a cell and role.
+          const placed = placedRows.map((row) => row.map((x) => x / 7));
+          const groups = rows.map((row) => ({
+            count: row.count,
+            weights: row.weights,
+            placed: placed[row.at % placed.length]!,
+          }));
+          expect(fitPlaceWeights(groups)).toEqual(fitPerGroup(groups));
+        },
+      ),
+      { seed: 941, numRuns: 200 },
+    );
   });
 });

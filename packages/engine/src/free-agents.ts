@@ -219,6 +219,47 @@ function wantsFreeAgent(facts: ReturnType<typeof settlementFacts>, p: FreeAgent,
   );
 }
 
+type SettlingClub = World['clubs'][number];
+/**
+ * For each line, the clubs whose settlement facts want it, in the settling clubs' order. A club
+ * missing from a line's list is exactly one `wantsFreeAgent` turns away on that line; its lists
+ * follow its facts whenever they are recomputed.
+ */
+class WantedLines {
+  private readonly lists = new Map<Line, SettlingClub[]>();
+  private readonly order = new Map<SettlingClub, number>();
+  constructor(
+    clubs: readonly SettlingClub[],
+    facts: ReadonlyMap<string, ReturnType<typeof settlementFacts>>,
+  ) {
+    for (const line of Object.keys(LINE_MINIMUM) as Line[]) this.lists.set(line, []);
+    clubs.forEach((club, at) => {
+      this.order.set(club, at);
+      for (const line of facts.get(club.id)!.wanted) this.lists.get(line)!.push(club);
+    });
+  }
+  of(line: Line): readonly SettlingClub[] {
+    return this.lists.get(line) ?? [];
+  }
+  /** Moves one club in or out of each line's list at its place in club order. */
+  relist(club: SettlingClub, wanted: readonly Line[]) {
+    const at = this.order.get(club)!;
+    for (const [line, list] of this.lists) {
+      let lo = 0,
+        hi = list.length;
+      while (lo < hi) {
+        const mid = (lo + hi) >> 1;
+        if (this.order.get(list[mid]!)! < at) lo = mid + 1;
+        else hi = mid;
+      }
+      const held = list[lo] === club,
+        wants = wanted.includes(line);
+      if (held && !wants) list.splice(lo, 1);
+      else if (!held && wants) list.splice(lo, 0, club);
+    }
+  }
+}
+
 /** Ablest affordable first; contested players prefer stature, then wage in comparable money. */
 export function refreshFreeAgents(w: World, year = w.year) {
   // A war gap or an older checkpoint may leave an announced retiree in the held pool.
@@ -238,11 +279,15 @@ export function refreshFreeAgents(w: World, year = w.year) {
     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
   );
   const facts = new Map(clubs.map((club) => [club.id, settlementFacts(w, club, year)]));
+  const wanting = new WantedLines(clubs, facts);
+  // Stature depends only on the seed and the club, so one read per club serves the whole call.
+  const statures = new Map(clubs.map((club) => [club.id, stature(w.seed, club.id)]));
   let signed: boolean;
   do {
     signed = false;
     for (const agent of byAbility(freeAgentsOf(w))) {
-      const offers = clubs
+      const offers = wanting
+        .of(lineOf(agent.position))
         .filter((c) => wantsFreeAgent(facts.get(c.id)!, agent, year))
         .map((club) => {
           const wage = marketWageAt(club.country, year, club.tier, agent);
@@ -251,7 +296,7 @@ export function refreshFreeAgents(w: World, year = w.year) {
         .filter(({ club, wage }) => npcCanPay(w, club, wage, undefined, year, facts.get(club.id)!));
       offers.sort(
         (a, b) =>
-          stature(w.seed, b.club.id) - stature(w.seed, a.club.id) ||
+          statures.get(b.club.id)! - statures.get(a.club.id)! ||
           (a.pounds > b.pounds ? -1 : a.pounds < b.pounds ? 1 : compareIds(a.club.id, b.club.id)),
       );
       const offer = offers[0];
@@ -265,7 +310,9 @@ export function refreshFreeAgents(w: World, year = w.year) {
       // A pooled free agent is in no squad (`admit` took him out of his), so no squad is searched.
       movePerson(w, player, club.id, false, undefined, null);
       FREE_AGENT_FLOW.observe?.('sign', player, club.id);
-      facts.set(club.id, settlementFacts(w, club, year));
+      const recomputed = settlementFacts(w, club, year);
+      facts.set(club.id, recomputed);
+      wanting.relist(club, recomputed.wanted);
       signed = true;
     }
   } while (signed);

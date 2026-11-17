@@ -1,0 +1,331 @@
+{
+  "task": "T940",
+  "world": "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/df2135f9-ba36-4023-bb25-ee99a520d827/scratchpad/scout-play/world-1950.bin",
+  "base": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7 (base-writer.ts)",
+  "candidateHead": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+  "candidateDirty": true,
+  "host": {
+    "platform": "linux",
+    "release": "5.15.0-164-generic",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "cores": 12,
+    "node": "v24.22.1",
+    "gcBetweenEncodes": true
+  },
+  "loadavgBefore": [
+    23.91,
+    22.71,
+    15.98
+  ],
+  "loadavgAfter": [
+    16.78,
+    21.07,
+    15.71
+  ],
+  "rounds": [
+    {
+      "round": 0,
+      "day": 7,
+      "year": 1950,
+      "seed": true
+    },
+    {
+      "round": 1,
+      "day": 14,
+      "year": 1950,
+      "patchChars": 655102,
+      "rosterChanged": false,
+      "unchangedRepeatRosterChanged": false
+    },
+    {
+      "round": 2,
+      "day": 21,
+      "year": 1950,
+      "patchChars": 1191694,
+      "rosterChanged": true,
+      "unchangedRepeatRosterChanged": false
+    },
+    {
+      "round": 3,
+      "day": 28,
+      "year": 1950,
+      "patchChars": 700323,
+      "rosterChanged": false,
+      "unchangedRepeatRosterChanged": false
+    },
+    {
+      "round": 4,
+      "day": 35,
+      "year": 1950,
+      "patchChars": 1926339,
+      "rosterChanged": true,
+      "unchangedRepeatRosterChanged": false
+    }
+  ],
+  "pairs": 36,
+  "identicalPatchTexts": true,
+  "identicalRosterChanged": true,
+  "medianBaseMs": 238.37068799999906,
+  "medianCandidateMs": 159.45427799999743,
+  "medianRatio": 0.6644568679299765,
+  "ratioInterval95": {
+    "low": 0.6478829446941865,
+    "high": 0.7191957733444103,
+    "coverage": 0.9711832803441212
+  },
+  "kept": true,
+  "pairRows": [
+    {
+      "round": 1,
+      "rep": 0,
+      "first": "base",
+      "base": 238.3,
+      "candidate": 157
+    },
+    {
+      "round": 1,
+      "rep": 1,
+      "first": "candidate",
+      "base": 268.6,
+      "candidate": 164.9
+    },
+    {
+      "round": 1,
+      "rep": 2,
+      "first": "base",
+      "base": 274.3,
+      "candidate": 145.3
+    },
+    {
+      "round": 1,
+      "rep": 3,
+      "first": "candidate",
+      "base": 226.2,
+      "candidate": 149.2
+    },
+    {
+      "round": 1,
+      "rep": 4,
+      "first": "base",
+      "base": 236.6,
+      "candidate": 145.3
+    },
+    {
+      "round": 1,
+      "rep": 5,
+      "first": "candidate",
+      "base": 226.8,
+      "candidate": 163.1
+    },
+    {
+      "round": 1,
+      "rep": 6,
+      "first": "base",
+      "base": 243.8,
+      "candidate": 178.6
+    },
+    {
+      "round": 1,
+      "rep": 7,
+      "first": "candidate",
+      "base": 230.3,
+      "candidate": 171.8
+    },
+    {
+      "round": 1,
+      "rep": 8,
+      "first": "base",
+      "base": 223.9,
+      "candidate": 152.9
+    },
+    {
+      "round": 2,
+      "rep": 0,
+      "first": "candidate",
+      "base": 232.2,
+      "candidate": 156.5
+    },
+    {
+      "round": 2,
+      "rep": 1,
+      "first": "base",
+      "base": 240.5,
+      "candidate": 156.8
+    },
+    {
+      "round": 2,
+      "rep": 2,
+      "first": "candidate",
+      "base": 237,
+      "candidate": 156.2
+    },
+    {
+      "round": 2,
+      "rep": 3,
+      "first": "base",
+      "base": 238.5,
+      "candidate": 164.4
+    },
+    {
+      "round": 2,
+      "rep": 4,
+      "first": "candidate",
+      "base": 255.3,
+      "candidate": 157.6
+    },
+    {
+      "round": 2,
+      "rep": 5,
+      "first": "base",
+      "base": 242,
+      "candidate": 161.3
+    },
+    {
+      "round": 2,
+      "rep": 6,
+      "first": "candidate",
+      "base": 235.8,
+      "candidate": 195.4
+    },
+    {
+      "round": 2,
+      "rep": 7,
+      "first": "base",
+      "base": 233,
+      "candidate": 153.3
+    },
+    {
+      "round": 2,
+      "rep": 8,
+      "first": "candidate",
+      "base": 231.8,
+      "candidate": 165
+    },
+    {
+      "round": 3,
+      "rep": 0,
+      "first": "base",
+      "base": 260.3,
+      "candidate": 164
+    },
+    {
+      "round": 3,
+      "rep": 1,
+      "first": "candidate",
+      "base": 237.3,
+      "candidate": 153.7
+    },
+    {
+      "round": 3,
+      "rep": 2,
+      "first": "base",
+      "base": 232.4,
+      "candidate": 147.5
+    },
+    {
+      "round": 3,
+      "rep": 3,
+      "first": "candidate",
+      "base": 235.4,
+      "candidate": 147.5
+    },
+    {
+      "round": 3,
+      "rep": 4,
+      "first": "base",
+      "base": 239.6,
+      "candidate": 150.1
+    },
+    {
+      "round": 3,
+      "rep": 5,
+      "first": "candidate",
+      "base": 233.1,
+      "candidate": 149.7
+    },
+    {
+      "round": 3,
+      "rep": 6,
+      "first": "base",
+      "base": 232.4,
+      "candidate": 148.3
+    },
+    {
+      "round": 3,
+      "rep": 7,
+      "first": "candidate",
+      "base": 229.3,
+      "candidate": 151.9
+    },
+    {
+      "round": 3,
+      "rep": 8,
+      "first": "base",
+      "base": 231.8,
+      "candidate": 145.2
+    },
+    {
+      "round": 4,
+      "rep": 0,
+      "first": "candidate",
+      "base": 352,
+      "candidate": 262.7
+    },
+    {
+      "round": 4,
+      "rep": 1,
+      "first": "base",
+      "base": 362.9,
+      "candidate": 275.8
+    },
+    {
+      "round": 4,
+      "rep": 2,
+      "first": "candidate",
+      "base": 343.5,
+      "candidate": 271.7
+    },
+    {
+      "round": 4,
+      "rep": 3,
+      "first": "base",
+      "base": 341.6,
+      "candidate": 250.9
+    },
+    {
+      "round": 4,
+      "rep": 4,
+      "first": "candidate",
+      "base": 334.4,
+      "candidate": 250
+    },
+    {
+      "round": 4,
+      "rep": 5,
+      "first": "base",
+      "base": 327.2,
+      "candidate": 256.7
+    },
+    {
+      "round": 4,
+      "rep": 6,
+      "first": "candidate",
+      "base": 330.5,
+      "candidate": 254.4
+    },
+    {
+      "round": 4,
+      "rep": 7,
+      "first": "base",
+      "base": 371.2,
+      "candidate": 260.7
+    },
+    {
+      "round": 4,
+      "rep": 8,
+      "first": "candidate",
+      "base": 353,
+      "candidate": 269.8
+    }
+  ]
+}

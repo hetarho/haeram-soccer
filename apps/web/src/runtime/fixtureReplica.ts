@@ -2,7 +2,7 @@ import type { Club, Player } from '../../../../packages/contracts/src/types';
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
 import {
   FIXTURE_READ_KEYS,
-  fixtureRosterKey,
+  fixtureRosterContext,
   type FixtureReadCopy,
   type FixtureReadPerson,
 } from '../../../../packages/engine/src/fixture-copy';
@@ -68,7 +68,8 @@ export class FixtureReplicaWriter {
   private previous?: {
     revision: number;
     identity: string;
-    roster: string;
+    /** `fixtureRosterKey` is this context plus `squads` below, compared text by text. */
+    rosterContext: string;
     clubs: Map<string, string>;
     people: Map<string, string>;
     squads: Map<string, string>;
@@ -87,7 +88,7 @@ export class FixtureReplicaWriter {
       squadTexts = textsOf(squads);
     if (clubTexts.size !== clubs.length) throw new Error('Duplicate fixture-copy club');
     const key = identity(copy),
-      roster = fixtureRosterKey(copy);
+      rosterContext = fixtureRosterContext(copy);
     const previous = this.previous?.identity === key ? this.previous : undefined;
     const profiles = new Map<string, string>();
     const attributeTexts = new Map<string, Map<string, string>>();
@@ -120,6 +121,11 @@ export class FixtureReplicaWriter {
     let patch: string | undefined;
     if (previous) {
       const squadChanges = changes(squads, squadTexts, previous.squads);
+      // No put, drop or reorder: the same squad texts in the same order, i.e. the same key part.
+      const squadsChanged =
+        squadChanges.put.length > 0 ||
+        squadChanges.drop.length > 0 ||
+        squadChanges.order !== undefined;
       const columns = new Set(
         squadChanges.put
           .filter(([id]) => profiles.get(id) === previous.profiles.get(id))
@@ -147,13 +153,13 @@ export class FixtureReplicaWriter {
               .map((p) => [p.id, ATTRIBUTES.map((a) => p.attrs[a]), p.developed ?? null]),
           ]),
         hasSquads: copy.squads !== undefined,
-        rosterChanged: previous.roster !== roster,
+        rosterChanged: previous.rosterContext !== rosterContext || squadsChanged,
       } satisfies Patch);
     }
     this.previous = {
       revision,
       identity: key,
-      roster,
+      rosterContext,
       clubs: clubTexts,
       people: peopleTexts,
       squads: squadTexts,
