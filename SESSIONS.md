@@ -139,6 +139,7 @@
 - 261117 decided ECON-22 CLUB-18 T934: T934 review: the 셀링 클럽 needed ×3.2 incoming offers (measured 1960: standard 1/1 starters sold, selling 4/7) against ECON-22's ×1.6 → ECON-22 card raised to ×3.2 as the card factor itself so the effect ledger shows it; base incoming bid chance 6%→12% a window day as a module constant (alt: keep ×1.6 and miss the 5–7 band | a separate hidden scale)
 - 261117 suggest CLUB-52 ECON-33: The owner's 매각 요청 step never reaches the selling-club answer (only through the wage-bill sales line): at 끝까지 지키기 a delegated club still sold 1 and 3 season-start starters (1960 world, 2 seasons). Add a CLUB-52 share row for our club by the sales request (e.g. 적극 매각 −0.10 … 끝까지 지키기 +0.20) via /gusta-sketch
 - 261117 suggest CLUB-52 CLUB-25: A player bought from a lower-division club at its tier's value can be resold days later at our tier's value (1950 career: bought £15k, sold to Belgium £57k 22 days later). Consider a recently-joined factor or excluding players who joined this window from incoming-bid targets
+- 261117 suggest CLUB-33 CLUB-53: A funded 1960 top-flight takeover now signs 4/4/7 fee players a season but still finishes 19th in its first season while holding £41m–£71m; measure how often personal terms refuse the 단장's step and whether the one-move-a-look cadence still binds before tuning further
 
 ## unlanded
 | id | tag | branch | commit | at |
