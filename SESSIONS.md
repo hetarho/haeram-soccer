@@ -128,6 +128,7 @@
 | T929 | pf17 | gusta-session-self-improve-pf17-c279c8c5 | 44a165069f6e | 2026-11-16T18:59Z |
 
 ## log
+- 261117 gusta-update 0.17.3→0.17.4; ARCH r46 ARCH-30 per-check plan scripts/verification-plan.json (implemented with it, tasked=46); review/test-gate-time-261110 F8 adopted →T930; review/gusta-self-improve-261109 base ARCH@46
 - 261116 T929 done
 - 261116 gusta-update-ssot ARCH-23 start
 - 261116 T920 integrated
@@ -147,4 +148,3 @@
 - 261116 fix ci: warm read-only test worlds before integration shards and keep the world cache on failure (e3d5f568)
 - 261116 T923 integrated
 - 261116 T922 integrated
-- 261116 T917 integrated
