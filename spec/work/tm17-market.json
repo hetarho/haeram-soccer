@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T06:09:06.237Z",
-  "sourceCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+  "snapshotAt": "2026-11-17T06:30:05.201Z",
+  "sourceCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
   "group": {
     "id": "tm17-market",
     "branch": "gusta-session-self-improve-tm17-ff4b9f94",
@@ -32,6 +32,114 @@
         "owner": "host runner (shared final gate)",
         "candidate": null,
         "duplicationReason": "No automated e2e or agent scenario covers these models yet, so nothing is duplicated"
+      },
+      {
+        "id": "T935-AC1",
+        "scenario": "moneyBar(w) at acted steps 4–5 is the highest OVR whose 27-year-old market wage × 25 fits the plan's money for signings (plan.left); none at steps 1–3; none when wages take the share; raised by sales and capital, lowered by fees",
+        "steps": [
+          "club(5) rich vs poor plan; check wage(bar)×25 ≤ plan.left < wage(bar+1)×25",
+          "poor plan whose wage bill takes the 80% share: left 0, no bar",
+          "add a season sale: bar appears; add cash above reserve: bar higher; add a fee: left and bar lower",
+          "steps 1–3 and a cautious 단장 asked 넉넉히: undefined"
+        ],
+        "expected": "bar follows ECON-33's signing money",
+        "observed": "all assertions pass",
+        "evidence": [
+          "signings.test.ts 'is the highest OVR…' and 'reads the money left for signings…'",
+          "vitest --project integration signings.test.ts 35/35"
+        ],
+        "status": "pass",
+        "reason": "deterministic fixture tests",
+        "replaces": [],
+        "stage": "unit",
+        "required": true,
+        "owner": "implementer",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T935-AC2",
+        "scenario": "below-bar slots ordered first weakest first; candidates beat by the margin; 아낌없이 cap max(3, distinct slots below the bar) not inflated by repeated signings or signings for slots never below",
+        "steps": [
+          "upgradeNeeds with a bar between measures",
+          "upgradeCap unit cases",
+          "slotsBelowBar unchanged after two arrivals for the weak slot and one for a strong slot; cap stays 3",
+          "rich 아낌없이 club with 3 completed upgrades bids a 4th for a below-bar slot it beats by the margin; 넉넉히 with 2 bids none"
+        ],
+        "expected": "ordering and cap as CLUB-33 states",
+        "observed": "all pass",
+        "evidence": [
+          "signings.test.ts money-bar describe block",
+          "vitest integration signings.test.ts 35/35"
+        ],
+        "status": "pass",
+        "reason": "deterministic fixture tests",
+        "replaces": [],
+        "stage": "unit",
+        "required": true,
+        "owner": "implementer",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T935-AC3",
+        "scenario": "makeRoom at steps 4–5 lists bench players aged 24+ more than 8 below the bar at any squad size, never recent joiners or under-24s, never below a line minimum, in one report",
+        "steps": [
+          "rich club(5) ≤24 players with a last-season arrival, a recent joiner and a 23-year-old",
+          "staffSignings regular look",
+          "check listings, line minimums and the single report; 적당히, sales direct and no money list nobody"
+        ],
+        "expected": "only eligible weak bench players listed, one report",
+        "observed": "all pass",
+        "evidence": [
+          "signings.test.ts 'lists non-starters aged 24+…' and 'lists nobody for the bar…'"
+        ],
+        "status": "pass",
+        "reason": "deterministic fixture tests",
+        "replaces": [],
+        "stage": "unit",
+        "required": true,
+        "owner": "implementer",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T935-AC4",
+        "scenario": "vibe check --tier task",
+        "steps": [
+          "vibe check --tier task --diff-base 64dab2ef4 --task T935"
+        ],
+        "expected": "all task checks pass",
+        "observed": "typecheck, lint, format, i18n, affected-units (1359 tests) passed, tree a5d09cf2",
+        "evidence": [
+          "vibe check JSON ok:true, failedCheckIds []"
+        ],
+        "status": "pass",
+        "reason": "executed",
+        "replaces": [],
+        "stage": "unit",
+        "required": true,
+        "owner": "implementer",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T935-HANDOFF",
+        "scenario": "1950/1960 reference careers after integration: fee signings a season, finishes, dearest signing, valid saves",
+        "steps": [
+          "coordinator runs the reference-career measurement on the integrated candidate"
+        ],
+        "expected": "rich delegated clubs replace weak players with dearer ones; saves valid",
+        "observed": "not run by this worker",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "integration-stage measurement owned by the coordinator after integration; not a task acceptance",
+        "replaces": [],
+        "stage": "integration",
+        "required": false,
+        "owner": "coordinator",
+        "candidate": null,
+        "duplicationReason": ""
       }
     ],
     "push": null,
@@ -42,7 +150,7 @@
       "T934",
       "T935"
     ],
-    "runner": {
+    "lastRun": {
       "id": "9276c334-107a-4aaf-830c-bb52f13af33e",
       "adapter": "builtin",
       "providers": {
@@ -65,6 +173,47 @@
         }
       ],
       "startedAt": "2026-11-17T05:07:27.440Z",
+      "stoppedAt": "2026-11-17T06:30:02.270Z",
+      "dispatched": 13,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
+          "role": "worker",
+          "error": "T932: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+        },
+        {
+          "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+          "role": "worker",
+          "error": "T935: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+        },
+        {
+          "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+          "role": "worker",
+          "error": "기획 브랜치를 워커 공간에 합치지 못했습니다: 83e -c core.attributesFile=/home/deep/haeram/haeram-soccor/.git/gusta/v1/state.gitattributes -c merge.gusta-state.name=gusta STATE sections -c merge.gusta-state.driver=\"/home/deep/.nvm/versions/node/v24.22.1/bin/node\" \"/home/deep/.npm/_npx/c183f26c8545da3b/node_modules/@haeram/gusta/bin/gusta.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/gusta-session-self-improve-tm17-ff4b9f94"
+        },
+        {
+          "attempt": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
+          "submissionId": "5e9c06f6-ed25-4871-b2bc-c842148ec02e",
+          "commit": "c0cd01e32ca4239925bbdb234215dbf3de50a232",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        },
+        {
+          "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+          "role": "worker",
+          "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-AC1"
+        },
+        {
+          "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+          "role": "worker",
+          "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-AC1"
+        },
+        {
+          "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+          "error": "review retry limit"
+        }
+      ],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -73,9 +222,9 @@
     "total": 4,
     "completed": 1,
     "remaining": 3,
-    "running": 1,
+    "running": 0,
     "review": 0,
-    "blocked": 0,
+    "blocked": 1,
     "unassigned": 2
   },
   "tasks": [
@@ -102,7 +251,7 @@
       "title": "A money bar for the 단장: replace every weak starter and list the weak bench",
       "dep": [],
       "lane": "desk",
-      "status": "doing"
+      "status": "blocked"
     }
   ],
   "attempts": [
@@ -126,6 +275,9 @@
       "submittedBase": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
       "submissionId": "5e9c06f6-ed25-4871-b2bc-c842148ec02e",
       "submittedAt": "2026-11-17T05:59:23.486Z",
+      "integratedCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+      "integratedAt": "2026-11-17T06:10:24.933Z",
+      "cleanedAt": "2026-11-17T06:30:02.256Z",
       "risk": null,
       "agentChecks": [
         {
@@ -243,7 +395,14 @@
           "verification": []
         }
       ],
-      "verification": []
+      "verification": [],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline --silent && pnpm run typecheck",
+          "startedAt": "2026-11-17T06:09:06.699Z",
+          "finishedAt": "2026-11-17T06:10:24.567Z"
+        }
+      ]
     },
     {
       "id": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
@@ -257,23 +416,137 @@
       "contributors": [
         "9276c334-107a-4aaf-830c-bb52f13af33e/worker-1"
       ],
-      "status": "doing",
-      "reason": null,
+      "status": "blocked",
+      "reason": "review retry limit; inspect submission",
       "createdAt": "2026-11-17T05:22:35.002Z",
       "startCommit": "95f34bdd0c0fba55d7679c9fb75557fddb4561c4",
-      "submittedBase": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
-      "submissionId": "dd9819de-1b88-4ad2-8df9-f434ce103d1d",
-      "submittedAt": "2026-11-17T05:49:42.180Z",
+      "verifiedCommit": "333bbb9c6f1e8f65d5db3c9023be47c01a09c22d",
+      "submittedBase": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+      "submissionId": "cc23f319-c140-49d7-a3e4-3b31445ade2e",
+      "submittedAt": "2026-11-17T06:29:56.991Z",
       "risk": null,
+      "agentChecks": [
+        {
+          "id": "T935-AC1",
+          "scenario": "moneyBar(w) at acted steps 4–5 is the highest OVR whose 27-year-old market wage × 25 fits the plan's money for signings (plan.left); none at steps 1–3; none when wages take the share; raised by sales and capital, lowered by fees",
+          "steps": [
+            "club(5) rich vs poor plan; check wage(bar)×25 ≤ plan.left < wage(bar+1)×25",
+            "poor plan whose wage bill takes the 80% share: left 0, no bar",
+            "add a season sale: bar appears; add cash above reserve: bar higher; add a fee: left and bar lower",
+            "steps 1–3 and a cautious 단장 asked 넉넉히: undefined"
+          ],
+          "expected": "bar follows ECON-33's signing money",
+          "observed": "all assertions pass",
+          "evidence": [
+            "signings.test.ts 'is the highest OVR…' and 'reads the money left for signings…'",
+            "vitest --project integration signings.test.ts 35/35"
+          ],
+          "status": "pass",
+          "reason": "deterministic fixture tests",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T935-AC2",
+          "scenario": "below-bar slots ordered first weakest first; candidates beat by the margin; 아낌없이 cap max(3, distinct slots below the bar) not inflated by repeated signings or signings for slots never below",
+          "steps": [
+            "upgradeNeeds with a bar between measures",
+            "upgradeCap unit cases",
+            "slotsBelowBar unchanged after two arrivals for the weak slot and one for a strong slot; cap stays 3",
+            "rich 아낌없이 club with 3 completed upgrades bids a 4th for a below-bar slot it beats by the margin; 넉넉히 with 2 bids none"
+          ],
+          "expected": "ordering and cap as CLUB-33 states",
+          "observed": "all pass",
+          "evidence": [
+            "signings.test.ts money-bar describe block",
+            "vitest integration signings.test.ts 35/35"
+          ],
+          "status": "pass",
+          "reason": "deterministic fixture tests",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T935-AC3",
+          "scenario": "makeRoom at steps 4–5 lists bench players aged 24+ more than 8 below the bar at any squad size, never recent joiners or under-24s, never below a line minimum, in one report",
+          "steps": [
+            "rich club(5) ≤24 players with a last-season arrival, a recent joiner and a 23-year-old",
+            "staffSignings regular look",
+            "check listings, line minimums and the single report; 적당히, sales direct and no money list nobody"
+          ],
+          "expected": "only eligible weak bench players listed, one report",
+          "observed": "all pass",
+          "evidence": [
+            "signings.test.ts 'lists non-starters aged 24+…' and 'lists nobody for the bar…'"
+          ],
+          "status": "pass",
+          "reason": "deterministic fixture tests",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T935-AC4",
+          "scenario": "vibe check --tier task",
+          "steps": [
+            "vibe check --tier task --diff-base 64dab2ef4 --task T935"
+          ],
+          "expected": "all task checks pass",
+          "observed": "typecheck, lint, format, i18n, affected-units (1359 tests) passed, tree a5d09cf2",
+          "evidence": [
+            "vibe check JSON ok:true, failedCheckIds []"
+          ],
+          "status": "pass",
+          "reason": "executed",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T935-HANDOFF",
+          "scenario": "1950/1960 reference careers after integration: fee signings a season, finishes, dearest signing, valid saves",
+          "steps": [
+            "coordinator runs the reference-career measurement on the integrated candidate"
+          ],
+          "expected": "rich delegated clubs replace weak players with dearer ones; saves valid",
+          "observed": "not run by this worker",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "integration-stage measurement owned by the coordinator after integration; not a task acceptance",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "coordinator",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
       "dispatch": {
-        "id": "edcff16f-7b69-4da2-a444-2e6b0e165270",
+        "id": "05f08862-0cea-4d67-87c2-caec43bdbedb",
         "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": "opus",
-        "status": "running",
-        "startedAt": "2026-11-17T05:59:23.577Z"
+        "status": "finished",
+        "startedAt": "2026-11-17T06:21:35.898Z",
+        "finishedAt": "2026-11-17T06:29:57.020Z",
+        "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-AC1",
+        "summary": "I fixed the third review finding: the 아낌없이 upgrade cap now counts only the starting slots that are weak right now, so departures can no longer inflate it. The task-tier check passes.\n\n**What changed:** `slotsBelowBar` no longer tries to rebuild the pre-window lineup from the squad minus this window's arrivals. It counts, once each, the current XI slots more than the margin below the money bar, measured the same way `upgradeNeeds` measures them (the starter, or a signing still settling in there).\n- **Reviewer's case:** three starters sold and replaced by three upgrade signings, next to one other weak slot, now counts only that one slot. The cap stays 3, so no fourth upgrade.\n- **Repeated signings:** two upgrades for the same slot, or an upgrade for a slot that was never weak, use up the cap without raising it.\n- **Filled slots:** a slot an upgrade lifts above the bar stops counting.\n\n**Trade-off:** if more than three slots start below the bar, the director may stop before replacing all of them in one window, because the cap drops as he fills them. The rest wait for the next window. Counting the window's starting slots exactly would need a slot recorded on each bid, which means changing the contracts package, outside this task's files. This is noted in the task result's limits.\n\n**Checks:**\n- `vibe check --tier task` passed: typecheck, lint, format, i18n and affected unit tests.\n- `signings.test.ts` runs in the integration project, which the task tier skips, so I ran it by hand: 36/36 pass. That includes the reviewer's scenario as a test.\n- I also ran the 12 related engine test files by hand: 121/121 pass.\n\nThe coordinator still needs to measure the 1950/1960 reference careers after integration."
       },
       "reviewHistory": [
         {
@@ -301,13 +574,66 @@
           "finishedAt": "2026-11-17T05:55:07.603Z",
           "invalidatedAt": "2026-11-17T05:55:07.662Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "507fe418-63fa-4859-b5dc-12b018cf8820",
+          "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T935 corrects the signing-money calculation, but the revised upgrade cap can still count slots that are no longer weak. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:598",
+              "message": "T935: Removing this window's arrivals from the current squad does not reconstruct the pre-window XI when players have also left. For example, if four strong starters are sold and replaced by four strong arrivals, removing the arrivals selects weak bench players in their places. Those artificial weak slots can raise the cap above three even when the current XI is entirely above the bar, allowing further upgrades beyond CLUB-33's limit. Count eligible slots without reconstructing the old XI from the remaining squad, and cover departures followed by arrivals in the same window."
+            }
+          ],
+          "commit": "0236401dff905f582af827c1bd73dd13ff27b258",
+          "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+          "submissionId": "7c43ef01-aabf-47a9-acb6-1d426158f38c",
+          "createdAt": "2026-11-17T06:09:26.174Z",
+          "finishedAt": "2026-11-17T06:10:26.833Z",
+          "invalidatedAt": "2026-11-17T06:10:26.876Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "a89fa663-5c7a-4d53-85dd-490833015bd6",
+          "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T935 still allows the upgrade cap to grow from slots made artificially weak by departures. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:610",
+              "message": "T935: Removing arrivals still cannot reconstruct the pre-window XI after departures, and the added `upgraded` condition preserves the artificial weak slots when their replacements were director upgrades. For example, after three strong starters leave and are replaced by three completed upgrades, their former slots can be counted as weak because the reconstructed XI uses bench players. If one other slot remains genuinely below the bar, the count becomes four and permits a fourth upgrade, although only one original slot was weak and CLUB-33 caps upgrades at three. Count distinct genuinely eligible slots without inferring the old XI from the remaining squad, and cover departures, completed upgrades and a separate remaining weak slot together."
+            }
+          ],
+          "commit": "0b5d8ab4986876f473d3d8b316142f8af47f3ad6",
+          "baseCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+          "submissionId": "24026634-dd5a-48c8-a819-3469eb73d15e",
+          "createdAt": "2026-11-17T06:20:47.967Z",
+          "finishedAt": "2026-11-17T06:21:35.796Z",
+          "invalidatedAt": "2026-11-17T06:21:35.840Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "50c0c689-faf6-475d-b34e-c36fa8c0b43a",
+          "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+          "status": "reviewing",
+          "commit": "333bbb9c6f1e8f65d5db3c9023be47c01a09c22d",
+          "baseCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+          "submissionId": "cc23f319-c140-49d7-a3e4-3b31445ade2e",
+          "createdAt": "2026-11-17T06:29:57.366Z",
+          "invalidatedAt": "2026-11-17T06:29:59.896Z",
+          "invalidationReason": "review retry limit"
         }
       ],
       "steps": [
         {
           "taskId": "T935",
-          "commit": "a4184be8e465904fc083228bf8c93eaaa7f47af1",
-          "at": "2026-11-17T05:49:42.172Z",
+          "commit": "333bbb9c6f1e8f65d5db3c9023be47c01a09c22d",
+          "at": "2026-11-17T06:29:56.981Z",
           "verification": []
         }
       ],
@@ -2026,6 +2352,1291 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 243,
+      "at": "2026-11-17T06:09:25.435Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 244,
+      "at": "2026-11-17T06:09:25.700Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 245,
+      "at": "2026-11-17T06:09:25.725Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 246,
+      "at": "2026-11-17T06:09:25.846Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "7c43ef01-aabf-47a9-acb6-1d426158f38c",
+        "submittedAt": "2026-11-17T06:09:25.846Z",
+        "steps": [
+          {
+            "taskId": "T935",
+            "commit": "0236401dff905f582af827c1bd73dd13ff27b258",
+            "at": "2026-11-17T06:09:25.836Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "0236401dff905f582af827c1bd73dd13ff27b258"
+      }
+    },
+    {
+      "sequence": 247,
+      "at": "2026-11-17T06:09:25.859Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "agentChecks": [
+          {
+            "id": "T932-agent-na",
+            "scenario": "Agent acceptance for pure engine answer models (no UI or caller in this task)",
+            "steps": [
+              "Task declares agent-acceptance: not applicable; every acceptance criterion is a deterministic unit-stage check owned by the implementer"
+            ],
+            "expected": "No computer-use scenario exists for this task; UI and bid-flow observation belongs to T933–T934",
+            "observed": "Not run: no screen or player-facing flow changed; unit checks covered the criteria and review c29b2c46's fix (vibe check --tier task, all 5 checks passed)",
+            "evidence": [
+              "vibe check --tier task: typecheck, lint, format, i18n and affected-units passed after the c29b2c46 correction"
+            ],
+            "status": "not-run",
+            "reason": "Task has no UI or integration surface; agent acceptance is not applicable per the task file",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "host runner (shared final gate)",
+            "candidate": null,
+            "duplicationReason": "No automated e2e or agent scenario covers these models yet, so nothing is duplicated"
+          },
+          {
+            "id": "T935-AC1",
+            "scenario": "moneyBar(w) at acted steps 4–5 is the highest OVR whose 27-year-old market wage × 25 fits the plan's money for signings (plan.left); none at steps 1–3; none when wages take the share; raised by sales and capital, lowered by fees",
+            "steps": [
+              "club(5) rich vs poor plan; check wage(bar)×25 ≤ plan.left < wage(bar+1)×25",
+              "poor plan whose wage bill takes the 80% share: left 0, no bar",
+              "add a season sale: bar appears; add cash above reserve: bar higher; add a fee: left and bar lower",
+              "steps 1–3 and a cautious 단장 asked 넉넉히: undefined"
+            ],
+            "expected": "bar follows ECON-33's signing money",
+            "observed": "all assertions pass",
+            "evidence": [
+              "signings.test.ts 'is the highest OVR…' and 'reads the money left for signings…'",
+              "vitest --project integration signings.test.ts 35/35"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC2",
+            "scenario": "below-bar slots ordered first weakest first; candidates beat by the margin; 아낌없이 cap max(3, distinct slots below the bar) not inflated by repeated signings or signings for slots never below",
+            "steps": [
+              "upgradeNeeds with a bar between measures",
+              "upgradeCap unit cases",
+              "slotsBelowBar unchanged after two arrivals for the weak slot and one for a strong slot; cap stays 3",
+              "rich 아낌없이 club with 3 completed upgrades bids a 4th for a below-bar slot it beats by the margin; 넉넉히 with 2 bids none"
+            ],
+            "expected": "ordering and cap as CLUB-33 states",
+            "observed": "all pass",
+            "evidence": [
+              "signings.test.ts money-bar describe block",
+              "vitest integration signings.test.ts 35/35"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC3",
+            "scenario": "makeRoom at steps 4–5 lists bench players aged 24+ more than 8 below the bar at any squad size, never recent joiners or under-24s, never below a line minimum, in one report",
+            "steps": [
+              "rich club(5) ≤24 players with a last-season arrival, a recent joiner and a 23-year-old",
+              "staffSignings regular look",
+              "check listings, line minimums and the single report; 적당히, sales direct and no money list nobody"
+            ],
+            "expected": "only eligible weak bench players listed, one report",
+            "observed": "all pass",
+            "evidence": [
+              "signings.test.ts 'lists non-starters aged 24+…' and 'lists nobody for the bar…'"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC4",
+            "scenario": "vibe check --tier task",
+            "steps": [
+              "vibe check --tier task --diff-base 64dab2ef4 --task T935"
+            ],
+            "expected": "all task checks pass",
+            "observed": "typecheck, lint, format, i18n, affected-units (1359 tests) passed, tree a5d09cf2",
+            "evidence": [
+              "vibe check JSON ok:true, failedCheckIds []"
+            ],
+            "status": "pass",
+            "reason": "executed",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-HANDOFF",
+            "scenario": "1950/1960 reference careers after integration: fee signings a season, finishes, dearest signing, valid saves",
+            "steps": [
+              "coordinator runs the reference-career measurement on the integrated candidate"
+            ],
+            "expected": "rich delegated clubs replace weak players with dearer ones; saves valid",
+            "observed": "not run by this worker",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "integration-stage measurement owned by the coordinator after integration; not a task acceptance",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "coordinator",
+            "candidate": null,
+            "duplicationReason": ""
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 248,
+      "at": "2026-11-17T06:09:25.859Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "agentChecks": [
+          {
+            "id": "T935-AC1",
+            "scenario": "moneyBar(w) at acted steps 4–5 is the highest OVR whose 27-year-old market wage × 25 fits the plan's money for signings (plan.left); none at steps 1–3; none when wages take the share; raised by sales and capital, lowered by fees",
+            "steps": [
+              "club(5) rich vs poor plan; check wage(bar)×25 ≤ plan.left < wage(bar+1)×25",
+              "poor plan whose wage bill takes the 80% share: left 0, no bar",
+              "add a season sale: bar appears; add cash above reserve: bar higher; add a fee: left and bar lower",
+              "steps 1–3 and a cautious 단장 asked 넉넉히: undefined"
+            ],
+            "expected": "bar follows ECON-33's signing money",
+            "observed": "all assertions pass",
+            "evidence": [
+              "signings.test.ts 'is the highest OVR…' and 'reads the money left for signings…'",
+              "vitest --project integration signings.test.ts 35/35"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC2",
+            "scenario": "below-bar slots ordered first weakest first; candidates beat by the margin; 아낌없이 cap max(3, distinct slots below the bar) not inflated by repeated signings or signings for slots never below",
+            "steps": [
+              "upgradeNeeds with a bar between measures",
+              "upgradeCap unit cases",
+              "slotsBelowBar unchanged after two arrivals for the weak slot and one for a strong slot; cap stays 3",
+              "rich 아낌없이 club with 3 completed upgrades bids a 4th for a below-bar slot it beats by the margin; 넉넉히 with 2 bids none"
+            ],
+            "expected": "ordering and cap as CLUB-33 states",
+            "observed": "all pass",
+            "evidence": [
+              "signings.test.ts money-bar describe block",
+              "vitest integration signings.test.ts 35/35"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC3",
+            "scenario": "makeRoom at steps 4–5 lists bench players aged 24+ more than 8 below the bar at any squad size, never recent joiners or under-24s, never below a line minimum, in one report",
+            "steps": [
+              "rich club(5) ≤24 players with a last-season arrival, a recent joiner and a 23-year-old",
+              "staffSignings regular look",
+              "check listings, line minimums and the single report; 적당히, sales direct and no money list nobody"
+            ],
+            "expected": "only eligible weak bench players listed, one report",
+            "observed": "all pass",
+            "evidence": [
+              "signings.test.ts 'lists non-starters aged 24+…' and 'lists nobody for the bar…'"
+            ],
+            "status": "pass",
+            "reason": "deterministic fixture tests",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-AC4",
+            "scenario": "vibe check --tier task",
+            "steps": [
+              "vibe check --tier task --diff-base 64dab2ef4 --task T935"
+            ],
+            "expected": "all task checks pass",
+            "observed": "typecheck, lint, format, i18n, affected-units (1359 tests) passed, tree a5d09cf2",
+            "evidence": [
+              "vibe check JSON ok:true, failedCheckIds []"
+            ],
+            "status": "pass",
+            "reason": "executed",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T935-HANDOFF",
+            "scenario": "1950/1960 reference careers after integration: fee signings a season, finishes, dearest signing, valid saves",
+            "steps": [
+              "coordinator runs the reference-career measurement on the integrated candidate"
+            ],
+            "expected": "rich delegated clubs replace weak players with dearer ones; saves valid",
+            "observed": "not run by this worker",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "integration-stage measurement owned by the coordinator after integration; not a task acceptance",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "coordinator",
+            "candidate": null,
+            "duplicationReason": ""
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 249,
+      "at": "2026-11-17T06:09:25.871Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "edcff16f-7b69-4da2-a444-2e6b0e165270",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-17T05:59:23.577Z",
+          "finishedAt": "2026-11-17T06:09:25.871Z",
+          "error": null,
+          "summary": "I fixed both review findings for T935, and the task-tier check passes.\n\n1. **Money bar:** the bar now reads the plan's actual money for signings (`plan.left`, ECON-33): the squad share left after the wage bill, plus reinvested sales, less this season's fees and open bids, plus available capital. Before, it read the plan's total budget less fees, which counted money the wage bill already takes. When wages use up the whole share and there are no sales or spare cash, there is now no bar. Sales and cash raise it, and fees lower it.\n2. **아낌없이 upgrade cap:** the cap is now the larger of 3 and `slotsBelowBar`, the number of starting slots below the bar. Those slots are read on the squad as it stood before this window's arrivals, so each slot counts once however many signings the window makes. Before, the cap added the window's upgrades to the slots still below the bar, so it grew with every signing. `upgradeCap` now just takes that count.\n\nThe acceptance text still says \"the plan's budget less this season's fees\"; I followed the review and ECON-33's definition instead, and said so in the result. One side effect: the bar drops as the window's money is spent, so the count of slots below it can shrink within a window.\n\nVerification:\n- **Task tier:** `vibe check --tier task` passed: typecheck, lint, format, i18n and affected unit tests (1359).\n- **Integration project:** `signings.test.ts` runs there, so the task tier doesn't execute it. I ran it by hand: 35/35 pass. The new tests cover the money cases above and one slot counted once across two signings for the weak slot and one for a strong slot.\n- **Related engine files:** the other 12 related engine test files also pass by hand, 121/121.\n\nThe coordinator still needs to measure the 1950/1960 reference careers after integration."
+        }
+      }
+    },
+    {
+      "sequence": 250,
+      "at": "2026-11-17T06:09:26.174Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "507fe418-63fa-4859-b5dc-12b018cf8820",
+          "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+          "status": "reviewing",
+          "commit": "0236401dff905f582af827c1bd73dd13ff27b258",
+          "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+          "submissionId": "7c43ef01-aabf-47a9-acb6-1d426158f38c",
+          "createdAt": "2026-11-17T06:09:26.174Z"
+        }
+      }
+    },
+    {
+      "sequence": 251,
+      "at": "2026-11-17T06:09:29.178Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1d508ff2-9a0d-41c9-987c-46b64ccfaa9b",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-17T06:09:29.178Z"
+        }
+      }
+    },
+    {
+      "sequence": 252,
+      "at": "2026-11-17T06:09:29.193Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1d508ff2-9a0d-41c9-987c-46b64ccfaa9b",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-17T06:09:29.178Z"
+        }
+      }
+    },
+    {
+      "sequence": 253,
+      "at": "2026-11-17T06:10:24.684Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
+      "taskId": "T932",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline --silent && pnpm run typecheck",
+            "startedAt": "2026-11-17T06:09:06.699Z",
+            "finishedAt": "2026-11-17T06:10:24.567Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 254,
+      "at": "2026-11-17T06:10:24.933Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
+      "taskId": "T932",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+        "integratedAt": "2026-11-17T06:10:24.933Z"
+      }
+    },
+    {
+      "sequence": 255,
+      "at": "2026-11-17T06:10:26.833Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T935 corrects the signing-money calculation, but the revised upgrade cap can still count slots that are no longer weak. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+        "review": {
+          "id": "507fe418-63fa-4859-b5dc-12b018cf8820",
+          "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T935 corrects the signing-money calculation, but the revised upgrade cap can still count slots that are no longer weak. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:598",
+              "message": "T935: Removing this window's arrivals from the current squad does not reconstruct the pre-window XI when players have also left. For example, if four strong starters are sold and replaced by four strong arrivals, removing the arrivals selects weak bench players in their places. Those artificial weak slots can raise the cap above three even when the current XI is entirely above the bar, allowing further upgrades beyond CLUB-33's limit. Count eligible slots without reconstructing the old XI from the remaining squad, and cover departures followed by arrivals in the same window."
+            }
+          ],
+          "commit": "0236401dff905f582af827c1bd73dd13ff27b258",
+          "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+          "submissionId": "7c43ef01-aabf-47a9-acb6-1d426158f38c",
+          "createdAt": "2026-11-17T06:09:26.174Z",
+          "finishedAt": "2026-11-17T06:10:26.833Z"
+        }
+      }
+    },
+    {
+      "sequence": 256,
+      "at": "2026-11-17T06:10:26.846Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "1d508ff2-9a0d-41c9-987c-46b64ccfaa9b",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-17T06:09:29.178Z",
+          "finishedAt": "2026-11-17T06:10:26.846Z",
+          "error": null,
+          "summary": "T935 corrects the signing-money calculation, but the revised upgrade cap can still count slots that are no longer weak. Worker-reported checks passed; the final integration gate remains with the coordinator host."
+        }
+      }
+    },
+    {
+      "sequence": 257,
+      "at": "2026-11-17T06:10:26.876Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "efb067c2-c472-4b74-83e9-0fc25e6081ea",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T935 has two contract violations in the money bar and upgrade cap. Worker-reported task checks passed; the final integration gate remains with the coordinator host.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:550",
+                "message": "T935: The bar uses the recruitment plan's total squad budget minus fees, but CLUB-33 and ECON-33 define the season's money for signings after wages, reinvested sales, fees and available capital are accounted for. For example, when wages consume the income share and there is no capital or sales, plan.left is zero while this calculation can still produce a high bar. That can list weak players and generate upgrade needs despite there being no signing money. Derive the bar from the plan's actual signing money and cover wage, sales and capital cases."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:594",
+                "message": "T935: Adding all completed upgrades to the number of slots currently below the bar can raise the cap after every signing. If three upgrades have already been made and one slot remains below the bar, the cap becomes four; after another upgrade it becomes five while that slot remains below, even when the new signing addressed a different requested slot. The director can therefore keep buying beyond the specified max of three and the number of weak XI slots. Count distinct eligible slots without counting the same remaining slot again, and verify repeated signings and upgrades to slots that were not below the bar."
+              }
+            ],
+            "commit": "a4184be8e465904fc083228bf8c93eaaa7f47af1",
+            "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+            "submissionId": "dd9819de-1b88-4ad2-8df9-f434ce103d1d",
+            "createdAt": "2026-11-17T05:54:32.429Z",
+            "finishedAt": "2026-11-17T05:55:07.603Z",
+            "invalidatedAt": "2026-11-17T05:55:07.662Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "507fe418-63fa-4859-b5dc-12b018cf8820",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T935 corrects the signing-money calculation, but the revised upgrade cap can still count slots that are no longer weak. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:598",
+                "message": "T935: Removing this window's arrivals from the current squad does not reconstruct the pre-window XI when players have also left. For example, if four strong starters are sold and replaced by four strong arrivals, removing the arrivals selects weak bench players in their places. Those artificial weak slots can raise the cap above three even when the current XI is entirely above the bar, allowing further upgrades beyond CLUB-33's limit. Count eligible slots without reconstructing the old XI from the remaining squad, and cover departures followed by arrivals in the same window."
+              }
+            ],
+            "commit": "0236401dff905f582af827c1bd73dd13ff27b258",
+            "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+            "submissionId": "7c43ef01-aabf-47a9-acb6-1d426158f38c",
+            "createdAt": "2026-11-17T06:09:26.174Z",
+            "finishedAt": "2026-11-17T06:10:26.833Z",
+            "invalidatedAt": "2026-11-17T06:10:26.876Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 258,
+      "at": "2026-11-17T06:10:26.925Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a75c480b-43eb-4e9c-bc57-6abdd00af1e2",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-17T06:10:26.925Z"
+        }
+      }
+    },
+    {
+      "sequence": 259,
+      "at": "2026-11-17T06:10:27.148Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a75c480b-43eb-4e9c-bc57-6abdd00af1e2",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-17T06:10:26.925Z"
+        }
+      }
+    },
+    {
+      "sequence": 260,
+      "at": "2026-11-17T06:20:47.073Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 261,
+      "at": "2026-11-17T06:20:47.362Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 262,
+      "at": "2026-11-17T06:20:47.389Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 263,
+      "at": "2026-11-17T06:20:47.532Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+        "submissionId": "24026634-dd5a-48c8-a819-3469eb73d15e",
+        "submittedAt": "2026-11-17T06:20:47.532Z",
+        "steps": [
+          {
+            "taskId": "T935",
+            "commit": "0b5d8ab4986876f473d3d8b316142f8af47f3ad6",
+            "at": "2026-11-17T06:20:47.516Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "0b5d8ab4986876f473d3d8b316142f8af47f3ad6"
+      }
+    },
+    {
+      "sequence": 264,
+      "at": "2026-11-17T06:20:47.582Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "a75c480b-43eb-4e9c-bc57-6abdd00af1e2",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-17T06:10:26.925Z",
+          "finishedAt": "2026-11-17T06:20:47.582Z",
+          "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-AC1",
+          "summary": "The 아낌없이 cap no longer counts slots that a sale weakened and a new arrival filled again, and the task-tier check passes.\n\n`slotsBelowBar` now counts a starting slot (once) only if both of these hold:\n- **It was below the bar before this window's arrivals.**\n- **It is still weak or was upgraded:** it is below the bar now (by its starter or a signing still settling in there), or one of this window's completed upgrade signings holds it.\n\nWhat this means for the cap:\n- **Departures:** if starters are sold and replaced by strong players who were not upgrade signings, those slots don't count. In the reviewer's example of four starters sold and replaced, the count is 0 and the cap stays at 3.\n- **Upgrades to slots that were never weak:** they use up the cap without raising it.\n- **Repeated signings for one slot:** the slot counts once.\n\nThe money-bar fix from the previous round (reading the plan's signing money, `plan.left`) is unchanged.\n\nVerification:\n- `vibe check --tier task` passed: typecheck, lint, format, i18n and affected unit tests.\n- `signings.test.ts` runs in the integration project, which the task tier doesn't execute, so I ran it by hand: 36/36 pass. That includes a new test where four starters are sold and replaced in the same window. Their slots count 0 when the replacements aren't upgrades, and never more than the four upgrades made when they are.\n- The 12 related engine test files also pass by hand, 121/121.\n\nBids don't record which slot they were for, and adding that would mean changing the contracts package, which is outside this task's files. So an upgrade signing is matched to the slot he now holds or settles in. If a new manager changes formation mid-window, the new formation's slots are read. Both are noted in the task result. The coordinator still needs to measure the 1950/1960 reference careers after integration."
+        }
+      }
+    },
+    {
+      "sequence": 265,
+      "at": "2026-11-17T06:20:47.967Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "a89fa663-5c7a-4d53-85dd-490833015bd6",
+          "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+          "status": "reviewing",
+          "commit": "0b5d8ab4986876f473d3d8b316142f8af47f3ad6",
+          "baseCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+          "submissionId": "24026634-dd5a-48c8-a819-3469eb73d15e",
+          "createdAt": "2026-11-17T06:20:47.967Z"
+        }
+      }
+    },
+    {
+      "sequence": 266,
+      "at": "2026-11-17T06:20:51.533Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "cedacfef-dea0-4af2-9bc7-f9414a4be7e4",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-17T06:20:51.533Z"
+        }
+      }
+    },
+    {
+      "sequence": 267,
+      "at": "2026-11-17T06:20:51.558Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "cedacfef-dea0-4af2-9bc7-f9414a4be7e4",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-17T06:20:51.533Z"
+        }
+      }
+    },
+    {
+      "sequence": 268,
+      "at": "2026-11-17T06:21:35.796Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T935 still allows the upgrade cap to grow from slots made artificially weak by departures. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+        "review": {
+          "id": "a89fa663-5c7a-4d53-85dd-490833015bd6",
+          "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T935 still allows the upgrade cap to grow from slots made artificially weak by departures. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:610",
+              "message": "T935: Removing arrivals still cannot reconstruct the pre-window XI after departures, and the added `upgraded` condition preserves the artificial weak slots when their replacements were director upgrades. For example, after three strong starters leave and are replaced by three completed upgrades, their former slots can be counted as weak because the reconstructed XI uses bench players. If one other slot remains genuinely below the bar, the count becomes four and permits a fourth upgrade, although only one original slot was weak and CLUB-33 caps upgrades at three. Count distinct genuinely eligible slots without inferring the old XI from the remaining squad, and cover departures, completed upgrades and a separate remaining weak slot together."
+            }
+          ],
+          "commit": "0b5d8ab4986876f473d3d8b316142f8af47f3ad6",
+          "baseCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+          "submissionId": "24026634-dd5a-48c8-a819-3469eb73d15e",
+          "createdAt": "2026-11-17T06:20:47.967Z",
+          "finishedAt": "2026-11-17T06:21:35.796Z"
+        }
+      }
+    },
+    {
+      "sequence": 269,
+      "at": "2026-11-17T06:21:35.810Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "cedacfef-dea0-4af2-9bc7-f9414a4be7e4",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-17T06:20:51.533Z",
+          "finishedAt": "2026-11-17T06:21:35.810Z",
+          "error": null,
+          "summary": "T935 still allows the upgrade cap to grow from slots made artificially weak by departures. Worker-reported checks passed; the final integration gate remains with the coordinator host."
+        }
+      }
+    },
+    {
+      "sequence": 270,
+      "at": "2026-11-17T06:21:35.840Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "efb067c2-c472-4b74-83e9-0fc25e6081ea",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T935 has two contract violations in the money bar and upgrade cap. Worker-reported task checks passed; the final integration gate remains with the coordinator host.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:550",
+                "message": "T935: The bar uses the recruitment plan's total squad budget minus fees, but CLUB-33 and ECON-33 define the season's money for signings after wages, reinvested sales, fees and available capital are accounted for. For example, when wages consume the income share and there is no capital or sales, plan.left is zero while this calculation can still produce a high bar. That can list weak players and generate upgrade needs despite there being no signing money. Derive the bar from the plan's actual signing money and cover wage, sales and capital cases."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:594",
+                "message": "T935: Adding all completed upgrades to the number of slots currently below the bar can raise the cap after every signing. If three upgrades have already been made and one slot remains below the bar, the cap becomes four; after another upgrade it becomes five while that slot remains below, even when the new signing addressed a different requested slot. The director can therefore keep buying beyond the specified max of three and the number of weak XI slots. Count distinct eligible slots without counting the same remaining slot again, and verify repeated signings and upgrades to slots that were not below the bar."
+              }
+            ],
+            "commit": "a4184be8e465904fc083228bf8c93eaaa7f47af1",
+            "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+            "submissionId": "dd9819de-1b88-4ad2-8df9-f434ce103d1d",
+            "createdAt": "2026-11-17T05:54:32.429Z",
+            "finishedAt": "2026-11-17T05:55:07.603Z",
+            "invalidatedAt": "2026-11-17T05:55:07.662Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "507fe418-63fa-4859-b5dc-12b018cf8820",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T935 corrects the signing-money calculation, but the revised upgrade cap can still count slots that are no longer weak. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:598",
+                "message": "T935: Removing this window's arrivals from the current squad does not reconstruct the pre-window XI when players have also left. For example, if four strong starters are sold and replaced by four strong arrivals, removing the arrivals selects weak bench players in their places. Those artificial weak slots can raise the cap above three even when the current XI is entirely above the bar, allowing further upgrades beyond CLUB-33's limit. Count eligible slots without reconstructing the old XI from the remaining squad, and cover departures followed by arrivals in the same window."
+              }
+            ],
+            "commit": "0236401dff905f582af827c1bd73dd13ff27b258",
+            "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+            "submissionId": "7c43ef01-aabf-47a9-acb6-1d426158f38c",
+            "createdAt": "2026-11-17T06:09:26.174Z",
+            "finishedAt": "2026-11-17T06:10:26.833Z",
+            "invalidatedAt": "2026-11-17T06:10:26.876Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "a89fa663-5c7a-4d53-85dd-490833015bd6",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T935 still allows the upgrade cap to grow from slots made artificially weak by departures. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:610",
+                "message": "T935: Removing arrivals still cannot reconstruct the pre-window XI after departures, and the added `upgraded` condition preserves the artificial weak slots when their replacements were director upgrades. For example, after three strong starters leave and are replaced by three completed upgrades, their former slots can be counted as weak because the reconstructed XI uses bench players. If one other slot remains genuinely below the bar, the count becomes four and permits a fourth upgrade, although only one original slot was weak and CLUB-33 caps upgrades at three. Count distinct genuinely eligible slots without inferring the old XI from the remaining squad, and cover departures, completed upgrades and a separate remaining weak slot together."
+              }
+            ],
+            "commit": "0b5d8ab4986876f473d3d8b316142f8af47f3ad6",
+            "baseCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+            "submissionId": "24026634-dd5a-48c8-a819-3469eb73d15e",
+            "createdAt": "2026-11-17T06:20:47.967Z",
+            "finishedAt": "2026-11-17T06:21:35.796Z",
+            "invalidatedAt": "2026-11-17T06:21:35.840Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 271,
+      "at": "2026-11-17T06:21:35.898Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "05f08862-0cea-4d67-87c2-caec43bdbedb",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-17T06:21:35.898Z"
+        }
+      }
+    },
+    {
+      "sequence": 272,
+      "at": "2026-11-17T06:21:36.156Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "05f08862-0cea-4d67-87c2-caec43bdbedb",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-17T06:21:35.898Z"
+        }
+      }
+    },
+    {
+      "sequence": 273,
+      "at": "2026-11-17T06:29:56.635Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 274,
+      "at": "2026-11-17T06:29:56.865Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 275,
+      "at": "2026-11-17T06:29:56.889Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 276,
+      "at": "2026-11-17T06:29:56.991Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "cc23f319-c140-49d7-a3e4-3b31445ade2e",
+        "submittedAt": "2026-11-17T06:29:56.991Z",
+        "steps": [
+          {
+            "taskId": "T935",
+            "commit": "333bbb9c6f1e8f65d5db3c9023be47c01a09c22d",
+            "at": "2026-11-17T06:29:56.981Z",
+            "verification": []
+          }
+        ],
+        "verifiedCommit": "333bbb9c6f1e8f65d5db3c9023be47c01a09c22d"
+      }
+    },
+    {
+      "sequence": 277,
+      "at": "2026-11-17T06:29:57.020Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "05f08862-0cea-4d67-87c2-caec43bdbedb",
+          "runner": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-17T06:21:35.898Z",
+          "finishedAt": "2026-11-17T06:29:57.020Z",
+          "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-AC1",
+          "summary": "I fixed the third review finding: the 아낌없이 upgrade cap now counts only the starting slots that are weak right now, so departures can no longer inflate it. The task-tier check passes.\n\n**What changed:** `slotsBelowBar` no longer tries to rebuild the pre-window lineup from the squad minus this window's arrivals. It counts, once each, the current XI slots more than the margin below the money bar, measured the same way `upgradeNeeds` measures them (the starter, or a signing still settling in there).\n- **Reviewer's case:** three starters sold and replaced by three upgrade signings, next to one other weak slot, now counts only that one slot. The cap stays 3, so no fourth upgrade.\n- **Repeated signings:** two upgrades for the same slot, or an upgrade for a slot that was never weak, use up the cap without raising it.\n- **Filled slots:** a slot an upgrade lifts above the bar stops counting.\n\n**Trade-off:** if more than three slots start below the bar, the director may stop before replacing all of them in one window, because the cap drops as he fills them. The rest wait for the next window. Counting the window's starting slots exactly would need a slot recorded on each bid, which means changing the contracts package, outside this task's files. This is noted in the task result's limits.\n\n**Checks:**\n- `vibe check --tier task` passed: typecheck, lint, format, i18n and affected unit tests.\n- `signings.test.ts` runs in the integration project, which the task tier skips, so I ran it by hand: 36/36 pass. That includes the reviewer's scenario as a test.\n- I also ran the 12 related engine test files by hand: 121/121 pass.\n\nThe coordinator still needs to measure the 1950/1960 reference careers after integration."
+        }
+      }
+    },
+    {
+      "sequence": 278,
+      "at": "2026-11-17T06:29:57.366Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "50c0c689-faf6-475d-b34e-c36fa8c0b43a",
+          "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+          "status": "reviewing",
+          "commit": "333bbb9c6f1e8f65d5db3c9023be47c01a09c22d",
+          "baseCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+          "submissionId": "cc23f319-c140-49d7-a3e4-3b31445ade2e",
+          "createdAt": "2026-11-17T06:29:57.366Z"
+        }
+      }
+    },
+    {
+      "sequence": 279,
+      "at": "2026-11-17T06:29:59.896Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "reviewing",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "efb067c2-c472-4b74-83e9-0fc25e6081ea",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T935 has two contract violations in the money bar and upgrade cap. Worker-reported task checks passed; the final integration gate remains with the coordinator host.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:550",
+                "message": "T935: The bar uses the recruitment plan's total squad budget minus fees, but CLUB-33 and ECON-33 define the season's money for signings after wages, reinvested sales, fees and available capital are accounted for. For example, when wages consume the income share and there is no capital or sales, plan.left is zero while this calculation can still produce a high bar. That can list weak players and generate upgrade needs despite there being no signing money. Derive the bar from the plan's actual signing money and cover wage, sales and capital cases."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:594",
+                "message": "T935: Adding all completed upgrades to the number of slots currently below the bar can raise the cap after every signing. If three upgrades have already been made and one slot remains below the bar, the cap becomes four; after another upgrade it becomes five while that slot remains below, even when the new signing addressed a different requested slot. The director can therefore keep buying beyond the specified max of three and the number of weak XI slots. Count distinct eligible slots without counting the same remaining slot again, and verify repeated signings and upgrades to slots that were not below the bar."
+              }
+            ],
+            "commit": "a4184be8e465904fc083228bf8c93eaaa7f47af1",
+            "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+            "submissionId": "dd9819de-1b88-4ad2-8df9-f434ce103d1d",
+            "createdAt": "2026-11-17T05:54:32.429Z",
+            "finishedAt": "2026-11-17T05:55:07.603Z",
+            "invalidatedAt": "2026-11-17T05:55:07.662Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "507fe418-63fa-4859-b5dc-12b018cf8820",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T935 corrects the signing-money calculation, but the revised upgrade cap can still count slots that are no longer weak. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:598",
+                "message": "T935: Removing this window's arrivals from the current squad does not reconstruct the pre-window XI when players have also left. For example, if four strong starters are sold and replaced by four strong arrivals, removing the arrivals selects weak bench players in their places. Those artificial weak slots can raise the cap above three even when the current XI is entirely above the bar, allowing further upgrades beyond CLUB-33's limit. Count eligible slots without reconstructing the old XI from the remaining squad, and cover departures followed by arrivals in the same window."
+              }
+            ],
+            "commit": "0236401dff905f582af827c1bd73dd13ff27b258",
+            "baseCommit": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+            "submissionId": "7c43ef01-aabf-47a9-acb6-1d426158f38c",
+            "createdAt": "2026-11-17T06:09:26.174Z",
+            "finishedAt": "2026-11-17T06:10:26.833Z",
+            "invalidatedAt": "2026-11-17T06:10:26.876Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "a89fa663-5c7a-4d53-85dd-490833015bd6",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T935 still allows the upgrade cap to grow from slots made artificially weak by departures. Worker-reported checks passed; the final integration gate remains with the coordinator host.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:610",
+                "message": "T935: Removing arrivals still cannot reconstruct the pre-window XI after departures, and the added `upgraded` condition preserves the artificial weak slots when their replacements were director upgrades. For example, after three strong starters leave and are replaced by three completed upgrades, their former slots can be counted as weak because the reconstructed XI uses bench players. If one other slot remains genuinely below the bar, the count becomes four and permits a fourth upgrade, although only one original slot was weak and CLUB-33 caps upgrades at three. Count distinct genuinely eligible slots without inferring the old XI from the remaining squad, and cover departures, completed upgrades and a separate remaining weak slot together."
+              }
+            ],
+            "commit": "0b5d8ab4986876f473d3d8b316142f8af47f3ad6",
+            "baseCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+            "submissionId": "24026634-dd5a-48c8-a819-3469eb73d15e",
+            "createdAt": "2026-11-17T06:20:47.967Z",
+            "finishedAt": "2026-11-17T06:21:35.796Z",
+            "invalidatedAt": "2026-11-17T06:21:35.840Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "50c0c689-faf6-475d-b34e-c36fa8c0b43a",
+            "owner": "9276c334-107a-4aaf-830c-bb52f13af33e/reviewer-1",
+            "status": "reviewing",
+            "commit": "333bbb9c6f1e8f65d5db3c9023be47c01a09c22d",
+            "baseCommit": "a73163d2e40a6ae1b469bd9d312691ad462d5f07",
+            "submissionId": "cc23f319-c140-49d7-a3e4-3b31445ade2e",
+            "createdAt": "2026-11-17T06:29:57.366Z",
+            "invalidatedAt": "2026-11-17T06:29:59.896Z",
+            "invalidationReason": "review retry limit"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 280,
+      "at": "2026-11-17T06:29:59.911Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+      "taskId": "T935",
+      "previousStatus": "ready",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "review retry limit; inspect submission"
+      }
+    },
+    {
+      "sequence": 281,
+      "at": "2026-11-17T06:29:59.988Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
+      "taskId": "T932",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 282,
+      "at": "2026-11-17T06:30:02.256Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
+      "taskId": "T932",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-17T06:30:02.256Z"
+      }
+    },
+    {
+      "sequence": 283,
+      "at": "2026-11-17T06:30:02.270Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "9276c334-107a-4aaf-830c-bb52f13af33e",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-17T05:07:27.440Z",
+          "stoppedAt": "2026-11-17T06:30:02.270Z",
+          "dispatched": 13,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
+              "role": "worker",
+              "error": "T932: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            },
+            {
+              "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+              "role": "worker",
+              "error": "T935: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            },
+            {
+              "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+              "role": "worker",
+              "error": "기획 브랜치를 워커 공간에 합치지 못했습니다: 83e -c core.attributesFile=/home/deep/haeram/haeram-soccor/.git/gusta/v1/state.gitattributes -c merge.gusta-state.name=gusta STATE sections -c merge.gusta-state.driver=\"/home/deep/.nvm/versions/node/v24.22.1/bin/node\" \"/home/deep/.npm/_npx/c183f26c8545da3b/node_modules/@haeram/gusta/bin/gusta.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/gusta-session-self-improve-tm17-ff4b9f94"
+            },
+            {
+              "attempt": "954e829c-17ee-4b06-a9c5-f1e916d904ea",
+              "submissionId": "5e9c06f6-ed25-4871-b2bc-c842148ec02e",
+              "commit": "c0cd01e32ca4239925bbdb234215dbf3de50a232",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+              "role": "worker",
+              "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-AC1"
+            },
+            {
+              "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+              "role": "worker",
+              "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-AC1"
+            },
+            {
+              "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
+              "error": "review retry limit"
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
