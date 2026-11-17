@@ -1010,6 +1010,33 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
   const listed = (w: World) => activePlayers(w).filter((p) => transferStance(p) === 'listed');
   const roomReports = (w: World) =>
     (w.inbox || []).filter((item) => item.title.endsWith('이적 명단에 올렸어요'));
+  /** A far abler copy of `base` who joins in this window. */
+  function joinAble(w: World, base: Player, id: string) {
+    const p: Player = { ...structuredClone(base), id, status: 'active' };
+    p.attrs = Object.fromEntries(ATTRIBUTES.map((key) => [key, 99])) as Player['attrs'];
+    delete p.stance;
+    w.players.push(p);
+    noteSigning(w, p);
+    return p;
+  }
+  /** Records the 단장's completed upgrade signing of `playerId` in this window. */
+  function upgradeSigned(w: World, playerId: string) {
+    const day = currentDay(w);
+    w.bids = [
+      ...(w.bids || []),
+      {
+        id: `out:test:up:${playerId}`,
+        direction: 'out',
+        playerId,
+        fee: '1',
+        year: w.year,
+        day,
+        due: day,
+        status: 'completed',
+        staff: 'upgrade',
+      },
+    ];
+  }
   /** A plan resting on `revenue` with no cash to draw on. */
   function poor(w: World, revenue: bigint) {
     w.cash = '0';
@@ -1117,13 +1144,10 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(below.length).toBeLessThan(3);
     expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
     expect(slotsBelowBar(w, 2, undefined)).toBe(0);
-    /** A far abler copy of a slot's starter who joins in this window. */
+    /** A far abler copy of a slot's starter whom the 단장 signs for an upgrade in this window. */
     const arrive = (slot: number, id: string) => {
-      const p: Player = { ...structuredClone(ownStarters(w)[slot]!), id };
-      p.attrs = Object.fromEntries(ATTRIBUTES.map((key) => [key, 99])) as Player['attrs'];
-      delete p.stance;
-      w.players.push(p);
-      noteSigning(w, p);
+      const p = joinAble(w, ownStarters(w)[slot]!, id);
+      upgradeSigned(w, id);
       return p;
     };
     // A signing for the weak slot, then another for it, then one for a slot never below the bar.
@@ -1141,6 +1165,29 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(slotsBelowBar(w, 2, bar)).toBe(below.length);
     const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true };
     expect(upgradeCap(generous, slotsBelowBar(w, 2, bar))).toBe(3);
+  });
+
+  it('does not count a slot a departure weakened and an arrival filled again', () => {
+    const w = club(5);
+    const plain = upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[];
+    // A bar no starter stands more than 2 below.
+    const bar = Math.min(...plain.map((need) => need.level)) + 2;
+    expect(slotsBelowBar(w, 2, bar)).toBe(0);
+    // The four ablest starters leave; abler players take their places in the same window.
+    const sold = [...ownStarters(w)].sort((a, b) => overall(b) - overall(a)).slice(0, 4);
+    for (const p of sold) p.status = 'sold';
+    // Held by the bench, their slots fall below the bar: what a read without the arrivals sees.
+    expect(slotsBelowBar(w, 2, bar)).toBeGreaterThan(0);
+    const arrivals = sold.map((p, i) => joinAble(w, p, `cap:back:${i}`));
+    expect(joinedThisWindow(w)).toHaveLength(4);
+    // Read without them, those slots fall to the bench, yet the XI now stands above the bar.
+    expect(slotsBelowBar(w, 2, bar)).toBe(0);
+    const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true };
+    expect(upgradeCap(generous, slotsBelowBar(w, 2, bar))).toBe(3);
+    // Had the 단장 bought them as upgrades, each counts once, never above the upgrades made.
+    for (const p of arrivals) upgradeSigned(w, p.id);
+    expect(slotsBelowBar(w, 2, bar)).toBeLessThanOrEqual(arrivals.length);
+    expect(upgradeCap(generous, slotsBelowBar(w, 2, bar))).toBeLessThanOrEqual(arrivals.length);
   });
 
   it('a rich 아낌없이 club bids for a fourth upgrade in a window; 넉넉히 stops at its two', () => {
