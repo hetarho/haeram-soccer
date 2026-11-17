@@ -69,9 +69,10 @@ export const NPC_YOUTH = {
   headroom: [12, 24],
   /**
    * A skipped war summer's refill (→WORLD-14/16) is drawn ready to play: aged `ages`, his OVR
-   * `below` under the division's level and his potential `headroom` above his OVR.
+   * `below` under the division's level and his potential `headroom` above his OVR (T950: at the
+   * level, so the 1946–1951 top divisions restart nearest it).
    */
-  warRefill: { ages: [19, 24], below: 3, headroom: 4 },
+  warRefill: { ages: [19, 24], below: 0, headroom: 4 },
 } as const;
 
 /** The potential offset at quantile `u` of `NPC_YOUTH.skew`, linear between its anchors. */

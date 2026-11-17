@@ -33,8 +33,11 @@ export const CLUB_LEVELS = {
   investment: 0.5,
   /** Progress toward the next level lost in a season without investment. */
   decay: 0.05,
-  /** How far above its target actual surplus investment holds a level. */
-  aboveTarget: 1,
+  /**
+   * How far above its target actual surplus investment holds a level. 0 from T950: a held level
+   * lifted every lower division's intake and the divisions drifted 3–10 above their levels by 1965.
+   */
+  aboveTarget: 0,
   /** Levels a season a level moves toward its target, after promotion or relegation too. */
   moveAfterChange: 1,
 } as const;
