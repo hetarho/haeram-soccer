@@ -19,7 +19,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 45 | 45 | - | 2 |
+| ARCH | 46 | 46 | - | 2 |
 | WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 14 | 14 | - | 0 |
@@ -55,7 +55,7 @@
 | ui-engine-boundary-261027 | converted@261027 |
 | engine-architecture-261030 | converted@261031 |
 | gusta-self-improve-261109 | open@261109 |
-| test-gate-time-261110 | converted@261110 |
+| test-gate-time-261110 | converted@261117 |
 | test-value-261110 | converted@261110 |
 | game-runtime-speed-261110 | converted@261110 |
 | match-engine-split-261110 | converted@261111 |
@@ -64,6 +64,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
+| T930 | Keep one browser journey instance per distinct path or layout | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -73,6 +74,6 @@
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
 
 ## next
-- gusta-implement-task T916
+- gusta-implement-task T930
 - Session pf17 landed T920 T921 T926 T927 (identical worlds; history CPU about 3476 → 2293 ms a season, reports/261117-pf17); T925 and T928 recorded no gain.
 - NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
