@@ -128,6 +128,7 @@
 - 261116 decided T928: pf17 second cycle: adopted generation-hotpaths F4 as T928 now that T927 is measured, and unblocked T920 to re-measure its kept patch on an idle host; both kept only with identical worlds and a CPU-ratio interval below 1.
 - 261117 decided CLUB-33 CLUB-22 T931: A funded 아낌없이 club signed 0–1 players a season: upgrades stopped above 24 players and nobody trims a bought 25–35 squad → upgrade room by step (적당히 24, 넉넉히 28, 아낌없이 registration limit, listed players not counted) and at 넉넉히/아낌없이 with sales delegated the 단장 lists surplus non-XI 24+ players down to 24 each regular look (alt: raise the single 24 gate | sell surplus outright | leave squads to the owner)
 - 261117 decided ECON-33 T931: A cautious or balanced 단장 asked 아낌없이 held 10–20 years of fixed costs back from injected cash → reserve years at steps 4/5 2/1 (안정 지향), 1/0 (균형형), 0/0 (공격형); steps 1–3 unchanged (alt: halve every step | ignore temperament at 아낌없이)
+- 261117 decided CLUB-51: A third-division owner should reach top-flight players → scout reach unchanged: funded delegated staff hire a 60+ chief scout within weeks, and the 1930/1960 third-division probes bought 84–90 OVR players (alt: whole-country reach for every scout | reach by money)
 
 ## unlanded
 | id | tag | branch | commit | at |
