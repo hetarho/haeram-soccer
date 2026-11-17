@@ -126,6 +126,7 @@
 - 261116 decided LEAGUE-10: Owner chose the check boundary over a model fix: LEAGUE-10 r21 keeps division order on every season's first day except the 1946-1948 openings after the war gap (T924). Alternatives: model fix of the post-war restart (hours to days, broad fixture churn, uncertain); stop with the failure (rejected by owner).
 - 261116 decided T925: pf17 orchestrator adopted generation-hotpaths F1-F3 as T925-T927 and runs planned T921 (owner request 261117: autonomous performance work until 06:00 KST). F4 (semantic slot keys) deferred: risk of conflating ratings and same lines as F3. Kept only with identical worlds and a measured CPU-ratio interval below 1.
 - 261116 decided T928: pf17 second cycle: adopted generation-hotpaths F4 as T928 now that T927 is measured, and unblocked T920 to re-measure its kept patch on an idle host; both kept only with identical worlds and a CPU-ratio interval below 1.
+- 261117 decided CLUB-33 CLUB-22 T931: A funded 아낌없이 club signed 0–1 players a season: upgrades stopped above 24 players and nobody trims a bought 25–35 squad → upgrade room by step (적당히 24, 넉넉히 28, 아낌없이 registration limit, listed players not counted) and at 넉넉히/아낌없이 with sales delegated the 단장 lists surplus non-XI 24+ players down to 24 each regular look (alt: raise the single 24 gate | sell surplus outright | leave squads to the owner)
 
 ## unlanded
 | id | tag | branch | commit | at |
