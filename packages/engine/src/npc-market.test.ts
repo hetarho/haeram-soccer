@@ -19,7 +19,7 @@ import { formationOf, slotOvr } from './player-state';
 import { compareIds, random } from './primitives';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
-import { npcWageBill, npcWageLimit } from './books';
+import { NPC_WAGE_DECISIONS, npcWageBill, npcWageLimit } from './books';
 import { clubRegistration } from './registration';
 import { currentDay, SEASON_END_DAY } from './calendar';
 import { playerTotals, settleNpcSeason } from './npc-stats';
@@ -402,6 +402,48 @@ describe('isolated NPC transfer windows', () => {
     );
     npcMarket(w);
     expect(locations(w, p.id)).toEqual([other.id]);
+  });
+
+  it('leaves the walk moves when a buyer is refused every listing on its own facts', () => {
+    for (const closed of ['wage', 'registration', 'books'] as const) {
+      const { w, seller, buyer, other } = fixture(2024);
+      const p = listedKeeper(w, seller);
+      missingKeeper(w, buyer);
+      missingKeeper(w, other);
+      other.books!.openingIncome = '999999999999999';
+      if (closed === 'wage') {
+        buyer.books!.openingIncome = '0';
+        buyer.books!.cash = '0';
+      } else if (closed === 'registration') {
+        const players = w.squads![buyer.id]!;
+        const { ceiling } = clubRegistration(buyer, w.year, players);
+        expect(Number.isFinite(ceiling)).toBe(true);
+        while (players.length < ceiling) {
+          const q = structuredClone(players[0]!);
+          q.id = `ceiling:${players.length}`;
+          q.wage = '0';
+          players.push(q);
+        }
+        buyer.books!.openingIncome = '999999999999999';
+        invalidateNpcSquad(w, buyer.id);
+      } else delete buyer.books;
+      // The walk could not settle anything for this buyer: every listing's offer is refused.
+      for (const c of w.clubs.slice(1))
+        for (const q of c === buyer ? [] : w.squads![c.id]!)
+          expect(npcOffer(w, buyer, q, c, '1')).toBeUndefined();
+      const decided: string[] = [];
+      NPC_WAGE_DECISIONS.observe = (club) => decided.push(club.id);
+      try {
+        npcMarket(w);
+      } finally {
+        delete NPC_WAGE_DECISIONS.observe;
+      }
+      expect(locations(w, p.id)).toEqual([other.id]);
+      expect(decided).not.toContain(buyer.id);
+      const moves = Object.values(w.playerRecords!).flatMap((r) => r.moves);
+      expect(moves.some((m) => m.to === other.id)).toBe(true);
+      expect(moves.filter((m) => m.to === buyer.id)).toEqual([]);
+    }
   });
 
   it('refuses counted signings at the registration limit and permits the same signing with room', () => {

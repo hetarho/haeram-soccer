@@ -258,6 +258,19 @@ export function npcOffer(
   return { club: buyer, wage, paid, pounds: BigInt(inPounds(buyer.country, w.year, wage)) };
 }
 
+/**
+ * Buyer facts on which `npcOffer` refuses every listing, each before its wage-decision observer: no
+ * books, a full registration ceiling or a wage bill over the limit. Only a settled move changes them.
+ */
+function refusesEveryListing(w: World, buyer: Club, settlement: Settlement) {
+  if (!buyer.books) return true;
+  const { registration, limit, bill } = clubFacts(w, buyer, settlement);
+  return (
+    registration.total + reservedReturns(w, buyer.id, settlement) >= registration.ceiling ||
+    (limit !== undefined && bill > limit)
+  );
+}
+
 /** Observation only for the final lived-world gate; no observer changes settlement inputs. */
 export const PLAYER_MOVE_FLOW: { observe?: (w: World, id: string, move: PlayerMove) => void } = {};
 export function recordPlayerMove(w: World, id: string, move: PlayerMove) {
@@ -472,6 +485,9 @@ export function npcMarket(w: World) {
   };
   for (const buyer of buyers) {
     while ((counts.get(buyer.id) ?? 0) < NPC_MARKET.moves) {
+      // Such a walk would settle nothing; the reads it skips are settlement memos, and draws and
+      // observers come only before the walk or with an accepted offer.
+      if (refusesEveryListing(w, buyer, settlement)) break;
       let completed = false;
       for (const need of wanted.get(buyer.id)!) {
         const floor = need.slot ? need.best + NPC_MARKET.upgrade : undefined;
