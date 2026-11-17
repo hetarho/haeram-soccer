@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| cf17 | ihaelam-ui-MacBookPro | pair | 2026-11-17T15:12Z | 2026-11-17T15:27Z | T916 | gusta-session-start-cf17-c5483839 | 5d8ea739c76d | 27b831eabec55286522b5ec4 |
+| cf17 | ihaelam-ui-MacBookPro | pair | 2026-11-17T15:12Z | 2026-11-17T15:33Z | - | gusta-session-start-cf17-c5483839 | cc5d72ffd682 | 27b831eabec55286522b5ec4 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -167,8 +167,10 @@
 | T930 | cf17 | gusta-session-start-cf17-c5483839 | ca6f9915ba5b | 2026-11-17T13:45Z |
 | T942 | cf17 | gusta-session-start-cf17-c5483839 | 45f9a3169094 | 2026-11-17T13:49Z |
 | T943 | cf17 | gusta-session-start-cf17-c5483839 | 66bff25c12d4 | 2026-11-17T15:10Z |
+| T916 | cf17 | gusta-session-start-cf17-c5483839 | cc5d72ffd682 | 2026-11-17T15:33Z |
 
 ## log
+- 261117 T916 done
 - 261117 T943 done
 - 261117 T942 done
 - 261117 T930 done
@@ -188,4 +190,3 @@
 - 261117 T941 integrated
 - 261117 T940 integrated
 - 261117 T935 integrated
-- 261117 T938 integrated
