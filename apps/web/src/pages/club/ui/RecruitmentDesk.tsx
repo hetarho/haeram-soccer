@@ -697,6 +697,15 @@ export function RecruitmentDesk({
   const [step, setStep] = useTaskState(w.id, 'market-step', 1);
   // The wage offer's step of his demand (→CLUB-53): 100%, the first, unless the owner picks more.
   const [wageStep, setWageStep] = useTaskState(w.id, 'market-wage-step', 0);
+  // Another player's detail starts again at 100%, so a step picked for one is never offered to
+  // the next by accident; returning to the page keeps the step picked for the same player.
+  const viewedPlayer = viewing?.playerId,
+    lastViewed = useRef(viewedPlayer);
+  useEffect(() => {
+    if (lastViewed.current === viewedPlayer) return;
+    lastViewed.current = viewedPlayer;
+    if (viewedPlayer) setWageStep(0);
+  }, [viewedPlayer, setWageStep]);
   const [expanded, setExpanded] = useTaskState(w.id, 'market-expanded', false);
   const registered = squadRegistration(w);
   const blocked = useGameState(gameActionsBlocked) || !!w.critical;
