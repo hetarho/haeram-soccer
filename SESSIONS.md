@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| iv17 | hq-dev1-pve2-vm2 | pair | 2026-11-17T03:13Z | 2026-11-17T03:13Z | T931 | gusta-session-start-iv17-d1ff7e09 | 31e55816fd9e | ed23b71f67600a8391865160 |
+| iv17 | hq-dev1-pve2-vm2 | pair | 2026-11-17T03:13Z | 2026-11-17T03:48Z | - | gusta-session-start-iv17-d1ff7e09 | 85412a97b810 | ed23b71f67600a8391865160 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -131,8 +131,10 @@
 | id | tag | branch | commit | at |
 |---|---|---|---|---|
 | T929 | pf17 | gusta-session-self-improve-pf17-c279c8c5 | 44a165069f6e | 2026-11-16T18:59Z |
+| T931 | iv17 | gusta-session-start-iv17-d1ff7e09 | 85412a97b810 | 2026-11-17T03:48Z |
 
 ## log
+- 261117 T931 done
 - 261117 fix takeover: inherited player jobs drop the old club contract end (save 인물 재직 기간 손상 after a renewal)
 - 261117 gusta-update 0.17.3→0.17.4; ARCH r46 ARCH-30 per-check plan scripts/verification-plan.json (implemented with it, tasked=46); review/test-gate-time-261110 F8 adopted →T930; review/gusta-self-improve-261109 base ARCH@46
 - 261116 T929 done
@@ -152,4 +154,3 @@
 - 261116 gusta-update-ssot LEAGUE-10 r21 done; next gusta-create-task LEAGUE
 - 261116 gusta-update-ssot LEAGUE-10 start
 - 261116 fix ci: warm read-only test worlds before integration shards and keep the world cache on failure (e3d5f568)
-- 261116 T923 integrated
