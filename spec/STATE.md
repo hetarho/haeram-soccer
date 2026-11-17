@@ -57,6 +57,7 @@
 | gusta-self-improve-261109 | open@261109 |
 | test-gate-time-261110 | converted@261117 |
 | transfer-market-261117 | converted@261117 |
+| lifecycle-perf-261117 | ready@261117 |
 | test-value-261110 | converted@261110 |
 | game-runtime-speed-261110 | converted@261110 |
 | match-engine-split-261110 | converted@261111 |
@@ -70,6 +71,11 @@
 | T933 | Answer our bids by the selling club, then the player, with a wage offer | CLUB STAFF ECON | T932 | todo |
 | T934 | Sell our players through the selling-club answer, with realistic volumes | CLUB ECON | T933 | todo |
 | T935 | A money bar for the 단장: replace every weak starter and list the weak bench | CLUB ECON | - | todo |
+| T936 | Choose the automatic XI by scanning stored pair values | ARCH | - | todo |
+| T937 | Index market ratings by slot and skip buyers rejected for every listing | ARCH | - | todo |
+| T938 | Index the clubs that want each line for free-agent offers | ARCH | - | todo |
+| T939 | Hand the autosave world to the codec worker as JSON text | SAVE ARCH | - | todo |
+| T940 | Build the fixture replica's roster key from texts it already serialized | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
