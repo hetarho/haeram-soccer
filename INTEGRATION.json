@@ -106,10 +106,10 @@
       "publication": "merge",
       "host": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-iv17-d1ff7e09",
-      "head": "86cc5c56a631118fb34dbcbd7d421baeb7ed1f38",
+      "head": "31e55816fd9e8f4433a950a9be56d9ae5fc4cb08",
       "land": "main",
       "status": "working",
-      "at": "2026-11-17T02:50:40.976Z",
+      "at": "2026-11-17T03:13:48.704Z",
       "agentChecks": [],
       "verificationCommands": []
     }
