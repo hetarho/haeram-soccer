@@ -66,8 +66,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T944 | Market-season harness | ARCH | - | todo |
-| T945 | NPC pull market | WORLD CLUB LEAGUE | T944 | todo |
 | T948 | Loss-runway plan | ECON CLUB STAFF ARCH | - | todo |
 | T949 | Funded club buys the best | CLUB ECON | T948 | todo |
 | T950 | Calibrate market and levels | WORLD LEAGUE CLUB ECON | T945 T947 T949 | todo |
@@ -80,7 +78,7 @@
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
 | tm17-market | 4 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-17T11:45:09.928Z | [history](work/tm17-market.json) |
 | lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
-| xf18-market | 3 | 6 | 2 | 4 | 0 | 0 | 4 | 2026-11-17T19:41:49.570Z | [history](work/xf18-market.json) |
+| xf18-market | 3 | 6 | 4 | 2 | 0 | 2 | 0 | 2026-11-17T20:13:36.621Z | [history](work/xf18-market.json) |
 
 ## next
 - inspect work board for remaining tasks

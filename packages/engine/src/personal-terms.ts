@@ -8,7 +8,7 @@
  * from `random(\`${w.seed}:terms:${bidId}\`)` (→ARCH-5). `termsContext` reads one from a world.
  */
 import type { Grade } from '../../contracts/src/player';
-import type { World } from '../../contracts/src/types';
+import type { Club, Player, World } from '../../contracts/src/types';
 import { freeAgentsOf } from './free-agents';
 import { divisionFor } from './market-prices';
 import { exp, log } from './portable-math';
@@ -238,5 +238,39 @@ export function termsContext(w: World, terms: TermsOffer): TermsContext | undefi
     wouldStart: recruitmentFit(w, offer).willStart,
     startsNow: !!club && startingSquad(w, club).some((p) => p.id === player.id),
     freeAgent: !club,
+  };
+}
+
+/** Terms between clubs nobody owns (→WORLD-16): the buyer, the selling club, the player and his XI. */
+export interface NpcTermsOffer {
+  buyer: Club;
+  seller: Club;
+  player: Player;
+  /** His market wage at the buying club (→CLUB-25): the demand and the offer alike (100%). */
+  wage: string;
+  /** He would start for the buyer; he starts for the seller now. */
+  wouldStart: boolean;
+  startsNow: boolean;
+}
+
+/**
+ * The player's answer between clubs nobody owns (→CLUB-53): the buyer offers his market wage at
+ * its club, and "our" in the factors reads the buying club — its division, reputation and Europe.
+ */
+export function npcTermsContext(w: World, o: NpcTermsOffer): TermsContext {
+  const ourEurope = europeOf(w, o.buyer.id);
+  return {
+    demand: o.wage,
+    offer: o.wage,
+    divisionsBelow: Math.max(0, o.buyer.tier - o.seller.tier),
+    ourReputation: o.buyer.reputation,
+    hisReputation: o.seller.reputation,
+    ambition: o.player.personality.ambition,
+    age: w.year - o.player.born,
+    ...(ourEurope ? { ourEurope } : {}),
+    hisEurope: !!europeOf(w, o.seller.id),
+    wouldStart: o.wouldStart,
+    startsNow: o.startsNow,
+    freeAgent: false,
   };
 }

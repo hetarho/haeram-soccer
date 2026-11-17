@@ -14,6 +14,7 @@ import { compareIds, random, zeroMetrics } from './primitives';
 import { overall } from './player-state';
 import { clubById, invalidateNpcSquad, joinClub, NPC_SQUAD, stature, refillPlace } from './world';
 import { movePerson } from './npc-continuity';
+import { withMoveReason } from './npc-market';
 import { RETIREMENT, retirePerson } from './careers';
 import { ageAttributes } from './training';
 import { AGEING, lineOf } from './player';
@@ -308,7 +309,7 @@ export function refreshFreeAgents(w: World, year = w.year) {
       joinClub(player, nationalityOf(w, player.id) === club.country ? 'domestic' : 'abroad', year);
       // Employment records the free move's actual club and date; a free move has no fee.
       // A pooled free agent is in no squad (`admit` took him out of his), so no squad is searched.
-      movePerson(w, player, club.id, false, undefined, null);
+      withMoveReason('free-signing', () => movePerson(w, player, club.id, false, undefined, null));
       FREE_AGENT_FLOW.observe?.('sign', player, club.id);
       const recomputed = settlementFacts(w, club, year);
       facts.set(club.id, recomputed);

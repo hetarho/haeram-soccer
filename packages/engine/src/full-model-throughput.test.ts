@@ -183,7 +183,7 @@ const facts = (w: World) => ({
 // through every founding squad's strength; d01e8b16487872a4 and aef5e3c0618eb5f2 before.
 const BEFORE = {
   aggregateRecords: 'efb1b0e2dc8517ba',
-  candidateRounds: 'a00032e27765d38e',
+  candidateRounds: '3025a6623928c81f',
 };
 
 describe('complete-result throughput (T285)', () => {

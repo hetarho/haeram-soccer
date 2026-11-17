@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T19:41:49.570Z",
-  "sourceCommit": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
+  "snapshotAt": "2026-11-17T20:13:36.621Z",
+  "sourceCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
   "group": {
     "id": "xf18-market",
     "branch": "gusta-session-self-improve-xf18-607e3688",
@@ -404,36 +404,20 @@
   },
   "summary": {
     "total": 6,
-    "completed": 2,
-    "remaining": 4,
+    "completed": 4,
+    "remaining": 2,
     "running": 0,
-    "review": 0,
-    "blocked": 4,
+    "review": 2,
+    "blocked": 0,
     "unassigned": 0
   },
   "tasks": [
-    {
-      "id": "T944",
-      "title": "Market-season harness: many short match-free runs counting moves, flows and tier levels",
-      "dep": [],
-      "lane": "npc-market",
-      "status": "blocked"
-    },
-    {
-      "id": "T945",
-      "title": "NPC pull market: buyers bid by need, the seller and the player answer, era caps per window",
-      "dep": [
-        "T944"
-      ],
-      "lane": "npc-market",
-      "status": "blocked"
-    },
     {
       "id": "T948",
       "title": "The 단장 plans on a loss runway, not a share of income",
       "dep": [],
       "lane": "owner-market",
-      "status": "blocked"
+      "status": "ready"
     },
     {
       "id": "T949",
@@ -442,7 +426,7 @@
         "T948"
       ],
       "lane": "owner-market",
-      "status": "blocked"
+      "status": "ready"
     }
   ],
   "attempts": [
@@ -460,13 +444,14 @@
         "1b9f256d-1a9a-471b-9cf1-6b6469353286/worker-1",
         "1b9f256d-1a9a-471b-9cf1-6b6469353286/worker-3"
       ],
-      "status": "blocked",
-      "reason": "coordinator native correction (review round 4) in progress",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-17T16:24:55.326Z",
       "startCommit": "779ae5291b3e7e052efc7674259588927c0913e4",
-      "submittedBase": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
-      "submissionId": "bcfbab9d-48cb-4fba-a3f4-331bb226e342",
-      "submittedAt": "2026-11-17T19:33:27.733Z",
+      "verifiedCommit": "352cfd2e08893def21dac5fb858fd2ad6c553299",
+      "submittedBase": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+      "submissionId": "fdd37ebd-e68e-4a9c-bf16-632a1f6f2e05",
+      "submittedAt": "2026-11-17T20:08:45.529Z",
       "risk": null,
       "agentChecks": [
         {
@@ -637,6 +622,19 @@
         "error": null,
         "summary": "Finding 2 is fixed and the task-tier check passed: typecheck, lint, format, i18n and 1,453 affected unit tests (lint failed once on an unused import and passed after it was removed).\nThe buyer's search now starts at a wage ceiling: the highest OVR whose market wage, at the cheapest age (14 or 41) with no promise, fits the buyer's headroom. It reads down each indexed list and stops only when no remaining player could beat both the need's threshold and the targets already kept at that slot. The fixed 24-entry depth is gone. Each candidate is checked for affordability (his wage plus the lowest possible bid) without firing the wage-decision observer.\nTwo new unit tests cover the reviewer's boundaries. Both fail on the previous engine and pass now:\n- An affordable 40-year-old rated 88 is bought, although the old estimate cut him off.\n- A slot fit rated 82 is bought past 30 abler players who rate only 78.2 at that slot.\nThe day-loop equivalence tests pass (11) after regenerating the throughput signature (9581b43fe497276a → 8268a8e9573aa5ea) and tests/fixtures/portable-v1.json. Both 8-seed, 5-season measurements were re-run and recorded in T945's result. The bands barely moved, and fresh-1995 CPU time is unchanged at 322 s.\nFinding 1 is blocked. The reviewer asks that a buyer can still bid on later settlement days, and that a higher-stature club is not beaten by a lower one's earlier meeting day. The current one seeded meeting day per buyer-player pair follows the coordinator's directive, and lifting it needs a decision only the planner can make. The code keeps the directed per-pair day for now."
       },
+      "review": {
+        "id": "26c6b626-e59c-4d92-b841-6d7ca7c9b7f7",
+        "owner": "codex-rv-npc5",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Merge resolution is limited to the two regenerated fixtures; all other files exactly preserve the appropriate parent version. All requested tests pass: 11 integration, 6 contract, and 62 unit tests. Integration used a checkout-local cache for sandbox compatibility. No tracked files changed.",
+        "findings": [],
+        "commit": "352cfd2e08893def21dac5fb858fd2ad6c553299",
+        "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+        "submissionId": "fdd37ebd-e68e-4a9c-bf16-632a1f6f2e05",
+        "createdAt": "2026-11-17T20:08:46.091Z",
+        "finishedAt": "2026-11-17T20:13:33.855Z"
+      },
       "reviewHistory": [
         {
           "id": "1e3e8b9e-c69c-42ce-9a9f-f3279982a3ca",
@@ -747,6 +745,21 @@
           "finishedAt": "2026-11-17T19:38:29.370Z",
           "invalidatedAt": "2026-11-17T19:38:29.858Z",
           "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "e44411d1-0769-4608-8992-3014ce3f545a",
+          "owner": "codex-rv-npc4",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "All earlier findings are fixed: per-window draws (packages/engine/src/npc-market.ts:794,840,870); seller eligibility before target selection and removal of fixed search depth (packages/engine/src/npc-market.ts:748,758); pre-1995 contract factors for every seller (packages/engine/src/sale-answer.ts:115,404); shared NPC seller rows on our bids (packages/engine/src/sale-answer.ts:445,477); seed-grouped snapshot construction (scripts/lib/market-seasons.ts:73), atomic publication and distinct seed keys (scripts/lib/start-worlds.ts:43,84); tunable registry coverage (scripts/lib/market-tunables.ts:22); localized diagnostics (packages/contracts/src/source-messages.ts:22); XI losses after the close (scripts/market-seasons.ts:216); and owner starts (scripts/market-seasons.ts:307). Candidate measurements report both required 8-seed × 5-season workloads and settlement costs (spec/tasks/T945.npc-pull-market.md:27,35). All 81 targeted tests, lint and i18n validation passed. An independent real-RNG check confirmed save/load equivalence and completed-move caps across 48 settlements. No new blocking correctness or contract problems found. Tracked files remain unchanged.",
+          "findings": [],
+          "commit": "16bd38b4d7ecd81dcc06ab030c19fd876ebfc78d",
+          "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+          "submissionId": "0f48a42b-5413-4e5c-9fc4-f9b6d2f9653e",
+          "createdAt": "2026-11-17T19:57:43.969Z",
+          "finishedAt": "2026-11-17T20:01:23.852Z",
+          "invalidatedAt": "2026-11-17T20:07:11.309Z",
+          "invalidationReason": "worker resumed or blocked"
         }
       ],
       "steps": [
@@ -764,13 +777,13 @@
         },
         {
           "taskId": "T945",
-          "commit": "6c52fc8df07884a1317ddd2fc6fd589a6dada00f",
-          "at": "2026-11-17T19:33:27.693Z",
+          "commit": "352cfd2e08893def21dac5fb858fd2ad6c553299",
+          "at": "2026-11-17T20:08:45.511Z",
           "verification": [
             {
               "command": "npx @haeram/gusta vibe check --tier task",
-              "startedAt": "2026-11-17T19:31:38.265Z",
-              "finishedAt": "2026-11-17T19:33:27.421Z"
+              "startedAt": "2026-11-17T20:07:11.955Z",
+              "finishedAt": "2026-11-17T20:08:45.322Z"
             }
           ]
         }
@@ -778,8 +791,8 @@
       "verification": [
         {
           "command": "npx @haeram/gusta vibe check --tier task",
-          "startedAt": "2026-11-17T19:31:38.265Z",
-          "finishedAt": "2026-11-17T19:33:27.421Z"
+          "startedAt": "2026-11-17T20:07:11.955Z",
+          "finishedAt": "2026-11-17T20:08:45.322Z"
         }
       ]
     },
@@ -805,6 +818,8 @@
       "submittedBase": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
       "submissionId": "16bf6ae8-359b-4c96-97e2-88eafccd40fb",
       "submittedAt": "2026-11-17T19:37:43.957Z",
+      "integratedCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+      "integratedAt": "2026-11-17T19:45:13.188Z",
       "risk": null,
       "agentChecks": [
         {
@@ -1020,6 +1035,13 @@
           "startedAt": "2026-11-17T19:36:25.597Z",
           "finishedAt": "2026-11-17T19:37:43.752Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "npx @haeram/gusta vibe check --tier task",
+          "startedAt": "2026-11-17T19:41:52.293Z",
+          "finishedAt": "2026-11-17T19:45:12.681Z"
+        }
       ]
     },
     {
@@ -1036,13 +1058,14 @@
         "1b9f256d-1a9a-471b-9cf1-6b6469353286/worker-3",
         "1b9f256d-1a9a-471b-9cf1-6b6469353286/worker-2"
       ],
-      "status": "blocked",
-      "reason": "coordinator native correction (review round 4) in progress",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-11-17T16:25:07.255Z",
       "startCommit": "779ae5291b3e7e052efc7674259588927c0913e4",
-      "submittedBase": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
-      "submissionId": "68f2e94d-60a2-4152-b17c-ea42696567ad",
-      "submittedAt": "2026-11-17T19:23:53.595Z",
+      "verifiedCommit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+      "submittedBase": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+      "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+      "submittedAt": "2026-11-17T20:10:10.327Z",
       "risk": null,
       "agentChecks": [
         {
@@ -1358,6 +1381,32 @@
           "finishedAt": "2026-11-17T19:31:06.621Z",
           "invalidatedAt": "2026-11-17T19:31:07.515Z",
           "invalidationReason": "worker resumed or blocked"
+        },
+        {
+          "id": "7d2239e1-4e82-4d5e-85d9-70b892efc82d",
+          "owner": "codex-rv-owner4",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "117 existing targeted tests passed; two isolated probes reproduced T949 defects. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:431), displayed wage/raise room (packages/engine/src/delegation.ts:418), runway refusal (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), fractional seasons/years (apps/web/src/entities/office/ui/DelegationPlan.tsx:85), unrestricted reach pool (packages/engine/src/scout-search.ts:227), uncapped look termination (packages/engine/src/signings.ts:1126), current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196), held haggle places (packages/engine/src/signings.ts:1057), pending short-line coverage (packages/engine/src/signings.ts:1077), and report decimal formatting (apps/web/src/presentation/text.ts:122). Retry precedence remains incomplete. T950/T951 handoffs were respected.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1109 (T949)",
+              "message": "Delegated mediation spends before raiseHaggles runs, so a mediated ordinary bid can consume funds needed by a due retry. An isolated director-bids fixture with balanced temperament, step 5, a pending midfield mediation and cash 120674 made either bid independently affordable; staffSignings placed the mediation bid first and expired the due haggle instead of raising it. Process due retries before mediated ordinary moves, as required by the earlier CLUB-41 finding."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1190 (T949)",
+              "message": "The upgrade count includes completed/open bids but excludes refused haggles that now retain their places. With cap minus one completed upgrades and one held upgrade, an ordinary look therefore opens another upgrade; the held bid is raised tomorrow without checking the cap. An isolated probe produced 12 completed/pending upgrades against an 11-upgrade window cap. Include outstanding upgrade haggles in the cap accounting so their retries cannot exceed CLUB-33's window limit."
+            }
+          ],
+          "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+          "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+          "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+          "createdAt": "2026-11-17T19:51:17.641Z",
+          "finishedAt": "2026-11-17T19:57:42.941Z",
+          "invalidatedAt": "2026-11-17T19:57:43.441Z",
+          "invalidationReason": "worker resumed or blocked"
         }
       ],
       "steps": [
@@ -1375,14 +1424,13 @@
         },
         {
           "taskId": "T949",
-          "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
-          "at": "2026-11-17T19:23:53.564Z",
+          "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+          "at": "2026-11-17T20:10:10.310Z",
           "verification": [
             {
               "command": "npx @haeram/gusta vibe check --tier task",
-              "startedAt": "2026-11-17T19:23:53.197Z",
-              "finishedAt": "2026-11-17T19:23:53.197Z",
-              "cached": "2026-11-17T19:23:26.504Z"
+              "startedAt": "2026-11-17T20:09:07.817Z",
+              "finishedAt": "2026-11-17T20:10:10.124Z"
             }
           ]
         }
@@ -1390,9 +1438,8 @@
       "verification": [
         {
           "command": "npx @haeram/gusta vibe check --tier task",
-          "startedAt": "2026-11-17T19:23:53.197Z",
-          "finishedAt": "2026-11-17T19:23:53.197Z",
-          "cached": "2026-11-17T19:23:26.504Z"
+          "startedAt": "2026-11-17T20:09:07.817Z",
+          "finishedAt": "2026-11-17T20:10:10.124Z"
         }
       ]
     }
@@ -14471,6 +14518,987 @@
       "tasks": [
         "T946",
         "T947"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 949,
+      "at": "2026-11-17T19:45:12.874Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "5174ea38-06ff-40b2-8130-9723489d7937",
+      "taskId": "T947",
+      "tasks": [
+        "T946",
+        "T947"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T19:41:52.293Z",
+            "finishedAt": "2026-11-17T19:45:12.681Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 950,
+      "at": "2026-11-17T19:45:13.188Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "5174ea38-06ff-40b2-8130-9723489d7937",
+      "taskId": "T947",
+      "tasks": [
+        "T946",
+        "T947"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+        "integratedAt": "2026-11-17T19:45:13.188Z"
+      }
+    },
+    {
+      "sequence": 951,
+      "at": "2026-11-17T19:50:05.997Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 952,
+      "at": "2026-11-17T19:50:06.494Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 953,
+      "at": "2026-11-17T19:51:16.959Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+        "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+        "submittedAt": "2026-11-17T19:51:16.959Z",
+        "steps": [
+          {
+            "taskId": "T948",
+            "commit": "1b6a9e4cf4b8c7043fb84f9df5f1b9029ca62297",
+            "at": "2026-11-17T16:51:00.435Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T16:49:39.183Z",
+                "finishedAt": "2026-11-17T16:51:00.198Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T949",
+            "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+            "at": "2026-11-17T19:51:16.941Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T19:50:06.697Z",
+                "finishedAt": "2026-11-17T19:51:16.745Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T19:50:06.697Z",
+            "finishedAt": "2026-11-17T19:51:16.745Z"
+          }
+        ],
+        "verifiedCommit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1"
+      }
+    },
+    {
+      "sequence": 954,
+      "at": "2026-11-17T19:51:17.641Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7d2239e1-4e82-4d5e-85d9-70b892efc82d",
+          "owner": "codex-rv-owner4",
+          "status": "reviewing",
+          "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+          "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+          "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+          "createdAt": "2026-11-17T19:51:17.641Z"
+        }
+      }
+    },
+    {
+      "sequence": 955,
+      "at": "2026-11-17T19:55:38.867Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 956,
+      "at": "2026-11-17T19:55:39.987Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 957,
+      "at": "2026-11-17T19:57:21.012Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+        "submissionId": "0f48a42b-5413-4e5c-9fc4-f9b6d2f9653e",
+        "submittedAt": "2026-11-17T19:57:21.012Z",
+        "steps": [
+          {
+            "taskId": "T944",
+            "commit": "9fd60ecc34cbcd2239f21ac078e4f0fb01762a39",
+            "at": "2026-11-17T16:39:39.366Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T16:39:13.134Z",
+                "finishedAt": "2026-11-17T16:39:39.192Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T945",
+            "commit": "16bd38b4d7ecd81dcc06ab030c19fd876ebfc78d",
+            "at": "2026-11-17T19:57:20.994Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T19:55:40.294Z",
+                "finishedAt": "2026-11-17T19:57:20.789Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T19:55:40.294Z",
+            "finishedAt": "2026-11-17T19:57:20.789Z"
+          }
+        ],
+        "verifiedCommit": "16bd38b4d7ecd81dcc06ab030c19fd876ebfc78d"
+      }
+    },
+    {
+      "sequence": 958,
+      "at": "2026-11-17T19:57:42.941Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "117 existing targeted tests passed; two isolated probes reproduced T949 defects. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:431), displayed wage/raise room (packages/engine/src/delegation.ts:418), runway refusal (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), fractional seasons/years (apps/web/src/entities/office/ui/DelegationPlan.tsx:85), unrestricted reach pool (packages/engine/src/scout-search.ts:227), uncapped look termination (packages/engine/src/signings.ts:1126), current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196), held haggle places (packages/engine/src/signings.ts:1057), pending short-line coverage (packages/engine/src/signings.ts:1077), and report decimal formatting (apps/web/src/presentation/text.ts:122). Retry precedence remains incomplete. T950/T951 handoffs were respected.",
+        "review": {
+          "id": "7d2239e1-4e82-4d5e-85d9-70b892efc82d",
+          "owner": "codex-rv-owner4",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "117 existing targeted tests passed; two isolated probes reproduced T949 defects. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:431), displayed wage/raise room (packages/engine/src/delegation.ts:418), runway refusal (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), fractional seasons/years (apps/web/src/entities/office/ui/DelegationPlan.tsx:85), unrestricted reach pool (packages/engine/src/scout-search.ts:227), uncapped look termination (packages/engine/src/signings.ts:1126), current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196), held haggle places (packages/engine/src/signings.ts:1057), pending short-line coverage (packages/engine/src/signings.ts:1077), and report decimal formatting (apps/web/src/presentation/text.ts:122). Retry precedence remains incomplete. T950/T951 handoffs were respected.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1109 (T949)",
+              "message": "Delegated mediation spends before raiseHaggles runs, so a mediated ordinary bid can consume funds needed by a due retry. An isolated director-bids fixture with balanced temperament, step 5, a pending midfield mediation and cash 120674 made either bid independently affordable; staffSignings placed the mediation bid first and expired the due haggle instead of raising it. Process due retries before mediated ordinary moves, as required by the earlier CLUB-41 finding."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/signings.ts:1190 (T949)",
+              "message": "The upgrade count includes completed/open bids but excludes refused haggles that now retain their places. With cap minus one completed upgrades and one held upgrade, an ordinary look therefore opens another upgrade; the held bid is raised tomorrow without checking the cap. An isolated probe produced 12 completed/pending upgrades against an 11-upgrade window cap. Include outstanding upgrade haggles in the cap accounting so their retries cannot exceed CLUB-33's window limit."
+            }
+          ],
+          "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+          "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+          "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+          "createdAt": "2026-11-17T19:51:17.641Z",
+          "finishedAt": "2026-11-17T19:57:42.941Z"
+        }
+      }
+    },
+    {
+      "sequence": 959,
+      "at": "2026-11-17T19:57:43.441Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "coordinator native correction (review round 5) in progress",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "c08fa13c-3bdb-46d1-a6f5-156d691a7aa9",
+            "owner": "codex-rv-owner",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Found candidate-ranking and financial-display contract violations. All 70 focused tests, lint and i18n validation passed. No tracked files changed.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:420 (T949)",
+                "message": "Rounding slot gain changes CLUB-33's candidate order. With seed 'staff-signings', no manager pick and recruitment at step 5, the director bids for a player rated 55.73 at the slot while an affordable 56.27 candidate remains available: both gains round to 15. Rank by the unrounded gain and make the regression test compare actual slot values."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:399 (T948)",
+                "message": "The displayed wage budget and contracts raise room ignore the additional reserve required by the raise. With income equal to current fixed costs, step 2, a balanced director and 10,000 minor units of available capital, contracts.left reports 1,666, but runwayTest rejects that raise; the actual maximum is 1,538. Derive the advertised room from the same commitment calculation used for acceptance."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:240 (T948)",
+                "message": "A runway refusal still uses delegation.verdict.squadBudget, which claims fee plus one year's wage exceeds plan.left. Reproduced at step 2 with left=10,000, fee=5,000 and wage=1,500: rejection correctly follows the six-season runway, but the explanation falsely says 6,500 exceeds 10,000. Add a runway-specific refusal resource in every locale, retaining the historical resource for supported saves."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/contracts/src/source-messages.ts:7205 (T949)",
+                "message": "Confirmed delegation.offer.signings still says '7일마다', with the equivalent seven-day claim in all 12 locale packs. OfferAnswers also supplies the fixed upgrade count despite the new money-bar cap. Update this live explanation to describe three-day looks, the step's pending-bid limit and the expanded upgrade cap, using named parameters and translations throughout."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:89 (T948)",
+                "message": "New fractional coverage and reserve values bypass the shared number formatters here and at line 108. sourceMessage stringifies them before localizeValue, so de-DE displays '3.5 Spielzeiten' and '0.25 Jahre' instead of localized decimal separators. Format these numbers at the presentation boundary with the shared decimal formatter."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/delegation.ts:216 (T948)",
+                "message": "planRoomAfterWage has no production callers after this lane; only tests exercise it. The refunded parameter chain also remains despite becoming a documented no-op. Consider removing these obsolete interfaces to avoid maintaining redundant budget APIs."
+              }
+            ],
+            "commit": "610f169e64f82f5f5c0244d282d846531beea3cd",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "9ce41fc7-b0a9-4788-8cfa-848022f56481",
+            "createdAt": "2026-11-17T17:45:20.319Z",
+            "finishedAt": "2026-11-17T17:52:21.595Z",
+            "invalidatedAt": "2026-11-17T18:06:34.020Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "2546fd3c-bf16-4193-b91b-ceb99053afec",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior review corrections are present, but the submission still violates recruitment and sale-explanation contracts. The reference-career measurements also predate the assigned commit; the coordinator host should run the final gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/scout-search.ts:223 (T949)",
+                "message": "The reach-wide candidate search still applies the shortlist's age and ability bands. For example, at recruitment step 5 it excludes players younger than 26 and those above the ability ceiling, even when they are geographically within the scout's reach and are the best affordable upgrade. CLUB-33 requires ranking everyone within that reach after the manager's pick, while ECON-16 says the setting shapes the shortlist draw. Separate the reach-wide pool from the shortlist filters and verify ranking with an otherwise eligible player outside those bands."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1137 (T949)",
+                "message": "The new eight-move limit can end a look with no pending bids and unfilled needs: immediate free-agent signings and refusals each consume a move, so after eight such approaches the director waits for a later look even when another candidate is available. CLUB-33 requires the look to continue until the pending-bid limit is reached or no move can be made. Remove the arbitrary cap or make termination follow those conditions, and cover more than eight immediate approaches."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:496 (T948)",
+                "message": "Changing wagePressure to runway-based levels leaves the sale-answer consumer reporting the old income-share thresholds. A sale can now be discounted because cash cannot cover planned losses while its report says wages exceed a sales line by 10 percentage points, a line that no longer exists. Update the live sale-answer explanations to describe the runway condition, retaining the historical resources for saved prose; coordinate this change with T945, which owns that consumer."
+              },
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T949.funded-club-buys-best.md (T949)",
+                "message": "The required two-season reference-career results were measured before the correction, not on commit 029f8fd. The correction changes candidate ordering, which can alter later signings, sales and cash through the simulation, so the recorded direction cannot establish the acceptance result for this candidate. Have the coordinator host measure both reference careers on the pinned candidate and record the results before the final gate."
+              }
+            ],
+            "commit": "029f8fd78e72362f50259d7fc3cc313644402ded",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "e3d25fc9-344a-410c-a828-40575d69a069",
+            "createdAt": "2026-11-17T18:23:39.129Z",
+            "finishedAt": "2026-11-17T18:24:36.962Z",
+            "invalidatedAt": "2026-11-17T18:24:37.073Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "6a392ece-3de7-480c-bb94-a787e2919168",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The reach-wide search and look termination corrections are present, and the worker’s task-tier checks passed on the assigned commit. Two runway explanations still misstate the club’s finances. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:1219 (T948)",
+                "message": "At sales step 1, any planned loss makes wagePressure level 2 because the plan permits no loss, even if the club has ample cash. The untouchable-sale explanation nevertheless says cash cannot cover half the allowed seasons, although there are no allowed seasons. The recruitment, contracts and sales plan-over explanations similarly describe insufficient cash at step 1. Use income-based explanations when the runway is zero, and cover that case in the affected reports."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/entities/office/ui/DelegationPlan.tsx:98 (T948)",
+                "message": "A positive coverage below 0.1 seasons is rounded down to zero in delegatePlan, so coversLine selects coversNone and tells the user there is no cash available even when plan.capital is positive. Distinguish zero capital from positive coverage that rounds to zero, and display an accurate coverage or less-than-0.1 message."
+              }
+            ],
+            "commit": "a696eb955615e5defafd9a838c64dd69483d3db3",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "6a145b27-1b32-4ce1-9bff-c535dbb03504",
+            "createdAt": "2026-11-17T18:43:54.144Z",
+            "finishedAt": "2026-11-17T18:44:40.627Z",
+            "invalidatedAt": "2026-11-17T18:44:40.707Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "bd209107-77ce-44e6-8d10-fdead9eb0ba4",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior explanation fixes are present, and the worker’s task-tier checks passed on the pinned commit. Two contract violations remain in the runway calculation and negotiator retries. The coordinator retains the final integration and reference-career gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:195 (T948)",
+                "message": "ECON-33 defines the reserve from current annual fixed costs, then tests the planned loss after the commitment against that available capital. Adding the proposed wage to the reserve prematurely rejects affordable signings and raises. For example, at step 2 with a balanced director, current costs equal to income and 10,000 above the current reserve, a fee-free raise of 1,666 has a six-season loss of 9,996 and should pass; this calculation rejects it because it also reserves half the proposed raise. Calculate the reserve from current costs and use the post-commitment costs for the planned loss; align the displayed wage room and tests with that rule."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1087 (T949)",
+                "message": "When multiple negotiator bids are rejected on the same day and capacity is available, this selects and retries only one. The remaining rejected bids are delayed, and subsequent ordinary moves can fill the pending limit before they are retried. CLUB-41 requires each negotiator’s raised bid the day after its answer. Process all due retries within the applicable pending limit before making ordinary moves, and cover simultaneous rejections."
+              }
+            ],
+            "commit": "81046c88f185f0cc787dac26e088064051add2ac",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "b5b8b05f-9827-4ebb-9e86-7a44b4517d24",
+            "createdAt": "2026-11-17T18:54:20.709Z",
+            "finishedAt": "2026-11-17T18:55:07.419Z",
+            "invalidatedAt": "2026-11-17T18:55:07.568Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "0a487db6-e88a-4a80-a735-e1db8a5ed7cb",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "reviewing",
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "d9ffde7f62ba1112a7989220210b0fe22765b3aa",
+            "submissionId": "d29305c3-67bc-4c8f-9047-39d313ef53de",
+            "createdAt": "2026-11-17T19:23:27.619Z",
+            "invalidatedAt": "2026-11-17T19:23:31.000Z",
+            "invalidationReason": "review retry limit"
+          },
+          {
+            "id": "1a197f65-928a-4e1a-9e67-a8a417247d30",
+            "owner": "codex-rv-owner3",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes confirmed: unrounded gain (packages/engine/src/signings.ts:429), exact displayed room (packages/engine/src/delegation.ts:208), runway refusals (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), preview decimal formatting (apps/web/src/entities/office/ui/DelegationPlan.tsx:105), unrestricted reach (packages/engine/src/scout-search.ts:227), uncapped look loop (packages/engine/src/signings.ts:1145), and current-cost reserve (packages/engine/src/delegation.ts:197). Multiple retries are processed at packages/engine/src/signings.ts:1103, but normal answer-day scheduling still blocks them. Three remaining issues were reproduced. 62 unit tests, four focused integration tests, i18n validation and lint passed. T951/T950 handoffs accepted; tracked files unchanged.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1085 (T949)",
+                "message": "Next-day negotiator retries can still be displaced by ordinary bids. When three haggles are rejected or counters declined on regular look day D, they are ineligible for retry until D+1, so the ordinary loop fills all three pending slots on D. On D+1 this guard returns before retrying any original player. Reproduced with the director-bids fixture, balanced temperament and recruitment step 5. Preserve capacity for scheduled haggles and add a regression that invokes staffSignings on both the answer day and the following day (CLUB-41)."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1049 (T949)",
+                "message": "One pending player removes an entire short-line need regardless of its deficit. shortLines emits one need per line, so two forwards against a minimum of four are treated as covered after only one forward bid. In a funded 3-5-2 case with two strong forwards, the look makes one short-FW bid followed by two DF upgrade bids while another affordable forward is still needed. Account for pending arrivals against count/minimum before advancing to upgrades, preserving CLUB-33's short-line priority."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/delegation.ts:595 (T948)",
+                "message": "Fractional reserve years remain unformatted in generated plan reports. The preview uses the shared decimal formatter, but planLines interpolates reserveYears directly; translating the balanced step-3 runway line into de-DE produces 'Guthaben über 0.25 Jahren' instead of '0,25'. localizeValue preserves that captured string. Format this recognized numeric parameter at the presentation boundary while keeping saved source prose locale-independent, as required by ARCH-32."
+              }
+            ],
+            "commit": "7abd811c40e89ad16c322fcca7c09670f13c0f59",
+            "baseCommit": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
+            "submissionId": "68f2e94d-60a2-4152-b17c-ea42696567ad",
+            "createdAt": "2026-11-17T19:23:59.531Z",
+            "finishedAt": "2026-11-17T19:31:06.621Z",
+            "invalidatedAt": "2026-11-17T19:31:07.515Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "7d2239e1-4e82-4d5e-85d9-70b892efc82d",
+            "owner": "codex-rv-owner4",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "117 existing targeted tests passed; two isolated probes reproduced T949 defects. Earlier fixes verified: unrounded gain (packages/engine/src/signings.ts:431), displayed wage/raise room (packages/engine/src/delegation.ts:418), runway refusal (packages/engine/src/signings.ts:238), look/pending copy (apps/web/src/pages/club/ui/ClubStaff.tsx:1368), fractional seasons/years (apps/web/src/entities/office/ui/DelegationPlan.tsx:85), unrestricted reach pool (packages/engine/src/scout-search.ts:227), uncapped look termination (packages/engine/src/signings.ts:1126), current-cost reserve and post-commitment loss (packages/engine/src/delegation.ts:196), held haggle places (packages/engine/src/signings.ts:1057), pending short-line coverage (packages/engine/src/signings.ts:1077), and report decimal formatting (apps/web/src/presentation/text.ts:122). Retry precedence remains incomplete. T950/T951 handoffs were respected.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1109 (T949)",
+                "message": "Delegated mediation spends before raiseHaggles runs, so a mediated ordinary bid can consume funds needed by a due retry. An isolated director-bids fixture with balanced temperament, step 5, a pending midfield mediation and cash 120674 made either bid independently affordable; staffSignings placed the mediation bid first and expired the due haggle instead of raising it. Process due retries before mediated ordinary moves, as required by the earlier CLUB-41 finding."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/signings.ts:1190 (T949)",
+                "message": "The upgrade count includes completed/open bids but excludes refused haggles that now retain their places. With cap minus one completed upgrades and one held upgrade, an ordinary look therefore opens another upgrade; the held bid is raised tomorrow without checking the cap. An isolated probe produced 12 completed/pending upgrades against an 11-upgrade window cap. Include outstanding upgrade haggles in the cap accounting so their retries cannot exceed CLUB-33's window limit."
+              }
+            ],
+            "commit": "a3c1444d4d1d37421271f79aa7048e904fb5fbf1",
+            "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+            "submissionId": "ef1dc0e7-5bb6-461b-973b-573d25a185d0",
+            "createdAt": "2026-11-17T19:51:17.641Z",
+            "finishedAt": "2026-11-17T19:57:42.941Z",
+            "invalidatedAt": "2026-11-17T19:57:43.441Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 960,
+      "at": "2026-11-17T19:57:43.969Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e44411d1-0769-4608-8992-3014ce3f545a",
+          "owner": "codex-rv-npc4",
+          "status": "reviewing",
+          "commit": "16bd38b4d7ecd81dcc06ab030c19fd876ebfc78d",
+          "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+          "submissionId": "0f48a42b-5413-4e5c-9fc4-f9b6d2f9653e",
+          "createdAt": "2026-11-17T19:57:43.969Z"
+        }
+      }
+    },
+    {
+      "sequence": 961,
+      "at": "2026-11-17T20:01:23.852Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "e44411d1-0769-4608-8992-3014ce3f545a",
+          "owner": "codex-rv-npc4",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "All earlier findings are fixed: per-window draws (packages/engine/src/npc-market.ts:794,840,870); seller eligibility before target selection and removal of fixed search depth (packages/engine/src/npc-market.ts:748,758); pre-1995 contract factors for every seller (packages/engine/src/sale-answer.ts:115,404); shared NPC seller rows on our bids (packages/engine/src/sale-answer.ts:445,477); seed-grouped snapshot construction (scripts/lib/market-seasons.ts:73), atomic publication and distinct seed keys (scripts/lib/start-worlds.ts:43,84); tunable registry coverage (scripts/lib/market-tunables.ts:22); localized diagnostics (packages/contracts/src/source-messages.ts:22); XI losses after the close (scripts/market-seasons.ts:216); and owner starts (scripts/market-seasons.ts:307). Candidate measurements report both required 8-seed × 5-season workloads and settlement costs (spec/tasks/T945.npc-pull-market.md:27,35). All 81 targeted tests, lint and i18n validation passed. An independent real-RNG check confirmed save/load equivalence and completed-move caps across 48 settlements. No new blocking correctness or contract problems found. Tracked files remain unchanged.",
+          "findings": [],
+          "commit": "16bd38b4d7ecd81dcc06ab030c19fd876ebfc78d",
+          "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+          "submissionId": "0f48a42b-5413-4e5c-9fc4-f9b6d2f9653e",
+          "createdAt": "2026-11-17T19:57:43.969Z",
+          "finishedAt": "2026-11-17T20:01:23.852Z"
+        }
+      }
+    },
+    {
+      "sequence": 962,
+      "at": "2026-11-17T20:01:25.507Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 963,
+      "at": "2026-11-17T20:01:30.314Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "Command failed: git -C /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/xf18-market-integrate-29d81d6c merge --no-ff --no-commit 16bd38b4d7ecd81dcc06ab030c19fd876ebfc78d\n"
+      }
+    },
+    {
+      "sequence": 964,
+      "at": "2026-11-17T20:07:11.309Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "approved",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "1e3e8b9e-c69c-42ce-9a9f-f3279982a3ca",
+            "owner": "codex-rv-npc",
+            "status": "reviewing",
+            "commit": "965ebf34e5b3b8cd5ea64d77e9bf3c8aaeb26b38",
+            "baseCommit": "779ae5291b3e7e052efc7674259588927c0913e4",
+            "submissionId": "e9ca9000-3707-41aa-acdd-27cabdf9b4ec",
+            "createdAt": "2026-11-17T17:26:02.740Z",
+            "invalidatedAt": "2026-11-17T17:33:45.754Z",
+            "invalidationReason": "T945: 태스크 계약(quote)이 상위 브랜치와 다릅니다. 워커는 acceptance 체크([v])·result만 바꿉니다. 기획 변경이면 작업을 동기화하세요."
+          },
+          {
+            "id": "2d0c8026-0da7-4169-b01f-f1b28cf5890a",
+            "owner": "codex-rv-npc",
+            "status": "reviewing",
+            "commit": "965ebf34e5b3b8cd5ea64d77e9bf3c8aaeb26b38",
+            "baseCommit": "2d792ef36765214d1b2e3f00904327855c4d4300",
+            "submissionId": "e9ca9000-3707-41aa-acdd-27cabdf9b4ec",
+            "createdAt": "2026-11-17T17:34:16.347Z",
+            "invalidatedAt": "2026-11-17T17:34:16.707Z",
+            "invalidationReason": "T945: CLUB@76가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+          },
+          {
+            "id": "afd45e5d-3108-40a0-9073-804461d2d609",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The pinned submission has market and measurement contract violations. The worker reported passing task-tier checks and measurements; the shared final gate remains deferred to the coordinator.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/npc-market.ts:660 (T945)",
+                "message": "The tried set is recreated on every settlement day, so a buyer can bid for the same player again after a refusal in the same window. The test at npc-market.unit.test.ts:409 explicitly exercises this behavior, but T945 requires one bid per target per window. Prevent repeat bids within a window while preserving the specified seeded draws and bid cap."
+              },
+              {
+                "priority": "P2",
+                "where": "scripts/market-seasons.ts:189 (T944, T945)",
+                "message": "XI losses are captured before liveHistory performs the season close. A season-start starter who retires, is released, or returns from a loan at that close is therefore omitted from the total XI losses reported for the season. Capture losses after the close while retaining the season-start club identities, and verify the resulting measurement used by T945."
+              },
+              {
+                "priority": "P2",
+                "where": "scripts/lib/start-worlds.ts:35 (T944)",
+                "message": "The snapshot key replaces every non-alphanumeric seed character with an underscore without retaining or checking the original seed. For example, seed prefixes 'a/' and 'a_' produce the same filename for seed 0, so a later lived run can silently load the other seed's world despite a valid checksum. Encode or hash the complete seed in the key and verify distinct seeds cannot reuse a snapshot."
+              },
+              {
+                "priority": "P2",
+                "where": "scripts/market-seasons.ts:336 (T944)",
+                "message": "The harness rejects every --owner argument, although T944 specifies an owner world when --owner <club id> is supplied. Implement that start mode so the requested occasional owner-world measurements can run, or hand the scope gap back for a planning decision."
+              }
+            ],
+            "commit": "a65e30626021541116c22f7fc28558b6383403fe",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "66b5ec2e-c084-46c7-9a73-a866ad553811",
+            "createdAt": "2026-11-17T18:06:36.209Z",
+            "finishedAt": "2026-11-17T18:07:50.613Z",
+            "invalidatedAt": "2026-11-17T18:07:50.853Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "16bd6f56-4251-44ac-988b-c0b3af424fa5",
+            "owner": "1b9f256d-1a9a-471b-9cf1-6b6469353286/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "The prior review corrections are present, but the NPC market still excludes eligible targets in ways that violate T945’s buyer-selection contract. Worker task-tier checks and measurements were reviewed; the coordinator host owns the final gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/npc-market.ts:613 (T945)",
+                "message": "A buyer can meet a target only on one randomly assigned settlement day. If its need or funding becomes available after that day, it cannot bid for that player during the rest of the window, even when he is its best reachable target. The same restriction lets a lower-stature buyer acquire a player before a higher-stature interested buyer’s assigned day. T945 requires selection on each settlement day and WORLD-16 gives a contested player to the higher-stature club. Track window attempts without excluding untried targets on later days, and cover a need opening after the first settlement and competing buyers."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/npc-market.ts:713 (T945)",
+                "message": "The candidate index discards everyone above an estimated regular’s affordable level plus six and stops after 24 main-OVR entries per division before ranking by slot gain. An affordable older player above that estimate, or a better slot fit below those 24 entries, is never considered even when he is the best reachable target. T945 requires buyers to choose by slot gain within reach and means. Preserve the indexed search while ensuring eligible candidates can compete on actual affordability and slot rating, with coverage for both boundaries."
+              }
+            ],
+            "commit": "2ccec5475b3788bf4303705924741bccf70ab961",
+            "baseCommit": "689ba8610707bcb1ca36c866544dec68950eea80",
+            "submissionId": "8a388275-9061-4e65-9dc0-8242876b2424",
+            "createdAt": "2026-11-17T18:40:11.638Z",
+            "finishedAt": "2026-11-17T18:41:04.365Z",
+            "invalidatedAt": "2026-11-17T18:41:04.466Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "9c503f7b-16ba-4c7b-b63a-a3bd65cf8f7f",
+            "owner": "codex-rv-npc3",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Earlier fixes verified: window draws (packages/engine/src/npc-market.ts:616), seller filtering and unrestricted depth (packages/engine/src/npc-market.ts:748), pre-1995 rows for every seller (packages/engine/src/sale-answer.ts:115 and packages/engine/src/sale-answer.ts:404), seed grouping (scripts/lib/market-seasons.ts:73), distinct snapshot keys and atomic publication (scripts/lib/start-worlds.ts:43 and scripts/lib/start-worlds.ts:87), tunable registry (scripts/lib/market-tunables.ts:22), localized diagnostics (packages/contracts/src/source-messages.ts:22), post-close XI losses (scripts/market-seasons.ts:216), and owner start (scripts/market-seasons.ts:308). All 80 selected unit tests, lint and i18n validation passed. Six-settlement save/load comparison matched with three completed moves. Two contract gaps remain.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/sale-answer.ts:491 (T945)",
+                "message": "The new relegated-starter and above-division factors are populated only by npcSaleContext. When our top-flight club bids for the same qualifying NPC seller's starter, saleContext supplies no npc rows, omitting both −0.10 adjustments. An isolated reproduction returned both factors through npcSaleContext and neither through saleContext. CLUB-52 defines these factors by the NPC seller's circumstances, regardless of buyer ownership. Share the seller facts with the owned-buyer path and cover that path with a regression."
+              },
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T945.npc-pull-market.md:35 (T945)",
+                "message": "The completed measurement acceptance requires eight seeds and five seasons for both starts, but the reported full measurements precede decision A. The submitted algorithm has only a four-seed, two-season lived:1951 smoke and no updated modern measurement; the reported cost comparison also predates decision A. Rerun both required harness workloads on this candidate and update the statistics and settlement-cost evidence before marking this acceptance complete."
+              }
+            ],
+            "commit": "6c52fc8df07884a1317ddd2fc6fd589a6dada00f",
+            "baseCommit": "5dfeb3138a11d3cad21d2ea1b73edd5e59bbc251",
+            "submissionId": "bcfbab9d-48cb-4fba-a3f4-331bb226e342",
+            "createdAt": "2026-11-17T19:33:29.141Z",
+            "finishedAt": "2026-11-17T19:38:29.370Z",
+            "invalidatedAt": "2026-11-17T19:38:29.858Z",
+            "invalidationReason": "worker resumed or blocked"
+          },
+          {
+            "id": "e44411d1-0769-4608-8992-3014ce3f545a",
+            "owner": "codex-rv-npc4",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "All earlier findings are fixed: per-window draws (packages/engine/src/npc-market.ts:794,840,870); seller eligibility before target selection and removal of fixed search depth (packages/engine/src/npc-market.ts:748,758); pre-1995 contract factors for every seller (packages/engine/src/sale-answer.ts:115,404); shared NPC seller rows on our bids (packages/engine/src/sale-answer.ts:445,477); seed-grouped snapshot construction (scripts/lib/market-seasons.ts:73), atomic publication and distinct seed keys (scripts/lib/start-worlds.ts:43,84); tunable registry coverage (scripts/lib/market-tunables.ts:22); localized diagnostics (packages/contracts/src/source-messages.ts:22); XI losses after the close (scripts/market-seasons.ts:216); and owner starts (scripts/market-seasons.ts:307). Candidate measurements report both required 8-seed × 5-season workloads and settlement costs (spec/tasks/T945.npc-pull-market.md:27,35). All 81 targeted tests, lint and i18n validation passed. An independent real-RNG check confirmed save/load equivalence and completed-move caps across 48 settlements. No new blocking correctness or contract problems found. Tracked files remain unchanged.",
+            "findings": [],
+            "commit": "16bd38b4d7ecd81dcc06ab030c19fd876ebfc78d",
+            "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+            "submissionId": "0f48a42b-5413-4e5c-9fc4-f9b6d2f9653e",
+            "createdAt": "2026-11-17T19:57:43.969Z",
+            "finishedAt": "2026-11-17T20:01:23.852Z",
+            "invalidatedAt": "2026-11-17T20:07:11.309Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 965,
+      "at": "2026-11-17T20:07:11.791Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 966,
+      "at": "2026-11-17T20:08:45.529Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "fdd37ebd-e68e-4a9c-bf16-632a1f6f2e05",
+        "submittedAt": "2026-11-17T20:08:45.529Z",
+        "steps": [
+          {
+            "taskId": "T944",
+            "commit": "9fd60ecc34cbcd2239f21ac078e4f0fb01762a39",
+            "at": "2026-11-17T16:39:39.366Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T16:39:13.134Z",
+                "finishedAt": "2026-11-17T16:39:39.192Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T945",
+            "commit": "352cfd2e08893def21dac5fb858fd2ad6c553299",
+            "at": "2026-11-17T20:08:45.511Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T20:07:11.955Z",
+                "finishedAt": "2026-11-17T20:08:45.322Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T20:07:11.955Z",
+            "finishedAt": "2026-11-17T20:08:45.322Z"
+          }
+        ],
+        "verifiedCommit": "352cfd2e08893def21dac5fb858fd2ad6c553299"
+      }
+    },
+    {
+      "sequence": 967,
+      "at": "2026-11-17T20:08:46.091Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "26c6b626-e59c-4d92-b841-6d7ca7c9b7f7",
+          "owner": "codex-rv-npc5",
+          "status": "reviewing",
+          "commit": "352cfd2e08893def21dac5fb858fd2ad6c553299",
+          "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+          "submissionId": "fdd37ebd-e68e-4a9c-bf16-632a1f6f2e05",
+          "createdAt": "2026-11-17T20:08:46.091Z"
+        }
+      }
+    },
+    {
+      "sequence": 968,
+      "at": "2026-11-17T20:09:07.124Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 969,
+      "at": "2026-11-17T20:09:07.640Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 970,
+      "at": "2026-11-17T20:10:10.327Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "a35f560e-ee7f-4c7d-ad33-5c0bf562ad3c",
+      "taskId": "T949",
+      "tasks": [
+        "T948",
+        "T949"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "202c5ec1-d1b7-43f2-a07f-78973c11200a",
+        "submittedAt": "2026-11-17T20:10:10.327Z",
+        "steps": [
+          {
+            "taskId": "T948",
+            "commit": "1b6a9e4cf4b8c7043fb84f9df5f1b9029ca62297",
+            "at": "2026-11-17T16:51:00.435Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T16:49:39.183Z",
+                "finishedAt": "2026-11-17T16:51:00.198Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T949",
+            "commit": "7be644a485ec9e5065f353fa35d763a8429d6926",
+            "at": "2026-11-17T20:10:10.310Z",
+            "verification": [
+              {
+                "command": "npx @haeram/gusta vibe check --tier task",
+                "startedAt": "2026-11-17T20:09:07.817Z",
+                "finishedAt": "2026-11-17T20:10:10.124Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx @haeram/gusta vibe check --tier task",
+            "startedAt": "2026-11-17T20:09:07.817Z",
+            "finishedAt": "2026-11-17T20:10:10.124Z"
+          }
+        ],
+        "verifiedCommit": "7be644a485ec9e5065f353fa35d763a8429d6926"
+      }
+    },
+    {
+      "sequence": 971,
+      "at": "2026-11-17T20:13:33.855Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "26c6b626-e59c-4d92-b841-6d7ca7c9b7f7",
+          "owner": "codex-rv-npc5",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Merge resolution is limited to the two regenerated fixtures; all other files exactly preserve the appropriate parent version. All requested tests pass: 11 integration, 6 contract, and 62 unit tests. Integration used a checkout-local cache for sandbox compatibility. No tracked files changed.",
+          "findings": [],
+          "commit": "352cfd2e08893def21dac5fb858fd2ad6c553299",
+          "baseCommit": "ff6024e8d1cd6c956874070a85159bacc5f9d42c",
+          "submissionId": "fdd37ebd-e68e-4a9c-bf16-632a1f6f2e05",
+          "createdAt": "2026-11-17T20:08:46.091Z",
+          "finishedAt": "2026-11-17T20:13:33.855Z"
+        }
+      }
+    },
+    {
+      "sequence": 972,
+      "at": "2026-11-17T20:13:34.352Z",
+      "type": "attempt",
+      "group": "xf18-market",
+      "attemptId": "f379138e-2261-4734-9b65-7312e1c2e353",
+      "taskId": "T945",
+      "tasks": [
+        "T944",
+        "T945"
       ],
       "previousStatus": "approved",
       "status": "integrating",
