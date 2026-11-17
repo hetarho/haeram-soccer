@@ -65,6 +65,7 @@ import { joinFreeAgents } from './free-agents';
 import { retainPerson, openEmployment } from './person-careers';
 import { movePerson } from './npc-continuity';
 import { registration } from './registration';
+import * as catalogs from '../../catalogs/src/index';
 import { bidOutlook, transferStance } from './transfers';
 import * as personalTerms from './personal-terms';
 import { termsChance, termsContext, WAGE_STEPS } from './personal-terms';
@@ -1855,6 +1856,66 @@ describe('a pending player covers what his arrival would meet (→CLUB-33, CLUB-
     expect(staffBids(w).filter((bid) => bid.staff === 'short')).toEqual([]);
     arrive(w, owner);
     expect(shortLines(w)).toEqual([]);
+  });
+
+  it("an owner's pending deal leaves a look the money, wage bill and squad his arrival would", () => {
+    willing();
+    // Income just meets the fixed costs, so every wage added is a planned loss (→ECON-33), and the
+    // cash is tight: the look with the owner's midfielder pending moves as it does once he joined
+    // and his fee was paid, its own bids' wages counted move by move.
+    for (const cash of ['120000', '160000']) {
+      const w = club(5),
+        look = currentDay(w) + SIGNING_CONFIG.lookDays;
+      w.shortlist = { ...w.shortlist!, requests: [] };
+      passReachFree(w);
+      w.cash = cash;
+      w.budgetPlan = { year: w.year, revenue: operatingCosts(w).annual, sales: '0' };
+      const owner = pendingFor(w, 'MF'),
+        joined = structuredClone(w);
+      arrive(
+        joined,
+        joined.bids!.find((bid) => bid.id === owner.id)!,
+      );
+      joined.cash = (BigInt(joined.cash) - BigInt(owner.fee)).toString();
+      const moves = (one: World) => {
+        const before = new Set(one.bids!.map((bid) => bid.id));
+        one.calendar = { day: look };
+        staffSignings(one);
+        return staffBids(one)
+          .filter((bid) => !before.has(bid.id))
+          .map((bid) => [bid.playerId, bid.staff, bid.fee]);
+      };
+      const pending = moves(w);
+      expect(pending.length).toBeGreaterThan(0);
+      expect(pending).toEqual(moves(joined));
+    }
+  });
+
+  it("registers each candidate against the squad the window's bids will leave (→CLUB-44)", () => {
+    willing();
+    // A 25-player limit with those aged 21 or under exempt, as the English top flight registers.
+    const rule = vi.spyOn(catalogs, 'registrationRule').mockReturnValue({
+      max: 25,
+      ceiling: 40,
+      exempt: { ageAtMost: 21 },
+      status: 'observed',
+      sources: [],
+    });
+    onTestFinished(() => rule.mockRestore());
+    const w = club(5);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    // 24 counted players: room for one adult more.
+    const adult = activePlayers(w).find((p) => w.year - p.born > 21)!;
+    for (let i = 0; registration(w).counted < 24; i++)
+      w.players.push({ ...structuredClone(adult), id: `fixture:signings:counted:${i}` });
+    expect(registration(w)).toMatchObject({ counted: 24, allowed: 25 });
+    passReachFree(w);
+    staffSignings(w);
+    const pending = staffBids(w).filter((bid) => bid.status === 'pending'),
+      counted = pending.filter((bid) => w.year - bid.offer!.player.born > 21);
+    // One adult takes the last place; any other move is for a player the limit exempts.
+    expect(pending.length).toBeGreaterThan(0);
+    expect(counted).toHaveLength(1);
   });
 });
 

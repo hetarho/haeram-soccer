@@ -406,6 +406,7 @@ function candidates(
   need: SigningNeed,
   tried: Set<string>,
   byGain = false,
+  squad: World = w,
 ) {
   const listed = new Set(shortlistOffers(w).map(({ offer }) => offer.player.id)),
     pick = need.requested?.pick,
@@ -422,7 +423,7 @@ function candidates(
           ? lineOfPlayer(offer.player) === need.line
           : playsAt(offer.player, need.position) &&
             atSlot(w, offer.player, need.slot) >= need.level + need.margin) &&
-        !registrationRoom(w, { ...offer.player, joined: w.year }),
+        !registrationRoom(squad, { ...offer.player, joined: w.year }),
     )
     .map((entry) => ({
       ...entry,
@@ -1101,19 +1102,32 @@ function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
  * the owner's as well as his, and of each of his haggles awaiting a raise, joined as a completed
  * move joins him (`noteSigning`). A look reads its needs there, since an arrival at once counts in
  * his line and the squad, closes a replacement need of his line (→CLUB-42) and stands in the XI or
- * as the measure of a slot he beats, so one pending player covers every need his arrival would meet
- * and no other.
+ * as the measure of a slot he beats, on the wage the bid offers (→CLUB-53), so one pending player
+ * covers every need his arrival would meet and no other, and the registration and money checks of
+ * the next move read the squad, the wage bill and the cash they will be: his own open fees are
+ * reserved already (→ECON-33), the owner's come out of the cash as his deals would pay them.
+ * `raising`: a haggle left out, as its raise is checked as his move.
  */
-function projection(w: World, day: number) {
+function projection(w: World, day: number, raising?: TransferBid) {
   const bids = windowBids(w, day),
-    arriving = [...bids.filter(isOpen), ...haggles(w, bids)].flatMap((bid) => {
-      if (!bid.offer) return [];
+    open = bids.filter(isOpen),
+    arriving = [...open, ...haggles(w, bids)].flatMap((bid) => {
+      if (!bid.offer || bid === raising) return [];
       const p = structuredClone(bid.offer.player);
+      p.wage = stepWage(p.wage, bid.wage ?? 1);
       if (bid.loan) p.loanUntil = w.year + 1;
       joinClub(p, isForeignCandidate(w, p.id, bid.club) ? 'abroad' : 'domestic', w.year);
       return [p];
-    });
-  return { club: { ...w, players: [...w.players, ...arriving] }, arriving };
+    }),
+    ownerFees = open.reduce((total, bid) => total + (bid.staff ? 0n : BigInt(bid.fee)), 0n);
+  return {
+    club: {
+      ...w,
+      cash: (BigInt(w.cash) - ownerFees).toString(),
+      players: [...w.players, ...arriving],
+    },
+    arriving,
+  };
 }
 /**
  * The replacement needs a look moves for (→CLUB-42): open since before today and not closed by an
@@ -1191,9 +1205,10 @@ function raiseHaggles(w: World, day: number) {
     }
     const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
     const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
-    const terms = wageOffer(w, offer, fee);
+    const { club } = projection(w, day, retry),
+      terms = wageOffer(club, offer, fee);
     const room =
-      registrationRoom(w, { ...offer.player, joined: w.year }) ??
+      registrationRoom(club, { ...offer.player, joined: w.year }) ??
       (retry.staff === 'upgrade' ? upgradeCapReached(w, day, retry) : undefined);
     if (terms.ok && !room) {
       placeBid(w, targetOf(w, offer), fee, false, retry.staff, terms.offer.step);
@@ -1237,7 +1252,7 @@ function staffMove(w: World, day: number) {
     unlisted = players.filter((p) => transferStance(p) !== 'listed').length,
     tried = new Set(bids.map((bid) => bid.playerId));
   const margin = stance.signing.margin,
-    bar = margin !== undefined && stance.signing.bar ? moneyBar(w) : undefined,
+    bar = margin !== undefined && stance.signing.bar ? moneyBar(club) : undefined,
     upgradeList =
       margin !== undefined && (stance.signing.room === undefined || unlisted <= stance.signing.room)
         ? upgradeNeeds(club, margin, [...joinedThisWindow(w, day), ...arriving], bar)
@@ -1267,7 +1282,7 @@ function staffMove(w: World, day: number) {
     .map(({ need }) => need);
   if (!needs.length) return false;
   const offers = reachOffers(w),
-    plan = delegatePlan(w, 'recruitment');
+    plan = delegatePlan(club, 'recruitment');
   for (const need of needs)
     for (const { offer } of candidates(
       w,
@@ -1275,15 +1290,16 @@ function staffMove(w: World, day: number) {
       need,
       tried,
       need.kind === 'upgrade' && !!stance.signing.bar,
+      club,
     )) {
       const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
       // His lowest wage step already failing the runway test rules out every higher one.
       if (
         !(need.kind === 'short' && offer.freeAgent) &&
-        !runwayTest(w, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }).ok
+        !runwayTest(club, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }).ok
       )
         continue;
-      const terms = wageOffer(w, offer, fee, need.kind);
+      const terms = wageOffer(club, offer, fee, need.kind);
       if (!terms.ok) continue;
       if (offer.freeAgent) directorSignsFreeAgent(w, offer, need, terms.offer);
       else {
@@ -1323,8 +1339,11 @@ export function pursueRequest(
   const picked = requestCandidates(w, request).find(({ offer }) => offer.player.id === person);
   if (!picked || !transferWindow(w).open) return sourceMessage('copy.signings.b38bc71204');
   const day = currentDay(w),
-    { offer, index } = picked;
-  const room = registrationRoom(w, { ...offer.player, joined: w.year });
+    { offer, index } = picked,
+    // His pursuit is his move: it reads the squad and wage bill the window's bids will leave; the
+    // owner's own move reads the club as it is (→CLUB-33).
+    squad = actor === 'delegated' ? projection(w, day).club : w;
+  const room = registrationRoom(squad, { ...offer.player, joined: w.year });
   if (room) return room;
   const fee = offer.freeAgent
     ? '0'
@@ -1346,7 +1365,7 @@ export function pursueRequest(
     // A mediated upgrade is one of the window's upgrades, whoever asked for it (→CLUB-33, CLUB-39).
     const capped = request.kind === 'upgrade' ? upgradeCapReached(w, day) : undefined;
     if (capped) return capped;
-    const terms = wageOffer(w, offer, fee);
+    const terms = wageOffer(squad, offer, fee);
     if (!terms.ok) return terms.reason;
     if (offer.freeAgent) {
       const starter = request.slot === undefined ? undefined : ownStarters(w)[request.slot];
