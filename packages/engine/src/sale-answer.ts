@@ -78,10 +78,10 @@ export interface SaleContext {
   windowDaysLeft?: number;
   /** The bid's season: before 1995 the contract rows count half, for every seller (→CLUB-52). */
   year?: number;
-  /** A bid between clubs nobody owns (→WORLD-16) reads two more rows; absent for our club's. */
+  /** A seller nobody owns reads two more rows, whoever bids; absent when our club sells. */
   npc?: NpcSaleRows;
 }
-/** The rows only a club nobody owns answering another one reads (→CLUB-52). */
+/** The rows a club nobody owns reads as the seller, ours or another club's bid alike (→CLUB-52). */
 export interface NpcSaleRows {
   /** It was relegated at the last close and he is one of its starters. */
   relegatedStarter: boolean;
@@ -441,6 +441,8 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     transferRequest: false,
     unhappy: false,
     director: buyingDirector(w),
+    // Our bid meets the seller's own circumstances as another club's would.
+    npc: npcSellerRows(w, seller, player, common.place, clubById(w, w.playerClub)?.tier),
   };
 }
 
@@ -460,6 +462,27 @@ function tierAtLastClose(w: World, club: Club) {
   const index = w.clubs.indexOf(club);
   return w.history.at(-1)?.standings.find((row) => row[0] === index)?.[1];
 }
+/**
+ * The seller's own rows (→CLUB-52), whoever bids: relegated at the last close with him among its
+ * starters, and he rates 5 or more above its division's level (→WORLD-15) with the buyer, of
+ * `buyerTier`, playing higher.
+ */
+function npcSellerRows(
+  w: World,
+  seller: Club,
+  player: Player,
+  place: SalePlace,
+  buyerTier: number | undefined,
+): NpcSaleRows {
+  const before = tierAtLastClose(w, seller);
+  return {
+    relegatedStarter: before !== undefined && before < seller.tier && place !== 'outside',
+    aboveDivision:
+      buyerTier !== undefined &&
+      buyerTier < seller.tier &&
+      overall(player) >= tierLevel(seller.tier) + V.aboveDivisionPoints,
+  };
+}
 
 /**
  * A club nobody owns answering another one (→CLUB-52, WORLD-16): his place in its XI, his contract
@@ -469,8 +492,7 @@ function tierAtLastClose(w: World, club: Club) {
 export function npcSaleContext(w: World, bid: NpcSaleBid): SaleContext {
   const { seller, buyer, player } = bid,
     window = transferWindow(w),
-    place = placeIn(startingSquad(w, seller), player.id),
-    before = tierAtLastClose(w, seller);
+    place = placeIn(startingSquad(w, seller), player.id);
   return {
     fee: bid.fee,
     asking: bid.asking,
@@ -488,11 +510,6 @@ export function npcSaleContext(w: World, bid: NpcSaleBid): SaleContext {
     unhappy: false,
     year: w.year,
     ...(window.open ? { windowDaysLeft: window.daysLeft } : {}),
-    npc: {
-      relegatedStarter: before !== undefined && before < seller.tier && place !== 'outside',
-      aboveDivision:
-        buyer.tier < seller.tier &&
-        overall(player) >= tierLevel(seller.tier) + V.aboveDivisionPoints,
-    },
+    npc: npcSellerRows(w, seller, player, place, buyer.tier),
   };
 }

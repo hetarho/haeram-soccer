@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { message } from '../../contracts/src/messages';
 import type { ClubBooks, ClubSeasonBook } from '../../contracts/src/owner';
-import type { Club, World } from '../../contracts/src/types';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import type { Club, SeasonArchive, World } from '../../contracts/src/types';
 import { currencyChange } from './books';
 import { SEASON_ROUNDS } from './calendar';
 import { SAFETY_ROUNDS } from './delegation-info';
@@ -11,6 +12,7 @@ import { careerWorld } from './career.testkit';
 import { activePlayers, overall } from './player-state';
 import { compareIds } from './primitives';
 import {
+  npcSaleContext,
   SALE_FACTORS,
   saleAnswer,
   saleContext,
@@ -20,7 +22,7 @@ import {
   type SaleContext,
 } from './sale-answer';
 import { SALE_SHARE } from './transfer-policy';
-import { startingSquad } from './world';
+import { invalidateNpcSquad, startingSquad, tierLevel } from './world';
 
 /** A neutral bid: no factor but his place moves the share. */
 function ctx(over: Partial<SaleContext> = {}): SaleContext {
@@ -250,6 +252,53 @@ describe('saleContext reads a bid from a world', () => {
     const c = saleContext(lw, { playerId: p.id, sellerId: seller.id, fee: '1' })!;
     expect(c.contractSeasons).toBe(1);
     expect(saleShare(c).lines.some((l) => l.message === 'copy.transfers.53f9e38caf')).toBe(true);
+  });
+
+  it('reads the relegated-starter and above-division rows of a seller nobody owns for our bid too', () => {
+    const world = structuredClone(w);
+    const own = world.clubs.find((c) => c.id === world.playerClub)!;
+    const club = world.clubs.find(
+      (c) => c.country === 'ENG' && c.tier === 1 && c.id !== own.id && world.squads?.[c.id],
+    )!;
+    // Our club plays a division above the seller, which went down at the last close.
+    own.tier = 0;
+    const archive = { year: world.year - 1, standings: [[world.clubs.indexOf(club), 0]] };
+    world.history = [...world.history, archive as unknown as SeasonArchive];
+    // One of its starters rates 5 above its division's level.
+    const p = startingSquad(world, club)[0]!;
+    for (const a of ATTRIBUTES) p.attrs[a] = tierLevel(club.tier) + 5;
+    invalidateNpcSquad(world, club.id);
+    expect(startingSquad(world, club)).toContain(p);
+    const rows = (c: SaleContext) =>
+      saleShare(c)
+        .lines.filter((l) => l.factor === 'relegated' || l.factor === 'aboveDivision')
+        .map((l) => [l.factor, l.delta]);
+    const ours = saleContext(world, { playerId: p.id, sellerId: club.id, fee: '1' })!;
+    expect(ours.npc).toEqual({ relegatedStarter: true, aboveDivision: true });
+    expect(rows(ours)).toEqual([
+      ['relegated', -0.1],
+      ['aboveDivision', -0.1],
+    ]);
+    // The same rows another club of our division would meet.
+    const npc = npcSaleContext(world, {
+      seller: club,
+      buyer: own,
+      player: p,
+      fee: '1',
+      asking: ours.asking,
+      sellingDown: false,
+    });
+    expect(npc.npc).toEqual(ours.npc);
+    // From the seller's own division only the relegated row stays.
+    own.tier = club.tier;
+    expect(rows(saleContext(world, { playerId: p.id, sellerId: club.id, fee: '1' })!)).toEqual([
+      ['relegated', -0.1],
+    ]);
+    // Our own sales read neither row.
+    const mine = activePlayers(world)[0]!;
+    const sale = saleContext(world, { playerId: mine.id, sellerId: world.playerClub, fee: '1' })!;
+    expect(sale.npc).toBeUndefined();
+    expect(rows(sale)).toEqual([]);
   });
 
   it('reads our own player with his stance and our asking bar of value', () => {
