@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r47 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r48 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -243,6 +243,7 @@
   - Match rules, action/skill primitives and fixture reconstruction are leaf modules: the script writer and the staging take plain inputs and import no campaign lifecycle or orchestration, and the save codec rebuilds fixtures without importing the season orchestrator. Existing entry points may re-export leaves for compatibility.
   - Expensive measurement reuse is keyed by the runner/workload and its transitive runtime dependencies, catalog inputs, codec and toolchain. Preserve a separate full-source/build provenance fingerprint; unrelated visual assets or test edits do not invalidate simulation-only phases. A relevant source change always invalidates reuse.
   - Keep historical measurements immutable and label later values by source, command, environment, selected checks and cache state; structural dependency/selection checks do not imply runtime speedups.
+  - A cause-isolated calibration experiment retains its executable recipe, exact candidate patches and source/input manifests in versioned artifacts before heavy execution. A required independent recipe review identifies those exact hashes; review of another workload is not approval. Temporary compiled graphs and large raw outputs may stay outside Git, with their hashes and completion receipts retained. Missing recipes, inputs or matching review evidence remain unexecuted, never a model pass.
 
 - ARCH-34 [o] A speed-up succeeds when the candidate is faster than its baseline on the machine it is measured on, beyond the measurement noise; no speed target is set in milliseconds or seconds. ← phones, desktops and CPUs differ too much for one absolute time to mean anything
   - `scripts/perf/ab.mjs` measures it: both sides are bundled the same way from their own trees (identical sources give byte-identical bundles), each process loads both and alternates their reps, and the side loaded first alternates across processes. Main-thread CPU time is the primary measure; wall time is reported beside it.
@@ -278,6 +279,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r48 261117 ARCH-33✎ measurement provenance without a durable recipe requirement→versioned calibration recipes, exact patches/manifests and hash-matched independent review before heavy execution
 - r47 261117 ARCH-30✎ batch command carrying its own frozen offline install→prepare `pnpm install --frozen-lockfile --offline` in every CLI-created worktree; no task or batch command installs dependencies
 - r46 261117 ARCH-30✎ tier commands in prose with one chained task command, reuse keyed to the whole tree→per-check plan `scripts/verification-plan.json` (task five checks, batch verify:batch), each success kept and reused on declared inputs that leave out Markdown outside the code, test, script and artifact folders; rationale task checks about a minute→about four minutes in a fresh worktree
 - r45 261117 ARCH-23✎ integration job limit 45 min→75 min, covering a cold world cache after an engine change
