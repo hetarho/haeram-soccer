@@ -174,8 +174,11 @@
 | T942 | cf17 | gusta-session-start-cf17-c5483839 | 45f9a3169094 | 2026-11-17T13:49Z |
 | T943 | cf17 | gusta-session-start-cf17-c5483839 | 66bff25c12d4 | 2026-11-17T15:10Z |
 | T916 | cf17 | gusta-session-start-cf17-c5483839 | cc5d72ffd682 | 2026-11-17T15:33Z |
+| T946 | work | gusta-session-self-improve-xf18-607e3688 | ff6024e8d1cd | 2026-11-17T19:45Z |
+| T947 | work | gusta-session-self-improve-xf18-607e3688 | ff6024e8d1cd | 2026-11-17T19:45Z |
 
 ## log
+- 261117 T946 T947 integrated
 - 261117 T916 done
 - 261117 T943 done
 - 261117 T942 done
@@ -195,4 +198,3 @@
 - 261117 T937 integrated
 - 261117 T941 integrated
 - 261117 T940 integrated
-- 261117 T935 integrated
