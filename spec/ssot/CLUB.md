@@ -378,7 +378,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
-- r75 261117 CLUB-52✎ factors +our bid with a 데이터 헤드코치 manager −0.05 (was STAFF-14's +5 points of bid acceptance)
+- r75 261117 CLUB-52✎ factors without our manager→+our bid with a 데이터 헤드코치 manager −0.05 (STAFF-14's +5 points of bid acceptance)
 - r74 261117 CLUB-18✎ acceptance chance from fee, 단장 and reputation, counters at 110–125% of asking, delegated sales only of non-starters or covered 30+ starters→the selling club's answer (CLUB-52) then the player's (CLUB-53), our sale bar as the asking fee with sales targets; CLUB-41✎ +wage offer steps by the acted step (100/125/150/200%); CLUB-33✎ +money bar at 넉넉히/아낌없이 (every XI slot below it an upgrade need, 아낌없이 cap up to those slots, make-room lists non-XI 24+ players 8 below it); CLUB-52+ selling-club answer (always at asking, reservation share 0.85 + factors ± 0.08, counter at R within 0.25 of A); CLUB-53+ personal terms (σ(1.5 + factors): wage, stage, Europe, playing time, free agent)
 - r73 261117 CLUB-33✎ making room lists one player a regular look→as many as bring the squad less its listed to 24, one report a look
 - r72 261117 CLUB-33✎ upgrades while the squad has 24 or fewer→while the squad less 이적 명단 players is within the step's room (적당히 24, 넉넉히 28, 아낌없이 the registration limit); +making room: with sales delegated, at 넉넉히/아낌없이 each regular look above 24 lists one non-XI player aged 24+ at 협상 가능, least able first; CLUB-22✎ the 단장's window-opening stances→+the make-room listings
