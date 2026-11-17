@@ -164,6 +164,7 @@
 | T934 | work | gusta-session-self-improve-tm17-ff4b9f94 | 4ba930627cbb | 2026-11-17T11:46Z |
 
 ## log
+- 261117 gusta-create-task ARCH r48 start: split T916 recipe preparation from unchanged diagnostic execution
 - 261117 gusta-update-ssot ARCH-33 start: T916 recipe provenance recovery only
 - 261117 fix e2e: promise-deadline loan fixture lowers its bid until the selling club counters (dccee24d, pushed)
 - 261117 gusta-update 0.17.4→0.17.5 landed on main f7a23e83 (ARCH r47, T942 todo)
@@ -183,4 +184,3 @@
 - 261117 T932 integrated
 - 261117 T931 done
 - 261117 fix takeover: inherited player jobs drop the old club contract end (save 인물 재직 기간 손상 after a renewal)
-- 261117 gusta-update 0.17.3→0.17.4; ARCH r46 ARCH-30 per-check plan scripts/verification-plan.json (implemented with it, tasked=46); review/test-gate-time-261110 F8 adopted →T930; review/gusta-self-improve-261109 base ARCH@46
