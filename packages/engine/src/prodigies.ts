@@ -32,6 +32,17 @@ export const PRODIGY = {
   until: 18,
 } as const;
 
+/**
+ * Lands a drawn player's OVR on `ovr`: every attribute his position reads moves alike, so his
+ * profile keeps its shape (a prodigy here, a war-gap refill in npc-careers, →WORLD-16/18).
+ */
+export function landOnOvr(p: Player, ovr: number) {
+  const shift = ovr - mainOvr(p);
+  for (const a of ATTRIBUTES)
+    if (p.position === 'GK' || !GOALKEEPING.has(a))
+      p.attrs[a] = clamp(Math.round((p.attrs[a] + shift) * 100) / 100, 1, 99);
+}
+
 /** The multiple a prodigy's growth takes at `age` (→PLAYER-15): `PRODIGY.growth` until 18, else 1. */
 export function prodigyGrowth(player: Pick<Player, 'prodigy'>, age: number) {
   return player.prodigy && age < PRODIGY.until ? PRODIGY.growth : 1;
@@ -111,11 +122,7 @@ export function drawProdigies(w: World, year = w.year + 1): Player[] {
       c.tier,
       slot.role,
     );
-    // His OVR lands on the drawn value: every attribute his position reads moves alike.
-    const shift = ovr - mainOvr(p);
-    for (const a of ATTRIBUTES)
-      if (p.position === 'GK' || !GOALKEEPING.has(a))
-        p.attrs[a] = clamp(Math.round((p.attrs[a] + shift) * 100) / 100, 1, 99);
+    landOnOvr(p, ovr);
     p.wage = marketWageAt(c.country, year, c.tier, p);
     p.potential = clamp(Math.max(mainOvr(p), potential), 1, 99);
     p.prodigy = true;

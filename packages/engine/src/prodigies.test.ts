@@ -7,9 +7,9 @@ import { developAnnually, settlePlayerGrowth } from './training';
 import { ACADEMY_LIMIT, ageGroupOf, seasonAcademy } from './academy';
 import { lineOf, mainOvr } from './player';
 import { overall } from './player-state';
-import { closeNpcSummer, intakeNpcYouth, NPC_YOUTH, youthCentre } from './npc-careers';
+import { closeNpcSummer, intakeNpcYouth, NPC_YOUTH } from './npc-careers';
 import { crossWar } from './wartime';
-import { LINE_MINIMUM, NPC_SQUAD } from './world';
+import { divisionLevel, LINE_MINIMUM, NPC_SQUAD } from './world';
 import { TRAINING_GROUND, trainingGroundTerms } from './facility-model';
 import { random } from './primitives';
 
@@ -225,10 +225,11 @@ describe('a war-gap summer (→WORLD-14/16)', () => {
       expect(players.filter((p) => lineOf(p.position) === line).length).toBeGreaterThanOrEqual(
         LINE_MINIMUM[line],
       );
-    // Refills sit at the bench level (→WORLD-16), none at the academy's centre.
+    // War refills come ready to play, just under the division's level (→WORLD-16).
     const refills = players.filter((p) => p.id.includes(`:y:${w.year + 1}:`));
-    const top = youthCentre(c, c.levels!.academy, true) + NPC_YOUTH.skew.at(-1)![1];
-    for (const p of refills) expect(p.potential).toBeLessThanOrEqual(Math.max(top, mainOvr(p)));
+    expect(refills).toHaveLength(3);
+    for (const p of refills)
+      expect(mainOvr(p)).toBeCloseTo(divisionLevel(c.tier) - NPC_YOUTH.warRefill.below, 1);
     // A played summer still takes the academy's count on top.
     intakeNpcYouth(w, c, w.year + 2);
     expect(players.length).toBe(NPC_SQUAD.size + NPC_YOUTH.byAcademy[c.levels!.academy]!.count);

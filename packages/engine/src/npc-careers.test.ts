@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { emptyPlayerDetail } from '../../contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
+import type { Player } from '../../contracts/src/types';
 import { announceRetirements, retirementAnnounceDay, retirementChanceWithContext } from './careers';
 import { worldMarketFixture } from './world-market.testkit';
 import { CLUB_LEVELS, enrollSquadPlayer, foundSquads, levelTargets } from './persisted-squads';
@@ -14,8 +15,10 @@ import {
   youthSkew,
 } from './npc-careers';
 import { clubManager } from './managerMarket';
+import { PRODIGY } from './prodigies';
 import {
   clubPlayers,
+  divisionLevel,
   rating,
   ratingOf,
   squad,
@@ -26,7 +29,7 @@ import {
   LINE_MINIMUM,
 } from './world';
 import { lineOf, mainOvr } from './player';
-import { random, zeroMetrics } from './primitives';
+import { clamp, integer, random, zeroMetrics } from './primitives';
 import { clubRegistration } from './registration';
 import { crossWar } from './wartime';
 import { TRAINING_GROUND } from './facility-model';
@@ -384,6 +387,10 @@ describe('persisted NPC careers on isolated squads', () => {
     const youth = squad.filter((q) => q.id.includes(':y:') && !q.prodigy);
     expect(youth).toHaveLength(1);
     expect(youth[0]!.id.startsWith(`${c.id}:y:194`)).toBe(true);
+    // He came ready to play (→WORLD-16): 19–24 in the season he joined.
+    const joined = Number(youth[0]!.id.split(':')[2]);
+    expect(joined - youth[0]!.born).toBeGreaterThanOrEqual(NPC_YOUTH.warRefill.ages[0]);
+    expect(joined - youth[0]!.born).toBeLessThanOrEqual(NPC_YOUTH.warRefill.ages[1]);
     expect(youth[0]!.until - 1946).toBeGreaterThanOrEqual(1);
     expect(youth[0]!.until - 1946).toBeLessThanOrEqual(5);
     const after = structuredClone(w);
@@ -414,6 +421,85 @@ describe('academy intakes around the division level (→WORLD-16)', () => {
     c.tier = 3;
     expect(youthCentre(c, 0, false)).toBe(50);
     expect(youthCentre(c, 0, true)).toBe(40);
+  });
+});
+
+describe('war-gap refills ready to play (→WORLD-14/16)', () => {
+  const serial = (p: Player) => Number(p.id.split(':').at(-1));
+  const lines = (players: Player[]) =>
+    (Object.keys(LINE_MINIMUM) as (keyof typeof LINE_MINIMUM)[]).every(
+      (line) => players.filter((p) => lineOf(p.position) === line).length >= LINE_MINIMUM[line],
+    );
+
+  it("draws a skipped summer's refills aged 19–24 just under the division level, from their own stream", () => {
+    const { w, c } = fixture(1940);
+    const { ages, below, headroom } = NPC_YOUTH.warRefill;
+    const seen = new Set<number>();
+    for (const tier of [0, 1, 2, 3]) {
+      c.tier = tier;
+      w.squads![c.id] = [];
+      intakeNpcYouth(w, c, w.year + 1, undefined, true);
+      const players = w.squads![c.id]!;
+      // Only to the standing size, with each line's minimum and a goalkeeper (→CLUB-5).
+      expect(players).toHaveLength(NPC_SQUAD.size);
+      expect(lines(players)).toBe(true);
+      const ovr = divisionLevel(tier) - below;
+      for (const p of players) {
+        const age = w.year + 1 - p.born;
+        seen.add(age);
+        expect(age).toBe(integer(random(`${w.seed}:war-refill:${p.id}`), ages[0], ages[1]));
+        expect(mainOvr(p)).toBeCloseTo(ovr, 1);
+        expect(p.potential).toBe(ovr + headroom);
+        expect(p.until - (w.year + 1)).toBeGreaterThanOrEqual(1);
+        expect(p.until - (w.year + 1)).toBeLessThanOrEqual(5);
+      }
+    }
+    // Spread across the ages, not one age for all.
+    expect(Math.min(...seen)).toBeGreaterThanOrEqual(ages[0]);
+    expect(Math.max(...seen)).toBeLessThanOrEqual(ages[1]);
+    expect(seen.size).toBeGreaterThanOrEqual(4);
+  });
+
+  it("keeps a played summer's academy intake and refills on the youth stream", () => {
+    const { w, c } = fixture();
+    const count = NPC_YOUTH.byAcademy[c.levels!.academy]!.count;
+    w.squads![c.id] = [];
+    intakeNpcYouth(w, c);
+    const players = w.squads![c.id]!;
+    expect(players.length).toBeGreaterThan(count);
+    for (const p of players) {
+      // The intake's own draws, in their order: age, potential, then the OVR's headroom.
+      const r = random(`${w.seed}:youth:${p.id}`);
+      expect(w.year + 1 - p.born).toBe(integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]));
+      const centre = youthCentre(c, c.levels!.academy, serial(p) >= count);
+      const potential = clamp(Math.round(centre + youthSkew(r())), 15, 99);
+      expect(p.potential).toBe(Math.max(mainOvr(p), potential));
+      const level = clamp(potential - integer(r, ...NPC_YOUTH.headroom), 15, 92);
+      expect(Math.abs(mainOvr(p) - level)).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('refills a skipped summer to the standing size and places its prodigies on top', () => {
+    const { w, c, players } = fixture(1941);
+    const { ages, below } = NPC_YOUTH.warRefill;
+    const gone = players.splice(0, 3).map((p) => p.id);
+    const prodigies = random(`${w.seed}:prodigy:${w.year + 1}`)() < PRODIGY.twoChance ? 2 : 1;
+    closeNpcSummer(w, undefined, false);
+    const squad = w.squads![c.id]!;
+    const refills = squad.filter((p) => new RegExp(`^${c.id}:y:${w.year + 1}:\\d+$`).test(p.id));
+    expect(refills).toHaveLength(gone.length);
+    expect(squad.filter((p) => !p.prodigy)).toHaveLength(NPC_SQUAD.size);
+    expect(lines(squad)).toBe(true);
+    for (const p of refills) {
+      expect(w.year + 1 - p.born).toBeGreaterThanOrEqual(ages[0]);
+      expect(w.year + 1 - p.born).toBeLessThanOrEqual(ages[1]);
+      expect(mainOvr(p)).toBeCloseTo(divisionLevel(c.tier) - below, 1);
+    }
+    // The summer's one or two prodigies (→WORLD-18) are drawn as well, over and above the refill.
+    const placed = [...Object.values(w.squads!).flat(), ...(w.academy?.players ?? [])].filter(
+      (p) => p.prodigy && p.id.includes(`:${w.year + 1}:prodigy`),
+    );
+    expect(placed).toHaveLength(prodigies);
   });
 });
 
