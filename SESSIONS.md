@@ -158,6 +158,7 @@
 | T934 | work | gusta-session-self-improve-tm17-ff4b9f94 | 4ba930627cbb | 2026-11-17T11:46Z |
 
 ## log
+- 261117 gusta-update 0.17.4→0.17.5 landed on main f7a23e83 (ARCH r47, T942 todo)
 - 261117 gusta-create-task ARCH r47 → T942
 - 261117 gusta-create-task ARCH start
 - 261117 gusta-update-ssot ARCH r47 ARCH-30✎ prepare line; verify:batch install pending task
@@ -177,4 +178,3 @@
 - 261117 gusta-update 0.17.3→0.17.4; ARCH r46 ARCH-30 per-check plan scripts/verification-plan.json (implemented with it, tasked=46); review/test-gate-time-261110 F8 adopted →T930; review/gusta-self-improve-261109 base ARCH@46
 - 261116 T929 done
 - 261116 gusta-update-ssot ARCH-23 start
-- 261116 T920 integrated
