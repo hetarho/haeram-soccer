@@ -226,9 +226,18 @@ describe('club operating policy', () => {
   });
 
   it('shapes the transfer market from young prospects to ready-made veterans', () => {
-    const prospects = world({ recruitment: 1 }),
-      balanced = world(),
-      veterans = world({ recruitment: 5 });
+    // A chief scout who searches the whole country (→CLUB-51): the dial's ages and abilities, not
+    // the few divisions next to ours, set what each search finds.
+    const countryWide = (w: World) => {
+      expect(w.staff?.some((member) => member.role === 'scout')).toBe(true);
+      w.staff = w.staff!.map((member) =>
+        member.role === 'scout' ? { ...member, ability: 80, trait: undefined } : member,
+      );
+      return w;
+    };
+    const prospects = countryWide(world({ recruitment: 1 })),
+      balanced = countryWide(world()),
+      veterans = countryWide(world({ recruitment: 5 }));
     const ages = (w: World) => transferOffers(w).map((offer) => w.year - offer.player.born);
     const ability = (w: World) => mean(transferOffers(w).map((offer) => overall(offer.player)));
     const headroom = (w: World) =>

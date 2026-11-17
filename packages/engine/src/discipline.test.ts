@@ -9,11 +9,11 @@ import {
 } from './discipline';
 import { activePlayers, ownLeagueClubs, ownStarters, startingSquad } from './index';
 import { matchdayRosters } from './aggregate/engine';
-import { currentDay } from './calendar';
+import { currentDay, ROUND_INTERVAL_DAYS } from './calendar';
 import { eraRules } from './match/rules';
 import { prepareMatch, simulateMatch } from './match';
 import { lineOf } from './player';
-import { advanceRound } from './season';
+import { advanceDays, advanceRound } from './season';
 import { founded } from './season.testkit';
 import { squad } from './world';
 import { withCandidateModel } from '../../../tests/fixtures/worlds';
@@ -209,6 +209,10 @@ describe('discipline (→MATCH-19)', () => {
 describe('candidate model incidents and availability (→LEAGUE-15, MATCH-19, MATCH-21)', () => {
   it('carries incidents into the next lineup', () => {
     const w = withCandidateModel(founded(2024));
+    // The opening window's market settles on the days before the first match day (→WORLD-16), so
+    // the round's squads stand as they kick off only from its eve.
+    advanceDays(w, ROUND_INTERVAL_DAYS - 1 - currentDay(w), undefined, false);
+    expect(w.round).toBe(0);
     const others = w.fixtures.filter(
       (f) =>
         f.round === 1 && f.kind === 'league' && f.home !== w.playerClub && f.away !== w.playerClub,

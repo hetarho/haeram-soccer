@@ -51,8 +51,14 @@ describe('actual league scorer standings', () => {
       w.fixtures.filter((f) => isScoringFixture(w, f)).flatMap((f) => [f.home, f.away]),
     );
     expect(new Set(season.players.map((p) => p.club))).toEqual(fixtureClubs);
+    // The window market moves players between league clubs mid-season (→WORLD-16): a moved
+    // scorer's row keeps each club's own contribution, and every club's sum is its own.
+    const parts = (club: string) =>
+      season.players.flatMap((p) =>
+        p.clubs ? p.clubs.filter((part) => part.club === club) : p.club === club ? [p] : [],
+      );
     for (const club of fixtureClubs) {
-      const players = season.players.filter((p) => p.club === club);
+      const players = parts(club);
       expect(players.reduce((goals, p) => goals + p.goals, 0)).toBe(w.tables[club].gf);
       expect(players.reduce((appearances, p) => appearances + p.appearances, 0)).toBe(
         w.tables[club].played * 11,

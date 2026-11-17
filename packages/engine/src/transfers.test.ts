@@ -307,10 +307,13 @@ describe('outgoing bids', () => {
     const { w, offers, cash } = bidEvery(biddingMarket(), 500);
     const completed = outBids(w).filter((b) => b.status === 'completed');
     // A bid above the asking fee is always accepted (→CLUB-52); only a player's refusal of our
-    // terms ends one, with nothing paid (→CLUB-53).
+    // terms ends one, with nothing paid (→CLUB-53), or his move elsewhere in the clubs' own window
+    // market before the answer, which lapses it (→CLUB-50, WORLD-16).
     expect(completed.length).toBeGreaterThanOrEqual(1);
     for (const bid of outBids(w).filter((b) => b.status !== 'completed'))
-      expect(bid).toMatchObject({ status: 'rejected', refusedBy: 'player' });
+      if (bid.status === 'expired')
+        expect(squad(w, clubById(w, bid.club!)!).some((p) => p.id === bid.playerId)).toBe(false);
+      else expect(bid).toMatchObject({ status: 'rejected', refusedBy: 'player' });
     // No match is played in the first four days, so the fees are the only movement.
     const paid = completed.reduce((sum, b) => sum + BigInt(b.fee), 0n);
     expect(cash - BigInt(w.cash)).toBe(paid);
@@ -722,7 +725,9 @@ describe('market identity', () => {
     placeBid(w, clubIndex(w), fee);
     const [bid] = outBids(w);
     expect(bid.offer).toEqual({ player: offer.player, fee: offer.fee, loanFee: offer.loanFee });
-    holdRows(w, { policy: { recruitment: 5 } });
+    // The search whose ages leave him out (→ECON-16: 17–21 at 1, 26–33 at 5): the standard list's
+    // ablest players now fall inside either end's ages, so the switch follows his age.
+    holdRows(w, { policy: { recruitment: w.year - offer.player.born > 21 ? 1 : 5 } });
     expect(ids(w)).not.toContain(offer.player.id);
     expect(bidBoard(w)[0]).toMatchObject({ player: offer.player, asking: offer.fee });
     const cash = BigInt(w.cash);

@@ -18,6 +18,7 @@ import { validateWorld } from '../../contracts/src/schema';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { careerWorld } from './career.testkit';
 import { joinFreeAgents } from './free-agents';
+import { wouldJoin } from './testing';
 const world = () => careerWorld({ seed: 'continuity' });
 describe('selected NPC continuity', () => {
   it('enrolls persisted prospects without inspection and preserves identity and attributes over a rollover', () => {
@@ -86,21 +87,36 @@ describe('selected NPC continuity', () => {
   it('records external recruitment without inventing an old club or historical appearances', () => {
     const w = world();
     w.cash = '9999999999';
+    const freeLike = (template: Player, id: string) => {
+      const one = makePlayer(
+        'ENG',
+        w.seed,
+        id,
+        w.year,
+        overall(template),
+        template.position,
+        w.year - template.born,
+      );
+      one.attrs = { ...template.attrs };
+      one.positions = { ...template.positions };
+      one.potential = template.potential;
+      return one;
+    };
+    const recruitFree = (c: World, one: Player) => {
+      joinFreeAgents(c, structuredClone(one), c.year);
+      const index = transferOffers(c).findIndex((offer) => offer.player.id === one.id);
+      operate(c, { type: 'recruit', candidate: index, wage: 2 });
+    };
+    // A domestic midfielder of the list, remade as an unretained free agent. His answer to our
+    // terms at the 200% step is drawn by his id (→CLUB-53, →ARCH-5): the first id whose seeded
+    // answer agrees, since even a likely yes is a draw.
     const template = transferOffers(w).find(
       (offer) => offer.available && !offer.foreign && lineOf(offer.player.position) === 'MF',
     )!.player;
-    const free = makePlayer(
-      'ENG',
-      w.seed,
-      'unretained:free',
-      w.year,
-      overall(template),
-      template.position,
-      w.year - template.born,
-    );
-    free.attrs = { ...template.attrs };
-    free.positions = { ...template.positions };
-    free.potential = template.potential;
+    const free = Array.from({ length: 8 }, (_, n) =>
+      freeLike(template, n ? `unretained:free:${n}` : 'unretained:free'),
+    ).find((one) => wouldJoin(w, one.id, (c) => recruitFree(c, one)))!;
+    expect(free).toBeDefined();
     expect(joinFreeAgents(w, free, w.year)).toBe(true);
     expect(w.people![free.id].club).toBeUndefined();
     expect(w.people![free.id].origin).toBeUndefined();

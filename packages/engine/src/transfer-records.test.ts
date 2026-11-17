@@ -4,6 +4,7 @@ import type { TransferFact, World } from '../../contracts/src/types';
 import { activePlayers, advanceDays, currentDay, operate, placeBid, transferOffers } from './index';
 import { addEvent } from './events';
 import { inTodayMoney, transferLedger, transferRanking } from './transfer-records';
+import { suitorFor } from './transfers';
 import { incoming, world } from './transfers.testkit';
 import { buyOffer, wouldJoin } from './testing';
 
@@ -45,8 +46,13 @@ describe('own-club transfer facts (→HIST-20)', () => {
       loaned = listed[second!]!;
     expect(loaned).toMatchObject({ freeAgent: false, available: true });
     buyOffer(w, second!, true, 2);
-    const sold = activePlayers(w).find((p) => p.position !== 'GK')!;
+    // An outfield player a club would actually sign at the bid's fee: each buyer takes only a
+    // player it needs and can register and pay for (→WORLD-16).
+    const sold = activePlayers(w).find(
+      (p) => p.position !== 'GK' && suitorFor(w, p, () => 0, '12345'),
+    )!;
     const bid = incoming(w, sold.id, '12345');
+    bid.club = suitorFor(w, sold, () => 0, '12345')!.id;
     operate(w, { type: 'respond-bid', id: bid.id, accept: true });
     // The record starts at the first fee signing's ledger line, the bid's own line before it.
     expect(w.events[w.transfers!.ledgerBefore]).toMatchObject({

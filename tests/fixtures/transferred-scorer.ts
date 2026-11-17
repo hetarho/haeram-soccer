@@ -49,6 +49,10 @@ export function transferredScorerWorld(
     status: 'pending',
   });
   respondBid(w, 'in:scorer-transfer', true);
+  // The window market would pull a 99-rated striker up to the top flight in winter (→WORLD-16),
+  // out of this league's ledger: he announces that this season ends his career (→CLUB-3), which
+  // keeps every club from bidding for him, so both contributions stay this league's to its close.
+  w.squads![buyer.id]!.find((p) => p.id === player.id)!.retiring = w.year;
   advanceRound(w, undefined, false);
   return { w, playerId: player.id, buyer: buyer.id };
 }
