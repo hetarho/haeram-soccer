@@ -71,6 +71,7 @@ import { termsChance, termsContext, WAGE_STEPS } from './personal-terms';
 import { pursueRequest, requestCandidates, wageCeiling, wageOffer } from './signings';
 import { random } from './primitives';
 import { staffBidShare } from './director-bidding';
+import { openNeed, openNeeds } from './replacements';
 
 /** Release the actual listed club player, keeping his identity and unchanged sporting quality. */
 function releaseListed(w: World, line?: Line) {
@@ -207,6 +208,29 @@ function tried(w: World, playerId: string) {
     status: 'rejected',
   };
   w.bids = [...(w.bids || []), bid];
+}
+/** Marks every free agent within the scout's reach as tried: each move is then a pending bid. */
+function passReachFree(w: World) {
+  for (const offer of reachOffers(w)) if (offer.freeAgent) tried(w, offer.player.id);
+}
+/** The player of a bid joins as a completed move joins him (`noteSigning`), the fee aside. */
+function arrive(w: World, bid: TransferBid) {
+  const player = structuredClone(bid.offer!.player);
+  bid.status = 'completed';
+  w.players.push(player);
+  noteSigning(w, player, bid.club);
+}
+/** A bid for the first available club player of `line` on the list, waiting for its answer. */
+function pendingFor(w: World, line: Line, staff?: TransferBid['staff']) {
+  const offers = transferOffers(w),
+    index = offers.findIndex(
+      (offer) => offer.available && !offer.freeAgent && lineOf(offer.player.position) === line,
+    );
+  expect(index).toBeGreaterThanOrEqual(0);
+  placeBid(w, index, offers[index]!.fee, false, staff);
+  const bid = w.bids!.at(-1)!;
+  bid.due = currentDay(w) + 20;
+  return bid;
 }
 /** Marks every free agent the scout lists as tried, so the 단장 moves for a fee-bearing player. */
 function passFree(w: World) {
@@ -1089,6 +1113,33 @@ describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)',
     expect(listed(w).map((p) => p.id)).toEqual(listedIds);
   });
 
+  it("reads the step's room and the registration ceiling with the window's pending players in", () => {
+    willing();
+    /** A look three days after the opening, with and without a bid placed at the opening. */
+    const look = (w: World, size: number) => {
+      const opening = currentDay(w);
+      w.settings!.responsibilities.sales = 'direct';
+      w.shortlist = { ...w.shortlist!, requests: [] };
+      pad(w, size);
+      passReachFree(w);
+      const alone = structuredClone(w);
+      pendingFor(w, 'MF', 'upgrade');
+      for (const one of [w, alone]) {
+        one.calendar = { day: opening + SIGNING_CONFIG.lookDays };
+        staffSignings(one);
+      }
+      return { pending: staffBids(w), alone: staffBids(alone) };
+    };
+    // 넉넉히's room is 28 players less the listed: 28 can take an upgrade, 28 and one pending not.
+    const ample = look(club(4), 28);
+    expect(ample.alone).toEqual([expect.objectContaining({ staff: 'upgrade' })]);
+    expect(ample.pending).toHaveLength(1);
+    // 아낌없이 reads the 40-player ceiling: 39 can take one more, 39 and one pending not.
+    const generous = look(club(5), 39);
+    expect(generous.alone.length).toBeGreaterThan(0);
+    expect(generous.pending).toHaveLength(1);
+  });
+
   it('lists nobody with sales direct, at 적당히 or with 24 left', () => {
     const direct = club(5);
     direct.settings!.responsibilities.sales = 'direct';
@@ -1692,6 +1743,118 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(moneyBar(broke)).toBeUndefined();
     makeRoom(broke);
     expect(listed(broke)).toEqual([]);
+  });
+});
+
+describe('a pending player covers what his arrival would meet (→CLUB-33, CLUB-42)', () => {
+  /** A rich 아낌없이 club with three forwards, the fourth gone on the opening day. */
+  function forwardGone() {
+    const w = club(5),
+      opening = currentDay(w),
+      forwards = activePlayers(w).filter((p) => lineOf(p.position) === 'FW');
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    expect(forwards).toHaveLength(4);
+    keep(w, 'FW', 3);
+    // His departure opened a replacement need for his line, now below its minimum too.
+    expect(openNeed(w, forwards[3]!, opening)).toBeDefined();
+    passReachFree(w);
+    return { w, look: opening + SIGNING_CONFIG.lookDays };
+  }
+
+  it('one forward covers the short line and the replacement need a departure opened', () => {
+    willing();
+    const { w, look } = forwardGone();
+    w.calendar = { day: look };
+    expect(shortLines(w)).toEqual([expect.objectContaining({ line: 'FW', count: 3, minimum: 4 })]);
+    expect(openNeeds(w)).toEqual([expect.objectContaining({ line: 'FW' })]);
+    staffSignings(w);
+    const forward = staffBids(w).filter((bid) => bid.staff !== 'upgrade');
+    expect(forward).toEqual([expect.objectContaining({ staff: 'short', status: 'pending' })]);
+    // His arrival clears both, as the look read it.
+    arrive(w, forward[0]!);
+    expect(shortLines(w)).toEqual([]);
+    expect(openNeeds(w)).toEqual([]);
+  });
+
+  it('a look with a forward pending moves as it would once he had joined', () => {
+    willing();
+    // The same club twice: a forward bid for at the opening still pending, or already joined. The
+    // look reads the pending one as joined, in his line, the replacement need and the XI alike.
+    const { w, look } = forwardGone(),
+      bid = pendingFor(w, 'FW', 'short'),
+      joined = structuredClone(w);
+    arrive(
+      joined,
+      joined.bids!.find((one) => one.id === bid.id)!,
+    );
+    const moves = (one: World) => {
+      const before = new Set(one.bids!.map((b) => b.id));
+      one.calendar = { day: look };
+      staffSignings(one);
+      return staffBids(one)
+        .filter((b) => !before.has(b.id))
+        .map((b) => [b.playerId, b.staff]);
+    };
+    // The pending bid holds one of his three places, so its look makes one move fewer.
+    const pending = moves(w);
+    expect(pending.length).toBeGreaterThan(0);
+    expect(moves(joined).slice(0, pending.length)).toEqual(pending);
+  });
+
+  it('looks between regular days only while a replacement need is left uncovered', () => {
+    willing();
+    const { w, look } = forwardGone(),
+      after = look - SIGNING_CONFIG.lookDays + 1,
+      open = structuredClone(w);
+    // With the need open the day after the departure is a look day (→CLUB-42) ...
+    open.calendar = { day: after };
+    staffSignings(open);
+    expect(staffBids(open)).toContainEqual(expect.objectContaining({ staff: 'short' }));
+    // ... but not once a forward is pending, whose arrival would close it.
+    pendingFor(w, 'FW', 'short');
+    const count = w.bids!.length;
+    w.calendar = { day: after };
+    staffSignings(w);
+    expect(w.bids!.slice(count)).toEqual([]);
+  });
+
+  it('a squad short of 20 counts a pending player of any line toward it', () => {
+    willing();
+    const w = club(5),
+      opening = currentDay(w);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    // Every line at its minimum but one defender over: 19 players, the keepers asked for first.
+    for (const [line, count] of [
+      ['GK', 2],
+      ['DF', 7],
+      ['MF', 6],
+      ['FW', 4],
+    ] as const)
+      keep(w, line, count);
+    expect(shortLines(w)).toEqual([expect.objectContaining({ line: 'GK', squad: 19 })]);
+    passReachFree(w);
+    const defender = pendingFor(w, 'DF', 'upgrade');
+    w.calendar = { day: opening + SIGNING_CONFIG.lookDays };
+    staffSignings(w);
+    expect(staffBids(w).filter((bid) => bid.staff === 'short')).toEqual([]);
+    arrive(w, defender);
+    expect(shortLines(w)).toEqual([]);
+  });
+
+  it("an owner's pending bid counts as the arrival it would be", () => {
+    willing();
+    const w = club(5),
+      opening = currentDay(w);
+    w.shortlist = { ...w.shortlist!, requests: [] };
+    keep(w, 'FW', 3);
+    passReachFree(w);
+    const owner = pendingFor(w, 'FW');
+    expect(owner.staff).toBeUndefined();
+    w.calendar = { day: opening + SIGNING_CONFIG.lookDays };
+    staffSignings(w);
+    expect(staffBids(w).filter((bid) => bid.staff === 'short')).toEqual([]);
+    arrive(w, owner);
+    expect(shortLines(w)).toEqual([]);
   });
 });
 

@@ -1097,39 +1097,49 @@ function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
   return { world: w.id, kind: 'club', clubId: offer.source.club, playerId: offer.player.id };
 }
 /**
- * Whether a held bid's player would meet a need when he joins: one of its line for a short line
- * or a replacement, one who beats the slot's measure by the margin for an upgrade. Each such player
- * covers one need, a short line taking as many as it lacks, so the 단장 neither bids twice for one
- * place nor moves on to upgrades while a line is still short (→CLUB-33).
+ * The club as it stands once the window's bids go through (→CLUB-33): the player of every open bid,
+ * the owner's as well as his, and of each of his haggles awaiting a raise, joined as a completed
+ * move joins him (`noteSigning`). A look reads its needs there, since an arrival at once counts in
+ * his line and the squad, closes a replacement need of his line (→CLUB-42) and stands in the XI or
+ * as the measure of a slot he beats, so one pending player covers every need his arrival would meet
+ * and no other.
  */
-function uncovered(w: World, needs: SigningNeed[], held: TransferBid[]) {
-  const waiting = held.flatMap((bid) => (bid.offer ? [bid.offer.player] : []));
-  return needs.filter((need) => {
-    // A squad short of 20 with every line at its minimum asks for one player at a time.
-    let lacking = need.kind === 'short' ? Math.max(1, need.minimum - need.count) : 1;
-    while (lacking > 0) {
-      const i = waiting.findIndex((p) =>
-        need.kind === 'upgrade'
-          ? playsAt(p, need.position) && atSlot(w, p, need.slot) >= need.level + need.margin
-          : lineOfPlayer(p) === need.line,
-      );
-      if (i < 0) return true;
-      waiting.splice(i, 1);
-      lacking--;
-    }
-    return false;
-  });
+function projection(w: World, day: number) {
+  const bids = windowBids(w, day),
+    arriving = [...bids.filter(isOpen), ...haggles(w, bids)].flatMap((bid) => {
+      if (!bid.offer) return [];
+      const p = structuredClone(bid.offer.player);
+      if (bid.loan) p.loanUntil = w.year + 1;
+      joinClub(p, isForeignCandidate(w, p.id, bid.club) ? 'abroad' : 'domestic', w.year);
+      return [p];
+    });
+  return { club: { ...w, players: [...w.players, ...arriving] }, arriving };
+}
+/**
+ * The replacement needs a look moves for (→CLUB-42): open since before today and not closed by an
+ * arrival, each of which closes the earliest open need of his line as `closeNeedFor` does.
+ */
+function replacementNeeds(w: World, day: number, arriving: readonly Player[]): SigningNeed[] {
+  const open = openNeeds(w);
+  for (const p of arriving) {
+    const i = open.findIndex((need) => need.line === lineOfPlayer(p));
+    if (i >= 0) open.splice(i, 1);
+  }
+  return open
+    .filter((need) => need.day < day)
+    .map((need) => ({ kind: 'replacement', line: need.line, playerId: need.playerId }));
 }
 
 /**
  * The 단장's look (→CLUB-33): with transfers delegated and a window open, on its opening day and
- * every `lookDays`th day after it, every day while a replacement need is open (plus a negotiator's
- * next-day raises), he makes moves — a free agent signed or a trait-priced bid — until the places
- * his bids hold reach the step's count (`pendingLimit`), each for the first need not already
- * covered by a held bid that a candidate meets within the runway test, each pending fee reserved
- * (→ECON-33). A negotiator's haggle keeps its place until its raise the day after the answer
- * (→CLUB-41), which comes before a mediation's move and the look's. Short roles come before
- * replacements and upgrades, and the manager's requested roles before the others.
+ * every `lookDays`th day after it, every day while a replacement need no pending player would close
+ * is open (plus a negotiator's next-day raises), he makes moves — a free agent signed or a
+ * trait-priced bid — until the places his bids hold reach the step's count (`pendingLimit`), each
+ * for the first need of the club as the window's bids would leave it (`projection`) that a
+ * candidate meets within the runway test, each pending fee reserved (→ECON-33). A negotiator's
+ * haggle keeps its place until its raise the day after the answer (→CLUB-41), which comes before a
+ * mediation's move and the look's. Short roles come before replacements and upgrades, and the
+ * manager's requested roles before the others.
  */
 export function staffSignings(w: World) {
   const day = currentDay(w),
@@ -1150,8 +1160,9 @@ export function staffSignings(w: World) {
   if (regular) makeRoom(w, day);
   const limit = pendingLimit(w);
   if (moved || heldStaffBids(w, day).length >= limit) return;
-  const replacing = openNeeds(w).some((need) => need.day < day);
-  // Off a regular look he moves only for a replacement, or past a negotiator's ended haggle.
+  // Off a regular look he looks while a replacement need no pending player would close is open
+  // (→CLUB-42), or past a negotiator's ended haggle.
+  const replacing = replacementNeeds(w, day, projection(w, day).arriving).length > 0;
   if (!regular && !replacing && !ended) return;
   // Every move records a bid for its player, who is never asked again in the window, so the look
   // ends when the places his bids hold reach the step's count or no candidate is left to move for.
@@ -1210,55 +1221,50 @@ function raiseHaggles(w: World, day: number) {
 }
 
 /**
- * One move of a look (→CLUB-33): the first need no held bid covers that a candidate meets —
- * the manager's pick, the shortlist, then the players within the scout's reach, an upgrade at
- * 넉넉히 and 아낌없이 by slot gain — with a wage step and fee inside the money checks. Whether a
- * move was made.
+ * One move of a look (→CLUB-33): the first need left once the window's bids go through that a
+ * candidate meets — the manager's pick, the shortlist, then the players within the scout's reach,
+ * an upgrade at 넉넉히 and 아낌없이 by slot gain — with a wage step and fee inside the money checks.
+ * Whether a move was made.
  */
 function staffMove(w: World, day: number) {
-  const players = activePlayers(w);
-  if (players.length >= registration(w).ceiling) return false;
+  // Every need, the registration ceiling and the step's room read the club as it stands once the
+  // window's bids go through, so a pending player covers what his arrival would.
+  const { club, arriving } = projection(w, day),
+    players = activePlayers(club);
+  if (players.length >= registration(club).ceiling) return false;
   const bids = windowBids(w, day),
     stance = spendingStance(w, 'recruitment'),
     unlisted = players.filter((p) => transferStance(p) !== 'listed').length,
-    tried = new Set(bids.map((bid) => bid.playerId)),
-    joined = joinedThisWindow(w, day),
-    replacements: SigningNeed[] = openNeeds(w)
-      .filter((need) => need.day < day)
-      .map((need) => ({ kind: 'replacement', line: need.line, playerId: need.playerId }));
+    tried = new Set(bids.map((bid) => bid.playerId));
   const margin = stance.signing.margin,
     bar = margin !== undefined && stance.signing.bar ? moneyBar(w) : undefined,
     upgradeList =
       margin !== undefined && (stance.signing.room === undefined || unlisted <= stance.signing.room)
-        ? upgradeNeeds(w, margin, joined, bar)
+        ? upgradeNeeds(club, margin, [...joinedThisWindow(w, day), ...arriving], bar)
         : [];
   const requests = signingRequests(w),
     found: SigningNeed[] = [
-      ...shortLines(w),
-      ...replacements,
+      ...shortLines(club),
+      ...replacementNeeds(w, day, arriving),
       ...(upgradeCapReached(w, day) ? [] : upgradeList),
     ];
-  const needs = uncovered(
-    w,
-    found
-      .map((need) => {
-        const requested = requests.find((request) =>
-          need.kind !== 'upgrade'
-            ? request.kind === 'short' && request.line === need.line
-            : request.slot === need.slot,
-        );
-        return requested ? { ...need, requested } : need;
-      })
-      .map((need, order) => ({ need, order }))
-      .sort(
-        (a, b) =>
-          NEED_ORDER[a.need.kind] - NEED_ORDER[b.need.kind] ||
-          Number(!a.need.requested) - Number(!b.need.requested) ||
-          a.order - b.order,
-      )
-      .map(({ need }) => need),
-    heldStaffBids(w, day),
-  );
+  const needs = found
+    .map((need) => {
+      const requested = requests.find((request) =>
+        need.kind !== 'upgrade'
+          ? request.kind === 'short' && request.line === need.line
+          : request.slot === need.slot,
+      );
+      return requested ? { ...need, requested } : need;
+    })
+    .map((need, order) => ({ need, order }))
+    .sort(
+      (a, b) =>
+        NEED_ORDER[a.need.kind] - NEED_ORDER[b.need.kind] ||
+        Number(!a.need.requested) - Number(!b.need.requested) ||
+        a.order - b.order,
+    )
+    .map(({ need }) => need);
   if (!needs.length) return false;
   const offers = reachOffers(w),
     plan = delegatePlan(w, 'recruitment');
