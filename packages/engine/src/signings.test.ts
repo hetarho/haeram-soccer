@@ -952,7 +952,7 @@ describe('the 단장 keeps room to upgrade a large squad (→CLUB-33, CLUB-22)',
 
   it('lists nobody with sales direct, at 적당히 or with 24 left', () => {
     const direct = club(5);
-    direct.settings.responsibilities.sales = 'direct';
+    direct.settings!.responsibilities.sales = 'direct';
     pad(direct, 30);
     staffSignings(direct);
     expect(listed(direct)).toEqual([]);
