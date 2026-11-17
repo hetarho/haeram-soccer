@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T08:15:39.588Z",
-  "sourceCommit": "94b22c9daa02409326d709ffe6aeaeffd027f3ae",
+  "snapshotAt": "2026-11-17T08:36:35.184Z",
+  "sourceCommit": "1a739a2c0b29c9d4afd862db04a3fe6d0754cbfe",
   "group": {
     "id": "tm17-market",
     "branch": "gusta-session-self-improve-tm17-ff4b9f94",
@@ -235,7 +235,7 @@
       "T935"
     ],
     "lastRun": {
-      "id": "8ef6f49b-7aa2-4742-9fef-491e94f92964",
+      "id": "47e799ab-c9fa-4894-b14c-78abff251b53",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -256,47 +256,34 @@
           "version": "2.1.326 (Claude Code)"
         }
       ],
-      "startedAt": "2026-11-17T06:30:52.535Z",
-      "stoppedAt": "2026-11-17T08:15:32.818Z",
-      "dispatched": 8,
+      "startedAt": "2026-11-17T08:16:21.225Z",
+      "stoppedAt": "2026-11-17T08:36:31.565Z",
+      "dispatched": 2,
       "outcome": "needs-attention",
-      "failures": [
-        {
-          "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
-          "role": "worker",
-          "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-reference-careers"
-        },
-        {
-          "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
-          "role": "worker",
-          "error": "서로 다른 인수검증 기준에 같은 ID를 쓸 수 없습니다. 태스크·세션별 고유 ID를 사용하세요: T935-reference-careers"
-        },
-        {
-          "attempt": "d0b2f83e-4144-4ece-93c7-e1b1420006f2",
-          "error": "review retry limit"
-        },
-        {
-          "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
-          "role": "worker",
-          "error": "adapter timeout"
-        },
-        {
-          "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
-          "role": "worker",
-          "error": "T933: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
-        }
-      ],
+      "failures": [],
       "autopilot": true,
-      "decisionWaitMs": 900000
+      "decisionWaitMs": 900000,
+      "decisionWait": {
+        "startedAt": "2026-11-17T08:36:02.651Z",
+        "deadlineAt": "2026-11-17T08:51:01.482Z",
+        "attempts": [
+          {
+            "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
+            "taskId": "T933",
+            "question": "STAFF-14 gives the 데이터 헤드코치 'bid acceptance +5 points', but CLUB-52's selling-club answer (its factor table) has no such factor. How should this coach help our bids now?",
+            "requestedAt": "2026-11-17T08:36:01.794Z"
+          }
+        ]
+      }
     }
   },
   "summary": {
     "total": 4,
     "completed": 2,
     "remaining": 2,
-    "running": 0,
+    "running": 1,
     "review": 0,
-    "blocked": 1,
+    "blocked": 0,
     "unassigned": 1
   },
   "tasks": [
@@ -307,7 +294,7 @@
         "T932"
       ],
       "lane": "bids",
-      "status": "blocked"
+      "status": "doing"
     },
     {
       "id": "T934",
@@ -921,27 +908,84 @@
         "T933"
       ],
       "lane": "bids",
-      "owner": "8ef6f49b-7aa2-4742-9fef-491e94f92964/worker-1",
+      "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1",
       "contributors": [
-        "8ef6f49b-7aa2-4742-9fef-491e94f92964/worker-1"
+        "8ef6f49b-7aa2-4742-9fef-491e94f92964/worker-1",
+        "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1"
       ],
-      "status": "blocked",
-      "reason": "T933: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "status": "doing",
+      "reason": null,
       "createdAt": "2026-11-17T07:05:20.624Z",
       "startCommit": "412a5efdc1619b73016872dc9d004b08be7c5ef2",
+      "submittedBase": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+      "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+      "submittedAt": "2026-11-17T08:16:09.409Z",
+      "risk": null,
       "dispatch": {
-        "id": "b7cfa002-61d4-4160-8658-e1af302c19f0",
-        "runner": "8ef6f49b-7aa2-4742-9fef-491e94f92964",
+        "id": "9df43fdb-0adb-4518-99b3-36c099b6b8ac",
+        "runner": "47e799ab-c9fa-4894-b14c-78abff251b53",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": "opus",
         "status": "finished",
-        "startedAt": "2026-11-17T08:05:28.099Z",
-        "finishedAt": "2026-11-17T08:15:22.709Z",
-        "error": "T933: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
-        "summary": "T933 is done; the code is checkpointed as fa11ea99. On our bids for another club's player (the owner's and the 단장's), the selling club now answers first through `saleAnswer` (CLUB-52). A bid at or above the asking fee is always accepted, a counter is made at the club's reservation, and `acceptanceChance` is gone along with its reputation term and the old 110–125% counter. When the club agrees, the player answers our wage offer through `termsAnswer` (CLUB-53). If he agrees he signs on the offered wage. If he refuses, the bid ends with `refusedBy: 'player'`, no fee is paid, cash is unchanged, and an inbox report names his factors.\n\n- **Saves and commands:** a bid now stores an optional wage step (`wage`) and who refused (`refusedBy`). The bid and recruit commands accept an optional wage step, checked by the schema and the web protocol. An old save without these fields reads as the 100% step.\n- **Free agents:** the owner's recruit command asks a free agent his terms at once (with the +1.0 free-agent factor). If he refuses he stays in the pool and a report arrives. The 단장's own free-agent signings are unchanged until T934.\n- **Bid preview:** `bidOutlook` gives the exact accept and counter chances with the club's factor lines, plus the player's chance at each wage step. It reads no randomness.\n- **단장 effect:** his effect is now a share of the reservation: (ability−50)/250, a negotiator 0.05 more, a vacant post 0.05 against us. The office ledger drops the reputation factor.\n- **Bid view:** the bid sheet offers the wage steps 100/125/150/200%. It shows \"수락 n% · 역제안 m%\" and the player's chance, with both sets of factor lines, and sends the chosen step.\n- **Copy:** the influences explainer now describes personal terms and the wage steps. 26 new messages and 7 rewritten ones are in the source and all 12 locales.\n\nChecks: the final re-run of the task checks on fa11ea99 did not pass as a whole. Typecheck, lint, format and i18n passed; the affected unit tests were 2638 of 2639. The one failure was a timeout in an unrelated progression test while the machine's load average was about 30; run alone it passed 37/37. The full task check passed earlier on the same code. I also ran `transfers.test.ts` (an integration file) by hand once: 26/26 passed.\n\nDecisions and gaps for you, all recorded in the task result:\n- STAFF-14 gives the 데이터 헤드코치 \"+5 points\" of bid acceptance, but CLUB-52's factor table doesn't list it. I kept it as an extra factor taking 0.05 off the seller's reservation, like the negotiator. The spec should name it in STAFF-14 or CLUB-52.\n- Bids by the 단장 use the 100% step until T934 passes his chosen step. `signings.ts` still lets a negotiator raise his offer the next day after a player has refused terms; T934 should skip those bids.\n- I adjusted five test files outside the task's file list because the new answers changed their outcomes: `staff.test.ts` and `staff.hiring.test.ts` (new expected 단장 values), and `world-market.test.ts`, `persisted-squads.test.ts` and `scout-search.test.ts`. The last three now fix the player's answer to \"agree\", since they test the move rather than his answer.\n- My by-hand run of `signings.test.ts`, `replacements.test.ts` and `transfers.delegated.test.ts` was stopped by the session limit before it reported, so their outcome is unknown. They and `transfers.incoming.test.ts` are left to the shared final gate.\n- The browser journey `tests/e2e/recruitment.spec.ts` (around lines 388 and 447) expects a free agent to sign instantly. He can now refuse, so the journey needs a coordinator fix in CI."
-      }
+        "startedAt": "2026-11-17T08:17:16.157Z",
+        "finishedAt": "2026-11-17T08:36:01.840Z",
+        "error": null,
+        "summary": "Four of the five review findings are fixed. The fifth needs your decision, so T933 is blocked on one policy question; nothing is committed.\n\nFixed:\n1. **Wage steps on every path:** the player detail sheet now shows the 100/125/150/200% steps with the player's chance and factors. A free agent's signing and a loan bid send the picked step, so a free agent who refused can be asked again at a higher step.\n2. **Club factors in every report:** every report of the selling club's answer now names its reservation and the factors behind it. This covers an accepted bid, an accept whose completion was blocked, and a player's refusal right after the club accepted or the 단장 took a counter.\n3. **Translated factor lists:** reports no longer join all factors into one text value — under a non-Korean locale that left factors in Korean. Each factor now has its own slot, with one message per factor count (12 for the club, 8 for the player). This also required changing the age factor's Korean text to \"나이 {age}세\", because \"{age}세\" collided with another message. A new test checks that every report with 0–11 club factors and 0–7 player factors reads fully in English, each factor translated on its own.\n4. **Names:** player and 단장 names in these titles and messages are now marked to stay as written.\n\nChecks:\n- The task-level checks (typecheck, lint, format, i18n, affected unit tests) all pass on the final tree.\n- `RecruitmentDesk.test.ts` passes 47/47.\n- `transfers.test.ts` (an integration file I ran by hand) passes 26/26.\n- Still left to the shared final gate: the integration files `signings.test.ts`, `replacements.test.ts` and `transfers.delegated.test.ts`, and the browser journey `tests/e2e/recruitment.spec.ts`. That journey expects a free agent to sign at once and may now see a refusal.\n\nBlocked: the 데이터 헤드코치's \"+5 points\" bid effect. STAFF-14 calls it bid acceptance, but CLUB-52's factor table doesn't list it. The code still applies it as 0.05 of the asking fee off the seller's reservation, which is not the same as +5 points of probability. This is the only open item."
+      },
+      "reviewHistory": [
+        {
+          "id": "18885f0a-8b7a-4c53-8aa4-3d5f572240cf",
+          "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:776",
+              "message": "T933: Free-agent recruitment and loan offers submit directly without a wage step or a terms preview. Both therefore always offer 100%, and a free agent who refuses cannot be offered a higher step through the UI. Provide the wage choices and player chance for these paths and submit the selected step."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:767",
+              "message": "T933: When the selling club accepts, the success report does not include its reservation or factors; if the player then refuses, only the player’s factors are reported. CLUB-52 requires each selling-club answer’s report to name the factors that moved its reservation. Preserve that information for accepted answers as well."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:169",
+              "message": "T933: Joining source-language factor sentences into one string prevents localizeText from resolving each factor independently. With multiple factors, non-Korean inbox reports retain Korean factor text even though the outer report is translated. Preserve a localizable structure or use a message representation that resolves each factor separately."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/ops-squad.ts:73",
+              "message": "T933: The new player-name parameters are absent from verbatimParameters for market.answer.free.title, market.answer.player.title, and market.recruit.refused. A name matching source display text can consequently be translated when the report or status is displayed, contrary to the identity localization rule. Mark those name parameters verbatim."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:128",
+              "message": "T933: The manager style’s STAFF-14 benefit is changed from five points of bid acceptance probability to five points of the asking fee off the seller’s reservation. These produce different probabilities, and CLUB-52 does not specify this extra share factor. Resolve the STAFF-14/CLUB-52 policy conflict with the planner before implementing the chosen behavior."
+            }
+          ],
+          "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+          "baseCommit": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+          "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+          "createdAt": "2026-11-17T08:16:22.579Z",
+          "finishedAt": "2026-11-17T08:17:15.289Z",
+          "invalidatedAt": "2026-11-17T08:17:15.542Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T933",
+          "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+          "at": "2026-11-17T08:16:09.378Z",
+          "verification": []
+        }
+      ],
+      "verification": []
     }
   ],
   "history": [
@@ -6354,6 +6398,501 @@
           ],
           "autopilot": true,
           "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 444,
+      "at": "2026-11-17T08:16:06.077Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 445,
+      "at": "2026-11-17T08:16:08.942Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 446,
+      "at": "2026-11-17T08:16:09.409Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+        "submittedBase": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+        "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+        "submittedAt": "2026-11-17T08:16:09.409Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T933",
+            "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+            "at": "2026-11-17T08:16:09.378Z",
+            "verification": []
+          }
+        ],
+        "verification": []
+      }
+    },
+    {
+      "sequence": 447,
+      "at": "2026-11-17T08:16:21.271Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-17T08:16:21.225Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 448,
+      "at": "2026-11-17T08:16:22.579Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "18885f0a-8b7a-4c53-8aa4-3d5f572240cf",
+          "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/reviewer-1",
+          "status": "reviewing",
+          "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+          "baseCommit": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+          "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+          "createdAt": "2026-11-17T08:16:22.579Z"
+        }
+      }
+    },
+    {
+      "sequence": 449,
+      "at": "2026-11-17T08:16:27.363Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "a5241468-13f8-4fd5-a7d3-c5fe794fd696",
+          "runner": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-17T08:16:27.363Z"
+        }
+      }
+    },
+    {
+      "sequence": 450,
+      "at": "2026-11-17T08:16:27.455Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "a5241468-13f8-4fd5-a7d3-c5fe794fd696",
+          "runner": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-17T08:16:27.363Z"
+        }
+      }
+    },
+    {
+      "sequence": 451,
+      "at": "2026-11-17T08:17:15.289Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate.",
+        "review": {
+          "id": "18885f0a-8b7a-4c53-8aa4-3d5f572240cf",
+          "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:776",
+              "message": "T933: Free-agent recruitment and loan offers submit directly without a wage step or a terms preview. Both therefore always offer 100%, and a free agent who refuses cannot be offered a higher step through the UI. Provide the wage choices and player chance for these paths and submit the selected step."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:767",
+              "message": "T933: When the selling club accepts, the success report does not include its reservation or factors; if the player then refuses, only the player’s factors are reported. CLUB-52 requires each selling-club answer’s report to name the factors that moved its reservation. Preserve that information for accepted answers as well."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:169",
+              "message": "T933: Joining source-language factor sentences into one string prevents localizeText from resolving each factor independently. With multiple factors, non-Korean inbox reports retain Korean factor text even though the outer report is translated. Preserve a localizable structure or use a message representation that resolves each factor separately."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/ops-squad.ts:73",
+              "message": "T933: The new player-name parameters are absent from verbatimParameters for market.answer.free.title, market.answer.player.title, and market.recruit.refused. A name matching source display text can consequently be translated when the report or status is displayed, contrary to the identity localization rule. Mark those name parameters verbatim."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:128",
+              "message": "T933: The manager style’s STAFF-14 benefit is changed from five points of bid acceptance probability to five points of the asking fee off the seller’s reservation. These produce different probabilities, and CLUB-52 does not specify this extra share factor. Resolve the STAFF-14/CLUB-52 policy conflict with the planner before implementing the chosen behavior."
+            }
+          ],
+          "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+          "baseCommit": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+          "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+          "createdAt": "2026-11-17T08:16:22.579Z",
+          "finishedAt": "2026-11-17T08:17:15.289Z"
+        }
+      }
+    },
+    {
+      "sequence": 452,
+      "at": "2026-11-17T08:17:15.377Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "a5241468-13f8-4fd5-a7d3-c5fe794fd696",
+          "runner": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-17T08:16:27.363Z",
+          "finishedAt": "2026-11-17T08:17:15.377Z",
+          "error": null,
+          "summary": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate."
+        }
+      }
+    },
+    {
+      "sequence": 453,
+      "at": "2026-11-17T08:17:15.542Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1",
+        "contributors": [
+          "8ef6f49b-7aa2-4742-9fef-491e94f92964/worker-1",
+          "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "18885f0a-8b7a-4c53-8aa4-3d5f572240cf",
+            "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T933 implements the two-stage bid answer, but the submission leaves wage choices inaccessible on some recruitment paths and has reporting, localization, and SSOT issues. The coordinator should retain the final integration and browser gate.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:776",
+                "message": "T933: Free-agent recruitment and loan offers submit directly without a wage step or a terms preview. Both therefore always offer 100%, and a free agent who refuses cannot be offered a higher step through the UI. Provide the wage choices and player chance for these paths and submit the selected step."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:767",
+                "message": "T933: When the selling club accepts, the success report does not include its reservation or factors; if the player then refuses, only the player’s factors are reported. CLUB-52 requires each selling-club answer’s report to name the factors that moved its reservation. Preserve that information for accepted answers as well."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:169",
+                "message": "T933: Joining source-language factor sentences into one string prevents localizeText from resolving each factor independently. With multiple factors, non-Korean inbox reports retain Korean factor text even though the outer report is translated. Preserve a localizable structure or use a message representation that resolves each factor separately."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/ops-squad.ts:73",
+                "message": "T933: The new player-name parameters are absent from verbatimParameters for market.answer.free.title, market.answer.player.title, and market.recruit.refused. A name matching source display text can consequently be translated when the report or status is displayed, contrary to the identity localization rule. Mark those name parameters verbatim."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:128",
+                "message": "T933: The manager style’s STAFF-14 benefit is changed from five points of bid acceptance probability to five points of the asking fee off the seller’s reservation. These produce different probabilities, and CLUB-52 does not specify this extra share factor. Resolve the STAFF-14/CLUB-52 policy conflict with the planner before implementing the chosen behavior."
+              }
+            ],
+            "commit": "b92872ce48e9dc6e66c5e3bf67b8291045e5de00",
+            "baseCommit": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
+            "submissionId": "7606e201-6160-4abc-8487-7006cabafcba",
+            "createdAt": "2026-11-17T08:16:22.579Z",
+            "finishedAt": "2026-11-17T08:17:15.289Z",
+            "invalidatedAt": "2026-11-17T08:17:15.542Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 454,
+      "at": "2026-11-17T08:17:16.157Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9df43fdb-0adb-4518-99b3-36c099b6b8ac",
+          "runner": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-17T08:17:16.157Z"
+        }
+      }
+    },
+    {
+      "sequence": 455,
+      "at": "2026-11-17T08:17:17.365Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9df43fdb-0adb-4518-99b3-36c099b6b8ac",
+          "runner": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-17T08:17:16.157Z"
+        }
+      }
+    },
+    {
+      "sequence": 473,
+      "at": "2026-11-17T08:36:01.795Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "decision: STAFF-14 gives the 데이터 헤드코치 'bid acceptance +5 points', but CLUB-52's selling-club answer (its factor table) has no such factor. How should this coach help our bids now?"
+      }
+    },
+    {
+      "sequence": 474,
+      "at": "2026-11-17T08:36:01.840Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "9df43fdb-0adb-4518-99b3-36c099b6b8ac",
+          "runner": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-17T08:17:16.157Z",
+          "finishedAt": "2026-11-17T08:36:01.840Z",
+          "error": null,
+          "summary": "Four of the five review findings are fixed. The fifth needs your decision, so T933 is blocked on one policy question; nothing is committed.\n\nFixed:\n1. **Wage steps on every path:** the player detail sheet now shows the 100/125/150/200% steps with the player's chance and factors. A free agent's signing and a loan bid send the picked step, so a free agent who refused can be asked again at a higher step.\n2. **Club factors in every report:** every report of the selling club's answer now names its reservation and the factors behind it. This covers an accepted bid, an accept whose completion was blocked, and a player's refusal right after the club accepted or the 단장 took a counter.\n3. **Translated factor lists:** reports no longer join all factors into one text value — under a non-Korean locale that left factors in Korean. Each factor now has its own slot, with one message per factor count (12 for the club, 8 for the player). This also required changing the age factor's Korean text to \"나이 {age}세\", because \"{age}세\" collided with another message. A new test checks that every report with 0–11 club factors and 0–7 player factors reads fully in English, each factor translated on its own.\n4. **Names:** player and 단장 names in these titles and messages are now marked to stay as written.\n\nChecks:\n- The task-level checks (typecheck, lint, format, i18n, affected unit tests) all pass on the final tree.\n- `RecruitmentDesk.test.ts` passes 47/47.\n- `transfers.test.ts` (an integration file I ran by hand) passes 26/26.\n- Still left to the shared final gate: the integration files `signings.test.ts`, `replacements.test.ts` and `transfers.delegated.test.ts`, and the browser journey `tests/e2e/recruitment.spec.ts`. That journey expects a free agent to sign at once and may now see a refusal.\n\nBlocked: the 데이터 헤드코치's \"+5 points\" bid effect. STAFF-14 calls it bid acceptance, but CLUB-52's factor table doesn't list it. The code still applies it as 0.05 of the asking fee off the seller's reservation, which is not the same as +5 points of probability. This is the only open item."
+        }
+      }
+    },
+    {
+      "sequence": 475,
+      "at": "2026-11-17T08:36:02.667Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-17T08:16:21.225Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000,
+          "decisionWait": {
+            "startedAt": "2026-11-17T08:36:02.651Z",
+            "deadlineAt": "2026-11-17T08:51:01.482Z",
+            "attempts": [
+              {
+                "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
+                "taskId": "T933",
+                "question": "STAFF-14 gives the 데이터 헤드코치 'bid acceptance +5 points', but CLUB-52's selling-club answer (its factor table) has no such factor. How should this coach help our bids now?",
+                "requestedAt": "2026-11-17T08:36:01.794Z"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "sequence": 476,
+      "at": "2026-11-17T08:36:31.180Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 477,
+      "at": "2026-11-17T08:36:31.565Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "47e799ab-c9fa-4894-b14c-78abff251b53",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-17T08:16:21.225Z",
+          "stoppedAt": "2026-11-17T08:36:31.565Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000,
+          "decisionWait": {
+            "startedAt": "2026-11-17T08:36:02.651Z",
+            "deadlineAt": "2026-11-17T08:51:01.482Z",
+            "attempts": [
+              {
+                "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
+                "taskId": "T933",
+                "question": "STAFF-14 gives the 데이터 헤드코치 'bid acceptance +5 points', but CLUB-52's selling-club answer (its factor table) has no such factor. How should this coach help our bids now?",
+                "requestedAt": "2026-11-17T08:36:01.794Z"
+              }
+            ]
+          }
         }
       }
     }
