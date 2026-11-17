@@ -303,6 +303,9 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     refreshFreeAgents(w, w.year + 1);
   }
   afterRetirements?.();
+  // A skipped summer's prodigies join squads below the standing size before its refills fill
+  // them (→WORLD-14/16/18); a played summer's join after the intake.
+  if (!matches) drawProdigies(w, w.year + 1, true);
   const used = npcYouthIds(w);
   for (const id of Object.keys(w.squads ?? {})) {
     const c = clubById(w, id);
@@ -311,7 +314,7 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     intakeNpcYouth(w, c, w.year + 1, used, !matches);
     invalidateNpcSquad(w, id);
   }
-  drawProdigies(w);
+  if (matches) drawProdigies(w);
   if (matches) capFreeAgents(w);
   settleAbsentPlayerRecords(w);
   w.npcSummerAt = w.year;

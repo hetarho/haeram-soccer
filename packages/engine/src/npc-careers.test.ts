@@ -354,8 +354,9 @@ describe('persisted NPC careers on isolated squads', () => {
 
   it('lives seven skipped summers without matches, extending only each running contract', () => {
     const { w, c, players } = fixture(1939);
-    // Two arrivals per year leave room for all seven intakes without hitting the separate cap.
     c.levels!.academy = 0;
+    // 39 at the war's first summer, he stops in the gap and youth refills his place alone.
+    players[2]!.born = 1900;
     const p = players[0]!,
       born = p.born,
       until = p.until,
@@ -373,11 +374,13 @@ describe('persisted NPC careers on isolated squads', () => {
     expect(w.npcSummerAt).toBe(1945);
     expect(w.fixtures).toEqual([]);
     expect(w.history).toEqual([]);
-    expect(w.squads![c.id]!.length).toBeGreaterThanOrEqual(NPC_SQUAD.size);
-    expect(w.squads![c.id]!.some((p) => p.id.startsWith(`${c.id}:y:1946:`))).toBe(true);
-    const firstIntake = w.squads![c.id]!.find((p) => p.id.startsWith(`${c.id}:y:1940:`))!;
-    expect(firstIntake.until - 1946).toBeGreaterThanOrEqual(1);
-    expect(firstIntake.until - 1946).toBeLessThanOrEqual(5);
+    // Skipped summers bring youth only to the standing size (→WORLD-14/16): one refill, no more.
+    expect(w.squads![c.id]!.length).toBe(NPC_SQUAD.size);
+    const youth = w.squads![c.id]!.filter((q) => q.id.includes(':y:'));
+    expect(youth).toHaveLength(1);
+    expect(youth[0]!.id.startsWith(`${c.id}:y:194`)).toBe(true);
+    expect(youth[0]!.until - 1946).toBeGreaterThanOrEqual(1);
+    expect(youth[0]!.until - 1946).toBeLessThanOrEqual(5);
     const after = structuredClone(w);
     crossWar(w, 1938);
     expect(w).toEqual(after);

@@ -4,10 +4,11 @@ import { worldMarketFixture } from './world-market.testkit';
 import { foundSquads } from './persisted-squads';
 import { drawProdigies, PRODIGY, prodigyGrowth, prodigyWeight } from './prodigies';
 import { developAnnually, settlePlayerGrowth } from './training';
-import { ageGroupOf } from './academy';
+import { ACADEMY_LIMIT, ageGroupOf, seasonAcademy } from './academy';
 import { lineOf, mainOvr } from './player';
 import { overall } from './player-state';
-import { intakeNpcYouth, NPC_YOUTH, youthCentre } from './npc-careers';
+import { closeNpcSummer, intakeNpcYouth, NPC_YOUTH, youthCentre } from './npc-careers';
+import { crossWar } from './wartime';
 import { LINE_MINIMUM, NPC_SQUAD } from './world';
 import { TRAINING_GROUND } from './facility-model';
 
@@ -206,17 +207,77 @@ describe('a war-gap summer (→WORLD-14/16)', () => {
   });
 });
 
-describe("the owner's academy across the war gap (→WORLD-14)", () => {
-  it('takes no prodigy for a season the war skips, and takes them again from the 1946 restart', () => {
+describe("a war-gap summer's prodigies (→WORLD-14/16/18)", () => {
+  it("join only a squad below its standing size, the owner's academy included", () => {
     const w = fixture();
-    // Our academy weighs 6 against the other club's 1, so most placements would be ours.
-    w.academyFacility = 5;
-    w.clubs.find((c) => c.id === 'foreign')!.levels!.academy = 0;
-    // The 1938 close draws for 1939 and the skipped summers for 1940–1946.
-    const war = summers(w, 1939, 7).filter((s) => s.year < 1946);
-    expect(war.flatMap((s) => s.drawn).length).toBeGreaterThan(0);
-    for (const { drawn } of war) for (const p of drawn) expect(p.id.startsWith('own:')).toBe(false);
-    const after = summers(w, 1946, 20).flatMap((s) => s.drawn);
-    expect(after.some((p) => p.id.startsWith('own:'))).toBe(true);
+    const c = w.clubs.find((club) => club.id === 'foreign')!;
+    const players = w.squads![c.id]!;
+    // The other club weighs 6 against our 1, but its squad stands at its size.
+    c.levels!.academy = 5;
+    w.academyFacility = 0;
+    expect(players.length).toBe(NPC_SQUAD.size);
+    const war: Player[] = [];
+    for (let year = 1940; year < 1946; year++) {
+      w.year = year - 1;
+      war.push(...drawProdigies(w, year, true));
+      w.academy = { players: [] };
+    }
+    expect(war.length).toBeGreaterThanOrEqual(6);
+    for (const p of war) expect(p.id.startsWith('own:academy:')).toBe(true);
+    expect(players.length).toBe(NPC_SQUAD.size);
+    // With our academy full too, a full squad still takes none.
+    w.year = 1940;
+    w.academy = { players: Array.from({ length: ACADEMY_LIMIT }, () => structuredClone(war[0]!)) };
+    expect(drawProdigies(w, 1941, true)).toEqual([]);
+    expect(players.length).toBe(NPC_SQUAD.size);
+    // One place below the size takes at most one, as one of the refills.
+    players.pop();
+    for (let year = 1941; year < 1946; year++) {
+      w.year = year - 1;
+      drawProdigies(w, year, true);
+      expect(players.length).toBeLessThanOrEqual(NPC_SQUAD.size);
+      for (let k = players.length - 1; k >= 0; k--) if (players[k]!.prodigy) players.splice(k, 1);
+    }
+  });
+
+  it('come before the refills, so a skipped summer ends with squads at their standing size', () => {
+    const w = fixture();
+    let drawn = 0;
+    for (let year = 1939; year < 1946; year++) {
+      w.year = year;
+      closeNpcSummer(w, undefined, false);
+      for (const players of Object.values(w.squads ?? {})) {
+        expect(players.length).toBe(NPC_SQUAD.size);
+        drawn += players.filter((p) => p.prodigy && p.born === year + 1 - PRODIGY.age).length;
+      }
+      drawn += (w.academy?.players ?? []).filter(
+        (p) => p.prodigy && p.born === year + 1 - PRODIGY.age,
+      ).length;
+    }
+    // Every skipped summer draws one or two.
+    expect(drawn).toBeGreaterThanOrEqual(7);
+  });
+});
+
+describe("the owner's academy across the war gap (→WORLD-14)", () => {
+  it('develops a prodigy each skipped summer and keeps him through the restart season', () => {
+    const w = fixture();
+    // Aged 14 in 1938/39, the last season played before the war; the other club's squad is full,
+    // so a refill-only draw places him in our academy.
+    w.year = 1937;
+    const [p] = drawProdigies(w, 1938, true);
+    expect(p!.id.startsWith('own:academy:')).toBe(true);
+    expect(w.academy!.players).toEqual([p]);
+    const before = mainOvr(p!);
+    w.year = 1946;
+    crossWar(w, 1938);
+    expect(w.academy!.players).toContain(p);
+    expect(mainOvr(p!) - before).toBeGreaterThan(15);
+    // Aged 22 at the restart, he stays its season for the club to promote (→CLUB-16).
+    seasonAcademy(w);
+    expect(w.academy!.players).toContain(p);
+    w.year = 1947;
+    seasonAcademy(w);
+    expect(w.academy!.players).not.toContain(p);
   });
 });

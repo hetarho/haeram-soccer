@@ -23,6 +23,7 @@ import { debutRule, directionOf, directionOption, releaseRule } from './directio
 import { insolvencyStop } from './delegation';
 import { academyFacilityTerms } from './facilities';
 import { intakePotential } from './owner-traits';
+import { WARTIME } from './season-years';
 
 /** First-team squad limit shared with signings. */
 /** Prospects held at once; intakes stop while the academy is full. */
@@ -420,9 +421,13 @@ function staffReport(w: World, title: string, detail: string, ref?: string) {
 /** Season boundary: academy ages, and delegated staff promote or release prospects. */
 export function seasonAcademy(w: World): void {
   if (!w.academy?.players.length) return;
-  // Academy football ends at 21 whoever decides; this also bounds the academy.
+  // Academy football ends at 21 whoever decides; this also bounds the academy. A prodigy
+  // (→WORLD-18) whom the war gap aged past it unseen stays through the restart season, so the
+  // club can still promote him (→WORLD-14).
   for (const player of w.academy.players.filter(
-    (prospect) => w.year - prospect.born >= ACADEMY_LEAVE_AGE,
+    (prospect) =>
+      w.year - prospect.born >= ACADEMY_LEAVE_AGE &&
+      !(prospect.prodigy && w.year === WARTIME.restart),
   )) {
     releaseYouth(w, player.id);
     staffReport(

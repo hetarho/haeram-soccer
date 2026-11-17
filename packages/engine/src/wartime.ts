@@ -8,6 +8,8 @@ import { SEASON_END_DAY } from './calendar';
 import { hasOwner, ownerSettleGap } from './owner';
 import { closeNpcSummer } from './npc-careers';
 import { retirementAnnounceDay, announceNpcRetirements } from './careers';
+import { developAnnually } from './training';
+import { trainingGroundTerms } from './facility-model';
 
 export { WARTIME, seasonAfter, seasonFrom } from './season-years';
 
@@ -52,6 +54,18 @@ export function crossWar(w: World, closed: number) {
           if (!job.to && job.role === 'player' && job.contractUntil)
             job.contractUntil = { ...job.contractUntil, year: job.contractUntil.year + 1 };
       }
+      // The owner's academy plays no skipped season, but a prodigy there (→WORLD-18) ages and
+      // develops each skipped summer, as every persisted player does (→WORLD-14, PLAYER-15).
+      if (hasOwner(w))
+        for (const p of w.academy?.players ?? [])
+          if (p.prodigy)
+            developAnnually(w, p, {
+              year: year + 1,
+              youth: w.manager.youth,
+              ground: trainingGroundTerms(w).growth,
+              adaptation: p.adaptation,
+              report: false,
+            });
       w.calendar = { day: retirementAnnounceDay(year) };
       announceNpcRetirements(w);
       w.calendar = { day: SEASON_END_DAY + 1 };
