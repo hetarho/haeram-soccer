@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-17T08:36:35.184Z",
-  "sourceCommit": "1a739a2c0b29c9d4afd862db04a3fe6d0754cbfe",
+  "snapshotAt": "2026-11-17T08:42:50.312Z",
+  "sourceCommit": "9b6fc9411be886e627e22e6076c7c6e5852b49ee",
   "group": {
     "id": "tm17-market",
     "branch": "gusta-session-self-improve-tm17-ff4b9f94",
@@ -235,7 +235,7 @@
       "T935"
     ],
     "lastRun": {
-      "id": "47e799ab-c9fa-4894-b14c-78abff251b53",
+      "id": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -256,34 +256,28 @@
           "version": "2.1.326 (Claude Code)"
         }
       ],
-      "startedAt": "2026-11-17T08:16:21.225Z",
-      "stoppedAt": "2026-11-17T08:36:31.565Z",
-      "dispatched": 2,
+      "startedAt": "2026-11-17T08:36:45.203Z",
+      "stoppedAt": "2026-11-17T08:42:47.280Z",
+      "dispatched": 1,
       "outcome": "needs-attention",
-      "failures": [],
+      "failures": [
+        {
+          "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
+          "role": "worker",
+          "error": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+        }
+      ],
       "autopilot": true,
-      "decisionWaitMs": 900000,
-      "decisionWait": {
-        "startedAt": "2026-11-17T08:36:02.651Z",
-        "deadlineAt": "2026-11-17T08:51:01.482Z",
-        "attempts": [
-          {
-            "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
-            "taskId": "T933",
-            "question": "STAFF-14 gives the 데이터 헤드코치 'bid acceptance +5 points', but CLUB-52's selling-club answer (its factor table) has no such factor. How should this coach help our bids now?",
-            "requestedAt": "2026-11-17T08:36:01.794Z"
-          }
-        ]
-      }
+      "decisionWaitMs": 900000
     }
   },
   "summary": {
     "total": 4,
     "completed": 2,
     "remaining": 2,
-    "running": 1,
+    "running": 0,
     "review": 0,
-    "blocked": 0,
+    "blocked": 1,
     "unassigned": 1
   },
   "tasks": [
@@ -294,7 +288,7 @@
         "T932"
       ],
       "lane": "bids",
-      "status": "doing"
+      "status": "blocked"
     },
     {
       "id": "T934",
@@ -908,13 +902,14 @@
         "T933"
       ],
       "lane": "bids",
-      "owner": "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1",
+      "owner": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4/worker-1",
       "contributors": [
         "8ef6f49b-7aa2-4742-9fef-491e94f92964/worker-1",
-        "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1"
+        "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1",
+        "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4/worker-1"
       ],
-      "status": "doing",
-      "reason": null,
+      "status": "blocked",
+      "reason": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요.",
       "createdAt": "2026-11-17T07:05:20.624Z",
       "startCommit": "412a5efdc1619b73016872dc9d004b08be7c5ef2",
       "submittedBase": "5d6b0d80f02e304c8995370aab53123fcd3cb06c",
@@ -922,17 +917,17 @@
       "submittedAt": "2026-11-17T08:16:09.409Z",
       "risk": null,
       "dispatch": {
-        "id": "9df43fdb-0adb-4518-99b3-36c099b6b8ac",
-        "runner": "47e799ab-c9fa-4894-b14c-78abff251b53",
+        "id": "f374c1cf-db22-4424-a546-c18bb9ee1124",
+        "runner": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
         "role": "worker",
         "slot": 1,
         "provider": "claude",
         "model": "opus",
         "status": "finished",
-        "startedAt": "2026-11-17T08:17:16.157Z",
-        "finishedAt": "2026-11-17T08:36:01.840Z",
-        "error": null,
-        "summary": "Four of the five review findings are fixed. The fifth needs your decision, so T933 is blocked on one policy question; nothing is committed.\n\nFixed:\n1. **Wage steps on every path:** the player detail sheet now shows the 100/125/150/200% steps with the player's chance and factors. A free agent's signing and a loan bid send the picked step, so a free agent who refused can be asked again at a higher step.\n2. **Club factors in every report:** every report of the selling club's answer now names its reservation and the factors behind it. This covers an accepted bid, an accept whose completion was blocked, and a player's refusal right after the club accepted or the 단장 took a counter.\n3. **Translated factor lists:** reports no longer join all factors into one text value — under a non-Korean locale that left factors in Korean. Each factor now has its own slot, with one message per factor count (12 for the club, 8 for the player). This also required changing the age factor's Korean text to \"나이 {age}세\", because \"{age}세\" collided with another message. A new test checks that every report with 0–11 club factors and 0–7 player factors reads fully in English, each factor translated on its own.\n4. **Names:** player and 단장 names in these titles and messages are now marked to stay as written.\n\nChecks:\n- The task-level checks (typecheck, lint, format, i18n, affected unit tests) all pass on the final tree.\n- `RecruitmentDesk.test.ts` passes 47/47.\n- `transfers.test.ts` (an integration file I ran by hand) passes 26/26.\n- Still left to the shared final gate: the integration files `signings.test.ts`, `replacements.test.ts` and `transfers.delegated.test.ts`, and the browser journey `tests/e2e/recruitment.spec.ts`. That journey expects a free agent to sign at once and may now see a refusal.\n\nBlocked: the 데이터 헤드코치's \"+5 points\" bid effect. STAFF-14 calls it bid acceptance, but CLUB-52's factor table doesn't list it. The code still applies it as 0.05 of the asking fee off the seller's reservation, which is not the same as +5 points of probability. This is the only open item."
+        "startedAt": "2026-11-17T08:36:45.763Z",
+        "finishedAt": "2026-11-17T08:42:46.655Z",
+        "error": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요.",
+        "summary": "T933이 끝났고 `vibe check --tier task`(typecheck, lint, format, i18n, 영향받는 유닛 테스트 300개 파일·2643건)가 트리 684cca9806e6에서 통과했습니다.\n\n이번 디스패치에서 한 일은 기획 결정(CLUB r75, STAFF r44) 반영입니다. 데이터 헤드코치는 우리 입찰에 대한 매각 판단(CLUB-52)의 share 요인 −0.05입니다. 기존 `managerStyle` −0.05 요인(transfers.ts `bidFactors`)은 그대로 두고, 리포트에 그 이름이 나오도록 문구만 바꿨습니다. `market.sale.managerStyle`이 '데이터 헤드코치 감독의 협상 지원'으로 바뀌었고 원본 메시지와 12개 언어 팩을 모두 고쳤습니다. 함수 주석도 CLUB-52의 행을 가리키게 정리했습니다.\n\nT933 수락 항목은 [v]로 표시했고 result의 at, verified, limits를 갱신했습니다. limits의 (0)·(4)·(5)는 해결로 바꿨습니다.\n\n공동 최종 게이트로 넘기는 것:\n- 통합 테스트 `signings.test.ts`, `replacements.test.ts`, `transfers.delegated.test.ts`, `transfers.incoming.test.ts`와 나머지 `staff.test.ts`\n- 브라우저 여정 `tests/e2e/recruitment.spec.ts`: 자유계약 선수가 이제 100% 조건을 거절할 수 있고, 입찰 시트의 확률 문구가 '수락 n% · 역제안 m%'로 바뀌었습니다.\n\n변경은 커밋하지 않은 상태로 워크트리에 있습니다."
       },
       "reviewHistory": [
         {
@@ -6893,6 +6888,203 @@
               }
             ]
           }
+        }
+      }
+    },
+    {
+      "sequence": 478,
+      "at": "2026-11-17T08:36:45.221Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-17T08:36:45.203Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 479,
+      "at": "2026-11-17T08:36:45.268Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4/worker-1",
+        "contributors": [
+          "8ef6f49b-7aa2-4742-9fef-491e94f92964/worker-1",
+          "47e799ab-c9fa-4894-b14c-78abff251b53/worker-1",
+          "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 480,
+      "at": "2026-11-17T08:36:45.763Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "f374c1cf-db22-4424-a546-c18bb9ee1124",
+          "runner": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-17T08:36:45.763Z"
+        }
+      }
+    },
+    {
+      "sequence": 481,
+      "at": "2026-11-17T08:36:46.071Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "f374c1cf-db22-4424-a546-c18bb9ee1124",
+          "runner": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-17T08:36:45.763Z"
+        }
+      }
+    },
+    {
+      "sequence": 482,
+      "at": "2026-11-17T08:42:46.519Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 483,
+      "at": "2026-11-17T08:42:46.596Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+      }
+    },
+    {
+      "sequence": 484,
+      "at": "2026-11-17T08:42:46.655Z",
+      "type": "attempt",
+      "group": "tm17-market",
+      "attemptId": "fa90989d-80df-401f-b18d-36379b69507c",
+      "taskId": "T933",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "f374c1cf-db22-4424-a546-c18bb9ee1124",
+          "runner": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-17T08:36:45.763Z",
+          "finishedAt": "2026-11-17T08:42:46.655Z",
+          "error": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요.",
+          "summary": "T933이 끝났고 `vibe check --tier task`(typecheck, lint, format, i18n, 영향받는 유닛 테스트 300개 파일·2643건)가 트리 684cca9806e6에서 통과했습니다.\n\n이번 디스패치에서 한 일은 기획 결정(CLUB r75, STAFF r44) 반영입니다. 데이터 헤드코치는 우리 입찰에 대한 매각 판단(CLUB-52)의 share 요인 −0.05입니다. 기존 `managerStyle` −0.05 요인(transfers.ts `bidFactors`)은 그대로 두고, 리포트에 그 이름이 나오도록 문구만 바꿨습니다. `market.sale.managerStyle`이 '데이터 헤드코치 감독의 협상 지원'으로 바뀌었고 원본 메시지와 12개 언어 팩을 모두 고쳤습니다. 함수 주석도 CLUB-52의 행을 가리키게 정리했습니다.\n\nT933 수락 항목은 [v]로 표시했고 result의 at, verified, limits를 갱신했습니다. limits의 (0)·(4)·(5)는 해결로 바꿨습니다.\n\n공동 최종 게이트로 넘기는 것:\n- 통합 테스트 `signings.test.ts`, `replacements.test.ts`, `transfers.delegated.test.ts`, `transfers.incoming.test.ts`와 나머지 `staff.test.ts`\n- 브라우저 여정 `tests/e2e/recruitment.spec.ts`: 자유계약 선수가 이제 100% 조건을 거절할 수 있고, 입찰 시트의 확률 문구가 '수락 n% · 역제안 m%'로 바뀌었습니다.\n\n변경은 커밋하지 않은 상태로 워크트리에 있습니다."
+        }
+      }
+    },
+    {
+      "sequence": 485,
+      "at": "2026-11-17T08:42:47.280Z",
+      "type": "group",
+      "group": "tm17-market",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "06426b9e-c5f3-4b09-8d9a-d04d2ceb4cf4",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.169.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.326 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-17T08:36:45.203Z",
+          "stoppedAt": "2026-11-17T08:42:47.280Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "fa90989d-80df-401f-b18d-36379b69507c",
+              "role": "worker",
+              "error": "T933: CLUB@74가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
         }
       }
     }

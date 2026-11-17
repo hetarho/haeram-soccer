@@ -1,0 +1,71 @@
+process 1/6: cpu ×0.947
+process 2/6: cpu ×0.862
+process 3/6: cpu ×1.012
+process 4/6: cpu ×0.833
+process 5/6: cpu ×0.979
+process 6/6: cpu ×0.973
+{
+  "workload": "history",
+  "machine": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.22.1",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "cores": 12
+  },
+  "base": "79a417ccdd669938f9ea67097984a7a9b0314a31",
+  "cand": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/lc17-perf-T936-7b45668c",
+  "procs": 6,
+  "jobs": 1,
+  "reps": 2,
+  "warm": 1,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "ce15ae1b2bed2a00",
+    "cand": "2cbe41f92e4516a4"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "77664084c38173f1"
+    ],
+    "cand": [
+      "77664084c38173f1"
+    ]
+  },
+  "season": {
+    "pairs": 12,
+    "ms": {
+      "base": {
+        "cpu": 7852.098999999998,
+        "wall": 8290.736435
+      },
+      "cand": {
+        "cpu": 6818.344,
+        "wall": 8105.9411855
+      }
+    },
+    "cpu": {
+      "ratio": 0.9319,
+      "lo": 0.8789,
+      "hi": 0.9833,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.9532,
+      "lo": 0.9088,
+      "hi": 0.9944,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    5.07,
+    6.74,
+    5.98,
+    5.15,
+    9.62,
+    13.16,
+    8.34
+  ]
+}

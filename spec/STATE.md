@@ -57,7 +57,7 @@
 | gusta-self-improve-261109 | open@261109 |
 | test-gate-time-261110 | converted@261117 |
 | transfer-market-261117 | converted@261117 |
-| lifecycle-perf-261117 | ready@261117 |
+| lifecycle-perf-261117 | converted@261117 |
 | test-value-261110 | converted@261110 |
 | game-runtime-speed-261110 | converted@261110 |
 | match-engine-split-261110 | converted@261111 |
@@ -69,12 +69,6 @@
 | T930 | Keep one browser journey instance per distinct path or layout | ARCH | - | todo |
 | T933 | Answer our bids by the selling club, then the player, with a wage offer | CLUB STAFF ECON | T932 | todo |
 | T934 | Sell our players through the selling-club answer, and let the 단장 offer wage steps | CLUB ECON | T933 T935 | todo |
-| T936 | Choose the automatic XI by scanning stored pair values | ARCH | - | todo |
-| T937 | Index market ratings by slot and skip buyers rejected for every listing | ARCH | - | todo |
-| T938 | Index the clubs that want each line for free-agent offers | ARCH | - | todo |
-| T939 | Hand the autosave world to the codec worker as JSON text | SAVE ARCH | - | todo |
-| T940 | Build the fixture replica's roster key from texts it already serialized | ARCH | - | todo |
-| T941 | Share place terms and normalisers in NPC match attribution | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -82,7 +76,8 @@
 | natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
-| tm17-market | 4 | 4 | 2 | 2 | 1 | 0 | 0 | 2026-11-17T08:36:35.184Z | [history](work/tm17-market.json) |
+| tm17-market | 4 | 4 | 2 | 2 | 0 | 0 | 1 | 2026-11-17T08:42:50.312Z | [history](work/tm17-market.json) |
+| lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
 
 ## next
 - inspect work board for remaining tasks

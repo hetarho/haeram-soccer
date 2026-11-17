@@ -202,6 +202,38 @@ describe('ordered fixture replicas', () => {
     expect(next.rosterChanged).toBe(false);
     expect(fixtureRosterKey(source)).toBe(key);
   });
+  it('reports a roster change exactly when fixtureRosterKey differs, squad or person alone', () => {
+    const source = copy(),
+      writer = new FixtureReplicaWriter(),
+      reader = new FixtureReplicaReader();
+    let id = 1,
+      key = fixtureRosterKey(source);
+    reader.apply(packet(writer, source, id));
+    const step = (edit: () => void, changed: boolean) => {
+      edit();
+      const next = fixtureRosterKey(source);
+      expect(next !== key).toBe(changed);
+      expect(reader.apply(packet(writer, source, ++id)).rosterChanged).toBe(changed);
+      key = next;
+    };
+    step(() => undefined, false);
+    step(() => (source.squads = {}), true); // Present but empty is not absent.
+    step(() => {
+      source.squads = {
+        a: [makePlayer('ENG', source.seed, 'a:stored', source.year, 55, 'CM', 23)],
+        b: [makePlayer('ENG', source.seed, 'b:stored', source.year, 40, 'GK', 25)],
+      };
+    }, true);
+    step(() => undefined, false);
+    step(() => (source.squads!.b![0]!.name = 'Squad only'), true);
+    step(() => (source.squads!.a![0]!.attrs.pace += 1), true);
+    step(() => (source.squads = { b: source.squads!.b!, a: source.squads!.a! }), true);
+    step(() => (source.people!.q!.name = 'Person only'), true);
+    step(() => (source.calendar = { day: 9 }), false);
+    step(() => (source.freeAgents = [{ id: 'free' }]), true);
+    step(() => delete source.squads, true);
+    step(() => undefined, false);
+  });
   it('keeps the registry when unchanged, and replicates insertion, deletion and original ordering', () => {
     const source = copy(),
       writer = new FixtureReplicaWriter(),

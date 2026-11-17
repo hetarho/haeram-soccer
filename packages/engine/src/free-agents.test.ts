@@ -22,12 +22,14 @@ import {
   invalidateNpcSquad,
   makePlayer,
   NPC_SQUAD,
+  refillPlace,
   startingSquad,
   stature,
 } from './world';
+import { clubStyle } from './tactics';
 import { marketWageAt } from './market-prices';
 import { NPC_WAGE_DECISIONS, npcWageBill } from './books';
-import { lineOf } from './player';
+import { LINE_MINIMUM, lineOf } from './player';
 import { operatingExpensesAt } from './finance';
 import {
   FREE_AGENT_FLOW as REFERENCE_FLOW,
@@ -426,6 +428,58 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     refreshFreeAgents(w);
     expect(w.freeAgents!.map((p) => p.id)).toEqual(['over-limit']);
     expect(w.squads![rival.id]).toHaveLength(40);
+  });
+
+  it('follows a club whose wanted lines change after a signing in the same call', () => {
+    const { w, c } = npcBooksFixture();
+    const rival = { ...c, id: 'ENG:0:0:0', country: 'ENG', tier: 1, levels: undefined };
+    w.clubs = [w.clubs[0]!, c, rival];
+    delete w.squads;
+    foundSquads(w);
+    // Both lack only keepers; the rival's full standing size stops it once it has two.
+    w.squads![c.id] = w.squads![c.id]!.filter((p) => p.position !== 'GK');
+    const rivalSquad = w.squads![rival.id]!.filter((p) => p.position !== 'GK');
+    while (rivalSquad.length < NPC_SQUAD.size - 2)
+      rivalSquad.push(
+        makePlayer('ENG', w.seed, `depth:${rivalSquad.length}`, w.year, 40, 'CM', 24),
+      );
+    w.squads![rival.id] = rivalSquad;
+    for (const club of [c, rival])
+      for (const line of ['DF', 'MF', 'FW'] as const)
+        expect(
+          w.squads![club.id]!.filter((p) => lineOf(p.position) === line).length,
+        ).toBeGreaterThanOrEqual(LINE_MINIMUM[line]);
+    const keepers = ['keeper-a', 'keeper-b', 'keeper-c', 'keeper-d', 'keeper-e'].map((id, i) =>
+      agent(id, 70 - i * 5, 'GK'),
+    );
+    // Once the club has its keepers, its refill line is no longer the keepers'.
+    const refill = refillPlace(clubStyle(c), [...w.squads![c.id]!, ...keepers.slice(0, 2)]);
+    expect(lineOf(refill)).not.toBe('GK');
+    const outfield = agent('outfield', 90, refill);
+    w.freeAgents = [...keepers, outfield];
+    const candidate = structuredClone(w),
+      reference = structuredClone(w);
+    const run = (world: World, referenceRun: boolean) => {
+      const events: [string, string, string | undefined, string][] = [];
+      const flow = referenceRun ? REFERENCE_FLOW : FREE_AGENT_FLOW;
+      flow.observe = (kind, player, club) => events.push([kind, player.id, club, player.wage]);
+      try {
+        (referenceRun ? referenceRefresh : refreshFreeAgents)(world);
+      } finally {
+        delete flow.observe;
+      }
+      return events;
+    };
+    const events = run(candidate, false);
+    expect(events).toEqual(run(reference, true));
+    expect(candidate).toEqual(reference);
+    const signedTo = (club: string) => events.filter(([, , to]) => to === club).map(([, id]) => id);
+    // The ablest player waits a pass until the club's keepers are signed and his line is wanted.
+    expect(signedTo(c.id)).toContain('outfield');
+    expect(signedTo(c.id).filter((id) => id.startsWith('keeper'))).toHaveLength(2);
+    expect(signedTo(rival.id)).toHaveLength(2);
+    // Neither club wants a fifth keeper once both have their two.
+    expect(candidate.freeAgents!.map((p) => p.id)).toEqual(['keeper-e']);
   });
 
   it('ages an own release without growth, while an NPC release keeps its settled attributes', () => {
