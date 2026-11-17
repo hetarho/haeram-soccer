@@ -335,6 +335,8 @@ export function delegatePlan(
   request: SpendRequest = requestOf(w, key),
   /** The season's income when the caller already read it (`planRevenue(w)`). */
   income: string = planRevenue(w),
+  /** Fees this season the caller reads as unspent: a window's own signings undone (→CLUB-33). */
+  refunded = 0n,
 ): DelegatePlan {
   const delegate = delegateOf(w),
     level = actedLevel(request, delegate.temperament),
@@ -386,7 +388,7 @@ export function delegatePlan(
   if (key === 'recruitment') {
     reinvestShare = REINVEST_SHARE[level];
     sales = seasonSales(w);
-    spent = signingSpend(w);
+    spent = above(signingSpend(w), refunded);
     left =
       above(above(incomeBudget, committed) + (sales * BigInt(reinvestShare)) / 100n, spent) +
       above(capital, above(committed, incomeBudget));

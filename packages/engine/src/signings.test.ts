@@ -44,6 +44,7 @@ import {
   upgradeCap,
   makeRoom,
   slotsBelowBar,
+  windowBar,
 } from './index';
 import { addEvent } from './events';
 import { delegatePlan } from './delegation';
@@ -1244,6 +1245,47 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     expect(upgradeNeeds(w, 2, joinedThisWindow(w)).filter((need) => belowBar(need, bar))).toEqual(
       [],
     );
+  });
+
+  it('keeps the window cap while its own signings spend the money the bar reads', () => {
+    const w = club(5);
+    const wages = BigInt(operatingCosts(w).playerWages);
+    // Income whose squad share just carries the wage bill: the plan's money is the cash.
+    poor(w, (wages * 125n) / 100n);
+    const plain = (upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[]).sort(
+      (a, b) => a.level - b.level || a.slot - b.slot,
+    );
+    w.cash = (wageAt(w, Math.floor(plain[4]!.level) + 3) * 25n).toString();
+    const bar = moneyBar(w)!,
+      below = plain.filter((need) => bar - need.level > 2);
+    expect(below.length).toBeGreaterThanOrEqual(5);
+    expect(windowBar(w)).toBe(bar);
+    const generous = { margin: 2, upgrades: 3, makeRoom: true, bar: true, barCap: true };
+    const capNow = () => upgradeCap(generous, slotsBelowBar(w, 2, windowBar(w)));
+    expect(capNow()).toBe(below.length);
+    let fell = false;
+    // The 단장 fills the weak slots one by one, each signing paying a fee and a star's wage.
+    for (const [i, need] of below.entries()) {
+      const left = BigInt(delegatePlan(w, 'recruitment').left),
+        fee = left / 4n,
+        p = joinAble(w, need.measure, `cap:paid:${i}`);
+      p.wage = wageAt(w, bar).toString();
+      w.cash = (BigInt(w.cash) - fee).toString();
+      addEvent(w, 'transfer-in', 'buy', 'buy', fee.toString());
+      upgradeSigned(w, p.id);
+      w.bids!.at(-1)!.fee = fee.toString();
+      // The plan's money falls with every signing until none is left, and the bar now with it.
+      if (left > 0n) expect(BigInt(delegatePlan(w, 'recruitment').left)).toBeLessThan(left);
+      const now = moneyBar(w);
+      if (now === undefined || slotsBelowBar(w, 2, now) < below.length) fell = true;
+      // The window's bar undoes its own signings: every slot weak at the opening still counts.
+      expect(windowBar(w)).toBe(bar);
+      expect(slotsBelowBar(w, 2, windowBar(w))).toBe(below.length);
+      const done = (w.bids || []).filter((bid) => bid.staff === 'upgrade').length;
+      expect(done < capNow()).toBe(i < below.length - 1);
+    }
+    // Read against the bar now, the cap would have fallen before the weak slots were filled.
+    expect(fell).toBe(true);
   });
 
   it('a rich 아낌없이 club bids for a fourth upgrade in a window; 넉넉히 stops at its two', () => {

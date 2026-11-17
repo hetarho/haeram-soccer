@@ -549,8 +549,8 @@ export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'si
  * squad share above the players' wage bill with the reinvested sales, less this season's fees and
  * open bids, then the available capital.
  */
-function barMoney(w: World) {
-  const plan = delegatePlan(w, 'recruitment'),
+function barMoney(w: World, refunded = 0n) {
+  const plan = delegatePlan(w, 'recruitment', undefined, undefined, refunded),
     money = BigInt(plan.left);
   return plan.stance.signing.bar && money > 0n ? money : undefined;
 }
@@ -560,8 +560,8 @@ function barMoney(w: World) {
  * times `barYears`, fits the season's money for signings; none at the other steps or when not even
  * the lowest fits. As NPC clubs read the level a place can carry (`affordableLevel`), on money.
  */
-export function moneyBar(w: World): number | undefined {
-  const money = barMoney(w),
+export function moneyBar(w: World, refunded = 0n): number | undefined {
+  const money = barMoney(w, refunded),
     template = activePlayers(w)[0];
   if (money === undefined || !template) return undefined;
   const club = clubOf(w),
@@ -611,11 +611,37 @@ function squadAtOpening(w: World, day: number): World {
   };
 }
 /**
+ * The money bar the window open on `day` is capped by (→CLUB-33): the bar now, or the bar with this
+ * window's signings undone when that is higher — their fees back in the cash and out of the
+ * season's fees, their wages off the bill, the 단장's open bids withdrawn. What the window's own
+ * signings spent never lowers its cap; money the plan lost otherwise (a re-plan on lower income)
+ * does, and money it gained raises it.
+ */
+export function windowBar(w: World, day = currentDay(w)): number | undefined {
+  const now = moneyBar(w),
+    opening = windowOpening(w, day),
+    inWindow = (bid: TransferBid) =>
+      bid.direction === 'out' && bid.year === w.year && bid.day >= opening && bid.day <= day,
+    bids = w.bids ?? [],
+    paid = bids.filter((bid) => inWindow(bid) && bid.status === 'completed'),
+    arrived = new Set(joinedThisWindow(w, day).map((p) => p.id));
+  if (!arrived.size && !bids.some((bid) => inWindow(bid) && isOpen(bid))) return now;
+  const refunded = paid.reduce((total, bid) => total + BigInt(bid.fee), 0n);
+  const undone: World = {
+    ...w,
+    cash: (BigInt(w.cash) + refunded).toString(),
+    players: w.players.map((p) => (arrived.has(p.id) ? { ...p, status: 'sold' as const } : p)),
+    bids: bids.filter((bid) => !(inWindow(bid) && isOpen(bid))),
+  };
+  const before = moneyBar(undone, refunded);
+  return before === undefined ? now : now === undefined ? before : Math.max(now, before);
+}
+/**
  * The XI slots more than `margin` below the money bar (→CLUB-33), each counted once: the slots of the
- * XI the window open on `day` found (`squadAtOpening`), measured by their starters against the bar
- * now. An upgrade that lifts one of them leaves it counted, so the cap holds through the window;
- * a slot a departure weakened, a signing for a slot never below the bar and a repeated signing for
- * one slot add nothing.
+ * XI the window open on `day` found (`squadAtOpening`), measured by their starters against `bar`
+ * (the window's, `windowBar`). An upgrade that lifts one of them leaves it counted, and the money it
+ * spent does not lower that bar, so the cap holds through the window; a slot a departure weakened,
+ * a signing for a slot never below the bar and a repeated signing for one slot add nothing.
  */
 export function slotsBelowBar(
   w: World,
@@ -907,7 +933,9 @@ export function staffSignings(w: World) {
         : [];
   const cap = upgradeCap(
     stance.signing,
-    stance.signing.barCap && margin !== undefined ? slotsBelowBar(w, margin, bar, day) : 0,
+    stance.signing.barCap && margin !== undefined
+      ? slotsBelowBar(w, margin, windowBar(w, day), day)
+      : 0,
   );
   const requests = signingRequests(w),
     short = shortLines(w),
