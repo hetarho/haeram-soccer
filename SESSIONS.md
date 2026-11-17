@@ -153,6 +153,7 @@
 - 261117 decided ECON-33 T948: Income-share wage ceiling (45–80%) → a loss runway: fee + planned loss × none/6/4/2/1 seasons must fit capital above a 0–1-year reserve (alt: keep shares with capital added | an unbounded owner-funded budget with only the ECON-41 stop).
 - 261117 decided review/market-levels-261118 T945: NPC market F4 (held 261117) → adopted on the owner's request: pull bids with CLUB-52/53 answers and era caps; the multi-season NPC envelope (F5 part) and era contract rules (F6) held until T950's harness evidence; the owner-world results-only seam (F7) rejected as unneeded.
 - 261117 decided WORLD-18 PLAYER-15 T947: Elite prospects → 1–2 prodigies a year world-wide (14, OVR 57–63, potential 88–96) placed by academy level × stature, own academy included, growing ×3 with ×3 the season limit until 18 (alt: lower NPC youth ages for everyone | a breakthrough-only rule).
+- 261117 suggest T949 CLUB-33: Follow-up from T949's review audit: mediation.ts requestMet reads arrivals only, so a delegated mediation can pursue a request a pending bid already covers and bid for a second player; count open bids' players in requestMet/detectMediations (a small task touching mediation.ts).
 
 ## unlanded
 | id | tag | branch | commit | at |
