@@ -10,7 +10,7 @@ import { CLUB_LEVELS, enrollSquadPlayer, followLevels, foundSquads } from './per
 import { lineOf, mainOvr } from './player';
 import { clamp, integer, random } from './primitives';
 import { CLUB_TAKEOVER } from './owner-config';
-import { drawProdigies } from './prodigies';
+import { drawProdigies, landOnOvr } from './prodigies';
 import { clubRegistration, registrationExempt } from './registration';
 import { departmentMultiplier } from './staff';
 import { clubStyle } from './tactics';
@@ -67,6 +67,11 @@ export const NPC_YOUTH = {
   /** A youngster taken only to refill the standing size is centred this far below the level. */
   refillBelow: 10,
   headroom: [12, 24],
+  /**
+   * A skipped war summer's refill (→WORLD-14/16) is drawn ready to play: aged `ages`, his OVR
+   * `below` under the division's level and his potential `headroom` above his OVR.
+   */
+  warRefill: { ages: [19, 24], below: 3, headroom: 4 },
 } as const;
 
 /** The potential offset at quantile `u` of `NPC_YOUTH.skew`, linear between its anchors. */
@@ -134,6 +139,26 @@ function lacksLine(players: Player[]) {
   );
 }
 
+/**
+ * A youngster's age, OVR and potential (→WORLD-16). An intake's come from its youth stream: the
+ * potential around its centre, the OVR a headroom below it. A skipped war summer's refill comes
+ * ready to play from a stream of its own (`<seed>:war-refill:<id>`), so no other draw moves.
+ */
+function youthDraw(w: World, c: Club, id: string, refill: boolean, war: boolean) {
+  if (war) {
+    const { ages, below, headroom } = NPC_YOUTH.warRefill;
+    const r = random(`${w.seed}:war-refill:${id}`);
+    const level = clamp(divisionLevel(c.tier) - below, 15, 92);
+    return { age: integer(r, ages[0], ages[1]), level, potential: clamp(level + headroom, 15, 99) };
+  }
+  const r = random(`${w.seed}:youth:${id}`);
+  const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
+  const centre = youthCentre(c, c.levels!.academy, refill);
+  const potential = clamp(Math.round(centre + youthSkew(r())), 15, 99);
+  const level = clamp(potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]), 15, 92);
+  return { age, level, potential };
+}
+
 /** Academy draws alone can produce a golden generation, with no club-level event. */
 function npcYouthIds(w: World) {
   return new Set([
@@ -147,7 +172,7 @@ function npcYouthIds(w: World) {
 }
 /**
  * A club's youth intake (→WORLD-16): its academy's count, then any youngsters its standing size or
- * a line needs. A war-gap summer (`refillOnly`) takes only the refills (→WORLD-14).
+ * a line needs. A war-gap summer (`refillOnly`) takes only the refills, ready to play (→WORLD-14).
  */
 export function intakeNpcYouth(
   w: World,
@@ -169,15 +194,7 @@ export function intakeNpcYouth(
     if (state.total >= state.ceiling) break;
     const id = `${c.id}:y:${year}:${serial}`;
     if (used.has(id)) continue;
-    const r = random(`${w.seed}:youth:${id}`);
-    const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
-    const centre = youthCentre(c, c.levels.academy, added >= count);
-    const potential = clamp(Math.round(centre + youthSkew(r())), 15, 99);
-    const level = clamp(
-      potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]),
-      15,
-      92,
-    );
+    const { age, level, potential } = youthDraw(w, c, id, added >= count, refillOnly);
     const p = generatedPlayer(
       c.country,
       w.seed,
@@ -188,7 +205,11 @@ export function intakeNpcYouth(
       age,
       c.tier,
     );
+    // A war refill's OVR lands on its drawn value, as a prodigy's does (→WORLD-18).
+    if (refillOnly) landOnOvr(p, level);
     p.potential = Math.max(mainOvr(p), potential);
+    // Its wage is quoted on that final OVR and potential: a young player's quote reads both.
+    if (refillOnly) p.wage = marketWageAt(c.country, year, c.tier, p);
     p.graduate = true;
     p.joined = year;
     p.fatigue = clubStyle(c) === 'press' ? PRESS_LOAD_FATIGUE : 0;
