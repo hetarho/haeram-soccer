@@ -170,11 +170,11 @@
       "branch": "gusta-session-start-cf17-c5483839",
       "head": "0f6bb3291f63ac0e7b11cbf230c81e33e631dabb",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-17T13:55:24.927Z",
+      "status": "withdrawn",
+      "at": "2026-11-17T13:55:27.782Z",
       "agentChecks": [],
       "verificationCommands": [],
-      "reason": "session-ended"
+      "reason": "failed"
     }
   },
   "gate": null,
