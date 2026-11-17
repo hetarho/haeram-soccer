@@ -131,13 +131,31 @@ Other reads at 1951:
 
 | era (run) | fee in/out | ENG in/out | XI lost (by fee) | lower-division top-3 moving up | loans a season |
 |---|---|---|---|---|---|
-| 1951–55 (L51-base) | 3.22/3.24 | 3.45/3.52 | 2.58 (1.79) | 9.1% | 138 |
-| 1951–60 (L51x10-final) | 3.17/3.20; 1958–60 2.87–3.07 | 3.52/3.52 | 2.44 (1.77) | 8.4% | 142 |
-| 1958–62, final source (L75-final, 3 seeds) | 2.79–3.06 / 2.88–3.09 | | 1.94–2.28 (1.54–1.73) | 6.2–8.9% | 142–151 |
-| 1958–61 without the 1960 anchor (L75-base, intermediate) | 4.05–4.45 | | 2.36–2.74 (1.95–2.21) | 7.6–10.6% | 193–218 |
-| 1965–75, final source (L75-final) | 3.84–4.05 / 3.96–4.05 | | 2.38–2.72 (1.88–2.12) | 8.2–11.1% | 166–183 |
-| 1997–2001 (F95-base) | 3.76/4.04 | 4.63/5.05 | 2.31 (1.75) | 8.1% | 215 |
+| 1951–55 (L51-base), means over the 5 seasons | 3.22/3.24 | 3.45/3.52 | 2.58 (1.79) | 9.1% | 138 |
+| 1951–60 (L51x10-final), means; 1958–60 range of each year | 3.17/3.20; 1958–60 2.87–3.07 / 2.97–3.09 | 3.52/3.52 | 2.44 (1.77) | 8.4% | 142 |
+| 1949–57, final source (L75-final), range over every year | 3.12–3.37 / 3.14–3.37 | 3.40–3.63 / 3.40–3.67 | 2.31–2.71 (1.67–1.90) | 8.0–9.0% | 106–149 |
+| 1958–62, final source (L75-final), range over every year | 2.79–3.06 / 2.88–3.09 | 3.38–3.62 / 3.28–3.57 | 1.94–2.28 (1.54–1.73) | 6.2–8.9% | 142–151 |
+| 1958–61 without the 1960 anchor (L75-base, intermediate), range over every year | 4.05–4.45 / 4.15–4.50 | | 2.36–2.74 (1.95–2.21) | 7.6–10.6% | 193–218 |
+| 1963–75, final source (L75-final), range over every year | 3.63–4.06 / 3.82–4.12 | 4.78–5.23 / 4.92–5.27 | 2.31–2.72 (1.88–2.19) | 7.4–11.1% | 166–191 |
+| 1997–2001 (F95-base), means; range of each year | 3.76/4.04; 3.00–4.89 / 3.01–5.52 | 4.63/5.05; 3.88–5.52 / 3.83–6.32 | 2.31 (1.75); 1.87–2.71 (1.34–2.31) | 8.1%; 7.0–8.6% | 215; 200–238 |
 | bands | 2–4 (1946–61), 3–5 (1961–78), 3–6 (1978–2010), 4–8 / 3–6 (2010–) | | 2–3 (0.8–1.5) 1950s, 2.5–3.5 (1.5–2.5) modern | 20–30% 1950s, 40–60% modern | |
+
+### Observed fee-move band misses (top flight per club; every recorded year)
+
+Over all countries' top flights and England's alone, each year checked against its era's band.
+
+**L75-final** (final source, fresh:1930→1975):
+- 1962: all top flights 2.79 in / 2.88 out, under 3–5.
+- England is above 5 in 1963 (5.23/5.15), 1965 (5.03/5.13), 1966 (5.03/5.02), 1967 (out 5.18), 1968 (out 5.20), 1969 (in 5.17), 1970 (out 5.15), 1972 (out 5.03), 1973 (5.20/5.27), 1974 (out 5.07) and 1975 (5.13/5.02).
+- The all-country means stay within 3–5 from 1963.
+
+**F95-base** (fresh:1995):
+- Measured seasons: England out 6.32 in 1997, over 3–6.
+- Burn-in seasons, which are not measured: 1995 all 6.97/7.61 and England 7.21/7.52; 1996 all 6.08/6.91 and England 6.59/7.23.
+
+**L51-base and L51x10-final:** no fee-move misses.
+
+**XI lost by fee:** 1.67–1.90 in 1949–57, above the 1950s band of 0.8–1.5.
 
 Sweeps on the chosen level constants (8 seeds):
 - **1995 {6,3,3}** (F95-era): 3.21/3.42, XI 2.14 (1.62). This is at the band's lower edge, so the 1995 anchor stays {6,4,4}.
