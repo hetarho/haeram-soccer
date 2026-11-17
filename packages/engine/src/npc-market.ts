@@ -17,7 +17,7 @@ import { MARKET_CONFIG, marketValueAt, marketWageAt } from './market-prices';
 import { movePerson } from './npc-continuity';
 import { moveSquadPlayer } from './persisted-squads';
 import { formationOf, slotOvr } from './player-state';
-import { LINE_MINIMUM, lineOf, mainOvr, type Slot } from './player';
+import { FORMATIONS, LINE_MINIMUM, lineOf, mainOvr, type Slot } from './player';
 import { compareIds, random, ratio } from './primitives';
 import { clubRegistration, registrationExempt } from './registration';
 import { SQUAD_MINIMUM } from './squad-size';
@@ -57,21 +57,83 @@ type ClubFacts = {
 type Settlement = {
   clubs: Map<string, ClubFacts>;
   returns: Map<string, number>;
-  ratings: Map<Player, Map<Slot | undefined, number>>;
+  ratings: SettlementRatings;
 };
 
-/** A missing slot means main-position OVR. No ratings outlive this atomic settlement. */
-function rating(p: Player, settlement?: Settlement, slot?: Slot) {
-  let scores = settlement?.ratings.get(p);
-  const cached = scores?.get(slot);
-  if (cached !== undefined) return cached;
-  const value = slot ? slotOvr(p, slot) : mainOvr(p);
-  if (settlement) {
-    if (!scores) settlement.ratings.set(p, (scores = new Map()));
-    scores.set(slot, value);
+/** Each formation slot object's place in a rating row, by identity; main OVR takes the last place. */
+const SLOT_PLACES = new Map<Slot, number>();
+for (const formation of Object.values(FORMATIONS))
+  for (const slot of formation.slots)
+    if (!SLOT_PLACES.has(slot)) SLOT_PLACES.set(slot, SLOT_PLACES.size);
+const MAIN_PLACE = SLOT_PLACES.size,
+  ROW = MAIN_PLACE + 1;
+
+/**
+ * One atomic settlement's ratings; none outlive it. Each player has a row of one place per formation
+ * slot object and one for main OVR (NaN until read); a slot outside the formations keeps a map.
+ */
+export class SettlementRatings {
+  private rows = new Map<Player, number>();
+  private values: Float64Array;
+  private used = 0;
+  private others = new Map<Player, Map<Slot, number>>();
+  private lastSlot: Slot | undefined;
+  private lastPlace = MAIN_PLACE;
+
+  constructor(players = 64) {
+    this.values = new Float64Array(ROW * Math.max(1, players)).fill(NaN);
   }
-  return value;
+
+  /** A missing slot means main-position OVR. */
+  of(p: Player, slot?: Slot): number {
+    let place = MAIN_PLACE;
+    if (slot) {
+      if (slot === this.lastSlot) place = this.lastPlace;
+      else {
+        const known = SLOT_PLACES.get(slot);
+        if (known === undefined) return this.other(p, slot);
+        this.lastSlot = slot;
+        this.lastPlace = place = known;
+      }
+    }
+    let row = this.rows.get(p);
+    if (row === undefined) {
+      if (this.used === this.values.length) {
+        const values = new Float64Array(this.values.length * 2).fill(NaN);
+        values.set(this.values);
+        this.values = values;
+      }
+      this.rows.set(p, (row = this.used));
+      this.used += ROW;
+    }
+    const cached = this.values[row + place]!;
+    // NaN marks an unread place; a NaN rating is simply read again.
+    if (cached === cached) return cached;
+    const value = slot ? slotOvr(p, slot) : mainOvr(p);
+    this.values[row + place] = value;
+    return value;
+  }
+
+  /** A moved player's ratings are read afresh. */
+  forget(p: Player) {
+    this.rows.delete(p);
+    this.others.delete(p);
+  }
+
+  private other(p: Player, slot: Slot) {
+    let scores = this.others.get(p);
+    const cached = scores?.get(slot);
+    if (cached !== undefined) return cached;
+    const value = slotOvr(p, slot);
+    if (!scores) this.others.set(p, (scores = new Map()));
+    scores.set(slot, value);
+    return value;
+  }
 }
+
+/** A missing slot means main-position OVR. No ratings outlive this atomic settlement. */
+const rating = (p: Player, settlement?: Settlement, slot?: Slot) =>
+  settlement ? settlement.ratings.of(p, slot) : slot ? slotOvr(p, slot) : mainOvr(p);
 
 function clubFacts(w: World, club: Club, settlement?: Settlement): ClubFacts {
   const cached = settlement?.clubs.get(club.id);
@@ -351,7 +413,11 @@ export function npcMarket(w: World) {
     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
   );
   const counts = new Map<string, number>();
-  const settlement: Settlement = { clubs: new Map(), returns: new Map(), ratings: new Map() };
+  const settlement: Settlement = {
+    clubs: new Map(),
+    returns: new Map(),
+    ratings: new SettlementRatings(clubs.reduce((n, c) => n + w.squads![c.id]!.length, 0)),
+  };
   for (const record of Object.values(w.playerRecords ?? {})) {
     if (record.loan)
       settlement.returns.set(record.loan.club, (settlement.returns.get(record.loan.club) ?? 0) + 1);
@@ -468,7 +534,7 @@ export function npcMarket(w: World) {
           );
           const winner = offers[0]!;
           settleMove(w, listing, winner, fee);
-          settlement.ratings.delete(listing.player);
+          settlement.ratings.forget(listing.player);
           settlement.clubs.delete(listing.club.id);
           settlement.clubs.delete(winner.club.id);
           if (listing.loan)

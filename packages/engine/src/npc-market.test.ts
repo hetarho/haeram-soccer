@@ -9,7 +9,9 @@ import {
   npcOffer,
   NPC_MARKET,
   returnNpcLoans,
+  SettlementRatings,
 } from './npc-market';
+import { FORMATIONS, mainOvr } from './player';
 import { closeNpcSummer, closeNpcWindow, intakeNpcYouth } from './npc-careers';
 import { foundSquads } from './persisted-squads';
 import { clubStyle, generatedPlayer, invalidateNpcSquad, stature } from './world';
@@ -90,6 +92,42 @@ const locations = (w: World, id: string) =>
     .map(([club]) => club);
 
 describe('isolated NPC transfer windows', () => {
+  it('keeps one settlement rating per slot object, main OVR apart, and a slot outside the formations', () => {
+    const { w, seller } = fixture();
+    const [p, q] = w.squads![seller.id]!;
+    const slots = Object.values(FORMATIONS).flatMap((formation) => formation.slots);
+    // Two distinct formation slot objects that rate this player equally.
+    const [a, b] = slots.flatMap((x, i) =>
+      slots.slice(i + 1).flatMap((y) => (slotOvr(p!, x) === slotOvr(p!, y) ? [[x, y]] : [])),
+    )[0]!;
+    expect(a).not.toBe(b);
+    const outside = { ...a! };
+    // A single row's room makes the second player grow the rows.
+    const ratings = new SettlementRatings(1);
+    const before = { a: slotOvr(p!, a!), main: mainOvr(p!), q: slotOvr(q!, b!) };
+    expect(ratings.of(p!, a)).toBe(before.a);
+    expect(ratings.of(p!)).toBe(before.main);
+    expect(ratings.of(q!, b)).toBe(before.q);
+    for (const attr of ATTRIBUTES) p!.attrs[attr] = 30;
+    // Read places keep their value; unread ones (another slot object, a slot outside) read afresh.
+    expect(ratings.of(p!, a)).toBe(before.a);
+    expect(ratings.of(p!)).toBe(before.main);
+    expect(ratings.of(p!, b)).toBe(slotOvr(p!, b!));
+    expect(ratings.of(p!, outside)).toBe(slotOvr(p!, outside));
+    expect(ratings.of(p!, b)).not.toBe(before.a);
+    expect(ratings.of(q!, b)).toBe(before.q);
+    for (const attr of ATTRIBUTES) p!.attrs[attr] = 80;
+    expect(ratings.of(p!, outside)).not.toBe(slotOvr(p!, outside));
+    ratings.forget(p!);
+    expect(ratings.of(p!, a)).toBe(slotOvr(p!, a!));
+    expect(ratings.of(p!, outside)).toBe(slotOvr(p!, outside));
+    expect(ratings.of(p!)).toBe(mainOvr(p!));
+    expect(ratings.of(q!, b)).toBe(before.q);
+    // No rating outlives its settlement.
+    for (const attr of ATTRIBUTES) q!.attrs[attr] = 20;
+    expect(new SettlementRatings().of(q!, b)).toBe(slotOvr(q!, b!));
+  });
+
   it('refreshes ratings between settlements and between independent quote mutations', () => {
     const { w, seller, buyer } = fixture();
     const p = listedKeeper(w, seller);
