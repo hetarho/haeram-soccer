@@ -630,7 +630,9 @@ test('keeps the clock running while comparing candidates away from home until th
   await chooseOption(filter.getByRole('combobox', { name: '영입 포지션', exact: true }), 'line:GK');
   await closeMarketPanel(page, '영입 필터');
   await expect(marketRows(page).first()).toBeVisible();
+  // Reach-wide candidates list the club's own players too; they take no bid, so open another's.
   await marketRows(page)
+    .filter({ hasNotText: '우리 선수' })
     .first()
     .getByRole('button', { name: / 상세 보기$/ })
     .click();

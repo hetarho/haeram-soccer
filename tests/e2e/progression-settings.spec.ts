@@ -301,7 +301,8 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   await foundQuiet(page);
   // Keep the original owner, seed and natural Aug3 draw. An actual Spanish buyer needs an
   // MF after two of its current players move to another real Spanish club; the ordinary market
-  // then creates the one owner-held offer, with its untouched Aug8 deadline.
+  // then creates the one owner-held offer, with its untouched Aug8 deadline, from whichever club
+  // its pull market picks.
   await chooseLevel(page, 4);
   await configureResponsibilities(page, {
     responsibilities: { sales: 'direct', recruitment: 'direct' },
@@ -393,16 +394,20 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   const observed = await exportWorld(page);
   const pending = pendingDecisions(observed);
   expect(pending).toHaveLength(1);
-  expect(observed.bids!.find((bid) => bid.id === pending[0]!.ref)).toMatchObject({
+  const offered = observed.bids!.find((bid) => bid.id === pending[0]!.ref);
+  expect(offered).toMatchObject({
     direction: 'in',
     playerId: target.id,
-    club: buyer.id,
     year: 1930,
     day: 2,
     due: 7,
     status: 'pending',
     fee: '1978685',
   });
+  // The pull market picks the bidder among every club that needs him (0.8.11), so the offer is
+  // read from the world: another real club's, never our own.
+  expect(observed.clubs.some((club) => club.id === offered!.club)).toBe(true);
+  expect(offered!.club).not.toBe(observed.playerClub);
   // The controller's 결재함 counts the same work as the entrance and opens the office's queue
   // (→WEB-18/100).
   const inbox = clock.getByTestId('approval-inbox');
