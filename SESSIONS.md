@@ -140,8 +140,10 @@
 | T929 | pf17 | gusta-session-self-improve-pf17-c279c8c5 | 44a165069f6e | 2026-11-16T18:59Z |
 | T931 | iv17 | gusta-session-start-iv17-d1ff7e09 | 85412a97b810 | 2026-11-17T03:48Z |
 | T932 | work | gusta-session-self-improve-tm17-ff4b9f94 | a73163d2e40a | 2026-11-17T06:10Z |
+| T936 | work | gusta-session-self-improve-lc17-37ba91cb | 6aaa6aa407b6 | 2026-11-17T07:37Z |
 
 ## log
+- 261117 T936 integrated
 - 261117 T932 integrated
 - 261117 T931 done
 - 261117 fix takeover: inherited player jobs drop the old club contract end (save 인물 재직 기간 손상 after a renewal)
@@ -161,4 +163,3 @@
 - 261116 gusta-create-task LEAGUE r21 -> T924
 - 261116 gusta-create-task LEAGUE start
 - 261116 gusta-update-ssot LEAGUE-10 r21 done; next gusta-create-task LEAGUE
-- 261116 gusta-update-ssot LEAGUE-10 start
