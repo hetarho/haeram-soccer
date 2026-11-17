@@ -71,7 +71,6 @@
 | T933 | Answer our bids by the selling club, then the player, with a wage offer | CLUB STAFF ECON | T932 | todo |
 | T934 | Sell our players through the selling-club answer, and let the 단장 offer wage steps | CLUB ECON | T933 T935 | todo |
 | T935 | A money bar for the 단장: replace every weak starter and list the weak bench | CLUB ECON | - | todo |
-| T936 | Choose the automatic XI by scanning stored pair values | ARCH | - | todo |
 | T937 | Index market ratings by slot and skip buyers rejected for every listing | ARCH | - | todo |
 | T938 | Index the clubs that want each line for free-agent offers | ARCH | - | todo |
 | T939 | Hand the autosave world to the codec worker as JSON text | SAVE ARCH | - | todo |
@@ -84,9 +83,7 @@
 | natural-football-261114 | 2 | 34 | 34 | 0 | 0 | 0 | 0 | 2026-11-13T22:53:51.463Z | [history](work/natural-football-261114.json) |
 | ws16 | 1 | 3 | 3 | 0 | 0 | 0 | 0 | 2026-11-16T10:09:59.210Z | [history](work/ws16.json) |
 | pf17-perf | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-16T18:32:38.598Z | [history](work/pf17-perf.json) |
+| lc17-perf | 3 | 6 | 1 | 5 | 3 | 2 | 0 | 2026-11-17T07:16:11.583Z | [history](work/lc17-perf.json) |
 
 ## next
-- gusta-implement-task T916 T930
-- Session iv17 landed the takeover save fix and T931 as 0.8.7 (reports/261117-iv17); its CLUB-33 short-line bid follow-up is an inbox suggestion.
-- Session pf17 landed T920 T921 T926 T927 (identical worlds; history CPU about 3476 → 2293 ms a season, reports/261117-pf17); T925 and T928 recorded no gain.
-- NF16 landed natural-football (T873–T915) and ws16 (T917 T922 T923) as 0.8.4 (reports/261116-nf16). T916 stays todo until the owner decides the annual-order/calibration policy boundary; the 1946 historical division-order failure is pre-existing on main (reports/261114-nf14).
+- inspect work board for remaining tasks

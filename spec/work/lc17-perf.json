@@ -1,0 +1,910 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-11-17T07:16:11.583Z",
+  "sourceCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+  "group": {
+    "id": "lc17-perf",
+    "branch": "gusta-session-self-improve-lc17-37ba91cb",
+    "status": "active",
+    "createdAt": "2026-11-17T06:31:30.857Z",
+    "limits": {
+      "workers": 3,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "push": null,
+    "review": "all",
+    "taskScope": [
+      "T936",
+      "T937",
+      "T938",
+      "T939",
+      "T940",
+      "T941"
+    ]
+  },
+  "summary": {
+    "total": 6,
+    "completed": 1,
+    "remaining": 5,
+    "running": 3,
+    "review": 2,
+    "blocked": 0,
+    "unassigned": 0
+  },
+  "tasks": [
+    {
+      "id": "T937",
+      "title": "Index market ratings by slot and skip buyers rejected for every listing",
+      "dep": [],
+      "status": "ready"
+    },
+    {
+      "id": "T938",
+      "title": "Index the clubs that want each line for free-agent offers",
+      "dep": [],
+      "status": "doing"
+    },
+    {
+      "id": "T939",
+      "title": "Hand the autosave world to the codec worker as JSON text",
+      "dep": [],
+      "status": "reviewing"
+    },
+    {
+      "id": "T940",
+      "title": "Build the fixture replica's roster key from texts it already serialized",
+      "dep": [],
+      "status": "doing"
+    },
+    {
+      "id": "T941",
+      "title": "Share place terms and normalisers in NPC match attribution",
+      "dep": [],
+      "status": "doing"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "group": "lc17-perf",
+      "taskId": "T936",
+      "tasks": [
+        "T936"
+      ],
+      "lane": null,
+      "owner": "lc17-wa",
+      "contributors": [
+        "lc17-wa"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-17T06:31:40.676Z",
+      "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31",
+      "verifiedCommit": "061d707f30bb610b908c807e5d00d8f6d0967913",
+      "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+      "submissionId": "38512725-2742-4621-8367-a8daf3179002",
+      "submittedAt": "2026-11-17T06:55:15.640Z",
+      "risk": null,
+      "review": {
+        "id": "2a994761-d952-42aa-8ba6-fa7db7d0c79f",
+        "owner": "lc17-rv-codex",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T936 at 061d707f30bb610b908c807e5d00d8f6d0967913 preserves the old greedy ordering, stable ties, used-by-id behavior, and unchanged selectionValue/multiplier call order and count; non-finite values use the original sort comparator over identically ordered stored pairs. Scope is limited to declared touches and T936 itself. Independent checks passed: persisted-squads unit tests (29), the isolated automatic XI block (4, including its 300-run property), and 300 additional differential cases comparing exact Player identity and call traces across finite ties, shared IDs, NaN, infinities, undersized and empty squads. world.test.ts is classified as integration, so its new block was run explicitly with a name filter. Recorded world hashes exactly match 31243d16e32446febb0da343ce593a4fcb3fa042a474d9666017effdb36799c9 (1934) and 8dc13e17c9b093f7e5f6b1a943e586fa656b7907f5286b11a846cbc4efed873f (1950). All six A/B process runs report equal side output hashes across 12 timed pairs; independently recomputed CPU ratio is 0.9319 [0.8789, 0.9833]. Benchmark baseline differs from the assigned base only in spec documents; the measured implementation differs from the submitted commit only in T936 documentation. Submitted task-tier verification passed on the exact commit, including lint and i18n. Full integration, contract, build and batch remain coordinator gates.",
+        "findings": [],
+        "commit": "061d707f30bb610b908c807e5d00d8f6d0967913",
+        "baseCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+        "submissionId": "38512725-2742-4621-8367-a8daf3179002",
+        "createdAt": "2026-11-17T06:57:17.875Z",
+        "finishedAt": "2026-11-17T07:01:14.390Z"
+      },
+      "steps": [
+        {
+          "taskId": "T936",
+          "commit": "061d707f30bb610b908c807e5d00d8f6d0967913",
+          "at": "2026-11-17T06:55:15.620Z",
+          "verification": [
+            {
+              "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+              "startedAt": "2026-11-17T06:51:22.685Z",
+              "finishedAt": "2026-11-17T06:55:15.442Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+          "startedAt": "2026-11-17T06:51:22.685Z",
+          "finishedAt": "2026-11-17T06:55:15.442Z"
+        }
+      ]
+    },
+    {
+      "id": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "group": "lc17-perf",
+      "taskId": "T937",
+      "tasks": [
+        "T937"
+      ],
+      "lane": null,
+      "owner": "lc17-wb",
+      "contributors": [
+        "lc17-wb"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-11-17T06:31:45.566Z",
+      "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31",
+      "verifiedCommit": "76f8853d5df6ecfe54bdf0f3b9532f378d2bd88a",
+      "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+      "submissionId": "98c57d46-10d0-4f4d-ac27-648d74a89728",
+      "submittedAt": "2026-11-17T07:13:06.101Z",
+      "risk": null,
+      "steps": [
+        {
+          "taskId": "T937",
+          "commit": "76f8853d5df6ecfe54bdf0f3b9532f378d2bd88a",
+          "at": "2026-11-17T07:13:06.082Z",
+          "verification": [
+            {
+              "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+              "startedAt": "2026-11-17T07:12:01.932Z",
+              "finishedAt": "2026-11-17T07:13:05.950Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+          "startedAt": "2026-11-17T07:12:01.932Z",
+          "finishedAt": "2026-11-17T07:13:05.950Z"
+        }
+      ]
+    },
+    {
+      "id": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "group": "lc17-perf",
+      "taskId": "T939",
+      "tasks": [
+        "T939"
+      ],
+      "lane": null,
+      "owner": "lc17-wc",
+      "contributors": [
+        "lc17-wc"
+      ],
+      "status": "reviewing",
+      "reason": null,
+      "createdAt": "2026-11-17T06:31:49.291Z",
+      "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31",
+      "verifiedCommit": "ecc25735611ad8e37c30e9a2e9e0ecd502c26276",
+      "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+      "submissionId": "c08b6e00-caf5-4e63-997d-f1cd5edb5920",
+      "submittedAt": "2026-11-17T06:56:59.165Z",
+      "risk": null,
+      "review": {
+        "id": "9aadf8ca-8535-426d-879f-fb613a79684d",
+        "owner": "lc17-rv-codex",
+        "status": "reviewing",
+        "commit": "ecc25735611ad8e37c30e9a2e9e0ecd502c26276",
+        "baseCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+        "submissionId": "c08b6e00-caf5-4e63-997d-f1cd5edb5920",
+        "createdAt": "2026-11-17T07:15:29.717Z"
+      },
+      "steps": [
+        {
+          "taskId": "T939",
+          "commit": "ecc25735611ad8e37c30e9a2e9e0ecd502c26276",
+          "at": "2026-11-17T06:56:59.149Z",
+          "verification": [
+            {
+              "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+              "startedAt": "2026-11-17T06:55:42.941Z",
+              "finishedAt": "2026-11-17T06:56:58.980Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+          "startedAt": "2026-11-17T06:55:42.941Z",
+          "finishedAt": "2026-11-17T06:56:58.980Z"
+        }
+      ]
+    },
+    {
+      "id": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "group": "lc17-perf",
+      "taskId": "T941",
+      "tasks": [
+        "T941"
+      ],
+      "lane": null,
+      "owner": "lc17-wd",
+      "contributors": [
+        "lc17-wd"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-17T06:49:32.818Z",
+      "startCommit": "c9dfd49e72f4d7cb99d7d3129caea70f031583aa"
+    },
+    {
+      "id": "2cb76a30-761d-406e-84c2-639658a51852",
+      "group": "lc17-perf",
+      "taskId": "T938",
+      "tasks": [
+        "T938"
+      ],
+      "lane": null,
+      "owner": "lc17-wa2",
+      "contributors": [
+        "lc17-wa2"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-17T06:57:07.719Z",
+      "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7"
+    },
+    {
+      "id": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+      "group": "lc17-perf",
+      "taskId": "T940",
+      "tasks": [
+        "T940"
+      ],
+      "lane": null,
+      "owner": "lc17-wc2",
+      "contributors": [
+        "lc17-wc2"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-17T07:13:38.082Z",
+      "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7"
+    }
+  ],
+  "history": [
+    {
+      "sequence": 291,
+      "at": "2026-11-17T06:31:30.887Z",
+      "type": "group",
+      "group": "lc17-perf",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "lc17-perf",
+        "branch": "gusta-session-self-improve-lc17-37ba91cb",
+        "status": "preparing",
+        "createdAt": "2026-11-17T06:31:30.857Z",
+        "limits": {
+          "workers": 3,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": null,
+        "review": "all",
+        "taskScope": [
+          "T936",
+          "T937",
+          "T938",
+          "T939",
+          "T940"
+        ]
+      }
+    },
+    {
+      "sequence": 292,
+      "at": "2026-11-17T06:31:30.930Z",
+      "type": "group",
+      "group": "lc17-perf",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 297,
+      "at": "2026-11-17T06:31:40.676Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+        "group": "lc17-perf",
+        "taskId": "T936",
+        "tasks": [
+          "T936"
+        ],
+        "lane": null,
+        "owner": "lc17-wa",
+        "contributors": [
+          "lc17-wa"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-17T06:31:40.676Z",
+        "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31"
+      }
+    },
+    {
+      "sequence": 299,
+      "at": "2026-11-17T06:31:43.172Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 300,
+      "at": "2026-11-17T06:31:45.566Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+        "group": "lc17-perf",
+        "taskId": "T937",
+        "tasks": [
+          "T937"
+        ],
+        "lane": null,
+        "owner": "lc17-wb",
+        "contributors": [
+          "lc17-wb"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-17T06:31:45.566Z",
+        "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31"
+      }
+    },
+    {
+      "sequence": 301,
+      "at": "2026-11-17T06:31:48.000Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 302,
+      "at": "2026-11-17T06:31:49.291Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "1916165e-f804-413a-8975-2546f7f35eb4",
+        "group": "lc17-perf",
+        "taskId": "T939",
+        "tasks": [
+          "T939"
+        ],
+        "lane": null,
+        "owner": "lc17-wc",
+        "contributors": [
+          "lc17-wc"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-17T06:31:49.291Z",
+        "startCommit": "79a417ccdd669938f9ea67097984a7a9b0314a31"
+      }
+    },
+    {
+      "sequence": 303,
+      "at": "2026-11-17T06:31:51.603Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 314,
+      "at": "2026-11-17T06:43:00.342Z",
+      "type": "group",
+      "group": "lc17-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T936",
+          "T937",
+          "T938",
+          "T939",
+          "T940",
+          "T941"
+        ]
+      }
+    },
+    {
+      "sequence": 320,
+      "at": "2026-11-17T06:48:26.048Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 321,
+      "at": "2026-11-17T06:48:26.166Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T939: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 322,
+      "at": "2026-11-17T06:48:56.837Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "reason": "T939 measured and not kept: the text hand-off is 1.30x slower on the engine thread (postMessage 1.303 [1.278, 1.318]) though the structuredClone proxy passes (0.627 [0.598, 0.643]); acceptance lines 1, 2, 4 cannot be marked, so submit refuses — needs the coordinator's close decision"
+      }
+    },
+    {
+      "sequence": 323,
+      "at": "2026-11-17T06:49:32.818Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "taskId": "T941",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "3b65146b-5645-4337-a6d0-c59309562e34",
+        "group": "lc17-perf",
+        "taskId": "T941",
+        "tasks": [
+          "T941"
+        ],
+        "lane": null,
+        "owner": "lc17-wd",
+        "contributors": [
+          "lc17-wd"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-17T06:49:32.818Z",
+        "startCommit": "c9dfd49e72f4d7cb99d7d3129caea70f031583aa"
+      }
+    },
+    {
+      "sequence": 324,
+      "at": "2026-11-17T06:49:37.463Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "3b65146b-5645-4337-a6d0-c59309562e34",
+      "taskId": "T941",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 325,
+      "at": "2026-11-17T06:51:22.536Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 326,
+      "at": "2026-11-17T06:55:15.640Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "061d707f30bb610b908c807e5d00d8f6d0967913",
+        "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+        "submissionId": "38512725-2742-4621-8367-a8daf3179002",
+        "submittedAt": "2026-11-17T06:55:15.640Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T936",
+            "commit": "061d707f30bb610b908c807e5d00d8f6d0967913",
+            "at": "2026-11-17T06:55:15.620Z",
+            "verification": [
+              {
+                "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+                "startedAt": "2026-11-17T06:51:22.685Z",
+                "finishedAt": "2026-11-17T06:55:15.442Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+            "startedAt": "2026-11-17T06:51:22.685Z",
+            "finishedAt": "2026-11-17T06:55:15.442Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 327,
+      "at": "2026-11-17T06:55:41.436Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 328,
+      "at": "2026-11-17T06:55:42.810Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 329,
+      "at": "2026-11-17T06:56:59.165Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "ecc25735611ad8e37c30e9a2e9e0ecd502c26276",
+        "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+        "submissionId": "c08b6e00-caf5-4e63-997d-f1cd5edb5920",
+        "submittedAt": "2026-11-17T06:56:59.165Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T939",
+            "commit": "ecc25735611ad8e37c30e9a2e9e0ecd502c26276",
+            "at": "2026-11-17T06:56:59.149Z",
+            "verification": [
+              {
+                "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+                "startedAt": "2026-11-17T06:55:42.941Z",
+                "finishedAt": "2026-11-17T06:56:58.980Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+            "startedAt": "2026-11-17T06:55:42.941Z",
+            "finishedAt": "2026-11-17T06:56:58.980Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 330,
+      "at": "2026-11-17T06:57:07.719Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "2cb76a30-761d-406e-84c2-639658a51852",
+        "group": "lc17-perf",
+        "taskId": "T938",
+        "tasks": [
+          "T938"
+        ],
+        "lane": null,
+        "owner": "lc17-wa2",
+        "contributors": [
+          "lc17-wa2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-17T06:57:07.719Z",
+        "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7"
+      }
+    },
+    {
+      "sequence": 331,
+      "at": "2026-11-17T06:57:11.180Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "2cb76a30-761d-406e-84c2-639658a51852",
+      "taskId": "T938",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 332,
+      "at": "2026-11-17T06:57:17.876Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2a994761-d952-42aa-8ba6-fa7db7d0c79f",
+          "owner": "lc17-rv-codex",
+          "status": "reviewing",
+          "commit": "061d707f30bb610b908c807e5d00d8f6d0967913",
+          "baseCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+          "submissionId": "38512725-2742-4621-8367-a8daf3179002",
+          "createdAt": "2026-11-17T06:57:17.875Z"
+        }
+      }
+    },
+    {
+      "sequence": 346,
+      "at": "2026-11-17T07:01:14.390Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "2a994761-d952-42aa-8ba6-fa7db7d0c79f",
+          "owner": "lc17-rv-codex",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T936 at 061d707f30bb610b908c807e5d00d8f6d0967913 preserves the old greedy ordering, stable ties, used-by-id behavior, and unchanged selectionValue/multiplier call order and count; non-finite values use the original sort comparator over identically ordered stored pairs. Scope is limited to declared touches and T936 itself. Independent checks passed: persisted-squads unit tests (29), the isolated automatic XI block (4, including its 300-run property), and 300 additional differential cases comparing exact Player identity and call traces across finite ties, shared IDs, NaN, infinities, undersized and empty squads. world.test.ts is classified as integration, so its new block was run explicitly with a name filter. Recorded world hashes exactly match 31243d16e32446febb0da343ce593a4fcb3fa042a474d9666017effdb36799c9 (1934) and 8dc13e17c9b093f7e5f6b1a943e586fa656b7907f5286b11a846cbc4efed873f (1950). All six A/B process runs report equal side output hashes across 12 timed pairs; independently recomputed CPU ratio is 0.9319 [0.8789, 0.9833]. Benchmark baseline differs from the assigned base only in spec documents; the measured implementation differs from the submitted commit only in T936 documentation. Submitted task-tier verification passed on the exact commit, including lint and i18n. Full integration, contract, build and batch remain coordinator gates.",
+          "findings": [],
+          "commit": "061d707f30bb610b908c807e5d00d8f6d0967913",
+          "baseCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+          "submissionId": "38512725-2742-4621-8367-a8daf3179002",
+          "createdAt": "2026-11-17T06:57:17.875Z",
+          "finishedAt": "2026-11-17T07:01:14.390Z"
+        }
+      }
+    },
+    {
+      "sequence": 347,
+      "at": "2026-11-17T07:01:34.298Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 363,
+      "at": "2026-11-17T07:11:45.284Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 364,
+      "at": "2026-11-17T07:11:45.401Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T937: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 365,
+      "at": "2026-11-17T07:12:01.794Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 366,
+      "at": "2026-11-17T07:13:06.101Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "600b893c-9086-4be2-ba69-5d702e7bcc2c",
+      "taskId": "T937",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "76f8853d5df6ecfe54bdf0f3b9532f378d2bd88a",
+        "submittedBase": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+        "submissionId": "98c57d46-10d0-4f4d-ac27-648d74a89728",
+        "submittedAt": "2026-11-17T07:13:06.101Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T937",
+            "commit": "76f8853d5df6ecfe54bdf0f3b9532f378d2bd88a",
+            "at": "2026-11-17T07:13:06.082Z",
+            "verification": [
+              {
+                "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+                "startedAt": "2026-11-17T07:12:01.932Z",
+                "finishedAt": "2026-11-17T07:13:05.950Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "npx --yes @haeram/gusta@latest vibe check --tier task",
+            "startedAt": "2026-11-17T07:12:01.932Z",
+            "finishedAt": "2026-11-17T07:13:05.950Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 367,
+      "at": "2026-11-17T07:13:38.083Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+      "taskId": "T940",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+        "group": "lc17-perf",
+        "taskId": "T940",
+        "tasks": [
+          "T940"
+        ],
+        "lane": null,
+        "owner": "lc17-wc2",
+        "contributors": [
+          "lc17-wc2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-17T07:13:38.082Z",
+        "startCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7"
+      }
+    },
+    {
+      "sequence": 368,
+      "at": "2026-11-17T07:13:40.507Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "55cd0eff-74f0-4943-9629-4c9e9b0667c5",
+      "taskId": "T940",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 369,
+      "at": "2026-11-17T07:15:27.846Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm run typecheck"
+      }
+    },
+    {
+      "sequence": 370,
+      "at": "2026-11-17T07:15:29.717Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "1916165e-f804-413a-8975-2546f7f35eb4",
+      "taskId": "T939",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9aadf8ca-8535-426d-879f-fb613a79684d",
+          "owner": "lc17-rv-codex",
+          "status": "reviewing",
+          "commit": "ecc25735611ad8e37c30e9a2e9e0ecd502c26276",
+          "baseCommit": "9bfd5e5acbe0e201ce75b34bd0befe698ace7ed7",
+          "submissionId": "c08b6e00-caf5-4e63-997d-f1cd5edb5920",
+          "createdAt": "2026-11-17T07:15:29.717Z"
+        }
+      }
+    },
+    {
+      "sequence": 371,
+      "at": "2026-11-17T07:16:07.755Z",
+      "type": "attempt",
+      "group": "lc17-perf",
+      "attemptId": "7b45668c-a688-49a3-9939-2fce147fe4c9",
+      "taskId": "T936",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}

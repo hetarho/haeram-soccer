@@ -15,8 +15,14 @@ import {
   clubStyle,
   formationOf,
   npcSquad,
+  lineup,
+  selectionValue,
+  compareIds,
+  makePlayer,
+  TACTICS,
 } from './index';
-import { LINES } from '../../contracts/src/player';
+import type { Manager, ManagerTrait, Player, Tactic } from '../../contracts/src/types';
+import { LINES, POSITIONS } from '../../contracts/src/player';
 import { LINE_MINIMUM, lineOf, ovrAt } from './player';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -200,4 +206,107 @@ it('never assigns the single goal scorer an assist for the same goal', () => {
       }
   }
   expect(checked).toBeGreaterThan(0);
+});
+
+describe('automatic XI', () => {
+  /** The sort-based `lineup` the scan replaces, kept as the reference it must match. */
+  function sortedLineup(
+    players: Player[],
+    tactic: Tactic,
+    manager?: Manager,
+    year?: number,
+    multiplier: (p: Player) => number = () => 1,
+  ): Player[] {
+    const slots = formationOf(tactic);
+    const pairs: { p: Player; slot: number; value: number }[] = [];
+    for (const p of players)
+      slots.forEach((slot, i) =>
+        pairs.push({ p, slot: i, value: selectionValue(p, slot, manager, year, multiplier(p)) }),
+      );
+    pairs.sort((a, b) => b.value - a.value || a.slot - b.slot || compareIds(a.p.id, b.p.id));
+    const chosen: (Player | undefined)[] = Array(slots.length);
+    const used = new Set<string>();
+    for (const pair of pairs) {
+      if (chosen[pair.slot] || used.has(pair.p.id)) continue;
+      chosen[pair.slot] = pair.p;
+      used.add(pair.p.id);
+    }
+    return chosen.filter((p): p is Player => !!p);
+  }
+  const base = POSITIONS.map((position, i) =>
+    makePlayer('ENG', 'lineup-seed', `base:${position}`, 1950, 40 + i * 3, position, 19 + i),
+  );
+  /** A copy of `p` under another id, so its values tie his in every slot. */
+  const twin = (p: Player, id: string, fatigue = p.fatigue): Player => ({ ...p, id, fatigue });
+  const same = (a: Player[], b: Player[]) => expect(a.map((p) => p.id)).toEqual(b.map((p) => p.id));
+
+  it('matches the sorted pairs when values tie across slots and players', () => {
+    const squad = [
+      ...base.slice(4, 9),
+      ...base.slice(4, 9).map((p, i) => twin(p, `twin:${9 - i}`)),
+    ];
+    const flat = () => 0;
+    for (const tactic of TACTICS) {
+      same(lineup(squad, tactic), sortedLineup(squad, tactic));
+      same(
+        lineup(squad, tactic, undefined, 1950, flat),
+        sortedLineup(squad, tactic, undefined, 1950, flat),
+      );
+    }
+  });
+  it('keeps the sort path when a value is not finite', () => {
+    const squad = [
+      ...base,
+      twin(base[3]!, 'nan:a', Number.NaN),
+      twin(base[7]!, 'nan:b', Number.NaN),
+    ];
+    const nanFor = (p: Player) => (p.id === 'base:CM' ? Number.NaN : 1);
+    for (const tactic of TACTICS) {
+      same(lineup(squad, tactic), sortedLineup(squad, tactic));
+      same(
+        lineup(base, tactic, undefined, 1950, nanFor),
+        sortedLineup(base, tactic, undefined, 1950, nanFor),
+      );
+    }
+  });
+  it('fields every player when there are fewer than the slots', () => {
+    const squad = base.slice(2, 7);
+    for (const tactic of TACTICS) {
+      const xi = lineup(squad, tactic);
+      expect(xi).toHaveLength(5);
+      same(xi, sortedLineup(squad, tactic));
+    }
+    expect(lineup([], 'balanced')).toEqual([]);
+  });
+  it('matches the sorted pairs on random squads with ties, shared ids and traits', () => {
+    const trait = fc.constantFrom<ManagerTrait | undefined>(
+      undefined,
+      'youth',
+      'rotation',
+      'stable',
+    );
+    const member = fc.record({
+      from: fc.integer({ min: 0, max: base.length - 1 }),
+      id: fc.integer({ min: 0, max: 30 }),
+      fatigue: fc.constantFrom(0, 10, 25, 40),
+    });
+    fc.assert(
+      fc.property(
+        fc.array(member, { maxLength: 30 }),
+        fc.constantFrom(...TACTICS),
+        trait,
+        fc.constantFrom(1, 0, 0.9),
+        (members, tactic, managerTrait, factor) => {
+          const squad = members.map((m) => twin(base[m.from]!, `p:${m.id}`, m.fatigue));
+          const manager = managerTrait ? ({ trait: managerTrait } as Manager) : undefined;
+          const multiplier = (p: Player) => (p.id.endsWith('7') ? factor : 1);
+          same(
+            lineup(squad, tactic, manager, 1950, multiplier),
+            sortedLineup(squad, tactic, manager, 1950, multiplier),
+          );
+        },
+      ),
+      { numRuns: 300 },
+    );
+  });
 });
