@@ -32,10 +32,10 @@
         "year": 1950,
         "round": 5,
         "revision": 37,
-        "cash": "2059938",
+        "cash": "2057355",
         "currency": "GBP-LSD",
         "income": "861988",
-        "expense": "155518",
+        "expense": "158101",
         "tactic": "balanced",
         "manager": {
           "id": "coach:1950:1:4025576267",
@@ -856,9 +856,14 @@
             "amount": "13804"
           },
           {
+            "kind": "delegate-plan",
+            "title": "단장 Patrick Oliver의 유소년 운영 계획",
+            "amount": null
+          },
+          {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "13801"
+            "amount": "15093"
           },
           {
             "kind": "rival-sacking",
@@ -903,7 +908,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "13804"
+            "amount": "15095"
           }
         ],
         "euro": []
@@ -926,7 +931,7 @@
         "year": 1960,
         "round": 0,
         "revision": 323,
-        "cash": "59598476",
+        "cash": "59063659",
         "currency": "FRF",
         "income": "0",
         "expense": "0",
@@ -4622,7 +4627,7 @@
             "year": 1959,
             "rank": 16,
             "points": 33,
-            "cash": "5959847579",
+            "cash": "5906365917",
             "currency": "FRF-OLD",
             "champions": [
               {
@@ -4785,7 +4790,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534064"
+            "amount": "22807436"
           },
           {
             "kind": "gate",
@@ -4805,12 +4810,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534062"
+            "amount": "22807436"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534063"
+            "amount": "22807436"
           },
           {
             "kind": "rival-sacking",
@@ -4830,7 +4835,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534063"
+            "amount": "22807436"
           },
           {
             "kind": "gate",
@@ -4845,17 +4850,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534064"
+            "amount": "22807436"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534063"
-          },
-          {
-            "kind": "delegate-plan",
-            "title": "단장 Damien Adam의 유소년 운영 계획",
-            "amount": null
+            "amount": "22807436"
           },
           {
             "kind": "operating-cost",
@@ -4888,11 +4888,6 @@
             "amount": "22807435"
           },
           {
-            "kind": "delegate-plan",
-            "title": "단장 Damien Adam의 유소년 운영 계획",
-            "amount": null
-          },
-          {
             "kind": "cup-exit",
             "title": "프랑스 컵 1라운드 탈락",
             "amount": null
@@ -4910,12 +4905,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534064"
+            "amount": "22807437"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534063"
+            "amount": "22807436"
           },
           {
             "kind": "rival-sacking",
@@ -4930,7 +4925,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534062"
+            "amount": "22807435"
           },
           {
             "kind": "owner-living",
@@ -4950,7 +4945,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534064"
+            "amount": "22807436"
           },
           {
             "kind": "suspension",
@@ -4965,12 +4960,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534063"
+            "amount": "22807437"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534063"
+            "amount": "22807436"
           },
           {
             "kind": "rival-sacking",
@@ -5000,7 +4995,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534062"
+            "amount": "22807435"
           },
           {
             "kind": "owner-living",
@@ -5010,7 +5005,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534064"
+            "amount": "22807436"
           },
           {
             "kind": "suspension",
@@ -5030,12 +5025,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534062"
+            "amount": "22807435"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534064"
+            "amount": "22807437"
           },
           {
             "kind": "suspension",
@@ -5045,7 +5040,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21534062"
+            "amount": "22807436"
           },
           {
             "kind": "contract",
@@ -5090,12 +5085,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552992"
+            "amount": "22826364"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826364"
           },
           {
             "kind": "suspension",
@@ -5105,7 +5100,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552990"
+            "amount": "22826363"
           },
           {
             "kind": "gate",
@@ -5120,12 +5115,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552992"
+            "amount": "22826364"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552990"
+            "amount": "22826364"
           },
           {
             "kind": "owner-living",
@@ -5135,7 +5130,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552992"
+            "amount": "22826365"
           },
           {
             "kind": "gate",
@@ -5150,7 +5145,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552989"
+            "amount": "22826362"
           },
           {
             "kind": "suspension",
@@ -5160,7 +5155,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552993"
+            "amount": "22826365"
           },
           {
             "kind": "gate",
@@ -5175,7 +5170,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552990"
+            "amount": "22826363"
           },
           {
             "kind": "owner-living",
@@ -5185,16 +5180,16 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552990"
+            "amount": "22826363"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826365"
           },
           {
             "kind": "youth-intake",
-            "title": "유스 아카데미 입단 3명",
+            "title": "유스 아카데미 입단 4명",
             "amount": null
           },
           {
@@ -5210,12 +5205,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552992"
+            "amount": "22826364"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552990"
+            "amount": "22826363"
           },
           {
             "kind": "retirement-announce",
@@ -5235,7 +5230,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826364"
           },
           {
             "kind": "gate",
@@ -5250,7 +5245,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826364"
           },
           {
             "kind": "injury",
@@ -5260,7 +5255,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826363"
           },
           {
             "kind": "gate",
@@ -5275,12 +5270,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552992"
+            "amount": "22826366"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552989"
+            "amount": "22826362"
           },
           {
             "kind": "owner-living",
@@ -5290,7 +5285,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826364"
           },
           {
             "kind": "rival-sacking",
@@ -5310,7 +5305,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552992"
+            "amount": "22826364"
           },
           {
             "kind": "suspension",
@@ -5320,12 +5315,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552990"
+            "amount": "22826363"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826364"
           },
           {
             "kind": "owner-living",
@@ -5345,7 +5340,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826365"
           },
           {
             "kind": "injury",
@@ -5355,12 +5350,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826363"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "21552991"
+            "amount": "22826364"
           },
           {
             "kind": "league-merit",
@@ -15770,6 +15765,45 @@
         "direction": {},
         "careers": [
           {
+            "id": "ENG:1:0:12:p:14:108",
+            "name": "Ethan Brooks",
+            "born": 1916,
+            "position": "CM",
+            "professionalism": 2,
+            "qualities": {
+              "understanding": 4,
+              "teaching": 5,
+              "judgement": 4
+            },
+            "playing": "active",
+            "employment": [
+              {
+                "role": "player",
+                "club": "ENG:1:0:12",
+                "from": {
+                  "year": 1950,
+                  "day": 0
+                },
+                "to": {
+                  "year": 1950,
+                  "day": 9
+                }
+              },
+              {
+                "role": "player",
+                "club": "ENG:3:0:0",
+                "from": {
+                  "year": 1950,
+                  "day": 9
+                }
+              }
+            ],
+            "mentors": [],
+            "formerOwn": true,
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "club": "ENG:3:0:0"
+          },
+          {
             "id": "ENG:3:0:0:p:6:109",
             "name": "Ben Allen",
             "born": 1930,
@@ -15889,6 +15923,7 @@
               "judgement": 1
             },
             "playing": "active",
+            "club": "ENG:3:0:0",
             "employment": [
               {
                 "role": "player",
@@ -15896,25 +15931,12 @@
                 "from": {
                   "year": 1950,
                   "day": 0
-                },
-                "to": {
-                  "year": 1950,
-                  "day": 11
-                }
-              },
-              {
-                "role": "player",
-                "club": "ITA:2:2:2",
-                "from": {
-                  "year": 1950,
-                  "day": 11
                 }
               }
             ],
             "mentors": [],
             "formerOwn": true,
-            "ownCareer": [0, 0, 20, 17, 0, 0, 4, 1, 0, 0, 90, 0],
-            "club": "ITA:2:2:2"
+            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           },
           {
             "id": "ENG:3:0:0:p:0:109",
@@ -16117,7 +16139,6 @@
               "judgement": 3
             },
             "playing": "active",
-            "club": "ENG:3:0:0",
             "formerOwn": true,
             "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             "employment": [
@@ -16127,10 +16148,23 @@
                 "from": {
                   "year": 1950,
                   "day": 0
+                },
+                "to": {
+                  "year": 1950,
+                  "day": 11
+                }
+              },
+              {
+                "role": "player",
+                "club": "ENG:3:0:16",
+                "from": {
+                  "year": 1950,
+                  "day": 11
                 }
               }
             ],
-            "mentors": []
+            "mentors": [],
+            "club": "ENG:3:0:16"
           },
           {
             "id": "ENG:3:0:0:p:1:108",
@@ -16410,7 +16444,7 @@
             "key": "coach:1950:1:4025576267:1950:summer:slot:10:ST",
             "created": {
               "year": 1950,
-              "day": 7
+              "day": 3
             },
             "window": "summer",
             "manager": {
@@ -16434,16 +16468,16 @@
               "wage": "66222"
             },
             "managerReason": "스트라이커 자리 보강을 요청했어요. 현재 적합 후보는 Luke Wood 선수예요.",
-            "directorReason": "이적료 £8,975와 연봉 £275을 더하면 영입에 쓸 돈 £7,765을 넘어요(단장 판단 적당히)",
-            "support": "balanced",
+            "directorReason": "이적료 £8,975와 연봉 £275을 더하면 이적료와 계획 적자 연 £0의 4시즌분이 보유 자금 £3,121을 넘어요(단장 판단 적당히)",
+            "support": "manager",
             "status": "resolved",
             "resolution": {
               "at": {
                 "year": 1950,
-                "day": 7
+                "day": 3
               },
-              "support": "balanced",
-              "result": "연봉을 요구의 125%까지 올려도 선수가 응할 가능성이 60%에 못 미치거나 자금 점검을 넘지 못해요 다음 이적시장 마감까지의 보강 약속을 기록했어요.",
+              "support": "manager",
+              "result": "진행 가능한 적합 후보가 없어요. 다음 이적시장 마감까지의 보강 약속을 기록했어요.",
               "promise": "promise:1950:0"
             }
           }
@@ -16468,7 +16502,7 @@
             },
             "created": {
               "year": 1950,
-              "day": 7
+              "day": 3
             },
             "deadline": {
               "year": 1950,
@@ -16477,14 +16511,32 @@
             "status": "pending"
           }
         ],
-        "recruitmentArrivals": [],
+        "recruitmentArrivals": [
+          {
+            "player": "ENG:1:0:12:p:14:108",
+            "name": "Ethan Brooks",
+            "position": "CM",
+            "positions": {
+              "CM": 3,
+              "AM": 2,
+              "LM": 1,
+              "RM": 2,
+              "CB": 2,
+              "ST": 2
+            },
+            "at": {
+              "year": 1950,
+              "day": 9
+            }
+          }
+        ],
         "year": 1950,
         "round": 1,
         "revision": 16,
-        "cash": "1179058",
+        "cash": "897340",
         "currency": "GBP-LSD",
-        "income": "198022",
-        "expense": "372432",
+        "income": "195499",
+        "expense": "651627",
         "tactic": "balanced",
         "manager": {
           "id": "coach:1950:1:4025576267",
@@ -16518,7 +16570,7 @@
           },
           {
             "id": "ENG:3:0:0:founding:1950:2",
-            "status": "sold",
+            "status": "active",
             "wage": "6663",
             "career": [0, 0, 20, 17, 0, 0, 4, 1, 0, 0, 90, 0]
           },
@@ -16566,7 +16618,7 @@
           },
           {
             "id": "ENG:3:0:0:founding:1950:0",
-            "status": "active",
+            "status": "sold",
             "wage": "4469",
             "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           },
@@ -16635,6 +16687,12 @@
             "status": "active",
             "wage": "6030",
             "career": [0, 0, 40, 35, 0, 0, 2, 0, 0, 0, 90, 0]
+          },
+          {
+            "id": "ENG:1:0:12:p:14:108",
+            "status": "active",
+            "wage": "44417",
+            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           }
         ],
         "matches": [
@@ -16792,6 +16850,11 @@
             "amount": "51652"
           },
           {
+            "kind": "transfer-bid",
+            "title": "Ethan Brooks 영입 제안",
+            "amount": null
+          },
+          {
             "kind": "sponsor:local",
             "title": "지역 후원",
             "amount": "794"
@@ -16837,9 +16900,19 @@
             "amount": null
           },
           {
+            "kind": "transfer-in",
+            "title": "Ethan Brooks 영입",
+            "amount": "279195"
+          },
+          {
             "kind": "transfer-out",
-            "title": "Derek Nicholls의 새로운 도전",
-            "amount": "7662"
+            "title": "Ethan Lucas의 새로운 도전",
+            "amount": "5139"
+          },
+          {
+            "kind": "transfer-bid",
+            "title": "Terence Sharp 영입 제안",
+            "amount": null
           }
         ],
         "euro": []
@@ -18447,7 +18520,7 @@
               "wage": "26961"
             },
             "managerReason": "미드필더 보강을 위해 Eric Pritchard 선수를 요청했어요.",
-            "directorReason": "현금이 바닥나지 않게 멈췄어요. 쓰고 나면 현금이 고정지출 4주분(£277)보다 적어요(단장 판단 적당히)",
+            "directorReason": "이적료 £481와 연봉 £112을 더하면 이적료와 계획 적자 연 £0의 4시즌분이 보유 자금 £0을 넘어요(단장 판단 적당히)",
             "support": "balanced",
             "status": "resolved",
             "resolution": {
