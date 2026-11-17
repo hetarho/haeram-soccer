@@ -39,6 +39,7 @@ import { scaleBy, zeroMetrics } from './primitives';
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
 import { historyWorld } from './history';
 import { settleNpcBooks } from './books';
+import { movePerson } from './npc-continuity';
 
 const choice = (tier: WealthTier, traits: OwnerTrait[] = []) => ({ tier, traits });
 /** The club at `place` of a division of England. */
@@ -243,6 +244,28 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     // The manager taken over is tracked from the takeover as at a founding, archives or not.
     expect(w.managerHistory).toMatchObject({ club: club.id, coverage: 'founding' });
     expect(w.managerHistory!.trackedFrom).toMatchObject({ year: w.year, day: 0 });
+    expect(() => validateWorld(structuredClone(w))).not.toThrow();
+  });
+
+  it('keeps no contract end the club nobody owned wrote on a job, so a later sale still saves', () => {
+    const { w, club } = setup('takeover-contract-end');
+    const p = clubPlayers(w, club).find((q) =>
+      w.people?.[q.id]?.employment.some((j) => !j.to && j.role === 'player' && j.club === club.id),
+    )!;
+    const job = w.people![p.id]!.employment.find((j) => !j.to && j.role === 'player')!;
+    // Its last renewal ran to last season's close; the owner kept him past it.
+    job.from = { year: w.year - 2, day: 0 };
+    job.contractUntil = { year: w.year - 1, day: 365 };
+    takeOver(w, club.id, choice('industrial'));
+    const held = w.people![p.id]!.employment.find((j) => !j.to && j.role === 'player')!;
+    expect(held.contractUntil).toBeUndefined();
+    const buyer = atPlace(w, 0, 1);
+    movePerson(
+      w,
+      w.players.find((q) => q.id === p.id)!,
+      buyer.id,
+      true,
+    );
     expect(() => validateWorld(structuredClone(w))).not.toThrow();
   });
 

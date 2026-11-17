@@ -208,11 +208,16 @@ export function takeOver(
     if (club.cohesion !== undefined) p.adaptation = club.cohesion;
   }
   w.players = players;
-  for (const p of players)
+  for (const p of players) {
     if (p.qualities) {
       retainPerson(w, p, club.id, true);
       openEmployment(w, p.id, 'player', club.id);
     }
+    // The owner's contracts are his players' own (`until`), as for any he signs: an end the club
+    // nobody owned wrote on the job would outlive his renewals and date a later departure after it.
+    const job = w.people?.[p.id]?.employment.find((held) => !held.to && held.role === 'player');
+    if (job) delete job.contractUntil;
+  }
   // The club is the owner's now: its books, 조직력 and project were a club nobody owns's, and
   // so were its coaches, who leave as the owner's staff starts as a new club's (→OWNER-4).
   for (const { person, job } of activeCoachingEmployment(w))
