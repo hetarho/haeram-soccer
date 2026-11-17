@@ -66,8 +66,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T951 | Market value ranking and paid moves down | WORLD CLUB LEAGUE ECON ARCH | T945 T948 | todo |
-| T950 | Calibrate market and levels | WORLD LEAGUE CLUB ECON | T945 T947 T949 T951 T952 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
