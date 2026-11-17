@@ -6,9 +6,11 @@ import { atCareerDate } from './person-careers';
 import { announceNpcRetirements, RETIREMENT, retirePerson, retirementAnnounceDay } from './careers';
 import { TRAINING_GROUND } from './facility-model';
 import { clubManager } from './managerMarket';
-import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads';
+import { CLUB_LEVELS, enrollSquadPlayer, followLevels, foundSquads } from './persisted-squads';
 import { lineOf, mainOvr } from './player';
 import { clamp, integer, random } from './primitives';
+import { CLUB_TAKEOVER } from './owner-config';
+import { drawProdigies, landOnOvr } from './prodigies';
 import { clubRegistration, registrationExempt } from './registration';
 import { departmentMultiplier } from './staff';
 import { clubStyle } from './tactics';
@@ -29,6 +31,7 @@ import { npcNeedsRefill, returnNpcLoans } from './npc-market';
 import { developAnnually, settlePlayerGrowth } from './training';
 import {
   clubById,
+  divisionLevel,
   generatedPlayer,
   invalidateNpcSquad,
   invalidateNpcSquads,
@@ -41,19 +44,62 @@ import {
   refillPlace,
 } from './world';
 
-/** Starting calibration; T866 measures the division and century distributions. */
+/**
+ * Youth intakes of clubs nobody owns (→WORLD-16): an academy level's count of youngsters, and any
+ * more the standing size or a line needs. Starting values; T950 tunes them.
+ */
 export const NPC_YOUTH = {
   ages: [17, 18],
-  byAcademy: [
-    { count: 2, potential: [44, 65] },
-    { count: 2, potential: [54, 75] },
-    { count: 3, potential: [64, 85] },
-    { count: 3, potential: [74, 95] },
-    { count: 4, potential: [78, 99] },
-    { count: 5, potential: [83, 99] },
+  byAcademy: [{ count: 2 }, { count: 2 }, { count: 3 }, { count: 3 }, { count: 4 }, { count: 5 }],
+  /** Potential points per academy level above or below its division's ladder value. */
+  divisionCentre: 3,
+  /**
+   * The spread of an intake's potential around its centre, as a quantile table of one uniform
+   * draw: most end below it, about a third at or above and about 5% 10 or more above (the
+   * anchors sit half a point low, so the rounded potential splits at them).
+   */
+  skew: [
+    [0, -20],
+    [2 / 3, -0.5],
+    [0.95, 9.5],
+    [1, 14],
   ],
+  /** A youngster taken only to refill the standing size is centred this far below the level. */
+  refillBelow: 10,
   headroom: [12, 24],
+  /**
+   * A skipped war summer's refill (→WORLD-14/16) is drawn ready to play: aged `ages`, his OVR
+   * `below` under the division's level and his potential `headroom` above his OVR (T950: at the
+   * level, so the 1946–1951 top divisions restart nearest it).
+   */
+  warRefill: { ages: [19, 24], below: 0, headroom: 4 },
 } as const;
+
+/** The potential offset at quantile `u` of `NPC_YOUTH.skew`, linear between its anchors. */
+export function youthSkew(u: number) {
+  const table = NPC_YOUTH.skew;
+  for (let i = 1; i < table.length; i++) {
+    const [u1, v1] = table[i]!;
+    if (u <= u1 || i === table.length - 1) {
+      const [u0, v0] = table[i - 1]!;
+      return v0 + ((v1 - v0) * (Math.min(u, u1) - u0)) / (u1 - u0);
+    }
+  }
+  return 0;
+}
+
+/**
+ * Where an intake's potential centres (→WORLD-16): its division's level (→WORLD-15), moved
+ * `divisionCentre` points for each level its academy stands from its division's ladder value
+ * (→WORLD-17); a refill youngster's at the division's bench level, `refillBelow` under it.
+ */
+export function youthCentre(c: Club, academy: number, refill: boolean) {
+  const level = divisionLevel(c.tier);
+  if (refill) return level - NPC_YOUTH.refillBelow;
+  const ladder = CLUB_TAKEOVER.facilities.division;
+  const value = ladder[Math.min(c.tier, ladder.length - 1)]!.academy;
+  return level + (academy - value) * NPC_YOUTH.divisionCentre;
+}
 
 /** Called at the market cadence and at close; the marker survives a save/load. */
 export function settleNpcGrowth(w: World) {
@@ -94,6 +140,26 @@ function lacksLine(players: Player[]) {
   );
 }
 
+/**
+ * A youngster's age, OVR and potential (→WORLD-16). An intake's come from its youth stream: the
+ * potential around its centre, the OVR a headroom below it. A skipped war summer's refill comes
+ * ready to play from a stream of its own (`<seed>:war-refill:<id>`), so no other draw moves.
+ */
+function youthDraw(w: World, c: Club, id: string, refill: boolean, war: boolean) {
+  if (war) {
+    const { ages, below, headroom } = NPC_YOUTH.warRefill;
+    const r = random(`${w.seed}:war-refill:${id}`);
+    const level = clamp(divisionLevel(c.tier) - below, 15, 92);
+    return { age: integer(r, ages[0], ages[1]), level, potential: clamp(level + headroom, 15, 99) };
+  }
+  const r = random(`${w.seed}:youth:${id}`);
+  const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
+  const centre = youthCentre(c, c.levels!.academy, refill);
+  const potential = clamp(Math.round(centre + youthSkew(r())), 15, 99);
+  const level = clamp(potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]), 15, 92);
+  return { age, level, potential };
+}
+
 /** Academy draws alone can produce a golden generation, with no club-level event. */
 function npcYouthIds(w: World) {
   return new Set([
@@ -105,28 +171,31 @@ function npcYouthIds(w: World) {
     ...Object.keys(w.playerRecords ?? {}),
   ]);
 }
-export function intakeNpcYouth(w: World, c: Club, year = w.year + 1, used = npcYouthIds(w)) {
+/**
+ * A club's youth intake (→WORLD-16): its academy's count, then any youngsters its standing size or
+ * a line needs. A war-gap summer (`refillOnly`) takes only the refills, ready to play (→WORLD-14).
+ */
+export function intakeNpcYouth(
+  w: World,
+  c: Club,
+  year = w.year + 1,
+  used = npcYouthIds(w),
+  refillOnly = false,
+) {
   const players = w.squads?.[c.id];
   if (!players || !c.levels) return;
-  const config = NPC_YOUTH.byAcademy[c.levels.academy]!;
+  const count = refillOnly ? 0 : NPC_YOUTH.byAcademy[c.levels.academy]!.count;
   let added = 0;
   for (
     let serial = 0;
-    added < config.count || players.length < NPC_SQUAD.size || lacksLine(players);
+    added < count || players.length < NPC_SQUAD.size || lacksLine(players);
     serial++
   ) {
     const state = clubRegistration(c, year, players);
     if (state.total >= state.ceiling) break;
     const id = `${c.id}:y:${year}:${serial}`;
     if (used.has(id)) continue;
-    const r = random(`${w.seed}:youth:${id}`);
-    const age = integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]);
-    const potential = integer(r, config.potential[0], config.potential[1]);
-    const level = clamp(
-      potential - integer(r, NPC_YOUTH.headroom[0], NPC_YOUTH.headroom[1]),
-      15,
-      92,
-    );
+    const { age, level, potential } = youthDraw(w, c, id, added >= count, refillOnly);
     const p = generatedPlayer(
       c.country,
       w.seed,
@@ -137,7 +206,11 @@ export function intakeNpcYouth(w: World, c: Club, year = w.year + 1, used = npcY
       age,
       c.tier,
     );
+    // A war refill's OVR lands on its drawn value, as a prodigy's does (→WORLD-18).
+    if (refillOnly) landOnOvr(p, level);
     p.potential = Math.max(mainOvr(p), potential);
+    // Its wage is quoted on that final OVR and potential: a young player's quote reads both.
+    if (refillOnly) p.wage = marketWageAt(c.country, year, c.tier, p);
     p.graduate = true;
     p.joined = year;
     p.fatigue = clubStyle(c) === 'press' ? PRESS_LOAD_FATIGUE : 0;
@@ -202,6 +275,9 @@ export function closeNpcWindow(w: World) {
 export function closeNpcSummer(w: World, afterRetirements?: () => void, matches = true) {
   if (w.npcSummerAt !== undefined && w.npcSummerAt >= w.year) return;
   foundSquads(w);
+  // Promotion and relegation are known: the levels follow the division each club plays next
+  // (→WORLD-17), before the season's development and the intake read them.
+  if (matches) for (const c of w.clubs) if (w.squads?.[c.id]) followLevels(w, c);
   if (matches) settleNpcGrowth(w);
   // Normal play already made this decision on 1 April; old checkpoints and skipped summers use
   // the very same date and stream, not a second draw at the close.
@@ -223,6 +299,8 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     for (const p of players)
       if (retiring(p) && retirePlayerRecord(w, p, id)) recordRetirementNews(w, p, id);
     const manager = clubManager(w, c);
+    // A skipped summer's development stands for its whole season, which has no rounds, so a
+    // prodigy's rule reads his age in that season (→WORLD-14, PLAYER-15).
     for (const p of players)
       developAnnually(w, p, {
         year: w.year + 1,
@@ -230,6 +308,7 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
         ground: TRAINING_GROUND[c.levels.ground]!.growth,
         adaptation: c.cohesion ?? 0.8,
         report: false,
+        season: matches ? undefined : w.year,
       });
   }
   for (const [id, players] of Object.entries(w.squads ?? {})) {
@@ -253,9 +332,13 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
   for (const id of Object.keys(w.squads ?? {})) {
     const c = clubById(w, id);
     if (!c) continue;
-    intakeNpcYouth(w, c, w.year + 1, used);
+    // A skipped war summer brings youth only to the standing size (→WORLD-14/16).
+    intakeNpcYouth(w, c, w.year + 1, used, !matches);
     invalidateNpcSquad(w, id);
   }
+  // Every summer, a skipped one included, draws its one or two prodigies after the intake: the
+  // war refill limit bounds youth, not them (→WORLD-14/16/18).
+  drawProdigies(w);
   if (matches) capFreeAgents(w);
   settleAbsentPlayerRecords(w);
   w.npcSummerAt = w.year;

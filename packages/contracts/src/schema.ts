@@ -176,6 +176,7 @@ const club = z.object({
       ground: z.number().int().min(0).max(5),
       coaching: z.number().int().min(0).max(5),
       progress: z.number().finite().min(-1).max(1).optional(),
+      invested: z.literal(true).optional(),
     })
     .optional(),
 });
@@ -193,6 +194,7 @@ const playerShape = {
   born: z.number().int(),
   joined: season.optional(),
   graduate: z.literal(true).optional(),
+  prodigy: z.literal(true).optional(),
   attrs: attributes,
   personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
   qualities: z.strictObject({ understanding: grade, teaching: grade, judgement: grade }).optional(),

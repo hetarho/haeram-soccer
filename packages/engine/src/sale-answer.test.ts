@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { message } from '../../contracts/src/messages';
 import type { ClubBooks, ClubSeasonBook } from '../../contracts/src/owner';
-import type { Club, World } from '../../contracts/src/types';
+import { ATTRIBUTES } from '../../contracts/src/player';
+import type { Club, SeasonArchive, World } from '../../contracts/src/types';
 import { currencyChange } from './books';
 import { SEASON_ROUNDS } from './calendar';
 import { SAFETY_ROUNDS } from './delegation-info';
@@ -11,6 +12,7 @@ import { careerWorld } from './career.testkit';
 import { activePlayers, overall } from './player-state';
 import { compareIds } from './primitives';
 import {
+  npcSaleContext,
   SALE_FACTORS,
   saleAnswer,
   saleContext,
@@ -20,7 +22,7 @@ import {
   type SaleContext,
 } from './sale-answer';
 import { SALE_SHARE } from './transfer-policy';
-import { startingSquad } from './world';
+import { invalidateNpcSquad, startingSquad, tierLevel } from './world';
 
 /** A neutral bid: no factor but his place moves the share. */
 function ctx(over: Partial<SaleContext> = {}): SaleContext {
@@ -59,6 +61,7 @@ const VARIANTS: SaleContext[] = [
     wageShare: 80,
   }),
   ctx({ director: { vacant: false, name: 'D', ability: 90, negotiator: true }, windowDaysLeft: 1 }),
+  ctx({ contractSeasons: 2, year: 1960, npc: { relegatedStarter: true, aboveDivision: true } }),
 ];
 const draws = (n: number) => Array.from({ length: n }, (_, i) => (i + 0.5) / n);
 
@@ -184,10 +187,48 @@ describe('the selling club answer (→CLUB-52)', () => {
     }
   });
 
+  it('counts the contract rows half before 1995 for every seller', () => {
+    const contract = (over: Partial<SaleContext>) =>
+      saleShare(ctx(over)).lines.find((l) => l.factor === 'contract')?.delta;
+    for (const ownSeller of [false, true]) {
+      expect(contract({ ownSeller, contractSeasons: 1, year: 1994 })).toBeCloseTo(-0.075, 10);
+      expect(contract({ ownSeller, contractSeasons: 2, year: 1994 })).toBeCloseTo(-0.025, 10);
+      expect(contract({ ownSeller, contractSeasons: 1, year: 1995 })).toBeCloseTo(-0.15, 10);
+      expect(contract({ ownSeller, contractSeasons: 2, year: 2010 })).toBeCloseTo(-0.05, 10);
+    }
+  });
+
+  it('adds the NPC rows to the share and never to the draw', () => {
+    const plain = ctx({ year: 2000, npc: { relegatedStarter: false, aboveDivision: false } }),
+      both = ctx({ year: 2000, npc: { relegatedStarter: true, aboveDivision: true } });
+    for (const u of draws(20)) {
+      const before = saleAnswer(plain, u),
+        after = saleAnswer(both, u);
+      expect(after.spread).toBe(before.spread);
+      expect(after.lines.map((l) => [l.factor, l.delta])).toEqual([
+        ...before.lines.map((l) => [l.factor, l.delta]),
+        ['relegated', -0.1],
+        ['aboveDivision', -0.1],
+      ]);
+    }
+  });
+
   it('names every factor with a message whose parameters it supplies', () => {
     const lines = VARIANTS.flatMap((c) => saleShare(c).lines);
     expect(new Set(lines.map((l) => l.factor))).toEqual(new Set(SALE_FACTORS.map((f) => f.id)));
     for (const l of lines) expect(message(l.message, l.params)).not.toMatch(/\{/);
+  });
+
+  it("names our 단장's runway test on the wage rows, not the retired sales line", () => {
+    const row = (wageLine: 0 | 1 | 2) =>
+      saleShare(ctx({ ownSeller: true, value: '900000', wageLine, wageShare: 80 })).lines.find(
+        (l) => l.factor === 'wages',
+      );
+    expect(row(0)).toBeUndefined();
+    expect(row(1)).toMatchObject({ delta: -0.05, message: 'market.sale.runway.over' });
+    expect(row(2)).toMatchObject({ delta: -0.1, message: 'market.sale.runway.far' });
+    // A seller nobody owns has no 단장 of ours, so no runway row.
+    expect(saleShare(ctx({ wageLine: 2 })).lines.some((l) => l.factor === 'wages')).toBe(false);
   });
 });
 
@@ -223,6 +264,53 @@ describe('saleContext reads a bid from a world', () => {
     const c = saleContext(lw, { playerId: p.id, sellerId: seller.id, fee: '1' })!;
     expect(c.contractSeasons).toBe(1);
     expect(saleShare(c).lines.some((l) => l.message === 'copy.transfers.53f9e38caf')).toBe(true);
+  });
+
+  it('reads the relegated-starter and above-division rows of a seller nobody owns for our bid too', () => {
+    const world = structuredClone(w);
+    const own = world.clubs.find((c) => c.id === world.playerClub)!;
+    const club = world.clubs.find(
+      (c) => c.country === 'ENG' && c.tier === 1 && c.id !== own.id && world.squads?.[c.id],
+    )!;
+    // Our club plays a division above the seller, which went down at the last close.
+    own.tier = 0;
+    const archive = { year: world.year - 1, standings: [[world.clubs.indexOf(club), 0]] };
+    world.history = [...world.history, archive as unknown as SeasonArchive];
+    // One of its starters rates 5 above its division's level.
+    const p = startingSquad(world, club)[0]!;
+    for (const a of ATTRIBUTES) p.attrs[a] = tierLevel(club.tier) + 5;
+    invalidateNpcSquad(world, club.id);
+    expect(startingSquad(world, club)).toContain(p);
+    const rows = (c: SaleContext) =>
+      saleShare(c)
+        .lines.filter((l) => l.factor === 'relegated' || l.factor === 'aboveDivision')
+        .map((l) => [l.factor, l.delta]);
+    const ours = saleContext(world, { playerId: p.id, sellerId: club.id, fee: '1' })!;
+    expect(ours.npc).toEqual({ relegatedStarter: true, aboveDivision: true });
+    expect(rows(ours)).toEqual([
+      ['relegated', -0.1],
+      ['aboveDivision', -0.1],
+    ]);
+    // The same rows another club of our division would meet.
+    const npc = npcSaleContext(world, {
+      seller: club,
+      buyer: own,
+      player: p,
+      fee: '1',
+      asking: ours.asking,
+      sellingDown: false,
+    });
+    expect(npc.npc).toEqual(ours.npc);
+    // From the seller's own division only the relegated row stays.
+    own.tier = club.tier;
+    expect(rows(saleContext(world, { playerId: p.id, sellerId: club.id, fee: '1' })!)).toEqual([
+      ['relegated', -0.1],
+    ]);
+    // Our own sales read neither row.
+    const mine = activePlayers(world)[0]!;
+    const sale = saleContext(world, { playerId: mine.id, sellerId: world.playerClub, fee: '1' })!;
+    expect(sale.npc).toBeUndefined();
+    expect(rows(sale)).toEqual([]);
   });
 
   it('reads our own player with his stance and our asking bar of value', () => {

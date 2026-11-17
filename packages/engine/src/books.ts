@@ -28,10 +28,10 @@ import { sponsorOffers, sponsorSlotOpen } from './sponsors';
 import { ranked } from './season';
 import { groupKey } from './league-fixtures';
 import { clubPlayers, stature } from './world';
-import { CLUB_LEVELS } from './persisted-squads';
+import { investLevels } from './persisted-squads';
 import { clubFollowing, facilityStage } from './club-value';
 import { DEFAULT_TICKET } from './presets';
-import { clamp, ratio, scaleBy } from './primitives';
+import { ratio, scaleBy } from './primitives';
 import { seasonAfter } from './wartime';
 import { hasOwner } from './owner';
 import { CLUB_BOOKS, NPC_BACKING } from './owner-config';
@@ -222,7 +222,7 @@ export function settleNpcBooks(w: World, club: Club, season: SeasonIndex = seaso
   const next = currencyChange(club.country, w.year, seasonAfter(w.year));
   const carried = next ? next(balance.toString()) : balance.toString();
   if (club.books && keepsBooks(w, club)) {
-    investNpcLevels(club, result > ceiling ? result - ceiling : 0n, BigInt(book.income));
+    investLevels(club, result > ceiling ? result - ceiling : 0n, BigInt(book.income));
     if (next) for (const p of clubPlayers(w, club)) p.wage = next(p.wage);
   }
   club.books = {
@@ -259,6 +259,30 @@ export function npcWageLimit(w: World, club: Club, year = w.year): bigint | unde
     live(books.transfersPaid ?? '0') +
     backingFromIncome(w, club, income)
   );
+}
+
+/**
+ * A club nobody owns's season wage budget (→WORLD-16), the market's means: projected operating
+ * income less operating costs, plus `runway`'s share of its cash above debt (spent over that many
+ * seasons); no backing and no transfer balance. Not a commitment rule: npcCanPay decides those.
+ */
+export function npcWageBudget(
+  w: World,
+  club: Club,
+  runway: number,
+  year = w.year,
+): bigint | undefined {
+  if (!keepsBooks(w, club) || !club.books) return undefined;
+  const books = club.books,
+    last = books.seasons[0];
+  const income = forecastIncome(w, club, books, year);
+  const costs = BigInt(
+    operatingExpenses(w, club, last, last && lastTier(w, club, last.year), year),
+  );
+  const liveYear = last?.year === w.year ? seasonAfter(w.year) : w.year;
+  const reserve =
+    converted(club, books.cash, liveYear, year) - converted(club, books.debt, liveYear, year);
+  return income - costs + (reserve > 0n ? reserve / BigInt(Math.max(1, runway)) : 0n);
 }
 
 function converted(club: Club, amount: string, from: number, to: number): bigint {
@@ -343,18 +367,6 @@ export function recordNpcTransferFee(w: World, club: Club, fee: string, received
   if (!keepsBooks(w, club) || !club.books) return;
   const key = received ? 'transfersReceived' : 'transfersPaid';
   club.books[key] = (BigInt(club.books[key] ?? '0') + BigInt(fee)).toString();
-}
-
-function investNpcLevels(club: Club, spent: bigint, income: bigint) {
-  const levels = club.levels;
-  if (!levels) return;
-  const share = spent > 0n && income > 0n ? Number((spent * 10000n) / income) / 10000 : 0;
-  const delta = spent > 0n ? Math.min(5, share * CLUB_LEVELS.investment) : -CLUB_LEVELS.decay;
-  const progress = Math.round(((levels.progress ?? 0) + delta) * 10000) / 10000;
-  const whole = Math.trunc(progress);
-  for (const key of ['academy', 'ground', 'coaching'] as const)
-    levels[key] = clamp(levels[key] + whole, 0, 5);
-  levels.progress = Math.round((progress - whole) * 10000) / 10000;
 }
 
 /** The season's income, wages and operating expenses of `club`, in this season's money. */

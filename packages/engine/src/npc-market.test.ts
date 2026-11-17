@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Club, MatchPlayback, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
@@ -8,6 +8,7 @@ import {
   npcMarketDays,
   npcOffer,
   NPC_MARKET,
+  npcBidFee,
   returnNpcLoans,
   SettlementRatings,
 } from './npc-market';
@@ -31,6 +32,25 @@ import { crossWar } from './wartime';
 import { suitorFor } from './transfers';
 import { expireContracts } from './contracts';
 import { operatingExpensesAt } from './finance';
+
+/**
+ * The seller's and the player's answers are seeded draws (→CLUB-52/53); these mechanics cases pin
+ * them so a bid the seller and the player would take is taken: the lowest reservation spread and a
+ * player who agrees whenever his chance is above zero. Answer models have their own tests below.
+ */
+const answerDraws = vi.hoisted(() => ({ sale: 0, terms: 0, bid: 0.5 }));
+vi.mock('./primitives', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./primitives')>();
+  return {
+    ...actual,
+    random(seed: string) {
+      if (seed.includes(':npc-sale:')) return () => answerDraws.sale;
+      if (seed.includes(':npc-terms:')) return () => answerDraws.terms;
+      if (seed.includes(':npc-bid:')) return () => answerDraws.bid;
+      return actual.random(seed);
+    },
+  };
+});
 
 /** Three tiny synthetic NPC squads; no fixture simulation, world generation or time progression. */
 function fixture(year = 1950, count = 3) {
@@ -81,6 +101,14 @@ function listedKeeper(w: World, seller: Club, age = 24) {
   // Keep this seller inside its signing budget unless a test explicitly makes it overspend.
   seller.books!.openingIncome = npcWageBill(w, seller).toString();
   return p;
+}
+/**
+ * The pull market bids for unlisted players too (→WORLD-16): the seller's own keepers announce
+ * their retirement, which keeps them off the market, so the keepers a case names are its only ones.
+ */
+function onlyOfferedKeepers(w: World, seller: Club, ...offered: { id: string }[]) {
+  for (const q of w.squads![seller.id]!)
+    if (q.position === 'GK' && !offered.some((o) => o.id === q.id)) q.retiring = w.year;
 }
 function missingKeeper(w: World, c: Club) {
   w.squads![c.id] = w.squads![c.id]!.filter((p) => p.position !== 'GK');
@@ -212,13 +240,15 @@ describe('isolated NPC transfer windows', () => {
       exact,
       below,
     ];
+    onlyOfferedKeepers(w, seller, exact, below);
+    onlyOfferedKeepers(w, w.clubs[3]!);
     seller.books!.openingIncome = npcWageBill(w, seller).toString();
     npcMarket(w);
     expect(locations(w, exact.id)).toEqual([buyer.id]);
     expect(locations(w, below.id)).toEqual([seller.id]);
   });
 
-  it('buys a needed keeper at market value, settles both books and preserves one live identity', () => {
+  it('buys a needed keeper at its accepted bid, settles both books and preserves one live identity', () => {
     const { w, seller, buyer, other } = fixture();
     const p = listedKeeper(w, seller);
     const before = structuredClone(p),
@@ -233,6 +263,10 @@ describe('isolated NPC transfer windows', () => {
       BigInt(operatingExpensesAt(buyer.country, w.year, buyer.tier))
     ).toString();
     npcMarket(w);
+    // Not rich enough to bid the asking fee itself: the bid is its drawn share, accepted.
+    const value = fee;
+    const paid = npcBidFee(value, false, answerDraws.bid);
+    expect(BigInt(paid)).toBeLessThan(BigInt(value));
     expect(locations(w, p.id)).toEqual([buyer.id]);
     const live = w.squads![buyer.id]!.find((q) => q.id === p.id)!;
     expect(live.attrs).toEqual(before.attrs);
@@ -240,16 +274,16 @@ describe('isolated NPC transfer windows', () => {
     expect(live.born).toBe(before.born);
     expect(live.until).toBeGreaterThan(w.year);
     expect(live.wage).toBe(marketWageAt('ENG', w.year, buyer.tier, live));
-    expect(seller.books!.transfersReceived).toBe(fee);
-    expect(buyer.books!.transfersPaid).toBe(fee);
+    expect(seller.books!.transfersReceived).toBe(paid);
+    expect(buyer.books!.transfersPaid).toBe(paid);
     expect(w.playerRecords![p.id]!.moves).toEqual([
-      { year: w.year, day: currentDay(w), from: seller.id, to: buyer.id, fee },
+      { year: w.year, day: currentDay(w), from: seller.id, to: buyer.id, fee: paid },
     ]);
     expect(w.squads![other.id]).toBe(untouched);
     expect(w.events).toEqual([]);
   });
 
-  it('an over-limit club cannot buy and lists its highest wage first without selling below eighteen', () => {
+  it('an over-limit club cannot buy and sells whom it can best spare without selling below eighteen', () => {
     const { w, seller, buyer } = fixture();
     const p = listedKeeper(w, seller);
     seller.books!.openingIncome = '0';
@@ -552,6 +586,8 @@ describe('isolated NPC transfer windows', () => {
     const { w, seller, buyer, other } = fixture(2024);
     const p = listedKeeper(w, seller, 23);
     for (const a of ATTRIBUTES) p.attrs[a] = 40;
+    onlyOfferedKeepers(w, seller, p);
+    onlyOfferedKeepers(w, w.clubs[3]!);
     missingKeeper(w, buyer);
     npcMarket(w);
     expect(w.playerRecords![p.id]!.loan).toBeDefined();
@@ -585,6 +621,8 @@ describe('isolated NPC transfer windows', () => {
     p.until = w.year + 4;
     p.graduate = true;
     p.joined = w.year - 2;
+    onlyOfferedKeepers(w, seller, p);
+    onlyOfferedKeepers(w, w.clubs[3]!);
     const terms = { wage: p.wage, until: p.until };
     missingKeeper(w, buyer);
     npcMarket(w);
@@ -757,6 +795,8 @@ describe('isolated NPC transfer windows', () => {
     const p = listedKeeper(w, seller, 19);
     for (const a of ATTRIBUTES) p.attrs[a] = 40;
     p.until = 1950;
+    onlyOfferedKeepers(w, seller, p);
+    onlyOfferedKeepers(w, w.clubs[3]!);
     missingKeeper(w, buyer);
     npcMarket(w);
     const record = w.playerRecords![p.id]!;

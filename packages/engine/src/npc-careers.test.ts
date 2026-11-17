@@ -2,13 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { emptyPlayerDetail } from '../../contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
+import type { Player } from '../../contracts/src/types';
 import { announceRetirements, retirementAnnounceDay, retirementChanceWithContext } from './careers';
 import { worldMarketFixture } from './world-market.testkit';
-import { CLUB_LEVELS, enrollSquadPlayer, foundSquads } from './persisted-squads';
-import { closeNpcSummer, intakeNpcYouth, NPC_YOUTH, settleNpcGrowth } from './npc-careers';
+import { CLUB_LEVELS, enrollSquadPlayer, foundSquads, levelTargets } from './persisted-squads';
+import {
+  closeNpcSummer,
+  intakeNpcYouth,
+  NPC_YOUTH,
+  settleNpcGrowth,
+  youthCentre,
+  youthSkew,
+} from './npc-careers';
 import { clubManager } from './managerMarket';
+import { marketWageAt } from './market-prices';
+import { PRODIGY } from './prodigies';
 import {
   clubPlayers,
+  divisionLevel,
   rating,
   ratingOf,
   squad,
@@ -19,7 +30,7 @@ import {
   LINE_MINIMUM,
 } from './world';
 import { lineOf, mainOvr } from './player';
-import { random, zeroMetrics } from './primitives';
+import { clamp, integer, random, zeroMetrics } from './primitives';
 import { clubRegistration } from './registration';
 import { crossWar } from './wartime';
 import { TRAINING_GROUND } from './facility-model';
@@ -302,13 +313,18 @@ describe('persisted NPC careers on isolated squads', () => {
         LINE_MINIMUM[line],
       );
     expect(new Set(players.map((p) => p.id)).size).toBe(players.length);
-    for (const p of players) {
+    const [low, high] = [NPC_YOUTH.skew[0]![1], NPC_YOUTH.skew.at(-1)![1]];
+    for (const [i, p] of players.entries()) {
       expect(p.id).toMatch(new RegExp(`^${c.id}:y:${w.year + 1}:\\d+$`));
       expect([17, 18]).toContain(w.year + 1 - p.born);
-      expect(p.potential).toBeGreaterThanOrEqual(
-        NPC_YOUTH.byAcademy[c.levels!.academy]!.potential[0],
+      // The academy's count is centred on the division, the rest on its bench (→WORLD-16).
+      const centre = youthCentre(
+        c,
+        c.levels!.academy,
+        i >= NPC_YOUTH.byAcademy[c.levels!.academy]!.count,
       );
-      expect(p.potential).toBeLessThanOrEqual(NPC_YOUTH.byAcademy[c.levels!.academy]!.potential[1]);
+      expect(p.potential).toBeGreaterThanOrEqual(Math.max(mainOvr(p), Math.round(centre + low)));
+      expect(p.potential).toBeLessThanOrEqual(Math.max(mainOvr(p), Math.round(centre + high)));
       if ((coachingGrade(p) ?? 0) >= 4)
         expect(w.people![p.id]).toMatchObject({ id: p.id, born: p.born, name: p.name, club: c.id });
     }
@@ -342,8 +358,9 @@ describe('persisted NPC careers on isolated squads', () => {
 
   it('lives seven skipped summers without matches, extending only each running contract', () => {
     const { w, c, players } = fixture(1939);
-    // Two arrivals per year leave room for all seven intakes without hitting the separate cap.
     c.levels!.academy = 0;
+    // 39 at the war's first summer, he stops in the gap and youth refills his place alone.
+    players[2]!.born = 1900;
     const p = players[0]!,
       born = p.born,
       until = p.until,
@@ -361,13 +378,149 @@ describe('persisted NPC careers on isolated squads', () => {
     expect(w.npcSummerAt).toBe(1945);
     expect(w.fixtures).toEqual([]);
     expect(w.history).toEqual([]);
-    expect(w.squads![c.id]!.length).toBeGreaterThanOrEqual(NPC_SQUAD.size);
-    expect(w.squads![c.id]!.some((p) => p.id.startsWith(`${c.id}:y:1946:`))).toBe(true);
-    const firstIntake = w.squads![c.id]!.find((p) => p.id.startsWith(`${c.id}:y:1940:`))!;
-    expect(firstIntake.until - 1946).toBeGreaterThanOrEqual(1);
-    expect(firstIntake.until - 1946).toBeLessThanOrEqual(5);
+    // Skipped summers bring youth only to the standing size (→WORLD-14/16): one refill, no more.
+    // Each summer's one or two prodigies (→WORLD-18) join on top; this is the only squad.
+    const squad = w.squads![c.id]!,
+      prodigies = squad.filter((q) => q.prodigy).length;
+    expect(prodigies).toBeGreaterThanOrEqual(7);
+    expect(prodigies).toBeLessThanOrEqual(14);
+    expect(squad.length).toBe(NPC_SQUAD.size + prodigies);
+    const youth = squad.filter((q) => q.id.includes(':y:') && !q.prodigy);
+    expect(youth).toHaveLength(1);
+    expect(youth[0]!.id.startsWith(`${c.id}:y:194`)).toBe(true);
+    // He came ready to play (→WORLD-16): 19–24 in the season he joined.
+    const joined = Number(youth[0]!.id.split(':')[2]);
+    expect(joined - youth[0]!.born).toBeGreaterThanOrEqual(NPC_YOUTH.warRefill.ages[0]);
+    expect(joined - youth[0]!.born).toBeLessThanOrEqual(NPC_YOUTH.warRefill.ages[1]);
+    expect(youth[0]!.until - 1946).toBeGreaterThanOrEqual(1);
+    expect(youth[0]!.until - 1946).toBeLessThanOrEqual(5);
     const after = structuredClone(w);
     crossWar(w, 1938);
     expect(w).toEqual(after);
+  });
+});
+
+describe('academy intakes around the division level (→WORLD-16)', () => {
+  it('skews potential: most below the centre, about a third at or above, about 5% 10 above', () => {
+    const draws = Array.from({ length: 10000 }, (_, i) => Math.round(youthSkew((i + 0.5) / 10000)));
+    const share = (test: (v: number) => boolean) => draws.filter(test).length / draws.length;
+    expect(share((v) => v < 0)).toBeGreaterThan(0.5);
+    expect(share((v) => v >= 0)).toBeCloseTo(1 / 3, 1);
+    expect(share((v) => v >= 10)).toBeCloseTo(0.05, 2);
+    expect(youthSkew(0)).toBe(NPC_YOUTH.skew[0]![1]);
+    expect(youthSkew(1)).toBe(NPC_YOUTH.skew.at(-1)![1]);
+  });
+
+  it('centres on the division level shifted by the academy distance, refills at its bench', () => {
+    const { c } = fixture();
+    c.tier = 0;
+    // The top flight's ladder academy is 3 (CLUB_TAKEOVER.facilities).
+    expect(youthCentre(c, 3, false)).toBe(80);
+    expect(youthCentre(c, 4, false)).toBe(80 + NPC_YOUTH.divisionCentre);
+    expect(youthCentre(c, 1, false)).toBe(80 - 2 * NPC_YOUTH.divisionCentre);
+    expect(youthCentre(c, 5, true)).toBe(80 - NPC_YOUTH.refillBelow);
+    c.tier = 3;
+    expect(youthCentre(c, 0, false)).toBe(50);
+    expect(youthCentre(c, 0, true)).toBe(40);
+  });
+});
+
+describe('war-gap refills ready to play (→WORLD-14/16)', () => {
+  const serial = (p: Player) => Number(p.id.split(':').at(-1));
+  const lines = (players: Player[]) =>
+    (Object.keys(LINE_MINIMUM) as (keyof typeof LINE_MINIMUM)[]).every(
+      (line) => players.filter((p) => lineOf(p.position) === line).length >= LINE_MINIMUM[line],
+    );
+
+  it("draws a skipped summer's refills aged 19–24 just under the division level, from their own stream", () => {
+    const { w, c } = fixture(1940);
+    const { ages, below, headroom } = NPC_YOUTH.warRefill;
+    const seen = new Set<number>();
+    for (const tier of [0, 1, 2, 3]) {
+      c.tier = tier;
+      w.squads![c.id] = [];
+      intakeNpcYouth(w, c, w.year + 1, undefined, true);
+      const players = w.squads![c.id]!;
+      // Only to the standing size, with each line's minimum and a goalkeeper (→CLUB-5).
+      expect(players).toHaveLength(NPC_SQUAD.size);
+      expect(lines(players)).toBe(true);
+      const ovr = divisionLevel(tier) - below;
+      for (const p of players) {
+        const age = w.year + 1 - p.born;
+        seen.add(age);
+        expect(age).toBe(integer(random(`${w.seed}:war-refill:${p.id}`), ages[0], ages[1]));
+        expect(mainOvr(p)).toBeCloseTo(ovr, 1);
+        expect(p.potential).toBe(ovr + headroom);
+        // His wage is his market quote on his final OVR and potential (a young quote reads both).
+        expect(p.wage).toBe(marketWageAt(c.country, w.year + 1, tier, p));
+        expect(p.until - (w.year + 1)).toBeGreaterThanOrEqual(1);
+        expect(p.until - (w.year + 1)).toBeLessThanOrEqual(5);
+      }
+    }
+    // Spread across the ages, not one age for all.
+    expect(Math.min(...seen)).toBeGreaterThanOrEqual(ages[0]);
+    expect(Math.max(...seen)).toBeLessThanOrEqual(ages[1]);
+    expect(seen.size).toBeGreaterThanOrEqual(4);
+  });
+
+  it("keeps a played summer's academy intake and refills on the youth stream", () => {
+    const { w, c } = fixture();
+    const count = NPC_YOUTH.byAcademy[c.levels!.academy]!.count;
+    w.squads![c.id] = [];
+    intakeNpcYouth(w, c);
+    const players = w.squads![c.id]!;
+    expect(players.length).toBeGreaterThan(count);
+    for (const p of players) {
+      // The intake's own draws, in their order: age, potential, then the OVR's headroom.
+      const r = random(`${w.seed}:youth:${p.id}`);
+      expect(w.year + 1 - p.born).toBe(integer(r, NPC_YOUTH.ages[0], NPC_YOUTH.ages[1]));
+      const centre = youthCentre(c, c.levels!.academy, serial(p) >= count);
+      const potential = clamp(Math.round(centre + youthSkew(r())), 15, 99);
+      expect(p.potential).toBe(Math.max(mainOvr(p), potential));
+      const level = clamp(potential - integer(r, ...NPC_YOUTH.headroom), 15, 92);
+      expect(Math.abs(mainOvr(p) - level)).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('refills a skipped summer to the standing size and places its prodigies on top', () => {
+    const { w, c, players } = fixture(1941);
+    const { ages, below } = NPC_YOUTH.warRefill;
+    const gone = players.splice(0, 3).map((p) => p.id);
+    const prodigies = random(`${w.seed}:prodigy:${w.year + 1}`)() < PRODIGY.twoChance ? 2 : 1;
+    closeNpcSummer(w, undefined, false);
+    const squad = w.squads![c.id]!;
+    const refills = squad.filter((p) => new RegExp(`^${c.id}:y:${w.year + 1}:\\d+$`).test(p.id));
+    expect(refills).toHaveLength(gone.length);
+    expect(squad.filter((p) => !p.prodigy)).toHaveLength(NPC_SQUAD.size);
+    expect(lines(squad)).toBe(true);
+    for (const p of refills) {
+      expect(w.year + 1 - p.born).toBeGreaterThanOrEqual(ages[0]);
+      expect(w.year + 1 - p.born).toBeLessThanOrEqual(ages[1]);
+      expect(mainOvr(p)).toBeCloseTo(divisionLevel(c.tier) - below, 1);
+    }
+    // The summer's one or two prodigies (→WORLD-18) are drawn as well, over and above the refill.
+    const placed = [...Object.values(w.squads!).flat(), ...(w.academy?.players ?? [])].filter(
+      (p) => p.prodigy && p.id.includes(`:${w.year + 1}:prodigy`),
+    );
+    expect(placed).toHaveLength(prodigies);
+  });
+});
+
+describe('levels at the summer close (→WORLD-17)', () => {
+  it('move after promotion toward the new division, one a season, and not in a war summer', () => {
+    const { w, c } = fixture();
+    c.tier = 3;
+    const bottom = levelTargets(w, c);
+    c.levels = { ...bottom };
+    // Promoted at this close: the books settled on the old division, then the club went up.
+    c.tier = 0;
+    const top = levelTargets(w, c);
+    closeNpcSummer(w);
+    expect(c.levels!.academy).toBe(Math.min(top.academy, bottom.academy + 1));
+    // A skipped war summer keeps books and levels standing still (→WORLD-14).
+    const held = { ...c.levels! };
+    w.year++;
+    closeNpcSummer(w, undefined, false);
+    expect(c.levels).toEqual(held);
   });
 });
