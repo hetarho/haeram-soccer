@@ -147,8 +147,10 @@
 | T938 | work | gusta-session-self-improve-lc17-37ba91cb | c117ffb23d17 | 2026-11-17T07:54Z |
 | T935 | work | gusta-session-self-improve-tm17-ff4b9f94 | 94b22c9daa02 | 2026-11-17T07:57Z |
 | T940 | work | gusta-session-self-improve-lc17-37ba91cb | 6de16f223ced | 2026-11-17T07:59Z |
+| T941 | work | gusta-session-self-improve-lc17-37ba91cb | c0202d1c5444 | 2026-11-17T08:10Z |
 
 ## log
+- 261117 T941 integrated
 - 261117 T940 integrated
 - 261117 T935 integrated
 - 261117 T938 integrated
@@ -168,4 +170,3 @@
 - 261116 T925 integrated
 - 261116 T927 integrated
 - 261116 fix test: lived-world sell-down check aligned with WORLD-17 r14/ECON-42 and forty-season limit (4cc14729)
-- 261116 T924 done
