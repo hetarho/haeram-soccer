@@ -151,12 +151,14 @@
       "publication": "merge",
       "host": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-self-improve-lc17-37ba91cb",
-      "head": "64dab2ef4ab9a7bc0b9ec1bb91bbda85d4b9dd7f",
+      "head": "31b56599ef95da379565d28b55e1b0018bd3484b",
       "land": "main",
       "status": "working",
-      "at": "2026-11-17T06:17:49.584Z",
+      "at": "2026-11-17T08:28:53.386Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [
+        "pnpm install --frozen-lockfile --offline && pnpm run typecheck"
+      ]
     }
   },
   "gate": null,
