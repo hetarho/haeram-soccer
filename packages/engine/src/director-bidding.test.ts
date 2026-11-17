@@ -117,6 +117,24 @@ describe('director trait bidding', () => {
     staffSignings(w);
     expect(w.bids!.slice(count).every((b) => b.playerId !== id)).toBe(true);
   });
+  it('raises every bid refused on the same day before any other move', () => {
+    willing();
+    // 균형형 at 아낌없이 keeps up to three bids pending (→CLUB-33): two refused the same day are
+    // both raised the day after, ahead of the look's ordinary moves (→CLUB-41).
+    const w = world('negotiator'),
+      offers = transferOffers(w),
+      club = offers.flatMap((offer, i) => (offer.available && !offer.freeAgent ? [i] : []));
+    expect(club.length).toBeGreaterThanOrEqual(2);
+    const first = bid(w, 90, club[0]),
+      second = bid(w, 90, club[1]);
+    first.status = second.status = 'rejected';
+    const count = w.bids!.length;
+    w.calendar!.day = Math.max(first.due, second.due) + 1;
+    staffSignings(w);
+    const raised = w.bids!.slice(count, count + 2);
+    expect(raised.map((b) => b.playerId)).toEqual([first.playerId, second.playerId]);
+    for (const next of raised) expect(next.fee).toBe(ratio(next.offer!.fee, 95n, 100n));
+  });
   it('jumps to the ceiling in the final seven days', () => {
     const w = world('negotiator');
     delete w.delegationRequests;

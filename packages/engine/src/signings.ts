@@ -1083,55 +1083,63 @@ export function staffSignings(w: World) {
   // Today's moves are made: a second call on the same day changes nothing.
   if (bids.some((bid) => bid.staff && bid.day === day)) return;
   if (pendingStaffBids(w, day).length >= limit) return;
-  // A refused negotiator bid gets its next answer-day move outside the regular look gate.
-  const retry = [...bids].reverse().find(
-    (bid) =>
-      directorTrait(w) === 'negotiator' &&
-      bid.staff &&
-      bid.status === 'rejected' &&
-      // A player who refused our terms is not haggled with over the fee (→CLUB-53).
-      bid.refusedBy !== 'player' &&
-      bid.due < day &&
-      !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
-      BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', BigInt(bidCeiling(w)), 100n)),
-  );
-  let retried = false;
-  if (retry && directorTrait(w) === 'negotiator') {
+  // Every refused negotiator bid gets its next answer-day move outside the regular look gate,
+  // before any other move, while his pending bids stay under the step's count (→CLUB-41).
+  const retries =
+    directorTrait(w) === 'negotiator'
+      ? bids.filter(
+          (bid) =>
+            bid.staff &&
+            bid.status === 'rejected' &&
+            // A player who refused our terms is not haggled with over the fee (→CLUB-53).
+            bid.refusedBy !== 'player' &&
+            bid.due < day &&
+            !bids.some((later) => later.playerId === bid.playerId && later.day > bid.day) &&
+            BigInt(bid.fee) < BigInt(ratio(bid.offer?.fee ?? '0', BigInt(bidCeiling(w)), 100n)),
+        )
+      : [];
+  // Whether a haggle ended today without a raise: he then moves on to the next candidate.
+  let ended = false;
+  for (const retry of retries) {
+    if (pendingStaffBids(w, day).length >= limit) return;
     const offers = transferOffers(w),
       index = offers.findIndex((offer) => offer.available && offer.player.id === retry.playerId),
       offer = index >= 0 ? offers[index] : locateOffer(w, retry.playerId, retry.club);
-    if (offer?.available) {
-      const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
-      const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
-      const terms = wageOffer(w, offer, fee);
-      const room = registrationRoom(w, { ...offer.player, joined: w.year });
-      if (terms.ok && !room) {
-        placeBid(w, targetOf(w, offer), fee, false, retry.staff, terms.offer.step);
-        pushInbox(w, {
-          kind: 'staff-report',
-          title: sourceMessage('copy.signings.6773850ac5', { p0: offer.player.name }),
-          detail: `${sourceMessage('copy.signings.2bce8a2d24', {
-            p0: staffBidShare(w, previous),
-            p1: terms.offer.reason,
-          })} · ${wageLine(w, terms.offer)}`,
-          attention: false,
-        });
-        retried = true;
-        if (pendingStaffBids(w, day).length >= limit) return;
-      } else {
-        retry.status = 'expired';
-        pushInbox(w, {
-          kind: 'staff-report',
-          title: sourceMessage('copy.signings.e773f7135a', { p0: offer.player.name }),
-          detail: room ?? (terms.ok ? terms.offer.reason : terms.reason),
-          attention: false,
-        });
-      }
-    } else retry.status = 'expired';
+    if (!offer?.available) {
+      retry.status = 'expired';
+      ended = true;
+      continue;
+    }
+    const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
+    const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
+    const terms = wageOffer(w, offer, fee);
+    const room = registrationRoom(w, { ...offer.player, joined: w.year });
+    if (terms.ok && !room) {
+      placeBid(w, targetOf(w, offer), fee, false, retry.staff, terms.offer.step);
+      pushInbox(w, {
+        kind: 'staff-report',
+        title: sourceMessage('copy.signings.6773850ac5', { p0: offer.player.name }),
+        detail: `${sourceMessage('copy.signings.2bce8a2d24', {
+          p0: staffBidShare(w, previous),
+          p1: terms.offer.reason,
+        })} · ${wageLine(w, terms.offer)}`,
+        attention: false,
+      });
+    } else {
+      retry.status = 'expired';
+      ended = true;
+      pushInbox(w, {
+        kind: 'staff-report',
+        title: sourceMessage('copy.signings.e773f7135a', { p0: offer.player.name }),
+        detail: room ?? (terms.ok ? terms.offer.reason : terms.reason),
+        attention: false,
+      });
+    }
   }
+  if (pendingStaffBids(w, day).length >= limit) return;
   const replacing = openNeeds(w).some((need) => need.day < day);
   // Off a regular look he moves only for a replacement, or past a negotiator's ended haggle.
-  if (!regular && !replacing && (!retry || retried)) return;
+  if (!regular && !replacing && !ended) return;
   // Every move records a bid for its player, who is never asked again in the window, so the look
   // ends when his pending bids reach the step's count or no candidate is left to move for.
   while (staffMove(w, day)) if (pendingStaffBids(w, day).length >= limit) return;

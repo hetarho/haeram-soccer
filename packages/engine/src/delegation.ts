@@ -189,17 +189,21 @@ interface RunwayBase {
   reserveYears: number;
   runway: number;
 }
-/** The runway test on plain amounts (→`runwayTest`): the one calculation every reading shares. */
+/**
+ * The runway test on plain amounts (→`runwayTest`): the one calculation every reading shares. The
+ * reserve is kept on current annual fixed costs; the commitment's wage moves only the planned loss.
+ */
 function runwayCheck(base: RunwayBase, fee: bigint, wage: bigint): RunwayCheck {
   const loss = above(base.annual + wage, base.income),
-    capital = above(base.cash, times(base.annual + wage, base.reserveYears)),
+    capital = above(base.cash, times(base.annual, base.reserveYears)),
     ok =
       base.runway === 0 ? loss === 0n && fee <= capital : fee + times(loss, base.runway) <= capital;
   return { ok, loss, capital, runway: base.runway };
 }
 /**
  * The largest yearly wage the runway test lets through with no fee (→ECON-33): a new wage raises
- * both the planned loss and the reserve kept back. Zero when even the current bill fails it.
+ * the planned loss, against capital above the reserve on current costs. Zero when even the current
+ * bill fails it.
  */
 function wageRoom(base: RunwayBase): bigint {
   if (!runwayCheck(base, 0n, 0n).ok) return 0n;
@@ -410,7 +414,7 @@ export function delegatePlan(
     capital = now.capital,
     loss = now.loss,
     covers = loss > 0n ? Number((capital * 10n) / loss) / 10 : undefined,
-    // The largest wage the runway test still lets through, its added reserve counted (→ECON-33).
+    // The largest wage the runway test still lets through, against capital on current costs (→ECON-33).
     room = key === 'recruitment' || key === 'contracts' || key === 'sales' ? wageRoom(base) : 0n,
     feeRoom = !now.ok ? 0n : runway === 0 ? capital : capital - times(loss, runway);
   let share = 0,

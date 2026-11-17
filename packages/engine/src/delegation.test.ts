@@ -156,9 +156,10 @@ describe('the 단장 plans on a loss runway, not a share of income (→ECON-33)'
     expect(planLines(w, plan).join(' ')).toContain('현금으로 1시즌');
   });
 
-  it("shows the room for raises the runway test accepts, the raise's added reserve counted", () => {
+  it('shows the room for raises the runway test accepts, the reserve kept on current costs', () => {
     // Income equal to the fixed costs, 아껴서 (six seasons, half a year back for a 균형형 단장)
-    // and a little capital: each unit of raise adds a unit of loss and half a unit of reserve.
+    // and a little capital: each unit of raise adds a unit of loss; the reserve stays on today's
+    // costs (→ECON-33), so the raise does not also hold half of itself back.
     const w = club('delegation-raise-room');
     w.delegationRequests = { contracts: 2 };
     lossOf(w, 0n);
@@ -169,8 +170,9 @@ describe('the 단장 plans on a loss runway, not a share of income (→ECON-33)'
     expect(BigInt(plan.budget) - BigInt(plan.committed)).toBe(left);
     expect(runwayTest(w, plan, { wage: left }).ok).toBe(true);
     expect(runwayTest(w, plan, { wage: left + 1n }).ok).toBe(false);
-    // 10,000 / 6.5 rounded down, not the 1,666 that ignores the reserve the raise adds.
-    expect(left).toBe(1538n);
+    // 10,000 / 6 rounded down: a raise of 1,666 is six seasons of 9,996 and passes.
+    expect(left).toBe(1666n);
+    expect(runwayTest(w, plan, { wage: 1666n })).toMatchObject({ ok: true, capital: 10_000n });
   });
 
   it('reserves live bid fees once and releases the current bid reservation when settling it', () => {

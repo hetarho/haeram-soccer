@@ -301,7 +301,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
       loss = fee + wage,
       planned = { year: w.year, revenue: (annual - loss).toString(), sales: '0' };
     w.budgetPlan = planned;
-    w.cash = (fee + (loss + wage) * 2n + (annual + wage) / 4n + 1n).toString();
+    w.cash = (fee + (loss + wage) * 2n + annual / 4n + 1n).toString();
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(false);
     w.delegationRequests = { recruitment: 5 };
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(true);

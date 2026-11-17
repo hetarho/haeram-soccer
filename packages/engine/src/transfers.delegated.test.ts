@@ -7,7 +7,7 @@ import { inBids, world } from './transfers.testkit';
 describe('incoming bids', () => {
   it('lets delegated staff answer quietly, as the selling club (→CLUB-18, CLUB-52)', () => {
     // A season whose offers include both answers once the 단장 has signed from the shortlist.
-    const w = world('market-1');
+    const w = world('market-3');
     // New clubs answer offers themselves; this scenario hands transfers to the staff.
     expect(isDelegated(w, 'sales')).toBe(false);
     w.settings = staffAuthority(4);
