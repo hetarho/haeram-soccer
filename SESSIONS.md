@@ -1,11 +1,6 @@
 # SESSIONS
 > Running sessions, their claims, the inbox and the log. Written by the gusta CLI on its own branch; never merged into a code branch.
 
-## active
-| tag | host | mode | since | at | doing | branch | commit | session |
-|---|---|---|---|---|---|---|---|---|
-| iv17 | hq-dev1-pve2-vm2 | pair | 2026-11-17T03:13Z | 2026-11-17T03:48Z | - | gusta-session-start-iv17-d1ff7e09 | 85412a97b810 | ed23b71f67600a8391865160 |
-
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
 - 261113 decided T864: 시장 초기값 선택: 첫날·중간날·마지막 날 3회 정산, 개선 폭 4, 임대 23세 이하, 일반 이동 창구당 3회를 채택했습니다. 대안은 매일 정산 또는 더 큰 이동 한도였으나 T864의 제한된 정산과 T866 보정을 유지했습니다. 강제 매각은 급여 한도와 인원·라인 최소를 우선하고, 개막 0일 이동은 개막 상태를 남긴 뒤 첫 진행에서 정산합니다. 성장만으로 XI를 다시 고르지 않는 기존 계약을 복구했습니다.
@@ -136,6 +131,7 @@
 - 261117 decided CLUB-33 T935: Rich clubs replace weak players → money bar at 넉넉히/아낌없이: highest OVR whose 27-year-old wage × 25 fits the signing money; every XI slot more than the margin below it an upgrade need, 아낌없이 cap up to those slots; non-XI 24+ players 8 below it listed (alt: raise caps only | sell by a fixed OVR)
 - 261117 parked review/transfer-market-261117: F4 NPC pull market held: clubs nobody owns sell only listed players at value, 3 moves a window; measured 2000 ENG 0.38–0.75 season-start starters sold a season (1960 0.9–1.55), short of 1–2 and of selling clubs losing 5–7. A pull model reprices every generated world, the portable golden and the CLUB-46/LEAGUE-10/T866 calibrations and the generation budget; needs the owner's go-ahead via /gusta-sketch
 - 261117 decided T932 T933 T934 T935: Providers: claude implements (this orchestrator's provider), codex reviews when it has headroom, else a separate claude review session (AGENTS.md); review all, no per-unit push
+- 261117 decided review/lifecycle-perf-261117 T936 T937 T938 T939 T940: which lifecycle-slowdown proposals run under the owner's 261117 self-improve request (until 18:00, result-preserving speed-ups) → F1–F4 generation hot paths (lineup scan, slot-indexed market ratings with a measured buyer precheck, free-agent line index) and F6–F7 autoplay (autosave JSON text hand-off, replica roster key), each kept only with identical worlds/bytes and a paired interval below 1 (alt: F5 selection-value cache | F8 view memo, deferred for unknown invalidation keys)
 
 ## unlanded
 | id | tag | branch | commit | at |
