@@ -68,7 +68,7 @@ import {
   transferWindowDays,
   wageBill,
 } from './index';
-import { buyOffer, handTo, holdRows, staffAuthority } from './testing';
+import { buyOffer, handTo, holdRows, staffAuthority, wouldJoin } from './testing';
 import { financeProjection } from './projection';
 import { delegatePlan } from './delegation';
 import { askingMultiplier } from './world-market';
@@ -1235,18 +1235,22 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     releaseFixturePlayers(w);
     w.cash = '999999999999';
     w.calendar = { day: 10 };
+    // A free agent signs at once; another club's player joins on loan through an accepted bid. Each
+    // joins only when he agrees to our terms too (→CLUB-53), on his own seeded answer: the first who
+    // does at the 200% step.
     const offers = transferOffers(w),
-      agent = offers.find((o) => o.freeAgent)!,
-      club = offers.find((o) => !o.freeAgent)!;
+      recruit = (copy: World, o: ScoutOffer) =>
+        operate(copy, { type: 'recruit', candidate: offers.indexOf(o), wage: 2 }),
+      agent = offers.find((o) => o.freeAgent && wouldJoin(w, o.player.id, (c) => recruit(c, o)))!;
     expect(agent).toMatchObject({ freeAgent: true, available: true });
+    recruit(w, agent);
+    const listed = transferOffers(w),
+      club = listed.find(
+        (o) =>
+          !o.freeAgent && wouldJoin(w, o.player.id, (c) => buyOffer(c, listed.indexOf(o), true, 2)),
+      )!;
     expect(club).toMatchObject({ freeAgent: false, available: true });
-    // A free agent signs at once; another club's player joins on loan through an accepted bid.
-    operate(w, { type: 'recruit', candidate: offers.indexOf(agent) });
-    buyOffer(
-      w,
-      transferOffers(w).findIndex((o) => o.player.id === club.player.id),
-      true,
-    );
+    buyOffer(w, listed.indexOf(club), true, 2);
     const free = w.players.find((p) => p.id === agent.player.id)!,
       loaned = w.players.find((p) => p.id === club.player.id)!;
     // An able free agent is a Ballon d'Or star whose contract may carry its bonus (→CLUB-29).

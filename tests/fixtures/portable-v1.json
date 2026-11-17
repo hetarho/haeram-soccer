@@ -16065,72 +16065,19 @@
               }
             ],
             "mentors": []
-          },
-          {
-            "id": "ENG:2:0:16:p:9:110",
-            "name": "Cyril Davis",
-            "born": 1932,
-            "position": "ST",
-            "professionalism": 3,
-            "qualities": {
-              "understanding": 1,
-              "teaching": 4,
-              "judgement": 3
-            },
-            "playing": "active",
-            "employment": [
-              {
-                "role": "player",
-                "club": "ENG:2:0:16",
-                "from": {
-                  "year": 1950,
-                  "day": 11
-                },
-                "to": {
-                  "year": 1950,
-                  "day": 11
-                }
-              },
-              {
-                "role": "player",
-                "club": "ENG:3:0:0",
-                "from": {
-                  "year": 1950,
-                  "day": 11
-                }
-              }
-            ],
-            "mentors": [],
-            "formerOwn": true,
-            "ownCareer": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "club": "ENG:3:0:0"
           }
         ],
         "playingCoachProposals": {},
         "mediations": [],
         "promises": [],
-        "recruitmentArrivals": [
-          {
-            "player": "ENG:2:0:16:p:9:110",
-            "name": "Cyril Davis",
-            "position": "ST",
-            "positions": {
-              "ST": 3,
-              "AM": 3
-            },
-            "at": {
-              "year": 1950,
-              "day": 11
-            }
-          }
-        ],
+        "recruitmentArrivals": [],
         "year": 1950,
         "round": 1,
         "revision": 16,
-        "cash": "1023084",
+        "cash": "1076701",
         "currency": "GBP-LSD",
         "income": "190360",
-        "expense": "407132",
+        "expense": "353515",
         "tactic": "balanced",
         "manager": {
           "id": "coach:1950:1:4025576267",
@@ -16281,12 +16228,6 @@
             "status": "active",
             "wage": "3312",
             "career": [0, 0, 32, 24, 0, 0, 0, 0, 1, 0, 90, 0]
-          },
-          {
-            "id": "ENG:2:0:16:p:9:110",
-            "status": "active",
-            "wage": "8812",
-            "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           }
         ],
         "matches": [
@@ -16488,9 +16429,9 @@
             "amount": null
           },
           {
-            "kind": "transfer-in",
-            "title": "Cyril Davis 영입",
-            "amount": "53617"
+            "kind": "transfer-bid",
+            "title": "Cyril Davis 영입 제안",
+            "amount": null
           }
         ],
         "euro": []

@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r60 | Define the browser-demo rules for historical club economy.
+> r61 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -114,7 +114,7 @@
   | 스카우팅 | 즉시 전력 | the scout's search's ability band +4 (→CLUB-51); player wages ×1.05 |
   | 스카우팅 | 광역 네트워크 | one more per line and the top flight of one more country abroad (→CLUB-51); potential never ranks first |
   | 스카우팅 | 지역 인재 우선 | home gate demand +2%, player wages ×0.97; one fewer per line and no players abroad (→CLUB-51) |
-  | 매각 기조 | 셀링 클럽 | other clubs' offers ×1.6, sale fees ×1.25; morale baseline −2 |
+  | 매각 기조 | 셀링 클럽 | other clubs' offers ×3.2, sale fees ×1.25; morale baseline −2 |
   | 매각 기조 | 쇼케이스 | offers ×1.3, sale fees ×1.1; morale baseline −1 |
   | 매각 기조 | 핵심 지키기 | morale baseline +2; offers ×0.5 |
   | 매각 기조 | 강경 협상 | sale fees ×1.15; offers ×0.8 |
@@ -248,6 +248,7 @@
   - funded operating deficits and wages above turnover are permitted. Exhausted backing and unsupported commitments remain observable. No support is chosen to force a title or strength target.
 
 ## chg
+- r61 261117 ECON-22✎ 셀링 클럽 other clubs' offers ×1.6→×3.2 (with CLUB-18's sales targets: some seasons sell 5–7 of the starters a season began with)
 - r60 261117 ECON-33✎ the 선수 영입 step sets margins, caps and bid points→+wage offer ceilings 100/125/150/200% and the money bar at 4–5
 - r59 261117 ECON-33✎ reserve years at steps 4/5 안정 지향 20/10, 균형형 10/5, 공격형 5/0→2/1, 1/0, 0/0
 - r58 261114 ECON-36✎ opaque income/no owner capital→income components, separate actual capital and cash reconciliation · ECON-42+ bounded estimated annual backing drawn only for a shortfall
