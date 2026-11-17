@@ -1,0 +1,37 @@
+{
+  "task": "T943",
+  "recipeHash": "9bab8a5364768a83e298b190c234b3bcc8402edc68164ab7951061ed56ca26ac",
+  "manifestHash": "8e5028df37339a855f42580855b7c6f2dc633db4b5f1240a24e8f96b57dc5254",
+  "patches": {
+    "control": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "c1": "eb09a8a9fe1ba3d15969a119bd5369edc04567956492fe54890e8f737d749a7f",
+    "c2": "413ba80a9b32f7e18da5182e2b47838ab1268c6b9e8e8a94d6b957ddc191a7aa",
+    "c1-c2": "1e026a6e337b34a63286118f2c616fed779bcc6be53ab398bc1e508297f32e8b"
+  },
+  "reviewer": {
+    "provider": "codex",
+    "session": "cf17-review-codex-gpt-6.1-sol"
+  },
+  "author": {
+    "provider": "claude",
+    "session": "cf17 loop dispatch f1194a5b-df33-40c3-be00-3bcd352abf5e"
+  },
+  "approved": false,
+  "checklist": {
+    "1": "fail: Equivalent prepare returned ok with exact hashes and declared anchor checks, but the frozen identity omits execution-helper dependencies; the specified tsx CLI itself hit sandbox IPC EPERM.",
+    "2": "pass: Git diff and ls-tree confirm only material.test.ts and persisted-world.integration.test.ts differ across the declared historical runtime inputs.",
+    "3": "pass: Both historical anchor blob IDs and SHA-256 values match Git objects and the retained continuation evidence.",
+    "4": "pass: C1 changes only generated-player headroom and mainOvr potential floor before wages; makePlayer, flat initial ability, attributes, identities and random draw count remain unchanged.",
+    "5": "pass: C2 subtracts exactly 11 from the existing single raw academy potential draw; C1+C2 is byte-for-byte the concatenation of the two patches.",
+    "6": "fail: Fresh-world creation, initial advanceRound, daily progression, strict ordering and common-control baseline comparisons are correct, but unfinished runs lose every accumulated annual observation.",
+    "7": "pass: Endpoint hash and byte count use JSON.stringify(world); the fixed oracle remains unchanged and mismatches remain unresolved without a model-pass claim.",
+    "8": "pass: Each variant uses a fresh historical archive and isolated bundle; all 216 closure hashes match, with no checkpoint, borrowed output or production-source mutation.",
+    "9": "fail: Receipt matching and the real CLI shared-lock call are present, and timer cancellation marks runs unfinished, but interruption cleanup and durable cleanup receipts are missing."
+  },
+  "findings": [
+    "scripts/natural-football/generation-repair-run.ts:91 — P2: Annual rows, sums and strict-order failures exist only in memory until the entire run finishes. A timeout or crash before 1950 leaves no observations, contradicting T916's requirement to retain annual evidence at the timebox boundary. Persist observations as each boundary is reached while keeping completion separate.",
+    "scripts/natural-football/generation-repair.mjs:321 — P1: Child cancellation is wired only to the timeout callback, with no parent SIGTERM/SIGINT handling or encompassing child-cleanup finally block. Terminating the coordinator PID can leave simulation children running after its timer disappears; the CLI can then reclaim the dead owner's shared lock. Cancel and await all owned children on interruption and exceptional exits before releasing ownership.",
+    "scripts/natural-football/generation-repair.mjs:356 — P2: The execution summary discards runVerificationStage's cancellationCleanup evidence, including descendant and escalation lists. onUpdate stores entries only in memory, so no durable report retains that evidence. Preserve the runner's cleanup receipt and child identity alongside terminal completion status.",
+    "scripts/natural-football/generation-repair.mjs:65 — P2: RECIPE_FILES excludes imported verification-runner.ts, measurement-identity.ts and source-graph.ts, while the manifest closure covers only the child entry. In particular, changing verification-runner.ts leaves both review hashes unchanged and allows an old receipt to authorize changed execution and cleanup behavior. Include the orchestrator's transitive helper identities in the frozen manifest."
+  ]
+}
