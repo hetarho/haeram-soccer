@@ -136,6 +136,7 @@
 - 261117 decided T937 T939: unit outcomes that needed a coordinator call → T939 kept as a recorded experiment (real postMessage send cost 1.30× slower; F6 rejected); T937's parts judged on their combined A/B (0.887, per-part intervals spanned 1 under load) and Part 2 allowed to leave pure per-settlement memos unwritten after review 81070492 P2 (alt: drop T937 | keep only Part 1 without a measured gain)
 - 261117 decided T937 T941: submitting units whose whole --changed task sweep failed only on load-sensitive timeouts outside their code at load ~44 → submitted with explicit affected checks and left the whole unit project to the batch gate (alt: wait for load to drop past the 18:00 deadline)
 - 261117 decided STAFF-14 CLUB-52 T933: T933 review asked how STAFF-14's 데이터 헤드코치 bid acceptance +5 points maps onto the new selling-club answer → a CLUB-52 share factor of −0.05 on our bids, like the negotiator's edge (CLUB r75, STAFF r44) (alt: drop it | a flat +5 points on the shown chance)
+- 261117 decided ECON-22 CLUB-18 T934: T934 review: the 셀링 클럽 needed ×3.2 incoming offers (measured 1960: standard 1/1 starters sold, selling 4/7) against ECON-22's ×1.6 → ECON-22 card raised to ×3.2 as the card factor itself so the effect ledger shows it; base incoming bid chance 6%→12% a window day as a module constant (alt: keep ×1.6 and miss the 5–7 band | a separate hidden scale)
 
 ## unlanded
 | id | tag | branch | commit | at |
