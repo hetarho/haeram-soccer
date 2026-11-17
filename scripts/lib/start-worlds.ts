@@ -5,7 +5,7 @@
  * JSON (no engine import) and is separate from the shared world caches (`.git/haeram/worlds`,
  * `node_modules/.cache/haeram-worlds`), which measurements must not touch.
  */
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import {
   existsSync,
   mkdirSync,
@@ -18,6 +18,7 @@ import {
 } from 'node:fs';
 import { join } from 'node:path';
 import { gunzipSync, gzipSync } from 'node:zlib';
+import { toolMessage } from './tool-messages';
 
 export const START_WORLD_DIR = '.tmp/market-seasons';
 /** Most snapshots kept; the oldest by modification time go first. */
@@ -71,10 +72,16 @@ export function saveStartWorld(
 ): string {
   mkdirSync(dir, { recursive: true });
   const bytes = gzipSync(Buffer.from(JSON.stringify(world)));
-  const path = dataPath(dir, key);
-  writeFileSync(`${path}.part`, bytes);
-  writeFileSync(sumPath(dir, key), sha256(bytes));
-  renameSync(`${path}.part`, path);
+  const path = dataPath(dir, key),
+    sum = sumPath(dir, key);
+  // Each writer stages under its own name and publishes by rename, the checksum first, so a
+  // concurrent writer of the same key never removes another's staging file and a reader never
+  // sees a data file without its checksum. Writers of one key store the same world.
+  const stage = `.${process.pid}.${randomBytes(6).toString('hex')}.part`;
+  writeFileSync(sum + stage, sha256(bytes));
+  writeFileSync(path + stage, bytes);
+  renameSync(sum + stage, sum);
+  renameSync(path + stage, path);
   pruneStartWorlds(dir, cap, startWorldName(key));
   return path;
 }
@@ -91,7 +98,7 @@ export function loadStartWorld<T>(dir: string, key: StartWorldKey): T | undefine
 export function loadStartWorldFile<T>(path: string): T {
   const sum = path.replace(/\.json\.gz$/, '.sha256');
   const world = readStartWorldFile<T>(path, sum, false);
-  if (world === undefined) throw new Error(`${path}: no snapshot`);
+  if (world === undefined) throw new Error(toolMessage('marketSeasons.noSnapshot', { path }));
   return world;
 }
 
@@ -100,7 +107,7 @@ function readStartWorldFile<T>(path: string, sum: string, repair: boolean): T | 
   const bytes = readFileSync(path);
   const expected = existsSync(sum) ? readFileSync(sum, 'utf8').trim() : undefined;
   if (expected !== undefined && expected !== sha256(bytes)) {
-    if (!repair) throw new Error(`${path}: sha256 mismatch`);
+    if (!repair) throw new Error(toolMessage('marketSeasons.snapshotMismatch', { path }));
     rmSync(path, { force: true });
     rmSync(sum, { force: true });
     return undefined;

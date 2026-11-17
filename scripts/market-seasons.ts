@@ -24,33 +24,29 @@ import { fileURLToPath } from 'node:url';
 import { currency } from '../packages/catalogs/src/index';
 import type { World } from '../packages/contracts/src/types';
 import { currentDay, SEASON_END_DAY } from '../packages/engine/src/calendar';
-import { FREE_AGENT_FLOW, FREE_AGENT_CONFIG } from '../packages/engine/src/free-agents';
+import { FREE_AGENT_FLOW } from '../packages/engine/src/free-agents';
 import { historyWorld, liveHistory } from '../packages/engine/src/history';
 import { MATCH_MODEL_RELEASE } from '../packages/engine/src/match-model-release';
 import { inPounds } from '../packages/engine/src/club-value';
 import { npcWageBill, npcWageLimit } from '../packages/engine/src/books';
 import { NPC_MARKET, PLAYER_MOVE_FLOW } from '../packages/engine/src/npc-market';
-import { NPC_YOUTH } from '../packages/engine/src/npc-careers';
-import { CLUB_LEVELS } from '../packages/engine/src/persisted-squads';
 import { LINE_MINIMUM, lineOf, mainOvr } from '../packages/engine/src/player';
 import { overall } from '../packages/engine/src/player-state';
 import { RESULTS_LUCK } from '../packages/engine/src/results-only';
 import { advanceDays } from '../packages/engine/src/season';
 import { transferWindowDays } from '../packages/engine/src/transfer-window';
-import { clubById, NPC_SQUAD, SQUAD_SPREAD, squad } from '../packages/engine/src/world';
-import { MARKET_CONFIG } from '../packages/engine/src/market-prices';
-import { CLUB_BOOKS } from '../packages/engine/src/owner-config';
+import { clubById, NPC_SQUAD, squad } from '../packages/engine/src/world';
 import { measurementIdentity } from './lib/measurement-identity';
+import { setTunables } from './lib/market-tunables';
+import { toolMessage } from './lib/tool-messages';
 import {
   FRESH_MIN_BURN_IN,
-  applyTunables,
   inferReason,
   luckSalt,
-  plainClone,
   mergeRuns,
   parseSeeds,
   parseStart,
-  partition,
+  partitionBySeed,
   runJobs,
   seasonStats,
   seedName,
@@ -80,23 +76,8 @@ const option = (key: string, fallback: string) => {
 };
 const SELF = fileURLToPath(import.meta.url);
 
-/** The tunables `--config` may override; a new engine constant joins here. */
-const TUNABLES: Record<string, object> = {
-  NPC_SQUAD,
-  NPC_YOUTH,
-  CLUB_LEVELS,
-  NPC_MARKET,
-  SQUAD_SPREAD,
-  CLUB_BOOKS,
-  MARKET_CONFIG,
-  FREE_AGENT_CONFIG,
-};
-const DEFAULTS = plainClone(TUNABLES);
-/** The defaults with `config` over them. */
-function setConfig(config: Record<string, unknown>) {
-  applyTunables(TUNABLES, plainClone(DEFAULTS));
-  applyTunables(TUNABLES, plainClone(config));
-}
+/** The defaults with `config` over them (scripts/lib/market-tunables.ts). */
+const setConfig = (config: Record<string, unknown>) => setTunables(config);
 
 // ---------------------------------------------------------------------------------------------
 // Observation
@@ -286,7 +267,7 @@ function startWorld(spec: StartSpec, seed: string, config: Record<string, unknow
     setConfig({});
     w = liveHistory(historyWorld(seed), spec.year);
     saveStartWorld(START_WORLD_DIR, key, w);
-    console.error(`${seed}: stored lived:${spec.year} start world`);
+    console.error(toolMessage('marketSeasons.stored', { seed, year: String(spec.year) }));
   }
   setConfig(config);
   return w;
@@ -309,7 +290,13 @@ function runOne(plan: Plan, job: RunJob): RunResult {
   for (let n = 0; n < plan.burnIn + plan.seasons; n++) {
     (n < plan.burnIn ? burnIn : seasons).push(playSeason(w, salt));
     console.error(
-      `${job.seed} luck ${job.luck}: season ${n + 1}/${plan.burnIn + plan.seasons} closed (${((performance.now() - t0) / 1000).toFixed(0)} s)`,
+      toolMessage('marketSeasons.progress', {
+        seed: job.seed,
+        luck: job.luck,
+        season: n + 1,
+        seasons: plan.burnIn + plan.seasons,
+        seconds: Math.round((performance.now() - t0) / 1000),
+      }),
     );
   }
   RESULTS_LUCK.salt = '';
@@ -322,10 +309,10 @@ function runOne(plan: Plan, job: RunJob): RunResult {
 const readConfig = (file: string): Record<string, unknown> =>
   file ? JSON.parse(readFileSync(file, 'utf8')) : {};
 const writeOut = (file: string, value: unknown) => {
-  if (!file) throw usageError('--out file.json');
+  if (!file) throw usageError();
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, JSON.stringify(value, null, 2) + '\n');
-  console.error(`wrote ${file}`);
+  console.error(toolMessage('marketSeasons.wrote', { path: file }));
 };
 
 if (args.includes('--child')) {
@@ -335,18 +322,18 @@ if (args.includes('--child')) {
       for (const job of m.jobs) process.send!({ result: runOne(m.plan, job) });
       process.send!({ done: true });
     } catch (error) {
-      process.send!({ error: String(error instanceof Error ? error.stack : error) });
+      process.send!({ error: error instanceof Error ? error.message : String(error) });
     }
   });
 } else if (args.includes('--merge')) {
   const at = args.indexOf('--merge') + 1;
   const files: string[] = [];
   for (let i = at; i < args.length && !args[i]!.startsWith('--'); i++) files.push(args[i]!);
-  if (!files.length) throw usageError('--merge a.json b.json');
+  if (!files.length) throw usageError();
   const runs: RunResult[] = files.flatMap((f) => JSON.parse(readFileSync(f, 'utf8')).runs ?? []);
   writeOut(option('out', ''), { meta: { merged: files }, merged: mergeRuns(runs) });
 } else {
-  if (args.includes('--owner')) throw usageError('an owner world is not supported yet');
+  if (args.includes('--owner')) throw usageError(toolMessage('marketSeasons.ownerUnsupported'));
   const start = option('start', '');
   if (!start) throw usageError();
   const kind = start.split(':')[0];
@@ -359,18 +346,19 @@ if (args.includes('--child')) {
     ![burnIn, seasons, lucks, jobsWanted].every((n) => Number.isInteger(n) && n >= 0) ||
     lucks < 1
   )
-    throw usageError();
+    throw usageError(toolMessage('marketSeasons.badOptions'));
   const configFile = option('config', '');
   const plan: Plan = { start, burnIn, seasons, config: readConfig(configFile) };
-  // Validated and echoed before any world is built.
-  const applied = applyTunables(plainClone(TUNABLES), plainClone(plan.config));
+  // Validated and echoed before any world is built; each run sets them again in its own process.
+  const inForce = setTunables(plan.config);
+  setTunables({});
   const prefix = option('seed-prefix', 'market-');
   const seeds = parseSeeds(option('seeds', '0..7')).map((n) => seedName(prefix, n));
   const jobs = runJobs(seeds, lucks);
   const startedAt = new Date().toISOString();
   const t0 = performance.now();
   const results: RunResult[] = [];
-  const parts = partition(jobs, Math.min(jobsWanted, jobs.length));
+  const parts = partitionBySeed(jobs, Math.min(jobsWanted, jobs.length));
   if (parts.length <= 1) for (const job of jobs) results.push(runOne(plan, job));
   else
     await Promise.all(
@@ -388,7 +376,11 @@ if (args.includes('--child')) {
               else if (m.done) child.send(false);
             });
             child.on('exit', (code) =>
-              code ? reject(new Error(`child exit ${code}`)) : resolve(),
+              code
+                ? reject(
+                    new Error(toolMessage('marketSeasons.childFailed', { code: String(code) })),
+                  )
+                : resolve(),
             );
             child.on('error', reject);
             child.send({ plan, jobs: part });
@@ -407,7 +399,8 @@ if (args.includes('--child')) {
       seasons,
       seeds,
       lucks,
-      appliedConfig: applied,
+      appliedConfig: plan.config,
+      tunablesInForce: inForce,
       reasons:
         'reason.given is the engine-reported reason (absent until the market reports one); seller and buyer reasons are inferred from facts with exported reads and are labelled inferred',
       units: 'money in pounds of the season; tiers are 0 for the top flight',

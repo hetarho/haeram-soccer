@@ -59,7 +59,7 @@ const VARIANTS: SaleContext[] = [
     wageShare: 80,
   }),
   ctx({ director: { vacant: false, name: 'D', ability: 90, negotiator: true }, windowDaysLeft: 1 }),
-  ctx({ contractSeasons: 2, npc: { relegatedStarter: true, aboveDivision: true, year: 1960 } }),
+  ctx({ contractSeasons: 2, year: 1960, npc: { relegatedStarter: true, aboveDivision: true } }),
 ];
 const draws = (n: number) => Array.from({ length: n }, (_, i) => (i + 0.5) / n);
 
@@ -185,21 +185,20 @@ describe('the selling club answer (→CLUB-52)', () => {
     }
   });
 
-  it('counts the contract rows half before 1995 between clubs nobody owns', () => {
+  it('counts the contract rows half before 1995 for every seller', () => {
     const contract = (over: Partial<SaleContext>) =>
       saleShare(ctx(over)).lines.find((l) => l.factor === 'contract')?.delta;
-    const rows = { relegatedStarter: false, aboveDivision: false };
-    expect(contract({ contractSeasons: 1, npc: { ...rows, year: 1994 } })).toBeCloseTo(-0.075, 10);
-    expect(contract({ contractSeasons: 2, npc: { ...rows, year: 1994 } })).toBeCloseTo(-0.025, 10);
-    expect(contract({ contractSeasons: 1, npc: { ...rows, year: 1995 } })).toBeCloseTo(-0.15, 10);
-    expect(contract({ contractSeasons: 2, npc: { ...rows, year: 2010 } })).toBeCloseTo(-0.05, 10);
-    // Our club's answers keep their rows unchanged.
-    expect(contract({ contractSeasons: 1 })).toBeCloseTo(-0.15, 10);
+    for (const ownSeller of [false, true]) {
+      expect(contract({ ownSeller, contractSeasons: 1, year: 1994 })).toBeCloseTo(-0.075, 10);
+      expect(contract({ ownSeller, contractSeasons: 2, year: 1994 })).toBeCloseTo(-0.025, 10);
+      expect(contract({ ownSeller, contractSeasons: 1, year: 1995 })).toBeCloseTo(-0.15, 10);
+      expect(contract({ ownSeller, contractSeasons: 2, year: 2010 })).toBeCloseTo(-0.05, 10);
+    }
   });
 
   it('adds the NPC rows to the share and never to the draw', () => {
-    const plain = ctx({ npc: { relegatedStarter: false, aboveDivision: false, year: 2000 } }),
-      both = ctx({ npc: { relegatedStarter: true, aboveDivision: true, year: 2000 } });
+    const plain = ctx({ year: 2000, npc: { relegatedStarter: false, aboveDivision: false } }),
+      both = ctx({ year: 2000, npc: { relegatedStarter: true, aboveDivision: true } });
     for (const u of draws(20)) {
       const before = saleAnswer(plain, u),
         after = saleAnswer(both, u);

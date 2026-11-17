@@ -591,8 +591,13 @@ type Attempt = 'skipped' | 'bid' | 'moved';
  */
 export function npcMarket(w: World) {
   const day = currentDay(w);
-  const days = npcMarketDays(w.year).find((dates) => dates.includes(day));
+  const windows = npcMarketDays(w.year),
+    windowAt = windows.findIndex((dates) => dates.includes(day)),
+    days = windows[windowAt];
   if (!days || (w.npcMarketAt?.year === w.year && w.npcMarketAt.day >= day)) return;
+  // A pair's bid, the seller's answer and the player's are drawn once a window (→CLUB-52/53):
+  // asked again on a later settlement day of the window, it meets the same draws.
+  const windowName = windowAt === 0 ? 'summer' : 'winter';
   w.npcMarketAt = { year: w.year, day };
   const clubs = w.clubs.filter(
     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
@@ -705,6 +710,8 @@ export function npcMarket(w: World) {
         if (tried.has(`${buyer.id}|${cand.player.id}`)) continue;
         const listing = listed.get(cand.player.id);
         if (loanOnly && !listing?.loan) continue;
+        // A player his club cannot sell now never takes a place of the bounded search.
+        if (salesLeft(cand.club) <= 0 || !npcCanSell(w, cand.club, cand.player)) continue;
         read++;
         const score = need.slot ? rating(cand.player, settlement, need.slot) : cand.ovr;
         if (score < threshold) continue;
@@ -738,7 +745,7 @@ export function npcMarket(w: World) {
     const fee = npcBidFee(
       asking,
       rich,
-      random(`${w.seed}:npc-bid:${w.year}:${day}:${bidder.id}:${p.id}`)(),
+      random(`${w.seed}:npc-bid:${w.year}:${windowName}:${bidder.id}:${p.id}`)(),
     );
     const offer = npcOffer(w, bidder, p, seller, fee, loan, wanted.get(bidder.id), settlement);
     return offer ? { fee, offer } : undefined;
@@ -787,7 +794,7 @@ export function npcMarket(w: World) {
         asking,
         sellingDown: limit !== undefined && bill > limit,
       }),
-      random(`${w.seed}:npc-sale:${w.year}:${day}:${bidder.id}:${p.id}`)(),
+      random(`${w.seed}:npc-sale:${w.year}:${windowName}:${bidder.id}:${p.id}`)(),
     );
     if (answer.kind === 'refuse') return 'bid';
     let fee = bid.fee,
@@ -817,7 +824,7 @@ export function npcMarket(w: World) {
         wouldStart: wouldStart(bidder, p),
         startsNow: startingSquad(w, seller).includes(p),
       }),
-      random(`${w.seed}:npc-terms:${w.year}:${day}:${bidder.id}:${p.id}`)(),
+      random(`${w.seed}:npc-terms:${w.year}:${windowName}:${bidder.id}:${p.id}`)(),
     );
     if (!terms.accept) return 'bid';
     settleMove(

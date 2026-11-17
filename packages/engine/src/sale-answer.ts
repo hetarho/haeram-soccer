@@ -76,10 +76,9 @@ export interface SaleContext {
     { vacant: true } | { vacant: false; name: string; ability: number; negotiator: boolean };
   /** Days left in the open window, the deadline day 0; absent outside a window. */
   windowDaysLeft?: number;
-  /**
-   * A bid between clubs nobody owns (→WORLD-16) reads two more rows and the contract rows' era;
-   * absent for our club's answers and for bids to us, whose rows are unchanged.
-   */
+  /** The bid's season: before 1995 the contract rows count half, for every seller (→CLUB-52). */
+  year?: number;
+  /** A bid between clubs nobody owns (→WORLD-16) reads two more rows; absent for our club's. */
   npc?: NpcSaleRows;
 }
 /** The rows only a club nobody owns answering another one reads (→CLUB-52). */
@@ -88,8 +87,6 @@ export interface NpcSaleRows {
   relegatedStarter: boolean;
   /** He rates 5 or more above its division's level (→WORLD-15) and the buyer plays higher. */
   aboveDivision: boolean;
-  /** The bid's season: before 1995 the contract rows count half. */
-  year: number;
 }
 
 const V = SALE_FACTOR_VALUES;
@@ -115,7 +112,7 @@ export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
     id: 'contract',
     read: (c) => {
       // Before 1995 a move out of contract still carried a fee, so the rows count half.
-      const era = c.npc && c.npc.year < V.contractFullFrom ? V.contractEarlyShare : 1;
+      const era = c.year !== undefined && c.year < V.contractFullFrom ? V.contractEarlyShare : 1;
       return c.contractSeasons <= 1
         ? line('contract', V.contract.final * era, 'copy.transfers.53f9e38caf')
         : c.contractSeasons === 2
@@ -404,6 +401,7 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
       contractSeasons: seasonsLeft(w, player.until),
       age: w.year - player.born,
       prospect,
+      year: w.year,
       ...(window.open ? { windowDaysLeft: window.daysLeft } : {}),
     };
   if (ownSeller) {
@@ -488,13 +486,13 @@ export function npcSaleContext(w: World, bid: NpcSaleBid): SaleContext {
     stance: 'open',
     transferRequest: false,
     unhappy: false,
+    year: w.year,
     ...(window.open ? { windowDaysLeft: window.daysLeft } : {}),
     npc: {
       relegatedStarter: before !== undefined && before < seller.tier && place !== 'outside',
       aboveDivision:
         buyer.tier < seller.tier &&
         overall(player) >= tierLevel(seller.tier) + V.aboveDivisionPoints,
-      year: w.year,
     },
   };
 }

@@ -180,10 +180,11 @@ const facts = (w: World) => ({
 // changed results establish no throughput speed claim.
 // The evidence audit expands every missing array tail; scalar leaves and array lengths are separate.
 // T945's pull market changes which players clubs nobody owns hold, so the candidate rounds' signature
-// moves (aef5e3c0618eb5f2 before it); the aggregate records keep theirs.
+// moves (aef5e3c0618eb5f2 before it, a05cbbd0c13eeb52 with draws keyed by day before its
+// window-keyed draws and CLUB-52's pre-1995 half for every seller); the aggregate records keep theirs.
 const BEFORE = {
   aggregateRecords: 'd01e8b16487872a4',
-  candidateRounds: 'a05cbbd0c13eeb52',
+  candidateRounds: '9322bc0149c21767',
 };
 
 describe('complete-result throughput (T285)', () => {

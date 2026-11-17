@@ -1,8 +1,10 @@
-import { mkdtempSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { historyWorld } from '../../packages/engine/src/history';
+import { NPC_MARKET_ERA, npcMarketCaps } from '../../packages/engine/src/transfer-policy';
+import { MARKET_TUNABLES, setTunables } from './market-tunables';
 import {
   applyTunables,
   distribution,
@@ -13,6 +15,7 @@ import {
   parseSeeds,
   parseStart,
   partition,
+  partitionBySeed,
   runJobs,
   seasonStats,
   spread,
@@ -235,6 +238,46 @@ describe('helpers', () => {
       [2, 4],
     ]);
     expect(partition([1], 4)).toEqual([[1]]);
+    // Every luck of one seed in one process, so a lived start is built once per seed.
+    expect(partitionBySeed(runJobs(['a', 'b', 'c'], 2), 2)).toEqual([
+      [
+        { seed: 'a', luck: 0 },
+        { seed: 'a', luck: 1 },
+        { seed: 'c', luck: 0 },
+        { seed: 'c', luck: 1 },
+      ],
+      [
+        { seed: 'b', luck: 0 },
+        { seed: 'b', luck: 1 },
+      ],
+    ]);
+  });
+
+  it('carries a config override of the era caps to npcMarketCaps, and undoes it', () => {
+    const before = npcMarketCaps(1960);
+    const inForce = setTunables({
+      NPC_MARKET_ERA: { anchors: [[1950, { bids: 9, buys: 7, sales: 6 }]] },
+      SALE_SHARE: { base: 0.8 },
+    });
+    try {
+      expect(npcMarketCaps(1960)).toEqual({ bids: 9, buys: 7, sales: 6 });
+      expect(inForce.NPC_MARKET_ERA).toEqual({ anchors: [[1950, { bids: 9, buys: 7, sales: 6 }]] });
+      expect(inForce.SALE_SHARE).toMatchObject({ base: 0.8, spread: 0.08 });
+      expect(Object.keys(MARKET_TUNABLES)).toEqual(
+        expect.arrayContaining([
+          'NPC_MARKET',
+          'NPC_MARKET_ERA',
+          'SALE_FACTOR_VALUES',
+          'TERMS_VALUES',
+        ]),
+      );
+      expect(() => setTunables({ NPC_MARKET_ERA: { nope: 1 } })).toThrow();
+      expect(() => setTunables({ MISSING: { a: 1 } })).toThrow();
+    } finally {
+      setTunables({});
+    }
+    expect(npcMarketCaps(1960)).toEqual(before);
+    expect(NPC_MARKET_ERA.anchors).toHaveLength(5);
   });
 
   it('merges overrides into named tunables, echoing them, and refuses a missing setting', () => {
@@ -319,6 +362,17 @@ describe('start world store', () => {
     const again = saveStartWorld(dir, key, { a: 1 });
     writeFileSync(again, Buffer.from('damaged'));
     expect(() => loadStartWorldFile(again)).toThrow();
+  });
+
+  it("stages each write under its own name, leaving another writer's staging untouched", () => {
+    const dir = scratch();
+    const other = join(dir, `${startWorldName(key)}.json.gz.999999.abcdef.part`);
+    writeFileSync(other, 'another writer');
+    saveStartWorld(dir, key, { a: 1 });
+    saveStartWorld(dir, key, { a: 1 });
+    expect(existsSync(other)).toBe(true);
+    expect(readdirSync(dir).filter((f) => f.endsWith('.part'))).toEqual([other.split('/').at(-1)]);
+    expect(loadStartWorld(dir, key)).toEqual({ a: 1 });
   });
 
   it('caps the entries, dropping the oldest and keeping the one just written', () => {

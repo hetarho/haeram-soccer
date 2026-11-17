@@ -3,12 +3,13 @@
  * season aggregation over observed moves and facts, tunable overrides and the merge of runs. No
  * engine import, so each part is testable on synthetic moves. Output is machine data (JSON).
  */
-import { message } from '../../packages/contracts/src/messages';
+import { toolMessage } from './tool-messages';
 
 const USAGE =
   'market-seasons.ts --start fresh:<year>|lived:<year>|file:<path> [--burn-in N] [--seasons N] [--seeds 0..7] [--lucks K] [--jobs N] [--config file.json] --out file.json | --merge a.json b.json --out file.json';
+/** A usage error: what was wrong, as a message, or the usage line itself. */
 export const usageError = (detail?: string) =>
-  new Error(message('naturalFootball.usage', { command: detail ? `${USAGE} (${detail})` : USAGE }));
+  new Error(detail ?? toolMessage('naturalFootball.usage', { command: USAGE }));
 
 /** A fresh world makes no moves in its first season (measured 261118), so it needs a burn-in. */
 export const FRESH_MIN_BURN_IN = 2;
@@ -24,14 +25,14 @@ export function parseStart(text: string, burnIn: number): StartSpec {
   const kind = at < 0 ? text : text.slice(0, at);
   const rest = at < 0 ? '' : text.slice(at + 1);
   if (kind === 'file') {
-    if (!rest) throw usageError('file:<path>');
+    if (!rest) throw usageError(toolMessage('marketSeasons.badStart', { start: text }));
     return { kind, path: rest };
   }
   const year = Number(rest);
   if ((kind !== 'fresh' && kind !== 'lived') || !Number.isInteger(year) || year < 1930)
-    throw usageError(`start ${text}`);
+    throw usageError(toolMessage('marketSeasons.badStart', { start: text }));
   if (kind === 'fresh' && burnIn < FRESH_MIN_BURN_IN)
-    throw usageError(`fresh start needs --burn-in ${FRESH_MIN_BURN_IN} or more`);
+    throw usageError(toolMessage('marketSeasons.freshBurnIn', { minimum: FRESH_MIN_BURN_IN }));
   return { kind, year };
 }
 
@@ -41,9 +42,9 @@ export function parseSeeds(text: string): number[] {
   for (const part of text.split(',')) {
     const range = /^(\d+)\.\.(\d+)$/.exec(part);
     const single = /^\d+$/.test(part);
-    if (!range && !single) throw usageError(`seeds ${text}`);
+    if (!range && !single) throw usageError(toolMessage('marketSeasons.badSeeds', { seeds: text }));
     const [from, to] = range ? [Number(range[1]), Number(range[2])] : [Number(part), Number(part)];
-    if (to < from) throw usageError(`seeds ${text}`);
+    if (to < from) throw usageError(toolMessage('marketSeasons.badSeeds', { seeds: text }));
     for (let n = from; n <= to; n++) if (!out.includes(n)) out.push(n);
   }
   return out;
@@ -63,6 +64,15 @@ export interface RunJob {
 /** Every (seed, luck) pair, seeds outermost. */
 export function runJobs(seeds: readonly string[], lucks: number): RunJob[] {
   return seeds.flatMap((seed) => Array.from({ length: lucks }, (_, luck) => ({ seed, luck })));
+}
+
+/**
+ * Jobs grouped by seed, the groups dealt round-robin over `parts` child processes (empty parts
+ * dropped): every luck of one seed runs in one process, so a lived start is built once per seed.
+ */
+export function partitionBySeed(jobs: readonly RunJob[], parts: number): RunJob[][] {
+  const seeds = [...new Set(jobs.map((j) => j.seed))];
+  return partition(seeds, parts).map((group) => jobs.filter((j) => group.includes(j.seed)));
 }
 
 /** Round-robin partition of jobs over `jobs` child processes (empty parts dropped). */
@@ -94,7 +104,8 @@ export function applyTunables(
 ): Record<string, unknown> {
   const merge = (target: Record<string, unknown>, patch: Record<string, unknown>, path: string) => {
     for (const [key, value] of Object.entries(patch)) {
-      if (!(key in target)) throw usageError(`config names a missing setting: ${path}${key}`);
+      if (!(key in target))
+        throw usageError(toolMessage('marketSeasons.missingSetting', { setting: `${path}${key}` }));
       const current = target[key];
       if (
         value &&
@@ -113,7 +124,7 @@ export function applyTunables(
   };
   for (const [name, patch] of Object.entries(config)) {
     const target = registry[name];
-    if (!target) throw usageError(`config names an unknown tunable: ${name}`);
+    if (!target) throw usageError(toolMessage('marketSeasons.unknownTunable', { tunable: name }));
     merge(target as Record<string, unknown>, patch as Record<string, unknown>, `${name}.`);
   }
   return config;

@@ -7,6 +7,7 @@ import {
   npcBidFee,
   npcMarket,
   npcMarketDays,
+  NPC_MARKET,
   PLAYER_MOVE_FLOW,
   recordPlayerMove,
   returnNpcLoans,
@@ -227,7 +228,7 @@ describe('the pull market (→WORLD-16)', () => {
 
   it('keeps each window to the era table: bids spread over its days, buys capped', () => {
     expect(npcMarketCaps(1930)).toEqual({ bids: 3, buys: 2, sales: 2 });
-    expect(npcMarketCaps(1950)).toEqual(NPC_MARKET_ERA[0]![1]);
+    expect(npcMarketCaps(1950)).toEqual(NPC_MARKET_ERA.anchors[0]![1]);
     expect(npcMarketCaps(1995)).toEqual({ bids: 6, buys: 4, sales: 4 });
     expect(npcMarketCaps(2002)).toEqual({ bids: 7, buys: 4, sales: 4 });
     expect(npcMarketCaps(2030)).toEqual({ bids: 8, buys: 5, sales: 5 });
@@ -254,6 +255,40 @@ describe('the pull market (→WORLD-16)', () => {
     expect(seen.filter((s) => s.move.to === buyer.id)).toHaveLength(npcMarketCaps(1950).buys);
     const bids = draws.keys.filter((k) => k.includes(':npc-sale:') && k.includes(`:${buyer.id}:`));
     expect(bids.length).toBeLessThanOrEqual(npcMarketCaps(1950).bids);
+  });
+
+  it('lets no club that cannot sell take a place of the bounded search', () => {
+    const { w, seller, buyer } = fixture();
+    const p = target(w, seller);
+    // A third club holds more keepers rated far above him than the search reads, every one
+    // unsellable this window: it has already made its era's sales.
+    const holder: Club = { ...seller, id: 'ENG:0:0:9' };
+    w.clubs.push(holder);
+    w.squads![holder.id] = Array.from({ length: NPC_MARKET.searchDepth + 6 }, (_, n) => {
+      const q = generatedPlayer('ENG', w.seed, `holder-keeper:${n}`, w.year, 90, 'GK', 24, 0);
+      for (const a of ATTRIBUTES) q.attrs[a] = 90;
+      q.potential = 90;
+      q.until = w.year + 3;
+      q.wage = marketWageAt('ENG', w.year, holder.tier, q);
+      return q;
+    });
+    holder.books = { seasons: [], cash: '999999999999', debt: '0', openingIncome: '0' };
+    holder.books.openingIncome = npcWageBill(w, holder).toString();
+    for (let n = 0; n < npcMarketCaps(w.year).sales; n++)
+      recordPlayerMove(w, `holder-sold:${n}`, {
+        year: w.year,
+        day: w.calendar!.day,
+        from: holder.id,
+        to: seller.id,
+        fee: '1',
+      });
+    invalidateNpcSquad(w, holder.id);
+    npcMarket(w);
+    expect(at(w, p.id)).toEqual([buyer.id]);
+    // None of the holder's keepers was sold.
+    expect(w.squads![holder.id]!.filter((q) => q.id.includes('holder-keeper'))).toHaveLength(
+      NPC_MARKET.searchDepth + 6,
+    );
   });
 
   it('sells down by the lowest value for his wage, then 30+, then final season, then highest wage', () => {
@@ -371,15 +406,26 @@ describe('move reasons reach the observer and nothing else', () => {
     expect(JSON.stringify(w)).not.toContain('"reason"');
   });
 
-  it('draws each answer from its own CLUB-52/53 key', () => {
+  it("draws a pair's bid and answers once a window, the same on every settlement day", () => {
     const { w, seller, buyer } = fixture();
     const p = target(w, seller);
+    draws.terms = 0.999999; // the player refuses: the buyer asks again on the window's later days
     draws.keys.length = 0;
+    const [summer, winter] = npcMarketDays(w.year);
+    for (const day of summer!) {
+      w.calendar!.day = day;
+      npcMarket(w);
+    }
+    w.calendar!.day = winter![0]!;
     npcMarket(w);
-    const day = w.calendar!.day;
-    const bid = `${w.year}:${day}:${buyer.id}:${p.id}`;
-    expect(draws.keys).toContain(`${w.seed}:npc-sale:${bid}`);
-    expect(draws.keys).toContain(`${w.seed}:npc-terms:${bid}`);
-    expect(draws.keys).toContain(`${w.seed}:npc-bid:${bid}`);
+    const pair = `${buyer.id}:${p.id}`;
+    const keys = (kind: string) =>
+      new Set(draws.keys.filter((k) => k.includes(`:${kind}:`) && k.endsWith(pair)));
+    for (const kind of ['npc-bid', 'npc-sale', 'npc-terms'])
+      expect([...keys(kind)].sort()).toEqual([
+        `${w.seed}:${kind}:${w.year}:summer:${pair}`,
+        `${w.seed}:${kind}:${w.year}:winter:${pair}`,
+      ]);
+    expect(at(w, p.id)).toEqual([seller.id]);
   });
 });
