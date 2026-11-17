@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r46 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r47 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -207,6 +207,8 @@
   - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
 - ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about four minutes in a fresh worktree; even the covering Chromium specs made each task too slow
   - plan: `scripts/verification-plan.json`
+  - prepare: `pnpm install --frozen-lockfile --offline`
+  - Dependencies come only from prepare; no task or batch command installs them, and CI jobs install their own (→ARCH-23). ← a worktree the CLI creates has no ignored dependency folder, so its task checks could not start and the batch command carried its own install
   - The plan declares every task and batch command as its own check with its inputs: code, tests, scripts, artifacts, patches, CI and configuration (every JSON, TypeScript, module, YAML and TOML file in the repository), never Markdown outside those folders such as `spec/` documents, `docs/`, README, AGENTS or skills. `vibe check --tier task|batch` runs the tier's checks in order, records each success on its own and continues past a failure, so recovery reruns only failed, affected or unrun checks and a Markdown-only change reuses earlier successes. ← one chained task command hid which check cost the time (measured 261117 in a fresh worktree: affected units 97 s, typecheck 70 s cold and 7 s warm, format 46 s, lint 24 s, i18n 4 s)
   - task, once before each done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm run validate:i18n`, `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests`.
   - Run task commands through `vibe check --tier task`; task acceptance names task-tier checks only. Maintain affected integration and browser tests with the implementation and hand off their commands/specs in result limits; unexecuted checks never count as passed.
@@ -276,6 +278,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r47 261117 ARCH-30✎ batch command carrying its own frozen offline install→prepare `pnpm install --frozen-lockfile --offline` in every CLI-created worktree; no task or batch command installs dependencies
 - r46 261117 ARCH-30✎ tier commands in prose with one chained task command, reuse keyed to the whole tree→per-check plan `scripts/verification-plan.json` (task five checks, batch verify:batch), each success kept and reused on declared inputs that leave out Markdown outside the code, test, script and artifact folders; rationale task checks about a minute→about four minutes in a fresh worktree
 - r45 261117 ARCH-23✎ integration job limit 45 min→75 min, covering a cold world cache after an engine change
 - r44 261116 ARCH-18✎ Chrome/Edge, Firefox and Safari/WebKit gate→ARCH-35 supported browsers · ARCH-23✎ Chromium and Firefox three shards, WebKit four→supported browsers, Chromium three shards · ARCH-30✎ batch every journey on Chromium→no browser spec, journeys only in CI; three cumulative failed gates→repair and rerun within limits · ARCH-35+ alpha, current stable Chrome only

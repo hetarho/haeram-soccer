@@ -19,7 +19,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 46 | 46 | - | 2 |
+| ARCH | 47 | 47 | - | 2 |
 | WEB | 221 | 221 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 14 | 14 | - | 0 |
@@ -67,6 +67,7 @@
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T930 | Keep one browser journey instance per distinct path or layout | ARCH | - | todo |
+| T942 | Run the batch gate without its own dependency install | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -80,3 +81,4 @@
 ## next
 - Session tm17 landed T932–T935 as 0.8.9 (reports/261117-tm17): selling-club answer and personal terms as factor registries, wage steps, money bar, delegated sales; the NPC pull market (review transfer-market-261117 F4) waits for the owner.
 - inspect work board for remaining tasks
+- gusta-implement-task T942
