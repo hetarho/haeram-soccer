@@ -612,8 +612,9 @@ function squadAtOpening(w: World, day: number): World {
 }
 /**
  * The money bar the window open on `day` is capped by (→CLUB-33): the bar now, or the bar with this
- * window's signings undone when that is higher — their fees back in the cash and out of the
- * season's fees, their wages off the bill, the 단장's open bids withdrawn. What the window's own
+ * window's signings undone when that is higher — the fees they actually paid (a counter's included,
+ * read from the recorded transfer facts) back in the cash and out of the season's fees, their wages
+ * off the bill, the 단장's open bids withdrawn. What the window's own
  * signings spent never lowers its cap; money the plan lost otherwise (a re-plan on lower income)
  * does, and money it gained raises it.
  */
@@ -623,10 +624,20 @@ export function windowBar(w: World, day = currentDay(w)): number | undefined {
     inWindow = (bid: TransferBid) =>
       bid.direction === 'out' && bid.year === w.year && bid.day >= opening && bid.day <= day,
     bids = w.bids ?? [],
-    paid = bids.filter((bid) => inWindow(bid) && bid.status === 'completed'),
     arrived = new Set(joinedThisWindow(w, day).map((p) => p.id));
   if (!arrived.size && !bids.some((bid) => inWindow(bid) && isOpen(bid))) return now;
-  const refunded = paid.reduce((total, bid) => total + BigInt(bid.fee), 0n);
+  // The fee a signing paid is its recorded fact's: an accepted counter pays `counterFee`, not the bid.
+  const refunded = (w.transfers?.facts ?? []).reduce(
+    (total, fact) =>
+      fact.direction === 'in' &&
+      fact.year === w.year &&
+      fact.day >= opening &&
+      fact.day <= day &&
+      fact.currency === w.currency
+        ? total + BigInt(fact.fee)
+        : total,
+    0n,
+  );
   const undone: World = {
     ...w,
     cash: (BigInt(w.cash) + refunded).toString(),

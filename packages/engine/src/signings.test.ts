@@ -47,6 +47,7 @@ import {
   windowBar,
 } from './index';
 import { addEvent } from './events';
+import { recordTransfer } from './transfer-records';
 import { delegatePlan } from './delegation';
 import { playerRecord } from './player-records';
 import { marketWageAt } from './market-prices';
@@ -1247,7 +1248,7 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     );
   });
 
-  it('keeps the window cap while its own signings spend the money the bar reads', () => {
+  it('keeps the window cap while its own signings, accepted counters included, spend the money the bar reads', () => {
     const w = club(5);
     const wages = BigInt(operatingCosts(w).playerWages);
     // Income whose squad share just carries the wage bill: the plan's money is the cash.
@@ -1264,16 +1265,23 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     const capNow = () => upgradeCap(generous, slotsBelowBar(w, 2, windowBar(w)));
     expect(capNow()).toBe(below.length);
     let fell = false;
-    // The 단장 fills the weak slots one by one, each signing paying a fee and a star's wage.
+    // The 단장 fills the weak slots one by one, each signing paying a fee and a star's wage; every
+    // other one is a counter he accepted, paid at `counterFee` above the bid he made, as
+    // `completeSigning` pays it: cash debited, a transfer-in line and a transfer fact.
     for (const [i, need] of below.entries()) {
       const left = BigInt(delegatePlan(w, 'recruitment').left),
         fee = left / 4n,
         p = joinAble(w, need.measure, `cap:paid:${i}`);
       p.wage = wageAt(w, bar).toString();
       w.cash = (BigInt(w.cash) - fee).toString();
+      recordTransfer(w, { direction: 'in', loan: false, player: p, fee: fee.toString() });
       addEvent(w, 'transfer-in', 'buy', 'buy', fee.toString());
       upgradeSigned(w, p.id);
-      w.bids!.at(-1)!.fee = fee.toString();
+      const bid = w.bids!.at(-1)!;
+      if (i % 2) {
+        bid.fee = ((fee * 8n) / 10n).toString();
+        bid.counterFee = fee.toString();
+      } else bid.fee = fee.toString();
       // The plan's money falls with every signing until none is left, and the bar now with it.
       if (left > 0n) expect(BigInt(delegatePlan(w, 'recruitment').left)).toBeLessThan(left);
       const now = moneyBar(w);
