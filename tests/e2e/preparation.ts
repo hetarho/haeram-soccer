@@ -45,12 +45,17 @@ export const showsCompression = ({ from, to }: { from: number; to: number }) =>
   presentationMs(from, to, 1) > PLAIN_RUNNING_MS;
 
 /**
- * The first stoppage (→WEB-32) of a reference playback that starts after the opening minutes and
- * lasts at least `minSeconds` of match time, so 1x shows its compression plainly.
+ * The first set-piece stoppage (→WEB-32) of a reference playback — a corner, free kick or goal
+ * kick, never the kick-off after a goal, whose celebration adds its own held time — that starts
+ * after the opening minutes and lasts at least `minSeconds` of match time, so 1x shows its
+ * compression plainly.
  */
 export function longPreparation(playback: MatchPlayback, minSeconds = 20) {
   const stoppage = stoppages(playback).find(
-    ({ from, to }) => from >= 120 && to - from >= minSeconds,
+    ({ from, to, segments }) =>
+      from >= 120 &&
+      to - from >= minSeconds &&
+      !segments.some((segment) => segment.beat?.kind === 'kickoff'),
   );
   if (!stoppage) throw new Error(`no stoppage of ${minSeconds} s or more`);
   return stoppage;
