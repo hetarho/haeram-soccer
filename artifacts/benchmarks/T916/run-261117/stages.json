@@ -1,0 +1,82 @@
+{
+ "control": {
+  "stage": "control",
+  "status": "passed",
+  "command": "/Users/ihaelam/.hermes/node/bin/node /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/run.mjs control /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/receipt.json /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/observations.json",
+  "argv": [
+   "/Users/ihaelam/.hermes/node/bin/node",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/run.mjs",
+   "control",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/receipt.json",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/observations.json"
+  ],
+  "pid": 47798,
+  "started": "2026-11-17T15:28:00.116Z",
+  "exitCode": 0,
+  "stdoutPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/control.stdout.log",
+  "stderrPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/control.stderr.log",
+  "finished": "2026-11-17T15:31:41.980Z",
+  "elapsedMs": 221864,
+  "commandExitCode": 0
+ },
+ "c1": {
+  "stage": "c1",
+  "status": "passed",
+  "command": "/Users/ihaelam/.hermes/node/bin/node /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/run.mjs c1 /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/receipt.json /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/observations.json",
+  "argv": [
+   "/Users/ihaelam/.hermes/node/bin/node",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/run.mjs",
+   "c1",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/receipt.json",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/observations.json"
+  ],
+  "pid": 47799,
+  "started": "2026-11-17T15:28:00.117Z",
+  "exitCode": 0,
+  "stdoutPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/c1.stdout.log",
+  "stderrPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/c1.stderr.log",
+  "finished": "2026-11-17T15:32:07.545Z",
+  "elapsedMs": 247427,
+  "commandExitCode": 0
+ },
+ "c2": {
+  "stage": "c2",
+  "status": "passed",
+  "command": "/Users/ihaelam/.hermes/node/bin/node /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/run.mjs c2 /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/receipt.json /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/observations.json",
+  "argv": [
+   "/Users/ihaelam/.hermes/node/bin/node",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/run.mjs",
+   "c2",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/receipt.json",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/observations.json"
+  ],
+  "pid": 47800,
+  "started": "2026-11-17T15:28:00.118Z",
+  "exitCode": 0,
+  "stdoutPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/c2.stdout.log",
+  "stderrPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/c2.stderr.log",
+  "finished": "2026-11-17T15:32:04.809Z",
+  "elapsedMs": 244690,
+  "commandExitCode": 0
+ },
+ "c1-c2": {
+  "stage": "c1-c2",
+  "status": "passed",
+  "command": "/Users/ihaelam/.hermes/node/bin/node /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/run.mjs c1-c2 /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/receipt.json /private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/observations.json",
+  "argv": [
+   "/Users/ihaelam/.hermes/node/bin/node",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/run.mjs",
+   "c1-c2",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/receipt.json",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/observations.json"
+  ],
+  "pid": 47801,
+  "started": "2026-11-17T15:28:00.119Z",
+  "exitCode": 0,
+  "stdoutPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/c1-c2.stdout.log",
+  "stderrPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/c1-c2.stderr.log",
+  "finished": "2026-11-17T15:32:11.960Z",
+  "elapsedMs": 251840,
+  "commandExitCode": 0
+ }
+}

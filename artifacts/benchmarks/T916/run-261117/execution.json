@@ -1,0 +1,1229 @@
+{
+ "schema": "t943-generation-repair-execution-v1",
+ "manifestHash": "b1b18f9c429a7391d6f25151354449afb6328286952f05d63c4561b7edf972db",
+ "recipeHash": "41c3c8e35dddf73bbf28e3b4625a1d25f675d61adb206f0f74d466ceef70bfd4",
+ "review": {
+  "file": "artifacts/benchmarks/T916/review-3.json",
+  "sha256": "65fbec01b776afa83d2f2b375206c76183bde49ece4670ba9c6d5c766548488e"
+ },
+ "started": "2026-11-17T15:27:59.299Z",
+ "finished": "2026-11-17T15:32:11.962Z",
+ "timeboxMs": 1800000,
+ "timedOut": false,
+ "interrupted": null,
+ "stages": {
+  "file": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/stages.json",
+  "sha256": "9c5666c3c81c05a2779d152e6b1d6eece78095e6825a24d905ffffa037828afa",
+  "recordFailures": []
+ },
+ "oracle": {
+  "expected": "9a3d6e9654f933c65f72625c21523272500de0f92860f59e63e2b01a1e568be2",
+  "serializer": "proved-by-control-reproduction"
+ },
+ "runs": [
+  {
+   "variant": "control",
+   "patchSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "inputs": {
+    "bundleSha256": "12c5216640d17a8611d19b8739088618b772f78ac283cc688b24ea7913b41d1f",
+    "patched": {
+     "packages/engine/src/world.ts": "59405eea5be354f8e327e678f988a7ae469d2a33121ca050fa1fb3aeef9cca2f",
+     "packages/engine/src/npc-careers.ts": "38829e41e9942e923caea8674d8cfd2457a82ac4433f375a3cb3b6244fcc84d9"
+    }
+   },
+   "completion": {
+    "status": "passed",
+    "pid": 47798,
+    "started": "2026-11-17T15:28:00.116Z",
+    "finished": "2026-11-17T15:31:41.980Z",
+    "exitCode": 0,
+    "signal": null,
+    "elapsedMs": 221864,
+    "cancelRequested": null,
+    "cancellationCleanup": null,
+    "failure": null,
+    "stdoutPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/control.stdout.log",
+    "stderrPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/control.stderr.log"
+   },
+   "finished": true,
+   "receiptSha256": "72712c7a4d8e8b40f24a9f0de768b73822236200d35fa3151f6e55d4fddf5775",
+   "observations": {
+    "file": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/control/observations.json",
+    "sha256": "f1df4eeec210fca90cda85e77bdd5deffecfb1dbc59d9c4c005989a085e1fbab",
+    "complete": false,
+    "through": {
+     "year": 1950,
+     "day": 0
+    },
+    "years": [
+     1930,
+     1931,
+     1932,
+     1933,
+     1934,
+     1935,
+     1936,
+     1937,
+     1938,
+     1946,
+     1947,
+     1948,
+     1949,
+     1950
+    ],
+    "orderFailures": [
+     {
+      "year": 1946,
+      "country": "ENG",
+      "tier": 2,
+      "mean": 79.375,
+      "above": 74.66666666666667
+     },
+     {
+      "year": 1946,
+      "country": "ITA",
+      "tier": 2,
+      "mean": 75.33333333333333,
+      "above": 74.9
+     },
+     {
+      "year": 1947,
+      "country": "ENG",
+      "tier": 2,
+      "mean": 80.79166666666667,
+      "above": 79.75
+     },
+     {
+      "year": 1948,
+      "country": "ENG",
+      "tier": 2,
+      "mean": 83.41666666666667,
+      "above": 81.75
+     }
+    ]
+   },
+   "endpoint": {
+    "year": 1950,
+    "day": 0,
+    "round": 0,
+    "bytes": 26404832,
+    "sha256": "9a3d6e9654f933c65f72625c21523272500de0f92860f59e63e2b01a1e568be2"
+   },
+   "orderFailures": [
+    {
+     "year": 1946,
+     "country": "ENG",
+     "tier": 2,
+     "mean": 79.375,
+     "above": 74.66666666666667
+    },
+    {
+     "year": 1946,
+     "country": "ITA",
+     "tier": 2,
+     "mean": 75.33333333333333,
+     "above": 74.9
+    },
+    {
+     "year": 1947,
+     "country": "ENG",
+     "tier": 2,
+     "mean": 80.79166666666667,
+     "above": 79.75
+    },
+    {
+     "year": 1948,
+     "country": "ENG",
+     "tier": 2,
+     "mean": 83.41666666666667,
+     "above": 81.75
+    }
+   ],
+   "baselineEqualsControl": true,
+   "cells1950": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "founding": 77.95,
+     "mean": 89.05,
+     "delta": 11.099999999999994,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "founding": 63.875,
+     "mean": 84.66666666666667,
+     "delta": 20.79166666666667,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "founding": 53.833333333333336,
+     "mean": 82.58333333333333,
+     "delta": 28.749999999999993,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "founding": 42.5,
+     "mean": 77.75,
+     "delta": 35.25,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "founding": 79.5,
+     "mean": 88.25,
+     "delta": 8.75,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "founding": 64.95454545454545,
+     "mean": 84.22727272727273,
+     "delta": 19.27272727272728,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "founding": 77.11111111111111,
+     "mean": 87.83333333333333,
+     "delta": 10.722222222222214,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "founding": 64.94444444444444,
+     "mean": 84.77777777777777,
+     "delta": 19.83333333333333,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "founding": 53.25,
+     "mean": 80.25,
+     "delta": 27,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "founding": 78.25,
+     "mean": 87.85,
+     "delta": 9.599999999999994,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "founding": 64.1,
+     "mean": 83.1,
+     "delta": 19,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "founding": 53.4,
+     "mean": 79.93333333333334,
+     "delta": 26.53333333333334,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "founding": 78.61111111111111,
+     "mean": 87.94444444444444,
+     "delta": 9.333333333333329,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "founding": 64.55555555555556,
+     "mean": 83.61111111111111,
+     "delta": 19.055555555555557,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "founding": 53.666666666666664,
+     "mean": 77.44444444444444,
+     "delta": 23.77777777777778,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "founding": 78.05555555555556,
+     "mean": 87.61111111111111,
+     "delta": 9.555555555555557,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "founding": 64.72222222222223,
+     "mean": 81.44444444444444,
+     "delta": 16.722222222222214,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "founding": 79.05555555555556,
+     "mean": 87.77777777777777,
+     "delta": 8.722222222222214,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "founding": 63.75,
+     "mean": 80.2,
+     "delta": 16.450000000000003,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "founding": 79.11111111111111,
+     "mean": 86.72222222222223,
+     "delta": 7.611111111111114,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "founding": 65.46666666666667,
+     "mean": 81.46666666666667,
+     "delta": 16,
+     "band": 5,
+     "outsideBand": true
+    }
+   ]
+  },
+  {
+   "variant": "c1",
+   "patchSha256": "eb09a8a9fe1ba3d15969a119bd5369edc04567956492fe54890e8f737d749a7f",
+   "inputs": {
+    "bundleSha256": "0c6d24359403f62ac2215274dd6c48651d119407e901fb1f1de6579644aa9a96",
+    "patched": {
+     "packages/engine/src/world.ts": "366729b9779be2c2a9abc3c73103d170cfe156f00ee93a965459cfc701817596",
+     "packages/engine/src/npc-careers.ts": "38829e41e9942e923caea8674d8cfd2457a82ac4433f375a3cb3b6244fcc84d9"
+    }
+   },
+   "completion": {
+    "status": "passed",
+    "pid": 47799,
+    "started": "2026-11-17T15:28:00.117Z",
+    "finished": "2026-11-17T15:32:07.545Z",
+    "exitCode": 0,
+    "signal": null,
+    "elapsedMs": 247427,
+    "cancelRequested": null,
+    "cancellationCleanup": null,
+    "failure": null,
+    "stdoutPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/c1.stdout.log",
+    "stderrPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/c1.stderr.log"
+   },
+   "finished": true,
+   "receiptSha256": "48f81424f8b068236f15b7aea7f39b4f7add25337b12533530d8bfa427a6d2f8",
+   "observations": {
+    "file": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1/observations.json",
+    "sha256": "2d513c4f8f18180b5d498c0423d2022f7deb0b98b25d17c4c9fa44641122e977",
+    "complete": false,
+    "through": {
+     "year": 1950,
+     "day": 0
+    },
+    "years": [
+     1930,
+     1931,
+     1932,
+     1933,
+     1934,
+     1935,
+     1936,
+     1937,
+     1938,
+     1946,
+     1947,
+     1948,
+     1949,
+     1950
+    ],
+    "orderFailures": [
+     {
+      "year": 1946,
+      "country": "GER",
+      "tier": 1,
+      "mean": 81.83333333333333,
+      "above": 81.27777777777777
+     },
+     {
+      "year": 1946,
+      "country": "FRA",
+      "tier": 2,
+      "mean": 78.77777777777777,
+      "above": 78.66666666666667
+     }
+    ]
+   },
+   "endpoint": {
+    "year": 1950,
+    "day": 0,
+    "round": 0,
+    "bytes": 26443946,
+    "sha256": "d8049d9cd00eb3fde555dd20ac92bdf12c64e8f305f810d663d81529f2143bba"
+   },
+   "orderFailures": [
+    {
+     "year": 1946,
+     "country": "GER",
+     "tier": 1,
+     "mean": 81.83333333333333,
+     "above": 81.27777777777777
+    },
+    {
+     "year": 1946,
+     "country": "FRA",
+     "tier": 2,
+     "mean": 78.77777777777777,
+     "above": 78.66666666666667
+    }
+   ],
+   "baselineEqualsControl": true,
+   "cells1950": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "founding": 77.95,
+     "mean": 88.9,
+     "delta": 10.950000000000003,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "founding": 63.875,
+     "mean": 85.75,
+     "delta": 21.875,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "founding": 53.833333333333336,
+     "mean": 83.04166666666667,
+     "delta": 29.208333333333336,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "founding": 42.5,
+     "mean": 78.66666666666667,
+     "delta": 36.16666666666667,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "founding": 79.5,
+     "mean": 88.5,
+     "delta": 9,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "founding": 64.95454545454545,
+     "mean": 84.81818181818181,
+     "delta": 19.86363636363636,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "founding": 77.11111111111111,
+     "mean": 87.72222222222223,
+     "delta": 10.611111111111114,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "founding": 64.94444444444444,
+     "mean": 85.5,
+     "delta": 20.555555555555557,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "founding": 53.25,
+     "mean": 80.3,
+     "delta": 27.049999999999997,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "founding": 78.25,
+     "mean": 88.4,
+     "delta": 10.150000000000006,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "founding": 64.1,
+     "mean": 82.7,
+     "delta": 18.60000000000001,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "founding": 53.4,
+     "mean": 80.56666666666666,
+     "delta": 27.166666666666664,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "founding": 78.61111111111111,
+     "mean": 88.22222222222223,
+     "delta": 9.611111111111114,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "founding": 64.55555555555556,
+     "mean": 83.33333333333333,
+     "delta": 18.77777777777777,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "founding": 53.666666666666664,
+     "mean": 78.77777777777777,
+     "delta": 25.111111111111107,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "founding": 78.05555555555556,
+     "mean": 87.83333333333333,
+     "delta": 9.777777777777771,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "founding": 64.72222222222223,
+     "mean": 82,
+     "delta": 17.27777777777777,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "founding": 79.05555555555556,
+     "mean": 87.38888888888889,
+     "delta": 8.333333333333329,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "founding": 63.75,
+     "mean": 81.2,
+     "delta": 17.450000000000003,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "founding": 79.11111111111111,
+     "mean": 86.94444444444444,
+     "delta": 7.833333333333329,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "founding": 65.46666666666667,
+     "mean": 81.6,
+     "delta": 16.133333333333326,
+     "band": 5,
+     "outsideBand": true
+    }
+   ]
+  },
+  {
+   "variant": "c2",
+   "patchSha256": "413ba80a9b32f7e18da5182e2b47838ab1268c6b9e8e8a94d6b957ddc191a7aa",
+   "inputs": {
+    "bundleSha256": "0af0f11dac127b0cd3f3b80bb0977019f5427fe740640f4d53b07d66e1646ae2",
+    "patched": {
+     "packages/engine/src/world.ts": "59405eea5be354f8e327e678f988a7ae469d2a33121ca050fa1fb3aeef9cca2f",
+     "packages/engine/src/npc-careers.ts": "4642475bed2ff2fcdf82aba7bc63f00fc47cd89a7f14be6d4b82111ebdc0ab3c"
+    }
+   },
+   "completion": {
+    "status": "passed",
+    "pid": 47800,
+    "started": "2026-11-17T15:28:00.118Z",
+    "finished": "2026-11-17T15:32:04.809Z",
+    "exitCode": 0,
+    "signal": null,
+    "elapsedMs": 244690,
+    "cancelRequested": null,
+    "cancellationCleanup": null,
+    "failure": null,
+    "stdoutPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/c2.stdout.log",
+    "stderrPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/c2.stderr.log"
+   },
+   "finished": true,
+   "receiptSha256": "709091d77bb3bac5da0fd534fe20dc74d558ed96615d2c7bf9044ed6669eb331",
+   "observations": {
+    "file": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c2/observations.json",
+    "sha256": "973d2b421f1b7bd01d101bba953d6ec87fb7d60e69c9f0e4d1092c7f6f72f265",
+    "complete": false,
+    "through": {
+     "year": 1950,
+     "day": 0
+    },
+    "years": [
+     1930,
+     1931,
+     1932,
+     1933,
+     1934,
+     1935,
+     1936,
+     1937,
+     1938,
+     1946,
+     1947,
+     1948,
+     1949,
+     1950
+    ],
+    "orderFailures": [
+     {
+      "year": 1946,
+      "country": "ENG",
+      "tier": 2,
+      "mean": 70.41666666666667,
+      "above": 67.16666666666667
+     },
+     {
+      "year": 1946,
+      "country": "GER",
+      "tier": 1,
+      "mean": 71.22222222222223,
+      "above": 70.11111111111111
+     },
+     {
+      "year": 1946,
+      "country": "ITA",
+      "tier": 2,
+      "mean": 67.55,
+      "above": 65.9
+     },
+     {
+      "year": 1946,
+      "country": "FRA",
+      "tier": 2,
+      "mean": 69.77777777777777,
+      "above": 68.72222222222223
+     },
+     {
+      "year": 1947,
+      "country": "ENG",
+      "tier": 2,
+      "mean": 72.54166666666667,
+      "above": 70.45833333333333
+     }
+    ]
+   },
+   "endpoint": {
+    "year": 1950,
+    "day": 0,
+    "round": 0,
+    "bytes": 26900283,
+    "sha256": "34f7485281f620637da4b4ee35f9f974612302e26477dd1df81c95ade132bbfa"
+   },
+   "orderFailures": [
+    {
+     "year": 1946,
+     "country": "ENG",
+     "tier": 2,
+     "mean": 70.41666666666667,
+     "above": 67.16666666666667
+    },
+    {
+     "year": 1946,
+     "country": "GER",
+     "tier": 1,
+     "mean": 71.22222222222223,
+     "above": 70.11111111111111
+    },
+    {
+     "year": 1946,
+     "country": "ITA",
+     "tier": 2,
+     "mean": 67.55,
+     "above": 65.9
+    },
+    {
+     "year": 1946,
+     "country": "FRA",
+     "tier": 2,
+     "mean": 69.77777777777777,
+     "above": 68.72222222222223
+    },
+    {
+     "year": 1947,
+     "country": "ENG",
+     "tier": 2,
+     "mean": 72.54166666666667,
+     "above": 70.45833333333333
+    }
+   ],
+   "baselineEqualsControl": true,
+   "cells1950": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "founding": 77.95,
+     "mean": 80,
+     "delta": 2.049999999999997,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "founding": 63.875,
+     "mean": 76.25,
+     "delta": 12.375,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "founding": 53.833333333333336,
+     "mean": 72.66666666666667,
+     "delta": 18.833333333333336,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "founding": 42.5,
+     "mean": 68.91666666666667,
+     "delta": 26.41666666666667,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "founding": 79.5,
+     "mean": 79.75,
+     "delta": 0.25,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "founding": 64.95454545454545,
+     "mean": 74.9090909090909,
+     "delta": 9.954545454545453,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "founding": 77.11111111111111,
+     "mean": 78.22222222222223,
+     "delta": 1.1111111111111143,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "founding": 64.94444444444444,
+     "mean": 75.11111111111111,
+     "delta": 10.166666666666671,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "founding": 53.25,
+     "mean": 71.4,
+     "delta": 18.150000000000006,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "founding": 78.25,
+     "mean": 79.05,
+     "delta": 0.7999999999999972,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "founding": 64.1,
+     "mean": 74.1,
+     "delta": 10,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "founding": 53.4,
+     "mean": 71.58333333333333,
+     "delta": 18.18333333333333,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "founding": 78.61111111111111,
+     "mean": 79.5,
+     "delta": 0.8888888888888857,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "founding": 64.55555555555556,
+     "mean": 74.44444444444444,
+     "delta": 9.888888888888886,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "founding": 53.666666666666664,
+     "mean": 70.77777777777777,
+     "delta": 17.111111111111107,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "founding": 78.05555555555556,
+     "mean": 78.77777777777777,
+     "delta": 0.7222222222222143,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "founding": 64.72222222222223,
+     "mean": 73.61111111111111,
+     "delta": 8.888888888888886,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "founding": 79.05555555555556,
+     "mean": 78.05555555555556,
+     "delta": -1,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "founding": 63.75,
+     "mean": 72.9,
+     "delta": 9.150000000000006,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "founding": 79.11111111111111,
+     "mean": 78.11111111111111,
+     "delta": -1,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "founding": 65.46666666666667,
+     "mean": 74.13333333333334,
+     "delta": 8.666666666666671,
+     "band": 5,
+     "outsideBand": true
+    }
+   ]
+  },
+  {
+   "variant": "c1-c2",
+   "patchSha256": "1e026a6e337b34a63286118f2c616fed779bcc6be53ab398bc1e508297f32e8b",
+   "inputs": {
+    "bundleSha256": "951ebe04ba58b3a3fca80fe73a68861e32a70b03a56721c18f9e59d5d66e9574",
+    "patched": {
+     "packages/engine/src/world.ts": "366729b9779be2c2a9abc3c73103d170cfe156f00ee93a965459cfc701817596",
+     "packages/engine/src/npc-careers.ts": "4642475bed2ff2fcdf82aba7bc63f00fc47cd89a7f14be6d4b82111ebdc0ab3c"
+    }
+   },
+   "completion": {
+    "status": "passed",
+    "pid": 47801,
+    "started": "2026-11-17T15:28:00.119Z",
+    "finished": "2026-11-17T15:32:11.960Z",
+    "exitCode": 0,
+    "signal": null,
+    "elapsedMs": 251840,
+    "cancelRequested": null,
+    "cancellationCleanup": null,
+    "failure": null,
+    "stdoutPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/c1-c2.stdout.log",
+    "stderrPath": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/c1-c2.stderr.log"
+   },
+   "finished": true,
+   "receiptSha256": "c9b2eac41f4b749c7246d677ef946e955ffc12a436ab6515d8be821d43a1499e",
+   "observations": {
+    "file": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/fd648b0b-57b1-417b-86e9-5c8f46fc962e/scratchpad/t916-run/c1-c2/observations.json",
+    "sha256": "e8c81ad7a43dc8780b805d6794b17e2f60c7e806f00f187e5047f0afffdf67e3",
+    "complete": false,
+    "through": {
+     "year": 1950,
+     "day": 0
+    },
+    "years": [
+     1930,
+     1931,
+     1932,
+     1933,
+     1934,
+     1935,
+     1936,
+     1937,
+     1938,
+     1946,
+     1947,
+     1948,
+     1949,
+     1950
+    ],
+    "orderFailures": [
+     {
+      "year": 1946,
+      "country": "ENG",
+      "tier": 3,
+      "mean": 70.45833333333333,
+      "above": 69.41666666666667
+     },
+     {
+      "year": 1947,
+      "country": "ENG",
+      "tier": 2,
+      "mean": 72.16666666666667,
+      "above": 71.875
+     }
+    ]
+   },
+   "endpoint": {
+    "year": 1950,
+    "day": 0,
+    "round": 0,
+    "bytes": 27010889,
+    "sha256": "ac2641045a762673a813993509c0da2957b1112c57dc75a16e67ffc0ffde9f9a"
+   },
+   "orderFailures": [
+    {
+     "year": 1946,
+     "country": "ENG",
+     "tier": 3,
+     "mean": 70.45833333333333,
+     "above": 69.41666666666667
+    },
+    {
+     "year": 1947,
+     "country": "ENG",
+     "tier": 2,
+     "mean": 72.16666666666667,
+     "above": 71.875
+    }
+   ],
+   "baselineEqualsControl": true,
+   "cells1950": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "founding": 77.95,
+     "mean": 80.55,
+     "delta": 2.5999999999999943,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "founding": 63.875,
+     "mean": 75.625,
+     "delta": 11.75,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "founding": 53.833333333333336,
+     "mean": 73.08333333333333,
+     "delta": 19.249999999999993,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "founding": 42.5,
+     "mean": 69.91666666666667,
+     "delta": 27.41666666666667,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "founding": 79.5,
+     "mean": 79.4,
+     "delta": -0.09999999999999432,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "founding": 64.95454545454545,
+     "mean": 75.72727272727273,
+     "delta": 10.77272727272728,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "founding": 77.11111111111111,
+     "mean": 78.77777777777777,
+     "delta": 1.6666666666666572,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "founding": 64.94444444444444,
+     "mean": 75.33333333333333,
+     "delta": 10.388888888888886,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "founding": 53.25,
+     "mean": 71,
+     "delta": 17.75,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "founding": 78.25,
+     "mean": 79.25,
+     "delta": 1,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "founding": 64.1,
+     "mean": 74.5,
+     "delta": 10.400000000000006,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "founding": 53.4,
+     "mean": 71.83333333333333,
+     "delta": 18.43333333333333,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "founding": 78.61111111111111,
+     "mean": 79.22222222222223,
+     "delta": 0.6111111111111143,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "founding": 64.55555555555556,
+     "mean": 74.83333333333333,
+     "delta": 10.277777777777771,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "founding": 53.666666666666664,
+     "mean": 71.27777777777777,
+     "delta": 17.611111111111107,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "founding": 78.05555555555556,
+     "mean": 79.22222222222223,
+     "delta": 1.1666666666666714,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "founding": 64.72222222222223,
+     "mean": 73.72222222222223,
+     "delta": 9,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "founding": 79.05555555555556,
+     "mean": 78.38888888888889,
+     "delta": -0.6666666666666714,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "founding": 63.75,
+     "mean": 73.25,
+     "delta": 9.5,
+     "band": 5,
+     "outsideBand": true
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "founding": 79.11111111111111,
+     "mean": 78.61111111111111,
+     "delta": -0.5,
+     "band": 5,
+     "outsideBand": false
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "founding": 65.46666666666667,
+     "mean": 74.2,
+     "delta": 8.733333333333334,
+     "band": 5,
+     "outsideBand": true
+    }
+   ]
+  }
+ ],
+ "modelPassClaimed": false,
+ "timingClaimed": false
+}

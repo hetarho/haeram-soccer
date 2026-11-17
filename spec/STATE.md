@@ -65,7 +65,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 T943 | doing@261117.cf17 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -77,6 +76,5 @@
 | lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
 
 ## next
-- gusta-implement-task T916
 - Session tm17 landed T932–T935 as 0.8.9 (reports/261117-tm17): selling-club answer and personal terms as factor registries, wage steps, money bar, delegated sales; the NPC pull market (review transfer-market-261117 F4) waits for the owner.
 - inspect work board for remaining tasks

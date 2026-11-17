@@ -1,0 +1,4487 @@
+{
+ "variant": "c2",
+ "seed": "persisted-world-invariants",
+ "initialAdvanceRound": 1,
+ "dailyCalls": 4192,
+ "years": [
+  {
+   "year": 1930,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 77.95
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 63.875
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 53.833333333333336
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 42.5
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.5
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 64.95454545454545
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 77.11111111111111
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 64.94444444444444
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 53.25
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 78.25
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 64.1
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 53.4
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.61111111111111
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 64.55555555555556
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 53.666666666666664
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.05555555555556
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 64.72222222222223
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.05555555555556
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 63.75
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.11111111111111
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 65.46666666666667
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 440,
+     "potential": 41003,
+     "wage": "236618501",
+     "value": "325383690"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 528,
+     "potential": 45350,
+     "wage": "32636557",
+     "value": "54810270"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 528,
+     "potential": 40092,
+     "wage": "4481072",
+     "value": "7628320"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 528,
+     "potential": 34547,
+     "wage": "673613",
+     "value": "1157598"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 440,
+     "potential": 41355,
+     "wage": "15109171952",
+     "value": "19502471701"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 484,
+     "potential": 41922,
+     "wage": "1756729664",
+     "value": "2986386334"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 396,
+     "potential": 36908,
+     "wage": "10164776330",
+     "value": "13660756823"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 396,
+     "potential": 34386,
+     "wage": "1297979108",
+     "value": "2170050161"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 440,
+     "potential": 33562,
+     "wage": "163773307",
+     "value": "281204714"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 440,
+     "potential": 41155,
+     "wage": "218081845153",
+     "value": "281321508873"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 440,
+     "potential": 38123,
+     "wage": "23076105377",
+     "value": "39380343227"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1320,
+     "potential": 100418,
+     "wage": "8922241009",
+     "value": "15244985578"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 396,
+     "potential": 37016,
+     "wage": "163762473121",
+     "value": "214922291392"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 396,
+     "potential": 34234,
+     "wage": "18067141429",
+     "value": "30254739761"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 396,
+     "potential": 30405,
+     "wage": "2306837823",
+     "value": "3903637899"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 396,
+     "potential": 36928,
+     "wage": "5858354905",
+     "value": "7665299400"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 396,
+     "potential": 34090,
+     "wage": "679191640",
+     "value": "1133883050"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 396,
+     "potential": 37090,
+     "wage": "928087522",
+     "value": "1181778023"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 440,
+     "potential": 37662,
+     "wage": "100223145",
+     "value": "168222858"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 396,
+     "potential": 37145,
+     "wage": "16034500585",
+     "value": "20134534867"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 330,
+     "potential": 28823,
+     "wage": "1538307106",
+     "value": "2582512049"
+    }
+   ]
+  },
+  {
+   "year": 1931,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 78.6
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 65.83333333333333
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 55.041666666666664
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 44.666666666666664
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.85
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 67.72727272727273
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.22222222222223
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 66.38888888888889
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 55.2
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 65.55
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 55.516666666666666
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.33333333333333
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 66.61111111111111
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 55.611111111111114
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.27777777777777
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 66.88888888888889
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.94444444444444
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 65.95
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.61111111111111
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 68.73333333333333
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 475,
+     "potential": 42613,
+     "wage": "208685494",
+     "value": "305263167"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 558,
+     "potential": 46034,
+     "wage": "45680291",
+     "value": "61218360"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 545,
+     "potential": 40248,
+     "wage": "5553260",
+     "value": "8002385"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 551,
+     "potential": 35264,
+     "wage": "970273",
+     "value": "1312653"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 482,
+     "potential": 43485,
+     "wage": "13222928032",
+     "value": "18021388495"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 520,
+     "potential": 43790,
+     "wage": "2939807093",
+     "value": "3482291496"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 432,
+     "potential": 38809,
+     "wage": "9317160511",
+     "value": "13191438209"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 425,
+     "potential": 35440,
+     "wage": "1605042949",
+     "value": "2246749008"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 455,
+     "potential": 33809,
+     "wage": "235344915",
+     "value": "318120240"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 477,
+     "potential": 43052,
+     "wage": "192640641632",
+     "value": "262093760219"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 465,
+     "potential": 38645,
+     "wage": "35578856177",
+     "value": "44289046510"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1368,
+     "potential": 101059,
+     "wage": "10732685722",
+     "value": "16519312882"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 433,
+     "potential": 39038,
+     "wage": "148861078697",
+     "value": "206656637495"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 422,
+     "potential": 35176,
+     "wage": "25856422952",
+     "value": "33069683688"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 410,
+     "potential": 30533,
+     "wage": "3178543232",
+     "value": "4117641542"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 433,
+     "potential": 38902,
+     "wage": "5171089132",
+     "value": "7105509344"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 419,
+     "potential": 34958,
+     "wage": "1064162338",
+     "value": "1317313922"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 428,
+     "potential": 38659,
+     "wage": "829589427",
+     "value": "1105810022"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 469,
+     "potential": 38995,
+     "wage": "151472164",
+     "value": "192945864"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 433,
+     "potential": 38888,
+     "wage": "14325307136",
+     "value": "18981607211"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 353,
+     "potential": 30170,
+     "wage": "2457996363",
+     "value": "3033908459"
+    }
+   ]
+  },
+  {
+   "year": 1932,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.8
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 67.83333333333333
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 60.25
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 51.083333333333336
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 81.35
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 68.68181818181819
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.11111111111111
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 68.55555555555556
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 58.75
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 80.35
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 68
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 58.65
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 69.55555555555556
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 58.111111111111114
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 80.33333333333333
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 67
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 80.72222222222223
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 67.4
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.11111111111111
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 70.4
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 505,
+     "potential": 43950,
+     "wage": "185655409",
+     "value": "309298923"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 599,
+     "potential": 47593,
+     "wage": "44555251",
+     "value": "65187155"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 600,
+     "potential": 43629,
+     "wage": "7868358",
+     "value": "12459532"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 590,
+     "potential": 38565,
+     "wage": "2065918",
+     "value": "2488169"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 513,
+     "potential": 44816,
+     "wage": "12157644304",
+     "value": "17321257923"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 540,
+     "potential": 43490,
+     "wage": "2626314364",
+     "value": "3420709804"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 460,
+     "potential": 39833,
+     "wage": "8132746096",
+     "value": "12854690884"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 443,
+     "potential": 35583,
+     "wage": "1785198079",
+     "value": "2382054363"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 472,
+     "potential": 34192,
+     "wage": "329828305",
+     "value": "452302027"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 497,
+     "potential": 43347,
+     "wage": "179587460983",
+     "value": "254447867669"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 509,
+     "potential": 40985,
+     "wage": "26919784809",
+     "value": "48040062023"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1445,
+     "potential": 104776,
+     "wage": "14078930051",
+     "value": "22401290558"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 461,
+     "potential": 40131,
+     "wage": "133926046012",
+     "value": "194048256079"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 456,
+     "potential": 36770,
+     "wage": "25100281633",
+     "value": "37369978453"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 423,
+     "potential": 30412,
+     "wage": "3892238906",
+     "value": "5143810261"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 455,
+     "potential": 39581,
+     "wage": "4737693872",
+     "value": "7100995647"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 438,
+     "potential": 34815,
+     "wage": "833638190",
+     "value": "1203774860"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 448,
+     "potential": 39018,
+     "wage": "733152180",
+     "value": "1057428485"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 479,
+     "potential": 38540,
+     "wage": "133106147",
+     "value": "193485221"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 460,
+     "potential": 40015,
+     "wage": "12897676925",
+     "value": "18677974475"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 371,
+     "potential": 30555,
+     "wage": "2401611087",
+     "value": "3216283765"
+    }
+   ]
+  },
+  {
+   "year": 1933,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.35
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 70.54166666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 64.79166666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 54.958333333333336
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 81.2
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 69.5909090909091
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.88888888888889
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 70.33333333333333
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 60.9
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 80.6
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 71.9
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 61.03333333333333
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.61111111111111
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 71.27777777777777
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 58.611111111111114
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.94444444444444
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 68.05555555555556
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 80.61111111111111
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 67.05
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 80.83333333333333
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 71.86666666666666
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 522,
+     "potential": 44171,
+     "wage": "164764713",
+     "value": "300580701"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 631,
+     "potential": 49519,
+     "wage": "47858575",
+     "value": "73739686"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 638,
+     "potential": 46131,
+     "wage": "10548264",
+     "value": "17009934"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 595,
+     "potential": 38706,
+     "wage": "2506743",
+     "value": "3355526"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 526,
+     "potential": 44630,
+     "wage": "10279223098",
+     "value": "16751720129"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 556,
+     "potential": 43723,
+     "wage": "2625442630",
+     "value": "3581358936"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 475,
+     "potential": 40194,
+     "wage": "7534007148",
+     "value": "12860783177"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 474,
+     "potential": 37282,
+     "wage": "1481815593",
+     "value": "2557813182"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 503,
+     "potential": 35863,
+     "wage": "482530831",
+     "value": "546380895"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 508,
+     "potential": 42925,
+     "wage": "151566700226",
+     "value": "241819851398"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 524,
+     "potential": 41483,
+     "wage": "34937199562",
+     "value": "54586876472"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1522,
+     "potential": 109186,
+     "wage": "16747000769",
+     "value": "28107061432"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 478,
+     "potential": 40459,
+     "wage": "118588286058",
+     "value": "194755083439"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 460,
+     "potential": 36581,
+     "wage": "31180137016",
+     "value": "40423403399"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 442,
+     "potential": 30836,
+     "wage": "4091355655",
+     "value": "5707728073"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 467,
+     "potential": 39378,
+     "wage": "3845189491",
+     "value": "6859146858"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 450,
+     "potential": 35058,
+     "wage": "1069177762",
+     "value": "1295158881"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 463,
+     "potential": 39064,
+     "wage": "631627710",
+     "value": "1044606747"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 496,
+     "potential": 38420,
+     "wage": "125998988",
+     "value": "185493200"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 460,
+     "potential": 39122,
+     "wage": "11485149464",
+     "value": "17854905783"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 389,
+     "potential": 31076,
+     "wage": "2187213310",
+     "value": "3318548460"
+    }
+   ]
+  },
+  {
+   "year": 1934,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 81.9
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 72.66666666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 67.58333333333333
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 57.791666666666664
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 81.15
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 69.45454545454545
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 80.77777777777777
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 72.5
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 62.4
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 81.6
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 73.05
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 63.85
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 82.66666666666667
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 71.83333333333333
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 60.333333333333336
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.38888888888889
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 67.16666666666667
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 80.16666666666667
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 67.55
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.05555555555556
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 72
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 526,
+     "potential": 43764,
+     "wage": "146619560",
+     "value": "311366877"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 633,
+     "potential": 48849,
+     "wage": "52853688",
+     "value": "78977081"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 631,
+     "potential": 45708,
+     "wage": "12337347",
+     "value": "20704488"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 622,
+     "potential": 41301,
+     "wage": "3293907",
+     "value": "4694063"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 524,
+     "potential": 43693,
+     "wage": "9111501933",
+     "value": "16903865554"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 558,
+     "potential": 42945,
+     "wage": "2488871249",
+     "value": "3463687388"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 476,
+     "potential": 39446,
+     "wage": "7144476378",
+     "value": "13497883909"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 474,
+     "potential": 36877,
+     "wage": "1578641454",
+     "value": "2809590965"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 498,
+     "potential": 35332,
+     "wage": "505348456",
+     "value": "577820288"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 520,
+     "potential": 43173,
+     "wage": "138331329091",
+     "value": "257631155427"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 513,
+     "potential": 39944,
+     "wage": "34319054866",
+     "value": "58428052659"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1541,
+     "potential": 110546,
+     "wage": "23634931817",
+     "value": "34957787850"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 480,
+     "potential": 39999,
+     "wage": "107280305581",
+     "value": "204348860200"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 463,
+     "potential": 36044,
+     "wage": "27638628950",
+     "value": "39652588106"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 449,
+     "potential": 30842,
+     "wage": "4906242454",
+     "value": "6458801765"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 480,
+     "potential": 40085,
+     "wage": "3655076309",
+     "value": "7699141649"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 460,
+     "potential": 35062,
+     "wage": "969098794",
+     "value": "1204017826"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 468,
+     "potential": 38582,
+     "wage": "542726206",
+     "value": "1017960614"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 506,
+     "potential": 38577,
+     "wage": "141519476",
+     "value": "188303641"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 468,
+     "potential": 38712,
+     "wage": "10152832963",
+     "value": "17645302032"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 387,
+     "potential": 30388,
+     "wage": "2309033799",
+     "value": "3331702144"
+    }
+   ]
+  },
+  {
+   "year": 1935,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 81.2
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 73.58333333333333
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 68.66666666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 60.083333333333336
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 83.5
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 69.13636363636364
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.72222222222223
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 72.83333333333333
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 62.9
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 82.55
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 74.55
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 65.01666666666667
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 83.66666666666667
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 72.22222222222223
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 61.388888888888886
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.38888888888889
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 67.05555555555556
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.83333333333333
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 66.8
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.83333333333333
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 70.93333333333334
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 513,
+     "potential": 41612,
+     "wage": "135079959",
+     "value": "323733257"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 614,
+     "potential": 46710,
+     "wage": "52449330",
+     "value": "81907569"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 617,
+     "potential": 44615,
+     "wage": "13500508",
+     "value": "22961550"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 592,
+     "potential": 39993,
+     "wage": "4100795",
+     "value": "5605051"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 535,
+     "potential": 44184,
+     "wage": "9177979121",
+     "value": "18805201602"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 566,
+     "potential": 43101,
+     "wage": "2665702165",
+     "value": "3487453553"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 469,
+     "potential": 38333,
+     "wage": "7064402420",
+     "value": "14146812037"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 462,
+     "potential": 35478,
+     "wage": "1811168582",
+     "value": "2970823546"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 492,
+     "potential": 34993,
+     "wage": "531664653",
+     "value": "634613762"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 513,
+     "potential": 42070,
+     "wage": "132091944682",
+     "value": "272907910702"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 515,
+     "potential": 39683,
+     "wage": "32635552104",
+     "value": "64710751556"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1512,
+     "potential": 107903,
+     "wage": "28730379225",
+     "value": "39739596964"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 473,
+     "potential": 38886,
+     "wage": "101631538118",
+     "value": "217167660350"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 456,
+     "potential": 34594,
+     "wage": "25661241207",
+     "value": "40317906660"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 437,
+     "potential": 30308,
+     "wage": "5893603905",
+     "value": "7113827062"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 481,
+     "potential": 39407,
+     "wage": "3597820719",
+     "value": "7562573465"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 455,
+     "potential": 34142,
+     "wage": "909974059",
+     "value": "1159377185"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 468,
+     "potential": 38156,
+     "wage": "492858997",
+     "value": "1036262491"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 503,
+     "potential": 37498,
+     "wage": "135155501",
+     "value": "182471016"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 467,
+     "potential": 38104,
+     "wage": "9672653912",
+     "value": "18690128216"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 383,
+     "potential": 29627,
+     "wage": "2381716027",
+     "value": "3074808427"
+    }
+   ]
+  },
+  {
+   "year": 1936,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 82.15
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 75.625
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 69.75
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 61.416666666666664
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 83.05
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 68.22727272727273
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 82.72222222222223
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 73.22222222222223
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 63.4
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 82.7
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 75.8
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 66.43333333333334
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 83.88888888888889
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 73.83333333333333
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 61.94444444444444
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.61111111111111
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 67.44444444444444
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.33333333333333
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 66.2
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.72222222222223
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 71.13333333333334
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 516,
+     "potential": 41695,
+     "wage": "153267904",
+     "value": "341961676"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 606,
+     "potential": 46108,
+     "wage": "61535722",
+     "value": "92783700"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 601,
+     "potential": 44039,
+     "wage": "16376353",
+     "value": "25087931"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 595,
+     "potential": 41035,
+     "wage": "4771275",
+     "value": "6351825"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 524,
+     "potential": 42855,
+     "wage": "9970066523",
+     "value": "20193750832"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 561,
+     "potential": 42609,
+     "wage": "2427185695",
+     "value": "3382434577"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 464,
+     "potential": 37241,
+     "wage": "7599104859",
+     "value": "14707973327"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 469,
+     "potential": 35521,
+     "wage": "2087320666",
+     "value": "2992992435"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 494,
+     "potential": 35690,
+     "wage": "541058595",
+     "value": "671680875"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 521,
+     "potential": 42341,
+     "wage": "158169095287",
+     "value": "298919567641"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 489,
+     "potential": 37162,
+     "wage": "38568872398",
+     "value": "65995947011"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1490,
+     "potential": 106854,
+     "wage": "30700969795",
+     "value": "43174627908"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 462,
+     "potential": 37309,
+     "wage": "111328264369",
+     "value": "221357801715"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 447,
+     "potential": 34270,
+     "wage": "31993082086",
+     "value": "46523371817"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 443,
+     "potential": 31011,
+     "wage": "5145081020",
+     "value": "7453645936"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 472,
+     "potential": 38168,
+     "wage": "4045462909",
+     "value": "7416679832"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 456,
+     "potential": 33896,
+     "wage": "816426573",
+     "value": "1118782613"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 474,
+     "potential": 38559,
+     "wage": "585269462",
+     "value": "1093008473"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 514,
+     "potential": 37713,
+     "wage": "114597094",
+     "value": "175609959"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 464,
+     "potential": 37412,
+     "wage": "10169941594",
+     "value": "19172568132"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 385,
+     "potential": 29609,
+     "wage": "2206047361",
+     "value": "3259822035"
+    }
+   ]
+  },
+  {
+   "year": 1937,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 82.45
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 75.79166666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 70.20833333333333
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 63.583333333333336
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 83.1
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 70.31818181818181
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 82.38888888888889
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 73.72222222222223
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 66.5
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 82.85
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 75.85
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 67.66666666666667
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 83.38888888888889
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 74.83333333333333
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 64.16666666666667
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 80.77777777777777
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 69.05555555555556
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 80.16666666666667
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 68.7
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 82.61111111111111
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 72.06666666666666
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 520,
+     "potential": 41728,
+     "wage": "152017368",
+     "value": "360220189"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 595,
+     "potential": 45446,
+     "wage": "71070664",
+     "value": "97168188"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 606,
+     "potential": 44148,
+     "wage": "17439143",
+     "value": "26445362"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 610,
+     "potential": 43183,
+     "wage": "6452857",
+     "value": "8136218"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 527,
+     "potential": 43001,
+     "wage": "10392485938",
+     "value": "20675973888"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 570,
+     "potential": 43321,
+     "wage": "3057909874",
+     "value": "4060841485"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 468,
+     "potential": 37526,
+     "wage": "8227505728",
+     "value": "16019318501"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 469,
+     "potential": 35276,
+     "wage": "2095367481",
+     "value": "3054234286"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 524,
+     "potential": 38142,
+     "wage": "591849715",
+     "value": "873981958"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 512,
+     "potential": 41492,
+     "wage": "157202640410",
+     "value": "306948862775"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 504,
+     "potential": 38112,
+     "wage": "49568124944",
+     "value": "73170403170"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1528,
+     "potential": 109532,
+     "wage": "31024954059",
+     "value": "47543083229"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 461,
+     "potential": 37227,
+     "wage": "118862137842",
+     "value": "232922224971"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 453,
+     "potential": 34912,
+     "wage": "34708906449",
+     "value": "52348397681"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 450,
+     "potential": 31615,
+     "wage": "6254369984",
+     "value": "9085780783"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 467,
+     "potential": 37500,
+     "wage": "3954834930",
+     "value": "7356137626"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 461,
+     "potential": 34454,
+     "wage": "1015203083",
+     "value": "1339926964"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 464,
+     "potential": 37424,
+     "wage": "570355776",
+     "value": "1095780986"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 516,
+     "potential": 38106,
+     "wage": "153980957",
+     "value": "223711298"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 471,
+     "potential": 37833,
+     "wage": "10925689885",
+     "value": "21767407476"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 386,
+     "potential": 29617,
+     "wage": "2426316491",
+     "value": "3255588490"
+    }
+   ]
+  },
+  {
+   "year": 1938,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 82.05
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 76
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 71.08333333333333
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 65.58333333333333
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 82.8
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 71.45454545454545
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 82.05555555555556
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 74.55555555555556
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 67.5
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 82.35
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 76.7
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 68.75
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 83.38888888888889
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 74.61111111111111
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 66.61111111111111
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.33333333333333
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 69.38888888888889
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.61111111111111
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 69.25
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 81.16666666666667
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 73.4
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 518,
+     "potential": 41296,
+     "wage": "154647882",
+     "value": "350851961"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 605,
+     "potential": 45839,
+     "wage": "76642075",
+     "value": "102221169"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 607,
+     "potential": 45022,
+     "wage": "19422343",
+     "value": "28721740"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 621,
+     "potential": 44481,
+     "wage": "5914594",
+     "value": "9172525"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 526,
+     "potential": 42807,
+     "wage": "11008878435",
+     "value": "21261393388"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 569,
+     "potential": 43632,
+     "wage": "3224377744",
+     "value": "4199886331"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 466,
+     "potential": 36968,
+     "wage": "8715374636",
+     "value": "16080133447"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 455,
+     "potential": 34587,
+     "wage": "2255546982",
+     "value": "3328922585"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 518,
+     "potential": 38107,
+     "wage": "618559768",
+     "value": "951701749"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 503,
+     "potential": 40449,
+     "wage": "163258250877",
+     "value": "303434206739"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 510,
+     "potential": 39108,
+     "wage": "56994132926",
+     "value": "75963754982"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1535,
+     "potential": 110755,
+     "wage": "34210330802",
+     "value": "52101573342"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 471,
+     "potential": 38018,
+     "wage": "125648464042",
+     "value": "242974042746"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 453,
+     "potential": 34518,
+     "wage": "40684888815",
+     "value": "53772029390"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 454,
+     "potential": 32826,
+     "wage": "7353059569",
+     "value": "10987222853"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 492,
+     "potential": 39501,
+     "wage": "4490067352",
+     "value": "8252013438"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 467,
+     "potential": 35043,
+     "wage": "964759942",
+     "value": "1327460595"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 470,
+     "potential": 37982,
+     "wage": "632518543",
+     "value": "1148506519"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 520,
+     "potential": 38283,
+     "wage": "144523056",
+     "value": "215100825"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 465,
+     "potential": 37250,
+     "wage": "10677272087",
+     "value": "20413714602"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 380,
+     "potential": 29092,
+     "wage": "2884288465",
+     "value": "3379918805"
+    }
+   ]
+  },
+  {
+   "year": 1946,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 72.25
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 67.16666666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 70.41666666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 67.66666666666667
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 76.85
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 73.18181818181819
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 70.11111111111111
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 71.22222222222223
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 71.05
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 73.5
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 65.9
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 67.55
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 73.88888888888889
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 68.72222222222223
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 69.77777777777777
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 75.05555555555556
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 71.22222222222223
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 74.11111111111111
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 71
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 74
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 70.93333333333334
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 755,
+     "potential": 55822,
+     "wage": "93567088",
+     "value": "536861250"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 864,
+     "potential": 59014,
+     "wage": "38305388",
+     "value": "150670538"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 888,
+     "potential": 63162,
+     "wage": "13527192",
+     "value": "78705606"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 946,
+     "potential": 65365,
+     "wage": "4986169",
+     "value": "28882388"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 791,
+     "potential": 60357,
+     "wage": "6586265757",
+     "value": "29283489738"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 862,
+     "potential": 63676,
+     "wage": "2082159195",
+     "value": "11242179404"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 648,
+     "potential": 45549,
+     "wage": "4348736516",
+     "value": "15026587732"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 703,
+     "potential": 50171,
+     "wage": "1581110142",
+     "value": "6708280805"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 779,
+     "potential": 55988,
+     "wage": "585077364",
+     "value": "3102934938"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 753,
+     "potential": 55159,
+     "wage": "82556280566",
+     "value": "370044417525"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 698,
+     "potential": 47397,
+     "wage": "23972738082",
+     "value": "102357106236"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 2310,
+     "potential": 156574,
+     "wage": "22352575104",
+     "value": "112175804691"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 671,
+     "potential": 49588,
+     "wage": "65782769451",
+     "value": "274504967629"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 662,
+     "potential": 45866,
+     "wage": "19295502823",
+     "value": "84743718036"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 711,
+     "potential": 49725,
+     "wage": "7269566114",
+     "value": "33749334381"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 713,
+     "potential": 53543,
+     "wage": "2510170782",
+     "value": "11534045913"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 709,
+     "potential": 51069,
+     "wage": "744409324",
+     "value": "3721973320"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 702,
+     "potential": 51948,
+     "wage": "328071468",
+     "value": "1575780283"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 791,
+     "potential": 56354,
+     "wage": "117904376",
+     "value": "613067078"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 704,
+     "potential": 51660,
+     "wage": "5721241060",
+     "value": "24942360710"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 585,
+     "potential": 42247,
+     "wage": "1642918891",
+     "value": "7757367871"
+    }
+   ]
+  },
+  {
+   "year": 1947,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 77.7
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 70.45833333333333
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 72.54166666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 66.79166666666667
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 78.5
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 72.68181818181819
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 74
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 71.5
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 70.4
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 76.7
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 69.25
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 68.31666666666666
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 76.94444444444444
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 70.94444444444444
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 67.44444444444444
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 77
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 70.61111111111111
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 75.77777777777777
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 70.7
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 75.11111111111111
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 70.46666666666667
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 777,
+     "potential": 59477,
+     "wage": "119274902",
+     "value": "675400389"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 894,
+     "potential": 61096,
+     "wage": "54732509",
+     "value": "182147601"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 886,
+     "potential": 63648,
+     "wage": "18752413",
+     "value": "87754512"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 923,
+     "potential": 62266,
+     "wage": "6945604",
+     "value": "25378665"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 775,
+     "potential": 60161,
+     "wage": "6729128542",
+     "value": "35274813365"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 848,
+     "potential": 61877,
+     "wage": "2597501949",
+     "value": "10418017388"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 671,
+     "potential": 48802,
+     "wage": "5333052565",
+     "value": "19939217936"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 680,
+     "potential": 48351,
+     "wage": "2045678912",
+     "value": "7397971963"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 768,
+     "potential": 54113,
+     "wage": "720785819",
+     "value": "2876653720"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 763,
+     "potential": 57776,
+     "wage": "101834488183",
+     "value": "482781835695"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 714,
+     "potential": 47965,
+     "wage": "34132409176",
+     "value": "103485148701"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 2289,
+     "potential": 155792,
+     "wage": "31659777514",
+     "value": "121310434004"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 672,
+     "potential": 50770,
+     "wage": "79339749210",
+     "value": "340282440752"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 678,
+     "potential": 47639,
+     "wage": "29522166127",
+     "value": "100704482790"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 680,
+     "potential": 46178,
+     "wage": "8004881645",
+     "value": "28839023763"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 695,
+     "potential": 53113,
+     "wage": "2918329244",
+     "value": "13492927678"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 696,
+     "potential": 49375,
+     "wage": "878900017",
+     "value": "3423945133"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 691,
+     "potential": 51744,
+     "wage": "421206694",
+     "value": "1834495337"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 773,
+     "potential": 54782,
+     "wage": "149327446",
+     "value": "620415937"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 693,
+     "potential": 51700,
+     "wage": "6820681684",
+     "value": "29281952261"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 585,
+     "potential": 41605,
+     "wage": "2052277869",
+     "value": "7727152711"
+    }
+   ]
+  },
+  {
+   "year": 1948,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.55
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 72.91666666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 72.83333333333333
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 66.83333333333333
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 78.65
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 73
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 77.22222222222223
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 73.66666666666667
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 69.2
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 78.25
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 71.3
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 69.4
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.83333333333333
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 72.94444444444444
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 68.27777777777777
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 77.44444444444444
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 71.94444444444444
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 77
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 71.75
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 76.38888888888889
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 71.26666666666667
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 738,
+     "potential": 57997,
+     "wage": "136546749",
+     "value": "746009992"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 839,
+     "potential": 58434,
+     "wage": "74497683",
+     "value": "200257520"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 809,
+     "potential": 58403,
+     "wage": "26310895",
+     "value": "86417724"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 868,
+     "potential": 58331,
+     "wage": "11362708",
+     "value": "24012900"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 734,
+     "potential": 57387,
+     "wage": "7928626185",
+     "value": "37930357008"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 766,
+     "potential": 56289,
+     "wage": "3710660963",
+     "value": "10742649432"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 628,
+     "potential": 47047,
+     "wage": "689474416",
+     "value": "2335267472"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 644,
+     "potential": 47072,
+     "wage": "253129074",
+     "value": "873877669"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 682,
+     "potential": 47213,
+     "wage": "116075450",
+     "value": "229600630"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 711,
+     "potential": 54980,
+     "wage": "126178645651",
+     "value": "541854310652"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 696,
+     "potential": 47507,
+     "wage": "43686759791",
+     "value": "110696712918"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 2142,
+     "potential": 147048,
+     "wage": "49387111965",
+     "value": "130474450454"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 639,
+     "potential": 48876,
+     "wage": "99524286445",
+     "value": "387672705101"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 644,
+     "potential": 45927,
+     "wage": "42052974705",
+     "value": "108656430644"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 646,
+     "potential": 43843,
+     "wage": "11942769437",
+     "value": "27948688782"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 644,
+     "potential": 49429,
+     "wage": "3510599647",
+     "value": "14025295491"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 629,
+     "potential": 45230,
+     "wage": "1295467172",
+     "value": "3631815528"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 628,
+     "potential": 47568,
+     "wage": "519512156",
+     "value": "1981966171"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 728,
+     "potential": 51709,
+     "wage": "246645898",
+     "value": "626415185"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 645,
+     "potential": 48710,
+     "wage": "8727742703",
+     "value": "31481162436"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 544,
+     "potential": 38823,
+     "wage": "3333066266",
+     "value": "8009767880"
+    }
+   ]
+  },
+  {
+   "year": 1949,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.6
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 74.54166666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 73.125
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 67.625
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.25
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 74.4090909090909
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 77.66666666666667
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 74.61111111111111
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 70.05
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 78.55
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 72.35
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 70.35
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.38888888888889
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 74.72222222222223
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 68.44444444444444
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 72.77777777777777
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 77.38888888888889
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 72.35
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 77.16666666666667
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 73.33333333333333
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 683,
+     "potential": 54019,
+     "wage": "154681526",
+     "value": "731433606"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 795,
+     "potential": 58188,
+     "wage": "104925321",
+     "value": "244380313"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 756,
+     "potential": 54076,
+     "wage": "33742157",
+     "value": "77335480"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 801,
+     "potential": 54047,
+     "wage": "14560733",
+     "value": "24042032"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 682,
+     "potential": 53816,
+     "wage": "9697035872",
+     "value": "38211462388"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 725,
+     "potential": 53952,
+     "wage": "4972977437",
+     "value": "11204382651"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 584,
+     "potential": 44543,
+     "wage": "799692383",
+     "value": "2508232513"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 602,
+     "potential": 44559,
+     "wage": "323682904",
+     "value": "855006301"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 645,
+     "potential": 44749,
+     "wage": "150322357",
+     "value": "232841445"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 683,
+     "potential": 53487,
+     "wage": "146271246122",
+     "value": "561161992649"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 638,
+     "potential": 44199,
+     "wage": "74934584773",
+     "value": "119599050734"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1969,
+     "potential": 137121,
+     "wage": "61572463392",
+     "value": "131182279804"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 578,
+     "potential": 45040,
+     "wage": "109275405961",
+     "value": "386870845095"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 574,
+     "potential": 41775,
+     "wage": "50711403665",
+     "value": "109290601572"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 609,
+     "potential": 41215,
+     "wage": "14522768621",
+     "value": "28230528672"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 589,
+     "potential": 45862,
+     "wage": "4090114344",
+     "value": "14177622206"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 597,
+     "potential": 43552,
+     "wage": "1765930534",
+     "value": "3807019114"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 601,
+     "potential": 45774,
+     "wage": "616511744",
+     "value": "1942990610"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 670,
+     "potential": 48257,
+     "wage": "281379746",
+     "value": "633483435"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 614,
+     "potential": 46673,
+     "wage": "11432372158",
+     "value": "32688494874"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 516,
+     "potential": 37172,
+     "wage": "3853775015",
+     "value": "8155998280"
+    }
+   ]
+  },
+  {
+   "year": 1950,
+   "day": 0,
+   "round": 0,
+   "rows": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 80
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "clubs": 24,
+     "mean": 76.25
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "clubs": 24,
+     "mean": 72.66666666666667
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "clubs": 24,
+     "mean": 68.91666666666667
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.75
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "clubs": 22,
+     "mean": 74.9090909090909
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.22222222222223
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 75.11111111111111
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "clubs": 20,
+     "mean": 71.4
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "clubs": 20,
+     "mean": 79.05
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 74.1
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "clubs": 60,
+     "mean": 71.58333333333333
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 79.5
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 74.44444444444444
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "clubs": 18,
+     "mean": 70.77777777777777
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.77777777777777
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "clubs": 18,
+     "mean": 73.61111111111111
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.05555555555556
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "clubs": 20,
+     "mean": 72.9
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "clubs": 18,
+     "mean": 78.11111111111111
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "clubs": 15,
+     "mean": 74.13333333333334
+    }
+   ],
+   "sums": [
+    {
+     "country": "ENG",
+     "tier": 0,
+     "players": 644,
+     "potential": 51435,
+     "wage": "196977115",
+     "value": "705546774"
+    },
+    {
+     "country": "ENG",
+     "tier": 1,
+     "players": 741,
+     "potential": 56160,
+     "wage": "123005593",
+     "value": "263850873"
+    },
+    {
+     "country": "ENG",
+     "tier": 2,
+     "players": 712,
+     "potential": 50830,
+     "wage": "39374788",
+     "value": "71266311"
+    },
+    {
+     "country": "ENG",
+     "tier": 3,
+     "players": 727,
+     "potential": 49552,
+     "wage": "15097884",
+     "value": "25380690"
+    },
+    {
+     "country": "ESP",
+     "tier": 0,
+     "players": 634,
+     "potential": 50372,
+     "wage": "12781208011",
+     "value": "36811169081"
+    },
+    {
+     "country": "ESP",
+     "tier": 1,
+     "players": 690,
+     "potential": 52035,
+     "wage": "5784332096",
+     "value": "11892295003"
+    },
+    {
+     "country": "GER",
+     "tier": 0,
+     "players": 559,
+     "potential": 43349,
+     "wage": "1011503467",
+     "value": "2614811505"
+    },
+    {
+     "country": "GER",
+     "tier": 1,
+     "players": 537,
+     "potential": 40528,
+     "wage": "374461426",
+     "value": "810362310"
+    },
+    {
+     "country": "GER",
+     "tier": 2,
+     "players": 608,
+     "potential": 42849,
+     "wage": "173092066",
+     "value": "248549546"
+    },
+    {
+     "country": "ITA",
+     "tier": 0,
+     "players": 639,
+     "potential": 50248,
+     "wage": "176789942654",
+     "value": "536095370729"
+    },
+    {
+     "country": "ITA",
+     "tier": 1,
+     "players": 594,
+     "potential": 42661,
+     "wage": "88047071184",
+     "value": "128453628967"
+    },
+    {
+     "country": "ITA",
+     "tier": 2,
+     "players": 1821,
+     "potential": 129161,
+     "wage": "77588920818",
+     "value": "136784289704"
+    },
+    {
+     "country": "FRA",
+     "tier": 0,
+     "players": 548,
+     "potential": 43289,
+     "wage": "129326369171",
+     "value": "392026937930"
+    },
+    {
+     "country": "FRA",
+     "tier": 1,
+     "players": 530,
+     "potential": 38794,
+     "wage": "55392693308",
+     "value": "105394906352"
+    },
+    {
+     "country": "FRA",
+     "tier": 2,
+     "players": 551,
+     "potential": 38485,
+     "wage": "24204667100",
+     "value": "31272948992"
+    },
+    {
+     "country": "POR",
+     "tier": 0,
+     "players": 548,
+     "potential": 43033,
+     "wage": "5590261018",
+     "value": "14094052407"
+    },
+    {
+     "country": "POR",
+     "tier": 1,
+     "players": 561,
+     "potential": 41588,
+     "wage": "1875519927",
+     "value": "3981170371"
+    },
+    {
+     "country": "NED",
+     "tier": 0,
+     "players": 583,
+     "potential": 45139,
+     "wage": "794599229",
+     "value": "2055357236"
+    },
+    {
+     "country": "NED",
+     "tier": 1,
+     "players": 612,
+     "potential": 44591,
+     "wage": "330413359",
+     "value": "614326410"
+    },
+    {
+     "country": "BEL",
+     "tier": 0,
+     "players": 557,
+     "potential": 42966,
+     "wage": "12232771412",
+     "value": "33364240661"
+    },
+    {
+     "country": "BEL",
+     "tier": 1,
+     "players": 475,
+     "potential": 34647,
+     "wage": "5820918659",
+     "value": "8152183389"
+    }
+   ]
+  }
+ ],
+ "orderFailures": [
+  {
+   "year": 1946,
+   "country": "ENG",
+   "tier": 2,
+   "mean": 70.41666666666667,
+   "above": 67.16666666666667
+  },
+  {
+   "year": 1946,
+   "country": "GER",
+   "tier": 1,
+   "mean": 71.22222222222223,
+   "above": 70.11111111111111
+  },
+  {
+   "year": 1946,
+   "country": "ITA",
+   "tier": 2,
+   "mean": 67.55,
+   "above": 65.9
+  },
+  {
+   "year": 1946,
+   "country": "FRA",
+   "tier": 2,
+   "mean": 69.77777777777777,
+   "above": 68.72222222222223
+  },
+  {
+   "year": 1947,
+   "country": "ENG",
+   "tier": 2,
+   "mean": 72.54166666666667,
+   "above": 70.45833333333333
+  }
+ ],
+ "cells1950": [
+  {
+   "country": "ENG",
+   "tier": 0,
+   "founding": 77.95,
+   "mean": 80,
+   "delta": 2.049999999999997,
+   "band": 5,
+   "outsideBand": false
+  },
+  {
+   "country": "ENG",
+   "tier": 1,
+   "founding": 63.875,
+   "mean": 76.25,
+   "delta": 12.375,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "ENG",
+   "tier": 2,
+   "founding": 53.833333333333336,
+   "mean": 72.66666666666667,
+   "delta": 18.833333333333336,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "ENG",
+   "tier": 3,
+   "founding": 42.5,
+   "mean": 68.91666666666667,
+   "delta": 26.41666666666667,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "ESP",
+   "tier": 0,
+   "founding": 79.5,
+   "mean": 79.75,
+   "delta": 0.25,
+   "band": 5,
+   "outsideBand": false
+  },
+  {
+   "country": "ESP",
+   "tier": 1,
+   "founding": 64.95454545454545,
+   "mean": 74.9090909090909,
+   "delta": 9.954545454545453,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "GER",
+   "tier": 0,
+   "founding": 77.11111111111111,
+   "mean": 78.22222222222223,
+   "delta": 1.1111111111111143,
+   "band": 5,
+   "outsideBand": false
+  },
+  {
+   "country": "GER",
+   "tier": 1,
+   "founding": 64.94444444444444,
+   "mean": 75.11111111111111,
+   "delta": 10.166666666666671,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "GER",
+   "tier": 2,
+   "founding": 53.25,
+   "mean": 71.4,
+   "delta": 18.150000000000006,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "ITA",
+   "tier": 0,
+   "founding": 78.25,
+   "mean": 79.05,
+   "delta": 0.7999999999999972,
+   "band": 5,
+   "outsideBand": false
+  },
+  {
+   "country": "ITA",
+   "tier": 1,
+   "founding": 64.1,
+   "mean": 74.1,
+   "delta": 10,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "ITA",
+   "tier": 2,
+   "founding": 53.4,
+   "mean": 71.58333333333333,
+   "delta": 18.18333333333333,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "FRA",
+   "tier": 0,
+   "founding": 78.61111111111111,
+   "mean": 79.5,
+   "delta": 0.8888888888888857,
+   "band": 5,
+   "outsideBand": false
+  },
+  {
+   "country": "FRA",
+   "tier": 1,
+   "founding": 64.55555555555556,
+   "mean": 74.44444444444444,
+   "delta": 9.888888888888886,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "FRA",
+   "tier": 2,
+   "founding": 53.666666666666664,
+   "mean": 70.77777777777777,
+   "delta": 17.111111111111107,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "POR",
+   "tier": 0,
+   "founding": 78.05555555555556,
+   "mean": 78.77777777777777,
+   "delta": 0.7222222222222143,
+   "band": 5,
+   "outsideBand": false
+  },
+  {
+   "country": "POR",
+   "tier": 1,
+   "founding": 64.72222222222223,
+   "mean": 73.61111111111111,
+   "delta": 8.888888888888886,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "NED",
+   "tier": 0,
+   "founding": 79.05555555555556,
+   "mean": 78.05555555555556,
+   "delta": -1,
+   "band": 5,
+   "outsideBand": false
+  },
+  {
+   "country": "NED",
+   "tier": 1,
+   "founding": 63.75,
+   "mean": 72.9,
+   "delta": 9.150000000000006,
+   "band": 5,
+   "outsideBand": true
+  },
+  {
+   "country": "BEL",
+   "tier": 0,
+   "founding": 79.11111111111111,
+   "mean": 78.11111111111111,
+   "delta": -1,
+   "band": 5,
+   "outsideBand": false
+  },
+  {
+   "country": "BEL",
+   "tier": 1,
+   "founding": 65.46666666666667,
+   "mean": 74.13333333333334,
+   "delta": 8.666666666666671,
+   "band": 5,
+   "outsideBand": true
+  }
+ ],
+ "endpoint": {
+  "year": 1950,
+  "day": 0,
+  "round": 0,
+  "bytes": 26900283,
+  "sha256": "34f7485281f620637da4b4ee35f9f974612302e26477dd1df81c95ade132bbfa"
+ },
+ "modelPassClaimed": false,
+ "timingClaimed": false
+}
