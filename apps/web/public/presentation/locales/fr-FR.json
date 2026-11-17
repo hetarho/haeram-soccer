@@ -6885,6 +6885,8 @@
     "market.sale.wages.over": "Masse salariale au-dessus du seuil de vente ({share} % des revenus)",
     "market.sale.wages.far": "Masse salariale plus de 10 points au-dessus du seuil de vente ({share} % des revenus)",
     "market.sale.sellDown": "Club qui vend pour réduire sa masse salariale",
+    "market.sale.relegated": "Titulaire d'un club relégué la saison dernière",
+    "market.sale.aboveDivision": "Joueur d'au moins 5 points au-dessus du niveau de sa division, convoité par un club d'une division supérieure",
     "market.sale.listed": "Placé sur la liste des transferts",
     "market.sale.request": "A demandé son transfert",
     "market.sale.unhappy": "Mécontent au club",

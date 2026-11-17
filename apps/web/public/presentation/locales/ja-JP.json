@@ -6879,6 +6879,8 @@
     "market.sale.wages.over": "選手年俸が売却基準線を超過(収入の{share}%)",
     "market.sale.wages.far": "選手年俸が売却基準線を10ポイント超過(収入の{share}%)",
     "market.sale.sellDown": "年俸削減のため選手を売る球団",
+    "market.sale.relegated": "昨季降格した球団のレギュラー",
+    "market.sale.aboveDivision": "所属ディビジョンの水準を5以上上回り、上位ディビジョンの球団が求める選手",
     "market.sale.listed": "移籍リストに載った選手",
     "market.sale.request": "移籍を要求した選手",
     "market.sale.unhappy": "不満を抱える選手",

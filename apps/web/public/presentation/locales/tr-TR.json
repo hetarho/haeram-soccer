@@ -6882,6 +6882,8 @@
     "market.sale.wages.over": "Maaş yükü satış çizgisinin üstünde (gelirin %{share} kadarı)",
     "market.sale.wages.far": "Maaş yükü satış çizgisinin 10 puandan fazla üstünde (gelirin %{share} kadarı)",
     "market.sale.sellDown": "Maaş yükünü azaltmak için satış yapan kulüp",
+    "market.sale.relegated": "Geçen sezon küme düşen bir kulübün ilk on bir oyuncusu",
+    "market.sale.aboveDivision": "Liginin seviyesinin en az 5 üstünde, üst ligden bir kulübün istediği oyuncu",
     "market.sale.listed": "Transfer listesinde",
     "market.sale.request": "Transfer talebinde bulundu",
     "market.sale.unhappy": "Kulüpte mutsuz",

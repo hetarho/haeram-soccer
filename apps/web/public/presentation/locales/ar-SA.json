@@ -6894,6 +6894,8 @@
     "market.sale.wages.over": "كتلة الأجور فوق خط البيع ({share}% من الدخل)",
     "market.sale.wages.far": "كتلة الأجور أعلى من خط البيع بأكثر من 10 نقاط ({share}% من الدخل)",
     "market.sale.sellDown": "نادٍ يبيع لخفض كتلة أجوره",
+    "market.sale.relegated": "لاعب أساسي في نادٍ هبط الموسم الماضي",
+    "market.sale.aboveDivision": "لاعب يفوق مستوى دوريه بخمس نقاط على الأقل ويطلبه نادٍ من دوري أعلى",
     "market.sale.listed": "على قائمة الانتقالات",
     "market.sale.request": "قدّم طلب انتقال",
     "market.sale.unhappy": "غير راضٍ في النادي",

@@ -6882,6 +6882,8 @@
     "market.sale.wages.over": "Salarissom boven de verkoopgrens ({share}% van de inkomsten)",
     "market.sale.wages.far": "Salarissom meer dan 10 punten boven de verkoopgrens ({share}% van de inkomsten)",
     "market.sale.sellDown": "Club die verkoopt om de salarissom te verlagen",
+    "market.sale.relegated": "Basisspeler van een club die vorig seizoen degradeerde",
+    "market.sale.aboveDivision": "Speler minstens 5 boven het niveau van zijn divisie, gewild door een club uit een hogere divisie",
     "market.sale.listed": "Op de transferlijst",
     "market.sale.request": "Heeft een transferverzoek ingediend",
     "market.sale.unhappy": "Ontevreden bij de club",

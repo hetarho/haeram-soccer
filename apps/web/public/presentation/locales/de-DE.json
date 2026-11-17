@@ -6882,6 +6882,8 @@
     "market.sale.wages.over": "Gehaltssumme über der Verkaufsgrenze ({share} % der Einnahmen)",
     "market.sale.wages.far": "Gehaltssumme mehr als 10 Punkte über der Verkaufsgrenze ({share} % der Einnahmen)",
     "market.sale.sellDown": "Verein, der zur Gehaltssenkung verkauft",
+    "market.sale.relegated": "Stammspieler eines in der letzten Saison abgestiegenen Vereins",
+    "market.sale.aboveDivision": "Spieler mindestens 5 über dem Niveau seiner Liga, von einem Verein einer höheren Liga umworben",
     "market.sale.listed": "Auf der Transferliste",
     "market.sale.request": "Hat um einen Wechsel gebeten",
     "market.sale.unhappy": "Unzufrieden im Verein",

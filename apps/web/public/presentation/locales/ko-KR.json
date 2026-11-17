@@ -6879,6 +6879,8 @@
     "market.sale.wages.over": "선수 연봉이 매각 기준선을 넘음(수입의 {share}%)",
     "market.sale.wages.far": "선수 연봉이 매각 기준선을 10%p 넘게 넘음(수입의 {share}%)",
     "market.sale.sellDown": "연봉을 줄이려 선수를 파는 구단",
+    "market.sale.relegated": "지난 시즌 강등된 구단의 주전 선수",
+    "market.sale.aboveDivision": "소속 디비전 수준보다 5 이상 높아 상위 디비전 구단이 원하는 선수",
     "market.sale.listed": "이적 명단에 오른 선수",
     "market.sale.request": "이적 요청을 낸 선수",
     "market.sale.unhappy": "언해피 상태의 선수",

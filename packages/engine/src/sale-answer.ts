@@ -22,7 +22,7 @@ import { SALE_BARS, SALE_FACTOR_VALUES, SALE_SHARE } from './transfer-policy';
 import { transferWindow } from './transfer-window';
 import { seasonAfter } from './wartime';
 import { isProspect, playerValue, transferStance } from './transfers';
-import { clubById, ownStarters, startingSquad } from './world';
+import { clubById, ownStarters, startingSquad, tierLevel } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
 
 /** One factor's line: what it adds and the message, with its named parameters, that names it. */
@@ -76,6 +76,20 @@ export interface SaleContext {
     { vacant: true } | { vacant: false; name: string; ability: number; negotiator: boolean };
   /** Days left in the open window, the deadline day 0; absent outside a window. */
   windowDaysLeft?: number;
+  /**
+   * A bid between clubs nobody owns (→WORLD-16) reads two more rows and the contract rows' era;
+   * absent for our club's answers and for bids to us, whose rows are unchanged.
+   */
+  npc?: NpcSaleRows;
+}
+/** The rows only a club nobody owns answering another one reads (→CLUB-52). */
+export interface NpcSaleRows {
+  /** It was relegated at the last close and he is one of its starters. */
+  relegatedStarter: boolean;
+  /** He rates 5 or more above its division's level (→WORLD-15) and the buyer plays higher. */
+  aboveDivision: boolean;
+  /** The bid's season: before 1995 the contract rows count half. */
+  year: number;
 }
 
 const V = SALE_FACTOR_VALUES;
@@ -99,12 +113,15 @@ export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
   },
   {
     id: 'contract',
-    read: (c) =>
-      c.contractSeasons <= 1
-        ? line('contract', V.contract.final, 'copy.transfers.53f9e38caf')
+    read: (c) => {
+      // Before 1995 a move out of contract still carried a fee, so the rows count half.
+      const era = c.npc && c.npc.year < V.contractFullFrom ? V.contractEarlyShare : 1;
+      return c.contractSeasons <= 1
+        ? line('contract', V.contract.final * era, 'copy.transfers.53f9e38caf')
         : c.contractSeasons === 2
-          ? line('contract', V.contract.next, 'market.sale.contract.next')
-          : undefined,
+          ? line('contract', V.contract.next * era, 'market.sale.contract.next')
+          : undefined;
+    },
   },
   {
     id: 'age',
@@ -141,6 +158,20 @@ export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
     read: (c) =>
       c.sellingDown && !c.ownSeller
         ? line('sellDown', V.sellingDown, 'market.sale.sellDown')
+        : undefined,
+  },
+  {
+    id: 'relegated',
+    read: (c) =>
+      c.npc?.relegatedStarter
+        ? line('relegated', V.relegatedStarter, 'market.sale.relegated')
+        : undefined,
+  },
+  {
+    id: 'aboveDivision',
+    read: (c) =>
+      c.npc?.aboveDivision
+        ? line('aboveDivision', V.aboveDivision, 'market.sale.aboveDivision')
         : undefined,
   },
   {
@@ -412,5 +443,58 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     transferRequest: false,
     unhappy: false,
     director: buyingDirector(w),
+  };
+}
+
+/** A bid between clubs nobody owns (→WORLD-16): the seller, the buyer, the player and the fees. */
+export interface NpcSaleBid {
+  seller: Club;
+  buyer: Club;
+  player: Player;
+  fee: string;
+  asking: string;
+  /** The seller is selling down its wage bill (→WORLD-17), as the settlement reads it. */
+  sellingDown: boolean;
+}
+
+/** The tier a club played in at the last close, from that season's archived standings. */
+function tierAtLastClose(w: World, club: Club) {
+  const index = w.clubs.indexOf(club);
+  return w.history.at(-1)?.standings.find((row) => row[0] === index)?.[1];
+}
+
+/**
+ * A club nobody owns answering another one (→CLUB-52, WORLD-16): his place in its XI, his contract
+ * (this season counted, 1 its final), age and promise, its money and sell-down, the two NPC rows
+ * and the window's days left. No 단장 sits on either side.
+ */
+export function npcSaleContext(w: World, bid: NpcSaleBid): SaleContext {
+  const { seller, buyer, player } = bid,
+    window = transferWindow(w),
+    place = placeIn(startingSquad(w, seller), player.id),
+    before = tierAtLastClose(w, seller);
+  return {
+    fee: bid.fee,
+    asking: bid.asking,
+    ownSeller: false,
+    place,
+    contractSeasons: Math.max(1, player.until - w.year + 1),
+    age: w.year - player.born,
+    prospect: isProspect(w, player),
+    ...npcCash(w, seller),
+    wageLine: 0,
+    wageShare: 0,
+    sellingDown: bid.sellingDown,
+    stance: 'open',
+    transferRequest: false,
+    unhappy: false,
+    ...(window.open ? { windowDaysLeft: window.daysLeft } : {}),
+    npc: {
+      relegatedStarter: before !== undefined && before < seller.tier && place !== 'outside',
+      aboveDivision:
+        buyer.tier < seller.tier &&
+        overall(player) >= tierLevel(seller.tier) + V.aboveDivisionPoints,
+      year: w.year,
+    },
   };
 }

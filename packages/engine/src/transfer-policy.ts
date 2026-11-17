@@ -35,6 +35,14 @@ export const SALE_FACTOR_VALUES = {
   cashCrisis: -0.15,
   wageLine: { over: -0.05, far: -0.1 },
   sellingDown: -0.1,
+  /** A club nobody owns relegated at the last close, for one of its starters. */
+  relegatedStarter: -0.1,
+  /** A club nobody owns's player 5 or more above its division's level, bid for from a higher one. */
+  aboveDivision: -0.1,
+  aboveDivisionPoints: 5,
+  /** Before this season the contract rows count half: a move out of contract still carried a fee. */
+  contractFullFrom: 1995,
+  contractEarlyShare: 0.5,
   listed: -0.15,
   requestOrUnhappy: -0.1,
   /** −(ability − 50)/250, a negotiator 0.05 more, a vacant post +0.05. */
@@ -46,3 +54,35 @@ export const SALE_FACTOR_VALUES = {
   deadlineDays: 3,
   deadline: -0.05,
 } as const;
+
+/** A club nobody owns's market caps for one window (→WORLD-16): bids, completed buys and sales. */
+export interface NpcMarketCaps {
+  bids: number;
+  buys: number;
+  sales: number;
+}
+/**
+ * The era table behind those caps: anchors by year, linear between them and flat outside, each
+ * value rounded to a whole count. Few moves under the retain and maximum-wage systems, more after
+ * freedom of contract, the most after 1995. Starting values, tuned by measurement (T950).
+ */
+export const NPC_MARKET_ERA: readonly (readonly [number, NpcMarketCaps])[] = [
+  [1950, { bids: 3, buys: 2, sales: 2 }],
+  [1965, { bids: 4, buys: 3, sales: 3 }],
+  [1980, { bids: 5, buys: 3, sales: 3 }],
+  [1995, { bids: 6, buys: 4, sales: 4 }],
+  [2010, { bids: 8, buys: 5, sales: 5 }],
+];
+/** The caps in force in `year`'s windows. */
+export function npcMarketCaps(year: number, era = NPC_MARKET_ERA): NpcMarketCaps {
+  const first = era[0]!,
+    last = era.at(-1)!;
+  if (year <= first[0]) return { ...first[1] };
+  if (year >= last[0]) return { ...last[1] };
+  const at = era.findIndex(([anchor]) => anchor > year);
+  const [y0, a] = era[at - 1]!,
+    [y1, b] = era[at]!,
+    t = (year - y0) / (y1 - y0);
+  const read = (key: keyof NpcMarketCaps) => Math.round(a[key] + (b[key] - a[key]) * t);
+  return { bids: read('bids'), buys: read('buys'), sales: read('sales') };
+}

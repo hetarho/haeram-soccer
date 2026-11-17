@@ -179,9 +179,11 @@ const facts = (w: World) => ({
 // confirms these full-field signatures. Neither material nor cleanSheets is excluded here, and
 // changed results establish no throughput speed claim.
 // The evidence audit expands every missing array tail; scalar leaves and array lengths are separate.
+// T945's pull market changes which players clubs nobody owns hold, so the candidate rounds' signature
+// moves (aef5e3c0618eb5f2 before it); the aggregate records keep theirs.
 const BEFORE = {
   aggregateRecords: 'd01e8b16487872a4',
-  candidateRounds: 'aef5e3c0618eb5f2',
+  candidateRounds: 'a05cbbd0c13eeb52',
 };
 
 describe('complete-result throughput (T285)', () => {

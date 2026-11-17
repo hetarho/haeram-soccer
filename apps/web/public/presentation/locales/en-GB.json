@@ -6882,6 +6882,8 @@
     "market.sale.wages.over": "Wage bill above the sales line ({share}% of income)",
     "market.sale.wages.far": "Wage bill more than 10 points above the sales line ({share}% of income)",
     "market.sale.sellDown": "A club selling down its wage bill",
+    "market.sale.relegated": "A starter at a club relegated last season",
+    "market.sale.aboveDivision": "A player 5 or more above his division's level, wanted by a club from a higher division",
     "market.sale.listed": "On the transfer list",
     "market.sale.request": "Handed in a transfer request",
     "market.sale.unhappy": "Unhappy at the club",
