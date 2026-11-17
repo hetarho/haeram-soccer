@@ -24,11 +24,11 @@
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 14 | 14 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 71 | 71 | - | 0 |
+| CLUB | 72 | 72 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
 | LEAGUE | 21 | 21 | - | 0 |
 | STAFF | 42 | 42 | - | 0 |
-| ECON | 58 | 58 | - | 0 |
+| ECON | 59 | 59 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
 | SAVE | 70 | 70 | - | 0 |
@@ -65,6 +65,7 @@
 |---|---|---|---|---|
 | T916 | Measure isolated generation repair factors against unchanged world targets | ARCH WORLD LEAGUE PLAYER | T915 | todo |
 | T930 | Keep one browser journey instance per distinct path or layout | ARCH | - | todo |
+| T931 | Let a funded 단장 at 넉넉히 and 아낌없이 spend the owner's money on a full squad | CLUB ECON | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |

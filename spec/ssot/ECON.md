@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r58 | Define the browser-demo rules for historical club economy.
+> r59 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -196,7 +196,7 @@
   | 3 | 62% | 40% | 1.6% | 집중 투자 | 60% |
   | 4 | 70% | 55% | 2.4% | 엘리트 아카데미 | 68% |
   | 5 | 80% | 70% | 3.5% | 최고 수준 아카데미 | 80% |
-  - reserve years of current annual fixed costs by the step acted on (1–5): 안정 지향 50/40/30/20/10, 균형형 40/30/20/10/5, 공격형 30/20/10/5/0. Cash above that reserve, less fees reserved by open delegated bids, is available capital; negative cash releases none. An injection changes it immediately. This is a shared balance, recalculated from live cash and costs, not a fresh grant at each plan.
+  - reserve years of current annual fixed costs by the step acted on (1–5): 안정 지향 50/40/30/2/1, 균형형 40/30/20/1/0, 공격형 30/20/10/0/0. Cash above that reserve, less fees reserved by open delegated bids, is available capital; negative cash releases none. An injection changes it immediately. This is a shared balance, recalculated from live cash and costs, not a fresh grant at each plan. ← at 20/10/5 years a funded club asked for 넉넉히 or 아낌없이 kept most of the owner's money back (measured 261117: three funded takeovers signed 0–1 players a season while holding £1m–£60m)
   - the squad budget adds all available capital to its income share; youth adds its youth share of available capital. Fees already paid reduce only the income-based signing money, since they have already left live cash; pending bids also reserve capital. Added annual wages reduce capital by their reserve-years cost before affordability is tested. These plans may spend more than income or player sales, with negative transfer cash flow.
   - signings: the income-based money for them is the squad share less the players' wage bill (never below zero), plus the reinvested share of this season's player sales, less this season's fees and the 단장's open bids (never below zero), then available capital is added. A signing passes when, with his wage, the players' wage bill stays within the squad share and the fee plus a year of his wage fit that money; a short line filled with a free agent reads only →ECON-41.
   - renewals and improved contracts: a raise passes when it fits the room the squad share leaves above the players' wage bill.
@@ -248,6 +248,7 @@
   - funded operating deficits and wages above turnover are permitted. Exhausted backing and unsupported commitments remain observable. No support is chosen to force a title or strength target.
 
 ## chg
+- r59 261117 ECON-33✎ reserve years at steps 4/5 안정 지향 20/10, 균형형 10/5, 공격형 5/0→2/1, 1/0, 0/0
 - r58 261114 ECON-36✎ opaque income/no owner capital→income components, separate actual capital and cash reconciliation · ECON-42+ bounded estimated annual backing drawn only for a shortfall
 - r57 261113 ECON-36✎ wage bill on strength and division→its players' contracts with transfer fees; competition money in force with LEAGUE-10's means level→with WORLD-17's wage limit; a takeover or project clears debt→removed; cash spent on the club→raises its academy, training ground and coaching levels
 - r56 261113 ECON-11/24✎ 8 negative rounds or debt over half-year costs→debt strictly over one year of fixed costs only; ECON-33✎ income only→income plus live capital above temperament/request reserves (balanced/default 20 years, bold/freely zero); ECON-41✎ four-round buffer→zero for bold/freely.
