@@ -2,11 +2,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import type { Club, Player, PlayerMove, SeasonArchive, World } from '../../contracts/src/types';
 import {
+  affordableLevel,
   bidsOnDay,
   compareSellDown,
+  NPC_MARKET,
   npcBidFee,
   npcMarket,
   npcMarketDays,
+  npcValueScore,
   PLAYER_MOVE_FLOW,
   recordPlayerMove,
   returnNpcLoans,
@@ -28,7 +31,7 @@ import {
 } from './world';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
-import { npcWageBill, npcWageLimit } from './books';
+import { npcWageBill, npcWageBudget, npcWageLimit } from './books';
 import { operatingExpensesAt } from './finance';
 import { npcSaleContext, saleShare } from './sale-answer';
 import { npcTermsContext, termsChance } from './personal-terms';
@@ -611,7 +614,7 @@ describe('asking again in a window (→CLUB-52/53)', () => {
       }
   });
 
-  it("counts a re-bid against the era's bids", () => {
+  it('bids blind on the first day, then skips a target who would refuse without spending a bid', () => {
     const { w, seller, buyer } = fixture();
     const best = target(w, seller, {}, 76);
     // A second keeper, a point below him.
@@ -625,11 +628,131 @@ describe('asking again in a window (→CLUB-52/53)', () => {
     // The abler keeper refuses this buyer all summer.
     draws.terms = (key) => (key.endsWith(`:${buyer.id}:${best.id}`) ? 0.999999 : 0);
     draws.keys.length = 0;
-    settle(w, npcMarketDays(w.year)[0]!);
-    // Each day's one bid goes to him again; the second keeper is never asked.
-    expect(asked('npc-sale', buyer, best)).toHaveLength(npcMarketCaps(w.year).bids);
+    const [first, second] = npcMarketDays(w.year)[0]!;
+    expect(bidsOnDay(npcMarketCaps(w.year).bids, 1, 3)).toBe(1);
+    // The first day's one bid goes to him blind, and he refuses.
+    settle(w, [first!]);
+    expect(asked('npc-sale', buyer, best)).toHaveLength(1);
     expect(asked('npc-sale', buyer, next)).toEqual([]);
     expect(at(w, best.id)).toEqual([seller.id]);
-    expect(at(w, next.id)).toEqual([seller.id]);
+    // The second day reads his answer again, skips him, and its one bid still buys the next keeper.
+    settle(w, [second!]);
+    expect(asked('npc-sale', buyer, best)).toHaveLength(2);
+    expect(asked('npc-sale', buyer, next)).toHaveLength(1);
+    expect(at(w, best.id)).toEqual([seller.id]);
+    expect(at(w, next.id)).toEqual([buyer.id]);
+  });
+});
+
+/** A second seller of `tier`, a copy of the fixture's seller under its own ids and books. */
+function secondSeller(w: World, seller: Club, tier: number) {
+  const other: Club = { ...seller, id: `ENG:${tier}:0:7`, tier, books: { ...seller.books! } };
+  w.squads![other.id] = w.squads![seller.id]!.map((q) => ({
+    ...structuredClone(q),
+    id: `other-${q.id}`,
+  }));
+  w.clubs.push(other);
+  for (const q of w.squads![other.id]!) if (q.position === 'GK') q.retiring = w.year;
+  other.books!.openingIncome = npcWageBill(w, other).toString();
+  invalidateNpcSquad(w, other.id);
+  return other;
+}
+/** A keeper of `ability` added to `club`, priced on its division. */
+function keeperAt(w: World, club: Club, id: string, ability: number, over: Partial<Player> = {}) {
+  const p = generatedPlayer('ENG', w.seed, id, w.year, ability, 'GK', 24, 0);
+  for (const a of ATTRIBUTES) p.attrs[a] = ability;
+  Object.assign(p, { potential: ability, until: w.year + 3 }, over);
+  p.wage = marketWageAt('ENG', w.year, club.tier, p);
+  w.squads![club.id]!.push(p);
+  club.books!.openingIncome = npcWageBill(w, club).toString();
+  invalidateNpcSquad(w, club.id);
+  return p;
+}
+
+describe('targets by value, means from the wage budget, paid moves down (→WORLD-16)', () => {
+  it('ranks a slot target by gain for what he would cost: the cheaper first on equal gain', () => {
+    const { w, seller, buyer } = fixture();
+    // The buyer keeps two weak keepers: a slot need, not a short line.
+    for (const q of w.squads![seller.id]!.filter((q) => q.position === 'GK').slice(0, 2))
+      w.squads![buyer.id]!.push({ ...structuredClone(q), id: `weak-${q.id}`, retiring: undefined });
+    for (const q of w.squads![buyer.id]!)
+      if (q.position === 'GK') for (const a of ATTRIBUTES) q.attrs[a] = 55;
+    buyer.books!.openingIncome = npcWageBill(w, buyer).toString();
+    invalidateNpcSquad(w, buyer.id);
+    const lower = secondSeller(w, seller, 1);
+    const dear = target(w, seller, {}, 75),
+      cheap = keeperAt(w, lower, 'cheap-keeper', 75);
+    expect(BigInt(marketValueAt('ENG', w.year, 1, cheap))).toBeLessThan(
+      BigInt(marketValueAt('ENG', w.year, 0, dear)),
+    );
+    draws.keys.length = 0;
+    // 1950: one bid on the first day; it goes to the cheaper keeper of equal gain, who joins.
+    npcMarket(w);
+    expect(asked('npc-sale', buyer, cheap)).toHaveLength(1);
+    expect(asked('npc-sale', buyer, dear)).toEqual([]);
+    expect(at(w, cheap.id)).toEqual([buyer.id]);
+    expect(at(w, dear.id)).toEqual([seller.id]);
+  });
+
+  it('lets a cheaper target of slightly smaller gain outrank a dear one, by the weight', () => {
+    const reference = 1000n;
+    // A dear target costs twice the reference, a cheap one exactly it.
+    expect(npcValueScore(10, 2000n, reference)).toBe(10 * (0.5 + 0.25));
+    expect(npcValueScore(9, 1000n, reference)).toBe(9);
+    expect(npcValueScore(9, 1000n, reference)).toBeGreaterThan(npcValueScore(10, 2000n, reference));
+    const weight = NPC_MARKET.valueWeight;
+    try {
+      NPC_MARKET.valueWeight = 0;
+      expect(npcValueScore(9, 1000n, reference)).toBeLessThan(npcValueScore(10, 2000n, reference));
+    } finally {
+      NPC_MARKET.valueWeight = weight;
+    }
+    // No budget or no cost reads the gain alone.
+    expect(npcValueScore(7, 1000n, 0n)).toBe(7);
+  });
+
+  it('reads the affordable level from the season wage budget, not cash plus backing', () => {
+    const { w, buyer } = fixture();
+    const players = w.squads![buyer.id]!,
+      regular = { ...players[0]!, born: w.year - NPC_MARKET.termAge, potential: 0 },
+      wageAt = (ovr: number) => BigInt(marketWageAt('ENG', w.year, buyer.tier, regular, ovr)),
+      size = BigInt(NPC_SQUAD.size);
+    // A small club's income and a cash pile that would pay a squad of 99s for a season.
+    buyer.books!.openingIncome = npcWageBill(w, buyer).toString();
+    buyer.books!.cash = (
+      wageAt(99) * size +
+      BigInt(operatingExpensesAt('ENG', w.year, buyer.tier))
+    ).toString();
+    expect(npcWageLimit(w, buyer)! / size).toBeGreaterThanOrEqual(wageAt(99));
+    const level = affordableLevel(w, buyer, players);
+    expect(level).toBeLessThan(99);
+    const budget = npcWageBudget(w, buyer, NPC_MARKET.cashRunway)!;
+    expect(wageAt(level)).toBeLessThanOrEqual(budget / size);
+    expect(wageAt(level + 1)).toBeGreaterThan(budget / size);
+    // More income each season raises it; the same cash spread over more seasons lowers it.
+    buyer.books!.openingIncome = (BigInt(buyer.books!.openingIncome) * 3n).toString();
+    expect(affordableLevel(w, buyer, players)).toBeGreaterThan(level);
+  });
+
+  it("buys a higher division's listed player down for a fee, never an unlisted starter", () => {
+    for (const listed of [true, false]) {
+      const { w, seller, buyer } = fixture();
+      buyer.tier = 1;
+      // In his final season he is listed; with seasons left he is an unlisted starter.
+      const p = target(w, seller, listed ? { until: w.year } : {});
+      expect(startingSquad(w, seller)).toContain(p);
+      draws.keys.length = 0;
+      const seen = observe(() => npcMarket(w));
+      if (listed) {
+        expect(at(w, p.id)).toEqual([buyer.id]);
+        const move = seen.find((s) => s.id === p.id)!;
+        expect(move.reason).toBe('listed-down');
+        expect(move.move.loan).toBeUndefined();
+        expect(BigInt(move.move.fee)).toBeGreaterThan(0n);
+      } else {
+        expect(asked('npc-sale', buyer, p)).toEqual([]);
+        expect(at(w, p.id)).toEqual([seller.id]);
+      }
+    }
   });
 });

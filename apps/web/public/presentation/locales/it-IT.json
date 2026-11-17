@@ -6898,6 +6898,8 @@
     "market.sale.cash": "Crisi di liquidità ({rounds} giornate di costi fissi)",
     "market.sale.wages.over": "Monte ingaggi sopra la soglia di cessione ({share}% delle entrate)",
     "market.sale.wages.far": "Monte ingaggi oltre 10 punti sopra la soglia di cessione ({share}% delle entrate)",
+    "market.sale.runway.over": "Con il monte ingaggi attuale, la cassa non copre la perdita prevista per le stagioni consentite",
+    "market.sale.runway.far": "La cassa non copre la perdita prevista nemmeno per metà delle stagioni consentite",
     "market.sale.sellDown": "Club che vende per ridurre gli ingaggi",
     "market.sale.relegated": "Titolare di un club retrocesso la scorsa stagione",
     "market.sale.aboveDivision": "Giocatore di almeno 5 punti sopra il livello della sua divisione, cercato da un club di una divisione superiore",

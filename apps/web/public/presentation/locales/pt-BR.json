@@ -6898,6 +6898,8 @@
     "market.sale.cash": "Crise de caixa ({rounds} rodadas de custos fixos)",
     "market.sale.wages.over": "Folha salarial acima da linha de vendas ({share}% da receita)",
     "market.sale.wages.far": "Folha salarial mais de 10 pontos acima da linha de vendas ({share}% da receita)",
+    "market.sale.runway.over": "Com a folha salarial atual, o caixa não cobre o prejuízo planejado pelas temporadas permitidas",
+    "market.sale.runway.far": "O caixa não cobre o prejuízo planejado nem pela metade das temporadas permitidas",
     "market.sale.sellDown": "Clube vendendo para reduzir a folha",
     "market.sale.relegated": "Titular de um clube rebaixado na última temporada",
     "market.sale.aboveDivision": "Jogador ao menos 5 acima do nível da sua divisão, procurado por um clube de divisão superior",

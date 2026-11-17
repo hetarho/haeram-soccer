@@ -261,6 +261,30 @@ export function npcWageLimit(w: World, club: Club, year = w.year): bigint | unde
   );
 }
 
+/**
+ * A club nobody owns's season wage budget (→WORLD-16), the market's means: projected operating
+ * income less operating costs, plus `runway`'s share of its cash above debt (spent over that many
+ * seasons); no backing and no transfer balance. Not a commitment rule: npcCanPay decides those.
+ */
+export function npcWageBudget(
+  w: World,
+  club: Club,
+  runway: number,
+  year = w.year,
+): bigint | undefined {
+  if (!keepsBooks(w, club) || !club.books) return undefined;
+  const books = club.books,
+    last = books.seasons[0];
+  const income = forecastIncome(w, club, books, year);
+  const costs = BigInt(
+    operatingExpenses(w, club, last, last && lastTier(w, club, last.year), year),
+  );
+  const liveYear = last?.year === w.year ? seasonAfter(w.year) : w.year;
+  const reserve =
+    converted(club, books.cash, liveYear, year) - converted(club, books.debt, liveYear, year);
+  return income - costs + (reserve > 0n ? reserve / BigInt(Math.max(1, runway)) : 0n);
+}
+
 function converted(club: Club, amount: string, from: number, to: number): bigint {
   return BigInt(currencyChange(club.country, from, to)?.(amount) ?? amount);
 }

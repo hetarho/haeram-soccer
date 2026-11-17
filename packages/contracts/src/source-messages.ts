@@ -7403,6 +7403,9 @@ export const sourceMessages = {
   'market.sale.cash': '자금 위기(고정비 {rounds}라운드분)',
   'market.sale.wages.over': '선수 연봉이 매각 기준선을 넘음(수입의 {share}%)',
   'market.sale.wages.far': '선수 연봉이 매각 기준선을 10%p 넘게 넘음(수입의 {share}%)',
+  'market.sale.runway.over':
+    '현재 선수 연봉으로는 보유 자금이 계획 적자를 적자 허용 기간만큼 버티지 못함',
+  'market.sale.runway.far': '보유 자금이 계획 적자를 적자 허용 기간의 절반도 버티지 못함',
   'market.sale.sellDown': '연봉을 줄이려 선수를 파는 구단',
   'market.sale.relegated': '지난 시즌 강등된 구단의 주전 선수',
   'market.sale.aboveDivision': '소속 디비전 수준보다 5 이상 높아 상위 디비전 구단이 원하는 선수',

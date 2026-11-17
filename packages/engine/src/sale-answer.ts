@@ -144,10 +144,12 @@ export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
   {
     id: 'wages',
     read: (c) =>
+      // Our 단장's runway test (→ECON-33): failing at half the runway, or at the current wage bill.
+      // The former sales-line IDs stay registered for saved prose (→ARCH-32).
       c.ownSeller && c.wageLine === 2
-        ? line('wages', V.wageLine.far, 'market.sale.wages.far', { share: c.wageShare })
+        ? line('wages', V.wageLine.far, 'market.sale.runway.far')
         : c.ownSeller && c.wageLine === 1
-          ? line('wages', V.wageLine.over, 'market.sale.wages.over', { share: c.wageShare })
+          ? line('wages', V.wageLine.over, 'market.sale.runway.over')
           : undefined,
   },
   {

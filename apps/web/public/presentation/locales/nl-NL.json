@@ -6895,6 +6895,8 @@
     "market.sale.cash": "Geldcrisis ({rounds} speelrondes vaste kosten)",
     "market.sale.wages.over": "Salarissom boven de verkoopgrens ({share}% van de inkomsten)",
     "market.sale.wages.far": "Salarissom meer dan 10 punten boven de verkoopgrens ({share}% van de inkomsten)",
+    "market.sale.runway.over": "Bij de huidige salarissom dekt de kas het geplande verlies niet voor de toegestane seizoenen",
+    "market.sale.runway.far": "De kas dekt het geplande verlies niet eens voor de helft van de toegestane seizoenen",
     "market.sale.sellDown": "Club die verkoopt om de salarissom te verlagen",
     "market.sale.relegated": "Basisspeler van een club die vorig seizoen degradeerde",
     "market.sale.aboveDivision": "Speler minstens 5 boven het niveau van zijn divisie, gewild door een club uit een hogere divisie",

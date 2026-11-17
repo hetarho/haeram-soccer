@@ -181,9 +181,12 @@ const facts = (w: World) => ({
 // The evidence audit expands every missing array tail; scalar leaves and array lengths are separate.
 // T946's division-anchored talent (founding at 80/70/60/50 by division, →WORLD-15) changed both
 // through every founding squad's strength; d01e8b16487872a4 and aef5e3c0618eb5f2 before.
+// T951's market (value-ranked targets, wage-budget means, paid moves down, refusal skip) changes
+// which players clubs nobody owns hold, so the candidate rounds' signature moves (3025a6623928c81f
+// before it); the aggregate records keep theirs.
 const BEFORE = {
   aggregateRecords: 'efb1b0e2dc8517ba',
-  candidateRounds: '3025a6623928c81f',
+  candidateRounds: 'e04477da1bf7dfb3',
 };
 
 describe('complete-result throughput (T285)', () => {
