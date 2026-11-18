@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T02:21Z | T954 | gusta-session-start-mr18cx-5d3ec005 | 5595802aecde | 9eeb147edbd8727c1a5f52aa |
+| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T02:30Z | - | gusta-session-start-mr18cx-5d3ec005 | 55c6a26d | 9eeb147edbd8727c1a5f52aa |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -187,8 +187,10 @@
 | T951 | xf18 | gusta-session-self-improve-xf18-607e3688 | 20b3d90dd08a | 2026-11-17T22:07Z |
 | T950 | xf18 | gusta-session-self-improve-xf18-607e3688 | 20b3d90dd08a | 2026-11-17T22:07Z |
 | T953 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | d849bc4eb448 | 2026-11-18T02:20Z |
+| T954 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 55c6a26d | 2026-11-18T02:30Z |
 
 ## log
+- 261118 T954 done
 - 261118 T953 done
 - 261118 fix market: emit outcomes for counted NPC bids for T953 measurement
 - 261118 sketch mr18: owner decisions on xf18 parked items → WORLD r18 LEAGUE r23 PLAYER r20 CLUB r78 ECON r63 OWNER r8 WEB r222, tasks T953–T980, ideation/historical-era-rules
@@ -208,4 +210,3 @@
 - 261117 gusta-create-task ARCH r48 start: split T916 recipe preparation from unchanged diagnostic execution
 - 261117 gusta-update-ssot ARCH-33 start: T916 recipe provenance recovery only
 - 261117 fix e2e: promise-deadline loan fixture lowers its bid until the selling club counters (dccee24d, pushed)
-- 261117 gusta-update 0.17.4→0.17.5 landed on main f7a23e83 (ARCH r47, T942 todo)
