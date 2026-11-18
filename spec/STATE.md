@@ -67,7 +67,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T969 | Administration deducts 10 points and writes off half the debt | ECON LEAGUE | T967 | doing@261118.mr18cx |
 | T970 | Show distress stages instead of bankruptcy | WEB OWNER ECON ARCH | T967 T969 | todo |
 | T980 | League tables show deducted points | ECON LEAGUE ARCH | T969 | todo |
 | T971 | The 단장 plans to a season-end cash floor, not a loss runway | ECON CLUB STAFF | T967 | todo |
@@ -90,7 +89,8 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
+- gusta-implement-task T970
 - gusta-implement-task T973
-- gusta-implement-task T969 T971
+- gusta-implement-task T971
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.
