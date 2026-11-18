@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "id": "en-GB",
   "messages": {
+    "finance.distress.writeOff": "Debt write-off",
+    "finance.distress.writeOffDetail": "Entering administration wrote off half the debt. This is excluded from operating income.",
     "finance.distress.noSigning": "Fee and loan signings are prohibited during forced sales or administration.",
     "finance.distress.freeMinimum": "During financial distress, free signings may only restore the minimum of 14 players or a goalkeeper.",
     "finance.distress.forcedSale": "The offer of at least 70% of player value was accepted under financial distress forced sales.",

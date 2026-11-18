@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "id": "it-IT",
   "messages": {
+    "finance.distress.writeOff": "Cancellazione del debito",
+    "finance.distress.writeOffDetail": "L’amministrazione controllata ha cancellato metà del debito. L’importo è escluso dai ricavi operativi.",
     "finance.distress.noSigning": "Acquisti a pagamento e prestiti sono vietati durante cessioni obbligatorie o amministrazione controllata.",
     "finance.distress.freeMinimum": "In crisi finanziaria, gli svincolati possono solo completare il minimo di 14 giocatori o fornire un portiere mancante.",
     "finance.distress.forcedSale": "L’offerta pari ad almeno il 70% del valore del giocatore è stata accettata per le cessioni obbligatorie della crisi finanziaria.",

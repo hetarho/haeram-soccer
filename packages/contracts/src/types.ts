@@ -652,7 +652,12 @@ export interface Fixture {
   /** Kicks scored in the shoot-out of a knockout fixture decided on penalties (→MATCH-6). */
   shootout?: Score;
 }
-export interface TableRow {
+export interface LeagueDeduction {
+  /** Positive administrative deduction; match points remain unchanged. */
+  deducted: number;
+  deductionReason: 'administration';
+}
+export interface TableRow extends Partial<LeagueDeduction> {
   played: number;
   won: number;
   drawn: number;
@@ -949,7 +954,9 @@ export interface AssociationCoefficient {
   points: number;
   clubs: number;
 }
-export interface SeasonArchive {
+export interface SeasonArchive extends Partial<LeagueDeduction> {
+  /** League-row deductions keyed by stable club ID; absent from older season archives. */
+  leagueDeductions?: Record<string, LeagueDeduction>;
   year: number;
   tier: number;
   group: number;

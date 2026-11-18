@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "id": "ko-KR",
   "messages": {
+    "finance.distress.writeOff": "채무 탕감",
+    "finance.distress.writeOffDetail": "법정관리 진입으로 부채의 절반을 탕감했습니다. 영업 수입에는 포함되지 않습니다.",
     "finance.distress.noSigning": "매각 요구 또는 법정관리 중에는 이적료를 내는 영입과 임대 영입을 할 수 없습니다.",
     "finance.distress.freeMinimum": "재정 위기 중 자유계약 영입은 최소 14명이나 골키퍼를 확보할 때만 가능합니다.",
     "finance.distress.forcedSale": "재정 위기에 따른 강제 매각으로 선수 가치의 70% 이상인 제안을 수락했습니다.",

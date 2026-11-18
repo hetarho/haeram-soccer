@@ -135,9 +135,19 @@ export function settleNpcDistress(w: World, fixtures: readonly Fixture[]) {
   for (const club of w.clubs) {
     if (!played.has(club.id) || !keepsBooks(w, club) || !club.books) continue;
     const before = club.books.distress;
-    const after = stepDistress(before, npcDebt(w, club), npcFixedCosts(w, club), w);
+    const debt = npcDebt(w, club);
+    const after = stepDistress(before, debt, npcFixedCosts(w, club), w);
     if (after) club.books.distress = after;
-    reportDistress(w, club.id, before, after);
+    const writtenOff = reportDistress(w, club.id, before, after, debt);
+    if (writtenOff !== undefined) {
+      const books = club.books;
+      const liveYear = books.seasons[0]?.year === w.year ? seasonAfter(w.year) : w.year;
+      const amount = converted(club, writtenOff.toString(), w.year, liveYear);
+      const oldDebt = BigInt(books.debt);
+      books.debt = (oldDebt > amount ? oldDebt - amount : 0n).toString();
+      if (amount > oldDebt) books.cash = (BigInt(books.cash) + amount - oldDebt).toString();
+      books.debtWriteOff = (BigInt(books.debtWriteOff ?? '0') + writtenOff).toString();
+    }
   }
 }
 
@@ -442,6 +452,7 @@ function seasonBook(w: World, club: Club, books: ClubBooks, season: SeasonIndex)
       commercial: lines.commercial.toString(),
       competitions: lines.competitions.toString(),
     },
+    ...(books.debtWriteOff !== undefined ? { debtWriteOff: books.debtWriteOff } : {}),
     wages: wages.toString(),
     costs: costs.toString(),
     transfersPaid: books.transfersPaid ?? '0',

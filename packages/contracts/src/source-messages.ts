@@ -1,5 +1,8 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'finance.distress.writeOff': '채무 탕감',
+  'finance.distress.writeOffDetail':
+    '법정관리 진입으로 부채의 절반을 탕감했습니다. 영업 수입에는 포함되지 않습니다.',
   'finance.distress.noSigning':
     '매각 요구 또는 법정관리 중에는 이적료를 내는 영입과 임대 영입을 할 수 없습니다.',
   'finance.distress.freeMinimum':

@@ -4,6 +4,8 @@ import type { Player, World } from '../../contracts/src/types';
 import { message } from '../../contracts/src/messages';
 import { SQUAD_MINIMUM } from './squad-size';
 import { compareIds } from './primitives';
+import { emptyTable, groupKey } from './league-fixtures';
+import { seasonAfter } from './wartime';
 import { addEvent } from './events';
 import { pushInbox } from './inbox';
 
@@ -69,14 +71,33 @@ export function reportDistress(
   club: string,
   before?: DistressState,
   after?: DistressState,
+  debt = BigInt(w.cash) < 0n ? -BigInt(w.cash) : 0n,
 ) {
   if (!after?.stage || after.stage <= (before?.stage ?? 0)) return;
-  DISTRESS_FLOW.observe?.(Object.freeze({ club, stage: after.stage }));
-  if (club !== w.playerClub) return;
-  const title = message(`finance.distress.stage${after.stage}`);
-  const detail = message('finance.distress.entry', { stage: title });
-  addEvent(w, 'distress-entry', title, detail);
-  pushInbox(w, { kind: 'finance', title, detail, attention: false });
+  const writtenOff =
+    after.stage === 3 ? (debt * BigInt(Math.round(DISTRESS.writeOff * 1000))) / 1000n : undefined;
+  const pointsDeducted = after.stage === 3 ? administrationDeduction(w, club, after) : undefined;
+  if (club === w.playerClub && writtenOff !== undefined) {
+    // Administrative relief changes debt, never income or operating profit.
+    w.cash = (BigInt(w.cash) + writtenOff).toString();
+    addEvent(
+      w,
+      'debt-write-off',
+      message('finance.distress.writeOff'),
+      message('finance.distress.writeOffDetail'),
+      writtenOff.toString(),
+    );
+  }
+  DISTRESS_FLOW.observe?.(
+    Object.freeze({ club, stage: after.stage, ...(pointsDeducted ? { pointsDeducted } : {}) }),
+  );
+  if (club === w.playerClub) {
+    const title = message(`finance.distress.stage${after.stage}`);
+    const detail = message('finance.distress.entry', { stage: title });
+    addEvent(w, 'distress-entry', title, detail);
+    pushInbox(w, { kind: 'finance', title, detail, attention: false });
+  }
+  return writtenOff;
 }
 
 /** An injection can clear stages 1/2 immediately; stage 3 still requires its season close. */
@@ -149,3 +170,42 @@ export function distressSalePlan(
 }
 export const distressSaleFee = (value: bigint) =>
   (value * BigInt(Math.round(DISTRESS.saleShare * 1000)) + 999n) / 1000n;
+
+/** Apply a due deduction to the new table once, without fabricating fields in old saves. */
+export function applyPendingDeductions(w: World) {
+  for (const club of w.clubs) {
+    const state = club.id === w.playerClub ? w.distress : club.books?.distress;
+    const pending = state?.pendingDeduction;
+    if (!state || !pending || pending.season !== w.year) continue;
+    const row = (w.tables[club.id] ??= emptyTable());
+    if (row.deductionReason === 'administration') {
+      delete state.pendingDeduction;
+      continue;
+    }
+    row.deducted = (row.deducted ?? 0) + pending.points;
+    row.deductionReason = 'administration';
+    delete state.pendingDeduction;
+    DISTRESS_FLOW.observe?.(Object.freeze({ club: club.id, pointsDeducted: pending.points }));
+  }
+}
+/** Entries after the league's last settled round affect its following season, even before the close. */
+function administrationDeduction(w: World, clubId: string, state: DistressState) {
+  const club = w.clubs.find((c) => c.id === clubId)!;
+  const fixtures = w.fixtures.filter(
+    (f) => f.kind === 'league' && f.year === w.year && f.groupKey === groupKey(club),
+  );
+  const ended = fixtures.length > 0 && fixtures.every((f) => !!f.score);
+  const season = ended ? seasonAfter(w.year) : w.year;
+  if (state.deductionSeason === w.year) return undefined;
+  state.deductionSeason = w.year;
+  if (ended) {
+    state.pendingDeduction = { season, points: DISTRESS.points };
+    return undefined;
+  }
+  const row = (w.tables[clubId] ??= emptyTable());
+  // A retained table receipt also protects a save whose optional distress season marker is absent.
+  if (row.deductionReason === 'administration') return undefined;
+  row.deducted = (row.deducted ?? 0) + DISTRESS.points;
+  row.deductionReason = 'administration';
+  return DISTRESS.points;
+}

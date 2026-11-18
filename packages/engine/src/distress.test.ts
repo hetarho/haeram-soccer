@@ -56,7 +56,7 @@ describe('financial distress boundaries', () => {
     expect(w.events.filter((e) => e.kind === 'distress-entry')).toHaveLength(1);
     expect(w.inbox?.filter((e) => e.kind === 'finance' && e.title === '법정관리')).toHaveLength(1);
     settleRound(w, false);
-    expect(facts).toEqual([{ club: w.playerClub, stage: 3 }]);
+    expect(facts).toEqual([{ club: w.playerClub, stage: 3, pointsDeducted: 10 }]);
     w.cash = '0';
     w.distress = { stage: 2 };
     repayDistress(w);

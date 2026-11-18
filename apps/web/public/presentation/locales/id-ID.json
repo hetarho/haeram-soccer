@@ -2,6 +2,8 @@
   "schemaVersion": 1,
   "id": "id-ID",
   "messages": {
+    "finance.distress.writeOff": "Penghapusan utang",
+    "finance.distress.writeOffDetail": "Masuk administrasi pengadilan menghapus separuh utang. Ini tidak termasuk pendapatan operasional.",
     "finance.distress.noSigning": "Perekrutan berbayar dan pinjaman dilarang selama penjualan wajib atau administrasi pengadilan.",
     "finance.distress.freeMinimum": "Saat krisis keuangan, pemain bebas hanya boleh melengkapi minimum 14 pemain atau penjaga gawang yang belum ada.",
     "finance.distress.forcedSale": "Tawaran minimal 70% nilai pemain diterima karena penjualan wajib akibat krisis keuangan.",

@@ -55,6 +55,9 @@ export function careerEnded(w: Pick<World, 'bankrupt' | 'ended'>) {
 export interface DistressState {
   stage?: 1 | 2 | 3;
   overHalfRounds?: number;
+  /** Last entry season that assigned an administration deduction (possibly queued for next season). */
+  deductionSeason?: number;
+  pendingDeduction?: { season: number; points: number };
   lastRound?: { year: number; round: number };
 }
 
@@ -165,6 +168,8 @@ export interface ClubSeasonBook {
   };
   /** Actual owner support, separate from income and result. */
   ownerCapital?: string;
+  /** Debt forgiven separately from income and operating/trading result. */
+  debtWriteOff?: string;
   /** The wage bill (→CLUB-25). */
   wages: string;
   /** Operating expenses (→ECON-30). */
@@ -187,6 +192,8 @@ export interface ClubBooks {
   transfersPaid?: string;
   transfersReceived?: string;
   distress?: DistressState;
+  /** Current-season administrative adjustment, already applied to live cash/debt. */
+  debtWriteOff?: string;
   seasons: ClubSeasonBook[];
   cash: string;
   debt: string;
