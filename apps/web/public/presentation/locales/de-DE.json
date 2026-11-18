@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Finanzwarnung",
     "finance.distress.stage2": "Zwangsverkäufe",
     "finance.distress.stage3": "Insolvenzverwaltung",
+    "finance.distress.freeMinimumLimit": "In finanzieller Not dürfen vertragslose Spieler nur den Mindestkader von {minimum} Spielern oder einen fehlenden Torwart ergänzen.",
+    "finance.distress.forcedSaleShare": "Das Angebot von mindestens {percent} % des Spielerwerts wurde im Rahmen finanziell erzwungener Verkäufe angenommen.",
     "finance.distress.entry": "Der Verein befindet sich in finanzieller Not: {stage}.",
     "player.personality.loyalty": "Loyalität",
     "player.personality.loyalty.description": "Wie stark ihn seine Zeit beim Verein und die Ausbildung in dessen Jugend zum Bleiben bewegen.",

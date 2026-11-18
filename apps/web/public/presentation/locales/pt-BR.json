@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Alerta financeiro",
     "finance.distress.stage2": "Vendas obrigatórias",
     "finance.distress.stage3": "Administração judicial",
+    "finance.distress.freeMinimumLimit": "Em crise financeira, agentes livres só podem completar o mínimo de {minimum} jogadores ou garantir um goleiro.",
+    "finance.distress.forcedSaleShare": "A oferta de pelo menos {percent}% do valor do jogador foi aceita devido às vendas obrigatórias da crise financeira.",
     "finance.distress.entry": "O clube entrou em crise financeira: {stage}.",
     "player.personality.loyalty": "Lealdade",
     "player.personality.loyalty.description": "Quanto o tempo no clube e a formação na base dele incentivam o jogador a ficar.",

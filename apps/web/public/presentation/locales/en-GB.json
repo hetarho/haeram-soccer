@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Financial warning",
     "finance.distress.stage2": "Forced sales",
     "finance.distress.stage3": "Administration",
+    "finance.distress.freeMinimumLimit": "During financial distress, free signings may only restore the minimum of {minimum} players or a goalkeeper.",
+    "finance.distress.forcedSaleShare": "The offer of at least {percent}% of player value was accepted under financial distress forced sales.",
     "finance.distress.entry": "The club has entered financial distress: {stage}.",
     "player.personality.loyalty": "Loyalty",
     "player.personality.loyalty.description": "How strongly time at a club and an academy start there encourage him to stay.",

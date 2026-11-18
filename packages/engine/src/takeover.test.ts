@@ -60,8 +60,20 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
   it('makes the club as it stands the owner’s, its squad his players at the club’s 조직력', () => {
     const { w, club } = setup();
     club.cohesion = 0.62;
-    club.books!.distress = { stage: 3, overHalfRounds: 8, deductionSeason: w.year };
+    club.books!.distress = {
+      stage: 3,
+      overHalfRounds: 8,
+      deductionSeason: w.year,
+      lastRound: { year: w.year, round: 3 },
+      pendingDeduction: { season: w.year + 1, points: 10 },
+    };
     w.tables[club.id] = { ...w.tables[club.id]!, deducted: 10, deductionReason: 'administration' };
+    const penalized = w.clubs.find((c) => c.id !== club.id)!;
+    w.tables[penalized.id] = {
+      ...w.tables[penalized.id]!,
+      deducted: 10,
+      deductionReason: 'administration',
+    };
     expect(clubPlayers(w, club).length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
     // Intentionally leave the keeper slot uncovered to exercise takeover's fill path.
     w.squads![club.id] = clubPlayers(w, club).filter((p) => (p.positions.GK ?? 0) < 2);
@@ -105,8 +117,19 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
       expect(p.id.startsWith(`${club.id}:takeover:`)).toBe(true);
     expect(club.cohesion).toBeUndefined();
     expect(club.books).toBeUndefined();
-    expect(w.distress).toEqual({ stage: 3, overHalfRounds: 8, deductionSeason: w.year });
+    expect(w.distress).toEqual({
+      stage: 3,
+      overHalfRounds: 8,
+      deductionSeason: w.year,
+      lastRound: { year: w.year, round: 3 },
+      pendingDeduction: { season: w.year + 1, points: 10 },
+    });
     expect(w.tables[club.id]).toMatchObject({ deducted: 10, deductionReason: 'administration' });
+    expect(w.tables[penalized.id]).toMatchObject({
+      deducted: 10,
+      deductionReason: 'administration',
+    });
+    expect(w.events.some((e) => e.kind === 'distress-entry')).toBe(false);
     expect(() => validateWorld(structuredClone(w))).not.toThrow();
   });
 

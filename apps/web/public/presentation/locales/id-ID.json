@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Peringatan keuangan",
     "finance.distress.stage2": "Penjualan wajib",
     "finance.distress.stage3": "Administrasi pengadilan",
+    "finance.distress.freeMinimumLimit": "Saat krisis keuangan, pemain bebas hanya boleh melengkapi minimum {minimum} pemain atau penjaga gawang yang belum ada.",
+    "finance.distress.forcedSaleShare": "Tawaran minimal {percent}% nilai pemain diterima karena penjualan wajib akibat krisis keuangan.",
     "finance.distress.entry": "Klub memasuki tahap krisis keuangan: {stage}.",
     "player.personality.loyalty": "Loyalitas",
     "player.personality.loyalty.description": "Seberapa kuat masa bakti di klub dan asal dari akademinya mendorongnya untuk bertahan.",

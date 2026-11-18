@@ -1,4 +1,10 @@
-import { distressSalePlan, distressSaleFee, distressSigningReason, forcedSales } from './distress';
+import {
+  DISTRESS,
+  distressSalePlan,
+  distressSaleFee,
+  distressSigningReason,
+  forcedSales,
+} from './distress';
 import { message as sourceMessage, type SourceMessageId } from '../../contracts/src/messages';
 import { INCOMING_BID_CHANCE, SALE_BARS } from './transfer-policy';
 import { clubPlayer, worldMarketOffer } from './world-market';
@@ -240,7 +246,8 @@ export function termsReport(chance: number, lines: readonly FactorLine[], room =
 }
 /** The selling club's reservation and the factors behind it, for its answer's report. */
 function saleReason(w: World, answer: SaleAnswer, room?: number) {
-  if (answer.forced) return sourceMessage('finance.distress.forcedSale');
+  if (answer.forced)
+    return sourceMessage('finance.distress.forcedSaleShare', { percent: DISTRESS.saleShare * 100 });
   return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines, room);
 }
 /** An inbox item's longest title and detail (the save schema's bounds, →SAVE-5). */
@@ -418,13 +425,15 @@ function completeSale(w: World, bid: TransferBid, p: Player, fee = bid.fee) {
   const club = w.clubs.find((c) => c.id === bid.club);
   const offer = club && npcOffer(w, club, p, clubOf(w), fee);
   if (!offer) throw new Error(sourceMessage('copy.transfers.30aac47a5f'));
-  if (BigInt(w.cash) + BigInt(fee) < BigInt(playingCoachDepartureCost(w, p.id)))
+  const release = BigInt(playingCoachDepartureCost(w, p.id));
+  if (release > 0n && BigInt(w.cash) + BigInt(fee) < release)
     throw new Error(sourceMessage('copy.transfers.4c1042837b'));
   const wasStarter = ownStarters(w).some((starter) => starter.id === p.id);
   credit(w, fee);
   endPlayingCoachForDeparture(w, p.id);
   p.status = 'sold';
   delete p.stance;
+  delete p.distressListing;
   // His sale ends his talk, his unhappiness and his transfer request (→CLUB-27).
   leaveContract(w, p);
   const live = { ...p, wage: offer.wage, until: w.year + npcContractTerm(w.year - p.born) - 1 };
@@ -846,7 +855,10 @@ function decideOutgoing(w: World, bid: TransferBid) {
   const attention = !bid.staff;
   if (answer.kind === 'accept') {
     const financial = bid.staff
-      ? signingVerdict(w, atOfferedWage(bid, p), bid.fee, undefined, bid.id)
+      ? signingVerdict(w, atOfferedWage(bid, p), bid.fee, undefined, bid.id, {
+          freeAgent: offer.freeAgent,
+          loan: bid.loan,
+        })
       : undefined;
     const blocker =
       financial && !financial.ok ? financial.reason : signingBlocker(w, offer, bid.fee, bid.loan);
@@ -940,7 +952,10 @@ function answerStaffCounter(
 ) {
   const p = offer.player,
     fee = bid.counterFee!,
-    verdict = signingVerdict(w, atOfferedWage(bid, p), fee, undefined, bid.id),
+    verdict = signingVerdict(w, atOfferedWage(bid, p), fee, undefined, bid.id, {
+      freeAgent: offer.freeAgent,
+      loan: bid.loan,
+    }),
     blocker = signingBlocker(w, offer, fee, bid.loan),
     belowCeiling = BigInt(bid.fee) < BigInt(ratio(asking, BigInt(bidCeiling(w)), 100n)),
     bargaining = haggling(w) && belowCeiling,
@@ -1134,7 +1149,7 @@ export function expectedOfferDays(w: World, p: Player) {
 }
 /** Forced sales run even when the owner retains sales decisions (→ECON-24). */
 export function forceDistressSales(w: World) {
-  if (!forcedSales(w.distress) || !transferWindow(w).open) return;
+  if (!transferWindow(w).open) return;
   const commitments = (w.bids ?? [])
     .filter((b) => b.direction === 'out' && b.year === w.year && isOpen(b))
     .reduce(
@@ -1142,18 +1157,36 @@ export function forceDistressSales(w: World) {
       0n,
     );
   const debt = commitments - BigInt(w.cash);
-  const plan = distressSalePlan(
-    activePlayers(w),
-    debt,
-    BigInt(operatingCosts(w).annual),
-    (p) => BigInt(playerValue(w, p)),
-    (remaining, p) =>
-      !p.loanUntil &&
-      p.retiring === undefined &&
-      remaining.length > SQUAD_MINIMUM &&
-      (p.position !== 'GK' || remaining.filter((q) => q.position === 'GK').length > 1),
-  );
-  for (const p of plan) if (p.stance !== 'listed') setTransferStance(w, p.id, 'listed');
+  const plan = forcedSales(w.distress)
+    ? distressSalePlan(
+        activePlayers(w),
+        debt,
+        BigInt(operatingCosts(w).annual),
+        (p) => BigInt(playerValue(w, p)),
+        (remaining, p) =>
+          !p.loanUntil &&
+          p.retiring === undefined &&
+          remaining.length > SQUAD_MINIMUM &&
+          (p.position !== 'GK' || remaining.filter((q) => q.position === 'GK').length > 1),
+      )
+    : [];
+  const selected = new Set(plan.map((p) => p.id));
+  for (const p of activePlayers(w)) {
+    if (p.distressListing !== undefined && !selected.has(p.id)) {
+      const previous = p.distressListing;
+      delete p.distressListing;
+      if (p.stance === 'listed') {
+        if (previous === 'open') delete p.stance;
+        else p.stance = previous;
+      }
+    }
+  }
+  for (const p of plan)
+    if (p.stance !== 'listed') {
+      const previous = transferStance(p);
+      setTransferStance(w, p.id, 'listed');
+      p.distressListing = previous;
+    }
 }
 /**
  * At a window opening with transfers delegated (→CLUB-22), the staff set stances by the direction,
@@ -1203,6 +1236,7 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
   if (p.retiring !== undefined) throw new Error(sourceMessage('copy.transfers.e8c146ef48'));
   if (p.transferRequest && stance === 'untouchable')
     throw new Error(sourceMessage('copy.transfers.2c9aecab5e'));
+  delete p.distressListing;
   if (transferStance(p) === stance) return;
   if (stance === 'open') delete p.stance;
   else p.stance = stance;
@@ -1413,7 +1447,8 @@ function answerIncoming(
       accept = false;
       detail = sourceMessage('copy.transfers.30aac47a5f');
     }
-    if (accept && BigInt(w.cash) + BigInt(deal) < BigInt(playingCoachDepartureCost(w, player.id))) {
+    const release = BigInt(playingCoachDepartureCost(w, player.id));
+    if (accept && release > 0n && BigInt(w.cash) + BigInt(deal) < release) {
       accept = false;
       detail = sourceMessage('copy.transfers.7017097137');
     }
@@ -1445,7 +1480,8 @@ function answerIncoming(
     const blocker = saleBlocker(w, player);
     report(
       !blocker,
-      blocker ?? sourceMessage('finance.distress.forcedSale'),
+      blocker ??
+        sourceMessage('finance.distress.forcedSaleShare', { percent: DISTRESS.saleShare * 100 }),
       sourceMessage('copy.transfers.e744d7026d'),
     );
     return;

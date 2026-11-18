@@ -9,6 +9,10 @@ export const sourceMessages = {
     '재정 위기 중 자유계약 영입은 최소 14명이나 골키퍼를 확보할 때만 가능합니다.',
   'finance.distress.forcedSale':
     '재정 위기에 따른 강제 매각으로 선수 가치의 70% 이상인 제안을 수락했습니다.',
+  'finance.distress.freeMinimumLimit':
+    '재정 위기 중 자유계약 영입은 최소 {minimum}명이나 골키퍼를 확보할 때만 가능합니다.',
+  'finance.distress.forcedSaleShare':
+    '재정 위기에 따른 강제 매각으로 선수 가치의 {percent}% 이상인 제안을 수락했습니다.',
   'finance.distress.stage1': '재정 경고',
   'finance.distress.stage2': '매각 요구',
   'finance.distress.stage3': '법정관리',

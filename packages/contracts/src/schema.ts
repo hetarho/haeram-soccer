@@ -238,6 +238,7 @@ const playerShape = {
     })
     .optional(),
   stance: z.enum(['listed', 'untouchable']).optional(),
+  distressListing: z.enum(['open', 'listed', 'untouchable']).optional(),
   retiring: z.number().int().optional(),
   talk: z
     .strictObject({

@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Allarme finanziario",
     "finance.distress.stage2": "Cessioni obbligatorie",
     "finance.distress.stage3": "Amministrazione controllata",
+    "finance.distress.freeMinimumLimit": "In crisi finanziaria, gli svincolati possono solo completare il minimo di {minimum} giocatori o fornire un portiere mancante.",
+    "finance.distress.forcedSaleShare": "L’offerta pari ad almeno il {percent}% del valore del giocatore è stata accettata per le cessioni obbligatorie della crisi finanziaria.",
     "finance.distress.entry": "Il club è entrato in crisi finanziaria: {stage}.",
     "player.personality.loyalty": "Fedeltà",
     "player.personality.loyalty.description": "Quanto il tempo trascorso nel club e la formazione nel suo vivaio lo spingono a restare.",

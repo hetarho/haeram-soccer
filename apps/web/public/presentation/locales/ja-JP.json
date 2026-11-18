@@ -10,6 +10,8 @@
     "finance.distress.stage1": "財政警告",
     "finance.distress.stage2": "売却要求",
     "finance.distress.stage3": "管財人管理",
+    "finance.distress.freeMinimumLimit": "財政危機中の自由契約選手の獲得は、最低{minimum}人またはゴールキーパーの確保に限られます。",
+    "finance.distress.forcedSaleShare": "財政危機による強制売却として、選手価値の{percent}%以上のオファーを受諾しました。",
     "finance.distress.entry": "クラブが財政危機の段階「{stage}」に入りました。",
     "player.personality.loyalty": "忠誠心",
     "player.personality.loyalty.description": "クラブで過ごした時間と、そのクラブのアカデミー出身であることが残留の意思に与える影響です。",

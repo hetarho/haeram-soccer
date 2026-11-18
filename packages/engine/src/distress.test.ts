@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type { DistressState } from '../../contracts/src/owner';
 import { DISTRESS_FLOW, repayDistress, stepDistress } from './distress';
 import { npcBooksFixture } from './npc-books.testkit';
-import { npcFixedCosts, settleNpcBooks, settleNpcDistress } from './books';
+import { booksClose, npcFixedCosts, settleNpcBooks, settleNpcDistress } from './books';
 import { settleRound } from './settlement';
 import { operatingCosts } from './finance';
 import { careerEnded } from '../../contracts/src/owner';
@@ -60,10 +60,28 @@ describe('financial distress boundaries', () => {
     w.cash = '0';
     w.distress = { stage: 2 };
     repayDistress(w);
-    expect(w.distress.stage).toBeUndefined();
+    expect(w.distress).toBeUndefined();
     w.distress = { stage: 3 };
     repayDistress(w);
     expect(w.distress.stage).toBe(3);
+  });
+  it('drops quiet recovered state but retains live sanction metadata through JSON reload', () => {
+    expect(tick({ stage: 1, lastRound: { year: 1949, round: 3 } }, 0n)).toBeUndefined();
+    const pending = { season: 1951, points: 10 };
+    const state = tick({ stage: 1, pendingDeduction: pending, deductionSeason: 1950 }, 0n)!;
+    expect(Object.hasOwn(state, 'stage')).toBe(false);
+    expect(JSON.parse(JSON.stringify(state))).toEqual(state);
+    expect(state.pendingDeduction).toEqual(pending);
+    expect(tick({ deductionSeason: 1949 }, 0n)).toBeUndefined();
+  });
+  it('releases administration at a legacy founded season close without opening NPC books', () => {
+    const { w, c } = npcBooksFixture();
+    expect(w.owner).toBeUndefined();
+    w.distress = { stage: 3 };
+    w.cash = '0';
+    booksClose(w);
+    expect(w.distress).toBeUndefined();
+    expect(c.books).toBeUndefined();
   });
   it('checks NPCs only on their settled league rounds and removes the silent debt floor', () => {
     const { w, c } = npcBooksFixture();
@@ -80,6 +98,8 @@ describe('financial distress boundaries', () => {
       groupKey: 'ESP:0:0',
       score: { home: 0, away: 0 },
     };
+    const facts: unknown[] = [];
+    DISTRESS_FLOW.observe = (fact) => facts.push(fact);
     w.round = 1;
     settleNpcDistress(w, []);
     expect(c.books.distress).toBeUndefined();
@@ -87,6 +107,20 @@ describe('financial distress boundaries', () => {
     expect(c.books.distress?.stage).toBe(3);
     settleNpcDistress(w, [fixture]);
     expect(c.books.distress?.overHalfRounds).toBe(1);
+    expect(facts).toEqual([{ club: c.id, stage: 3, pointsDeducted: 10 }]);
+    c.books.distress = { stage: 1 };
+    c.books.cash = '0';
+    c.books.debt = '0';
+    w.round++;
+    settleNpcDistress(w, [fixture]);
+    expect(c.books.distress).toBeUndefined();
+    facts.length = 0;
+    c.books.debt = (annual / 3n).toString();
+    w.round++;
+    settleNpcDistress(w, [fixture]);
+    settleNpcDistress(w, [fixture]);
+    expect(facts).toEqual([{ club: c.id, stage: 1 }]);
+    c.books.distress = { stage: 3 };
     c.books.debt = (10n ** 20n).toString();
     const books = settleNpcBooks(w, c);
     expect(BigInt(books.debt)).toBeGreaterThan(10n ** 19n);

@@ -10,6 +10,8 @@
     "finance.distress.stage1": "تحذير مالي",
     "finance.distress.stage2": "مبيعات إجبارية",
     "finance.distress.stage3": "إدارة قضائية",
+    "finance.distress.freeMinimumLimit": "أثناء الأزمة المالية، يُسمح بضم اللاعبين الأحرار فقط لاستكمال الحد الأدنى البالغ {minimum} لاعبًا أو توفير حارس مرمى.",
+    "finance.distress.forcedSaleShare": "قُبل العرض الذي يبلغ {percent}% على الأقل من قيمة اللاعب ضمن المبيعات الإجبارية بسبب الأزمة المالية.",
     "finance.distress.entry": "دخل النادي مرحلة أزمة مالية: {stage}.",
     "player.personality.loyalty": "الولاء",
     "player.personality.loyalty.description": "مدى تأثير الوقت الذي قضاه في النادي وتخرّجه من أكاديميته على رغبته في البقاء.",

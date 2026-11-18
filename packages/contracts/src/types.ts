@@ -402,6 +402,8 @@ export interface Player {
   injury?: { year: number; day: number; label: string };
   /** Market standing (→CLUB-22); absent means open to offers. */
   stance?: Exclude<TransferStance, 'open'>;
+  /** Stance to restore when a distress-only listing is no longer required. */
+  distressListing?: TransferStance;
   /** Season year whose close ends the career he has announced he will finish (→CLUB-3). */
   retiring?: number;
   /** The contract talk he opened (→CLUB-26). */

@@ -88,7 +88,9 @@ export function detectMediations(w: World): RecruitmentMediation[] {
     }
     const { offer } = picked,
       fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n),
-      verdict = signingVerdict(w, offer.player, fee);
+      verdict = signingVerdict(w, offer.player, fee, undefined, undefined, {
+        freeAgent: offer.freeAgent,
+      });
     if (verdict.ok) continue;
     const mediation: RecruitmentMediation = {
       id: `mediation:${w.year}:${w.mediations?.length ?? 0}`,

@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Avertissement financier",
     "finance.distress.stage2": "Ventes forcées",
     "finance.distress.stage3": "Redressement judiciaire",
+    "finance.distress.freeMinimumLimit": "En difficulté financière, les agents libres servent uniquement à atteindre {minimum} joueurs ou à recruter un gardien manquant.",
+    "finance.distress.forcedSaleShare": "L’offre d’au moins {percent} % de la valeur du joueur a été acceptée dans le cadre des ventes forcées pour difficultés financières.",
     "finance.distress.entry": "Le club entre en difficulté financière : {stage}.",
     "player.personality.loyalty": "Loyauté",
     "player.personality.loyalty.description": "À quel point le temps passé au club et une formation dans son académie l’incitent à rester.",

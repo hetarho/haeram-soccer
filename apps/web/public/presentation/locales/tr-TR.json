@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Mali uyarı",
     "finance.distress.stage2": "Zorunlu satışlar",
     "finance.distress.stage3": "Kayyum yönetimi",
+    "finance.distress.freeMinimumLimit": "Mali kriz sırasında serbest oyuncular yalnızca en az {minimum} oyuncuyu veya eksik kaleciyi tamamlamak için alınabilir.",
+    "finance.distress.forcedSaleShare": "Mali kriz nedeniyle zorunlu satış kapsamında oyuncu değerinin en az %{percent}’i tutarındaki teklif kabul edildi.",
     "finance.distress.entry": "Kulüp mali kriz aşamasına girdi: {stage}.",
     "player.personality.loyalty": "Sadakat",
     "player.personality.loyalty.description": "Kulüpte geçirdiği sürenin ve kulübün altyapısından yetişmiş olmasının kalma isteğine etkisi.",

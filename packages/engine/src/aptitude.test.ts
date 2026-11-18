@@ -58,11 +58,10 @@ describe('fixed off-pitch aptitude', () => {
         return { ...old, personality };
       }),
     );
-    // Recorded from the generator of the sixteen attributes (→PLAYER-2) and the name pools
-    // (→WORLD-12), before loyalty was added; the off-pitch components
-    // stay independent of every other field.
+    // The off-pitch draws stay independent of the original player fields (→PLAYER-2, WORLD-12).
+    // This includes wages priced on the current division levels (→CLUB-25, WORLD-15).
     expect(createHash('sha256').update(JSON.stringify(players)).digest('hex')).toBe(
-      '5dac362112bdfc88ee88a8b8133249a8128de0e9c473f0b3e0ac3cab4f519a32',
+      '69b728332bb75c663539cb73c705173c80ea1281258511f73610f774ccfe84c2',
     );
   });
   it('keeps fixed aptitude independent of playing state and rejects invalid components', () => {
