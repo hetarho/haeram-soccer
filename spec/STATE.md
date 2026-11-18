@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T965 | Bigger clubs are slower to sell | CLUB LEAGUE | - | todo |
+| T965 | Bigger clubs are slower to sell | CLUB LEAGUE | - | doing@261118.mr18cx |
 | T966 | A loyal player is harder to lure away | CLUB PLAYER | T979 | todo |
 | T967 | Financial distress ladder replaces bankruptcy | ECON WORLD OWNER | - | todo |
 | T968 | Clubs in distress cannot buy and must sell | ECON WORLD CLUB | T967 | todo |

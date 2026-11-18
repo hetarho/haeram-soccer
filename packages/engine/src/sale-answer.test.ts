@@ -30,6 +30,7 @@ function ctx(over: Partial<SaleContext> = {}): SaleContext {
     fee: '800000',
     asking: '1000000',
     ownSeller: false,
+    stature: 0,
     place: 'starter',
     contractSeasons: 3,
     age: 26,
@@ -48,7 +49,7 @@ function ctx(over: Partial<SaleContext> = {}): SaleContext {
 /** Contexts that push the share far up, far down, and our own club's floor. */
 const VARIANTS: SaleContext[] = [
   ctx(),
-  ctx({ place: 'core', prospect: true }),
+  ctx({ place: 'core', prospect: true, stature: 13 }),
   ctx({ place: 'outside', contractSeasons: 1, age: 34, cashCrisis: true, sellingDown: true }),
   ctx({
     ownSeller: true,

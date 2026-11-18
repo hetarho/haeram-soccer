@@ -26,6 +26,7 @@ export const SALE_SHARE = {
 } as const;
 /** CLUB-52's factor table: what each one adds to the share. */
 export const SALE_FACTOR_VALUES = {
+  stature: { giant: 0.1, big: 0.05, small: -0.05 },
   place: { core: 0.1, starter: 0.05, outside: -0.1 },
   contract: { final: -0.15, next: -0.05 },
   age: { veteran: -0.1, old: -0.2 },

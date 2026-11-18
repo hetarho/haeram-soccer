@@ -7437,6 +7437,9 @@ export const sourceMessages = {
     '선수 영입을 위임하면 단장이 이적시장이 열린 날과 그 뒤 {days}일마다 살펴보며, 진행 중인 제안이 {pending}건이 될 때까지 감독이 요청한 자리와 빈 자리를 먼저 채우고, {upgrades} 이적료와 새 연봉은 보유 자금이 계획 적자를 적자 허용 기간만큼 버티는 범위에서만 써요. 지금 영입에 쓸 돈은 {left}예요.',
   'delegation.offer.upgradesBar':
     '주전보다 능력이 {margin} 이상 나은 선수를 이적시장마다 {upgrades}명까지, 돈 기준선보다 처지는 주전 자리가 더 많으면 그 자리 수만큼 데려와요.',
+  'market.sale.stature.giant': '거대 구단은 매각에 더 신중함',
+  'market.sale.stature.big': '큰 구단은 매각에 더 신중함',
+  'market.sale.stature.small': '작은 구단은 매각에 더 유연함',
   'market.sale.place.core': '팀의 핵심 주전 세 명 중 한 명',
   'market.sale.place.starter': '주전 선수',
   'market.sale.place.outside': '주전이 아닌 선수',
