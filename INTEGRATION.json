@@ -288,7 +288,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 679406
     },
-    "phase": "checking",
+    "phase": "failed",
     "land": "main",
     "base": "e60819c1a6eca5f765a3d8815036496f2f425721",
     "cohort": [
@@ -307,16 +307,308 @@
     "at": "2026-11-18T09:22:05.493Z",
     "deadline": "2026-11-18T10:21:54.027Z",
     "candidate": "af4339d4a01ea4fc14a5ac2dfe8693993e6d4a9a",
-    "checks": [],
+    "checks": [
+      {
+        "command": "verification-plan:scripts/verification-plan.json",
+        "schemaVersion": 1,
+        "ok": false,
+        "exitCode": 1,
+        "cached": false,
+        "timedOut": false,
+        "cancelled": false,
+        "stale": false,
+        "ms": 2573052,
+        "scope": {
+          "TIER": "batch",
+          "DIFF_BASE": "e60819c1a6eca5f765a3d8815036496f2f425721",
+          "TASK": "",
+          "TASKS": ""
+        },
+        "commit": "af4339d4a01ea4fc14a5ac2dfe8693993e6d4a9a",
+        "tree": "cea9ba89e380439deb289c1c57461b19d9d48e86",
+        "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-9c1741e9-60c4-48ba-a136-680868513148.log",
+        "tail": [
+          "      Tests  52 failed | 4514 passed | 3 skipped (4569)",
+          "   Start at  18:23:42",
+          "   Duration  2489.75s (tests 96%, import 3%)",
+          "",
+          "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/vitest-results.json",
+          "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":684620,\"started\":\"2026-11-18T09:23:41.841Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-18T10:05:12.990Z\",\"elapsedMs\":2491156,\"commandExitCode\":1,\"afterExitCode\":1}",
+          "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/report.json\"}",
+          " ELIFECYCLE  Command failed with exit code 1."
+        ],
+        "failedTests": [
+          "× arrive only inside windows, at most three at a time, and lapse after their due day 107987ms",
+          "× stops a multi-day advance exactly when the club goes bankrupt 4702ms",
+          "× signs again once a contract has run its term, valued anew 339448ms",
+          "× every progression mode records the same facts (ENG haeram-demo) 353193ms",
+          "× npc squad fills the formation 139ms",
+          "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 480024ms",
+          "× changes only the own identity and the next-fixture choice, one revision per command 17705ms",
+          "× plays the following rounds exactly as without it 361ms",
+          "× leaves equal worlds and evidence for equal careers 260ms",
+          "× continues from its state in another process exactly as without the break (T308) 291ms",
+          "× keeps old records and dresses the next ones in the applied design 190ms",
+          "× fails loudly when a recorded appearance is rewritten 142ms",
+          "× survives encode/decode and is worn and used up on both resumed copies 164ms",
+          "× reduces material to season heat maps at the close 117601ms",
+          "× pays a second-tier squad 35–50% of a top-flight squad of the same ability 200ms",
+          "× declines a raise that crosses the live cash floor (→CLUB-26, →ECON-33) 192ms",
+          "× signs a veteran for one season and declines a raise the cash cannot carry 427ms",
+          "× declines a delegated renewal the season’s cash projection cannot carry 263ms",
+          "× keeps one identity and exact per-club contributions through a real in-league sale 14392ms",
+          "× counts them in the cash warning and the bankruptcy threshold 528ms"
+        ],
+        "plan": {
+          "source": "scripts/verification-plan.json",
+          "checks": [
+            "verify-batch"
+          ]
+        },
+        "checks": [
+          {
+            "id": "verify-batch",
+            "command": "pnpm run verify:batch",
+            "inputs": [
+              "*.json",
+              "*.mjs",
+              "*.toml",
+              "*.ts",
+              "*.yaml",
+              ".github",
+              ".gitignore",
+              ".node-version",
+              ".prettierignore",
+              "apps",
+              "artifacts",
+              "packages",
+              "patches",
+              "scripts",
+              "tests"
+            ],
+            "inputFingerprint": "47e8b250a2d1f5868d26d1d71a73bd3c8b061a7e037eaa898a3fe41cb5320573",
+            "executionFingerprint": "f86c01a6f8480418a61fbd0fe937c3f14f1edaa80657a366154c7bb03c45701e",
+            "ok": false,
+            "status": "failed",
+            "exitCode": 1,
+            "cached": false,
+            "timedOut": false,
+            "cancelled": false,
+            "stale": false,
+            "ms": 2572747,
+            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-9c1741e9-60c4-48ba-a136-680868513148.log",
+            "failedTests": [
+              "× arrive only inside windows, at most three at a time, and lapse after their due day 107987ms",
+              "× stops a multi-day advance exactly when the club goes bankrupt 4702ms",
+              "× signs again once a contract has run its term, valued anew 339448ms",
+              "× every progression mode records the same facts (ENG haeram-demo) 353193ms",
+              "× npc squad fills the formation 139ms",
+              "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 480024ms",
+              "× changes only the own identity and the next-fixture choice, one revision per command 17705ms",
+              "× plays the following rounds exactly as without it 361ms",
+              "× leaves equal worlds and evidence for equal careers 260ms",
+              "× continues from its state in another process exactly as without the break (T308) 291ms",
+              "× keeps old records and dresses the next ones in the applied design 190ms",
+              "× fails loudly when a recorded appearance is rewritten 142ms",
+              "× survives encode/decode and is worn and used up on both resumed copies 164ms",
+              "× reduces material to season heat maps at the close 117601ms",
+              "× pays a second-tier squad 35–50% of a top-flight squad of the same ability 200ms",
+              "× declines a raise that crosses the live cash floor (→CLUB-26, →ECON-33) 192ms",
+              "× signs a veteran for one season and declines a raise the cash cannot carry 427ms",
+              "× declines a delegated renewal the season’s cash projection cannot carry 263ms",
+              "× keeps one identity and exact per-club contributions through a real in-league sale 14392ms",
+              "× counts them in the cash warning and the bankruptcy threshold 528ms"
+            ],
+            "tail": [
+              "      Tests  52 failed | 4514 passed | 3 skipped (4569)",
+              "   Start at  18:23:42",
+              "   Duration  2489.75s (tests 96%, import 3%)",
+              "",
+              "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/vitest-results.json",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":684620,\"started\":\"2026-11-18T09:23:41.841Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-18T10:05:12.990Z\",\"elapsedMs\":2491156,\"commandExitCode\":1,\"afterExitCode\":1}",
+              "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/report.json\"}",
+              " ELIFECYCLE  Command failed with exit code 1."
+            ],
+            "cleanup": {
+              "scope": "process-group",
+              "signalled": false,
+              "escalated": false
+            }
+          }
+        ],
+        "failedCheckIds": [
+          "verify-batch"
+        ],
+        "cleanup": {
+          "scope": "process-group",
+          "signalled": false,
+          "escalated": false
+        }
+      }
+    ],
     "agentChecks": [],
-    "rounds": [],
+    "rounds": [
+      {
+        "candidate": "af4339d4a01ea4fc14a5ac2dfe8693993e6d4a9a",
+        "checks": [
+          {
+            "command": "verification-plan:scripts/verification-plan.json",
+            "schemaVersion": 1,
+            "ok": false,
+            "exitCode": 1,
+            "cached": false,
+            "timedOut": false,
+            "cancelled": false,
+            "stale": false,
+            "ms": 2573052,
+            "scope": {
+              "TIER": "batch",
+              "DIFF_BASE": "e60819c1a6eca5f765a3d8815036496f2f425721",
+              "TASK": "",
+              "TASKS": ""
+            },
+            "commit": "af4339d4a01ea4fc14a5ac2dfe8693993e6d4a9a",
+            "tree": "cea9ba89e380439deb289c1c57461b19d9d48e86",
+            "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-9c1741e9-60c4-48ba-a136-680868513148.log",
+            "tail": [
+              "      Tests  52 failed | 4514 passed | 3 skipped (4569)",
+              "   Start at  18:23:42",
+              "   Duration  2489.75s (tests 96%, import 3%)",
+              "",
+              "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/vitest-results.json",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":684620,\"started\":\"2026-11-18T09:23:41.841Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-18T10:05:12.990Z\",\"elapsedMs\":2491156,\"commandExitCode\":1,\"afterExitCode\":1}",
+              "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/report.json\"}",
+              " ELIFECYCLE  Command failed with exit code 1."
+            ],
+            "failedTests": [
+              "× arrive only inside windows, at most three at a time, and lapse after their due day 107987ms",
+              "× stops a multi-day advance exactly when the club goes bankrupt 4702ms",
+              "× signs again once a contract has run its term, valued anew 339448ms",
+              "× every progression mode records the same facts (ENG haeram-demo) 353193ms",
+              "× npc squad fills the formation 139ms",
+              "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 480024ms",
+              "× changes only the own identity and the next-fixture choice, one revision per command 17705ms",
+              "× plays the following rounds exactly as without it 361ms",
+              "× leaves equal worlds and evidence for equal careers 260ms",
+              "× continues from its state in another process exactly as without the break (T308) 291ms",
+              "× keeps old records and dresses the next ones in the applied design 190ms",
+              "× fails loudly when a recorded appearance is rewritten 142ms",
+              "× survives encode/decode and is worn and used up on both resumed copies 164ms",
+              "× reduces material to season heat maps at the close 117601ms",
+              "× pays a second-tier squad 35–50% of a top-flight squad of the same ability 200ms",
+              "× declines a raise that crosses the live cash floor (→CLUB-26, →ECON-33) 192ms",
+              "× signs a veteran for one season and declines a raise the cash cannot carry 427ms",
+              "× declines a delegated renewal the season’s cash projection cannot carry 263ms",
+              "× keeps one identity and exact per-club contributions through a real in-league sale 14392ms",
+              "× counts them in the cash warning and the bankruptcy threshold 528ms"
+            ],
+            "plan": {
+              "source": "scripts/verification-plan.json",
+              "checks": [
+                "verify-batch"
+              ]
+            },
+            "checks": [
+              {
+                "id": "verify-batch",
+                "command": "pnpm run verify:batch",
+                "inputs": [
+                  "*.json",
+                  "*.mjs",
+                  "*.toml",
+                  "*.ts",
+                  "*.yaml",
+                  ".github",
+                  ".gitignore",
+                  ".node-version",
+                  ".prettierignore",
+                  "apps",
+                  "artifacts",
+                  "packages",
+                  "patches",
+                  "scripts",
+                  "tests"
+                ],
+                "inputFingerprint": "47e8b250a2d1f5868d26d1d71a73bd3c8b061a7e037eaa898a3fe41cb5320573",
+                "executionFingerprint": "f86c01a6f8480418a61fbd0fe937c3f14f1edaa80657a366154c7bb03c45701e",
+                "ok": false,
+                "status": "failed",
+                "exitCode": 1,
+                "cached": false,
+                "timedOut": false,
+                "cancelled": false,
+                "stale": false,
+                "ms": 2572747,
+                "log": "/home/deep/haeram/haeram-soccor/.git/gusta/v1/logs/check-9c1741e9-60c4-48ba-a136-680868513148.log",
+                "failedTests": [
+                  "× arrive only inside windows, at most three at a time, and lapse after their due day 107987ms",
+                  "× stops a multi-day advance exactly when the club goes bankrupt 4702ms",
+                  "× signs again once a contract has run its term, valued anew 339448ms",
+                  "× every progression mode records the same facts (ENG haeram-demo) 353193ms",
+                  "× npc squad fills the formation 139ms",
+                  "× keeps identical ordered facts across daily/manual/batch paths with profile/history reads and save reloads (retained career) 480024ms",
+                  "× changes only the own identity and the next-fixture choice, one revision per command 17705ms",
+                  "× plays the following rounds exactly as without it 361ms",
+                  "× leaves equal worlds and evidence for equal careers 260ms",
+                  "× continues from its state in another process exactly as without the break (T308) 291ms",
+                  "× keeps old records and dresses the next ones in the applied design 190ms",
+                  "× fails loudly when a recorded appearance is rewritten 142ms",
+                  "× survives encode/decode and is worn and used up on both resumed copies 164ms",
+                  "× reduces material to season heat maps at the close 117601ms",
+                  "× pays a second-tier squad 35–50% of a top-flight squad of the same ability 200ms",
+                  "× declines a raise that crosses the live cash floor (→CLUB-26, →ECON-33) 192ms",
+                  "× signs a veteran for one season and declines a raise the cash cannot carry 427ms",
+                  "× declines a delegated renewal the season’s cash projection cannot carry 263ms",
+                  "× keeps one identity and exact per-club contributions through a real in-league sale 14392ms",
+                  "× counts them in the cash warning and the bankruptcy threshold 528ms"
+                ],
+                "tail": [
+                  "      Tests  52 failed | 4514 passed | 3 skipped (4569)",
+                  "   Start at  18:23:42",
+                  "   Duration  2489.75s (tests 96%, import 3%)",
+                  "",
+                  "JSON report written to /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/vitest-results.json",
+                  "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":684620,\"started\":\"2026-11-18T09:23:41.841Z\",\"exitCode\":1,\"stdoutPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-18T10:05:12.990Z\",\"elapsedMs\":2491156,\"commandExitCode\":1,\"afterExitCode\":1}",
+                  "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2/.tmp/verification/2026-11-18T09-22-21-365Z-681105/report.json\"}",
+                  " ELIFECYCLE  Command failed with exit code 1."
+                ],
+                "cleanup": {
+                  "scope": "process-group",
+                  "signalled": false,
+                  "escalated": false
+                }
+              }
+            ],
+            "failedCheckIds": [
+              "verify-batch"
+            ],
+            "cleanup": {
+              "scope": "process-group",
+              "signalled": false,
+              "escalated": false
+            }
+          }
+        ],
+        "at": "2026-11-18T10:05:14.409Z"
+      }
+    ],
     "path": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-662237f9-737f-401b-89d5-dd83f2125ea2",
     "branch": "integration/662237f9-737f-401b-89d5-dd83f2125ea2",
     "version": {
       "skipped": "manual",
       "from": "0.8.11",
       "to": "0.8.12"
-    }
+    },
+    "ciCommands": [
+      "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:contract && pnpm run validate:catalogs && pnpm run validate:presentation && pnpm run validate:i18n && pnpm run build",
+      "pnpm run test:unit",
+      "pnpm run test:integration --shard=1/3",
+      "pnpm run test:integration --shard=2/3",
+      "pnpm run test:integration --shard=3/3",
+      "pnpm exec playwright test --project=chromium --shard=1/3",
+      "pnpm exec playwright test --project=chromium --shard=2/3",
+      "pnpm exec playwright test --project=chromium --shard=3/3"
+    ]
   },
   "history": [
     {
