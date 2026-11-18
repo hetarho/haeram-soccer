@@ -1,0 +1,16 @@
+historyWorld 256 ms clubs=611 players=0
+{"season":1931,"ms":2593,"digestMs":1,"players":0,"heapMB":172}
+{"season":1932,"ms":3153,"digestMs":0,"players":0,"heapMB":182}
+{"season":1933,"ms":3229,"digestMs":0,"players":0,"heapMB":129}
+{"season":1934,"ms":3016,"digestMs":0,"players":0,"heapMB":240}
+{"season":1935,"ms":3006,"digestMs":0,"players":0,"heapMB":202}
+{"season":1936,"ms":3070,"digestMs":0,"players":0,"heapMB":152}
+{"season":1937,"ms":3253,"digestMs":0,"players":0,"heapMB":253}
+{"season":1938,"ms":3288,"digestMs":0,"players":0,"heapMB":160}
+{"season":1946,"ms":4691,"digestMs":0,"players":0,"heapMB":331}
+{"season":1947,"ms":3117,"digestMs":0,"players":0,"heapMB":212}
+{"season":1948,"ms":3574,"digestMs":0,"players":0,"heapMB":161}
+{"season":1949,"ms":3444,"digestMs":0,"players":0,"heapMB":294}
+{"season":1950,"ms":3668,"digestMs":0,"players":0,"heapMB":221}
+{"decade":1950,"seed":"generation-reference","seasons":13,"initMs":256,"generationMs":43363,"perSeasonMeanMs":3316,"listingsMs":31,"takeoverMs":51,"listings":451,"fortune":"5207018900","worldHash":"4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce"}
+pnpm exec tsx artifacts/benchmarks/generation-market-261116/gen-driver.mts     39.89s user 0.92s system 87% cpu 46.480 total

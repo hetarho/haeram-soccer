@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-18T19:13:44.399Z",
-  "sourceCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+  "snapshotAt": "2026-11-18T19:18:39.858Z",
+  "sourceCommit": "490a2bc54e5549cbefe654f9e52e9e8078d35b1e",
   "group": {
     "id": "np19-perf",
     "branch": "gusta-session-self-improve-np19-f1c9b1b9",
@@ -258,23 +258,14 @@
   },
   "summary": {
     "total": 7,
-    "completed": 6,
-    "remaining": 1,
-    "running": 1,
+    "completed": 7,
+    "remaining": 0,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T987",
-      "title": "Settlement memos for market needs, prices, sellable lines, listings and rivals",
-      "dep": [
-        "T982"
-      ],
-      "status": "doing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "81015110-b4aa-4987-84d1-b0430d70cd49",
@@ -945,6 +936,8 @@
       "submittedBase": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
       "submissionId": "bb2c505d-782c-482b-813e-21ce1085b61b",
       "submittedAt": "2026-11-18T19:09:31.016Z",
+      "integratedCommit": "430ebb17f923a4e0e92f183bec26f94eda05446e",
+      "integratedAt": "2026-11-18T19:14:49.612Z",
       "risk": null,
       "review": {
         "id": "5463fae5-dd83-448a-aa11-498374948bcb",
@@ -987,6 +980,13 @@
           "finishedAt": "2026-11-18T19:09:30.875Z",
           "cached": "2026-11-18T18:24:05.146Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-18T19:13:47.413Z",
+          "finishedAt": "2026-11-18T19:14:49.181Z"
+        }
       ]
     },
     {
@@ -1001,19 +1001,62 @@
       "contributors": [
         "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-18T18:54:18.853Z",
       "startCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+      "verifiedCommit": "d7f204d611a77f41553de968634c05781f9d337e",
+      "submittedBase": "490a2bc54e5549cbefe654f9e52e9e8078d35b1e",
+      "submissionId": "f1edd054-91b3-4d91-802c-d80452ecab86",
+      "submittedAt": "2026-11-18T19:18:03.703Z",
+      "risk": null,
       "dispatch": {
-        "id": "aecc3663-0f88-4dd5-8cc9-49502140fde0",
+        "id": "295a8630-d8ff-4de4-9f67-1e741815c2d1",
         "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
-        "provider": "claude",
-        "model": "opus",
-        "status": "running",
-        "startedAt": "2026-11-18T18:54:27.033Z"
-      }
+        "provider": "codex",
+        "model": "gpt-6.1-terra",
+        "status": "finished",
+        "startedAt": "2026-11-18T19:18:06.643Z",
+        "finishedAt": "2026-11-18T19:18:36.594Z",
+        "error": null,
+        "summary": "T987 implements the settlement optimizations with no identified contract or correctness regression. The worker’s recorded task checks and targeted test evidence passed; its performance and world-hash evidence was collected against the submission’s parent, 899f9ea9. The coordinator retains the final integrated-candidate gate."
+      },
+      "review": {
+        "id": "efe31121-d2aa-471d-973f-a0a6ba29a69c",
+        "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T987 implements the settlement optimizations with no identified contract or correctness regression. The worker’s recorded task checks and targeted test evidence passed; its performance and world-hash evidence was collected against the submission’s parent, 899f9ea9. The coordinator retains the final integrated-candidate gate.",
+        "findings": [],
+        "commit": "d7f204d611a77f41553de968634c05781f9d337e",
+        "baseCommit": "490a2bc54e5549cbefe654f9e52e9e8078d35b1e",
+        "submissionId": "f1edd054-91b3-4d91-802c-d80452ecab86",
+        "createdAt": "2026-11-18T19:18:03.966Z",
+        "finishedAt": "2026-11-18T19:18:36.574Z"
+      },
+      "steps": [
+        {
+          "taskId": "T987",
+          "commit": "d7f204d611a77f41553de968634c05781f9d337e",
+          "at": "2026-11-18T19:18:03.686Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-18T19:17:01.478Z",
+              "finishedAt": "2026-11-18T19:18:03.516Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-18T19:17:01.478Z",
+          "finishedAt": "2026-11-18T19:18:03.516Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -5960,6 +6003,274 @@
       "group": "np19-perf",
       "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
       "taskId": "T988",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1198,
+      "at": "2026-11-18T19:14:49.364Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-18T19:13:47.413Z",
+            "finishedAt": "2026-11-18T19:14:49.181Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1199,
+      "at": "2026-11-18T19:14:49.612Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "430ebb17f923a4e0e92f183bec26f94eda05446e",
+        "integratedAt": "2026-11-18T19:14:49.612Z"
+      }
+    },
+    {
+      "sequence": 1200,
+      "at": "2026-11-18T19:17:00.958Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1201,
+      "at": "2026-11-18T19:17:01.297Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1202,
+      "at": "2026-11-18T19:17:01.330Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1203,
+      "at": "2026-11-18T19:18:03.703Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "d7f204d611a77f41553de968634c05781f9d337e",
+        "submittedBase": "490a2bc54e5549cbefe654f9e52e9e8078d35b1e",
+        "submissionId": "f1edd054-91b3-4d91-802c-d80452ecab86",
+        "submittedAt": "2026-11-18T19:18:03.703Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T987",
+            "commit": "d7f204d611a77f41553de968634c05781f9d337e",
+            "at": "2026-11-18T19:18:03.686Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T19:17:01.478Z",
+                "finishedAt": "2026-11-18T19:18:03.516Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T19:17:01.478Z",
+            "finishedAt": "2026-11-18T19:18:03.516Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1204,
+      "at": "2026-11-18T19:18:03.722Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "aecc3663-0f88-4dd5-8cc9-49502140fde0",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-18T18:54:27.033Z",
+          "finishedAt": "2026-11-18T19:18:03.722Z",
+          "error": null,
+          "summary": "T987 is implemented in packages/engine/src/npc-market.ts, and the world is unchanged bit for bit.\n- Part A: SettlementRatings now remembers the last player read, and that memo is cleared in forget. A new bests(players, slots) matches Math.max(0, ...of) exactly, keeping NaN as NaN and turning -0 into +0. needs uses it while a settlement is open.\n- Part B: each settlement Candidate keeps its asking fee. For a buyer of the seller's country it also keeps the converted fee, the least bid and the wage per buyer tier. attempt reuses the asking fee.\n- Part C: a per-settlement Map<Club, Record<Line, boolean>> of sellable lines (from sellableLines, which npcCanSell now also reads) replaces the per-candidate squad recount in targetsFor. It is cleared for the seller and the bidder where settlement.clubs.delete runs. The per-player loanUntil/retiring checks stay.\n- Part D: listings works from index arrays with the same comparator values and counts \"blocked\" from those arrays. The rival loop walks a once-per-settlement group of same-stature buyers in buyers order.\n\nA new unit test in npc-market.test.ts covers bests against Math.max(0, ...of): an empty squad, -0, NaN and a slot outside the formations. The NaN and -0 ratings come from a pass-through vi.mock of freshSlotOvr.\n\nSame world: gen-driver 1950 generation-reference printed worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce.\n\nMeasurement with ab.mjs against base 899f9ea9 on a shared, loaded host (load about 22–25), with equal output hashes on both workloads:\n- history: CPU ratio 0.859 [0.852, 0.866]\n- history-five: CPU ratio 0.850 [0.828, 0.874]\n\nChecks:\n- vibe check --tier task passed (typecheck, lint, format, i18n, and 1497 affected unit tests in 156 files; log check-24ca49d8).\n- The integration files named in the acceptance also passed: 33 tests across the six files, plus settlement.test.ts (2 tests).\n- Artifacts are in artifacts/benchmarks/night-perf-261119/T987.\n\nLimits:\n- The parts were measured together only, not one by one.\n- bidOf still converts the asking fee for each bidder.\n- The full batch is left to the coordinator's final gate."
+        }
+      }
+    },
+    {
+      "sequence": 1205,
+      "at": "2026-11-18T19:18:03.966Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "efe31121-d2aa-471d-973f-a0a6ba29a69c",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "reviewing",
+          "commit": "d7f204d611a77f41553de968634c05781f9d337e",
+          "baseCommit": "490a2bc54e5549cbefe654f9e52e9e8078d35b1e",
+          "submissionId": "f1edd054-91b3-4d91-802c-d80452ecab86",
+          "createdAt": "2026-11-18T19:18:03.966Z"
+        }
+      }
+    },
+    {
+      "sequence": 1206,
+      "at": "2026-11-18T19:18:06.643Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "295a8630-d8ff-4de4-9f67-1e741815c2d1",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-18T19:18:06.643Z"
+        }
+      }
+    },
+    {
+      "sequence": 1207,
+      "at": "2026-11-18T19:18:06.665Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "295a8630-d8ff-4de4-9f67-1e741815c2d1",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-18T19:18:06.643Z"
+        }
+      }
+    },
+    {
+      "sequence": 1208,
+      "at": "2026-11-18T19:18:36.574Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "efe31121-d2aa-471d-973f-a0a6ba29a69c",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T987 implements the settlement optimizations with no identified contract or correctness regression. The worker’s recorded task checks and targeted test evidence passed; its performance and world-hash evidence was collected against the submission’s parent, 899f9ea9. The coordinator retains the final integrated-candidate gate.",
+          "findings": [],
+          "commit": "d7f204d611a77f41553de968634c05781f9d337e",
+          "baseCommit": "490a2bc54e5549cbefe654f9e52e9e8078d35b1e",
+          "submissionId": "f1edd054-91b3-4d91-802c-d80452ecab86",
+          "createdAt": "2026-11-18T19:18:03.966Z",
+          "finishedAt": "2026-11-18T19:18:36.574Z"
+        }
+      }
+    },
+    {
+      "sequence": 1209,
+      "at": "2026-11-18T19:18:36.594Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "295a8630-d8ff-4de4-9f67-1e741815c2d1",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-18T19:18:06.643Z",
+          "finishedAt": "2026-11-18T19:18:36.594Z",
+          "error": null,
+          "summary": "T987 implements the settlement optimizations with no identified contract or correctness regression. The worker’s recorded task checks and targeted test evidence passed; its performance and world-hash evidence was collected against the submission’s parent, 899f9ea9. The coordinator retains the final integrated-candidate gate."
+        }
+      }
+    },
+    {
+      "sequence": 1210,
+      "at": "2026-11-18T19:18:36.634Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

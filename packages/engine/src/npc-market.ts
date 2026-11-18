@@ -122,6 +122,9 @@ export class SettlementRatings {
   private others = new Map<Player, Map<Slot, number>>();
   private lastSlot: Slot | undefined;
   private lastPlace = MAIN_PLACE;
+  /** The last player read and his row, so a run of reads for one player skips the row map. */
+  private lastPlayer: Player | undefined;
+  private lastRow = 0;
 
   constructor(players = 64) {
     this.values = new Float64Array(ROW * Math.max(1, players)).fill(NaN);
@@ -139,6 +142,52 @@ export class SettlementRatings {
         this.lastPlace = place = known;
       }
     }
+    const row = this.rowOf(p);
+    const cached = this.values[row + place]!;
+    // NaN marks an unread place; a NaN rating is simply read again.
+    if (cached === cached) return cached;
+    const value = slot ? freshSlotOvr(p, slot) : mainOvr(p);
+    this.values[row + place] = value;
+    return value;
+  }
+
+  /**
+   * Each slot's best rating over `players`, exactly `Math.max(0, ...players.map((p) => of(p, slot)))`:
+   * each player's row is read once and each slot's place resolved once; the running maximum starts at
+   * +0, so a -0 rating leaves +0 and a NaN rating makes the slot's best NaN, as `Math.max` does.
+   */
+  bests(players: readonly Player[], slots: readonly Slot[]): number[] {
+    const places: number[] = [];
+    for (const slot of slots) {
+      const place = SLOT_PLACES.get(slot);
+      if (place === undefined)
+        return slots.map((s) => Math.max(0, ...players.map((p) => this.of(p, s))));
+      places.push(place);
+    }
+    const best = slots.map(() => 0);
+    for (const p of players) {
+      const row = this.rowOf(p);
+      for (let s = 0; s < places.length; s++) {
+        const at = row + places[s]!;
+        let value = this.values[at]!;
+        if (value !== value) this.values[at] = value = freshSlotOvr(p, slots[s]!);
+        const current = best[s]!;
+        if (current !== current) continue;
+        if (value > current || value !== value) best[s] = value;
+      }
+    }
+    return best;
+  }
+
+  /** A moved player's ratings are read afresh. */
+  forget(p: Player) {
+    if (p === this.lastPlayer) this.lastPlayer = undefined;
+    this.rows.delete(p);
+    this.others.delete(p);
+  }
+
+  private rowOf(p: Player) {
+    if (p === this.lastPlayer) return this.lastRow;
     let row = this.rows.get(p);
     if (row === undefined) {
       if (this.used === this.values.length) {
@@ -149,18 +198,9 @@ export class SettlementRatings {
       this.rows.set(p, (row = this.used));
       this.used += ROW;
     }
-    const cached = this.values[row + place]!;
-    // NaN marks an unread place; a NaN rating is simply read again.
-    if (cached === cached) return cached;
-    const value = slot ? freshSlotOvr(p, slot) : mainOvr(p);
-    this.values[row + place] = value;
-    return value;
-  }
-
-  /** A moved player's ratings are read afresh. */
-  forget(p: Player) {
-    this.rows.delete(p);
-    this.others.delete(p);
+    this.lastPlayer = p;
+    this.lastRow = row;
+    return row;
   }
 
   private other(p: Player, slot: Slot) {
@@ -260,8 +300,14 @@ function needs(w: World, c: Club, settlement?: Settlement): Need[] {
     if (!result.some((n) => n.line === line)) result.push({ line, best: -1, rank: 0 });
   }
   const level = affordableLevel(w, c, players);
-  for (const slot of formationOf(clubStyle(c))) {
-    const best = Math.max(0, ...players.map((p) => rating(p, settlement, slot)));
+  const slots = formationOf(clubStyle(c));
+  // An open settlement reads each player's ratings row once for every slot (`bests`).
+  const bests = settlement?.ratings.bests(players, slots);
+  for (let s = 0; s < slots.length; s++) {
+    const slot = slots[s]!;
+    const best = bests
+      ? bests[s]!
+      : Math.max(0, ...players.map((p) => rating(p, settlement, slot)));
     if (best <= level - NPC_MARKET.upgrade)
       result.push({ line: lineOf(slot.position), slot, best, rank: 1 + best - level });
   }
@@ -275,14 +321,26 @@ const fills = (p: Player, need: Need, settlement?: Settlement) =>
 
 /** One conservative departure gate, also used for the highest-paid sell-down. */
 export function npcCanSell(w: World, c: Club, p: Player) {
-  const players = w.squads?.[c.id] ?? [];
-  const line = lineOf(p.position);
   return (
     !p.loanUntil &&
     p.retiring === undefined &&
-    players.length > Math.max(SQUAD_MINIMUM, NPC_MARKET.minimum) &&
-    players.filter((q) => lineOf(q.position) === line).length > LINE_MINIMUM[line]
+    sellableLines(w.squads?.[c.id] ?? [])[lineOf(p.position)]
   );
+}
+/**
+ * The squad side of `npcCanSell`, by line: the squad holds more than its floor and the line more
+ * than its minimum.
+ */
+function sellableLines(players: readonly Player[]): Record<Line, boolean> {
+  const counts = { GK: 0, DF: 0, MF: 0, FW: 0 } as Record<Line, number>;
+  for (const q of players) counts[lineOf(q.position)]++;
+  const big = players.length > Math.max(SQUAD_MINIMUM, NPC_MARKET.minimum);
+  return {
+    GK: big && counts.GK > LINE_MINIMUM.GK,
+    DF: big && counts.DF > LINE_MINIMUM.DF,
+    MF: big && counts.MF > LINE_MINIMUM.MF,
+    FW: big && counts.FW > LINE_MINIMUM.FW,
+  };
 }
 
 function canRegister(w: World, c: Club, p: Player, loan: boolean, settlement?: Settlement) {
@@ -524,31 +582,38 @@ function listings(w: World, clubs: Club[], settlement: Settlement) {
       age: w.year - p.born,
       finalSeason: p.until <= w.year,
     });
-    const ranked = sellDown
-      ? players
-          .map((p) => ({ p, row: row(p) }))
-          .sort((a, b) => compareSellDown(a.row, b.row))
-          .map(({ p }) => p)
-      : [...players].sort(
-          (a, b) => rating(a, settlement) - rating(b, settlement) || compareIds(a.id, b.id),
-        );
+    // Each player's main OVR and line, read once; the squad stays as it is while listings are read.
+    const count = players.length,
+      ovrs = new Float64Array(count),
+      playerLines: Line[] = [];
+    for (let i = 0; i < count; i++) {
+      ovrs[i] = rating(players[i]!, settlement);
+      playerLines.push(lineOf(players[i]!.position));
+    }
+    const sellable = sellableLines(players);
+    // The same comparisons over the same starting order, so the same ranking.
+    const ranked = players.map((_, i) => i);
+    if (sellDown) {
+      const rows = players.map(row);
+      ranked.sort((a, b) => compareSellDown(rows[a]!, rows[b]!));
+    } else ranked.sort((a, b) => ovrs[a]! - ovrs[b]! || compareIds(players[a]!.id, players[b]!.id));
     const remaining = [...players];
     let surplus = Math.max(0, players.length - NPC_SQUAD.size);
-    for (const p of ranked) {
-      if (!npcCanSell(w, c, p)) continue;
-      const line = lineOf(p.position);
+    for (const i of ranked) {
+      const p = players[i]!,
+        line = playerLines[i]!;
+      // `npcCanSell` read from the squad's line counts.
+      if (p.loanUntil || p.retiring !== undefined || !sellable[line]) continue;
       if (
         sellDown &&
         (remaining.length <= Math.max(SQUAD_MINIMUM, NPC_MARKET.minimum) ||
           remaining.filter((q) => lineOf(q.position) === line).length <= LINE_MINIMUM[line])
       )
         continue;
-      const blocked =
-        players.filter(
-          (q) =>
-            lineOf(q.position) === line &&
-            rating(q, settlement) >= rating(p, settlement) + NPC_MARKET.blocked,
-        ).length >= LINE_MINIMUM[line];
+      const bar = ovrs[i]! + NPC_MARKET.blocked;
+      let above = 0;
+      for (let j = 0; j < count; j++) if (playerLines[j] === line && ovrs[j]! >= bar) above++;
+      const blocked = above >= LINE_MINIMUM[line];
       if (sellDown ? bill <= limit! : !(surplus > 0 || blocked || p.until <= w.year)) continue;
       listed.set(p.id, {
         club: c,
@@ -571,8 +636,18 @@ function listings(w: World, clubs: Club[], settlement: Settlement) {
   return listed;
 }
 
-/** A player one division and line of the market holds, read once per settlement. */
-type Candidate = { player: Player; club: Club; ovr: number };
+/**
+ * A player one division and line of the market holds, read once per settlement, with his price
+ * facts as first read: the asking fee (his listing's loan flag stands for the settlement) and, for a
+ * buyer of his club's country, the fee converted, the least bid converted and his wage by tier.
+ */
+type Candidate = {
+  player: Player;
+  club: Club;
+  ovr: number;
+  asking?: string;
+  home?: { fee: bigint; least: bigint; wages: bigint[] };
+};
 const indexKey = (country: string, tier: number, line: Line) => `${country}:${tier}:${line}`;
 /** The first candidate rated at most `top` in a list sorted from the ablest down. */
 function firstAtMost(list: readonly Candidate[], top: number) {
@@ -696,6 +771,13 @@ export function npcMarket(w: World) {
     const statures = new Map(clubs.map((c) => [c.id, stature(w.seed, c.id)]));
     const statureOf = (c: Club) => statures.get(c.id)!;
     const buyers = [...clubs].sort((a, b) => statureOf(b) - statureOf(a) || compareIds(a.id, b.id));
+    /** The buyers of each stature, in `buyers` order: the rivals a bid can meet. */
+    const peers = new Map<number, Club[]>();
+    for (const c of buyers) {
+      const group = peers.get(statureOf(c));
+      if (group) group.push(c);
+      else peers.set(statureOf(c), [c]);
+    }
     const wanted = new Map(clubs.map((c) => [c.id, needs(w, c, settlement)]));
     const levels = new Map<string, number>();
     /** The highest OVR any player's wage could fit the buyer's headroom at: the search's ceiling. */
@@ -719,14 +801,32 @@ export function npcMarket(w: World) {
       const value = marketValueAt(seller.country, w.year, seller.tier, p);
       return loan ? ratio(value, BigInt(Math.round(MARKET_CONFIG.loan * 1000)), 1000n) : value;
     };
-    /** A target's price to the buyer, in its money: his wage at the club, the asking and least fees. */
-    const priceOf = (buyer: Club, seller: Club, p: Player, loan: boolean) => {
-      const asking = askingOf(seller, p, loan);
-      return {
-        wage: BigInt(marketWageAt(buyer.country, w.year, buyer.tier, p)),
+    /** A candidate's asking fee, read once a settlement. */
+    const askingFor = (cand: Candidate, loan: boolean) =>
+      (cand.asking ??= askingOf(cand.club, cand.player, loan));
+    /**
+     * A target's price to the buyer, in its money: his wage at the club, the asking and least fees.
+     * For a buyer of the seller's country the conversion reads only that country and year, so the
+     * fees are kept once and the wage once per buyer division.
+     */
+    const priceOf = (buyer: Club, cand: Candidate, loan: boolean) => {
+      const { club: seller, player: p } = cand;
+      const asking = askingFor(cand, loan);
+      if (buyer.country !== seller.country)
+        return {
+          wage: BigInt(marketWageAt(buyer.country, w.year, buyer.tier, p)),
+          fee: BigInt(convertFee(w, seller, buyer, asking)),
+          least: BigInt(convertFee(w, seller, buyer, npcBidFee(asking, false, 0))),
+        };
+      const home = (cand.home ??= {
         fee: BigInt(convertFee(w, seller, buyer, asking)),
         least: BigInt(convertFee(w, seller, buyer, npcBidFee(asking, false, 0))),
-      };
+        wages: [],
+      });
+      const wage = (home.wages[buyer.tier] ??= BigInt(
+        marketWageAt(buyer.country, w.year, buyer.tier, p),
+      ));
+      return { wage, fee: home.fee, least: home.least };
     };
     /**
      * Whether the buyer's funded envelope holds his wage at the club and the lowest bid it could
@@ -802,6 +902,16 @@ export function npcMarket(w: World) {
             out.push({ country, tier: 0, listedOnly: false });
       return out;
     };
+    /**
+     * Each club's squad side of `npcCanSell` by line, read once a settlement: only a settled move
+     * changes a squad, and it clears the seller's and the bidder's.
+     */
+    const sellables = new Map<Club, Record<Line, boolean>>();
+    const sellable = (c: Club, line: Line) => {
+      let byLine = sellables.get(c);
+      if (!byLine) sellables.set(c, (byLine = sellableLines(w.squads?.[c.id] ?? [])));
+      return byLine[line];
+    };
     const listedLists = new Map<string, Candidate[]>();
     /**
      * A higher division's list held to the players who come down (`listedDown`), in the index's
@@ -849,12 +959,18 @@ export function npcMarket(w: World) {
           if (cand.club === buyer || moved.has(cand.player.id) || salesLeft(cand.club) <= 0)
             continue;
           if (asked.has(cand.player.id)) continue;
-          if (!npcCanSell(w, cand.club, cand.player)) continue;
+          // `npcCanSell`, its squad side kept per club; the list holds only players of `need.line`.
+          if (
+            cand.player.loanUntil ||
+            cand.player.retiring !== undefined ||
+            !sellable(cand.club, need.line)
+          )
+            continue;
           const listing = listed.get(cand.player.id),
             loan = listing?.loan ?? false;
           const rated = need.slot ? rating(cand.player, settlement, need.slot) : cand.ovr;
           if (rated < bound()) continue;
-          const price = priceOf(buyer, cand.club, cand.player, loan);
+          const price = priceOf(buyer, cand, loan);
           if (!affords(buyer, price)) continue;
           const score = valued
             ? npcValueScore(
@@ -976,7 +1092,7 @@ export function npcMarket(w: World) {
       if (moved.has(p.id) || salesLeft(seller) <= 0 || !npcCanSell(w, seller, p)) return 'skipped';
       const listing = listed.get(p.id),
         loan = listing?.loan ?? false;
-      const asking = askingOf(seller, p, loan);
+      const asking = askingFor(cand, loan);
       const own = bidOf(buyer, p, seller, asking, loan);
       triedBy(buyer).add(p.id);
       if (!own) return 'skipped';
@@ -986,8 +1102,8 @@ export function npcMarket(w: World) {
       // higher statures have had their turn, so only an equal-stature rival can outbid here.
       let bidder = buyer,
         bid = own;
-      for (const rival of buyers) {
-        if (statureOf(rival) !== statureOf(buyer) || rival === buyer || rival === seller) continue;
+      for (const rival of peers.get(statureOf(buyer))!) {
+        if (rival === buyer || rival === seller) continue;
         if (bidsLeft(rival) <= 0 || buysLeft(rival) <= 0 || tried.get(rival.id)?.has(p.id))
           continue;
         if (!reaches(rival, seller, listing)) continue;
@@ -1026,6 +1142,8 @@ export function npcMarket(w: World) {
       settlement.ratings.forget(p);
       settlement.clubs.delete(seller.id);
       settlement.clubs.delete(bidder.id);
+      sellables.delete(seller);
+      sellables.delete(bidder);
       if (loan) settlement.returns.set(seller.id, (settlement.returns.get(seller.id) ?? 0) + 1);
       moved.add(p.id);
       buys.set(bidder.id, (buys.get(bidder.id) ?? 0) + 1);
