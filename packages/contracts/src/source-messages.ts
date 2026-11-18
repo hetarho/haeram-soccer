@@ -7472,6 +7472,7 @@ export const sourceMessages = {
   'market.terms.leavingEurope': '유럽 대회에 나가는 구단을 떠나야 함',
   'market.terms.wouldStart': '우리 팀에서 주전으로 뛸 수 있음',
   'market.terms.losesPlace': '지금은 주전이지만 우리 팀에서는 주전이 아님',
+  'market.terms.loyalty': '현재 구단에 대한 충성심',
   'market.terms.freeAgent': '자유계약 선수',
   'market.answer.reservation.0': '구단이 버틴 선 {reservation}(요구액의 {share}%)',
   'market.answer.reservation.1': '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1}',

@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T966 | A loyal player is harder to lure away | CLUB PLAYER | T979 | todo |
+| T966 | A loyal player is harder to lure away | CLUB PLAYER | T979 | doing@261118.mr18cx |
 | T967 | Financial distress ladder replaces bankruptcy | ECON WORLD OWNER | - | todo |
 | T968 | Clubs in distress cannot buy and must sell | ECON WORLD CLUB | T967 | todo |
 | T969 | Administration deducts 10 points and writes off half the debt | ECON LEAGUE | T967 | todo |

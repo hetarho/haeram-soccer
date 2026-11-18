@@ -9,6 +9,7 @@
  */
 import type { Grade } from '../../contracts/src/player';
 import type { Club, Player, World } from '../../contracts/src/types';
+import { loyaltyTerm } from './loyalty';
 import { freeAgentsOf } from './free-agents';
 import { divisionFor } from './market-prices';
 import { exp, log } from './portable-math';
@@ -45,6 +46,8 @@ export interface TermsContext {
   wouldStart: boolean;
   startsNow: boolean;
   freeAgent: boolean;
+  /** His loyalty term at the selling club; zero for free agents (→CLUB-54). */
+  loyalty: number;
 }
 
 /** CLUB-53's log-odds; starting values, tuned by measurement. */
@@ -159,6 +162,13 @@ export const TERMS_FACTORS: readonly AnswerFactor<TermsContext>[] = [
     read: (c) =>
       c.freeAgent ? line('freeAgent', T.freeAgent, 'market.terms.freeAgent') : undefined,
   },
+  {
+    id: 'loyalty',
+    read: (c) =>
+      !c.freeAgent && c.loyalty > 0
+        ? line('loyalty', -c.loyalty, 'market.terms.loyalty')
+        : undefined,
+  },
 ];
 
 /** His chance of agreeing, σ(1.5 + Σ), with the lines of the factors that moved it. */
@@ -270,6 +280,7 @@ export function resolvedTermsContext(
     wouldStart: recruitmentFit(w, offer, context.recruitment).willStart,
     startsNow: !!club && context.starters(club).has(player.id),
     freeAgent: !club,
+    loyalty: club ? loyaltyTerm(player, w.year) : 0,
   };
 }
 
@@ -304,5 +315,6 @@ export function npcTermsContext(w: World, o: NpcTermsOffer): TermsContext {
     wouldStart: o.wouldStart,
     startsNow: o.startsNow,
     freeAgent: false,
+    loyalty: loyaltyTerm(o.player, w.year),
   };
 }
