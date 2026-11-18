@@ -1,0 +1,20 @@
+packed bytes 14605835 gzip bytes 2450988 cjk14 chars ~ 1400565
+brotli q11 cpu ms 168679 bytes 1915986 rss MB 562
+      276.52 real       172.35 user         0.62 sys
+           589447168  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               76636  page reclaims
+                 793  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                 607  messages sent
+                 560  messages received
+                  41  signals received
+                 888  voluntary context switches
+               42295  involuntary context switches
+          1479314523  instructions retired
+           636622688  cycles elapsed
+            82778040  peak memory footprint
