@@ -216,6 +216,8 @@ export interface StartChoice {
 }
 /** One club on the takeover list (→WEB-15, ECON-37), its amounts in its own money. */
 export interface ClubListing {
+  /** The same whole-percent mix the takeover records (→OWNER-19). */
+  fanDisposition: FanDisposition;
   clubId: string;
   name: string;
   country: CountryCode;

@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "nl-NL",
   "messages": {
+    "fans.disposition.title": "Profiel van de supporters",
+    "fans.disposition.results": "Resultaatgericht {percent}% · Hechten aan competitieresultaten en seizoensprestaties.",
+    "fans.disposition.identity": "Identiteitsgericht {percent}% · Reageren op de verkoop van sterren en basisspelers uit de jeugd en op veranderingen van de clubidentiteit.",
+    "fans.disposition.finance": "Financieel behoudend {percent}% · Letten op schulden, dividend en toegangsprijzen.",
+    "fans.disposition.stars": "Sterrenliefhebbers {percent}% · Verwelkomen grote aankopen en kapitaalinjecties van de eigenaar.",
     "fans.homegrownSale": "Verkoop van een basisspeler uit de jeugd",
     "finance.distress.writeOff": "Schuldkwijtschelding",
     "finance.distress.writeOffDetail": "Bij aanvang van het bewind is de helft van de schuld kwijtgescholden. Dit telt niet als bedrijfsinkomsten.",

@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "ja-JP",
   "messages": {
+    "fans.disposition.title": "ファンの志向",
+    "fans.disposition.results": "成績重視派 {percent}% · リーグ戦の結果とシーズンの成果を重視します。",
+    "fans.disposition.identity": "伝統重視派 {percent}% · スターや下部組織出身の先発選手の売却、クラブのアイデンティティ変更に敏感です。",
+    "fans.disposition.finance": "財政保守派 {percent}% · 借金、配当、チケット価格を重視します。",
+    "fans.disposition.stars": "スター重視派 {percent}% · 大型補強とオーナーの資金投入を歓迎します。",
     "fans.homegrownSale": "下部組織出身の先発選手を売却",
     "finance.distress.writeOff": "債務免除",
     "finance.distress.writeOffDetail": "管財人管理への移行により債務の半分が免除されました。営業収入には含まれません。",

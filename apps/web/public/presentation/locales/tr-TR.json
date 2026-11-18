@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "tr-TR",
   "messages": {
+    "fans.disposition.title": "Taraftar eğilimleri",
+    "fans.disposition.results": "Sonuç odaklılar {percent}% · Lig sonuçlarına ve sezon başarılarına önem verirler.",
+    "fans.disposition.identity": "Kimlik odaklılar {percent}% · Yıldızların ve altyapıdan yetişen ilk 11 oyuncularının satışına ve kulüp kimliğindeki değişikliklere tepki verirler.",
+    "fans.disposition.finance": "Mali muhafazakârlar {percent}% · Borçlara, temettülere ve bilet fiyatlarına önem verirler.",
+    "fans.disposition.stars": "Yıldız tutkunları {percent}% · Büyük transferleri ve kulüp sahibinin sermaye katkılarını memnuniyetle karşılarlar.",
     "fans.homegrownSale": "Altyapıdan yetişen ilk 11 oyuncusunun satışı",
     "finance.distress.writeOff": "Borç silme",
     "finance.distress.writeOffDetail": "Kayyum yönetimine geçişte borcun yarısı silindi. Bu tutar faaliyet gelirine dahil değildir.",

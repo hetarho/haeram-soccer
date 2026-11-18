@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "ar-SA",
   "messages": {
+    "fans.disposition.title": "توجهات المشجعين",
+    "fans.disposition.results": "المهتمون بالنتائج {percent}% · يهتمون بنتائج الدوري وإنجازات الموسم.",
+    "fans.disposition.identity": "المتمسكون بالهوية {percent}% · يتأثرون ببيع النجوم والأساسيين من خريجي الأكاديمية وتغييرات هوية النادي.",
+    "fans.disposition.finance": "المحافظون مالياً {percent}% · يهتمون بالديون وتوزيعات الأرباح وأسعار التذاكر.",
+    "fans.disposition.stars": "محبو النجوم {percent}% · يرحبون بالصفقات الكبيرة وضخ المالك للأموال.",
     "fans.homegrownSale": "بيع لاعب أساسي من أكاديمية النادي",
     "finance.distress.writeOff": "إعفاء من الديون",
     "finance.distress.writeOffDetail": "أُعفي النادي من نصف ديونه عند دخوله الإدارة القضائية. ولا يُحتسب ذلك ضمن الإيرادات التشغيلية.",

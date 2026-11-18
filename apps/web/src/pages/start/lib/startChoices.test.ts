@@ -104,6 +104,7 @@ const listing = (
     lastWages: '0',
     strength: 60,
     affordable: false,
+    fanDisposition: { results: 25, identity: 25, finance: 25, stars: 25 },
     ...rest,
   };
 };
@@ -313,6 +314,27 @@ describe('start flow screens', () => {
     expect(text(html)).not.toContain('구단 방향');
     expect(html).not.toContain('combobox');
   });
+  it('shows the chosen club’s four pre-takeover labels summing to exactly 100%', () => {
+    const mix = { results: 41, identity: 13, finance: 19, stars: 27 };
+    const html = markup(
+      createElement(TakeoverConfirm, {
+        listing: listing('Chosen club', { fanDisposition: mix }),
+        year: 1950,
+        busy: false,
+        blocked: false,
+        onBack: () => {},
+        onConfirm: () => {},
+      }),
+    );
+    const fans = html.match(/data-testid="takeover-fan-disposition">([\s\S]*?)<\/ul>/)![1]!;
+    const shares = [...text(fans).matchAll(/(\d+)%/g)].map((match) => Number(match[1]));
+    expect(shares).toEqual(Object.values(mix));
+    expect(shares.reduce((sum, share) => sum + share, 0)).toBe(100);
+    for (const label of ['성적파', '정체성파', '재정 보수파', '스타 선호파'])
+      expect(text(fans)).toContain(label);
+    for (const driver of ['리그 경기', '유스 출신', '티켓 가격', '자금 투입'])
+      expect(text(fans)).toContain(driver);
+  });
   it('lists the clubs with price, books, strength and affordability once they arrive', () => {
     const clubs = [
       listing('Rovers', { pounds: 400, strength: 71, cash: pence(20_000), debt: pence(5_000) }),
@@ -363,10 +385,18 @@ describe('start flow translation', () => {
           null,
           createElement(TierStep, { tier: 'midsize', onChange: () => {} }),
           createElement(TraitStep, { traits: [], onChange: () => {} }),
+          createElement(TakeoverConfirm, {
+            listing: listing('User club name'),
+            year: 1950,
+            busy: false,
+            blocked: false,
+            onBack: () => {},
+            onConfirm: () => {},
+          }),
         ),
       );
       expect(markup, entry.id).not.toMatch(/[가-힣]/);
-      expect(markup, entry.id).not.toMatch(/\{p\d+\}/);
+      expect(markup, entry.id).not.toMatch(/\{(?:p\d+|percent)\}/);
     }
   });
 });

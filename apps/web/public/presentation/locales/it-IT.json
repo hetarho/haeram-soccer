@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "it-IT",
   "messages": {
+    "fans.disposition.title": "Profilo dei tifosi",
+    "fans.disposition.results": "Orientati ai risultati {percent}% · Danno peso ai risultati in campionato e ai traguardi stagionali.",
+    "fans.disposition.identity": "Legati all’identità {percent}% · Reagiscono alla vendita di stelle e titolari del vivaio e ai cambiamenti dell’identità del club.",
+    "fans.disposition.finance": "Prudenti nelle finanze {percent}% · Si preoccupano di debiti, dividendi e prezzi dei biglietti.",
+    "fans.disposition.stars": "Appassionati di stelle {percent}% · Apprezzano i grandi acquisti e gli apporti del proprietario.",
     "fans.homegrownSale": "Vendita di un titolare del vivaio",
     "finance.distress.writeOff": "Cancellazione del debito",
     "finance.distress.writeOffDetail": "L’amministrazione controllata ha cancellato metà del debito. L’importo è escluso dai ricavi operativi.",

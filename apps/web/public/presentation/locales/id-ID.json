@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "id-ID",
   "messages": {
+    "fans.disposition.title": "Kecenderungan suporter",
+    "fans.disposition.results": "Berorientasi hasil {percent}% · Mengutamakan hasil liga dan pencapaian musim.",
+    "fans.disposition.identity": "Berorientasi identitas {percent}% · Bereaksi terhadap penjualan bintang dan pemain inti lulusan akademi serta perubahan identitas klub.",
+    "fans.disposition.finance": "Konservatif finansial {percent}% · Memperhatikan utang, dividen, dan harga tiket.",
+    "fans.disposition.stars": "Penggemar bintang {percent}% · Menyambut perekrutan besar dan suntikan dana pemilik.",
     "fans.homegrownSale": "Penjualan pemain inti lulusan akademi",
     "finance.distress.writeOff": "Penghapusan utang",
     "finance.distress.writeOffDetail": "Masuk administrasi pengadilan menghapus separuh utang. Ini tidak termasuk pendapatan operasional.",

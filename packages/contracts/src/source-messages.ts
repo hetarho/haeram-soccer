@@ -1,5 +1,11 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'fans.disposition.title': '팬 성향',
+  'fans.disposition.results': '성적파 {percent}% · 리그 경기 결과와 시즌 성과를 중시합니다.',
+  'fans.disposition.identity':
+    '정체성파 {percent}% · 스타와 유스 출신 주전의 매각, 구단 정체성 변화에 민감합니다.',
+  'fans.disposition.finance': '재정 보수파 {percent}% · 부채, 배당과 티켓 가격을 중시합니다.',
+  'fans.disposition.stars': '스타 선호파 {percent}% · 대형 영입과 구단주 자금 투입을 반깁니다.',
   'fans.homegrownSale': '주전 유스 출신 선수 매각',
   'league.points.administration': '−{points}점 · 법정관리',
   'finance.distress.nextBand': '{title} 잔고 {cash} · 다음 단계 부채 기준: {limit} 초과',

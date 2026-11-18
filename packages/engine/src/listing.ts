@@ -6,6 +6,7 @@
 import { COUNTRIES, currency } from '../../catalogs/src/index';
 import type { Club, ClubListing, WealthTier, World } from '../../contracts/src/types';
 import { fromPounds, pricedClubs, tierFortune, type PricedClub } from './club-value';
+import { takeoverFanDisposition } from './fan-disposition';
 import { rating } from './world';
 
 /** Last season's book: the newest closed season the books keep (→ECON-36). */
@@ -42,6 +43,7 @@ export function clubListings(w: World, tier?: WealthTier): ClubListing[] {
         last = lastSeason(w, club);
       return {
         clubId: club.id,
+        fanDisposition: takeoverFanDisposition(w, club),
         name: club.name,
         country: club.country as ClubListing['country'],
         division: club.tier,

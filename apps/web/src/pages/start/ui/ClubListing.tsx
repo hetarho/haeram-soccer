@@ -10,7 +10,7 @@ import { useRead } from '../../../shared/lib';
 import { ClubDetail } from '../../../widgets/club-detail';
 import { CrestMark } from '../../../entities/club';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { compactMoney, seasonName } from '../../../presentation/format';
+import { compactMoney, number, seasonName } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
 import { Segments } from '../../../shared/ui/Segments';
 import { Select } from '../../../shared/ui/Select';
@@ -27,6 +27,13 @@ import {
   type ListingSort,
 } from '../../../entities/league';
 import s from './ClubListing.module.css';
+
+const FAN_DISPOSITIONS = [
+  ['results', 'fans.disposition.results'],
+  ['identity', 'fans.disposition.identity'],
+  ['finance', 'fans.disposition.finance'],
+  ['stars', 'fans.disposition.stars'],
+] as const;
 
 /** The fortune's money: the tiers are sized in pounds (→OWNER-3, ECON-35). */
 const POUNDS: CountryCode = 'ENG';
@@ -464,6 +471,14 @@ export function TakeoverConfirm({
             )}
           </li>
         </ul>
+        <section aria-label={displayMessage('fans.disposition.title')}>
+          <h3>{richMessage('fans.disposition.title')}</h3>
+          <ul className={s.terms} data-testid="takeover-fan-disposition">
+            {FAN_DISPOSITIONS.map(([key, id]) => (
+              <li key={key}>{richMessage(id, { percent: number(listing.fanDisposition[key]) })}</li>
+            ))}
+          </ul>
+        </section>
       </div>
     </Dialog>
   );

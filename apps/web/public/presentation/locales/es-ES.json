@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "es-ES",
   "messages": {
+    "fans.disposition.title": "Perfil de la afición",
+    "fans.disposition.results": "Resultadistas {percent}% · Valoran los resultados de liga y los logros de la temporada.",
+    "fans.disposition.identity": "Defensores de la identidad {percent}% · Reaccionan a la venta de estrellas y titulares de la cantera y a los cambios de identidad del club.",
+    "fans.disposition.finance": "Conservadores financieros {percent}% · Se preocupan por la deuda, los dividendos y el precio de las entradas.",
+    "fans.disposition.stars": "Amantes de las estrellas {percent}% · Celebran los grandes fichajes y las aportaciones del propietario.",
     "fans.homegrownSale": "Venta de un titular de la cantera",
     "finance.distress.writeOff": "Condonación de deuda",
     "finance.distress.writeOffDetail": "La entrada en administración judicial condonó la mitad de la deuda. Se excluye de los ingresos operativos.",

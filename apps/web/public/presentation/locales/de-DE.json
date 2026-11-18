@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "de-DE",
   "messages": {
+    "fans.disposition.title": "Fan-Ausrichtung",
+    "fans.disposition.results": "Erfolgsorientierte {percent}% · Legen Wert auf Ligaergebnisse und Saisonerfolge.",
+    "fans.disposition.identity": "Identitätsbewusste {percent}% · Reagieren auf den Verkauf von Stars und Stammspielern aus der Jugend sowie auf Änderungen der Vereinsidentität.",
+    "fans.disposition.finance": "Finanziell Konservative {percent}% · Achten auf Schulden, Dividenden und Eintrittspreise.",
+    "fans.disposition.stars": "Star-Begeisterte {percent}% · Begrüßen große Transfers und Einlagen des Eigentümers.",
     "fans.homegrownSale": "Verkauf eines Stammspielers aus der Jugend",
     "finance.distress.writeOff": "Schuldenerlass",
     "finance.distress.writeOffDetail": "Mit Eintritt in die Insolvenzverwaltung wurde die Hälfte der Schulden erlassen. Dies zählt nicht als Betriebseinnahme.",

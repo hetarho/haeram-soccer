@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "fr-FR",
   "messages": {
+    "fans.disposition.title": "Profil des supporters",
+    "fans.disposition.results": "Attachés aux résultats {percent}% · Privilégient les résultats en championnat et les succès de la saison.",
+    "fans.disposition.identity": "Attachés à l’identité {percent}% · Réagissent aux ventes de vedettes et de titulaires formés au club, ainsi qu’aux changements d’identité du club.",
+    "fans.disposition.finance": "Prudents financièrement {percent}% · Se préoccupent des dettes, des dividendes et du prix des billets.",
+    "fans.disposition.stars": "Amateurs de vedettes {percent}% · Apprécient les grandes recrues et les apports du propriétaire.",
     "fans.homegrownSale": "Vente d’un titulaire formé au club",
     "finance.distress.writeOff": "Abandon de créance",
     "finance.distress.writeOffDetail": "Le redressement judiciaire a effacé la moitié de la dette. Ce montant est exclu des recettes d’exploitation.",

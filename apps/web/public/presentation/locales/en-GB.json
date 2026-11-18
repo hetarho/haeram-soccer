@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "id": "en-GB",
   "messages": {
+    "fans.disposition.title": "Fan dispositions",
+    "fans.disposition.results": "Results-focused {percent}% · Care about league results and season achievements.",
+    "fans.disposition.identity": "Identity-focused {percent}% · React to star sales, academy starter sales and club identity changes.",
+    "fans.disposition.finance": "Financial conservatives {percent}% · Care about debt, dividends and ticket prices.",
+    "fans.disposition.stars": "Star enthusiasts {percent}% · Welcome big signings and owner injections.",
     "fans.homegrownSale": "Academy starter sold",
     "finance.distress.writeOff": "Debt write-off",
     "finance.distress.writeOffDetail": "Entering administration wrote off half the debt. This is excluded from operating income.",
