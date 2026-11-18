@@ -8,17 +8,25 @@ export interface PlayingSpan {
 
 /** Slot changes join one continuous spell. A substituted player never returns. */
 export function playingSpan(stints: readonly PlayingSpan[]): PlayingSpan {
-  return {
-    from: Math.min(...stints.map((s) => s.from)),
-    to: Math.max(...stints.map((s) => s.to)),
-  };
+  // Pairwise `Math.min`/`Math.max` give the spread forms' values, empty and NaN included, without
+  // their mapped arrays (T983).
+  let from = Infinity,
+    to = -Infinity;
+  for (const s of stints) {
+    from = Math.min(from, s.from);
+    to = Math.max(to, s.to);
+  }
+  return { from, to };
 }
 
 export function commonSpan(...spans: readonly PlayingSpan[]): PlayingSpan {
-  return {
-    from: Math.max(...spans.map((s) => s.from)),
-    to: Math.min(...spans.map((s) => s.to)),
-  };
+  let from = -Infinity,
+    to = Infinity;
+  for (const s of spans) {
+    from = Math.max(from, s.from);
+    to = Math.min(to, s.to);
+  }
+  return { from, to };
 }
 
 /**

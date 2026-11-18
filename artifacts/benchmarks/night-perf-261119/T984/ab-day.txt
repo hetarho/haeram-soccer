@@ -1,0 +1,96 @@
+process 1/6: cpu ×1.026
+process 2/6: cpu ×0.990
+process 3/6: cpu ×1.013
+process 4/6: cpu ×0.992
+process 5/6: cpu ×1.021
+process 6/6: cpu ×0.958
+{
+  "workload": "day",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "e8b4ada93c59f6966eee14567b250768cd31bc60",
+  "cand": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/np19-perf-T984-33e7240c",
+  "procs": 6,
+  "jobs": 1,
+  "reps": 60,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "bf2d196993069b87",
+    "cand": "00165b8726e2a92d"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "a56436ea3e565194"
+    ],
+    "cand": [
+      "a56436ea3e565194"
+    ]
+  },
+  "other": {
+    "pairs": 42,
+    "ms": {
+      "base": {
+        "cpu": 13.036999999999807,
+        "wall": 47.093749999999545
+      },
+      "cand": {
+        "cpu": 12.349500000000262,
+        "wall": 36.12543750000077
+      }
+    },
+    "cpu": {
+      "ratio": 0.9943,
+      "lo": 0.9767,
+      "hi": 1.0125,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 0.9692,
+      "lo": 0.8279,
+      "hi": 1.1538,
+      "call": "no difference"
+    }
+  },
+  "own": {
+    "pairs": 54,
+    "ms": {
+      "base": {
+        "cpu": 496.5529999999999,
+        "wall": 967.6849585
+      },
+      "cand": {
+        "cpu": 510.5329999999999,
+        "wall": 886.5885840000005
+      }
+    },
+    "cpu": {
+      "ratio": 0.9969,
+      "lo": 0.9752,
+      "hi": 1.0152,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 0.9911,
+      "lo": 0.943,
+      "hi": 1.0372,
+      "call": "no difference"
+    }
+  },
+  "load1": [
+    16.7685546875,
+    16.69677734375,
+    17.150390625,
+    20.46435546875,
+    26.2470703125,
+    28.79638671875,
+    31.1162109375
+  ]
+}
