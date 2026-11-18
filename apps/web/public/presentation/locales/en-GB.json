@@ -3,6 +3,7 @@
   "id": "en-GB",
   "messages": {
     "player.personality.loyalty": "Loyalty",
+    "player.personality.loyalty.description": "How strongly time at a club and an academy start there encourage him to stay.",
     "navigation.dashboard": "Clubhouse",
     "navigation.league": "League",
     "navigation.history": "History",

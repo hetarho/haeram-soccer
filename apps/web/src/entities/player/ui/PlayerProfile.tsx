@@ -145,7 +145,15 @@ export function PlayerProfile({
             {localizeValue(
               (Object.keys(PERSONALITY_LABEL) as (keyof Personality)[]).map((key) => (
                 <div key={key}>
-                  <dt>{localizeValue(PERSONALITY_LABEL[key])}</dt>
+                  <dt
+                    title={
+                      key === 'loyalty'
+                        ? displayMessage('player.personality.loyalty.description')
+                        : undefined
+                    }
+                  >
+                    {localizeValue(PERSONALITY_LABEL[key])}
+                  </dt>
                   <dd>{localizeValue(gradeLabel(player.personality[key], own, scout, range))}</dd>
                 </div>
               )),

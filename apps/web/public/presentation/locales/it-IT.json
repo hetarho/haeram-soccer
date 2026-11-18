@@ -3,6 +3,7 @@
   "id": "it-IT",
   "messages": {
     "player.personality.loyalty": "Fedeltà",
+    "player.personality.loyalty.description": "Quanto il tempo trascorso nel club e la formazione nel suo vivaio lo spingono a restare.",
     "navigation.dashboard": "Sede del club",
     "navigation.league": "Campionato",
     "navigation.history": "Storia",

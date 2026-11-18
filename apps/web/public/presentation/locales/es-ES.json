@@ -3,6 +3,7 @@
   "id": "es-ES",
   "messages": {
     "player.personality.loyalty": "Lealtad",
+    "player.personality.loyalty.description": "Cuánto le animan a quedarse el tiempo en el club y haberse formado en su cantera.",
     "navigation.dashboard": "Casa club",
     "navigation.league": "Liga",
     "navigation.history": "Historia",

@@ -1,6 +1,8 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
   'player.personality.loyalty': '충성심',
+  'player.personality.loyalty.description':
+    '구단에서 보낸 시간과 그 구단 유스 출신 이력이 잔류 의사에 미치는 영향이에요.',
   'match.replay.seek': '기록된 시점으로 이동',
   'naturalFootball.title': '축구 움직임 비교',
   'naturalFootball.baseline': '기존 버전',

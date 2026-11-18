@@ -3,6 +3,7 @@
   "id": "ja-JP",
   "messages": {
     "player.personality.loyalty": "忠誠心",
+    "player.personality.loyalty.description": "クラブで過ごした時間と、そのクラブのアカデミー出身であることが残留の意思に与える影響です。",
     "navigation.dashboard": "クラブハウス",
     "navigation.league": "リーグ",
     "navigation.history": "歴史",

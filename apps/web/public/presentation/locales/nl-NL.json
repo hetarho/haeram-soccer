@@ -3,6 +3,7 @@
   "id": "nl-NL",
   "messages": {
     "player.personality.loyalty": "Loyaliteit",
+    "player.personality.loyalty.description": "Hoe sterk zijn tijd bij de club en een opleiding in de eigen jeugd hem aanmoedigen om te blijven.",
     "navigation.dashboard": "Clubhuis",
     "navigation.league": "Competitie",
     "navigation.history": "Geschiedenis",

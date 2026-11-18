@@ -513,6 +513,9 @@ describe('paged whole-world recruitment desk', () => {
     const card = markup.slice(markup.indexOf('<article'), markup.indexOf('</article>'));
     expect(card.match(/data-tier=/g)).toHaveLength(1);
     expect(card.match(/프로의식/g)).toHaveLength(1);
+    const personality = card.match(/data-testid="profile-personality">(.*?)<\/dl>/)![1];
+    expect(personality.match(/<dt/g)).toHaveLength(4);
+    expect(personality).toContain('>충성심</dt>');
     expect(markup).not.toContain('>닫기<');
     // Money runway in weeks or months, never rounds; neutral notes are not warnings.
     expect(markup).toContain('자금 여력 1년 이상');

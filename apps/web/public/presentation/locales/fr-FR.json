@@ -3,6 +3,7 @@
   "id": "fr-FR",
   "messages": {
     "player.personality.loyalty": "Loyauté",
+    "player.personality.loyalty.description": "À quel point le temps passé au club et une formation dans son académie l’incitent à rester.",
     "navigation.dashboard": "Club-house",
     "navigation.league": "Championnat",
     "navigation.history": "Histoire",

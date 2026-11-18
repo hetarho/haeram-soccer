@@ -3,6 +3,7 @@
   "id": "tr-TR",
   "messages": {
     "player.personality.loyalty": "Sadakat",
+    "player.personality.loyalty.description": "Kulüpte geçirdiği sürenin ve kulübün altyapısından yetişmiş olmasının kalma isteğine etkisi.",
     "navigation.dashboard": "Kulüp binası",
     "navigation.league": "Lig",
     "navigation.history": "Tarihçe",
