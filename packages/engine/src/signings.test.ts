@@ -291,7 +291,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     staffSignings(w);
     const [bid] = staffBids(w);
     expect(bid).toMatchObject({ staff: 'upgrade', status: 'pending' });
-    const offer = transferOffers(w).find((one) => one.player.id === bid.playerId)!;
+    const offer = bid.offer!;
     expect(bid.fee).toBe(offer.fee);
     const starter = Math.min(
       ...activePlayers(w)
@@ -305,7 +305,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     passFree(bold);
     staffSignings(bold);
     const [high] = staffBids(bold);
-    const asked = transferOffers(bold).find((one) => one.player.id === high.playerId)!.fee;
+    const asked = high.offer!.fee;
     expect(high.fee).toBe(ratio(asked, 110n, 100n));
     for (const request of [2, 1] as const) {
       const quiet = club(request);
@@ -816,7 +816,9 @@ describe('requests by formation slot (→CLUB-33)', () => {
       expect.objectContaining({ kind: 'upgrade', slot: k, position, line: lineOf(position) }),
     ]);
     // His pick plays that position at 준수 or better.
-    const pick = listed.find((p) => p.id === w.shortlist!.requests[0]!.pick)!;
+    const pick = shortlistOffers(w).find(
+      ({ offer }) => offer.player.id === w.shortlist!.requests[0]!.pick,
+    )!.offer.player;
     expect(pick.positions[position]).toBeGreaterThanOrEqual(2);
   });
 
@@ -1879,21 +1881,21 @@ describe('a pending player covers what his arrival would meet (→CLUB-33, CLUB-
     // cash is tight: the look with the owner's midfielder pending moves as it does once he joined
     // and his fee was paid, its own bids' wages counted move by move. A countered bid of his pays the
     // counter when he accepts it (→CLUB-52), and the look reads that.
-    for (const [cash, countered] of [
-      ['200000', false],
-      ['250000', false],
-      ['200000', true],
-      ['250000', true],
+    for (const [cashBuffer, countered] of [
+      [200000n, false],
+      [250000n, false],
+      [200000n, true],
+      [250000n, true],
     ] as const) {
       const w = club(5),
         look = currentDay(w) + SIGNING_CONFIG.lookDays;
       w.shortlist = { ...w.shortlist!, requests: [] };
       passReachFree(w);
-      w.cash = cash;
       w.budgetPlan = { year: w.year, revenue: operatingCosts(w).annual, sales: '0' };
       const owner = pendingFor(w, 'MF');
       if (countered)
         Object.assign(owner, { status: 'countered', counterFee: ratio(owner.fee, 125n, 100n) });
+      w.cash = (BigInt(owner.counterFee ?? owner.fee) + cashBuffer).toString();
       const joined = structuredClone(w);
       arrive(
         joined,

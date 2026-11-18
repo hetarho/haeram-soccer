@@ -94,7 +94,9 @@ describe('incoming bids', () => {
     expect(w.events.some((event) => event.kind === 'retirement-announce')).toBe(false);
     expect(seen.size).toBeGreaterThan(0);
     expect(inBids(w).some((b) => b.status === 'expired')).toBe(true);
-    expect(w.players.every((p) => p.status === 'active')).toBe(true);
+    // Players can leave at contract expiry. Ignoring the bids must never produce a sale.
+    expect(inBids(w).filter((bid) => bid.status === 'completed')).toEqual([]);
+    expect(w.events.filter((event) => event.kind === 'transfer-out')).toEqual([]);
     expect(validateWorld(w).id).toBe(w.id);
   });
 

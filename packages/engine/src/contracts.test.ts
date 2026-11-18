@@ -71,8 +71,8 @@ import {
 } from './index';
 import { buyOffer, handTo, holdRows, staffAuthority, wouldJoin } from './testing';
 import { financeProjection } from './projection';
-import { projectCashTo } from './delegation.testkit';
-import { delegatePlan } from './delegation';
+import { holdTemperament, projectCashTo } from './delegation.testkit';
+import { delegatePlan, floorTest } from './delegation';
 import { askingMultiplier } from './world-market';
 import { releaseFixturePlayers, twentyPlayerFixture } from './player-fixtures.testkit';
 import { joinFreeAgents } from './free-agents';
@@ -155,18 +155,14 @@ describe('market wages (→CLUB-25)', () => {
     }
   });
 
-  it('pays a second-tier squad 35–50% of a top-flight squad of the same ability', () => {
+  it('pays a second-tier player 35–50% of his top-flight wage', () => {
     const w = world();
-    const top = w.clubs.find((c) => c.country === 'ENG' && c.tier === 0)!;
-    const players = npcSquad(w.seed, w.year, top);
-    const bill = (division: number) =>
-      players.reduce((sum, p) => sum + amount(marketWage(w, p, division)), 0);
-    const share = bill(1) / bill(0);
+    const player = rated(w, 70);
+    const pay = (division: number) => amount(marketWage(w, player, division));
+    const share = pay(1) / pay(0);
     expect(share).toBeGreaterThanOrEqual(0.35);
     expect(share).toBeLessThanOrEqual(0.5);
-    // Every division below pays less again for the same squad.
-    for (let division = 1; division <= 4; division++)
-      expect(bill(division)).toBeLessThanOrEqual(bill(division - 1));
+    for (let division = 2; division <= 4; division++) expect(pay(division)).toBe(pay(1));
   });
 
   it('raises the wage for one ability with the football index across eras', () => {
@@ -484,9 +480,7 @@ describe('contract talks (→CLUB-26)', () => {
   });
 
   it('declines a raise that crosses the live cash floor (→CLUB-26, →ECON-33)', () => {
-    // The same raise passes only when the live closing projection stays above the cash floor.
-    /** The talk answered with this season's plan resting on `revenue(annual, raise)`. */
-    const verdict = (revenue: (annual: bigint, raise: bigint) => bigint, cashYears = 2n) => {
+    const verdict = (buffer: bigint) => {
       const { w, p } = talking(80);
       // Only this player's raise is being decided against the exact pre-talk wage bill.
       for (const other of activePlayers(w)) {
@@ -495,22 +489,23 @@ describe('contract talks (→CLUB-26)', () => {
         delete other.talk;
       }
       const annual = BigInt(operatingCosts(w).annual);
-      w.cash = (annual * cashYears).toString();
+      w.cash = (annual * 2n).toString();
+      w.calendar = { day: seasonDayOf(w.year, 1, 1) };
+      w.delegationRequests = { contracts: 3 };
       holdRows(w, { direction: { renewal: 'keepAll' } });
       const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage);
       expect(raise).toBeGreaterThan(0n);
-      w.budgetPlan = { year: w.year, revenue: revenue(annual, raise).toString(), sales: '0' };
-      if (cashYears === 1n) projectCashTo(w, annual / 2n);
+      w.budgetPlan = { year: w.year, revenue: (annual + raise).toString(), sales: '0' };
+      // At round 23 the raise commits half this season's wages and all of the next season's.
+      projectCashTo(w, annual / 2n + raise + raise / 2n + buffer);
       const plan = delegatePlan(w, 'contracts');
       const events = newYear(w);
       return { w, p, raise, plan, item: talkItems(w, p.id)[0], events };
     };
-    // The income covers every fixed cost with the raise: no planned loss, signed.
-    const within = verdict((annual, raise) => annual + raise);
-    expect(BigInt(within.plan.left)).toBeGreaterThanOrEqual(within.raise);
+    const within = verdict(0n);
+    expect(BigInt(within.plan.left)).toBe(within.raise);
     expect(within.item.title).toContain('받아들였어요');
-    // At the half-season floor there is no room for a raise.
-    const past = verdict((annual, raise) => annual + raise - annual / 2n, 1n);
+    const past = verdict(-1n);
     expect(BigInt(past.plan.left)).toBeLessThan(past.raise);
     expect(past.item.title).toContain('거절했어요');
     expect(past.item.detail).toContain('현금 하한');
@@ -518,7 +513,7 @@ describe('contract talks (→CLUB-26)', () => {
       past.events.find((e) => e.title.includes(past.p.name) && e.kind === 'contract-decline'),
     ).toMatchObject({ kind: 'contract-decline' });
     // Live funding allows the same raise.
-    const funded = verdict((annual, raise) => annual + raise - annual / 2n, 40n);
+    const funded = verdict(within.raise);
     expect(BigInt(funded.plan.spendable)).toBeGreaterThan(0n);
     expect(funded.item.title).toContain('받아들였어요');
     // The plan's wage bill is the players' alone; the staff's sit in the other fixed costs.
@@ -599,12 +594,12 @@ describe('contract talks (→CLUB-26)', () => {
 
     const broke = talking(80);
     holdRows(broke.w, { direction: { renewal: 'keepAll' } });
-    // Three rounds of today's costs: short of the month the plain insolvency stop keeps.
+    // Three rounds of today's costs leaves insufficient room for the raise.
     broke.w.cash = ((BigInt(operatingCosts(broke.w).annual) / 46n) * 3n).toString();
     const until = broke.p.until;
     newYear(broke.w);
     expect(broke.p.until).toBe(until);
-    expect(talkItems(broke.w, broke.p.id)[0].detail).toContain('현금이 바닥나지 않게');
+    expect(talkItems(broke.w, broke.p.id)[0].detail).toContain('현금 하한');
   });
 
   it('refuses an owner’s offer below the floor, stating it, and signs one at the floor', () => {
@@ -739,6 +734,8 @@ describe('contract talks (→CLUB-26)', () => {
     const losing = () => {
       const { w, p } = talking(80);
       holdRows(w, { direction: { renewal: 'keepAll' } });
+      holdTemperament(w, 'director', 'balanced');
+      w.delegationRequests = { contracts: 5 };
       w.calendar = { day: 0 };
       // A manager paid far beyond the club's income makes the season a loss: four times its costs
       // and its projected surplus, since a taken-over club's books can earn more than they cost.
@@ -756,7 +753,7 @@ describe('contract talks (→CLUB-26)', () => {
           BigInt(financeProjection(w).seasonEnd.low) +
           (raise * (46n - played)) / 46n;
       expect(loss).toBeGreaterThan(0n);
-      return { w, p, loss };
+      return { w, p, loss, raise };
     };
     const short = losing(),
       covered = losing();
@@ -764,6 +761,8 @@ describe('contract talks (→CLUB-26)', () => {
     // differs, one below zero, one at zero.
     short.w.cash = (short.loss - 1n).toString();
     covered.w.cash = covered.loss.toString();
+    for (const { w, raise } of [short, covered])
+      expect(floorTest(w, delegatePlan(w, 'contracts'), { wage: raise }).ok).toBe(true);
     const until = short.p.until;
     contractTalks(short.w);
     contractTalks(covered.w);

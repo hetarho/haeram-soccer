@@ -14,7 +14,7 @@ import { freeAgentsOf } from './free-agents';
 import { divisionFor } from './market-prices';
 import { exp, log } from './portable-math';
 import { clubOf, overall } from './player-state';
-import { recruitmentContext, recruitmentFit, type TransferOffer } from './recruitment';
+import { recruitmentSelection, type TransferOffer } from './recruitment';
 import type { AnswerFactor, FactorLine } from './sale-answer';
 import { clubById, startingSquad } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
@@ -238,7 +238,7 @@ export function termsSearchContext(w: World) {
   const entries = new Map<string, ReturnType<typeof europeOf>>(),
     starters = new Map<string, Set<string>>();
   return {
-    recruitment: recruitmentContext(w),
+    ownStarters: startingSquad(w, clubOf(w)),
     europe: (id: string) => {
       if (!entries.has(id)) entries.set(id, europeOf(w, id));
       return entries.get(id);
@@ -277,7 +277,7 @@ export function resolvedTermsContext(
     age: w.year - player.born,
     ...(ourEurope ? { ourEurope } : {}),
     hisEurope: !!club && !!context.europe(club.id),
-    wouldStart: recruitmentFit(w, offer, context.recruitment).willStart,
+    wouldStart: recruitmentSelection(w, offer, context.ownStarters).willStart,
     startsNow: !!club && context.starters(club).has(player.id),
     freeAgent: !club,
     loyalty: club ? loyaltyTerm(player, w.year) : 0,
