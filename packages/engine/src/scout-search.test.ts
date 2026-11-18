@@ -566,7 +566,7 @@ describe('the ceiling above our eleven (ECON-16, T809)', () => {
   });
 
   it('finds the same players after switching the dial away and back (CLUB-14)', () => {
-    const w = elevenAt(scoutAt(world(), 85), 88),
+    const w = freeAgentsAt(elevenAt(scoutAt(world(), 85), 88), 93),
       before = structuredClone(transferOffers(w));
     expect(Math.max(...before.map((offer) => overall(offer.player)))).toBeGreaterThan(85);
     holdRows(w, { policy: { recruitment: 1 } });

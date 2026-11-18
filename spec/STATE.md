@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T961 | The chief scout lists players who would come first | CLUB | - | todo |
+| T961 | The chief scout lists players who would come first | CLUB | - | doing@261118.mr18cx |
 | T962 | Mediation counts a request an open bid covers | CLUB | - | todo |
 | T963 | The first leg of a tie at index 2 is a first leg | MATCH | - | todo |
 | T964 | Angry fans stop coming, a loved owner's club draws more | ECON OWNER | - | todo |
