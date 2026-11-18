@@ -13,7 +13,7 @@ import {
   TAKEOVER_DEBT,
 } from './owner-config';
 import { clubManager, managerOffers } from './managerMarket';
-import { clubPlayers, makePlayer } from './world';
+import { clubPlayers, invalidateNpcSquad, makePlayer } from './world';
 import { formationOf, isOwnSeason, lastOwnSeason, ownSeasons } from './player-state';
 import { lineOf } from './player';
 import { fanFollowing } from './fans';
@@ -60,6 +60,10 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
   it('makes the club as it stands the owner’s, its squad his players at the club’s 조직력', () => {
     const { w, club } = setup();
     club.cohesion = 0.62;
+    expect(clubPlayers(w, club).length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
+    // Intentionally leave the keeper slot uncovered to exercise takeover's fill path.
+    w.squads![club.id] = clubPlayers(w, club).filter((p) => (p.positions.GK ?? 0) < 2);
+    invalidateNpcSquad(w, club.id);
     const roster = clubPlayers(w, club);
     roster[0]!.joined = w.year - 3;
     roster[0]!.graduate = true;
@@ -68,7 +72,9 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     );
     const tenure = roster.map(({ id, joined, graduate }) => ({ id, joined, graduate }));
     const fielded = roster.map((p) => p.id);
-    expect(roster.length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
+    expect(
+      uncoveredSlots(roster, formationOf(clubManager(w, club).philosophy)).length,
+    ).toBeGreaterThan(0);
     takeOver(w, club.id, choice('industrial'));
     expect(w.playerClub).toBe(club.id);
     const ids = w.players.map((p) => p.id);
@@ -91,6 +97,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
       expect(p.clauses).toBeDefined();
       expect(w.people?.[p.id]?.club).toBe(club.id);
     }
+    expect(w.players.some((p) => !fielded.includes(p.id))).toBe(true);
     // The generated places are at the club's level, in its division's money.
     for (const p of w.players.filter((q) => !fielded.includes(q.id)))
       expect(p.id.startsWith(`${club.id}:takeover:`)).toBe(true);
