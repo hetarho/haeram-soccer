@@ -224,8 +224,10 @@
 | T978 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | c68ac0542c8d | 2026-11-18T09:21Z |
 | T981 | cx19 | gusta-session-start-cx19-3baf6666 | 3e05de454b6b | 2026-11-18T15:25Z |
 | T983 | work | gusta-session-self-improve-np19-f1c9b1b9 | 4491c7e8e8cf | 2026-11-18T17:29Z |
+| T984 | work | gusta-session-self-improve-np19-f1c9b1b9 | 24666400c47c | 2026-11-18T17:31Z |
 
 ## log
+- 261118 T984 integrated
 - 261118 T983 integrated
 - 261118 np19 self-improve start: 7h engine perf run (00:25–07:25 KST): 4h behavior-preserving speedups (generation, 10x stalls), 3h gate+push main and feature-removal cost report
 - 261118 T981 done
@@ -245,4 +247,3 @@
 - 261118 T969 done
 - 261118 T968 done
 - 261118 T967 done
-- 261118 T966 done
