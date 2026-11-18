@@ -160,6 +160,7 @@
 - 261118 decided CLUB-44 CLUB-47 CLUB-54 T979: A signing starts fresh tenure and a return preserves an academy qualification recorded for that same club. Preview, registration and completion must be consistent. This preserves established Spanish exemptions without a new save field, unlike resetting all origin or storing a second qualification. Scout decline wording follows the already approved individual curve.
 - 261118 decided T967: ECON-38의 인수 시 채무 전환은 이미 기록된 위기 단계·누적 정산·포인트 이력을 보존하고, 원래 부채만 분할 상환 대출로 전환한다. 단계 해제는 ECON-24의 다음 정산이나 시즌 마감에서 판단한다. 인수 시 기록을 초기화하면 같은 구단에 이미 적용된 제재와 상태가 달라져 보존안을 택했다.
 - 261118 decided T975: OWNER-12의 배율은 0.5+2×지분, OWNER-19의 상한은 45%다. T975의 50% 대 25% 두 배 예시는 성립하지 않는다. 실제 허용 양끝 45% 대 10%(1.4× 대 0.7×)로 두 배 검증을 하며 SSOT 수식과 범위를 유지한다.
+- 261118 decided T958: 임금 실측 준비에서 구식 등급 앵커 77/66/55/44를 확인했다. CLUB-25 r82에서 WORLD-15의 80/70/60/50을 공유 기준으로 명확히 하고 시세 계산이 같은 앵커를 쓰게 한다. 구식 기준에서는 70 선수가 2부에서 1부 견적의 61.8%를 받으므로 급여 배수만 바꿔 해결할 수 없다.
 
 ## unlanded
 | id | tag | branch | commit | at |
