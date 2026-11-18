@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T960 | Buyers value a young player's gain two seasons on | WORLD PLAYER CLUB | - | todo |
+| T960 | Buyers value a young player's gain two seasons on | WORLD PLAYER CLUB | - | doing@261118.mr18cx |
 | T961 | The chief scout lists players who would come first | CLUB | - | todo |
 | T962 | Mediation counts a request an open bid covers | CLUB | - | todo |
 | T963 | The first leg of a tie at index 2 is a first leg | MATCH | - | todo |

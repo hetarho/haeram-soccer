@@ -32,6 +32,7 @@ import {
 } from './world';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
+import * as marketPrices from './market-prices';
 import { npcWageBill, npcWageBudget, npcWageLimit } from './books';
 import { operatingExpensesAt } from './finance';
 import { npcSaleContext, saleShare } from './sale-answer';
@@ -874,4 +875,48 @@ describe('loan returns preserve each club’s recorded origin', () => {
     });
     expect(w.squads![seller.id]!.some((q) => q.id === p.id)).toBe(false);
   });
+});
+
+describe('a young target’s expected gain (→WORLD-16)', () => {
+  it.each([20, 25])(
+    'ranks a lower-division player aged %i at equal current gain and cost',
+    (age) => {
+      const { w, seller, buyer } = fixture();
+      for (const q of w.squads![seller.id]!.filter((q) => q.position === 'GK').slice(0, 2)) {
+        const weak = { ...structuredClone(q), id: `weak-${q.id}` };
+        for (const a of ATTRIBUTES) weak.attrs[a] = 55;
+        w.squads![buyer.id]!.push(weak);
+      }
+      buyer.books!.openingIncome = npcWageBill(w, buyer).toString();
+      buyer.levels = { academy: 3, ground: 3, coaching: 3 };
+      invalidateNpcSquad(w, buyer.id);
+      const lower = secondSeller(w, seller, 1);
+      // Other clubs have no keeper upgrade to pursue; the buyer has a slot need, not a short line.
+      target(w, seller, { retiring: w.year }, 90);
+      const older = keeperAt(w, lower, 'a-older-keeper', 75, { born: w.year - 26 });
+      const prospect = keeperAt(w, lower, 'z-prospect-keeper', 75, {
+        born: w.year - age,
+        potential: 95,
+      });
+      const ids = new Set([older.id, prospect.id]);
+      const valueAt = marketPrices.marketValueAt,
+        wageAt = marketPrices.marketWageAt;
+      const value = vi
+        .spyOn(marketPrices, 'marketValueAt')
+        .mockImplementation((...args) => (ids.has(args[3].id) ? '1000' : valueAt(...args)));
+      const wage = vi
+        .spyOn(marketPrices, 'marketWageAt')
+        .mockImplementation((...args) => (ids.has(args[3].id) ? '1000' : wageAt(...args)));
+      try {
+        const bids = observeBids(() => npcMarket(w)).filter((bid) => bid.to.id === buyer.id);
+        expect(bids[0]).toMatchObject({
+          playerId: age === 20 ? prospect.id : older.id,
+          outcome: 'completed',
+        });
+      } finally {
+        value.mockRestore();
+        wage.mockRestore();
+      }
+    },
+  );
 });
