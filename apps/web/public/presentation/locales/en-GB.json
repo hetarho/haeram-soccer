@@ -7013,6 +7013,13 @@
     "delegation.plan.salesCalmIncome": "Wages and fixed costs stay within the planned income, so he answers offers on the usual terms.",
     "delegation.flow.recruitmentShortIncome": "Wages and fixed costs are already above the planned income, so he takes on no new wage or fee.",
     "delegation.flow.contractsShortIncome": "Wages and fixed costs are above the planned income, so he agrees no raises and renews frugally.",
-    "delegation.runway.coversLittle": "Planned loss {loss} a year · cash covers less than {seasons} seasons"
+    "delegation.runway.coversLittle": "Planned loss {loss} a year · cash covers less than {seasons} seasons",
+    "finance.distress.nextBand": "{title} Cash {cash} · Next stage: debt above {limit}",
+    "finance.distress.recoveryBand": "{title} Cash {cash} · Recovery at season close with debt below {limit}",
+    "finance.cash.runway": "{title} Fixed costs covered for {weeks} weeks",
+    "finance.distress.detail1": "The financial warning lowers fan mood. Debt above {limit} for {rounds} rounds triggers forced sales.",
+    "finance.distress.detail2": "Forced sales apply and fee and loan signings are restricted. Free agents may only restore the squad minimum or a goalkeeper. Debt above {limit} triggers administration.",
+    "finance.distress.detail3": "Forced-sale restrictions continue. Entry deducts {points} points once per season and writes off {percent}% of debt. Recovery requires debt below {limit} at season close.",
+    "career.ended.record": "Club management ended in the {season} season. {kept}"
   }
 }

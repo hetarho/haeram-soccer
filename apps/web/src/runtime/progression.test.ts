@@ -6,6 +6,7 @@ import { gameStore, initialClientState } from './store';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import {
   clubCrisisDetail,
+  clubDistressLine,
   crisisBegan,
   crisisTitle,
   PACE_MS,
@@ -305,29 +306,43 @@ describe('the global progression clock', () => {
   it('names the 파산 위기 a step begins and nothing for one under way or an ended career (→WEB-56)', () => {
     const debt = structuredClone(w);
     debt.cash = '-1';
-    debt.insolvent = 1;
+    debt.distress = { stage: 1, overHalfRounds: 0 };
     expect(crisisBegan(w, debt)).toBe('club');
-    expect(crisisBegan(debt, { ...debt, insolvent: 2 })).toBeUndefined();
+    expect(crisisBegan(debt, structuredClone(debt))).toBeUndefined();
+    for (const stage of [2, 3] as const) {
+      const next = { ...debt, distress: { stage, overHalfRounds: 8 } };
+      expect(crisisBegan(debt, next)).toBe('club');
+      expect(crisisBegan(next, next)).toBeUndefined();
+      expect(crisisBegan(next, debt)).toBeUndefined();
+    }
+    expect(crisisBegan({ ...debt, distress: undefined }, debt)).toBe('club');
     const broke = structuredClone(w);
     broke.owner!.ownerCrisis = { since: { year: w.year, day: 1 } };
     expect(crisisBegan(w, broke)).toBe('owner');
     expect(crisisBegan(broke, broke)).toBeUndefined();
+    const renewed = structuredClone(broke);
+    renewed.owner!.ownerCrisis!.since.year++;
+    expect(crisisBegan(broke, renewed)).toBe('owner');
     expect(
       crisisBegan(w, { ...debt, bankrupt: { year: w.year, round: 1, day: 1 } }),
     ).toBeUndefined();
     expect(crisisTitle(broke, 'owner')).toBe('구단주 파산 위기');
-    expect(crisisTitle(debt, 'club')).toBe(debt.owner ? '구단 파산 위기' : '파산 위기');
-    // The warning states the club's crisis in its inbox item's words: eight rounds in debt end it.
-    expect(clubCrisisDetail(debt)).toMatch(
-      /^잔고가 .+예요\. 연간 고정지출 1년분을 빚으로 버틸 수 있으며/,
+    expect(crisisTitle(debt, 'club')).toBe('재정 경고');
+    expect(clubCrisisDetail(debt)).toContain('8라운드');
+    expect(clubCrisisDetail({ ...debt, distress: { stage: 2, overHalfRounds: 8 } })).toContain(
+      '자유계약',
     );
+    const administration = { ...debt, distress: { stage: 3 as const, overHalfRounds: 8 } };
+    expect(clubCrisisDetail(administration)).toContain('승점 10점');
+    expect(clubCrisisDetail(administration)).toContain('시즌 마감');
+    expect(BigInt(clubDistressLine(administration))).toBe(BigInt(clubDistressLine(debt)));
   });
   it('stops a running clock once behind a warning when a 파산 위기 begins, and only the owner restarts it (→WEB-56)', async () => {
     const s = setup();
     controller = s.controller;
     const debt = structuredClone(w);
     debt.cash = '-1';
-    debt.insolvent = 1;
+    debt.distress = { stage: 1, overHalfRounds: 0 };
     s.command.mockImplementation(async () => ({
       ok: true,
       requestId: 'test',
@@ -349,7 +364,7 @@ describe('the global progression clock', () => {
     expect(s.command.mock.calls.length).toBe(sent);
     // The same crisis going on never stops the clock again.
     const deeper = structuredClone(debt);
-    deeper.insolvent = 2;
+    deeper.distress!.overHalfRounds = 2;
     s.command.mockImplementation(async () => ({
       ok: true,
       requestId: 'test',
@@ -358,6 +373,20 @@ describe('the global progression clock', () => {
     controller.start();
     await vi.advanceTimersByTimeAsync(3000);
     expect(controller.store.getState()).toMatchObject({ running: true, crisis: undefined });
+    for (const stage of [2, 3] as const) {
+      const entered = { ...deeper, distress: { stage, overHalfRounds: 8 } };
+      s.command.mockResolvedValue({
+        ok: true,
+        requestId: 'stage',
+        view: { world: entered } as View,
+      });
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(controller.store.getState()).toMatchObject({ running: false, crisis: 'club' });
+      controller.clearCrisis();
+      controller.start();
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(controller.store.getState()).toMatchObject({ running: true, crisis: undefined });
+    }
   });
   it("stops for the owner's 구단주 파산 위기 too, and leaving a match or the office never resumes it", async () => {
     const s = setup();
@@ -381,6 +410,32 @@ describe('the global progression clock', () => {
     controller.leaveOffice();
     await vi.advanceTimersByTimeAsync(3000);
     expect(controller.store.getState().running).toBe(false);
+  });
+  it('never opens a crisis warning for fan pressure or a manual arrival', async () => {
+    const world = structuredClone(w);
+    const pressure = structuredClone(world);
+    pressure.owner!.fanCrisis = { rounds: 1 };
+    const s = setup(undefined, world);
+    controller = s.controller;
+    s.command.mockResolvedValue({ ok: true, requestId: 'fans', view: { world: pressure } as View });
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState().running).toBe(true);
+    expect(controller.store.getState().crisis).toBeUndefined();
+    controller.dispose();
+    world.settings!.mode = 'manual';
+    const manual = setup(undefined, world);
+    controller = manual.controller;
+    const reached = structuredClone(world);
+    reached.distress = { stage: 3, overHalfRounds: 8 };
+    manual.command.mockResolvedValue({
+      ok: true,
+      requestId: 'manual',
+      view: { world: reached } as View,
+    });
+    await controller.nextEvent();
+    expect(controller.store.getState().running).toBe(false);
+    expect(controller.store.getState().crisis).toBeUndefined();
   });
   it('plays on once the owner decides the last event that stopped a running clock (→WEB-42)', async () => {
     const s = setup();

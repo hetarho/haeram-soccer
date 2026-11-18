@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T970 | Show distress stages instead of bankruptcy | WEB OWNER ECON ARCH | T967 T969 | todo |
+| T970 | Show distress stages instead of bankruptcy | WEB OWNER ECON ARCH | T967 T969 | doing@261118.mr18cx |
 | T980 | League tables show deducted points | ECON LEAGUE ARCH | T969 | todo |
 | T971 | The 단장 plans to a season-end cash floor, not a loss runway | ECON CLUB STAFF | T967 | todo |
 | T972 | The budget page and verdicts speak of the cash floor | WEB ECON ARCH | T971 | todo |

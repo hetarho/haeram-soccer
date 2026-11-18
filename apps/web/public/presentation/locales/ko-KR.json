@@ -7010,6 +7010,13 @@
     "delegation.plan.salesCalmIncome": "선수 연봉과 고정지출이 계획 수입 안에 머물러 평소 기준으로 제안을 받아요.",
     "delegation.flow.recruitmentShortIncome": "지금도 선수 연봉과 고정지출이 계획 수입을 넘어 새 연봉이나 이적료를 쓰지 않아요.",
     "delegation.flow.contractsShortIncome": "지금 선수 연봉과 고정지출이 계획 수입을 넘어 연봉 인상은 받아들이지 않고 짠물로 재계약해요.",
-    "delegation.runway.coversLittle": "계획 적자 연 {loss} · 현금으로 {seasons}시즌분 미만"
+    "delegation.runway.coversLittle": "계획 적자 연 {loss} · 현금으로 {seasons}시즌분 미만",
+    "finance.distress.nextBand": "{title} 잔고 {cash} · 다음 단계 부채 기준: {limit} 초과",
+    "finance.distress.recoveryBand": "{title} 잔고 {cash} · 시즌 마감 시 부채 {limit} 미만이면 회복",
+    "finance.cash.runway": "{title} 고정지출 {weeks}주분 남음",
+    "finance.distress.detail1": "재정 경고로 팬 민심이 하락합니다. 부채가 {limit}를 초과한 상태로 {rounds}라운드 지속되면 매각 요구에 진입합니다.",
+    "finance.distress.detail2": "강제 매각이 진행되고 이적료·임대 영입이 제한됩니다. 자유계약은 최소 인원이나 골키퍼 확보에만 허용됩니다. 부채가 {limit}를 초과하면 법정관리에 진입합니다.",
+    "finance.distress.detail3": "매각 요구의 제한이 유지됩니다. 진입 시 시즌당 한 번 승점 {points}점이 차감되고 부채 {percent}%가 탕감됩니다. 시즌 마감 시 부채가 {limit} 미만이면 회복합니다.",
+    "career.ended.record": "{season} 시즌에 구단 운영이 끝났어요. {kept}"
   }
 }

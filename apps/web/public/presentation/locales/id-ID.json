@@ -7010,6 +7010,13 @@
     "delegation.plan.salesCalmIncome": "Gaji dan biaya tetap tetap dalam rencana pemasukan, jadi ia menjawab tawaran dengan ukuran biasa.",
     "delegation.flow.recruitmentShortIncome": "Gaji dan biaya tetap sudah melampaui rencana pemasukan, jadi ia tidak menanggung gaji atau biaya transfer baru.",
     "delegation.flow.contractsShortIncome": "Gaji dan biaya tetap melampaui rencana pemasukan, jadi ia tidak menerima kenaikan dan memperpanjang secara hemat.",
-    "delegation.runway.coversLittle": "Rencana rugi {loss} per tahun · kas menutup kurang dari {seasons} musim"
+    "delegation.runway.coversLittle": "Rencana rugi {loss} per tahun · kas menutup kurang dari {seasons} musim",
+    "finance.distress.nextBand": "{title} Saldo {cash} · Tahap berikut: utang di atas {limit}",
+    "finance.distress.recoveryBand": "{title} Saldo {cash} · Pulih saat akhir musim dengan utang di bawah {limit}",
+    "finance.cash.runway": "{title} Biaya tetap tertutup untuk {weeks} minggu",
+    "finance.distress.detail1": "Peringatan keuangan menurunkan semangat suporter. Utang di atas {limit} selama {rounds} putaran memicu penjualan paksa.",
+    "finance.distress.detail2": "Penjualan paksa dan pembatasan transfer berbayar serta pinjaman berlaku. Pemain bebas hanya boleh melengkapi jumlah minimum skuad atau penjaga gawang. Utang di atas {limit} memicu administrasi pengadilan.",
+    "finance.distress.detail3": "Pembatasan penjualan paksa berlanjut. Saat masuk, {points} poin dikurangi sekali per musim dan {percent}% utang dihapus. Pemulihan memerlukan utang di bawah {limit} pada akhir musim.",
+    "career.ended.record": "Pengelolaan klub berakhir pada musim {season}. {kept}"
   }
 }

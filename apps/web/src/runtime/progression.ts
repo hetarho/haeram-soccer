@@ -19,7 +19,8 @@ import {
 } from '../../../../packages/engine/src/approvals';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
-import { bankruptcyCashThreshold, moneyLabel } from '../../../../packages/engine/src/finance';
+import { DISTRESS } from '../../../../packages/engine/src/distress';
+import { moneyLabel, operatingCosts } from '../../../../packages/engine/src/finance';
 import type { GameClient } from './client';
 import { gameStore } from './store';
 import { unfinishedPlayback, useMatchView } from './matchView';
@@ -32,40 +33,54 @@ export const PACE_MS: Record<Pace, number> = { x1: 1000, x2: 500, x5: 200, x10: 
  * day is absorbed by the fast days before it (→WEB-18).
  */
 export const RUN_AHEAD_DAYS: Record<Pace, number> = { x1: 3, x2: 3, x5: 5, x10: 7 };
-/** Why the clock stopped for good (→OWNER-16, ECON-24): the club's or the owner's end. */
+/** Preserve old ended careers without inventing an owner cause (→OWNER-16). */
 function endedReason(w: Pick<World, 'bankrupt' | 'ended'>) {
   return w.ended === 'owner'
     ? sourceMessage('copy.progression.a15eda2b52')
     : w.ended === 'fans'
       ? sourceMessage('copy.progression.39653c135b')
-      : sourceMessage('copy.progression.6330ef3bc3');
+      : sourceMessage('copy.ownerFigures.13ed83a888');
 }
 /** A 파산 위기 the automatic clock stops for once (→WEB-56, OWNER-15): the club's or the owner's. */
 export type Crisis = 'club' | 'owner';
 /**
- * The 파산 위기 a step from `before` to `after` began, if any: the club's first round in debt
- * (→ECON-24) or the owner's 구단주 파산 위기 (→OWNER-14). A crisis already under way begins nothing,
+ * The 파산 위기 a step from `before` to `after` began, if any: an upward financial distress stage entry
+ * (→ECON-24) or the owner's current 구단주 파산 위기 (→OWNER-14). A crisis already under way begins nothing,
  * so the same one never stops the clock twice.
  */
 export function crisisBegan(before: World, after: World): Crisis | undefined {
   if (careerEnded(after)) return undefined;
-  if (!before.insolvent && (after.insolvent ?? 0) > 0) return 'club';
-  if (!before.owner?.ownerCrisis && after.owner?.ownerCrisis) return 'owner';
+  if ((after.distress?.stage ?? 0) > (before.distress?.stage ?? 0)) return 'club';
+  if (
+    after.owner?.ownerCrisis &&
+    (!before.owner?.ownerCrisis ||
+      before.owner.ownerCrisis.since.year !== after.owner.ownerCrisis.since.year ||
+      before.owner.ownerCrisis.since.day !== after.owner.ownerCrisis.since.day)
+  )
+    return 'owner';
   return undefined;
 }
 /** The name a crisis stop gives the stopped clock, as the money band names it (→WEB-56). */
 export function crisisTitle(w: World, crisis: Crisis) {
   return crisis === 'owner'
     ? sourceMessage('copy.ownerFigures.f20b1ae1c7')
-    : w.owner
-      ? sourceMessage('copy.CashAlarm.7c6b2c4fa1')
-      : sourceMessage('copy.CashAlarm.be03d028d1');
+    : sourceMessage(`finance.distress.stage${w.distress?.stage ?? 1}`);
 }
-/** What the club's 파산 위기 warning states, in its inbox item's words (→ECON-24, WEB-56). */
+/** The next entry line, or administration's season-close recovery line, in integer money. */
+export function clubDistressLine(w: World) {
+  const stage = w.distress?.stage ?? 0;
+  const share =
+    stage === 2 ? DISTRESS.administration : stage === 0 ? DISTRESS.warning : DISTRESS.forcedSales;
+  const numerator = BigInt(operatingCosts(w).annual) * BigInt(Math.round(share * 1000));
+  return ((numerator + (stage === 3 ? 999n : 0n)) / 1000n).toString();
+}
+/** The current stage's effects and its next entry/recovery condition (→ECON-24). */
 export function clubCrisisDetail(w: World) {
-  return sourceMessage('finance.debt.warning', {
-    cash: moneyLabel(w, w.cash),
-    limit: moneyLabel(w, bankruptcyCashThreshold(w)),
+  const stage = w.distress?.stage ?? 1;
+  return sourceMessage(`finance.distress.detail${stage}`, {
+    limit: moneyLabel(w, clubDistressLine(w)),
+    ...(stage === 1 ? { rounds: DISTRESS.saleRounds } : {}),
+    ...(stage === 3 ? { points: DISTRESS.points, percent: DISTRESS.writeOff * 100 } : {}),
   });
 }
 /** How long the 경기 결과 알림 notice stays once our fixture's day is shown (→WEB-18). */

@@ -7025,6 +7025,13 @@
     "delegation.plan.salesCalmIncome": "تبقى الرواتب والتكاليف الثابتة ضمن الدخل المخطط، لذا يرد على العروض بالمعيار المعتاد.",
     "delegation.flow.recruitmentShortIncome": "تتجاوز الرواتب والتكاليف الثابتة الدخل المخطط بالفعل، لذا لا يلتزم براتب أو رسوم انتقال جديدة.",
     "delegation.flow.contractsShortIncome": "تتجاوز الرواتب والتكاليف الثابتة الدخل المخطط، لذا لا يقبل زيادات ويجدد بتقشف.",
-    "delegation.runway.coversLittle": "خسارة مخططة {loss} سنويًا · النقد يغطي أقل من {seasons} مواسم"
+    "delegation.runway.coversLittle": "خسارة مخططة {loss} سنويًا · النقد يغطي أقل من {seasons} مواسم",
+    "finance.distress.nextBand": "{title} الرصيد {cash} · المرحلة التالية: دين أعلى من {limit}",
+    "finance.distress.recoveryBand": "{title} الرصيد {cash} · التعافي عند ختام الموسم بدين أقل من {limit}",
+    "finance.cash.runway": "{title} تغطية التكاليف الثابتة لمدة {weeks} أسابيع",
+    "finance.distress.detail1": "التحذير المالي يخفض معنويات الجماهير. استمرار الدين أعلى من {limit} لمدة {rounds} جولات يفرض بيع اللاعبين.",
+    "finance.distress.detail2": "يسري البيع القسري وقيود الانتقالات المدفوعة والإعارات. لا يُسمح باللاعبين الأحرار إلا لاستكمال الحد الأدنى للتشكيلة أو تأمين حارس. الدين الأعلى من {limit} يفرض الإدارة القضائية.",
+    "finance.distress.detail3": "تستمر قيود البيع القسري. عند الدخول تُخصم {points} نقاط مرة واحدة في الموسم ويُعفى {percent}% من الدين. يتطلب التعافي دينًا أقل من {limit} عند ختام الموسم.",
+    "career.ended.record": "انتهت إدارة النادي في موسم {season}. {kept}"
   }
 }
