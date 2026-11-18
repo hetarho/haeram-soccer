@@ -186,11 +186,12 @@
       "branch": "gusta-session-self-improve-xf18-607e3688",
       "head": "4360eac27d3b2eaea448e2a4bf767823f148f1b4",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-18T00:06:38.089Z",
+      "status": "paused",
+      "at": "2026-11-18T00:06:40.736Z",
       "agentChecks": [],
       "verificationCommands": [],
-      "device": "ihaelam-ui-MacBookPro"
+      "device": "ihaelam-ui-MacBookPro",
+      "reason": "session-ended"
     }
   },
   "gate": {
