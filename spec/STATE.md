@@ -75,6 +75,8 @@
 | T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
 | T982 | Scan market candidates without per-candidate string keys | ARCH | - | todo |
 | T986 | Validate the own match's script once and drop attribution copies nothing reads | ARCH | - | todo |
+| T987 | Settlement memos for market needs, prices, sellable lines, listings and rivals | ARCH | T982 | todo |
+| T988 | Compute free-agent settlement money facts only for clubs that read them | ARCH | - | todo |
 | T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |
 | T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |
 | T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | todo |
