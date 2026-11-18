@@ -348,6 +348,10 @@ const snapshot = z.object({
       ]),
     )
     .max(100),
+  leagueDeductions: z
+    .record(id, leagueDeduction)
+    .refine((rows) => Object.keys(rows).length <= 100)
+    .optional(),
 });
 const scorerSeason = z.object({
   year: z.number().int().min(1901).max(4000),
@@ -1863,7 +1867,10 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       s.year > w.year ||
       s.day < s.round * 7 ||
       new Set(s.rows.map((row) => row[0])).size !== s.rows.length ||
-      s.rows.some((row) => row[0] >= w.clubs.length)
+      s.rows.some((row) => row[0] >= w.clubs.length) ||
+      Object.keys(s.leagueDeductions ?? {}).some(
+        (club) => !s.rows.some(([index]) => w.clubs[index]?.id === club),
+      )
     )
       throw new Error(sourceMessage('copy.schema.5c3b1c6347'));
     snapshotKeys.add(key);

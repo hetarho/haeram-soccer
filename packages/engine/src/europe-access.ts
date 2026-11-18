@@ -2,6 +2,7 @@ import { message as sourceMessage } from '../../contracts/src/messages';
 import type { SeasonArchive, World } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
+import { archivedLeaguePoints } from './league-fixtures';
 import { coefficientValue } from './europe-coefficients';
 
 /** Quota bands include qualifying entrants, admitted directly in this demo (→EURO-11). */
@@ -74,7 +75,8 @@ function leagueOrder(w: AccessWorld, country: string) {
       .filter((r) => r[1] === 0 && w.clubs[r[0]].country === country)
       .sort(
         (a, b) =>
-          b[3] - a[3] ||
+          archivedLeaguePoints(last, w.clubs[b[0]].id, b[3]) -
+            archivedLeaguePoints(last, w.clubs[a[0]].id, a[3]) ||
           b[4] - b[5] - (a[4] - a[5]) ||
           b[4] - a[4] ||
           compareIds(w.clubs[a[0]].id, w.clubs[b[0]].id),

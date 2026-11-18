@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { clubBooksSchema } from '../../../../packages/contracts/src/schema';
 import { worldMarketFixture } from '../../../../packages/engine/src/world-market.testkit';
-import { emptyTable } from '../../../../packages/engine/src/league-fixtures';
+import { archivedLeaguePoints, emptyTable } from '../../../../packages/engine/src/league-fixtures';
+import { snapshotStandings } from '../../../../packages/engine/src/season';
 import { pack, unpack } from './packing';
 
 describe('optional distress facts in compact checkpoints', () => {
@@ -60,6 +61,7 @@ describe('optional distress facts in compact checkpoints', () => {
         leagueDeductions: { [w.playerClub]: deduction },
       },
     ];
+    snapshotStandings(w);
     const roundTrip = () => unpack(JSON.parse(JSON.stringify(pack(w))));
     const restored = roundTrip();
     expect(restored.tables[w.playerClub]).toEqual(w.tables[w.playerClub]);
@@ -67,8 +69,14 @@ describe('optional distress facts in compact checkpoints', () => {
     expect(restored.clubs[1]!.books).toEqual(club.books);
     expect(clubBooksSchema.parse(restored.clubs[1]!.books)).toEqual(club.books);
     expect(restored.history).toEqual(w.history);
+    expect(restored.rankHistory).toEqual(w.rankHistory);
+    const snapshot = restored.rankHistory!.at(-1)!;
+    const ownRow = snapshot.rows.find(([index]) => restored.clubs[index]?.id === w.playerClub)!;
+    expect(ownRow[1]).toBe(0);
+    expect(archivedLeaguePoints(snapshot, w.playerClub, ownRow[1])).toBe(-10);
     delete w.distress;
     w.tables[w.playerClub] = emptyTable();
+    snapshotStandings(w);
     delete club.books.distress;
     delete club.books.debtWriteOff;
     delete club.books.seasons[0]!.debtWriteOff;
@@ -81,6 +89,7 @@ describe('optional distress facts in compact checkpoints', () => {
     expect(old.clubs[1]!.books).not.toHaveProperty('debtWriteOff');
     expect(old.clubs[1]!.books!.seasons[0]).not.toHaveProperty('debtWriteOff');
     expect(old.history[0]).not.toHaveProperty('leagueDeductions');
+    expect(old.rankHistory!.at(-1)).not.toHaveProperty('leagueDeductions');
     expect(old.history[0]!.standings).toEqual([[0, 0, 0, 0, 0, 0]]);
   });
 });

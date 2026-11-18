@@ -17,6 +17,7 @@ import * as scoutSearch from './scout-search';
 import { footballQuote } from './quotes';
 import { staffBidShare } from './director-bidding';
 import { activePlayers } from './player-state';
+import { transferRequests, UNHAPPY_CONFIG } from './contracts';
 
 function ownFixture() {
   const w = worldMarketFixture();
@@ -139,6 +140,21 @@ describe('distress market sanctions', () => {
       );
     expect(w.players[2]!.stance).toBe('listed');
     expect(w.players.every((p) => p.distressListing === undefined)).toBe(true);
+  });
+  it('keeps the transfer listing a player requests during a forced sale plan', () => {
+    const w = ownFixture();
+    w.cash = (-BigInt(operatingCosts(w).annual)).toString();
+    forceDistressSales(w);
+    const player = w.players.find((p) => p.distressListing !== undefined)!;
+    expect(player.distressListing).toBeDefined();
+    player.unhappy = { year: w.year, day: 0, reason: 'renewal-declined' };
+    w.calendar = { day: UNHAPPY_CONFIG.requestDays };
+    transferRequests(w);
+    w.cash = '0';
+    forceDistressSales(w);
+    expect(player.transferRequest).toBeDefined();
+    expect(player.stance).toBe('listed');
+    expect(player.distressListing).toBeUndefined();
   });
   it.each(['pending', 'countered'] as const)(
     'does not count a prohibited %s fee bid as an emergency place',

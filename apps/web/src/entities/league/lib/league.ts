@@ -6,7 +6,10 @@ import type {
   World,
 } from '../../../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../../../packages/catalogs/src/index';
-import { groupKey } from '../../../../../../packages/engine/src/league-fixtures';
+import {
+  archivedLeaguePoints,
+  groupKey,
+} from '../../../../../../packages/engine/src/league-fixtures';
 import { currentDay, fixtureDay } from '../../../../../../packages/engine/src/calendar';
 import { divisionName } from '../../../presentation/competitionLabels';
 
@@ -220,7 +223,7 @@ export function archivedTimeline(w: World, year: number): ArchivedRound[] {
         rows: snapshot.rows.map(([index, points, gf, ga], i) => ({
           id: w.clubs[index].id,
           rank: i + 1,
-          points,
+          points: archivedLeaguePoints(snapshot, w.clubs[index].id, points),
           gf,
           ga,
         })),

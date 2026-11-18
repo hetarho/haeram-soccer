@@ -155,7 +155,7 @@ export function settleNpcDistress(w: World, fixtures: readonly Fixture[]) {
       const oldDebt = BigInt(books.debt);
       books.debt = (oldDebt > amount ? oldDebt - amount : 0n).toString();
       if (amount > oldDebt) books.cash = (BigInt(books.cash) + amount - oldDebt).toString();
-      books.debtWriteOff = (BigInt(books.debtWriteOff ?? '0') + writtenOff).toString();
+      books.debtWriteOff = (BigInt(books.debtWriteOff ?? '0') + amount).toString();
     }
   }
 }

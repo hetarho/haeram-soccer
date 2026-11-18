@@ -43,7 +43,8 @@ export function stepDistress(
     return previous;
   let stage = previous?.stage;
   let rounds = previous?.overHalfRounds ?? 0;
-  if (!closed) rounds = above(debt, annual, DISTRESS.forcedSales) ? rounds + 1 : 0;
+  if (!above(debt, annual, DISTRESS.forcedSales)) rounds = 0;
+  else if (!closed) rounds++;
   if (stage === 3) {
     if (closed && below(debt, annual, DISTRESS.forcedSales))
       stage = debt <= 0n ? undefined : below(debt, annual, DISTRESS.warning) ? 1 : 2;

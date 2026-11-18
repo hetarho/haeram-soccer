@@ -674,8 +674,10 @@ export interface StandingSnapshot {
   day: number;
   tier: number;
   group: number;
-  /** Sorted by rank. Each row is [club index, points, goals for, goals against]. */
+  /** Sorted by rank. Each row is [club index, settled match points, goals for, goals against]. */
   rows: [number, number, number, number][];
+  /** Deductions effective at this round, keyed by the club's retained ID. */
+  leagueDeductions?: Record<string, LeagueDeduction>;
 }
 export interface GoalScorer {
   /** Actual contributions by club, present after an in-league move. */

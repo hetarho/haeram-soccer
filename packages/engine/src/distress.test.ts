@@ -77,7 +77,7 @@ describe('financial distress boundaries', () => {
   it('releases administration at a legacy founded season close without opening NPC books', () => {
     const { w, c } = npcBooksFixture();
     expect(w.owner).toBeUndefined();
-    w.distress = { stage: 3 };
+    w.distress = { stage: 3, overHalfRounds: 7, lastRound: { year: w.year, round: 46 } };
     w.cash = '0';
     booksClose(w);
     expect(w.distress).toBeUndefined();

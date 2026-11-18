@@ -207,6 +207,10 @@ export function snapshotStandings(w: World) {
       day: currentDay(w),
       tier: own.tier,
       group: own.group,
+      ...archiveLeagueDeductions(
+        w,
+        members.map((club) => club.id),
+      ),
       rows: ranked(w, members).map((c) => {
         const row = w.tables[c.id] || emptyTable();
         return [w.clubs.indexOf(c), row.points, row.gf, row.ga];

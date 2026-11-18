@@ -1,4 +1,5 @@
 import { linkPlayer } from './player-records';
+import { archivedLeaguePoints } from './league-fixtures';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
 import type { Event, MatchRecord, Player, World } from '../../contracts/src/types';
@@ -1165,6 +1166,8 @@ function tableNews(w: World, name: string): NewsItem[] {
       });
     topRounds = rank === 1 ? topRounds + 1 : 0;
     if (previousRank !== undefined && snapshot.round >= 3) {
+      const points = ([index, gross]: [number, number, number, number]) =>
+        archivedLeaguePoints(snapshot, w.clubs[index].id, gross);
       const second = snapshot.rows[1];
       if (rank === 1 && previousRank > 1) {
         item(
@@ -1175,7 +1178,9 @@ function tableNews(w: World, name: string): NewsItem[] {
             ? sourceMessage('copy.news.4d41acc29a', { p0: name })
             : sourceMessage('copy.news.a03cf66d6d', { p0: name }),
           second
-            ? sourceMessage('copy.news.7cad1d42b7', { p0: snapshot.rows[0][1] - second[1] })
+            ? sourceMessage('copy.news.7cad1d42b7', {
+                p0: points(snapshot.rows[0]) - points(second),
+              })
             : undefined,
           !beenTop,
         );
@@ -1188,7 +1193,7 @@ function tableNews(w: World, name: string): NewsItem[] {
           sourceMessage('copy.news.a325d5c16a', { p0: name, p1: topRounds }),
         );
       if (rank === 1 && second && snapshot.round >= 15) {
-        const gap = snapshot.rows[0][1] - second[1];
+        const gap = points(snapshot.rows[0]) - points(second);
         for (const mark of [6, 10, 15])
           if (gap >= mark && !leadMarks.has(mark)) {
             leadMarks.add(mark);
