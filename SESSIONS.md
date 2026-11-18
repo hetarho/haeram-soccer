@@ -140,6 +140,17 @@
 - 261117 suggest CLUB-52 ECON-33: The owner's 매각 요청 step never reaches the selling-club answer (only through the wage-bill sales line): at 끝까지 지키기 a delegated club still sold 1 and 3 season-start starters (1960 world, 2 seasons). Add a CLUB-52 share row for our club by the sales request (e.g. 적극 매각 −0.10 … 끝까지 지키기 +0.20) via /gusta-sketch
 - 261117 suggest CLUB-52 CLUB-25: A player bought from a lower-division club at its tier's value can be resold days later at our tier's value (1950 career: bought £15k, sold to Belgium £57k 22 days later). Consider a recently-joined factor or excluding players who joined this window from incoming-bid targets
 - 261117 suggest CLUB-33 CLUB-53: A funded 1960 top-flight takeover now signs 4/4/7 fee players a season but still finishes 19th in its first season while holding £41m–£71m; measure how often personal terms refuse the 단장's step and whether the one-move-a-look cadence still binds before tuning further
+- 261117 decided T916: Missing T916 temporary proposals and hash-matched four-variant review -> version the reconstructable recipe and manifests in a runnable prerequisite, hand independent review to the host, then resume T916 with every original acceptance and its 30-minute measurement limit intact (alternatives: execute a self-reviewed reconstruction | reuse the 1946/1950 continuation approvals). The old proposals are absent in both retained checkouts; surviving reviews explicitly cover different workloads. This unit performs recovery planning only, no heavy run, no production change, no subagent and no model-pass claim.
+- 261117 parked ARCH-30: Shared integration gate 18274191 (owner cf17, candidate 411eb769) is stuck in phase failed past its 14:57Z deadline: its batch plan passed (513 files, 4311 tests), but ws16's recorded verificationCommands name host-specific paths (/home/deep/.npm/_npx/.../gusta.mjs lint, /tmp/ws16-verify-world.mjs) that fail on any other host; ws16's head fdfe2e23 was already in main and its committed verify-world passed. gusta 0.17.5 cannot release it: repair refuses after the deadline, claim refuses while a gate exists, and withdraw refuses cohort members (candidate-frozen). cf17 pushed the verified candidate 411eb769 to main as a fast-forward under the owner's direct-to-main rule. Every later vibe integration finish waits on this gate until the owner clears it (record it in history and set state.gate to null through the CLI's own integration transaction), then withdraws ws16 as landed outside the gate.
+- 261117 decided T943: T943 routing -> claude/opus@high (alt: retry codex/gpt-6.1-terra@high | park T943/T916). Two codex/gpt-6.1-terra@high units ended blocked after 100 s and 49 s with notes only and no recipe; AGENTS.md defaults implementation to the orchestration provider (Claude) and prefers the other provider for review, so the non-author codex reviews the frozen recipe before T916 runs.
+- 261117 decided T916: T916 four-variant generation repair measurement at its timebox -> adopt none; record the measured values and name the next cause (alt: adopt C2 youth offset -11 for the top-tier level | adopt C1+C2). Control reproduced the 1950 oracle; cells outside +-5 were control 21/21, C1 21/21, C2 13/21 and C1+C2 13/21, with strict-order failures 4/2/5/2. C2 fixes only the top-tier level and halves wages and values. Adjacent-division gaps compress from 10-15 at founding to 2-8 by 1950 in every variant, so the next measurement is how strength moves between divisions (intake by tier or academy level, NPC transfers between divisions, promotion/relegation mixing). A repair needs /gusta-sketch.
+- 261117 decided WORLD-15 LEAGUE-10 T946: Division levels → the owner's 80/70/60/50 (90−10t) held within ±3 from 1935 by anchoring NPC facility levels to the division and drawing intakes around the division level (alt: keep 77−11t and only cut youth potential, T916 C2 | a scripted pull toward division levels, forbidden by WORLD-17). Prices stay on absolute OVR; 1951 wage/value sums are measured, any rebase is a later task.
+- 261117 decided ECON-33 T948: Income-share wage ceiling (45–80%) → a loss runway: fee + planned loss × none/6/4/2/1 seasons must fit capital above a 0–1-year reserve (alt: keep shares with capital added | an unbounded owner-funded budget with only the ECON-41 stop).
+- 261117 decided review/market-levels-261118 T945: NPC market F4 (held 261117) → adopted on the owner's request: pull bids with CLUB-52/53 answers and era caps; the multi-season NPC envelope (F5 part) and era contract rules (F6) held until T950's harness evidence; the owner-world results-only seam (F7) rejected as unneeded.
+- 261117 decided WORLD-18 PLAYER-15 T947: Elite prospects → 1–2 prodigies a year world-wide (14, OVR 57–63, potential 88–96) placed by academy level × stature, own academy included, growing ×3 with ×3 the season limit until 18 (alt: lower NPC youth ages for everyone | a breakthrough-only rule).
+- 261117 suggest T949 CLUB-33: Follow-up from T949's review audit: mediation.ts requestMet reads arrivals only, so a delegated mediation can pursue a request a pending bid already covers and bid for a second player; count open bids' players in requestMet/detectMediations (a small task touching mediation.ts).
+- 261117 suggest CLUB-51 CLUB-53: Game feel after the 80/70/60/50 levels: a third-tier club's country-wide scout now lists mostly top-flight players, who nearly all refuse a lower division's terms (CLUB-53 stage factor). The shortlist could rank by realistic interest (stage, playing time) so a small club's scout finds players who would come.
+- 261117 suggest MATCH-22: Pre-existing knockout bug found during the xf18 gate: tieRule (packages/engine/src/knockout.ts:124) recognises a second leg only by an id ending in ':2', so the first leg of the tie at index 2 (e.g. 1990:cwc:k2:2) plays as a single match and a draw goes to penalties; tie results stay right on aggregate. Fixing it moves simulation results and goldens — its own task.
 
 ## unlanded
 | id | tag | branch | commit | at |
@@ -156,25 +167,38 @@
 | T937 | work | gusta-session-self-improve-lc17-37ba91cb | 71e620a4c58c | 2026-11-17T08:22Z |
 | T933 | work | gusta-session-self-improve-tm17-ff4b9f94 | 529f38ffc153 | 2026-11-17T09:48Z |
 | T934 | work | gusta-session-self-improve-tm17-ff4b9f94 | 4ba930627cbb | 2026-11-17T11:46Z |
+| T930 | cf17 | gusta-session-start-cf17-c5483839 | ca6f9915ba5b | 2026-11-17T13:45Z |
+| T942 | cf17 | gusta-session-start-cf17-c5483839 | 45f9a3169094 | 2026-11-17T13:49Z |
+| T943 | cf17 | gusta-session-start-cf17-c5483839 | 66bff25c12d4 | 2026-11-17T15:10Z |
+| T916 | cf17 | gusta-session-start-cf17-c5483839 | cc5d72ffd682 | 2026-11-17T15:33Z |
+| T946 | work | gusta-session-self-improve-xf18-607e3688 | ff6024e8d1cd | 2026-11-17T19:45Z |
+| T947 | work | gusta-session-self-improve-xf18-607e3688 | ff6024e8d1cd | 2026-11-17T19:45Z |
+| T944 | work | gusta-session-self-improve-xf18-607e3688 | 6fc7951b8831 | 2026-11-17T20:15Z |
+| T945 | work | gusta-session-self-improve-xf18-607e3688 | 6fc7951b8831 | 2026-11-17T20:15Z |
+| T952 | xf18 | gusta-session-self-improve-xf18-607e3688 | b368345b202b | 2026-11-17T20:20Z |
+| T948 | work | gusta-session-self-improve-xf18-607e3688 | 20b3d90dd08a | 2026-11-17T22:07Z |
+| T949 | work | gusta-session-self-improve-xf18-607e3688 | 20b3d90dd08a | 2026-11-17T22:07Z |
+| T951 | xf18 | gusta-session-self-improve-xf18-607e3688 | 20b3d90dd08a | 2026-11-17T22:07Z |
+| T950 | xf18 | gusta-session-self-improve-xf18-607e3688 | 20b3d90dd08a | 2026-11-17T22:07Z |
 
 ## log
 - 261117 fix architecture: delegated sales panel reads sale constants from the transfer-policy leaf (main CI red at 363ecdbc7, green at 5fbd9bd1c)
-- 261117 T934 integrated
-- 261117 T933 integrated
-- 261117 T937 integrated
-- 261117 T941 integrated
-- 261117 T940 integrated
-- 261117 T935 integrated
-- 261117 T938 integrated
-- 261117 T939 integrated
-- 261117 T936 integrated
-- 261117 T932 integrated
-- 261117 T931 done
-- 261117 fix takeover: inherited player jobs drop the old club contract end (save 인물 재직 기간 손상 after a renewal)
-- 261117 gusta-update 0.17.3→0.17.4; ARCH r46 ARCH-30 per-check plan scripts/verification-plan.json (implemented with it, tasked=46); review/test-gate-time-261110 F8 adopted →T930; review/gusta-self-improve-261109 base ARCH@46
-- 261116 T929 done
-- 261116 gusta-update-ssot ARCH-23 start
-- 261116 T920 integrated
-- 261116 T928 integrated
-- 261116 T921 integrated
-- 261116 T926 integrated
+- 261117 T950 done
+- 261117 T951 done
+- 261117 T948 T949 integrated
+- 261117 T952 done
+- 261117 T944 T945 integrated
+- 261117 T946 T947 integrated
+- 261117 T916 done
+- 261117 T943 done
+- 261117 T942 done
+- 261117 T930 done
+- 261117 T916 recovery planning committed 56be9e10: ARCH r48 and runnable T943; task checks passed; T916 remains todo, original acceptance unchanged; host owns review, claim cleanup and deferred publication
+- 261117 ARCH r48 consumed into T943; T916 original acceptance and measurement cap preserved; T942 base-only freshness update has no recipe impact
+- 261117 gusta-create-task ARCH r48 start: split T916 recipe preparation from unchanged diagnostic execution
+- 261117 gusta-update-ssot ARCH-33 start: T916 recipe provenance recovery only
+- 261117 fix e2e: promise-deadline loan fixture lowers its bid until the selling club counters (dccee24d, pushed)
+- 261117 gusta-update 0.17.4→0.17.5 landed on main f7a23e83 (ARCH r47, T942 todo)
+- 261117 gusta-create-task ARCH r47 → T942
+- 261117 gusta-create-task ARCH start
+- 261117 gusta-update-ssot ARCH r47 ARCH-30✎ prepare line; verify:batch install pending task
