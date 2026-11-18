@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r63 | Define the browser-demo rules for historical club economy.
+> r64 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -217,7 +217,7 @@
   |---|---|
   | 감독 인사 | 감독 기조: 저비용 at steps 1–2, 검증된 승부사 at 5, else 표준; 선호 학파 any |
   | 스태프 인사 | 코치 기조: 저비용 at 1–2, 최고 수준 at 5, else 표준 |
-  | 선수 계약 | 재계약 기조: 짠물 at 1 or while the runway test fails at the current wage bill (→ECON-33), 핵심만 붙잡기 at 2, 모두 붙잡기 at 5, else 표준 |
+  | 선수 계약 | 재계약 기조: 짠물 at 1 or while the cash floor test fails at the current wage bill (→ECON-33), 핵심만 붙잡기 at 2, 모두 붙잡기 at 5, else 표준 |
   | 선수 영입 | 영입 기조 at the step (유망주 발굴, 젊은 선수 위주, 균형, 경험 위주, 즉시 전력); director/manager support by the 단장's temperament: 단장 우선 for 안정 지향, 감독 우선 for 공격형, else 균형 |
   | 선수 매각 | - |
   | 유소년 운영 | the 단장: 유소년 투자 from the youth share (→ECON-33); the youth director: 육성 목표 1군 공급 if he is a developer, else 표준, and 데뷔 시점 by his temperament: 빠른 데뷔 for 공격형, 준비된 뒤 for 안정 지향 or a vacant post, else 표준 |
@@ -255,14 +255,16 @@
 - ECON-37 [o] A club's price is its value (구단 가치): its players' transfer values (→CLUB-46), its stadium and facilities at their stage costs on the football index (→ECON-32), its following at CLUB_VALUE.following per supporter, its league place at CLUB_VALUE.placeSeasons (3) seasons of its division's distribution (→ECON-28), plus its cash, less its debt; never below CLUB_VALUE.floor (one season of its division's distribution). ← a big club can be cheap when it carries debt, and a dear one can still lose money
 - ECON-38 [o] The buyer takes the club over as it stands: squad and contracts, manager, facilities, supporters, reputation, identity, history and its books (→CLUB-1). Its cash above zero stays the club's cash; its debt becomes a loan repaid in equal installments over TAKEOVER_DEBT.seasons (10) seasons at TAKEOVER_DEBT.rate (5%) a year, each installment a fixed cost of the league rounds (→ECON-12, →ECON-24), so the debt never counts as negative cash at the takeover. ← an indebted big club comes cheap and has to be paid down from the first day (Abramovich took over Chelsea's debts in 2003)
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
+  - the club keeps its active distress stage, elapsed rounds and recorded or pending points deductions (→ECON-24). At the next distress check its debt is the club's negative balance after the takeover debt has become a repayment loan.
 
 - ECON-42 [o] A club nobody owns has finite committed private backing each played season, drawn only for an actual closing cash shortfall (→!ECON-36). ← support can cover a loss without becoming unlimited deficit balancing
   - the annual limit is a share of the last closed season's operating income, converted to the signing season's money; before the first close use opening income. Estimated NPC_BACKING shares: stature at least 9, 100%; at least 4, 50%; at least −1, 15%; below −1, zero. These are game estimates, not real-club observations.
   - one allowance supports the season's wage and fee commitments (→!WORLD-17). Quotes/inspectors are read-only. The forecast is fixed by the previous book; capital and player sales are excluded from the income base. Do not spend the same cash, receipt or allowance twice.
-  - at close pay min(allowance, actual shortfall after existing cash/debt and operations/trading). Record owner capital separately, then apply existing cash/debt bounds. Repeating the close pays nothing twice; unused allowance expires, and skipped war seasons receive no grant.
+  - at close pay min(allowance, actual shortfall after existing cash/debt and operations/trading). Record owner capital separately, then apply the season cash ceiling and carry any remaining debt to the distress checks (→ECON-24). Repeating the close pays nothing twice; unused allowance expires, and skipped war seasons receive no grant.
   - funded operating deficits and wages above turnover are permitted. Exhausted backing and unsupported commitments remain observable. No support is chosen to force a title or strength target.
 
 ## chg
+- r64 261118 ECON-38✎ takeover debt conversion left distress implicit→retain the club's distress state and league deductions; ECON-39✎ the former runway test→ECON-33's cash floor test; ECON-42✎ cash/debt bounds→cash ceiling and ECON-24's debt checks
 - r63 261118 ECON-24✎ bankruptcy ends a career at debt above a season's fixed costs→a financial distress ladder for every club (경고 / 매각 요구 with a signing ban and forced sales / 법정관리 with −10 points and half the debt written off), no club bankrupt; ECON-33✎ loss runway none/6/4/2/1 seasons and temperament reserves→a season-end cash floor by step (cash now within income / a season / half a season / zero / stage 1's line), floor test, the 단장 warns near stage 1; ECON-23✎ +the owner's club's following and gate × (1 + (팬 민심 − 60)/80, within 0.4–1.5); ECON-36✎ debt beyond 1.5 seasons written off→the distress ladder, +books bands (wages/income by tier and table third, operating losses, fees received, distress); ECON-11✎ debt limit→distress ladder; ECON-30✎ bankruptcy threshold→distress lines
 - r62 261118 ECON-33✎ squad share of income 45/55/62/70/80%, sales reinvested 10–70%, sales line 45–80% of income, reserve 50/40/30/2/1 · 40/30/20/1/0 · 30/20/10/0/0 years→no income share or wage ceiling: a loss runway of none/6/4/2/1 seasons that available capital must cover, reserve 1/1/0.5/0.5/0.25 · 1/0.5/0.25/0/0 · 0.5/0.25/0/0/0 years, selling harder when the runway test fails; upgrades at 4–5 up to the slots below the money bar; ECON-39✎ 짠물 while the wage bill is above the squad share→while the runway test fails
 - r61 261117 ECON-22✎ 셀링 클럽 other clubs' offers ×1.6→×3.2 (with CLUB-18's sales targets: some seasons sell 5–7 of the starters a season began with)

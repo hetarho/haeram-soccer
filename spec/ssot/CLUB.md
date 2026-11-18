@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r80 | Define the browser-demo rules for squad and growth.
+> r81 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its squad (→WORLD-16) becomes its own players, each as the player he was with his contract, filled to 20 with players generated at its level when it holds fewer (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -187,7 +187,7 @@
   - the candidate who fits the need: the manager's pick, then the rest of the shortlist, then the players within the scout's reach (→CLUB-51); for an upgrade at 넉넉히 and 아낌없이, after the manager's pick, everyone within the reach by how far he beats the slot's starter; within each band by ability, then potential, free agents first only when both tie, then id; never a player he bid for in this window before (a negotiator's raised bid excepted, →CLUB-41), never on loan. A candidate who fails the money checks is passed over for the next affordable fit. ← available cash buys a sporting improvement rather than automatically preferring every free player
   - for a request with an actual mediation decision, its support outcome in →CLUB-39 governs whether to defer or prioritize a qualifying alternative/the manager's pick. Ordinary recruitment timing, suitability, limits and money checks still apply.
   - he signs a free agent at once and bids for anyone else as his trait bids (→CLUB-41).
-  - money: the runway test passes with his wage and fee (→ECON-33), and the insolvency stop lets it through (→ECON-41); a short line filled with a free agent needs the stop alone.
+  - money: the cash floor test passes with his wage and fee (→ECON-33), and the insolvency stop lets it through (→ECON-41); a short line filled with a free agent needs the stop alone.
   - each move and each answer reaches the inbox as a 단장 report naming the need, the manager's request when it is one, the row behind it and the money check.
   - targets for delegated recruitment, measured on reference careers: one selling club supplies at most two of a window's signings and at most a quarter of the club's fee signings over any five seasons; a top-flight club recruiting at 아낌없이 (measured under the retired 재정 기조 공격적) with the cash to pay (owner funding included, →OWNER-3) pays at least 0.5× the British record then standing (→CLUB-46) for its dearest signing within its first three such seasons, as Chelsea (2003–06) and Manchester City (2008) did. ← the owner's 2000s–2020s career, told to spend without limit, took 5 of its 10 dearest signings from one club (four in 2025/26) and 3 from another in 2008/09, and its dearest stayed near a quarter of the record (£7.7m in 2006/07, £32.3m in 2026/27)
 
@@ -400,6 +400,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r81 261118 CLUB-33✎ the former runway test in the recruitment line→ECON-33's cash floor test
 - r80 261118 CLUB-25/48✎ residual out-of-production gate and interpolation wording→the ability-fit division pricing already in force from r78
 - r79 261118 CLUB-44✎ academy exemption without an explicit return rule→recorded graduates of the registering club stay exempt on eligible returns; CLUB-47✎ fixed decline alert at 29→the player's own decline age; CLUB-54✎ tenure and academy term without return rules→a new stint on signing, resumed tenure on parent-club loan return or takeover, and retained documented academy origin on return
 - r78 261118 CLUB-25✎ ability-fit wage in force only after its gate, the club's division with 85–90 interpolation until then→in force for every club; +the curve's level set against ECON-36's wage bands; CLUB-28✎ free from 1996, 50% compensation before→free in every era, no compensation; CLUB-26✎ accepts any offer at the floor→answers through CLUB-54, the delegated raise without the runway test; CLUB-24✎ runway test at half the runway −25→forced sales (ECON-24) −25; CLUB-33✎ money bar for the runway plus one season→two seasons within the plan's spendable money; CLUB-51✎ +likely takers listed before likely refusers; CLUB-52✎ the 단장's runway rows −0.05/−0.10→the seller's distress −0.05/−0.25, +the seller's stature +0.10/+0.05/−0.05; CLUB-53✎ +loyalty against leaving; CLUB-54+ renewal answer, loyalty term and NPC renewal offers
