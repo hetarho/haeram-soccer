@@ -280,7 +280,37 @@
       "verificationCommands": []
     }
   },
-  "gate": null,
+  "gate": {
+    "token": "662237f9-737f-401b-89d5-dd83f2125ea2",
+    "owner": "mr18cx",
+    "via": "merge",
+    "executor": {
+      "host": "hq-dev1-pve2-vm2",
+      "pid": 679406
+    },
+    "phase": "preparing",
+    "land": "main",
+    "base": "e60819c1a6eca5f765a3d8815036496f2f425721",
+    "cohort": [
+      {
+        "id": "9eeb147edbd8727c1a5f52aa",
+        "tag": "mr18cx",
+        "host": "hq-dev1-pve2-vm2",
+        "device": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-mr18cx-5d3ec005",
+        "head": "af4339d4a01ea4fc14a5ac2dfe8693993e6d4a9a",
+        "agentChecks": [],
+        "verificationCommands": [],
+        "publication": "merge"
+      }
+    ],
+    "at": "2026-11-18T09:22:05.493Z",
+    "deadline": "2026-11-18T10:21:54.027Z",
+    "candidate": null,
+    "checks": [],
+    "agentChecks": [],
+    "rounds": []
+  },
   "history": [
     {
       "token": "18274191-503d-4e61-932e-ca822843f7cc",
