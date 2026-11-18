@@ -16,6 +16,7 @@ import type { Fixture, World } from '../../packages/contracts/src/types';
 import { clubOf, identityOf, nextOwnFixture, operate } from '../../packages/engine/src/index';
 import { selectMatchKits } from '../../packages/engine/src/kit-selection';
 import { FAN_MOOD } from '../../packages/engine/src/owner-config';
+import { fanMoodAfter } from '../../packages/engine/src/fan-mood-read';
 
 /**
  * T255: the marked synthetic cosmetic workload of the active-management century (KIT-9/6/12/13).
@@ -149,22 +150,16 @@ function untouchedStamp(w: World) {
 export const isIdentityMoodEvent = (event: World['events'][number]) =>
   event.kind === 'fan-mood' && event.title === '구단 정체성 변경';
 
-/**
- * 팬 민심 once a design is adopted at `mood`: the identity driver, scaled by 팬들의 친구 and kept
- * within 0–100 to hundredths, as the engine moves it (→OWNER-5/12).
- */
+/** Fan mood after a design adoption at `mood`, including the owner’s supporter mix. */
 export function fanMoodAfterAdoption(w: World, mood: number) {
-  const scaled = w.owner!.traits.includes('fansFriend')
-    ? FAN_MOOD.identity * FAN_MOOD.friendly
-    : FAN_MOOD.identity;
-  return Math.round(Math.min(FAN_MOOD.max, Math.max(FAN_MOOD.min, mood + scaled)) * 100) / 100;
+  return fanMoodAfter({ owner: { ...w.owner!, fanMood: mood } }, FAN_MOOD.identity, 'identity');
 }
 
 /**
  * Throws unless the command left 팬 민심 and the events as they were, except that adopting a
  * design on a career with an owner lowers 팬 민심 by the identity driver and records that one event.
  */
-function fanMoodAfter(
+function assertAdoptionMood(
   w: World,
   before: { events: number; mood?: number },
   adopts: boolean,
@@ -302,7 +297,7 @@ export function identityWorkload(resume?: IdentityWorkloadState) {
     run();
     assertAppearancesUnchanged(w, before, context);
     if (untouchedStamp(w) !== stamp) throw new Error(`${context} changed non-cosmetic facts`);
-    fanMoodAfter(w, mood, adopts, context);
+    assertAdoptionMood(w, mood, adopts, context);
     if (w.revision !== revision + 1) throw new Error(`${context} did not count one revision`);
     appearanceChecks++;
     appearancesCompared += before.length;

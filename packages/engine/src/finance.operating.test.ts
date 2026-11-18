@@ -70,18 +70,18 @@ describe('operating expenses (→ECON-30)', () => {
     expect(operatingCosts({ ...w, operatingExpenses: '123456' }).expenses).toBe('123456');
   });
 
-  it('counts them in the cash warning and the bankruptcy threshold', () => {
+  it('counts them in the cash warning and the administration threshold', () => {
     const start = (support: PolicyLevel = 3) => {
       const w = world();
       if (support !== 3) w.policy = { ...POLICY_DEFAULTS, support };
       w.round = 1;
       const cost = operatingCosts(w, 1),
         share = BigInt(roundShare(leagueShare(w), 1));
-      // Cash before the round that leaves `after` once its costs and installments are settled.
-      const settle = (after: bigint) => {
-        w.cash = (after + BigInt(cost.nextRound) - share).toString();
+      // The cash target is after costs and installments, before any administrative relief.
+      const settle = (beforeRelief: bigint, writeOff = 0n) => {
+        w.cash = (beforeRelief + BigInt(cost.nextRound) - share).toString();
         settleRound(w);
-        expect(BigInt(w.cash)).toBe(after);
+        expect(BigInt(w.cash)).toBe(beforeRelief + writeOff);
         return w;
       };
       return { w, cost, settle };
@@ -96,15 +96,20 @@ describe('operating expenses (→ECON-30)', () => {
     // after it in the same settled round (→ECON-40).
     const warning = warned.w.inbox!.findLast((item) => item.kind === 'finance');
     expect(warning!.detail).toContain(moneyLabel(warned.w, warned.cost.nextRound));
-    // Debt within a year of every fixed cost, expenses included, is not yet bankruptcy.
+    // Administration starts strictly beyond one year of fixed costs, including expenses.
     const annual = BigInt(warned.cost.annual),
       without = annual - BigInt(warned.cost.expenses);
     const inDebt = start().settle(-(without + 1n));
-    expect(inDebt.bankrupt).toBeUndefined();
+    expect(inDebt.distress?.stage).toBe(1);
     expect(inDebt.insolvent).toBe(1);
-    expect(start().settle(-annual).bankrupt).toBeUndefined();
-    const beyond = start().settle(-(annual + 1n));
-    expect(beyond.bankrupt).toBeDefined();
+    expect(start().settle(-annual).distress?.stage).toBe(1);
+    const writeOff = (annual + 1n) / 2n;
+    const beyond = start().settle(-(annual + 1n), writeOff);
+    expect(beyond.distress?.stage).toBe(3);
+    expect(beyond.bankrupt).toBeUndefined();
+    expect(beyond.events.find((event) => event.kind === 'debt-write-off')?.amount).toBe(
+      writeOff.toString(),
+    );
     // Both count them at the squad investment's factor (→ECON-16): ×1.2 needs more rounds' cash
     // and allows a deeper debt than the default level.
     const generous = start(5),
@@ -121,7 +126,7 @@ describe('operating expenses (→ECON-30)', () => {
       moneyLabel(generous.w, dearer.toString()),
     );
     expect(BigInt(generous.cost.annual)).toBeGreaterThan(annual + 1n);
-    expect(start(5).settle(-(annual + 1n)).bankrupt).toBeUndefined();
+    expect(start(5).settle(-(annual + 1n)).distress?.stage).toBe(1);
   });
 
   it("squad investment scales each round's operating expenses and the runway", () => {

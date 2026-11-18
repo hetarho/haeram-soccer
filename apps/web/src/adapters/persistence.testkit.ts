@@ -3,6 +3,7 @@ import type { CareerInput } from '../../../../packages/engine/src/career.testkit
 import { operate, simulateSeason } from '../../../../packages/engine/src/index';
 import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { lastSeasonTurnover } from '../../../../packages/engine/src/finance-read';
+import { fanMoodChange } from '../../../../packages/engine/src/fan-mood-read';
 import { FAN_MOOD } from '../../../../packages/engine/src/owner-config';
 import { invalidDetail } from '../../../../packages/engine/src/script/failure';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
@@ -33,7 +34,9 @@ export function supportCodecOwner(w: World) {
   const basis = positiveTurnover ? BigInt(turnover!) : BigInt(owner.takeover.price);
   if (basis <= 0n) throw invalidDetail('codec-fixture:capital-budget');
   const amount = (basis + 9n) / 10n;
-  const count = Math.ceil((FAN_MOOD.max - owner.fanMood) / FAN_MOOD.injection.max);
+  const moodGain = Math.round(fanMoodChange(w, FAN_MOOD.injection.max, 'stars') * 100);
+  const moodGap = Math.round((FAN_MOOD.max - owner.fanMood) * 100);
+  const count = Math.ceil(moodGap / moodGain);
   if (BigInt(owner.fortune) < amount * BigInt(count))
     throw invalidDetail('codec-fixture:affordable-capital');
   const receipts = [];

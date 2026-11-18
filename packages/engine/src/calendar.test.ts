@@ -17,6 +17,7 @@ import {
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { world as calendarClub } from './calendar.testkit';
 import { CAREER_YEAR } from './career.testkit';
+import { FAN_MOOD } from './owner-config';
 
 /** The calendar club on the released model: the calendar's mechanics are the subject. */
 const world = () => calendarClub('ENG');
@@ -140,14 +141,15 @@ describe('persistent season calendar', () => {
     validateWorld(w);
   });
 
-  it('stops a multi-day advance exactly when the club goes bankrupt', () => {
+  it('stops a multi-day advance on the round when the fans force the owner out', () => {
     const w = world();
-    // Debt deeper than a season's fixed costs ends the career at the next settlement.
-    w.cash = '-999999999';
+    w.owner!.fanMood = 0;
+    w.owner!.fanCrisis = { rounds: FAN_MOOD.rounds - 1 };
     advanceDays(w, 10);
     expect(currentDay(w)).toBe(7);
     expect(w.round).toBe(1);
-    expect(w.bankrupt).toEqual({ year: w.year, round: 1, day: 7 });
+    expect(w.ended).toBe('fans');
+    expect(w.events.filter((event) => event.kind === 'owner-ousted')).toHaveLength(1);
     const snapshot = canonical(w);
     advanceToNextMatch(w);
     expect(canonical(w)).toBe(snapshot);
