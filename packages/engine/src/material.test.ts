@@ -8,7 +8,7 @@ import { cellOf } from './match/pitch';
 import { MaterialTally } from './match/record';
 import { country } from '../../catalogs/src/index';
 import { closeSeason, simulateMatch } from './index';
-import { careerWorld, CAREER_YEAR, type CareerInput } from './career.testkit';
+import { careerWorld, CAREER_YEAR } from './career.testkit';
 import { ranked } from './season';
 import { clubOf } from './world';
 import {
@@ -138,8 +138,7 @@ describe('post-match material', () => {
   it('reduces material to season heat maps at the close', () => {
     // This local career must genuinely finish outside the playoff places; the next case covers
     // material from a playoff played during the close.
-    const input: CareerInput = { ...CAREER, seed: 'material-season-heat-no-playoff' };
-    const w = simulatedWorld(input, { rounds: 46 });
+    const w = simulatedWorld(CAREER, { rounds: 46 });
     expect(w.year).toBe(CAREER_YEAR);
     expect(w.round).toBe(46);
     const own = clubOf(w),
