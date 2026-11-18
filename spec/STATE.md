@@ -67,7 +67,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T954 | Each player ages on his own curve | PLAYER WORLD | - | doing@261118.mr18cx |
 | T955 | A fourth personality trait, 충성심 | PLAYER | - | todo |
 | T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
 | T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
@@ -106,6 +105,7 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
-- gusta-implement-task T954 T955 T957
+- gusta-implement-task T958
+- gusta-implement-task T955 T957
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.
