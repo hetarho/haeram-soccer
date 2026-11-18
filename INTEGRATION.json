@@ -342,8 +342,8 @@
       "branch": "gusta-session-start-cx19-ci-handoff",
       "head": "d23cf4f0aa88cd886e863bf150b0e33c9e2a2a0f",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-18T15:28:21.643Z",
+      "status": "ready",
+      "at": "2026-11-18T15:28:26.370Z",
       "agentChecks": [
         {
           "id": "T981-ci-handoff",
