@@ -114,6 +114,19 @@ export function npcFixedCosts(w: World, club: Club) {
     BigInt(operatingExpenses(w, club, last, last && lastTier(w, club, last.year)))
   );
 }
+/** Debt after actual current-season fees, before the seasonal book settles them into cash. */
+export function npcDebt(w: World, club: Club) {
+  const books = club.books;
+  if (!books) return 0n;
+  const liveYear = books.seasons[0]?.year === w.year ? seasonAfter(w.year) : w.year;
+  const live = (amount: string) => converted(club, amount, liveYear, w.year);
+  const debt =
+    live(books.debt) -
+    live(books.cash) +
+    live(books.transfersPaid ?? '0') -
+    live(books.transfersReceived ?? '0');
+  return debt > 0n ? debt : 0n;
+}
 /** Only clubs whose league round actually settled get a counter tick. */
 export function settleNpcDistress(w: World, fixtures: readonly Fixture[]) {
   const played = new Set(
@@ -122,7 +135,7 @@ export function settleNpcDistress(w: World, fixtures: readonly Fixture[]) {
   for (const club of w.clubs) {
     if (!played.has(club.id) || !keepsBooks(w, club) || !club.books) continue;
     const before = club.books.distress;
-    const after = stepDistress(before, BigInt(club.books.debt), npcFixedCosts(w, club), w);
+    const after = stepDistress(before, npcDebt(w, club), npcFixedCosts(w, club), w);
     if (after) club.books.distress = after;
     reportDistress(w, club.id, before, after);
   }

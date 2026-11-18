@@ -1,3 +1,4 @@
+import { distressFreeNeed, distressSigningReason, forcedSales } from './distress';
 import { retirePlayerRecord } from './player-records';
 import { recordRetirementNews } from './news';
 import { message as sourceMessage } from '../../contracts/src/messages';
@@ -297,7 +298,11 @@ export function refreshFreeAgents(w: World, year = w.year) {
     for (const agent of byAbility(freeAgentsOf(w))) {
       const offers = wanting
         .of(lineOf(agent.position))
-        .filter((c) => wantsFreeAgent(facts.get(c.id)!, agent, year))
+        .filter(
+          (c) =>
+            wantsFreeAgent(facts.get(c.id)!, agent, year) &&
+            (!forcedSales(c.books?.distress) || distressFreeNeed(w.squads![c.id]!, agent)),
+        )
         .map((club) => {
           const wage = marketWageAt(club.country, year, club.tier, agent);
           return { club, wage, pounds: BigInt(inPounds(club.country, year, wage)) };
@@ -352,7 +357,7 @@ export function signFreeAgentAtClose(
   const agent = byAbility(
     freeAgentsOf(w).filter((p) => lineOf(p.position) === line && overall(p) <= level),
   )[0];
-  if (!agent) return undefined;
+  if (!agent || distressSigningReason(w, agent, true)) return undefined;
   const graduate = graduateIds(w).has(agent.id);
   if (registrationRoom(w, { ...agent, joined: w.year, graduate: graduate ? true : undefined }))
     return 'full';

@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "id": "tr-TR",
   "messages": {
+    "finance.distress.noSigning": "Zorunlu satışlar veya kayyum yönetimi sırasında ücretli transfer ve kiralama yasaktır.",
+    "finance.distress.freeMinimum": "Mali kriz sırasında serbest oyuncular yalnızca en az 14 oyuncuyu veya eksik kaleciyi tamamlamak için alınabilir.",
+    "finance.distress.forcedSale": "Mali kriz nedeniyle zorunlu satış kapsamında oyuncu değerinin en az %70’i tutarındaki teklif kabul edildi.",
     "finance.distress.stage1": "Mali uyarı",
     "finance.distress.stage2": "Zorunlu satışlar",
     "finance.distress.stage3": "Kayyum yönetimi",

@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "id": "ar-SA",
   "messages": {
+    "finance.distress.noSigning": "تُحظر التعاقدات المدفوعة والإعارات أثناء المبيعات الإجبارية أو الإدارة القضائية.",
+    "finance.distress.freeMinimum": "أثناء الأزمة المالية، يُسمح بضم اللاعبين الأحرار فقط لاستكمال الحد الأدنى البالغ 14 لاعبًا أو توفير حارس مرمى.",
+    "finance.distress.forcedSale": "قُبل العرض الذي يبلغ 70% على الأقل من قيمة اللاعب ضمن المبيعات الإجبارية بسبب الأزمة المالية.",
     "finance.distress.stage1": "تحذير مالي",
     "finance.distress.stage2": "مبيعات إجبارية",
     "finance.distress.stage3": "إدارة قضائية",

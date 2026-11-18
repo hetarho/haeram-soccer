@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "id": "pt-BR",
   "messages": {
+    "finance.distress.noSigning": "Contratações pagas e empréstimos são proibidos durante vendas obrigatórias ou administração judicial.",
+    "finance.distress.freeMinimum": "Em crise financeira, agentes livres só podem completar o mínimo de 14 jogadores ou garantir um goleiro.",
+    "finance.distress.forcedSale": "A oferta de pelo menos 70% do valor do jogador foi aceita devido às vendas obrigatórias da crise financeira.",
     "finance.distress.stage1": "Alerta financeiro",
     "finance.distress.stage2": "Vendas obrigatórias",
     "finance.distress.stage3": "Administração judicial",

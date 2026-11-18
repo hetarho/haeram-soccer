@@ -1,3 +1,5 @@
+import { distressSalePlan, forcedSales } from './distress';
+import { npcDebt, npcFixedCosts } from './books';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { addEvent } from './events';
 import { playerRecord } from './player-records';
@@ -91,7 +93,7 @@ export function npcMarketDays(year: number) {
 
 type Need = { line: Line; slot?: Slot; best: number; rank: number };
 /** Why a club offers a player before anyone asks (→WORLD-16); a listed player comes first on ties. */
-type ListingReason = 'sell-down' | 'surplus' | 'blocked' | 'final-season';
+type ListingReason = 'forced-sale' | 'sell-down' | 'surplus' | 'blocked' | 'final-season';
 type Listing = {
   club: Club;
   player: Player;
@@ -322,6 +324,7 @@ export function npcOffer(
   settlement?: Settlement,
 ) {
   if (
+    forcedSales(buyer.books?.distress) ||
     !/^\d{1,80}$/.test(fee) ||
     buyer.id === w.playerClub ||
     buyer.representative ||
@@ -345,7 +348,7 @@ export function npcOffer(
  * books, a full registration ceiling or a wage bill over the limit. Only a settled move changes them.
  */
 function refusesEveryBid(w: World, buyer: Club, settlement: Settlement) {
-  if (!buyer.books) return true;
+  if (!buyer.books || forcedSales(buyer.books.distress)) return true;
   const { registration, limit, bill } = clubFacts(w, buyer, settlement);
   return (
     registration.total + reservedReturns(w, buyer.id, settlement) >= registration.ceiling ||
@@ -544,7 +547,21 @@ function listings(w: World, clubs: Club[], settlement: Settlement) {
       age: w.year - p.born,
       finalSeason: p.until <= w.year,
     });
-    const ranked = sellDown
+    const forced = forcedSales(c.books?.distress)
+      ? distressSalePlan(
+          players,
+          npcDebt(w, c),
+          npcFixedCosts(w, c),
+          (p) => row(p).value,
+          (remaining, p) =>
+            npcCanSell(w, c, p) &&
+            remaining.length > Math.max(SQUAD_MINIMUM, NPC_MARKET.minimum) &&
+            remaining.filter((q) => lineOf(q.position) === lineOf(p.position)).length >
+              LINE_MINIMUM[lineOf(p.position)],
+        )
+      : [];
+    const forcedIds = new Set(forced.map((p) => p.id));
+    const ordered = sellDown
       ? players
           .map((p) => ({ p, row: row(p) }))
           .sort((a, b) => compareSellDown(a.row, b.row))
@@ -552,6 +569,9 @@ function listings(w: World, clubs: Club[], settlement: Settlement) {
       : [...players].sort(
           (a, b) => rating(a, settlement) - rating(b, settlement) || compareIds(a.id, b.id),
         );
+    const ranked = forced.length
+      ? [...forced, ...ordered.filter((p) => !forcedIds.has(p.id))]
+      : ordered;
     const remaining = [...players];
     let surplus = Math.max(0, players.length - NPC_SQUAD.size);
     for (const p of ranked) {
@@ -569,20 +589,30 @@ function listings(w: World, clubs: Club[], settlement: Settlement) {
             lineOf(q.position) === line &&
             rating(q, settlement) >= rating(p, settlement) + NPC_MARKET.blocked,
         ).length >= LINE_MINIMUM[line];
-      if (sellDown ? bill <= limit! : !(surplus > 0 || blocked || p.until <= w.year)) continue;
+      if (
+        !forcedIds.has(p.id) &&
+        (sellDown ? bill <= limit! : !(surplus > 0 || blocked || p.until <= w.year))
+      )
+        continue;
       listed.set(p.id, {
         club: c,
         player: p,
-        loan: !sellDown && (blocked || surplus > 0) && w.year - p.born <= NPC_MARKET.loanAge,
-        reason: sellDown
-          ? 'sell-down'
-          : blocked
-            ? 'blocked'
-            : surplus > 0
-              ? 'surplus'
-              : 'final-season',
+        loan:
+          !forcedIds.has(p.id) &&
+          !sellDown &&
+          (blocked || surplus > 0) &&
+          w.year - p.born <= NPC_MARKET.loanAge,
+        reason: forcedIds.has(p.id)
+          ? 'forced-sale'
+          : sellDown
+            ? 'sell-down'
+            : blocked
+              ? 'blocked'
+              : surplus > 0
+                ? 'surplus'
+                : 'final-season',
       });
-      if (sellDown) {
+      if (sellDown || forcedIds.has(p.id)) {
         remaining.splice(remaining.indexOf(p), 1);
         bill -= BigInt(p.wage);
       } else if (surplus > 0) surplus--;
@@ -853,6 +883,7 @@ export function npcMarket(w: World) {
    * cheaper player below the kept ones can outscore them.
    */
   const targetsFor = (buyer: Club, need: Need) => {
+    if (forcedSales(buyer.books?.distress)) return [];
     const threshold = need.slot ? need.best + NPC_MARKET.upgrade : -Infinity,
       slack = need.slot ? NPC_MARKET.searchSlack : 0,
       keep = NPC_MARKET.targetsPerNeed * NPC_MARKET.searchSpare,

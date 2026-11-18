@@ -1,3 +1,4 @@
+import { distressSigningReason } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { closeNeedFor, openNeeds } from './replacements';
 import { bidCeiling, directorTrait, staffBidShare } from './director-bidding';
@@ -209,6 +210,8 @@ export function signingVerdict(
   need?: SigningNeed['kind'],
   bidId?: string,
 ) {
+  const distress = distressSigningReason(w, player, BigInt(fee) === 0n, false, bidId);
+  if (distress) return { ok: false as const, reason: distress };
   // A bid being settled replaces its own reservation; other live bids still tie up cash.
   const planning = bidId ? { ...w, bids: w.bids?.filter((bid) => bid.id !== bidId) } : w;
   const plan = delegatePlan(planning, 'recruitment'),

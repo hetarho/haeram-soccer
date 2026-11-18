@@ -1,7 +1,9 @@
 /** The shared financial distress ladder; no random draws or presentation preferences. */
 import type { DistressState } from '../../contracts/src/owner';
-import type { World } from '../../contracts/src/types';
+import type { Player, World } from '../../contracts/src/types';
 import { message } from '../../contracts/src/messages';
+import { SQUAD_MINIMUM } from './squad-size';
+import { compareIds } from './primitives';
 import { addEvent } from './events';
 import { pushInbox } from './inbox';
 
@@ -82,3 +84,68 @@ export function repayDistress(w: World) {
   if (!w.distress || BigInt(w.cash) < 0n) return;
   w.distress = { ...w.distress, overHalfRounds: 0, stage: w.distress.stage === 3 ? 3 : undefined };
 }
+
+/** Stage 2 and administration share the assigned market sanctions. */
+export const forcedSales = (state?: DistressState) => (state?.stage ?? 0) >= 2;
+
+/** A free signing may only restore the minimum or a missing keeper (→CLUB-5). */
+export function distressFreeNeed(
+  players: readonly Pick<Player, 'id' | 'position'>[],
+  player: Pick<Player, 'position'>,
+) {
+  return (
+    players.length < SQUAD_MINIMUM ||
+    (player.position === 'GK' && !players.some((p) => p.position === 'GK'))
+  );
+}
+/** Open owner and delegated bids both reserve future squad places; never count an ID twice. */
+export function distressSigningReason(
+  w: World,
+  player: Player,
+  free: boolean,
+  loan = false,
+  replacingBid?: string,
+) {
+  if (!forcedSales(w.distress)) return undefined;
+  if (!free || loan) return message('finance.distress.noSigning');
+  const players = new Map(w.players.filter((p) => p.status === 'active').map((p) => [p.id, p]));
+  for (const bid of w.bids ?? [])
+    if (
+      bid.id !== replacingBid &&
+      bid.direction === 'out' &&
+      bid.year === w.year &&
+      (bid.status === 'pending' || bid.status === 'countered') &&
+      bid.offer
+    )
+      players.set(bid.playerId, bid.offer.player);
+  return distressFreeNeed([...players.values()], player)
+    ? undefined
+    : message('finance.distress.freeMinimum');
+}
+
+/** Most valuable first, at the guaranteed acceptance price, respecting cumulative departure gates. */
+export function distressSalePlan(
+  players: readonly Player[],
+  debt: bigint,
+  annual: bigint,
+  value: (player: Player) => bigint,
+  canSell: (remaining: readonly Player[], player: Player) => boolean,
+) {
+  const remaining = [...players],
+    listed: Player[] = [];
+  const rows = players
+    .map((p) => ({ p, value: value(p) }))
+    .sort((a, b) =>
+      a.value === b.value ? compareIds(a.p.id, b.p.id) : a.value > b.value ? -1 : 1,
+    );
+  for (const row of rows) {
+    if (debt * 1000n < annual * BigInt(Math.round(DISTRESS.forcedSales * 1000))) break;
+    if (!canSell(remaining, row.p)) continue;
+    listed.push(row.p);
+    remaining.splice(remaining.indexOf(row.p), 1);
+    debt -= distressSaleFee(row.value);
+  }
+  return listed;
+}
+export const distressSaleFee = (value: bigint) =>
+  (value * BigInt(Math.round(DISTRESS.saleShare * 1000)) + 999n) / 1000n;

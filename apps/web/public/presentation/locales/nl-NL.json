@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "id": "nl-NL",
   "messages": {
+    "finance.distress.noSigning": "Transfers met een vergoeding en huurtransfers zijn verboden bij gedwongen verkoop of bewindvoering.",
+    "finance.distress.freeMinimum": "Bij financiële nood mogen vrije spelers alleen het minimum van 14 spelers of een ontbrekende doelman aanvullen.",
+    "finance.distress.forcedSale": "Het bod van minstens 70% van de spelerswaarde is aanvaard vanwege gedwongen verkoop bij financiële nood.",
     "finance.distress.stage1": "Financiële waarschuwing",
     "finance.distress.stage2": "Gedwongen verkoop",
     "finance.distress.stage3": "Bewindvoering",

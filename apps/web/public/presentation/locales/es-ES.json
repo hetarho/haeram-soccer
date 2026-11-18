@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "id": "es-ES",
   "messages": {
+    "finance.distress.noSigning": "No se permiten fichajes de pago ni cesiones durante ventas forzadas o administración judicial.",
+    "finance.distress.freeMinimum": "En crisis financiera, solo se permiten agentes libres para alcanzar 14 jugadores o disponer de portero.",
+    "finance.distress.forcedSale": "Se aceptó la oferta de al menos el 70% del valor del jugador por las ventas forzadas de la crisis financiera.",
     "finance.distress.stage1": "Advertencia financiera",
     "finance.distress.stage2": "Ventas forzadas",
     "finance.distress.stage3": "Administración judicial",

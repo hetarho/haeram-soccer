@@ -1,3 +1,5 @@
+import { distressSaleFee, forcedSales } from './distress';
+import { marketValueAt } from './market-prices';
 /**
  * The selling club's answer to a bid (매각 판단, →CLUB-52): one model for every bid a club
  * receives, ours to a club nobody owns and another club's to us while sales are delegated. A bid at
@@ -51,8 +53,10 @@ export interface SaleContext {
   asking: string;
   /** The seller is our club. */
   ownSeller: boolean;
-  /** Our player's value: our reservation never falls below 80% of it. Absent at other clubs. */
+  /** Player value for forced sales; our normal reservation also reads its 80% floor. */
   value?: string;
+  /** ECON-24 forced acceptance, separate from T971's reservation factors. */
+  forcedSales?: boolean;
   place: SalePlace;
   /** The seller’s stable LEAGUE-10 stature, independent of current strength or reputation. */
   stature: number;
@@ -258,6 +262,8 @@ const counterReach = (asking: bigint) =>
 export type SaleAnswerKind = 'accept' | 'counter' | 'refuse';
 export interface SaleAnswer {
   kind: SaleAnswerKind;
+  /** Forced acceptance under ECON-24 rather than the normal reservation. */
+  forced?: true;
   /** The counter's fee, R: never below the bid, never above the asking fee. */
   counter?: string;
   /** The reservation R and the share it was read at, the spread included. */
@@ -287,6 +293,17 @@ export function saleAnswer(
   if (reservation < floor) reservation = floor;
   if (reservation > asking) reservation = asking;
   const answer = { reservation: reservation.toString(), share, spread, lines };
+  if (
+    context.forcedSales &&
+    context.value !== undefined &&
+    fee >= distressSaleFee(BigInt(context.value))
+  )
+    return {
+      kind: 'accept',
+      ...answer,
+      forced: true,
+      reservation: distressSaleFee(BigInt(context.value)).toString(),
+    };
   if (fee >= asking || fee >= reservation) return { kind: 'accept', ...answer };
   if (fee >= reservation - counterReach(asking))
     return { kind: 'counter', counter: reservation.toString(), ...answer };
@@ -317,6 +334,12 @@ export function saleOutlook(
     if (bound <= SALE_SHARE.min) return 0;
     return Math.min(1, Math.max(0, (bound - base + s) / (2 * s)));
   };
+  if (
+    context.forcedSales &&
+    context.value !== undefined &&
+    fee >= distressSaleFee(BigInt(context.value))
+  )
+    return { accept: 1, counter: 0, lines };
   const accept = reservedAtMost(fee);
   return { accept, counter: reservedAtMost(fee + counterReach(asking)) - accept, lines };
 }
@@ -415,6 +438,7 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     prospect = isProspect(w, player),
     common = {
       fee: bid.fee,
+      forcedSales: forcedSales(ownSeller ? w.distress : seller.books?.distress),
       stature: stature(w.seed, seller.id),
       place: placeIn(ownSeller ? ownStarters(w) : startingSquad(w, seller), player.id),
       contractSeasons: seasonsLeft(w, player.until),
@@ -451,6 +475,7 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
   return {
     ...common,
     asking,
+    value: marketValueAt(seller.country, w.year, seller.tier, player),
     ownSeller,
     ...npcCash(w, seller),
     wageLine: 0,
@@ -514,6 +539,8 @@ export function npcSaleContext(w: World, bid: NpcSaleBid): SaleContext {
     place = placeIn(startingSquad(w, seller), player.id);
   return {
     fee: bid.fee,
+    forcedSales: forcedSales(seller.books?.distress),
+    value: marketValueAt(seller.country, w.year, seller.tier, player),
     asking: bid.asking,
     ownSeller: false,
     stature: stature(w.seed, seller.id),

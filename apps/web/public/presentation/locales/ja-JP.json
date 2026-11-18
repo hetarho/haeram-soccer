@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "id": "ja-JP",
   "messages": {
+    "finance.distress.noSigning": "売却要求中または管財人管理中は、移籍金を伴う獲得とレンタル獲得はできません。",
+    "finance.distress.freeMinimum": "財政危機中の自由契約選手の獲得は、最低14人またはゴールキーパーの確保に限られます。",
+    "finance.distress.forcedSale": "財政危機による強制売却として、選手価値の70%以上のオファーを受諾しました。",
     "finance.distress.stage1": "財政警告",
     "finance.distress.stage2": "売却要求",
     "finance.distress.stage3": "管財人管理",
