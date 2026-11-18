@@ -63,6 +63,7 @@
 | game-runtime-speed-261110 | converted@261110 |
 | match-engine-split-261110 | converted@261111 |
 | market-levels-261118 | converted@261118 |
+| night-perf-261119 | converted@261119 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -72,6 +73,10 @@
 | T955 | A fourth personality trait, 충성심 | PLAYER | - | todo |
 | T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
 | T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
+| T982 | Scan market candidates without per-candidate string keys | ARCH | - | todo |
+| T983 | Faster place-weight fitting and attribution kernels for NPC fixtures | ARCH | - | todo |
+| T984 | Per-slot best pairs in squad selection and explicit growth writes | ARCH | - | todo |
+| T985 | Profile only the measured reps, and later seasons alone | ARCH | - | todo |
 | T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |
 | T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |
 | T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | todo |
@@ -108,6 +113,7 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
+- np19 (261119, gusta-self-improve, running): engine speed-ups T982–T985 from review/night-perf-261119 in work group np19-perf; the owner reads reports/261119-np19.
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.
 - T981 (ARCH r49, from gusta-update 0.17.8): CI keeps only the Chromium browser shards; run `gusta-implement-task T981` independently of T953–T980.
