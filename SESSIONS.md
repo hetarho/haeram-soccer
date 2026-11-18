@@ -165,6 +165,7 @@
 - 261118 suggest T977 ECON-36 CLUB-46: Review the joint wage, fee and funding assumptions. Six paired wage levels left first-flight fee receipts and other ECON-36 bands outside range. The best wage level, 2700, leaves the 2003 mean quote at 2.98 times its reference. The exact misses and per-country books are in artifacts/benchmarks/T977.
 - 261118 suggest T978 LEAGUE-10 WORLD-16 ECON-36 CLUB-46 PLAYER-17 MATCH-23: The full 0.8.12 calibration leaves major linked misses in division level, upward moves, administration and transfer value. Review the joint funding, price and academy rules with the exact T977/T978 measurements. The refill-only 10→6 diagnostic worsened early coverage. The 1930–1975 cohort also saw zero six-point OVR drops in the tracked two-year onset interval.
 - 261118 suggest T961: The recovery makes likely-taker ranking work with a partial starting eleven. Audit direct recruitment preview and the improves filter for the older assumption that every formation slot has a current player.
+- 261118 decided T982 T988: T982 review asked twice to re-measure on a base that grew by units outside the history path (T985 tooling, T986 own-match) → coordinator serializes history-path units (T982, then T988, then T987) and owns one final combined measurement of the integrated candidate (alt: let reviews chase every base | waive re-measurement)
 
 ## unlanded
 | id | tag | branch | commit | at |
