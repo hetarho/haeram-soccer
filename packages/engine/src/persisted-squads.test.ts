@@ -30,6 +30,7 @@ import {
   squadPlaces,
   startingSquad,
   stature,
+  spreadTerm,
 } from './world';
 import { clubManager } from './managerMarket';
 import { continuousSquad, materializePeople, movePerson, returnLoan } from './npc-continuity';
@@ -41,7 +42,7 @@ import { signFreeAgent } from './ops-squad';
 import { clubPlayer, freeAgentTerms, worldMarketPage } from './world-market';
 import { transferOffers } from './scout-search';
 import { coachingGrade } from './aptitude';
-import { lineOf } from './player';
+import { lineOf, ovrAt } from './player';
 import { isInjured, overall } from './player-state';
 import { takeOver } from './takeover';
 import { staffAuthority } from './testing';
@@ -51,7 +52,7 @@ import { academyIntakeDay, academyIntakeSize, promoteYouth, runAcademyIntake } f
 import { playerRecord } from './player-records';
 
 /** Ten small synthetic clubs, no world generation, fixture settlement or season simulation. */
-function fixture(year = 1950, owner = true): World {
+function fixture(year = 1950, owner = true, foundingStrengths = new Map<string, number>()): World {
   const w = worldMarketFixture();
   w.year = year;
   w.catalog = CATALOG_VERSION;
@@ -80,6 +81,7 @@ function fixture(year = 1950, owner = true): World {
   w.tactic = w.manager.philosophy;
   w.calendar = { day: 0 };
   w.settings = staffAuthority(1);
+  for (const c of w.clubs) foundingStrengths.set(c.id, c.strength);
   foundSquads(w);
   if (owner) materializePeople(w);
   return w;
@@ -161,7 +163,8 @@ describe('persisted playable squads', () => {
   });
 
   it.each([1930, 1980])('founds all eight associations exactly once in %i', (year) => {
-    const w = fixture(year, false),
+    const foundingStrengths = new Map<string, number>();
+    const w = fixture(year, false, foundingStrengths),
       before = structuredClone(w.squads);
     expect(Object.keys(w.squads!)).toHaveLength(COUNTRIES.length);
     for (const c of w.clubs) {
@@ -172,7 +175,10 @@ describe('persisted playable squads', () => {
       }
       const players = w.squads![c.id]!;
       expect(players).toHaveLength(NPC_SQUAD.size);
-      for (const generated of npcSquad(w.seed, year, { ...c, strength: 55 })) {
+      for (const generated of npcSquad(w.seed, year, {
+        ...c,
+        strength: foundingStrengths.get(c.id)!,
+      })) {
         const stored = players.find((p) => p.id === generated.id)!;
         expect(stored.joined).toBe(year);
         expect(stored.graduate).toBeUndefined();
@@ -194,6 +200,52 @@ describe('persisted playable squads', () => {
     materializePeople(w);
     expect(w.squads).toEqual(before);
     liveIds(w);
+  });
+
+  it('founds varied XIs at their own strength with class, age and extra bench spread', () => {
+    const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+    const benchGaps: number[] = [],
+      extraGaps: number[] = [];
+    for (const seed of ['founding-spread-a', 'founding-spread-b']) {
+      const w = worldMarketFixture();
+      w.seed = seed;
+      w.playerClub = '';
+      w.players = [];
+      w.clubs = Array.from({ length: 24 }, (_, i) => ({
+        ...w.clubs[0]!,
+        id: `ENG:${i}`,
+        strength: 50 + (i % 4) * 10,
+      }));
+      const strengths = new Map(w.clubs.map((c) => [c.id, c.strength]));
+      const founding = new Map(w.clubs.map((c) => [c.id, npcSquad(seed, w.year, c)]));
+      foundSquads(w);
+      for (const c of w.clubs) {
+        const players = w.squads![c.id]!,
+          strength = strengths.get(c.id)!;
+        const places = squadPlaces(clubStyle(c));
+        // The matchday selection may reorder them; inspect the original founding places.
+        const starters = founding
+          .get(c.id)!
+          .slice(0, 11)
+          .map((p) => players.find((q) => q.id === p.id)!);
+        const xi = starters.map((p, i) => ovrAt(p.attrs, places[i]!.position, places[i]!.role));
+        expect(Math.abs(mean(xi) - strength)).toBeLessThanOrEqual(0.5);
+        expect(Math.max(...xi) - Math.min(...xi)).toBeGreaterThan(2);
+        // Normalising the XI shifts everyone together, retaining their own class and age.
+        const terms = starters.map((p) => spreadTerm(seed, p.id, w.year - p.born));
+        for (const [i, value] of xi.entries())
+          expect(Math.abs(value - mean(xi) - (terms[i]! - mean(terms)))).toBeLessThanOrEqual(1.5);
+        const starterIds = new Set(starters.map((p) => p.id));
+        benchGaps.push(mean(xi) - mean(players.filter((p) => !starterIds.has(p.id)).map(overall)));
+        const extras = players.filter((p) => p.id.includes(':founding:'));
+        expect(extras.length).toBeGreaterThan(0);
+        extraGaps.push(mean(xi) - mean(extras.map(overall)));
+      }
+    }
+    for (const gaps of [benchGaps, extraGaps]) {
+      expect(mean(gaps)).toBeGreaterThanOrEqual(3);
+      expect(mean(gaps)).toBeLessThanOrEqual(8);
+    }
   });
 
   it('pins collision-free founding profiles with the production squad spread', () => {

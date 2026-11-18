@@ -301,6 +301,7 @@ const fixture = z.object({
   away: id,
   country: text,
   groupKey: text,
+  leg: z.literal([1, 2]).optional(),
   score: score.optional(),
   shootout: score.optional(),
 });

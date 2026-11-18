@@ -639,6 +639,8 @@ export interface Fixture {
   away: string;
   country: string;
   groupKey: string;
+  /** First or return leg of a two-legged tie; absent for single matches and older fixtures. */
+  leg?: 1 | 2;
   score?: Score;
   /** Kicks scored in the shoot-out of a knockout fixture decided on penalties (→MATCH-6). */
   shootout?: Score;

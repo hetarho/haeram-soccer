@@ -17,6 +17,7 @@ import { buildEffects, buildOf } from './build';
 import { staffMember } from './staff-info';
 import { associationAccessOrder } from './europe-access';
 import { askedFeeFactor } from './owner-traits';
+import { termsChance, termsContext } from './personal-terms';
 import { freeAgentsOf, nationalityOf, originClub } from './free-agents';
 import {
   askingMultiplier,
@@ -49,6 +50,9 @@ export const SCOUT_CONFIG = {
   /** However the cards cut it, he lists at least this many per line. */
   minPerLine: 1,
 } as const;
+
+/** A player's chance at his demand that makes him a likely taker (→CLUB-51). */
+export const SCOUT_LIST = { likelyChance: 0.3 } as const;
 
 /**
  * T784's candidate shapes of the list (→CLUB-51), a measurement setting off in play: `line` lists a
@@ -173,6 +177,7 @@ function reachClubs(w: World, reach: ScoutReach) {
 }
 
 interface Found {
+  likely: boolean;
   player: Player;
   club?: Club;
   line: Line;
@@ -181,8 +186,9 @@ interface Found {
   first: number;
   second: number;
 }
-/** Sporting measures first, then free status and stable id (→CLUB-33). */
+/** Likely takers first, then sporting measures, free status and stable id (→CLUB-51/33). */
 const byRank = (a: Found, b: Found) =>
+  Number(b.likely) - Number(a.likely) ||
   b.first - a.first ||
   b.second - a.second ||
   Number(!b.club) - Number(!a.club) ||
@@ -211,8 +217,8 @@ function abilities(players: readonly Player[]) {
 
 /**
  * The players within the reach (→CLUB-51) whose age and ability fit the search, ranked
- * by ability and potential (potential first where the search says so), then free status and
- * id; per line the reach's count, keeping its places abroad for the ablest found there. With
+ * by willingness at his demand, ability and potential (potential first where the search says so),
+ * then free status and id; per line the reach's count, keeping its places abroad for the ablest found there. With
  * `everyone`, every player within the reach whatever his age and ability (the search's bands
  * shape the list alone, →ECON-16), all of them. Our players, players on loan at their club and
  * announced retirements are never listed.
@@ -229,7 +235,9 @@ function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
     const potentialFirst =
       reach.potentialFirst === 'all' ||
       (reach.potentialFirst === 'young' && age <= SCOUT_CONFIG.youngAge);
+    const context = termsContext(w, { playerId: player.id, clubId: club?.id, step: 1 });
     found.push({
+      likely: !!context && termsChance(context).chance >= SCOUT_LIST.likelyChance,
       player,
       ...(club ? { club } : {}),
       line: lineOfPlayer(player),

@@ -57,6 +57,18 @@ export function roundsFor(n: number) {
   return 32 - Math.clz32(Math.max(2, n) - 1);
 }
 
+/**
+ * Explicit leg identity, with the exact fixture pair as the compatibility source for older saves.
+ * Test for a return belonging to this fixture before looking for its own first leg: tie index 2
+ * also ends in ':2', but is itself a first leg when its return exists.
+ */
+export function fixtureLeg(f: Fixture, fixtures: readonly Fixture[]): Fixture['leg'] {
+  if (f.leg !== undefined) return f.leg;
+  if (fixtures.some((other) => other.id === `${f.id}:2`)) return 1;
+  if (fixtures.some((other) => `${other.id}:2` === f.id)) return 2;
+  return undefined;
+}
+
 /** The legs of tie `t` in round `index` of the `year` season, in playing order. */
 export function legsOf(
   w: World,

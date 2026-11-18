@@ -15,7 +15,7 @@ import {
 } from './books';
 import { npcContractTerm } from './free-agents';
 import { MARKET_CONFIG, marketValueAt, marketWageAt } from './market-prices';
-import { movePerson } from './npc-continuity';
+import { movePerson, restoreLoanStint } from './npc-continuity';
 import { CLUB_LEVELS, moveSquadPlayer } from './persisted-squads';
 import { TRAINING_GROUND } from './facility-model';
 import { clubManager } from './managerMarket';
@@ -482,12 +482,7 @@ export function returnNpcLoans(w: World) {
       p.until = loan.contractUntil;
       // The borrower keeps its own history; only the returning copy resumes the parent's stint.
       const returning = borrower?.id === w.playerClub ? structuredClone(p) : p;
-      const prior = parent.id === w.playerClub ? w.players.find((q) => q.id === id) : undefined;
-      delete returning.graduate;
-      delete returning.joined;
-      if (loan.graduate ?? prior?.graduate) returning.graduate = true;
-      const joined = loan.joined ?? prior?.joined;
-      if (joined !== undefined) returning.joined = joined;
+      restoreLoanStint(w, returning, parent.id, loan);
       if (w.people?.[id]) {
         movePerson(w, returning, parent.id, borrower?.id === w.playerClub, undefined, borrower?.id);
         delete w.people[id]!.loan;

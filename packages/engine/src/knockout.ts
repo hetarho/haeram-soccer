@@ -13,7 +13,7 @@ import { simulateMatch } from './match';
 import type { DecideRule } from './match/rules';
 import { recordMatch } from './season';
 import { fixtureDay } from './calendar';
-import { legsOf, tieAggregate, tieId } from './competition-keys';
+import { fixtureLeg, legsOf, tieAggregate, tieId } from './competition-keys';
 export { legsOf, roundLabel, roundsFor, tieAggregate, tieId } from './competition-keys';
 
 export type Settlement = (w: World, p: MatchPlayback) => void;
@@ -76,6 +76,7 @@ export function tieFixtures(
       away: tie.away,
       country,
       groupKey: key,
+      ...(round.legs === 2 ? { leg: 1 } : {}),
     };
     return round.legs === 2
       ? [
@@ -83,6 +84,7 @@ export function tieFixtures(
           {
             ...first,
             id: `${first.id}:2`,
+            leg: 2,
             round: returnRound,
             home: tie.away,
             away: tie.home,
@@ -121,7 +123,9 @@ export function tieRule(
   fixtures: readonly Fixture[],
   awayGoals: boolean,
 ): DecideRule | undefined {
-  if (f.id.endsWith(':2')) {
+  const identity = fixtureLeg(f, fixtures);
+  if (identity === 1) return undefined;
+  if (identity === 2) {
     const leg = fixtures.find((x) => x.id === f.id.slice(0, -2));
     if (!leg?.score) return { awayGoals: false };
     const hosted = leg.home === f.home;
@@ -133,7 +137,7 @@ export function tieRule(
       awayGoals,
     };
   }
-  return fixtures.some((x) => x.id === `${f.id}:2`) ? undefined : { awayGoals: false };
+  return { awayGoals: false };
 }
 
 /**
