@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T04:47Z | T964 | gusta-session-start-mr18cx-5d3ec005 | bcf54daf4d37 | 9eeb147edbd8727c1a5f52aa |
+| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T04:52Z | - | gusta-session-start-mr18cx-5d3ec005 | f12af63654d5 | 9eeb147edbd8727c1a5f52aa |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -199,8 +199,10 @@
 | T961 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | e4787581b0e6 | 2026-11-18T04:20Z |
 | T962 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | fbc3c3d1cba0 | 2026-11-18T04:27Z |
 | T963 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | e79a5ae5d7ce | 2026-11-18T04:34Z |
+| T964 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | f12af63654d5 | 2026-11-18T04:52Z |
 
 ## log
+- 261118 T964 done
 - 261118 Manual serial recovery complete: T957 repair d35ccad7 (base caeb5242), T979 fallback repair 891d073f (base d35ccad7), T961 e4787581/6cb3e4a3, T962 fbc3c3d1/5ecbd9d2, T963 e79a5ae5 plus closure. Each passed all five task checks and spec lint; evidence .tmp/mr18cx/*worker-check.json. Independent Claude review and all final batch/golden/integration/release/publication work remain with host; no code push or release prep performed.
 - 261118 T963 done
 - 261118 T962 done
@@ -220,4 +222,3 @@
 - 261118 fix market: emit outcomes for counted NPC bids for T953 measurement
 - 261118 sketch mr18: owner decisions on xf18 parked items → WORLD r18 LEAGUE r23 PLAYER r20 CLUB r78 ECON r63 OWNER r8 WEB r222, tasks T953–T980, ideation/historical-era-rules
 - 261117 fix architecture: delegated sales panel reads sale constants from the transfer-policy leaf (main CI red at 363ecdbc7, green at 5fbd9bd1c)
-- 261117 T950 done
