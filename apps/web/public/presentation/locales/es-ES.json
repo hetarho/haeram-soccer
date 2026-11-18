@@ -7024,6 +7024,27 @@
     "finance.distress.detail2": "Se aplican ventas forzosas y restricciones a fichajes con traspaso y cesiones. Los agentes libres solo pueden cubrir el mínimo de plantilla o un portero. Una deuda superior a {limit} activa la administración judicial.",
     "finance.distress.detail3": "Siguen las restricciones de ventas forzosas. La entrada resta {points} puntos una vez por temporada y condona el {percent}% de la deuda. La recuperación exige deuda inferior a {limit} al cierre.",
     "career.ended.record": "La gestión del club terminó en la temporada {season}. {kept}",
-    "league.points.administration": "−{points} puntos · administración judicial"
+    "league.points.administration": "−{points} puntos · administración judicial",
+    "delegation.floor.summary": "Efectivo al cierre {projected} · mínimo {floor} · disponible sobre el mínimo {spendable}",
+    "delegation.floor.refused": "Tras este compromiso: efectivo {projected}, mínimo {floor}, pérdida anual prevista {loss}. No cumple el mínimo. La petición mínima exige además gastos dentro de los ingresos.",
+    "delegation.floor.warningTitle": "Aviso del director · efectivo al cierre",
+    "delegation.floor.warning": "El efectivo previsto al cierre {projected} se acerca al umbral de alerta financiera {floor}. Revisa la previsión y los gastos.",
+    "delegation.floor.forcedSale": "Ventas forzadas por dificultades financieras −25 pp",
+    "market.sale.distress.warning": "Vendedor con alerta financiera",
+    "market.sale.distress.forced": "Vendedor con ventas forzadas o administración judicial",
+    "delegation.floor.saleReduction": "El efectivo previsto al cierre queda por debajo del mínimo del director, por lo que el porcentaje exigido baja {points} puntos porcentuales.",
+    "delegation.floor.available": "Disponible sobre el mínimo",
+    "delegation.floor.reservations": "Ya se han descontado {reserved} en pagos de ofertas delegadas abiertas.",
+    "delegation.floor.commitment": "Hay que conservar {floor} al cierre. Se cuenta el traspaso una vez y el nuevo sueldo o aumento durante el resto de esta temporada y la próxima. También se aplica el freno de liquidez.",
+    "delegation.floor.salesPressed": "El efectivo previsto queda bajo el mínimo o hay dificultades financieras, por lo que se consideran más ventas.",
+    "delegation.floor.salesCalm": "El efectivo previsto alcanza el mínimo y no hay dificultades financieras activas, así que se aplican los criterios normales.",
+    "delegation.floor.salesFactors": "Con ventas delegadas, la exigencia por un jugador negociable baja {points} puntos porcentuales si el efectivo previsto queda bajo el mínimo del director sin una fase de crisis activa. Las ofertas menores consideran rol, contrato, edad, solicitud de salida, descontento, crisis real, efectivo inferior a {rounds} jornadas de costes fijos y los últimos {days} días del mercado. Normalmente no se vende bajo el {floor}% del valor; las ventas forzosas tienen su propia regla.",
+    "delegation.floor.looks": "Con fichajes delegados, el director revisa al abrir el mercado y cada {days} días, priorizando líneas cortas y peticiones del entrenador hasta {pending} ofertas pendientes. {upgrades} El traspaso una vez y los sueldos del resto de esta temporada y la próxima deben respetar el mínimo. Un agente libre para una línea corta solo necesita superar el freno de liquidez. Margen para traspasos: {left}.",
+    "delegation.floor.youth": "Presupuesto juvenil {budget}: {share}% tanto de ingresos como del disponible sobre el mínimo · primero el sueldo del director juvenil {pay} · academia {level} ({cost} al año)",
+    "delegation.floor.committed": "Costes anuales ya comprometidos",
+    "delegation.floor.left": "Dinero restante",
+    "delegation.floor.contractsOwner": "Al abrir el mercado, el director decide renovaciones y aumentos según la política y el mínimo de caja solicitado, y lo comunica.",
+    "delegation.floor.salesOwner": "El director responde a otras ofertas según la política de ventas, el mínimo de caja y la fase real de crisis, e informa del resultado.",
+    "delegation.floor.recruitmentOwner": "El director ficha de la lista y las peticiones del entrenador según la política, el mínimo de caja y el freno de liquidez."
   }
 }

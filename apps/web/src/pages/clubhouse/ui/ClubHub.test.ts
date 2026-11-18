@@ -171,6 +171,16 @@ describe('home season card', () => {
     expect(markup.indexOf('<progress')).toBeGreaterThan(markup.indexOf('data-testid="hub-record"'));
   });
 
+  it('shows net points and the recorded deduction on the season card', () => {
+    const w = league();
+    w.tables.own.deducted = 10;
+    w.tables.own.deductionReason = 'administration';
+    const markup = renderToStaticMarkup(createElement(SeasonCard, { w, active: true }));
+    expect(markup).toContain('승점 -7');
+    expect(markup).toContain('data-testid="points-deduction"');
+    expect(markup).toContain('1-0-0');
+  });
+
   it('fills league progress a day at a time from the first to the last league match day', () => {
     const progress = (day: number) => {
       const w = league();

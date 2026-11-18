@@ -45,6 +45,7 @@ import {
 } from '../../../../../../packages/engine/src/transfers';
 import {
   SALE_FACTOR_VALUES,
+  SALE_FLOOR_REDUCTION,
   SALE_SHARE,
 } from '../../../../../../packages/engine/src/transfer-policy';
 import { managerPickPreview } from '../../../../../../packages/engine/src/managerMarket';
@@ -61,7 +62,7 @@ import { Dialog } from '../../../shared/ui/Dialog';
 import { DecisionOwner } from './DecisionOwner';
 import { OvrBadge } from '../../../entities/player';
 import { StaffRoleBadge } from './StaffRoleBadge';
-import { compactMoney, contractLine } from '../../../presentation/format';
+import { compactMoney, contractLine, number } from '../../../presentation/format';
 import { directorDecisions } from '../lib/shortlist';
 import { staffOrigin } from '../lib/staffMarket';
 import { ClubLink } from '../../../entities/club';
@@ -1285,7 +1286,7 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
         w={w}
         decision="contracts"
         criteria
-        auto={sourceMessage('copy.ClubStaff.5fe81d8483')}
+        auto={sourceMessage('delegation.floor.contractsOwner')}
         owner={sourceMessage('copy.ClubStaff.670fe07b8a')}
       />
       <DirectionFacts w={w} rows={['renewal']} responsibility="contracts" />
@@ -1293,10 +1294,18 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
         <li>{localizeValue(directionOption(w, 'renewal').summary)}</li>
         <li>{richMessage('copy.ClubStaff.9d5c92492d')}</li>
         <li>
-          {plan.runway > 0
-            ? richMessage('delegation.talk.runway', { seasons: plan.runway })
-            : richMessage('delegation.talk.income')}
+          {richMessage('delegation.floor.summary', {
+            projected: compactMoney(plan.projected, clubOf(w).country, w.year),
+            floor: compactMoney(plan.floor, clubOf(w).country, w.year),
+            spendable: compactMoney(plan.spendable, clubOf(w).country, w.year),
+          })}
         </li>
+        <li>
+          {richMessage('delegation.floor.commitment', {
+            floor: compactMoney(plan.floor, clubOf(w).country, w.year),
+          })}
+        </li>
+        {plan.level === 1 && <li>{richMessage('delegation.flow.contractsIncome')}</li>}
         <li>{richMessage('copy.ClubStaff.e257a74a0b')}</li>
       </ul>
     </section>
@@ -1330,14 +1339,14 @@ export function OfferAnswers({ w }: { w: World }) {
         w={w}
         decision="sales"
         criteria
-        auto={sourceMessage('copy.ClubStaff.d7d3dab4d0')}
+        auto={sourceMessage('delegation.floor.salesOwner')}
         owner={sourceMessage('copy.ClubStaff.ed0c775102')}
       />
       <DecisionOwner
         w={w}
         decision="recruitment"
         criteria
-        auto={sourceMessage('copy.ClubStaff.386ff78aec')}
+        auto={sourceMessage('delegation.floor.recruitmentOwner')}
         owner={sourceMessage('copy.ClubStaff.093dbc6ce0')}
       />
       <DirectionFacts w={w} rows={['market']} responsibility="sales" />
@@ -1352,10 +1361,11 @@ export function OfferAnswers({ w }: { w: World }) {
           })}
         </li>
         <li>
-          {richMessage('delegation.offer.salesFactors', {
-            rounds: SAFETY_ROUNDS,
-            days: SALE_FACTOR_VALUES.deadlineDays,
-            floor: Math.round(SALE_SHARE.ownFloor * 100),
+          {richMessage('delegation.floor.salesFactors', {
+            points: number(SALE_FLOOR_REDUCTION),
+            rounds: number(SAFETY_ROUNDS),
+            days: number(SALE_FACTOR_VALUES.deadlineDays),
+            floor: number(Math.round(SALE_SHARE.ownFloor * 100)),
           })}
         </li>
         {hold && (
@@ -1365,9 +1375,9 @@ export function OfferAnswers({ w }: { w: World }) {
         )}
         <li>{richMessage('copy.ClubStaff.5909c8a6d1', { p0: <b>{localizeValue(card)}</b> })}</li>
         <li>
-          {richMessage('delegation.offer.looks', {
-            days: RECRUITMENT_LOOKS.lookDays,
-            pending: recruitment.stance.pending,
+          {richMessage('delegation.floor.looks', {
+            days: number(RECRUITMENT_LOOKS.lookDays),
+            pending: number(recruitment.stance.pending),
             upgrades:
               signing.margin === undefined
                 ? sourceMessage('delegation.offer.noUpgrades')

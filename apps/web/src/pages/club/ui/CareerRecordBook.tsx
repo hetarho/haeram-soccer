@@ -16,7 +16,9 @@ import {
   trophyCabinet,
   type LeaderBoard,
 } from '../../../entities/player';
-import { number, seasonName } from '../../../presentation/format';
+import { decimal, number, seasonName } from '../../../presentation/format';
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
+import { PointsDeduction } from '../../../entities/league';
 import { ofScope, per90, playerStatus } from '../../../entities/player';
 import { useGameState } from '../../../runtime/store';
 import { PlayerLink } from '../../../entities/player';
@@ -112,14 +114,15 @@ export function CareerRecordBook({ w }: { w: World }) {
                 <h4>{richMessage('copy.CareerRecordBook.318e0b630b')}</h4>
                 <b>
                   {richMessage('copy.CareerRecordBook.d614463305', {
-                    p0: (records.points.points / records.points.played).toFixed(2),
+                    p0: decimal(leaguePoints(records.points) / records.points.played, 2),
                   })}
                 </b>
                 <p className={a.note}>
                   {richMessage('copy.CareerRecordBook.584827f64a', {
-                    p0: records.points.points,
-                    p1: records.points.played,
-                  })}
+                    p0: number(leaguePoints(records.points)),
+                    p1: number(records.points.played),
+                  })}{' '}
+                  <PointsDeduction row={records.points} />
                 </p>
                 <SeasonContext code={code} record={records.points} />
               </article>

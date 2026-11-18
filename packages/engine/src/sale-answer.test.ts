@@ -37,8 +37,6 @@ function ctx(over: Partial<SaleContext> = {}): SaleContext {
     prospect: false,
     cashCrisis: false,
     runway: 999,
-    wageLine: 0,
-    wageShare: 0,
     sellingDown: false,
     stance: 'open',
     transferRequest: false,
@@ -58,8 +56,7 @@ const VARIANTS: SaleContext[] = [
     contractSeasons: 1,
     age: 33,
     stance: 'listed',
-    wageLine: 2,
-    wageShare: 80,
+    distress: 2,
   }),
   ctx({ director: { vacant: false, name: 'D', ability: 90, negotiator: true }, windowDaysLeft: 1 }),
   ctx({ contractSeasons: 2, year: 1960, npc: { relegatedStarter: true, aboveDivision: true } }),
@@ -220,16 +217,17 @@ describe('the selling club answer (→CLUB-52)', () => {
     for (const l of lines) expect(message(l.message, l.params)).not.toMatch(/\{/);
   });
 
-  it("names our 단장's runway test on the wage rows, not the retired sales line", () => {
-    const row = (wageLine: 0 | 1 | 2) =>
-      saleShare(ctx({ ownSeller: true, value: '900000', wageLine, wageShare: 80 })).lines.find(
-        (l) => l.factor === 'wages',
-      );
-    expect(row(0)).toBeUndefined();
-    expect(row(1)).toMatchObject({ delta: -0.05, message: 'market.sale.runway.over' });
-    expect(row(2)).toMatchObject({ delta: -0.1, message: 'market.sale.runway.far' });
-    // A seller nobody owns has no 단장 of ours, so no runway row.
-    expect(saleShare(ctx({ wageLine: 2 })).lines.some((l) => l.factor === 'wages')).toBe(false);
+  it('reads the actual distress stage for every seller without moving the draw', () => {
+    for (const ownSeller of [false, true]) {
+      const row = (distress?: 1 | 2 | 3) =>
+        saleShare(ctx({ ownSeller, value: '900000', distress })).lines.find(
+          (l) => l.factor === 'distress',
+        );
+      expect(row()).toBeUndefined();
+      expect(row(1)).toMatchObject({ delta: -0.05, message: 'market.sale.distress.warning' });
+      for (const stage of [2, 3] as const)
+        expect(row(stage)).toMatchObject({ delta: -0.25, message: 'market.sale.distress.forced' });
+    }
   });
 });
 

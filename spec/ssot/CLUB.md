@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r82 | Define the browser-demo rules for squad and growth.
+> r83 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its squad (→WORLD-16) becomes its own players, each as the player he was with his contract, filled to 20 with players generated at its level when it holds fewer (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -55,6 +55,7 @@
   - During windows other clubs bid for our players (answered by the owner, or by the director when player sales are delegated) and lapse after 5 days; squad minimums still apply.
   - The bidder is a real club whose strength suits the player (4 below to 12 above his ability, stronger clubs more often, any country).
   - A delegated 단장 answers a bid for our player as the selling club (→CLUB-52): his asking fee is the sale bar below, and his counter goes back to the bidder, who takes it when its books allow (→WORLD-16); under 핵심 지키기 the three best starters are never sold.
+  - for a negotiable player at a club whose sales are delegated, a projected closing balance below the director's cash floor without an active financial distress stage (→ECON-33) reduces that asking bar five percentage points (estimated). The report states the adjustment. Actual distress follows →CLUB-52 and →ECON-24; the untouchable bar follows →CLUB-24.
   - The report names the bar and each factor.
   - another club's offer is at least one whole currency unit, so no offer reads 0 (→WEB-67).
   - bar by the 매각 기조 card (→ECON-22), of value and for a prospect (aged 22 or under with potential at least 8 above ability): 셀링 클럽 110%/160%, 쇼케이스 120%/180%, standard 130%/200%, 강경 협상 150%/230%, 핵심 지키기 150%/250%
@@ -400,6 +401,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r83 261118 CLUB-18✎ projected cash below the floor left the selling mechanism implicit→5-point asking-bar reduction for delegated negotiable players outside a distress stage
 - r82 261118 CLUB-25✎ implicit ability-fit tier anchors→WORLD-15's 80/70/60/50 levels
 - r81 261118 CLUB-33✎ the former runway test in the recruitment line→ECON-33's cash floor test
 - r80 261118 CLUB-25/48✎ residual out-of-production gate and interpolation wording→the ability-fit division pricing already in force from r78

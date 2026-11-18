@@ -7018,6 +7018,27 @@
     "finance.distress.detail2": "Penjualan paksa dan pembatasan transfer berbayar serta pinjaman berlaku. Pemain bebas hanya boleh melengkapi jumlah minimum skuad atau penjaga gawang. Utang di atas {limit} memicu administrasi pengadilan.",
     "finance.distress.detail3": "Pembatasan penjualan paksa berlanjut. Saat masuk, {points} poin dikurangi sekali per musim dan {percent}% utang dihapus. Pemulihan memerlukan utang di bawah {limit} pada akhir musim.",
     "career.ended.record": "Pengelolaan klub berakhir pada musim {season}. {kept}",
-    "league.points.administration": "−{points} poin · administrasi pengadilan"
+    "league.points.administration": "−{points} poin · administrasi pengadilan",
+    "delegation.floor.summary": "Kas akhir musim {projected} · batas bawah {floor} · dapat dibelanjakan di atas batas {spendable}",
+    "delegation.floor.refused": "Setelah komitmen ini: kas {projected}, batas {floor}, rugi tahunan terencana {loss}. Uji batas kas gagal. Permintaan minimum juga mengharuskan biaya dalam pendapatan.",
+    "delegation.floor.warningTitle": "Peringatan direktur · kas akhir musim",
+    "delegation.floor.warning": "Proyeksi kas akhir musim {projected} mendekati garis peringatan kesulitan keuangan {floor}. Periksa proyeksi kas dan pengeluaran.",
+    "delegation.floor.forcedSale": "Penjualan paksa akibat kesulitan keuangan −25 poin",
+    "market.sale.distress.warning": "Penjual mendapat peringatan keuangan",
+    "market.sale.distress.forced": "Penjual dalam penjualan paksa atau pengawasan pengadilan",
+    "delegation.floor.saleReduction": "Proyeksi kas akhir musim di bawah batas direktur, sehingga persentase harga yang diminta turun {points} poin persentase.",
+    "delegation.floor.available": "Dana di atas batas",
+    "delegation.floor.reservations": "Biaya tawaran delegasi yang terbuka sebesar {reserved} sudah dikurangi.",
+    "delegation.floor.commitment": "Sisakan {floor} pada akhir musim. Biaya transfer dihitung sekali, gaji baru atau kenaikannya untuk sisa musim ini dan musim berikutnya. Batas keamanan kas terpisah juga berlaku.",
+    "delegation.floor.salesPressed": "Proyeksi kas akhir di bawah batas atau klub dalam kesulitan keuangan, sehingga penjualan lebih dipertimbangkan.",
+    "delegation.floor.salesCalm": "Proyeksi kas akhir memenuhi batas tanpa tahap kesulitan aktif, sehingga kriteria penjualan biasa berlaku.",
+    "delegation.floor.salesFactors": "Dalam penjualan delegasi, harga pemain yang dapat dinegosiasikan turun {points} poin persentase jika proyeksi kas akhir di bawah batas direktur tanpa tahap kesulitan aktif. Tawaran lebih rendah menilai peran, kontrak, usia, permintaan pindah, ketidakpuasan, kesulitan nyata, kas kurang dari {rounds} putaran biaya tetap, dan {days} hari terakhir bursa. Penjualan biasa tidak di bawah {floor}% nilai; penjualan paksa memakai aturan terpisah.",
+    "delegation.floor.looks": "Direktur rekrutmen memeriksa pada hari pembukaan dan setiap {days} hari, mendahulukan lini kurang dan permintaan pelatih hingga {pending} tawaran tertunda. {upgrades} Satu biaya transfer serta gaji sisa musim ini dan musim berikutnya harus menjaga batas kas. Agen bebas untuk lini kurang hanya perlu lolos keamanan kas. Dana biaya transfer kini: {left}.",
+    "delegation.floor.youth": "Anggaran junior {budget}: masing-masing {share}% dari pendapatan dan dana di atas batas · gaji direktur junior {pay} dibayar dulu · akademi {level} ({cost} per tahun)",
+    "delegation.floor.committed": "Biaya tahunan yang sudah terikat",
+    "delegation.floor.left": "Dana tersisa",
+    "delegation.floor.contractsOwner": "Saat bursa dibuka, direktur menilai perpanjangan dan kenaikan menurut kebijakan serta batas kas permintaan, lalu melaporkan.",
+    "delegation.floor.salesOwner": "Direktur menjawab tawaran klub lain menurut kebijakan penjualan, batas kas dan tahap kesulitan nyata, lalu melaporkan hasilnya.",
+    "delegation.floor.recruitmentOwner": "Direktur merekrut dari daftar dan permintaan pelatih sesuai kebijakan, batas kas dan batas keamanan kas."
   }
 }

@@ -7018,6 +7018,27 @@
     "finance.distress.detail2": "강제 매각이 진행되고 이적료·임대 영입이 제한됩니다. 자유계약은 최소 인원이나 골키퍼 확보에만 허용됩니다. 부채가 {limit}를 초과하면 법정관리에 진입합니다.",
     "finance.distress.detail3": "매각 요구의 제한이 유지됩니다. 진입 시 시즌당 한 번 승점 {points}점이 차감되고 부채 {percent}%가 탕감됩니다. 시즌 마감 시 부채가 {limit} 미만이면 회복합니다.",
     "career.ended.record": "{season} 시즌에 구단 운영이 끝났어요. {kept}",
-    "league.points.administration": "−{points}점 · 법정관리"
+    "league.points.administration": "−{points}점 · 법정관리",
+    "delegation.floor.summary": "시즌 말 예상 현금 {projected} · 남길 현금 하한 {floor} · 하한 위 지출 여력 {spendable}",
+    "delegation.floor.refused": "이 약정 뒤 예상 현금 {projected}, 하한 {floor}, 계획 적자 연 {loss}으로 현금 하한 조건을 충족하지 못해요. 최소한만 요청은 지출도 수입 안에 머물러야 해요.",
+    "delegation.floor.warningTitle": "단장 경고 · 시즌 말 현금",
+    "delegation.floor.warning": "시즌 말 예상 현금 {projected}가 재정 위기 경고선 {floor}에 가까워요. 현금 전망과 지출을 확인해 주세요.",
+    "delegation.floor.forcedSale": "재정 위기 강제 매각 −25%p",
+    "market.sale.distress.warning": "판매 구단의 재정 위기 경고",
+    "market.sale.distress.forced": "판매 구단의 매각 요구 또는 법정관리",
+    "delegation.floor.saleReduction": "시즌 말 예상 현금이 단장 하한보다 낮아 매각 요구 비율을 {points}%p 낮췄어요.",
+    "delegation.floor.available": "하한 위 지출 여력",
+    "delegation.floor.reservations": "진행 중인 위임 제안의 이적료 {reserved}를 이미 뺀 금액이에요.",
+    "delegation.floor.commitment": "시즌 말에 남길 현금 하한은 {floor}예요. 이적료는 한 번, 새 연봉·인상분은 이번 시즌 남은 기간과 다음 시즌까지 계산해 이 선을 지켜요. 현금 고갈 방지 조건도 따로 확인해요.",
+    "delegation.floor.salesPressed": "시즌 말 예상 현금이 하한보다 낮거나 재정 위기 단계에 있어 매각을 더 적극적으로 검토해요.",
+    "delegation.floor.salesCalm": "시즌 말 예상 현금이 하한 이상이고 재정 위기 단계가 없어 평소 기준으로 매각을 검토해요.",
+    "delegation.floor.salesFactors": "매각을 위임하면 재정 위기 단계가 없고 시즌 말 예상 현금이 단장 하한보다 낮을 때 협상 가능 선수의 요구 비율을 {points}%p 낮춰요. 낮은 제안에는 선수의 팀 내 위치·계약·나이·이적 요청·언해피, 실제 재정 위기 단계, 고정비 여력 {rounds}라운드 미만, 시장 마지막 {days}일이 작용해요. 평소에는 평가 가치의 {floor}% 밑으로 팔지 않으며, 강제 매각은 별도 기준을 따라요.",
+    "delegation.floor.looks": "영입을 위임하면 단장이 시장 개장일과 그 뒤 {days}일마다 살펴보고, 제안 {pending}건까지 빈 자리와 감독 요청을 먼저 채워요. {upgrades} 이적료 한 번과 이번 시즌 남은 연봉·다음 시즌 연봉을 더해도 현금 하한을 지켜야 해요. 짧은 라인의 자유계약 보충은 현금 고갈 방지 조건만 확인해요. 지금 이적료 여력은 {left}예요.",
+    "delegation.floor.youth": "수입과 하한 위 지출 여력에서 각각 {share}%를 배정한 유소년 예산 {budget} · 먼저 지급할 유스 디렉터 급여 {pay} · 유소년 투자 {level}(연 {cost})",
+    "delegation.floor.committed": "이미 부담하는 연간 비용",
+    "delegation.floor.left": "남은 돈",
+    "delegation.floor.contractsOwner": "이적시장이 열리면 단장이 재계약 기조와 위임 요청의 현금 하한으로 재계약·인상 요구를 판단하고 알림·결정에 보고해요.",
+    "delegation.floor.salesOwner": "다른 구단의 제안에 단장이 매각 기조, 현금 하한과 실제 재정 위기 단계에 따라 답하고 알림·결정에 보고해요.",
+    "delegation.floor.recruitmentOwner": "단장이 스카우트 명단과 감독 요청을 보고 영입 방침, 현금 하한과 현금 고갈 방지 조건에 맞춰 영입해요."
   }
 }

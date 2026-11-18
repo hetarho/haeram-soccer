@@ -1,5 +1,6 @@
 import type { World } from '../../contracts/src/types';
 import { temperamentOf, type DelegatePost, type Temperament } from './delegation-info';
+import { financeProjection } from './projection';
 import { staffMember } from './staff-info';
 
 /** The first `prefix:n` key whose person has `temperament`. */
@@ -24,4 +25,13 @@ export function holdTemperament(w: World, post: DelegatePost, temperament: Tempe
     member.id = keyWith(temperament, post);
   }
   return member;
+}
+
+/** Move only cash to a given middle season-end projection, including integer rounding at zero. */
+export function projectCashTo(w: World, target: bigint) {
+  for (let i = 0; i < 2; i++) {
+    const projection = financeProjection(w);
+    const middle = (BigInt(projection.seasonEnd.low) + BigInt(projection.seasonEnd.high)) / 2n;
+    w.cash = (BigInt(w.cash) + target - middle).toString();
+  }
 }

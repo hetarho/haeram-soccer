@@ -7021,6 +7021,27 @@
     "finance.distress.detail2": "Zorunlu satışlar ile bonservisli ve kiralık transfer kısıtları uygulanır. Serbest oyuncular yalnızca asgari kadroyu veya kaleciyi tamamlayabilir. {limit} üzeri borç kayyum yönetimini başlatır.",
     "finance.distress.detail3": "Zorunlu satış kısıtları sürer. Girişte sezon başına bir kez {points} puan silinir ve borcun %{percent} kadarı affedilir. Toparlanma için sezon sonunda borç {limit} altında olmalıdır.",
     "career.ended.record": "Kulüp yönetimi {season} sezonunda sona erdi. {kept}",
-    "league.points.administration": "−{points} puan · kayyum yönetimi"
+    "league.points.administration": "−{points} puan · kayyum yönetimi",
+    "delegation.floor.summary": "Sezon sonu nakit {projected} · nakit tabanı {floor} · tabanın üstünde harcanabilir {spendable}",
+    "delegation.floor.refused": "Bu taahhütten sonra: nakit {projected}, taban {floor}, planlanan yıllık zarar {loss}. Nakit tabanı testi başarısız. Asgari talepte giderler de geliri aşmamalı.",
+    "delegation.floor.warningTitle": "Direktör uyarısı · sezon sonu nakit",
+    "delegation.floor.warning": "Sezon sonu tahmini nakit {projected}, mali sıkıntı uyarı sınırı {floor} yakınına geldi. Nakit tahminini ve harcamaları kontrol edin.",
+    "delegation.floor.forcedSale": "Mali sıkıntıda zorunlu satışlar −25 puan",
+    "market.sale.distress.warning": "Satıcı mali sıkıntı uyarısında",
+    "market.sale.distress.forced": "Satıcı zorunlu satış veya kayyum yönetiminde",
+    "delegation.floor.saleReduction": "Sezon sonu nakit tahmini direktörün tabanının altında olduğundan istenen oran {points} yüzde puan düşürüldü.",
+    "delegation.floor.available": "Tabanın üzerindeki harcama payı",
+    "delegation.floor.reservations": "Açık delege tekliflerin {reserved} tutarındaki bedeli zaten düşüldü.",
+    "delegation.floor.commitment": "Sezon sonunda {floor} korunur. Bonservis bir kez, yeni maaş veya artış bu sezonun kalanı ve gelecek sezon için sayılır. Ayrı nakit güvenlik freni de uygulanır.",
+    "delegation.floor.salesPressed": "Tahmini kapanış nakdi tabanın altında veya kulüp mali sıkıntıda; satışlar daha kolay değerlendirilir.",
+    "delegation.floor.salesCalm": "Tahmini kapanış nakdi tabanı karşılıyor ve aktif mali sıkıntı yok; normal satış ölçütleri uygulanır.",
+    "delegation.floor.salesFactors": "Satış devredildiğinde aktif mali sıkıntı olmadan tahmini kapanış nakdi direktör tabanının altındaysa pazarlığa açık oyuncunun talep oranı {points} yüzde puan düşer. Düşük teklifler rolü, sözleşmeyi, yaşı, ayrılma isteğini, mutsuzluğu, gerçek mali sıkıntıyı, {rounds} tur sabit giderden az nakdi ve pencerenin son {days} gününü okur. Normalde değerin %{floor} altına satılmaz; zorunlu satışın ayrı kuralı vardır.",
+    "delegation.floor.looks": "Delege transferlerde direktör açılışta ve her {days} günde bakar; önce eksik hatları ve teknik direktör taleplerini, en çok {pending} açık teklife kadar doldurur. {upgrades} Bir bonservis ile bu sezonun kalanı ve gelecek sezon maaşı nakit tabanını korumalıdır. Eksik hatta serbest oyuncu yalnız nakit güvenlik frenini okur. Bonservis payı: {left}.",
+    "delegation.floor.youth": "Gençlik bütçesi {budget}: gelir ve taban üstü payın ayrı ayrı %{share} kadarı · önce gençlik direktörü maaşı {pay} · akademi {level} (yılda {cost})",
+    "delegation.floor.committed": "Bağlanmış yıllık giderler",
+    "delegation.floor.left": "Kalan para",
+    "delegation.floor.contractsOwner": "Pencere açıldığında direktör yenileme ve zamları politikaya ve istenen nakit tabanına göre değerlendirip raporlar.",
+    "delegation.floor.salesOwner": "Direktör diğer teklifleri satış politikası, nakit tabanı ve gerçek mali sıkıntı aşamasına göre yanıtlayıp raporlar.",
+    "delegation.floor.recruitmentOwner": "Direktör liste ve teknik direktör taleplerinden politika, nakit tabanı ve nakit güvenlik freni içinde transfer yapar."
   }
 }

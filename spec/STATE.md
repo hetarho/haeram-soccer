@@ -25,7 +25,7 @@
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 82 | 82 | - | 0 |
+| CLUB | 83 | 83 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
@@ -67,8 +67,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T971 | The 단장 plans to a season-end cash floor, not a loss runway | ECON CLUB STAFF | T967 | todo |
-| T972 | The budget page and verdicts speak of the cash floor | WEB ECON ARCH | T971 | todo |
 | T973 | Players answer renewal offers; clubs nobody owns offer by need | CLUB WORLD | T979 T967 | todo |
 | T974 | Our players may turn down a renewal | CLUB WEB ARCH | T973 | todo |
 | T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | todo |
@@ -87,8 +85,8 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
+- gusta-implement-task T977
 - gusta-implement-task T975
 - gusta-implement-task T973
-- gusta-implement-task T971
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.

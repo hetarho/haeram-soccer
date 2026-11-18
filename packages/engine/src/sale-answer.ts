@@ -14,17 +14,16 @@ import type { SourceMessageId } from '../../contracts/src/messages';
 import type { Club, Player, TransferStance, World } from '../../contracts/src/types';
 import { currencyChange, npcWageBill, npcWageLimit } from './books';
 import { CLUB_TAKEOVER } from './owner-config';
-import { wagePressure } from './delegation';
 import { SAFETY_ROUNDS } from './delegation-info';
 import { EXPENSE_CONFIG, operatingCosts, operatingExpensesAt } from './finance';
 import { fixedCostRunway } from './investment';
 import { activePlayers, overall } from './player-state';
 import { compareIds, scaleBy } from './primitives';
 import { seasonsLeft, staffMember } from './staff-info';
-import { SALE_BARS, SALE_FACTOR_VALUES, SALE_SHARE } from './transfer-policy';
+import { SALE_FACTOR_VALUES, SALE_SHARE } from './transfer-policy';
 import { transferWindow } from './transfer-window';
 import { seasonAfter } from './wartime';
-import { isProspect, playerValue, transferStance } from './transfers';
+import { isProspect, playerValue, saleBar, transferStance } from './transfers';
 import { clubById, ownStarters, startingSquad, stature, tierLevel } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
 
@@ -53,6 +52,8 @@ export interface SaleContext {
   asking: string;
   /** The seller is our club. */
   ownSeller: boolean;
+  /** Our asking bar, including the separate delegated floor adjustment. */
+  saleBar?: { percent: number; reduction: number };
   /** Player value for forced sales; our normal reservation also reads its 80% floor. */
   value?: string;
   /** ECON-24 forced acceptance, separate from T971's reservation factors. */
@@ -68,10 +69,8 @@ export interface SaleContext {
   /** The seller's cash crisis or fixed-cost runway under 4 rounds (→ECON-41), with that runway. */
   cashCrisis: boolean;
   runway: number;
-  /** Our players' wage bill against the 단장's sales line: 1 above it, 2 more than 10 points above. */
-  wageLine: 0 | 1 | 2;
-  /** The wage bill as a percentage of planned income, for the line's report. */
-  wageShare: number;
+  /** The seller's actual distress stage, whoever owns it. */
+  distress?: 1 | 2 | 3;
   /** A club nobody owns selling down its wage bill (→WORLD-17). */
   sellingDown: boolean;
   /** Our player's stance (→CLUB-22) and his unhappiness (→CLUB-27); open at other clubs. */
@@ -149,15 +148,15 @@ export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
         : undefined,
   },
   {
-    id: 'wages',
+    id: 'distress',
     read: (c) =>
-      // Our 단장's runway test (→ECON-33): failing at half the runway, or at the current wage bill.
-      // The former sales-line IDs stay registered for saved prose (→ARCH-32).
-      c.ownSeller && c.wageLine === 2
-        ? line('wages', V.wageLine.far, 'market.sale.runway.far')
-        : c.ownSeller && c.wageLine === 1
-          ? line('wages', V.wageLine.over, 'market.sale.runway.over')
-          : undefined,
+      c.distress
+        ? line(
+            'distress',
+            c.distress >= 2 ? V.distress.forced : V.distress.warning,
+            c.distress >= 2 ? 'market.sale.distress.forced' : 'market.sale.distress.warning',
+          )
+        : undefined,
   },
   {
     id: 'sellDown',
@@ -439,6 +438,7 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     common = {
       fee: bid.fee,
       forcedSales: forcedSales(ownSeller ? w.distress : seller.books?.distress),
+      distress: (ownSeller ? w.distress : seller.books?.distress)?.stage,
       stature: stature(w.seed, seller.id),
       place: placeIn(ownSeller ? ownStarters(w) : startingSquad(w, seller), player.id),
       contractSeasons: seasonsLeft(w, player.until),
@@ -449,18 +449,16 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     };
   if (ownSeller) {
     const value = playerValue(w, player),
-      bar = SALE_BARS[w.build?.market ?? 'standard'] ?? SALE_BARS.standard!,
-      runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
-      pressure = wagePressure(w);
+      bar = saleBar(w, player),
+      runway = fixedCostRunway(w.cash, operatingCosts(w).annual);
     return {
       ...common,
-      asking: bid.asking ?? ((BigInt(value) * BigInt(bar[prospect ? 1 : 0])) / 100n).toString(),
+      asking: bid.asking ?? ((BigInt(value) * BigInt(bar.percent)) / 100n).toString(),
       ownSeller,
+      saleBar: bar,
       value,
       cashCrisis: runway < SAFETY_ROUNDS,
       runway,
-      wageLine: pressure.level as 0 | 1 | 2,
-      wageShare: pressure.share,
       sellingDown: false,
       stance: transferStance(player),
       transferRequest: !!player.transferRequest,
@@ -478,8 +476,6 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     value: marketValueAt(seller.country, w.year, seller.tier, player),
     ownSeller,
     ...npcCash(w, seller),
-    wageLine: 0,
-    wageShare: 0,
     sellingDown: limit !== undefined && npcWageBill(w, seller) > limit,
     stance: 'open',
     transferRequest: false,
@@ -540,6 +536,7 @@ export function npcSaleContext(w: World, bid: NpcSaleBid): SaleContext {
   return {
     fee: bid.fee,
     forcedSales: forcedSales(seller.books?.distress),
+    distress: seller.books?.distress?.stage,
     value: marketValueAt(seller.country, w.year, seller.tier, player),
     asking: bid.asking,
     ownSeller: false,
@@ -549,8 +546,6 @@ export function npcSaleContext(w: World, bid: NpcSaleBid): SaleContext {
     age: w.year - player.born,
     prospect: isProspect(w, player),
     ...npcCash(w, seller),
-    wageLine: 0,
-    wageShare: 0,
     sellingDown: bid.sellingDown,
     stance: 'open',
     transferRequest: false,

@@ -134,10 +134,8 @@ test('the talk rule shows under 선수 as the club was taken over', async ({ pag
   await expect(talks.getByRole('button', { name: /^재계약 기조/ })).toHaveCount(0);
   await expect(talks).toContainText('시장가까지만');
   await expect(talks).toContainText('32세부터 1시즌');
-  // 짠물 plans no loss runway, so the money line is the income rule, not a share of revenue (T948).
-  await expect(talks).toContainText(
-    '인상 뒤에도 지출이 수입 안에 머물고 현금이 바닥나지 않을 때만',
-  );
+  // The delegated money line states the live cash floor and the commitment horizon (T972).
+  await expect(talks).toContainText('새 연봉·인상분은 이번 시즌 남은 기간과 다음 시즌까지 계산해');
   await expect(talks).toContainText('언해피');
   await expect(page.getByRole('dialog', { name: '재정 업무 기준', exact: true })).toHaveCount(0);
 });
