@@ -61,7 +61,7 @@ describe('fixed off-pitch aptitude', () => {
     // The off-pitch draws stay independent of the original player fields (→PLAYER-2, WORLD-12).
     // This includes wages priced on the current division levels (→CLUB-25, WORLD-15).
     expect(createHash('sha256').update(JSON.stringify(players)).digest('hex')).toBe(
-      '69b728332bb75c663539cb73c705173c80ea1281258511f73610f774ccfe84c2',
+      'f30d16efb84931300b91fc4558327bb770a589c56f02af95d432604bfcca0465',
     );
   });
   it('keeps fixed aptitude independent of playing state and rejects invalid components', () => {

@@ -8,7 +8,7 @@ import { divisionLevel } from './world';
 import { footballQuote } from './quotes';
 
 /**
- * Captured from contracts.ts before extraction; synthetic ratings, no generated world. Only the GER
+ * Exact synthetic quotes at T977’s calibrated wage level. Only the GER
  * 2020 star reaches the transfer premium (CLUB-46): the others stand at or below the pivot. Amounts
  * outside England stand at each country's 1999-rate level (ECON-35).
  */
@@ -21,10 +21,10 @@ const vectors = [
     age: 18,
     potential: 65,
     share: 1,
-    wageUnits: 22.37887356598485,
-    valueUnits: 73.73600576335177,
-    wage: '19265',
-    value: '63477',
+    wageUnits: 67.13662069795456,
+    valueUnits: 221.2080172900553,
+    wage: '57796',
+    value: '190431',
   },
   {
     code: 'ENG',
@@ -34,10 +34,10 @@ const vectors = [
     age: 18,
     potential: 65,
     share: 0.03,
-    wageUnits: 0.6713662069795455,
-    valueUnits: 2.212080172900553,
-    wage: '578',
-    value: '1904',
+    wageUnits: 2.0140986209386367,
+    valueUnits: 6.636240518701658,
+    wage: '1734',
+    value: '5713',
   },
   {
     code: 'ESP',
@@ -47,10 +47,10 @@ const vectors = [
     age: 24,
     potential: 80,
     share: 0.275,
-    wageUnits: 135.9569881607702,
-    valueUnits: 271.9139763215404,
-    wage: '11218863',
-    value: '15425937',
+    wageUnits: 407.8709644823107,
+    valueUnits: 815.7419289646214,
+    wage: '33656590',
+    value: '46277811',
   },
   {
     code: 'GER',
@@ -60,10 +60,10 @@ const vectors = [
     age: 30,
     potential: 85,
     share: 1,
-    wageUnits: 2442.672761947402,
-    valueUnits: 11267.065689690868,
-    wage: '248117208',
-    value: '1144464755',
+    wageUnits: 7328.018285842205,
+    valueUnits: 33801.1970690726,
+    wage: '744351625',
+    value: '3433394265',
   },
   {
     code: 'ITA',
@@ -73,10 +73,10 @@ const vectors = [
     age: 38,
     potential: 70,
     share: 0.15,
-    wageUnits: 36.86584172568527,
-    valueUnits: 36.86584172568527,
-    wage: '1512470454',
-    value: '824983884',
+    wageUnits: 110.59752517705581,
+    valueUnits: 110.59752517705581,
+    wage: '4537411363',
+    value: '2474951652',
   },
   {
     code: 'ENG',
@@ -86,10 +86,10 @@ const vectors = [
     age: 16,
     potential: 90,
     share: 1,
-    wageUnits: 149.1837449636251,
-    valueUnits: 543.1567347584297,
-    wage: '35804',
-    value: '130358',
+    wageUnits: 447.5512348908753,
+    valueUnits: 1629.470204275289,
+    wage: '107412',
+    value: '391073',
   },
   {
     code: 'FRA',
@@ -99,10 +99,10 @@ const vectors = [
     age: 28,
     potential: 60,
     share: 0.03,
-    wageUnits: 8.147351021376446,
-    valueUnits: 16.294702042752892,
-    wage: '516396',
-    value: '206558',
+    wageUnits: 24.442053064129333,
+    valueUnits: 48.884106128258665,
+    wage: '1549187',
+    value: '619675',
   },
 ];
 
@@ -169,8 +169,8 @@ describe('transfer premium (CLUB-46)', () => {
   });
 
   it('lets established young players reach modern growth while retaining the base age discount', () => {
-    expect(prices.marketValueUnits(0, 80, 20, 80, 2025)).toBe(9360);
-    expect(prices.marketValueUnits(0, 80, 24, 80, 2025)).toBe(13954.84319385);
+    expect(prices.marketValueUnits(0, 80, 20, 80, 2025)).toBe(28080);
+    expect(prices.marketValueUnits(0, 80, 24, 80, 2025)).toBe(41864.52958155);
     expect(prices.marketValueUnits(0, 80, 20, 80, 2025)).toBeLessThan(
       prices.marketValueUnits(0, 80, 24, 80, 2025),
     );
@@ -179,13 +179,13 @@ describe('transfer premium (CLUB-46)', () => {
     );
   });
 
-  it('keeps already-full-reach stars and prices below the premium pivot unchanged', () => {
-    expect(prices.marketValueUnits(0, 90, 20, 90, 2025)).toBe(25403.79672425298);
-    expect(prices.marketValueUnits(0, 60, 20, 60, 2025)).toBe(244.35821537417345);
+  it('reads exact quotes with full reach and below the transfer premium pivot', () => {
+    expect(prices.marketValueUnits(0, 90, 20, 90, 2025)).toBe(76211.39017275894);
+    expect(prices.marketValueUnits(0, 60, 20, 60, 2025)).toBe(733.0746461225204);
   });
 
   it('still discounts older players through their base price and earning years', () => {
-    expect(prices.marketValueUnits(0, 80, 32, 80, 2025)).toBe(10402.652166930644);
+    expect(prices.marketValueUnits(0, 80, 32, 80, 2025)).toBe(31207.956500791934);
     expect(prices.marketValueUnits(0, 80, 32, 80, 2025)).toBe(
       prices.marketValueUnits(0, 80, 28, 80, 2025) / 2,
     );
@@ -194,13 +194,13 @@ describe('transfer premium (CLUB-46)', () => {
     );
   });
 
-  it('retains early compressed values and wages exactly', () => {
+  it('reads exact early compressed values and wages at the calibrated level', () => {
     const ages = [20, 24, 28, 32];
     expect(ages.map((age) => prices.marketValueUnits(0, 80, age, 80, 1950))).toEqual([
-      1800, 2033.8064434589728, 2297.982583030687, 1148.9912915153434,
+      5400, 6101.419330376918, 6893.94774909206, 3446.97387454603,
     ]);
     expect(ages.map((age) => prices.marketWageUnits(0, 80, age, 80))).toEqual([
-      900, 1341.8118455625, 2000.5100321020468, 2000.5100321020468,
+      2700, 4025.4355366874997, 6001.530096306141, 6001.530096306141,
     ]);
   });
 
@@ -211,9 +211,9 @@ describe('transfer premium (CLUB-46)', () => {
         prices.MARKET_CONFIG.premium = [[2025, multiple]];
         return prices.marketValueUnits(0, 80, 20, 80, 2025);
       };
-      expect(at(1)).toBe(1800);
-      expect(at(1 - 1e-10)).toBeCloseTo(1800, 5);
-      expect(at(1 + 1e-10)).toBeCloseTo(1800, 5);
+      expect(at(1)).toBe(5400);
+      expect(at(1 - 1e-10)).toBeCloseTo(5400, 5);
+      expect(at(1 + 1e-10)).toBeCloseTo(5400, 5);
     } finally {
       prices.MARKET_CONFIG.premium = kept;
     }

@@ -16,7 +16,7 @@ export const MARKET_CONFIG = {
    * Yearly wage of a top-flight player rated `pivot` in his prime at football index 1, sized so a
    * top-flight wage bill weighs against the gate as it does in real football.
    */
-  wage: 900,
+  wage: 2700,
   pivot: 70,
   /** Each ability point multiplies wage and value, so 80 earns 7.4× 60 (CLUB-25: 6–10×). */
   perPoint: 1.105,

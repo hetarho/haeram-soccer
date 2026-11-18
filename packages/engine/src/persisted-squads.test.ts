@@ -262,7 +262,7 @@ describe('persisted playable squads', () => {
       return { ...earlier, personality };
     });
     expect(createHash('sha256').update(canonical(earlier)).digest('hex')).toBe(
-      'b910bb8f1c6c659872ba5a34a2a18d1186c5993ed745508f4958f8ffd0aef88d',
+      '6a2c383761a027917910e9951990f0605a47522d97402b764a39f266e35f31c1',
     );
   });
 
