@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "id-ID",
   "messages": {
+    "player.personality.loyalty": "Loyalitas",
     "navigation.dashboard": "Wisma klub",
     "navigation.league": "Liga",
     "navigation.history": "Sejarah",

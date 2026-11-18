@@ -204,7 +204,14 @@ export function takeOver(
     p.fatigue = 0;
     p.clauses = settleClauses(w.seed, p, p.agent!, year, 0);
     // Every player taken over starts at the club's 조직력 (→OWNER-4, LEAGUE-12).
+    const { joined, graduate } = p;
     joinClub(p, 'founding', year);
+    if (roster.some((held) => held.id === p.id)) {
+      // Ownership changes preserve known club history, including absent legacy facts.
+      if (joined === undefined) delete p.joined;
+      else p.joined = joined;
+      if (graduate) p.graduate = graduate;
+    }
     if (club.cohesion !== undefined) p.adaptation = club.cohesion;
   }
   w.players = players;

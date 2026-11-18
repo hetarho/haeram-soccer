@@ -1,7 +1,7 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 /** The scout's verdict on a market candidate (→CLUB-47): a grade A–E and the facts behind it. */
 import type { World } from '../../contracts/src/types';
-import { LINE_NAME, requestLabel } from './player';
+import { AGEING, ageingCurve, LINE_NAME, requestLabel } from './player';
 import { lineOfPlayer, overall } from './player-state';
 import {
   meetsRequest,
@@ -31,8 +31,6 @@ export const VERDICT_CONFIG = {
   growthRoom: 5,
   /** An arrival this far below settled is worth naming (→PLAYER-11). */
   adaptationDrop: 3,
-  /** Pace and stamina fall each season from this age (→PLAYER-17). */
-  declineAge: 29,
   reasons: 2,
 };
 
@@ -91,7 +89,8 @@ export function scoutVerdict(w: World, offer: TransferOffer & { own?: boolean },
   const cons = [
     slot.settled - slot.arrival >= c.adaptationDrop &&
       sourceMessage('copy.scout_verdict.995377e3ed', { p0: slot.arrival, p1: slot.settled }),
-    age >= c.declineAge && sourceMessage('copy.scout_verdict.535d69bbd6', { p0: age }),
+    age >= AGEING.pace.declineFrom + ageingCurve(w.seed, player.id).shift &&
+      sourceMessage('copy.scout_verdict.535d69bbd6', { p0: age }),
     !money.ok && money.reason,
   ].filter((reason): reason is string => !!reason);
   return {

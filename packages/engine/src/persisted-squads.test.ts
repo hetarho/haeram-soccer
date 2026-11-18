@@ -174,7 +174,13 @@ describe('persisted playable squads', () => {
       expect(players).toHaveLength(NPC_SQUAD.size);
       for (const generated of npcSquad(w.seed, year, c)) {
         const stored = players.find((p) => p.id === generated.id)!;
-        expect({ ...stored, until: generated.until }).toEqual(generated);
+        expect(stored.joined).toBe(year);
+        expect(stored.graduate).toBeUndefined();
+        expect({ ...stored, until: generated.until }).toEqual({
+          ...generated,
+          joined: year,
+          clubRounds: 0,
+        });
       }
       for (const p of players) {
         expect(BigInt(p.wage)).toBeGreaterThan(0n);
@@ -194,8 +200,16 @@ describe('persisted playable squads', () => {
     const w = worldMarketFixture();
     w.clubs[2].representative = true;
     foundSquads(w);
-    // Complete foreign roster captured before the adoption identity repair, including contracts.
-    expect(createHash('sha256').update(canonical(w.squads!.foreign)).digest('hex')).toBe(
+    // Pre-loyalty/tenure roster capture still checks every earlier field and draw, including contracts.
+    const earlier = w.squads!.foreign!.map((p) => {
+      const { loyalty: _loyalty, ...personality } = p.personality;
+      void _loyalty;
+      const { joined: _joined, clubRounds: _rounds, ...earlier } = p;
+      void _joined;
+      void _rounds;
+      return { ...earlier, personality };
+    });
+    expect(createHash('sha256').update(canonical(earlier)).digest('hex')).toBe(
       '24d910ac22c903edcf094ad738be6ac1e3a2af5605a856e99cde6bf25b722bd5',
     );
   });
@@ -431,7 +445,9 @@ describe('persisted playable squads', () => {
     respondBid(w, bid(w, sold, buyer.id, 'out').id, true);
     const returned = w.players.find((q) => q.id === p.id)!;
     expect(returned.career[0]).toBe(7);
-    expect(returned.graduate).toBe(true);
+    expect(returned.graduate).toBeUndefined();
+    returned.graduate = true;
+    returned.joined = w.year - 3;
     returned.loanUntil = w.year + 1;
     movePerson(w, returned, buyer.id, true, returned.loanUntil);
     liveIds(w);
@@ -444,6 +460,7 @@ describe('persisted playable squads', () => {
       status: 'active',
       attrs,
       graduate: true,
+      joined: w.year - 3,
     });
     expect(w.players.find((q) => q.id === p.id)!.career[0]).toBe(7);
     expect(w.people![p.id]!.ownCareer![0]).toBe(7);
@@ -486,8 +503,9 @@ describe('persisted playable squads', () => {
       expect(w.players.filter((q) => q.id === p.id)).toHaveLength(1);
       expect(w.players.find((q) => q.id === p.id)).toMatchObject({
         status: 'active',
-        graduate: true,
+        joined: w.year,
       });
+      expect(w.players.find((q) => q.id === p.id)!.graduate).toBeUndefined();
       expect(w.players.find((q) => q.id === p.id)!.career[0]).toBe(12);
     },
   );

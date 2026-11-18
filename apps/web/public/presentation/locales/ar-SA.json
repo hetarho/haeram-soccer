@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "ar-SA",
   "messages": {
+    "player.personality.loyalty": "الولاء",
     "navigation.dashboard": "مقر النادي",
     "navigation.league": "الدوري",
     "navigation.history": "التاريخ",

@@ -58,6 +58,7 @@ const input = (moves: MoveFact[], extra: Partial<SeasonInput> = {}): SeasonInput
   xiStart: {},
   xiLost: [],
   topThree: {},
+  divisionTopThree: {},
   contracts: { releases: 0, renewals: 0, expiring: 0 },
   retirements: 0,
   intake: [],
@@ -279,7 +280,8 @@ describe('calibration reads on synthetic season facts', () => {
     const base = { from: C, to: A, playerId: 'star' };
     const stats = seasonStats(
       input([move('paid', C, A, 'star')], {
-        topThree: { star: C.id, stays: D.id },
+        topThree: { star: C.id, stays: D.id, other: C.id },
+        divisionTopThree: { star: C.id, stays: D.id },
         bids: [
           { ...base, outcome: 'seller-refused' },
           { ...base, outcome: 'player-refused' },
@@ -298,6 +300,7 @@ describe('calibration reads on synthetic season facts', () => {
       playerRefused: 1,
       buyerRefused: 0,
       completed: 1,
+      shareMovedUp: 0.5,
     });
     expect(seasonStats(input([])).upwardFunnel.ENG.tier1.bids).toBeNull();
     expect(seasonStats(input([], { bids: [] })).upwardFunnel.ENG.tier1.bids).toBe(0);

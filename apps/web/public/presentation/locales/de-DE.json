@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "de-DE",
   "messages": {
+    "player.personality.loyalty": "Loyalität",
     "navigation.dashboard": "Klubhaus",
     "navigation.league": "Liga",
     "navigation.history": "Historie",

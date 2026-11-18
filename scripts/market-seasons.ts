@@ -219,6 +219,8 @@ function playSeason(w: World, salt: string): SeasonStats {
   }));
   const xiStart: Record<string, string[]> = {};
   const topThree: Record<string, string> = {};
+  const divisionCandidates = new Map<string, { player: Player; club: string }[]>();
+  const bestFirst = (a: Player, b: Player) => overall(b) - overall(a) || a.id.localeCompare(b.id);
   // Retain references as well as IDs so players retiring at this close remain in the cohort.
   const ageingStart = new Map<string, { player: Player; age: number; ovr: number }>();
   for (const c of clubs) {
@@ -229,12 +231,24 @@ function playSeason(w: World, salt: string): SeasonStats {
     xiStart[c.id] = squad(w, c)
       .slice(0, 11)
       .map((p) => p.id);
-    if (c.tier > 0)
-      for (const p of [...w.squads![c.id]!]
-        .sort((a, b) => overall(b) - overall(a) || a.id.localeCompare(b.id))
-        .slice(0, 3))
+    if (c.tier > 0) {
+      const division = `${c.country}:${c.tier}`;
+      const candidates = divisionCandidates.get(division) ?? [];
+      for (const p of [...w.squads![c.id]!].sort(bestFirst).slice(0, 3)) {
         topThree[p.id] = c.id;
+        candidates.push({ player: p, club: c.id });
+      }
+      divisionCandidates.set(division, candidates);
+    }
   }
+  const divisionTopThree = Object.fromEntries(
+    [...divisionCandidates.values()].flatMap((candidates) =>
+      candidates
+        .sort((a, b) => bestFirst(a.player, b.player))
+        .slice(0, 3)
+        .map(({ player, club }) => [player.id, club]),
+    ),
+  );
   collector = {
     moves: [],
     releases: 0,
@@ -332,6 +346,7 @@ function playSeason(w: World, salt: string): SeasonStats {
     xiStart,
     xiLost,
     topThree,
+    divisionTopThree,
     contracts: { releases: collector.releases, renewals, expiring: expiring.size },
     retirements,
     intake,

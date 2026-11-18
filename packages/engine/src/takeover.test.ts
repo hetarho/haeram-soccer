@@ -61,9 +61,12 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     const { w, club } = setup();
     club.cohesion = 0.62;
     const roster = clubPlayers(w, club);
+    roster[0]!.joined = w.year - 3;
+    roster[0]!.graduate = true;
     const inherited = roster.map(({ id, name, born, attrs, positions, wage, until }) =>
       structuredClone({ id, name, born, attrs, positions, wage, until }),
     );
+    const tenure = roster.map(({ id, joined, graduate }) => ({ id, joined, graduate }));
     const fielded = roster.map((p) => p.id);
     expect(roster.length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
     expect(
@@ -80,8 +83,14 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     expect(uncoveredSlots(w.players, formationOf(w.tactic))).toEqual([]);
     for (const player of inherited)
       expect(w.players.find((p) => p.id === player.id)).toMatchObject(player);
+    for (const held of tenure) {
+      const p = w.players.find((one) => one.id === held.id)!;
+      expect(p.joined).toBe(held.joined);
+      expect(p.graduate).toBe(held.graduate);
+    }
     for (const p of w.players) {
-      expect(p).toMatchObject({ status: 'active', fatigue: 0, adaptation: 0.62, joined: w.year });
+      expect(p).toMatchObject({ status: 'active', fatigue: 0, adaptation: 0.62 });
+      if (!fielded.includes(p.id)) expect(p.joined).toBe(w.year);
       expect(p.clauses).toBeDefined();
       expect(w.people?.[p.id]?.club).toBe(club.id);
     }

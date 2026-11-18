@@ -15,6 +15,7 @@ import {
   type RoleId,
 } from '../../contracts/src/player';
 import { exp, log } from './portable-math';
+import { random } from './primitives';
 
 /**
  * The player model (→PLAYER): attributes, positions and roles, OVR on one scale, traits,
@@ -456,6 +457,7 @@ export function adaptationMultiplier(adaptation: number) {
 /** Personality rates by grade (index grade − 1, →PLAYER-7). */
 export const PROFESSIONALISM_RATE = [0.7, 0.85, 1, 1.15, 1.3] as const;
 export const ADAPTABILITY_RATE = [0.6, 0.8, 1, 1.2, 1.4] as const;
+export const LOYALTY_WEIGHT = [0, 0.5, 1, 1.5, 2] as const;
 export const AMBITION_UNHAPPY = [0, 0, 0, 0.25, 0.5] as const;
 export const GRADE_LABEL: Record<Grade, string> = {
   1: sourceMessage('copy.player.76fc73c3b5'),
@@ -468,6 +470,7 @@ export const PERSONALITY_LABEL: Record<keyof Personality, string> = {
   professionalism: sourceMessage('copy.influences.f22434c1d6'),
   adaptability: sourceMessage('copy.influences.af26f66619'),
   ambition: sourceMessage('copy.influences.7589bac4d7'),
+  loyalty: sourceMessage('player.personality.loyalty'),
 };
 export const TRAIT_LABEL: Record<PlayTrait, string> = {
   workrate: sourceMessage('copy.player.008abc9b64'),
@@ -565,6 +568,33 @@ export const AGEING: Record<
   };
 })();
 
+/** Career-fixed individual offsets to the group table (→PLAYER-17). */
+export const AGEING_CURVE = {
+  shiftShares: [1, 2, 5, 15, 37, 18, 10, 6, 4, 2],
+  minShift: -4,
+  rate: { min: 0.6, mode: 1, max: 1.8 },
+} as const;
+
+export function ageingCurve(seed: string, id: string) {
+  const draw = random(`${seed}:ageing:${id}`),
+    pick = draw() * 100;
+  let shift: number = AGEING_CURVE.minShift,
+    cumulative = 0;
+  for (const share of AGEING_CURVE.shiftShares) {
+    cumulative += share;
+    if (pick < cumulative) break;
+    shift++;
+  }
+  const { min, mode, max } = AGEING_CURVE.rate,
+    u = draw(),
+    span = max - min,
+    rate =
+      u < (mode - min) / span
+        ? min + Math.sqrt(u * span * (mode - min))
+        : max - Math.sqrt((1 - u) * span * (max - mode));
+  return { shift, rate };
+}
+
 /** What each school of football prefers (→STAFF-21). */
 export const SCHOOL_PREFS: Record<
   ManagerStyle,
@@ -603,7 +633,11 @@ export const slotLine = (tactic: Tactic, index: number) =>
  * The grades another club's player shows, as wide as the chief scout's ability allows (→PLAYER-18);
  * `scale` narrows it on whole grades, 원석 감별사's half (→OWNER-5) making ±2 read ±1 and ±1 exact.
  */
-export function personalityRange(grade: Grade, scoutAbility?: number, scale = 1): [Grade, Grade] {
+export function personalityRange(
+  grade: Grade = 3,
+  scoutAbility?: number,
+  scale = 1,
+): [Grade, Grade] {
   const spread = Math.floor(
     (scoutAbility === undefined ? 2 : scoutAbility >= 80 ? 0 : scoutAbility >= 60 ? 1 : 2) * scale,
   );
@@ -815,6 +849,7 @@ export function generateProfile(
   rating: number,
   role?: RoleId,
   age?: number,
+  loyalty: Grade = 3,
 ): Profile {
   const attrs = generateAttributes(rng, position, rating, role, age);
   const positions = generatePositions(rng, position);
@@ -822,6 +857,7 @@ export function generateProfile(
     professionalism: gradeOf(rng),
     adaptability: gradeOf(rng),
     ambition: gradeOf(rng),
+    loyalty,
   };
   return { attrs, positions, personality, traits: generateTraits(rng, position, rating, attrs) };
 }

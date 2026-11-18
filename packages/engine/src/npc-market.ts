@@ -25,6 +25,7 @@ import { SQUAD_MINIMUM } from './squad-size';
 import {
   clubById,
   clubPlayers,
+  joinClub,
   clubStyle,
   NPC_SQUAD,
   refillPlace,
@@ -434,8 +435,7 @@ function settleMove(
     p.until = w.year + npcContractTerm(w.year - p.born) - 1;
   }
   p.wage = offer.wage;
-  p.joined = w.year;
-  delete p.graduate;
+  joinClub(p, seller.country === offer.club.country ? 'domestic' : 'abroad', w.year);
   delete p.clauses;
   recordNpcTransferFee(w, seller, fee, true);
   recordNpcTransferFee(w, offer.club, offer.paid, false);

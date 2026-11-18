@@ -17,7 +17,7 @@ import { movePerson } from './npc-continuity';
 import { withMoveReason } from './npc-market';
 import { RETIREMENT, retirePerson } from './careers';
 import { ageAttributes } from './training';
-import { AGEING, lineOf } from './player';
+import { AGEING, ageingCurve, lineOf } from './player';
 import { divisionFor, signingClauses } from './contracts';
 import { marketWage, marketWageAt } from './market-prices';
 import { clubRegistration, registrationExempt, registrationRoom } from './registration';
@@ -100,12 +100,14 @@ function freeAgentOf(p: Player, since: number): FreeAgent {
  */
 function declineFreeAgent(w: World, p: FreeAgent, season: number) {
   const age = season - p.born,
-    before = { ...p.attrs };
+    before = { ...p.attrs },
+    curve = ageingCurve(w.seed, p.id);
   ageAttributes(
+    w.seed,
     p,
     age,
     random(`${w.seed}:free-agent-age:${p.id}:${season}`),
-    (a) => age < AGEING[a].declineFrom,
+    (a) => age < AGEING[a].declineFrom + curve.shift,
   );
   for (const a of ATTRIBUTES) p.attrs[a] = Math.min(p.attrs[a], before[a]);
 }

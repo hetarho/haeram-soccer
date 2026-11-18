@@ -350,6 +350,8 @@ export interface SeasonInput {
   xiLost: { club: string; player: string }[];
   /** Each lower-division club's three best players at the season's start: player → club. */
   topThree: Record<string, string>;
+  /** The three best players in each lower division when the season opens. */
+  divisionTopThree: Record<string, string>;
   contracts: { releases: number; renewals: number; expiring: number };
   retirements: number;
   /** Players new to the world's squads at the close (youth), by the tier of the club they joined. */
@@ -555,18 +557,22 @@ export function seasonStats(input: SeasonInput) {
             const homes = new Set(
               input.clubs.filter((c) => c.country === country && c.tier === tier).map((c) => c.id),
             );
-            const tracked = Object.entries(input.topThree).filter(([, home]) => homes.has(home));
+            const tracked = Object.values(input.divisionTopThree).filter((home) =>
+              homes.has(home),
+            ).length;
             const bids = input.bids?.filter(
               (b) =>
                 homes.has(b.from.id) &&
-                input.topThree[b.playerId] === b.from.id &&
+                input.divisionTopThree[b.playerId] === b.from.id &&
                 b.to.tier < b.from.tier,
             );
-            const completed = upwardMoves.filter((m) => homes.has(m.from!.id));
+            const completed = upwardMoves.filter(
+              (m) => input.divisionTopThree[m.playerId] === m.from!.id && homes.has(m.from!.id),
+            );
             return [
               tierKey(tier),
               {
-                tracked: tracked.length,
+                tracked,
                 status: bids ? 'observed' : 'absent',
                 bids: bids?.length ?? null,
                 sellerRefused: bids
@@ -579,6 +585,9 @@ export function seasonStats(input: SeasonInput) {
                   ? bids.filter((b) => b.outcome === 'buyer-refused').length
                   : null,
                 completed: completed.length,
+                shareMovedUp: tracked
+                  ? new Set(completed.map((m) => m.playerId)).size / tracked
+                  : null,
               },
             ];
           }),

@@ -4,6 +4,7 @@ import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import {
   adaptationAfter,
   AGEING,
+  ageingCurve,
   mainOvr,
   overshootFactor,
   PROFESSIONALISM_RATE,
@@ -348,7 +349,8 @@ export function developAnnually(
       : age <= 30
         ? 0.3
         : 0;
-  const growing = (a: Attribute) => age <= AGEING[a].growUntil;
+  const curve = ageingCurve(w.seed, player.id);
+  const growing = (a: Attribute) => age <= AGEING[a].growUntil + curve.shift;
   const before = mainOvr(player);
   // A season's growth reaches the main OVR whole. Under 27 its noise rides inside it, so it never
   // carries him past his potential; later every attribute takes its own.
@@ -358,7 +360,7 @@ export function developAnnually(
     share: 1,
     adaptation: context.adaptation,
   });
-  ageAttributes(player, age, variation, (a) => young && growing(a));
+  ageAttributes(w.seed, player, age, variation, (a) => young && growing(a));
   recordDevelopment(player, hundredths(mainOvr(player) - before));
   revisePotential(w, player, context.year, context.report);
 }
@@ -369,14 +371,17 @@ export function developAnnually(
  * order. Growth is not part of it, so a player nobody trains (→CLUB-49) ages by it alone.
  */
 export function ageAttributes(
+  seed: string,
   player: Player,
   age: number,
   noise: () => number,
   skip: (a: Attribute) => boolean = () => false,
 ) {
+  const curve = ageingCurve(seed, player.id);
   for (const a of ATTRIBUTES) {
     if (skip(a)) continue;
-    const decline = age >= AGEING[a].declineFrom ? AGEING[a].perSeason : 0;
+    const decline =
+      age >= AGEING[a].declineFrom + curve.shift ? AGEING[a].perSeason * curve.rate : 0;
     player.attrs[a] = hundredths(clamp(player.attrs[a] + noise() - 0.5 - decline, 5, TOP));
   }
 }

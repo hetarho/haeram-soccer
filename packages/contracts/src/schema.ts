@@ -196,7 +196,12 @@ const playerShape = {
   graduate: z.literal(true).optional(),
   prodigy: z.literal(true).optional(),
   attrs: attributes,
-  personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
+  personality: z.strictObject({
+    professionalism: grade,
+    adaptability: grade,
+    ambition: grade,
+    loyalty: grade.optional(),
+  }),
   qualities: z.strictObject({ understanding: grade, teaching: grade, judgement: grade }).optional(),
   traits: z.array(z.enum(PLAY_TRAITS)).max(3),
   adaptation: z.number().finite().min(0.3).max(1),

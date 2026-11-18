@@ -26,6 +26,7 @@ import {
   adaptationStart,
   GENERATED_ATTRIBUTES,
   generateProfile,
+  gradeOf,
   LINE_MINIMUM,
   lineOf,
   type Joined,
@@ -68,6 +69,8 @@ export {
 /** Where a player joining the club starts to settle (→PLAYER-11). */
 export function joinClub(p: Player, joined: Joined, year: number) {
   p.joined = year;
+  if (joined === 'academy') p.graduate = true;
+  else delete p.graduate;
   p.adaptation = adaptationStart(p.personality.adaptability, joined);
   p.clubRounds = 0;
   delete p.unsettled;
@@ -167,6 +170,7 @@ function drawPlayer(
     Math.round(rating),
     role,
     age,
+    gradeOf(random(`${seed}:loyalty:${id}`)),
   );
   const player: Player = {
     id,

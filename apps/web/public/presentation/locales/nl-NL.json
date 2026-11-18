@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "nl-NL",
   "messages": {
+    "player.personality.loyalty": "Loyaliteit",
     "navigation.dashboard": "Clubhuis",
     "navigation.league": "Competitie",
     "navigation.history": "Geschiedenis",
