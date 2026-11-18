@@ -201,6 +201,7 @@
 | T963 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | e79a5ae5d7ce | 2026-11-18T04:34Z |
 
 ## log
+- 261118 Manual serial recovery complete: T957 repair d35ccad7 (base caeb5242), T979 fallback repair 891d073f (base d35ccad7), T961 e4787581/6cb3e4a3, T962 fbc3c3d1/5ecbd9d2, T963 e79a5ae5 plus closure. Each passed all five task checks and spec lint; evidence .tmp/mr18cx/*worker-check.json. Independent Claude review and all final batch/golden/integration/release/publication work remain with host; no code push or release prep performed.
 - 261118 T963 done
 - 261118 T962 done
 - 261118 T961 done
@@ -220,4 +221,3 @@
 - 261118 sketch mr18: owner decisions on xf18 parked items → WORLD r18 LEAGUE r23 PLAYER r20 CLUB r78 ECON r63 OWNER r8 WEB r222, tasks T953–T980, ideation/historical-era-rules
 - 261117 fix architecture: delegated sales panel reads sale constants from the transfer-policy leaf (main CI red at 363ecdbc7, green at 5fbd9bd1c)
 - 261117 T950 done
-- 261117 T951 done
