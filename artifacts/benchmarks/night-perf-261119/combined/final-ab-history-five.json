@@ -1,0 +1,121 @@
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "d999af70",
+  "cand": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/self-improve-np19-f1c9b1b9",
+  "procs": 3,
+  "jobs": 1,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "115c49b2421f8441",
+    "cand": "9b16515de622de8a"
+  },
+  "sameBundle": false,
+  "sameHash": false,
+  "hashes": {
+    "base": [
+      "b0e9f0e763c79d50"
+    ],
+    "cand": [
+      "e97882a37555a428"
+    ]
+  },
+  "season": {
+    "pairs": 3,
+    "ms": {
+      "base": {
+        "cpu": 15618.321000000002,
+        "wall": 21890.137667000003
+      },
+      "cand": {
+        "cpu": 10482.647,
+        "wall": 15269.972082999997
+      }
+    },
+    "cpu": {
+      "ratio": 0.6757,
+      "lo": 0.6564,
+      "hi": 0.6889,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.705,
+      "lo": 0.6876,
+      "hi": 0.7306,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    10.6044921875,
+    15.79443359375,
+    20.10498046875,
+    22.1591796875
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 15216.669,
+            "wall": 21890.137667000003
+          },
+          "b": {
+            "cpu": 10482.647,
+            "wall": 15269.972082999997
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "e97882a37555a428"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 15618.321000000002,
+            "wall": 22060.734291999997
+          },
+          "b": {
+            "cpu": 10251.747,
+            "wall": 15169.498959
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "e97882a37555a428"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 15691.858,
+            "wall": 21669.226791
+          },
+          "b": {
+            "cpu": 10708.148,
+            "wall": 15830.502707999996
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "e97882a37555a428"
+      ]
+    }
+  ]
+}

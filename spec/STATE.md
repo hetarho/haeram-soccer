@@ -111,7 +111,7 @@
 
 ## next
 - inspect work board for remaining tasks
-- np19 (261119, gusta-self-improve, running): engine speed-ups T982–T985 from review/night-perf-261119 in work group np19-perf; the owner reads reports/261119-np19.
+- np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked). mr18cx must merge main (npc-market.ts) and re-prepare 0.8.13.
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.
 - T981 (ARCH r49, from gusta-update 0.17.8): CI keeps only the Chromium browser shards; run `gusta-implement-task T981` independently of T953–T980.
