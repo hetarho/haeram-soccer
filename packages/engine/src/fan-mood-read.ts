@@ -11,8 +11,8 @@ export function percentOf(amount: bigint, turnover: bigint | undefined) {
   return Number((amount * 10000n) / turnover) / 100;
 }
 
-/** Stored mood after one disposition factor, the friends drop factor, clamp and rounding; never mutates. */
-export function fanMoodAfter(
+/** Apply the disposition and friends effects to a stated mood driver. */
+export function fanMoodChange(
   w: Pick<World, 'owner'>,
   change: number,
   disposition?: keyof FanDisposition,
@@ -25,7 +25,16 @@ export function fanMoodAfter(
       share === undefined
         ? change
         : change * (FAN_DISPOSITION.baseFactor + (FAN_DISPOSITION.shareFactor * share) / 100),
-    scaled = adjusted < 0 && hasTrait(w, 'fansFriend') ? adjusted * FAN_MOOD.friendly : adjusted,
-    before = owner.fanMood;
-  return Math.round(clamp(before + scaled, FAN_MOOD.min, FAN_MOOD.max) * 100) / 100;
+    scaled = adjusted < 0 && hasTrait(w, 'fansFriend') ? adjusted * FAN_MOOD.friendly : adjusted;
+  return scaled;
+}
+
+/** Mood after the driver, bounded and rounded to the stored precision. */
+export function fanMoodAfter(
+  w: Pick<World, 'owner'>,
+  change: number,
+  disposition?: keyof FanDisposition,
+) {
+  const mood = w.owner!.fanMood + fanMoodChange(w, change, disposition);
+  return Math.round(clamp(mood, FAN_MOOD.min, FAN_MOOD.max) * 100) / 100;
 }

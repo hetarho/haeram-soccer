@@ -412,6 +412,25 @@ describe('팬 민심 and the crises (→OWNER-12–15, WEB-56)', () => {
     expect(movers.map((mover) => mover.label).join(' / ')).toContain('배당');
     expect(movers.at(-1)).toMatchObject({ change: -5, direction: 'down' });
   });
+  it('uses the result disposition and the ordinary drift in the mood summary', () => {
+    const w = owned();
+    w.owner!.fanMood = 80;
+    w.owner!.traits = ['fansFriend'];
+    w.owner!.fanDisposition = { results: 45, finance: 15, identity: 20, stars: 20 };
+    w.ownMatches = [
+      {
+        year: w.year,
+        kind: 'league',
+        round: 1,
+        home: w.playerClub,
+        away: w.clubs.find((club) => club.id !== w.playerClub)!.id,
+        score: { home: 0, away: 1 },
+      } as (typeof w.ownMatches)[number],
+    ];
+    const [result, drift] = fanMovers(w);
+    expect(result.change).toBeCloseTo(-1.4 * FAN_MOOD.friendly);
+    expect(drift.change).toBeCloseTo((FAN_MOOD.start - 80) * FAN_MOOD.drift);
+  });
   it('shows 구단주 파산 위기 and 퇴진 압박 as statuses with what remains', () => {
     const w = owned();
     expect(ownerStatuses(w)).toEqual([]);

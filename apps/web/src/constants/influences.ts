@@ -2424,7 +2424,7 @@ export const PLAYER_ACTIONS: PlayerAction[] = [
     sourceMessage('copy.influences.6c7e36a5b3'),
     sourceMessage('copy.influences.636b022e8b'),
     [
-      link('renewal-acceptance', sourceMessage('copy.influences.8408b7c312')),
+      link('renewal-acceptance', sourceMessage('renewal.guide.wage')),
       link('operating-cost', sourceMessage('copy.influences.2e5ff80ef0')),
       link('auto-signing', sourceMessage('copy.influences.256b196958')),
     ],

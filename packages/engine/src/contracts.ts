@@ -445,7 +445,7 @@ export function talksRound(w: World, p: Player, talk: ContractTalk) {
 }
 const percentLabel = (chance: number) => `${Math.round(chance * 100)}%`;
 /** A refusal is binding until the next real opening, including across the year turn. */
-function renewalBlocked(w: World, p: Player) {
+export function renewalBlocked(w: World, p: Player) {
   const now = renewalWindow(w),
     refusal = p.renewalRefused;
   return !!refusal && refusal.year === now.year && refusal.window === now.window;
@@ -914,17 +914,19 @@ export function offerContract(w: World, id: string, wage: string, term: TalkTerm
       sourceMessage('copy.contracts.aa91ac6b14', { p0: p.name, p1: moneyLabel(w, talk.floor) }),
     );
   const answer = renewalAnswer(w, p, talkRenewalContext(w, p, talk, wage));
-  if (answer.accept) signTalk(w, p, talk, wage, term, false);
-  else {
-    const detail = refuseRenewal(w, p, talk, termsReport(answer.chance, answer.lines));
-    pushInbox(w, {
-      kind: 'contract-talk',
-      title: sourceMessage('renewal.refused.title', { name: p.name, kind: talkLabel(talk) }),
-      detail,
-      attention: false,
-      ref: p.id,
-    });
+  if (answer.accept) {
+    signTalk(w, p, talk, wage, term, false);
+    return true;
   }
+  const detail = refuseRenewal(w, p, talk, termsReport(answer.chance, answer.lines));
+  pushInbox(w, {
+    kind: 'contract-talk',
+    title: sourceMessage('renewal.refused.title', { name: p.name, kind: talkLabel(talk) }),
+    detail,
+    attention: false,
+    ref: p.id,
+  });
+  return false;
 }
 /** The owner declines; the manager then tries to talk him round (→CLUB-27). */
 export function declineContract(w: World, id: string) {

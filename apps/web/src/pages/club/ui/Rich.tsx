@@ -1012,12 +1012,10 @@ function ContractTalkSheet({
       {localizeValue(
         player.unhappy && (
           <p className={s.muted}>
-            {richMessage('copy.Rich.54db82f7cf', {
-              p0: UNHAPPY_REASON[player.unhappy.reason],
-              p1: player.transferRequest
-                ? sourceMessage('copy.Rich.716e17c88b')
-                : sourceMessage('copy.Rich.a43d2917b3'),
-            })}
+            {richMessage(
+              player.transferRequest ? 'renewal.talk.unhappyRequest' : 'renewal.talk.unhappy',
+              { reason: UNHAPPY_REASON[player.unhappy.reason] },
+            )}
           </p>
         ),
       )}
@@ -1025,7 +1023,10 @@ function ContractTalkSheet({
         talk.kind === 'improve' && <p className={s.muted}>{richMessage('copy.Rich.94dd6887a9')}</p>,
       )}
       <p>
-        {richMessage('copy.Rich.3293275d8c', { p0: money(talk.demand), p1: money(talk.floor) })}
+        {richMessage('renewal.talk.amounts', {
+          demand: money(talk.demand),
+          floor: money(talk.floor),
+        })}
       </p>
       <section data-testid="renewal-chance" aria-label={displayMessage('renewal.chance.label')}>
         <p>{richMessage('renewal.chance', { chance: Math.round(renewal.chance * 100) })}</p>

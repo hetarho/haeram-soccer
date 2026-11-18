@@ -7636,6 +7636,10 @@ export const sourceMessages = {
     '{name} 선수가 제안을 거절했습니다. 기존 계약은 유지되며 다음 이적시장부터 다시 제안할 수 있습니다. {report}',
   'renewal.refused.title': '{name} 선수의 {kind} 제안 거절',
   'renewal.accepted.report': '{detail} · {report}',
+  'renewal.talk.amounts': '요구액은 {demand}, 하한은 {floor}예요.',
+  'renewal.talk.unhappy': '{reason}(으)로 불만이 있어요. 계약에 합의하면 불만이 풀려요.',
+  'renewal.talk.unhappyRequest':
+    '{reason}(으)로 불만이 있어요. 계약에 합의하면 불만이 풀리고 이적 요청을 거둬요.',
   'renewal.chance.label': '재계약 수락 확률',
   'renewal.chance': '선수 수락 확률 {chance}%',
   'renewal.guide.summary':
