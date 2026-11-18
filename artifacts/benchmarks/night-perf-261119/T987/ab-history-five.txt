@@ -1,0 +1,72 @@
+process 1/6: cpu ×0.901
+process 2/6: cpu ×0.873
+process 3/6: cpu ×0.840
+process 4/6: cpu ×0.819
+process 5/6: cpu ×0.848
+process 6/6: cpu ×0.821
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+  "cand": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/np19-perf-T987-ae59723d",
+  "procs": 6,
+  "jobs": 1,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "0cda9b2ee9017f36",
+    "cand": "c189f6136283270e"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "b0e9f0e763c79d50"
+    ],
+    "cand": [
+      "b0e9f0e763c79d50"
+    ]
+  },
+  "season": {
+    "pairs": 6,
+    "ms": {
+      "base": {
+        "cpu": 10789.672999999999,
+        "wall": 10835.3274165
+      },
+      "cand": {
+        "cpu": 8966.170000000002,
+        "wall": 8991.372937
+      }
+    },
+    "cpu": {
+      "ratio": 0.8499,
+      "lo": 0.8283,
+      "hi": 0.8736,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.8798,
+      "lo": 0.8259,
+      "hi": 0.9532,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    17.166015625,
+    20.62744140625,
+    18.21337890625,
+    14.484375,
+    11.4326171875,
+    9.7353515625,
+    8.68505859375
+  ]
+}
+node scripts/perf/ab.mjs --base 899f9ea9ccaae0ed6991588ea1eb29f62442d73c    6  166.95s user 2.36s system 119% cpu 2:21.72 total

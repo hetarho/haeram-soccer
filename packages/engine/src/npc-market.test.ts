@@ -52,6 +52,17 @@ vi.mock('./primitives', async (importOriginal) => {
   };
 });
 
+/** Slot ratings a case sets by player id: a NaN or -0 no attribute sum gives. Empty, they pass through. */
+const ratingOverrides = vi.hoisted(() => new Map<string, number>());
+vi.mock('./player-state', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./player-state')>();
+  return {
+    ...actual,
+    freshSlotOvr: (...args: Parameters<typeof actual.freshSlotOvr>) =>
+      ratingOverrides.get(args[0].id) ?? actual.freshSlotOvr(...args),
+  };
+});
+
 /** Three tiny synthetic NPC squads; no fixture simulation, world generation or time progression. */
 function fixture(year = 1950, count = 3) {
   const w = worldMarketFixture();
@@ -154,6 +165,44 @@ describe('isolated NPC transfer windows', () => {
     // No rating outlives its settlement.
     for (const attr of ATTRIBUTES) q!.attrs[attr] = 20;
     expect(new SettlementRatings().of(q!, b)).toBe(slotOvr(q!, b!));
+  });
+
+  it("reads a squad's best rating per slot as Math.max(0, ...ratings): NaN, -0 and empty kept", () => {
+    const { w, seller } = fixture();
+    const squad = w.squads![seller.id]!.slice(0, 4);
+    const slots = [...formationOf('possession'), { ...formationOf('possession')[0]! }];
+    const expected = (ratings: SettlementRatings, players: typeof squad) =>
+      slots.map((slot) => Math.max(0, ...players.map((p) => ratings.of(p, slot))));
+    const same = (players: typeof squad) => {
+      const ratings = new SettlementRatings(1);
+      const bests = ratings.bests(players, slots);
+      // Read against a fresh settlement, and against the one `bests` filled.
+      expect(bests.map((x) => (Object.is(x, 0) ? '+0' : x))).toEqual(
+        expected(new SettlementRatings(1), players).map((x) => (Object.is(x, 0) ? '+0' : x)),
+      );
+      expect(bests).toEqual(expected(ratings, players));
+      return bests;
+    };
+    try {
+      expect(same([])).toEqual(slots.map(() => 0));
+      same(squad);
+      // A -0 rating leaves +0, as Math.max(0, -0) does.
+      for (const p of squad) ratingOverrides.set(p.id, -0);
+      expect(same(squad).every((x) => Object.is(x, 0))).toBe(true);
+      // A NaN rating anywhere makes the slot's best NaN, read before or after an abler player.
+      ratingOverrides.set(squad[1]!.id, NaN);
+      ratingOverrides.delete(squad[2]!.id);
+      expect(same(squad).every(Number.isNaN)).toBe(true);
+      // Each slot read once a player: a slot outside the formations takes the plain path.
+      ratingOverrides.clear();
+      const ratings = new SettlementRatings(1);
+      const inside = ratings.bests(squad, slots.slice(0, -1));
+      for (const p of squad) for (const attr of ATTRIBUTES) p.attrs[attr] = 1;
+      expect(ratings.bests(squad, slots.slice(0, -1))).toEqual(inside);
+      expect(ratings.bests(squad, slots).slice(0, -1)).toEqual(inside);
+    } finally {
+      ratingOverrides.clear();
+    }
   });
 
   it('reads slot ratings through an open settlement and afresh once it closes, a throw included', () => {
