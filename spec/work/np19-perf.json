@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-18T18:51:29.974Z",
-  "sourceCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+  "snapshotAt": "2026-11-18T19:13:44.399Z",
+  "sourceCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
   "group": {
     "id": "np19-perf",
     "branch": "gusta-session-self-improve-np19-f1c9b1b9",
@@ -258,12 +258,12 @@
   },
   "summary": {
     "total": 7,
-    "completed": 5,
-    "remaining": 2,
-    "running": 0,
+    "completed": 6,
+    "remaining": 1,
+    "running": 1,
     "review": 0,
-    "blocked": 1,
-    "unassigned": 1
+    "blocked": 0,
+    "unassigned": 0
   },
   "tasks": [
     {
@@ -272,13 +272,7 @@
       "dep": [
         "T982"
       ],
-      "status": "todo"
-    },
-    {
-      "id": "T988",
-      "title": "Compute free-agent settlement money facts only for clubs that read them",
-      "dep": [],
-      "status": "blocked"
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -304,6 +298,8 @@
       "submittedBase": "c34862786c6f682bf0a092ba3f335b5469092957",
       "submissionId": "ec992881-953f-4c79-b2e3-d998e61baf46",
       "submittedAt": "2026-11-18T18:50:30.600Z",
+      "integratedCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+      "integratedAt": "2026-11-18T18:54:15.619Z",
       "risk": null,
       "agentChecks": [
         {
@@ -418,6 +414,13 @@
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-11-18T18:49:09.720Z",
           "finishedAt": "2026-11-18T18:50:30.212Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-18T18:51:36.219Z",
+          "finishedAt": "2026-11-18T18:54:14.884Z"
         }
       ]
     },
@@ -934,24 +937,45 @@
       "contributors": [
         "np19-native-2"
       ],
-      "status": "blocked",
-      "reason": "coordinator hold: integrate T982 first so each unit is reviewed on one moving base; resumes after T982 integrates",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-18T18:09:19.245Z",
       "startCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
-      "submittedBase": "c34862786c6f682bf0a092ba3f335b5469092957",
-      "submissionId": "a7f08e0b-c40a-4633-bd27-76bf1ab11346",
-      "submittedAt": "2026-11-18T18:24:05.353Z",
+      "verifiedCommit": "d851e9d5b459971eee987cf4405685385142cbd5",
+      "submittedBase": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+      "submissionId": "bb2c505d-782c-482b-813e-21ce1085b61b",
+      "submittedAt": "2026-11-18T19:09:31.016Z",
       "risk": null,
+      "review": {
+        "id": "5463fae5-dd83-448a-aa11-498374948bcb",
+        "owner": "np19-review-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T988 is result-preserving: lazy registration and bill/limit read the same pure inputs at first read as the eager build did, npcCanPay and observer order are unchanged, a signing club still gets fresh facts. Independent re-run on 899f9ea9 plus T988 free-agents.ts gives worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce; the A/B and test records in the result match the committed evidence.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "artifacts/benchmarks/night-perf-261119/T988/ab-history.json.partial.json",
+            "message": "T988: the ab.mjs progress file (complete:false, per-run rows) is committed next to the final ab-history.json. It duplicates the final record; sibling units T982/T986 committed the same kind of file, so dropping these (or ignoring *.partial.json) is a cleanup for the coordinator's final pass, not a blocker."
+          }
+        ],
+        "commit": "d851e9d5b459971eee987cf4405685385142cbd5",
+        "baseCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+        "submissionId": "bb2c505d-782c-482b-813e-21ce1085b61b",
+        "createdAt": "2026-11-18T19:09:55.089Z",
+        "finishedAt": "2026-11-18T19:13:18.229Z"
+      },
       "steps": [
         {
           "taskId": "T988",
           "commit": "d851e9d5b459971eee987cf4405685385142cbd5",
-          "at": "2026-11-18T18:24:05.328Z",
+          "at": "2026-11-18T19:09:30.999Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-11-18T18:22:28.470Z",
-              "finishedAt": "2026-11-18T18:24:05.071Z"
+              "startedAt": "2026-11-18T19:09:30.875Z",
+              "finishedAt": "2026-11-18T19:09:30.875Z",
+              "cached": "2026-11-18T18:24:05.146Z"
             }
           ]
         }
@@ -959,10 +983,37 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-11-18T18:22:28.470Z",
-          "finishedAt": "2026-11-18T18:24:05.071Z"
+          "startedAt": "2026-11-18T19:09:30.875Z",
+          "finishedAt": "2026-11-18T19:09:30.875Z",
+          "cached": "2026-11-18T18:24:05.146Z"
         }
       ]
+    },
+    {
+      "id": "ae59723d-7407-453a-99f2-db506499320b",
+      "group": "np19-perf",
+      "taskId": "T987",
+      "tasks": [
+        "T987"
+      ],
+      "lane": null,
+      "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1",
+      "contributors": [
+        "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-18T18:54:18.853Z",
+      "startCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+      "dispatch": {
+        "id": "aecc3663-0f88-4dd5-8cc9-49502140fde0",
+        "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": "opus",
+        "status": "running",
+        "startedAt": "2026-11-18T18:54:27.033Z"
+      }
     }
   ],
   "history": [
@@ -5658,6 +5709,257 @@
       "group": "np19-perf",
       "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
       "taskId": "T982",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1186,
+      "at": "2026-11-18T18:54:15.154Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-18T18:51:36.219Z",
+            "finishedAt": "2026-11-18T18:54:14.884Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1187,
+      "at": "2026-11-18T18:54:15.619Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+        "integratedAt": "2026-11-18T18:54:15.619Z"
+      }
+    },
+    {
+      "sequence": 1188,
+      "at": "2026-11-18T18:54:18.853Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ae59723d-7407-453a-99f2-db506499320b",
+        "group": "np19-perf",
+        "taskId": "T987",
+        "tasks": [
+          "T987"
+        ],
+        "lane": null,
+        "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1",
+        "contributors": [
+          "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-18T18:54:18.853Z",
+        "startCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c"
+      }
+    },
+    {
+      "sequence": 1189,
+      "at": "2026-11-18T18:54:26.861Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1190,
+      "at": "2026-11-18T18:54:27.033Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "aecc3663-0f88-4dd5-8cc9-49502140fde0",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-18T18:54:27.033Z"
+        }
+      }
+    },
+    {
+      "sequence": 1191,
+      "at": "2026-11-18T18:54:27.605Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "aecc3663-0f88-4dd5-8cc9-49502140fde0",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-18T18:54:27.033Z"
+        }
+      }
+    },
+    {
+      "sequence": 1192,
+      "at": "2026-11-18T19:09:30.508Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1193,
+      "at": "2026-11-18T19:09:30.638Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1194,
+      "at": "2026-11-18T19:09:31.016Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+        "submissionId": "bb2c505d-782c-482b-813e-21ce1085b61b",
+        "submittedAt": "2026-11-18T19:09:31.016Z",
+        "steps": [
+          {
+            "taskId": "T988",
+            "commit": "d851e9d5b459971eee987cf4405685385142cbd5",
+            "at": "2026-11-18T19:09:30.999Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T19:09:30.875Z",
+                "finishedAt": "2026-11-18T19:09:30.875Z",
+                "cached": "2026-11-18T18:24:05.146Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T19:09:30.875Z",
+            "finishedAt": "2026-11-18T19:09:30.875Z",
+            "cached": "2026-11-18T18:24:05.146Z"
+          }
+        ],
+        "verifiedCommit": "d851e9d5b459971eee987cf4405685385142cbd5"
+      }
+    },
+    {
+      "sequence": 1195,
+      "at": "2026-11-18T19:09:55.089Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "5463fae5-dd83-448a-aa11-498374948bcb",
+          "owner": "np19-review-1",
+          "status": "reviewing",
+          "commit": "d851e9d5b459971eee987cf4405685385142cbd5",
+          "baseCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+          "submissionId": "bb2c505d-782c-482b-813e-21ce1085b61b",
+          "createdAt": "2026-11-18T19:09:55.089Z"
+        }
+      }
+    },
+    {
+      "sequence": 1196,
+      "at": "2026-11-18T19:13:18.229Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "5463fae5-dd83-448a-aa11-498374948bcb",
+          "owner": "np19-review-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T988 is result-preserving: lazy registration and bill/limit read the same pure inputs at first read as the eager build did, npcCanPay and observer order are unchanged, a signing club still gets fresh facts. Independent re-run on 899f9ea9 plus T988 free-agents.ts gives worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce; the A/B and test records in the result match the committed evidence.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "artifacts/benchmarks/night-perf-261119/T988/ab-history.json.partial.json",
+              "message": "T988: the ab.mjs progress file (complete:false, per-run rows) is committed next to the final ab-history.json. It duplicates the final record; sibling units T982/T986 committed the same kind of file, so dropping these (or ignoring *.partial.json) is a cleanup for the coordinator's final pass, not a blocker."
+            }
+          ],
+          "commit": "d851e9d5b459971eee987cf4405685385142cbd5",
+          "baseCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
+          "submissionId": "bb2c505d-782c-482b-813e-21ce1085b61b",
+          "createdAt": "2026-11-18T19:09:55.089Z",
+          "finishedAt": "2026-11-18T19:13:18.229Z"
+        }
+      }
+    },
+    {
+      "sequence": 1197,
+      "at": "2026-11-18T19:13:41.900Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

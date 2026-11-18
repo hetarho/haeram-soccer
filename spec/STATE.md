@@ -74,7 +74,6 @@
 | T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
 | T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
 | T987 | Settlement memos for market needs, prices, sellable lines, listings and rivals | ARCH | T982 | todo |
-| T988 | Compute free-agent settlement money facts only for clubs that read them | ARCH | - | todo |
 | T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |
 | T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |
 | T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | todo |
@@ -109,7 +108,7 @@
 | tm17-market | 4 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-17T11:45:09.928Z | [history](work/tm17-market.json) |
 | lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
-| np19-perf | 2 | 7 | 5 | 2 | 0 | 0 | 1 | 2026-11-18T18:51:29.974Z | [history](work/np19-perf.json) |
+| np19-perf | 2 | 7 | 6 | 1 | 1 | 0 | 0 | 2026-11-18T19:13:44.399Z | [history](work/np19-perf.json) |
 
 ## next
 - inspect work board for remaining tasks
