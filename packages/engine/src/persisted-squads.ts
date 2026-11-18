@@ -20,6 +20,8 @@ import {
   selectionValue,
   squadPlaceAge,
   squadPlaces,
+  spreadLevels,
+  spreadTerm,
 } from './world';
 import { message } from '../../contracts/src/messages';
 
@@ -143,6 +145,9 @@ export function foundSquads(w: World) {
     const style = clubStyle(c),
       places = squadPlaces(style),
       retained = players.length;
+    const starterTerms = players
+      .slice(0, formationOf(style).length)
+      .map((p) => spreadTerm(w.seed, p.id, w.year - p.born));
     while (players.length < NPC_SQUAD.size) {
       const extra = players.length - places.length,
         place = places[11 + (extra % (places.length - 11))]!,
@@ -156,7 +161,11 @@ export function foundSquads(w: World) {
         w.seed,
         id,
         w.year,
-        c.strength,
+        spreadLevels(
+          c.strength,
+          [...starterTerms, spreadTerm(w.seed, id, age)],
+          starterTerms.length,
+        )[starterTerms.length]!,
         place.position,
         age,
         c.tier,

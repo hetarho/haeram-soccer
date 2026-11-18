@@ -9,7 +9,7 @@ import { measurementIdentity } from './lib/measurement-identity';
  *   pnpm exec tsx scripts/match-parity.ts --report [--partition calibration|validation]
  *     [--round N] [--scale S] [--only core,tactics,gap,tier,fatigue,era,knockout,rare]
  *     [--conditions id,…] [--rare-scale S] [--seasons N] [--jobs N] [--out FILE] [--patch JSON]
- *     [--sizes id=N,…] [--setting flat|spread] [--smoke]
+ *     [--sizes id=N,…] [--setting spread] [--smoke]
  *   default: calibration partition, round 0, scale 1, every match family, output
  *   artifacts/benchmarks/aggregate-model-calibration.json; `--seasons N` also plays N founded
  *   worlds one season each through ordinary settlement (season:league-20; `--only season` plays
@@ -811,7 +811,7 @@ function sourceFingerprint() {
 }
 
 const args = process.argv.slice(2);
-// T808: `--setting flat|spread` draws every generated squad on that squad spread (→WORLD-6), here and
+// T808: `--setting spread` draws every generated squad on that squad spread (→WORLD-6), here and
 // in every worker.
 const squadSetting = squadSpreadSetting(args);
 // A measurement's config overrides (`--patch <json>`): the result path's configs patched in this

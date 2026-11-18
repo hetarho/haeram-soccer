@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |
+| T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | doing@261118.mr18cx |
 | T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |
 | T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | todo |
 | T960 | Buyers value a young player's gain two seasons on | WORLD PLAYER CLUB | - | todo |

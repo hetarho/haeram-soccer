@@ -16,7 +16,7 @@
  *   pnpm exec tsx scripts/calibrate-transfers.ts                 4 ENG careers, 1950–2029
  *   options: --seeds N, --first-seed N, --seasons N, --countries ENG,ESP, --tiers midsize,
  *            --out careers.json (keep the careers), --in a.json,b.json (report kept careers only),
- *            --setting flat|spread (WORLD-6's squad spread for the run, T808; else the default)
+ *            --setting spread (WORLD-6's squad spread for the run, T808; else the default)
  *
  * A career is a 1950 takeover (`careerWorld`: the lowest professional division's first club, one
  * year of fixed costs in cash) until T668 rebuilds the reference careers on generated worlds.
@@ -49,7 +49,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { squadSpreadSetting } from './lib/squad-spread-setting';
 
 const args = process.argv.slice(2);
-// T808: `--setting flat|spread` plays the careers on that squad spread (→WORLD-6).
+// T808: `--setting spread` plays the careers on that squad spread (→WORLD-6).
 squadSpreadSetting(args);
 const option = (name: string, fallback: string) => {
   const index = args.indexOf(`--${name}`);

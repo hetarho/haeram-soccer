@@ -138,8 +138,8 @@ const BASELINE = {
   // T979 review correction retains the borrower's own joined/origin facts on its sold row.
   'owned-22': '44b8c72e952057b6381df64f8cd51aedf3b50f3439c635d6eabee925d9ba8b88',
   'owned-35': 'd34da8a0bc8c386b9cf346ba0fc6e3dbfe0ee1e5a43e816a68614a7664977d8a',
-  // T979 adds founding tenure and uses the shared join boundary on the NPC loan.
-  npc: '2fc7e0fe85fadd913bd8fe0fe067f8ca9b73ea0a537e5742d95f12067a037eda',
+  // T957 production spread changes the NPC founding roster and extra bench players.
+  npc: '2f8a97990e2f1c2d66de9bcf8e3bfe2753ce2d338fb6f6333357216b996ee307',
   missing: '3acaf009713082f2837df58e8502a6e24df38e2cdf4708e44b856f1f9b228d96',
 };
 

@@ -178,7 +178,11 @@ describe('bounded whole-world market', () => {
     expect(ids).toContain(young.id);
     expect(ids).toContain(limit.id);
     expect(youth.items.every((o) => w.year - o.player.born <= 20)).toBe(true);
-    expect(youth.total).toBe(all.items.filter((o) => w.year - o.player.born <= 20).length);
+    const allItems = Array.from(
+      { length: Math.ceil(all.total / all.pageSize) },
+      (_, page) => query(w, { page, pageSize: all.pageSize }).items,
+    ).flat();
+    expect(youth.total).toBe(allItems.filter((o) => w.year - o.player.born <= 20).length);
     expect(youth.total).toBeLessThan(all.total);
   });
 
