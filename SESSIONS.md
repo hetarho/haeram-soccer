@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T05:01Z | T966 | gusta-session-start-mr18cx-5d3ec005 | b52242099d72 | 9eeb147edbd8727c1a5f52aa |
+| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T05:07Z | - | gusta-session-start-mr18cx-5d3ec005 | 917d28f0e897 | 9eeb147edbd8727c1a5f52aa |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -201,8 +201,10 @@
 | T963 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | e79a5ae5d7ce | 2026-11-18T04:34Z |
 | T964 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | f12af63654d5 | 2026-11-18T04:52Z |
 | T965 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | b73778f20216 | 2026-11-18T05:01Z |
+| T966 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 917d28f0e897 | 2026-11-18T05:07Z |
 
 ## log
+- 261118 T966 done
 - 261118 T965 done
 - 261118 T964 done
 - 261118 Manual serial recovery complete: T957 repair d35ccad7 (base caeb5242), T979 fallback repair 891d073f (base d35ccad7), T961 e4787581/6cb3e4a3, T962 fbc3c3d1/5ecbd9d2, T963 e79a5ae5 plus closure. Each passed all five task checks and spec lint; evidence .tmp/mr18cx/*worker-check.json. Independent Claude review and all final batch/golden/integration/release/publication work remain with host; no code push or release prep performed.
@@ -222,4 +224,3 @@
 - 261118 T954 done
 - 261118 T953 done
 - 261118 fix market: emit outcomes for counted NPC bids for T953 measurement
-- 261118 sketch mr18: owner decisions on xf18 parked items → WORLD r18 LEAGUE r23 PLAYER r20 CLUB r78 ECON r63 OWNER r8 WEB r222, tasks T953–T980, ideation/historical-era-rules
