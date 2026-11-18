@@ -1,0 +1,104 @@
+[
+ {
+  "day": 1,
+  "kind": "other",
+  "engineCpu": 736.2,
+  "wall": 739.1,
+  "market": 235.4,
+  "clubs": 450,
+  "ph": {
+   "returns": 2.2,
+   "windowMoves": 3,
+   "listings": 41,
+   "index": 5.6,
+   "needs": 24.9,
+   "defs": 0,
+   "loop": 158.8
+  }
+ },
+ {
+  "day": 16,
+  "kind": "market",
+  "engineCpu": 348.5,
+  "wall": 350.7,
+  "market": 349.8,
+  "clubs": 450,
+  "ph": {
+   "returns": 1.6,
+   "windowMoves": 2.5,
+   "listings": 16.3,
+   "index": 6.2,
+   "needs": 23.4,
+   "defs": 0,
+   "loop": 300
+  }
+ },
+ {
+  "day": 31,
+  "kind": "market",
+  "engineCpu": 150.3,
+  "wall": 151.3,
+  "market": 116.4,
+  "clubs": 450,
+  "ph": {
+   "returns": 1.6,
+   "windowMoves": 2.6,
+   "listings": 14.6,
+   "index": 5.2,
+   "needs": 23.1,
+   "defs": 0,
+   "loop": 69.3
+  }
+ },
+ {
+  "day": 153,
+  "kind": "market",
+  "engineCpu": 202.8,
+  "wall": 203.2,
+  "market": 196.6,
+  "clubs": 450,
+  "ph": {
+   "returns": 1.3,
+   "windowMoves": 1.8,
+   "listings": 13,
+   "index": 3.9,
+   "needs": 22.1,
+   "defs": 0,
+   "loop": 154.5
+  }
+ },
+ {
+  "day": 169,
+  "kind": "market",
+  "engineCpu": 403.1,
+  "wall": 404.9,
+  "market": 404.2,
+  "clubs": 450,
+  "ph": {
+   "returns": 1.5,
+   "windowMoves": 2.4,
+   "listings": 13.9,
+   "index": 5.8,
+   "needs": 22.1,
+   "defs": 0,
+   "loop": 358.4
+  }
+ },
+ {
+  "day": 184,
+  "kind": "market",
+  "engineCpu": 159.9,
+  "wall": 161,
+  "market": 126.7,
+  "clubs": 450,
+  "ph": {
+   "returns": 1.6,
+   "windowMoves": 2.2,
+   "listings": 14.5,
+   "index": 5.9,
+   "needs": 23.7,
+   "defs": 0,
+   "loop": 78.9
+  }
+ }
+]

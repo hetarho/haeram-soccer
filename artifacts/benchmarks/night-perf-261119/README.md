@@ -11,3 +11,5 @@ Evidence for review/night-perf-261119 and reports/261119-np19.
 - `brotli-q11-play10.txt`: pure-JS Brotli q11 on a ten-season career save.
 
 The drivers were written in a session scratchpad and still name absolute paths there and in the session worktree; adjust the paths (or `WT=`) before rerunning. The cached `.bin` worlds were not kept (tens of MB each); `late/play.ts` and `late/gen.ts` rebuild them.
+- `remove-market/`: 10x market-day levers M0–M4 on main cbd26188 (patches, pair runs, impact runs; profiles not kept).
+- `cliff/`: the 1950 career played on to 1991 on main cbd26188 — sizes per season, codec choice, day costs, checkpoints on fast and efficiency cores (`seasons-summary.txt`, `days-summary.txt`).
