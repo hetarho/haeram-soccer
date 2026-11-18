@@ -109,7 +109,7 @@ const keyOf = (n) => {
 const self = new Map(),
   inclusive = new Map();
 let counted = 0;
-prof.samples.forEach((id, i) => {
+prof.samples.forEach((id) => {
   const node = byId.get(id);
   if (node.callFrame.functionName === '(idle)') return;
   counted++;
