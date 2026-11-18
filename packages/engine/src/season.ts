@@ -824,7 +824,7 @@ export function topUpAtClose(w: World, level: number) {
     youth.clauses = signingClauses(w, youth);
     youth.graduate = true;
     if (registrationRoom(w, { ...youth, joined: w.year })) break;
-    joinClub(youth, 'domestic', w.year);
+    joinClub(youth, 'domestic', w.year, true);
     w.players.push(youth);
     movePerson(w, youth, w.playerClub, true);
   }

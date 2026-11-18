@@ -807,3 +807,71 @@ describe('targets by value, means from the wage budget, paid moves down (→WORL
     }
   });
 });
+
+describe('loan returns preserve each club’s recorded origin', () => {
+  it.each([true, false])(
+    'keeps the borrower row when its own academy flag is %s',
+    (ownGraduate) => {
+      const { w, seller } = fixture(2000);
+      const p = target(w, seller);
+      w.squads![seller.id] = w.squads![seller.id]!.filter((q) => q.id !== p.id);
+      p.joined = w.year;
+      if (ownGraduate) p.graduate = true;
+      p.loanUntil = w.year + 1;
+      w.players.push(p);
+      w.playerRecords = {
+        [p.id]: {
+          moves: [],
+          loan: {
+            club: seller.id,
+            until: w.year + 1,
+            wage: p.wage,
+            contractUntil: w.year + 2,
+            year: w.year,
+            joined: w.year - 4,
+            ...(!ownGraduate ? { graduate: true } : {}),
+          },
+        },
+      };
+      returnNpcLoans(w);
+      expect(w.players.find((q) => q.id === p.id)).toMatchObject({
+        status: 'sold',
+        joined: w.year,
+      });
+      expect(p.graduate).toBe(ownGraduate ? true : undefined);
+      const returned = w.squads![seller.id]!.find((q) => q.id === p.id)!;
+      expect(returned.joined).toBe(w.year - 4);
+      expect(returned.graduate).toBe(ownGraduate ? undefined : true);
+    },
+  );
+
+  it('resumes an owned parent’s recorded stint for an old loan without people or optional facts', () => {
+    const { w, seller } = fixture();
+    const p = target(w, seller, { joined: w.year, graduate: undefined });
+    const prior = structuredClone(p);
+    prior.status = 'sold';
+    prior.joined = w.year - 5;
+    prior.graduate = true;
+    w.players.push(prior);
+    delete w.people;
+    w.playerRecords = {
+      [p.id]: {
+        moves: [],
+        loan: {
+          club: w.playerClub,
+          until: w.year + 1,
+          wage: p.wage,
+          contractUntil: w.year + 2,
+          year: w.year,
+        },
+      },
+    };
+    returnNpcLoans(w);
+    expect(w.players.find((q) => q.id === p.id)).toMatchObject({
+      status: 'active',
+      joined: w.year - 5,
+      graduate: true,
+    });
+    expect(w.squads![seller.id]!.some((q) => q.id === p.id)).toBe(false);
+  });
+});

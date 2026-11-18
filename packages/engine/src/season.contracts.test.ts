@@ -329,6 +329,7 @@ describe('closed season archive', () => {
       expect(overall(p)).toBeGreaterThanOrEqual(level - 5 - 9);
       expect(overall(p)).toBeLessThan(xi - 15);
       expect(p.born).toBe(w.year - 18);
+      expect(p.graduate).toBe(true);
       // On the market wage of the division he joins.
       expect(p.wage).toBe(marketWageAt(own.country, w.year, own.tier, p));
     }

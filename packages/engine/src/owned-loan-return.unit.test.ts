@@ -135,8 +135,9 @@ function facts(w: World, eventAt: number) {
 const digest = (value: unknown) => createHash('sha256').update(canonical(value)).digest('hex');
 // BASELINE CAPTURES: unchanged 134ae45f, complete raw worlds retained in .tmp/t912.
 const BASELINE = {
-  'owned-22': '4ecc192b289da0a30c4cb7327118b6ef9772beb08156f28ad86577539fa438b9',
-  'owned-35': 'd475e4f8194652acaa99fc345bcc6594965e51ccf9181af453df31ae58064c24',
+  // T979 review correction retains the borrower's own joined/origin facts on its sold row.
+  'owned-22': '44b8c72e952057b6381df64f8cd51aedf3b50f3439c635d6eabee925d9ba8b88',
+  'owned-35': 'd34da8a0bc8c386b9cf346ba0fc6e3dbfe0ee1e5a43e816a68614a7664977d8a',
   // T979 adds founding tenure and uses the shared join boundary on the NPC loan.
   npc: '2fc7e0fe85fadd913bd8fe0fe067f8ca9b73ea0a537e5742d95f12067a037eda',
   missing: '3acaf009713082f2837df58e8502a6e24df38e2cdf4708e44b856f1f9b228d96',
@@ -149,6 +150,7 @@ describe('canonical owned loan return notification', () => {
       const { w, id, parent } = ownedLoan(age);
       const p = w.players.find((q) => q.id === id)!;
       const terms = structuredClone(w.playerRecords![id]!.loan!);
+      const borrowerFacts = { joined: p.joined, graduate: p.graduate };
       expect(p.loanUntil).toBe(w.year + 1);
       expect(w.people![id]!.loan!.club).toBe(parent);
       atReturn(w);
@@ -167,6 +169,7 @@ describe('canonical owned loan return notification', () => {
         },
       ]);
       expect(p.status).toBe('sold');
+      expect({ joined: p.joined, graduate: p.graduate }).toEqual(borrowerFacts);
       expect(p.loanUntil).toBeUndefined();
       expect(w.people![id]!.loan).toBeUndefined();
       expect(w.playerRecords![id]!.loan).toBeUndefined();

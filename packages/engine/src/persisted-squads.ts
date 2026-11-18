@@ -245,14 +245,6 @@ export function moveSquadPlayer(
       };
     if (prior >= 0) {
       live.career = [...w.players[prior]!.career];
-      if (w.people?.[p.id]?.loan?.club === club) {
-        // A return resumes the parent club's tenure; a new signing starts it again.
-        const parent = w.players[prior]!;
-        if (parent.joined === undefined) delete live.joined;
-        else live.joined = parent.joined;
-        if (parent.graduate) live.graduate = true;
-        else delete live.graduate;
-      }
       // Most signing callers already inserted their live record and retain that reference.
       Object.assign(p, live);
       w.players[prior] = p;

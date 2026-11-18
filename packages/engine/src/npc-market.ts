@@ -473,14 +473,18 @@ export function returnNpcLoans(w: World) {
       delete p.loanUntil;
       p.wage = currencyChange(parent.country, loan.year, w.year)?.(loan.wage) ?? loan.wage;
       p.until = loan.contractUntil;
-      delete p.graduate;
-      delete p.joined;
-      if (loan.graduate) p.graduate = true;
-      if (loan.joined !== undefined) p.joined = loan.joined;
+      // The borrower keeps its own history; only the returning copy resumes the parent's stint.
+      const returning = borrower?.id === w.playerClub ? structuredClone(p) : p;
+      const prior = parent.id === w.playerClub ? w.players.find((q) => q.id === id) : undefined;
+      delete returning.graduate;
+      delete returning.joined;
+      if (loan.graduate ?? prior?.graduate) returning.graduate = true;
+      const joined = loan.joined ?? prior?.joined;
+      if (joined !== undefined) returning.joined = joined;
       if (w.people?.[id]) {
-        movePerson(w, p, parent.id, borrower?.id === w.playerClub, undefined, borrower?.id);
+        movePerson(w, returning, parent.id, borrower?.id === w.playerClub, undefined, borrower?.id);
         delete w.people[id]!.loan;
-      } else moveSquadPlayer(w, p, parent.id, borrower?.id);
+      } else moveSquadPlayer(w, returning, parent.id, borrower?.id);
       if (borrower!.id === w.playerClub)
         addEvent(
           w,

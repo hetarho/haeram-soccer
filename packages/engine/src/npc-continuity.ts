@@ -290,6 +290,13 @@ export function returnLoan(w: World, p: Player) {
   const person = retainPerson(w, p, undefined, true);
   const parent = person.loan?.club;
   delete p.loanUntil;
+  if (parent === w.playerClub) {
+    const prior = w.players.find((q) => q.id === p.id);
+    if (prior?.joined === undefined) delete p.joined;
+    else p.joined = prior.joined;
+    if (prior?.graduate) p.graduate = true;
+    else delete p.graduate;
+  }
   movePerson(w, p, parent);
   delete person.loan;
   p.status = parent === w.playerClub ? 'active' : 'sold';
