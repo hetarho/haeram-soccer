@@ -722,7 +722,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     // The top-up's level is the division the club will play in, read before anyone leaves.
     const freeLevel = Math.round(divisionStrength(w));
     // Unrenewed contracts end: those players leave, before 1996 for a compensation (→CLUB-28).
-    expireContracts(w, oldTier);
+    expireContracts(w);
     // The running contracts' promotion or relegation clauses apply from the first round (→CLUB-29).
     if (own.tier !== oldTier) applyClauses(w, own.tier < oldTier ? 'promotion' : 'relegation');
     for (const p of activePlayers(w)) {
