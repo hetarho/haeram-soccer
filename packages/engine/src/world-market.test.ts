@@ -427,6 +427,38 @@ describe('stable-identity approaches', () => {
     },
   );
 
+  it.each([false, true])(
+    'counts another club academy graduate in previews and pinned completion (loan=%s)',
+    (loan) => {
+      const { w, original, target } = spanishReturnFixture(22, false);
+      const source = squad(w, w.clubs[1]).find((p) => p.id === original.id)!;
+      source.graduate = true;
+      source.joined = w.year - 3;
+      const before = structuredClone(w);
+      const offer = worldMarketOffer(w, target)!;
+      expect(offer.player.graduate).toBeUndefined();
+      expect(worldMarketDetail(w, target).buy.eligible).toBe(false);
+      expect(worldMarketDetail(w, target).loan.eligible).toBe(false);
+      expect(w).toEqual(before);
+      w.players.pop();
+      placeBid(w, target, loan ? offer.loanFee : offer.fee, loan);
+      const bid = w.bids![0];
+      // Old pinned offers could still carry the selling club's academy fact.
+      bid.offer!.player.graduate = true;
+      bid.status = 'countered';
+      respondBid(w, bid.id, true);
+      expect(bid.status).toBe('completed');
+      expect(w.players.find((p) => p.id === original.id)).toMatchObject({ joined: w.year });
+      expect(w.players.find((p) => p.id === original.id)!.graduate).toBeUndefined();
+      expect(registration(w)).toMatchObject({ counted: 25, exempt: 0, total: 25 });
+      if (loan)
+        expect(w.playerRecords![original.id].loan).toMatchObject({
+          joined: w.year - 3,
+          graduate: true,
+        });
+    },
+  );
+
   it('still blocks older graduates, non-graduates and returns above the total ceiling', () => {
     for (const [age, graduate, total] of [
       [23, true, 25],

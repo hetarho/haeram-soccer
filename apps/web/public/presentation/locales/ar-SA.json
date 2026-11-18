@@ -3,6 +3,7 @@
   "id": "ar-SA",
   "messages": {
     "player.personality.loyalty": "الولاء",
+    "player.personality.loyalty.description": "مدى تأثير الوقت الذي قضاه في النادي وتخرّجه من أكاديميته على رغبته في البقاء.",
     "navigation.dashboard": "مقر النادي",
     "navigation.league": "الدوري",
     "navigation.history": "التاريخ",

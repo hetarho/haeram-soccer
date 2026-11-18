@@ -25,7 +25,7 @@
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 78 | 78 | - | 0 |
+| CLUB | 79 | 79 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
@@ -67,8 +67,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | doing@261118.mr18cx |
-| T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
 | T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |
 | T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |
 | T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | todo |
@@ -104,7 +102,7 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
-- gusta-implement-task T956
+- gusta-implement-task T959
 - gusta-implement-task T958
 - gusta-implement-task T957
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).

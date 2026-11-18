@@ -3,6 +3,7 @@
   "id": "pt-BR",
   "messages": {
     "player.personality.loyalty": "Lealdade",
+    "player.personality.loyalty.description": "Quanto o tempo no clube e a formação na base dele incentivam o jogador a ficar.",
     "navigation.dashboard": "Sede do clube",
     "navigation.league": "Liga",
     "navigation.history": "História",

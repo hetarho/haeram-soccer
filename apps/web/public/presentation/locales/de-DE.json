@@ -3,6 +3,7 @@
   "id": "de-DE",
   "messages": {
     "player.personality.loyalty": "Loyalität",
+    "player.personality.loyalty.description": "Wie stark ihn seine Zeit beim Verein und die Ausbildung in dessen Jugend zum Bleiben bewegen.",
     "navigation.dashboard": "Klubhaus",
     "navigation.league": "Liga",
     "navigation.history": "Historie",

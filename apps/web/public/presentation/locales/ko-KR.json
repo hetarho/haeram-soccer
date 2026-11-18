@@ -3,6 +3,7 @@
   "id": "ko-KR",
   "messages": {
     "player.personality.loyalty": "충성심",
+    "player.personality.loyalty.description": "구단에서 보낸 시간과 그 구단 유스 출신 이력이 잔류 의사에 미치는 영향이에요.",
     "navigation.dashboard": "클럽하우스",
     "navigation.league": "리그",
     "navigation.history": "기록",

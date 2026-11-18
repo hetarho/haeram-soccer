@@ -2,6 +2,10 @@ import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Club, Player, World } from '../../contracts/src/types';
 import { registrationRule, type RegistrationRule } from '../../catalogs/src/index';
 import { activePlayers, clubOf } from './player-state';
+/** Recorded academy qualification of our club, including departed players. */
+export const graduateIds = (w: World) =>
+  new Set(w.players.filter((p) => p.graduate).map((p) => p.id));
+
 type Registrant = Pick<Player, 'born' | 'position' | 'loanUntil' | 'graduate' | 'joined'>;
 export function registrationExempt(rule: RegistrationRule, year: number, player: Registrant) {
   const age = year - player.born,

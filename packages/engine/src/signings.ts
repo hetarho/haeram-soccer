@@ -2,7 +2,7 @@ import { message as sourceMessage } from '../../contracts/src/messages';
 import { closeNeedFor, openNeeds } from './replacements';
 import { bidCeiling, directorTrait, staffBidShare } from './director-bidding';
 import { SQUAD_TARGET } from './squad-size';
-import { registration, registrationRoom } from './registration';
+import { graduateIds, registration, registrationRoom } from './registration';
 import { detectMediations, resolveDelegatedMediations } from './mediation';
 import { careerDate, openEmployment, retainPerson } from './person-careers';
 import { movePerson } from './npc-continuity';
@@ -628,7 +628,7 @@ export function noteSigning(w: World, player: Player, sourceClub?: string) {
     positions: { ...player.positions },
     at: careerDate(w),
   });
-  joinClub(player, foreign ? 'abroad' : 'domestic', w.year);
+  joinClub(player, foreign ? 'abroad' : 'domestic', w.year, player.graduate === true);
   const window = w.shortlist?.window;
   if (
     window &&
@@ -1109,14 +1109,20 @@ function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
  * `raising`: a haggle left out, as its raise is checked as his move.
  */
 function projection(w: World, day: number, raising?: TransferBid) {
-  const bids = windowBids(w, day),
+  const graduates = graduateIds(w),
+    bids = windowBids(w, day),
     open = bids.filter(isOpen),
     arriving = [...open, ...haggles(w, bids)].flatMap((bid) => {
       if (!bid.offer || bid === raising) return [];
       const p = structuredClone(bid.offer.player);
       p.wage = stepWage(p.wage, bid.wage ?? 1);
       if (bid.loan) p.loanUntil = w.year + 1;
-      joinClub(p, isForeignCandidate(w, p.id, bid.club) ? 'abroad' : 'domestic', w.year);
+      joinClub(
+        p,
+        isForeignCandidate(w, p.id, bid.club) ? 'abroad' : 'domestic',
+        w.year,
+        graduates.has(p.id),
+      );
       return [p];
     }),
     // An owner's countered bid pays the counter if he accepts it (→CLUB-52).

@@ -64,18 +64,24 @@ describe('club tenure and loyalty (→CLUB-53/54)', () => {
     });
   });
 
-  it('our actual free signing starts tenure again and clears a former own graduate flag', () => {
+  it('our actual free signing starts tenure again and retains a recorded own academy origin', () => {
     const w = fixture();
-    const p = makePlayer('ENG', w.seed, 'own:former', w.year, 40, 'CB', 24);
+    const p = makePlayer('ENG', w.seed, 'own:former', w.year, 40, 'CB', 22);
     p.joined = w.year - 4;
     p.graduate = true;
     w.players.push({ ...p, status: 'sold' });
+    w.clubs[0]!.country = 'ESP';
+    w.year = 2001;
+    p.born = w.year - 22;
+    for (const row of w.players) row.born = p.born;
+    while (w.players.filter((row) => row.status === 'active').length < 25)
+      w.players.push({ ...w.players[1]!, id: `counted:${w.players.length}` });
     w.freeAgents = [{ ...p, freeSince: w.year }];
     const signed = signFreeAgentAtClose(w, 'DF', 99);
     expect(signed && typeof signed !== 'string').toBe(true);
     const live = w.players.find((one) => one.id === p.id)!;
     expect(live.joined).toBe(w.year);
-    expect(live.graduate).toBeUndefined();
+    expect(live.graduate).toBe(true);
     expect(w.freeAgents).toEqual([]);
   });
 

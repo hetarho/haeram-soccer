@@ -3,6 +3,7 @@
   "id": "id-ID",
   "messages": {
     "player.personality.loyalty": "Loyalitas",
+    "player.personality.loyalty.description": "Seberapa kuat masa bakti di klub dan asal dari akademinya mendorongnya untuk bertahan.",
     "navigation.dashboard": "Wisma klub",
     "navigation.league": "Liga",
     "navigation.history": "Sejarah",
