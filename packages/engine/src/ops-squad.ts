@@ -1,3 +1,4 @@
+import { distressSigningReason } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { worldMarketOffer } from './world-market';
 import { graduateIds, registrationRoom } from './registration';
@@ -132,6 +133,8 @@ export function squadCommand(w: World, cmd: SquadCommand) {
         );
         break;
       }
+      const distress = distressSigningReason(w, o.player, true, cmd.loan);
+      if (distress) throw new Error(distress);
       if (cmd.loan) throw new Error(sourceMessage('copy.ops_squad.a2b1b34469'));
       if (cmd.wage !== undefined && !isWageStep(cmd.wage))
         throw new Error(sourceMessage('market.bid.invalidWage'));

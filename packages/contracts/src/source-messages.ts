@@ -1,5 +1,18 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'finance.distress.writeOff': '채무 탕감',
+  'finance.distress.writeOffDetail':
+    '법정관리 진입으로 부채의 절반을 탕감했습니다. 영업 수입에는 포함되지 않습니다.',
+  'finance.distress.noSigning':
+    '매각 요구 또는 법정관리 중에는 이적료를 내는 영입과 임대 영입을 할 수 없습니다.',
+  'finance.distress.freeMinimum':
+    '재정 위기 중 자유계약 영입은 최소 14명이나 골키퍼를 확보할 때만 가능합니다.',
+  'finance.distress.forcedSale':
+    '재정 위기에 따른 강제 매각으로 선수 가치의 70% 이상인 제안을 수락했습니다.',
+  'finance.distress.stage1': '재정 경고',
+  'finance.distress.stage2': '매각 요구',
+  'finance.distress.stage3': '법정관리',
+  'finance.distress.entry': '구단이 재정 위기 단계 {stage}에 진입했습니다.',
   'player.personality.loyalty': '충성심',
   'player.personality.loyalty.description':
     '구단에서 보낸 시간과 그 구단 유스 출신 이력이 잔류 의사에 미치는 영향이에요.',

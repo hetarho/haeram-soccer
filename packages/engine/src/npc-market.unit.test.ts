@@ -35,7 +35,7 @@ import {
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
 import * as marketPrices from './market-prices';
-import { npcWageBill, npcWageBudget, npcWageLimit } from './books';
+import { npcFixedCosts, npcWageBill, npcWageBudget, npcWageLimit } from './books';
 import { operatingExpensesAt } from './finance';
 import { npcSaleContext, saleShare } from './sale-answer';
 import { npcTermsContext, termsChance } from './personal-terms';
@@ -975,4 +975,27 @@ describe('a young target’s expected gain (→WORLD-16)', () => {
       }
     },
   );
+});
+
+describe('distress on the real NPC market path', () => {
+  it('lists its most valuable player under forced sales even within the funded envelope', () => {
+    const { w, seller, buyer } = fixture();
+    const p = target(w, seller, {}, 90);
+    seller.books!.distress = { stage: 2 };
+    seller.books!.cash = '0';
+    seller.books!.debt = (npcFixedCosts(w, seller) * 2n).toString();
+    seller.books!.openingIncome = '999999999999';
+    expect(npcWageBill(w, seller)).toBeLessThan(npcWageLimit(w, seller)!);
+    const moves = observe(() => npcMarket(w));
+    expect(at(w, p.id)).toEqual([buyer.id]);
+    expect(moves.find((m) => m.id === p.id)?.reason).toBe('forced-sale');
+  });
+  it('places no fee or loan bids when its buyer enters stage 2', () => {
+    const { w, seller, buyer } = fixture();
+    const p = target(w, seller);
+    buyer.books!.distress = { stage: 2 };
+    const bids = observeBids(() => npcMarket(w));
+    expect(bids.filter((b) => b.to.id === buyer.id)).toHaveLength(0);
+    expect(at(w, p.id)).toEqual([seller.id]);
+  });
 });

@@ -1,3 +1,5 @@
+import { applyPendingDeductions } from './distress';
+import { archiveLeagueDeductions } from './league-fixtures';
 import { closePlayerLines, linkOwnMatchPlayers, linkPlayer } from './player-records';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { refreshReadModels } from './read-models';
@@ -105,7 +107,7 @@ import { recordRecentResult, retainRecentResults } from './recent-results';
 import { careerEnded, hasOwner, ownerClose, ownerDay } from './owner';
 import { crossWar, seasonAfter } from './wartime';
 import { capFreeAgents, refreshFreeAgents, signFreeAgentAtClose } from './free-agents';
-import { booksClose } from './books';
+import { booksClose, settleNpcDistress } from './books';
 import { fanMoodAfterLeagueMatch, fanMoodClose, fanMoodRound } from './fan-mood';
 import {
   currentDay,
@@ -140,9 +142,11 @@ export function divisionStrength(w: World) {
     : rating(w, own);
 }
 export function prepareSeason(w: World, continental = true, lifecycle = true) {
+  const deductions = !lifecycle ? archiveLeagueDeductions(w).leagueDeductions : undefined;
   w.fixtures = [];
   w.tables = {};
-  for (const c of w.clubs) w.tables[c.id] = emptyTable();
+  for (const c of w.clubs) w.tables[c.id] = { ...emptyTable(), ...deductions?.[c.id] };
+  if (lifecycle) applyPendingDeductions(w);
   w.fixtures = buildSeasonFixtures(w);
   w.round = 0;
   w.calendar = { day: 0 };
@@ -622,6 +626,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     group: oldGroup,
     rank: order.findIndex((c) => c.id === own.id) + 1,
     points: table.points,
+    ...(table.deducted !== undefined
+      ? { deducted: table.deducted, deductionReason: table.deductionReason }
+      : {}),
     played: table.played,
     won: table.won,
     drawn: table.drawn,
@@ -639,6 +646,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       .filter((m) => m.year === w.year)
       .reduce((s, m) => addMetrics(s, m.metrics[m.home === w.playerClub ? 0 : 1]), zeroMetrics()),
     standings: worldStandings(w),
+    ...archiveLeagueDeductions(w),
     champions,
     ...(europeCoefficients ? { europeCoefficients } : {}),
     europe: europeArchive(w),
@@ -864,6 +872,7 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
     manager: '',
     metrics: zeroMetrics(),
     standings: worldStandings(w),
+    ...archiveLeagueDeductions(w),
     champions,
     ...(europeCoefficients ? { europeCoefficients } : {}),
     europe: europeArchive(w),
@@ -1015,11 +1024,15 @@ function playRound(
   advanceEurope(w, capture, undefined, observe);
   advanceCups(w, capture, undefined, observe);
   if (owned) {
-    settleRound(w);
+    settleRound(
+      w,
+      fixtures.some((f) => ownFixture(w, f) && f.kind === 'league' && !!f.score),
+    );
     fanMoodRound(w);
     // A manager at the floor of trust may resign once the round is settled (→STAFF-47).
     settleManagerTrust(w);
   }
+  settleNpcDistress(w, fixtures);
   snapshotStandings(w);
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {

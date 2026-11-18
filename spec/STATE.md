@@ -25,11 +25,11 @@
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 80 | 80 | - | 0 |
+| CLUB | 82 | 82 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
-| ECON | 63 | 63 | - | 0 |
+| ECON | 64 | 64 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
 | SAVE | 70 | 70 | - | 0 |
@@ -67,9 +67,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T967 | Financial distress ladder replaces bankruptcy | ECON WORLD OWNER | - | todo |
-| T968 | Clubs in distress cannot buy and must sell | ECON WORLD CLUB | T967 | todo |
-| T969 | Administration deducts 10 points and writes off half the debt | ECON LEAGUE | T967 | todo |
 | T970 | Show distress stages instead of bankruptcy | WEB OWNER ECON ARCH | T967 T969 | todo |
 | T980 | League tables show deducted points | ECON LEAGUE ARCH | T969 | todo |
 | T971 | The 단장 plans to a season-end cash floor, not a loss runway | ECON CLUB STAFF | T967 | todo |
@@ -92,6 +89,8 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
-- gusta-implement-task T967
+- gusta-implement-task T970
+- gusta-implement-task T973
+- gusta-implement-task T971
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.

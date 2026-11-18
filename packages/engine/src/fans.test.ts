@@ -1,7 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canonical } from '../../contracts/src/index';
 import {
-  BANKRUPT_MESSAGE,
   catchment,
   clubOf,
   driftFans,
@@ -10,11 +8,9 @@ import {
   fanFollowing,
   gateProjection,
   localSupporters,
-  operate,
   operatingCosts,
   partCostUnits,
   settleRound,
-  simulateSeason,
   STADIUM_STEPS,
   stature,
 } from './index';
@@ -120,8 +116,8 @@ describe('facility parts (→ECON-32)', () => {
   });
 });
 
-describe('bankruptcy', () => {
-  it('allows prolonged shallow debt, then ends the career below its debt limit, refusing every action', () => {
+describe('financial distress', () => {
+  it('allows shallow debt and reports deep debt without ending the career', () => {
     const w = world('going-under');
     const annual = BigInt(operatingCosts(w).annual);
     for (let round = 1; round <= 12; round++) {
@@ -133,18 +129,14 @@ describe('bankruptcy', () => {
       expect(w.bankrupt).toBeUndefined();
       expect(w.critical).toBeUndefined();
     }
-    expect(w.inbox?.filter((item) => item.title.startsWith('파산 위기'))).toHaveLength(1);
+    expect(w.inbox?.filter((item) => item.title.startsWith('파산 위기'))).toHaveLength(0);
     w.round = 13;
     w.cash = (-annual * 2n).toString();
     settleRound(w);
-    expect(w.bankrupt).toMatchObject({ year: w.year, round: 13 });
-    expect(w.events.at(-1)).toMatchObject({ kind: 'bankruptcy' });
-    expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow(
-      BANKRUPT_MESSAGE,
-    );
-    const before = canonical(w);
-    simulateSeason(w);
-    expect(canonical(w)).toBe(before);
+    expect(w.bankrupt).toBeUndefined();
+    expect(w.distress?.stage).toBe(3);
+    expect(w.events.some((e) => e.kind === 'bankruptcy')).toBe(false);
+    expect(w.ended).toBeUndefined();
   });
 
   it('forgives the count once cash is back above zero', () => {

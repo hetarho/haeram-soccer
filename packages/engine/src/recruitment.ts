@@ -1,3 +1,4 @@
+import { distressSigningReason } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { registrationRoom } from './registration';
 import type { Line, ScoutOffer, World } from '../../contracts/src/types';
@@ -120,16 +121,18 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
     }),
     full = !!registrationReason,
     fit = recruitmentFit(w, offer);
+  const distress = distressSigningReason(w, offer.player, offer.freeAgent, loan);
   const fee = loan ? offer.loanFee : offer.fee,
     wage = offer.player.wage,
     annualAfter = BigInt(operatingCost(w)) + BigInt(wage),
     cashAfter = BigInt(w.cash) - BigInt(fee),
     affordable = BigInt(w.cash) >= BigInt(fee),
-    eligible = offer.available && !alreadyOwned && !full;
+    eligible = offer.available && !alreadyOwned && !full && !distress;
   const runway =
     cashAfter > 0n && annualAfter > 0n ? (cashAfter * BigInt(SEASON_ROUNDS)) / annualAfter : 0n;
   const reason =
-    !offer.available || alreadyOwned
+    distress ??
+    (!offer.available || alreadyOwned
       ? sourceMessage('copy.recruitment.a831dc1d01')
       : full
         ? registrationReason!
@@ -137,7 +140,7 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
           ? sourceMessage('copy.playing_coach.8791d586e5')
           : fit.willStart
             ? sourceMessage('copy.recruitment.d02fa95e5e')
-            : sourceMessage('copy.recruitment.220bcc37f2');
+            : sourceMessage('copy.recruitment.220bcc37f2'));
   return {
     ...fit,
     fee,

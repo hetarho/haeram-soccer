@@ -90,6 +90,7 @@ export const WORLD_VIEW_FIELDS = {
   lastChampions: 'include',
   critical: 'include',
   insolvent: 'include',
+  distress: 'include',
   bankrupt: 'include',
   receiptIds: 'include',
   discipline: 'include',

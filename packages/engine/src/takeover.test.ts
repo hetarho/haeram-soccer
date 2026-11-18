@@ -60,6 +60,8 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
   it('makes the club as it stands the owner’s, its squad his players at the club’s 조직력', () => {
     const { w, club } = setup();
     club.cohesion = 0.62;
+    club.books!.distress = { stage: 3, overHalfRounds: 8, deductionSeason: w.year };
+    w.tables[club.id] = { ...w.tables[club.id]!, deducted: 10, deductionReason: 'administration' };
     expect(clubPlayers(w, club).length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
     // Intentionally leave the keeper slot uncovered to exercise takeover's fill path.
     w.squads![club.id] = clubPlayers(w, club).filter((p) => (p.positions.GK ?? 0) < 2);
@@ -103,6 +105,9 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
       expect(p.id.startsWith(`${club.id}:takeover:`)).toBe(true);
     expect(club.cohesion).toBeUndefined();
     expect(club.books).toBeUndefined();
+    expect(w.distress).toEqual({ stage: 3, overHalfRounds: 8, deductionSeason: w.year });
+    expect(w.tables[club.id]).toMatchObject({ deducted: 10, deductionReason: 'administration' });
+    expect(() => validateWorld(structuredClone(w))).not.toThrow();
   });
 
   it('keeps the manager with his school, style and level; a new club’s staff and settings', () => {

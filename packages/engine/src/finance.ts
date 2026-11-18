@@ -566,6 +566,15 @@ export function financialBreakdown(w: World) {
     catchment: catchment(w),
     income,
     expense,
+    /** Non-income administrative relief; kept apart from both operating totals. */
+    adjustments: ledgerLines(
+      period,
+      { 'debt-write-off': sourceMessage('finance.distress.writeOff') },
+      period
+        .filter((e) => e.kind === 'debt-write-off')
+        .reduce((sum, e) => sum + BigInt(e.amount!), 0n)
+        .toString(),
+    ),
     /**
      * This season's income less its expense, the owner's injections and dividends included; the
      * club's own result without them is `seasonResult` (→OWNER-11).

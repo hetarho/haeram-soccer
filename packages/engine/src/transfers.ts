@@ -1,3 +1,4 @@
+import { distressSalePlan, distressSaleFee, distressSigningReason, forcedSales } from './distress';
 import { message as sourceMessage, type SourceMessageId } from '../../contracts/src/messages';
 import { INCOMING_BID_CHANCE, SALE_BARS } from './transfer-policy';
 import { clubPlayer, worldMarketOffer } from './world-market';
@@ -239,6 +240,7 @@ export function termsReport(chance: number, lines: readonly FactorLine[], room =
 }
 /** The selling club's reservation and the factors behind it, for its answer's report. */
 function saleReason(w: World, answer: SaleAnswer, room?: number) {
+  if (answer.forced) return sourceMessage('finance.distress.forcedSale');
   return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines, room);
 }
 /** An inbox item's longest title and detail (the save schema's bounds, →SAVE-5). */
@@ -308,6 +310,8 @@ function askingFee(offer: Pick<MarketOffer, 'fee' | 'loanFee'>, loan?: boolean) 
 }
 function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string, loan = false) {
   if (!offer?.available) return sourceMessage('copy.ops_squad.c94b14b4dc');
+  const distress = distressSigningReason(w, offer.player, offer.freeAgent, loan);
+  if (distress) return distress;
   const room = registrationRoom(w, {
     ...offer.player,
     joined: w.year,
@@ -487,6 +491,8 @@ export function placeBid(
   const offer = typeof candidate === 'number' ? scouted : worldMarketOffer(w, candidate);
   if (!offer?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
   if (offer.freeAgent) throw new Error(sourceMessage('copy.transfers.79ea9f1dde'));
+  const distress = distressSigningReason(w, offer.player, false, loan);
+  if (distress) throw new Error(distress);
   // The selling club, whichever list named him: a bid concerns him there (→CLUB-14).
   const club =
     typeof candidate === 'number'
@@ -1126,6 +1132,29 @@ export function listingAppeal(w: World, p: Player) {
 export function expectedOfferDays(w: World, p: Player) {
   return Math.round(1 / (LISTED_OFFER.chance * listingAppeal(w, p)));
 }
+/** Forced sales run even when the owner retains sales decisions (→ECON-24). */
+export function forceDistressSales(w: World) {
+  if (!forcedSales(w.distress) || !transferWindow(w).open) return;
+  const commitments = (w.bids ?? [])
+    .filter((b) => b.direction === 'out' && b.year === w.year && isOpen(b))
+    .reduce(
+      (sum, b) => sum + BigInt(b.status === 'countered' ? (b.counterFee ?? b.fee) : b.fee),
+      0n,
+    );
+  const debt = commitments - BigInt(w.cash);
+  const plan = distressSalePlan(
+    activePlayers(w),
+    debt,
+    BigInt(operatingCosts(w).annual),
+    (p) => BigInt(playerValue(w, p)),
+    (remaining, p) =>
+      !p.loanUntil &&
+      p.retiring === undefined &&
+      remaining.length > SQUAD_MINIMUM &&
+      (p.position !== 'GK' || remaining.filter((q) => q.position === 'GK').length > 1),
+  );
+  for (const p of plan) if (p.stance !== 'listed') setTransferStance(w, p.id, 'listed');
+}
 /**
  * At a window opening with transfers delegated (→CLUB-22), the staff set stances by the direction,
  * for players at 협상 가능 only: 셀링 클럽 lists non-starters aged 30+, 육성 목표 판매용 육성 lists
@@ -1275,7 +1304,7 @@ function listedOffers(w: World, day: number, until: number) {
       p2: overall(p),
       p3: moneyLabel(w, value),
     });
-    if (isDelegated(w, 'sales')) {
+    if (isDelegated(w, 'sales') || forcedSales(w.distress)) {
       answerIncoming(w, bid, p, club, value, fee);
       continue;
     }
@@ -1349,6 +1378,7 @@ function answerIncoming(
   fee: string,
 ) {
   if (
+    !forcedSales(w.distress) &&
     isDelegated(w, 'sales') &&
     !isDelegated(w, 'staff') &&
     w.staff?.some((member) => member.person === player.id)
@@ -1411,6 +1441,15 @@ function answerIncoming(
     });
     if (!accept) resent(w, bid, player);
   };
+  if (forcedSales(w.distress) && BigInt(fee) >= distressSaleFee(BigInt(value))) {
+    const blocker = saleBlocker(w, player);
+    report(
+      !blocker,
+      blocker ?? sourceMessage('finance.distress.forcedSale'),
+      sourceMessage('copy.transfers.e744d7026d'),
+    );
+    return;
+  }
   if (untouchable && offered < UNTOUCHABLE_BAR) {
     // Whoever decides, an untouchable player is not discussed below the bar.
     report(false, sourceMessage('copy.transfers.b100c715c7', { p0: offered, p1: UNTOUCHABLE_BAR }));
@@ -1596,7 +1635,9 @@ export function dailyMarket(w: World, settleNpc = true): void {
     window = transferWindow(w, day);
   announceWindows(w, day);
   settleBids(w, window.open);
+  if (window.open && forcedSales(w.distress)) handoverSales(w, true);
   if (window.open) {
+    forceDistressSales(w);
     incomingBid(w, day, window.until!);
     listedOffers(w, day, window.until!);
     // With transfers delegated the 단장 looks for players (→CLUB-33).
@@ -1629,7 +1670,7 @@ export function handoverRecruitment(w: World, delegated: boolean) {
     answerStaffCounter(w, bid, offer, askingFee(offer, bid.loan));
   }
 }
-export function handoverSales(w: World) {
+export function handoverSales(w: World, forcedOnly = false) {
   for (const bid of w.bids || []) {
     if (bid.direction !== 'in' || bid.status !== 'pending') continue;
     const player = activePlayers(w).find((p) => p.id === bid.playerId),
@@ -1640,6 +1681,12 @@ export function handoverSales(w: World) {
       bid.year !== w.year ||
       bid.due < currentDay(w) ||
       !transferWindow(w).open
+    )
+      continue;
+    if (
+      forcedOnly &&
+      (!forcedSales(w.distress) ||
+        BigInt(bid.fee) < distressSaleFee(BigInt(playerValue(w, player))))
     )
       continue;
     answerIncoming(w, bid, player, club, playerValue(w, player), bid.fee);

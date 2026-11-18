@@ -229,6 +229,9 @@ export function takeOver(
   // so were its coaches, who leave as the owner's staff starts as a new club's (→OWNER-4).
   for (const { person, job } of activeCoachingEmployment(w))
     if (job.club === club.id) closeEmployment(w, person.id, job.role);
+  // Ownership never removes an existing sanction or its settled-round counter.
+  if (books?.distress) w.distress = structuredClone(books.distress);
+  else delete w.distress;
   delete club.books;
   delete club.cohesion;
   delete club.project;

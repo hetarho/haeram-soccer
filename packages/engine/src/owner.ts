@@ -1,3 +1,4 @@
+import { repayDistress } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The owner's own money and career (→OWNER): the business bet and living costs at each settlement,
@@ -339,6 +340,7 @@ function inject(w: World, raw: string) {
     );
   owner.fortune = (fortune - amount).toString();
   credit(w, amount.toString());
+  repayDistress(w);
   addEvent(
     w,
     'owner-injection',

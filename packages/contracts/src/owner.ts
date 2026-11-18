@@ -41,15 +41,24 @@ export type DividendShare = (typeof DIVIDEND_SHARES)[number];
 /** The decades a takeover starts in; the 1940s take over at the 1946 restart (→WEB-2, WORLD-14). */
 export const TAKEOVER_DECADES = [1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000] as const;
 export type TakeoverDecade = (typeof TAKEOVER_DECADES)[number];
-/** What ended a career (→OWNER-16): the club's bankruptcy, the owner's, or 구단주 퇴진. */
+/** Active ends are owner/fans; club remains a recorded legacy cause (→SAVE-10). */
 export type EndCause = 'club' | 'owner' | 'fans';
 /**
- * Whether the career is over (→OWNER-16, ECON-24): the club's bankruptcy, the owner's or 구단주
- * 퇴진. Nothing advances after it and only the inbox can be read; the engine, the worker and the
- * UI all read this one predicate.
+ * Whether a career has ended (→OWNER-16), retaining already recorded legacy club ends
+ * (→SAVE-10). New club settlements never produce an end. The engine, worker and UI share this predicate.
  */
 export function careerEnded(w: Pick<World, 'bankrupt' | 'ended'>) {
   return w.bankrupt !== undefined || w.ended !== undefined;
+}
+
+/** Optional distress facts; old saves have no stage or counter (→ECON-24, SAVE-10). */
+export interface DistressState {
+  stage?: 1 | 2 | 3;
+  overHalfRounds?: number;
+  /** Last entry season that assigned an administration deduction (possibly queued for next season). */
+  deductionSeason?: number;
+  pendingDeduction?: { season: number; points: number };
+  lastRound?: { year: number; round: number };
 }
 
 /** One owner season at its close (→OWNER-17), in the money of that season. */
@@ -159,6 +168,8 @@ export interface ClubSeasonBook {
   };
   /** Actual owner support, separate from income and result. */
   ownerCapital?: string;
+  /** Debt forgiven separately from income and operating/trading result. */
+  debtWriteOff?: string;
   /** The wage bill (→CLUB-25). */
   wages: string;
   /** Operating expenses (→ECON-30). */
@@ -180,6 +191,9 @@ export interface ClubBooks {
   /** Transfer fees accrued in the current season. */
   transfersPaid?: string;
   transfersReceived?: string;
+  distress?: DistressState;
+  /** Current-season administrative adjustment, already applied to live cash/debt. */
+  debtWriteOff?: string;
   seasons: ClubSeasonBook[];
   cash: string;
   debt: string;
