@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-18T17:29:52.577Z",
-  "sourceCommit": "4491c7e8e8cf498cfe70be3f079d6cfdc0b5c23c",
+  "snapshotAt": "2026-11-18T17:37:52.632Z",
+  "sourceCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
   "group": {
     "id": "np19-perf",
     "branch": "gusta-session-self-improve-np19-f1c9b1b9",
@@ -171,6 +171,32 @@
       "T984",
       "T985"
     ],
+    "runner": {
+      "id": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.316 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.167.0"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.316 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-11-18T17:31:22.009Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
     "lastRun": {
       "id": "aaa0a658-4fd0-493f-9e5e-208d1c314462",
       "adapter": "builtin",
@@ -229,10 +255,10 @@
   },
   "summary": {
     "total": 4,
-    "completed": 2,
-    "remaining": 2,
+    "completed": 3,
+    "remaining": 1,
     "running": 1,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
@@ -240,12 +266,6 @@
     {
       "id": "T982",
       "title": "Scan market candidates without per-candidate string keys",
-      "dep": [],
-      "status": "ready"
-    },
-    {
-      "id": "T985",
-      "title": "Profile only the measured reps, and later seasons alone",
       "dep": [],
       "status": "doing"
     }
@@ -259,15 +279,15 @@
         "T982"
       ],
       "lane": null,
-      "owner": "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
+      "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2",
       "contributors": [
-        "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1"
+        "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
+        "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2"
       ],
-      "status": "ready",
-      "reason": null,
+      "status": "doing",
+      "reason": "T982의 구현과 작업자 검증 기록을 검토했습니다. 제출 시 측정은 통과했지만, 배정된 상위 기준에 통합된 선발 최적화와 함께 T982의 성능 목표가 유지되는지 확인되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
       "createdAt": "2026-11-18T15:48:43.964Z",
       "startCommit": "9b3b38536002495cb760e0f3ec556ccde53488e1",
-      "verifiedCommit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
       "submittedBase": "780d53a09b8cf7b06f72d57f962982612ee81018",
       "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
       "submittedAt": "2026-11-18T17:28:40.353Z",
@@ -297,18 +317,38 @@
         }
       ],
       "dispatch": {
-        "id": "348c79f3-e7c6-4514-a6a5-c41d0cde7912",
-        "runner": "aaa0a658-4fd0-493f-9e5e-208d1c314462",
+        "id": "c8450b5f-8d74-4ff3-8781-2e7b95e7e2c7",
+        "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
         "role": "worker",
-        "slot": 1,
+        "slot": 2,
         "provider": "claude",
         "model": "opus",
-        "status": "finished",
-        "startedAt": "2026-11-18T15:48:50.569Z",
-        "finishedAt": "2026-11-18T16:44:45.292Z",
-        "error": "T982: 태스크 result에 verified 기록이 필요합니다.",
-        "summary": "T982 is implemented on base 9b3b3853. Both parts are in, and the 1950 world hash is unchanged.\n\n**Part 1 (npc-market.ts):**\n- `tried` is now one `Set` of player ids per buyer. It is set up once before the candidate loop and shared with `attempt`.\n- The cheap filters (`club === buyer`, `moved`, `salesLeft`) run before the set lookup, then `npcCanSell`.\n- Listed-only segments walk a list that is built once per settlement, when first read, for each (country, tier, line). It is the sorted index filtered by `listedDown`, in the same order, so `firstAtMost` and the bound break stop at the same points.\n- No club or player id can contain `|`: club ids and all player id forms are joined with `:`. The old composite key was therefore unambiguous, and the per-buyer sets answer exactly as it did.\n\n**Part 2 (player-state.ts):**\n- `slotOvr` with multiplier 1 now reads the open settlement's ratings. `withSlotRatings` opens that scope and closes it in `finally`.\n- `npcMarket` runs its settlement inside the scope. `SettlementRatings` and the market's own `rating` call `freshSlotOvr`, the unchanged formula, so they never read through the scope.\n- Part 2 measured faster on top of part 1 (CPU ×0.967, interval 0.955–0.981), so it is kept.\n\n**Results:**\n- **World hash:** the 1950 generation-reference run printed `4161b5e0…5ce`, the base value, both after part 1 and with the final code.\n- **Speed (`ab.mjs`, 6 processes, M1 Max shared and loaded):** output hashes matched in every run.\n\n| Comparison | Workload | CPU ratio | 95% interval |\n|---|---|---|---|\n| Part 1 vs base | history | 0.919 | 0.915–0.922 |\n| Final vs base | history | 0.890 | 0.875–0.904 |\n| Final vs base | history-five | 0.857 | 0.842–0.871 |\n\n- **Tests:**\n  - A new unit case in npc-market.test.ts checks the scope. Inside it, every value equals the fresh one. After it closes, after a thrown error and after `npcMarket`, `slotOvr` computes afresh.\n  - The npc-market and persisted-squads units pass, 75/75.\n  - The named integration files pass, 6 files and 33/33. `history.test.ts` and `world.test.ts` belong to the integration project. `calendar.progression-esp.test.ts` does not exist in this tree, so only the -eng file ran.\n  - `vibe check --tier task` passed: typecheck, lint, format, i18n, and affected units 1561/1561.\n\nThe run outputs are kept in artifacts/benchmarks/night-perf-261119/T982. The full batch and the CI browser journeys are left to the coordinator's final gate."
+        "status": "running",
+        "startedAt": "2026-11-18T17:32:00.028Z"
       },
+      "reviewHistory": [
+        {
+          "id": "6865d329-3411-49c1-8738-a2448383ee67",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 제출 시 측정은 통과했지만, 배정된 상위 기준에 통합된 선발 최적화와 함께 T982의 성능 목표가 유지되는지 확인되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T982.market-candidate-scan.md:9",
+              "message": "T982의 part 2 유지 조건과 최종 성능 측정은 모두 원래 작업 기준인 9b3b3853에서 수행됐습니다. 배정된 baseCommit 24666400에는 같은 시장 정산 중 호출되는 world.ts 선발 알고리즘의 T984 최적화가 추가돼 있어, 기록된 비율은 두 최적화가 함께 적용된 후보에서 part 2가 여전히 빠르고 전체 CPU 비율이 1 미만임을 입증하지 못합니다. 해당 상위 기준에 T982를 적용한 후보에서 part 1 대비 part 2와 최종 history/history-five 측정을 다시 기록하고, part 2가 빨라지는 경우에만 유지해주세요."
+            }
+          ],
+          "commit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+          "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+          "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
+          "createdAt": "2026-11-18T17:31:22.926Z",
+          "finishedAt": "2026-11-18T17:31:59.819Z",
+          "invalidatedAt": "2026-11-18T17:31:59.866Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
       "steps": [
         {
           "taskId": "T982",
@@ -473,6 +513,8 @@
       "submittedBase": "e8b4ada93c59f6966eee14567b250768cd31bc60",
       "submissionId": "9570c563-fddf-4c5e-b72e-d8b9e12638e2",
       "submittedAt": "2026-11-18T17:24:34.483Z",
+      "integratedCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+      "integratedAt": "2026-11-18T17:31:09.746Z",
       "risk": null,
       "agentChecks": [
         {
@@ -641,6 +683,13 @@
           "startedAt": "2026-11-18T17:23:53.959Z",
           "finishedAt": "2026-11-18T17:24:34.099Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-18T17:29:56.322Z",
+          "finishedAt": "2026-11-18T17:31:09.323Z"
+        }
       ]
     },
     {
@@ -651,27 +700,90 @@
         "T985"
       ],
       "lane": null,
-      "owner": "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
+      "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1",
       "contributors": [
-        "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1"
+        "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
+        "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-18T16:44:45.524Z",
       "startCommit": "e8b4ada93c59f6966eee14567b250768cd31bc60",
+      "verifiedCommit": "d9f5446ed1df0d92fb785f00e0773935cca154a0",
+      "submittedBase": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+      "submissionId": "8389f3d0-40bc-4301-9c4b-7fdc7912ace9",
+      "submittedAt": "2026-11-18T17:35:55.380Z",
+      "risk": null,
       "dispatch": {
-        "id": "b58acf37-cd32-479f-a59d-02e644ee7343",
-        "runner": "aaa0a658-4fd0-493f-9e5e-208d1c314462",
-        "role": "worker",
+        "id": "50bbed50-efb5-43d9-856e-24c12d6d1725",
+        "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+        "role": "reviewer",
         "slot": 1,
-        "provider": "claude",
-        "model": "sonnet",
+        "provider": "codex",
+        "model": "gpt-6-luna",
         "status": "finished",
-        "startedAt": "2026-11-18T16:44:55.969Z",
-        "finishedAt": "2026-11-18T16:48:54.886Z",
-        "error": "검증 실패: pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-        "summary": "profile.mjs now profiles only the measured reps. The child starts the V8 profiler through node:inspector/promises after the skip and warm reps, stops it after the measured reps and writes the .cpuprofile itself. The hrtime-window filter and the \"window not on the profile clock\" fallback are gone. `--skip n` runs n unprofiled reps before the warm reps (for history, n seasons from 1930) and is documented in the header. I did this in the child, so workloads.ts is unchanged and no workload's timed reps or digests change. The ab.mjs note now reads about 2.8–3.7 s a season to 1950 on the loaded M1 Max (261119). Both acceptance commands ran and printed tables. History with --skip 2: 2234 samples over 13081 ms. Aggregate with 2 reps and 1 warm: 434 samples over 3316 ms. Host load was heavy during both (load1 22 and 34). I ran scripts/perf/stats.test.ts and it passes (4 tests). I did not run `vibe check --tier task`; the host runner runs it after my return. Result and acceptance in T985 are filled in."
-      }
+        "startedAt": "2026-11-18T17:35:58.149Z",
+        "finishedAt": "2026-11-18T17:37:45.206Z",
+        "error": null,
+        "summary": "T985 meets its acceptance criteria, and the prior line-profile label issue is fixed. The recorded worker evidence covers the requested profile runs and task checks; the final gate remains with the coordinator host."
+      },
+      "review": {
+        "id": "b0c132f9-41ad-40a8-9513-c5a8965fbb5f",
+        "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T985 meets its acceptance criteria, and the prior line-profile label issue is fixed. The recorded worker evidence covers the requested profile runs and task checks; the final gate remains with the coordinator host.",
+        "findings": [],
+        "commit": "d9f5446ed1df0d92fb785f00e0773935cca154a0",
+        "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+        "submissionId": "8389f3d0-40bc-4301-9c4b-7fdc7912ace9",
+        "createdAt": "2026-11-18T17:35:55.616Z",
+        "finishedAt": "2026-11-18T17:37:45.163Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "77e8f9b0-d96c-4c0a-a02e-abf7d6fccf9d",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T985 meets the measured-rep and skip behavior, but its line-profile output still mislabels the samples.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "scripts/perf/profile.mjs:153",
+              "message": "T985: The profiler now starts after skip and warm reps, so `positionTicks` covers measured reps only. The `--lines` output still says “warm-up included,” which misrepresents the profile data. Update the label to match the measured-only scope."
+            }
+          ],
+          "commit": "060fe61d181a8e14a24e31fe23fa1026da52ef20",
+          "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+          "submissionId": "a207e7ab-8ec0-4d3c-b935-b92be669d631",
+          "createdAt": "2026-11-18T17:33:11.794Z",
+          "finishedAt": "2026-11-18T17:35:11.735Z",
+          "invalidatedAt": "2026-11-18T17:35:11.789Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T985",
+          "commit": "d9f5446ed1df0d92fb785f00e0773935cca154a0",
+          "at": "2026-11-18T17:35:55.358Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-18T17:35:23.595Z",
+              "finishedAt": "2026-11-18T17:35:55.117Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-18T17:35:23.595Z",
+          "finishedAt": "2026-11-18T17:35:55.117Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -3087,6 +3199,890 @@
       "group": "np19-perf",
       "attemptId": "33e7240c-9706-4158-8396-fb396610c169",
       "taskId": "T984",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1099,
+      "at": "2026-11-18T17:31:09.532Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "33e7240c-9706-4158-8396-fb396610c169",
+      "taskId": "T984",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-18T17:29:56.322Z",
+            "finishedAt": "2026-11-18T17:31:09.323Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1100,
+      "at": "2026-11-18T17:31:09.746Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "33e7240c-9706-4158-8396-fb396610c169",
+      "taskId": "T984",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+        "integratedAt": "2026-11-18T17:31:09.746Z"
+      }
+    },
+    {
+      "sequence": 1101,
+      "at": "2026-11-18T17:31:22.021Z",
+      "type": "group",
+      "group": "np19-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-18T17:31:22.009Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1102,
+      "at": "2026-11-18T17:31:22.050Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1",
+        "contributors": [
+          "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
+          "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1103,
+      "at": "2026-11-18T17:31:22.432Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "495e8e26-c5e4-4d7b-839c-f26a2a6d7a30",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-18T17:31:22.432Z"
+        }
+      }
+    },
+    {
+      "sequence": 1104,
+      "at": "2026-11-18T17:31:22.767Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "495e8e26-c5e4-4d7b-839c-f26a2a6d7a30",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-18T17:31:22.432Z"
+        }
+      }
+    },
+    {
+      "sequence": 1105,
+      "at": "2026-11-18T17:31:22.926Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "6865d329-3411-49c1-8738-a2448383ee67",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "reviewing",
+          "commit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+          "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+          "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
+          "createdAt": "2026-11-18T17:31:22.926Z"
+        }
+      }
+    },
+    {
+      "sequence": 1106,
+      "at": "2026-11-18T17:31:25.660Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ec9a4497-8498-44f5-b12b-0d8d0b536ef6",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-18T17:31:25.660Z"
+        }
+      }
+    },
+    {
+      "sequence": 1107,
+      "at": "2026-11-18T17:31:25.678Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ec9a4497-8498-44f5-b12b-0d8d0b536ef6",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-18T17:31:25.660Z"
+        }
+      }
+    },
+    {
+      "sequence": 1108,
+      "at": "2026-11-18T17:31:59.819Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T982의 구현과 작업자 검증 기록을 검토했습니다. 제출 시 측정은 통과했지만, 배정된 상위 기준에 통합된 선발 최적화와 함께 T982의 성능 목표가 유지되는지 확인되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+        "review": {
+          "id": "6865d329-3411-49c1-8738-a2448383ee67",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 제출 시 측정은 통과했지만, 배정된 상위 기준에 통합된 선발 최적화와 함께 T982의 성능 목표가 유지되는지 확인되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T982.market-candidate-scan.md:9",
+              "message": "T982의 part 2 유지 조건과 최종 성능 측정은 모두 원래 작업 기준인 9b3b3853에서 수행됐습니다. 배정된 baseCommit 24666400에는 같은 시장 정산 중 호출되는 world.ts 선발 알고리즘의 T984 최적화가 추가돼 있어, 기록된 비율은 두 최적화가 함께 적용된 후보에서 part 2가 여전히 빠르고 전체 CPU 비율이 1 미만임을 입증하지 못합니다. 해당 상위 기준에 T982를 적용한 후보에서 part 1 대비 part 2와 최종 history/history-five 측정을 다시 기록하고, part 2가 빨라지는 경우에만 유지해주세요."
+            }
+          ],
+          "commit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+          "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+          "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
+          "createdAt": "2026-11-18T17:31:22.926Z",
+          "finishedAt": "2026-11-18T17:31:59.819Z"
+        }
+      }
+    },
+    {
+      "sequence": 1109,
+      "at": "2026-11-18T17:31:59.836Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "ec9a4497-8498-44f5-b12b-0d8d0b536ef6",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-18T17:31:25.660Z",
+          "finishedAt": "2026-11-18T17:31:59.836Z",
+          "error": null,
+          "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 제출 시 측정은 통과했지만, 배정된 상위 기준에 통합된 선발 최적화와 함께 T982의 성능 목표가 유지되는지 확인되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1110,
+      "at": "2026-11-18T17:31:59.867Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2",
+        "contributors": [
+          "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
+          "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "6865d329-3411-49c1-8738-a2448383ee67",
+            "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 제출 시 측정은 통과했지만, 배정된 상위 기준에 통합된 선발 최적화와 함께 T982의 성능 목표가 유지되는지 확인되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T982.market-candidate-scan.md:9",
+                "message": "T982의 part 2 유지 조건과 최종 성능 측정은 모두 원래 작업 기준인 9b3b3853에서 수행됐습니다. 배정된 baseCommit 24666400에는 같은 시장 정산 중 호출되는 world.ts 선발 알고리즘의 T984 최적화가 추가돼 있어, 기록된 비율은 두 최적화가 함께 적용된 후보에서 part 2가 여전히 빠르고 전체 CPU 비율이 1 미만임을 입증하지 못합니다. 해당 상위 기준에 T982를 적용한 후보에서 part 1 대비 part 2와 최종 history/history-five 측정을 다시 기록하고, part 2가 빨라지는 경우에만 유지해주세요."
+              }
+            ],
+            "commit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+            "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+            "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
+            "createdAt": "2026-11-18T17:31:22.926Z",
+            "finishedAt": "2026-11-18T17:31:59.819Z",
+            "invalidatedAt": "2026-11-18T17:31:59.866Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1111,
+      "at": "2026-11-18T17:32:00.028Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c8450b5f-8d74-4ff3-8781-2e7b95e7e2c7",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-18T17:32:00.028Z"
+        }
+      }
+    },
+    {
+      "sequence": 1112,
+      "at": "2026-11-18T17:32:00.326Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c8450b5f-8d74-4ff3-8781-2e7b95e7e2c7",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-18T17:32:00.028Z"
+        }
+      }
+    },
+    {
+      "sequence": 1113,
+      "at": "2026-11-18T17:32:00.417Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1114,
+      "at": "2026-11-18T17:32:00.832Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1115,
+      "at": "2026-11-18T17:32:00.863Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1116,
+      "at": "2026-11-18T17:33:11.516Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "060fe61d181a8e14a24e31fe23fa1026da52ef20",
+        "submittedBase": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+        "submissionId": "a207e7ab-8ec0-4d3c-b935-b92be669d631",
+        "submittedAt": "2026-11-18T17:33:11.516Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T985",
+            "commit": "060fe61d181a8e14a24e31fe23fa1026da52ef20",
+            "at": "2026-11-18T17:33:11.471Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T17:32:01.023Z",
+                "finishedAt": "2026-11-18T17:33:11.127Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T17:32:01.023Z",
+            "finishedAt": "2026-11-18T17:33:11.127Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1117,
+      "at": "2026-11-18T17:33:11.556Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "495e8e26-c5e4-4d7b-839c-f26a2a6d7a30",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-18T17:31:22.432Z",
+          "finishedAt": "2026-11-18T17:33:11.556Z",
+          "error": null,
+          "summary": "Removed the unused `i` parameter in scripts/perf/profile.mjs. `pnpm run lint` now passes with no errors. Prettier passes on profile.mjs, and `pnpm run format:check` passed earlier on the same tree. I updated the result's verified line in spec/tasks/T985.profiler-measured-window.md. I did not rerun `vibe check --tier task`; the host runs it. I did not rerun the two profile commands or stats.test.ts after this one-character change. Their earlier outputs (history 2234 samples, aggregate 434 samples; stats.test.ts 4 tests passing) are quoted in the result."
+        }
+      }
+    },
+    {
+      "sequence": 1118,
+      "at": "2026-11-18T17:33:11.794Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "77e8f9b0-d96c-4c0a-a02e-abf7d6fccf9d",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "reviewing",
+          "commit": "060fe61d181a8e14a24e31fe23fa1026da52ef20",
+          "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+          "submissionId": "a207e7ab-8ec0-4d3c-b935-b92be669d631",
+          "createdAt": "2026-11-18T17:33:11.794Z"
+        }
+      }
+    },
+    {
+      "sequence": 1119,
+      "at": "2026-11-18T17:33:14.624Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "202da92a-c82a-4027-8e68-3cfe11091359",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6-luna",
+          "status": "starting",
+          "startedAt": "2026-11-18T17:33:14.624Z"
+        }
+      }
+    },
+    {
+      "sequence": 1120,
+      "at": "2026-11-18T17:33:14.662Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "202da92a-c82a-4027-8e68-3cfe11091359",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6-luna",
+          "status": "running",
+          "startedAt": "2026-11-18T17:33:14.624Z"
+        }
+      }
+    },
+    {
+      "sequence": 1121,
+      "at": "2026-11-18T17:35:11.735Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T985 meets the measured-rep and skip behavior, but its line-profile output still mislabels the samples.",
+        "review": {
+          "id": "77e8f9b0-d96c-4c0a-a02e-abf7d6fccf9d",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T985 meets the measured-rep and skip behavior, but its line-profile output still mislabels the samples.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "scripts/perf/profile.mjs:153",
+              "message": "T985: The profiler now starts after skip and warm reps, so `positionTicks` covers measured reps only. The `--lines` output still says “warm-up included,” which misrepresents the profile data. Update the label to match the measured-only scope."
+            }
+          ],
+          "commit": "060fe61d181a8e14a24e31fe23fa1026da52ef20",
+          "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+          "submissionId": "a207e7ab-8ec0-4d3c-b935-b92be669d631",
+          "createdAt": "2026-11-18T17:33:11.794Z",
+          "finishedAt": "2026-11-18T17:35:11.735Z"
+        }
+      }
+    },
+    {
+      "sequence": 1122,
+      "at": "2026-11-18T17:35:11.757Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "202da92a-c82a-4027-8e68-3cfe11091359",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6-luna",
+          "status": "finished",
+          "startedAt": "2026-11-18T17:33:14.624Z",
+          "finishedAt": "2026-11-18T17:35:11.757Z",
+          "error": null,
+          "summary": "T985 meets the measured-rep and skip behavior, but its line-profile output still mislabels the samples."
+        }
+      }
+    },
+    {
+      "sequence": 1123,
+      "at": "2026-11-18T17:35:11.789Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "77e8f9b0-d96c-4c0a-a02e-abf7d6fccf9d",
+            "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T985 meets the measured-rep and skip behavior, but its line-profile output still mislabels the samples.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "scripts/perf/profile.mjs:153",
+                "message": "T985: The profiler now starts after skip and warm reps, so `positionTicks` covers measured reps only. The `--lines` output still says “warm-up included,” which misrepresents the profile data. Update the label to match the measured-only scope."
+              }
+            ],
+            "commit": "060fe61d181a8e14a24e31fe23fa1026da52ef20",
+            "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+            "submissionId": "a207e7ab-8ec0-4d3c-b935-b92be669d631",
+            "createdAt": "2026-11-18T17:33:11.794Z",
+            "finishedAt": "2026-11-18T17:35:11.735Z",
+            "invalidatedAt": "2026-11-18T17:35:11.789Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1124,
+      "at": "2026-11-18T17:35:11.868Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b3865199-7f43-4649-8000-39f4c78a5a64",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "starting",
+          "startedAt": "2026-11-18T17:35:11.867Z"
+        }
+      }
+    },
+    {
+      "sequence": 1125,
+      "at": "2026-11-18T17:35:12.212Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "b3865199-7f43-4649-8000-39f4c78a5a64",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "running",
+          "startedAt": "2026-11-18T17:35:11.867Z"
+        }
+      }
+    },
+    {
+      "sequence": 1126,
+      "at": "2026-11-18T17:35:22.998Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1127,
+      "at": "2026-11-18T17:35:23.382Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1128,
+      "at": "2026-11-18T17:35:23.414Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1129,
+      "at": "2026-11-18T17:35:55.380Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "8389f3d0-40bc-4301-9c4b-7fdc7912ace9",
+        "submittedAt": "2026-11-18T17:35:55.380Z",
+        "steps": [
+          {
+            "taskId": "T985",
+            "commit": "d9f5446ed1df0d92fb785f00e0773935cca154a0",
+            "at": "2026-11-18T17:35:55.358Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T17:35:23.595Z",
+                "finishedAt": "2026-11-18T17:35:55.117Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T17:35:23.595Z",
+            "finishedAt": "2026-11-18T17:35:55.117Z"
+          }
+        ],
+        "verifiedCommit": "d9f5446ed1df0d92fb785f00e0773935cca154a0"
+      }
+    },
+    {
+      "sequence": 1130,
+      "at": "2026-11-18T17:35:55.404Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "b3865199-7f43-4649-8000-39f4c78a5a64",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "sonnet",
+          "status": "finished",
+          "startedAt": "2026-11-18T17:35:11.867Z",
+          "finishedAt": "2026-11-18T17:35:55.404Z",
+          "error": null,
+          "summary": "Fixed the review finding in scripts/perf/profile.mjs. The `--lines` header now reads \"(N ticks, measured reps only)\" instead of \"warm-up included\". My earlier attempt to change it had not matched the file, so the old label was still in place. A grep finds no \"warm-up\" text left in the file. Prettier and eslint pass on profile.mjs. I did not rerun the profile commands, the full task tier or stats.test.ts for this label-only change; the host runs `vibe check --tier task`."
+        }
+      }
+    },
+    {
+      "sequence": 1131,
+      "at": "2026-11-18T17:35:55.616Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b0c132f9-41ad-40a8-9513-c5a8965fbb5f",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "reviewing",
+          "commit": "d9f5446ed1df0d92fb785f00e0773935cca154a0",
+          "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+          "submissionId": "8389f3d0-40bc-4301-9c4b-7fdc7912ace9",
+          "createdAt": "2026-11-18T17:35:55.616Z"
+        }
+      }
+    },
+    {
+      "sequence": 1132,
+      "at": "2026-11-18T17:35:58.149Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "50bbed50-efb5-43d9-856e-24c12d6d1725",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6-luna",
+          "status": "starting",
+          "startedAt": "2026-11-18T17:35:58.149Z"
+        }
+      }
+    },
+    {
+      "sequence": 1133,
+      "at": "2026-11-18T17:35:58.170Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "50bbed50-efb5-43d9-856e-24c12d6d1725",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6-luna",
+          "status": "running",
+          "startedAt": "2026-11-18T17:35:58.149Z"
+        }
+      }
+    },
+    {
+      "sequence": 1134,
+      "at": "2026-11-18T17:37:45.163Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b0c132f9-41ad-40a8-9513-c5a8965fbb5f",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T985 meets its acceptance criteria, and the prior line-profile label issue is fixed. The recorded worker evidence covers the requested profile runs and task checks; the final gate remains with the coordinator host.",
+          "findings": [],
+          "commit": "d9f5446ed1df0d92fb785f00e0773935cca154a0",
+          "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+          "submissionId": "8389f3d0-40bc-4301-9c4b-7fdc7912ace9",
+          "createdAt": "2026-11-18T17:35:55.616Z",
+          "finishedAt": "2026-11-18T17:37:45.163Z"
+        }
+      }
+    },
+    {
+      "sequence": 1135,
+      "at": "2026-11-18T17:37:45.206Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "50bbed50-efb5-43d9-856e-24c12d6d1725",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6-luna",
+          "status": "finished",
+          "startedAt": "2026-11-18T17:35:58.149Z",
+          "finishedAt": "2026-11-18T17:37:45.206Z",
+          "error": null,
+          "summary": "T985 meets its acceptance criteria, and the prior line-profile label issue is fixed. The recorded worker evidence covers the requested profile runs and task checks; the final gate remains with the coordinator host."
+        }
+      }
+    },
+    {
+      "sequence": 1136,
+      "at": "2026-11-18T17:37:45.274Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
