@@ -1,9 +1,9 @@
-process 1/6: cpu ×0.926
-process 2/6: cpu ×0.894
-process 3/6: cpu ×0.906
-process 4/6: cpu ×0.896
-process 5/6: cpu ×0.906
-process 6/6: cpu ×0.893
+process 1/6: cpu ×0.907
+process 2/6: cpu ×0.891
+process 3/6: cpu ×0.942
+process 4/6: cpu ×0.894
+process 5/6: cpu ×0.934
+process 6/6: cpu ×0.914
 {
   "workload": "history",
   "machine": {
@@ -13,16 +13,16 @@ process 6/6: cpu ×0.893
     "cpu": "Apple M1 Max",
     "cores": 10
   },
-  "base": "24666400c47cfebf4196dfb5ec5059a3094bf299",
-  "cand": "/private/tmp/claude-501/-Users-ihaelam-project--gusta-worktrees-haeram-soccer-7b6c81df-np19-perf-T982-81015110/bc905b3d-503a-4825-9533-b2e97406eba9/scratchpad/part1b",
+  "base": "c34862786c6f682bf0a092ba3f335b5469092957",
+  "cand": "/private/tmp/claude-501/-Users-ihaelam-project--gusta-worktrees-haeram-soccer-7b6c81df-np19-perf-T982-81015110/bc905b3d-503a-4825-9533-b2e97406eba9/scratchpad/part1C",
   "procs": 6,
   "jobs": 1,
   "reps": 10,
   "warm": 1,
   "seed": "perf-261027",
   "bundles": {
-    "base": "ac9f4829b5cc18cc",
-    "cand": "afdf6d384d7bac73"
+    "base": "5f8d37978ac8a908",
+    "cand": "5d265eff5834d7ca"
   },
   "sameBundle": false,
   "sameHash": true,
@@ -38,34 +38,34 @@ process 6/6: cpu ×0.893
     "pairs": 60,
     "ms": {
       "base": {
-        "cpu": 2972.9120000000003,
-        "wall": 3617.814207999998
+        "cpu": 2673.6985000000022,
+        "wall": 2714.1049380000004
       },
       "cand": {
-        "cpu": 2692.9335,
-        "wall": 3234.531291500003
+        "cpu": 2443.6670000000013,
+        "wall": 2455.266354000003
       }
     },
     "cpu": {
-      "ratio": 0.9036,
-      "lo": 0.8958,
-      "hi": 0.914,
+      "ratio": 0.9134,
+      "lo": 0.8988,
+      "hi": 0.9288,
       "call": "faster"
     },
     "wall": {
-      "ratio": 0.9084,
-      "lo": 0.8936,
-      "hi": 0.9234,
+      "ratio": 0.9135,
+      "lo": 0.8986,
+      "hi": 0.9298,
       "call": "faster"
     }
   },
   "load1": [
-    13.9921875,
-    17.95556640625,
-    12.5439453125,
-    15.876953125,
-    20.55810546875,
-    33.47119140625,
-    25.69921875
+    10.388671875,
+    17.3369140625,
+    10.31201171875,
+    6.54638671875,
+    4.5751953125,
+    19.396484375,
+    16.1748046875
   ]
 }
