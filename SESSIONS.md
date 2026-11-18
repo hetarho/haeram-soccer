@@ -224,6 +224,7 @@
 | T978 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | c68ac0542c8d | 2026-11-18T09:21Z |
 
 ## log
+- 261118 gusta-create-task ARCH start
 - 261118 gusta-update-ssot ARCH r49: ARCH-23✎ ARCH-30✎ CI browser shards only
 - 261118 gusta-update-ssot ARCH start
 - 261118 T978 done
@@ -243,4 +244,3 @@
 - 261118 T965 done
 - 261118 T964 done
 - 261118 Manual serial recovery complete: T957 repair d35ccad7 (base caeb5242), T979 fallback repair 891d073f (base d35ccad7), T961 e4787581/6cb3e4a3, T962 fbc3c3d1/5ecbd9d2, T963 e79a5ae5 plus closure. Each passed all five task checks and spec lint; evidence .tmp/mr18cx/*worker-check.json. Independent Claude review and all final batch/golden/integration/release/publication work remain with host; no code push or release prep performed.
-- 261118 T963 done
