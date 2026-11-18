@@ -52,12 +52,14 @@ describe('fixed off-pitch aptitude', () => {
         const p = makePlayer('ENG', seed, `test:${pos}`, 1950, 30 + i * 3, pos, 18 + i);
         expect(p.qualities).toEqual(generateQualities(seed, p.id));
         const { qualities: _qualities, ...old } = p;
+        const { loyalty: _loyalty, ...personality } = old.personality;
         void _qualities;
-        return old;
+        void _loyalty;
+        return { ...old, personality };
       }),
     );
     // Recorded from the generator of the sixteen attributes (→PLAYER-2) and the name pools
-    // (→WORLD-12); the off-pitch components
+    // (→WORLD-12), before loyalty was added; the off-pitch components
     // stay independent of every other field.
     expect(createHash('sha256').update(JSON.stringify(players)).digest('hex')).toBe(
       '5dac362112bdfc88ee88a8b8133249a8128de0e9c473f0b3e0ac3cab4f519a32',

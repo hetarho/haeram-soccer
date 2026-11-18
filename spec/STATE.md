@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T955 | A fourth personality trait, 충성심 | PLAYER | - | todo |
+| T955 | A fourth personality trait, 충성심 | PLAYER | - | doing@261118.mr18cx |
 | T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
 | T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
 | T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |

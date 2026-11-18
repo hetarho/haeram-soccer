@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "tr-TR",
   "messages": {
+    "player.personality.loyalty": "Sadakat",
     "navigation.dashboard": "Kulüp binası",
     "navigation.league": "Lig",
     "navigation.history": "Tarihçe",

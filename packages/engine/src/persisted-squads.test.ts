@@ -194,8 +194,13 @@ describe('persisted playable squads', () => {
     const w = worldMarketFixture();
     w.clubs[2].representative = true;
     foundSquads(w);
-    // Complete foreign roster captured before the adoption identity repair, including contracts.
-    expect(createHash('sha256').update(canonical(w.squads!.foreign)).digest('hex')).toBe(
+    // Pre-loyalty roster capture still checks every earlier field and draw, including contracts.
+    const earlier = w.squads!.foreign!.map((p) => {
+      const { loyalty: _loyalty, ...personality } = p.personality;
+      void _loyalty;
+      return { ...p, personality };
+    });
+    expect(createHash('sha256').update(canonical(earlier)).digest('hex')).toBe(
       '24d910ac22c903edcf094ad738be6ac1e3a2af5605a856e99cde6bf25b722bd5',
     );
   });

@@ -55,6 +55,8 @@ export interface Personality {
   professionalism: Grade;
   adaptability: Grade;
   ambition: Grade;
+  /** Missing in supported saves: read as neutral without rewriting the stored fact. */
+  loyalty?: Grade;
 }
 
 /** Fixed off-pitch components, generated independently of playing ability (→PLAYER-22/25). */

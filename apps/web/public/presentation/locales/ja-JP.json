@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "ja-JP",
   "messages": {
+    "player.personality.loyalty": "忠誠心",
     "navigation.dashboard": "クラブハウス",
     "navigation.league": "リーグ",
     "navigation.history": "歴史",

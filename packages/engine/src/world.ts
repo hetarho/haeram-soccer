@@ -26,6 +26,7 @@ import {
   adaptationStart,
   GENERATED_ATTRIBUTES,
   generateProfile,
+  gradeOf,
   LINE_MINIMUM,
   lineOf,
   type Joined,
@@ -167,6 +168,7 @@ function drawPlayer(
     Math.round(rating),
     role,
     age,
+    gradeOf(random(`${seed}:loyalty:${id}`)),
   );
   const player: Player = {
     id,

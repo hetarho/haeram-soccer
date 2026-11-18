@@ -121,8 +121,16 @@ function facts(w: World, eventAt: number) {
   const copy = structuredClone(w);
   // New notification only; retain every earlier event and every other world field.
   copy.events.splice(eventAt);
-  // Compatible release labels do not change the fixture's game facts.
-  return { ...copy, engine: undefined };
+  // The capture predates loyalty, including player snapshots held in pending bids.
+  // Keep every earlier fact and compatible release-independent field in this comparison.
+  return JSON.parse(
+    JSON.stringify({ ...copy, engine: undefined }, (key, value) => {
+      if (key !== 'personality' || !value || typeof value !== 'object') return value;
+      const { loyalty: _loyalty, ...earlier } = value;
+      void _loyalty;
+      return earlier;
+    }),
+  );
 }
 const digest = (value: unknown) => createHash('sha256').update(canonical(value)).digest('hex');
 // BASELINE CAPTURES: unchanged 134ae45f, complete raw worlds retained in .tmp/t912.

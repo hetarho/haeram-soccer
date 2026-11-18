@@ -1,5 +1,6 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'player.personality.loyalty': '충성심',
   'match.replay.seek': '기록된 시점으로 이동',
   'naturalFootball.title': '축구 움직임 비교',
   'naturalFootball.baseline': '기존 버전',
