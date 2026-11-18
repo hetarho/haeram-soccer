@@ -202,12 +202,19 @@
       "branch": "gusta-session-self-improve-lc17-37ba91cb",
       "head": "31b56599ef95da379565d28b55e1b0018bd3484b",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-17T08:28:53.386Z",
+      "status": "landed",
+      "at": "2026-11-18T00:58:22.458Z",
       "agentChecks": [],
       "verificationCommands": [
         "pnpm install --frozen-lockfile --offline && pnpm run typecheck"
-      ]
+      ],
+      "landed": "4360eac27d3b2eaea448e2a4bf767823f148f1b4",
+      "reconciled": {
+        "at": "2026-11-18T00:58:22.458Z",
+        "from": "working",
+        "reason": "owner 261118 cleanup: session ended, head already on main",
+        "verified": false
+      }
     },
     "27b831eabec55286522b5ec4": {
       "id": "27b831eabec55286522b5ec4",
