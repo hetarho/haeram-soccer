@@ -136,10 +136,17 @@
       "branch": "gusta-session-start-iv17-d1ff7e09",
       "head": "31e55816fd9e8f4433a950a9be56d9ae5fc4cb08",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-17T03:13:48.704Z",
+      "status": "landed",
+      "at": "2026-11-18T00:58:12.488Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "landed": "4360eac27d3b2eaea448e2a4bf767823f148f1b4",
+      "reconciled": {
+        "at": "2026-11-18T00:58:12.488Z",
+        "from": "working",
+        "reason": "owner 261118 cleanup: session ended, head already on main",
+        "verified": false
+      }
     },
     "8a08fb5e0dc073e82af22692": {
       "id": "8a08fb5e0dc073e82af22692",
