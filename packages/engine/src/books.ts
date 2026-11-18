@@ -93,15 +93,18 @@ export function booksOpen(w: World) {
  * the takeover and a taken-over career (an owner) keep books, never for the owner's club.
  */
 export function booksClose(w: World) {
-  if (hasOwner(w) && !w.owner) return;
-  if (w.distress)
-    w.distress = stepDistress(
+  if (w.distress) {
+    const after = stepDistress(
       w.distress,
       BigInt(w.cash) < 0n ? -BigInt(w.cash) : 0n,
       BigInt(operatingCosts(w).annual),
       w,
       true,
     );
+    if (after) w.distress = after;
+    else delete w.distress;
+  }
+  if (hasOwner(w) && !w.owner) return;
   const season = seasonIndex(w);
   for (const club of w.clubs) if (keepsBooks(w, club)) settleNpcBooks(w, club, season);
 }
@@ -136,8 +139,14 @@ export function settleNpcDistress(w: World, fixtures: readonly Fixture[]) {
     if (!played.has(club.id) || !keepsBooks(w, club) || !club.books) continue;
     const before = club.books.distress;
     const debt = npcDebt(w, club);
+    if (debt === 0n && !before?.stage && !before?.overHalfRounds) {
+      if (!before?.pendingDeduction && before?.deductionSeason !== w.year)
+        delete club.books.distress;
+      continue;
+    }
     const after = stepDistress(before, debt, npcFixedCosts(w, club), w);
     if (after) club.books.distress = after;
+    else delete club.books.distress;
     const writtenOff = reportDistress(w, club.id, before, after, debt);
     if (writtenOff !== undefined) {
       const books = club.books;
@@ -146,7 +155,7 @@ export function settleNpcDistress(w: World, fixtures: readonly Fixture[]) {
       const oldDebt = BigInt(books.debt);
       books.debt = (oldDebt > amount ? oldDebt - amount : 0n).toString();
       if (amount > oldDebt) books.cash = (BigInt(books.cash) + amount - oldDebt).toString();
-      books.debtWriteOff = (BigInt(books.debtWriteOff ?? '0') + writtenOff).toString();
+      books.debtWriteOff = (BigInt(books.debtWriteOff ?? '0') + amount).toString();
     }
   }
 }
@@ -294,6 +303,7 @@ export function settleNpcBooks(w: World, club: Club, season: SeasonIndex = seaso
     true,
   );
   if (after) club.books.distress = after;
+  else delete club.books.distress;
   return club.books;
 }
 

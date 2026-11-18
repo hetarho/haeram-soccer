@@ -775,6 +775,8 @@ export function transferRequests(w: World) {
     if (!p.unhappy || p.transferRequest || p.loanUntil || p.retiring !== undefined) continue;
     if (dayCountedFrom(w, p.unhappy.year) - p.unhappy.day < UNHAPPY_CONFIG.requestDays) continue;
     p.transferRequest = { year: w.year, day: currentDay(w) };
+    // The request now keeps him listed independently of the club's sale plan.
+    delete p.distressListing;
     p.stance = 'listed';
     const why = sourceMessage('copy.contracts.c3df0a8d04', {
       p0: UNHAPPY_REASON[p.unhappy.reason],

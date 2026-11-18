@@ -1,3 +1,4 @@
+import { tierLevel } from './tier-levels';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { continuousSquad } from './npc-continuity';
 import { matchdaySquad } from './persisted-squads';
@@ -257,7 +258,7 @@ export { tierLevel, tierStrengthRange } from './tier-levels';
  * divisions' band (→LEAGUE-10) and academy intakes (→WORLD-16) are read against it.
  */
 export function divisionLevel(tier: number) {
-  return 90 - 10 * (tier + 1);
+  return tierLevel(tier);
 }
 /**
  * Long-run size of each club relative to its division, stable for the career (→LEAGUE-10). Every

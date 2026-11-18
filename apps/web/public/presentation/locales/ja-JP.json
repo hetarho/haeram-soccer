@@ -10,6 +10,8 @@
     "finance.distress.stage1": "財政警告",
     "finance.distress.stage2": "売却要求",
     "finance.distress.stage3": "管財人管理",
+    "finance.distress.freeMinimumLimit": "財政危機中の自由契約選手の獲得は、最低{minimum}人またはゴールキーパーの確保に限られます。",
+    "finance.distress.forcedSaleShare": "財政危機による強制売却として、選手価値の{percent}%以上のオファーを受諾しました。",
     "finance.distress.entry": "クラブが財政危機の段階「{stage}」に入りました。",
     "player.personality.loyalty": "忠誠心",
     "player.personality.loyalty.description": "クラブで過ごした時間と、そのクラブのアカデミー出身であることが残留の意思に与える影響です。",
@@ -7008,6 +7010,14 @@
     "delegation.plan.salesCalmIncome": "年俸と固定費が計画収入の範囲に収まっているため、通常の基準でオファーに応じます。",
     "delegation.flow.recruitmentShortIncome": "すでに年俸と固定費が計画収入を超えているため、新たな年俸や移籍金は使いません。",
     "delegation.flow.contractsShortIncome": "年俸と固定費が計画収入を超えているため、昇給は受け入れず倹約型で再契約します。",
-    "delegation.runway.coversLittle": "計画赤字 年{loss} · 現金で{seasons}シーズン分未満"
+    "delegation.runway.coversLittle": "計画赤字 年{loss} · 現金で{seasons}シーズン分未満",
+    "finance.distress.nextBand": "{title} 残高 {cash} · 次の段階：負債が{limit}超",
+    "finance.distress.recoveryBand": "{title} 残高 {cash} · シーズン終了時に負債が{limit}未満なら回復",
+    "finance.cash.runway": "{title} 固定費{weeks}週分を確保",
+    "finance.distress.detail1": "財政警告によりファンの支持が下がります。負債が{limit}を超えた状態で{rounds}節続くと売却要求に移行します。",
+    "finance.distress.detail2": "強制売却が行われ、移籍金を伴う獲得と期限付き移籍が制限されます。自由契約は最低人数またはGKの確保に限られます。負債が{limit}を超えると法的管理に移行します。",
+    "finance.distress.detail3": "売却要求の制限が続きます。移行時にシーズンに一度、勝点{points}が減点され、負債の{percent}%が免除されます。シーズン終了時に負債が{limit}未満なら回復します。",
+    "career.ended.record": "{season}シーズンにクラブ運営が終了しました。{kept}",
+    "league.points.administration": "−{points}点 · 法的管理"
   }
 }

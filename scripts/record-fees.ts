@@ -214,7 +214,7 @@ interface Career {
 function checkOf(w: World, player: Player, fee: string) {
   const plan = delegatePlan(w, 'recruitment'),
     wage = BigInt(player.wage);
-  const verdict = signingVerdict(w, player, fee);
+  const verdict = signingVerdict(w, player, fee, undefined, undefined, { freeAgent: false });
   if (verdict.ok) return 'ok';
   if (wage > 0n && BigInt(plan.committed) + wage > BigInt(plan.budget)) return 'wage bill';
   if (BigInt(fee) + wage > BigInt(plan.left)) return 'share';

@@ -578,11 +578,7 @@ export function gameOverFacts(w: World): GameOverFacts {
   const kept = sourceMessage('copy.ownerFigures.bb36ff7e9c');
   const line =
     cause === 'club'
-      ? sourceMessage('finance.debt.ended', {
-          season: seasonName(season),
-          rounds: w.insolvent ?? 0,
-          kept,
-        })
+      ? sourceMessage('career.ended.record', { season: seasonName(season), kept })
       : cause === 'owner'
         ? sourceMessage('copy.ownerFigures.b2200caa15', {
             p0: seasonName(season),
@@ -600,11 +596,11 @@ export function gameOverFacts(w: World): GameOverFacts {
     cause,
     title:
       cause === 'club'
-        ? sourceMessage('copy.ownerFigures.f933e937de', { p0: own.name })
+        ? sourceMessage('copy.ownerFigures.13ed83a888')
         : cause === 'owner'
           ? sourceMessage('copy.stories.ca78f66cf8')
           : sourceMessage('copy.stories.4e6b8dec47'),
-    club: cause === 'club' ? undefined : own.name,
+    club: own.name,
     season,
     line,
     seasons: seasons.length,

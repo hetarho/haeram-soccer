@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Avertissement financier",
     "finance.distress.stage2": "Ventes forcées",
     "finance.distress.stage3": "Redressement judiciaire",
+    "finance.distress.freeMinimumLimit": "En difficulté financière, les agents libres servent uniquement à atteindre {minimum} joueurs ou à recruter un gardien manquant.",
+    "finance.distress.forcedSaleShare": "L’offre d’au moins {percent} % de la valeur du joueur a été acceptée dans le cadre des ventes forcées pour difficultés financières.",
     "finance.distress.entry": "Le club entre en difficulté financière : {stage}.",
     "player.personality.loyalty": "Loyauté",
     "player.personality.loyalty.description": "À quel point le temps passé au club et une formation dans son académie l’incitent à rester.",
@@ -7014,6 +7016,14 @@
     "delegation.plan.salesCalmIncome": "Les salaires et coûts fixes restent dans les recettes prévues : il répond aux offres selon les critères habituels.",
     "delegation.flow.recruitmentShortIncome": "Les salaires et coûts fixes dépassent déjà les recettes prévues : il n’engage ni nouveau salaire ni indemnité.",
     "delegation.flow.contractsShortIncome": "Les salaires et coûts fixes dépassent les recettes prévues : il n’accorde aucune hausse et renouvelle au plus juste.",
-    "delegation.runway.coversLittle": "Perte prévue de {loss} par an · la trésorerie couvre moins de {seasons} saisons"
+    "delegation.runway.coversLittle": "Perte prévue de {loss} par an · la trésorerie couvre moins de {seasons} saisons",
+    "finance.distress.nextBand": "{title} Solde {cash} · Étape suivante : dette supérieure à {limit}",
+    "finance.distress.recoveryBand": "{title} Solde {cash} · Sortie en fin de saison avec une dette inférieure à {limit}",
+    "finance.cash.runway": "{title} Charges fixes couvertes pendant {weeks} semaines",
+    "finance.distress.detail1": "L’avertissement financier fait baisser le moral des supporters. Une dette supérieure à {limit} pendant {rounds} journées déclenche les ventes forcées.",
+    "finance.distress.detail2": "Les ventes forcées et les restrictions sur les transferts payants et les prêts s’appliquent. Les joueurs libres ne peuvent que rétablir l’effectif minimum ou un gardien. Une dette supérieure à {limit} déclenche le redressement judiciaire.",
+    "finance.distress.detail3": "Les restrictions des ventes forcées continuent. L’entrée retire {points} points une fois par saison et efface {percent}% de la dette. La sortie exige une dette inférieure à {limit} en fin de saison.",
+    "career.ended.record": "La gestion du club s’est terminée lors de la saison {season}. {kept}",
+    "league.points.administration": "−{points} points · redressement judiciaire"
   }
 }

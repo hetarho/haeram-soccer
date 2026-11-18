@@ -1,5 +1,17 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'league.points.administration': '−{points}점 · 법정관리',
+  'finance.distress.nextBand': '{title} 잔고 {cash} · 다음 단계 부채 기준: {limit} 초과',
+  'finance.distress.recoveryBand': '{title} 잔고 {cash} · 시즌 마감 시 부채 {limit} 미만이면 회복',
+  'finance.cash.runway': '{title} 고정지출 {weeks}주분 남음',
+  'finance.distress.detail1':
+    '재정 경고로 팬 민심이 하락합니다. 부채가 {limit}를 초과한 상태로 {rounds}라운드 지속되면 매각 요구에 진입합니다.',
+  'finance.distress.detail2':
+    '강제 매각이 진행되고 이적료·임대 영입이 제한됩니다. 자유계약은 최소 인원이나 골키퍼 확보에만 허용됩니다. 부채가 {limit}를 초과하면 법정관리에 진입합니다.',
+  'finance.distress.detail3':
+    '매각 요구의 제한이 유지됩니다. 진입 시 시즌당 한 번 승점 {points}점이 차감되고 부채 {percent}%가 탕감됩니다. 시즌 마감 시 부채가 {limit} 미만이면 회복합니다.',
+  'career.ended.record': '{season} 시즌에 구단 운영이 끝났어요. {kept}',
+
   'finance.distress.writeOff': '채무 탕감',
   'finance.distress.writeOffDetail':
     '법정관리 진입으로 부채의 절반을 탕감했습니다. 영업 수입에는 포함되지 않습니다.',
@@ -9,6 +21,10 @@ export const sourceMessages = {
     '재정 위기 중 자유계약 영입은 최소 14명이나 골키퍼를 확보할 때만 가능합니다.',
   'finance.distress.forcedSale':
     '재정 위기에 따른 강제 매각으로 선수 가치의 70% 이상인 제안을 수락했습니다.',
+  'finance.distress.freeMinimumLimit':
+    '재정 위기 중 자유계약 영입은 최소 {minimum}명이나 골키퍼를 확보할 때만 가능합니다.',
+  'finance.distress.forcedSaleShare':
+    '재정 위기에 따른 강제 매각으로 선수 가치의 {percent}% 이상인 제안을 수락했습니다.',
   'finance.distress.stage1': '재정 경고',
   'finance.distress.stage2': '매각 요구',
   'finance.distress.stage3': '법정관리',

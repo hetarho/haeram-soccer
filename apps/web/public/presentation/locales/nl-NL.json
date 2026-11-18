@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Financiële waarschuwing",
     "finance.distress.stage2": "Gedwongen verkoop",
     "finance.distress.stage3": "Bewindvoering",
+    "finance.distress.freeMinimumLimit": "Bij financiële nood mogen vrije spelers alleen het minimum van {minimum} spelers of een ontbrekende doelman aanvullen.",
+    "finance.distress.forcedSaleShare": "Het bod van minstens {percent}% van de spelerswaarde is aanvaard vanwege gedwongen verkoop bij financiële nood.",
     "finance.distress.entry": "De club verkeert in financiële nood: {stage}.",
     "player.personality.loyalty": "Loyaliteit",
     "player.personality.loyalty.description": "Hoe sterk zijn tijd bij de club en een opleiding in de eigen jeugd hem aanmoedigen om te blijven.",
@@ -7011,6 +7013,14 @@
     "delegation.plan.salesCalmIncome": "Salarissen en vaste kosten blijven binnen de geplande inkomsten, dus hij beoordeelt aanbiedingen zoals gewoonlijk.",
     "delegation.flow.recruitmentShortIncome": "Salarissen en vaste kosten liggen al boven de geplande inkomsten, dus hij gaat geen nieuw salaris of transfersom aan.",
     "delegation.flow.contractsShortIncome": "Salarissen en vaste kosten liggen boven de geplande inkomsten, dus hij geeft geen verhoging en verlengt zuinig.",
-    "delegation.runway.coversLittle": "Gepland verlies van {loss} per jaar · de kas dekt minder dan {seasons} seizoenen"
+    "delegation.runway.coversLittle": "Gepland verlies van {loss} per jaar · de kas dekt minder dan {seasons} seizoenen",
+    "finance.distress.nextBand": "{title} Saldo {cash} · Volgende fase: schuld boven {limit}",
+    "finance.distress.recoveryBand": "{title} Saldo {cash} · Herstel bij seizoenseinde met schuld onder {limit}",
+    "finance.cash.runway": "{title} Vaste kosten voor {weeks} weken gedekt",
+    "finance.distress.detail1": "De financiële waarschuwing verlaagt de stemming van fans. Schuld boven {limit} gedurende {rounds} speelronden leidt tot gedwongen verkopen.",
+    "finance.distress.detail2": "Gedwongen verkopen en beperkingen op betaalde transfers en huur gelden. Vrije spelers mogen alleen het minimumaantal spelers of een keeper herstellen. Schuld boven {limit} leidt tot bewindvoering.",
+    "finance.distress.detail3": "De beperkingen op gedwongen verkopen blijven gelden. Bij intrede worden eenmaal per seizoen {points} punten afgetrokken en wordt {percent}% van de schuld kwijtgescholden. Herstel vereist schuld onder {limit} bij seizoenseinde.",
+    "career.ended.record": "Het clubbestuur eindigde in seizoen {season}. {kept}",
+    "league.points.administration": "−{points} punten · bewindvoering"
   }
 }

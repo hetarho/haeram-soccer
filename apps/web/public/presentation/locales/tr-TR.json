@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Mali uyarı",
     "finance.distress.stage2": "Zorunlu satışlar",
     "finance.distress.stage3": "Kayyum yönetimi",
+    "finance.distress.freeMinimumLimit": "Mali kriz sırasında serbest oyuncular yalnızca en az {minimum} oyuncuyu veya eksik kaleciyi tamamlamak için alınabilir.",
+    "finance.distress.forcedSaleShare": "Mali kriz nedeniyle zorunlu satış kapsamında oyuncu değerinin en az %{percent}’i tutarındaki teklif kabul edildi.",
     "finance.distress.entry": "Kulüp mali kriz aşamasına girdi: {stage}.",
     "player.personality.loyalty": "Sadakat",
     "player.personality.loyalty.description": "Kulüpte geçirdiği sürenin ve kulübün altyapısından yetişmiş olmasının kalma isteğine etkisi.",
@@ -7011,6 +7013,14 @@
     "delegation.plan.salesCalmIncome": "Maaşlar ve sabit giderler planlanan gelir içinde kaldığı için teklifleri olağan ölçüyle yanıtlar.",
     "delegation.flow.recruitmentShortIncome": "Maaşlar ve sabit giderler şimdiden planlanan geliri aştığı için yeni maaş ya da bonservis üstlenmez.",
     "delegation.flow.contractsShortIncome": "Maaşlar ve sabit giderler planlanan geliri aştığı için zam kabul etmez ve tutumlu yeniler.",
-    "delegation.runway.coversLittle": "Yıllık {loss} planlanan zarar · nakit {seasons} sezondan azını karşılıyor"
+    "delegation.runway.coversLittle": "Yıllık {loss} planlanan zarar · nakit {seasons} sezondan azını karşılıyor",
+    "finance.distress.nextBand": "{title} Bakiye {cash} · Sonraki aşama: {limit} üzeri borç",
+    "finance.distress.recoveryBand": "{title} Bakiye {cash} · Sezon sonunda {limit} altı borçla toparlanma",
+    "finance.cash.runway": "{title} Sabit giderler {weeks} hafta karşılanıyor",
+    "finance.distress.detail1": "Mali uyarı taraftar moralini düşürür. {rounds} tur boyunca {limit} üzeri borç zorunlu satışları başlatır.",
+    "finance.distress.detail2": "Zorunlu satışlar ile bonservisli ve kiralık transfer kısıtları uygulanır. Serbest oyuncular yalnızca asgari kadroyu veya kaleciyi tamamlayabilir. {limit} üzeri borç kayyum yönetimini başlatır.",
+    "finance.distress.detail3": "Zorunlu satış kısıtları sürer. Girişte sezon başına bir kez {points} puan silinir ve borcun %{percent} kadarı affedilir. Toparlanma için sezon sonunda borç {limit} altında olmalıdır.",
+    "career.ended.record": "Kulüp yönetimi {season} sezonunda sona erdi. {kept}",
+    "league.points.administration": "−{points} puan · kayyum yönetimi"
   }
 }

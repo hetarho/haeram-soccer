@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Finanzwarnung",
     "finance.distress.stage2": "Zwangsverkäufe",
     "finance.distress.stage3": "Insolvenzverwaltung",
+    "finance.distress.freeMinimumLimit": "In finanzieller Not dürfen vertragslose Spieler nur den Mindestkader von {minimum} Spielern oder einen fehlenden Torwart ergänzen.",
+    "finance.distress.forcedSaleShare": "Das Angebot von mindestens {percent} % des Spielerwerts wurde im Rahmen finanziell erzwungener Verkäufe angenommen.",
     "finance.distress.entry": "Der Verein befindet sich in finanzieller Not: {stage}.",
     "player.personality.loyalty": "Loyalität",
     "player.personality.loyalty.description": "Wie stark ihn seine Zeit beim Verein und die Ausbildung in dessen Jugend zum Bleiben bewegen.",
@@ -7011,6 +7013,14 @@
     "delegation.plan.salesCalmIncome": "Gehälter und Fixkosten bleiben im Rahmen der geplanten Einnahmen, daher beantwortet er Angebote wie üblich.",
     "delegation.flow.recruitmentShortIncome": "Gehälter und Fixkosten liegen schon über den geplanten Einnahmen, daher geht er kein neues Gehalt und keine Ablöse ein.",
     "delegation.flow.contractsShortIncome": "Gehälter und Fixkosten liegen über den geplanten Einnahmen, daher gewährt er keine Erhöhung und verlängert sparsam.",
-    "delegation.runway.coversLittle": "Geplanter Verlust {loss} pro Jahr · das Guthaben deckt weniger als {seasons} Spielzeiten"
+    "delegation.runway.coversLittle": "Geplanter Verlust {loss} pro Jahr · das Guthaben deckt weniger als {seasons} Spielzeiten",
+    "finance.distress.nextBand": "{title} Guthaben {cash} · Nächste Stufe: Schulden über {limit}",
+    "finance.distress.recoveryBand": "{title} Guthaben {cash} · Erholung am Saisonende bei Schulden unter {limit}",
+    "finance.cash.runway": "{title} Fixkosten für {weeks} Wochen gedeckt",
+    "finance.distress.detail1": "Die Finanzwarnung senkt die Fanstimmung. Schulden über {limit} während {rounds} Spieltagen lösen Zwangsverkäufe aus.",
+    "finance.distress.detail2": "Zwangsverkäufe und Beschränkungen für Ablöse- und Leihtransfers gelten. Vereinslose dürfen nur die Mindestkadergröße oder einen Torwart sichern. Schulden über {limit} lösen die Zwangsverwaltung aus.",
+    "finance.distress.detail3": "Die Beschränkungen der Zwangsverkäufe bleiben bestehen. Der Eintritt zieht einmal pro Saison {points} Punkte ab und erlässt {percent}% der Schulden. Erholung erfordert Schulden unter {limit} am Saisonende.",
+    "career.ended.record": "Die Vereinsführung endete in der Saison {season}. {kept}",
+    "league.points.administration": "−{points} Punkte · Zwangsverwaltung"
   }
 }

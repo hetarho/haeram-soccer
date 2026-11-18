@@ -1,4 +1,4 @@
-import { distressSigningReason } from './distress';
+import { distressSigningReason, distressArrivalAllowed } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { closeNeedFor, openNeeds } from './replacements';
 import { bidCeiling, directorTrait, staffBidShare } from './director-bidding';
@@ -209,8 +209,9 @@ export function signingVerdict(
   fee: string,
   need?: SigningNeed['kind'],
   bidId?: string,
+  facts: { freeAgent: boolean; loan?: boolean } = { freeAgent: false },
 ) {
-  const distress = distressSigningReason(w, player, BigInt(fee) === 0n, false, bidId);
+  const distress = distressSigningReason(w, player, facts.freeAgent, facts.loan, bidId);
   if (distress) return { ok: false as const, reason: distress };
   // A bid being settled replaces its own reservation; other live bids still tie up cash.
   const planning = bidId ? { ...w, bids: w.bids?.filter((bid) => bid.id !== bidId) } : w;
@@ -221,7 +222,7 @@ export function signingVerdict(
     ok: false as const,
     reason: sourceMessage('delegation.verdict.wrap', { reason, plan: label }),
   });
-  if (need === 'short' && BigInt(fee) === 0n) {
+  if (need === 'short' && facts.freeAgent && !facts.loan) {
     const stop = insolvencyStop(planning, 0n, wage);
     return stop
       ? no(stop)
@@ -320,7 +321,9 @@ export function wageOffer(
       asked = { ...context, demand, offer: wage },
       read = termsChance(asked);
     if (read.chance < SIGNING_CONFIG.termsChance) continue;
-    const verdict = signingVerdict(w, { ...offer.player, wage }, fee, need);
+    const verdict = signingVerdict(w, { ...offer.player, wage }, fee, need, undefined, {
+      freeAgent: offer.freeAgent,
+    });
     if (verdict.ok)
       return {
         ok: true,
@@ -1063,7 +1066,7 @@ const raises = (bids: TransferBid[], bid: TransferBid) =>
  * negotiator's haggles waiting for their raise, so no other move takes a raise's place.
  */
 function heldStaffBids(w: World, day: number) {
-  const bids = windowBids(w, day);
+  const bids = windowBids(w, day).filter((bid) => distressArrivalAllowed(w, bid));
   return [...bids.filter((bid) => bid.staff && isOpen(bid)), ...haggles(w, bids)];
 }
 /**
@@ -1116,7 +1119,7 @@ export function recruitmentProjection(w: World, day = currentDay(w), raising?: T
     bids = windowBids(w, day),
     open = bids.filter(isOpen),
     arriving = [...open, ...haggles(w, bids)].flatMap((bid) => {
-      if (!bid.offer || bid === raising) return [];
+      if (!bid.offer || bid === raising || !distressArrivalAllowed(w, bid)) return [];
       const p = structuredClone(bid.offer.player);
       p.wage = stepWage(p.wage, bid.wage ?? 1);
       if (bid.loan) p.loanUntil = w.year + 1;

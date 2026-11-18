@@ -3,6 +3,8 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import type { Player, World } from '../../contracts/src/types';
 import * as legacy from './contracts';
 import * as prices from './market-prices';
+import { tierLevel } from './tier-levels';
+import { divisionLevel } from './world';
 import { footballQuote } from './quotes';
 
 /**
@@ -34,7 +36,7 @@ const vectors = [
     share: 0.03,
     wageUnits: 0.6713662069795455,
     valueUnits: 2.212080172900553,
-    wage: '1068',
+    wage: '578',
     value: '1904',
   },
   {
@@ -47,7 +49,7 @@ const vectors = [
     share: 0.275,
     wageUnits: 135.9569881607702,
     valueUnits: 271.9139763215404,
-    wage: '17338243',
+    wage: '11218863',
     value: '15425937',
   },
   {
@@ -73,7 +75,7 @@ const vectors = [
     share: 0.15,
     wageUnits: 36.86584172568527,
     valueUnits: 36.86584172568527,
-    wage: '2074959466',
+    wage: '1512470454',
     value: '824983884',
   },
   {
@@ -99,7 +101,7 @@ const vectors = [
     share: 0.03,
     wageUnits: 8.147351021376446,
     valueUnits: 16.294702042752892,
-    wage: '907604',
+    wage: '516396',
     value: '206558',
   },
 ];
@@ -570,6 +572,12 @@ describe('exceptional-player wage demands', () => {
   });
 });
 
+it('shares WORLD-15 tier anchors with fractional ability-fit wages', () => {
+  expect([0, 1, 2, 3].map(tierLevel)).toEqual([80, 70, 60, 50]);
+  expect([0, 1, 2, 3].map(divisionLevel)).toEqual([80, 70, 60, 50]);
+  expect(prices.wageDivision('ENG', 1, 70)).toBe(1);
+});
+
 describe('ability-fit wage (CLUB-25 r61, T712)', () => {
   const player = (ability: number, age: number, potential: number, year: number) =>
     ({
@@ -614,7 +622,7 @@ describe('ability-fit wage (CLUB-25 r61, T712)', () => {
         expect(wageAt(division, ovr)).toBe(wageAt(0, ovr));
       }
     // Between levels, fractional divisions retain their interpolation.
-    expect(prices.wageDivision('ENG', 2, 71.5)).toBe(0.5);
+    expect(prices.wageDivision('ENG', 2, 75)).toBe(0.5);
   });
 
   it('pays a second-tier player 40% of a top-flight wage', () => {

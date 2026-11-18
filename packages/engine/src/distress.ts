@@ -1,6 +1,6 @@
 /** The shared financial distress ladder; no random draws or presentation preferences. */
 import type { DistressState } from '../../contracts/src/owner';
-import type { Player, World } from '../../contracts/src/types';
+import type { Player, TransferBid, World } from '../../contracts/src/types';
 import { message } from '../../contracts/src/messages';
 import { SQUAD_MINIMUM } from './squad-size';
 import { compareIds } from './primitives';
@@ -43,7 +43,8 @@ export function stepDistress(
     return previous;
   let stage = previous?.stage;
   let rounds = previous?.overHalfRounds ?? 0;
-  if (!closed) rounds = above(debt, annual, DISTRESS.forcedSales) ? rounds + 1 : 0;
+  if (!above(debt, annual, DISTRESS.forcedSales)) rounds = 0;
+  else if (!closed) rounds++;
   if (stage === 3) {
     if (closed && below(debt, annual, DISTRESS.forcedSales))
       stage = debt <= 0n ? undefined : below(debt, annual, DISTRESS.warning) ? 1 : 2;
@@ -55,14 +56,24 @@ export function stepDistress(
     else if (stage !== 3 && rounds >= DISTRESS.saleRounds) stage = 2;
     else if (!stage && above(debt, annual, DISTRESS.warning)) stage = 1;
   }
-  // Preserve absence in unaffected old worlds. A counted round is retained for idempotence.
-  if (!previous && !stage && !rounds) return undefined;
-  return {
+  const next = {
     ...previous,
-    stage,
     overHalfRounds: rounds,
     ...(!closed ? { lastRound: { ...date } } : {}),
   };
+  delete next.stage;
+  if (stage) next.stage = stage;
+  return retainedDistress(next, date.year);
+}
+
+/** Keep live sanctions and their idempotence markers, but no empty recovery state. */
+function retainedDistress(state: DistressState, year: number) {
+  return state.stage ||
+    state.overHalfRounds ||
+    state.pendingDeduction ||
+    state.deductionSeason === year
+    ? state
+    : undefined;
 }
 
 /** Reports an upward stage entry once; exits have no entry receipt or inbox item. */
@@ -103,7 +114,11 @@ export function reportDistress(
 /** An injection can clear stages 1/2 immediately; stage 3 still requires its season close. */
 export function repayDistress(w: World) {
   if (!w.distress || BigInt(w.cash) < 0n) return;
-  w.distress = { ...w.distress, overHalfRounds: 0, stage: w.distress.stage === 3 ? 3 : undefined };
+  const next = { ...w.distress, overHalfRounds: 0 };
+  if (next.stage !== 3) delete next.stage;
+  const after = retainedDistress(next, w.year);
+  if (after) w.distress = after;
+  else delete w.distress;
 }
 
 /** Stage 2 and administration share the assigned market sanctions. */
@@ -117,6 +132,13 @@ export function distressFreeNeed(
   return (
     players.length < SQUAD_MINIMUM ||
     (player.position === 'GK' && !players.some((p) => p.position === 'GK'))
+  );
+}
+/** Free agents complete immediately; pending fee/loan negotiations cannot secure a sanctioned place. */
+export function distressArrivalAllowed(w: World, bid: TransferBid) {
+  return (
+    !forcedSales(w.distress) ||
+    (!bid.loan && !bid.club && !!w.freeAgents?.some((p) => p.id === bid.playerId))
   );
 }
 /** Open owner and delegated bids both reserve future squad places; never count an ID twice. */
@@ -136,12 +158,13 @@ export function distressSigningReason(
       bid.direction === 'out' &&
       bid.year === w.year &&
       (bid.status === 'pending' || bid.status === 'countered') &&
-      bid.offer
+      bid.offer &&
+      distressArrivalAllowed(w, bid)
     )
       players.set(bid.playerId, bid.offer.player);
   return distressFreeNeed([...players.values()], player)
     ? undefined
-    : message('finance.distress.freeMinimum');
+    : message('finance.distress.freeMinimumLimit', { minimum: SQUAD_MINIMUM });
 }
 
 /** Most valuable first, at the guaranteed acceptance price, respecting cumulative departure gates. */

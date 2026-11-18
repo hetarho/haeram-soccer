@@ -309,10 +309,14 @@ describe('the 단장 plans on a loss runway, not a share of income (→ECON-33)'
     expect(signingVerdict(w, incoming, '1').ok).toBe(false);
     const free = { ...incoming, wage: '100000' };
     expect(signingVerdict(w, free, '0', 'upgrade').ok).toBe(false);
-    expect(signingVerdict(w, free, '0', 'short')).toMatchObject({ ok: true });
+    expect(signingVerdict(w, free, '0', 'short', undefined, { freeAgent: true })).toMatchObject({
+      ok: true,
+    });
     expect(signingVerdict(w, free, '1', 'short').ok).toBe(false);
     w.cash = '1';
-    expect(signingVerdict(w, free, '0', 'short').reason).toContain('현금이 바닥나지 않게');
+    expect(signingVerdict(w, free, '0', 'short', undefined, { freeAgent: true }).reason).toContain(
+      '현금이 바닥나지 않게',
+    );
   });
 
   it('renewals at 짠물 while the runway test fails at the current wage bill (→ECON-39)', () => {

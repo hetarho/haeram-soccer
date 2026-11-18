@@ -80,7 +80,7 @@ export function clubProfile(w: World, clubId: string): ClubProfile | undefined {
       if (champion.cup === clubId) cup++;
     }
     europe += season.europe.filter((entry) => entry.winner === clubId).length;
-    const finish = archivedFinish(w, season.standings, index);
+    const finish = archivedFinish(w, season.standings, index, season.leagueDeductions);
     if (finish) seasons.push({ year: season.year, division: finish.tier, place: finish.place });
   }
   return {

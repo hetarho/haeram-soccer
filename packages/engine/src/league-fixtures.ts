@@ -1,5 +1,5 @@
 /** Pure fixture reconstruction shared by season preparation and the save codec. */
-import type { Club, Fixture, TableRow, World } from '../../contracts/src/types';
+import type { Club, Fixture, LeagueDeduction, TableRow, World } from '../../contracts/src/types';
 import { compareIds } from './primitives';
 
 export function groupKey(c: Club) {
@@ -44,7 +44,17 @@ export function buildSeasonFixtures(w: Pick<World, 'clubs' | 'year'>): Fixture[]
   return fixtures;
 }
 /** Settled match points after separately recorded administrative deductions. */
-export const leaguePoints = (row: TableRow) => row.points - (row.deducted ?? 0);
+export const leaguePoints = (row: Pick<TableRow, 'points' | 'deducted'>) =>
+  row.points - (row.deducted ?? 0);
+
+/** A compact record carries settled points and its administrative deduction separately. */
+export function archivedLeaguePoints(
+  archive: { leagueDeductions?: Record<string, LeagueDeduction> },
+  club: string,
+  points: number,
+) {
+  return leaguePoints({ points, deducted: archive.leagueDeductions?.[club]?.deducted });
+}
 export const emptyTable = (): TableRow => ({
   played: 0,
   won: 0,
@@ -56,7 +66,7 @@ export const emptyTable = (): TableRow => ({
 });
 
 /** The settled league ordering, shared by season outcomes and individual award team credit. */
-export function ranked(w: Pick<World, 'tables'>, clubs: readonly Club[]) {
+export function ranked<T extends Pick<Club, 'id'>>(w: Pick<World, 'tables'>, clubs: readonly T[]) {
   return [...clubs].sort((a, b) => {
     const x = w.tables[a.id] || emptyTable(),
       y = w.tables[b.id] || emptyTable();
@@ -70,8 +80,10 @@ export function ranked(w: Pick<World, 'tables'>, clubs: readonly Club[]) {
 }
 
 /** Preserve the existing six-column history tuples and add only actual deduction receipts. */
-export function archiveLeagueDeductions(w: Pick<World, 'tables'>) {
-  const rows = Object.entries(w.tables).filter(([, row]) => row.deducted !== undefined);
+export function archiveLeagueDeductions(w: Pick<World, 'tables'>, clubs = Object.keys(w.tables)) {
+  const rows = clubs
+    .map((club) => [club, w.tables[club]] as const)
+    .filter(([, row]) => row?.deducted !== undefined);
   return rows.length
     ? {
         leagueDeductions: Object.fromEntries(

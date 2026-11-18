@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Alerta financeiro",
     "finance.distress.stage2": "Vendas obrigatórias",
     "finance.distress.stage3": "Administração judicial",
+    "finance.distress.freeMinimumLimit": "Em crise financeira, agentes livres só podem completar o mínimo de {minimum} jogadores ou garantir um goleiro.",
+    "finance.distress.forcedSaleShare": "A oferta de pelo menos {percent}% do valor do jogador foi aceita devido às vendas obrigatórias da crise financeira.",
     "finance.distress.entry": "O clube entrou em crise financeira: {stage}.",
     "player.personality.loyalty": "Lealdade",
     "player.personality.loyalty.description": "Quanto o tempo no clube e a formação na base dele incentivam o jogador a ficar.",
@@ -7014,6 +7016,14 @@
     "delegation.plan.salesCalmIncome": "Salários e custos fixos ficam dentro da receita prevista, então ele responde às propostas pelo critério habitual.",
     "delegation.flow.recruitmentShortIncome": "Salários e custos fixos já passam da receita prevista, então ele não assume novo salário nem transferência.",
     "delegation.flow.contractsShortIncome": "Salários e custos fixos passam da receita prevista, então ele não aceita aumentos e renova com critério austero.",
-    "delegation.runway.coversLittle": "Prejuízo previsto de {loss} por ano · o caixa cobre menos de {seasons} temporadas"
+    "delegation.runway.coversLittle": "Prejuízo previsto de {loss} por ano · o caixa cobre menos de {seasons} temporadas",
+    "finance.distress.nextBand": "{title} Saldo {cash} · Próxima fase: dívida acima de {limit}",
+    "finance.distress.recoveryBand": "{title} Saldo {cash} · Recuperação no encerramento com dívida abaixo de {limit}",
+    "finance.cash.runway": "{title} Custos fixos cobertos por {weeks} semanas",
+    "finance.distress.detail1": "O alerta financeiro reduz o ânimo da torcida. Dívida acima de {limit} por {rounds} rodadas provoca vendas forçadas.",
+    "finance.distress.detail2": "Há vendas forçadas e restrições a contratações pagas e empréstimos. Agentes livres só podem repor o mínimo do elenco ou um goleiro. Dívida acima de {limit} provoca administração judicial.",
+    "finance.distress.detail3": "As restrições de vendas forçadas continuam. A entrada desconta {points} pontos uma vez por temporada e perdoa {percent}% da dívida. A recuperação exige dívida abaixo de {limit} no encerramento.",
+    "career.ended.record": "A gestão do clube terminou na temporada {season}. {kept}",
+    "league.points.administration": "−{points} pontos · administração judicial"
   }
 }

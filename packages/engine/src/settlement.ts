@@ -359,6 +359,7 @@ function insolvency(w: World, annual: string) {
       w,
     );
     if (after) w.distress = after;
+    else delete w.distress;
     reportDistress(w, w.playerClub, before, after);
   }
 }

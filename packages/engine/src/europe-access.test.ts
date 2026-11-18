@@ -79,6 +79,16 @@ describe('European access from closed facts', () => {
     expect(performanceAssociations(w)).toEqual([]);
   });
 
+  it('allocates league places using archived administration deductions', () => {
+    const w = world();
+    expect(get(w, 5)).toBe('uel');
+    w.history[0].leagueDeductions = {
+      'ENG:4': { deducted: 10, deductionReason: 'administration' },
+    };
+    expect(get(w, 5)).toBe('ucl');
+    expect(get(w, 4)).toBeUndefined();
+  });
+
   it('gives a lower-division cup winner its UEL place without substituting the runner-up', () => {
     const w = world();
     w.clubs.push({ ...club('ENG', 13), tier: 1 });

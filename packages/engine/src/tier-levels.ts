@@ -9,8 +9,7 @@ export function tierStrengthRange(tier: number): [number, number] {
   return [72 - tier * 11, 82 - tier * 11];
 }
 
-/** Where a club of this stature settles in a division. */
+/** Typical division strength (WORLD-15), shared by generation and ability-fit pricing. */
 export function tierLevel(tier: number) {
-  const [low, high] = tierStrengthRange(tier);
-  return (low + high) / 2;
+  return 90 - 10 * (tier + 1);
 }

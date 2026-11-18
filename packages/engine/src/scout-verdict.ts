@@ -75,7 +75,9 @@ export function scoutVerdict(w: World, offer: TransferOffer & { own?: boolean },
     picked = requests.some((request) => request.pick === player.id),
     met = requests.find((request) => meetsRequest(request, player)),
     room = Math.round(player.potential) - overall(player),
-    money = signingVerdict(w, player, offer.fee);
+    money = signingVerdict(w, player, offer.fee, undefined, undefined, {
+      freeAgent: offer.freeAgent,
+    });
   const pros = [
     picked && sourceMessage('copy.scout_verdict.a4a3073d56'),
     met && sourceMessage('copy.scout_verdict.2f44de7c6d', { p0: requestLabel(met) }),

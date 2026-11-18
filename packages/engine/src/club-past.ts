@@ -9,6 +9,7 @@ import type { PreOwnerSeason } from '../../contracts/src/owner';
 import { domesticCupName } from './competition-keys';
 import { isOwnSeason } from './player-state';
 import { compareIds } from './primitives';
+import { archivedLeaguePoints } from './league-fixtures';
 
 /**
  * A club's place in its division of an archived season (→HIST-2): its row among the rows of its
@@ -19,16 +20,19 @@ export function archivedFinish(
   w: Pick<World, 'clubs'>,
   standings: readonly number[][],
   index: number,
+  leagueDeductions?: SeasonArchive['leagueDeductions'],
 ) {
   const row = standings.find((entry) => entry[0] === index);
   if (!row) return undefined;
   const code = w.clubs[index]?.country;
+  const points = (entry: number[]) =>
+    archivedLeaguePoints({ leagueDeductions }, w.clubs[entry[0]!]?.id ?? '', entry[3]!);
   const division = standings
     .filter((entry) => w.clubs[entry[0]!]?.country === code && entry[1] === row[1])
     .filter((entry) => entry[2] === row[2])
     .sort(
       (a, b) =>
-        b[3]! - a[3]! ||
+        points(b) - points(a) ||
         b[4]! - b[5]! - (a[4]! - a[5]!) ||
         b[4]! - a[4]! ||
         compareIds(w.clubs[a[0]!]?.id ?? '', w.clubs[b[0]!]?.id ?? ''),
@@ -100,7 +104,7 @@ export function seasonsBeforeOwner(
   return w.history
     .filter((season) => !isOwnSeason(w, season))
     .map((season) => {
-      const finish = archivedFinish(w, season.standings, index);
+      const finish = archivedFinish(w, season.standings, index, season.leagueDeductions);
       const title = season.champions.some((entry) => entry.country === code && entry.club === id);
       return {
         year: season.year,

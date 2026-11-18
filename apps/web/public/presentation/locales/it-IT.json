@@ -10,6 +10,8 @@
     "finance.distress.stage1": "Allarme finanziario",
     "finance.distress.stage2": "Cessioni obbligatorie",
     "finance.distress.stage3": "Amministrazione controllata",
+    "finance.distress.freeMinimumLimit": "In crisi finanziaria, gli svincolati possono solo completare il minimo di {minimum} giocatori o fornire un portiere mancante.",
+    "finance.distress.forcedSaleShare": "L’offerta pari ad almeno il {percent}% del valore del giocatore è stata accettata per le cessioni obbligatorie della crisi finanziaria.",
     "finance.distress.entry": "Il club è entrato in crisi finanziaria: {stage}.",
     "player.personality.loyalty": "Fedeltà",
     "player.personality.loyalty.description": "Quanto il tempo trascorso nel club e la formazione nel suo vivaio lo spingono a restare.",
@@ -7014,6 +7016,14 @@
     "delegation.plan.salesCalmIncome": "Stipendi e costi fissi restano entro le entrate previste, quindi risponde alle offerte con il criterio abituale.",
     "delegation.flow.recruitmentShortIncome": "Stipendi e costi fissi superano già le entrate previste, quindi non assume nuovi stipendi né cartellini.",
     "delegation.flow.contractsShortIncome": "Stipendi e costi fissi superano le entrate previste, quindi non concede aumenti e rinnova al risparmio.",
-    "delegation.runway.coversLittle": "Perdita prevista di {loss} l’anno · la cassa copre meno di {seasons} stagioni"
+    "delegation.runway.coversLittle": "Perdita prevista di {loss} l’anno · la cassa copre meno di {seasons} stagioni",
+    "finance.distress.nextBand": "{title} Saldo {cash} · Prossima fase: debito superiore a {limit}",
+    "finance.distress.recoveryBand": "{title} Saldo {cash} · Recupero a fine stagione con debito inferiore a {limit}",
+    "finance.cash.runway": "{title} Costi fissi coperti per {weeks} settimane",
+    "finance.distress.detail1": "L’avvertimento finanziario riduce il morale dei tifosi. Un debito superiore a {limit} per {rounds} giornate avvia le vendite forzate.",
+    "finance.distress.detail2": "Si applicano vendite forzate e limiti ad acquisti a pagamento e prestiti. Gli svincolati possono solo ripristinare la rosa minima o un portiere. Un debito superiore a {limit} avvia l’amministrazione controllata.",
+    "finance.distress.detail3": "Restano i limiti delle vendite forzate. L’ingresso sottrae {points} punti una volta a stagione e cancella il {percent}% del debito. Il recupero richiede un debito inferiore a {limit} a fine stagione.",
+    "career.ended.record": "La gestione del club è terminata nella stagione {season}. {kept}",
+    "league.points.administration": "−{points} punti · amministrazione controllata"
   }
 }

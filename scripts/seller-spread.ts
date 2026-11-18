@@ -220,7 +220,9 @@ function signingOf(w: World, bid: TransferBid, tried: Set<string>): Signing | un
     )
     .flatMap((o) => {
       const fee = o.freeAgent ? '0' : ((BigInt(o.fee) * share) / 100n).toString();
-      const verdict = signingVerdict(w, o.player, fee);
+      const verdict = signingVerdict(w, o.player, fee, undefined, undefined, {
+        freeAgent: o.freeAgent,
+      });
       return verdict.ok
         ? []
         : [
