@@ -20,7 +20,12 @@ import { ageAttributes } from './training';
 import { AGEING, ageingCurve, lineOf } from './player';
 import { divisionFor, signingClauses } from './contracts';
 import { marketWage, marketWageAt } from './market-prices';
-import { clubRegistration, registrationExempt, registrationRoom } from './registration';
+import {
+  clubRegistration,
+  graduateIds,
+  registrationExempt,
+  registrationRoom,
+} from './registration';
 import { isForeignCandidate } from './scout-search';
 import { addEvent } from './events';
 import { moneyLabel } from './finance';
@@ -218,7 +223,8 @@ function wantsFreeAgent(facts: ReturnType<typeof settlementFacts>, p: FreeAgent,
   const state = facts.registration;
   return (
     state.total < state.ceiling &&
-    (registrationExempt(state.rule, year, { ...p, joined: year }) || state.counted < state.allowed)
+    (registrationExempt(state.rule, year, { ...p, joined: year, graduate: undefined }) ||
+      state.counted < state.allowed)
   );
 }
 
@@ -347,7 +353,9 @@ export function signFreeAgentAtClose(
     freeAgentsOf(w).filter((p) => lineOf(p.position) === line && overall(p) <= level),
   )[0];
   if (!agent) return undefined;
-  if (registrationRoom(w, { ...agent, joined: w.year })) return 'full';
+  const graduate = graduateIds(w).has(agent.id);
+  if (registrationRoom(w, { ...agent, joined: w.year, graduate: graduate ? true : undefined }))
+    return 'full';
   const p = takeFreeAgent(w, agent.id)!;
   p.wage = marketWage(w, p);
   p.until = w.year + FREE_AGENT_CONFIG.term;
@@ -356,10 +364,9 @@ export function signFreeAgentAtClose(
   const prior = w.players.findIndex((row) => row.id === p.id);
   if (prior >= 0) {
     p.career = [...w.players[prior]!.career];
-    if (w.players[prior]!.graduate) p.graduate = true;
     w.players[prior] = p;
   } else w.players.push(p);
-  joinClub(p, isForeignCandidate(w, p.id) ? 'abroad' : 'domestic', w.year);
+  joinClub(p, isForeignCandidate(w, p.id) ? 'abroad' : 'domestic', w.year, graduate);
   movePerson(w, p, w.playerClub, true, undefined, null);
   addEvent(
     w,

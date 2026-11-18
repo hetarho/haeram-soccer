@@ -28,8 +28,8 @@ import { scoutVerdict } from './scout-verdict';
 
 const recommendedIds = (w: World) =>
   new Set(w.shortlist?.year === w.year ? w.shortlist.entries.map((entry) => entry.playerId) : []);
-export const graduateIds = (w: World) =>
-  new Set(w.players.filter((p) => p.graduate).map((p) => p.id));
+export { graduateIds } from './registration';
+import { graduateIds } from './registration';
 /**
  * The share of his value a club asks us: the 단장's negotiation, 머니볼's fees (→CLUB-21) and
  * 협상의 달인 (→STAFF-20, →OWNER-5).
@@ -71,7 +71,7 @@ export function clubTerms(
   return {
     player: {
       ...player,
-      ...(graduates.has(player.id) ? { graduate: true as const } : {}),
+      graduate: graduates.has(player.id) ? (true as const) : undefined,
       wage: marketWageAt(buyer.country, w.year, buyer.tier, player),
     },
     fee: scaleBy(value, feeMultiplier, 1000n),
@@ -89,7 +89,7 @@ export function freeAgentTerms(w: World, agent: FreeAgent, graduates = graduateI
   return {
     player: {
       ...player,
-      ...(graduates.has(agent.id) ? { graduate: true as const } : {}),
+      graduate: graduates.has(agent.id) ? true : undefined,
       wage: marketWageAt(buyer.country, w.year, buyer.tier, agent),
       until: w.year + FREE_AGENT_CONFIG.term,
     } satisfies Player,

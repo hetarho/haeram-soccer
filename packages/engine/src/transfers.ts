@@ -1,9 +1,9 @@
 import { message as sourceMessage, type SourceMessageId } from '../../contracts/src/messages';
 import { INCOMING_BID_CHANCE, SALE_BARS } from './transfer-policy';
-import { worldMarketOffer } from './world-market';
+import { clubPlayer, worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
-import { registrationRoom } from './registration';
+import { graduateIds, registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
 import { npcMarket, npcOffer, recordPlayerMove } from './npc-market';
@@ -293,8 +293,8 @@ function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
   if (!bid.offer) return current;
   const { player, fee, loanFee } = bid.offer;
   return {
-    // Older pinned offers may lack the returning player's own academy qualification.
-    player: current?.player.graduate ? { ...player, graduate: true } : player,
+    // Pinned offers retain their terms, but registration reads our recorded academy origin.
+    player: { ...player, graduate: graduateIds(w).has(player.id) ? true : undefined },
     fee,
     loanFee,
     freeAgent: false,
@@ -326,6 +326,7 @@ function completeSigning(
 ) {
   // The bid keeps its record of him; the squad gets its own copy, on the wage he agreed to.
   const p = structuredClone(offer.player);
+  p.graduate = graduateIds(w).has(p.id) ? true : undefined;
   p.wage = wage;
   const prior = w.players.findIndex((player) => player.id === p.id);
   if (prior >= 0) {
@@ -340,7 +341,6 @@ function completeSigning(
       );
     p.career = [...w.players[prior].career];
     p.season = sameSeason ? [...w.players[prior].season] : zeroMetrics();
-    if (w.players[prior].graduate) p.graduate = true;
   }
   debit(w, fee);
   // A loan keeps his club's contract, its clauses his club's; a transfer signs one with its own
@@ -371,8 +371,9 @@ function completeSigning(
         contractUntil: offer.player.until,
         year: w.year,
       };
-      if (offer.player.graduate) record.loan.graduate = true;
-      if (offer.player.joined !== undefined) record.loan.joined = offer.player.joined;
+      const parent = clubPlayer(w, seller, p.id);
+      if (parent?.graduate) record.loan.graduate = true;
+      if (parent?.joined !== undefined) record.loan.joined = parent.joined;
     }
   }
   noteSigning(w, p, bid.club);

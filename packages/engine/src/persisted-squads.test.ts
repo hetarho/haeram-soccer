@@ -445,8 +445,7 @@ describe('persisted playable squads', () => {
     respondBid(w, bid(w, sold, buyer.id, 'out').id, true);
     const returned = w.players.find((q) => q.id === p.id)!;
     expect(returned.career[0]).toBe(7);
-    expect(returned.graduate).toBeUndefined();
-    returned.graduate = true;
+    expect(returned.graduate).toBe(true);
     returned.joined = w.year - 3;
     returned.loanUntil = w.year + 1;
     movePerson(w, returned, buyer.id, true, returned.loanUntil);
@@ -505,7 +504,7 @@ describe('persisted playable squads', () => {
         status: 'active',
         joined: w.year,
       });
-      expect(w.players.find((q) => q.id === p.id)!.graduate).toBeUndefined();
+      expect(w.players.find((q) => q.id === p.id)!.graduate).toBe(true);
       expect(w.players.find((q) => q.id === p.id)!.career[0]).toBe(12);
     },
   );
