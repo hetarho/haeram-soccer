@@ -67,7 +67,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | doing@261118.mr18cx |
 | T960 | Buyers value a young player's gain two seasons on | WORLD PLAYER CLUB | - | todo |
 | T961 | The chief scout lists players who would come first | CLUB | - | todo |
 | T962 | Mediation counts a request an open bid covers | CLUB | - | todo |
@@ -100,8 +99,8 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
+- gusta-implement-task T962
 - gusta-implement-task T961
 - gusta-implement-task T960
-- gusta-implement-task T959
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.
