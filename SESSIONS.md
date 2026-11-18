@@ -158,6 +158,7 @@
 - 261117 suggest MATCH-22: Pre-existing knockout bug found during the xf18 gate: tieRule (packages/engine/src/knockout.ts:124) recognises a second leg only by an id ending in ':2', so the first leg of the tie at index 2 (e.g. 1990:cwc:k2:2) plays as a single match and a draw goes to penalties; tie results stay right on aggregate. Fixing it moves simulation results and goldens — its own task.
 - 261118 decided T953: T953 counts submitted NPC bids and actual answers through a passive engine observer. The old move hook cannot distinguish refusals, while inferring them would change the meaning of the data. Keep the observer prerequisite in a separate commit and the harness task script-only.
 - 261118 decided CLUB-44 CLUB-47 CLUB-54 T979: A signing starts fresh tenure and a return preserves an academy qualification recorded for that same club. Preview, registration and completion must be consistent. This preserves established Spanish exemptions without a new save field, unlike resetting all origin or storing a second qualification. Scout decline wording follows the already approved individual curve.
+- 261118 decided T967: ECON-38의 인수 시 채무 전환은 이미 기록된 위기 단계·누적 정산·포인트 이력을 보존하고, 원래 부채만 분할 상환 대출로 전환한다. 단계 해제는 ECON-24의 다음 정산이나 시즌 마감에서 판단한다. 인수 시 기록을 초기화하면 같은 구단에 이미 적용된 제재와 상태가 달라져 보존안을 택했다.
 
 ## unlanded
 | id | tag | branch | commit | at |
