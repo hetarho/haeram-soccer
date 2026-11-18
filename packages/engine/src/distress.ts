@@ -60,7 +60,7 @@ export function stepDistress(
   const next = {
     ...previous,
     overHalfRounds: rounds,
-    ...(!closed ? { lastRound: { ...date } } : {}),
+    ...(!closed ? { lastRound: { year: date.year, round: date.round } } : {}),
   };
   delete next.stage;
   if (stage) next.stage = stage;

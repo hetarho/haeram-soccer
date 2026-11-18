@@ -146,6 +146,8 @@ describe('administration accounting and seasons', () => {
     w.cash = (-BigInt(operatingCosts(w).annual) * 3n).toString();
     settleRound(w);
     expect(w.distress?.stage).toBe(3);
+    expect(w.distress?.lastRound).toEqual({ year: w.year, round: 1 });
+    expect(JSON.parse(JSON.stringify(w)).distress).toEqual(w.distress);
     expect(w.tables[w.playerClub]!.deducted).toBe(10);
     expect(w.events.filter((e) => e.kind === 'debt-write-off')).toHaveLength(1);
     w.round++;
@@ -179,6 +181,9 @@ describe('administration accounting and seasons', () => {
     w.round = 1;
     w.fixtures = [f, { ...f, id: 'later', round: 2, score: undefined }];
     settleNpcDistress(w, [f]);
+    expect(c.books.distress?.lastRound).toEqual({ year: w.year, round: 1 });
+    const saved = JSON.parse(JSON.stringify(w)) as typeof w;
+    expect(saved.clubs.find((club) => club.id === c.id)?.books?.distress).toEqual(c.books.distress);
     expect(npcDebt(w, c)).toBe(debt - amount);
     expect(c.books.debtWriteOff).toBe(amount.toString());
     expect(w.tables[c.id]).toMatchObject({ deducted: 10, deductionReason: 'administration' });
