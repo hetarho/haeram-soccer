@@ -285,19 +285,30 @@ export function movePerson(
   if (club && !chosenAgain.includes(club)) invalidateNpcSquad(w, club);
   return person;
 }
+/** Resume only the parent's recorded stint; the borrower's facts never identify its origin. */
+export function restoreLoanStint(
+  w: World,
+  returning: Player,
+  parent?: string,
+  loan = w.playerRecords?.[returning.id]?.loan,
+) {
+  const prior = parent === w.playerClub ? w.players.find((q) => q.id === returning.id) : undefined;
+  const graduate = loan?.graduate ?? prior?.graduate;
+  const joined = loan?.joined ?? prior?.joined;
+  delete returning.graduate;
+  delete returning.joined;
+  if (graduate) returning.graduate = true;
+  if (joined !== undefined) returning.joined = joined;
+}
 export function returnLoan(w: World, p: Player) {
   endPlayingCoachForDeparture(w, p.id, true);
   const person = retainPerson(w, p, undefined, true);
   const parent = person.loan?.club;
   delete p.loanUntil;
-  if (parent === w.playerClub) {
-    const prior = w.players.find((q) => q.id === p.id);
-    if (prior?.joined === undefined) delete p.joined;
-    else p.joined = prior.joined;
-    if (prior?.graduate) p.graduate = true;
-    else delete p.graduate;
-  }
-  movePerson(w, p, parent);
+  // Keep our departed row's borrower history when the live player returns to an NPC parent.
+  const returning = parent !== w.playerClub && w.players.includes(p) ? structuredClone(p) : p;
+  restoreLoanStint(w, returning, parent);
+  movePerson(w, returning, parent);
   delete person.loan;
   p.status = parent === w.playerClub ? 'active' : 'sold';
 }

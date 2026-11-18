@@ -19,6 +19,8 @@ import {
   type SellDownRow,
 } from './npc-market';
 import { foundSquads } from './persisted-squads';
+import { returnLoan } from './npc-continuity';
+import { retainPerson } from './person-careers';
 import { lineOf } from './player';
 import { formationOf, slotOvr } from './player-state';
 import { clubStyle } from './tactics';
@@ -843,6 +845,60 @@ describe('loan returns preserve each club’s recorded origin', () => {
       const returned = w.squads![seller.id]!.find((q) => q.id === p.id)!;
       expect(returned.joined).toBe(w.year - 4);
       expect(returned.graduate).toBe(ownGraduate ? undefined : true);
+    },
+  );
+
+  it.each(['recorded-graduate', 'recorded-stint', 'unknown', 'owned-parent'])(
+    'rollover fallback restores only known parent facts: %s',
+    (scenario) => {
+      const { w, seller } = fixture();
+      const ownedParent = scenario === 'owned-parent';
+      const p = target(w, seller, { joined: w.year, graduate: true });
+      const parent = ownedParent ? w.playerClub : seller.id;
+      if (ownedParent) {
+        w.players.push({ ...structuredClone(p), status: 'sold', joined: w.year - 5 });
+        delete p.graduate;
+      } else {
+        w.squads![seller.id] = w.squads![seller.id]!.filter((q) => q.id !== p.id);
+        w.players.push(p);
+      }
+      retainPerson(w, p, ownedParent ? seller.id : w.playerClub).loan = {
+        club: parent,
+        until: w.year + 1,
+      };
+      p.loanUntil = w.year + 1;
+      if (scenario.startsWith('recorded'))
+        w.playerRecords = {
+          [p.id]: {
+            moves: [],
+            loan: {
+              club: parent,
+              until: w.year + 1,
+              wage: p.wage,
+              contractUntil: w.year + 2,
+              year: w.year,
+              joined: w.year - 4,
+              ...(scenario === 'recorded-graduate' ? { graduate: true as const } : {}),
+            },
+          },
+        };
+      const identity = structuredClone({ id: p.id, name: p.name, born: p.born, attrs: p.attrs });
+      returnLoan(w, p);
+      const returned = ownedParent
+        ? w.players.find((q) => q.id === p.id)!
+        : w.squads![parent]!.find((q) => q.id === p.id)!;
+      expect(returned).toMatchObject(identity);
+      expect(returned.joined).toBe(
+        ownedParent ? w.year - 5 : scenario === 'unknown' ? undefined : w.year - 4,
+      );
+      expect(returned.graduate).toBe(
+        ownedParent || scenario === 'recorded-graduate' ? true : undefined,
+      );
+      if (!ownedParent) {
+        expect(w.players.find((q) => q.id === p.id)).toBe(p);
+        expect(p).toMatchObject({ ...identity, status: 'sold', joined: w.year, graduate: true });
+        expect(returned).not.toBe(p);
+      }
     },
   );
 
