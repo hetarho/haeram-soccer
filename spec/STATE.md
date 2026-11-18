@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T964 | Angry fans stop coming, a loved owner's club draws more | ECON OWNER | - | todo |
+| T964 | Angry fans stop coming, a loved owner's club draws more | ECON OWNER | - | doing@261118.mr18cx |
 | T965 | Bigger clubs are slower to sell | CLUB LEAGUE | - | todo |
 | T966 | A loyal player is harder to lure away | CLUB PLAYER | T979 | todo |
 | T967 | Financial distress ladder replaces bankruptcy | ECON WORLD OWNER | - | todo |
