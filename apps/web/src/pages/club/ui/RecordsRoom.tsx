@@ -10,6 +10,7 @@ import type { MatchRecord, World } from '../../../../../../packages/contracts/sr
 import { readBuildTitle } from '../../../../../../packages/engine/src/build';
 import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { tacticLabel } from '../../../../../../packages/engine/src/tactics';
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import type { ClientState, GameClient } from '../../../runtime/client';
 import type { ClubRecords, RecordMatch, Run } from '../../../runtime/clubRecords';
 import type { Reply } from '../../../runtime/protocol';
@@ -18,6 +19,7 @@ import { AnalysisExport } from './AnalysisExport';
 import { CareerRecordBook, ClubLeaders, TrophyCabinet } from './CareerRecordBook';
 import { divisionName } from '../../../entities/player';
 import { ClubLink } from '../../../entities/club';
+import { PointsDeduction } from '../../../entities/league';
 import { ClubTrends, SeasonTable } from './ClubTrends';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { kindLabel, number, seasonName } from '../../../presentation/format';
@@ -701,11 +703,14 @@ function SeasonRecords({
                       [
                         [
                           sourceMessage('copy.RecordsRoom.d88e556226'),
-                          sourceMessage('copy.RecordsRoom.c45f87bb0d', {
-                            p0: divisionName(c.country, h.tier, h.group),
-                            p1: h.rank,
-                            p2: h.points,
-                          }),
+                          <>
+                            {richMessage('copy.RecordsRoom.c45f87bb0d', {
+                              p0: divisionName(c.country, h.tier, h.group),
+                              p1: number(h.rank),
+                              p2: number(leaguePoints(h)),
+                            })}{' '}
+                            <PointsDeduction row={h} />
+                          </>,
                         ],
                         [sourceMessage('copy.ClubTrends.2070613ba9'), number(h.fans)],
                         [sourceMessage('copy.RecordsRoom.70b1b5a635'), f(h.cash)],

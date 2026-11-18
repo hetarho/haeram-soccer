@@ -3,15 +3,17 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useEffect, useState } from 'react';
 import type { World } from '../../../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../../../packages/engine/src/calendar';
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import {
   orderIds,
+  PointsDeduction,
   ownDivisionRound,
   ownLeague,
   ownLeagueIds,
   ownLeagueProgress,
 } from '../../../entities/league';
 import { leagueName } from '../../../entities/league';
-import { competitionLabel } from '../../../presentation/format';
+import { competitionLabel, number } from '../../../presentation/format';
 import { clubSituation } from '../../../entities/player';
 import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
@@ -229,7 +231,12 @@ export function SeasonCard({ w, active }: { w: World; active: boolean }) {
             </b>
           </div>
           <div>
-            <span>{richMessage('copy.ClubHub.7776cad992', { p0: table?.points ?? 0 })}</span>
+            <span>
+              {richMessage('copy.ClubHub.7776cad992', {
+                p0: number(table ? leaguePoints(table) : 0),
+              })}{' '}
+              <PointsDeduction row={table} />
+            </span>
             <b data-testid="hub-record">
               <span key={table ? table.played : 0} className={s.bump}>
                 {localizeValue(table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0')}
