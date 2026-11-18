@@ -1,46 +1,46 @@
 {
   "stage": "T978",
-  "sourceCommit": "bf6b2af8e0a9543205ef2b1831ad47181cf9a335",
-  "sourceTree": "abd693a90caab6b6d7b99a4469a94ffc8c2e3aa6",
+  "sourceCommit": "c24568bc9fe94fcf5bd5ecd0034520094673154c",
+  "sourceTree": "64b6039db7d8fe65f353bdb909f6fb255b04d770",
   "dependencyFingerprints": [
     {
       "algorithm": "sha256",
-      "sha256": "e7057826794f1f2a050d83bf1128705a2f7dd4ed94ab8695f042ed1ee33d8587",
+      "sha256": "dc3b328dfc4730c068c7338555c0a7679eda8ca6ee4a0e82875c041158b49cda",
       "files": 242,
       "entry": "scripts/market-seasons.ts",
       "scope": "runtime dependency closure and declared inputs"
     },
     {
       "algorithm": "sha256",
-      "sha256": "3d2fde77f1d06555083982726cc088391f4e7d42987055732557254f6bbf4958",
+      "sha256": "5eb9d9ee448baeef5c48aa1adb43e53dcf6ba57e2f60aaa37caf9d943801e4f9",
       "files": 255,
       "entry": "scripts/match-parity.ts",
       "scope": "runtime dependency closure and declared inputs"
     },
     {
       "algorithm": "sha256",
-      "sha256": "f161e003921bc920baf39854bf0934a4ee3d0e866192412cbc4dcd8be41f13a6",
+      "sha256": "4a683056d0c13771aac34c9aa559557389ef0506603149d5972c43c7552bc4d2",
       "files": 225,
       "entry": "packages/engine/src/history.ts",
       "scope": "runtime dependency closure and declared inputs"
     },
     {
       "algorithm": "sha256",
-      "sha256": "e9d8d0cf5368f6051b5063650711976d55e40436191672b575fc3c5809206e20",
+      "sha256": "c27784e61b05150e9a37644573f8fdeabad0941951c0bc10ce69160662385275",
       "files": 236,
       "entry": "artifacts/benchmarks/T978/build-lived.ts",
       "scope": "runtime dependency closure and declared inputs"
     },
     {
       "algorithm": "sha256",
-      "sha256": "78b94273bf04ec34c3feb4fec2804447a2c23470a31cf6b0af133828a311504d",
+      "sha256": "984feb92f89715be89d9ff24547b0c7ab7a4f5eec56c00b71d5e07ec2d62b673",
       "files": 234,
       "entry": "artifacts/benchmarks/T978/continue-history.ts",
       "scope": "runtime dependency closure and declared inputs"
     },
     {
       "algorithm": "sha256",
-      "sha256": "987bd8a87cf5c1ede3b62b05a57cb24841134b609709b6f0206cba0d12353038",
+      "sha256": "e5478cc32c2e389eb35bfc0a6e506ded11b056dc5fcb5ca9e802b8a51a6bc368",
       "files": 262,
       "entry": "artifacts/benchmarks/T978/lived-parity.ts",
       "scope": "runtime dependency closure and declared inputs"
