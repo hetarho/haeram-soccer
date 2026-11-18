@@ -69,6 +69,8 @@ export {
 /** Where a player joining the club starts to settle (→PLAYER-11). */
 export function joinClub(p: Player, joined: Joined, year: number) {
   p.joined = year;
+  if (joined === 'academy') p.graduate = true;
+  else delete p.graduate;
   p.adaptation = adaptationStart(p.personality.adaptability, joined);
   p.clubRounds = 0;
   delete p.unsettled;

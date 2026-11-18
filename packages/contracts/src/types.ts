@@ -365,7 +365,7 @@ export interface Player {
   attrs: Attributes;
   personality: Personality;
   qualities?: OffPitchQualities;
-  /** Season of joining our first team; absent history never grants bandiera places. */
+  /** Season of joining his current club's first team; absent history never grants bandiera places. */
   joined?: number;
   graduate?: true;
   /** A prodigy (신동, →WORLD-18), growing three times faster until 18 (→PLAYER-15). */

@@ -12,6 +12,7 @@ import { formationOf } from './player-state';
 import { clubStyle } from './tactics';
 import {
   generatedPlayer,
+  joinClub,
   invalidateNpcSquad,
   invalidateNpcSquads,
   lineup,
@@ -165,8 +166,10 @@ export function foundSquads(w: World) {
       players.push(p);
     }
     for (const [i, p] of players.entries()) {
-      if (!adopting || i >= retained)
+      if (!adopting || i >= retained) {
         p.until = w.year + integer(random(`${w.seed}:${p.id}:contract`), 1, 5);
+        joinClub(p, 'founding', w.year);
+      }
       enrollSquadPlayer(w, c, p);
     }
     w.squads[c.id] = players;
@@ -242,7 +245,14 @@ export function moveSquadPlayer(
       };
     if (prior >= 0) {
       live.career = [...w.players[prior]!.career];
-      if (w.players[prior]!.graduate) live.graduate = true;
+      if (w.people?.[p.id]?.loan?.club === club) {
+        // A return resumes the parent club's tenure; a new signing starts it again.
+        const parent = w.players[prior]!;
+        if (parent.joined === undefined) delete live.joined;
+        else live.joined = parent.joined;
+        if (parent.graduate) live.graduate = true;
+        else delete live.graduate;
+      }
       // Most signing callers already inserted their live record and retain that reference.
       Object.assign(p, live);
       w.players[prior] = p;

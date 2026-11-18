@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
+| T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | doing@261118.mr18cx |
 | T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
 | T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |
 | T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |

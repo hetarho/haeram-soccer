@@ -33,6 +33,7 @@ import {
   clubById,
   divisionLevel,
   generatedPlayer,
+  joinClub,
   invalidateNpcSquad,
   invalidateNpcSquads,
   clubStrength,
@@ -211,8 +212,7 @@ export function intakeNpcYouth(
     p.potential = Math.max(mainOvr(p), potential);
     // Its wage is quoted on that final OVR and potential: a young player's quote reads both.
     if (refillOnly) p.wage = marketWageAt(c.country, year, c.tier, p);
-    p.graduate = true;
-    p.joined = year;
+    joinClub(p, 'academy', year);
     p.fatigue = clubStyle(c) === 'press' ? PRESS_LOAD_FATIGUE : 0;
     p.until = year + integer(random(`${w.seed}:${id}:contract`), 1, 5);
     if (!registrationExempt(state.rule, year, p) && state.counted >= state.allowed) break;
