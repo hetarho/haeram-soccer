@@ -821,8 +821,8 @@
   ],
   "lastPlanning": {
     "land": "main",
-    "base": "cf643e4929196ff624054dfaefe7c98d21ba9a86",
-    "candidate": "164197d29b77545cedd5815436fcd694951112ea",
-    "at": "2026-11-18T05:39:14.118Z"
+    "base": "164197d29b77545cedd5815436fcd694951112ea",
+    "candidate": "1bb2b1a1ba137b577476e99c5fe4ae79e0e0a7c8",
+    "at": "2026-11-18T05:43:39.143Z"
   }
 }
