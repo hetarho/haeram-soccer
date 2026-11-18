@@ -5,6 +5,7 @@ import {
   affordableLevel,
   bidsOnDay,
   compareSellDown,
+  NPC_BID_FLOW,
   NPC_MARKET,
   npcBidFee,
   npcMarket,
@@ -630,13 +631,27 @@ describe('asking again in a window (→CLUB-52/53)', () => {
     draws.keys.length = 0;
     const [first, second] = npcMarketDays(w.year)[0]!;
     expect(bidsOnDay(npcMarketCaps(w.year).bids, 1, 3)).toBe(1);
-    // The first day's one bid goes to him blind, and he refuses.
-    settle(w, [first!]);
-    expect(asked('npc-sale', buyer, best)).toHaveLength(1);
-    expect(asked('npc-sale', buyer, next)).toEqual([]);
-    expect(at(w, best.id)).toEqual([seller.id]);
-    // The second day reads his answer again, skips him, and its one bid still buys the next keeper.
-    settle(w, [second!]);
+    const observe = vi.fn<NonNullable<typeof NPC_BID_FLOW.observe>>();
+    NPC_BID_FLOW.observe = observe;
+    try {
+      // The first day's one bid goes to him blind, and he refuses.
+      settle(w, [first!]);
+      expect(asked('npc-sale', buyer, best)).toHaveLength(1);
+      expect(asked('npc-sale', buyer, next)).toEqual([]);
+      expect(at(w, best.id)).toEqual([seller.id]);
+      // The second day skips that refusal and spends its bid on the next keeper.
+      settle(w, [second!]);
+    } finally {
+      delete NPC_BID_FLOW.observe;
+    }
+    expect(
+      observe.mock.calls.flatMap(([bid]) =>
+        bid.to.id === buyer.id ? [[bid.from.id, bid.playerId, bid.outcome]] : [],
+      ),
+    ).toEqual([
+      [seller.id, best.id, 'player-refused'],
+      [seller.id, next.id, 'completed'],
+    ]);
     expect(asked('npc-sale', buyer, best)).toHaveLength(2);
     expect(asked('npc-sale', buyer, next)).toHaveLength(1);
     expect(at(w, best.id)).toEqual([seller.id]);

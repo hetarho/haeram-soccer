@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T953 | Market harness reads books, upward-move funnel, renewals, ageing and distress | ECON WORLD CLUB PLAYER LEAGUE | - | todo |
+| T953 | Market harness reads books, upward-move funnel, renewals, ageing and distress | ECON WORLD CLUB PLAYER LEAGUE | - | doing@261118.mr18cx |
 | T954 | Each player ages on his own curve | PLAYER WORLD | - | todo |
 | T955 | A fourth personality trait, 충성심 | PLAYER | - | todo |
 | T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
