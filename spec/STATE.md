@@ -102,6 +102,8 @@
 | T978 | Calibrate the combined world: levels, moves, books, distress, ageing | LEAGUE WORLD ECON PLAYER CLUB MATCH | T953 T954 T955 T957 T958 T959 T960 T961 T962 T963 T964 T965 T966 T967 T968 T969 T970 T971 T972 T973 T974 T975 T976 T977 T979 T980 | todo |
 | T981 | CI runs only the Chromium browser shards | ARCH | - | todo |
 | T986 | Validate the own match's script once and drop attribution copies nothing reads | ARCH | - | todo |
+| T987 | Settlement memos for market needs, prices, sellable lines, listings and rivals | ARCH | T982 | todo |
+| T988 | Compute free-agent settlement money facts only for clubs that read them | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
