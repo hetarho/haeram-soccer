@@ -342,6 +342,15 @@ export function bookStats(books: readonly EndBook[]) {
 
 export interface SeasonInput {
   year: number;
+  transferValues?: {
+    players: number;
+    dearest: number;
+    mean: number;
+    record: number;
+    dearestToRecord: number;
+    publishedMean?: number;
+    meanToPublishedFee?: number;
+  };
   clubs: StartClub[];
   moves: MoveFact[];
   /** Season-start XI by club. */
@@ -649,6 +658,7 @@ export function seasonStats(input: SeasonInput) {
 
   return {
     year: input.year,
+    ...(input.transferValues ? { transferValues: input.transferValues } : {}),
     moves,
     byWindow,
     reasons,

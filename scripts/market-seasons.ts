@@ -48,6 +48,7 @@ import { measurementIdentity } from './lib/measurement-identity';
 import { fingerprintFiles } from './lib/source-graph';
 import { setTunables } from './lib/market-tunables';
 import { toolMessage } from './lib/tool-messages';
+import { transferValues } from './lib/market-values';
 import {
   FRESH_MIN_BURN_IN,
   inferReason,
@@ -211,6 +212,7 @@ function advance(w: World, days: number) {
 
 function playSeason(w: World, salt: string): SeasonStats {
   const year = w.year;
+  const values = transferValues(w);
   const clubs = ownerless(w);
   const startClubs: StartClub[] = clubs.map((c) => ({
     ...ref(c),
@@ -341,6 +343,7 @@ function playSeason(w: World, salt: string): SeasonStats {
   );
   return seasonStats({
     year,
+    transferValues: values,
     clubs: startClubs,
     moves: collector.moves,
     xiStart,
