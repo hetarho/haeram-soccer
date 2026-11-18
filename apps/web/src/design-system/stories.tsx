@@ -1065,7 +1065,15 @@ function Alerts({ runtime }: { runtime: Runtime }) {
           <button
             onClick={() =>
               gameStore.setState({
-                view: { ...view, world: { ...w, cash: '-50000', insolvent: 2 } },
+                view: {
+                  ...view,
+                  world: {
+                    ...w,
+                    cash: '-50000',
+                    insolvent: 2,
+                    distress: { stage: 1, overHalfRounds: 0 },
+                  },
+                },
               })
             }
           >

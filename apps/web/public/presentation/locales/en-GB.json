@@ -7029,6 +7029,19 @@
     "delegation.floor.forcedSale": "Forced sales in financial distress −25pp",
     "market.sale.distress.warning": "Seller in financial distress: warning",
     "market.sale.distress.forced": "Seller under forced sales or administration",
-    "delegation.floor.saleReduction": "Projected closing cash is below the director’s floor, so the asking bar is reduced by {points} percentage points."
+    "delegation.floor.saleReduction": "Projected closing cash is below the director’s floor, so the asking bar is reduced by {points} percentage points.",
+    "delegation.floor.available": "Spendable above the floor",
+    "delegation.floor.reservations": "Open delegated bid fees of {reserved} have already been deducted.",
+    "delegation.floor.commitment": "Keep {floor} at season end. Count a fee once and new wages or raises for the rest of this season plus next season against that floor. The separate cash safety stop also applies.",
+    "delegation.floor.salesPressed": "Projected closing cash is below the floor or the club is in financial distress, so sales are pursued more readily.",
+    "delegation.floor.salesCalm": "Projected closing cash meets the floor and there is no active distress stage, so normal sale criteria apply.",
+    "delegation.floor.salesFactors": "With sales delegated, an open player’s asking bar falls by {points} percentage points when projected closing cash is below the director’s floor without an active distress stage. Lower bids read squad place, contract, age, transfer request, unhappiness, actual distress, fewer than {rounds} rounds of fixed costs in cash, and the final {days} days of the window. Normal sales never go below {floor}% of value; forced sales follow their separate rule.",
+    "delegation.floor.looks": "With recruitment delegated, the director looks on opening day and every {days} days, filling short lines and manager requests first up to {pending} pending bids. {upgrades} One fee plus wages for the rest of this season and next must preserve the cash floor. Free signings for a short line need only the cash safety stop. Fee room now: {left}.",
+    "delegation.floor.youth": "Youth budget {budget}: {share}% each of income and spendable money above the floor · youth director paid first: {pay} · academy {level} ({cost} a year)",
+    "delegation.floor.committed": "Annual costs already committed",
+    "delegation.floor.left": "Money left",
+    "delegation.floor.contractsOwner": "When a window opens, the director judges renewals and raises by renewal policy and the request’s cash floor, then reports the decision.",
+    "delegation.floor.salesOwner": "The director answers other clubs’ bids by sale policy, the cash floor and actual distress stage, then reports the result.",
+    "delegation.floor.recruitmentOwner": "The director recruits from the shortlist and manager requests within recruitment policy, the cash floor and the cash safety stop."
   }
 }

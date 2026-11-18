@@ -568,9 +568,9 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
         floor: money(plan.floor),
         spendable: money(plan.spendable),
       }),
-      sourceMessage('delegation.plan.youth', {
+      sourceMessage('delegation.floor.youth', {
         share,
-        budget: money(plan.incomeBudget),
+        budget: money(plan.budget),
         pay: money(plan.youth!.pay),
         level: POLICY_INFO.academy.levels[plan.youth!.level - 1].name,
         cost: money(plan.youth!.cost),
@@ -610,7 +610,9 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
     case 'sales':
       lines.push(
         sourceMessage(
-          plan.over ? 'delegation.plan.salesPressedIncome' : 'delegation.plan.salesCalmIncome',
+          BigInt(plan.projected) < BigInt(plan.floor) || w.distress?.stage
+            ? 'delegation.floor.salesPressed'
+            : 'delegation.floor.salesCalm',
         ),
       );
       break;

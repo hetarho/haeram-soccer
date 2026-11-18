@@ -21,6 +21,7 @@ import {
   ACADEMY_LIMIT,
 } from '../../../../packages/engine/src/academy';
 import { departmentEffects, staffEffects } from '../../../../packages/engine/src/staff';
+import { financeProjection } from '../../../../packages/engine/src/projection';
 import { delegatePlan, planRevenue } from '../../../../packages/engine/src/delegation';
 import { clubBudgets, ownerSeasonFlows } from '../../../../packages/engine/src/club-budget';
 import {
@@ -54,7 +55,8 @@ export function officeRead(w: World) {
     effects = policyEffects(policy),
     build = buildEffects(w);
   const costs = operatingCosts(w),
-    revenue = planRevenue(w);
+    revenue = planRevenue(w),
+    projection = financeProjection(w);
   const policyCosts = Object.fromEntries(
     POLICY_KEYS.map((key) => [
       key,
@@ -122,8 +124,8 @@ export function officeRead(w: World) {
       BUDGET_RESPONSIBILITIES.map((key) => [
         key,
         {
-          plan: delegatePlan(w, key, undefined, revenue),
-          previews: SPEND_REQUESTS.map((level) => delegatePlan(w, key, level, revenue)),
+          plan: delegatePlan(w, key, undefined, revenue, projection),
+          previews: SPEND_REQUESTS.map((level) => delegatePlan(w, key, level, revenue, projection)),
         },
       ]),
     ) as Record<

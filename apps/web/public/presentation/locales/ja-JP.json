@@ -7026,6 +7026,19 @@
     "delegation.floor.forcedSale": "財政危機による強制売却 −25ポイント",
     "market.sale.distress.warning": "売却クラブに財政警告",
     "market.sale.distress.forced": "売却クラブに売却要求または管財管理",
-    "delegation.floor.saleReduction": "シーズン末の予想現金がディレクターの下限を下回るため、売却要求の比率を{points}ポイント下げました。"
+    "delegation.floor.saleReduction": "シーズン末の予想現金がディレクターの下限を下回るため、売却要求の比率を{points}ポイント下げました。",
+    "delegation.floor.available": "下限を超える支出余力",
+    "delegation.floor.reservations": "進行中の委任オファーの移籍金{reserved}は差し引き済みです。",
+    "delegation.floor.commitment": "シーズン末に{floor}を残します。移籍金は一度、新しい年俸や増額分は今季の残りと来季の分を数え、この下限を守ります。資金枯渇を防ぐ別の条件も確認します。",
+    "delegation.floor.salesPressed": "シーズン末の予想現金が下限を下回るか財政危機の段階にあるため、売却を積極的に検討します。",
+    "delegation.floor.salesCalm": "シーズン末の予想現金が下限以上で財政危機の段階にないため、通常の基準で売却を検討します。",
+    "delegation.floor.salesFactors": "売却を委任すると、財政危機の段階になく予想期末現金がディレクターの下限を下回る場合、交渉可能な選手の要求比率を{points}ポイント下げます。低い入札には起用状況、契約、年齢、移籍要求、不満、実際の財政危機、固定費{rounds}節分未満の現金、市場の残り{days}日が影響します。通常は評価額の{floor}%未満では売らず、強制売却には別の規則を適用します。",
+    "delegation.floor.looks": "補強を委任すると開幕日と以後{days}日ごとに検討し、進行中の入札{pending}件まで不足ラインと監督の要望を優先します。{upgrades} 移籍金一回と今季の残り・来季の年俸を含めても現金下限を守る必要があります。不足ラインの自由契約補充は資金枯渇防止条件のみ確認します。現在の移籍金余力は{left}です。",
+    "delegation.floor.youth": "収入と下限を超える支出余力のそれぞれ{share}%を配分した育成予算{budget} · ユース責任者の給与{pay}を優先 · アカデミー{level}（年{cost}）",
+    "delegation.floor.committed": "確定済みの年間費用",
+    "delegation.floor.left": "残額",
+    "delegation.floor.contractsOwner": "市場が開くと、ディレクターは更新方針と委任要望の現金下限で更新・増額要求を判断し、結果を報告します。",
+    "delegation.floor.salesOwner": "ディレクターは売却方針、現金下限、実際の財政危機段階で他クラブの入札に答え、結果を報告します。",
+    "delegation.floor.recruitmentOwner": "ディレクターは候補リストと監督の要望から、補強方針、現金下限、資金枯渇防止条件の範囲で補強します。"
   }
 }

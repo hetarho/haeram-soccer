@@ -7029,6 +7029,19 @@
     "delegation.floor.forcedSale": "Zwangsverkäufe bei Finanznot −25 Pp.",
     "market.sale.distress.warning": "Verkäufer mit finanzieller Warnung",
     "market.sale.distress.forced": "Verkäufer unter Zwangsverkäufen oder Insolvenzverwaltung",
-    "delegation.floor.saleReduction": "Der erwartete Kassenbestand zum Saisonende liegt unter der Untergrenze des Sportdirektors; die Forderung sinkt um {points} Prozentpunkte."
+    "delegation.floor.saleReduction": "Der erwartete Kassenbestand zum Saisonende liegt unter der Untergrenze des Sportdirektors; die Forderung sinkt um {points} Prozentpunkte.",
+    "delegation.floor.available": "Verfügbar über der Untergrenze",
+    "delegation.floor.reservations": "Gebühren offener delegierter Gebote von {reserved} sind bereits abgezogen.",
+    "delegation.floor.commitment": "Am Saisonende müssen {floor} bleiben. Eine Ablöse zählt einmal, neue Gehälter oder Erhöhungen für den Rest dieser und die nächste Saison. Zusätzlich gilt die separate Liquiditätssperre.",
+    "delegation.floor.salesPressed": "Der erwartete Endbestand liegt unter der Untergrenze oder der Verein ist in Finanznot; Verkäufe werden leichter erwogen.",
+    "delegation.floor.salesCalm": "Der erwartete Endbestand erreicht die Untergrenze und es besteht keine Finanznot; normale Verkaufskriterien gelten.",
+    "delegation.floor.salesFactors": "Bei delegierten Verkäufen sinkt die Forderung für einen verhandelbaren Spieler um {points} Prozentpunkte, wenn der erwartete Endbestand ohne aktive Finanznot unter der Untergrenze des Direktors liegt. Niedrigere Gebote berücksichtigen Kaderrolle, Vertrag, Alter, Wechselwunsch, Unzufriedenheit, tatsächliche Finanznot, weniger als {rounds} Runden Fixkosten in bar und die letzten {days} Transfertage. Regulär wird nie unter {floor}% des Werts verkauft; Zwangsverkäufe folgen einer eigenen Regel.",
+    "delegation.floor.looks": "Bei delegierten Transfers prüft der Direktor am Eröffnungstag und alle {days} Tage, zuerst Engpässe und Trainerwünsche, bis zu {pending} offene Gebote. {upgrades} Eine Ablöse und Gehälter für den Rest dieser sowie die nächste Saison müssen die Untergrenze wahren. Kostenlose Zugänge für unterbesetzte Reihen brauchen nur die Liquiditätsprüfung. Ablösespielraum: {left}.",
+    "delegation.floor.youth": "Jugendbudget {budget}: je {share}% aus Einnahmen und Spielraum über der Untergrenze · zuerst Jugendleitergehalt {pay} · Akademie {level} ({cost} jährlich)",
+    "delegation.floor.committed": "Bereits gebundene Jahreskosten",
+    "delegation.floor.left": "Verbleibendes Geld",
+    "delegation.floor.contractsOwner": "Zum Transferfenster beurteilt der Direktor Verlängerungen und Erhöhungen nach Vertragspolitik und gewünschter Kassenuntergrenze und berichtet.",
+    "delegation.floor.salesOwner": "Der Direktor beantwortet Gebote nach Verkaufspolitik, Kassenuntergrenze und tatsächlicher Finanznotstufe und berichtet.",
+    "delegation.floor.recruitmentOwner": "Der Direktor verpflichtet aus der Liste und Trainerwünschen nach Transferpolitik, Kassenuntergrenze und Liquiditätssperre."
   }
 }

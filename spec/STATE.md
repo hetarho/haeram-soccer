@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T972 | The budget page and verdicts speak of the cash floor | WEB ECON ARCH | T971 | todo |
+| T972 | The budget page and verdicts speak of the cash floor | WEB ECON ARCH | T971 | doing@261118.mr18cx |
 | T973 | Players answer renewal offers; clubs nobody owns offer by need | CLUB WORLD | T979 T967 | todo |
 | T974 | Our players may turn down a renewal | CLUB WEB ARCH | T973 | todo |
 | T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | todo |

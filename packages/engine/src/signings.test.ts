@@ -1754,7 +1754,7 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     staffSignings(direct);
     expect(listed(direct)).toEqual([]);
     const broke = club(5);
-    broke.cash = '0';
+    projectCashTo(broke, -BigInt(operatingCosts(broke).annual));
     broke.budgetPlan = { year: broke.year, revenue: '0', sales: '0' };
     expect(moneyBar(broke)).toBeUndefined();
     makeRoom(broke);

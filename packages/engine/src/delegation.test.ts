@@ -230,7 +230,7 @@ describe('youth money is the 단장’s, the academy’s football the youth dire
     expect(directionOf(w, 'debut')).toBe('early');
     const report = w.inbox!.slice(before).find((item) => item.kind === 'staff-report')!;
     expect(report.title).toContain(delegateOf(w).name);
-    expect(report.detail).toContain('유소년 몫');
+    expect(report.detail).toContain('유소년 예산');
     // The academy's money rows name the 단장, its football rows the youth director.
     expect(settingDelegate(w, { policy: 'academy' })).toBe('academy');
     expect(settingPerson(w, { policy: 'academy' }).post).toBe('director');

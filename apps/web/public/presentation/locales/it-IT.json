@@ -7032,6 +7032,19 @@
     "delegation.floor.forcedSale": "Vendite forzate per difficoltà finanziarie −25 pp",
     "market.sale.distress.warning": "Venditore in allarme finanziario",
     "market.sale.distress.forced": "Venditore con vendite forzate o amministrazione controllata",
-    "delegation.floor.saleReduction": "La liquidità prevista a fine stagione è sotto la soglia del direttore, quindi la percentuale richiesta scende di {points} punti percentuali."
+    "delegation.floor.saleReduction": "La liquidità prevista a fine stagione è sotto la soglia del direttore, quindi la percentuale richiesta scende di {points} punti percentuali.",
+    "delegation.floor.available": "Margine sopra la soglia",
+    "delegation.floor.reservations": "Sono già dedotti {reserved} per le offerte delegate aperte.",
+    "delegation.floor.commitment": "A fine stagione devono restare {floor}. Il cartellino conta una volta, nuovi stipendi o aumenti per il resto di questa stagione e la prossima. Vale anche il freno di liquidità separato.",
+    "delegation.floor.salesPressed": "La liquidità finale prevista è sotto la soglia o il club è in difficoltà finanziaria: si valutano più vendite.",
+    "delegation.floor.salesCalm": "La liquidità prevista rispetta la soglia senza difficoltà attive: valgono i normali criteri di vendita.",
+    "delegation.floor.salesFactors": "Con vendite delegate, la richiesta per un giocatore negoziabile scende di {points} punti se la liquidità finale prevista è sotto la soglia del direttore senza una fase di crisi attiva. Le offerte inferiori leggono ruolo, contratto, età, richiesta di cessione, malcontento, crisi reale, cassa inferiore a {rounds} turni di costi fissi e gli ultimi {days} giorni di mercato. Le vendite normali non scendono sotto il {floor}% del valore; quelle forzate seguono una regola distinta.",
+    "delegation.floor.looks": "Il direttore delegato controlla all’apertura e ogni {days} giorni, prima le carenze e le richieste del tecnico, fino a {pending} offerte aperte. {upgrades} Un cartellino e gli stipendi per il resto di questa stagione e la prossima devono rispettare la soglia. Un parametro zero per una linea carente richiede solo il freno di liquidità. Margine cartellini: {left}.",
+    "delegation.floor.youth": "Budget giovani {budget}: {share}% sia dei ricavi sia del margine sopra la soglia · prima lo stipendio del direttore giovanile {pay} · accademia {level} ({cost} annui)",
+    "delegation.floor.committed": "Costi annui già impegnati",
+    "delegation.floor.left": "Denaro restante",
+    "delegation.floor.contractsOwner": "All’apertura del mercato il direttore giudica rinnovi e aumenti secondo politica e soglia di cassa richiesta, poi riferisce.",
+    "delegation.floor.salesOwner": "Il direttore risponde alle offerte secondo politica di vendita, soglia di cassa e crisi effettiva, poi riferisce.",
+    "delegation.floor.recruitmentOwner": "Il direttore recluta dalla lista e dalle richieste del tecnico secondo politica, soglia di cassa e freno di liquidità."
   }
 }

@@ -7032,6 +7032,19 @@
     "delegation.floor.forcedSale": "Ventes forcées en difficulté financière −25 pts",
     "market.sale.distress.warning": "Vendeur en alerte financière",
     "market.sale.distress.forced": "Vendeur sous ventes forcées ou administration judiciaire",
-    "delegation.floor.saleReduction": "La trésorerie prévue en fin de saison est inférieure au seuil du directeur ; le prix demandé baisse de {points} points de pourcentage."
+    "delegation.floor.saleReduction": "La trésorerie prévue en fin de saison est inférieure au seuil du directeur ; le prix demandé baisse de {points} points de pourcentage.",
+    "delegation.floor.available": "Marge au-dessus du seuil",
+    "delegation.floor.reservations": "Les indemnités des offres déléguées en cours, soit {reserved}, sont déjà déduites.",
+    "delegation.floor.commitment": "Il faut conserver {floor} en fin de saison. Une indemnité compte une fois, les nouveaux salaires ou hausses pour le reste de cette saison et la suivante. Le frein de trésorerie distinct s’applique aussi.",
+    "delegation.floor.salesPressed": "La trésorerie prévue est sous le seuil ou le club est en difficulté financière : les ventes sont davantage envisagées.",
+    "delegation.floor.salesCalm": "La trésorerie prévue respecte le seuil sans difficulté financière active : les critères habituels s’appliquent.",
+    "delegation.floor.salesFactors": "Pour les ventes déléguées, le prix exigé d’un joueur négociable baisse de {points} points si la trésorerie finale prévue est sous le seuil du directeur sans difficulté financière active. Les offres inférieures tiennent compte du rôle, du contrat, de l’âge, du souhait de départ, du mécontentement, des difficultés réelles, de moins de {rounds} journées de frais fixes en caisse et des {days} derniers jours du mercato. Normalement, aucune vente sous {floor}% de la valeur ; les ventes forcées suivent leur propre règle.",
+    "delegation.floor.looks": "Le directeur chargé du recrutement examine le marché à l’ouverture puis tous les {days} jours, d’abord les lignes en manque et les demandes du coach, jusqu’à {pending} offres en cours. {upgrades} Une indemnité et les salaires du reste de cette saison et de la suivante doivent respecter le seuil. Un joueur libre pour une ligne en manque ne passe que le frein de trésorerie. Marge d’indemnités : {left}.",
+    "delegation.floor.youth": "Budget jeunes {budget} : {share}% des revenus et autant de la marge au-dessus du seuil · salaire du directeur des jeunes payé d’abord : {pay} · académie {level} ({cost} par an)",
+    "delegation.floor.committed": "Coûts annuels déjà engagés",
+    "delegation.floor.left": "Argent restant",
+    "delegation.floor.contractsOwner": "À l’ouverture du mercato, le directeur juge prolongations et hausses selon la politique et le seuil de trésorerie demandé, puis rend compte.",
+    "delegation.floor.salesOwner": "Le directeur répond aux offres selon la politique de vente, le seuil de trésorerie et la difficulté financière réelle, puis rend compte.",
+    "delegation.floor.recruitmentOwner": "Le directeur recrute selon la liste et les demandes du coach, dans la politique, le seuil de trésorerie et le frein de liquidité."
   }
 }

@@ -7029,6 +7029,19 @@
     "delegation.floor.forcedSale": "Gedwongen verkopen bij financiële nood −25 pp",
     "market.sale.distress.warning": "Verkoper met financiële waarschuwing",
     "market.sale.distress.forced": "Verkoper onder gedwongen verkopen of bewind",
-    "delegation.floor.saleReduction": "Het verwachte eindsaldo ligt onder de ondergrens van de directeur, dus de vraagprijs daalt met {points} procentpunten."
+    "delegation.floor.saleReduction": "Het verwachte eindsaldo ligt onder de ondergrens van de directeur, dus de vraagprijs daalt met {points} procentpunten.",
+    "delegation.floor.available": "Besteedbaar boven de ondergrens",
+    "delegation.floor.reservations": "Kosten van open gedelegeerde biedingen van {reserved} zijn al afgetrokken.",
+    "delegation.floor.commitment": "Houd aan het seizoenseinde {floor} over. Een transfersom telt eenmaal, nieuwe lonen of verhogingen voor de rest van dit seizoen en het volgende. Ook de aparte kasrem geldt.",
+    "delegation.floor.salesPressed": "Het verwachte eindsaldo ligt onder de ondergrens of de club zit in financiële nood, dus verkopen worden eerder overwogen.",
+    "delegation.floor.salesCalm": "Het verwachte eindsaldo voldoet aan de ondergrens zonder actieve financiële nood, dus normale verkoopcriteria gelden.",
+    "delegation.floor.salesFactors": "Bij gedelegeerde verkoop daalt de vraag voor een onderhandelbare speler met {points} procentpunten als het verwachte eindsaldo onder de grens van de directeur ligt zonder actieve noodfase. Lagere biedingen lezen rol, contract, leeftijd, vertrekwens, onvrede, echte financiële nood, minder dan {rounds} ronden vaste lasten in kas en de laatste {days} transferdagen. Normaal wordt nooit onder {floor}% van de waarde verkocht; gedwongen verkoop volgt een eigen regel.",
+    "delegation.floor.looks": "De directeur bekijkt gedelegeerde transfers op de openingsdag en elke {days} dagen, eerst tekorten en trainersverzoeken, tot {pending} open biedingen. {upgrades} Eén transfersom plus lonen voor de rest van dit en het volgende seizoen moeten de kasgrens bewaren. Een transfervrije aanvulling op een korte linie hoeft alleen de kasrem te halen. Ruimte voor transfersommen: {left}.",
+    "delegation.floor.youth": "Jeugdbudget {budget}: {share}% van zowel inkomsten als ruimte boven de ondergrens · jeugdchef eerst betaald: {pay} · academie {level} ({cost} per jaar)",
+    "delegation.floor.committed": "Reeds vastgelegde jaarkosten",
+    "delegation.floor.left": "Geld over",
+    "delegation.floor.contractsOwner": "Bij opening van de markt beoordeelt de directeur verlengingen en verhogingen volgens beleid en gevraagde kasgrens, en rapporteert.",
+    "delegation.floor.salesOwner": "De directeur beantwoordt biedingen volgens verkoopbeleid, kasgrens en echte noodfase en rapporteert het resultaat.",
+    "delegation.floor.recruitmentOwner": "De directeur werft uit de lijst en trainerswensen binnen beleid, kasgrens en kasrem."
   }
 }

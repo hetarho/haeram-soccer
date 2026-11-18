@@ -18,7 +18,7 @@ import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import { openDecisionSettings } from '../../../shared/routing/state';
 import { Card } from '../../../shared/ui/Card';
 import { Money } from '../../../shared/ui/Money';
-import { compactMoney } from '../../../presentation/format';
+import { compactMoney, decimal } from '../../../presentation/format';
 import { DeskStats, type DeskStat } from './OfficeDesk';
 import s from './DelegationPlan.module.css';
 
@@ -51,7 +51,7 @@ export interface FlowStep {
 
 /**
  * A plan's money read left to right as one sentence (→`PlanPreview`): the season's income, the
- * capital above the reserve, the work's money, what it already pays, and what is left to spend. The steps are the
+ * spendable money above the floor, the work's money, what it already pays, and what is left to spend. The steps are the
  * shared stat tiles joined by arrows; on a phone they stack two by two.
  */
 export function PlanFlow({ label, steps }: { label: string; steps: readonly FlowStep[] }) {
@@ -71,13 +71,27 @@ export function PlanFlow({ label, steps }: { label: string; steps: readonly Flow
   );
 }
 
-/** Minimal typed DTO adaptation; the full cash-floor explanation follows in T972. */
+/** Current closing cash, required floor and spendable money, formatted at presentation. */
 export function floorLine(w: World, plan: DelegatePlan) {
   const money = (value: string) => compactMoney(value, clubOf(w).country, w.year);
-  return sourceMessage('delegation.floor.summary', {
+  return displayMessage('delegation.floor.summary', {
     projected: money(plan.projected),
     floor: money(plan.floor),
     spendable: money(plan.spendable),
+  });
+}
+
+/** Explain the commitment horizon on the first view of a plan. */
+export function floorRule(w: World, plan: DelegatePlan) {
+  if (plan.key === 'academy') return displayMessage('delegation.flow.academyLine');
+  if (plan.key === 'sales')
+    return displayMessage(
+      BigInt(plan.projected) < BigInt(plan.floor) || w.distress?.stage
+        ? 'delegation.floor.salesPressed'
+        : 'delegation.floor.salesCalm',
+    );
+  return displayMessage('delegation.floor.commitment', {
+    floor: compactMoney(plan.floor, clubOf(w).country, w.year),
   });
 }
 
@@ -94,19 +108,17 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
         : undefined,
     },
     capital: FlowStep = {
-      label: sourceMessage('delegation.flow.capital'),
+      label: sourceMessage('delegation.floor.available'),
       value: amount(plan.spendable),
-      note: floorLine(w, plan),
+      note: displayMessage('delegation.floor.reservations', { reserved: money(plan.reserved) }),
     },
     carried: FlowStep = {
       label: sourceMessage('delegation.flow.wageRoom'),
       value: amount(plan.budget),
-      note: floorLine(w, plan),
     },
     wages: FlowStep = {
       label: sourceMessage('delegation.flow.wages'),
       value: amount(plan.committed),
-      note: floorLine(w, plan),
       tone: 'minus',
     };
   switch (plan.key) {
@@ -135,25 +147,31 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
         },
       ];
     case 'academy': {
-      const youth = plan.youth!;
+      const youth = plan.youth!,
+        share = sharePercent(plan.share);
       return [
         revenue,
         capital,
         {
           label: sourceMessage('delegation.flow.budget'),
           value: amount(plan.budget),
+          note: displayMessage('delegation.floor.youth', {
+            share: decimal(share, Number.isInteger(share) ? 0 : 1),
+            budget: money(plan.budget),
+            pay: money(youth.pay),
+            level: POLICY_INFO.academy.levels[youth.level - 1].name,
+            cost: money(youth.cost),
+          }),
         },
         {
-          label: sourceMessage('delegation.flow.youthPay'),
-          value: amount(youth.pay),
-          note: sourceMessage('delegation.flow.youthPayNote'),
+          label: sourceMessage('delegation.floor.committed'),
+          value: amount(plan.committed),
           tone: 'minus',
         },
         {
-          label: sourceMessage('delegation.flow.academy'),
-          value: POLICY_INFO.academy.levels[youth.level - 1].name,
-          note: sourceMessage('delegation.flow.academyNote', { cost: money(youth.cost) }),
-          tone: 'result',
+          label: sourceMessage('delegation.floor.left'),
+          value: amount(plan.left),
+          tone: BigInt(plan.left) > 0n ? 'result' : 'empty',
         },
       ];
     }
@@ -171,7 +189,22 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
 
 /** The plan in one or two plain sentences under its steps. */
 function planSentence(w: World, plan: DelegatePlan): ReactNode {
-  return plan.key === 'manager' || plan.key === 'staff' ? undefined : floorLine(w, plan);
+  if (plan.key === 'manager' || plan.key === 'staff') return undefined;
+  return (
+    <>
+      {floorLine(w, plan)} {floorRule(w, plan)}
+      {plan.level === 1 && (plan.key === 'recruitment' || plan.key === 'contracts') && (
+        <>
+          {' '}
+          {richMessage(
+            plan.key === 'contracts'
+              ? 'delegation.flow.contractsIncome'
+              : 'delegation.flow.recruitmentIncome',
+          )}
+        </>
+      )}
+    </>
+  );
 }
 
 /** The posts whose pay the 단장's criteria decide: the setting he sets and the pay now. */
@@ -204,7 +237,7 @@ function pending(w: World, plan: DelegatePlan) {
 
 /**
  * The 단장's plan for a request (→`delegatePlan`): how he heard it, the money as income → capital →
- * the wage bill the runway carries → already committed → left to spend, one plain sentence, and the settings he sets. The delegation
+ * the affordable annual wage bill → already committed → left to spend, one plain sentence, and the settings he sets. The delegation
  * page shows it for the request being chosen; a work's page for the request in force.
  */
 export function PlanPreview({

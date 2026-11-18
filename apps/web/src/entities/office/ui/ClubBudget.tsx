@@ -20,7 +20,7 @@ import { Money } from '../../../shared/ui/Money';
 import { SeasonStepper } from '../../../shared/ui/SeasonStepper';
 import { compactMoney, number, percent, seasonName } from '../../../presentation/format';
 import { fixedCosts } from '../../player/@x/office';
-import { PlanFlow, planSteps, floorLine, type DelegatePlan } from './DelegationPlan';
+import { PlanFlow, planSteps, floorLine, floorRule, type DelegatePlan } from './DelegationPlan';
 import s from './ClubBudget.module.css';
 
 /** A part of one of the two flow bars, coloured by what it is. */
@@ -222,7 +222,7 @@ function MoneyFlow({ budget, code }: { budget: SeasonBudget; code: string }) {
   );
 }
 
-/** One work's plan in a few words for the list (→`delegatePlan`): its loss runway first. */
+/** One work's plan in a few words for the list (→`delegatePlan`): its live cash floor first. */
 function planSummary(w: World, plan: DelegatePlan) {
   const code = clubOf(w).country,
     money = (value: string) => compactMoney(value, code, w.year);
@@ -271,6 +271,7 @@ function SeasonPlan({ w, office }: { w: World; office: OfficeRead }) {
             >
               <h5>{localizeValue(RESPONSIBILITY_NAMES[key])}</h5>
               <PlanFlow label={RESPONSIBILITY_NAMES[key]} steps={planSteps(w, plan)!} />
+              <p>{floorRule(w, plan)}</p>
             </section>
           );
         }),
