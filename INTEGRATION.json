@@ -28,14 +28,21 @@
       "branch": "gusta-session-self-improve-ws16-c1384351",
       "head": "fdfe2e23fa28bf51b69c130e60013a85ff13d74f",
       "land": "main",
-      "status": "ready",
-      "at": "2026-11-16T10:14:36.746Z",
+      "status": "landed",
+      "at": "2026-11-18T00:57:59.238Z",
       "agentChecks": [],
       "verificationCommands": [
         "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
         "node --import tsx /tmp/ws16-verify-world.mjs .",
         "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
-      ]
+      ],
+      "landed": "4360eac27d3b2eaea448e2a4bf767823f148f1b4",
+      "reconciled": {
+        "at": "2026-11-18T00:57:59.238Z",
+        "from": "ready",
+        "reason": "owner 261118 cleanup: session ended, head already on main",
+        "verified": false
+      }
     },
     "7a88e7723e75cfe5a6df9ab7": {
       "id": "7a88e7723e75cfe5a6df9ab7",
