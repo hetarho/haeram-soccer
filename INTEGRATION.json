@@ -262,6 +262,22 @@
         "reason": "owner 261118 cleanup: session ended, head already on main",
         "verified": false
       }
+    },
+    "9eeb147edbd8727c1a5f52aa": {
+      "id": "9eeb147edbd8727c1a5f52aa",
+      "owner": "f6b8b523-2bfb-456e-8327-c100ccba8731",
+      "tag": "mr18cx",
+      "kind": "start",
+      "publication": "merge",
+      "host": "hq-dev1-pve2-vm2",
+      "device": "hq-dev1-pve2-vm2",
+      "branch": "gusta-session-start-mr18cx-5d3ec005",
+      "head": "a5d7b73cad5c3ea453ca7bfb7bf26427011110f5",
+      "land": "main",
+      "status": "working",
+      "at": "2026-11-18T02:01:37.992Z",
+      "agentChecks": [],
+      "verificationCommands": []
     }
   },
   "gate": null,
