@@ -92,10 +92,17 @@
       "branch": "gusta-session-self-improve-pf17-c279c8c5",
       "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
       "land": "main",
-      "status": "ready",
-      "at": "2026-11-16T19:59:14.123Z",
+      "status": "landed",
+      "at": "2026-11-18T00:58:05.795Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "landed": "4360eac27d3b2eaea448e2a4bf767823f148f1b4",
+      "reconciled": {
+        "at": "2026-11-18T00:58:05.795Z",
+        "from": "ready",
+        "reason": "owner 261118 cleanup: session ended, head already on main",
+        "verified": false
+      }
     },
     "9e5ff6a75bd0957f25e20202": {
       "id": "9e5ff6a75bd0957f25e20202",
