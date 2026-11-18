@@ -5,6 +5,7 @@ import {
   affordableLevel,
   bidsOnDay,
   compareSellDown,
+  NPC_BID_FLOW,
   NPC_MARKET,
   npcBidFee,
   npcMarket,
@@ -186,6 +187,18 @@ function observe(act: () => void) {
   return seen;
 }
 
+function observeBids(act: () => void) {
+  const seen: Parameters<NonNullable<typeof NPC_BID_FLOW.observe>>[0][] = [];
+  const before = NPC_BID_FLOW.observe;
+  NPC_BID_FLOW.observe = (bid) => seen.push(bid);
+  try {
+    act();
+  } finally {
+    NPC_BID_FLOW.observe = before;
+  }
+  return seen;
+}
+
 describe('the pull market (→WORLD-16)', () => {
   it('buys an unlisted starter at a bid that reaches the reservation, and not below it', () => {
     for (const [bid, sale, moves] of [
@@ -198,7 +211,16 @@ describe('the pull market (→WORLD-16)', () => {
       expect(startingSquad(w, seller)).toContain(p);
       draws.bid = bid;
       draws.sale = sale;
-      const seen = observe(() => npcMarket(w));
+      let seen: ReturnType<typeof observe> = [];
+      const bids = observeBids(() => {
+        seen = observe(() => npcMarket(w));
+      });
+      expect(bids).toContainEqual({
+        from: { id: seller.id, country: seller.country, tier: seller.tier },
+        to: { id: buyer.id, country: buyer.country, tier: buyer.tier },
+        playerId: p.id,
+        outcome: moves ? 'completed' : 'seller-refused',
+      });
       expect(at(w, p.id)).toEqual([moves ? buyer.id : seller.id]);
       if (moves) {
         expect(seen).toEqual([
@@ -222,6 +244,25 @@ describe('the pull market (→WORLD-16)', () => {
     const seen = observe(() => npcMarket(w));
     expect(at(w, p.id)).toEqual([buyer.id]);
     expect(seen[0]!.move.fee).toBe(asking.toString());
+  });
+
+  it('reports an unaffordable seller counter as the buyer refusing the counted bid', () => {
+    const { w, seller, buyer } = fixture();
+    const p = target(w, seller);
+    const asking = modestBuyer(w, buyer, p, seller);
+    const wage = BigInt(marketWageAt('ENG', w.year, buyer.tier, p));
+    const affordable = npcWageBill(w, buyer) + wage + (asking * 9n) / 10n;
+    buyer.books!.debt = (npcWageLimit(w, buyer)! - affordable).toString();
+    draws.bid = 0.6;
+    draws.sale = 1;
+    const bids = observeBids(() => npcMarket(w));
+    expect(bids).toContainEqual(
+      expect.objectContaining({
+        playerId: p.id,
+        outcome: 'buyer-refused',
+      }),
+    );
+    expect(at(w, p.id)).toEqual([seller.id]);
   });
 
   it('lets the player refuse by his CLUB-53 draw, and then nothing moves', () => {
@@ -630,13 +671,23 @@ describe('asking again in a window (→CLUB-52/53)', () => {
     draws.keys.length = 0;
     const [first, second] = npcMarketDays(w.year)[0]!;
     expect(bidsOnDay(npcMarketCaps(w.year).bids, 1, 3)).toBe(1);
-    // The first day's one bid goes to him blind, and he refuses.
-    settle(w, [first!]);
-    expect(asked('npc-sale', buyer, best)).toHaveLength(1);
-    expect(asked('npc-sale', buyer, next)).toEqual([]);
-    expect(at(w, best.id)).toEqual([seller.id]);
-    // The second day reads his answer again, skips him, and its one bid still buys the next keeper.
-    settle(w, [second!]);
+    const bids = observeBids(() => {
+      // The first day's one bid goes to him blind, and he refuses.
+      settle(w, [first!]);
+      expect(asked('npc-sale', buyer, best)).toHaveLength(1);
+      expect(asked('npc-sale', buyer, next)).toEqual([]);
+      expect(at(w, best.id)).toEqual([seller.id]);
+      // The second day skips that refusal and spends its bid on the next keeper.
+      settle(w, [second!]);
+    });
+    expect(
+      bids.flatMap((bid) =>
+        bid.to.id === buyer.id ? [[bid.from.id, bid.playerId, bid.outcome]] : [],
+      ),
+    ).toEqual([
+      [seller.id, best.id, 'player-refused'],
+      [seller.id, next.id, 'completed'],
+    ]);
     expect(asked('npc-sale', buyer, best)).toHaveLength(2);
     expect(asked('npc-sale', buyer, next)).toHaveLength(1);
     expect(at(w, best.id)).toEqual([seller.id]);

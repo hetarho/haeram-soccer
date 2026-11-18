@@ -357,6 +357,20 @@ export type MoveReason =
 export const PLAYER_MOVE_FLOW: {
   observe?: (w: World, id: string, move: PlayerMove, reason: MoveReason) => void;
 } = {};
+
+type BidRefusal = 'seller-refused' | 'player-refused' | 'buyer-refused';
+type BidClub = Pick<Club, 'id' | 'country' | 'tier'>;
+
+/** A counted bid's outcome. Candidate previews and unsubmitted offers do not emit. */
+export const NPC_BID_FLOW: {
+  observe?: (bid: {
+    from: BidClub;
+    to: BidClub;
+    playerId: string;
+    outcome: BidRefusal | 'completed';
+  }) => void;
+} = {};
+
 let pendingReason: MoveReason | undefined;
 /** Runs `act` with `reason` given to every move it records without one of its own. */
 export function withMoveReason<T>(reason: MoveReason, act: () => T): T {
@@ -875,8 +889,8 @@ export function npcMarket(w: World) {
   type Bid = NonNullable<ReturnType<typeof bidOf>>;
   /**
    * The seller's answer (→CLUB-52) and the player's (→CLUB-53) to a bid under this window's draws,
-   * read with today's factors: the fee and offer it settles on, or undefined when either refuses or
-   * the seller's counter is beyond the bidder. A counter is checked against the bidder's envelope
+   * read with today's factors: the fee and offer it settles on, or the party that refuses.
+   * A counter is checked against the bidder's envelope
    * before its offer, so a refused reading reaches no wage-decision observer.
    */
   const answered = (
@@ -886,7 +900,7 @@ export function npcMarket(w: World) {
     asking: string,
     loan: boolean,
     bid: Bid,
-  ) => {
+  ): Bid | BidRefusal => {
     const { limit, bill } = clubFacts(w, seller, settlement);
     const answer = saleAnswer(
       npcSaleContext(w, {
@@ -899,7 +913,7 @@ export function npcMarket(w: World) {
       }),
       random(`${w.seed}:npc-sale:${w.year}:${windowName}:${bidder.id}:${p.id}`)(),
     );
-    if (answer.kind === 'refuse') return undefined;
+    if (answer.kind === 'refuse') return 'seller-refused';
     let fee = bid.fee,
       offer = bid.offer;
     if (answer.kind === 'counter') {
@@ -908,7 +922,7 @@ export function npcMarket(w: World) {
         const facts = clubFacts(w, bidder, settlement),
           paid = BigInt(convertFee(w, seller, bidder, answer.counter!));
         if (facts.limit !== undefined && facts.bill + BigInt(offer.wage) + paid > facts.limit)
-          return undefined;
+          return 'buyer-refused';
       }
       const countered = npcOffer(
         w,
@@ -920,7 +934,7 @@ export function npcMarket(w: World) {
         wanted.get(bidder.id),
         settlement,
       );
-      if (!countered) return undefined;
+      if (!countered) return 'buyer-refused';
       fee = answer.counter!;
       offer = countered;
     }
@@ -935,7 +949,7 @@ export function npcMarket(w: World) {
       }),
       random(`${w.seed}:npc-terms:${w.year}:${windowName}:${bidder.id}:${p.id}`)(),
     );
-    return terms.accept ? { fee, offer } : undefined;
+    return terms.accept ? { fee, offer } : 'player-refused';
   };
   /**
    * One target: the bid (or an equal-stature rival's who pays him more), both answers, the move.
@@ -952,7 +966,7 @@ export function npcMarket(w: World) {
     tried.add(`${buyer.id}|${p.id}`);
     if (!own) return 'skipped';
     let result = later ? answered(buyer, p, seller, asking, loan, own) : undefined;
-    if (later && !result) return 'skipped';
+    if (typeof result === 'string') return 'skipped';
     // A player two clubs want joins the one of higher stature, then the higher wage (→WORLD-16):
     // higher statures have had their turn, so only an equal-stature rival can outbid here.
     let bidder = buyer,
@@ -970,7 +984,7 @@ export function npcMarket(w: World) {
       ) {
         if (later) {
           const theirResult = answered(rival, p, seller, asking, loan, theirs);
-          if (!theirResult) continue;
+          if (typeof theirResult === 'string') continue;
           result = theirResult;
         }
         bidder = rival;
@@ -979,8 +993,14 @@ export function npcMarket(w: World) {
     }
     tried.add(`${bidder.id}|${p.id}`);
     bids.set(bidder.id, (bids.get(bidder.id) ?? 0) + 1);
-    if (!later) result = answered(bidder, p, seller, asking, loan, bid);
-    if (!result) return 'bid';
+    result ??= answered(bidder, p, seller, asking, loan, bid);
+    NPC_BID_FLOW.observe?.({
+      from: { id: seller.id, country: seller.country, tier: seller.tier },
+      to: { id: bidder.id, country: bidder.country, tier: bidder.tier },
+      playerId: p.id,
+      outcome: typeof result === 'string' ? result : 'completed',
+    });
+    if (typeof result === 'string') return 'bid';
     const { fee, offer } = result;
     const down = seller.country === bidder.country && seller.tier < bidder.tier;
     settleMove(
