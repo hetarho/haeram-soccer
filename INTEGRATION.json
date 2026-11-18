@@ -1240,8 +1240,8 @@
   ],
   "lastPlanning": {
     "land": "main",
-    "base": "d5627f883b556cd546e456511ffd60b0c9a123b8",
-    "candidate": "081deff8119ada5210ddbe828691da992da2462f",
-    "at": "2026-11-18T15:47:57.824Z"
+    "base": "081deff8119ada5210ddbe828691da992da2462f",
+    "candidate": "63609b9b0c6059664b491deb5ce2f8c879b610e9",
+    "at": "2026-11-18T16:05:25.770Z"
   }
 }
