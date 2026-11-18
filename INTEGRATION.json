@@ -274,8 +274,8 @@
       "branch": "gusta-session-start-mr18cx-5d3ec005",
       "head": "af4339d4a01ea4fc14a5ac2dfe8693993e6d4a9a",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-18T09:21:39.608Z",
+      "status": "ready",
+      "at": "2026-11-18T09:21:44.212Z",
       "agentChecks": [],
       "verificationCommands": []
     }
