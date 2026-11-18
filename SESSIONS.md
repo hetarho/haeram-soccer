@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| cx19 | ihaelam-ui-MacBookPro | autopilot | 2026-11-18T15:22Z | 2026-11-18T15:22Z | T981 | gusta-session-start-cx19-3baf6666 | e5e1522f78a7 | 714447d9631e922b6b17af6a |
+| cx19 | ihaelam-ui-MacBookPro | autopilot | 2026-11-18T15:22Z | 2026-11-18T15:25Z | - | gusta-session-start-cx19-3baf6666 | 3e05de454b6b | 714447d9631e922b6b17af6a |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -222,8 +222,10 @@
 | T976 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 7419d844 | 2026-11-18T08:07Z |
 | T977 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | e1dc14bcb80d | 2026-11-18T08:34Z |
 | T978 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | c68ac0542c8d | 2026-11-18T09:21Z |
+| T981 | cx19 | gusta-session-start-cx19-3baf6666 | 3e05de454b6b | 2026-11-18T15:25Z |
 
 ## log
+- 261118 T981 done
 - 261118 gusta-create-task ARCH start
 - 261118 gusta-update-ssot ARCH r49: ARCH-23✎ ARCH-30✎ CI browser shards only
 - 261118 gusta-update-ssot ARCH start
@@ -243,4 +245,3 @@
 - 261118 T966 done
 - 261118 T965 done
 - 261118 T964 done
-- 261118 Manual serial recovery complete: T957 repair d35ccad7 (base caeb5242), T979 fallback repair 891d073f (base d35ccad7), T961 e4787581/6cb3e4a3, T962 fbc3c3d1/5ecbd9d2, T963 e79a5ae5 plus closure. Each passed all five task checks and spec lint; evidence .tmp/mr18cx/*worker-check.json. Independent Claude review and all final batch/golden/integration/release/publication work remain with host; no code push or release prep performed.
