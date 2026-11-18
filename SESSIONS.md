@@ -194,6 +194,7 @@
 | T956 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 4dcab37c97ec | 2026-11-18T03:10Z |
 
 ## log
+- 261118 T979 independent-review correction: preserve close-refill graduate, borrower history and parent-only loan facts with old-loan fallback; task check against 535d0f03 passed (159 files, 1516 tests), spec lint passed. Archived task unchanged; integration handoff retained.
 - 261118 T956 done
 - 261118 T979 done
 - 261118 T955 done
@@ -213,4 +214,3 @@
 - 261117 T942 done
 - 261117 T930 done
 - 261117 T916 recovery planning committed 56be9e10: ARCH r48 and runnable T943; task checks passed; T916 remains todo, original acceptance unchanged; host owns review, claim cleanup and deferred publication
-- 261117 ARCH r48 consumed into T943; T916 original acceptance and measurement cap preserved; T942 base-only freshness update has no recipe impact
