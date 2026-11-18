@@ -156,6 +156,7 @@
 - 261117 suggest T949 CLUB-33: Follow-up from T949's review audit: mediation.ts requestMet reads arrivals only, so a delegated mediation can pursue a request a pending bid already covers and bid for a second player; count open bids' players in requestMet/detectMediations (a small task touching mediation.ts).
 - 261117 suggest CLUB-51 CLUB-53: Game feel after the 80/70/60/50 levels: a third-tier club's country-wide scout now lists mostly top-flight players, who nearly all refuse a lower division's terms (CLUB-53 stage factor). The shortlist could rank by realistic interest (stage, playing time) so a small club's scout finds players who would come.
 - 261117 suggest MATCH-22: Pre-existing knockout bug found during the xf18 gate: tieRule (packages/engine/src/knockout.ts:124) recognises a second leg only by an id ending in ':2', so the first leg of the tie at index 2 (e.g. 1990:cwc:k2:2) plays as a single match and a draw goes to penalties; tie results stay right on aggregate. Fixing it moves simulation results and goldens — its own task.
+- 261118 decided T953: T953 counts submitted NPC bids and actual answers through a passive engine observer. The old move hook cannot distinguish refusals, while inferring them would change the meaning of the data. Keep the observer prerequisite in a separate commit and the harness task script-only.
 
 ## unlanded
 | id | tag | branch | commit | at |
