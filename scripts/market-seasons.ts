@@ -19,6 +19,7 @@
  * plays on the full model, about 27 s a season; used sparingly) with --owner-tier <wealth tier>
  * (default oil). Measurement reads the clubs nobody owns. Wrap long runs in `caffeinate -ims`.
  */
+import assert from 'node:assert/strict';
 import { execFileSync, fork } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -48,6 +49,7 @@ import { measurementIdentity } from './lib/measurement-identity';
 import { fingerprintFiles } from './lib/source-graph';
 import { setTunables } from './lib/market-tunables';
 import { toolMessage } from './lib/tool-messages';
+import { MarketAgeingCareers } from './lib/market-ageing';
 import { transferValues } from './lib/market-values';
 import {
   FRESH_MIN_BURN_IN,
@@ -88,6 +90,7 @@ const option = (key: string, fallback: string) => {
   return index < 0 ? fallback : (args[index + 1] ?? fallback);
 };
 const SELF = fileURLToPath(import.meta.url);
+const snapshotDir = process.env.MARKET_SEASONS_START_DIR ?? START_WORLD_DIR;
 
 /** The defaults with `config` over them (scripts/lib/market-tunables.ts). */
 const setConfig = (config: Record<string, unknown>) => setTunables(config);
@@ -121,6 +124,9 @@ const observed = {
     collector.distress?.push(fact),
   ),
 };
+if (process.env.HAERAM_CALIBRATION_REQUIRE_OBSERVERS === '1') {
+  assert(observed.renewals && observed.distress);
+}
 const ref = (c: { id: string; country: string; tier: number }): ClubRef => ({
   id: c.id,
   country: c.country,
@@ -382,11 +388,11 @@ function startWorld(spec: StartSpec, seed: string, config: Record<string, unknow
     seed,
     year: spec.year,
   };
-  let w = loadStartWorld<World>(START_WORLD_DIR, key);
+  let w = loadStartWorld<World>(snapshotDir, key);
   if (!w) {
     setConfig({});
     w = liveHistory(historyWorld(seed), spec.year);
-    saveStartWorld(START_WORLD_DIR, key, w);
+    saveStartWorld(snapshotDir, key, w);
     console.error(toolMessage('marketSeasons.stored', { seed, year: String(spec.year) }));
   }
   setConfig(config);
@@ -415,8 +421,10 @@ function runOne(plan: Plan, job: RunJob): RunResult {
   const salt = luckSalt(job.luck);
   const burnIn: SeasonStats[] = [],
     seasons: SeasonStats[] = [];
+  const careers = new MarketAgeingCareers();
   const t0 = performance.now();
   for (let n = 0; n < plan.burnIn + plan.seasons; n++) {
+    careers.read(w);
     (n < plan.burnIn ? burnIn : seasons).push(playSeason(w, salt));
     console.error(
       toolMessage('marketSeasons.progress', {
@@ -429,7 +437,16 @@ function runOne(plan: Plan, job: RunJob): RunResult {
     );
   }
   RESULTS_LUCK.salt = '';
-  return { seed: job.seed, luck: job.luck, start: plan.start, burnIn, seasons };
+  careers.read(w);
+  return {
+    seed: job.seed,
+    luck: job.luck,
+    start: plan.start,
+    burnIn,
+    seasons,
+    finalYear: w.year,
+    ageingCareers: careers.summarize(),
+  };
 }
 
 // ---------------------------------------------------------------------------------------------

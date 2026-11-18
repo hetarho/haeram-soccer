@@ -525,6 +525,26 @@ export function seasonStats(input: SeasonInput) {
   );
 
   const countries = [...new Set(input.clubs.map((c) => c.country))].sort();
+  const divisionLevels = Object.fromEntries(
+    countries.map((country) => [
+      country,
+      Object.fromEntries(
+        tiers.flatMap((tier) => {
+          const clubs = input.clubs.filter(
+            (club) => club.country === country && club.tier === tier,
+          );
+          return clubs.length
+            ? [
+                [
+                  tierKey(tier),
+                  { clubs: clubs.length, mean: mean(clubs.map((club) => club.strength)) },
+                ],
+              ]
+            : [];
+        }),
+      ),
+    ]),
+  );
   const books = Object.fromEntries(
     countries.map((country) => {
       const rows = input.books.filter((b) => b.country === country);
@@ -674,6 +694,8 @@ export function seasonStats(input: SeasonInput) {
     tiers: tierRows,
     books,
     upwardFunnel,
+    divisionLevels,
+    lowerClubsAbove85: input.clubs.filter((club) => club.tier > 0 && club.strength > 85).length,
     renewals,
     ageing,
     distress,
@@ -749,6 +771,8 @@ export function mergeSeasons(runs: readonly (readonly object[])[]) {
 }
 
 export interface RunResult {
+  finalYear?: number;
+  ageingCareers?: ReturnType<import('./market-ageing').MarketAgeingCareers['summarize']>;
   seed: string;
   luck: number;
   start: string;
