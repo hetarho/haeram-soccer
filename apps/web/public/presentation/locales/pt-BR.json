@@ -5106,6 +5106,7 @@
     "copy.match_model.04c48f5e27": "Discrepância de registro de correspondência {p0}: {p1}",
     "copy.match.7c4e1d0a52": "Nenhuma partida pode ser disputada no modelo de partida {p0}. Carregue o jogo salvo novamente para passá-lo ao modelo lançado {p1}.",
     "copy.match.35ef500e6b": "{p0} vence na disputa de pênaltis",
+    "mediation.request.arrived": "Um jogador que atende ao pedido chegou, encerrando esta mediação de contratação.",
     "copy.mediation.2508939fdb": "Solicitar {p1} do Diretor {p0}",
     "copy.mediation.8ef75211ff": "Atualmente não há candidatos disponíveis para o pedido ou as negociações já foram iniciadas. Não julgo com base em conflitos financeiros.",
     "copy.mediation.14ea1a66fb": "Solicitamos ao jogador {p1} que reforçasse {p0}.",

@@ -5780,6 +5780,7 @@ export const sourceMessages = {
   'copy.match.7c4e1d0a52':
     '경기 모델 {p0}로는 경기를 치를 수 없습니다. 저장을 다시 불러오면 출시된 모델 {p1}(으)로 옮겨집니다.',
   'copy.match.35ef500e6b': '승부차기 {p0} 승리',
+  'mediation.request.arrived': '요청에 맞는 선수가 실제로 합류해 이번 영입 중재를 마감했어요.',
   'copy.mediation.2508939fdb': '{p0} 감독의 {p1} 요청',
   'copy.mediation.8ef75211ff':
     '현재 요청에 맞는 영입 가능한 후보가 없거나 이미 협상을 진행했어요. 재정적 대립으로 판단하지 않아요.',

@@ -13,7 +13,7 @@ import { freeAgentsOf } from './free-agents';
 import { divisionFor } from './market-prices';
 import { exp, log } from './portable-math';
 import { clubOf, overall } from './player-state';
-import { recruitmentFit } from './recruitment';
+import { recruitmentContext, recruitmentFit, type TransferOffer } from './recruitment';
 import type { AnswerFactor, FactorLine } from './sale-answer';
 import { clubById, startingSquad } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
@@ -220,23 +220,55 @@ export function termsContext(w: World, terms: TermsOffer): TermsContext | undefi
       : { world: w.id, kind: 'offer', playerId: player.id },
   );
   if (!offer) return undefined;
+  return resolvedTermsContext(w, { player, club, offer, step: terms.step });
+}
+
+/** Query-local facts shared by all candidates; no cache survives a world mutation. */
+export function termsSearchContext(w: World) {
+  const entries = new Map<string, ReturnType<typeof europeOf>>(),
+    starters = new Map<string, Set<string>>();
+  return {
+    recruitment: recruitmentContext(w),
+    europe: (id: string) => {
+      if (!entries.has(id)) entries.set(id, europeOf(w, id));
+      return entries.get(id);
+    },
+    starters: (club: Club) => {
+      let ids = starters.get(club.id);
+      if (!ids) starters.set(club.id, (ids = new Set(startingSquad(w, club).map((p) => p.id))));
+      return ids;
+    },
+  };
+}
+
+/** Use the resolved source player (including his club history), and the buyer's quote separately. */
+export function resolvedTermsContext(
+  w: World,
+  {
+    player,
+    club,
+    offer,
+    step,
+  }: { player: Player; club?: Club; offer: TransferOffer; step: number },
+  context = termsSearchContext(w),
+): TermsContext {
   const ours = clubOf(w),
     demand = BigInt(offer.player.wage),
-    step = BigInt(Math.round(terms.step * 10000)),
+    share = BigInt(Math.round(step * 10000)),
     hisDivision = club ? club.tier : Math.round(divisionFor(ours.country, overall(player))),
-    ourEurope = europeOf(w, ours.id);
+    ourEurope = context.europe(ours.id);
   return {
     demand: demand.toString(),
-    offer: ((demand * step) / 10000n).toString(),
+    offer: ((demand * share) / 10000n).toString(),
     divisionsBelow: Math.max(0, ours.tier - hisDivision),
     ourReputation: ours.reputation,
     ...(club ? { hisReputation: club.reputation } : {}),
     ambition: player.personality.ambition,
     age: w.year - player.born,
     ...(ourEurope ? { ourEurope } : {}),
-    hisEurope: !!club && !!europeOf(w, club.id),
-    wouldStart: recruitmentFit(w, offer).willStart,
-    startsNow: !!club && startingSquad(w, club).some((p) => p.id === player.id),
+    hisEurope: !!club && !!context.europe(club.id),
+    wouldStart: recruitmentFit(w, offer, context.recruitment).willStart,
+    startsNow: !!club && context.starters(club).has(player.id),
     freeAgent: !club,
   };
 }
