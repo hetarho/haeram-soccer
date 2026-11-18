@@ -187,6 +187,7 @@
 | T950 | xf18 | gusta-session-self-improve-xf18-607e3688 | 20b3d90dd08a | 2026-11-17T22:07Z |
 
 ## log
+- 261118 fix market: emit outcomes for counted NPC bids for T953 measurement
 - 261118 sketch mr18: owner decisions on xf18 parked items → WORLD r18 LEAGUE r23 PLAYER r20 CLUB r78 ECON r63 OWNER r8 WEB r222, tasks T953–T980, ideation/historical-era-rules
 - 261117 fix architecture: delegated sales panel reads sale constants from the transfer-policy leaf (main CI red at 363ecdbc7, green at 5fbd9bd1c)
 - 261117 T950 done
@@ -206,4 +207,3 @@
 - 261117 fix e2e: promise-deadline loan fixture lowers its bid until the selling club counters (dccee24d, pushed)
 - 261117 gusta-update 0.17.4→0.17.5 landed on main f7a23e83 (ARCH r47, T942 todo)
 - 261117 gusta-create-task ARCH r47 → T942
-- 261117 gusta-create-task ARCH start
