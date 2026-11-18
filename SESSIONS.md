@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T07:36Z | T974 | gusta-session-start-mr18cx-5d3ec005 | 2dc9ed3a4d56 | 9eeb147edbd8727c1a5f52aa |
+| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T07:47Z | - | gusta-session-start-mr18cx-5d3ec005 | 39a55a62 | 9eeb147edbd8727c1a5f52aa |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -214,8 +214,10 @@
 | T971 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | fc6db4a9c86b | 2026-11-18T07:04Z |
 | T972 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 52461276dd4b | 2026-11-18T07:14Z |
 | T973 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | d4129ca7 | 2026-11-18T07:36Z |
+| T974 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 39a55a62 | 2026-11-18T07:47Z |
 
 ## log
+- 261118 T974 done
 - 261118 T973 done
 - 261118 T972 done
 - 261118 T971 done
@@ -235,4 +237,3 @@
 - 261118 fix T957 tests: base caeb52429605; uncovered keeper forces takeover fill; captured founding strengths and bounded class/age/extra bench distribution. Focused 51 tests and all five task-tier checks pass; evidence .tmp/mr18cx/T957-repair-worker-check.json. Archived receipt unchanged.
 - 261118 T960 done
 - 261118 T959 done
-- 261118 T958 done
