@@ -105,6 +105,13 @@ export interface PlaceGroup {
 }
 
 /**
+ * Scratch rows `fitPlaceWeights` reuses from call to call (T983): a Float64Array of more than
+ * 64 bytes is allocated outside V8's heap, which cost more than the fit's own arithmetic when every
+ * call took its own. Only ever read within one call, after that call has written them.
+ */
+let FIT_SCRATCH = new Float64Array(0);
+
+/**
  * One side, period and action class. Proportional fitting preserves each line's unplaced
  * expectation while the per-group normalisation preserves the group's count. Pins (shots and
  * their feeds) are excluded from both matrices, so their already drawn credits stay exact.
@@ -112,24 +119,45 @@ export interface PlaceGroup {
 export function fitPlaceWeights(groups: readonly PlaceGroup[]): number[][] {
   if (groups.length === 0) return [];
   const n = groups[0]!.weights.length;
-  const expected = Array<number>(n).fill(0);
+  const size = n * (groups.length + 3);
+  if (FIT_SCRATCH.length < size)
+    FIT_SCRATCH = new Float64Array(Math.max(size, 2 * FIT_SCRATCH.length));
+  // `expected`, `scale` and `actual`, then each group's `counted` row at `(3 + k) * n`.
+  const expected = FIT_SCRATCH.subarray(0, n).fill(0),
+    scale = FIT_SCRATCH.subarray(n, 2 * n),
+    actual = FIT_SCRATCH.subarray(2 * n, 3 * n);
   for (const g of groups) {
     const sum = g.weights.reduce((a, b) => a + b, 0);
     if (sum > 0) for (let p = 0; p < n; p++) expected[p]! += (g.count * g.weights[p]!) / sum;
   }
-  const scale: number[] = expected.map((e) => (e > 0 ? 1 : 0));
+  for (let p = 0; p < n; p++) scale[p] = expected[p]! > 0 ? 1 : 0;
+  // Each group's `count * placed[p]`, the first product of `(count * placed * scale) / sum`,
+  // computed once rather than in every iteration (T983): the same products in the same order.
+  for (let k = 0; k < groups.length; k++) {
+    const g = groups[k]!,
+      at = (3 + k) * n;
+    for (let p = 0; p < n; p++) FIT_SCRATCH[at + p] = g.count * g.placed[p]!;
+  }
   for (let iteration = 0; iteration < AC.place.iterations; iteration++) {
-    const actual = Array<number>(n).fill(0);
-    for (const g of groups) {
+    actual.fill(0);
+    for (let k = 0; k < groups.length; k++) {
+      const placed = groups[k]!.placed;
       let sum = 0;
-      for (let p = 0; p < n; p++) sum += g.placed[p]! * scale[p]!;
-      if (sum > 0)
-        for (let p = 0; p < n; p++) actual[p]! += (g.count * g.placed[p]! * scale[p]!) / sum;
+      for (let p = 0; p < n; p++) sum += placed[p]! * scale[p]!;
+      if (sum > 0) {
+        const at = (3 + k) * n;
+        for (let p = 0; p < n; p++) actual[p]! += (FIT_SCRATCH[at + p]! * scale[p]!) / sum;
+      }
     }
     // Stop on numerical convergence, not after a small fixed count that leaves a systematic
     // bias in asymmetric classes. The configured iteration count remains the bounded cap.
-    if (actual.every((a, p) => Math.abs(a - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!)))
-      break;
+    let converged = true;
+    for (let p = 0; p < n; p++)
+      if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) {
+        converged = false;
+        break;
+      }
+    if (converged) break;
     for (let p = 0; p < n; p++)
       scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
   }
