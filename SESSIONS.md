@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T04:20Z | T962 | gusta-session-start-mr18cx-5d3ec005 | 6cb3e4a3a1e7 | 9eeb147edbd8727c1a5f52aa |
+| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T04:27Z | - | gusta-session-start-mr18cx-5d3ec005 | fbc3c3d1cba0 | 9eeb147edbd8727c1a5f52aa |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -197,8 +197,10 @@
 | T959 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | a235c2a45562 | 2026-11-18T03:49Z |
 | T960 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 55890bf6e8a2 | 2026-11-18T03:56Z |
 | T961 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | e4787581b0e6 | 2026-11-18T04:20Z |
+| T962 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | fbc3c3d1cba0 | 2026-11-18T04:27Z |
 
 ## log
+- 261118 T962 done
 - 261118 T961 done
 - 261118 fix T979 fallback: base d35ccad7; share recorded parent stint restoration with normal NPC returns, preserve sold borrower row, leave absent facts unknown. Three reproduced failures fixed, focused 64 and affected 1523 tests pass; all five task checks and lint pass. T957 follow-up commit d35ccad7; archived receipts unchanged.
 - 261118 fix T957 tests: base caeb52429605; uncovered keeper forces takeover fill; captured founding strengths and bounded class/age/extra bench distribution. Focused 51 tests and all five task-tier checks pass; evidence .tmp/mr18cx/T957-repair-worker-check.json. Archived receipt unchanged.
@@ -218,4 +220,3 @@
 - 261117 T950 done
 - 261117 T951 done
 - 261117 T948 T949 integrated
-- 261117 T952 done
