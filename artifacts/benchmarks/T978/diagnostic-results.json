@@ -1,0 +1,6480 @@
+{
+  "baseline": {
+    "levels": {
+      "byTier": {
+        "tier0": {
+          "mean": 73.51055555555556,
+          "min": 69.88888888888889,
+          "max": 77.25,
+          "cells": 80
+        },
+        "tier1": {
+          "mean": 62.40727904040404,
+          "min": 57.5,
+          "max": 66.70833333333333,
+          "cells": 80
+        },
+        "tier2": {
+          "mean": 52.95472222222222,
+          "min": 48.22222222222222,
+          "max": 56.583333333333336,
+          "cells": 40
+        },
+        "tier3": {
+          "mean": 44.516666666666666,
+          "min": 41.958333333333336,
+          "max": 46.166666666666664,
+          "cells": 10
+        }
+      },
+      "testedCells": 210,
+      "withinFour": 13,
+      "misses": [
+        [
+          "market-0",
+          1951,
+          "BEL",
+          "tier0",
+          80,
+          71.33333333333333
+        ],
+        [
+          "market-0",
+          1951,
+          "BEL",
+          "tier1",
+          70,
+          58.6
+        ],
+        [
+          "market-0",
+          1951,
+          "ENG",
+          "tier0",
+          80,
+          75.15
+        ],
+        [
+          "market-0",
+          1951,
+          "ENG",
+          "tier1",
+          70,
+          64.625
+        ],
+        [
+          "market-0",
+          1951,
+          "ENG",
+          "tier2",
+          60,
+          55.708333333333336
+        ],
+        [
+          "market-0",
+          1951,
+          "ENG",
+          "tier3",
+          50,
+          45.708333333333336
+        ],
+        [
+          "market-0",
+          1951,
+          "ESP",
+          "tier0",
+          80,
+          74.15
+        ],
+        [
+          "market-0",
+          1951,
+          "ESP",
+          "tier1",
+          70,
+          62.68181818181818
+        ],
+        [
+          "market-0",
+          1951,
+          "FRA",
+          "tier0",
+          80,
+          73.5
+        ],
+        [
+          "market-0",
+          1951,
+          "FRA",
+          "tier1",
+          70,
+          62.111111111111114
+        ],
+        [
+          "market-0",
+          1951,
+          "FRA",
+          "tier2",
+          60,
+          50
+        ],
+        [
+          "market-0",
+          1951,
+          "GER",
+          "tier0",
+          80,
+          74.94444444444444
+        ],
+        [
+          "market-0",
+          1951,
+          "GER",
+          "tier1",
+          70,
+          63.5
+        ],
+        [
+          "market-0",
+          1951,
+          "GER",
+          "tier2",
+          60,
+          51.65
+        ],
+        [
+          "market-0",
+          1951,
+          "ITA",
+          "tier0",
+          80,
+          74.6
+        ],
+        [
+          "market-0",
+          1951,
+          "ITA",
+          "tier1",
+          70,
+          63.5
+        ],
+        [
+          "market-0",
+          1951,
+          "ITA",
+          "tier2",
+          60,
+          51.96666666666667
+        ],
+        [
+          "market-0",
+          1951,
+          "NED",
+          "tier0",
+          80,
+          70.5
+        ],
+        [
+          "market-0",
+          1951,
+          "NED",
+          "tier1",
+          70,
+          58.75
+        ],
+        [
+          "market-0",
+          1951,
+          "POR",
+          "tier0",
+          80,
+          69.88888888888889
+        ],
+        [
+          "market-0",
+          1951,
+          "POR",
+          "tier1",
+          70,
+          57.5
+        ],
+        [
+          "market-0",
+          1952,
+          "BEL",
+          "tier0",
+          80,
+          71.55555555555556
+        ],
+        [
+          "market-0",
+          1952,
+          "BEL",
+          "tier1",
+          70,
+          58.733333333333334
+        ],
+        [
+          "market-0",
+          1952,
+          "ENG",
+          "tier0",
+          80,
+          75.45
+        ],
+        [
+          "market-0",
+          1952,
+          "ENG",
+          "tier1",
+          70,
+          64.375
+        ],
+        [
+          "market-0",
+          1952,
+          "ENG",
+          "tier2",
+          60,
+          55.708333333333336
+        ],
+        [
+          "market-0",
+          1952,
+          "ESP",
+          "tier0",
+          80,
+          73.6
+        ],
+        [
+          "market-0",
+          1952,
+          "ESP",
+          "tier1",
+          70,
+          62.59090909090909
+        ],
+        [
+          "market-0",
+          1952,
+          "FRA",
+          "tier0",
+          80,
+          73.11111111111111
+        ],
+        [
+          "market-0",
+          1952,
+          "FRA",
+          "tier1",
+          70,
+          62.27777777777778
+        ],
+        [
+          "market-0",
+          1952,
+          "FRA",
+          "tier2",
+          60,
+          51.55555555555556
+        ],
+        [
+          "market-0",
+          1952,
+          "GER",
+          "tier0",
+          80,
+          73.27777777777777
+        ],
+        [
+          "market-0",
+          1952,
+          "GER",
+          "tier1",
+          70,
+          63.44444444444444
+        ],
+        [
+          "market-0",
+          1952,
+          "GER",
+          "tier2",
+          60,
+          50.75
+        ],
+        [
+          "market-0",
+          1952,
+          "ITA",
+          "tier0",
+          80,
+          74.5
+        ],
+        [
+          "market-0",
+          1952,
+          "ITA",
+          "tier1",
+          70,
+          63.1
+        ],
+        [
+          "market-0",
+          1952,
+          "ITA",
+          "tier2",
+          60,
+          52.21666666666667
+        ],
+        [
+          "market-0",
+          1952,
+          "NED",
+          "tier0",
+          80,
+          70.55555555555556
+        ],
+        [
+          "market-0",
+          1952,
+          "NED",
+          "tier1",
+          70,
+          60.35
+        ],
+        [
+          "market-0",
+          1952,
+          "POR",
+          "tier0",
+          80,
+          71.72222222222223
+        ],
+        [
+          "market-0",
+          1952,
+          "POR",
+          "tier1",
+          70,
+          58.333333333333336
+        ],
+        [
+          "market-0",
+          1953,
+          "BEL",
+          "tier0",
+          80,
+          71.72222222222223
+        ],
+        [
+          "market-0",
+          1953,
+          "BEL",
+          "tier1",
+          70,
+          60.46666666666667
+        ],
+        [
+          "market-0",
+          1953,
+          "ENG",
+          "tier0",
+          80,
+          75.6
+        ],
+        [
+          "market-0",
+          1953,
+          "ENG",
+          "tier1",
+          70,
+          65.375
+        ],
+        [
+          "market-0",
+          1953,
+          "ENG",
+          "tier2",
+          60,
+          55.125
+        ],
+        [
+          "market-0",
+          1953,
+          "ENG",
+          "tier3",
+          50,
+          45.541666666666664
+        ],
+        [
+          "market-0",
+          1953,
+          "ESP",
+          "tier0",
+          80,
+          74.35
+        ],
+        [
+          "market-0",
+          1953,
+          "ESP",
+          "tier1",
+          70,
+          62.72727272727273
+        ],
+        [
+          "market-0",
+          1953,
+          "FRA",
+          "tier0",
+          80,
+          72.88888888888889
+        ],
+        [
+          "market-0",
+          1953,
+          "FRA",
+          "tier1",
+          70,
+          62.55555555555556
+        ],
+        [
+          "market-0",
+          1953,
+          "FRA",
+          "tier2",
+          60,
+          51.05555555555556
+        ],
+        [
+          "market-0",
+          1953,
+          "GER",
+          "tier0",
+          80,
+          73.61111111111111
+        ],
+        [
+          "market-0",
+          1953,
+          "GER",
+          "tier1",
+          70,
+          63.72222222222222
+        ],
+        [
+          "market-0",
+          1953,
+          "GER",
+          "tier2",
+          60,
+          50.25
+        ],
+        [
+          "market-0",
+          1953,
+          "ITA",
+          "tier0",
+          80,
+          74.9
+        ],
+        [
+          "market-0",
+          1953,
+          "ITA",
+          "tier1",
+          70,
+          62.95
+        ],
+        [
+          "market-0",
+          1953,
+          "ITA",
+          "tier2",
+          60,
+          52.65
+        ],
+        [
+          "market-0",
+          1953,
+          "NED",
+          "tier0",
+          80,
+          71.22222222222223
+        ],
+        [
+          "market-0",
+          1953,
+          "NED",
+          "tier1",
+          70,
+          59.6
+        ],
+        [
+          "market-0",
+          1953,
+          "POR",
+          "tier0",
+          80,
+          72.44444444444444
+        ],
+        [
+          "market-0",
+          1953,
+          "POR",
+          "tier1",
+          70,
+          59.388888888888886
+        ],
+        [
+          "market-0",
+          1954,
+          "BEL",
+          "tier0",
+          80,
+          72.77777777777777
+        ],
+        [
+          "market-0",
+          1954,
+          "BEL",
+          "tier1",
+          70,
+          61.4
+        ],
+        [
+          "market-0",
+          1954,
+          "ENG",
+          "tier2",
+          60,
+          54.333333333333336
+        ],
+        [
+          "market-0",
+          1954,
+          "ENG",
+          "tier3",
+          50,
+          44.208333333333336
+        ],
+        [
+          "market-0",
+          1954,
+          "ESP",
+          "tier0",
+          80,
+          74.95
+        ],
+        [
+          "market-0",
+          1954,
+          "ESP",
+          "tier1",
+          70,
+          61.72727272727273
+        ],
+        [
+          "market-0",
+          1954,
+          "FRA",
+          "tier0",
+          80,
+          73.83333333333333
+        ],
+        [
+          "market-0",
+          1954,
+          "FRA",
+          "tier1",
+          70,
+          62.388888888888886
+        ],
+        [
+          "market-0",
+          1954,
+          "FRA",
+          "tier2",
+          60,
+          52.666666666666664
+        ],
+        [
+          "market-0",
+          1954,
+          "GER",
+          "tier0",
+          80,
+          74.77777777777777
+        ],
+        [
+          "market-0",
+          1954,
+          "GER",
+          "tier1",
+          70,
+          64.61111111111111
+        ],
+        [
+          "market-0",
+          1954,
+          "GER",
+          "tier2",
+          60,
+          51.4
+        ],
+        [
+          "market-0",
+          1954,
+          "ITA",
+          "tier0",
+          80,
+          74.6
+        ],
+        [
+          "market-0",
+          1954,
+          "ITA",
+          "tier1",
+          70,
+          64.45
+        ],
+        [
+          "market-0",
+          1954,
+          "ITA",
+          "tier2",
+          60,
+          53.916666666666664
+        ],
+        [
+          "market-0",
+          1954,
+          "NED",
+          "tier0",
+          80,
+          72.38888888888889
+        ],
+        [
+          "market-0",
+          1954,
+          "NED",
+          "tier1",
+          70,
+          61.05
+        ],
+        [
+          "market-0",
+          1954,
+          "POR",
+          "tier0",
+          80,
+          73.5
+        ],
+        [
+          "market-0",
+          1954,
+          "POR",
+          "tier1",
+          70,
+          59.388888888888886
+        ],
+        [
+          "market-0",
+          1955,
+          "BEL",
+          "tier0",
+          80,
+          73.27777777777777
+        ],
+        [
+          "market-0",
+          1955,
+          "BEL",
+          "tier1",
+          70,
+          62
+        ],
+        [
+          "market-0",
+          1955,
+          "ENG",
+          "tier1",
+          70,
+          65.91666666666667
+        ],
+        [
+          "market-0",
+          1955,
+          "ENG",
+          "tier2",
+          60,
+          55.083333333333336
+        ],
+        [
+          "market-0",
+          1955,
+          "ENG",
+          "tier3",
+          50,
+          44
+        ],
+        [
+          "market-0",
+          1955,
+          "ESP",
+          "tier0",
+          80,
+          75.1
+        ],
+        [
+          "market-0",
+          1955,
+          "ESP",
+          "tier1",
+          70,
+          63.54545454545455
+        ],
+        [
+          "market-0",
+          1955,
+          "FRA",
+          "tier0",
+          80,
+          74.22222222222223
+        ],
+        [
+          "market-0",
+          1955,
+          "FRA",
+          "tier1",
+          70,
+          63.27777777777778
+        ],
+        [
+          "market-0",
+          1955,
+          "FRA",
+          "tier2",
+          60,
+          53.5
+        ],
+        [
+          "market-0",
+          1955,
+          "GER",
+          "tier1",
+          70,
+          64.16666666666667
+        ],
+        [
+          "market-0",
+          1955,
+          "GER",
+          "tier2",
+          60,
+          51.7
+        ],
+        [
+          "market-0",
+          1955,
+          "ITA",
+          "tier0",
+          80,
+          75.05
+        ],
+        [
+          "market-0",
+          1955,
+          "ITA",
+          "tier1",
+          70,
+          65.25
+        ],
+        [
+          "market-0",
+          1955,
+          "ITA",
+          "tier2",
+          60,
+          54.3
+        ],
+        [
+          "market-0",
+          1955,
+          "NED",
+          "tier0",
+          80,
+          72.88888888888889
+        ],
+        [
+          "market-0",
+          1955,
+          "NED",
+          "tier1",
+          70,
+          62.85
+        ],
+        [
+          "market-0",
+          1955,
+          "POR",
+          "tier0",
+          80,
+          73.11111111111111
+        ],
+        [
+          "market-0",
+          1955,
+          "POR",
+          "tier1",
+          70,
+          61.77777777777778
+        ],
+        [
+          "market-1",
+          1951,
+          "BEL",
+          "tier0",
+          80,
+          69.94444444444444
+        ],
+        [
+          "market-1",
+          1951,
+          "BEL",
+          "tier1",
+          70,
+          60
+        ],
+        [
+          "market-1",
+          1951,
+          "ENG",
+          "tier1",
+          70,
+          64.54166666666667
+        ],
+        [
+          "market-1",
+          1951,
+          "ENG",
+          "tier3",
+          50,
+          43.375
+        ],
+        [
+          "market-1",
+          1951,
+          "ESP",
+          "tier0",
+          80,
+          73.2
+        ],
+        [
+          "market-1",
+          1951,
+          "ESP",
+          "tier1",
+          70,
+          63.40909090909091
+        ],
+        [
+          "market-1",
+          1951,
+          "FRA",
+          "tier0",
+          80,
+          73.16666666666667
+        ],
+        [
+          "market-1",
+          1951,
+          "FRA",
+          "tier1",
+          70,
+          61.333333333333336
+        ],
+        [
+          "market-1",
+          1951,
+          "FRA",
+          "tier2",
+          60,
+          48.666666666666664
+        ],
+        [
+          "market-1",
+          1951,
+          "GER",
+          "tier0",
+          80,
+          74.22222222222223
+        ],
+        [
+          "market-1",
+          1951,
+          "GER",
+          "tier1",
+          70,
+          62.666666666666664
+        ],
+        [
+          "market-1",
+          1951,
+          "GER",
+          "tier2",
+          60,
+          55.2
+        ],
+        [
+          "market-1",
+          1951,
+          "ITA",
+          "tier0",
+          80,
+          74.05
+        ],
+        [
+          "market-1",
+          1951,
+          "ITA",
+          "tier1",
+          70,
+          62.2
+        ],
+        [
+          "market-1",
+          1951,
+          "ITA",
+          "tier2",
+          60,
+          52.53333333333333
+        ],
+        [
+          "market-1",
+          1951,
+          "NED",
+          "tier0",
+          80,
+          71.5
+        ],
+        [
+          "market-1",
+          1951,
+          "NED",
+          "tier1",
+          70,
+          58.55
+        ],
+        [
+          "market-1",
+          1951,
+          "POR",
+          "tier0",
+          80,
+          73
+        ],
+        [
+          "market-1",
+          1951,
+          "POR",
+          "tier1",
+          70,
+          57.611111111111114
+        ],
+        [
+          "market-1",
+          1952,
+          "BEL",
+          "tier0",
+          80,
+          70.72222222222223
+        ],
+        [
+          "market-1",
+          1952,
+          "BEL",
+          "tier1",
+          70,
+          61.4
+        ],
+        [
+          "market-1",
+          1952,
+          "ENG",
+          "tier0",
+          80,
+          75.7
+        ],
+        [
+          "market-1",
+          1952,
+          "ENG",
+          "tier1",
+          70,
+          65
+        ],
+        [
+          "market-1",
+          1952,
+          "ENG",
+          "tier2",
+          60,
+          55.541666666666664
+        ],
+        [
+          "market-1",
+          1952,
+          "ENG",
+          "tier3",
+          50,
+          41.958333333333336
+        ],
+        [
+          "market-1",
+          1952,
+          "ESP",
+          "tier0",
+          80,
+          73.25
+        ],
+        [
+          "market-1",
+          1952,
+          "ESP",
+          "tier1",
+          70,
+          62.81818181818182
+        ],
+        [
+          "market-1",
+          1952,
+          "FRA",
+          "tier0",
+          80,
+          73.27777777777777
+        ],
+        [
+          "market-1",
+          1952,
+          "FRA",
+          "tier1",
+          70,
+          61.888888888888886
+        ],
+        [
+          "market-1",
+          1952,
+          "FRA",
+          "tier2",
+          60,
+          48.27777777777778
+        ],
+        [
+          "market-1",
+          1952,
+          "GER",
+          "tier0",
+          80,
+          74.05555555555556
+        ],
+        [
+          "market-1",
+          1952,
+          "GER",
+          "tier1",
+          70,
+          62.666666666666664
+        ],
+        [
+          "market-1",
+          1952,
+          "GER",
+          "tier2",
+          60,
+          54.75
+        ],
+        [
+          "market-1",
+          1952,
+          "ITA",
+          "tier0",
+          80,
+          73.3
+        ],
+        [
+          "market-1",
+          1952,
+          "ITA",
+          "tier1",
+          70,
+          62.3
+        ],
+        [
+          "market-1",
+          1952,
+          "ITA",
+          "tier2",
+          60,
+          52.18333333333333
+        ],
+        [
+          "market-1",
+          1952,
+          "NED",
+          "tier0",
+          80,
+          72
+        ],
+        [
+          "market-1",
+          1952,
+          "NED",
+          "tier1",
+          70,
+          58.9
+        ],
+        [
+          "market-1",
+          1952,
+          "POR",
+          "tier0",
+          80,
+          71.5
+        ],
+        [
+          "market-1",
+          1952,
+          "POR",
+          "tier1",
+          70,
+          59.27777777777778
+        ],
+        [
+          "market-1",
+          1953,
+          "BEL",
+          "tier0",
+          80,
+          70.94444444444444
+        ],
+        [
+          "market-1",
+          1953,
+          "BEL",
+          "tier1",
+          70,
+          62.2
+        ],
+        [
+          "market-1",
+          1953,
+          "ENG",
+          "tier0",
+          80,
+          75.9
+        ],
+        [
+          "market-1",
+          1953,
+          "ENG",
+          "tier1",
+          70,
+          65.33333333333333
+        ],
+        [
+          "market-1",
+          1953,
+          "ENG",
+          "tier2",
+          60,
+          55.541666666666664
+        ],
+        [
+          "market-1",
+          1953,
+          "ENG",
+          "tier3",
+          50,
+          43.166666666666664
+        ],
+        [
+          "market-1",
+          1953,
+          "ESP",
+          "tier0",
+          80,
+          72.4
+        ],
+        [
+          "market-1",
+          1953,
+          "ESP",
+          "tier1",
+          70,
+          63.54545454545455
+        ],
+        [
+          "market-1",
+          1953,
+          "FRA",
+          "tier0",
+          80,
+          73.27777777777777
+        ],
+        [
+          "market-1",
+          1953,
+          "FRA",
+          "tier1",
+          70,
+          62.611111111111114
+        ],
+        [
+          "market-1",
+          1953,
+          "FRA",
+          "tier2",
+          60,
+          48.22222222222222
+        ],
+        [
+          "market-1",
+          1953,
+          "GER",
+          "tier0",
+          80,
+          73.83333333333333
+        ],
+        [
+          "market-1",
+          1953,
+          "GER",
+          "tier1",
+          70,
+          63.611111111111114
+        ],
+        [
+          "market-1",
+          1953,
+          "GER",
+          "tier2",
+          60,
+          53.2
+        ],
+        [
+          "market-1",
+          1953,
+          "ITA",
+          "tier0",
+          80,
+          74.65
+        ],
+        [
+          "market-1",
+          1953,
+          "ITA",
+          "tier1",
+          70,
+          62.8
+        ],
+        [
+          "market-1",
+          1953,
+          "ITA",
+          "tier2",
+          60,
+          52.9
+        ],
+        [
+          "market-1",
+          1953,
+          "NED",
+          "tier0",
+          80,
+          72.38888888888889
+        ],
+        [
+          "market-1",
+          1953,
+          "NED",
+          "tier1",
+          70,
+          60.65
+        ],
+        [
+          "market-1",
+          1953,
+          "POR",
+          "tier0",
+          80,
+          71.88888888888889
+        ],
+        [
+          "market-1",
+          1953,
+          "POR",
+          "tier1",
+          70,
+          59.833333333333336
+        ],
+        [
+          "market-1",
+          1954,
+          "BEL",
+          "tier0",
+          80,
+          71.83333333333333
+        ],
+        [
+          "market-1",
+          1954,
+          "BEL",
+          "tier1",
+          70,
+          63.333333333333336
+        ],
+        [
+          "market-1",
+          1954,
+          "ENG",
+          "tier2",
+          60,
+          55.125
+        ],
+        [
+          "market-1",
+          1954,
+          "ENG",
+          "tier3",
+          50,
+          44.916666666666664
+        ],
+        [
+          "market-1",
+          1954,
+          "ESP",
+          "tier0",
+          80,
+          72.75
+        ],
+        [
+          "market-1",
+          1954,
+          "ESP",
+          "tier1",
+          70,
+          63.5
+        ],
+        [
+          "market-1",
+          1954,
+          "FRA",
+          "tier0",
+          80,
+          74
+        ],
+        [
+          "market-1",
+          1954,
+          "FRA",
+          "tier1",
+          70,
+          63.5
+        ],
+        [
+          "market-1",
+          1954,
+          "FRA",
+          "tier2",
+          60,
+          48.55555555555556
+        ],
+        [
+          "market-1",
+          1954,
+          "GER",
+          "tier0",
+          80,
+          74.22222222222223
+        ],
+        [
+          "market-1",
+          1954,
+          "GER",
+          "tier1",
+          70,
+          63.166666666666664
+        ],
+        [
+          "market-1",
+          1954,
+          "GER",
+          "tier2",
+          60,
+          55.25
+        ],
+        [
+          "market-1",
+          1954,
+          "ITA",
+          "tier0",
+          80,
+          74.9
+        ],
+        [
+          "market-1",
+          1954,
+          "ITA",
+          "tier1",
+          70,
+          64.35
+        ],
+        [
+          "market-1",
+          1954,
+          "ITA",
+          "tier2",
+          60,
+          54.016666666666666
+        ],
+        [
+          "market-1",
+          1954,
+          "NED",
+          "tier0",
+          80,
+          74.11111111111111
+        ],
+        [
+          "market-1",
+          1954,
+          "NED",
+          "tier1",
+          70,
+          61.25
+        ],
+        [
+          "market-1",
+          1954,
+          "POR",
+          "tier0",
+          80,
+          72.27777777777777
+        ],
+        [
+          "market-1",
+          1954,
+          "POR",
+          "tier1",
+          70,
+          59.94444444444444
+        ],
+        [
+          "market-1",
+          1955,
+          "BEL",
+          "tier0",
+          80,
+          72.05555555555556
+        ],
+        [
+          "market-1",
+          1955,
+          "BEL",
+          "tier1",
+          70,
+          62.93333333333333
+        ],
+        [
+          "market-1",
+          1955,
+          "ESP",
+          "tier0",
+          80,
+          73.3
+        ],
+        [
+          "market-1",
+          1955,
+          "ESP",
+          "tier1",
+          70,
+          63.90909090909091
+        ],
+        [
+          "market-1",
+          1955,
+          "FRA",
+          "tier0",
+          80,
+          73.88888888888889
+        ],
+        [
+          "market-1",
+          1955,
+          "FRA",
+          "tier1",
+          70,
+          63.22222222222222
+        ],
+        [
+          "market-1",
+          1955,
+          "FRA",
+          "tier2",
+          60,
+          50.388888888888886
+        ],
+        [
+          "market-1",
+          1955,
+          "GER",
+          "tier0",
+          80,
+          74.22222222222223
+        ],
+        [
+          "market-1",
+          1955,
+          "GER",
+          "tier1",
+          70,
+          64
+        ],
+        [
+          "market-1",
+          1955,
+          "GER",
+          "tier2",
+          60,
+          55
+        ],
+        [
+          "market-1",
+          1955,
+          "ITA",
+          "tier0",
+          80,
+          75.15
+        ],
+        [
+          "market-1",
+          1955,
+          "ITA",
+          "tier1",
+          70,
+          65.45
+        ],
+        [
+          "market-1",
+          1955,
+          "ITA",
+          "tier2",
+          60,
+          54.55
+        ],
+        [
+          "market-1",
+          1955,
+          "NED",
+          "tier0",
+          80,
+          73.44444444444444
+        ],
+        [
+          "market-1",
+          1955,
+          "NED",
+          "tier1",
+          70,
+          62.65
+        ],
+        [
+          "market-1",
+          1955,
+          "POR",
+          "tier0",
+          80,
+          73.55555555555556
+        ],
+        [
+          "market-1",
+          1955,
+          "POR",
+          "tier1",
+          70,
+          61.833333333333336
+        ]
+      ],
+      "reversals": [],
+      "lowerClubsAbove85PerOpening": 0
+    },
+    "moves": {
+      "byDivision": {
+        "BEL:tier1": {
+          "tracked": 30,
+          "movedUp": 1,
+          "bids": 1,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 1,
+          "shareMovedUp": 0.03333333333333333
+        },
+        "ENG:tier1": {
+          "tracked": 30,
+          "movedUp": 0,
+          "bids": 0,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 0,
+          "shareMovedUp": 0.0
+        },
+        "ENG:tier2": {
+          "tracked": 30,
+          "movedUp": 5,
+          "bids": 5,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 5,
+          "shareMovedUp": 0.16666666666666666
+        },
+        "ENG:tier3": {
+          "tracked": 30,
+          "movedUp": 6,
+          "bids": 6,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 6,
+          "shareMovedUp": 0.2
+        },
+        "ESP:tier1": {
+          "tracked": 30,
+          "movedUp": 2,
+          "bids": 2,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 2,
+          "shareMovedUp": 0.06666666666666667
+        },
+        "FRA:tier1": {
+          "tracked": 30,
+          "movedUp": 3,
+          "bids": 5,
+          "sellerRefused": 0,
+          "playerRefused": 2,
+          "buyerRefused": 0,
+          "completed": 3,
+          "shareMovedUp": 0.1
+        },
+        "FRA:tier2": {
+          "tracked": 30,
+          "movedUp": 5,
+          "bids": 5,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 5,
+          "shareMovedUp": 0.16666666666666666
+        },
+        "GER:tier1": {
+          "tracked": 30,
+          "movedUp": 0,
+          "bids": 0,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 0,
+          "shareMovedUp": 0.0
+        },
+        "GER:tier2": {
+          "tracked": 30,
+          "movedUp": 10,
+          "bids": 10,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 10,
+          "shareMovedUp": 0.3333333333333333
+        },
+        "ITA:tier1": {
+          "tracked": 30,
+          "movedUp": 3,
+          "bids": 3,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 3,
+          "shareMovedUp": 0.1
+        },
+        "ITA:tier2": {
+          "tracked": 30,
+          "movedUp": 5,
+          "bids": 5,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 5,
+          "shareMovedUp": 0.16666666666666666
+        },
+        "NED:tier1": {
+          "tracked": 30,
+          "movedUp": 1,
+          "bids": 1,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 1,
+          "shareMovedUp": 0.03333333333333333
+        },
+        "POR:tier1": {
+          "tracked": 30,
+          "movedUp": 2,
+          "bids": 2,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 2,
+          "shareMovedUp": 0.06666666666666667
+        }
+      },
+      "byYear": {
+        "1951": {
+          "tracked": 78,
+          "movedUp": 4,
+          "bids": 4,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 4,
+          "share": 0.05128205128205128,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        },
+        "1952": {
+          "tracked": 78,
+          "movedUp": 5,
+          "bids": 6,
+          "sellerRefused": 0,
+          "playerRefused": 1,
+          "buyerRefused": 0,
+          "completed": 5,
+          "share": 0.0641025641025641,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        },
+        "1953": {
+          "tracked": 78,
+          "movedUp": 12,
+          "bids": 12,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 12,
+          "share": 0.15384615384615385,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        },
+        "1954": {
+          "tracked": 78,
+          "movedUp": 14,
+          "bids": 15,
+          "sellerRefused": 0,
+          "playerRefused": 1,
+          "buyerRefused": 0,
+          "completed": 14,
+          "share": 0.1794871794871795,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        },
+        "1955": {
+          "tracked": 78,
+          "movedUp": 8,
+          "bids": 8,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 8,
+          "share": 0.10256410256410256,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        }
+      },
+      "share": 0.11025641025641025
+    },
+    "books": {
+      "books": {
+        "top": {
+          "wagesToIncome": 0.8635529236515037,
+          "costsToIncome": 0.32777646741626676,
+          "operatingResultToIncome": -0.18867503294291582,
+          "feesReceivedToIncome": 0.0033192788111169745,
+          "netFeesToIncome": 0.0020359325750659947,
+          "cashToIncome": 0.0,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.83125,
+          "clubSeasons": 480,
+          "wagesInside": false
+        },
+        "middle": {
+          "wagesToIncome": 0.7282170317176031,
+          "costsToIncome": 0.3316348189865185,
+          "operatingResultToIncome": -0.05362215411793277,
+          "feesReceivedToIncome": 0.000811741017480561,
+          "netFeesToIncome": 0.0,
+          "cashToIncome": 0.038508104319979655,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.6313725490196078,
+          "clubSeasons": 510,
+          "wagesInside": true,
+          "operatingLossInside": true,
+          "feesInside": false
+        },
+        "bottom": {
+          "wagesToIncome": 0.605596741046266,
+          "costsToIncome": 0.3252603093799282,
+          "operatingResultToIncome": 0.07460126347549237,
+          "feesReceivedToIncome": 0.0,
+          "netFeesToIncome": 0.0,
+          "cashToIncome": 0.1770389290978004,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.3686274509803922,
+          "clubSeasons": 510,
+          "wagesInside": true,
+          "operatingLossInside": false,
+          "feesInside": false
+        },
+        "tier2": {
+          "wagesToIncome": 0.6420227029833153,
+          "costsToIncome": 0.33000436646305076,
+          "operatingResultToIncome": 0.03659595139903409,
+          "feesReceivedToIncome": 0.054398417280901334,
+          "netFeesToIncome": 0.0,
+          "cashToIncome": 0.11260440768852478,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.4393548387096774,
+          "clubSeasons": 1550,
+          "wagesInside": false,
+          "operatingLossInside": false,
+          "feesInside": false
+        },
+        "tier3": {
+          "wagesToIncome": 0.5998955674697347,
+          "costsToIncome": 0.3297130760982651,
+          "operatingResultToIncome": 0.07426776433419541,
+          "feesReceivedToIncome": 0.043772676760353346,
+          "netFeesToIncome": 0.00022722935090838174,
+          "cashToIncome": 0.1722662751721671,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.3844262295081967,
+          "clubSeasons": 1220,
+          "wagesInside": false,
+          "operatingLossInside": false,
+          "feesInside": false
+        },
+        "tier4": {
+          "wagesToIncome": 0.5310845463496832,
+          "costsToIncome": 0.33180902046439137,
+          "operatingResultToIncome": 0.17578180280394656,
+          "feesReceivedToIncome": 0.01921189045998273,
+          "netFeesToIncome": 0.001097849427204236,
+          "cashToIncome": 0.31225551349468494,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.3375,
+          "clubSeasons": 240,
+          "wagesInside": false,
+          "operatingLossInside": false,
+          "feesInside": false
+        }
+      },
+      "byCountry": {
+        "BEL": {
+          "top": {
+            "wagesToIncome": 0.9850390852197253,
+            "costsToIncome": 0.3279765645788446,
+            "operatingResultToIncome": -0.3152206199183343,
+            "feesReceivedToIncome": 0.0017368661391615786,
+            "netFeesToIncome": 0.0009304571008091475,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8666666666666667,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7171061184366834,
+            "costsToIncome": 0.3382401332692351,
+            "operatingResultToIncome": -0.0449785339652329,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.028329069743313697,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.65,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6711263077159773,
+            "costsToIncome": 0.3252603093799282,
+            "operatingResultToIncome": 0.030339050193095997,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.05192488979663334,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4666666666666667,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6434558448712933,
+            "costsToIncome": 0.33248557082347574,
+            "operatingResultToIncome": 0.028323607946386792,
+            "feesReceivedToIncome": 0.06339716889098618,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.04341424752067565,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4666666666666667,
+            "clubSeasons": 150,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "ENG": {
+          "top": {
+            "wagesToIncome": 0.6625342669990215,
+            "costsToIncome": 0.319216912509139,
+            "operatingResultToIncome": 0.0029628927072688554,
+            "feesReceivedToIncome": 0.03301327886933192,
+            "netFeesToIncome": 0.003161536976528753,
+            "cashToIncome": 0.30107977127393304,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5666666666666667,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.635811624959788,
+            "costsToIncome": 0.33174241944276217,
+            "operatingResultToIncome": 0.04288217085920881,
+            "feesReceivedToIncome": 0.002312660294200222,
+            "netFeesToIncome": 0.0012634193154754422,
+            "cashToIncome": 0.2307604888902302,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5142857142857142,
+            "clubSeasons": 70,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5504669538432725,
+            "costsToIncome": 0.32550722718094827,
+            "operatingResultToIncome": 0.15477291376707256,
+            "feesReceivedToIncome": 0.012846119441281369,
+            "netFeesToIncome": 0.006246135300430197,
+            "cashToIncome": 0.5484177877121559,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.2,
+            "clubSeasons": 70,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.647939292472357,
+            "costsToIncome": 0.3278846859199358,
+            "operatingResultToIncome": 0.02715765842902307,
+            "feesReceivedToIncome": 0.051163297455084314,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.16574524331203308,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3958333333333333,
+            "clubSeasons": 240,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6014630294967771,
+            "costsToIncome": 0.3261231604502771,
+            "operatingResultToIncome": 0.06535071417253685,
+            "feesReceivedToIncome": 0.036593684092791526,
+            "netFeesToIncome": 0.004786980701373605,
+            "cashToIncome": 0.30555088863460844,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3958333333333333,
+            "clubSeasons": 240,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.5310845463496832,
+            "costsToIncome": 0.33180902046439137,
+            "operatingResultToIncome": 0.17578180280394656,
+            "feesReceivedToIncome": 0.01921189045998273,
+            "netFeesToIncome": 0.001097849427204236,
+            "cashToIncome": 0.31225551349468494,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3375,
+            "clubSeasons": 240,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "ESP": {
+          "top": {
+            "wagesToIncome": 0.8170591975223853,
+            "costsToIncome": 0.3308250431197046,
+            "operatingResultToIncome": -0.15520174480260945,
+            "feesReceivedToIncome": 0.004282215606479329,
+            "netFeesToIncome": 0.003598847026375096,
+            "cashToIncome": 0.004871567004120275,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8333333333333334,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7321767093578728,
+            "costsToIncome": 0.3317115933003975,
+            "operatingResultToIncome": -0.04708645144922756,
+            "feesReceivedToIncome": 0.0009401101960682838,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.06425225230441373,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5857142857142857,
+            "clubSeasons": 70,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5975792703179781,
+            "costsToIncome": 0.32500289760079726,
+            "operatingResultToIncome": 0.06971355565597123,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.17399167801911464,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3142857142857143,
+            "clubSeasons": 70,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.685235447295496,
+            "costsToIncome": 0.32985210889903416,
+            "operatingResultToIncome": 0.0012822911759091619,
+            "feesReceivedToIncome": 0.07005791134844404,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.0817864036603177,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5181818181818182,
+            "clubSeasons": 220,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "FRA": {
+          "top": {
+            "wagesToIncome": 0.9560355588570801,
+            "costsToIncome": 0.32717915858485525,
+            "operatingResultToIncome": -0.2809598374798922,
+            "feesReceivedToIncome": 0.004393192871934749,
+            "netFeesToIncome": 0.0016536987277080883,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8333333333333334,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7562116679116161,
+            "costsToIncome": 0.328144509095768,
+            "operatingResultToIncome": -0.08285991894865101,
+            "feesReceivedToIncome": 0.0006374568801638255,
+            "netFeesToIncome": 0.00023084898864446504,
+            "cashToIncome": 0.004576202370001362,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.6333333333333333,
+            "clubSeasons": 60,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6045399915207805,
+            "costsToIncome": 0.3300244174463214,
+            "operatingResultToIncome": 0.05205570415608851,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.17126574453929383,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.45,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6837015605798675,
+            "costsToIncome": 0.3310751256023164,
+            "operatingResultToIncome": -0.0018903021277276496,
+            "feesReceivedToIncome": 0.02644168279355083,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.12623426145702574,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4777777777777778,
+            "clubSeasons": 180,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.5276957244783436,
+            "costsToIncome": 0.33444770599160556,
+            "operatingResultToIncome": 0.13167772662144261,
+            "feesReceivedToIncome": 0.03832432939703889,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.04987455596350395,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3888888888888889,
+            "clubSeasons": 180,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "GER": {
+          "top": {
+            "wagesToIncome": 0.8094151550473134,
+            "costsToIncome": 0.33050575507549285,
+            "operatingResultToIncome": -0.14207070838396724,
+            "feesReceivedToIncome": 0.0029938264238149655,
+            "netFeesToIncome": 0.0013917692345048528,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8833333333333333,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7311257489555051,
+            "costsToIncome": 0.33033735995457947,
+            "operatingResultToIncome": -0.056370491211891076,
+            "feesReceivedToIncome": 0.017722564037701144,
+            "netFeesToIncome": 0.0003362084973486946,
+            "cashToIncome": 0.09176230712197819,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.6166666666666667,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.598899395435671,
+            "costsToIncome": 0.31862154795896097,
+            "operatingResultToIncome": 0.08229211511323653,
+            "feesReceivedToIncome": 0.00013898648097029572,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.20428769730187304,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.36666666666666664,
+            "clubSeasons": 60,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6610432542339806,
+            "costsToIncome": 0.3222099602875099,
+            "operatingResultToIncome": 0.03659595139903409,
+            "feesReceivedToIncome": 0.04379311934056633,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.10826383798488631,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4222222222222222,
+            "clubSeasons": 180,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.5437656284221035,
+            "costsToIncome": 0.33250194450184434,
+            "operatingResultToIncome": 0.1405946886056412,
+            "feesReceivedToIncome": 0.04537356132218347,
+            "netFeesToIncome": -0.002801189270374118,
+            "cashToIncome": 0.158100581232789,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.345,
+            "clubSeasons": 200,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "ITA": {
+          "top": {
+            "wagesToIncome": 0.8111502734989436,
+            "costsToIncome": 0.32748402975079727,
+            "operatingResultToIncome": -0.15042591580241893,
+            "feesReceivedToIncome": 0.0030833487409783217,
+            "netFeesToIncome": 0.0026741288353121315,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8333333333333334,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7159102272697455,
+            "costsToIncome": 0.333690968439318,
+            "operatingResultToIncome": -0.05429344021136967,
+            "feesReceivedToIncome": 0.0028415731935189023,
+            "netFeesToIncome": 0.00032120137081244717,
+            "cashToIncome": 0.03275239689432449,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.7,
+            "clubSeasons": 70,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6108073823497868,
+            "costsToIncome": 0.32798084628331026,
+            "operatingResultToIncome": 0.0798905514454476,
+            "feesReceivedToIncome": 0.0004489526569843694,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.1180955779437255,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4,
+            "clubSeasons": 70,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6420045084017871,
+            "costsToIncome": 0.32236816299009,
+            "operatingResultToIncome": 0.03576179164249288,
+            "feesReceivedToIncome": 0.04799393131245642,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.15955395534539255,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.455,
+            "clubSeasons": 200,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6271749427825982,
+            "costsToIncome": 0.33473440780286146,
+            "operatingResultToIncome": 0.0477114995748317,
+            "feesReceivedToIncome": 0.05084449854999561,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.24353820579272012,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.39166666666666666,
+            "clubSeasons": 600,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "NED": {
+          "top": {
+            "wagesToIncome": 0.8709445866841016,
+            "costsToIncome": 0.32898505184481197,
+            "operatingResultToIncome": -0.19060060354000052,
+            "feesReceivedToIncome": 0.0030493951061824915,
+            "netFeesToIncome": 0.0015355927324998278,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.9166666666666666,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7396634345019725,
+            "costsToIncome": 0.332503365362319,
+            "operatingResultToIncome": -0.06199851517066951,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.026020444605849805,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.6333333333333333,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5818819569918009,
+            "costsToIncome": 0.3161875376210953,
+            "operatingResultToIncome": 0.08917912612835135,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.14563527811300953,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.31666666666666665,
+            "clubSeasons": 60,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6230432017580103,
+            "costsToIncome": 0.337527639816933,
+            "operatingResultToIncome": 0.07917015704771327,
+            "feesReceivedToIncome": 0.07224194424502153,
+            "netFeesToIncome": -0.001014919702951727,
+            "cashToIncome": 0.17800669760721252,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.39,
+            "clubSeasons": 200,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "POR": {
+          "top": {
+            "wagesToIncome": 0.907731851063756,
+            "costsToIncome": 0.3324871373518794,
+            "operatingResultToIncome": -0.24183315873807426,
+            "feesReceivedToIncome": 0.004344291051748334,
+            "netFeesToIncome": 0.002916637817338975,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.9166666666666666,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.8180913637409915,
+            "costsToIncome": 0.3262494853846146,
+            "operatingResultToIncome": -0.10958712179161607,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.00016879661156710504,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.7333333333333333,
+            "clubSeasons": 60,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.642347955428853,
+            "costsToIncome": 0.3343328746432087,
+            "operatingResultToIncome": 0.013778472852188995,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.079518550640513,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4666666666666667,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6176145701286714,
+            "costsToIncome": 0.33567833561484395,
+            "operatingResultToIncome": 0.074616485220861,
+            "feesReceivedToIncome": 0.07327372244391078,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.1765618903756575,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.39444444444444443,
+            "clubSeasons": 180,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        }
+      },
+      "byYear": {
+        "1951": {
+          "top": {
+            "wagesToIncome": 0.9965637489658922,
+            "costsToIncome": 0.31533964119992075,
+            "operatingResultToIncome": -0.3228416226543883,
+            "feesReceivedToIncome": 0.0021920988020169524,
+            "netFeesToIncome": 0.0016891286284464679,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.9166666666666666,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7615442320244418,
+            "costsToIncome": 0.3201676123993226,
+            "operatingResultToIncome": -0.06933816995924111,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.7352941176470589,
+            "clubSeasons": 102,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6765866646805215,
+            "costsToIncome": 0.3202457955685378,
+            "operatingResultToIncome": 0.03583240259206068,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.02960971903092291,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4803921568627451,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6911468499933242,
+            "costsToIncome": 0.32054149511539465,
+            "operatingResultToIncome": -0.007726160650795949,
+            "feesReceivedToIncome": 0.024358242409228674,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.04161053256395829,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5096774193548387,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6561139067007598,
+            "costsToIncome": 0.3197066968665698,
+            "operatingResultToIncome": 0.026528577811661777,
+            "feesReceivedToIncome": 0.01966875891652447,
+            "netFeesToIncome": 0.0016869113592498193,
+            "cashToIncome": 0.05746802879542423,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4139344262295082,
+            "clubSeasons": 244,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.6306433842536663,
+            "costsToIncome": 0.3131516276661489,
+            "operatingResultToIncome": 0.07033353408516207,
+            "feesReceivedToIncome": 0.009059901958655019,
+            "netFeesToIncome": 0.0007422288628188859,
+            "cashToIncome": 0.2048130849680208,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4375,
+            "clubSeasons": 48,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "1952": {
+          "top": {
+            "wagesToIncome": 0.8811443449253085,
+            "costsToIncome": 0.31614836142541186,
+            "operatingResultToIncome": -0.2004932466279098,
+            "feesReceivedToIncome": 0.002726221696491535,
+            "netFeesToIncome": 0.0023404302051718597,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8125,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7494048322347043,
+            "costsToIncome": 0.32191340237907307,
+            "operatingResultToIncome": -0.08014114604393469,
+            "feesReceivedToIncome": 0.0009087792867166915,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.008393035164248002,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.7352941176470589,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6089252861926462,
+            "costsToIncome": 0.31095346239250143,
+            "operatingResultToIncome": 0.08185056006034672,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.11028275915922114,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.38235294117647056,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.655924679897304,
+            "costsToIncome": 0.31675599341225846,
+            "operatingResultToIncome": 0.032966809897565376,
+            "feesReceivedToIncome": 0.03884863488251501,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.08134013360554376,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.43870967741935485,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6586241503869852,
+            "costsToIncome": 0.31723276294776503,
+            "operatingResultToIncome": 0.03309847343903535,
+            "feesReceivedToIncome": 0.02842109329167243,
+            "netFeesToIncome": 0.00122018545087365,
+            "cashToIncome": 0.12961514193825313,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4344262295081967,
+            "clubSeasons": 244,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.45358376220660823,
+            "costsToIncome": 0.3199491939418384,
+            "operatingResultToIncome": 0.2467018455512045,
+            "feesReceivedToIncome": 0.0214467433870903,
+            "netFeesToIncome": 0.007044787190061522,
+            "cashToIncome": 0.21675185671582162,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3958333333333333,
+            "clubSeasons": 48,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "1953": {
+          "top": {
+            "wagesToIncome": 0.8406916270613684,
+            "costsToIncome": 0.33304295983827753,
+            "operatingResultToIncome": -0.19267844528111816,
+            "feesReceivedToIncome": 0.004048450458146305,
+            "netFeesToIncome": 0.0015067703504641184,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8541666666666666,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.6976856700175562,
+            "costsToIncome": 0.33473441123555037,
+            "operatingResultToIncome": -0.033391827956120335,
+            "feesReceivedToIncome": 0.0021080725298607,
+            "netFeesToIncome": 0.00023084898864446504,
+            "cashToIncome": 0.05064305812357802,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5490196078431373,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5969441502444078,
+            "costsToIncome": 0.3353191358202259,
+            "operatingResultToIncome": 0.05648761420525558,
+            "feesReceivedToIncome": 0.0008847341434998719,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.12470974334894488,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4117647058823529,
+            "clubSeasons": 102,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6328091221648592,
+            "costsToIncome": 0.33918298580988665,
+            "operatingResultToIncome": 0.041477804845527586,
+            "feesReceivedToIncome": 0.061401304591376056,
+            "netFeesToIncome": -0.007189016086751432,
+            "cashToIncome": 0.12508975640277026,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.43548387096774194,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.5931849366598365,
+            "costsToIncome": 0.33907437383742167,
+            "operatingResultToIncome": 0.07426776433419541,
+            "feesReceivedToIncome": 0.05093502877756308,
+            "netFeesToIncome": 0.0010058511834794325,
+            "cashToIncome": 0.2084709916280948,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.36475409836065575,
+            "clubSeasons": 244,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.3872730417612165,
+            "costsToIncome": 0.33895102381012865,
+            "operatingResultToIncome": 0.2904919463270011,
+            "feesReceivedToIncome": 0.022301830746411754,
+            "netFeesToIncome": -0.0004006537044950226,
+            "cashToIncome": 0.3613054935406364,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3125,
+            "clubSeasons": 48,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "1954": {
+          "top": {
+            "wagesToIncome": 0.7972623842663868,
+            "costsToIncome": 0.33752781144972777,
+            "operatingResultToIncome": -0.13455874372254117,
+            "feesReceivedToIncome": 0.00464916949038182,
+            "netFeesToIncome": 0.0026055889957291114,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8229166666666666,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7016700442811825,
+            "costsToIncome": 0.33964873498250964,
+            "operatingResultToIncome": -0.047099432251920426,
+            "feesReceivedToIncome": 0.002803807108742521,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.07665864869341592,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5882352941176471,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5892289161963113,
+            "costsToIncome": 0.34433422705963224,
+            "operatingResultToIncome": 0.09139665983641013,
+            "feesReceivedToIncome": 0.001723962943867293,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.2806970604129645,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.29411764705882354,
+            "clubSeasons": 102,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6333511366428177,
+            "costsToIncome": 0.3425200164363549,
+            "operatingResultToIncome": 0.04223483650316878,
+            "feesReceivedToIncome": 0.058185458611437174,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.1581249685463319,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.43870967741935485,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.589713966763797,
+            "costsToIncome": 0.34231147952854935,
+            "operatingResultToIncome": 0.10105181233710807,
+            "feesReceivedToIncome": 0.04624660674414714,
+            "netFeesToIncome": -0.0038024975101584317,
+            "cashToIncome": 0.3253089763084782,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3975409836065574,
+            "clubSeasons": 244,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.5310845463496832,
+            "costsToIncome": 0.3430245374479514,
+            "operatingResultToIncome": 0.1631463651258085,
+            "feesReceivedToIncome": 0.02217323902387389,
+            "netFeesToIncome": -0.0013678514002104386,
+            "cashToIncome": 0.39601943780863125,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3125,
+            "clubSeasons": 48,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "1955": {
+          "top": {
+            "wagesToIncome": 0.7537499721561591,
+            "costsToIncome": 0.3281136187485263,
+            "operatingResultToIncome": -0.07658522234321705,
+            "feesReceivedToIncome": 0.0035782943516079278,
+            "netFeesToIncome": 0.001898443393137331,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.75,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7015243660583224,
+            "costsToIncome": 0.3347694971324739,
+            "operatingResultToIncome": -0.03523109936030497,
+            "feesReceivedToIncome": 0.001390103999940276,
+            "netFeesToIncome": 0.0001845946533475735,
+            "cashToIncome": 0.09138156767149688,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5490196078431373,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5607670610850773,
+            "costsToIncome": 0.33393291608475806,
+            "operatingResultToIncome": 0.10470434670833756,
+            "feesReceivedToIncome": 0.0008463921154124318,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.30178480605192004,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.27450980392156865,
+            "clubSeasons": 102,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.5852849133997378,
+            "costsToIncome": 0.33478710900907616,
+            "operatingResultToIncome": 0.09249100946319033,
+            "feesReceivedToIncome": 0.07726234062444914,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.2601600836791046,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3741935483870968,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.47823026145936676,
+            "costsToIncome": 0.3343965540004943,
+            "operatingResultToIncome": 0.2062307932167699,
+            "feesReceivedToIncome": 0.06400260153559872,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.3904274314693477,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3114754098360656,
+            "clubSeasons": 244,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.19388623731065446,
+            "costsToIncome": 0.33180902046439137,
+            "operatingResultToIncome": 0.46552685791035825,
+            "feesReceivedToIncome": 0.02067040934728253,
+            "netFeesToIncome": 0.0018060878664640336,
+            "cashToIncome": 0.5765154515859249,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.22916666666666666,
+            "clubSeasons": 48,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        }
+      },
+      "wageBandError": 0.05675835114146174,
+      "distressEntries": {
+        "BEL": {
+          "stage1": 12,
+          "stage2": 9,
+          "stage3": 4
+        },
+        "ENG": {
+          "stage1": 24,
+          "stage2": 16,
+          "stage3": 22
+        },
+        "ESP": {
+          "stage1": 9,
+          "stage2": 4,
+          "stage3": 2
+        },
+        "FRA": {
+          "stage1": 24,
+          "stage2": 13,
+          "stage3": 15
+        },
+        "GER": {
+          "stage1": 23,
+          "stage2": 13,
+          "stage3": 8
+        },
+        "ITA": {
+          "stage1": 30,
+          "stage2": 18,
+          "stage3": 22
+        },
+        "NED": {
+          "stage1": 15,
+          "stage2": 5,
+          "stage3": 5
+        },
+        "POR": {
+          "stage1": 11,
+          "stage2": 3,
+          "stage3": 4
+        }
+      },
+      "stage3PerCountryDecade": {
+        "BEL": 4.0,
+        "ENG": 22.0,
+        "ESP": 2.0,
+        "FRA": 15.0,
+        "GER": 8.0,
+        "ITA": 22.0,
+        "NED": 5.0,
+        "POR": 4.0
+      },
+      "stage3Inside": {
+        "BEL": false,
+        "ENG": false,
+        "ESP": true,
+        "FRA": false,
+        "GER": false,
+        "ITA": false,
+        "NED": false,
+        "POR": false
+      },
+      "pointsDeducted": {
+        "BEL": 40,
+        "ENG": 220,
+        "ESP": 20,
+        "FRA": 150,
+        "GER": 80,
+        "ITA": 220,
+        "NED": 50,
+        "POR": 40
+      },
+      "transferValues": {
+        "1951": {
+          "worlds": 2,
+          "players": 1052,
+          "dearestToRecord": 1.7851107487922706,
+          "meanToPublishedFee": null
+        },
+        "1952": {
+          "worlds": 2,
+          "players": 1047,
+          "dearestToRecord": 2.2817781400966184,
+          "meanToPublishedFee": null
+        },
+        "1953": {
+          "worlds": 2,
+          "players": 1054,
+          "dearestToRecord": 2.0600681763285023,
+          "meanToPublishedFee": null
+        },
+        "1954": {
+          "worlds": 2,
+          "players": 1061,
+          "dearestToRecord": 2.4597713768115943,
+          "meanToPublishedFee": null
+        },
+        "1955": {
+          "worlds": 2,
+          "players": 1039,
+          "dearestToRecord": 2.971972023809524,
+          "meanToPublishedFee": null
+        }
+      }
+    }
+  },
+  "refillSix": {
+    "levels": {
+      "byTier": {
+        "tier0": {
+          "mean": 73.54625,
+          "min": 69.88888888888889,
+          "max": 77.3,
+          "cells": 80
+        },
+        "tier1": {
+          "mean": 62.47418876262626,
+          "min": 57.5,
+          "max": 67.08333333333333,
+          "cells": 80
+        },
+        "tier2": {
+          "mean": 53.07513888888889,
+          "min": 48.5,
+          "max": 56.416666666666664,
+          "cells": 40
+        },
+        "tier3": {
+          "mean": 44.52916666666667,
+          "min": 42.041666666666664,
+          "max": 46.166666666666664,
+          "cells": 10
+        }
+      },
+      "testedCells": 210,
+      "withinFour": 10,
+      "misses": [
+        [
+          "market-0",
+          1951,
+          "BEL",
+          "tier0",
+          80,
+          71.33333333333333
+        ],
+        [
+          "market-0",
+          1951,
+          "BEL",
+          "tier1",
+          70,
+          58.6
+        ],
+        [
+          "market-0",
+          1951,
+          "ENG",
+          "tier0",
+          80,
+          75.15
+        ],
+        [
+          "market-0",
+          1951,
+          "ENG",
+          "tier1",
+          70,
+          64.625
+        ],
+        [
+          "market-0",
+          1951,
+          "ENG",
+          "tier2",
+          60,
+          55.708333333333336
+        ],
+        [
+          "market-0",
+          1951,
+          "ENG",
+          "tier3",
+          50,
+          45.708333333333336
+        ],
+        [
+          "market-0",
+          1951,
+          "ESP",
+          "tier0",
+          80,
+          74.15
+        ],
+        [
+          "market-0",
+          1951,
+          "ESP",
+          "tier1",
+          70,
+          62.68181818181818
+        ],
+        [
+          "market-0",
+          1951,
+          "FRA",
+          "tier0",
+          80,
+          73.5
+        ],
+        [
+          "market-0",
+          1951,
+          "FRA",
+          "tier1",
+          70,
+          62.111111111111114
+        ],
+        [
+          "market-0",
+          1951,
+          "FRA",
+          "tier2",
+          60,
+          50
+        ],
+        [
+          "market-0",
+          1951,
+          "GER",
+          "tier0",
+          80,
+          74.94444444444444
+        ],
+        [
+          "market-0",
+          1951,
+          "GER",
+          "tier1",
+          70,
+          63.5
+        ],
+        [
+          "market-0",
+          1951,
+          "GER",
+          "tier2",
+          60,
+          51.65
+        ],
+        [
+          "market-0",
+          1951,
+          "ITA",
+          "tier0",
+          80,
+          74.6
+        ],
+        [
+          "market-0",
+          1951,
+          "ITA",
+          "tier1",
+          70,
+          63.5
+        ],
+        [
+          "market-0",
+          1951,
+          "ITA",
+          "tier2",
+          60,
+          51.96666666666667
+        ],
+        [
+          "market-0",
+          1951,
+          "NED",
+          "tier0",
+          80,
+          70.5
+        ],
+        [
+          "market-0",
+          1951,
+          "NED",
+          "tier1",
+          70,
+          58.75
+        ],
+        [
+          "market-0",
+          1951,
+          "POR",
+          "tier0",
+          80,
+          69.88888888888889
+        ],
+        [
+          "market-0",
+          1951,
+          "POR",
+          "tier1",
+          70,
+          57.5
+        ],
+        [
+          "market-0",
+          1952,
+          "BEL",
+          "tier0",
+          80,
+          71.66666666666667
+        ],
+        [
+          "market-0",
+          1952,
+          "BEL",
+          "tier1",
+          70,
+          58.8
+        ],
+        [
+          "market-0",
+          1952,
+          "ENG",
+          "tier0",
+          80,
+          75.45
+        ],
+        [
+          "market-0",
+          1952,
+          "ENG",
+          "tier1",
+          70,
+          64.375
+        ],
+        [
+          "market-0",
+          1952,
+          "ENG",
+          "tier2",
+          60,
+          55.791666666666664
+        ],
+        [
+          "market-0",
+          1952,
+          "ESP",
+          "tier0",
+          80,
+          73.6
+        ],
+        [
+          "market-0",
+          1952,
+          "ESP",
+          "tier1",
+          70,
+          62.59090909090909
+        ],
+        [
+          "market-0",
+          1952,
+          "FRA",
+          "tier0",
+          80,
+          73.11111111111111
+        ],
+        [
+          "market-0",
+          1952,
+          "FRA",
+          "tier1",
+          70,
+          62.388888888888886
+        ],
+        [
+          "market-0",
+          1952,
+          "FRA",
+          "tier2",
+          60,
+          51.611111111111114
+        ],
+        [
+          "market-0",
+          1952,
+          "GER",
+          "tier0",
+          80,
+          73.27777777777777
+        ],
+        [
+          "market-0",
+          1952,
+          "GER",
+          "tier1",
+          70,
+          63.44444444444444
+        ],
+        [
+          "market-0",
+          1952,
+          "GER",
+          "tier2",
+          60,
+          50.95
+        ],
+        [
+          "market-0",
+          1952,
+          "ITA",
+          "tier0",
+          80,
+          74.5
+        ],
+        [
+          "market-0",
+          1952,
+          "ITA",
+          "tier1",
+          70,
+          63.1
+        ],
+        [
+          "market-0",
+          1952,
+          "ITA",
+          "tier2",
+          60,
+          52.266666666666666
+        ],
+        [
+          "market-0",
+          1952,
+          "NED",
+          "tier0",
+          80,
+          70.61111111111111
+        ],
+        [
+          "market-0",
+          1952,
+          "NED",
+          "tier1",
+          70,
+          60.45
+        ],
+        [
+          "market-0",
+          1952,
+          "POR",
+          "tier0",
+          80,
+          71.77777777777777
+        ],
+        [
+          "market-0",
+          1952,
+          "POR",
+          "tier1",
+          70,
+          58.44444444444444
+        ],
+        [
+          "market-0",
+          1953,
+          "BEL",
+          "tier0",
+          80,
+          72
+        ],
+        [
+          "market-0",
+          1953,
+          "BEL",
+          "tier1",
+          70,
+          60.46666666666667
+        ],
+        [
+          "market-0",
+          1953,
+          "ENG",
+          "tier0",
+          80,
+          75.6
+        ],
+        [
+          "market-0",
+          1953,
+          "ENG",
+          "tier1",
+          70,
+          65.25
+        ],
+        [
+          "market-0",
+          1953,
+          "ENG",
+          "tier2",
+          60,
+          55.083333333333336
+        ],
+        [
+          "market-0",
+          1953,
+          "ENG",
+          "tier3",
+          50,
+          45.458333333333336
+        ],
+        [
+          "market-0",
+          1953,
+          "ESP",
+          "tier0",
+          80,
+          74.4
+        ],
+        [
+          "market-0",
+          1953,
+          "ESP",
+          "tier1",
+          70,
+          62.90909090909091
+        ],
+        [
+          "market-0",
+          1953,
+          "FRA",
+          "tier0",
+          80,
+          72.88888888888889
+        ],
+        [
+          "market-0",
+          1953,
+          "FRA",
+          "tier1",
+          70,
+          63.166666666666664
+        ],
+        [
+          "market-0",
+          1953,
+          "FRA",
+          "tier2",
+          60,
+          51.166666666666664
+        ],
+        [
+          "market-0",
+          1953,
+          "GER",
+          "tier0",
+          80,
+          73.55555555555556
+        ],
+        [
+          "market-0",
+          1953,
+          "GER",
+          "tier1",
+          70,
+          63.333333333333336
+        ],
+        [
+          "market-0",
+          1953,
+          "GER",
+          "tier2",
+          60,
+          50.8
+        ],
+        [
+          "market-0",
+          1953,
+          "ITA",
+          "tier0",
+          80,
+          74.7
+        ],
+        [
+          "market-0",
+          1953,
+          "ITA",
+          "tier1",
+          70,
+          62.9
+        ],
+        [
+          "market-0",
+          1953,
+          "ITA",
+          "tier2",
+          60,
+          52.583333333333336
+        ],
+        [
+          "market-0",
+          1953,
+          "NED",
+          "tier0",
+          80,
+          71.16666666666667
+        ],
+        [
+          "market-0",
+          1953,
+          "NED",
+          "tier1",
+          70,
+          60.1
+        ],
+        [
+          "market-0",
+          1953,
+          "POR",
+          "tier0",
+          80,
+          72.38888888888889
+        ],
+        [
+          "market-0",
+          1953,
+          "POR",
+          "tier1",
+          70,
+          59.5
+        ],
+        [
+          "market-0",
+          1954,
+          "BEL",
+          "tier0",
+          80,
+          72.77777777777777
+        ],
+        [
+          "market-0",
+          1954,
+          "BEL",
+          "tier1",
+          70,
+          61.06666666666667
+        ],
+        [
+          "market-0",
+          1954,
+          "ENG",
+          "tier0",
+          80,
+          75.95
+        ],
+        [
+          "market-0",
+          1954,
+          "ENG",
+          "tier1",
+          70,
+          65.5
+        ],
+        [
+          "market-0",
+          1954,
+          "ENG",
+          "tier2",
+          60,
+          54.708333333333336
+        ],
+        [
+          "market-0",
+          1954,
+          "ENG",
+          "tier3",
+          50,
+          44.458333333333336
+        ],
+        [
+          "market-0",
+          1954,
+          "ESP",
+          "tier0",
+          80,
+          74.65
+        ],
+        [
+          "market-0",
+          1954,
+          "ESP",
+          "tier1",
+          70,
+          62.59090909090909
+        ],
+        [
+          "market-0",
+          1954,
+          "FRA",
+          "tier0",
+          80,
+          73.94444444444444
+        ],
+        [
+          "market-0",
+          1954,
+          "FRA",
+          "tier1",
+          70,
+          62.166666666666664
+        ],
+        [
+          "market-0",
+          1954,
+          "FRA",
+          "tier2",
+          60,
+          51.94444444444444
+        ],
+        [
+          "market-0",
+          1954,
+          "GER",
+          "tier0",
+          80,
+          74.83333333333333
+        ],
+        [
+          "market-0",
+          1954,
+          "GER",
+          "tier1",
+          70,
+          65.11111111111111
+        ],
+        [
+          "market-0",
+          1954,
+          "GER",
+          "tier2",
+          60,
+          51.9
+        ],
+        [
+          "market-0",
+          1954,
+          "ITA",
+          "tier0",
+          80,
+          75.55
+        ],
+        [
+          "market-0",
+          1954,
+          "ITA",
+          "tier1",
+          70,
+          64.25
+        ],
+        [
+          "market-0",
+          1954,
+          "ITA",
+          "tier2",
+          60,
+          53.61666666666667
+        ],
+        [
+          "market-0",
+          1954,
+          "NED",
+          "tier0",
+          80,
+          72.72222222222223
+        ],
+        [
+          "market-0",
+          1954,
+          "NED",
+          "tier1",
+          70,
+          62
+        ],
+        [
+          "market-0",
+          1954,
+          "POR",
+          "tier0",
+          80,
+          73.5
+        ],
+        [
+          "market-0",
+          1954,
+          "POR",
+          "tier1",
+          70,
+          60.166666666666664
+        ],
+        [
+          "market-0",
+          1955,
+          "BEL",
+          "tier0",
+          80,
+          73.22222222222223
+        ],
+        [
+          "market-0",
+          1955,
+          "BEL",
+          "tier1",
+          70,
+          62
+        ],
+        [
+          "market-0",
+          1955,
+          "ENG",
+          "tier0",
+          80,
+          75.7
+        ],
+        [
+          "market-0",
+          1955,
+          "ENG",
+          "tier1",
+          70,
+          65.33333333333333
+        ],
+        [
+          "market-0",
+          1955,
+          "ENG",
+          "tier3",
+          50,
+          44.666666666666664
+        ],
+        [
+          "market-0",
+          1955,
+          "ESP",
+          "tier0",
+          80,
+          75.65
+        ],
+        [
+          "market-0",
+          1955,
+          "ESP",
+          "tier1",
+          70,
+          63.59090909090909
+        ],
+        [
+          "market-0",
+          1955,
+          "FRA",
+          "tier0",
+          80,
+          73.77777777777777
+        ],
+        [
+          "market-0",
+          1955,
+          "FRA",
+          "tier1",
+          70,
+          63.888888888888886
+        ],
+        [
+          "market-0",
+          1955,
+          "FRA",
+          "tier2",
+          60,
+          53.27777777777778
+        ],
+        [
+          "market-0",
+          1955,
+          "GER",
+          "tier0",
+          80,
+          75.83333333333333
+        ],
+        [
+          "market-0",
+          1955,
+          "GER",
+          "tier1",
+          70,
+          64.66666666666667
+        ],
+        [
+          "market-0",
+          1955,
+          "GER",
+          "tier2",
+          60,
+          52.25
+        ],
+        [
+          "market-0",
+          1955,
+          "ITA",
+          "tier0",
+          80,
+          75.35
+        ],
+        [
+          "market-0",
+          1955,
+          "ITA",
+          "tier1",
+          70,
+          64.45
+        ],
+        [
+          "market-0",
+          1955,
+          "ITA",
+          "tier2",
+          60,
+          54.36666666666667
+        ],
+        [
+          "market-0",
+          1955,
+          "NED",
+          "tier0",
+          80,
+          73.44444444444444
+        ],
+        [
+          "market-0",
+          1955,
+          "NED",
+          "tier1",
+          70,
+          63
+        ],
+        [
+          "market-0",
+          1955,
+          "POR",
+          "tier0",
+          80,
+          73.38888888888889
+        ],
+        [
+          "market-0",
+          1955,
+          "POR",
+          "tier1",
+          70,
+          62.22222222222222
+        ],
+        [
+          "market-1",
+          1951,
+          "BEL",
+          "tier0",
+          80,
+          69.94444444444444
+        ],
+        [
+          "market-1",
+          1951,
+          "BEL",
+          "tier1",
+          70,
+          60
+        ],
+        [
+          "market-1",
+          1951,
+          "ENG",
+          "tier1",
+          70,
+          64.54166666666667
+        ],
+        [
+          "market-1",
+          1951,
+          "ENG",
+          "tier3",
+          50,
+          43.375
+        ],
+        [
+          "market-1",
+          1951,
+          "ESP",
+          "tier0",
+          80,
+          73.2
+        ],
+        [
+          "market-1",
+          1951,
+          "ESP",
+          "tier1",
+          70,
+          63.40909090909091
+        ],
+        [
+          "market-1",
+          1951,
+          "FRA",
+          "tier0",
+          80,
+          73.16666666666667
+        ],
+        [
+          "market-1",
+          1951,
+          "FRA",
+          "tier1",
+          70,
+          61.333333333333336
+        ],
+        [
+          "market-1",
+          1951,
+          "FRA",
+          "tier2",
+          60,
+          48.666666666666664
+        ],
+        [
+          "market-1",
+          1951,
+          "GER",
+          "tier0",
+          80,
+          74.22222222222223
+        ],
+        [
+          "market-1",
+          1951,
+          "GER",
+          "tier1",
+          70,
+          62.666666666666664
+        ],
+        [
+          "market-1",
+          1951,
+          "GER",
+          "tier2",
+          60,
+          55.2
+        ],
+        [
+          "market-1",
+          1951,
+          "ITA",
+          "tier0",
+          80,
+          74.05
+        ],
+        [
+          "market-1",
+          1951,
+          "ITA",
+          "tier1",
+          70,
+          62.2
+        ],
+        [
+          "market-1",
+          1951,
+          "ITA",
+          "tier2",
+          60,
+          52.53333333333333
+        ],
+        [
+          "market-1",
+          1951,
+          "NED",
+          "tier0",
+          80,
+          71.5
+        ],
+        [
+          "market-1",
+          1951,
+          "NED",
+          "tier1",
+          70,
+          58.55
+        ],
+        [
+          "market-1",
+          1951,
+          "POR",
+          "tier0",
+          80,
+          73
+        ],
+        [
+          "market-1",
+          1951,
+          "POR",
+          "tier1",
+          70,
+          57.611111111111114
+        ],
+        [
+          "market-1",
+          1952,
+          "BEL",
+          "tier0",
+          80,
+          70.77777777777777
+        ],
+        [
+          "market-1",
+          1952,
+          "BEL",
+          "tier1",
+          70,
+          61.4
+        ],
+        [
+          "market-1",
+          1952,
+          "ENG",
+          "tier0",
+          80,
+          75.7
+        ],
+        [
+          "market-1",
+          1952,
+          "ENG",
+          "tier1",
+          70,
+          65.08333333333333
+        ],
+        [
+          "market-1",
+          1952,
+          "ENG",
+          "tier2",
+          60,
+          55.541666666666664
+        ],
+        [
+          "market-1",
+          1952,
+          "ENG",
+          "tier3",
+          50,
+          42.041666666666664
+        ],
+        [
+          "market-1",
+          1952,
+          "ESP",
+          "tier0",
+          80,
+          73.25
+        ],
+        [
+          "market-1",
+          1952,
+          "ESP",
+          "tier1",
+          70,
+          62.90909090909091
+        ],
+        [
+          "market-1",
+          1952,
+          "FRA",
+          "tier0",
+          80,
+          73.27777777777777
+        ],
+        [
+          "market-1",
+          1952,
+          "FRA",
+          "tier1",
+          70,
+          61.888888888888886
+        ],
+        [
+          "market-1",
+          1952,
+          "FRA",
+          "tier2",
+          60,
+          48.5
+        ],
+        [
+          "market-1",
+          1952,
+          "GER",
+          "tier0",
+          80,
+          74.11111111111111
+        ],
+        [
+          "market-1",
+          1952,
+          "GER",
+          "tier1",
+          70,
+          62.77777777777778
+        ],
+        [
+          "market-1",
+          1952,
+          "GER",
+          "tier2",
+          60,
+          54.8
+        ],
+        [
+          "market-1",
+          1952,
+          "ITA",
+          "tier0",
+          80,
+          73.3
+        ],
+        [
+          "market-1",
+          1952,
+          "ITA",
+          "tier1",
+          70,
+          62.35
+        ],
+        [
+          "market-1",
+          1952,
+          "ITA",
+          "tier2",
+          60,
+          52.25
+        ],
+        [
+          "market-1",
+          1952,
+          "NED",
+          "tier0",
+          80,
+          72
+        ],
+        [
+          "market-1",
+          1952,
+          "NED",
+          "tier1",
+          70,
+          58.95
+        ],
+        [
+          "market-1",
+          1952,
+          "POR",
+          "tier0",
+          80,
+          71.5
+        ],
+        [
+          "market-1",
+          1952,
+          "POR",
+          "tier1",
+          70,
+          59.27777777777778
+        ],
+        [
+          "market-1",
+          1953,
+          "BEL",
+          "tier0",
+          80,
+          71
+        ],
+        [
+          "market-1",
+          1953,
+          "BEL",
+          "tier1",
+          70,
+          62.06666666666667
+        ],
+        [
+          "market-1",
+          1953,
+          "ENG",
+          "tier0",
+          80,
+          75.9
+        ],
+        [
+          "market-1",
+          1953,
+          "ENG",
+          "tier1",
+          70,
+          65.45833333333333
+        ],
+        [
+          "market-1",
+          1953,
+          "ENG",
+          "tier2",
+          60,
+          55.291666666666664
+        ],
+        [
+          "market-1",
+          1953,
+          "ENG",
+          "tier3",
+          50,
+          43.083333333333336
+        ],
+        [
+          "market-1",
+          1953,
+          "ESP",
+          "tier0",
+          80,
+          72.4
+        ],
+        [
+          "market-1",
+          1953,
+          "ESP",
+          "tier1",
+          70,
+          63.68181818181818
+        ],
+        [
+          "market-1",
+          1953,
+          "FRA",
+          "tier0",
+          80,
+          73.27777777777777
+        ],
+        [
+          "market-1",
+          1953,
+          "FRA",
+          "tier1",
+          70,
+          62.666666666666664
+        ],
+        [
+          "market-1",
+          1953,
+          "FRA",
+          "tier2",
+          60,
+          49
+        ],
+        [
+          "market-1",
+          1953,
+          "GER",
+          "tier0",
+          80,
+          73.66666666666667
+        ],
+        [
+          "market-1",
+          1953,
+          "GER",
+          "tier1",
+          70,
+          63.72222222222222
+        ],
+        [
+          "market-1",
+          1953,
+          "GER",
+          "tier2",
+          60,
+          53.55
+        ],
+        [
+          "market-1",
+          1953,
+          "ITA",
+          "tier0",
+          80,
+          74.3
+        ],
+        [
+          "market-1",
+          1953,
+          "ITA",
+          "tier1",
+          70,
+          63.3
+        ],
+        [
+          "market-1",
+          1953,
+          "ITA",
+          "tier2",
+          60,
+          52.93333333333333
+        ],
+        [
+          "market-1",
+          1953,
+          "NED",
+          "tier0",
+          80,
+          72.22222222222223
+        ],
+        [
+          "market-1",
+          1953,
+          "NED",
+          "tier1",
+          70,
+          61
+        ],
+        [
+          "market-1",
+          1953,
+          "POR",
+          "tier0",
+          80,
+          72
+        ],
+        [
+          "market-1",
+          1953,
+          "POR",
+          "tier1",
+          70,
+          59.94444444444444
+        ],
+        [
+          "market-1",
+          1954,
+          "BEL",
+          "tier0",
+          80,
+          71.61111111111111
+        ],
+        [
+          "market-1",
+          1954,
+          "BEL",
+          "tier1",
+          70,
+          63.666666666666664
+        ],
+        [
+          "market-1",
+          1954,
+          "ENG",
+          "tier3",
+          50,
+          44.208333333333336
+        ],
+        [
+          "market-1",
+          1954,
+          "ESP",
+          "tier0",
+          80,
+          73.1
+        ],
+        [
+          "market-1",
+          1954,
+          "ESP",
+          "tier1",
+          70,
+          64.0909090909091
+        ],
+        [
+          "market-1",
+          1954,
+          "FRA",
+          "tier0",
+          80,
+          73.83333333333333
+        ],
+        [
+          "market-1",
+          1954,
+          "FRA",
+          "tier1",
+          70,
+          63
+        ],
+        [
+          "market-1",
+          1954,
+          "FRA",
+          "tier2",
+          60,
+          50.22222222222222
+        ],
+        [
+          "market-1",
+          1954,
+          "GER",
+          "tier0",
+          80,
+          74.5
+        ],
+        [
+          "market-1",
+          1954,
+          "GER",
+          "tier1",
+          70,
+          63.388888888888886
+        ],
+        [
+          "market-1",
+          1954,
+          "GER",
+          "tier2",
+          60,
+          54.4
+        ],
+        [
+          "market-1",
+          1954,
+          "ITA",
+          "tier0",
+          80,
+          74.55
+        ],
+        [
+          "market-1",
+          1954,
+          "ITA",
+          "tier1",
+          70,
+          63.75
+        ],
+        [
+          "market-1",
+          1954,
+          "ITA",
+          "tier2",
+          60,
+          53.61666666666667
+        ],
+        [
+          "market-1",
+          1954,
+          "NED",
+          "tier0",
+          80,
+          74.22222222222223
+        ],
+        [
+          "market-1",
+          1954,
+          "NED",
+          "tier1",
+          70,
+          61.25
+        ],
+        [
+          "market-1",
+          1954,
+          "POR",
+          "tier0",
+          80,
+          72.22222222222223
+        ],
+        [
+          "market-1",
+          1954,
+          "POR",
+          "tier1",
+          70,
+          60.666666666666664
+        ],
+        [
+          "market-1",
+          1955,
+          "BEL",
+          "tier0",
+          80,
+          72.55555555555556
+        ],
+        [
+          "market-1",
+          1955,
+          "BEL",
+          "tier1",
+          70,
+          62.86666666666667
+        ],
+        [
+          "market-1",
+          1955,
+          "ENG",
+          "tier2",
+          60,
+          55.916666666666664
+        ],
+        [
+          "market-1",
+          1955,
+          "ESP",
+          "tier0",
+          80,
+          73.45
+        ],
+        [
+          "market-1",
+          1955,
+          "ESP",
+          "tier1",
+          70,
+          63.5
+        ],
+        [
+          "market-1",
+          1955,
+          "FRA",
+          "tier0",
+          80,
+          74.61111111111111
+        ],
+        [
+          "market-1",
+          1955,
+          "FRA",
+          "tier1",
+          70,
+          63.77777777777778
+        ],
+        [
+          "market-1",
+          1955,
+          "FRA",
+          "tier2",
+          60,
+          50.5
+        ],
+        [
+          "market-1",
+          1955,
+          "GER",
+          "tier0",
+          80,
+          74.5
+        ],
+        [
+          "market-1",
+          1955,
+          "GER",
+          "tier1",
+          70,
+          64.16666666666667
+        ],
+        [
+          "market-1",
+          1955,
+          "GER",
+          "tier2",
+          60,
+          54.8
+        ],
+        [
+          "market-1",
+          1955,
+          "ITA",
+          "tier0",
+          80,
+          75.3
+        ],
+        [
+          "market-1",
+          1955,
+          "ITA",
+          "tier1",
+          70,
+          64.15
+        ],
+        [
+          "market-1",
+          1955,
+          "ITA",
+          "tier2",
+          60,
+          54.766666666666666
+        ],
+        [
+          "market-1",
+          1955,
+          "NED",
+          "tier0",
+          80,
+          73.44444444444444
+        ],
+        [
+          "market-1",
+          1955,
+          "NED",
+          "tier1",
+          70,
+          62.7
+        ],
+        [
+          "market-1",
+          1955,
+          "POR",
+          "tier0",
+          80,
+          73.27777777777777
+        ],
+        [
+          "market-1",
+          1955,
+          "POR",
+          "tier1",
+          70,
+          62.388888888888886
+        ]
+      ],
+      "reversals": [],
+      "lowerClubsAbove85PerOpening": 0
+    },
+    "moves": {
+      "byDivision": {
+        "BEL:tier1": {
+          "tracked": 30,
+          "movedUp": 2,
+          "bids": 2,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 2,
+          "shareMovedUp": 0.06666666666666667
+        },
+        "ENG:tier1": {
+          "tracked": 30,
+          "movedUp": 1,
+          "bids": 2,
+          "sellerRefused": 0,
+          "playerRefused": 1,
+          "buyerRefused": 0,
+          "completed": 1,
+          "shareMovedUp": 0.03333333333333333
+        },
+        "ENG:tier2": {
+          "tracked": 30,
+          "movedUp": 6,
+          "bids": 6,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 6,
+          "shareMovedUp": 0.2
+        },
+        "ENG:tier3": {
+          "tracked": 30,
+          "movedUp": 6,
+          "bids": 6,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 6,
+          "shareMovedUp": 0.2
+        },
+        "ESP:tier1": {
+          "tracked": 30,
+          "movedUp": 2,
+          "bids": 2,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 2,
+          "shareMovedUp": 0.06666666666666667
+        },
+        "FRA:tier1": {
+          "tracked": 30,
+          "movedUp": 2,
+          "bids": 4,
+          "sellerRefused": 0,
+          "playerRefused": 2,
+          "buyerRefused": 0,
+          "completed": 2,
+          "shareMovedUp": 0.06666666666666667
+        },
+        "FRA:tier2": {
+          "tracked": 30,
+          "movedUp": 7,
+          "bids": 7,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 7,
+          "shareMovedUp": 0.23333333333333334
+        },
+        "GER:tier1": {
+          "tracked": 30,
+          "movedUp": 1,
+          "bids": 1,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 1,
+          "shareMovedUp": 0.03333333333333333
+        },
+        "GER:tier2": {
+          "tracked": 30,
+          "movedUp": 4,
+          "bids": 4,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 4,
+          "shareMovedUp": 0.13333333333333333
+        },
+        "ITA:tier1": {
+          "tracked": 30,
+          "movedUp": 1,
+          "bids": 1,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 1,
+          "shareMovedUp": 0.03333333333333333
+        },
+        "ITA:tier2": {
+          "tracked": 30,
+          "movedUp": 4,
+          "bids": 4,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 4,
+          "shareMovedUp": 0.13333333333333333
+        },
+        "NED:tier1": {
+          "tracked": 30,
+          "movedUp": 1,
+          "bids": 1,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 1,
+          "shareMovedUp": 0.03333333333333333
+        },
+        "POR:tier1": {
+          "tracked": 30,
+          "movedUp": 2,
+          "bids": 2,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 2,
+          "shareMovedUp": 0.06666666666666667
+        }
+      },
+      "byYear": {
+        "1951": {
+          "tracked": 78,
+          "movedUp": 4,
+          "bids": 4,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 4,
+          "share": 0.05128205128205128,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        },
+        "1952": {
+          "tracked": 78,
+          "movedUp": 5,
+          "bids": 6,
+          "sellerRefused": 0,
+          "playerRefused": 1,
+          "buyerRefused": 0,
+          "completed": 5,
+          "share": 0.0641025641025641,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        },
+        "1953": {
+          "tracked": 78,
+          "movedUp": 12,
+          "bids": 12,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 12,
+          "share": 0.15384615384615385,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        },
+        "1954": {
+          "tracked": 78,
+          "movedUp": 7,
+          "bids": 9,
+          "sellerRefused": 0,
+          "playerRefused": 2,
+          "buyerRefused": 0,
+          "completed": 7,
+          "share": 0.08974358974358974,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        },
+        "1955": {
+          "tracked": 78,
+          "movedUp": 11,
+          "bids": 11,
+          "sellerRefused": 0,
+          "playerRefused": 0,
+          "buyerRefused": 0,
+          "completed": 11,
+          "share": 0.14102564102564102,
+          "band": [
+            0.2,
+            0.3
+          ],
+          "inside": false
+        }
+      },
+      "share": 0.1
+    },
+    "books": {
+      "books": {
+        "top": {
+          "wagesToIncome": 0.8693729213634002,
+          "costsToIncome": 0.3260657817652867,
+          "operatingResultToIncome": -0.18256624768080126,
+          "feesReceivedToIncome": 0.00352599633599502,
+          "netFeesToIncome": 0.0023690899970404216,
+          "cashToIncome": 0.0,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.8291666666666667,
+          "clubSeasons": 480,
+          "wagesInside": false
+        },
+        "middle": {
+          "wagesToIncome": 0.7260074965380842,
+          "costsToIncome": 0.3323969933145718,
+          "operatingResultToIncome": -0.05547644800953681,
+          "feesReceivedToIncome": 0.0011178883585032371,
+          "netFeesToIncome": 0.0,
+          "cashToIncome": 0.03142696902363569,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.6254901960784314,
+          "clubSeasons": 510,
+          "wagesInside": true,
+          "operatingLossInside": true,
+          "feesInside": false
+        },
+        "bottom": {
+          "wagesToIncome": 0.6078970766800964,
+          "costsToIncome": 0.3257520330833862,
+          "operatingResultToIncome": 0.0732866401875662,
+          "feesReceivedToIncome": 0.0,
+          "netFeesToIncome": 0.0,
+          "cashToIncome": 0.18298342769754172,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.38823529411764707,
+          "clubSeasons": 510,
+          "wagesInside": true,
+          "operatingLossInside": false,
+          "feesInside": false
+        },
+        "tier2": {
+          "wagesToIncome": 0.6567700600100708,
+          "costsToIncome": 0.3279462735576355,
+          "operatingResultToIncome": 0.024392143376744203,
+          "feesReceivedToIncome": 0.048679581770047525,
+          "netFeesToIncome": 0.0,
+          "cashToIncome": 0.12174053164168332,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.4503225806451613,
+          "clubSeasons": 1550,
+          "wagesInside": false,
+          "operatingLossInside": false,
+          "feesInside": false
+        },
+        "tier3": {
+          "wagesToIncome": 0.6122998239330446,
+          "costsToIncome": 0.3316049672375799,
+          "operatingResultToIncome": 0.05891314258854269,
+          "feesReceivedToIncome": 0.043162825258028455,
+          "netFeesToIncome": 0.00017307083594481347,
+          "cashToIncome": 0.1384925752347656,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.38934426229508196,
+          "clubSeasons": 1220,
+          "wagesInside": true,
+          "operatingLossInside": false,
+          "feesInside": false
+        },
+        "tier4": {
+          "wagesToIncome": 0.4547854028649838,
+          "costsToIncome": 0.33122563442896125,
+          "operatingResultToIncome": 0.2529764753232638,
+          "feesReceivedToIncome": 0.017724216714019848,
+          "netFeesToIncome": 0.0011900560864113526,
+          "cashToIncome": 0.3552929633366536,
+          "debtToFixedCosts": 0.0,
+          "operatingLossShare": 0.375,
+          "clubSeasons": 240,
+          "wagesInside": false,
+          "operatingLossInside": false,
+          "feesInside": false
+        }
+      },
+      "byCountry": {
+        "BEL": {
+          "top": {
+            "wagesToIncome": 1.0142583984087696,
+            "costsToIncome": 0.3327436831545385,
+            "operatingResultToIncome": -0.35397050695337784,
+            "feesReceivedToIncome": 0.001162643167952095,
+            "netFeesToIncome": 0.0007856298273678395,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8666666666666667,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7135924995890321,
+            "costsToIncome": 0.331776406640088,
+            "operatingResultToIncome": -0.040214130224219005,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.010139753089269041,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.6666666666666666,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6735424577752676,
+            "costsToIncome": 0.3284795649480284,
+            "operatingResultToIncome": 0.006613707864733942,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.0529371564566226,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.48333333333333334,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6464307346075744,
+            "costsToIncome": 0.32965122509859973,
+            "operatingResultToIncome": 0.01923080757084036,
+            "feesReceivedToIncome": 0.04701053309673358,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.08883865193869653,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.49333333333333335,
+            "clubSeasons": 150,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "ENG": {
+          "top": {
+            "wagesToIncome": 0.6574636042132274,
+            "costsToIncome": 0.3222443471110913,
+            "operatingResultToIncome": 0.010853370541283805,
+            "feesReceivedToIncome": 0.052005626183240325,
+            "netFeesToIncome": 0.013423740148508664,
+            "cashToIncome": 0.27652574960230053,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5166666666666667,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.6624750456715647,
+            "costsToIncome": 0.33174241944276217,
+            "operatingResultToIncome": -0.0008230504236169138,
+            "feesReceivedToIncome": 0.0019218676574502553,
+            "netFeesToIncome": 0.0006736193802309213,
+            "cashToIncome": 0.3916599168537799,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5,
+            "clubSeasons": 70,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5088380830511325,
+            "costsToIncome": 0.32635475499165434,
+            "operatingResultToIncome": 0.17064875837420612,
+            "feesReceivedToIncome": 0.011653643009227095,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.579110707597561,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.21428571428571427,
+            "clubSeasons": 70,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6319506426129282,
+            "costsToIncome": 0.3315561141891481,
+            "operatingResultToIncome": 0.034729024692329885,
+            "feesReceivedToIncome": 0.05487951129543525,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.1943421983440876,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3958333333333333,
+            "clubSeasons": 240,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6432922418304556,
+            "costsToIncome": 0.3258152339570327,
+            "operatingResultToIncome": 0.04590988581752006,
+            "feesReceivedToIncome": 0.04244927312632989,
+            "netFeesToIncome": 0.0009442980922524988,
+            "cashToIncome": 0.19724207289325166,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4041666666666667,
+            "clubSeasons": 240,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.4547854028649838,
+            "costsToIncome": 0.33122563442896125,
+            "operatingResultToIncome": 0.2529764753232638,
+            "feesReceivedToIncome": 0.017724216714019848,
+            "netFeesToIncome": 0.0011900560864113526,
+            "cashToIncome": 0.3552929633366536,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.375,
+            "clubSeasons": 240,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "ESP": {
+          "top": {
+            "wagesToIncome": 0.82487149736546,
+            "costsToIncome": 0.3243257372637892,
+            "operatingResultToIncome": -0.14994113538655168,
+            "feesReceivedToIncome": 0.004282215606479329,
+            "netFeesToIncome": 0.002322337380177165,
+            "cashToIncome": 0.005731354038895235,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.85,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7177070658235107,
+            "costsToIncome": 0.3387432017414712,
+            "operatingResultToIncome": -0.05032092779668661,
+            "feesReceivedToIncome": 0.0016227376617343357,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.07415760265699892,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5714285714285714,
+            "clubSeasons": 70,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6020419939925687,
+            "costsToIncome": 0.323822475942646,
+            "operatingResultToIncome": 0.06985538402873036,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.17429779555781086,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.34285714285714286,
+            "clubSeasons": 70,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6803265310648569,
+            "costsToIncome": 0.3355316287723934,
+            "operatingResultToIncome": -0.0028634364758610854,
+            "feesReceivedToIncome": 0.07060007385305482,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.07982077783068817,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5272727272727272,
+            "clubSeasons": 220,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "FRA": {
+          "top": {
+            "wagesToIncome": 0.9430802204483114,
+            "costsToIncome": 0.32997599061712435,
+            "operatingResultToIncome": -0.2715010581178068,
+            "feesReceivedToIncome": 0.00455808551108752,
+            "netFeesToIncome": 0.002084265723676513,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8166666666666667,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7339408964723927,
+            "costsToIncome": 0.33308962998148195,
+            "operatingResultToIncome": -0.05749152595006852,
+            "feesReceivedToIncome": 0.001682002263332636,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.024507629405041226,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.6166666666666667,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6321177712972421,
+            "costsToIncome": 0.3294844820352101,
+            "operatingResultToIncome": 0.03292985428413599,
+            "feesReceivedToIncome": 0.0010552510162102448,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.13396830622251937,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.45,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6741438308336469,
+            "costsToIncome": 0.32576236189538227,
+            "operatingResultToIncome": -0.001944045536879535,
+            "feesReceivedToIncome": 0.028506966900353193,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.04946848366802033,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4888888888888889,
+            "clubSeasons": 180,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.584346731792959,
+            "costsToIncome": 0.3356397356002203,
+            "operatingResultToIncome": 0.0779017719159738,
+            "feesReceivedToIncome": 0.03127958939114049,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.04247321778085904,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.39444444444444443,
+            "clubSeasons": 180,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "GER": {
+          "top": {
+            "wagesToIncome": 0.8111225719688862,
+            "costsToIncome": 0.32978306775509697,
+            "operatingResultToIncome": -0.14371576726329466,
+            "feesReceivedToIncome": 0.0030882931339586157,
+            "netFeesToIncome": 0.0018554277963911507,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.9166666666666666,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7315426109655448,
+            "costsToIncome": 0.3317974951086011,
+            "operatingResultToIncome": -0.078839902858889,
+            "feesReceivedToIncome": 0.002460139448946198,
+            "netFeesToIncome": 0.0005248074147811391,
+            "cashToIncome": 0.026168309277154567,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.6833333333333333,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.572461391452918,
+            "costsToIncome": 0.32023644759126146,
+            "operatingResultToIncome": 0.11432948390887045,
+            "feesReceivedToIncome": 0.0006487460595986994,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.2607732696871401,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.36666666666666664,
+            "clubSeasons": 60,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6609929472635092,
+            "costsToIncome": 0.32210377364815673,
+            "operatingResultToIncome": 0.02827984058055555,
+            "feesReceivedToIncome": 0.040102290012362436,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.10868849529906766,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4388888888888889,
+            "clubSeasons": 180,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6042196306574608,
+            "costsToIncome": 0.3294898135923034,
+            "operatingResultToIncome": 0.0749713114184919,
+            "feesReceivedToIncome": 0.043162825258028455,
+            "netFeesToIncome": 0.00010095858058619607,
+            "cashToIncome": 0.12308787994281663,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.405,
+            "clubSeasons": 200,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "ITA": {
+          "top": {
+            "wagesToIncome": 0.8502570464012894,
+            "costsToIncome": 0.3231588877502577,
+            "operatingResultToIncome": -0.18617518799755037,
+            "feesReceivedToIncome": 0.003937468898785933,
+            "netFeesToIncome": 0.002892825051874135,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8333333333333334,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7259246588612158,
+            "costsToIncome": 0.33743869516977276,
+            "operatingResultToIncome": -0.056349228617160706,
+            "feesReceivedToIncome": 0.001785223765642256,
+            "netFeesToIncome": 0.0005823026425665636,
+            "cashToIncome": 0.018506083993713417,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.6714285714285714,
+            "clubSeasons": 70,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5828464452577136,
+            "costsToIncome": 0.32536682289239016,
+            "operatingResultToIncome": 0.10317905043564918,
+            "feesReceivedToIncome": 0.00027133116257008796,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.17246138584926196,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4142857142857143,
+            "clubSeasons": 70,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6586852538854947,
+            "costsToIncome": 0.31975260494294805,
+            "operatingResultToIncome": 0.02965676546826743,
+            "feesReceivedToIncome": 0.034143850663981165,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.16695121024485043,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.47,
+            "clubSeasons": 200,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.5959281916722461,
+            "costsToIncome": 0.33512856833729626,
+            "operatingResultToIncome": 0.07437929394781735,
+            "feesReceivedToIncome": 0.04914890455124059,
+            "netFeesToIncome": 0.0008079577722728409,
+            "cashToIncome": 0.22473325331902885,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.37666666666666665,
+            "clubSeasons": 600,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "NED": {
+          "top": {
+            "wagesToIncome": 0.8929204514052482,
+            "costsToIncome": 0.32837790672071987,
+            "operatingResultToIncome": -0.21528171191719292,
+            "feesReceivedToIncome": 0.0030493951061824915,
+            "netFeesToIncome": 0.001556653952352782,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.9166666666666666,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7138555298249019,
+            "costsToIncome": 0.3287846832675376,
+            "operatingResultToIncome": -0.046751665224647077,
+            "feesReceivedToIncome": 0.0003530054183780083,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.04977432423535506,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.6,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6363954618605395,
+            "costsToIncome": 0.3218913846695505,
+            "operatingResultToIncome": 0.06893905213431456,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.1957375950843524,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.38333333333333336,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.620661800638201,
+            "costsToIncome": 0.33559085558505364,
+            "operatingResultToIncome": 0.06837918016296075,
+            "feesReceivedToIncome": 0.07307749516527781,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.18404261860456653,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.395,
+            "clubSeasons": 200,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "POR": {
+          "top": {
+            "wagesToIncome": 0.8897448817187585,
+            "costsToIncome": 0.33080380999233305,
+            "operatingResultToIncome": -0.21843626288590726,
+            "feesReceivedToIncome": 0.0024647981861717354,
+            "netFeesToIncome": 0.0024101366538404325,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.9166666666666666,
+            "clubSeasons": 60,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7703323264329874,
+            "costsToIncome": 0.32731645197752324,
+            "operatingResultToIncome": -0.09880983866856909,
+            "feesReceivedToIncome": 0.0005317494263101579,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.7166666666666667,
+            "clubSeasons": 60,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6280862725578166,
+            "costsToIncome": 0.32694018050256013,
+            "operatingResultToIncome": 0.02409230455903851,
+            "feesReceivedToIncome": 0.00026764162378719306,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.11122588784008011,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.48333333333333334,
+            "clubSeasons": 60,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6303016442874029,
+            "costsToIncome": 0.33550410281273196,
+            "operatingResultToIncome": 0.057865617833552624,
+            "feesReceivedToIncome": 0.06299200020832918,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.17177669811591412,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.40555555555555556,
+            "clubSeasons": 180,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": null,
+            "costsToIncome": null,
+            "operatingResultToIncome": null,
+            "feesReceivedToIncome": null,
+            "netFeesToIncome": null,
+            "cashToIncome": null,
+            "debtToFixedCosts": null,
+            "operatingLossShare": null,
+            "clubSeasons": 0,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        }
+      },
+      "byYear": {
+        "1951": {
+          "top": {
+            "wagesToIncome": 0.9965637489658922,
+            "costsToIncome": 0.31533964119992075,
+            "operatingResultToIncome": -0.3228416226543883,
+            "feesReceivedToIncome": 0.0021920988020169524,
+            "netFeesToIncome": 0.0016891286284464679,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.9166666666666666,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7615442320244418,
+            "costsToIncome": 0.3201676123993226,
+            "operatingResultToIncome": -0.06933816995924111,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.7352941176470589,
+            "clubSeasons": 102,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6765866646805215,
+            "costsToIncome": 0.3202457955685378,
+            "operatingResultToIncome": 0.03583240259206068,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.02960971903092291,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4803921568627451,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6911468499933242,
+            "costsToIncome": 0.32054149511539465,
+            "operatingResultToIncome": -0.007726160650795949,
+            "feesReceivedToIncome": 0.024358242409228674,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.04161053256395829,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5096774193548387,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6561139067007598,
+            "costsToIncome": 0.3197066968665698,
+            "operatingResultToIncome": 0.026528577811661777,
+            "feesReceivedToIncome": 0.01966875891652447,
+            "netFeesToIncome": 0.0016869113592498193,
+            "cashToIncome": 0.05746802879542423,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4139344262295082,
+            "clubSeasons": 244,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.6306433842536663,
+            "costsToIncome": 0.3131516276661489,
+            "operatingResultToIncome": 0.07033353408516207,
+            "feesReceivedToIncome": 0.009059901958655019,
+            "netFeesToIncome": 0.0007422288628188859,
+            "cashToIncome": 0.2048130849680208,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4375,
+            "clubSeasons": 48,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "1952": {
+          "top": {
+            "wagesToIncome": 0.8811443449253085,
+            "costsToIncome": 0.31614836142541186,
+            "operatingResultToIncome": -0.2004932466279098,
+            "feesReceivedToIncome": 0.00271627561618135,
+            "netFeesToIncome": 0.0023690899970404216,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8125,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7494048322347043,
+            "costsToIncome": 0.32242599668786304,
+            "operatingResultToIncome": -0.07871008501659327,
+            "feesReceivedToIncome": 0.0009087792867166915,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.008393035164248002,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.7352941176470589,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6089252861926462,
+            "costsToIncome": 0.31095346239250143,
+            "operatingResultToIncome": 0.08185056006034672,
+            "feesReceivedToIncome": 0.0,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.1079708572664964,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.38235294117647056,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6573465261310171,
+            "costsToIncome": 0.3169536891752329,
+            "operatingResultToIncome": 0.0333732667944757,
+            "feesReceivedToIncome": 0.035573342572540675,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.08817373894119443,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.43548387096774194,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6555749897870307,
+            "costsToIncome": 0.31723276294776503,
+            "operatingResultToIncome": 0.03466423339471501,
+            "feesReceivedToIncome": 0.03001088878094591,
+            "netFeesToIncome": 0.0002633941365752785,
+            "cashToIncome": 0.12682509378384693,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4385245901639344,
+            "clubSeasons": 244,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.45540050017304884,
+            "costsToIncome": 0.3197243485841435,
+            "operatingResultToIncome": 0.2463467893902902,
+            "feesReceivedToIncome": 0.02092698383909953,
+            "netFeesToIncome": 0.006006514996213394,
+            "cashToIncome": 0.21299007885120186,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3958333333333333,
+            "clubSeasons": 48,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "1953": {
+          "top": {
+            "wagesToIncome": 0.8386322097276725,
+            "costsToIncome": 0.3356745754166837,
+            "operatingResultToIncome": -0.1809062726646653,
+            "feesReceivedToIncome": 0.002919369037732364,
+            "netFeesToIncome": 0.0019037381547554937,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.8541666666666666,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.6896881936035248,
+            "costsToIncome": 0.3362995482912955,
+            "operatingResultToIncome": -0.03521199679003338,
+            "feesReceivedToIncome": 0.0010103189810050383,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.05894950800420852,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5490196078431373,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.6313149305154382,
+            "costsToIncome": 0.3395306934921445,
+            "operatingResultToIncome": 0.03594168910430096,
+            "feesReceivedToIncome": 0.002584478799686782,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.1765828091265872,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.43137254901960786,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6404414454776193,
+            "costsToIncome": 0.3386329305167537,
+            "operatingResultToIncome": 0.03605862377544085,
+            "feesReceivedToIncome": 0.06661115566929054,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.13799022658733606,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.43870967741935485,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.589167638308171,
+            "costsToIncome": 0.3389650119689276,
+            "operatingResultToIncome": 0.08554162745916692,
+            "feesReceivedToIncome": 0.04749814141113038,
+            "netFeesToIncome": 0.0007530162110358377,
+            "cashToIncome": 0.13460184098507133,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.36475409836065575,
+            "clubSeasons": 244,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.35605349456801305,
+            "costsToIncome": 0.33901472332365634,
+            "operatingResultToIncome": 0.3148253529920539,
+            "feesReceivedToIncome": 0.021681972060302503,
+            "netFeesToIncome": 0.003101096623826672,
+            "cashToIncome": 0.41607972682769795,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3333333333333333,
+            "clubSeasons": 48,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "1954": {
+          "top": {
+            "wagesToIncome": 0.8302970509438495,
+            "costsToIncome": 0.3335699485543887,
+            "operatingResultToIncome": -0.16099370642526245,
+            "feesReceivedToIncome": 0.00736711731641924,
+            "netFeesToIncome": 0.003850146334746681,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.78125,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7015520817956225,
+            "costsToIncome": 0.3424536312790545,
+            "operatingResultToIncome": -0.036692553921676904,
+            "feesReceivedToIncome": 0.003548274012935535,
+            "netFeesToIncome": 0.0006448493321854836,
+            "cashToIncome": 0.07855559736139336,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5588235294117647,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5556551722569953,
+            "costsToIncome": 0.33660956905440176,
+            "operatingResultToIncome": 0.08015904132569909,
+            "feesReceivedToIncome": 0.0005717442393753291,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.3110338896427175,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3235294117647059,
+            "clubSeasons": 102,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6513357339537797,
+            "costsToIncome": 0.3429175246236836,
+            "operatingResultToIncome": 0.018527016697294903,
+            "feesReceivedToIncome": 0.05316293648190771,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.18111951815621086,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.44193548387096776,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.6042196306574608,
+            "costsToIncome": 0.3422659267780778,
+            "operatingResultToIncome": 0.05307439420682166,
+            "feesReceivedToIncome": 0.048373410125682414,
+            "netFeesToIncome": -0.0020076463693860544,
+            "cashToIncome": 0.21121852721299253,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.42213114754098363,
+            "clubSeasons": 244,
+            "wagesInside": true,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.400399513361288,
+            "costsToIncome": 0.34565965533259413,
+            "operatingResultToIncome": 0.2858530515331611,
+            "feesReceivedToIncome": 0.01986783571972352,
+            "netFeesToIncome": -0.0011658780681132006,
+            "cashToIncome": 0.5111198489602353,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3333333333333333,
+            "clubSeasons": 48,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        },
+        "1955": {
+          "top": {
+            "wagesToIncome": 0.7418049066938123,
+            "costsToIncome": 0.3249669633052904,
+            "operatingResultToIncome": -0.07512438568036844,
+            "feesReceivedToIncome": 0.007435443289598442,
+            "netFeesToIncome": 0.002775340858830834,
+            "cashToIncome": 0.0,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.78125,
+            "clubSeasons": 96,
+            "wagesInside": false
+          },
+          "middle": {
+            "wagesToIncome": 0.7137944520244739,
+            "costsToIncome": 0.3332702905277976,
+            "operatingResultToIncome": -0.041183000104502085,
+            "feesReceivedToIncome": 0.002178128142161043,
+            "netFeesToIncome": 0.0013409777595010676,
+            "cashToIncome": 0.13306676211881047,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.5490196078431373,
+            "clubSeasons": 102,
+            "wagesInside": true,
+            "operatingLossInside": true,
+            "feesInside": false
+          },
+          "bottom": {
+            "wagesToIncome": 0.5571915743035821,
+            "costsToIncome": 0.3294360747892817,
+            "operatingResultToIncome": 0.11323910009034491,
+            "feesReceivedToIncome": 0.0008166683455510084,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.29241076386888853,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3235294117647059,
+            "clubSeasons": 102,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier2": {
+            "wagesToIncome": 0.6411243988084694,
+            "costsToIncome": 0.33521323763984856,
+            "operatingResultToIncome": 0.05538709725576948,
+            "feesReceivedToIncome": 0.06482346663646965,
+            "netFeesToIncome": 0.0,
+            "cashToIncome": 0.22226667956058127,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.4258064516129032,
+            "clubSeasons": 310,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier3": {
+            "wagesToIncome": 0.5288889640112724,
+            "costsToIncome": 0.33494395726952214,
+            "operatingResultToIncome": 0.18133021288738901,
+            "feesReceivedToIncome": 0.05577414234820068,
+            "netFeesToIncome": 0.0017161936589415632,
+            "cashToIncome": 0.32249375089179455,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.3073770491803279,
+            "clubSeasons": 244,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          },
+          "tier4": {
+            "wagesToIncome": 0.3996533265125136,
+            "costsToIncome": 0.33122563442896125,
+            "operatingResultToIncome": 0.335423564352065,
+            "feesReceivedToIncome": 0.02093671420678597,
+            "netFeesToIncome": -0.0024521291107537646,
+            "cashToIncome": 0.6822938783654771,
+            "debtToFixedCosts": 0.0,
+            "operatingLossShare": 0.375,
+            "clubSeasons": 48,
+            "wagesInside": false,
+            "operatingLossInside": false,
+            "feesInside": false
+          }
+        }
+      },
+      "wageBandError": 0.06796957641472424,
+      "distressEntries": {
+        "BEL": {
+          "stage1": 11,
+          "stage2": 7,
+          "stage3": 5
+        },
+        "ENG": {
+          "stage1": 27,
+          "stage2": 15,
+          "stage3": 24
+        },
+        "ESP": {
+          "stage1": 8,
+          "stage2": 4,
+          "stage3": 2
+        },
+        "FRA": {
+          "stage1": 22,
+          "stage2": 12,
+          "stage3": 18
+        },
+        "GER": {
+          "stage1": 24,
+          "stage2": 10,
+          "stage3": 8
+        },
+        "ITA": {
+          "stage1": 38,
+          "stage2": 20,
+          "stage3": 21
+        },
+        "NED": {
+          "stage1": 14,
+          "stage2": 6,
+          "stage3": 5
+        },
+        "POR": {
+          "stage1": 9,
+          "stage2": 4,
+          "stage3": 4
+        }
+      },
+      "stage3PerCountryDecade": {
+        "BEL": 5.0,
+        "ENG": 24.0,
+        "ESP": 2.0,
+        "FRA": 18.0,
+        "GER": 8.0,
+        "ITA": 21.0,
+        "NED": 5.0,
+        "POR": 4.0
+      },
+      "stage3Inside": {
+        "BEL": false,
+        "ENG": false,
+        "ESP": true,
+        "FRA": false,
+        "GER": false,
+        "ITA": false,
+        "NED": false,
+        "POR": false
+      },
+      "pointsDeducted": {
+        "BEL": 50,
+        "ENG": 240,
+        "ESP": 20,
+        "FRA": 180,
+        "GER": 80,
+        "ITA": 210,
+        "NED": 50,
+        "POR": 40
+      },
+      "transferValues": {
+        "1951": {
+          "worlds": 2,
+          "players": 1052,
+          "dearestToRecord": 1.7851107487922706,
+          "meanToPublishedFee": null
+        },
+        "1952": {
+          "worlds": 2,
+          "players": 1047,
+          "dearestToRecord": 2.2817781400966184,
+          "meanToPublishedFee": null
+        },
+        "1953": {
+          "worlds": 2,
+          "players": 1054,
+          "dearestToRecord": 2.0600681763285023,
+          "meanToPublishedFee": null
+        },
+        "1954": {
+          "worlds": 2,
+          "players": 1057,
+          "dearestToRecord": 2.4597713768115943,
+          "meanToPublishedFee": null
+        },
+        "1955": {
+          "worlds": 2,
+          "players": 1054,
+          "dearestToRecord": 2.971972023809524,
+          "meanToPublishedFee": null
+        }
+      }
+    }
+  },
+  "candidateReceipts": [
+    {
+      "sha256": "ccf9b955ba1dfc54b9dc84f7dcafbe53792b17bb197ac9e452c4ef19835dc02f",
+      "meta": {
+        "command": "pnpm exec tsx scripts/market-seasons.ts --start file:.tmp/mr18cx/T978/snapshots/4a683056d0c13771-market-0-a0a84624340dfd00-1951.json.gz --seeds 0 --burn-in 0 --seasons 5 --jobs 1 --config artifacts/benchmarks/T978/refill-six.json --out .tmp/mr18cx/T978/diagnostic-1951-0.json.part",
+        "startedAt": "2026-11-18T09:06:50.090Z",
+        "seconds": 91.094493134,
+        "identity": {
+          "algorithm": "sha256",
+          "sha256": "dc3b328dfc4730c068c7338555c0a7679eda8ca6ee4a0e82875c041158b49cda",
+          "files": 242,
+          "entry": "scripts/market-seasons.ts",
+          "scope": "runtime dependency closure and declared inputs"
+        },
+        "source": {
+          "head": "796a0a379efd0b1b8cd14a504e512831dea7ecf0",
+          "dirty": "",
+          "fingerprint": {
+            "algorithm": "sha256",
+            "sha256": "f09e9c00230c12fdf211a4c076191d3be733a525fc9d7c5923dacd2e708186e3",
+            "files": 2563
+          }
+        },
+        "environment": {
+          "node": "v24.22.1",
+          "platform": "linux",
+          "arch": "x64"
+        },
+        "observers": {
+          "renewals": true,
+          "distress": true
+        },
+        "reads": {
+          "books": "closed-book-after-settlement",
+          "thirds": "one-based-rank-divided-by-group-size",
+          "netFees": "received-minus-paid",
+          "fixedCosts": "wages-plus-operating-costs",
+          "ageing": "opening-squad-cohort-by-age-at-annual-close-including-retirees"
+        },
+        "start": "file:.tmp/mr18cx/T978/snapshots/4a683056d0c13771-market-0-a0a84624340dfd00-1951.json.gz",
+        "burnIn": 0,
+        "seasons": 5,
+        "seeds": [
+          "market-0"
+        ],
+        "lucks": 1,
+        "owner": null,
+        "appliedConfig": {
+          "NPC_YOUTH": {
+            "refillBelow": 6
+          }
+        },
+        "tunablesInForce": {
+          "NPC_YOUTH": {
+            "ages": [
+              17,
+              18
+            ],
+            "byAcademy": [
+              {
+                "count": 2
+              },
+              {
+                "count": 2
+              },
+              {
+                "count": 3
+              },
+              {
+                "count": 3
+              },
+              {
+                "count": 4
+              },
+              {
+                "count": 5
+              }
+            ],
+            "divisionCentre": 3,
+            "skew": [
+              [
+                0,
+                -20
+              ],
+              [
+                0.6666666666666666,
+                -0.5
+              ],
+              [
+                0.95,
+                9.5
+              ],
+              [
+                1,
+                14
+              ]
+            ],
+            "refillBelow": 6,
+            "headroom": [
+              12,
+              24
+            ],
+            "warRefill": {
+              "ages": [
+                19,
+                24
+              ],
+              "below": 0,
+              "headroom": 4
+            }
+          }
+        },
+        "reasons": "reason.given is the engine-reported reason (absent until the market reports one); seller and buyer reasons are inferred from facts with exported reads and are labelled inferred",
+        "units": "money in pounds of the season; tiers are 0 for the top flight"
+      }
+    },
+    {
+      "sha256": "9063c775dafc82626aa02a6acbd775d320676ed153f61632fab49b11d3cadf5f",
+      "meta": {
+        "command": "pnpm exec tsx scripts/market-seasons.ts --start file:.tmp/mr18cx/T978/snapshots/4a683056d0c13771-market-1-a08d564afb14acd3-1951.json.gz --seeds 1 --burn-in 0 --seasons 5 --jobs 1 --config artifacts/benchmarks/T978/refill-six.json --out .tmp/mr18cx/T978/diagnostic-1951-1.json.part",
+        "startedAt": "2026-11-18T09:06:50.227Z",
+        "seconds": 95.69019537,
+        "identity": {
+          "algorithm": "sha256",
+          "sha256": "dc3b328dfc4730c068c7338555c0a7679eda8ca6ee4a0e82875c041158b49cda",
+          "files": 242,
+          "entry": "scripts/market-seasons.ts",
+          "scope": "runtime dependency closure and declared inputs"
+        },
+        "source": {
+          "head": "796a0a379efd0b1b8cd14a504e512831dea7ecf0",
+          "dirty": "",
+          "fingerprint": {
+            "algorithm": "sha256",
+            "sha256": "f09e9c00230c12fdf211a4c076191d3be733a525fc9d7c5923dacd2e708186e3",
+            "files": 2563
+          }
+        },
+        "environment": {
+          "node": "v24.22.1",
+          "platform": "linux",
+          "arch": "x64"
+        },
+        "observers": {
+          "renewals": true,
+          "distress": true
+        },
+        "reads": {
+          "books": "closed-book-after-settlement",
+          "thirds": "one-based-rank-divided-by-group-size",
+          "netFees": "received-minus-paid",
+          "fixedCosts": "wages-plus-operating-costs",
+          "ageing": "opening-squad-cohort-by-age-at-annual-close-including-retirees"
+        },
+        "start": "file:.tmp/mr18cx/T978/snapshots/4a683056d0c13771-market-1-a08d564afb14acd3-1951.json.gz",
+        "burnIn": 0,
+        "seasons": 5,
+        "seeds": [
+          "market-1"
+        ],
+        "lucks": 1,
+        "owner": null,
+        "appliedConfig": {
+          "NPC_YOUTH": {
+            "refillBelow": 6
+          }
+        },
+        "tunablesInForce": {
+          "NPC_YOUTH": {
+            "ages": [
+              17,
+              18
+            ],
+            "byAcademy": [
+              {
+                "count": 2
+              },
+              {
+                "count": 2
+              },
+              {
+                "count": 3
+              },
+              {
+                "count": 3
+              },
+              {
+                "count": 4
+              },
+              {
+                "count": 5
+              }
+            ],
+            "divisionCentre": 3,
+            "skew": [
+              [
+                0,
+                -20
+              ],
+              [
+                0.6666666666666666,
+                -0.5
+              ],
+              [
+                0.95,
+                9.5
+              ],
+              [
+                1,
+                14
+              ]
+            ],
+            "refillBelow": 6,
+            "headroom": [
+              12,
+              24
+            ],
+            "warRefill": {
+              "ages": [
+                19,
+                24
+              ],
+              "below": 0,
+              "headroom": 4
+            }
+          }
+        },
+        "reasons": "reason.given is the engine-reported reason (absent until the market reports one); seller and buyer reasons are inferred from facts with exported reads and are labelled inferred",
+        "units": "money in pounds of the season; tiers are 0 for the top flight"
+      }
+    }
+  ]
+}
