@@ -17,7 +17,7 @@ import { buildEffects, buildOf } from './build';
 import { staffMember } from './staff-info';
 import { associationAccessOrder } from './europe-access';
 import { askedFeeFactor } from './owner-traits';
-import { termsChance, termsContext } from './personal-terms';
+import { termsChance, resolvedTermsContext, termsSearchContext } from './personal-terms';
 import { freeAgentsOf, nationalityOf, originClub } from './free-agents';
 import {
   askingMultiplier,
@@ -177,6 +177,7 @@ function reachClubs(w: World, reach: ScoutReach) {
 }
 
 interface Found {
+  offer: ScoutOffer;
   likely: boolean;
   player: Player;
   club?: Club;
@@ -194,7 +195,12 @@ const byRank = (a: Found, b: Found) =>
   Number(!b.club) - Number(!a.club) ||
   compareIds(a.player.id, b.player.id);
 
-function offerOf(w: World, found: Found, multiplier: number, graduates: Set<string>): ScoutOffer {
+function offerOf(
+  w: World,
+  found: Pick<Found, 'club' | 'player' | 'abroad'>,
+  multiplier: number,
+  graduates: Set<string>,
+): ScoutOffer {
   const source = found.club
     ? ({ kind: 'club', club: found.club.id } as const)
     : ({ kind: 'free' } as const);
@@ -226,7 +232,10 @@ function abilities(players: readonly Player[]) {
 function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
   const own = clubOf(w).country,
     owned = new Set(activePlayers(w).map((p) => p.id)),
-    found: Found[] = [];
+    found: Found[] = [],
+    context = termsSearchContext(w),
+    multiplier = askingMultiplier(w),
+    graduates = graduateIds(w);
   const consider = (player: Player, ovr: number, club: Club | undefined, country: string) => {
     const age = w.year - player.born;
     if (owned.has(player.id)) return;
@@ -235,9 +244,11 @@ function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
     const potentialFirst =
       reach.potentialFirst === 'all' ||
       (reach.potentialFirst === 'young' && age <= SCOUT_CONFIG.youngAge);
-    const context = termsContext(w, { playerId: player.id, clubId: club?.id, step: 1 });
+    const offer = offerOf(w, { player, club, abroad: country !== own }, multiplier, graduates),
+      terms = resolvedTermsContext(w, { player, club, offer, step: 1 }, context);
     found.push({
-      likely: !!context && termsChance(context).chance >= SCOUT_LIST.likelyChance,
+      offer,
+      likely: termsChance(terms).chance >= SCOUT_LIST.likelyChance,
       player,
       ...(club ? { club } : {}),
       line: lineOfPlayer(player),
@@ -261,17 +272,15 @@ function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
     if (agent.status === 'active' && (country === own || reach.abroad.includes(country)))
       consider(agent, ovrs[i]!, undefined, country);
   });
-  const multiplier = askingMultiplier(w),
-    graduates = graduateIds(w),
-    spread = LIST_SPREAD.inForce,
+  const spread = LIST_SPREAD.inForce,
     listedClubs = new Set<string>();
   return LINES.flatMap((line) => {
     const ranked = found.filter((f) => f.line === line).sort(byRank);
-    if (everyone) return ranked.map((f) => offerOf(w, f, multiplier, graduates));
+    if (everyone) return ranked.map((f) => f.offer);
     if (spread === 'none') {
       const kept = new Set(ranked.filter((f) => f.abroad).slice(0, reach.abroadPlaces));
       for (const f of ranked) if (kept.size < reach.perLine) kept.add(f);
-      return ranked.filter((f) => kept.has(f)).map((f) => offerOf(w, f, multiplier, graduates));
+      return ranked.filter((f) => kept.has(f)).map((f) => f.offer);
     }
     const seen = spread === 'list' ? listedClubs : new Set<string>(),
       kept = new Set<Found>();
@@ -289,7 +298,7 @@ function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
       reach.abroadPlaces,
     );
     take(ranked, reach.perLine);
-    return ranked.filter((f) => kept.has(f)).map((f) => offerOf(w, f, multiplier, graduates));
+    return ranked.filter((f) => kept.has(f)).map((f) => f.offer);
   });
 }
 
@@ -309,6 +318,11 @@ function listKey(w: World, reach: ScoutReach) {
     own.id,
     own.tier,
     own.group,
+    w.tactic,
+    ownStarters(w),
+    // Club-level inputs are cheap to read even on a hit; never walk the world's players here.
+    w.clubs.map((club) => [club.id, club.reputation]),
+    w.europe.map((entry) => [entry.key, entry.name, entry.clubs]),
     w.players.length,
     activePlayers(w).length,
     reach,

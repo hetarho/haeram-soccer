@@ -28,7 +28,7 @@ import {
   SPONSOR_SLOT_LABELS,
 } from './finance';
 import { currentDay, SEASON_ROUNDS } from './calendar';
-import { driftFans, MIN_FANS } from './fans';
+import { driftFans, fanMoodFollowing, MIN_FANS } from './fans';
 import { pushInbox } from './inbox';
 import { marketingFanGain, policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
@@ -233,7 +233,11 @@ export function settleRound(w: World) {
   // The bases move first (→ECON-34); supporters drift toward the following the club's
   // reputation commands, scaled by 글로벌 인지도, without a ceiling.
   settleBases(w);
-  club.fans = driftFans(club.fans + fansGained, club.reputation, baseEffects(w).following);
+  club.fans = driftFans(
+    club.fans + fansGained,
+    club.reputation,
+    baseEffects(w).following * fanMoodFollowing(w),
+  );
   settleDistribution(w);
   const money = (amount: string) => moneyLabel(w, amount);
   addEvent(

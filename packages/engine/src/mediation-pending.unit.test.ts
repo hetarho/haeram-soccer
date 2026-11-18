@@ -1,5 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi, onTestFinished } from 'vitest';
 import type { SigningRequest, TransferBid } from '../../contracts/src/types';
+import { message } from '../../contracts/src/messages';
+import * as personalTerms from './personal-terms';
+import { respondBid } from './transfers';
+import { mediationPreview } from './mediation';
 import { canonical } from '../../contracts/src/index';
 import { marketCandidate, worldMarketFixture } from './world-market.testkit';
 import { basicStaff } from './staff';
@@ -99,5 +103,80 @@ describe('mediation reads the ordinary pending-squad projection (→CLUB-33/34/3
     expect(w.promises).toBeUndefined();
     bid.status = 'rejected';
     expect(delegatedMediations(w)).toHaveLength(1);
+  });
+  it('rechecks the second queued row after the first places a bid covering both requests', () => {
+    const { w, request } = fixture();
+    w.shortlist!.requests.push({
+      kind: 'upgrade',
+      line: 'MF',
+      position: 'CM',
+      slot: 6,
+      pick: request.pick,
+    });
+    expect(detectMediations(w)).toHaveLength(2);
+    w.cash = w.income = '999999999999';
+    holdRows(w, { direction: { recruitmentSupport: 'manager' } });
+    expect(resolveDelegatedMediations(w)).toBe(1);
+    expect(w.bids).toHaveLength(1);
+    expect(w.mediations!.map((m) => m.status)).toEqual(['resolved', 'pending']);
+    expect(w.promises).toBeUndefined();
+    expect(w.recruitmentArrivals).toBeUndefined();
+    expect(resolveDelegatedMediations(w)).toBe(0);
+  });
+
+  it('closes a parked mediation after its covering counter succeeds, without a second bid or promise', () => {
+    const { w, bid } = fixture();
+    const [mediation] = detectMediations(w);
+    w.cash = w.income = '999999999999';
+    w.bids = [{ ...bid, status: 'countered', counterFee: '1' }];
+    const trust = w.manager.trust;
+    expect(resolveDelegatedMediations(w)).toBe(0);
+    const answer = vi
+      .spyOn(personalTerms, 'termsAnswer')
+      .mockReturnValue({ accept: true, chance: 1, logOdds: 9, lines: [] });
+    onTestFinished(() => answer.mockRestore());
+    respondBid(w, bid.id, true);
+    expect(w.bids![0]!.status).toBe('completed');
+    expect(w.recruitmentArrivals).toHaveLength(1);
+    expect(resolveDelegatedMediations(w)).toBe(1);
+    expect(w.mediations![0]!.resolution).toMatchObject({
+      result: message('mediation.request.arrived'),
+    });
+    expect(w.mediations![0]!.resolution!.promise).toBeUndefined();
+    expect(
+      w.inbox!.some(
+        (i) => i.ref === mediation!.id && i.detail === message('mediation.request.arrived'),
+      ),
+    ).toBe(true);
+    expect(w.bids).toHaveLength(1);
+    expect(w.promises).toBeUndefined();
+    expect(w.manager.trust).toBe(trust);
+    const settled = canonical(w);
+    expect(resolveDelegatedMediations(w)).toBe(0);
+    expect(canonical(w)).toBe(settled);
+  });
+
+  it('counts an earlier current-window bid but keeps arrivals bounded by creation; owner previews stay explicit', () => {
+    const { w, bid, request } = fixture();
+    const [mediation] = detectMediations(w);
+    w.calendar!.day = 1;
+    mediation!.created.day = 1;
+    w.bids = [bid];
+    expect(requestMet(w, request, mediation!.created)).toBe(true);
+    w.cash = w.income = '999999999999';
+    expect(mediationPreview(w, mediation!.id, 'director').result).not.toBe(
+      message('mediation.request.arrived'),
+    );
+    bid.status = 'rejected';
+    w.recruitmentArrivals = [
+      {
+        player: bid.playerId,
+        name: bid.offer!.player.name,
+        at: { year: w.year, day: 0 },
+        position: 'CM',
+        positions: { CM: 3 },
+      },
+    ];
+    expect(requestMet(w, request, mediation!.created)).toBe(false);
   });
 });

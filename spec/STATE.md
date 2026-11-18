@@ -67,9 +67,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T964 | Angry fans stop coming, a loved owner's club draws more | ECON OWNER | - | todo |
-| T965 | Bigger clubs are slower to sell | CLUB LEAGUE | - | todo |
-| T966 | A loyal player is harder to lure away | CLUB PLAYER | T979 | todo |
 | T967 | Financial distress ladder replaces bankruptcy | ECON WORLD OWNER | - | todo |
 | T968 | Clubs in distress cannot buy and must sell | ECON WORLD CLUB | T967 | todo |
 | T969 | Administration deducts 10 points and writes off half the debt | ECON LEAGUE | T967 | todo |
@@ -95,8 +92,6 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
-- gusta-implement-task T966
-- gusta-implement-task T965
-- gusta-implement-task T964
+- gusta-implement-task T967
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.

@@ -5780,6 +5780,7 @@ export const sourceMessages = {
   'copy.match.7c4e1d0a52':
     '경기 모델 {p0}로는 경기를 치를 수 없습니다. 저장을 다시 불러오면 출시된 모델 {p1}(으)로 옮겨집니다.',
   'copy.match.35ef500e6b': '승부차기 {p0} 승리',
+  'mediation.request.arrived': '요청에 맞는 선수가 실제로 합류해 이번 영입 중재를 마감했어요.',
   'copy.mediation.2508939fdb': '{p0} 감독의 {p1} 요청',
   'copy.mediation.8ef75211ff':
     '현재 요청에 맞는 영입 가능한 후보가 없거나 이미 협상을 진행했어요. 재정적 대립으로 판단하지 않아요.',
@@ -7436,6 +7437,9 @@ export const sourceMessages = {
     '선수 영입을 위임하면 단장이 이적시장이 열린 날과 그 뒤 {days}일마다 살펴보며, 진행 중인 제안이 {pending}건이 될 때까지 감독이 요청한 자리와 빈 자리를 먼저 채우고, {upgrades} 이적료와 새 연봉은 보유 자금이 계획 적자를 적자 허용 기간만큼 버티는 범위에서만 써요. 지금 영입에 쓸 돈은 {left}예요.',
   'delegation.offer.upgradesBar':
     '주전보다 능력이 {margin} 이상 나은 선수를 이적시장마다 {upgrades}명까지, 돈 기준선보다 처지는 주전 자리가 더 많으면 그 자리 수만큼 데려와요.',
+  'market.sale.stature.giant': '거대 구단은 매각에 더 신중함',
+  'market.sale.stature.big': '큰 구단은 매각에 더 신중함',
+  'market.sale.stature.small': '작은 구단은 매각에 더 유연함',
   'market.sale.place.core': '팀의 핵심 주전 세 명 중 한 명',
   'market.sale.place.starter': '주전 선수',
   'market.sale.place.outside': '주전이 아닌 선수',
@@ -7468,6 +7472,7 @@ export const sourceMessages = {
   'market.terms.leavingEurope': '유럽 대회에 나가는 구단을 떠나야 함',
   'market.terms.wouldStart': '우리 팀에서 주전으로 뛸 수 있음',
   'market.terms.losesPlace': '지금은 주전이지만 우리 팀에서는 주전이 아님',
+  'market.terms.loyalty': '현재 구단에 대한 충성심',
   'market.terms.freeAgent': '자유계약 선수',
   'market.answer.reservation.0': '구단이 버틴 선 {reservation}(요구액의 {share}%)',
   'market.answer.reservation.1': '구단이 버틴 선 {reservation}(요구액의 {share}%): {f1}',

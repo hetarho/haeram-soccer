@@ -11,6 +11,7 @@
 import type { SourceMessageId } from '../../contracts/src/messages';
 import type { Club, Player, TransferStance, World } from '../../contracts/src/types';
 import { currencyChange, npcWageBill, npcWageLimit } from './books';
+import { CLUB_TAKEOVER } from './owner-config';
 import { wagePressure } from './delegation';
 import { SAFETY_ROUNDS } from './delegation-info';
 import { EXPENSE_CONFIG, operatingCosts, operatingExpensesAt } from './finance';
@@ -22,7 +23,7 @@ import { SALE_BARS, SALE_FACTOR_VALUES, SALE_SHARE } from './transfer-policy';
 import { transferWindow } from './transfer-window';
 import { seasonAfter } from './wartime';
 import { isProspect, playerValue, transferStance } from './transfers';
-import { clubById, ownStarters, startingSquad, tierLevel } from './world';
+import { clubById, ownStarters, startingSquad, stature, tierLevel } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
 
 /** One factor's line: what it adds and the message, with its named parameters, that names it. */
@@ -53,6 +54,8 @@ export interface SaleContext {
   /** Our player's value: our reservation never falls below 80% of it. Absent at other clubs. */
   value?: string;
   place: SalePlace;
+  /** The seller’s stable LEAGUE-10 stature, independent of current strength or reputation. */
+  stature: number;
   /** Seasons left on his contract, this one included: 1 is its final season. */
   contractSeasons: number;
   age: number;
@@ -209,6 +212,19 @@ export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
       c.windowDaysLeft !== undefined && c.windowDaysLeft < V.deadlineDays
         ? line('deadline', V.deadline, 'market.sale.deadline', { days: c.windowDaysLeft })
         : undefined,
+  },
+  {
+    id: 'stature',
+    read: (c) => {
+      const sizes = CLUB_TAKEOVER.facilities.stature;
+      return c.stature >= sizes.giant.from
+        ? line('stature', V.stature.giant, 'market.sale.stature.giant')
+        : c.stature >= sizes.big.from
+          ? line('stature', V.stature.big, 'market.sale.stature.big')
+          : c.stature <= sizes.small.to
+            ? line('stature', V.stature.small, 'market.sale.stature.small')
+            : undefined;
+    },
   },
 ];
 
@@ -399,6 +415,7 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     prospect = isProspect(w, player),
     common = {
       fee: bid.fee,
+      stature: stature(w.seed, seller.id),
       place: placeIn(ownSeller ? ownStarters(w) : startingSquad(w, seller), player.id),
       contractSeasons: seasonsLeft(w, player.until),
       age: w.year - player.born,
@@ -499,6 +516,7 @@ export function npcSaleContext(w: World, bid: NpcSaleBid): SaleContext {
     fee: bid.fee,
     asking: bid.asking,
     ownSeller: false,
+    stature: stature(w.seed, seller.id),
     place,
     contractSeasons: Math.max(1, player.until - w.year + 1),
     age: w.year - player.born,

@@ -29,6 +29,7 @@ function ctx(over: Partial<TermsContext> = {}): TermsContext {
     wouldStart: false,
     startsNow: false,
     freeAgent: false,
+    loyalty: 0,
     ...over,
   };
 }
@@ -122,6 +123,7 @@ describe('personal terms (→CLUB-53)', () => {
       ctx({
         ...offered(0.8),
         divisionsBelow: 1,
+        loyalty: 2,
         hisReputation: 70,
         hisEurope: true,
         startsNow: true,

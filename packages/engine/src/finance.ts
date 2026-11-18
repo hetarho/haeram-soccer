@@ -19,7 +19,7 @@ import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
 import { SEASON_ROUNDS } from './calendar';
 import { facilityUpkeep, stadiumCapacity } from './facilities';
-import { catchment, localSupporters } from './fans';
+import { catchment, localSupporters, fanMoodFollowing } from './fans';
 import { OWNER_TRAITS } from './owner-config';
 import { hasTrait } from './owner-traits';
 
@@ -370,7 +370,10 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
   // The club build moves home demand on its own: community clubs fill seats, commercial ones lose some.
   const build = 1 + buildEffects(w).gateDemand;
   // No campaign brings more than every local supporter.
-  const wanted = Math.min(supporters, supporters * demand * formDemand * draw * marketing * build);
+  const wanted = Math.min(
+    supporters,
+    supporters * demand * formDemand * draw * marketing * build * fanMoodFollowing(w),
+  );
   const expected = Math.min(capacity, wanted);
   const low = Math.round(expected * 0.8);
   const high = Math.round(expected);
