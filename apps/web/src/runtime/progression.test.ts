@@ -3,6 +3,7 @@ import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
+import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import {
   clubCrisisDetail,
@@ -335,7 +336,9 @@ describe('the global progression clock', () => {
     const administration = { ...debt, distress: { stage: 3 as const, overHalfRounds: 8 } };
     expect(clubCrisisDetail(administration)).toContain('승점 10점');
     expect(clubCrisisDetail(administration)).toContain('시즌 마감');
-    expect(BigInt(clubDistressLine(administration))).toBe(BigInt(clubDistressLine(debt)));
+    const annual = BigInt(operatingCosts(debt).annual);
+    expect(BigInt(clubDistressLine(debt))).toBe(annual / 2n);
+    expect(BigInt(clubDistressLine(administration))).toBe((annual + 1n) / 2n);
   });
   it('stops a running clock once behind a warning when a 파산 위기 begins, and only the owner restarts it (→WEB-56)', async () => {
     const s = setup();

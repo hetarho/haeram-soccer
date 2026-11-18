@@ -133,14 +133,14 @@ function facts(w: World, eventAt: number) {
   );
 }
 const digest = (value: unknown) => createHash('sha256').update(canonical(value)).digest('hex');
-// BASELINE CAPTURES: unchanged 134ae45f, complete raw worlds retained in .tmp/t912.
+// Baseline captures with the T977 pricing level. Original 134ae45f raw worlds are in .tmp/t912.
 const BASELINE = {
   // T979 review correction retains the borrower's own joined/origin facts on its sold row.
-  'owned-22': '44b8c72e952057b6381df64f8cd51aedf3b50f3439c635d6eabee925d9ba8b88',
-  'owned-35': 'd34da8a0bc8c386b9cf346ba0fc6e3dbfe0ee1e5a43e816a68614a7664977d8a',
+  'owned-22': 'fc01e1f0c1c77cc63e709677c4a13fdf9e6b339a910f6718648dbabb7ed1465b',
+  'owned-35': '015c80890cec05a6bf46357032f175f3c243ac2ad67d9ca78bed2150d66d4089',
   // T957 production spread changes the NPC founding roster and extra bench players.
-  npc: '2f8a97990e2f1c2d66de9bcf8e3bfe2753ce2d338fb6f6333357216b996ee307',
-  missing: '3acaf009713082f2837df58e8502a6e24df38e2cdf4708e44b856f1f9b228d96',
+  npc: 'a7571099c069f9dae738d6307a4c0976600c81051f67b5586db2612dff8b52d1',
+  missing: '02e03844776f859de510dd4890c1c170f074ffffd965f7e4940ff207bd69ed9d',
 };
 
 describe('canonical owned loan return notification', () => {
