@@ -67,7 +67,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T974 | Our players may turn down a renewal | CLUB WEB ARCH | T973 | doing@261118.mr18cx |
 | T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | todo |
 | T976 | The takeover confirmation shows the fans' disposition | WEB OWNER ARCH | T975 | todo |
 | T977 | Rebase the wage curve's level on the 80/70/60/50 world | CLUB ECON | T953 T958 T967 T968 | todo |
@@ -84,7 +83,6 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
-- gusta-implement-task T974
 - gusta-implement-task T977
 - gusta-implement-task T975
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
