@@ -1,0 +1,71 @@
+process 1/6: cpu ×0.953
+process 2/6: cpu ×0.985
+process 3/6: cpu ×0.925
+process 4/6: cpu ×0.958
+process 5/6: cpu ×0.884
+process 6/6: cpu ×0.989
+{
+  "workload": "own-match",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "c1023944",
+  "cand": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/np19-perf-T986-bcb96418",
+  "procs": 6,
+  "jobs": 1,
+  "reps": 12,
+  "warm": 4,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "e94d1df5f00c9cbe",
+    "cand": "86f1d1be3ca174c7"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "57d66f84b227afdb"
+    ],
+    "cand": [
+      "57d66f84b227afdb"
+    ]
+  },
+  "own-match": {
+    "pairs": 72,
+    "ms": {
+      "base": {
+        "cpu": 60.372999999999934,
+        "wall": 70.64366650000011
+      },
+      "cand": {
+        "cpu": 57.49550000000022,
+        "wall": 66.83699999999999
+      }
+    },
+    "cpu": {
+      "ratio": 0.9484,
+      "lo": 0.9184,
+      "hi": 0.9762,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.9943,
+      "lo": 0.8977,
+      "hi": 1.1067,
+      "call": "no difference"
+    }
+  },
+  "load1": [
+    20.515625,
+    20.63427734375,
+    20.6630859375,
+    21.17041015625,
+    20.43603515625,
+    20.43603515625,
+    19.03955078125
+  ]
+}

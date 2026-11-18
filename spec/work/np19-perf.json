@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-18T17:37:52.632Z",
-  "sourceCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+  "snapshotAt": "2026-11-18T18:11:42.356Z",
+  "sourceCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
   "group": {
     "id": "np19-perf",
     "branch": "gusta-session-self-improve-np19-f1c9b1b9",
@@ -61,9 +61,9 @@
           "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
         ],
         "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
-        "observed": "The diff is engine-only. World hash and ab output hashes match the base. Units 75/75, integration 33/33 and the task tier (1561 units) passed.",
+        "observed": "The diff is engine-only. On the tree merged with 24666400, the world hash and the ab.mjs output hashes match the base. Units 75/75, integration 33/33 and the task tier (1567 units) passed.",
         "evidence": [
-          "artifacts/benchmarks/night-perf-261119/T982/part2-1950.txt",
+          "artifacts/benchmarks/night-perf-261119/T982/final-1950.txt",
           "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
           "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
         ],
@@ -169,7 +169,10 @@
       "T982",
       "T983",
       "T984",
-      "T985"
+      "T985",
+      "T986",
+      "T987",
+      "T988"
     ],
     "runner": {
       "id": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
@@ -254,18 +257,32 @@
     }
   },
   "summary": {
-    "total": 4,
-    "completed": 3,
-    "remaining": 1,
+    "total": 7,
+    "completed": 4,
+    "remaining": 3,
     "running": 1,
-    "review": 0,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 0
+    "unassigned": 1
   },
   "tasks": [
     {
       "id": "T982",
       "title": "Scan market candidates without per-candidate string keys",
+      "dep": [],
+      "status": "ready"
+    },
+    {
+      "id": "T987",
+      "title": "Settlement memos for market needs, prices, sellable lines, listings and rivals",
+      "dep": [
+        "T982"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T988",
+      "title": "Compute free-agent settlement money facts only for clubs that read them",
       "dep": [],
       "status": "doing"
     }
@@ -284,13 +301,14 @@
         "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
         "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2"
       ],
-      "status": "doing",
-      "reason": "T982의 구현과 작업자 검증 기록을 검토했습니다. 제출 시 측정은 통과했지만, 배정된 상위 기준에 통합된 선발 최적화와 함께 T982의 성능 목표가 유지되는지 확인되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-11-18T15:48:43.964Z",
       "startCommit": "9b3b38536002495cb760e0f3ec556ccde53488e1",
-      "submittedBase": "780d53a09b8cf7b06f72d57f962982612ee81018",
-      "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
-      "submittedAt": "2026-11-18T17:28:40.353Z",
+      "verifiedCommit": "c9fde08e47814390fcea013315d53f1bd8e94803",
+      "submittedBase": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+      "submissionId": "1c786e6a-b49b-4034-b876-3b6b66be6093",
+      "submittedAt": "2026-11-18T18:09:33.626Z",
       "risk": null,
       "agentChecks": [
         {
@@ -300,9 +318,9 @@
             "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
           ],
           "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
-          "observed": "The diff is engine-only. World hash and ab output hashes match the base. Units 75/75, integration 33/33 and the task tier (1561 units) passed.",
+          "observed": "The diff is engine-only. On the tree merged with 24666400, the world hash and the ab.mjs output hashes match the base. Units 75/75, integration 33/33 and the task tier (1567 units) passed.",
           "evidence": [
-            "artifacts/benchmarks/night-perf-261119/T982/part2-1950.txt",
+            "artifacts/benchmarks/night-perf-261119/T982/final-1950.txt",
             "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
             "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
           ],
@@ -323,8 +341,11 @@
         "slot": 2,
         "provider": "claude",
         "model": "opus",
-        "status": "running",
-        "startedAt": "2026-11-18T17:32:00.028Z"
+        "status": "finished",
+        "startedAt": "2026-11-18T17:32:00.028Z",
+        "finishedAt": "2026-11-18T18:09:33.658Z",
+        "error": null,
+        "summary": "I re-ran the T982 measurements against the assigned base 24666400 (T983 and T984 integrated), as review 6865d329 P2 asked. Part 2 is still faster on top of part 1, so it stays.\n\n**Results against 24666400** (`ab.mjs`, 6 processes, M1 Max shared at load 9–26; output hashes equal in every run):\n\n| Comparison | Workload | CPU ratio | 95% interval |\n|---|---|---|---|\n| Part 1 vs base | history | 0.904 | 0.896–0.914 |\n| Part 2 on top of part 1 | history | 0.964 | 0.949–0.982 |\n| Final vs base | history | 0.872 | 0.861–0.885 |\n| Final vs base | history-five | 0.856 | 0.811–0.905 |\n\n**Other checks on the merged tree:**\n- **World hash:** the 1950 generation-reference run printed `4161b5e0…5ce`, the base value (`final-1950.txt`).\n- **Units:** the npc-market and persisted-squads files pass, 75/75.\n- **Integration:** the named files pass, 6 files and 33/33 in 319 s. `calendar.progression-esp.test.ts` does not exist in this tree, so only the -eng file ran.\n- **Task tier:** `vibe check --tier task --diff-base 24666400` passed: typecheck, lint, format, i18n, and affected units 1567/1567 in 166 files (tree d2722d0e).\n\n**Files:**\n- The measurements against 9b3b3853 are kept in `artifacts/benchmarks/night-perf-261119/T982/base-9b3b3853/`. Their old `part1-1950.txt` and `part2-1950.txt` now show as deleted at the top level.\n- The new JSON and text results replace the files at the top level of the T982 folder.\n- The task result now records the new base, these measurements and the correction.\n\nI used `git mv` to move the old files, which staged them. I then unstaged with `git reset -q`, so the working tree holds the changes and the index matches HEAD again.\n\nThe full batch and the CI browser journeys are left to the coordinator's final gate."
       },
       "reviewHistory": [
         {
@@ -352,13 +373,13 @@
       "steps": [
         {
           "taskId": "T982",
-          "commit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
-          "at": "2026-11-18T17:28:40.335Z",
+          "commit": "c9fde08e47814390fcea013315d53f1bd8e94803",
+          "at": "2026-11-18T18:09:33.601Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-11-18T17:27:01.144Z",
-              "finishedAt": "2026-11-18T17:28:40.132Z"
+              "startedAt": "2026-11-18T18:07:30.646Z",
+              "finishedAt": "2026-11-18T18:09:33.328Z"
             }
           ]
         }
@@ -366,8 +387,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-11-18T17:27:01.144Z",
-          "finishedAt": "2026-11-18T17:28:40.132Z"
+          "startedAt": "2026-11-18T18:07:30.646Z",
+          "finishedAt": "2026-11-18T18:09:33.328Z"
         }
       ]
     },
@@ -713,6 +734,8 @@
       "submittedBase": "24666400c47cfebf4196dfb5ec5059a3094bf299",
       "submissionId": "8389f3d0-40bc-4301-9c4b-7fdc7912ace9",
       "submittedAt": "2026-11-18T17:35:55.380Z",
+      "integratedCommit": "3cf569ea4211e4a93ab743996e1e8772eb201867",
+      "integratedAt": "2026-11-18T17:41:04.101Z",
       "risk": null,
       "dispatch": {
         "id": "50bbed50-efb5-43d9-856e-24c12d6d1725",
@@ -783,7 +806,99 @@
           "startedAt": "2026-11-18T17:35:23.595Z",
           "finishedAt": "2026-11-18T17:35:55.117Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-18T17:37:59.298Z",
+          "finishedAt": "2026-11-18T17:41:03.355Z"
+        }
       ]
+    },
+    {
+      "id": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "group": "np19-perf",
+      "taskId": "T986",
+      "tasks": [
+        "T986"
+      ],
+      "lane": null,
+      "owner": "np19-native-1",
+      "contributors": [
+        "np19-native-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-18T17:46:00.551Z",
+      "startCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+      "verifiedCommit": "494abf642d9682a36a2fc1939ed44dda9b72d156",
+      "submittedBase": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+      "submissionId": "0f58dca0-86b9-4c06-b7b1-2124ef29d191",
+      "submittedAt": "2026-11-18T18:08:32.924Z",
+      "risk": null,
+      "dispatch": {
+        "id": "c240656c-2c15-4fd1-9994-c17f6f34af6f",
+        "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": "gpt-6.1-terra",
+        "status": "finished",
+        "startedAt": "2026-11-18T18:09:37.026Z",
+        "finishedAt": "2026-11-18T18:11:38.724Z",
+        "error": null,
+        "summary": "T986 is approved at commit 494abf642d9682a36a2fc1939ed44dda9b72d156. The reviewed changes preserve the script-validation and attribution contracts. Worker task-tier checks passed, and the benchmark artifacts report matching output hashes with faster CPU intervals. The coordinator remains responsible for the final batch gate."
+      },
+      "review": {
+        "id": "b22c64bb-1ade-4b3e-860a-7c47b21dfacf",
+        "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T986 is approved at commit 494abf642d9682a36a2fc1939ed44dda9b72d156. The reviewed changes preserve the script-validation and attribution contracts. Worker task-tier checks passed, and the benchmark artifacts report matching output hashes with faster CPU intervals. The coordinator remains responsible for the final batch gate.",
+        "findings": [],
+        "commit": "494abf642d9682a36a2fc1939ed44dda9b72d156",
+        "baseCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+        "submissionId": "0f58dca0-86b9-4c06-b7b1-2124ef29d191",
+        "createdAt": "2026-11-18T18:09:34.123Z",
+        "finishedAt": "2026-11-18T18:11:38.702Z"
+      },
+      "steps": [
+        {
+          "taskId": "T986",
+          "commit": "494abf642d9682a36a2fc1939ed44dda9b72d156",
+          "at": "2026-11-18T18:08:32.887Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-18T18:06:59.123Z",
+              "finishedAt": "2026-11-18T18:08:32.532Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-18T18:06:59.123Z",
+          "finishedAt": "2026-11-18T18:08:32.532Z"
+        }
+      ]
+    },
+    {
+      "id": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "group": "np19-perf",
+      "taskId": "T988",
+      "tasks": [
+        "T988"
+      ],
+      "lane": null,
+      "owner": "np19-native-2",
+      "contributors": [
+        "np19-native-2"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-18T18:09:19.245Z",
+      "startCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50"
     }
   ],
   "history": [
@@ -4083,6 +4198,637 @@
       "group": "np19-perf",
       "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
       "taskId": "T985",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1137,
+      "at": "2026-11-18T17:41:03.597Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-18T17:37:59.298Z",
+            "finishedAt": "2026-11-18T17:41:03.355Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1138,
+      "at": "2026-11-18T17:41:04.101Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "3cf569ea4211e4a93ab743996e1e8772eb201867",
+        "integratedAt": "2026-11-18T17:41:04.101Z"
+      }
+    },
+    {
+      "sequence": 1139,
+      "at": "2026-11-18T17:42:44.768Z",
+      "type": "group",
+      "group": "np19-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T982",
+          "T983",
+          "T984",
+          "T985",
+          "T986"
+        ]
+      }
+    },
+    {
+      "sequence": 1140,
+      "at": "2026-11-18T17:45:47.809Z",
+      "type": "group",
+      "group": "np19-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T982",
+          "T983",
+          "T984",
+          "T985",
+          "T986",
+          "T987",
+          "T988"
+        ]
+      }
+    },
+    {
+      "sequence": 1141,
+      "at": "2026-11-18T17:46:00.551Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+        "group": "np19-perf",
+        "taskId": "T986",
+        "tasks": [
+          "T986"
+        ],
+        "lane": null,
+        "owner": "np19-native-1",
+        "contributors": [
+          "np19-native-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-18T17:46:00.551Z",
+        "startCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50"
+      }
+    },
+    {
+      "sequence": 1142,
+      "at": "2026-11-18T17:46:06.331Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1143,
+      "at": "2026-11-18T18:06:58.738Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1144,
+      "at": "2026-11-18T18:07:29.757Z",
+      "type": "group",
+      "group": "np19-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "agentChecks": [
+          {
+            "id": "T983-ab-identity",
+            "scenario": "The aggregate fitting and attribution speed-ups keep every aggregate and day output bit-identical and make the aggregate engine faster",
+            "steps": [
+              "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload aggregate --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+              "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload day --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-day.json"
+            ],
+            "expected": "Equal output hashes on both workloads; aggregate CPU-ratio interval entirely below 1",
+            "observed": "sameHash true on both (aggregate 09c4b698345ff9fc, day a56436ea3e565194); aggregate CPU ×0.768 (0.758–0.783) faster; own match days ×0.849 (0.836–0.866); other days ×0.997 (0.959–1.029), no difference",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+              "artifacts/benchmarks/night-perf-261119/T983/ab-day.json",
+              "artifacts/benchmarks/night-perf-261119/T983/README.md"
+            ],
+            "status": "pass",
+            "reason": "deterministic paired measurement run by the worker at task stage",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T983-final-gate",
+            "scenario": "Shared batch gate (verify:batch) and CI browser journeys on the integrated candidate",
+            "steps": [
+              "Coordinator runs pnpm run verify:batch on the fixed integrated candidate after all participating sessions are ready"
+            ],
+            "expected": "Batch gate passes; CI browser journeys pass after the push",
+            "observed": "Not run by this worker: ARCH-30 reserves builds, full integration and batch for the initiating coordinator's final gate, and browser journeys run only in CI",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "engine-only task unit; full suites belong to the host's shared final gate",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "host coordinator (np19-perf final gate)",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T982-ui-none",
+            "scenario": "T982 changes only engine code and adds no screen behaviour, so there is no computer-use scenario to observe.",
+            "steps": [
+              "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
+            ],
+            "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
+            "observed": "The diff is engine-only. On the tree merged with 24666400, the world hash and the ab.mjs output hashes match the base. Units 75/75, integration 33/33 and the task tier (1567 units) passed.",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T982/final-1950.txt",
+              "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
+              "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
+            ],
+            "status": "not-run",
+            "reason": "This is an engine-only result-identical speed-up with nothing to observe on screen. Browser journeys run only in CI after the coordinator's final batch gate.",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": "Adds no e2e; deterministic checks already cover the change."
+          },
+          {
+            "id": "T984-same-world",
+            "scenario": "1950 generation-reference world hash unchanged",
+            "steps": [
+              "pnpm exec tsx artifacts/benchmarks/generation-market-261116/gen-driver.mts 1950 generation-reference --hash"
+            ],
+            "expected": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce",
+            "observed": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce. The correction changed only tests; engine source is unchanged since this run.",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T984/gen-1950-hash.txt"
+            ],
+            "status": "pass",
+            "reason": "deterministic worker check",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T984-ab-measurement",
+            "scenario": "Paired A/B for history and day against base e8b4ada9, plus each part on its own",
+            "steps": [
+              "node scripts/perf/ab.mjs --base e8b4ada9 --workload history --procs 6 --json .../ab-history.json",
+              "node scripts/perf/ab.mjs --base e8b4ada9 --workload day --procs 6 --json .../ab-day.json",
+              "part 1 vs base and part 2 vs base+part 1, using a scratch copy of the tree"
+            ],
+            "expected": "Equal output hashes; each part kept only if its history interval is below 1 or not slower",
+            "observed": "Hashes equal in every run. History, both parts: 0.944 (0.933–0.955). Part 1 alone: 0.980 (0.974–0.989). Part 2 on top of part 1: 0.944 (0.930–0.957). Day: 0.994 (0.977–1.013), no difference. Engine source is unchanged by the correction.",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T984/ab-history.json",
+              "artifacts/benchmarks/night-perf-261119/T984/ab-day.json",
+              "artifacts/benchmarks/night-perf-261119/T984/ab-history-part1-vs-base.json",
+              "artifacts/benchmarks/night-perf-261119/T984/ab-history-part2-vs-part1.json"
+            ],
+            "status": "pass",
+            "reason": "measured on a shared Apple M1 Max, load1 12–48",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T984-named-tests",
+            "scenario": "The named existing test files still pass",
+            "steps": [
+              "pnpm exec vitest run world, persisted-squads, staff, training, npc-careers, player, calendar.progression-eng, season, full-model-throughput",
+              "rerun calendar.progression-eng alone after it timed out under load"
+            ],
+            "expected": "All pass unchanged",
+            "observed": "8 files passed together (131 tests). calendar.progression-eng timed out at 435 s against its 300 s limit when run beside the others at load around 48, then passed alone in 121 s. calendar.progression-esp no longer exists (T787 removed it) and was not run. world.test.ts and training.test.ts are now identical to base.",
+            "evidence": [
+              "scratchpad named.log / eng.log"
+            ],
+            "status": "pass",
+            "reason": "esp file absent from the tree",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T984-task-tier",
+            "scenario": "ARCH-30 task-tier checks",
+            "steps": [
+              "gusta vibe check --tier task --diff-base e8b4ada9 --task T984"
+            ],
+            "expected": "typecheck, lint, format, i18n and affected units pass, including the new unit tests",
+            "observed": "All passed: 1,493 unit tests, the four new selection-growth tests included",
+            "evidence": [
+              "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-c6b27ea3-25c8-41eb-b546-c32e45a08695.log"
+            ],
+            "status": "pass",
+            "reason": "",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1145,
+      "at": "2026-11-18T18:07:29.757Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "agentChecks": [
+          {
+            "id": "T982-ui-none",
+            "scenario": "T982 changes only engine code and adds no screen behaviour, so there is no computer-use scenario to observe.",
+            "steps": [
+              "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
+            ],
+            "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
+            "observed": "The diff is engine-only. On the tree merged with 24666400, the world hash and the ab.mjs output hashes match the base. Units 75/75, integration 33/33 and the task tier (1567 units) passed.",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T982/final-1950.txt",
+              "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
+              "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
+            ],
+            "status": "not-run",
+            "reason": "This is an engine-only result-identical speed-up with nothing to observe on screen. Browser journeys run only in CI after the coordinator's final batch gate.",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": "Adds no e2e; deterministic checks already cover the change."
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1146,
+      "at": "2026-11-18T18:07:29.796Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1147,
+      "at": "2026-11-18T18:07:30.314Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1148,
+      "at": "2026-11-18T18:07:30.395Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1149,
+      "at": "2026-11-18T18:08:32.924Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "494abf642d9682a36a2fc1939ed44dda9b72d156",
+        "submittedBase": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+        "submissionId": "0f58dca0-86b9-4c06-b7b1-2124ef29d191",
+        "submittedAt": "2026-11-18T18:08:32.924Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T986",
+            "commit": "494abf642d9682a36a2fc1939ed44dda9b72d156",
+            "at": "2026-11-18T18:08:32.887Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T18:06:59.123Z",
+                "finishedAt": "2026-11-18T18:08:32.532Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T18:06:59.123Z",
+            "finishedAt": "2026-11-18T18:08:32.532Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1150,
+      "at": "2026-11-18T18:09:19.245Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "43408213-eee0-4cf3-859c-31790072e0fa",
+        "group": "np19-perf",
+        "taskId": "T988",
+        "tasks": [
+          "T988"
+        ],
+        "lane": null,
+        "owner": "np19-native-2",
+        "contributors": [
+          "np19-native-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-18T18:09:19.245Z",
+        "startCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50"
+      }
+    },
+    {
+      "sequence": 1151,
+      "at": "2026-11-18T18:09:27.863Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1152,
+      "at": "2026-11-18T18:09:33.626Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+        "submissionId": "1c786e6a-b49b-4034-b876-3b6b66be6093",
+        "submittedAt": "2026-11-18T18:09:33.626Z",
+        "steps": [
+          {
+            "taskId": "T982",
+            "commit": "c9fde08e47814390fcea013315d53f1bd8e94803",
+            "at": "2026-11-18T18:09:33.601Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T18:07:30.646Z",
+                "finishedAt": "2026-11-18T18:09:33.328Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T18:07:30.646Z",
+            "finishedAt": "2026-11-18T18:09:33.328Z"
+          }
+        ],
+        "verifiedCommit": "c9fde08e47814390fcea013315d53f1bd8e94803"
+      }
+    },
+    {
+      "sequence": 1153,
+      "at": "2026-11-18T18:09:33.658Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "c8450b5f-8d74-4ff3-8781-2e7b95e7e2c7",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-18T17:32:00.028Z",
+          "finishedAt": "2026-11-18T18:09:33.658Z",
+          "error": null,
+          "summary": "I re-ran the T982 measurements against the assigned base 24666400 (T983 and T984 integrated), as review 6865d329 P2 asked. Part 2 is still faster on top of part 1, so it stays.\n\n**Results against 24666400** (`ab.mjs`, 6 processes, M1 Max shared at load 9–26; output hashes equal in every run):\n\n| Comparison | Workload | CPU ratio | 95% interval |\n|---|---|---|---|\n| Part 1 vs base | history | 0.904 | 0.896–0.914 |\n| Part 2 on top of part 1 | history | 0.964 | 0.949–0.982 |\n| Final vs base | history | 0.872 | 0.861–0.885 |\n| Final vs base | history-five | 0.856 | 0.811–0.905 |\n\n**Other checks on the merged tree:**\n- **World hash:** the 1950 generation-reference run printed `4161b5e0…5ce`, the base value (`final-1950.txt`).\n- **Units:** the npc-market and persisted-squads files pass, 75/75.\n- **Integration:** the named files pass, 6 files and 33/33 in 319 s. `calendar.progression-esp.test.ts` does not exist in this tree, so only the -eng file ran.\n- **Task tier:** `vibe check --tier task --diff-base 24666400` passed: typecheck, lint, format, i18n, and affected units 1567/1567 in 166 files (tree d2722d0e).\n\n**Files:**\n- The measurements against 9b3b3853 are kept in `artifacts/benchmarks/night-perf-261119/T982/base-9b3b3853/`. Their old `part1-1950.txt` and `part2-1950.txt` now show as deleted at the top level.\n- The new JSON and text results replace the files at the top level of the T982 folder.\n- The task result now records the new base, these measurements and the correction.\n\nI used `git mv` to move the old files, which staged them. I then unstaged with `git reset -q`, so the working tree holds the changes and the index matches HEAD again.\n\nThe full batch and the CI browser journeys are left to the coordinator's final gate."
+        }
+      }
+    },
+    {
+      "sequence": 1154,
+      "at": "2026-11-18T18:09:34.123Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b22c64bb-1ade-4b3e-860a-7c47b21dfacf",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "reviewing",
+          "commit": "494abf642d9682a36a2fc1939ed44dda9b72d156",
+          "baseCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+          "submissionId": "0f58dca0-86b9-4c06-b7b1-2124ef29d191",
+          "createdAt": "2026-11-18T18:09:34.123Z"
+        }
+      }
+    },
+    {
+      "sequence": 1155,
+      "at": "2026-11-18T18:09:37.026Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c240656c-2c15-4fd1-9994-c17f6f34af6f",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-18T18:09:37.026Z"
+        }
+      }
+    },
+    {
+      "sequence": 1156,
+      "at": "2026-11-18T18:09:37.073Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c240656c-2c15-4fd1-9994-c17f6f34af6f",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-18T18:09:37.026Z"
+        }
+      }
+    },
+    {
+      "sequence": 1157,
+      "at": "2026-11-18T18:11:38.702Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b22c64bb-1ade-4b3e-860a-7c47b21dfacf",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T986 is approved at commit 494abf642d9682a36a2fc1939ed44dda9b72d156. The reviewed changes preserve the script-validation and attribution contracts. Worker task-tier checks passed, and the benchmark artifacts report matching output hashes with faster CPU intervals. The coordinator remains responsible for the final batch gate.",
+          "findings": [],
+          "commit": "494abf642d9682a36a2fc1939ed44dda9b72d156",
+          "baseCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+          "submissionId": "0f58dca0-86b9-4c06-b7b1-2124ef29d191",
+          "createdAt": "2026-11-18T18:09:34.123Z",
+          "finishedAt": "2026-11-18T18:11:38.702Z"
+        }
+      }
+    },
+    {
+      "sequence": 1158,
+      "at": "2026-11-18T18:11:38.724Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "c240656c-2c15-4fd1-9994-c17f6f34af6f",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-18T18:09:37.026Z",
+          "finishedAt": "2026-11-18T18:11:38.724Z",
+          "error": null,
+          "summary": "T986 is approved at commit 494abf642d9682a36a2fc1939ed44dda9b72d156. The reviewed changes preserve the script-validation and attribution contracts. Worker task-tier checks passed, and the benchmark artifacts report matching output hashes with faster CPU intervals. The coordinator remains responsible for the final batch gate."
+        }
+      }
+    },
+    {
+      "sequence": 1159,
+      "at": "2026-11-18T18:11:38.800Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

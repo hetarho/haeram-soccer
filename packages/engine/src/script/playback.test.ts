@@ -129,6 +129,29 @@ describe('own script playback boundary with synthetic rows', () => {
     expect(playback.record).not.toHaveProperty('material');
   });
 
+  it("reuses only the production writer's count and validates a test-seam writer again", () => {
+    const f = fixture();
+    const reused = ownMatchPlayback(f.record, f.squads, () => f.detail, f.options);
+    const revalidated = ownMatchPlayback(f.record, f.squads, () => f.detail, {
+      ...f.options,
+      writer: (detail, seed) => writeScript(detail, seed),
+    });
+    expect(reused.problems).toBeUndefined();
+    expect(revalidated).toEqual(reused);
+    const miskinded = ownMatchPlayback(f.record, f.squads, () => f.detail, {
+      ...f.options,
+      writer: (detail, seed) => {
+        const written = writeScript(detail, seed);
+        if ('problems' in written) return written;
+        written.script.beats.find((b) => b.event !== undefined)!.kind = 'carry';
+        return written;
+      },
+    });
+    expect(miskinded.problems?.some((p) => p.endsWith(':kind'))).toBe(true);
+    expect(miskinded.record).toBe(f.record);
+    expect(miskinded).not.toHaveProperty('script');
+  });
+
   it('retains explicit writer problems and catches structural failures without aborting settlement', () => {
     const f = fixture();
     const failed = ownMatchPlayback(f.record, f.squads, () => f.detail, {
