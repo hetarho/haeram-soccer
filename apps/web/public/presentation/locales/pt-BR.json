@@ -7045,6 +7045,13 @@
     "delegation.floor.left": "Dinheiro restante",
     "delegation.floor.contractsOwner": "Na abertura da janela, o diretor julga renovações e aumentos pela política e pelo mínimo de caixa pedido, e relata a decisão.",
     "delegation.floor.salesOwner": "O diretor responde a propostas pela política de vendas, mínimo de caixa e fase real de crise, e relata o resultado.",
-    "delegation.floor.recruitmentOwner": "O diretor contrata da lista e dos pedidos do técnico dentro da política, do mínimo de caixa e do freio de liquidez."
+    "delegation.floor.recruitmentOwner": "O diretor contrata da lista e dos pedidos do técnico dentro da política, do mínimo de caixa e do freio de liquidez.",
+    "renewal.factor.wage": "Oferta acima do piso de renovação ({percent}%)",
+    "renewal.factor.higherBid": "Um clube de maior reputação fez oferta nesta janela ou na anterior",
+    "renewal.factor.starter": "É titular no clube atual",
+    "renewal.factor.bench": "Não é titular no clube atual",
+    "renewal.factor.age": "Idade: {age}",
+    "renewal.factor.loyalty": "Lealdade ao clube atual",
+    "renewal.factor.distress": "O clube atual está em dificuldades financeiras"
   }
 }

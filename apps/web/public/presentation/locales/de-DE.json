@@ -7042,6 +7042,13 @@
     "delegation.floor.left": "Verbleibendes Geld",
     "delegation.floor.contractsOwner": "Zum Transferfenster beurteilt der Direktor Verlängerungen und Erhöhungen nach Vertragspolitik und gewünschter Kassenuntergrenze und berichtet.",
     "delegation.floor.salesOwner": "Der Direktor beantwortet Gebote nach Verkaufspolitik, Kassenuntergrenze und tatsächlicher Finanznotstufe und berichtet.",
-    "delegation.floor.recruitmentOwner": "Der Direktor verpflichtet aus der Liste und Trainerwünschen nach Transferpolitik, Kassenuntergrenze und Liquiditätssperre."
+    "delegation.floor.recruitmentOwner": "Der Direktor verpflichtet aus der Liste und Trainerwünschen nach Transferpolitik, Kassenuntergrenze und Liquiditätssperre.",
+    "renewal.factor.wage": "Angebot über der Verlängerungsuntergrenze ({percent} %)",
+    "renewal.factor.higherBid": "Ein angesehenerer Verein bot in diesem oder letzten Transferfenster",
+    "renewal.factor.starter": "Stammspieler beim aktuellen Verein",
+    "renewal.factor.bench": "Kein Stammspieler beim aktuellen Verein",
+    "renewal.factor.age": "Alter: {age}",
+    "renewal.factor.loyalty": "Treue zum aktuellen Verein",
+    "renewal.factor.distress": "Der aktuelle Verein ist in finanzieller Not"
   }
 }

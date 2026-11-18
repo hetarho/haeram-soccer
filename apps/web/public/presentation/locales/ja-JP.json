@@ -7039,6 +7039,13 @@
     "delegation.floor.left": "残額",
     "delegation.floor.contractsOwner": "市場が開くと、ディレクターは更新方針と委任要望の現金下限で更新・増額要求を判断し、結果を報告します。",
     "delegation.floor.salesOwner": "ディレクターは売却方針、現金下限、実際の財政危機段階で他クラブの入札に答え、結果を報告します。",
-    "delegation.floor.recruitmentOwner": "ディレクターは候補リストと監督の要望から、補強方針、現金下限、資金枯渇防止条件の範囲で補強します。"
+    "delegation.floor.recruitmentOwner": "ディレクターは候補リストと監督の要望から、補強方針、現金下限、資金枯渇防止条件の範囲で補強します。",
+    "renewal.factor.wage": "更新下限を上回る提示（{percent}%）",
+    "renewal.factor.higherBid": "今期または前期の移籍期間に名声の高いクラブが入札",
+    "renewal.factor.starter": "現在のクラブの先発",
+    "renewal.factor.bench": "現在のクラブで先発ではない",
+    "renewal.factor.age": "年齢{age}歳",
+    "renewal.factor.loyalty": "現在のクラブへの忠誠心",
+    "renewal.factor.distress": "現在のクラブが財政難"
   }
 }

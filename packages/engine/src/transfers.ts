@@ -1,3 +1,4 @@
+import { recordRenewalBid } from './renewal-bids';
 import {
   DISTRESS,
   distressSalePlan,
@@ -439,6 +440,7 @@ function completeSale(w: World, bid: TransferBid, p: Player, fee = bid.fee) {
   // His sale ends his talk, his unhappiness and his transfer request (→CLUB-27).
   leaveContract(w, p);
   const live = { ...p, wage: offer.wage, until: w.year + npcContractTerm(w.year - p.born) - 1 };
+  delete live.renewalBids;
   live.joined = w.year;
   delete live.graduate;
   delete live.clauses;
@@ -551,6 +553,9 @@ export function placeBid(
     ...(wage !== undefined ? { wage } : {}),
   };
   w.bids = [...(w.bids || []), bid];
+  const seller = club && w.clubs.find((c) => c.id === club);
+  const livePlayer = seller && clubPlayer(w, seller, bid.playerId);
+  if (seller && livePlayer) recordRenewalBid(w, livePlayer, seller, clubOf(w));
   if (bid.staff) warnCashFloor(w);
   addEvent(
     w,
@@ -1332,6 +1337,7 @@ function listedOffers(w: World, day: number, until: number) {
       status: 'pending',
     };
     w.bids = [...(w.bids || []), bid];
+    recordRenewalBid(w, p, clubOf(w), club);
     const summary = sourceMessage('copy.transfers.0a9e8d6e85', {
       p0: p.position,
       p1: w.year - p.born,
@@ -1400,6 +1406,7 @@ function incomingBid(w: World, day: number, until: number) {
     status: 'pending',
   };
   w.bids = [...(w.bids || []), bid];
+  recordRenewalBid(w, player!, clubOf(w), club);
   answerIncoming(w, bid, player, club, value, fee);
 }
 

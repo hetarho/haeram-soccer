@@ -691,6 +691,11 @@ describe('asking again in a window (→CLUB-52/53)', () => {
       [seller.id, best.id, 'player-refused'],
       [seller.id, next.id, 'completed'],
     ]);
+    // Only the counted first-day bid is stored. Previewing the refusal on day two adds no row.
+    expect(best.renewalBids).toEqual([
+      { club: seller.id, year: w.year, window: 'summer', reputation: buyer.reputation },
+    ]);
+    expect(next.renewalBids).toBeUndefined(); // The completed move begins a new stint.
     expect(asked('npc-sale', buyer, best)).toHaveLength(2);
     expect(asked('npc-sale', buyer, next)).toHaveLength(1);
     expect(at(w, best.id)).toEqual([seller.id]);

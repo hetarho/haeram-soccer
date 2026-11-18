@@ -7045,6 +7045,13 @@
     "delegation.floor.left": "Argent restant",
     "delegation.floor.contractsOwner": "À l’ouverture du mercato, le directeur juge prolongations et hausses selon la politique et le seuil de trésorerie demandé, puis rend compte.",
     "delegation.floor.salesOwner": "Le directeur répond aux offres selon la politique de vente, le seuil de trésorerie et la difficulté financière réelle, puis rend compte.",
-    "delegation.floor.recruitmentOwner": "Le directeur recrute selon la liste et les demandes du coach, dans la politique, le seuil de trésorerie et le frein de liquidité."
+    "delegation.floor.recruitmentOwner": "Le directeur recrute selon la liste et les demandes du coach, dans la politique, le seuil de trésorerie et le frein de liquidité.",
+    "renewal.factor.wage": "Offre au-dessus du plancher de prolongation ({percent} %)",
+    "renewal.factor.higherBid": "Un club plus réputé a fait une offre lors de ce mercato ou du précédent",
+    "renewal.factor.starter": "Titulaire dans son club actuel",
+    "renewal.factor.bench": "Non titulaire dans son club actuel",
+    "renewal.factor.age": "Âge : {age}",
+    "renewal.factor.loyalty": "Loyauté envers son club actuel",
+    "renewal.factor.distress": "Son club actuel est en difficulté financière"
   }
 }

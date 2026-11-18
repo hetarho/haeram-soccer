@@ -250,6 +250,17 @@ const playerShape = {
       clauses: clauses.optional(),
     })
     .optional(),
+  renewalBids: z
+    .array(
+      z.strictObject({
+        club: id,
+        year: season,
+        window: z.enum(['summer', 'winter']),
+        reputation: rating,
+      }),
+    )
+    .max(2)
+    .optional(),
   improveAsked: season.optional(),
   unhappy: z
     .strictObject({

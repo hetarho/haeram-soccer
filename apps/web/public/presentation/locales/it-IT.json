@@ -7045,6 +7045,13 @@
     "delegation.floor.left": "Denaro restante",
     "delegation.floor.contractsOwner": "All’apertura del mercato il direttore giudica rinnovi e aumenti secondo politica e soglia di cassa richiesta, poi riferisce.",
     "delegation.floor.salesOwner": "Il direttore risponde alle offerte secondo politica di vendita, soglia di cassa e crisi effettiva, poi riferisce.",
-    "delegation.floor.recruitmentOwner": "Il direttore recluta dalla lista e dalle richieste del tecnico secondo politica, soglia di cassa e freno di liquidità."
+    "delegation.floor.recruitmentOwner": "Il direttore recluta dalla lista e dalle richieste del tecnico secondo politica, soglia di cassa e freno di liquidità.",
+    "renewal.factor.wage": "Offerta sopra il minimo di rinnovo ({percent}%)",
+    "renewal.factor.higherBid": "Un club più prestigioso ha fatto un’offerta in questa finestra o nella precedente",
+    "renewal.factor.starter": "Titolare nel club attuale",
+    "renewal.factor.bench": "Non è titolare nel club attuale",
+    "renewal.factor.age": "Età: {age}",
+    "renewal.factor.loyalty": "Fedeltà al club attuale",
+    "renewal.factor.distress": "Il club attuale è in difficoltà finanziarie"
   }
 }

@@ -7045,6 +7045,13 @@
     "delegation.floor.left": "Dinero restante",
     "delegation.floor.contractsOwner": "Al abrir el mercado, el director decide renovaciones y aumentos según la política y el mínimo de caja solicitado, y lo comunica.",
     "delegation.floor.salesOwner": "El director responde a otras ofertas según la política de ventas, el mínimo de caja y la fase real de crisis, e informa del resultado.",
-    "delegation.floor.recruitmentOwner": "El director ficha de la lista y las peticiones del entrenador según la política, el mínimo de caja y el freno de liquidez."
+    "delegation.floor.recruitmentOwner": "El director ficha de la lista y las peticiones del entrenador según la política, el mínimo de caja y el freno de liquidez.",
+    "renewal.factor.wage": "Oferta por encima del mínimo de renovación ({percent} %)",
+    "renewal.factor.higherBid": "Un club de mayor reputación pujó en este mercado o el anterior",
+    "renewal.factor.starter": "Es titular en su club actual",
+    "renewal.factor.bench": "No es titular en su club actual",
+    "renewal.factor.age": "Edad: {age}",
+    "renewal.factor.loyalty": "Lealtad a su club actual",
+    "renewal.factor.distress": "Su club actual tiene dificultades económicas"
   }
 }

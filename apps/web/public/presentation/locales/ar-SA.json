@@ -7054,6 +7054,13 @@
     "delegation.floor.left": "المال المتبقي",
     "delegation.floor.contractsOwner": "عند فتح السوق يقيّم المدير التجديدات والزيادات وفق السياسة وحد النقد المطلوب ثم يبلغ بالقرار.",
     "delegation.floor.salesOwner": "يرد المدير على عروض الأندية وفق سياسة البيع والحد النقدي ومرحلة الضائقة الفعلية ثم يبلغ بالنتيجة.",
-    "delegation.floor.recruitmentOwner": "يتعاقد المدير من القائمة وطلبات المدرب ضمن السياسة والحد النقدي وحاجز أمان النقد."
+    "delegation.floor.recruitmentOwner": "يتعاقد المدير من القائمة وطلبات المدرب ضمن السياسة والحد النقدي وحاجز أمان النقد.",
+    "renewal.factor.wage": "عرض أعلى من الحد الأدنى للتجديد ({percent}٪)",
+    "renewal.factor.higherBid": "قدّم نادٍ أعلى سمعة عرضًا في فترة الانتقالات الحالية أو السابقة",
+    "renewal.factor.starter": "أساسي في ناديه الحالي",
+    "renewal.factor.bench": "ليس أساسيًا في ناديه الحالي",
+    "renewal.factor.age": "العمر {age}",
+    "renewal.factor.loyalty": "الولاء لناديه الحالي",
+    "renewal.factor.distress": "ناديه الحالي في ضائقة مالية"
   }
 }

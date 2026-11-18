@@ -7042,6 +7042,13 @@
     "delegation.floor.left": "Kalan para",
     "delegation.floor.contractsOwner": "Pencere açıldığında direktör yenileme ve zamları politikaya ve istenen nakit tabanına göre değerlendirip raporlar.",
     "delegation.floor.salesOwner": "Direktör diğer teklifleri satış politikası, nakit tabanı ve gerçek mali sıkıntı aşamasına göre yanıtlayıp raporlar.",
-    "delegation.floor.recruitmentOwner": "Direktör liste ve teknik direktör taleplerinden politika, nakit tabanı ve nakit güvenlik freni içinde transfer yapar."
+    "delegation.floor.recruitmentOwner": "Direktör liste ve teknik direktör taleplerinden politika, nakit tabanı ve nakit güvenlik freni içinde transfer yapar.",
+    "renewal.factor.wage": "Yenileme tabanının üzerinde teklif (%{percent})",
+    "renewal.factor.higherBid": "Bu veya önceki transfer döneminde daha itibarlı bir kulüp teklif verdi",
+    "renewal.factor.starter": "Mevcut kulübünde ilk 11 oyuncusu",
+    "renewal.factor.bench": "Mevcut kulübünde ilk 11 oyuncusu değil",
+    "renewal.factor.age": "Yaş: {age}",
+    "renewal.factor.loyalty": "Mevcut kulübüne sadakat",
+    "renewal.factor.distress": "Mevcut kulübü mali sıkıntıda"
   }
 }

@@ -375,6 +375,8 @@ export interface Player {
   /** Season of joining his current club's first team; absent history never grants bandiera places. */
   joined?: number;
   graduate?: true;
+  /** Maximum bidding reputation in each of the last two real windows at the current club. */
+  renewalBids?: { club: string; year: number; window: 'summer' | 'winter'; reputation: number }[];
   /** A prodigy (신동, →WORLD-18), growing three times faster until 18 (→PLAYER-15). */
   prodigy?: true;
   traits: PlayTrait[];

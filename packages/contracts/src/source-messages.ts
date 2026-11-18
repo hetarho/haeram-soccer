@@ -7618,4 +7618,11 @@ export const sourceMessages = {
     '다른 구단의 제안에 단장이 매각 기조, 현금 하한과 실제 재정 위기 단계에 따라 답하고 알림·결정에 보고해요.',
   'delegation.floor.recruitmentOwner':
     '단장이 스카우트 명단과 감독 요청을 보고 영입 방침, 현금 하한과 현금 고갈 방지 조건에 맞춰 영입해요.',
+  'renewal.factor.wage': '재계약 하한보다 높은 제안({percent}%)',
+  'renewal.factor.higherBid': '이번 또는 지난 이적시장에서 더 명성 높은 구단이 입찰함',
+  'renewal.factor.starter': '현재 구단의 주전',
+  'renewal.factor.bench': '현재 구단에서 주전이 아님',
+  'renewal.factor.age': '나이 {age}세',
+  'renewal.factor.loyalty': '현재 구단에 대한 충성심',
+  'renewal.factor.distress': '현재 구단이 재정난에 처함',
 } as const;

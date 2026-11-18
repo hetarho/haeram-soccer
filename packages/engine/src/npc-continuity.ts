@@ -295,6 +295,7 @@ export function restoreLoanStint(
   const prior = parent === w.playerClub ? w.players.find((q) => q.id === returning.id) : undefined;
   const graduate = loan?.graduate ?? prior?.graduate;
   const joined = loan?.joined ?? prior?.joined;
+  delete returning.renewalBids;
   delete returning.graduate;
   delete returning.joined;
   if (graduate) returning.graduate = true;

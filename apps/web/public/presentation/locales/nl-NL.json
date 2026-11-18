@@ -7042,6 +7042,13 @@
     "delegation.floor.left": "Geld over",
     "delegation.floor.contractsOwner": "Bij opening van de markt beoordeelt de directeur verlengingen en verhogingen volgens beleid en gevraagde kasgrens, en rapporteert.",
     "delegation.floor.salesOwner": "De directeur beantwoordt biedingen volgens verkoopbeleid, kasgrens en echte noodfase en rapporteert het resultaat.",
-    "delegation.floor.recruitmentOwner": "De directeur werft uit de lijst en trainerswensen binnen beleid, kasgrens en kasrem."
+    "delegation.floor.recruitmentOwner": "De directeur werft uit de lijst en trainerswensen binnen beleid, kasgrens en kasrem.",
+    "renewal.factor.wage": "Bod boven de verlengingsondergrens ({percent}%)",
+    "renewal.factor.higherBid": "Een club met meer aanzien bood deze of vorige transferperiode",
+    "renewal.factor.starter": "Basisspeler bij zijn huidige club",
+    "renewal.factor.bench": "Geen basisspeler bij zijn huidige club",
+    "renewal.factor.age": "Leeftijd: {age}",
+    "renewal.factor.loyalty": "Trouw aan zijn huidige club",
+    "renewal.factor.distress": "Zijn huidige club heeft financiële problemen"
   }
 }
