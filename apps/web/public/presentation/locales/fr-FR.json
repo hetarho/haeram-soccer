@@ -7052,6 +7052,14 @@
     "renewal.factor.bench": "Non titulaire dans son club actuel",
     "renewal.factor.age": "Âge : {age}",
     "renewal.factor.loyalty": "Loyauté envers son club actuel",
-    "renewal.factor.distress": "Son club actuel est en difficulté financière"
+    "renewal.factor.distress": "Son club actuel est en difficulté financière",
+    "renewal.refused": "{name} a refusé l’offre. Son contrat actuel continue ; une nouvelle offre sera possible au prochain mercato. {report}",
+    "renewal.refused.title": "{name} a refusé l’offre de {kind}",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.chance.label": "Probabilité d’accepter la prolongation",
+    "renewal.chance": "Probabilité d’acceptation du joueur : {chance} %",
+    "renewal.guide.summary": "Sous le plancher enregistré, l’offre est refusée. Au-dessus, salaire, division adaptée et ambition, offre plus réputée lors de ce mercato ou du précédent, temps de jeu, âge, loyauté et difficultés financières fixent la probabilité. Le tirage est fixé par joueur, saison et mercato ; après un refus, une nouvelle offre est possible au prochain mercato.",
+    "renewal.guide.wage": "Un salaire au-dessus du plancher augmente la probabilité d’acceptation. La demande et le plancher restent ceux enregistrés à l’ouverture.",
+    "renewal.guide.staff": "Si les règles de conservation et de finances le permettent, le directeur délégué propose ; le joueur applique le même calcul que pour une offre du propriétaire."
   }
 }

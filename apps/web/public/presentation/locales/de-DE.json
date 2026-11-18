@@ -7049,6 +7049,14 @@
     "renewal.factor.bench": "Kein Stammspieler beim aktuellen Verein",
     "renewal.factor.age": "Alter: {age}",
     "renewal.factor.loyalty": "Treue zum aktuellen Verein",
-    "renewal.factor.distress": "Der aktuelle Verein ist in finanzieller Not"
+    "renewal.factor.distress": "Der aktuelle Verein ist in finanzieller Not",
+    "renewal.refused": "{name} lehnte das Angebot ab. Sein bisheriger Vertrag läuft weiter; ab dem nächsten Transferfenster kann erneut verhandelt werden. {report}",
+    "renewal.refused.title": "{name} lehnte das Angebot für {kind} ab",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.chance.label": "Annahmechance der Verlängerung",
+    "renewal.chance": "Annahmechance des Spielers: {chance} %",
+    "renewal.guide.summary": "Unter der gespeicherten Untergrenze wird abgelehnt. Darüber bestimmen Gehalt, passende Liga und Ehrgeiz, ein angeseheneres Gebot in diesem oder letzten Fenster, Einsatzzeit, Alter, Treue und Finanznot die Chance. Der Zufallswert gilt je Spieler, Saison und Fenster; nach Ablehnung ist ab dem nächsten Fenster ein neues Angebot möglich.",
+    "renewal.guide.wage": "Gehalt über der Untergrenze erhöht die Annahmechance. Forderung und Untergrenze bleiben ab Verhandlungsbeginn gespeichert.",
+    "renewal.guide.staff": "Erlauben Bindungs- und Finanzregeln das Angebot, bietet der beauftragte Direktor an; der Spieler nutzt dieselbe Annahmeberechnung wie beim Eigentümer."
   }
 }

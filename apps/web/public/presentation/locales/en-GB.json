@@ -7049,6 +7049,14 @@
     "renewal.factor.bench": "Does not start for his current club",
     "renewal.factor.age": "Age {age}",
     "renewal.factor.loyalty": "Loyalty to his current club",
-    "renewal.factor.distress": "His current club is in financial distress"
+    "renewal.factor.distress": "His current club is in financial distress",
+    "renewal.refused": "{name} refused the offer. His existing contract continues; he can be approached again from the next transfer window. {report}",
+    "renewal.refused.title": "{name} refused the {kind} offer",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.chance.label": "Renewal acceptance chance",
+    "renewal.chance": "Player acceptance chance: {chance}%",
+    "renewal.guide.summary": "Below the saved floor is refused. Above it, wages, suitable division and ambition, a higher-reputation bid this window or last, playing time, age, loyalty and distress set the chance. The draw is fixed by player, season and window; a refusal can be approached again next window.",
+    "renewal.guide.wage": "Wages above the floor raise acceptance chance. An open talk keeps the demand and floor recorded when it opened.",
+    "renewal.guide.staff": "When retention and finance rules permit, the delegated director offers; the player uses the same acceptance calculation as for an owner offer."
   }
 }

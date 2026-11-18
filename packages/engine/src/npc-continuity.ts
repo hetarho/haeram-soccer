@@ -296,6 +296,7 @@ export function restoreLoanStint(
   const graduate = loan?.graduate ?? prior?.graduate;
   const joined = loan?.joined ?? prior?.joined;
   delete returning.renewalBids;
+  delete returning.renewalRefused;
   delete returning.graduate;
   delete returning.joined;
   if (graduate) returning.graduate = true;

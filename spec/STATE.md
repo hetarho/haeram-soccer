@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T974 | Our players may turn down a renewal | CLUB WEB ARCH | T973 | todo |
+| T974 | Our players may turn down a renewal | CLUB WEB ARCH | T973 | doing@261118.mr18cx |
 | T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | todo |
 | T976 | The takeover confirmation shows the fans' disposition | WEB OWNER ARCH | T975 | todo |
 | T977 | Rebase the wage curve's level on the 80/70/60/50 world | CLUB ECON | T953 T958 T967 T968 | todo |

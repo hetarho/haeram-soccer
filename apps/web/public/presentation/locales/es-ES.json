@@ -7052,6 +7052,14 @@
     "renewal.factor.bench": "No es titular en su club actual",
     "renewal.factor.age": "Edad: {age}",
     "renewal.factor.loyalty": "Lealtad a su club actual",
-    "renewal.factor.distress": "Su club actual tiene dificultades económicas"
+    "renewal.factor.distress": "Su club actual tiene dificultades económicas",
+    "renewal.refused": "{name} rechazó la oferta. Su contrato actual continúa; se le podrá hacer otra oferta a partir del próximo mercado. {report}",
+    "renewal.refused.title": "{name} rechazó la oferta de {kind}",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.chance.label": "Probabilidad de aceptar la renovación",
+    "renewal.chance": "Probabilidad de aceptación del jugador: {chance} %",
+    "renewal.guide.summary": "Se rechaza por debajo del mínimo guardado. Por encima, salario, división adecuada y ambición, una puja de mayor reputación en este mercado o el anterior, minutos, edad, lealtad y dificultades económicas determinan la probabilidad. El sorteo queda fijado por jugador, temporada y mercado; tras un rechazo se puede volver a ofrecer en el siguiente mercado.",
+    "renewal.guide.wage": "Un salario superior al mínimo aumenta la probabilidad de aceptación. La negociación conserva la demanda y el mínimo de su apertura.",
+    "renewal.guide.staff": "Si las políticas de retención y finanzas lo permiten, el director delegado ofrece; el jugador usa el mismo cálculo que ante una oferta del propietario."
   }
 }

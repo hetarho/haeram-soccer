@@ -7052,6 +7052,14 @@
     "renewal.factor.bench": "Non è titolare nel club attuale",
     "renewal.factor.age": "Età: {age}",
     "renewal.factor.loyalty": "Fedeltà al club attuale",
-    "renewal.factor.distress": "Il club attuale è in difficoltà finanziarie"
+    "renewal.factor.distress": "Il club attuale è in difficoltà finanziarie",
+    "renewal.refused": "{name} ha rifiutato l’offerta. Il contratto attuale prosegue; si potrà riprovare dalla prossima finestra di mercato. {report}",
+    "renewal.refused.title": "{name} ha rifiutato l’offerta di {kind}",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.chance.label": "Probabilità di accettare il rinnovo",
+    "renewal.chance": "Probabilità di accettazione del giocatore: {chance}%",
+    "renewal.guide.summary": "Sotto il minimo salvato l’offerta è rifiutata. Sopra, stipendio, divisione adatta e ambizione, offerta più prestigiosa in questa finestra o nella precedente, impiego, età, fedeltà e difficoltà finanziarie determinano la probabilità. Il sorteggio è fisso per giocatore, stagione e finestra; dopo un rifiuto si può riprovare dalla prossima finestra.",
+    "renewal.guide.wage": "Uno stipendio sopra il minimo aumenta la probabilità di accettazione. Richiesta e minimo restano quelli registrati all’apertura.",
+    "renewal.guide.staff": "Se le regole di permanenza e finanza lo consentono, il direttore delegato offre; il giocatore usa lo stesso calcolo delle offerte del proprietario."
   }
 }

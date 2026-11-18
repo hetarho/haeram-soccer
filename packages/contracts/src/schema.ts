@@ -261,6 +261,13 @@ const playerShape = {
     )
     .max(2)
     .optional(),
+  renewalRefused: z
+    .strictObject({
+      year: season,
+      window: z.enum(['summer', 'winter']),
+      kind: z.enum(['renew', 'improve']),
+    })
+    .optional(),
   improveAsked: season.optional(),
   unhappy: z
     .strictObject({

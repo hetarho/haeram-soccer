@@ -7049,6 +7049,14 @@
     "renewal.factor.bench": "Mevcut kulübünde ilk 11 oyuncusu değil",
     "renewal.factor.age": "Yaş: {age}",
     "renewal.factor.loyalty": "Mevcut kulübüne sadakat",
-    "renewal.factor.distress": "Mevcut kulübü mali sıkıntıda"
+    "renewal.factor.distress": "Mevcut kulübü mali sıkıntıda",
+    "renewal.refused": "{name} teklifi reddetti. Mevcut sözleşmesi devam eder; bir sonraki transfer döneminden itibaren yeniden teklif yapılabilir. {report}",
+    "renewal.refused.title": "{name}, {kind} teklifini reddetti",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.chance.label": "Yenilemeyi kabul etme olasılığı",
+    "renewal.chance": "Oyuncunun kabul olasılığı: %{chance}",
+    "renewal.guide.summary": "Kayıtlı tabanın altı reddedilir. Üzerinde ücret, uygun lig ve hırs, bu veya önceki dönemde daha itibarlı bir teklif, süre, yaş, sadakat ve mali sıkıntı olasılığı belirler. Çekiliş oyuncu, sezon ve döneme sabittir; ret sonrası gelecek dönemde yeniden teklif edilebilir.",
+    "renewal.guide.wage": "Taban üzerindeki ücret kabul olasılığını artırır. Görüşme, açılışta kaydedilen talep ve tabanı korur.",
+    "renewal.guide.staff": "Tutma ve mali kurallar izin verirse yetkili direktör teklif verir; oyuncu, sahibin teklifiyle aynı kabul hesabını kullanır."
   }
 }

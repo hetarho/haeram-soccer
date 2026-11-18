@@ -7625,4 +7625,16 @@ export const sourceMessages = {
   'renewal.factor.age': '나이 {age}세',
   'renewal.factor.loyalty': '현재 구단에 대한 충성심',
   'renewal.factor.distress': '현재 구단이 재정난에 처함',
+  'renewal.refused':
+    '{name} 선수가 제안을 거절했습니다. 기존 계약은 유지되며 다음 이적시장부터 다시 제안할 수 있습니다. {report}',
+  'renewal.refused.title': '{name} 선수의 {kind} 제안 거절',
+  'renewal.accepted.report': '{detail} · {report}',
+  'renewal.chance.label': '재계약 수락 확률',
+  'renewal.chance': '선수 수락 확률 {chance}%',
+  'renewal.guide.summary':
+    '저장된 하한 미만은 거절합니다. 하한 이상은 연봉·능력에 맞는 리그와 야망·이번 또는 지난 시장의 더 명성 높은 구단 입찰·출전·나이·충성심·재정난으로 수락 확률을 계산합니다. 선수와 시즌·이적시장에 고정된 추첨으로 답하며, 거절하면 다음 시장부터 다시 제안할 수 있습니다.',
+  'renewal.guide.wage':
+    '하한보다 높은 연봉은 수락 확률을 높입니다. 열린 협상의 요구액과 하한은 협상 시작 때 확정된 금액입니다.',
+  'renewal.guide.staff':
+    '위임 시 유지 기준과 재정 기준을 통과하면 단장이 제안하며, 선수는 소유자 제안과 같은 확률 계산으로 답합니다.',
 } as const;

@@ -1,5 +1,6 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import * as primitives from './primitives';
 import { country, currency, footballIndex, priceIndex } from '../../catalogs/src/index';
 import type {
   AgentRating,
@@ -25,7 +26,7 @@ import {
   closeSeason,
   clubById,
   clubOf,
-  contractTalks,
+  contractTalks as engineContractTalks,
   currentDay,
   isDelegated,
   divisionFor,
@@ -38,7 +39,7 @@ import {
   marketWage,
   moneyLabel,
   npcSquad,
-  operate,
+  operate as engineOperate,
   operatingCosts,
   overall,
   ownLeagueClubs,
@@ -86,6 +87,29 @@ import { simulatedWorld } from '../../../tests/fixtures/worlds';
 // The constants (MARKET_CONFIG) follow the career calibration (→ECON-29), so these tests hold the
 // CLUB-25 targets, not the constants.
 const founding = { country: 'ENG' as const, seed: 'market-wages' };
+/** These integration scenarios isolate money/terms policy with a willing player. The actual
+ * seeded refusal, replay and window boundaries are covered in contracts-renewal.unit.test.ts.
+ * Scope the draw to the tested operation: cached world builders always retain real renewal draws.
+ */
+function withWillingPlayer<T>(act: () => T): T {
+  const original = primitives.random;
+  const spy = vi
+    .spyOn(primitives, 'random')
+    .mockImplementation((key) => (key.includes(':renew:') ? () => 0 : original(key)));
+  try {
+    return act();
+  } finally {
+    spy.mockRestore();
+  }
+}
+function contractTalks(w: World) {
+  return withWillingPlayer(() => engineContractTalks(w));
+}
+function operate(w: World, command: Parameters<typeof engineOperate>[1]) {
+  return command.type === 'contract-offer'
+    ? withWillingPlayer(() => engineOperate(w, command))
+    : engineOperate(w, command);
+}
 /** The club on the released model: contracts, not the match model, are the subject. */
 function world(country: 'ENG' | 'ESP' = 'ENG', year?: number) {
   const w = simulatedWorld({ ...founding, country, ...(year === undefined ? {} : { year }) });
