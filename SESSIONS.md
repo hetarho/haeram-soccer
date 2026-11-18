@@ -164,6 +164,7 @@
 - 261118 decided T971: 하한 미달이나 실제 위기 단계가 없는 경우의 매각 압력은 위임된 협상 가능 선수의 호가 기준을 5%p 낮추는 것으로 정했다. 기존 CLUB-52 위기 요인과 중복 적용하거나 명단 정책을 추가하는 대안 대신, CLUB-18의 호가 조정으로만 적용하고 보고서에 이유를 적는다. CLUB r83, 계획 커밋 e60819c1.
 - 261118 suggest T977 ECON-36 CLUB-46: Review the joint wage, fee and funding assumptions. Six paired wage levels left first-flight fee receipts and other ECON-36 bands outside range. The best wage level, 2700, leaves the 2003 mean quote at 2.98 times its reference. The exact misses and per-country books are in artifacts/benchmarks/T977.
 - 261118 suggest T978 LEAGUE-10 WORLD-16 ECON-36 CLUB-46 PLAYER-17 MATCH-23: The full 0.8.12 calibration leaves major linked misses in division level, upward moves, administration and transfer value. Review the joint funding, price and academy rules with the exact T977/T978 measurements. The refill-only 10→6 diagnostic worsened early coverage. The 1930–1975 cohort also saw zero six-point OVR drops in the tracked two-year onset interval.
+- 261118 suggest T961: The recovery makes likely-taker ranking work with a partial starting eleven. Audit direct recruitment preview and the improves filter for the older assumption that every formation slot has a current player.
 
 ## unlanded
 | id | tag | branch | commit | at |
