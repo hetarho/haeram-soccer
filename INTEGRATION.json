@@ -194,541 +194,545 @@
       "reason": "session-ended"
     }
   },
-  "gate": {
-    "token": "18274191-503d-4e61-932e-ca822843f7cc",
-    "owner": "cf17",
-    "via": "merge",
-    "executor": {
-      "host": "ihaelam-ui-MacBookPro.local",
-      "pid": 33354
-    },
-    "phase": "failed",
-    "land": "main",
-    "base": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-    "cohort": [
-      {
-        "id": "8b7b5ad8543dbf211daaa575",
-        "tag": "ws16",
-        "branch": "gusta-session-self-improve-ws16-c1384351",
-        "head": "fdfe2e23fa28bf51b69c130e60013a85ff13d74f",
-        "agentChecks": [],
-        "verificationCommands": [
-          "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
-          "node --import tsx /tmp/ws16-verify-world.mjs .",
-          "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
-        ],
-        "publication": "merge"
+  "gate": null,
+  "history": [
+    {
+      "token": "18274191-503d-4e61-932e-ca822843f7cc",
+      "owner": "cf17",
+      "via": "merge",
+      "executor": {
+        "host": "ihaelam-ui-MacBookPro.local",
+        "pid": 33354
       },
-      {
-        "id": "7a88e7723e75cfe5a6df9ab7",
-        "tag": "nf16",
-        "branch": "gusta-session-start-nf16-46eb8aaa",
-        "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
-        "agentChecks": [],
-        "verificationCommands": [],
-        "publication": "merge"
-      },
-      {
-        "id": "2c0e6451d9095ff99d83c89a",
-        "tag": "pf17",
-        "branch": "gusta-session-self-improve-pf17-c279c8c5",
-        "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
-        "agentChecks": [],
-        "verificationCommands": [],
-        "publication": "merge"
-      },
-      {
-        "id": "8a08fb5e0dc073e82af22692",
-        "tag": "44205ffd",
-        "branch": "gusta-session-start-iv17-d1ff7e09",
-        "head": "2ed74c67faca287b1df36b82b0f68a6215b29ee7",
-        "agentChecks": [],
-        "verificationCommands": [],
-        "publication": "merge"
-      },
-      {
-        "id": "27b831eabec55286522b5ec4",
-        "tag": "cf17",
-        "branch": "gusta-session-start-cf17-c5483839",
-        "head": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-        "agentChecks": [],
-        "verificationCommands": [],
-        "publication": "merge"
-      }
-    ],
-    "deferred": [
-      {
-        "id": "9e5ff6a75bd0957f25e20202",
-        "tag": "iv17",
-        "host": "hq-dev1-pve2-vm2",
-        "branch": "gusta-session-start-iv17-8fc58b3e",
-        "status": "working",
-        "at": "2026-11-17T02:50:30.664Z",
-        "reason": "no-signal"
-      },
-      {
-        "id": "ed23b71f67600a8391865160",
-        "tag": "iv17",
-        "host": "hq-dev1-pve2-vm2",
-        "branch": "gusta-session-start-iv17-d1ff7e09",
-        "status": "working",
-        "at": "2026-11-17T03:13:48.704Z",
-        "reason": "no-signal"
-      },
-      {
-        "id": "cb6d2aaafc008c50895c56bb",
-        "tag": "tm17",
-        "host": "hq-dev1-pve2-vm2",
-        "branch": "gusta-session-self-improve-tm17-ff4b9f94",
-        "status": "working",
-        "at": "2026-11-17T04:46:07.830Z",
-        "reason": "no-signal"
-      },
-      {
-        "id": "3bfc1d35823365efd50baab5",
-        "tag": "lc17",
-        "host": "hq-dev1-pve2-vm2",
-        "branch": "gusta-session-self-improve-lc17-37ba91cb",
-        "status": "working",
-        "at": "2026-11-17T08:28:53.386Z",
-        "reason": "no-signal"
-      }
-    ],
-    "at": "2026-11-17T13:57:36.470Z",
-    "deadline": "2026-11-17T14:57:33.027Z",
-    "candidate": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-    "checks": [
-      {
-        "command": "verification-plan:scripts/verification-plan.json",
-        "schemaVersion": 1,
-        "ok": true,
-        "exitCode": 0,
-        "cached": false,
-        "timedOut": false,
-        "cancelled": false,
-        "stale": false,
-        "ms": 868687,
-        "scope": {
-          "TIER": "batch",
-          "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-          "TASK": "",
-          "TASKS": ""
+      "phase": "expired",
+      "land": "main",
+      "base": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+      "cohort": [
+        {
+          "id": "8b7b5ad8543dbf211daaa575",
+          "tag": "ws16",
+          "branch": "gusta-session-self-improve-ws16-c1384351",
+          "head": "fdfe2e23fa28bf51b69c130e60013a85ff13d74f",
+          "agentChecks": [],
+          "verificationCommands": [
+            "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+            "node --import tsx /tmp/ws16-verify-world.mjs .",
+            "node --import tsx artifacts/verification/ws16/verify-world.mjs ."
+          ],
+          "publication": "merge"
         },
-        "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-        "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
-        "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-90320235-4025-4c1f-934b-64cb8f3cc749.log",
-        "tail": [
-          " Test Files  513 passed (513)",
-          "      Tests  4311 passed | 3 skipped (4314)",
-          "   Start at  22:58:22",
-          "   Duration  837.85s (tests 96%, import 3%, transform 1%)",
-          "",
-          "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/vitest-results.json",
-          "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":37055,\"started\":\"2026-11-17T13:58:22.106Z\",\"exitCode\":0,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-17T14:12:18.936Z\",\"elapsedMs\":838805,\"commandExitCode\":0,\"afterExitCode\":0}",
-          "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/report.json\"}"
-        ],
-        "failedTests": [],
-        "plan": {
-          "source": "scripts/verification-plan.json",
-          "checks": [
-            "verify-batch"
-          ]
+        {
+          "id": "7a88e7723e75cfe5a6df9ab7",
+          "tag": "nf16",
+          "branch": "gusta-session-start-nf16-46eb8aaa",
+          "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
+          "agentChecks": [],
+          "verificationCommands": [],
+          "publication": "merge"
         },
-        "checks": [
-          {
-            "id": "verify-batch",
-            "command": "pnpm run verify:batch",
-            "inputs": [
-              "*.json",
-              "*.mjs",
-              "*.toml",
-              "*.ts",
-              "*.yaml",
-              ".github",
-              ".gitignore",
-              ".node-version",
-              ".prettierignore",
-              "apps",
-              "artifacts",
-              "packages",
-              "patches",
-              "scripts",
-              "tests"
-            ],
-            "inputFingerprint": "dd248c4895c21e5574b9b5ef69a408961c8367fbe5c26f336d85134ed95632f5",
-            "executionFingerprint": "4bfd6e139643743714f3e85e1dbaf9a34954873d9728cb97ea6ec1b2a5fad015",
-            "ok": true,
-            "status": "passed",
-            "exitCode": 0,
-            "cached": false,
-            "timedOut": false,
-            "cancelled": false,
-            "stale": false,
-            "ms": 868187,
-            "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-90320235-4025-4c1f-934b-64cb8f3cc749.log",
-            "failedTests": [],
-            "tail": [
-              " Test Files  513 passed (513)",
-              "      Tests  4311 passed | 3 skipped (4314)",
-              "   Start at  22:58:22",
-              "   Duration  837.85s (tests 96%, import 3%, transform 1%)",
-              "",
-              "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/vitest-results.json",
-              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":37055,\"started\":\"2026-11-17T13:58:22.106Z\",\"exitCode\":0,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-17T14:12:18.936Z\",\"elapsedMs\":838805,\"commandExitCode\":0,\"afterExitCode\":0}",
-              "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/report.json\"}"
-            ],
-            "cleanup": {
-              "scope": "process-group",
-              "signalled": false,
-              "escalated": false
-            }
-          }
-        ],
-        "failedCheckIds": [],
-        "cleanup": {
-          "scope": "process-group",
-          "signalled": false,
-          "escalated": false
+        {
+          "id": "2c0e6451d9095ff99d83c89a",
+          "tag": "pf17",
+          "branch": "gusta-session-self-improve-pf17-c279c8c5",
+          "head": "3dc8320741ca5d85f320482e25fdea9e4c2d0f98",
+          "agentChecks": [],
+          "verificationCommands": [],
+          "publication": "merge"
+        },
+        {
+          "id": "8a08fb5e0dc073e82af22692",
+          "tag": "44205ffd",
+          "branch": "gusta-session-start-iv17-d1ff7e09",
+          "head": "2ed74c67faca287b1df36b82b0f68a6215b29ee7",
+          "agentChecks": [],
+          "verificationCommands": [],
+          "publication": "merge"
+        },
+        {
+          "id": "27b831eabec55286522b5ec4",
+          "tag": "cf17",
+          "branch": "gusta-session-start-cf17-c5483839",
+          "head": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+          "agentChecks": [],
+          "verificationCommands": [],
+          "publication": "merge"
         }
-      },
-      {
-        "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
-        "schemaVersion": 1,
-        "ok": false,
-        "exitCode": 1,
-        "cached": false,
-        "timedOut": false,
-        "cancelled": false,
-        "stale": false,
-        "ms": 272,
-        "scope": {
-          "TIER": "batch",
-          "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-          "TASK": "",
-          "TASKS": ""
+      ],
+      "deferred": [
+        {
+          "id": "9e5ff6a75bd0957f25e20202",
+          "tag": "iv17",
+          "host": "hq-dev1-pve2-vm2",
+          "branch": "gusta-session-start-iv17-8fc58b3e",
+          "status": "working",
+          "at": "2026-11-17T02:50:30.664Z",
+          "reason": "no-signal"
         },
-        "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-        "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
-        "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-b3e02971-f9ee-4864-a928-0cf04a77c2e3.log",
-        "tail": [
-          "    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
-          "    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
-          "    at node:internal/main/run_main_module:33:47 {",
-          "  code: 'MODULE_NOT_FOUND',",
-          "  requireStack: []",
-          "}",
-          "",
-          "Node.js v26.8.1"
-        ],
-        "failedTests": [],
-        "cleanup": {
-          "scope": "process-group",
-          "signalled": false,
-          "escalated": false
-        }
-      },
-      {
-        "command": "node --import tsx /tmp/ws16-verify-world.mjs .",
-        "schemaVersion": 1,
-        "ok": false,
-        "exitCode": 1,
-        "cached": false,
-        "timedOut": false,
-        "cancelled": false,
-        "stale": false,
-        "ms": 186,
-        "scope": {
-          "TIER": "batch",
-          "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-          "TASK": "",
-          "TASKS": ""
+        {
+          "id": "ed23b71f67600a8391865160",
+          "tag": "iv17",
+          "host": "hq-dev1-pve2-vm2",
+          "branch": "gusta-session-start-iv17-d1ff7e09",
+          "status": "working",
+          "at": "2026-11-17T03:13:48.704Z",
+          "reason": "no-signal"
         },
-        "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-        "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
-        "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-5a5c2fbc-84a3-41b6-88ad-cbfe67b8b200.log",
-        "tail": [
-          "    at resolveDirectorySync (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:12398)",
-          "    at resolveTsPathsSync (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:13605)",
-          "    at resolve (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:16832) {",
-          "  code: 'ERR_MODULE_NOT_FOUND',",
-          "  url: 'file:///tmp/ws16-verify-world.mjs'",
-          "}",
-          "",
-          "Node.js v26.8.1"
-        ],
-        "failedTests": [],
-        "cleanup": {
-          "scope": "process-group",
-          "signalled": false,
-          "escalated": false
-        }
-      },
-      {
-        "command": "node --import tsx artifacts/verification/ws16/verify-world.mjs .",
-        "schemaVersion": 1,
-        "ok": true,
-        "exitCode": 0,
-        "cached": false,
-        "timedOut": false,
-        "cancelled": false,
-        "stale": false,
-        "ms": 24994,
-        "scope": {
-          "TIER": "batch",
-          "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-          "TASK": "",
-          "TASKS": ""
+        {
+          "id": "cb6d2aaafc008c50895c56bb",
+          "tag": "tm17",
+          "host": "hq-dev1-pve2-vm2",
+          "branch": "gusta-session-self-improve-tm17-ff4b9f94",
+          "status": "working",
+          "at": "2026-11-17T04:46:07.830Z",
+          "reason": "no-signal"
         },
-        "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-        "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
-        "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-b9d4a329-f08b-4124-a734-44ed264b136d.log",
-        "tail": [
-          "{\"year\":1933,\"overlaps\":0,\"ms\":5311}",
-          "{\"year\":1934,\"overlaps\":0,\"ms\":7591}",
-          "{\"year\":1935,\"overlaps\":0,\"ms\":10038}",
-          "{\"year\":1936,\"overlaps\":0,\"ms\":12634}",
-          "{\"year\":1937,\"overlaps\":0,\"ms\":15027}",
-          "{\"year\":1938,\"overlaps\":0,\"ms\":17358}",
-          "{\"year\":1946,\"overlaps\":0,\"ms\":21130}",
-          "{\"head\":\"411eb769e7d278dce928bb4e20ff61dc093263cb\",\"seed\":\"save-overlap-diagnosis\",\"engine\":\"0.8.10\",\"year\":1946,\"boundaries\":[{\"year\":1931,\"overlaps\":0,\"ms\":1269},{\"year\":1932,\"overlaps\":0,\"ms\":3228},{\"year\":1933,\"overlaps\":0,\"ms\":5311},{\"year\":1934,\"overlaps\":0,\"ms\":7591},{\"year\":1935,\"overlaps\":0,\"ms\":10038},{\"year\":1936,\"overlaps\":0,\"ms\":12634},{\"year\":1937,\"overlaps\":0,\"ms\":15027},{\"year\":1938,\"overlaps\":0,\"ms\":17358},{\"year\":1946,\"overlaps\":0,\"ms\":21130}],\"overlaps\":0,\"validation\":true,\"checkpoint\":true,\"portableDecode\":true,\"canonicalEqual\":true,\"bytes\":2845797,\"ms\":24544}"
-        ],
-        "failedTests": [],
-        "cleanup": {
-          "scope": "process-group",
-          "signalled": false,
-          "escalated": false
+        {
+          "id": "3bfc1d35823365efd50baab5",
+          "tag": "lc17",
+          "host": "hq-dev1-pve2-vm2",
+          "branch": "gusta-session-self-improve-lc17-37ba91cb",
+          "status": "working",
+          "at": "2026-11-17T08:28:53.386Z",
+          "reason": "no-signal"
         }
-      }
-    ],
-    "agentChecks": [],
-    "rounds": [
-      {
-        "candidate": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-        "checks": [
-          {
-            "command": "verification-plan:scripts/verification-plan.json",
-            "schemaVersion": 1,
-            "ok": true,
-            "exitCode": 0,
-            "cached": false,
-            "timedOut": false,
-            "cancelled": false,
-            "stale": false,
-            "ms": 868687,
-            "scope": {
-              "TIER": "batch",
-              "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-              "TASK": "",
-              "TASKS": ""
-            },
-            "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-            "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
-            "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-90320235-4025-4c1f-934b-64cb8f3cc749.log",
-            "tail": [
-              " Test Files  513 passed (513)",
-              "      Tests  4311 passed | 3 skipped (4314)",
-              "   Start at  22:58:22",
-              "   Duration  837.85s (tests 96%, import 3%, transform 1%)",
-              "",
-              "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/vitest-results.json",
-              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":37055,\"started\":\"2026-11-17T13:58:22.106Z\",\"exitCode\":0,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-17T14:12:18.936Z\",\"elapsedMs\":838805,\"commandExitCode\":0,\"afterExitCode\":0}",
-              "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/report.json\"}"
-            ],
-            "failedTests": [],
-            "plan": {
-              "source": "scripts/verification-plan.json",
-              "checks": [
-                "verify-batch"
-              ]
-            },
+      ],
+      "at": "2026-11-18T00:57:50.708Z",
+      "deadline": "2026-11-17T14:57:33.027Z",
+      "candidate": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+      "checks": [
+        {
+          "command": "verification-plan:scripts/verification-plan.json",
+          "schemaVersion": 1,
+          "ok": true,
+          "exitCode": 0,
+          "cached": false,
+          "timedOut": false,
+          "cancelled": false,
+          "stale": false,
+          "ms": 868687,
+          "scope": {
+            "TIER": "batch",
+            "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+            "TASK": "",
+            "TASKS": ""
+          },
+          "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+          "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
+          "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-90320235-4025-4c1f-934b-64cb8f3cc749.log",
+          "tail": [
+            " Test Files  513 passed (513)",
+            "      Tests  4311 passed | 3 skipped (4314)",
+            "   Start at  22:58:22",
+            "   Duration  837.85s (tests 96%, import 3%, transform 1%)",
+            "",
+            "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/vitest-results.json",
+            "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":37055,\"started\":\"2026-11-17T13:58:22.106Z\",\"exitCode\":0,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-17T14:12:18.936Z\",\"elapsedMs\":838805,\"commandExitCode\":0,\"afterExitCode\":0}",
+            "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/report.json\"}"
+          ],
+          "failedTests": [],
+          "plan": {
+            "source": "scripts/verification-plan.json",
             "checks": [
-              {
-                "id": "verify-batch",
-                "command": "pnpm run verify:batch",
-                "inputs": [
-                  "*.json",
-                  "*.mjs",
-                  "*.toml",
-                  "*.ts",
-                  "*.yaml",
-                  ".github",
-                  ".gitignore",
-                  ".node-version",
-                  ".prettierignore",
-                  "apps",
-                  "artifacts",
-                  "packages",
-                  "patches",
-                  "scripts",
-                  "tests"
-                ],
-                "inputFingerprint": "dd248c4895c21e5574b9b5ef69a408961c8367fbe5c26f336d85134ed95632f5",
-                "executionFingerprint": "4bfd6e139643743714f3e85e1dbaf9a34954873d9728cb97ea6ec1b2a5fad015",
-                "ok": true,
-                "status": "passed",
-                "exitCode": 0,
-                "cached": false,
-                "timedOut": false,
-                "cancelled": false,
-                "stale": false,
-                "ms": 868187,
-                "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-90320235-4025-4c1f-934b-64cb8f3cc749.log",
-                "failedTests": [],
-                "tail": [
-                  " Test Files  513 passed (513)",
-                  "      Tests  4311 passed | 3 skipped (4314)",
-                  "   Start at  22:58:22",
-                  "   Duration  837.85s (tests 96%, import 3%, transform 1%)",
-                  "",
-                  "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/vitest-results.json",
-                  "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":37055,\"started\":\"2026-11-17T13:58:22.106Z\",\"exitCode\":0,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-17T14:12:18.936Z\",\"elapsedMs\":838805,\"commandExitCode\":0,\"afterExitCode\":0}",
-                  "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/report.json\"}"
-                ],
-                "cleanup": {
-                  "scope": "process-group",
-                  "signalled": false,
-                  "escalated": false
-                }
+              "verify-batch"
+            ]
+          },
+          "checks": [
+            {
+              "id": "verify-batch",
+              "command": "pnpm run verify:batch",
+              "inputs": [
+                "*.json",
+                "*.mjs",
+                "*.toml",
+                "*.ts",
+                "*.yaml",
+                ".github",
+                ".gitignore",
+                ".node-version",
+                ".prettierignore",
+                "apps",
+                "artifacts",
+                "packages",
+                "patches",
+                "scripts",
+                "tests"
+              ],
+              "inputFingerprint": "dd248c4895c21e5574b9b5ef69a408961c8367fbe5c26f336d85134ed95632f5",
+              "executionFingerprint": "4bfd6e139643743714f3e85e1dbaf9a34954873d9728cb97ea6ec1b2a5fad015",
+              "ok": true,
+              "status": "passed",
+              "exitCode": 0,
+              "cached": false,
+              "timedOut": false,
+              "cancelled": false,
+              "stale": false,
+              "ms": 868187,
+              "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-90320235-4025-4c1f-934b-64cb8f3cc749.log",
+              "failedTests": [],
+              "tail": [
+                " Test Files  513 passed (513)",
+                "      Tests  4311 passed | 3 skipped (4314)",
+                "   Start at  22:58:22",
+                "   Duration  837.85s (tests 96%, import 3%, transform 1%)",
+                "",
+                "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/vitest-results.json",
+                "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":37055,\"started\":\"2026-11-17T13:58:22.106Z\",\"exitCode\":0,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-17T14:12:18.936Z\",\"elapsedMs\":838805,\"commandExitCode\":0,\"afterExitCode\":0}",
+                "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/report.json\"}"
+              ],
+              "cleanup": {
+                "scope": "process-group",
+                "signalled": false,
+                "escalated": false
               }
-            ],
-            "failedCheckIds": [],
-            "cleanup": {
-              "scope": "process-group",
-              "signalled": false,
-              "escalated": false
             }
-          },
-          {
-            "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
-            "schemaVersion": 1,
-            "ok": false,
-            "exitCode": 1,
-            "cached": false,
-            "timedOut": false,
-            "cancelled": false,
-            "stale": false,
-            "ms": 272,
-            "scope": {
-              "TIER": "batch",
-              "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-              "TASK": "",
-              "TASKS": ""
-            },
-            "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-            "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
-            "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-b3e02971-f9ee-4864-a928-0cf04a77c2e3.log",
-            "tail": [
-              "    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
-              "    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
-              "    at node:internal/main/run_main_module:33:47 {",
-              "  code: 'MODULE_NOT_FOUND',",
-              "  requireStack: []",
-              "}",
-              "",
-              "Node.js v26.8.1"
-            ],
-            "failedTests": [],
-            "cleanup": {
-              "scope": "process-group",
-              "signalled": false,
-              "escalated": false
-            }
-          },
-          {
-            "command": "node --import tsx /tmp/ws16-verify-world.mjs .",
-            "schemaVersion": 1,
-            "ok": false,
-            "exitCode": 1,
-            "cached": false,
-            "timedOut": false,
-            "cancelled": false,
-            "stale": false,
-            "ms": 186,
-            "scope": {
-              "TIER": "batch",
-              "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-              "TASK": "",
-              "TASKS": ""
-            },
-            "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-            "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
-            "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-5a5c2fbc-84a3-41b6-88ad-cbfe67b8b200.log",
-            "tail": [
-              "    at resolveDirectorySync (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:12398)",
-              "    at resolveTsPathsSync (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:13605)",
-              "    at resolve (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:16832) {",
-              "  code: 'ERR_MODULE_NOT_FOUND',",
-              "  url: 'file:///tmp/ws16-verify-world.mjs'",
-              "}",
-              "",
-              "Node.js v26.8.1"
-            ],
-            "failedTests": [],
-            "cleanup": {
-              "scope": "process-group",
-              "signalled": false,
-              "escalated": false
-            }
-          },
-          {
-            "command": "node --import tsx artifacts/verification/ws16/verify-world.mjs .",
-            "schemaVersion": 1,
-            "ok": true,
-            "exitCode": 0,
-            "cached": false,
-            "timedOut": false,
-            "cancelled": false,
-            "stale": false,
-            "ms": 24994,
-            "scope": {
-              "TIER": "batch",
-              "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
-              "TASK": "",
-              "TASKS": ""
-            },
-            "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
-            "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
-            "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-b9d4a329-f08b-4124-a734-44ed264b136d.log",
-            "tail": [
-              "{\"year\":1933,\"overlaps\":0,\"ms\":5311}",
-              "{\"year\":1934,\"overlaps\":0,\"ms\":7591}",
-              "{\"year\":1935,\"overlaps\":0,\"ms\":10038}",
-              "{\"year\":1936,\"overlaps\":0,\"ms\":12634}",
-              "{\"year\":1937,\"overlaps\":0,\"ms\":15027}",
-              "{\"year\":1938,\"overlaps\":0,\"ms\":17358}",
-              "{\"year\":1946,\"overlaps\":0,\"ms\":21130}",
-              "{\"head\":\"411eb769e7d278dce928bb4e20ff61dc093263cb\",\"seed\":\"save-overlap-diagnosis\",\"engine\":\"0.8.10\",\"year\":1946,\"boundaries\":[{\"year\":1931,\"overlaps\":0,\"ms\":1269},{\"year\":1932,\"overlaps\":0,\"ms\":3228},{\"year\":1933,\"overlaps\":0,\"ms\":5311},{\"year\":1934,\"overlaps\":0,\"ms\":7591},{\"year\":1935,\"overlaps\":0,\"ms\":10038},{\"year\":1936,\"overlaps\":0,\"ms\":12634},{\"year\":1937,\"overlaps\":0,\"ms\":15027},{\"year\":1938,\"overlaps\":0,\"ms\":17358},{\"year\":1946,\"overlaps\":0,\"ms\":21130}],\"overlaps\":0,\"validation\":true,\"checkpoint\":true,\"portableDecode\":true,\"canonicalEqual\":true,\"bytes\":2845797,\"ms\":24544}"
-            ],
-            "failedTests": [],
-            "cleanup": {
-              "scope": "process-group",
-              "signalled": false,
-              "escalated": false
-            }
+          ],
+          "failedCheckIds": [],
+          "cleanup": {
+            "scope": "process-group",
+            "signalled": false,
+            "escalated": false
           }
-        ],
-        "at": "2026-11-17T14:12:49.352Z"
-      }
-    ],
-    "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc",
-    "branch": "integration/18274191-503d-4e61-932e-ca822843f7cc",
-    "version": {
-      "skipped": "manual",
-      "from": "0.8.9",
-      "to": "0.8.10"
-    },
-    "ciCommands": [
-      "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:contract && pnpm run validate:catalogs && pnpm run validate:presentation && pnpm run validate:i18n && pnpm run build",
-      "pnpm run test:unit",
-      "pnpm run test:integration --shard=1/3",
-      "pnpm run test:integration --shard=2/3",
-      "pnpm run test:integration --shard=3/3",
-      "pnpm exec playwright test --project=chromium --shard=1/3",
-      "pnpm exec playwright test --project=chromium --shard=2/3",
-      "pnpm exec playwright test --project=chromium --shard=3/3"
-    ]
-  },
-  "history": [],
+        },
+        {
+          "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+          "schemaVersion": 1,
+          "ok": false,
+          "exitCode": 1,
+          "cached": false,
+          "timedOut": false,
+          "cancelled": false,
+          "stale": false,
+          "ms": 272,
+          "scope": {
+            "TIER": "batch",
+            "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+            "TASK": "",
+            "TASKS": ""
+          },
+          "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+          "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
+          "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-b3e02971-f9ee-4864-a928-0cf04a77c2e3.log",
+          "tail": [
+            "    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+            "    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+            "    at node:internal/main/run_main_module:33:47 {",
+            "  code: 'MODULE_NOT_FOUND',",
+            "  requireStack: []",
+            "}",
+            "",
+            "Node.js v26.8.1"
+          ],
+          "failedTests": [],
+          "cleanup": {
+            "scope": "process-group",
+            "signalled": false,
+            "escalated": false
+          }
+        },
+        {
+          "command": "node --import tsx /tmp/ws16-verify-world.mjs .",
+          "schemaVersion": 1,
+          "ok": false,
+          "exitCode": 1,
+          "cached": false,
+          "timedOut": false,
+          "cancelled": false,
+          "stale": false,
+          "ms": 186,
+          "scope": {
+            "TIER": "batch",
+            "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+            "TASK": "",
+            "TASKS": ""
+          },
+          "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+          "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
+          "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-5a5c2fbc-84a3-41b6-88ad-cbfe67b8b200.log",
+          "tail": [
+            "    at resolveDirectorySync (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:12398)",
+            "    at resolveTsPathsSync (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:13605)",
+            "    at resolve (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:16832) {",
+            "  code: 'ERR_MODULE_NOT_FOUND',",
+            "  url: 'file:///tmp/ws16-verify-world.mjs'",
+            "}",
+            "",
+            "Node.js v26.8.1"
+          ],
+          "failedTests": [],
+          "cleanup": {
+            "scope": "process-group",
+            "signalled": false,
+            "escalated": false
+          }
+        },
+        {
+          "command": "node --import tsx artifacts/verification/ws16/verify-world.mjs .",
+          "schemaVersion": 1,
+          "ok": true,
+          "exitCode": 0,
+          "cached": false,
+          "timedOut": false,
+          "cancelled": false,
+          "stale": false,
+          "ms": 24994,
+          "scope": {
+            "TIER": "batch",
+            "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+            "TASK": "",
+            "TASKS": ""
+          },
+          "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+          "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
+          "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-b9d4a329-f08b-4124-a734-44ed264b136d.log",
+          "tail": [
+            "{\"year\":1933,\"overlaps\":0,\"ms\":5311}",
+            "{\"year\":1934,\"overlaps\":0,\"ms\":7591}",
+            "{\"year\":1935,\"overlaps\":0,\"ms\":10038}",
+            "{\"year\":1936,\"overlaps\":0,\"ms\":12634}",
+            "{\"year\":1937,\"overlaps\":0,\"ms\":15027}",
+            "{\"year\":1938,\"overlaps\":0,\"ms\":17358}",
+            "{\"year\":1946,\"overlaps\":0,\"ms\":21130}",
+            "{\"head\":\"411eb769e7d278dce928bb4e20ff61dc093263cb\",\"seed\":\"save-overlap-diagnosis\",\"engine\":\"0.8.10\",\"year\":1946,\"boundaries\":[{\"year\":1931,\"overlaps\":0,\"ms\":1269},{\"year\":1932,\"overlaps\":0,\"ms\":3228},{\"year\":1933,\"overlaps\":0,\"ms\":5311},{\"year\":1934,\"overlaps\":0,\"ms\":7591},{\"year\":1935,\"overlaps\":0,\"ms\":10038},{\"year\":1936,\"overlaps\":0,\"ms\":12634},{\"year\":1937,\"overlaps\":0,\"ms\":15027},{\"year\":1938,\"overlaps\":0,\"ms\":17358},{\"year\":1946,\"overlaps\":0,\"ms\":21130}],\"overlaps\":0,\"validation\":true,\"checkpoint\":true,\"portableDecode\":true,\"canonicalEqual\":true,\"bytes\":2845797,\"ms\":24544}"
+          ],
+          "failedTests": [],
+          "cleanup": {
+            "scope": "process-group",
+            "signalled": false,
+            "escalated": false
+          }
+        }
+      ],
+      "agentChecks": [],
+      "rounds": [
+        {
+          "candidate": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+          "checks": [
+            {
+              "command": "verification-plan:scripts/verification-plan.json",
+              "schemaVersion": 1,
+              "ok": true,
+              "exitCode": 0,
+              "cached": false,
+              "timedOut": false,
+              "cancelled": false,
+              "stale": false,
+              "ms": 868687,
+              "scope": {
+                "TIER": "batch",
+                "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+                "TASK": "",
+                "TASKS": ""
+              },
+              "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+              "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
+              "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-90320235-4025-4c1f-934b-64cb8f3cc749.log",
+              "tail": [
+                " Test Files  513 passed (513)",
+                "      Tests  4311 passed | 3 skipped (4314)",
+                "   Start at  22:58:22",
+                "   Duration  837.85s (tests 96%, import 3%, transform 1%)",
+                "",
+                "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/vitest-results.json",
+                "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":37055,\"started\":\"2026-11-17T13:58:22.106Z\",\"exitCode\":0,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-17T14:12:18.936Z\",\"elapsedMs\":838805,\"commandExitCode\":0,\"afterExitCode\":0}",
+                "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/report.json\"}"
+              ],
+              "failedTests": [],
+              "plan": {
+                "source": "scripts/verification-plan.json",
+                "checks": [
+                  "verify-batch"
+                ]
+              },
+              "checks": [
+                {
+                  "id": "verify-batch",
+                  "command": "pnpm run verify:batch",
+                  "inputs": [
+                    "*.json",
+                    "*.mjs",
+                    "*.toml",
+                    "*.ts",
+                    "*.yaml",
+                    ".github",
+                    ".gitignore",
+                    ".node-version",
+                    ".prettierignore",
+                    "apps",
+                    "artifacts",
+                    "packages",
+                    "patches",
+                    "scripts",
+                    "tests"
+                  ],
+                  "inputFingerprint": "dd248c4895c21e5574b9b5ef69a408961c8367fbe5c26f336d85134ed95632f5",
+                  "executionFingerprint": "4bfd6e139643743714f3e85e1dbaf9a34954873d9728cb97ea6ec1b2a5fad015",
+                  "ok": true,
+                  "status": "passed",
+                  "exitCode": 0,
+                  "cached": false,
+                  "timedOut": false,
+                  "cancelled": false,
+                  "stale": false,
+                  "ms": 868187,
+                  "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-90320235-4025-4c1f-934b-64cb8f3cc749.log",
+                  "failedTests": [],
+                  "tail": [
+                    " Test Files  513 passed (513)",
+                    "      Tests  4311 passed | 3 skipped (4314)",
+                    "   Start at  22:58:22",
+                    "   Duration  837.85s (tests 96%, import 3%, transform 1%)",
+                    "",
+                    "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/vitest-results.json",
+                    "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"passed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":37055,\"started\":\"2026-11-17T13:58:22.106Z\",\"exitCode\":0,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-17T14:12:18.936Z\",\"elapsedMs\":838805,\"commandExitCode\":0,\"afterExitCode\":0}",
+                    "{\"event\":\"verification-finished\",\"status\":\"passed\",\"passed\":true,\"exitCode\":0,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/.tmp/verification/2026-11-17T13-57-51-213Z-36459/report.json\"}"
+                  ],
+                  "cleanup": {
+                    "scope": "process-group",
+                    "signalled": false,
+                    "escalated": false
+                  }
+                }
+              ],
+              "failedCheckIds": [],
+              "cleanup": {
+                "scope": "process-group",
+                "signalled": false,
+                "escalated": false
+              }
+            },
+            {
+              "command": "node /home/deep/.npm/_npx/89474623f59d1e80/node_modules/@haeram/gusta/bin/gusta.mjs lint",
+              "schemaVersion": 1,
+              "ok": false,
+              "exitCode": 1,
+              "cached": false,
+              "timedOut": false,
+              "cancelled": false,
+              "stale": false,
+              "ms": 272,
+              "scope": {
+                "TIER": "batch",
+                "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+                "TASK": "",
+                "TASKS": ""
+              },
+              "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+              "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
+              "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-b3e02971-f9ee-4864-a928-0cf04a77c2e3.log",
+              "tail": [
+                "    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+                "    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+                "    at node:internal/main/run_main_module:33:47 {",
+                "  code: 'MODULE_NOT_FOUND',",
+                "  requireStack: []",
+                "}",
+                "",
+                "Node.js v26.8.1"
+              ],
+              "failedTests": [],
+              "cleanup": {
+                "scope": "process-group",
+                "signalled": false,
+                "escalated": false
+              }
+            },
+            {
+              "command": "node --import tsx /tmp/ws16-verify-world.mjs .",
+              "schemaVersion": 1,
+              "ok": false,
+              "exitCode": 1,
+              "cached": false,
+              "timedOut": false,
+              "cancelled": false,
+              "stale": false,
+              "ms": 186,
+              "scope": {
+                "TIER": "batch",
+                "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+                "TASK": "",
+                "TASKS": ""
+              },
+              "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+              "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
+              "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-5a5c2fbc-84a3-41b6-88ad-cbfe67b8b200.log",
+              "tail": [
+                "    at resolveDirectorySync (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:12398)",
+                "    at resolveTsPathsSync (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:13605)",
+                "    at resolve (file:///Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc/node_modules/.pnpm/tsx@4.23.15/node_modules/tsx/dist/register-nyXW-TH3.mjs:2:16832) {",
+                "  code: 'ERR_MODULE_NOT_FOUND',",
+                "  url: 'file:///tmp/ws16-verify-world.mjs'",
+                "}",
+                "",
+                "Node.js v26.8.1"
+              ],
+              "failedTests": [],
+              "cleanup": {
+                "scope": "process-group",
+                "signalled": false,
+                "escalated": false
+              }
+            },
+            {
+              "command": "node --import tsx artifacts/verification/ws16/verify-world.mjs .",
+              "schemaVersion": 1,
+              "ok": true,
+              "exitCode": 0,
+              "cached": false,
+              "timedOut": false,
+              "cancelled": false,
+              "stale": false,
+              "ms": 24994,
+              "scope": {
+                "TIER": "batch",
+                "DIFF_BASE": "dccee24da5333821d2ea6f7ba3fac1e0e5376773",
+                "TASK": "",
+                "TASKS": ""
+              },
+              "commit": "411eb769e7d278dce928bb4e20ff61dc093263cb",
+              "tree": "c8a399b3f6f176bdfcecfb9dacc42fa2af5fa563",
+              "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-b9d4a329-f08b-4124-a734-44ed264b136d.log",
+              "tail": [
+                "{\"year\":1933,\"overlaps\":0,\"ms\":5311}",
+                "{\"year\":1934,\"overlaps\":0,\"ms\":7591}",
+                "{\"year\":1935,\"overlaps\":0,\"ms\":10038}",
+                "{\"year\":1936,\"overlaps\":0,\"ms\":12634}",
+                "{\"year\":1937,\"overlaps\":0,\"ms\":15027}",
+                "{\"year\":1938,\"overlaps\":0,\"ms\":17358}",
+                "{\"year\":1946,\"overlaps\":0,\"ms\":21130}",
+                "{\"head\":\"411eb769e7d278dce928bb4e20ff61dc093263cb\",\"seed\":\"save-overlap-diagnosis\",\"engine\":\"0.8.10\",\"year\":1946,\"boundaries\":[{\"year\":1931,\"overlaps\":0,\"ms\":1269},{\"year\":1932,\"overlaps\":0,\"ms\":3228},{\"year\":1933,\"overlaps\":0,\"ms\":5311},{\"year\":1934,\"overlaps\":0,\"ms\":7591},{\"year\":1935,\"overlaps\":0,\"ms\":10038},{\"year\":1936,\"overlaps\":0,\"ms\":12634},{\"year\":1937,\"overlaps\":0,\"ms\":15027},{\"year\":1938,\"overlaps\":0,\"ms\":17358},{\"year\":1946,\"overlaps\":0,\"ms\":21130}],\"overlaps\":0,\"validation\":true,\"checkpoint\":true,\"portableDecode\":true,\"canonicalEqual\":true,\"bytes\":2845797,\"ms\":24544}"
+              ],
+              "failedTests": [],
+              "cleanup": {
+                "scope": "process-group",
+                "signalled": false,
+                "escalated": false
+              }
+            }
+          ],
+          "at": "2026-11-17T14:12:49.352Z"
+        }
+      ],
+      "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-18274191-503d-4e61-932e-ca822843f7cc",
+      "branch": "integration/18274191-503d-4e61-932e-ca822843f7cc",
+      "version": {
+        "skipped": "manual",
+        "from": "0.8.9",
+        "to": "0.8.10"
+      },
+      "ciCommands": [
+        "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:contract && pnpm run validate:catalogs && pnpm run validate:presentation && pnpm run validate:i18n && pnpm run build",
+        "pnpm run test:unit",
+        "pnpm run test:integration --shard=1/3",
+        "pnpm run test:integration --shard=2/3",
+        "pnpm run test:integration --shard=3/3",
+        "pnpm exec playwright test --project=chromium --shard=1/3",
+        "pnpm exec playwright test --project=chromium --shard=2/3",
+        "pnpm exec playwright test --project=chromium --shard=3/3"
+      ],
+      "from": "failed",
+      "reason": "owner 261118: stale cf17 gate; every cohort head is already on main (verified by merge-base), nothing left to integrate"
+    }
+  ],
   "lastPlanning": {
     "land": "main",
     "base": "143c2c725ea5b9d324a358abb9af0fd9f838c9dc",
