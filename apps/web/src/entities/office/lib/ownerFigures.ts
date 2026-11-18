@@ -267,8 +267,11 @@ export function injectionMood(w: World, amount: string) {
   if (!turnover || BigInt(turnover) <= 0n || !w.owner) return undefined;
   const percent = percentOf(BigInt(amount), BigInt(turnover))!;
   return (
-    fanMoodAfter(w, Math.min(FAN_MOOD.injection.max, percent * FAN_MOOD.injection.perPercent)) -
-    w.owner.fanMood
+    fanMoodAfter(
+      w,
+      Math.min(FAN_MOOD.injection.max, percent * FAN_MOOD.injection.perPercent),
+      'stars',
+    ) - w.owner.fanMood
   );
 }
 /** What an injection of `amount` leaves (→OWNER-9, WEB-114): both pots and 팬 민심's rise. */
@@ -295,7 +298,9 @@ export function dividendOutlook(w: World, dividend: DividendShare) {
   const turnover = seasonTurnover(w);
   const percent = percentOf(amount, turnover) ?? 100;
   const mood =
-    amount > 0n ? fanMoodAfter(w, percent * FAN_MOOD.dividend.perPercent) - w.owner!.fanMood : 0;
+    amount > 0n
+      ? fanMoodAfter(w, percent * FAN_MOOD.dividend.perPercent, 'finance') - w.owner!.fanMood
+      : 0;
   return { result: result.toString(), amount: amount.toString(), mood };
 }
 /** The last dividend the owner took, in the money of its season (→OWNER-11/17). */

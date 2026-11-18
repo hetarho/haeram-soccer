@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "pt-BR",
   "messages": {
+    "fans.homegrownSale": "Venda de titular formado na base",
     "finance.distress.writeOff": "Perdão de dívida",
     "finance.distress.writeOffDetail": "A entrada em administração judicial perdoou metade da dívida. Isso não integra a receita operacional.",
     "finance.distress.noSigning": "Contratações pagas e empréstimos são proibidos durante vendas obrigatórias ou administração judicial.",

@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "it-IT",
   "messages": {
+    "fans.homegrownSale": "Vendita di un titolare del vivaio",
     "finance.distress.writeOff": "Cancellazione del debito",
     "finance.distress.writeOffDetail": "L’amministrazione controllata ha cancellato metà del debito. L’importo è escluso dai ricavi operativi.",
     "finance.distress.noSigning": "Acquisti a pagamento e prestiti sono vietati durante cessioni obbligatorie o amministrazione controllata.",

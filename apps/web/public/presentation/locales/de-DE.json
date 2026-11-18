@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "de-DE",
   "messages": {
+    "fans.homegrownSale": "Verkauf eines Stammspielers aus der Jugend",
     "finance.distress.writeOff": "Schuldenerlass",
     "finance.distress.writeOffDetail": "Mit Eintritt in die Insolvenzverwaltung wurde die Hälfte der Schulden erlassen. Dies zählt nicht als Betriebseinnahme.",
     "finance.distress.noSigning": "Kostenpflichtige Transfers und Leihen sind während Zwangsverkäufen oder Insolvenzverwaltung untersagt.",

@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "tr-TR",
   "messages": {
+    "fans.homegrownSale": "Altyapıdan yetişen ilk 11 oyuncusunun satışı",
     "finance.distress.writeOff": "Borç silme",
     "finance.distress.writeOffDetail": "Kayyum yönetimine geçişte borcun yarısı silindi. Bu tutar faaliyet gelirine dahil değildir.",
     "finance.distress.noSigning": "Zorunlu satışlar veya kayyum yönetimi sırasında ücretli transfer ve kiralama yasaktır.",

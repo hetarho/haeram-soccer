@@ -123,7 +123,7 @@ export const FFP = {
 /**
  * 팬 민심 (→OWNER-12/13), on a 0–100 scale from `start` at the takeover. Each settled league round
  * it drifts `drift` of the gap toward `start`; below `floor` for `rounds` settled league rounds in a
- * row the owner is forced out. Drops are scaled by 팬들의 친구 (`friendly`), rises never.
+ * row the owner is forced out. Disposition scales each driver; 팬들의 친구 (`friendly`) additionally scales drops.
  */
 export const FAN_MOOD = {
   start: 60,
@@ -152,6 +152,23 @@ export const FAN_MOOD = {
   identity: -20,
   /** Each home league match, per preset step its price stands above the era's default (→ECON-17). */
   ticket: { perStep: -0.2 },
+  debt: -0.2,
+  distress: { 1: -5, 2: -10, 3: -20 },
+  homegrownSale: -3,
+} as const;
+
+/** Fan shares in whole percent and their estimated centre/draw (→OWNER-19). */
+export const FAN_DISPOSITION = {
+  min: 10,
+  max: 45,
+  neutral: 25,
+  lean: 15,
+  jitter: 10,
+  recentSeasons: 5,
+  giantStature: 13,
+  smallStature: -5,
+  baseFactor: 0.5,
+  shareFactor: 2,
 } as const;
 
 /**

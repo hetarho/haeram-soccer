@@ -432,6 +432,7 @@ function completeSale(w: World, bid: TransferBid, p: Player, fee = bid.fee) {
   if (release > 0n && BigInt(w.cash) + BigInt(fee) < release)
     throw new Error(sourceMessage('copy.transfers.4c1042837b'));
   const wasStarter = ownStarters(w).some((starter) => starter.id === p.id);
+  const homegrownStarter = wasStarter && graduateIds(w).has(p.id);
   credit(w, fee);
   endPlayingCoachForDeparture(w, p.id);
   p.status = 'sold';
@@ -461,7 +462,7 @@ function completeSale(w: World, bid: TransferBid, p: Player, fee = bid.fee) {
     club: bid.club,
     fee,
   });
-  if (fact) fanMoodTransfer(w, fact);
+  if (fact) fanMoodTransfer(w, fact, homegrownStarter);
   addEvent(
     w,
     'transfer-out',

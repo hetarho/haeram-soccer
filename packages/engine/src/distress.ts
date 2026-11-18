@@ -7,6 +7,7 @@ import { compareIds } from './primitives';
 import { emptyTable, groupKey } from './league-fixtures';
 import { seasonAfter } from './wartime';
 import { addEvent } from './events';
+import { fanMoodDistress } from './fan-mood';
 import { pushInbox } from './inbox';
 
 export const DISTRESS = {
@@ -106,6 +107,7 @@ export function reportDistress(
     const title = message(`finance.distress.stage${after.stage}`);
     const detail = message('finance.distress.entry', { stage: title });
     addEvent(w, 'distress-entry', title, detail);
+    fanMoodDistress(w, after.stage);
     pushInbox(w, { kind: 'finance', title, detail, attention: false });
   }
   return writtenOff;

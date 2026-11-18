@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "es-ES",
   "messages": {
+    "fans.homegrownSale": "Venta de un titular de la cantera",
     "finance.distress.writeOff": "Condonación de deuda",
     "finance.distress.writeOffDetail": "La entrada en administración judicial condonó la mitad de la deuda. Se excluye de los ingresos operativos.",
     "finance.distress.noSigning": "No se permiten fichajes de pago ni cesiones durante ventas forzadas o administración judicial.",

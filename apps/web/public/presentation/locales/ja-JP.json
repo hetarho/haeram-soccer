@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "ja-JP",
   "messages": {
+    "fans.homegrownSale": "下部組織出身の先発選手を売却",
     "finance.distress.writeOff": "債務免除",
     "finance.distress.writeOffDetail": "管財人管理への移行により債務の半分が免除されました。営業収入には含まれません。",
     "finance.distress.noSigning": "売却要求中または管財人管理中は、移籍金を伴う獲得とレンタル獲得はできません。",

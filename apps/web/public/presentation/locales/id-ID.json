@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "id-ID",
   "messages": {
+    "fans.homegrownSale": "Penjualan pemain inti lulusan akademi",
     "finance.distress.writeOff": "Penghapusan utang",
     "finance.distress.writeOffDetail": "Masuk administrasi pengadilan menghapus separuh utang. Ini tidak termasuk pendapatan operasional.",
     "finance.distress.noSigning": "Perekrutan berbayar dan pinjaman dilarang selama penjualan wajib atau administrasi pengadilan.",

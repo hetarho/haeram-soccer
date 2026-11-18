@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "id": "en-GB",
   "messages": {
+    "fans.homegrownSale": "Academy starter sold",
     "finance.distress.writeOff": "Debt write-off",
     "finance.distress.writeOffDetail": "Entering administration wrote off half the debt. This is excluded from operating income.",
     "finance.distress.noSigning": "Fee and loan signings are prohibited during forced sales or administration.",

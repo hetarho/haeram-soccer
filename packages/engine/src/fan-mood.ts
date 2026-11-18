@@ -14,6 +14,7 @@ import type {
 } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { FAN_MOOD } from './owner-config';
+import type { FanDisposition } from '../../contracts/src/owner';
 import { fanMoodAfter, percentOf } from './fan-mood-read';
 import { careerEnded } from './owner';
 import { addEvent } from './events';
@@ -29,14 +30,19 @@ function live(w: World) {
   return w.owner !== undefined && !careerEnded(w);
 }
 /**
- * Moves 팬 민심 by `change` within 0–100, a drop scaled by 팬들의 친구 (→OWNER-5), kept to
- * hundredths. A named driver leaves a `fan-mood` event, what moved it last (→WEB-114); league
+ * Moves 팬 민심 by `change` within 0–100, scaled once by disposition and drops by 팬들의 친구
+ * (→OWNER-5), kept to hundredths. A named driver leaves a `fan-mood` event, what moved it last (→WEB-114); league
  * results, the ticket price and the drift move it silently every round.
  */
-function move(w: World, change: number, why?: { title: string; detail: string }) {
+function move(
+  w: World,
+  change: number,
+  disposition: keyof FanDisposition,
+  why?: { title: string; detail: string },
+) {
   const owner = w.owner!,
     before = owner.fanMood;
-  owner.fanMood = fanMoodAfter(w, change);
+  owner.fanMood = fanMoodAfter(w, change, disposition);
   if (!why) return;
   const moved = owner.fanMood - before;
   addEvent(
@@ -62,9 +68,9 @@ export function fanMoodAfterLeagueMatch(w: World, result: MatchRecord) {
     own = home ? result.score.home : result.score.away,
     other = home ? result.score.away : result.score.home,
     { win, draw, defeat } = FAN_MOOD.result;
-  move(w, own > other ? win : own === other ? draw : defeat);
+  move(w, own > other ? win : own === other ? draw : defeat, 'results');
   const steps = home ? ticketSteps(w.ticket) : 0;
-  if (steps > 0) move(w, steps * FAN_MOOD.ticket.perStep);
+  if (steps > 0) move(w, steps * FAN_MOOD.ticket.perStep, 'finance');
 }
 
 /**
@@ -72,8 +78,9 @@ export function fanMoodAfterLeagueMatch(w: World, result: MatchRecord) {
  * a round below the floor counts one, the floor or above resets it, and the count at
  * FAN_MOOD.rounds forces the owner out (→OWNER-12/13).
  */
-export function fanMoodRound(w: World) {
-  if (!live(w)) return;
+export function fanMoodRound(w: World, leagueSettled = true) {
+  if (!leagueSettled || !live(w)) return;
+  if (BigInt(w.cash) < 0n) move(w, FAN_MOOD.debt, 'finance');
   const owner = w.owner!,
     mood = owner.fanMood + (FAN_MOOD.start - owner.fanMood) * FAN_MOOD.drift;
   owner.fanMood = Math.round(mood * 100) / 100;
@@ -127,21 +134,24 @@ function closeDrivers(w: World) {
       .map((t) => sourceMessage('copy.CareerRecordBook.2bfc53c804', { p0: t.name })),
   ];
   for (const title of titles)
-    move(w, FAN_MOOD.title, { title, detail: sourceMessage('copy.OwnerSheet.ce1c739e52') });
+    move(w, FAN_MOOD.title, 'results', {
+      title,
+      detail: sourceMessage('copy.OwnerSheet.ce1c739e52'),
+    });
   if (own.tier < season.tier)
-    move(w, FAN_MOOD.promotion, {
+    move(w, FAN_MOOD.promotion, 'results', {
       title: sourceMessage('copy.AcademyPanel.8e70a8dda1'),
       detail: sourceMessage('copy.fan_mood.93306a044e', { p0: season.tier + 1, p1: own.tier + 1 }),
     });
   else if (own.tier > season.tier)
-    move(w, FAN_MOOD.relegation, {
+    move(w, FAN_MOOD.relegation, 'results', {
       title: sourceMessage('copy.CareerRecordBook.7e6e321ef0'),
       detail: sourceMessage('copy.fan_mood.93306a044e', { p0: season.tier + 1, p1: own.tier + 1 }),
     });
   const lowest = country(own.country).groups.length - 1,
     clubs = season.standings.filter((row) => row[1] === season.tier && row[2] === season.group);
   if (season.tier === lowest && season.rank === clubs.length)
-    move(w, FAN_MOOD.lastInLowest, {
+    move(w, FAN_MOOD.lastInLowest, 'results', {
       title: sourceMessage('copy.fan_mood.b7bcb3bb83'),
       detail: sourceMessage('copy.fan_mood.aba5fd4e60', { p0: season.tier + 1 }),
     });
@@ -179,7 +189,7 @@ export function fanMoodClose(w: World) {
  * A completed own fee signing or sale, just recorded (→OWNER-12): a signing for a fee above the
  * club's previous record in today's money, or the sale of one of its highest-OVR players.
  */
-export function fanMoodTransfer(w: World, fact: TransferFact) {
+export function fanMoodTransfer(w: World, fact: TransferFact, homegrownStarter = false) {
   if (!live(w) || fact.loan) return;
   if (fact.direction === 'in') {
     // The club's fees in, highest first: this one, and the record it had to beat.
@@ -187,12 +197,17 @@ export function fanMoodTransfer(w: World, fact: TransferFact) {
       signing = rows.find((row) => row.source === 'fact' && row.fact === fact),
       record = rows.find((row) => row !== signing);
     if (signing && record && BigInt(signing.today) > BigInt(record.today))
-      move(w, FAN_MOOD.recordSigning, {
+      move(w, FAN_MOOD.recordSigning, 'stars', {
         title: sourceMessage('copy.fan_mood.4dbaafd6be'),
         detail: fact.name,
       });
     return;
   }
+  if (homegrownStarter)
+    move(w, FAN_MOOD.homegrownSale, 'identity', {
+      title: sourceMessage('fans.homegrownSale'),
+      detail: fact.name,
+    });
   // Ties count against the sale: he is one of the three only with fewer than three others at his
   // OVR or above, so a squad of equals has no star to sell.
   const sold = w.players.find((p) => p.id === fact.player);
@@ -208,7 +223,7 @@ export function fanMoodTransfer(w: World, fact: TransferFact) {
     (owner.starSaleWindow?.year !== w.year || owner.starSaleWindow.kind !== window.kind)
   ) {
     owner.starSaleWindow = { year: w.year, kind: window.kind };
-    move(w, FAN_MOOD.starSale.change, {
+    move(w, FAN_MOOD.starSale.change, 'identity', {
       title: sourceMessage('copy.fan_mood.19741d722e'),
       detail: `${fact.name} · OVR ${ovr}`,
     });
@@ -218,7 +233,7 @@ export function fanMoodTransfer(w: World, fact: TransferFact) {
 /** A designer draft adopted as the club's identity (→OWNER-12, KIT-9). */
 export function fanMoodIdentity(w: World) {
   if (!live(w)) return;
-  move(w, FAN_MOOD.identity, {
+  move(w, FAN_MOOD.identity, 'identity', {
     title: sourceMessage('copy.fan_mood.2d44d44e0c'),
     detail: sourceMessage('copy.fan_mood.6902fa4e38'),
   });
@@ -233,7 +248,7 @@ export function fanMoodInjection(w: World, amount: bigint) {
   const last = lastSeasonTurnover(w) ?? takeoverIncome(w),
     percent = percentOf(amount, last === undefined ? undefined : BigInt(last)),
     { perPercent, max } = FAN_MOOD.injection;
-  move(w, percent === undefined ? max : Math.min(max, percent * perPercent), {
+  move(w, percent === undefined ? max : Math.min(max, percent * perPercent), 'stars', {
     title: sourceMessage('copy.fan_mood.3881f2a2d6'),
     detail:
       percent === undefined
@@ -257,7 +272,7 @@ function takeoverIncome(w: World) {
 export function fanMoodDividend(w: World, amount: bigint) {
   if (!live(w) || amount <= 0n) return;
   const percent = percentOf(amount, seasonTurnover(w)) ?? 100;
-  move(w, percent * FAN_MOOD.dividend.perPercent, {
+  move(w, percent * FAN_MOOD.dividend.perPercent, 'finance', {
     title: sourceMessage('copy.fan_mood.eb9f33a674'),
     detail: sourceMessage('copy.fan_mood.65d2c22e42', { p0: percent.toFixed(1) }),
   });
@@ -269,4 +284,14 @@ export function fanMoodMovers(w: Pick<World, 'events'>, count = 5): Event[] {
   for (let i = w.events.length - 1; i >= 0 && movers.length < count; i--)
     if (w.events[i]!.kind === 'fan-mood') movers.push(w.events[i]!);
   return movers;
+}
+
+/** An actual upward distress entry, reported once by the financial ladder (→OWNER-12). */
+export function fanMoodDistress(w: World, stage: 1 | 2 | 3) {
+  if (!live(w)) return;
+  const title = sourceMessage(`finance.distress.stage${stage}`);
+  move(w, FAN_MOOD.distress[stage], 'finance', {
+    title,
+    detail: sourceMessage('finance.distress.entry', { stage: title }),
+  });
 }

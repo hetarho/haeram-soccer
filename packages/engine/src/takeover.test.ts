@@ -1,3 +1,4 @@
+import { takeoverFanDisposition } from './fan-disposition';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/schema';
 import type { OwnerTrait, WealthTier } from '../../contracts/src/owner';
@@ -212,6 +213,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
       stake: OWNER_BUSINESS.stake.start,
       dividendShare: OWNER_DIVIDEND.start,
       fanMood: FAN_MOOD.start,
+      fanDisposition: takeoverFanDisposition(w, club),
       ffpInjections: [],
       takeover: {
         year: w.year,

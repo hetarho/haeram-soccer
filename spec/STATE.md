@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | todo |
+| T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | doing@261118.mr18cx |
 | T976 | The takeover confirmation shows the fans' disposition | WEB OWNER ARCH | T975 | todo |
 | T977 | Rebase the wage curve's level on the 80/70/60/50 world | CLUB ECON | T953 T958 T967 T968 | todo |
 | T978 | Calibrate the combined world: levels, moves, books, distress, ageing | LEAGUE WORLD ECON PLAYER CLUB MATCH | T953 T954 T955 T957 T958 T959 T960 T961 T962 T963 T964 T965 T966 T967 T968 T969 T970 T971 T972 T973 T974 T975 T976 T977 T979 T980 | todo |

@@ -52,6 +52,7 @@ import { trackingBoundary } from './npc-stats';
 import { defaultSettings } from './responsibilities';
 import { prepareSeason } from './season';
 import { openShortlistWindow } from './signings';
+import { takeoverFanDisposition } from './fan-disposition';
 import { basicStaff } from './staff';
 
 /**
@@ -268,6 +269,7 @@ export function takeOver(
     stake: OWNER_BUSINESS.stake.start,
     dividendShare: OWNER_DIVIDEND.start,
     fanMood: FAN_MOOD.start,
+    fanDisposition: takeoverFanDisposition(w, club),
     ffpInjections: [],
     takeover: {
       year,
