@@ -15,6 +15,7 @@ import {
   type RoleId,
 } from '../../contracts/src/player';
 import { exp, log } from './portable-math';
+import { random } from './primitives';
 
 /**
  * The player model (→PLAYER): attributes, positions and roles, OVR on one scale, traits,
@@ -564,6 +565,33 @@ export const AGEING: Record<
     composure: by(32, 33, 0.5),
   };
 })();
+
+/** Career-fixed individual offsets to the group table (→PLAYER-17). */
+export const AGEING_CURVE = {
+  shiftShares: [1, 2, 5, 15, 37, 18, 10, 6, 4, 2],
+  minShift: -4,
+  rate: { min: 0.6, mode: 1, max: 1.8 },
+} as const;
+
+export function ageingCurve(seed: string, id: string) {
+  const draw = random(`${seed}:ageing:${id}`),
+    pick = draw() * 100;
+  let shift: number = AGEING_CURVE.minShift,
+    cumulative = 0;
+  for (const share of AGEING_CURVE.shiftShares) {
+    cumulative += share;
+    if (pick < cumulative) break;
+    shift++;
+  }
+  const { min, mode, max } = AGEING_CURVE.rate,
+    u = draw(),
+    span = max - min,
+    rate =
+      u < (mode - min) / span
+        ? min + Math.sqrt(u * span * (mode - min))
+        : max - Math.sqrt((1 - u) * span * (max - mode));
+  return { shift, rate };
+}
 
 /** What each school of football prefers (→STAFF-21). */
 export const SCHOOL_PREFS: Record<

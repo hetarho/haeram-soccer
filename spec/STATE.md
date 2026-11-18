@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T954 | Each player ages on his own curve | PLAYER WORLD | - | todo |
+| T954 | Each player ages on his own curve | PLAYER WORLD | - | doing@261118.mr18cx |
 | T955 | A fourth personality trait, 충성심 | PLAYER | - | todo |
 | T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
 | T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
