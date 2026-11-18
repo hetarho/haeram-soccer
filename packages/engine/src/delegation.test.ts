@@ -10,8 +10,7 @@ import { affordable } from './staff';
 import { signingVerdict } from './signings';
 import { staffAuthority } from './testing';
 import { settingsOf } from './responsibilities';
-import { addEvent } from './events';
-import { activePlayers, clubOf } from './player-state';
+import { activePlayers } from './player-state';
 import { financeProjection, seasonRevenue } from './projection';
 import {
   actedLevel,
@@ -36,7 +35,7 @@ import {
   wagePressure,
   youthPayCap,
 } from './delegation';
-import { holdTemperament, keyWith } from './delegation.testkit';
+import { holdTemperament, keyWith, projectCashTo } from './delegation.testkit';
 
 /** Players' wages scaled so they take `percent` of the season's projected income. */
 function wagesAt(w: World, percent: bigint) {
@@ -62,23 +61,20 @@ const annualOf = (w: World) => BigInt(operatingCosts(w).annual);
 function lossOf(w: World, loss: bigint) {
   w.budgetPlan = { year: w.year, revenue: (annualOf(w) - loss).toString(), sales: '0' };
 }
-/** Move only live cash until the actual middle projection is `target`. */
-function projectTo(w: World, target: bigint) {
-  const projection = financeProjection(w),
-    middle = (BigInt(projection.seasonEnd.low) + BigInt(projection.seasonEnd.high)) / 2n;
-  w.cash = (BigInt(w.cash) + target - middle).toString();
-}
-
 describe('the 단장 plans to a live cash floor (→ECON-33)', () => {
   it('uses each acted step’s floor with a fee once and prorated current plus next season wages', () => {
-    const w = club('delegation-floors'), annual = annualOf(w);
+    const w = club('delegation-floors'),
+      annual = annualOf(w);
     w.round = 23;
     lossOf(w, -10000n);
     const floors = [BigInt(w.cash), annual, annual / 2n, 0n, -annual / 4n];
     for (const step of [1, 2, 3, 4, 5] as const) {
       const floor = cashFloor(step, BigInt(w.cash), annual);
       expect(floor).toBe(floors[step - 1]);
-      const projection = { ...financeProjection(w), seasonEnd: { low: (floor + 2000n).toString(), high: (floor + 4000n).toString() } },
+      const projection = {
+          ...financeProjection(w),
+          seasonEnd: { low: (floor + 2000n).toString(), high: (floor + 4000n).toString() },
+        },
         plan = delegatePlan(w, 'recruitment', step, undefined, projection);
       expect(plan.floor).toBe(floor.toString());
       expect(plan.spendable).toBe('3000');
@@ -91,8 +87,12 @@ describe('the 단장 plans to a live cash floor (→ECON-33)', () => {
       expect(BigInt(plan.budget) - BigInt(plan.committed)).toBe(2000n);
     }
     lossOf(w, 1n);
-    const plan = delegatePlan(w, 'recruitment', 1), projection = financeProjection(w);
-    projection.seasonEnd = { low: (BigInt(w.cash) + annual * 10n).toString(), high: (BigInt(w.cash) + annual * 10n).toString() };
+    const plan = delegatePlan(w, 'recruitment', 1),
+      projection = financeProjection(w);
+    projection.seasonEnd = {
+      low: (BigInt(w.cash) + annual * 10n).toString(),
+      high: (BigInt(w.cash) + annual * 10n).toString(),
+    };
     expect(floorTest(w, plan, {}, projection)).toMatchObject({ ok: false, loss: 1n });
   });
 
@@ -101,7 +101,9 @@ describe('the 단장 plans to a live cash floor (→ECON-33)', () => {
     w.delegationRequests = { recruitment: 4 };
     const before = delegatePlan(w, 'recruitment');
     w.cash = (BigInt(w.cash) + 10000n).toString();
-    expect(BigInt(delegatePlan(w, 'recruitment').spendable)).toBe(BigInt(before.spendable) + 10000n);
+    expect(BigInt(delegatePlan(w, 'recruitment').spendable)).toBe(
+      BigInt(before.spendable) + 10000n,
+    );
     const added = delegatePlan(w, 'recruitment');
     applyDelegatePlans(w, 'window', ['recruitment']);
     expect(delegatePlan(w, 'recruitment').spendable).toBe(added.spendable);
@@ -110,13 +112,26 @@ describe('the 단장 plans to a live cash floor (→ECON-33)', () => {
   });
 
   it('reserves live bid fees once and excludes the settling bid from both cash checks', () => {
-    const w = club('delegation-pending'), annual = annualOf(w),
+    const w = club('delegation-pending'),
+      annual = annualOf(w),
       candidate = { ...w.players[0], id: 'reserved-signing', wage: '0' };
     w.delegationRequests = { recruitment: 4 };
     w.cash = (annual * 10n).toString();
-    const before = delegatePlan(w, 'recruitment'), fee = BigInt(before.spendable) * 2n / 3n;
-    w.bids = [{ id: 'reserved-bid', direction: 'out', playerId: candidate.id, fee: fee.toString(),
-      year: w.year, day: 0, due: 1, status: 'pending', staff: 'upgrade' }];
+    const before = delegatePlan(w, 'recruitment'),
+      fee = (BigInt(before.spendable) * 2n) / 3n;
+    w.bids = [
+      {
+        id: 'reserved-bid',
+        direction: 'out',
+        playerId: candidate.id,
+        fee: fee.toString(),
+        year: w.year,
+        day: 0,
+        due: 1,
+        status: 'pending',
+        staff: 'upgrade',
+      },
+    ];
     expect(BigInt(delegatePlan(w, 'recruitment').spendable)).toBe(BigInt(before.spendable) - fee);
     expect(signingVerdict(w, candidate, fee.toString()).ok).toBe(false);
     expect(signingVerdict(w, candidate, fee.toString(), undefined, 'reserved-bid').ok).toBe(true);
@@ -126,18 +141,23 @@ describe('the 단장 plans to a live cash floor (→ECON-33)', () => {
   });
 
   it('keeps the cautious insolvency stop and the short-line free signing exception distinct', () => {
-    const w = club('delegation-stop'), incoming = { ...w.players[0], id: 'incoming', wage: '1' };
+    const w = club('delegation-stop'),
+      incoming = { ...w.players[0], id: 'incoming', wage: '1' };
     w.cash = (annualOf(w) * 10n).toString();
     w.delegationRequests = { recruitment: 1 };
     lossOf(w, 1000n);
-    expect(signingVerdict(w, incoming, '0', 'upgrade', undefined, { freeAgent: true }).ok).toBe(false);
+    expect(signingVerdict(w, incoming, '0', 'upgrade', undefined, { freeAgent: true }).ok).toBe(
+      false,
+    );
     expect(signingVerdict(w, incoming, '0', 'short', undefined, { freeAgent: true }).ok).toBe(true);
     const projection = financeProjection(w);
     projection.seasonEnd = { low: '-1', high: '100000' };
     expect(floorTest(w, { level: 4, revenue: planRevenue(w) }, {}, projection).ok).toBe(true);
     expect(insolvencyStop(w, 0n, 0n, false, 'recruitment', projection)).toBeDefined();
     w.cash = '1';
-    expect(signingVerdict(w, incoming, '0', 'short', undefined, { freeAgent: true }).ok).toBe(false);
+    expect(signingVerdict(w, incoming, '0', 'short', undefined, { freeAgent: true }).ok).toBe(
+      false,
+    );
     holdTemperament(w, 'director', 'bold');
     w.delegationRequests = { recruitment: 5, staff: 3 };
     w.cash = (annualOf(w) * 60n).toString();
@@ -158,28 +178,33 @@ describe('the 단장 plans to a live cash floor (→ECON-33)', () => {
   it('uses the current-bill floor test to choose frugal renewals', () => {
     const w = club('delegation-frugal');
     w.delegationRequests = { contracts: 4 };
-    projectTo(w, 0n);
-    expect(delegatePlan(w, 'contracts').choices).toContainEqual(expect.objectContaining({ option: 'standard' }));
-    projectTo(w, -1n);
-    expect(delegatePlan(w, 'contracts').choices).toContainEqual(expect.objectContaining({ option: 'frugal' }));
+    projectCashTo(w, 0n);
+    expect(delegatePlan(w, 'contracts').choices).toContainEqual(
+      expect.objectContaining({ option: 'standard' }),
+    );
+    projectCashTo(w, -1n);
+    expect(delegatePlan(w, 'contracts').choices).toContainEqual(
+      expect.objectContaining({ option: 'frugal' }),
+    );
   });
 
   it('warns once per season, surviving pruned inbox/events, replans and save round trips', () => {
     const w = careerWorld({ seed: 'delegation-warning' });
     w.settings = staffAuthority(4);
-    projectTo(w, 0n);
+    projectCashTo(w, 0n);
     warnCashFloor(w);
     expect(w.delegationWarningSeason).toBe(w.year);
-    expect(w.inbox!.filter(i => i.title.includes('단장 경고'))).toHaveLength(1);
-    w.inbox = []; w.events = [];
+    expect(w.inbox!.filter((i) => i.title.includes('단장 경고'))).toHaveLength(1);
+    w.inbox = [];
+    w.events = [];
     const loaded = validateWorld(JSON.parse(canonical(w)));
     applyDelegatePlans(loaded, 'window');
     warnCashFloor(loaded);
-    expect(loaded.inbox!.filter(i => i.title.includes('단장 경고'))).toHaveLength(0);
+    expect(loaded.inbox!.filter((i) => i.title.includes('단장 경고'))).toHaveLength(0);
     loaded.delegationWarningSeason = loaded.year - 1;
-    projectTo(loaded, 0n);
+    projectCashTo(loaded, 0n);
     warnCashFloor(loaded);
-    expect(loaded.inbox!.filter(i => i.title.includes('단장 경고'))).toHaveLength(1);
+    expect(loaded.inbox!.filter((i) => i.title.includes('단장 경고'))).toHaveLength(1);
   });
 });
 
@@ -255,11 +280,11 @@ describe('selling and the plain stop', () => {
   it('sells harder below the floor or in distress and restores calm after an injection', () => {
     const w = club('delegation-sell');
     w.delegationRequests = { sales: 4 };
-    projectTo(w, 0n);
+    projectCashTo(w, 0n);
     expect(wagePressure(w).level).toBe(0);
-    projectTo(w, -1n);
+    projectCashTo(w, -1n);
     expect(wagePressure(w).level).toBe(1);
-    projectTo(w, 10000n);
+    projectCashTo(w, 10000n);
     expect(wagePressure(w).level).toBe(0);
     w.distress = { stage: 1, overHalfRounds: 0 };
     expect(wagePressure(w).level).toBe(1);

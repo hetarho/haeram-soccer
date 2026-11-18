@@ -1460,9 +1460,9 @@ export interface World {
    * when he made it, written at each plan moment (→`delegation.ts`). Absent, or from another
    * season, the plans read the income projection live.
    */
+  budgetPlan?: { year: number; revenue: string; sales: string };
   /** Last season the delegated cash-floor warning was emitted; independent of pruned prose. */
   delegationWarningSeason?: number;
-  budgetPlan?: { year: number; revenue: string; sales: string };
   /** 지역 기반 and 글로벌 인지도, 0–100 (→ECON-34); absent is 0. */
   localBase?: number;
   globalReach?: number;

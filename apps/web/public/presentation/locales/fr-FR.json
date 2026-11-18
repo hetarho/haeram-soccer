@@ -7031,6 +7031,7 @@
     "delegation.floor.warning": "La trésorerie prévue en fin de saison {projected} approche le seuil d’alerte financière {floor}. Vérifiez les prévisions et les dépenses.",
     "delegation.floor.forcedSale": "Ventes forcées en difficulté financière −25 pts",
     "market.sale.distress.warning": "Vendeur en alerte financière",
-    "market.sale.distress.forced": "Vendeur sous ventes forcées ou administration judiciaire"
+    "market.sale.distress.forced": "Vendeur sous ventes forcées ou administration judiciaire",
+    "delegation.floor.saleReduction": "La trésorerie prévue en fin de saison est inférieure au seuil du directeur ; le prix demandé baisse de {points} points de pourcentage."
   }
 }

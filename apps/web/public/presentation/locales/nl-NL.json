@@ -7028,6 +7028,7 @@
     "delegation.floor.warning": "Het verwachte geld aan seizoenseinde {projected} nadert de financiële waarschuwingsgrens {floor}. Controleer de kasprognose en uitgaven.",
     "delegation.floor.forcedSale": "Gedwongen verkopen bij financiële nood −25 pp",
     "market.sale.distress.warning": "Verkoper met financiële waarschuwing",
-    "market.sale.distress.forced": "Verkoper onder gedwongen verkopen of bewind"
+    "market.sale.distress.forced": "Verkoper onder gedwongen verkopen of bewind",
+    "delegation.floor.saleReduction": "Het verwachte eindsaldo ligt onder de ondergrens van de directeur, dus de vraagprijs daalt met {points} procentpunten."
   }
 }

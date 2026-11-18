@@ -20,10 +20,10 @@ import { fixedCostRunway } from './investment';
 import { activePlayers, overall } from './player-state';
 import { compareIds, scaleBy } from './primitives';
 import { seasonsLeft, staffMember } from './staff-info';
-import { SALE_BARS, SALE_FACTOR_VALUES, SALE_SHARE } from './transfer-policy';
+import { SALE_FACTOR_VALUES, SALE_SHARE } from './transfer-policy';
 import { transferWindow } from './transfer-window';
 import { seasonAfter } from './wartime';
-import { isProspect, playerValue, transferStance } from './transfers';
+import { isProspect, playerValue, saleBar, transferStance } from './transfers';
 import { clubById, ownStarters, startingSquad, stature, tierLevel } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
 
@@ -52,6 +52,8 @@ export interface SaleContext {
   asking: string;
   /** The seller is our club. */
   ownSeller: boolean;
+  /** Our asking bar, including the separate delegated floor adjustment. */
+  saleBar?: { percent: number; reduction: number };
   /** Player value for forced sales; our normal reservation also reads its 80% floor. */
   value?: string;
   /** ECON-24 forced acceptance, separate from T971's reservation factors. */
@@ -147,10 +149,14 @@ export const SALE_FACTORS: readonly AnswerFactor<SaleContext>[] = [
   },
   {
     id: 'distress',
-    read: (c) => c.distress
-      ? line('distress', c.distress >= 2 ? V.distress.forced : V.distress.warning,
-        c.distress >= 2 ? 'market.sale.distress.forced' : 'market.sale.distress.warning')
-      : undefined,
+    read: (c) =>
+      c.distress
+        ? line(
+            'distress',
+            c.distress >= 2 ? V.distress.forced : V.distress.warning,
+            c.distress >= 2 ? 'market.sale.distress.forced' : 'market.sale.distress.warning',
+          )
+        : undefined,
   },
   {
     id: 'sellDown',
@@ -443,12 +449,13 @@ export function saleContext(w: World, bid: SaleBid): SaleContext | undefined {
     };
   if (ownSeller) {
     const value = playerValue(w, player),
-      bar = SALE_BARS[w.build?.market ?? 'standard'] ?? SALE_BARS.standard!,
+      bar = saleBar(w, player),
       runway = fixedCostRunway(w.cash, operatingCosts(w).annual);
     return {
       ...common,
-      asking: bid.asking ?? ((BigInt(value) * BigInt(bar[prospect ? 1 : 0])) / 100n).toString(),
+      asking: bid.asking ?? ((BigInt(value) * BigInt(bar.percent)) / 100n).toString(),
       ownSeller,
+      saleBar: bar,
       value,
       cashCrisis: runway < SAFETY_ROUNDS,
       runway,

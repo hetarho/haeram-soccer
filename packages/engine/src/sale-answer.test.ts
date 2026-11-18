@@ -219,10 +219,14 @@ describe('the selling club answer (→CLUB-52)', () => {
 
   it('reads the actual distress stage for every seller without moving the draw', () => {
     for (const ownSeller of [false, true]) {
-      const row = (distress?: 1 | 2 | 3) => saleShare(ctx({ ownSeller, value: '900000', distress })).lines.find(l => l.factor === 'distress');
+      const row = (distress?: 1 | 2 | 3) =>
+        saleShare(ctx({ ownSeller, value: '900000', distress })).lines.find(
+          (l) => l.factor === 'distress',
+        );
       expect(row()).toBeUndefined();
       expect(row(1)).toMatchObject({ delta: -0.05, message: 'market.sale.distress.warning' });
-      for (const stage of [2, 3] as const) expect(row(stage)).toMatchObject({ delta: -0.25, message: 'market.sale.distress.forced' });
+      for (const stage of [2, 3] as const)
+        expect(row(stage)).toMatchObject({ delta: -0.25, message: 'market.sale.distress.forced' });
     }
   });
 });

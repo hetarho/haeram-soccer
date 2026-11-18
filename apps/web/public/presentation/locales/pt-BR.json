@@ -7031,6 +7031,7 @@
     "delegation.floor.warning": "O caixa previsto no fim da temporada {projected} está perto da linha de alerta financeiro {floor}. Confira a projeção e os gastos.",
     "delegation.floor.forcedSale": "Vendas forçadas por dificuldades financeiras −25 pp",
     "market.sale.distress.warning": "Vendedor com alerta financeiro",
-    "market.sale.distress.forced": "Vendedor sob vendas forçadas ou administração judicial"
+    "market.sale.distress.forced": "Vendedor sob vendas forçadas ou administração judicial",
+    "delegation.floor.saleReduction": "O caixa previsto no fim da temporada fica abaixo do mínimo do diretor, então o percentual pedido cai {points} pontos percentuais."
   }
 }

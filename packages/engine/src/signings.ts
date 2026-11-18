@@ -235,8 +235,14 @@ export function signingVerdict(
         };
   }
   const check = floorTest(planning, plan, { fee: BigInt(fee), wage }, projection);
-  if (!check.ok) return no(sourceMessage('delegation.floor.refused', {
-    projected: moneyLabel(w, check.projected.toString()), floor: moneyLabel(w, check.floor.toString()), loss: moneyLabel(w, check.loss.toString()) }));
+  if (!check.ok)
+    return no(
+      sourceMessage('delegation.floor.refused', {
+        projected: moneyLabel(w, check.projected.toString()),
+        floor: moneyLabel(w, check.floor.toString()),
+        loss: moneyLabel(w, check.loss.toString()),
+      }),
+    );
   const stop = insolvencyStop(planning, BigInt(fee), wage, false, 'recruitment', projection);
   if (stop) return no(stop);
   return {
@@ -673,9 +679,7 @@ export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'si
 function barMoney(w: World) {
   const plan = delegatePlan(w, 'recruitment'),
     money = BigInt(plan.left);
-  return plan.stance.signing.bar && money > 0n
-    ? { money, seasons: 2n }
-    : undefined;
+  return plan.stance.signing.bar && money > 0n ? { money, seasons: 2n } : undefined;
 }
 /**
  * The 단장's money bar (→CLUB-33, →ECON-33), at the 선수 영입 steps he acts on with one (넉넉히,
@@ -1146,7 +1150,7 @@ function replacementNeeds(w: World, day: number, arriving: readonly Player[]): S
  * is open (plus a negotiator's next-day raises), he makes moves — a free agent signed or a
  * trait-priced bid — until the places his bids hold reach the step's count (`pendingLimit`), each
  * for the first need of the club as the window's bids would leave it (`recruitmentProjection`) that a
- * candidate meets within the runway test, each pending fee reserved (→ECON-33). A negotiator's
+ * candidate meets within the floor test, each pending fee reserved (→ECON-33). A negotiator's
  * haggle keeps its place until its raise the day after the answer (→CLUB-41), which comes before a
  * mediation's move and the look's. Short roles come before replacements and upgrades, and the
  * manager's requested roles before the others.
@@ -1278,7 +1282,8 @@ function staffMove(w: World, day: number) {
     .map(({ need }) => need);
   if (!needs.length) return false;
   const offers = reachOffers(w),
-    plan = delegatePlan(club, 'recruitment');
+    projection = financeProjection(club),
+    plan = delegatePlan(club, 'recruitment', undefined, undefined, projection);
   for (const need of needs)
     for (const { offer } of candidates(
       w,
@@ -1292,7 +1297,7 @@ function staffMove(w: World, day: number) {
       // His lowest wage step already failing the floor test rules out every higher one.
       if (
         !(need.kind === 'short' && offer.freeAgent) &&
-        !floorTest(club, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }).ok
+        !floorTest(club, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }, projection).ok
       )
         continue;
       const terms = wageOffer(club, offer, fee, need.kind);

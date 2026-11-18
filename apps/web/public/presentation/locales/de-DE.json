@@ -7028,6 +7028,7 @@
     "delegation.floor.warning": "Der erwartete Saisonendbestand {projected} liegt nahe der finanziellen Warnschwelle {floor}. Prüfe Geldprognose und Ausgaben.",
     "delegation.floor.forcedSale": "Zwangsverkäufe bei Finanznot −25 Pp.",
     "market.sale.distress.warning": "Verkäufer mit finanzieller Warnung",
-    "market.sale.distress.forced": "Verkäufer unter Zwangsverkäufen oder Insolvenzverwaltung"
+    "market.sale.distress.forced": "Verkäufer unter Zwangsverkäufen oder Insolvenzverwaltung",
+    "delegation.floor.saleReduction": "Der erwartete Kassenbestand zum Saisonende liegt unter der Untergrenze des Sportdirektors; die Forderung sinkt um {points} Prozentpunkte."
   }
 }

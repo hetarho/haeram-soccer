@@ -33,7 +33,7 @@ import { debit } from './transactions';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
 import { managerBeats, managerFits, managerLine, managerMatches } from './managerMarket';
 import { directionLine } from './direction';
-import { insolvencyStop, youthPayCap } from './delegation';
+import { insolvencyStop, warnCashFloor, youthPayCap } from './delegation';
 import { pushInbox } from './inbox';
 import { moneyLabel } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
@@ -769,6 +769,7 @@ function appoint(w: World, member: Staff | StaffCandidate) {
     ].join(' · '),
     cost > 0n ? cost.toString() : undefined,
   );
+  warnCashFloor(w);
   return staff;
 }
 /**
@@ -817,6 +818,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
     w.staff = w.staff!.map((other) =>
       other.role === role ? withTerm({ ...other, wage: terms.wage, until: terms.until }) : other,
     );
+    warnCashFloor(w);
     addEvent(
       w,
       'staff-renew',

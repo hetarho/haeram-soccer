@@ -7028,6 +7028,7 @@
     "delegation.floor.warning": "Sezon sonu tahmini nakit {projected}, mali sıkıntı uyarı sınırı {floor} yakınına geldi. Nakit tahminini ve harcamaları kontrol edin.",
     "delegation.floor.forcedSale": "Mali sıkıntıda zorunlu satışlar −25 puan",
     "market.sale.distress.warning": "Satıcı mali sıkıntı uyarısında",
-    "market.sale.distress.forced": "Satıcı zorunlu satış veya kayyum yönetiminde"
+    "market.sale.distress.forced": "Satıcı zorunlu satış veya kayyum yönetiminde",
+    "delegation.floor.saleReduction": "Sezon sonu nakit tahmini direktörün tabanının altında olduğundan istenen oran {points} yüzde puan düşürüldü."
   }
 }

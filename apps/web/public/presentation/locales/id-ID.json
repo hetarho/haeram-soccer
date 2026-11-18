@@ -7025,6 +7025,7 @@
     "delegation.floor.warning": "Proyeksi kas akhir musim {projected} mendekati garis peringatan kesulitan keuangan {floor}. Periksa proyeksi kas dan pengeluaran.",
     "delegation.floor.forcedSale": "Penjualan paksa akibat kesulitan keuangan −25 poin",
     "market.sale.distress.warning": "Penjual mendapat peringatan keuangan",
-    "market.sale.distress.forced": "Penjual dalam penjualan paksa atau pengawasan pengadilan"
+    "market.sale.distress.forced": "Penjual dalam penjualan paksa atau pengawasan pengadilan",
+    "delegation.floor.saleReduction": "Proyeksi kas akhir musim di bawah batas direktur, sehingga persentase harga yang diminta turun {points} poin persentase."
   }
 }

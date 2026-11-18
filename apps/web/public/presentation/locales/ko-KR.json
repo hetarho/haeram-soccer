@@ -7025,6 +7025,7 @@
     "delegation.floor.warning": "시즌 말 예상 현금 {projected}가 재정 위기 경고선 {floor}에 가까워요. 현금 전망과 지출을 확인해 주세요.",
     "delegation.floor.forcedSale": "재정 위기 강제 매각 −25%p",
     "market.sale.distress.warning": "판매 구단의 재정 위기 경고",
-    "market.sale.distress.forced": "판매 구단의 매각 요구 또는 법정관리"
+    "market.sale.distress.forced": "판매 구단의 매각 요구 또는 법정관리",
+    "delegation.floor.saleReduction": "시즌 말 예상 현금이 단장 하한보다 낮아 매각 요구 비율을 {points}%p 낮췄어요."
   }
 }

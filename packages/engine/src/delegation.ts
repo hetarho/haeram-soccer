@@ -162,11 +162,16 @@ export interface FloorCheck {
 /** Current-cost floor; temperament changes the step, never adds another reserve. */
 export function cashFloor(level: SpendRequest, cash: bigint, annual: bigint): bigint {
   switch (level) {
-    case 1: return cash;
-    case 2: return annual;
-    case 3: return annual / 2n;
-    case 4: return 0n;
-    case 5: return -(annual * BigInt(Math.round(DISTRESS.warning * 1000))) / 1000n;
+    case 1:
+      return cash;
+    case 2:
+      return annual;
+    case 3:
+      return annual / 2n;
+    case 4:
+      return 0n;
+    case 5:
+      return -(annual * BigInt(Math.round(DISTRESS.warning * 1000))) / 1000n;
   }
 }
 interface FloorBase {
@@ -179,28 +184,46 @@ interface FloorBase {
 }
 function floorCheck(base: FloorBase, fee: bigint, wage: bigint): FloorCheck {
   const loss = above(base.annual + wage, base.income),
-    projected = base.projected - fee - wage * BigInt(base.remaining) / BigInt(SEASON_ROUNDS) - wage;
-  return { ok: projected >= base.floor && (base.level !== 1 || loss === 0n),
-    loss, floor: base.floor, projected };
+    projected =
+      base.projected - fee - (wage * BigInt(base.remaining)) / BigInt(SEASON_ROUNDS) - wage;
+  return {
+    ok: projected >= base.floor && (base.level !== 1 || loss === 0n),
+    loss,
+    floor: base.floor,
+    projected,
+  };
 }
-function floorBase(w: World, plan: Pick<DelegatePlan, 'level' | 'revenue'>, projection: FinanceProjection): FloorBase {
+function floorBase(
+  w: World,
+  plan: Pick<DelegatePlan, 'level' | 'revenue'>,
+  projection: FinanceProjection,
+): FloorBase {
   const annual = BigInt(operatingCosts(w).annual);
-  return { level: plan.level, annual, income: BigInt(plan.revenue),
+  return {
+    level: plan.level,
+    annual,
+    income: BigInt(plan.revenue),
     projected: middleCash(projection) - pendingFees(w),
     floor: cashFloor(plan.level, BigInt(w.cash), annual),
-    remaining: SEASON_ROUNDS - Math.min(w.round, SEASON_ROUNDS) };
+    remaining: SEASON_ROUNDS - Math.min(w.round, SEASON_ROUNDS),
+  };
 }
 const middleCash = (projection: FinanceProjection) =>
   (BigInt(projection.seasonEnd.low) + BigInt(projection.seasonEnd.high)) / 2n;
 /** Same live floor test for bids, raises and their previews; existing wages are already projected. */
-export function floorTest(w: World, plan: Pick<DelegatePlan, 'level' | 'revenue'>,
-  { fee = 0n, wage = 0n }: Commitment = {}, projection = financeProjection(w)): FloorCheck {
+export function floorTest(
+  w: World,
+  plan: Pick<DelegatePlan, 'level' | 'revenue'>,
+  { fee = 0n, wage = 0n }: Commitment = {},
+  projection = financeProjection(w),
+): FloorCheck {
   return floorCheck(floorBase(w, plan, projection), fee, wage);
 }
 /** Largest annual raise, including the prorated current season and one full next season. */
 function wageRoom(base: FloorBase): bigint {
   if (!floorCheck(base, 0n, 0n).ok) return 0n;
-  let low = 0n, high = 1n;
+  let low = 0n,
+    high = 1n;
   while (floorCheck(base, 0n, high).ok) high *= 2n;
   while (high - low > 1n) {
     const mid = (low + high) / 2n;
@@ -211,16 +234,25 @@ function wageRoom(base: FloorBase): bigint {
 }
 /** Persisted outside prunable prose and plan snapshots; reads never emit a warning. */
 export function warnCashFloor(w: World, projection = financeProjection(w)) {
-  if (w.delegationWarningSeason === w.year ||
-      !BUDGET_RESPONSIBILITIES.some(key => isDelegated(w, key))) return;
+  if (
+    w.delegationWarningSeason === w.year ||
+    !BUDGET_RESPONSIBILITIES.some((key) => isDelegated(w, key))
+  )
+    return;
   const annual = BigInt(operatingCosts(w).annual),
     line = cashFloor(5, BigInt(w.cash), annual),
     projected = middleCash(projection) - pendingFees(w);
   if (projected > line + (annual * BigInt(Math.round(DISTRESS.warning * 1000))) / 1000n) return;
   w.delegationWarningSeason = w.year;
-  pushInbox(w, { kind: 'finance', title: sourceMessage('delegation.floor.warningTitle'),
+  pushInbox(w, {
+    kind: 'finance',
+    title: sourceMessage('delegation.floor.warningTitle'),
     detail: sourceMessage('delegation.floor.warning', {
-      projected: moneyLabel(w, projected.toString()), floor: moneyLabel(w, line.toString()) }), attention: false });
+      projected: moneyLabel(w, projected.toString()),
+      floor: moneyLabel(w, line.toString()),
+    }),
+    attention: false,
+  });
 }
 
 /** This season's player sales: fees received and leavers' compensation (the books' 선수 매각). */
@@ -463,7 +495,13 @@ export function delegatePlan(
 /** Sell harder below the cash floor or in any financial distress (→ECON-33). */
 export function wagePressure(w: World) {
   const plan = delegatePlan(w, 'sales');
-  return { level: (forcedSales(w.distress) ? 2 : plan.over || w.distress?.stage ? 1 : 0) as 0 | 1 | 2 };
+  return {
+    level: (forcedSales(w.distress)
+      ? 2
+      : BigInt(plan.projected) < BigInt(plan.floor) || w.distress?.stage
+        ? 1
+        : 0) as 0 | 1 | 2,
+  };
 }
 
 /**
@@ -525,7 +563,11 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
   );
   if (plan.key === 'academy') {
     lines.push(
-      sourceMessage('delegation.floor.summary', { projected: money(plan.projected), floor: money(plan.floor), spendable: money(plan.spendable) }),
+      sourceMessage('delegation.floor.summary', {
+        projected: money(plan.projected),
+        floor: money(plan.floor),
+        spendable: money(plan.spendable),
+      }),
       sourceMessage('delegation.plan.youth', {
         share,
         budget: money(plan.incomeBudget),
@@ -542,7 +584,11 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
       wages: money(plan.committed),
       loss: money(plan.loss),
     }),
-    sourceMessage('delegation.floor.summary', { projected: money(plan.projected), floor: money(plan.floor), spendable: money(plan.spendable) }),
+    sourceMessage('delegation.floor.summary', {
+      projected: money(plan.projected),
+      floor: money(plan.floor),
+      spendable: money(plan.spendable),
+    }),
   );
   switch (plan.key) {
     case 'recruitment':

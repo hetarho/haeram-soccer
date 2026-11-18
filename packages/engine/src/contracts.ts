@@ -630,7 +630,7 @@ function declineTalk(w: World, p: Player, reason: string) {
  * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
  * ending before the running contract (→staffTerm), when 재계약 기조 keeps the player (the floor
  * within its wage cap, a starter when it keeps only the XI, younger than its age limit) and
- * the 단장's plan allows the raise (`delegatePlan`): the runway test passes with the raise
+ * the 단장's plan allows the raise (`delegatePlan`): the floor test passes with the raise
  * (→`floorTest`, ECON-33), and the plain insolvency stop lets it through;
  * otherwise they decline. Either way the talk's inbox item says why.
  */
@@ -678,12 +678,24 @@ export function staffTalkVerdict(w: World, p: Player) {
     };
   const projection = financeProjection(w);
   if (raise > 0n) {
-    const check = floorTest(w, delegatePlan(w, 'contracts', undefined, undefined, projection), { wage: raise }, projection);
-    if (!check.ok) return { accept: false as const,
-      reason: sourceMessage('delegation.verdict.wrap', { plan: finance,
-        reason: sourceMessage('delegation.floor.refused', {
-          projected: moneyLabel(w, check.projected.toString()), floor: moneyLabel(w, check.floor.toString()), loss: moneyLabel(w, check.loss.toString()) }) }) };
-
+    const check = floorTest(
+      w,
+      delegatePlan(w, 'contracts', undefined, undefined, projection),
+      { wage: raise },
+      projection,
+    );
+    if (!check.ok)
+      return {
+        accept: false as const,
+        reason: sourceMessage('delegation.verdict.wrap', {
+          plan: finance,
+          reason: sourceMessage('delegation.floor.refused', {
+            projected: moneyLabel(w, check.projected.toString()),
+            floor: moneyLabel(w, check.floor.toString()),
+            loss: moneyLabel(w, check.loss.toString()),
+          }),
+        }),
+      };
   }
   const stop = insolvencyStop(w, 0n, raise > 0n ? raise : 0n, false, 'contracts', projection);
   if (stop)

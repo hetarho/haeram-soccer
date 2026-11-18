@@ -7028,6 +7028,7 @@
     "delegation.floor.warning": "Projected season-end cash {projected} is near the financial distress warning line {floor}. Check the cash outlook and spending.",
     "delegation.floor.forcedSale": "Forced sales in financial distress −25pp",
     "market.sale.distress.warning": "Seller in financial distress: warning",
-    "market.sale.distress.forced": "Seller under forced sales or administration"
+    "market.sale.distress.forced": "Seller under forced sales or administration",
+    "delegation.floor.saleReduction": "Projected closing cash is below the director’s floor, so the asking bar is reduced by {points} percentage points."
   }
 }

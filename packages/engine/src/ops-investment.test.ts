@@ -67,8 +67,7 @@ describe('owner office instructions and investment', () => {
   it("bounds a delegated signing by what is left of the 단장's season budget", () => {
     const w = world();
     w.round = 1;
-    // Keep this income-budget boundary case below even the most generous reserve.
-    w.cash = (BigInt(operatingCosts(w).annual) * 4n).toString();
+    // Compare the live cash floor at the minimum and most expansive requests.
     w.income = operatingCosts(w).annual;
     holdTemperament(w, 'director', 'balanced');
     operate(w, { type: 'delegation-request', responsibility: 'recruitment', level: 1 });
@@ -76,8 +75,8 @@ describe('owner office instructions and investment', () => {
       fee = (BigInt(delegatePlan(w, 'recruitment').left) + 1n).toString();
     expect(signingVerdict(w, candidate, fee)).toMatchObject({
       ok: false,
-      // At 최소한만 the runway test refuses a fee past the cash or a planned loss (→ECON-33).
-      reason: expect.stringMatching(/보유 자금|수입 안에서만/),
+      // At 최소한만 the floor test refuses a fee beyond closing-cash room (→ECON-33).
+      reason: expect.stringContaining('현금 하한'),
     });
     operate(w, { type: 'delegation-request', responsibility: 'recruitment', level: 5 });
     expect(signingVerdict(w, candidate, fee)).toMatchObject({ ok: true });

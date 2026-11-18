@@ -7031,6 +7031,7 @@
     "delegation.floor.warning": "El efectivo previsto al cierre {projected} se acerca al umbral de alerta financiera {floor}. Revisa la previsión y los gastos.",
     "delegation.floor.forcedSale": "Ventas forzadas por dificultades financieras −25 pp",
     "market.sale.distress.warning": "Vendedor con alerta financiera",
-    "market.sale.distress.forced": "Vendedor con ventas forzadas o administración judicial"
+    "market.sale.distress.forced": "Vendedor con ventas forzadas o administración judicial",
+    "delegation.floor.saleReduction": "El efectivo previsto al cierre queda por debajo del mínimo del director, por lo que el porcentaje exigido baja {points} puntos porcentuales."
   }
 }

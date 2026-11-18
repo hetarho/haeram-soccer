@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { warnCashFloor } from './delegation';
 import { MANAGER_GONE } from './staff-info';
 export { MANAGER_GONE } from './staff-info';
 import { cancelPromises } from './promises';
@@ -99,6 +100,7 @@ export function renewManager(w: World, term?: ContractTerm, delegated = false) {
     { ...w.manager, wage: terms.wage, until: terms.until },
     delegated ? undefined : term,
   );
+  if (delegated) warnCashFloor(w);
   readRelated(w, w.manager.id);
   addEvent(
     w,
@@ -177,6 +179,7 @@ export function appointDelegatedManager(w: World) {
   const manager = installManager(w, pick, term),
     school = STYLE_INFO[manager.style].label,
     ends = contractSeason(w.year + term);
+  warnCashFloor(w);
   addEvent(
     w,
     'manager-hire',

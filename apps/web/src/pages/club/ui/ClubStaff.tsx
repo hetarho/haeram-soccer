@@ -1293,9 +1293,11 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
         <li>{localizeValue(directionOption(w, 'renewal').summary)}</li>
         <li>{richMessage('copy.ClubStaff.9d5c92492d')}</li>
         <li>
-          {plan.runway > 0
-            ? richMessage('delegation.talk.runway', { seasons: plan.runway })
-            : richMessage('delegation.talk.income')}
+          {richMessage('delegation.floor.summary', {
+            projected: compactMoney(plan.projected, clubOf(w).country, w.year),
+            floor: compactMoney(plan.floor, clubOf(w).country, w.year),
+            spendable: compactMoney(plan.spendable, clubOf(w).country, w.year),
+          })}
         </li>
         <li>{richMessage('copy.ClubStaff.e257a74a0b')}</li>
       </ul>

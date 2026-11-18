@@ -4,7 +4,6 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import type { ReactNode } from 'react';
 import type { BudgetResponsibility, World } from '../../../../../../packages/contracts/src/types';
 import {
-  personOf,
   requestLabel,
   RESPONSIBILITY_NAMES,
   sharePercent,
@@ -75,7 +74,11 @@ export function PlanFlow({ label, steps }: { label: string; steps: readonly Flow
 /** Minimal typed DTO adaptation; the full cash-floor explanation follows in T972. */
 export function floorLine(w: World, plan: DelegatePlan) {
   const money = (value: string) => compactMoney(value, clubOf(w).country, w.year);
-  return sourceMessage('delegation.floor.summary', { projected: money(plan.projected), floor: money(plan.floor), spendable: money(plan.spendable) });
+  return sourceMessage('delegation.floor.summary', {
+    projected: money(plan.projected),
+    floor: money(plan.floor),
+    spendable: money(plan.spendable),
+  });
 }
 
 /** The plan's money as steps, for the works the 단장 plans with money. */

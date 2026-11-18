@@ -7031,6 +7031,7 @@
     "delegation.floor.warning": "La liquidità prevista a fine stagione {projected} è vicina alla soglia di allarme finanziario {floor}. Controlla la previsione e le spese.",
     "delegation.floor.forcedSale": "Vendite forzate per difficoltà finanziarie −25 pp",
     "market.sale.distress.warning": "Venditore in allarme finanziario",
-    "market.sale.distress.forced": "Venditore con vendite forzate o amministrazione controllata"
+    "market.sale.distress.forced": "Venditore con vendite forzate o amministrazione controllata",
+    "delegation.floor.saleReduction": "La liquidità prevista a fine stagione è sotto la soglia del direttore, quindi la percentuale richiesta scende di {points} punti percentuali."
   }
 }

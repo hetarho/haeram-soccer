@@ -73,7 +73,8 @@ import { ownStarters } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './transactions';
 import { locateOffer, transferOffers } from './scout-search';
-import { applyDelegatePlans, warnCashFloor } from './delegation';
+import { applyDelegatePlans, delegatePlan, warnCashFloor } from './delegation';
+import { SALE_FLOOR_REDUCTION } from './transfer-policy';
 import { SAFETY_ROUNDS } from './delegation-info';
 import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
@@ -1065,7 +1066,12 @@ export function isProspect(w: World, p: Player) {
 export function saleBar(w: World, p: Player) {
   const prospect = isProspect(w, p),
     bars = SALE_BARS[w.build?.market ?? 'standard'] ?? SALE_BARS.standard!;
-  return { percent: bars[prospect ? 1 : 0], prospect };
+  const plan =
+    isDelegated(w, 'sales') && !w.distress?.stage && transferStance(p) === 'open'
+      ? delegatePlan(w, 'sales')
+      : undefined;
+  const reduction = plan && BigInt(plan.projected) < BigInt(plan.floor) ? SALE_FLOOR_REDUCTION : 0;
+  return { percent: bars[prospect ? 1 : 0] - reduction, prospect, reduction };
 }
 /**
  * The sale bar's base by the 매각 기조 card (→CLUB-18), of value and for a prospect: the club's
@@ -1568,14 +1574,27 @@ function answerAsSeller(
   const answer = saleAnswer(context, random(`${w.seed}:sale:${bid.id}`)()),
     terms = {
       asking: moneyLabel(w, context.asking),
-      bar: saleBar(w, player).percent,
+      bar: context.saleBar!.percent,
       fee: moneyLabel(w, bid.fee),
       offered,
     },
     detail =
       (id: SourceMessageId, extra: Record<string, string> = {}) =>
       (room: number) =>
-        sourceMessage(id, { ...terms, ...extra, reason: saleReason(w, answer, room) });
+        sourceMessage(id, {
+          ...terms,
+          ...extra,
+          reason: [
+            ...(context.saleBar?.reduction
+              ? [
+                  sourceMessage('delegation.floor.saleReduction', {
+                    points: context.saleBar.reduction,
+                  }),
+                ]
+              : []),
+            saleReason(w, answer, room),
+          ].join(' · '),
+        });
   if (answer.kind === 'accept') {
     report(true, detail('market.sale.own.accepted'));
     return;

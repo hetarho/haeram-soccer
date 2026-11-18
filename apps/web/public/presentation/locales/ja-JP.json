@@ -7025,6 +7025,7 @@
     "delegation.floor.warning": "シーズン末予想現金 {projected}が財政危機の警告線 {floor}に近づいています。現金予測と支出を確認してください。",
     "delegation.floor.forcedSale": "財政危機による強制売却 −25ポイント",
     "market.sale.distress.warning": "売却クラブに財政警告",
-    "market.sale.distress.forced": "売却クラブに売却要求または管財管理"
+    "market.sale.distress.forced": "売却クラブに売却要求または管財管理",
+    "delegation.floor.saleReduction": "シーズン末の予想現金がディレクターの下限を下回るため、売却要求の比率を{points}ポイント下げました。"
   }
 }

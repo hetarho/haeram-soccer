@@ -153,16 +153,16 @@ describe('incoming bids', () => {
     p.born = w.year - 26;
     p.until = w.year + 3;
     w.cash = '999999999999';
-    expect(saleBar(w, p)).toEqual({ percent: 130, prospect: false });
+    expect(saleBar(w, p)).toMatchObject({ percent: 130, prospect: false });
     // Age, contract, money and the sales line are the selling-club answer's factors now
     // (→CLUB-52), not cuts of the bar.
     p.born = w.year - 34;
     p.until = w.year + 1;
     w.cash = '0';
-    expect(saleBar(w, p)).toEqual({ percent: 130, prospect: false });
+    expect(saleBar(w, p)).toMatchObject({ percent: 130, prospect: false });
     p.born = w.year - 19;
     p.potential = overall(p) + 20;
-    expect(saleBar(w, p)).toEqual({ percent: 200, prospect: true });
+    expect(saleBar(w, p)).toMatchObject({ percent: 200, prospect: true });
     p.potential = overall(p) + 3;
     expect(saleBar(w, p).percent).toBe(130);
   });

@@ -82,6 +82,7 @@ export const WORLD_VIEW_FIELDS = {
   direction: 'include',
   delegationRequests: 'include',
   budgetPlan: 'include',
+  delegationWarningSeason: 'include',
   localBase: 'include',
   globalReach: 'include',
   cupWinners: 'include',

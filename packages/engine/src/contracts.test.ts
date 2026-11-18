@@ -70,6 +70,7 @@ import {
 } from './index';
 import { buyOffer, handTo, holdRows, staffAuthority, wouldJoin } from './testing';
 import { financeProjection } from './projection';
+import { projectCashTo } from './delegation.testkit';
 import { delegatePlan } from './delegation';
 import { askingMultiplier } from './world-market';
 import { releaseFixturePlayers, twentyPlayerFixture } from './player-fixtures.testkit';
@@ -458,9 +459,8 @@ describe('contract talks (→CLUB-26)', () => {
     ).toMatchObject({ kind: 'contract-decline' });
   });
 
-  it('declines a raise whose planned loss the cash cannot cover for the runway (→CLUB-26, →ECON-33)', () => {
-    // No share of income caps the wage bill (ECON-33 r62): the 단장 lets a raise through when the
-    // planned loss after it, times the runway of the step he acts on, fits the available capital.
+  it('declines a raise that crosses the live cash floor (→CLUB-26, →ECON-33)', () => {
+    // The same raise passes only when the live closing projection stays above the cash floor.
     /** The talk answered with this season's plan resting on `revenue(annual, raise)`. */
     const verdict = (revenue: (annual: bigint, raise: bigint) => bigint, cashYears = 2n) => {
       const { w, p } = talking(80);
@@ -476,6 +476,7 @@ describe('contract talks (→CLUB-26)', () => {
       const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage);
       expect(raise).toBeGreaterThan(0n);
       w.budgetPlan = { year: w.year, revenue: revenue(annual, raise).toString(), sales: '0' };
+      if (cashYears === 1n) projectCashTo(w, annual / 2n);
       const plan = delegatePlan(w, 'contracts');
       const events = newYear(w);
       return { w, p, raise, plan, item: talkItems(w, p.id)[0], events };
@@ -484,16 +485,15 @@ describe('contract talks (→CLUB-26)', () => {
     const within = verdict((annual, raise) => annual + raise);
     expect(BigInt(within.plan.left)).toBeGreaterThanOrEqual(within.raise);
     expect(within.item.title).toContain('받아들였어요');
-    // A loss of half a year's costs: at 적당히 the cash must cover it four seasons, and a year of
-    // costs does not, whatever his temperament: the 단장 declines, saying why.
+    // At the half-season floor there is no room for a raise.
     const past = verdict((annual, raise) => annual + raise - annual / 2n, 1n);
     expect(BigInt(past.plan.left)).toBeLessThan(past.raise);
     expect(past.item.title).toContain('거절했어요');
-    expect(past.item.detail).toContain('시즌 버티지 못해');
+    expect(past.item.detail).toContain('현금 하한');
     expect(
       past.events.find((e) => e.title.includes(past.p.name) && e.kind === 'contract-decline'),
     ).toMatchObject({ kind: 'contract-decline' });
-    // The same loss is allowed when the cash covers it for the runway.
+    // Live funding allows the same raise.
     const funded = verdict((annual, raise) => annual + raise - annual / 2n, 40n);
     expect(BigInt(funded.plan.spendable)).toBeGreaterThan(0n);
     expect(funded.item.title).toContain('받아들였어요');

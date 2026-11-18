@@ -60,7 +60,7 @@ import type { SigningNeed } from './signings';
 import { handTo, holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { careerWorld } from './career.testkit';
-import { holdTemperament } from './delegation.testkit';
+import { holdTemperament, projectCashTo } from './delegation.testkit';
 import { reachOffers, scoutReach } from './scout-search';
 import { joinFreeAgents } from './free-agents';
 import { retainPerson, openEmployment } from './person-careers';
@@ -318,16 +318,13 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it("keeps the 단장's money checks", () => {
     const w = club();
     const offer = transferOffers(w)[clubIndex(w)]!;
-    // A planned loss as large as the signing, and cash that covers it with his wage for two
-    // seasons above the quarter year a 균형형 단장 keeps back at 적당히: short of its four-season
-    // runway, inside 아낌없이's one season with nothing kept back (→ECON-33).
+    // With the same projected closing cash the half-season floor refuses what stage 1's line allows.
     const annual = BigInt(operatingCosts(w).annual),
       fee = BigInt(offer.fee),
       wage = BigInt(offer.player.wage),
-      loss = fee + wage,
-      planned = { year: w.year, revenue: (annual - loss).toString(), sales: '0' };
+      planned = { year: w.year, revenue: (annual + wage).toString(), sales: '0' };
     w.budgetPlan = planned;
-    w.cash = (fee + (loss + wage) * 2n + annual / 4n + 1n).toString();
+    projectCashTo(w, fee + wage * 2n);
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(false);
     w.delegationRequests = { recruitment: 5 };
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(true);
@@ -336,15 +333,15 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     w.budgetPlan = { ...planned, revenue: (annual + wage * 2n).toString() };
     w.cash = BigInt(offer.fee).toString();
     expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('현금이 바닥나지');
-    // Without income a year of cash cannot carry four seasons of the loss: the wage bill has no room.
+    // A projection below the floor leaves no room.
     const poor = club();
-    poor.cash = operatingCosts(poor).annual;
+    projectCashTo(poor, -annual);
     poor.budgetPlan = { ...planned, revenue: '0' };
-    expect(signingVerdict(poor, offer.player, offer.fee).reason).toContain('연봉 총액');
+    expect(signingVerdict(poor, offer.player, offer.fee).reason).toContain('현금 하한');
     passFree(poor);
     staffSignings(poor);
     expect(staffBids(poor)).toEqual([]);
-    // Zero planned income is not a refusal when the cash covers the loss for the runway.
+    // At step 3, cash above the floor can fund a commitment even with no planned income.
     const funded = club();
     funded.budgetPlan = { ...planned, revenue: '0' };
     expect(signingVerdict(funded, offer.player, offer.fee).ok).toBe(true);
@@ -1224,21 +1221,19 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     return BigInt(marketWageAt(c.country, w.year, c.tier, regular, ovr));
   };
 
-  it('is the highest OVR whose 27-year-old wage for the runway plus one season fits the capital the runway test leaves; higher when richer, none at 1–3', () => {
+  it('is the highest OVR whose 27-year-old wage for two seasons fits spendable money; higher when richer, none at 1–3', () => {
     const rich = club(5),
       modest = club(5);
     // Income past every fixed cost: no planned loss, and the cash is the money for signings.
     poor(modest, BigInt(operatingCosts(modest).annual) * 2n);
-    modest.cash = (wageAt(modest, 70) * 2n).toString();
+    projectCashTo(modest, wageAt(modest, 70) * 2n - BigInt(operatingCosts(modest).annual) / 4n);
     const high = moneyBar(rich)!,
       low = moneyBar(modest)!;
     expect(high).toBeGreaterThan(low);
-    // The bar is the highest OVR whose wage, for the runway (one season at 아낌없이) plus one,
-    // fits the capital the runway test leaves (→ECON-33).
+    // The bar uses two full seasons of wages within live spendable money (→CLUB-33).
     const plan = delegatePlan(modest, 'recruitment'),
       money = BigInt(plan.left),
       seasons = 2n;
-    expect(seasons).toBe(2n);
     expect(low).toBe(70);
     expect(wageAt(modest, low) * seasons).toBeLessThanOrEqual(money);
     expect(wageAt(modest, low + 1) * seasons).toBeGreaterThan(money);
@@ -1257,28 +1252,29 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     // Income that pays only the wages and no cash: the planned loss is uncovered.
     const spent = club(5);
     poor(spent, wages);
+    projectCashTo(spent, -annual);
     expect(BigInt(delegatePlan(spent, 'recruitment').left)).toBe(0n);
     expect(moneyBar(spent)).toBeUndefined();
-    // A player sale reaches the cash, and so the capital past a season of the loss.
+    // A player sale reaches cash and the live closing projection.
     const loss = annual - wages,
       sold = club(5);
     poor(sold, wages);
     addEvent(sold, 'transfer-out', 'sale', 'sale', (loss + wageAt(sold, 70) * 2n).toString());
-    sold.cash = (loss + wageAt(sold, 70) * 2n).toString();
+    projectCashTo(sold, wageAt(sold, 70) * 2n - annual / 4n);
     expect(BigInt(delegatePlan(sold, 'recruitment').left)).toBeGreaterThan(0n);
     const fromSales = moneyBar(sold)!;
     expect(fromSales).toBe(70);
-    // More cash above the reserve (none for a 균형형 단장 at 아낌없이) buys more.
+    // More cash above the same floor buys more.
     const funded = club(5);
     poor(funded, wages);
-    funded.cash = (loss + wageAt(funded, 85) * 2n).toString();
+    projectCashTo(funded, wageAt(funded, 85) * 2n - annual / 4n);
     expect(moneyBar(funded)!).toBeGreaterThan(fromSales);
     // A fee paid leaves the cash, and the money for signings with it.
     const bought = club(5);
     poor(bought, wages);
     addEvent(bought, 'transfer-out', 'sale', 'sale', (loss + wageAt(bought, 70) * 2n).toString());
     addEvent(bought, 'transfer-in', 'buy', 'buy', wages.toString());
-    bought.cash = (loss + wageAt(bought, 70) * 2n - wages).toString();
+    bought.cash = (BigInt(sold.cash) - wages).toString();
     expect(BigInt(delegatePlan(bought, 'recruitment').left)).toBeLessThan(
       BigInt(delegatePlan(sold, 'recruitment').left),
     );
