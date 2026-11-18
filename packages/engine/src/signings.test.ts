@@ -318,21 +318,25 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it("keeps the 단장's money checks", () => {
     const w = club();
     const offer = transferOffers(w)[clubIndex(w)]!;
-    // With the same projected closing cash the half-season floor refuses what stage 1's line allows.
+    // A large fixed bill lets the test start with the fee and reserve in cash.
+    w.manager.wage = (BigInt(operatingCosts(w).annual) * 4n).toString();
+    // The half-season floor rejects a commitment the fifth spending step can carry.
     const annual = BigInt(operatingCosts(w).annual),
       fee = BigInt(offer.fee),
       wage = BigInt(offer.player.wage),
       planned = { year: w.year, revenue: (annual + wage).toString(), sales: '0' };
     w.budgetPlan = planned;
-    projectCashTo(w, fee + wage * 2n);
+    projectCashTo(w, fee + wage + wage / 2n + annual / 2n - 1n);
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(false);
     w.delegationRequests = { recruitment: 5 };
-    expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(true);
+    const supported = signingVerdict(w, offer.player, offer.fee);
+    expect(supported.ok, supported.reason).toBe(true);
     // Whatever the plan allows, the plain stop keeps a month of fixed costs in cash: income past
     // every cost with his wage, and cash for the fee alone.
-    w.budgetPlan = { ...planned, revenue: (annual + wage * 2n).toString() };
-    w.cash = BigInt(offer.fee).toString();
-    expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('현금이 바닥나지');
+    const lowCash = club(5);
+    lowCash.budgetPlan = { ...planned, revenue: (annual + wage * 2n).toString() };
+    lowCash.cash = offer.fee;
+    expect(signingVerdict(lowCash, offer.player, offer.fee).reason).toContain('현금이 바닥나지');
     // A projection below the floor leaves no room.
     const poor = club();
     projectCashTo(poor, -annual);
@@ -1358,6 +1362,9 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
 
   it('does not count slots departures weakened and upgrades filled again beside a weak slot', () => {
     const w = club(5);
+    const starting = new Set(ownStarters(w));
+    for (const player of activePlayers(w))
+      if (!starting.has(player)) for (const attribute of ATTRIBUTES) player.attrs[attribute] = 10;
     const plain = upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[];
     const levels = [...new Set(plain.map((need) => need.level))].sort((a, b) => a - b);
     // A bar that leaves only the weakest measure more than 2 below it.
