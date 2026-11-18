@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r19 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r20 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Every player of a playable association's club is a persisted person who develops and ages by the rules below wherever he plays (→WORLD-16); only representative clubs field squads generated each season (→WORLD-6). A player of a club nobody owns plays at his club's 조직력 (→LEAGUE-12) in place of his own adaptation; cross-role person continuity and retirement eligibility are →WORLD-10/11. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -92,12 +92,13 @@
   | 컴플리트 포워드 | 드리블, 공중볼 |
   - a player's OVR on his card, in the market and in market wages and values (→CLUB-25) is his OVR at his main position in his best role there.
   - in a lineup slot he plays at 실효 OVR = the slot's position and role OVR × his level there (→PLAYER-4) × his adaptation multiplier (→PLAYER-10), less 3 when unhappy (→CLUB-27); the lineup and the match show both numbers.
-- PLAYER-7 [o] Every player has three personality traits, each one of five grades — 매우 낮음, 낮음, 보통, 높음, 매우 높음 — drawn 8% / 22% / 40% / 22% / 8% and fixed for his career. ← the per-player rates read as football words, as professionalism and adaptability do in football management games
+- PLAYER-7 [o] Every player has four personality traits, each one of five grades — 매우 낮음, 낮음, 보통, 높음, 매우 높음 — drawn 8% / 22% / 40% / 22% / 8% and fixed for his career. ← the per-player rates read as football words, as professionalism and adaptability do in football management games
   | trait | 매우 낮음 | 낮음 | 보통 | 높음 | 매우 높음 | decides |
   |---|---|---|---|---|---|---|
   | 프로의식 | ×0.70 | ×0.85 | ×1.00 | ×1.15 | ×1.30 | his development rate (→PLAYER-15) |
   | 적응력 | ×0.60 | ×0.80 | ×1.00 | ×1.20 | ×1.40 | his adaptation rate (→PLAYER-12) and his start after a transfer (→PLAYER-11) |
   | 야망 | never | never | never | 25% | 50% | unhappiness when a bigger club's offer is declined (→PLAYER-8) |
+  | 충성심 | ×0 | ×0.5 | ×1 | ×1.5 | ×2 | his loyalty weight: how much his seasons at a club and an academy start there hold him (→CLUB-54) |
 - PLAYER-8 [o] 야망 decides whether a declined offer from a bigger club makes him unhappy (→CLUB-27).
 - PLAYER-9 [o] Play traits, 0–3 per player (most have 1–2, stars up to 3, some none), bend his match decisions toward their action and his runs toward their space (→MATCH-16, →MATCH-17) and are what schools of football prefer (→STAFF): ← the way he plays, not only how well
   | trait | does |
@@ -142,7 +143,7 @@
   - a prodigy (→WORLD-18) grows at three times his rate until he turns 18, with three times the season's growth limit; the other rules hold. ← one in a world can rate 80 at 16, as football's rare teenage starters do
 - PLAYER-16 [o] With his adaptation at 0.90 or more a player grows past his potential, with no cap but 99, on a curve that flattens sharply: growth at +1 over potential runs ×0.25 of the rate below it, +3 ×0.10, +5 ×0.05, +10 ×0.02 (log-like between); the age rules still hold. ← a player who suits his manager can outgrow his potential, rarely and slowly
   - "the rate below it" is his rate 2 under potential: a settled player's round growth never falls below that rate, nearing potential or past it; an unsettled player's still shrinks with the gap and stops at potential.
-- PLAYER-17 [o] Attributes age by group: ← veterans drop back into playmaking or centre back as their legs go
+- PLAYER-17 [o] Attributes age by group, each player on his own curve: ← veterans drop back into playmaking or centre back as their legs go
   | attributes | grow until about | from | per season after |
   |---|---|---|---|
   | 속도, 체력 | 26 | 29 | −2 |
@@ -152,6 +153,12 @@
   | 시야, 위치선정, 판단력, 침착성 | 32 | 33 | −0.5 |
   | 선방, 공중볼 처리, 발밑 | 30 | 33 | −1 |
   - between growth and decline an attribute holds; every seasonal change carries noise of ±0.5.
+  - his own curve, drawn once from his own stream when he enters the world and fixed for his career: an onset shift added to every group's "grow until" and "from" ages, and a decline rate multiplying every "per season after". Starting values, estimated, tuned by measurement: ← one table aged every player alike, while football's players fade at different ages and speeds
+    | onset shift (years) | −4 | −3 | −2 | −1 | 0 | +1 | +2 | +3 | +4 | +5 |
+    |---|---|---|---|---|---|---|---|---|---|---|
+    | share | 1% | 2% | 5% | 15% | 37% | 18% | 10% | 6% | 4% | 2% |
+    - decline rate ×0.6 to ×1.8, triangular with its mode at ×1: some fall sharply, some hold on.
+  - targets on worlds lived with it (estimated): under 3% of players begin to decline before 27; most begin between 28 and 32; about one regular in ten aged 30 or over stays within 3 of his peak OVR until 34 or later, a few into their late 30s; some lose 6 or more OVR within two seasons of their onset.
 - PLAYER-18 [o] The owner sees his own players' attributes, positions and levels, traits, adaptation, multiplier and 실효 OVR exactly; for any other player attributes, positions and play traits are exact and personality grades show as a range by the chief scout's ability (→STAFF-11): 80+ exact, 60–79 ±1 grade, below 60 or no chief scout ±2. With the owner's 원석 감별사 (→OWNER-5) the range is halved on whole grades: ±2 becomes ±1, ±1 becomes exact. ← the scout earns his place, and a signing's settling is a stated gamble
 - PLAYER-19 [o] Match attributes are the 16 of →PLAYER-2; on the pitch 판단력 and 침착성 are the mental attributes, and the personality traits (→PLAYER-7) do not act in a match. Separate coaching aptitude and football understanding (→PLAYER-21) concern the later staff career, not a match modifier: 판단력 is on-pitch decision-making, football understanding the off-pitch reading of the game (→PLAYER-22). Nothing here changes by the start (→OWNER-2).
 
@@ -199,6 +206,7 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r20 261118 PLAYER-7✎ three personality traits→four (+충성심, a loyalty weight read by CLUB-53/54); PLAYER-17✎ one ageing table for every player→each player's own onset shift (−4 to +5 years) and decline rate (×0.6–1.8), drawn once
 - r19 261118 PLAYER-15✎ one growth rate for every player→+a prodigy (WORLD-18) grows ×3, with ×3 the season's limit, until 18
 - r18 261113 PLAYER-1✎ other clubs' squads generated each season, development and ageing for own players only→every playable-country player persisted and developing by the same rules, generated squads for representative clubs only
 - r17 261111 PLAYER-5✎ phase movement and role tendencies implemented in `grid/shape.ts` and `grid/tendencies.ts`→a role's place is the staging's shape, its action weights the result path's

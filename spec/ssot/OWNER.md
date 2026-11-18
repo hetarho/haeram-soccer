@@ -1,5 +1,5 @@
 # OWNER Owner fortune, takeover start, traits and standing
-> r7 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
+> r8 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
 
 ## decisions
 - OWNER-1 [o] The owner's fortune (구단주 자금) and the club's cash (구단 자금) are separate pots; money moves between them only by an injection (→OWNER-9) or a dividend (→OWNER-11). From the takeover the fortune is kept in the club's currency and converts with it (→ECON-5/6). ← the owner's own money and the club's books are different stakes
@@ -52,20 +52,32 @@
   | star sale | selling one of the club's three highest-OVR players −4, at most once a transfer window |
   | identity change | adopting a designer draft (→KIT-9) −20 |
   | ticket price | each home league match with a price above the era's default preset (→ECON-17) −0.2 per preset step above |
+  | debt | each settled league round in debt −0.2; entering financial distress stage 1 / 2 / 3 (→ECON-24) −5 / −10 / −20 |
+  | homegrown sale | selling an XI player who came through the club's academy (→CLUB-16) −3 |
+  - each change is scaled by the club's fan disposition (→!OWNER-19): × (0.5 + 2 × the share of the disposition that cares about the driver), rises and drops alike.
   - 팬들의 친구 multiplies every drop by 0.7 (→OWNER-5); rises are not scaled.
 - OWNER-13 [o] 퇴진 압박: each settled league round with 팬 민심 below FAN_MOOD.floor (15) counts one, rising to the floor or above resets the count; at 8 in a row the owner is forced out (구단주 퇴진) and the career ends.
 - OWNER-14 [o] 구단주 파산 위기: a fortune below zero after a settlement opens the crisis, which runs to the season close; a fortune below zero cannot be staked, so the season's dividend is the way back, and an owner still below zero after the close's dividend and living costs goes bankrupt (구단주 파산) and the career ends.
-- OWNER-15 [o] Crises are shown: 구단 파산 위기 (→ECON-24), 구단주 파산 위기 and 퇴진 압박 appear as statuses with what remains of their count (→WEB-56). Only the start of a 파산 위기 (구단 or 구단주) stops a running automatic clock, once, behind a warning dialog (→!WEB-56); no other crisis opens a modal or halts the clock.
-- OWNER-16 [o] A career ends on the club's bankruptcy (→ECON-24), the owner's bankruptcy (→OWNER-14) or 구단주 퇴진 (→OWNER-13); after it the game advances nothing and refuses every command but reading the inbox, and the game-over page names the cause (→WEB-56).
+- OWNER-15 [o] Crises are shown: the club's financial distress stage (→ECON-24), 구단주 파산 위기 and 퇴진 압박 appear as statuses with what remains of their count (→WEB-56). Only entering a distress stage or the start of 구단주 파산 위기 stops a running automatic clock, once each, behind a warning dialog (→!WEB-56); no other crisis opens a modal or halts the clock.
+- OWNER-16 [o] A career ends on the owner's bankruptcy (→OWNER-14) or 구단주 퇴진 (→OWNER-13), never on the club's money (→ECON-24); after it the game advances nothing and refuses every command but reading the inbox, and the game-over page names the cause (→WEB-56).
+- OWNER-19 [o] 팬 성향: a club's supporters are a mix of four dispositions, shares summing to 100%, drawn at the takeover from the club's own stream around a centre its stature and history set — a giant's or a recent champion's fans lean 성적파 and 스타 선호파, a small club's 정체성파 and 재정 보수파; the mix is shown before the takeover is confirmed (→WEB-2) and fixed for the career. ← the same decision pleases one club's fans and angers another's, as football's do
+  | disposition | cares about (→OWNER-12's drivers) |
+  |---|---|
+  | 성적파 | own league result, season close |
+  | 정체성파 | star sale, homegrown sale, identity change |
+  | 재정 보수파 | debt, dividend, ticket price |
+  | 스타 선호파 | big signing, injection |
+  - starting values, estimated: each share 10–45%, the centre's lean adding up to 15 points to its dispositions.
 - OWNER-17 [o] Each season close records the owner's fortune, the season's business result, living costs, injections, dividend and 팬 민심 at the close (→HIST-21).
 - OWNER-18 [o] Not in this version: selling the club, owners at other clubs, borrowing to buy, renaming the club, a draw or reroll of the owner, and converting careers made before the takeover rules (→SAVE-26).
 
 ## flow
 - Start: wealth tier → traits (0–5) → takeover decade (→WEB-2) → world generation (→WORLD-13) → club list → takeover (→ECON-38)
 - Season: stake set → monthly settlement (bet, living costs) → injections at will → league rounds move 팬 민심 → season close (dividend, business, living costs, crisis checks, record)
-- End: club bankruptcy | owner bankruptcy | 구단주 퇴진 → game-over page
+- End: owner bankruptcy | 구단주 퇴진 → game-over page
 
 ## chg
+- r8 261118 OWNER-12✎ drivers alike at every club→scaled by the fan disposition (OWNER-19), +debt and distress stages, +homegrown sale; OWNER-19+ 팬 성향: a mix of 성적파/정체성파/재정 보수파/스타 선호파 drawn at the takeover; OWNER-15✎ 구단 파산 위기→the club's distress stage; OWNER-16✎ the club's bankruptcy ends a career→never the club's money
 - r7 261110 OWNER-15✎ no crisis opens a modal or halts the clock→the start of a 구단/구단주 파산 위기 stops a running automatic clock once behind a warning dialog; 퇴진 압박 still never does
 - r6 261109 OWNER-7✎ settlements 1 Nov/1 Feb/1 May + close, success 50%, the whole staked share won or lost→the 1st of each month September–June + close (eleven), success 60%, 5% of the staked share won or lost; OWNER-5✎ 성공한 사업가 50→60%→60→70%; OWNER-8✎ 0.2% of the starting fortune a settlement→0.8% a season split over its settlements
 - r5 261104 OWNER-5✎ 마당발 candidate lists one longer, each candidate +5→free-agent pools one larger, each new free agent +5 (→STAFF-17/49)

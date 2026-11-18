@@ -15,25 +15,26 @@
 |---|---|
 | other-clubs-match-maps | open@261111 |
 | kick-off-fresh-seed | open@261111 |
+| historical-era-rules | open@261118 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 48 | 48 | - | 2 |
-| WEB | 221 | 221 | - | 0 |
+| WEB | 222 | 222 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
-| WORLD | 17 | 17 | - | 0 |
+| WORLD | 18 | 18 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 77 | 77 | - | 0 |
+| CLUB | 78 | 78 | - | 0 |
 | MATCH | 68 | 68 | - | 0 |
-| LEAGUE | 22 | 22 | - | 0 |
+| LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
-| ECON | 62 | 62 | - | 0 |
+| ECON | 63 | 63 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 27 | 27 | - | 0 |
 | SAVE | 70 | 70 | - | 0 |
-| OWNER | 7 | 7 | - | 0 |
-| PLAYER | 19 | 19 | - | 0 |
+| OWNER | 8 | 8 | - | 0 |
+| PLAYER | 20 | 20 | - | 0 |
 
 ## review
 | id | st |
@@ -66,6 +67,34 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T953 | Market harness reads books, upward-move funnel, renewals, ageing and distress | ECON WORLD CLUB PLAYER LEAGUE | - | todo |
+| T954 | Each player ages on his own curve | PLAYER WORLD | - | todo |
+| T955 | A fourth personality trait, 충성심 | PLAYER | - | todo |
+| T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
+| T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
+| T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |
+| T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |
+| T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | todo |
+| T960 | Buyers value a young player's gain two seasons on | WORLD PLAYER CLUB | - | todo |
+| T961 | The chief scout lists players who would come first | CLUB | - | todo |
+| T962 | Mediation counts a request an open bid covers | CLUB | - | todo |
+| T963 | The first leg of a tie at index 2 is a first leg | MATCH | - | todo |
+| T964 | Angry fans stop coming, a loved owner's club draws more | ECON OWNER | - | todo |
+| T965 | Bigger clubs are slower to sell | CLUB LEAGUE | - | todo |
+| T966 | A loyal player is harder to lure away | CLUB PLAYER | T979 | todo |
+| T967 | Financial distress ladder replaces bankruptcy | ECON WORLD OWNER | - | todo |
+| T968 | Clubs in distress cannot buy and must sell | ECON WORLD CLUB | T967 | todo |
+| T969 | Administration deducts 10 points and writes off half the debt | ECON LEAGUE | T967 | todo |
+| T970 | Show distress stages instead of bankruptcy | WEB OWNER ECON ARCH | T967 T969 | todo |
+| T980 | League tables show deducted points | ECON LEAGUE ARCH | T969 | todo |
+| T971 | The 단장 plans to a season-end cash floor, not a loss runway | ECON CLUB STAFF | T967 | todo |
+| T972 | The budget page and verdicts speak of the cash floor | WEB ECON ARCH | T971 | todo |
+| T973 | Players answer renewal offers; clubs nobody owns offer by need | CLUB WORLD | T979 T967 | todo |
+| T974 | Our players may turn down a renewal | CLUB WEB ARCH | T973 | todo |
+| T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | todo |
+| T976 | The takeover confirmation shows the fans' disposition | WEB OWNER ARCH | T975 | todo |
+| T977 | Rebase the wage curve's level on the 80/70/60/50 world | CLUB ECON | T953 T958 T967 T968 | todo |
+| T978 | Calibrate the combined world: levels, moves, books, distress, ageing | LEAGUE WORLD ECON PLAYER CLUB MATCH | T953 T954 T955 T957 T958 T959 T960 T961 T962 T963 T964 T965 T966 T967 T968 T969 T970 T971 T972 T973 T974 T975 T976 T977 T979 T980 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -78,5 +107,5 @@
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
 
 ## next
-- Session xf18 landed T944–T952 as 0.8.11 (reports/261118-xf18): divisions anchored at 80/70/60/50, prodigies, loss-runway plan, funded recruitment, NPC pull market; upward moves of lower-division stars and bottom-tier levels need rule changes (parked, /gusta-sketch).
-- inspect work board for remaining tasks
+- Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
+- Historical era rules parked in ideation/historical-era-rules.

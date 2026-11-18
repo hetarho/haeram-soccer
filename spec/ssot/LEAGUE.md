@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r22 | Define the browser-demo rules for domestic seasons and relegation.
+> r23 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -22,7 +22,7 @@
   - its strength is the mean 실효 OVR of its XI at its slots (→CLUB-6) before 조직력 and fatigue, on the scale the owner's club is read on, read again whenever its XI is chosen (→WORLD-16).
   - a representative club (→WORLD-1), whose squad is generated (→WORLD-6) and which keeps no books, keeps a scripted strength, the one exception to →WORLD-17: each summer it closes 20% of the gap to 68 + its stature + 2 after a continental title, with a summer's luck (sum of three uniforms, sd ≈ 1.5), a 1.5% takeover (+4 to +8) or crisis (−4 to −8) and a 0.4% project (+8 to +18, fading 15% a summer), within 15–99.
   - worlds lived with persisted players land within the real leagues' spread below: 4–9 different champions per country and the most successful club 7–17 titles over 1980/81–2009/10.
-  - they keep each division near its level: the mean strength of a division's clubs stays within ±3 of its level (→WORLD-15: 80, 70, 60, 50 for the top four) at every season's opening from 1935, the three openings after the war gap (1946–1948) excepted, and no club outside a top flight opens a season above 85 (band estimated). ← wages, values and the owner's balance are priced on the divisions' levels (→CLUB-25, →LEAGUE-13); squads that all grow or fade together would move every one of them
+  - they keep each division near its level: the mean strength of a division's clubs stays within ±4 of its level (→WORLD-15: 80, 70, 60, 50 for the top four) at every season's opening from 1935, the three openings after the war gap (1946–1948) excepted, and a club outside a top flight opening a season above 85 is rare, under one per opening across the world on average (bands estimated; the variance inside them is kept, never tuned away). ← wages, values and the owner's balance are priced on the divisions' levels (→CLUB-25, →LEAGUE-13); squads that all grow or fade together would move every one of them
   - they keep their divisions in order: on every season's first day a country's division means fall tier by tier, except on the three openings after the war gap (1946–1948), whose squads seven summers without a window left to retirements and youth alone (→WORLD-14/16); the order holds again from the 1949 opening. ← the restart opens with the squads the war left, and its windows sort them again
   - measured 261011 on the former scripted strengths (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
   - the real leagues 1980/81–2009/10 (each league's official champions list, titles not awarded left out: Italy 2004/05, France 1992/93; recalled, not yet read against the lists): 4–9 different champions per country, the most successful club 7–17 titles. ← one generic model of giants and big clubs per country should land where real leagues do, from France's nine champions to Portugal's four
@@ -91,6 +91,7 @@
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r23 261118 LEAGUE-10✎ division means within ±3 of the level, no club outside a top flight above 85→within ±4, such a club above 85 under one per opening worldwide on average, variance inside the bands kept
 - r22 261118 LEAGUE-10✎ division means within ±5 of the founding level in every decade from the 1950s→within ±3 of the division's level (80/70/60/50) at every opening from 1935, 1946–1948 excepted, and no club outside a top flight above 85
 - r21 261117 LEAGUE-10✎ division order unstated→division means fall tier by tier on every season's first day, except the three openings after the war gap (1946–1948)
 - r20 261113 LEAGUE-10✎ strength read from its players, measure unstated→the mean 실효 OVR of its XI at its slots before 조직력 and fatigue, read again whenever the XI is chosen; +lived worlds keep each division's mean strength within ±5 of its founding level from the 1950s (estimated); +a representative club keeps the scripted strength r19 removed for every club (20% toward 68 + stature + continental success, luck, 1.5% takeover or crisis, 0.4% project, 15–99)
