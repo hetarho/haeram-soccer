@@ -148,10 +148,106 @@ function growStep(
   if (!squares) return { rise: 0, ovr: before };
   // Each attribute's step ∝ its weight, scaled so the main OVR rises by `rise`.
   const scale = (rise * total) / squares;
-  for (const a of ATTRIBUTES) {
-    if (!weights[a] || (only && !only(a))) continue;
-    const step = hundredths(scale * weights[a] * factor(a));
-    player.attrs[a] = hundredths(Math.min(TOP, Math.max(player.attrs[a], player.attrs[a] + step)));
+  // Explicit reads and writes in ATTRIBUTES order (a test guards the order): each attribute with a
+  // weight that `only` lets grow steps by hundredths(scale × weight × factor), within its current
+  // value and the top.
+  const attrs = player.attrs;
+  let w: number, step: number, v: number;
+  w = weights.finishing;
+  if (w && (!only || only('finishing'))) {
+    step = hundredths(scale * w * factor('finishing'));
+    v = attrs.finishing;
+    attrs.finishing = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.dribbling;
+  if (w && (!only || only('dribbling'))) {
+    step = hundredths(scale * w * factor('dribbling'));
+    v = attrs.dribbling;
+    attrs.dribbling = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.crossing;
+  if (w && (!only || only('crossing'))) {
+    step = hundredths(scale * w * factor('crossing'));
+    v = attrs.crossing;
+    attrs.crossing = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.passing;
+  if (w && (!only || only('passing'))) {
+    step = hundredths(scale * w * factor('passing'));
+    v = attrs.passing;
+    attrs.passing = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.vision;
+  if (w && (!only || only('vision'))) {
+    step = hundredths(scale * w * factor('vision'));
+    v = attrs.vision;
+    attrs.vision = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.tackling;
+  if (w && (!only || only('tackling'))) {
+    step = hundredths(scale * w * factor('tackling'));
+    v = attrs.tackling;
+    attrs.tackling = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.positioning;
+  if (w && (!only || only('positioning'))) {
+    step = hundredths(scale * w * factor('positioning'));
+    v = attrs.positioning;
+    attrs.positioning = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.heading;
+  if (w && (!only || only('heading'))) {
+    step = hundredths(scale * w * factor('heading'));
+    v = attrs.heading;
+    attrs.heading = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.pace;
+  if (w && (!only || only('pace'))) {
+    step = hundredths(scale * w * factor('pace'));
+    v = attrs.pace;
+    attrs.pace = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.stamina;
+  if (w && (!only || only('stamina'))) {
+    step = hundredths(scale * w * factor('stamina'));
+    v = attrs.stamina;
+    attrs.stamina = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.strength;
+  if (w && (!only || only('strength'))) {
+    step = hundredths(scale * w * factor('strength'));
+    v = attrs.strength;
+    attrs.strength = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.reflexes;
+  if (w && (!only || only('reflexes'))) {
+    step = hundredths(scale * w * factor('reflexes'));
+    v = attrs.reflexes;
+    attrs.reflexes = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.handling;
+  if (w && (!only || only('handling'))) {
+    step = hundredths(scale * w * factor('handling'));
+    v = attrs.handling;
+    attrs.handling = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.distribution;
+  if (w && (!only || only('distribution'))) {
+    step = hundredths(scale * w * factor('distribution'));
+    v = attrs.distribution;
+    attrs.distribution = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.decisions;
+  if (w && (!only || only('decisions'))) {
+    step = hundredths(scale * w * factor('decisions'));
+    v = attrs.decisions;
+    attrs.decisions = hundredths(Math.min(TOP, Math.max(v, v + step)));
+  }
+  w = weights.composure;
+  if (w && (!only || only('composure'))) {
+    step = hundredths(scale * w * factor('composure'));
+    v = attrs.composure;
+    attrs.composure = hundredths(Math.min(TOP, Math.max(v, v + step)));
   }
   const after = mainOvr(player);
   return { rise: Math.max(0, hundredths(after - before)), ovr: after };

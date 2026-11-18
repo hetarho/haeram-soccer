@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-18T17:28:29.162Z",
-  "sourceCommit": "780d53a09b8cf7b06f72d57f962982612ee81018",
+  "snapshotAt": "2026-11-18T17:29:52.577Z",
+  "sourceCommit": "4491c7e8e8cf498cfe70be3f079d6cfdc0b5c23c",
   "group": {
     "id": "np19-perf",
     "branch": "gusta-session-self-improve-np19-f1c9b1b9",
@@ -229,9 +229,9 @@
   },
   "summary": {
     "total": 4,
-    "completed": 1,
-    "remaining": 3,
-    "running": 2,
+    "completed": 2,
+    "remaining": 2,
+    "running": 1,
     "review": 1,
     "blocked": 0,
     "unassigned": 0
@@ -241,13 +241,7 @@
       "id": "T982",
       "title": "Scan market candidates without per-candidate string keys",
       "dep": [],
-      "status": "verifying"
-    },
-    {
-      "id": "T984",
-      "title": "Per-slot best pairs in squad selection and explicit growth writes",
-      "dep": [],
-      "status": "approved"
+      "status": "ready"
     },
     {
       "id": "T985",
@@ -269,10 +263,15 @@
       "contributors": [
         "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1"
       ],
-      "status": "verifying",
+      "status": "ready",
       "reason": null,
       "createdAt": "2026-11-18T15:48:43.964Z",
       "startCommit": "9b3b38536002495cb760e0f3ec556ccde53488e1",
+      "verifiedCommit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+      "submittedBase": "780d53a09b8cf7b06f72d57f962982612ee81018",
+      "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
+      "submittedAt": "2026-11-18T17:28:40.353Z",
+      "risk": null,
       "agentChecks": [
         {
           "id": "T982-ui-none",
@@ -309,7 +308,28 @@
         "finishedAt": "2026-11-18T16:44:45.292Z",
         "error": "T982: 태스크 result에 verified 기록이 필요합니다.",
         "summary": "T982 is implemented on base 9b3b3853. Both parts are in, and the 1950 world hash is unchanged.\n\n**Part 1 (npc-market.ts):**\n- `tried` is now one `Set` of player ids per buyer. It is set up once before the candidate loop and shared with `attempt`.\n- The cheap filters (`club === buyer`, `moved`, `salesLeft`) run before the set lookup, then `npcCanSell`.\n- Listed-only segments walk a list that is built once per settlement, when first read, for each (country, tier, line). It is the sorted index filtered by `listedDown`, in the same order, so `firstAtMost` and the bound break stop at the same points.\n- No club or player id can contain `|`: club ids and all player id forms are joined with `:`. The old composite key was therefore unambiguous, and the per-buyer sets answer exactly as it did.\n\n**Part 2 (player-state.ts):**\n- `slotOvr` with multiplier 1 now reads the open settlement's ratings. `withSlotRatings` opens that scope and closes it in `finally`.\n- `npcMarket` runs its settlement inside the scope. `SettlementRatings` and the market's own `rating` call `freshSlotOvr`, the unchanged formula, so they never read through the scope.\n- Part 2 measured faster on top of part 1 (CPU ×0.967, interval 0.955–0.981), so it is kept.\n\n**Results:**\n- **World hash:** the 1950 generation-reference run printed `4161b5e0…5ce`, the base value, both after part 1 and with the final code.\n- **Speed (`ab.mjs`, 6 processes, M1 Max shared and loaded):** output hashes matched in every run.\n\n| Comparison | Workload | CPU ratio | 95% interval |\n|---|---|---|---|\n| Part 1 vs base | history | 0.919 | 0.915–0.922 |\n| Final vs base | history | 0.890 | 0.875–0.904 |\n| Final vs base | history-five | 0.857 | 0.842–0.871 |\n\n- **Tests:**\n  - A new unit case in npc-market.test.ts checks the scope. Inside it, every value equals the fresh one. After it closes, after a thrown error and after `npcMarket`, `slotOvr` computes afresh.\n  - The npc-market and persisted-squads units pass, 75/75.\n  - The named integration files pass, 6 files and 33/33. `history.test.ts` and `world.test.ts` belong to the integration project. `calendar.progression-esp.test.ts` does not exist in this tree, so only the -eng file ran.\n  - `vibe check --tier task` passed: typecheck, lint, format, i18n, and affected units 1561/1561.\n\nThe run outputs are kept in artifacts/benchmarks/night-perf-261119/T982. The full batch and the CI browser journeys are left to the coordinator's final gate."
-      }
+      },
+      "steps": [
+        {
+          "taskId": "T982",
+          "commit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+          "at": "2026-11-18T17:28:40.335Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-18T17:27:01.144Z",
+              "finishedAt": "2026-11-18T17:28:40.132Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-18T17:27:01.144Z",
+          "finishedAt": "2026-11-18T17:28:40.132Z"
+        }
+      ]
     },
     {
       "id": "5a537e90-d209-4c44-9b20-1d7049e362da",
@@ -331,6 +351,8 @@
       "submittedBase": "e8b4ada93c59f6966eee14567b250768cd31bc60",
       "submissionId": "2bd6bc97-ab27-44dd-a035-c52e091d4e5b",
       "submittedAt": "2026-11-18T16:26:56.873Z",
+      "integratedCommit": "4491c7e8e8cf498cfe70be3f079d6cfdc0b5c23c",
+      "integratedAt": "2026-11-18T17:29:46.019Z",
       "risk": null,
       "agentChecks": [
         {
@@ -421,6 +443,13 @@
           "startedAt": "2026-11-18T16:24:55.636Z",
           "finishedAt": "2026-11-18T16:26:56.528Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-18T17:28:33.284Z",
+          "finishedAt": "2026-11-18T17:29:45.451Z"
+        }
       ]
     },
     {
@@ -436,8 +465,8 @@
         "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-2",
         "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1"
       ],
-      "status": "approved",
-      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-18T16:26:57.106Z",
       "startCommit": "e8b4ada93c59f6966eee14567b250768cd31bc60",
       "verifiedCommit": "569b4cf700883e014f61233a6f0e3d0131ea651b",
@@ -2971,6 +3000,93 @@
       "group": "np19-perf",
       "attemptId": "5a537e90-d209-4c44-9b20-1d7049e362da",
       "taskId": "T983",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1095,
+      "at": "2026-11-18T17:28:40.353Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+        "submittedBase": "780d53a09b8cf7b06f72d57f962982612ee81018",
+        "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
+        "submittedAt": "2026-11-18T17:28:40.353Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T982",
+            "commit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+            "at": "2026-11-18T17:28:40.335Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T17:27:01.144Z",
+                "finishedAt": "2026-11-18T17:28:40.132Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T17:27:01.144Z",
+            "finishedAt": "2026-11-18T17:28:40.132Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1096,
+      "at": "2026-11-18T17:29:45.667Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "5a537e90-d209-4c44-9b20-1d7049e362da",
+      "taskId": "T983",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-18T17:28:33.284Z",
+            "finishedAt": "2026-11-18T17:29:45.451Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1097,
+      "at": "2026-11-18T17:29:46.019Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "5a537e90-d209-4c44-9b20-1d7049e362da",
+      "taskId": "T983",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "4491c7e8e8cf498cfe70be3f079d6cfdc0b5c23c",
+        "integratedAt": "2026-11-18T17:29:46.019Z"
+      }
+    },
+    {
+      "sequence": 1098,
+      "at": "2026-11-18T17:29:49.240Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "33e7240c-9706-4158-8396-fb396610c169",
+      "taskId": "T984",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
