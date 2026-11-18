@@ -1,3 +1,5 @@
+import { contractRenewalChance } from '../../packages/engine/src/contracts';
+import { message } from '../../packages/contracts/src/messages';
 import { approvalQueue } from './office';
 import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
@@ -30,6 +32,7 @@ async function talking() {
   // Routine notifications are marked read; the one canonical contract decision remains pending.
   for (const item of w.inbox ?? []) if (item.kind !== 'contract-talk') item.read = true;
   return {
+    renewal: contractRenewalChance(w, player, player.talk!),
     raw: await encode(w, 1, 0),
     name: player.name,
     dueDay: currentDay(w) + UNHAPPY_CONFIG.requestDays,
@@ -49,7 +52,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // 1 January. On the takeover the journey reached its last check as the slow 90 s ran out
   // (dfa39857's Chromium run), so it has the 180 s of the other journeys that live a season first.
   test.setTimeout(180_000);
-  const { raw, name, dueDay } = await talking();
+  const { raw, name, dueDay, renewal } = await talking();
   await seed(page, raw);
   await page.goto('/');
   await continueSlot(page);
@@ -63,6 +66,10 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(sheet.getByRole('heading', { name: `${name} 재계약 협상` })).toBeVisible();
   await expect(sheet).toContainText('요구');
   await expect(sheet).toContainText('하한');
+  const response = sheet.getByTestId('renewal-chance');
+  await expect(response).toContainText(`선수 수락 확률 ${Math.round(renewal.chance * 100)}%`);
+  for (const line of renewal.lines)
+    await expect(response).toContainText(message(line.message, line.params));
   // His agent's rating and the clauses the new contract would carry (→CLUB-29, CLUB-30).
   await expect(sheet).toContainText(/에이전트 [1-5]등급/);
   await expect(sheet).toContainText('새 계약 조항');

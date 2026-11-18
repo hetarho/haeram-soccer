@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "id": "fr-FR",
   "messages": {
+    "fans.disposition.title": "Profil des supporters",
+    "fans.disposition.results": "Attachés aux résultats {percent}% · Privilégient les résultats en championnat et les succès de la saison.",
+    "fans.disposition.identity": "Attachés à l’identité {percent}% · Réagissent aux ventes de vedettes et de titulaires formés au club, ainsi qu’aux changements d’identité du club.",
+    "fans.disposition.finance": "Prudents financièrement {percent}% · Se préoccupent des dettes, des dividendes et du prix des billets.",
+    "fans.disposition.stars": "Amateurs de vedettes {percent}% · Apprécient les grandes recrues et les apports du propriétaire.",
+    "fans.homegrownSale": "Vente d’un titulaire formé au club",
     "finance.distress.writeOff": "Abandon de créance",
     "finance.distress.writeOffDetail": "Le redressement judiciaire a effacé la moitié de la dette. Ce montant est exclu des recettes d’exploitation.",
     "finance.distress.noSigning": "Les transferts payants et les prêts sont interdits pendant les ventes forcées ou le redressement judiciaire.",
@@ -7045,6 +7051,24 @@
     "delegation.floor.left": "Argent restant",
     "delegation.floor.contractsOwner": "À l’ouverture du mercato, le directeur juge prolongations et hausses selon la politique et le seuil de trésorerie demandé, puis rend compte.",
     "delegation.floor.salesOwner": "Le directeur répond aux offres selon la politique de vente, le seuil de trésorerie et la difficulté financière réelle, puis rend compte.",
-    "delegation.floor.recruitmentOwner": "Le directeur recrute selon la liste et les demandes du coach, dans la politique, le seuil de trésorerie et le frein de liquidité."
+    "delegation.floor.recruitmentOwner": "Le directeur recrute selon la liste et les demandes du coach, dans la politique, le seuil de trésorerie et le frein de liquidité.",
+    "renewal.factor.wage": "Offre au-dessus du plancher de prolongation ({percent} %)",
+    "renewal.factor.higherBid": "Un club plus réputé a fait une offre lors de ce mercato ou du précédent",
+    "renewal.factor.starter": "Titulaire dans son club actuel",
+    "renewal.factor.bench": "Non titulaire dans son club actuel",
+    "renewal.factor.age": "Âge : {age}",
+    "renewal.factor.loyalty": "Loyauté envers son club actuel",
+    "renewal.factor.distress": "Son club actuel est en difficulté financière",
+    "renewal.refused": "{name} a refusé l’offre. Son contrat actuel continue ; une nouvelle offre sera possible au prochain mercato. {report}",
+    "renewal.refused.title": "{name} a refusé l’offre de {kind}",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.talk.amounts": "Le joueur demande {demand} et examine les offres à partir de {floor}.",
+    "renewal.talk.unhappy": "Le joueur est mécontent pour le motif suivant : {reason}. Un accord met fin à ce mécontentement.",
+    "renewal.talk.unhappyRequest": "Le joueur est mécontent pour le motif suivant : {reason}. Un accord met fin à ce mécontentement et le joueur retire sa demande de transfert.",
+    "renewal.chance.label": "Probabilité d’accepter la prolongation",
+    "renewal.chance": "Probabilité d’acceptation du joueur : {chance} %",
+    "renewal.guide.summary": "Sous le plancher enregistré, l’offre est refusée. Au-dessus, salaire, division adaptée et ambition, offre plus réputée lors de ce mercato ou du précédent, temps de jeu, âge, loyauté et difficultés financières fixent la probabilité. Le tirage est fixé par joueur, saison et mercato ; après un refus, une nouvelle offre est possible au prochain mercato.",
+    "renewal.guide.wage": "Un salaire au-dessus du plancher augmente la probabilité d’acceptation. La demande et le plancher restent ceux enregistrés à l’ouverture.",
+    "renewal.guide.staff": "Si les règles de conservation et de finances le permettent, le directeur délégué propose ; le joueur applique le même calcul que pour une offre du propriétaire."
   }
 }

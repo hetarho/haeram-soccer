@@ -1,5 +1,12 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'fans.disposition.title': '팬 성향',
+  'fans.disposition.results': '성적파 {percent}% · 리그 경기 결과와 시즌 성과를 중시합니다.',
+  'fans.disposition.identity':
+    '정체성파 {percent}% · 스타와 유스 출신 주전의 매각, 구단 정체성 변화에 민감합니다.',
+  'fans.disposition.finance': '재정 보수파 {percent}% · 부채, 배당과 티켓 가격을 중시합니다.',
+  'fans.disposition.stars': '스타 선호파 {percent}% · 대형 영입과 구단주 자금 투입을 반깁니다.',
+  'fans.homegrownSale': '주전 유스 출신 선수 매각',
   'league.points.administration': '−{points}점 · 법정관리',
   'finance.distress.nextBand': '{title} 잔고 {cash} · 다음 단계 부채 기준: {limit} 초과',
   'finance.distress.recoveryBand': '{title} 잔고 {cash} · 시즌 마감 시 부채 {limit} 미만이면 회복',
@@ -7618,4 +7625,27 @@ export const sourceMessages = {
     '다른 구단의 제안에 단장이 매각 기조, 현금 하한과 실제 재정 위기 단계에 따라 답하고 알림·결정에 보고해요.',
   'delegation.floor.recruitmentOwner':
     '단장이 스카우트 명단과 감독 요청을 보고 영입 방침, 현금 하한과 현금 고갈 방지 조건에 맞춰 영입해요.',
+  'renewal.factor.wage': '재계약 하한보다 높은 제안({percent}%)',
+  'renewal.factor.higherBid': '이번 또는 지난 이적시장에서 더 명성 높은 구단이 입찰함',
+  'renewal.factor.starter': '현재 구단의 주전',
+  'renewal.factor.bench': '현재 구단에서 주전이 아님',
+  'renewal.factor.age': '나이 {age}세',
+  'renewal.factor.loyalty': '현재 구단에 대한 충성심',
+  'renewal.factor.distress': '현재 구단이 재정난에 처함',
+  'renewal.refused':
+    '{name} 선수가 제안을 거절했습니다. 기존 계약은 유지되며 다음 이적시장부터 다시 제안할 수 있습니다. {report}',
+  'renewal.refused.title': '{name} 선수의 {kind} 제안 거절',
+  'renewal.accepted.report': '{detail} · {report}',
+  'renewal.talk.amounts': '요구액은 {demand}, 하한은 {floor}예요.',
+  'renewal.talk.unhappy': '{reason}(으)로 불만이 있어요. 계약에 합의하면 불만이 풀려요.',
+  'renewal.talk.unhappyRequest':
+    '{reason}(으)로 불만이 있어요. 계약에 합의하면 불만이 풀리고 이적 요청을 거둬요.',
+  'renewal.chance.label': '재계약 수락 확률',
+  'renewal.chance': '선수 수락 확률 {chance}%',
+  'renewal.guide.summary':
+    '저장된 하한 미만은 거절합니다. 하한 이상은 연봉·능력에 맞는 리그와 야망·이번 또는 지난 시장의 더 명성 높은 구단 입찰·출전·나이·충성심·재정난으로 수락 확률을 계산합니다. 선수와 시즌·이적시장에 고정된 추첨으로 답하며, 거절하면 다음 시장부터 다시 제안할 수 있습니다.',
+  'renewal.guide.wage':
+    '하한보다 높은 연봉은 수락 확률을 높입니다. 열린 협상의 요구액과 하한은 협상 시작 때 확정된 금액입니다.',
+  'renewal.guide.staff':
+    '위임 시 유지 기준과 재정 기준을 통과하면 단장이 제안하며, 선수는 소유자 제안과 같은 확률 계산으로 답합니다.',
 } as const;

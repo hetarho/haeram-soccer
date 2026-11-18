@@ -67,11 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T973 | Players answer renewal offers; clubs nobody owns offer by need | CLUB WORLD | T979 T967 | todo |
-| T974 | Our players may turn down a renewal | CLUB WEB ARCH | T973 | todo |
-| T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | todo |
-| T976 | The takeover confirmation shows the fans' disposition | WEB OWNER ARCH | T975 | todo |
-| T977 | Rebase the wage curve's level on the 80/70/60/50 world | CLUB ECON | T953 T958 T967 T968 | todo |
+| T977 | Rebase the wage curve's level on the 80/70/60/50 world | CLUB ECON | T953 T958 T967 T968 | doing@261118.mr18cx |
 | T978 | Calibrate the combined world: levels, moves, books, distress, ageing | LEAGUE WORLD ECON PLAYER CLUB MATCH | T953 T954 T955 T957 T958 T959 T960 T961 T962 T963 T964 T965 T966 T967 T968 T969 T970 T971 T972 T973 T974 T975 T976 T977 T979 T980 | todo |
 
 ## work
@@ -86,7 +82,5 @@
 
 ## next
 - gusta-implement-task T977
-- gusta-implement-task T975
-- gusta-implement-task T973
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.

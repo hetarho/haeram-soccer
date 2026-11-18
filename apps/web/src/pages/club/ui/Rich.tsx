@@ -1,3 +1,4 @@
+import type { ProjectedWorld } from '../../../runtime/protocol';
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
@@ -33,6 +34,7 @@ import {
   agentOf,
   agentPremium,
   clausesLabel,
+  contractRenewalChance,
   marketWage,
   TALK_LABEL,
   TALK_TERMS,
@@ -934,7 +936,7 @@ function ContractTalkSheet({
   onClose,
   error,
 }: {
-  w: World;
+  w: World & Pick<ProjectedWorld, 'renewalChances'>;
   player: Player;
   talk: ContractTalk;
   disabled: boolean;
@@ -950,6 +952,7 @@ function ContractTalkSheet({
     raise = BigInt(talk.floor) - BigInt(player.wage),
     runway = fixedCostRunway(w.cash, (BigInt(operatingCosts(w).annual) + raise).toString()),
     chance = Math.round(talkRoundChance(w) * 100),
+    renewal = w.renewalChances?.[player.id] ?? contractRenewalChance(w, player, talk),
     label = TALK_LABEL[talk.kind],
     window = talkWindow(w),
     terms = TALK_TERMS[window],
@@ -1009,12 +1012,10 @@ function ContractTalkSheet({
       {localizeValue(
         player.unhappy && (
           <p className={s.muted}>
-            {richMessage('copy.Rich.54db82f7cf', {
-              p0: UNHAPPY_REASON[player.unhappy.reason],
-              p1: player.transferRequest
-                ? sourceMessage('copy.Rich.716e17c88b')
-                : sourceMessage('copy.Rich.a43d2917b3'),
-            })}
+            {richMessage(
+              player.transferRequest ? 'renewal.talk.unhappyRequest' : 'renewal.talk.unhappy',
+              { reason: UNHAPPY_REASON[player.unhappy.reason] },
+            )}
           </p>
         ),
       )}
@@ -1022,8 +1023,26 @@ function ContractTalkSheet({
         talk.kind === 'improve' && <p className={s.muted}>{richMessage('copy.Rich.94dd6887a9')}</p>,
       )}
       <p>
-        {richMessage('copy.Rich.3293275d8c', { p0: money(talk.demand), p1: money(talk.floor) })}
+        {richMessage('renewal.talk.amounts', {
+          demand: money(talk.demand),
+          floor: money(talk.floor),
+        })}
       </p>
+      <section data-testid="renewal-chance" aria-label={displayMessage('renewal.chance.label')}>
+        <p>{richMessage('renewal.chance', { chance: Math.round(renewal.chance * 100) })}</p>
+        <ul>
+          {renewal.lines.map((line) => (
+            <li key={line.factor}>
+              {richMessage(
+                line.delta > 0 ? 'market.answer.termsFor' : 'market.answer.termsAgainst',
+                {
+                  factor: displayMessage(line.message, line.params),
+                },
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
       <p>
         {richMessage('copy.Rich.1c2ca8a472', {
           p0: agent,

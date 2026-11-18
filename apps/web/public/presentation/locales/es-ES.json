@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "id": "es-ES",
   "messages": {
+    "fans.disposition.title": "Perfil de la afición",
+    "fans.disposition.results": "Resultadistas {percent}% · Valoran los resultados de liga y los logros de la temporada.",
+    "fans.disposition.identity": "Defensores de la identidad {percent}% · Reaccionan a la venta de estrellas y titulares de la cantera y a los cambios de identidad del club.",
+    "fans.disposition.finance": "Conservadores financieros {percent}% · Se preocupan por la deuda, los dividendos y el precio de las entradas.",
+    "fans.disposition.stars": "Amantes de las estrellas {percent}% · Celebran los grandes fichajes y las aportaciones del propietario.",
+    "fans.homegrownSale": "Venta de un titular de la cantera",
     "finance.distress.writeOff": "Condonación de deuda",
     "finance.distress.writeOffDetail": "La entrada en administración judicial condonó la mitad de la deuda. Se excluye de los ingresos operativos.",
     "finance.distress.noSigning": "No se permiten fichajes de pago ni cesiones durante ventas forzadas o administración judicial.",
@@ -7045,6 +7051,24 @@
     "delegation.floor.left": "Dinero restante",
     "delegation.floor.contractsOwner": "Al abrir el mercado, el director decide renovaciones y aumentos según la política y el mínimo de caja solicitado, y lo comunica.",
     "delegation.floor.salesOwner": "El director responde a otras ofertas según la política de ventas, el mínimo de caja y la fase real de crisis, e informa del resultado.",
-    "delegation.floor.recruitmentOwner": "El director ficha de la lista y las peticiones del entrenador según la política, el mínimo de caja y el freno de liquidez."
+    "delegation.floor.recruitmentOwner": "El director ficha de la lista y las peticiones del entrenador según la política, el mínimo de caja y el freno de liquidez.",
+    "renewal.factor.wage": "Oferta por encima del mínimo de renovación ({percent} %)",
+    "renewal.factor.higherBid": "Un club de mayor reputación pujó en este mercado o el anterior",
+    "renewal.factor.starter": "Es titular en su club actual",
+    "renewal.factor.bench": "No es titular en su club actual",
+    "renewal.factor.age": "Edad: {age}",
+    "renewal.factor.loyalty": "Lealtad a su club actual",
+    "renewal.factor.distress": "Su club actual tiene dificultades económicas",
+    "renewal.refused": "{name} rechazó la oferta. Su contrato actual continúa; se le podrá hacer otra oferta a partir del próximo mercado. {report}",
+    "renewal.refused.title": "{name} rechazó la oferta de {kind}",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.talk.amounts": "El jugador pide {demand} y considera ofertas a partir de {floor}.",
+    "renewal.talk.unhappy": "El jugador está descontento por {reason}. Si se llega a un acuerdo, se resolverá su descontento.",
+    "renewal.talk.unhappyRequest": "El jugador está descontento por {reason}. Si se llega a un acuerdo, se resolverá su descontento y retirará su solicitud de traspaso.",
+    "renewal.chance.label": "Probabilidad de aceptar la renovación",
+    "renewal.chance": "Probabilidad de aceptación del jugador: {chance} %",
+    "renewal.guide.summary": "Se rechaza por debajo del mínimo guardado. Por encima, salario, división adecuada y ambición, una puja de mayor reputación en este mercado o el anterior, minutos, edad, lealtad y dificultades económicas determinan la probabilidad. El sorteo queda fijado por jugador, temporada y mercado; tras un rechazo se puede volver a ofrecer en el siguiente mercado.",
+    "renewal.guide.wage": "Un salario superior al mínimo aumenta la probabilidad de aceptación. La negociación conserva la demanda y el mínimo de su apertura.",
+    "renewal.guide.staff": "Si las políticas de retención y finanzas lo permiten, el director delegado ofrece; el jugador usa el mismo cálculo que ante una oferta del propietario."
   }
 }

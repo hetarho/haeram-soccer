@@ -1,0 +1,37 @@
+{
+  "stage": "T977",
+  "sourceCommit": "c1df12ab0b1596e9555100610ee0927070b31dbe",
+  "sourceTree": "1d69ce489d519fb860f0e327e687745fd8a1568c",
+  "dependencyFingerprints": [
+    {
+      "algorithm": "sha256",
+      "sha256": "08897d0976f6015c9e8b69cda1b5d4271ac082c194627ea402037e9351ea6b87",
+      "files": 241,
+      "entry": "scripts/market-seasons.ts",
+      "scope": "runtime dependency closure and declared inputs"
+    },
+    {
+      "algorithm": "sha256",
+      "sha256": "873df826fc5340545bb2fd840f9112a8aa3afb8141ebd78c0fdd8995a9fee289",
+      "files": 225,
+      "entry": "packages/engine/src/history.ts",
+      "scope": "runtime dependency closure and declared inputs"
+    },
+    {
+      "algorithm": "sha256",
+      "sha256": "39b440a7e9ec2b63aba3d182f0d74e19f70d20f0e857bd7b772507ca90ecddc5",
+      "files": 232,
+      "entry": "artifacts/benchmarks/T977/wage-shape.ts",
+      "scope": "runtime dependency closure and declared inputs"
+    }
+  ],
+  "environment": {
+    "node": "v24.22.1",
+    "pnpm": "10.34.6",
+    "architecture": "x64",
+    "platform": "linux",
+    "logicalCpus": 12,
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "memoryBytes": 33577496576
+  }
+}

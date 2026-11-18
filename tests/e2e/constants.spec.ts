@@ -35,7 +35,7 @@ for (const viewport of [{ width: 390, height: 844 }]) {
     expect(surfaces.border).toBe('solid');
     expect(surfaces.borderWidth).toBeGreaterThan(0);
     await expect(card).toContainText('최소 수락 연봉');
-    await expect(card).toContainText('추첨하지 않습니다');
+    await expect(card).toContainText('고정된 추첨');
     await expect(card).toContainText('우리 팀 평균 OVR');
     await expect(card.locator('ol ol')).toHaveCount(1);
     await card.getByText('구현 근거 확인', { exact: true }).click();

@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "id": "nl-NL",
   "messages": {
+    "fans.disposition.title": "Profiel van de supporters",
+    "fans.disposition.results": "Resultaatgericht {percent}% · Hechten aan competitieresultaten en seizoensprestaties.",
+    "fans.disposition.identity": "Identiteitsgericht {percent}% · Reageren op de verkoop van sterren en basisspelers uit de jeugd en op veranderingen van de clubidentiteit.",
+    "fans.disposition.finance": "Financieel behoudend {percent}% · Letten op schulden, dividend en toegangsprijzen.",
+    "fans.disposition.stars": "Sterrenliefhebbers {percent}% · Verwelkomen grote aankopen en kapitaalinjecties van de eigenaar.",
+    "fans.homegrownSale": "Verkoop van een basisspeler uit de jeugd",
     "finance.distress.writeOff": "Schuldkwijtschelding",
     "finance.distress.writeOffDetail": "Bij aanvang van het bewind is de helft van de schuld kwijtgescholden. Dit telt niet als bedrijfsinkomsten.",
     "finance.distress.noSigning": "Transfers met een vergoeding en huurtransfers zijn verboden bij gedwongen verkoop of bewindvoering.",
@@ -7042,6 +7048,24 @@
     "delegation.floor.left": "Geld over",
     "delegation.floor.contractsOwner": "Bij opening van de markt beoordeelt de directeur verlengingen en verhogingen volgens beleid en gevraagde kasgrens, en rapporteert.",
     "delegation.floor.salesOwner": "De directeur beantwoordt biedingen volgens verkoopbeleid, kasgrens en echte noodfase en rapporteert het resultaat.",
-    "delegation.floor.recruitmentOwner": "De directeur werft uit de lijst en trainerswensen binnen beleid, kasgrens en kasrem."
+    "delegation.floor.recruitmentOwner": "De directeur werft uit de lijst en trainerswensen binnen beleid, kasgrens en kasrem.",
+    "renewal.factor.wage": "Bod boven de verlengingsondergrens ({percent}%)",
+    "renewal.factor.higherBid": "Een club met meer aanzien bood deze of vorige transferperiode",
+    "renewal.factor.starter": "Basisspeler bij zijn huidige club",
+    "renewal.factor.bench": "Geen basisspeler bij zijn huidige club",
+    "renewal.factor.age": "Leeftijd: {age}",
+    "renewal.factor.loyalty": "Trouw aan zijn huidige club",
+    "renewal.factor.distress": "Zijn huidige club heeft financiële problemen",
+    "renewal.refused": "{name} weigerde het bod. Zijn huidige contract loopt door; vanaf de volgende transferperiode kan opnieuw worden onderhandeld. {report}",
+    "renewal.refused.title": "{name} weigerde het bod voor {kind}",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.talk.amounts": "De speler vraagt {demand} en overweegt biedingen vanaf {floor}.",
+    "renewal.talk.unhappy": "De speler is ontevreden vanwege {reason}. Bij een akkoord verdwijnt de onvrede.",
+    "renewal.talk.unhappyRequest": "De speler is ontevreden vanwege {reason}. Bij een akkoord verdwijnt de onvrede en trekt hij zijn transferverzoek in.",
+    "renewal.chance.label": "Kans op contractverlenging",
+    "renewal.chance": "Acceptatiekans van de speler: {chance}%",
+    "renewal.guide.summary": "Onder de opgeslagen ondergrens volgt weigering. Daarboven bepalen loon, passend divisieniveau en ambitie, een bod met meer aanzien deze of vorige periode, speeltijd, leeftijd, trouw en financiële nood de kans. De trekking staat vast per speler, seizoen en transferperiode; na weigering kan het volgende periode opnieuw.",
+    "renewal.guide.wage": "Loon boven de ondergrens verhoogt de acceptatiekans. De looneis en ondergrens blijven zoals vastgelegd bij de opening.",
+    "renewal.guide.staff": "Als behoudsbeleid en financiën het toelaten, biedt de gedelegeerde directeur; de speler gebruikt dezelfde berekening als bij een bod van de eigenaar."
   }
 }

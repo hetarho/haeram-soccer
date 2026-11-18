@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "id": "pt-BR",
   "messages": {
+    "fans.disposition.title": "Perfil da torcida",
+    "fans.disposition.results": "Foco em resultados {percent}% · Valorizam os resultados da liga e as conquistas da temporada.",
+    "fans.disposition.identity": "Foco na identidade {percent}% · Reagem à venda de estrelas e titulares da base e às mudanças na identidade do clube.",
+    "fans.disposition.finance": "Conservadores financeiros {percent}% · Preocupam-se com dívidas, dividendos e preços dos ingressos.",
+    "fans.disposition.stars": "Fãs de estrelas {percent}% · Celebram grandes contratações e aportes do proprietário.",
+    "fans.homegrownSale": "Venda de titular formado na base",
     "finance.distress.writeOff": "Perdão de dívida",
     "finance.distress.writeOffDetail": "A entrada em administração judicial perdoou metade da dívida. Isso não integra a receita operacional.",
     "finance.distress.noSigning": "Contratações pagas e empréstimos são proibidos durante vendas obrigatórias ou administração judicial.",
@@ -7045,6 +7051,24 @@
     "delegation.floor.left": "Dinheiro restante",
     "delegation.floor.contractsOwner": "Na abertura da janela, o diretor julga renovações e aumentos pela política e pelo mínimo de caixa pedido, e relata a decisão.",
     "delegation.floor.salesOwner": "O diretor responde a propostas pela política de vendas, mínimo de caixa e fase real de crise, e relata o resultado.",
-    "delegation.floor.recruitmentOwner": "O diretor contrata da lista e dos pedidos do técnico dentro da política, do mínimo de caixa e do freio de liquidez."
+    "delegation.floor.recruitmentOwner": "O diretor contrata da lista e dos pedidos do técnico dentro da política, do mínimo de caixa e do freio de liquidez.",
+    "renewal.factor.wage": "Oferta acima do piso de renovação ({percent}%)",
+    "renewal.factor.higherBid": "Um clube de maior reputação fez oferta nesta janela ou na anterior",
+    "renewal.factor.starter": "É titular no clube atual",
+    "renewal.factor.bench": "Não é titular no clube atual",
+    "renewal.factor.age": "Idade: {age}",
+    "renewal.factor.loyalty": "Lealdade ao clube atual",
+    "renewal.factor.distress": "O clube atual está em dificuldades financeiras",
+    "renewal.refused": "{name} recusou a oferta. O contrato atual continua; uma nova proposta poderá ser feita a partir da próxima janela. {report}",
+    "renewal.refused.title": "{name} recusou a oferta de {kind}",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.talk.amounts": "O jogador pede {demand} e considera propostas a partir de {floor}.",
+    "renewal.talk.unhappy": "O jogador está insatisfeito por {reason}. Um acordo resolve a insatisfação.",
+    "renewal.talk.unhappyRequest": "O jogador está insatisfeito por {reason}. Se houver um acordo, a insatisfação será resolvida e ele retirará o pedido de transferência.",
+    "renewal.chance.label": "Chance de aceitar a renovação",
+    "renewal.chance": "Chance de aceitação do jogador: {chance}%",
+    "renewal.guide.summary": "Abaixo do piso salvo, a oferta é recusada. Acima, salário, divisão adequada e ambição, oferta de maior reputação nesta janela ou na anterior, tempo de jogo, idade, lealdade e dificuldades financeiras definem a chance. O sorteio é fixo por jogador, temporada e janela; após recusa, uma nova oferta pode ser feita na próxima janela.",
+    "renewal.guide.wage": "Salário acima do piso aumenta a chance de aceitação. A negociação mantém a exigência e o piso registrados na abertura.",
+    "renewal.guide.staff": "Se as regras de manutenção e finanças permitirem, o diretor delegado oferece; o jogador usa o mesmo cálculo das ofertas do proprietário."
   }
 }

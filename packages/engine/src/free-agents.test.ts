@@ -279,7 +279,7 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     c.tier = 1;
     renewNpcContracts(w, c);
     expect(starter.wage).toBe(marketWageAt(c.country, 1951, 1, starter));
-    expect(starter.until).toBe(1951 + npcContractTerm(1951 - starter.born) - 1);
+    expect(starter.until).toBe(1951 + 3 - 1);
     expect(running).toMatchObject(old);
     expect(w.freeAgents ?? []).toEqual([]);
   });
@@ -287,11 +287,13 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
   it('releases an unnecessary expiry, while preserving identity and attributes', () => {
     const { w, c, players } = npcBooksFixture();
     const xi = new Set(startingSquad(w, c).map((p) => p.id));
-    const p = players.find(
-      (p) =>
-        !xi.has(p.id) &&
-        players.filter((q) => lineOf(q.position) === lineOf(p.position)).length > 6,
-    )!;
+    const p = players
+      .slice(18)
+      .find(
+        (p) =>
+          !xi.has(p.id) &&
+          players.filter((q) => lineOf(q.position) === lineOf(p.position)).length > 6,
+      )!;
     p.until = w.year;
     const before = structuredClone(p);
     renewNpcContracts(w, c);

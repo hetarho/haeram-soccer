@@ -250,6 +250,24 @@ const playerShape = {
       clauses: clauses.optional(),
     })
     .optional(),
+  renewalBids: z
+    .array(
+      z.strictObject({
+        club: id,
+        year: season,
+        window: z.enum(['summer', 'winter']),
+        reputation: rating,
+      }),
+    )
+    .max(2)
+    .optional(),
+  renewalRefused: z
+    .strictObject({
+      year: season,
+      window: z.enum(['summer', 'winter']),
+      kind: z.enum(['renew', 'improve']),
+    })
+    .optional(),
   improveAsked: season.optional(),
   unhappy: z
     .strictObject({
@@ -1015,6 +1033,15 @@ const ownerState = z.strictObject({
   stake: z.number().int().min(0).max(100),
   dividendShare: z.literal(DIVIDEND_SHARES),
   fanMood: rating,
+  fanDisposition: z
+    .strictObject({
+      results: z.number().int().min(10).max(45),
+      identity: z.number().int().min(10).max(45),
+      finance: z.number().int().min(10).max(45),
+      stars: z.number().int().min(10).max(45),
+    })
+    .refine((mix) => Object.values(mix).reduce((sum, share) => sum + share, 0) === 100)
+    .optional(),
   starSaleWindow: z.strictObject({ year: season, kind: z.enum(['summer', 'winter']) }).optional(),
   ownerCrisis: z.strictObject({ since: careerDate }).optional(),
   fanCrisis: z.strictObject({ rounds: z.number().int().min(1).max(100) }).optional(),

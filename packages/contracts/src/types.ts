@@ -375,6 +375,8 @@ export interface Player {
   /** Season of joining his current club's first team; absent history never grants bandiera places. */
   joined?: number;
   graduate?: true;
+  /** Maximum bidding reputation in each of the last two real windows at the current club. */
+  renewalBids?: { club: string; year: number; window: 'summer' | 'winter'; reputation: number }[];
   /** A prodigy (신동, →WORLD-18), growing three times faster until 18 (→PLAYER-15). */
   prodigy?: true;
   traits: PlayTrait[];
@@ -408,6 +410,8 @@ export interface Player {
   retiring?: number;
   /** The contract talk he opened (→CLUB-26). */
   talk?: ContractTalk;
+  /** A player's own refusal blocks another approach until the next real window (CLUB-54). */
+  renewalRefused?: { year: number; window: 'summer' | 'winter'; kind: ContractTalk['kind'] };
   /** Season year he last asked for an improved contract: at most once a season (→CLUB-26). */
   improveAsked?: number;
   /** Unhappy since this day, and why (→CLUB-27). */

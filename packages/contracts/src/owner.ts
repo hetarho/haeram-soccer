@@ -112,6 +112,13 @@ export interface TakeoverFacts {
    */
   lastIncome?: string;
 }
+/** Whole percentage shares, fixed at takeover (→OWNER-19). */
+export interface FanDisposition {
+  results: number;
+  identity: number;
+  finance: number;
+  stars: number;
+}
 /** The owner (→OWNER): who he is, his money and his standing with the supporters. */
 export interface OwnerState {
   tier: WealthTier;
@@ -128,6 +135,8 @@ export interface OwnerState {
   dividendShare: DividendShare;
   /** 팬 민심, 0–100 (→OWNER-12). */
   fanMood: number;
+  /** Absent in supported older saves; the starting default remains neutral. */
+  fanDisposition?: FanDisposition;
   /** The last transfer window with a star-sale drop (→OWNER-12); at most one drop per window. */
   starSaleWindow?: { year: number; kind: 'summer' | 'winter' };
   /** 구단주 파산 위기: the settlement that left the fortune below zero (→OWNER-14). */
@@ -207,6 +216,8 @@ export interface StartChoice {
 }
 /** One club on the takeover list (→WEB-15, ECON-37), its amounts in its own money. */
 export interface ClubListing {
+  /** The same whole-percent mix the takeover records (→OWNER-19). */
+  fanDisposition: FanDisposition;
   clubId: string;
   name: string;
   country: CountryCode;

@@ -46,13 +46,10 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
       o(
         'renewal-acceptance',
         sourceMessage('copy.influences.27ee29052c'),
-        sourceMessage('copy.influences.462bf6b264'),
-        sourceMessage('copy.influences.6673d85f1d'),
+        sourceMessage('copy.influences.bf7f08b3cb'),
+        sourceMessage('renewal.guide.summary'),
         [
-          direct(
-            sourceMessage('copy.influences.dfc8397da5'),
-            sourceMessage('copy.influences.ed0a78f335'),
-          ),
+          direct(sourceMessage('copy.influences.dfc8397da5'), sourceMessage('renewal.guide.wage')),
           f(
             sourceMessage('copy.influences.1651867839'),
             sourceMessage('copy.influences.acf56e4057'),
@@ -86,6 +83,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         ],
         [
           ...src('contracts', 'offerContract', 'talkTerms', 'talkFor', 'openTalk'),
+          ...src('renewal-answer', 'renewalChance', 'renewalAnswer'),
           ...src('market-prices', 'marketWageUnits'),
         ],
         [
@@ -174,7 +172,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         'auto-renewal',
         sourceMessage('copy.influences.9a23a64d98'),
         sourceMessage('copy.influences.462bf6b264'),
-        sourceMessage('copy.influences.87ae3f2b58'),
+        sourceMessage('renewal.guide.staff'),
         [
           direct(
             sourceMessage('copy.influences.c2ad8b97c3'),
@@ -2426,7 +2424,7 @@ export const PLAYER_ACTIONS: PlayerAction[] = [
     sourceMessage('copy.influences.6c7e36a5b3'),
     sourceMessage('copy.influences.636b022e8b'),
     [
-      link('renewal-acceptance', sourceMessage('copy.influences.8408b7c312')),
+      link('renewal-acceptance', sourceMessage('renewal.guide.wage')),
       link('operating-cost', sourceMessage('copy.influences.2e5ff80ef0')),
       link('auto-signing', sourceMessage('copy.influences.256b196958')),
     ],

@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "id": "ja-JP",
   "messages": {
+    "fans.disposition.title": "ファンの志向",
+    "fans.disposition.results": "成績重視派 {percent}% · リーグ戦の結果とシーズンの成果を重視します。",
+    "fans.disposition.identity": "伝統重視派 {percent}% · スターや下部組織出身の先発選手の売却、クラブのアイデンティティ変更に敏感です。",
+    "fans.disposition.finance": "財政保守派 {percent}% · 借金、配当、チケット価格を重視します。",
+    "fans.disposition.stars": "スター重視派 {percent}% · 大型補強とオーナーの資金投入を歓迎します。",
+    "fans.homegrownSale": "下部組織出身の先発選手を売却",
     "finance.distress.writeOff": "債務免除",
     "finance.distress.writeOffDetail": "管財人管理への移行により債務の半分が免除されました。営業収入には含まれません。",
     "finance.distress.noSigning": "売却要求中または管財人管理中は、移籍金を伴う獲得とレンタル獲得はできません。",
@@ -7039,6 +7045,24 @@
     "delegation.floor.left": "残額",
     "delegation.floor.contractsOwner": "市場が開くと、ディレクターは更新方針と委任要望の現金下限で更新・増額要求を判断し、結果を報告します。",
     "delegation.floor.salesOwner": "ディレクターは売却方針、現金下限、実際の財政危機段階で他クラブの入札に答え、結果を報告します。",
-    "delegation.floor.recruitmentOwner": "ディレクターは候補リストと監督の要望から、補強方針、現金下限、資金枯渇防止条件の範囲で補強します。"
+    "delegation.floor.recruitmentOwner": "ディレクターは候補リストと監督の要望から、補強方針、現金下限、資金枯渇防止条件の範囲で補強します。",
+    "renewal.factor.wage": "更新下限を上回る提示（{percent}%）",
+    "renewal.factor.higherBid": "今期または前期の移籍期間に名声の高いクラブが入札",
+    "renewal.factor.starter": "現在のクラブの先発",
+    "renewal.factor.bench": "現在のクラブで先発ではない",
+    "renewal.factor.age": "年齢{age}歳",
+    "renewal.factor.loyalty": "現在のクラブへの忠誠心",
+    "renewal.factor.distress": "現在のクラブが財政難",
+    "renewal.refused": "{name}は提示を断りました。現在の契約は続き、次の移籍期間から再び提示できます。{report}",
+    "renewal.refused.title": "{name}が{kind}の提示を拒否",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.talk.amounts": "希望額は{demand}で、{floor}以上の提示を検討します。",
+    "renewal.talk.unhappy": "選手は「{reason}」に不満を持っています。契約に合意すれば不満は解消します。",
+    "renewal.talk.unhappyRequest": "選手は「{reason}」に不満を持っています。契約に合意すれば不満が解消し、移籍要求も取り下げます。",
+    "renewal.chance.label": "契約更新の承諾確率",
+    "renewal.chance": "選手の承諾確率 {chance}%",
+    "renewal.guide.summary": "保存された下限未満は拒否されます。下限以上は年俸、能力相応のリーグと野心、今期か前期の名声の高いクラブの入札、出場、年齢、忠誠心、財政難で確率が決まります。抽選は選手・シーズン・移籍期間で固定され、拒否後は次の期間に再提示できます。",
+    "renewal.guide.wage": "下限を上回る年俸は承諾確率を上げます。進行中の交渉は開始時の要求額と下限を保持します。",
+    "renewal.guide.staff": "維持方針と財政条件を満たせば委任された部長が提示し、選手はオーナーの提示と同じ確率計算で答えます。"
   }
 }

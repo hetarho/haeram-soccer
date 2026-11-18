@@ -82,6 +82,19 @@ describe('action outcome summaries', () => {
     expect(describeOutcome(recruit, before, signed)?.title).toBe('선수를 영입했어요');
   });
 
+  it('shows a recorded renewal refusal without a signed-contract outcome', () => {
+    const before = world();
+    const p = before.players.find((player) => player.status === 'active')!;
+    const command = { type: 'contract-offer', player: p.id, wage: p.wage, term: 1 } as const;
+    const next = after(before, (w) => {
+      addEvent(w, 'contract-decline', '재계약 제안 거절', '기존 계약 유지');
+    });
+    const outcome = describeOutcome(command, before, next)!;
+    expect(outcome.title).toBe('선수에게 계약을 제시했어요');
+    expect(outcome.changes).toEqual([]);
+    expect(outcome.events).toEqual([{ title: '재계약 제안 거절', detail: '기존 계약 유지' }]);
+  });
+
   it('never summarizes a match that live playback has yet to reveal', () => {
     const before = world();
     expect(describeOutcome({ type: 'next-match' }, before, before)).toBeUndefined();

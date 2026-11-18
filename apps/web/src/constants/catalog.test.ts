@@ -11,9 +11,9 @@ const find = (id: string) => outcomes.find((outcome) => outcome.id === id)!;
 
 describe('implemented gameplay relationships', () => {
   it('separates player renewal thresholds, manager persuasion and the selling club bid probability', () => {
-    expect(find('renewal-acceptance').decision).toBe('조건 판정');
-    expect(find('renewal-acceptance').summary).toContain('추첨하지 않습니다');
-    expect(find('renewal-acceptance').summary).toContain('협상 시작 때 확정');
+    expect(find('renewal-acceptance').decision).toBe('확률');
+    expect(find('renewal-acceptance').summary).toContain('고정된 추첨');
+    expect(find('renewal-acceptance').summary).toContain('충성심');
     expect(find('renewal-acceptance').absent.join(' ')).toContain('우리 팀 평균 OVR');
     expect(find('bid-acceptance').decision).toBe('확률');
     expect(find('persuasion').decision).toBe('확률');
@@ -113,7 +113,7 @@ describe('causal hierarchy presentation', () => {
   it('exports the complete readable hierarchy, action consequences and source evidence', () => {
     const catalog = buildInfluenceCatalog();
     const markdown = influenceMarkdown(catalog);
-    expect(markdown).toContain('1. **선수의 재계약 수락 여부** [조건 판정]');
+    expect(markdown).toContain('1. **선수의 재계약 수락 여부** [확률]');
     expect(markdown).toContain('   2. **선수의 최소 수락 연봉**');
     expect(markdown).toContain('      1. **시장 연봉**');
     expect(markdown).toContain('\n12. **페널티킥·승부차기 성공**');

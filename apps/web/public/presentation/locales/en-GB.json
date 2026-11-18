@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "id": "en-GB",
   "messages": {
+    "fans.disposition.title": "Fan dispositions",
+    "fans.disposition.results": "Results-focused {percent}% · Care about league results and season achievements.",
+    "fans.disposition.identity": "Identity-focused {percent}% · React to star sales, academy starter sales and club identity changes.",
+    "fans.disposition.finance": "Financial conservatives {percent}% · Care about debt, dividends and ticket prices.",
+    "fans.disposition.stars": "Star enthusiasts {percent}% · Welcome big signings and owner injections.",
+    "fans.homegrownSale": "Academy starter sold",
     "finance.distress.writeOff": "Debt write-off",
     "finance.distress.writeOffDetail": "Entering administration wrote off half the debt. This is excluded from operating income.",
     "finance.distress.noSigning": "Fee and loan signings are prohibited during forced sales or administration.",
@@ -7042,6 +7048,24 @@
     "delegation.floor.left": "Money left",
     "delegation.floor.contractsOwner": "When a window opens, the director judges renewals and raises by renewal policy and the request’s cash floor, then reports the decision.",
     "delegation.floor.salesOwner": "The director answers other clubs’ bids by sale policy, the cash floor and actual distress stage, then reports the result.",
-    "delegation.floor.recruitmentOwner": "The director recruits from the shortlist and manager requests within recruitment policy, the cash floor and the cash safety stop."
+    "delegation.floor.recruitmentOwner": "The director recruits from the shortlist and manager requests within recruitment policy, the cash floor and the cash safety stop.",
+    "renewal.factor.wage": "Offer above the renewal floor ({percent}%)",
+    "renewal.factor.higherBid": "A higher-reputation club bid this window or last",
+    "renewal.factor.starter": "Starts for his current club",
+    "renewal.factor.bench": "Does not start for his current club",
+    "renewal.factor.age": "Age {age}",
+    "renewal.factor.loyalty": "Loyalty to his current club",
+    "renewal.factor.distress": "His current club is in financial distress",
+    "renewal.refused": "{name} refused the offer. His existing contract continues; he can be approached again from the next transfer window. {report}",
+    "renewal.refused.title": "{name} refused the {kind} offer",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.talk.amounts": "The player asks for {demand} and will consider offers from {floor}.",
+    "renewal.talk.unhappy": "The player is unhappy about {reason}. Agreeing a contract resolves it.",
+    "renewal.talk.unhappyRequest": "The player is unhappy about {reason}. Agreeing a contract resolves it and withdraws the transfer request.",
+    "renewal.chance.label": "Renewal acceptance chance",
+    "renewal.chance": "Player acceptance chance: {chance}%",
+    "renewal.guide.summary": "Below the saved floor is refused. Above it, wages, suitable division and ambition, a higher-reputation bid this window or last, playing time, age, loyalty and distress set the chance. The draw is fixed by player, season and window; a refusal can be approached again next window.",
+    "renewal.guide.wage": "Wages above the floor raise acceptance chance. An open talk keeps the demand and floor recorded when it opened.",
+    "renewal.guide.staff": "When retention and finance rules permit, the delegated director offers; the player uses the same acceptance calculation as for an owner offer."
   }
 }

@@ -1028,11 +1028,11 @@ function playRound(
   advanceEurope(w, capture, undefined, observe);
   advanceCups(w, capture, undefined, observe);
   if (owned) {
-    settleRound(
-      w,
-      fixtures.some((f) => ownFixture(w, f) && f.kind === 'league' && !!f.score),
+    const ownLeagueSettled = fixtures.some(
+      (f) => ownFixture(w, f) && f.kind === 'league' && !!f.score,
     );
-    fanMoodRound(w);
+    settleRound(w, ownLeagueSettled);
+    fanMoodRound(w, ownLeagueSettled);
     // A manager at the floor of trust may resign once the round is settled (→STAFF-47).
     settleManagerTrust(w);
   }

@@ -69,6 +69,8 @@ export {
 
 /** Where a player joining the club starts to settle (→PLAYER-11). */
 export function joinClub(p: Player, joined: Joined, year: number, graduate = false) {
+  delete p.renewalBids;
+  delete p.renewalRefused;
   p.joined = year;
   if (joined === 'academy' || graduate) p.graduate = true;
   else delete p.graduate;

@@ -40,7 +40,11 @@ import {
 } from '../../../../../../packages/engine/src/finance-read';
 import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { ratio } from '../../../../../../packages/engine/src/primitives';
-import { fanMoodAfter, percentOf } from '../../../../../../packages/engine/src/fan-mood-read';
+import {
+  fanMoodAfter,
+  fanMoodChange,
+  percentOf,
+} from '../../../../../../packages/engine/src/fan-mood-read';
 import { quote } from '../../../../../../packages/engine/src/quotes';
 import type { ClientState } from '../../../runtime/client';
 import { gameActionsBlocked } from '../../../runtime/store';
@@ -59,10 +63,6 @@ export function ownMoney(w: World, value: string | bigint) {
   return compactMoney(value.toString(), ownClub(w).country, w.year);
 }
 const has = (owner: OwnerState, trait: OwnerTrait) => owner.traits.includes(trait);
-/** A 팬 민심 change as the owner feels it: drops shrink under 팬들의 친구, rises never (→OWNER-12). */
-function felt(owner: OwnerState, change: number) {
-  return change < 0 && has(owner, 'fansFriend') ? change * FAN_MOOD.friendly : change;
-}
 const positive = (value: bigint) => (value > 0n ? value : 0n);
 
 /** The tier and the traits the owner took, as the sheet's header names them (→OWNER-3/5). */
@@ -267,8 +267,11 @@ export function injectionMood(w: World, amount: string) {
   if (!turnover || BigInt(turnover) <= 0n || !w.owner) return undefined;
   const percent = percentOf(BigInt(amount), BigInt(turnover))!;
   return (
-    fanMoodAfter(w, Math.min(FAN_MOOD.injection.max, percent * FAN_MOOD.injection.perPercent)) -
-    w.owner.fanMood
+    fanMoodAfter(
+      w,
+      Math.min(FAN_MOOD.injection.max, percent * FAN_MOOD.injection.perPercent),
+      'stars',
+    ) - w.owner.fanMood
   );
 }
 /** What an injection of `amount` leaves (→OWNER-9, WEB-114): both pots and 팬 민심's rise. */
@@ -295,7 +298,9 @@ export function dividendOutlook(w: World, dividend: DividendShare) {
   const turnover = seasonTurnover(w);
   const percent = percentOf(amount, turnover) ?? 100;
   const mood =
-    amount > 0n ? fanMoodAfter(w, percent * FAN_MOOD.dividend.perPercent) - w.owner!.fanMood : 0;
+    amount > 0n
+      ? fanMoodAfter(w, percent * FAN_MOOD.dividend.perPercent, 'finance') - w.owner!.fanMood
+      : 0;
   return { result: result.toString(), amount: amount.toString(), mood };
 }
 /** The last dividend the owner took, in the money of its season (→OWNER-11/17). */
@@ -409,7 +414,7 @@ export function fanMovers(w: World): FanMover[] {
       ? [match.score.home, match.score.away]
       : [match.score.away, match.score.home];
     const result = gf > ga ? 'win' : gf < ga ? 'defeat' : 'draw';
-    const change = felt(owner, FAN_MOOD.result[result]);
+    const change = fanMoodChange(w, FAN_MOOD.result[result], 'results');
     const rival = w.clubs.find((club) => club.id === (home ? match.away : match.home));
     movers.push({
       label: sourceMessage('copy.ownerFigures.ac3373014d', {
@@ -428,7 +433,7 @@ export function fanMovers(w: World): FanMover[] {
       direction: direction(change),
     });
   }
-  const drift = felt(owner, (FAN_MOOD.start - owner.fanMood) * FAN_MOOD.drift);
+  const drift = (FAN_MOOD.start - owner.fanMood) * FAN_MOOD.drift;
   if (Math.abs(drift) >= 0.05)
     movers.push({
       label: sourceMessage('copy.ownerFigures.5648870692', {

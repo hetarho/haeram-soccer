@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "id": "id-ID",
   "messages": {
+    "fans.disposition.title": "Kecenderungan suporter",
+    "fans.disposition.results": "Berorientasi hasil {percent}% · Mengutamakan hasil liga dan pencapaian musim.",
+    "fans.disposition.identity": "Berorientasi identitas {percent}% · Bereaksi terhadap penjualan bintang dan pemain inti lulusan akademi serta perubahan identitas klub.",
+    "fans.disposition.finance": "Konservatif finansial {percent}% · Memperhatikan utang, dividen, dan harga tiket.",
+    "fans.disposition.stars": "Penggemar bintang {percent}% · Menyambut perekrutan besar dan suntikan dana pemilik.",
+    "fans.homegrownSale": "Penjualan pemain inti lulusan akademi",
     "finance.distress.writeOff": "Penghapusan utang",
     "finance.distress.writeOffDetail": "Masuk administrasi pengadilan menghapus separuh utang. Ini tidak termasuk pendapatan operasional.",
     "finance.distress.noSigning": "Perekrutan berbayar dan pinjaman dilarang selama penjualan wajib atau administrasi pengadilan.",
@@ -7039,6 +7045,24 @@
     "delegation.floor.left": "Dana tersisa",
     "delegation.floor.contractsOwner": "Saat bursa dibuka, direktur menilai perpanjangan dan kenaikan menurut kebijakan serta batas kas permintaan, lalu melaporkan.",
     "delegation.floor.salesOwner": "Direktur menjawab tawaran klub lain menurut kebijakan penjualan, batas kas dan tahap kesulitan nyata, lalu melaporkan hasilnya.",
-    "delegation.floor.recruitmentOwner": "Direktur merekrut dari daftar dan permintaan pelatih sesuai kebijakan, batas kas dan batas keamanan kas."
+    "delegation.floor.recruitmentOwner": "Direktur merekrut dari daftar dan permintaan pelatih sesuai kebijakan, batas kas dan batas keamanan kas.",
+    "renewal.factor.wage": "Tawaran di atas batas minimum perpanjangan ({percent}%)",
+    "renewal.factor.higherBid": "Klub bereputasi lebih tinggi menawar pada bursa ini atau sebelumnya",
+    "renewal.factor.starter": "Pemain inti di klub saat ini",
+    "renewal.factor.bench": "Bukan pemain inti di klub saat ini",
+    "renewal.factor.age": "Usia {age}",
+    "renewal.factor.loyalty": "Loyalitas kepada klub saat ini",
+    "renewal.factor.distress": "Klub saat ini mengalami kesulitan keuangan",
+    "renewal.refused": "{name} menolak tawaran. Kontraknya saat ini tetap berlaku; tawaran baru dapat diajukan mulai bursa transfer berikutnya. {report}",
+    "renewal.refused.title": "{name} menolak tawaran {kind}",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.talk.amounts": "Pemain meminta {demand} dan mempertimbangkan tawaran mulai dari {floor}.",
+    "renewal.talk.unhappy": "Pemain tidak puas karena {reason}. Kesepakatan kontrak mengatasi ketidakpuasannya.",
+    "renewal.talk.unhappyRequest": "Pemain tidak puas karena {reason}. Jika kontrak disepakati, ketidakpuasannya teratasi dan ia menarik permintaan transfer.",
+    "renewal.chance.label": "Peluang menerima perpanjangan",
+    "renewal.chance": "Peluang penerimaan pemain: {chance}%",
+    "renewal.guide.summary": "Di bawah batas minimum tersimpan, tawaran ditolak. Di atasnya, gaji, divisi yang sesuai dan ambisi, tawaran bereputasi lebih tinggi pada bursa ini atau sebelumnya, waktu bermain, usia, loyalitas dan kesulitan keuangan menentukan peluang. Undian tetap menurut pemain, musim dan bursa; setelah penolakan, tawaran baru bisa diajukan pada bursa berikutnya.",
+    "renewal.guide.wage": "Gaji di atas batas minimum meningkatkan peluang penerimaan. Negosiasi tetap memakai permintaan dan batas minimum yang dicatat saat dibuka.",
+    "renewal.guide.staff": "Jika kebijakan retensi dan keuangan mengizinkan, direktur yang diberi wewenang menawar; pemain memakai perhitungan yang sama dengan tawaran pemilik."
   }
 }

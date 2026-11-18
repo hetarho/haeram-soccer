@@ -740,6 +740,7 @@ function previewStart(w: World, tier: WealthTier, year: number) {
     const price = pounds(club.strength);
     const amount = (share: number) => previewMinor(price * share, club.country, year);
     const listing: ClubListing = {
+      fanDisposition: { results: 25, identity: 25, finance: 25, stars: 25 },
       clubId: club.id,
       name: club.name,
       country: club.country as ClubListing['country'],

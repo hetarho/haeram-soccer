@@ -1,3 +1,4 @@
+import { recordRenewalBid } from './renewal-bids';
 import { distressSalePlan, forcedSales } from './distress';
 import { npcDebt, npcFixedCosts } from './books';
 import { message as sourceMessage } from '../../contracts/src/messages';
@@ -1063,6 +1064,7 @@ export function npcMarket(w: World) {
     }
     tried.add(`${bidder.id}|${p.id}`);
     bids.set(bidder.id, (bids.get(bidder.id) ?? 0) + 1);
+    recordRenewalBid(w, p, seller, bidder);
     result ??= answered(bidder, p, seller, asking, loan, bid);
     NPC_BID_FLOW.observe?.({
       from: { id: seller.id, country: seller.country, tier: seller.tier },

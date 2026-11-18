@@ -2,6 +2,12 @@
   "schemaVersion": 1,
   "id": "de-DE",
   "messages": {
+    "fans.disposition.title": "Fan-Ausrichtung",
+    "fans.disposition.results": "Erfolgsorientierte {percent}% · Legen Wert auf Ligaergebnisse und Saisonerfolge.",
+    "fans.disposition.identity": "Identitätsbewusste {percent}% · Reagieren auf den Verkauf von Stars und Stammspielern aus der Jugend sowie auf Änderungen der Vereinsidentität.",
+    "fans.disposition.finance": "Finanziell Konservative {percent}% · Achten auf Schulden, Dividenden und Eintrittspreise.",
+    "fans.disposition.stars": "Star-Begeisterte {percent}% · Begrüßen große Transfers und Einlagen des Eigentümers.",
+    "fans.homegrownSale": "Verkauf eines Stammspielers aus der Jugend",
     "finance.distress.writeOff": "Schuldenerlass",
     "finance.distress.writeOffDetail": "Mit Eintritt in die Insolvenzverwaltung wurde die Hälfte der Schulden erlassen. Dies zählt nicht als Betriebseinnahme.",
     "finance.distress.noSigning": "Kostenpflichtige Transfers und Leihen sind während Zwangsverkäufen oder Insolvenzverwaltung untersagt.",
@@ -7042,6 +7048,24 @@
     "delegation.floor.left": "Verbleibendes Geld",
     "delegation.floor.contractsOwner": "Zum Transferfenster beurteilt der Direktor Verlängerungen und Erhöhungen nach Vertragspolitik und gewünschter Kassenuntergrenze und berichtet.",
     "delegation.floor.salesOwner": "Der Direktor beantwortet Gebote nach Verkaufspolitik, Kassenuntergrenze und tatsächlicher Finanznotstufe und berichtet.",
-    "delegation.floor.recruitmentOwner": "Der Direktor verpflichtet aus der Liste und Trainerwünschen nach Transferpolitik, Kassenuntergrenze und Liquiditätssperre."
+    "delegation.floor.recruitmentOwner": "Der Direktor verpflichtet aus der Liste und Trainerwünschen nach Transferpolitik, Kassenuntergrenze und Liquiditätssperre.",
+    "renewal.factor.wage": "Angebot über der Verlängerungsuntergrenze ({percent} %)",
+    "renewal.factor.higherBid": "Ein angesehenerer Verein bot in diesem oder letzten Transferfenster",
+    "renewal.factor.starter": "Stammspieler beim aktuellen Verein",
+    "renewal.factor.bench": "Kein Stammspieler beim aktuellen Verein",
+    "renewal.factor.age": "Alter: {age}",
+    "renewal.factor.loyalty": "Treue zum aktuellen Verein",
+    "renewal.factor.distress": "Der aktuelle Verein ist in finanzieller Not",
+    "renewal.refused": "{name} lehnte das Angebot ab. Sein bisheriger Vertrag läuft weiter; ab dem nächsten Transferfenster kann erneut verhandelt werden. {report}",
+    "renewal.refused.title": "{name} lehnte das Angebot für {kind} ab",
+    "renewal.accepted.report": "{detail} · {report}",
+    "renewal.talk.amounts": "Der Spieler fordert {demand} und prüft Angebote ab {floor}.",
+    "renewal.talk.unhappy": "Der Spieler ist unzufrieden. Grund ist {reason}. Eine Einigung beendet die Unzufriedenheit.",
+    "renewal.talk.unhappyRequest": "Der Spieler ist unzufrieden. Grund ist {reason}. Bei einer Einigung legt er die Unzufriedenheit ab und zieht seinen Wechselwunsch zurück.",
+    "renewal.chance.label": "Annahmechance der Verlängerung",
+    "renewal.chance": "Annahmechance des Spielers: {chance} %",
+    "renewal.guide.summary": "Unter der gespeicherten Untergrenze wird abgelehnt. Darüber bestimmen Gehalt, passende Liga und Ehrgeiz, ein angeseheneres Gebot in diesem oder letzten Fenster, Einsatzzeit, Alter, Treue und Finanznot die Chance. Der Zufallswert gilt je Spieler, Saison und Fenster; nach Ablehnung ist ab dem nächsten Fenster ein neues Angebot möglich.",
+    "renewal.guide.wage": "Gehalt über der Untergrenze erhöht die Annahmechance. Forderung und Untergrenze bleiben ab Verhandlungsbeginn gespeichert.",
+    "renewal.guide.staff": "Erlauben Bindungs- und Finanzregeln das Angebot, bietet der beauftragte Direktor an; der Spieler nutzt dieselbe Annahmeberechnung wie beim Eigentümer."
   }
 }
