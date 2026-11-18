@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-18T19:18:39.858Z",
-  "sourceCommit": "490a2bc54e5549cbefe654f9e52e9e8078d35b1e",
+  "snapshotAt": "2026-11-18T19:20:21.325Z",
+  "sourceCommit": "b6c1737afb34e39ac35592234a122ce1e9d0e802",
   "group": {
     "id": "np19-perf",
     "branch": "gusta-session-self-improve-np19-f1c9b1b9",
@@ -11,6 +11,175 @@
       "workers": 2,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "ready": {
+      "commit": "b6c1737afb34e39ac35592234a122ce1e9d0e802",
+      "at": "2026-11-18T19:19:46.198Z",
+      "verified": false,
+      "owner": {
+        "tag": "np19",
+        "branch": "gusta-session-self-improve-np19-f1c9b1b9"
+      },
+      "checks": [
+        "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint"
+      ],
+      "agentChecks": [
+        {
+          "id": "T983-ab-identity",
+          "scenario": "The aggregate fitting and attribution speed-ups keep every aggregate and day output bit-identical and make the aggregate engine faster",
+          "steps": [
+            "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload aggregate --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+            "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload day --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-day.json"
+          ],
+          "expected": "Equal output hashes on both workloads; aggregate CPU-ratio interval entirely below 1",
+          "observed": "sameHash true on both (aggregate 09c4b698345ff9fc, day a56436ea3e565194); aggregate CPU ×0.768 (0.758–0.783) faster; own match days ×0.849 (0.836–0.866); other days ×0.997 (0.959–1.029), no difference",
+          "evidence": [
+            "artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+            "artifacts/benchmarks/night-perf-261119/T983/ab-day.json",
+            "artifacts/benchmarks/night-perf-261119/T983/README.md"
+          ],
+          "status": "pass",
+          "reason": "deterministic paired measurement run by the worker at task stage",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T983-final-gate",
+          "scenario": "Shared batch gate (verify:batch) and CI browser journeys on the integrated candidate",
+          "steps": [
+            "Coordinator runs pnpm run verify:batch on the fixed integrated candidate after all participating sessions are ready"
+          ],
+          "expected": "Batch gate passes; CI browser journeys pass after the push",
+          "observed": "Not run by this worker: ARCH-30 reserves builds, full integration and batch for the initiating coordinator's final gate, and browser journeys run only in CI",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "engine-only task unit; full suites belong to the host's shared final gate",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host coordinator (np19-perf final gate)",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T982-ui-none",
+          "scenario": "T982 changes only engine code and adds no screen behaviour, so there is no computer-use scenario to observe.",
+          "steps": [
+            "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
+          ],
+          "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
+          "observed": "The diff is engine-only. On c3486278 with T982 applied, the world hash and the ab.mjs output hashes match the base. Units 75/75 and the task tier (1567 units) passed; integration 33/33 passed on the tree merged with 24666400.",
+          "evidence": [
+            "artifacts/benchmarks/night-perf-261119/T982/final-c3486278-1950.txt",
+            "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
+            "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
+          ],
+          "status": "not-run",
+          "reason": "This is an engine-only result-identical speed-up with nothing to observe on screen. Browser journeys run only in CI after the coordinator's final batch gate.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": "Adds no e2e; deterministic checks already cover the change."
+        },
+        {
+          "id": "T984-same-world",
+          "scenario": "1950 generation-reference world hash unchanged",
+          "steps": [
+            "pnpm exec tsx artifacts/benchmarks/generation-market-261116/gen-driver.mts 1950 generation-reference --hash"
+          ],
+          "expected": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce",
+          "observed": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce. The correction changed only tests; engine source is unchanged since this run.",
+          "evidence": [
+            "artifacts/benchmarks/night-perf-261119/T984/gen-1950-hash.txt"
+          ],
+          "status": "pass",
+          "reason": "deterministic worker check",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T984-ab-measurement",
+          "scenario": "Paired A/B for history and day against base e8b4ada9, plus each part on its own",
+          "steps": [
+            "node scripts/perf/ab.mjs --base e8b4ada9 --workload history --procs 6 --json .../ab-history.json",
+            "node scripts/perf/ab.mjs --base e8b4ada9 --workload day --procs 6 --json .../ab-day.json",
+            "part 1 vs base and part 2 vs base+part 1, using a scratch copy of the tree"
+          ],
+          "expected": "Equal output hashes; each part kept only if its history interval is below 1 or not slower",
+          "observed": "Hashes equal in every run. History, both parts: 0.944 (0.933–0.955). Part 1 alone: 0.980 (0.974–0.989). Part 2 on top of part 1: 0.944 (0.930–0.957). Day: 0.994 (0.977–1.013), no difference. Engine source is unchanged by the correction.",
+          "evidence": [
+            "artifacts/benchmarks/night-perf-261119/T984/ab-history.json",
+            "artifacts/benchmarks/night-perf-261119/T984/ab-day.json",
+            "artifacts/benchmarks/night-perf-261119/T984/ab-history-part1-vs-base.json",
+            "artifacts/benchmarks/night-perf-261119/T984/ab-history-part2-vs-part1.json"
+          ],
+          "status": "pass",
+          "reason": "measured on a shared Apple M1 Max, load1 12–48",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T984-named-tests",
+          "scenario": "The named existing test files still pass",
+          "steps": [
+            "pnpm exec vitest run world, persisted-squads, staff, training, npc-careers, player, calendar.progression-eng, season, full-model-throughput",
+            "rerun calendar.progression-eng alone after it timed out under load"
+          ],
+          "expected": "All pass unchanged",
+          "observed": "8 files passed together (131 tests). calendar.progression-eng timed out at 435 s against its 300 s limit when run beside the others at load around 48, then passed alone in 121 s. calendar.progression-esp no longer exists (T787 removed it) and was not run. world.test.ts and training.test.ts are now identical to base.",
+          "evidence": [
+            "scratchpad named.log / eng.log"
+          ],
+          "status": "pass",
+          "reason": "esp file absent from the tree",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T984-task-tier",
+          "scenario": "ARCH-30 task-tier checks",
+          "steps": [
+            "gusta vibe check --tier task --diff-base e8b4ada9 --task T984"
+          ],
+          "expected": "typecheck, lint, format, i18n and affected units pass, including the new unit tests",
+          "observed": "All passed: 1,493 unit tests, the four new selection-growth tests included",
+          "evidence": [
+            "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-c6b27ea3-25c8-41eb-b546-c32e45a08695.log"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ]
+    },
+    "integration": {
+      "reason": "owning-session-working",
+      "candidate": null,
+      "verified": false,
+      "scope": null
     },
     "agentChecks": [
       {
@@ -174,7 +343,7 @@
       "T987",
       "T988"
     ],
-    "runner": {
+    "lastRun": {
       "id": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
       "adapter": "builtin",
       "providers": {
@@ -197,61 +366,10 @@
         }
       ],
       "startedAt": "2026-11-18T17:31:22.009Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "aaa0a658-4fd0-493f-9e5e-208d1c314462",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.316 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.167.0"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.316 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-11-18T15:48:43.801Z",
-      "stoppedAt": "2026-11-18T17:26:25.711Z",
-      "dispatched": 8,
-      "outcome": "needs-attention",
-      "failures": [
-        {
-          "attempt": "5a537e90-d209-4c44-9b20-1d7049e362da",
-          "submissionId": "2bd6bc97-ab27-44dd-a035-c52e091d4e5b",
-          "commit": "589e975b898b489c0f6d5b3d98248ebc54ec2165",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        },
-        {
-          "attempt": "81015110-b4aa-4987-84d1-b0430d70cd49",
-          "role": "worker",
-          "error": "T982: 태스크 result에 verified 기록이 필요합니다."
-        },
-        {
-          "attempt": "357a0fba-a927-4b49-88c2-9dec7186972e",
-          "role": "worker",
-          "error": "검증 실패: pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests"
-        },
-        {
-          "attempt": "33e7240c-9706-4158-8396-fb396610c169",
-          "submissionId": "9570c563-fddf-4c5e-b72e-d8b9e12638e2",
-          "commit": "569b4cf700883e014f61233a6f0e3d0131ea651b",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        }
-      ],
+      "stoppedAt": "2026-11-18T19:20:19.532Z",
+      "dispatched": 12,
+      "outcome": "completed",
+      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -291,6 +409,7 @@
       "submittedAt": "2026-11-18T18:50:30.600Z",
       "integratedCommit": "899f9ea9ccaae0ed6991588ea1eb29f62442d73c",
       "integratedAt": "2026-11-18T18:54:15.619Z",
+      "cleanedAt": "2026-11-18T19:19:52.041Z",
       "risk": null,
       "agentChecks": [
         {
@@ -437,6 +556,7 @@
       "submittedAt": "2026-11-18T16:26:56.873Z",
       "integratedCommit": "4491c7e8e8cf498cfe70be3f079d6cfdc0b5c23c",
       "integratedAt": "2026-11-18T17:29:46.019Z",
+      "cleanedAt": "2026-11-18T19:19:56.457Z",
       "risk": null,
       "agentChecks": [
         {
@@ -559,6 +679,7 @@
       "submittedAt": "2026-11-18T17:24:34.483Z",
       "integratedCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
       "integratedAt": "2026-11-18T17:31:09.746Z",
+      "cleanedAt": "2026-11-18T19:20:01.654Z",
       "risk": null,
       "agentChecks": [
         {
@@ -759,6 +880,7 @@
       "submittedAt": "2026-11-18T17:35:55.380Z",
       "integratedCommit": "3cf569ea4211e4a93ab743996e1e8772eb201867",
       "integratedAt": "2026-11-18T17:41:04.101Z",
+      "cleanedAt": "2026-11-18T19:20:06.923Z",
       "risk": null,
       "dispatch": {
         "id": "50bbed50-efb5-43d9-856e-24c12d6d1725",
@@ -860,6 +982,7 @@
       "submittedAt": "2026-11-18T18:08:32.924Z",
       "integratedCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
       "integratedAt": "2026-11-18T18:13:40.803Z",
+      "cleanedAt": "2026-11-18T19:20:11.579Z",
       "risk": null,
       "dispatch": {
         "id": "c240656c-2c15-4fd1-9994-c17f6f34af6f",
@@ -938,6 +1061,7 @@
       "submittedAt": "2026-11-18T19:09:31.016Z",
       "integratedCommit": "430ebb17f923a4e0e92f183bec26f94eda05446e",
       "integratedAt": "2026-11-18T19:14:49.612Z",
+      "cleanedAt": "2026-11-18T19:20:15.689Z",
       "risk": null,
       "review": {
         "id": "5463fae5-dd83-448a-aa11-498374948bcb",
@@ -1009,6 +1133,9 @@
       "submittedBase": "490a2bc54e5549cbefe654f9e52e9e8078d35b1e",
       "submissionId": "f1edd054-91b3-4d91-802c-d80452ecab86",
       "submittedAt": "2026-11-18T19:18:03.703Z",
+      "integratedCommit": "b6c1737afb34e39ac35592234a122ce1e9d0e802",
+      "integratedAt": "2026-11-18T19:19:40.459Z",
+      "cleanedAt": "2026-11-18T19:20:19.513Z",
       "risk": null,
       "dispatch": {
         "id": "295a8630-d8ff-4de4-9f67-1e741815c2d1",
@@ -1055,6 +1182,13 @@
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-11-18T19:17:01.478Z",
           "finishedAt": "2026-11-18T19:18:03.516Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-18T19:18:42.797Z",
+          "finishedAt": "2026-11-18T19:19:40.122Z"
         }
       ]
     }
@@ -6275,6 +6409,449 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1211,
+      "at": "2026-11-18T19:19:40.253Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-18T19:18:42.797Z",
+            "finishedAt": "2026-11-18T19:19:40.122Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1212,
+      "at": "2026-11-18T19:19:40.459Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "b6c1737afb34e39ac35592234a122ce1e9d0e802",
+        "integratedAt": "2026-11-18T19:19:40.459Z"
+      }
+    },
+    {
+      "sequence": 1213,
+      "at": "2026-11-18T19:19:46.214Z",
+      "type": "group",
+      "group": "np19-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "ready": {
+          "commit": "b6c1737afb34e39ac35592234a122ce1e9d0e802",
+          "at": "2026-11-18T19:19:46.198Z",
+          "verified": false,
+          "owner": {
+            "tag": "np19",
+            "branch": "gusta-session-self-improve-np19-f1c9b1b9"
+          },
+          "checks": [
+            "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint"
+          ],
+          "agentChecks": [
+            {
+              "id": "T983-ab-identity",
+              "scenario": "The aggregate fitting and attribution speed-ups keep every aggregate and day output bit-identical and make the aggregate engine faster",
+              "steps": [
+                "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload aggregate --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+                "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload day --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-day.json"
+              ],
+              "expected": "Equal output hashes on both workloads; aggregate CPU-ratio interval entirely below 1",
+              "observed": "sameHash true on both (aggregate 09c4b698345ff9fc, day a56436ea3e565194); aggregate CPU ×0.768 (0.758–0.783) faster; own match days ×0.849 (0.836–0.866); other days ×0.997 (0.959–1.029), no difference",
+              "evidence": [
+                "artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+                "artifacts/benchmarks/night-perf-261119/T983/ab-day.json",
+                "artifacts/benchmarks/night-perf-261119/T983/README.md"
+              ],
+              "status": "pass",
+              "reason": "deterministic paired measurement run by the worker at task stage",
+              "replaces": [],
+              "stage": "unit",
+              "required": true,
+              "owner": "worker",
+              "candidate": null,
+              "duplicationReason": ""
+            },
+            {
+              "id": "T983-final-gate",
+              "scenario": "Shared batch gate (verify:batch) and CI browser journeys on the integrated candidate",
+              "steps": [
+                "Coordinator runs pnpm run verify:batch on the fixed integrated candidate after all participating sessions are ready"
+              ],
+              "expected": "Batch gate passes; CI browser journeys pass after the push",
+              "observed": "Not run by this worker: ARCH-30 reserves builds, full integration and batch for the initiating coordinator's final gate, and browser journeys run only in CI",
+              "evidence": [],
+              "status": "not-run",
+              "reason": "engine-only task unit; full suites belong to the host's shared final gate",
+              "replaces": [],
+              "stage": "integration",
+              "required": true,
+              "owner": "host coordinator (np19-perf final gate)",
+              "candidate": null,
+              "duplicationReason": ""
+            },
+            {
+              "id": "T982-ui-none",
+              "scenario": "T982 changes only engine code and adds no screen behaviour, so there is no computer-use scenario to observe.",
+              "steps": [
+                "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
+              ],
+              "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
+              "observed": "The diff is engine-only. On c3486278 with T982 applied, the world hash and the ab.mjs output hashes match the base. Units 75/75 and the task tier (1567 units) passed; integration 33/33 passed on the tree merged with 24666400.",
+              "evidence": [
+                "artifacts/benchmarks/night-perf-261119/T982/final-c3486278-1950.txt",
+                "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
+                "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
+              ],
+              "status": "not-run",
+              "reason": "This is an engine-only result-identical speed-up with nothing to observe on screen. Browser journeys run only in CI after the coordinator's final batch gate.",
+              "replaces": [],
+              "stage": "integration",
+              "required": false,
+              "owner": "host",
+              "candidate": null,
+              "duplicationReason": "Adds no e2e; deterministic checks already cover the change."
+            },
+            {
+              "id": "T984-same-world",
+              "scenario": "1950 generation-reference world hash unchanged",
+              "steps": [
+                "pnpm exec tsx artifacts/benchmarks/generation-market-261116/gen-driver.mts 1950 generation-reference --hash"
+              ],
+              "expected": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce",
+              "observed": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce. The correction changed only tests; engine source is unchanged since this run.",
+              "evidence": [
+                "artifacts/benchmarks/night-perf-261119/T984/gen-1950-hash.txt"
+              ],
+              "status": "pass",
+              "reason": "deterministic worker check",
+              "replaces": [],
+              "stage": "unit",
+              "required": true,
+              "owner": "worker",
+              "candidate": null,
+              "duplicationReason": ""
+            },
+            {
+              "id": "T984-ab-measurement",
+              "scenario": "Paired A/B for history and day against base e8b4ada9, plus each part on its own",
+              "steps": [
+                "node scripts/perf/ab.mjs --base e8b4ada9 --workload history --procs 6 --json .../ab-history.json",
+                "node scripts/perf/ab.mjs --base e8b4ada9 --workload day --procs 6 --json .../ab-day.json",
+                "part 1 vs base and part 2 vs base+part 1, using a scratch copy of the tree"
+              ],
+              "expected": "Equal output hashes; each part kept only if its history interval is below 1 or not slower",
+              "observed": "Hashes equal in every run. History, both parts: 0.944 (0.933–0.955). Part 1 alone: 0.980 (0.974–0.989). Part 2 on top of part 1: 0.944 (0.930–0.957). Day: 0.994 (0.977–1.013), no difference. Engine source is unchanged by the correction.",
+              "evidence": [
+                "artifacts/benchmarks/night-perf-261119/T984/ab-history.json",
+                "artifacts/benchmarks/night-perf-261119/T984/ab-day.json",
+                "artifacts/benchmarks/night-perf-261119/T984/ab-history-part1-vs-base.json",
+                "artifacts/benchmarks/night-perf-261119/T984/ab-history-part2-vs-part1.json"
+              ],
+              "status": "pass",
+              "reason": "measured on a shared Apple M1 Max, load1 12–48",
+              "replaces": [],
+              "stage": "unit",
+              "required": true,
+              "owner": "worker",
+              "candidate": null,
+              "duplicationReason": ""
+            },
+            {
+              "id": "T984-named-tests",
+              "scenario": "The named existing test files still pass",
+              "steps": [
+                "pnpm exec vitest run world, persisted-squads, staff, training, npc-careers, player, calendar.progression-eng, season, full-model-throughput",
+                "rerun calendar.progression-eng alone after it timed out under load"
+              ],
+              "expected": "All pass unchanged",
+              "observed": "8 files passed together (131 tests). calendar.progression-eng timed out at 435 s against its 300 s limit when run beside the others at load around 48, then passed alone in 121 s. calendar.progression-esp no longer exists (T787 removed it) and was not run. world.test.ts and training.test.ts are now identical to base.",
+              "evidence": [
+                "scratchpad named.log / eng.log"
+              ],
+              "status": "pass",
+              "reason": "esp file absent from the tree",
+              "replaces": [],
+              "stage": "unit",
+              "required": true,
+              "owner": "worker",
+              "candidate": null,
+              "duplicationReason": ""
+            },
+            {
+              "id": "T984-task-tier",
+              "scenario": "ARCH-30 task-tier checks",
+              "steps": [
+                "gusta vibe check --tier task --diff-base e8b4ada9 --task T984"
+              ],
+              "expected": "typecheck, lint, format, i18n and affected units pass, including the new unit tests",
+              "observed": "All passed: 1,493 unit tests, the four new selection-growth tests included",
+              "evidence": [
+                "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-c6b27ea3-25c8-41eb-b546-c32e45a08695.log"
+              ],
+              "status": "pass",
+              "reason": "",
+              "replaces": [],
+              "stage": "unit",
+              "required": true,
+              "owner": "worker",
+              "candidate": null,
+              "duplicationReason": ""
+            }
+          ]
+        },
+        "integration": {
+          "reason": "owning-session-working",
+          "candidate": null,
+          "verified": false,
+          "scope": null
+        }
+      }
+    },
+    {
+      "sequence": 1214,
+      "at": "2026-11-18T19:19:46.328Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 1215,
+      "at": "2026-11-18T19:19:52.041Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-18T19:19:52.041Z"
+      }
+    },
+    {
+      "sequence": 1216,
+      "at": "2026-11-18T19:19:52.074Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "5a537e90-d209-4c44-9b20-1d7049e362da",
+      "taskId": "T983",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 1217,
+      "at": "2026-11-18T19:19:56.457Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "5a537e90-d209-4c44-9b20-1d7049e362da",
+      "taskId": "T983",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-18T19:19:56.457Z"
+      }
+    },
+    {
+      "sequence": 1218,
+      "at": "2026-11-18T19:19:56.486Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "33e7240c-9706-4158-8396-fb396610c169",
+      "taskId": "T984",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 1219,
+      "at": "2026-11-18T19:20:01.654Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "33e7240c-9706-4158-8396-fb396610c169",
+      "taskId": "T984",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-18T19:20:01.654Z"
+      }
+    },
+    {
+      "sequence": 1220,
+      "at": "2026-11-18T19:20:01.687Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 1221,
+      "at": "2026-11-18T19:20:06.923Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "357a0fba-a927-4b49-88c2-9dec7186972e",
+      "taskId": "T985",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-18T19:20:06.923Z"
+      }
+    },
+    {
+      "sequence": 1222,
+      "at": "2026-11-18T19:20:06.951Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 1223,
+      "at": "2026-11-18T19:20:11.579Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-18T19:20:11.579Z"
+      }
+    },
+    {
+      "sequence": 1224,
+      "at": "2026-11-18T19:20:11.606Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 1225,
+      "at": "2026-11-18T19:20:15.689Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-18T19:20:15.689Z"
+      }
+    },
+    {
+      "sequence": 1226,
+      "at": "2026-11-18T19:20:15.716Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 1227,
+      "at": "2026-11-18T19:20:19.513Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "ae59723d-7407-453a-99f2-db506499320b",
+      "taskId": "T987",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-18T19:20:19.513Z"
+      }
+    },
+    {
+      "sequence": 1228,
+      "at": "2026-11-18T19:20:19.532Z",
+      "type": "group",
+      "group": "np19-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-18T17:31:22.009Z",
+          "stoppedAt": "2026-11-18T19:20:19.532Z",
+          "dispatched": 12,
+          "outcome": "completed",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
