@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T978 | Calibrate the combined world: levels, moves, books, distress, ageing | LEAGUE WORLD ECON PLAYER CLUB MATCH | T953 T954 T955 T957 T958 T959 T960 T961 T962 T963 T964 T965 T966 T967 T968 T969 T970 T971 T972 T973 T974 T975 T976 T977 T979 T980 | todo |
+| T978 | Calibrate the combined world: levels, moves, books, distress, ageing | LEAGUE WORLD ECON PLAYER CLUB MATCH | T953 T954 T955 T957 T958 T959 T960 T961 T962 T963 T964 T965 T966 T967 T968 T969 T970 T971 T972 T973 T974 T975 T976 T977 T979 T980 | doing@261118.mr18cx |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
