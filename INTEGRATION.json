@@ -340,11 +340,30 @@
       "host": "ihaelam-ui-MacBookPro",
       "device": "ihaelam-ui-MacBookPro",
       "branch": "gusta-session-start-cx19-ci-handoff",
-      "head": "9fb29d7b7431cd57b7d347e0467747d543020713",
+      "head": "d23cf4f0aa88cd886e863bf150b0e33c9e2a2a0f",
       "land": "main",
       "status": "working",
-      "at": "2026-11-18T15:27:48.077Z",
-      "agentChecks": [],
+      "at": "2026-11-18T15:28:21.643Z",
+      "agentChecks": [
+        {
+          "id": "T981-ci-handoff",
+          "scenario": "First code push after landing starts Verify with exactly three Chromium shards",
+          "steps": [
+            "Inspect the first post-landing Verify web game run and its job list."
+          ],
+          "expected": "Exactly three e2e (chromium n/3) jobs run.",
+          "observed": "Not observed in this unit; handed to the coordinator that pushes.",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "ARCH-30 CI handoff. Observe this check on main after the verified candidate is pushed.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "coordinator that pushes",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
       "verificationCommands": []
     }
   },
