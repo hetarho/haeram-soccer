@@ -7021,6 +7021,13 @@
     "finance.distress.detail2": "Forced sales apply and fee and loan signings are restricted. Free agents may only restore the squad minimum or a goalkeeper. Debt above {limit} triggers administration.",
     "finance.distress.detail3": "Forced-sale restrictions continue. Entry deducts {points} points once per season and writes off {percent}% of debt. Recovery requires debt below {limit} at season close.",
     "career.ended.record": "Club management ended in the {season} season. {kept}",
-    "league.points.administration": "−{points} points · administration"
+    "league.points.administration": "−{points} points · administration",
+    "delegation.floor.summary": "Season-end cash {projected} · cash floor {floor} · spendable above the floor {spendable}",
+    "delegation.floor.refused": "After this commitment: cash {projected}, floor {floor}, annual planned loss {loss}. The cash-floor test fails. The minimum request also requires costs within income.",
+    "delegation.floor.warningTitle": "Director warning · season-end cash",
+    "delegation.floor.warning": "Projected season-end cash {projected} is near the financial distress warning line {floor}. Check the cash outlook and spending.",
+    "delegation.floor.forcedSale": "Forced sales in financial distress −25pp",
+    "market.sale.distress.warning": "Seller in financial distress: warning",
+    "market.sale.distress.forced": "Seller under forced sales or administration"
   }
 }

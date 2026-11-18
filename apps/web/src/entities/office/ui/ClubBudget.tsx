@@ -20,7 +20,7 @@ import { Money } from '../../../shared/ui/Money';
 import { SeasonStepper } from '../../../shared/ui/SeasonStepper';
 import { compactMoney, number, percent, seasonName } from '../../../presentation/format';
 import { fixedCosts } from '../../player/@x/office';
-import { PlanFlow, planSteps, runwayLine, type DelegatePlan } from './DelegationPlan';
+import { PlanFlow, planSteps, floorLine, type DelegatePlan } from './DelegationPlan';
 import s from './ClubBudget.module.css';
 
 /** A part of one of the two flow bars, coloured by what it is. */
@@ -228,15 +228,10 @@ function planSummary(w: World, plan: DelegatePlan) {
     money = (value: string) => compactMoney(value, code, w.year);
   switch (plan.key) {
     case 'recruitment':
-      return plan.runway > 0
-        ? displayMessage('budget.plans.signingRunway', {
-            seasons: plan.runway,
-            left: money(plan.left),
-          })
-        : displayMessage('budget.plans.signingIncome', { left: money(plan.left) });
+      return localizeValue(floorLine(w, plan));
     case 'contracts':
     case 'sales':
-      return localizeValue(runwayLine(plan));
+      return localizeValue(floorLine(w, plan));
     case 'academy':
       return displayMessage('budget.plans.academy', {
         level: POLICY_INFO.academy.levels[plan.youth!.level - 1].name,

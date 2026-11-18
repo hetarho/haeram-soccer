@@ -19,7 +19,7 @@ import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import { openDecisionSettings } from '../../../shared/routing/state';
 import { Card } from '../../../shared/ui/Card';
 import { Money } from '../../../shared/ui/Money';
-import { compactMoney, decimal } from '../../../presentation/format';
+import { compactMoney } from '../../../presentation/format';
 import { DeskStats, type DeskStat } from './OfficeDesk';
 import s from './DelegationPlan.module.css';
 
@@ -72,40 +72,10 @@ export function PlanFlow({ label, steps }: { label: string; steps: readonly Flow
   );
 }
 
-/**
- * The plan's loss runway in words (→ECON-33): the seasons of planned loss the cash must cover, or
- * that the plan stays within income.
- */
-export function runwayLine(plan: Pick<DelegatePlan, 'runway'>) {
-  return plan.runway > 0
-    ? sourceMessage('delegation.runway.allowed', { seasons: plan.runway })
-    : sourceMessage('delegation.runway.withinIncome');
-}
-/** A count of seasons or years with the decimals it has (at most two), in the reader's locale. */
-function figure(value: number) {
-  const places = [0, 1, 2].find(
-    (digits) => Math.abs(value * 10 ** digits - Math.round(value * 10 ** digits)) < 1e-9,
-  );
-  return decimal(value, places ?? 2);
-}
-/** The planned loss now and the seasons of it the available capital covers. */
-function coversLine(w: World, plan: DelegatePlan) {
-  return coverageLine(plan, compactMoney(plan.loss, clubOf(w).country, w.year));
-}
-/**
- * The coverage note for a planned loss already written as `loss`. Coverage is kept to one decimal,
- * so capital covering less than a tenth of a season reads so, never as no cash at all.
- */
-export function coverageLine(
-  plan: Pick<DelegatePlan, 'loss' | 'covers' | 'capital'>,
-  loss: string,
-) {
-  if (BigInt(plan.loss) === 0n) return sourceMessage('delegation.runway.noLoss');
-  return plan.covers
-    ? sourceMessage('delegation.runway.covers', { loss, seasons: figure(plan.covers) })
-    : BigInt(plan.capital) > 0n
-      ? sourceMessage('delegation.runway.coversLittle', { loss, seasons: figure(0.1) })
-      : sourceMessage('delegation.runway.coversNone', { loss });
+/** Minimal typed DTO adaptation; the full cash-floor explanation follows in T972. */
+export function floorLine(w: World, plan: DelegatePlan) {
+  const money = (value: string) => compactMoney(value, clubOf(w).country, w.year);
+  return sourceMessage('delegation.floor.summary', { projected: money(plan.projected), floor: money(plan.floor), spendable: money(plan.spendable) });
 }
 
 /** The plan's money as steps, for the works the 단장 plans with money. */
@@ -122,18 +92,18 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
     },
     capital: FlowStep = {
       label: sourceMessage('delegation.flow.capital'),
-      value: amount(plan.capital),
-      note: sourceMessage('delegation.flow.reserve', { years: figure(plan.reserveYears) }),
+      value: amount(plan.spendable),
+      note: floorLine(w, plan),
     },
     carried: FlowStep = {
       label: sourceMessage('delegation.flow.wageRoom'),
       value: amount(plan.budget),
-      note: runwayLine(plan),
+      note: floorLine(w, plan),
     },
     wages: FlowStep = {
       label: sourceMessage('delegation.flow.wages'),
       value: amount(plan.committed),
-      note: coversLine(w, plan),
+      note: floorLine(w, plan),
       tone: 'minus',
     };
   switch (plan.key) {
@@ -198,42 +168,7 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
 
 /** The plan in one or two plain sentences under its steps. */
 function planSentence(w: World, plan: DelegatePlan): ReactNode {
-  const seasons = plan.runway;
-  switch (plan.key) {
-    case 'recruitment':
-      return plan.over
-        ? richMessage(
-            seasons > 0
-              ? 'delegation.flow.recruitmentShort'
-              : 'delegation.flow.recruitmentShortIncome',
-          )
-        : seasons > 0
-          ? richMessage('delegation.flow.recruitmentRunway', { seasons })
-          : richMessage('delegation.flow.recruitmentIncome');
-    case 'contracts':
-      return plan.over
-        ? richMessage(
-            seasons > 0 ? 'delegation.flow.contractsShort' : 'delegation.flow.contractsShortIncome',
-          )
-        : seasons > 0
-          ? richMessage('delegation.flow.contractsRunway', { seasons })
-          : richMessage('delegation.flow.contractsIncome');
-    case 'academy':
-      return (
-        <>
-          {richMessage('delegation.flow.academyLine')}{' '}
-          {richMessage('delegation.flow.youthCoach', { name: personOf(w, 'youth').name })}
-        </>
-      );
-    case 'sales':
-      return seasons > 0
-        ? richMessage(plan.over ? 'delegation.plan.salesPressed' : 'delegation.plan.salesCalm')
-        : richMessage(
-            plan.over ? 'delegation.plan.salesPressedIncome' : 'delegation.plan.salesCalmIncome',
-          );
-    default:
-      return undefined;
-  }
+  return plan.key === 'manager' || plan.key === 'staff' ? undefined : floorLine(w, plan);
 }
 
 /** The posts whose pay the 단장's criteria decide: the setting he sets and the pay now. */

@@ -7024,6 +7024,13 @@
     "finance.distress.detail2": "Há vendas forçadas e restrições a contratações pagas e empréstimos. Agentes livres só podem repor o mínimo do elenco ou um goleiro. Dívida acima de {limit} provoca administração judicial.",
     "finance.distress.detail3": "As restrições de vendas forçadas continuam. A entrada desconta {points} pontos uma vez por temporada e perdoa {percent}% da dívida. A recuperação exige dívida abaixo de {limit} no encerramento.",
     "career.ended.record": "A gestão do clube terminou na temporada {season}. {kept}",
-    "league.points.administration": "−{points} pontos · administração judicial"
+    "league.points.administration": "−{points} pontos · administração judicial",
+    "delegation.floor.summary": "Caixa no fim da temporada {projected} · piso {floor} · disponível acima do piso {spendable}",
+    "delegation.floor.refused": "Após este compromisso: caixa {projected}, piso {floor}, prejuízo anual previsto {loss}. O teste do piso falha. O pedido mínimo também exige despesas dentro da receita.",
+    "delegation.floor.warningTitle": "Alerta do diretor · caixa final",
+    "delegation.floor.warning": "O caixa previsto no fim da temporada {projected} está perto da linha de alerta financeiro {floor}. Confira a projeção e os gastos.",
+    "delegation.floor.forcedSale": "Vendas forçadas por dificuldades financeiras −25 pp",
+    "market.sale.distress.warning": "Vendedor com alerta financeiro",
+    "market.sale.distress.forced": "Vendedor sob vendas forçadas ou administração judicial"
   }
 }

@@ -1,9 +1,4 @@
-/**
- * The 단장 plans on the season's income and the club's cash (→ECON-33): spending may run past
- * income — a planned loss — while the capital above a temperament/request reserve covers that loss
- * for the loss runway of the step he acts on. Cash spent and open bids reduce that capital; new
- * wages raise both the loss and the reserve. Plan moments hold income still; cash is read live.
- */
+/** Live season-end cash floors for delegated decisions (→ECON-33). */
 import { message as sourceMessage } from '../../contracts/src/messages';
 import type {
   BudgetResponsibility,
@@ -16,7 +11,7 @@ import type {
 import { SEASON_ROUNDS } from './calendar';
 import { moneyLabel, operatingCosts } from './finance';
 import { lastSeasonTurnover } from './finance-read';
-import { financeProjection, seasonRevenue } from './projection';
+import { financeProjection, seasonRevenue, type FinanceProjection } from './projection';
 import { POLICY_INFO, policyEffects, policyOf } from './policy';
 import { quote } from './quotes';
 import { clubOf } from './player-state';
@@ -28,25 +23,22 @@ import {
   BUDGET_RESPONSIBILITIES,
   delegateOf,
   personOf,
-  planRunway,
   RECRUITMENT_LOOKS,
   RESPONSIBILITY_NAMES,
   requestLabel,
   requestOf,
-  RESERVE_YEARS,
   safetyRounds,
   sharePercent,
   TEMPERAMENT_INFO,
   YOUTH_SHARE,
   type Delegate,
 } from './delegation-info';
+import { DISTRESS, forcedSales } from './distress';
 import { addEvent } from './events';
 import { pushInbox } from './inbox';
 
 /** The rules of a delegated decision that do not read money, from the level its person acts on. */
 export interface SpendingStance {
-  /** The loss runway in seasons (0: none, wages and costs within income) (→ECON-33). */
-  runway: number;
   /**
    * The 단장's upgrades (→CLUB-33): a margin over a starter (none: no upgrades), a cap a window, the
    * squad less its listed players they stop above (none: the registration limit), whether he
@@ -75,7 +67,6 @@ const UPGRADES: readonly SpendingStance['signing'][] = [
 ];
 function stanceOf(level: SpendRequest): SpendingStance {
   return {
-    runway: planRunway(level),
     signing: UPGRADES[level - 1],
     bidExtra: level === 5 ? 10 : 0,
     pending: RECRUITMENT_LOOKS.pendingByStep[level - 1]!,
@@ -106,38 +97,32 @@ export interface DelegatePlan {
   lastRevenue?: string;
   /** The youth share of income and capital in basis points; 0 for every other work. */
   share: number;
-  /**
-   * The work's money: for signings, renewals and sales the players' wage bill the runway carries
-   * (today's bill and the largest wage the runway test still lets through with no fee, its added
-   * reserve counted); for the academy the youth money; none for the posts.
-   */
+  /** Current wage bill plus affordable added annual wages, or the youth budget. */
   budget: string;
-  /** The youth share of income alone (the academy's); 0 for the other works. */
   incomeBudget: string;
-  /** Available capital: cash above the reserve, less fees reserved by open delegated bids. */
-  capital: string;
-  /** Years of current annual fixed costs kept back (→`RESERVE_YEARS`). */
-  reserveYears: number;
-  /** The loss runway in seasons; 0: none, the plan stays within income. */
-  runway: number;
-  /** This year's fixed costs, the players' wages included (→ECON-30). */
+  /** Live middle season-end cash projection, before open fee reservations. */
+  projected: string;
+  /** Cash required at season end by the step acted on. */
+  floor: string;
+  /** Open delegated fees, reserved once. */
+  reserved: string;
+  /** Projection above the floor, less reserved fees; never negative. */
+  spendable: string;
   fixedCosts: string;
-  /** The planned loss: fixed costs less the income he plans on, never below zero. */
+  /** Annual fixed costs less planned income, never below zero. */
   loss: string;
-  /** Seasons of the planned loss available capital covers (one decimal); none without a loss. */
-  covers?: number;
   /**
    * What the work already pays a year: the players' wages; the academy investment and the youth
    * director's pay; the manager's or the staff's wages for their posts.
    */
   committed: string;
   /**
-   * The work's money falls short: the runway test fails at the current wage bill (→ECON-33), or
+   * The work's money falls short: the floor test fails at the current wage bill (→ECON-33), or
    * the academy's pay and investment exceed the youth money.
    */
   over: boolean;
   /**
-   * What is left: for signings the fee the runway test lets through at the current wage bill; for
+   * What is left: for signings the fee the floor test lets through at the current wage bill; for
    * renewals the largest raise it lets through; the youth money left.
    */
   left: string;
@@ -163,85 +148,79 @@ function pendingFees(w: World): bigint {
     0n,
   );
 }
-/** An amount times a number of seasons or years given to two decimals (0.25, 0.5, 6). */
-const times = (amount: bigint, seasons: number) =>
-  (amount * BigInt(Math.round(seasons * 100))) / 100n;
-/** A commitment the runway test reads: a fee paid now and a yearly wage added. */
+/** A fee paid once now and annual wages added from today. */
 export interface Commitment {
   fee?: bigint;
   wage?: bigint;
 }
-/** The runway test's answer, with the planned loss after the commitment and the capital it read. */
-export interface RunwayCheck {
+export interface FloorCheck {
   ok: boolean;
   loss: bigint;
-  capital: bigint;
-  runway: number;
+  floor: bigint;
+  projected: bigint;
 }
-/** What the runway test reads of a club: its money and the plan's step, all live amounts. */
-interface RunwayBase {
-  /** Cash less fees reserved by open delegated bids. */
-  cash: bigint;
-  /** This year's fixed costs, the players' wages included. */
+/** Current-cost floor; temperament changes the step, never adds another reserve. */
+export function cashFloor(level: SpendRequest, cash: bigint, annual: bigint): bigint {
+  switch (level) {
+    case 1: return cash;
+    case 2: return annual;
+    case 3: return annual / 2n;
+    case 4: return 0n;
+    case 5: return -(annual * BigInt(Math.round(DISTRESS.warning * 1000))) / 1000n;
+  }
+}
+interface FloorBase {
+  level: SpendRequest;
+  projected: bigint;
+  floor: bigint;
   annual: bigint;
-  /** The income the plan rests on. */
   income: bigint;
-  reserveYears: number;
-  runway: number;
+  remaining: number;
 }
-/**
- * The runway test on plain amounts (→`runwayTest`): the one calculation every reading shares. The
- * reserve is kept on current annual fixed costs; the commitment's wage moves only the planned loss.
- */
-function runwayCheck(base: RunwayBase, fee: bigint, wage: bigint): RunwayCheck {
+function floorCheck(base: FloorBase, fee: bigint, wage: bigint): FloorCheck {
   const loss = above(base.annual + wage, base.income),
-    capital = above(base.cash, times(base.annual, base.reserveYears)),
-    ok =
-      base.runway === 0 ? loss === 0n && fee <= capital : fee + times(loss, base.runway) <= capital;
-  return { ok, loss, capital, runway: base.runway };
+    projected = base.projected - fee - wage * BigInt(base.remaining) / BigInt(SEASON_ROUNDS) - wage;
+  return { ok: projected >= base.floor && (base.level !== 1 || loss === 0n),
+    loss, floor: base.floor, projected };
 }
-/**
- * The largest yearly wage the runway test lets through with no fee (→ECON-33): a new wage raises
- * the planned loss, against capital above the reserve on current costs. Zero when even the current
- * bill fails it.
- */
-function wageRoom(base: RunwayBase): bigint {
-  if (!runwayCheck(base, 0n, 0n).ok) return 0n;
-  let low = 0n,
-    high = 1n;
-  while (runwayCheck(base, 0n, high).ok) high *= 2n;
-  // The test holds at `low` and fails at `high`; the passing wages form one range from zero.
+function floorBase(w: World, plan: Pick<DelegatePlan, 'level' | 'revenue'>, projection: FinanceProjection): FloorBase {
+  const annual = BigInt(operatingCosts(w).annual);
+  return { level: plan.level, annual, income: BigInt(plan.revenue),
+    projected: middleCash(projection) - pendingFees(w),
+    floor: cashFloor(plan.level, BigInt(w.cash), annual),
+    remaining: SEASON_ROUNDS - Math.min(w.round, SEASON_ROUNDS) };
+}
+const middleCash = (projection: FinanceProjection) =>
+  (BigInt(projection.seasonEnd.low) + BigInt(projection.seasonEnd.high)) / 2n;
+/** Same live floor test for bids, raises and their previews; existing wages are already projected. */
+export function floorTest(w: World, plan: Pick<DelegatePlan, 'level' | 'revenue'>,
+  { fee = 0n, wage = 0n }: Commitment = {}, projection = financeProjection(w)): FloorCheck {
+  return floorCheck(floorBase(w, plan, projection), fee, wage);
+}
+/** Largest annual raise, including the prorated current season and one full next season. */
+function wageRoom(base: FloorBase): bigint {
+  if (!floorCheck(base, 0n, 0n).ok) return 0n;
+  let low = 0n, high = 1n;
+  while (floorCheck(base, 0n, high).ok) high *= 2n;
   while (high - low > 1n) {
     const mid = (low + high) / 2n;
-    if (runwayCheck(base, 0n, mid).ok) low = mid;
+    if (floorCheck(base, 0n, mid).ok) low = mid;
     else high = mid;
   }
   return low;
 }
-const runwayBase = (
-  w: World,
-  plan: Pick<DelegatePlan, 'level' | 'revenue' | 'reserveYears'>,
-  runway: number,
-): RunwayBase => ({
-  cash: BigInt(w.cash) - pendingFees(w),
-  annual: BigInt(operatingCosts(w).annual),
-  income: BigInt(plan.revenue),
-  reserveYears: plan.reserveYears,
-  runway,
-});
-/**
- * The runway test (→ECON-33): a commitment passes when its fee plus the planned loss after it,
- * times the runway, fits available capital; with no runway (step 1) the planned loss after it must
- * be zero and its fee must fit available capital. `runway` defaults to the plan's step's; the
- * sales rules read it at half (→CLUB-24, →CLUB-52).
- */
-export function runwayTest(
-  w: World,
-  plan: Pick<DelegatePlan, 'level' | 'revenue' | 'reserveYears'>,
-  { fee = 0n, wage = 0n }: Commitment = {},
-  runway: number = planRunway(plan.level),
-): RunwayCheck {
-  return runwayCheck(runwayBase(w, plan, runway), fee, wage);
+/** Persisted outside prunable prose and plan snapshots; reads never emit a warning. */
+export function warnCashFloor(w: World, projection = financeProjection(w)) {
+  if (w.delegationWarningSeason === w.year ||
+      !BUDGET_RESPONSIBILITIES.some(key => isDelegated(w, key))) return;
+  const annual = BigInt(operatingCosts(w).annual),
+    line = cashFloor(5, BigInt(w.cash), annual),
+    projected = middleCash(projection) - pendingFees(w);
+  if (projected > line + (annual * BigInt(Math.round(DISTRESS.warning * 1000))) / 1000n) return;
+  w.delegationWarningSeason = w.year;
+  pushInbox(w, { kind: 'finance', title: sourceMessage('delegation.floor.warningTitle'),
+    detail: sourceMessage('delegation.floor.warning', {
+      projected: moneyLabel(w, projected.toString()), floor: moneyLabel(w, line.toString()) }), attention: false });
 }
 
 /** This season's player sales: fees received and leavers' compensation (the books' 선수 매각). */
@@ -394,6 +373,7 @@ export function delegatePlan(
   key: BudgetResponsibility,
   request: SpendRequest = requestOf(w, key),
   income: string = planRevenue(w),
+  projection = financeProjection(w),
 ): DelegatePlan {
   const delegate = delegateOf(w),
     level = actedLevel(request, delegate.temperament),
@@ -401,22 +381,12 @@ export function delegatePlan(
     costs = operatingCosts(w),
     annual = BigInt(costs.annual),
     wages = BigInt(costs.playerWages),
-    reserveYears = RESERVE_YEARS[delegate.temperament][level],
-    runway = planRunway(level),
-    base: RunwayBase = {
-      cash: BigInt(w.cash) - pendingFees(w),
-      annual,
-      income: revenue,
-      reserveYears,
-      runway,
-    },
-    now = runwayCheck(base, 0n, 0n),
-    capital = now.capital,
+    base = floorBase(w, { level, revenue: income }, projection),
+    now = floorCheck(base, 0n, 0n),
+    spendable = above(base.projected, base.floor),
     loss = now.loss,
-    covers = loss > 0n ? Number((capital * 10n) / loss) / 10 : undefined,
-    // The largest wage the runway test still lets through, against capital on current costs (→ECON-33).
     room = key === 'recruitment' || key === 'contracts' || key === 'sales' ? wageRoom(base) : 0n,
-    feeRoom = !now.ok ? 0n : runway === 0 ? capital : capital - times(loss, runway);
+    feeRoom = now.ok ? spendable : 0n;
   let share = 0,
     budget = 0n,
     incomeBudget = 0n,
@@ -428,7 +398,7 @@ export function delegatePlan(
     case 'recruitment':
     case 'contracts':
     case 'sales':
-      // The wage bill the cash carries for the runway: today's and the most it lets through.
+      // Current wages plus the additional annual wages the live floor carries.
       budget = wages + room;
       committed = wages;
       over = !now.ok;
@@ -437,7 +407,7 @@ export function delegatePlan(
     case 'academy': {
       share = YOUTH_SHARE[level];
       incomeBudget = part(revenue, share);
-      budget = incomeBudget + part(capital, share);
+      budget = incomeBudget + part(spendable, share);
       const split = youthSplit(w, budget, level);
       youth = {
         level: split.level,
@@ -475,12 +445,12 @@ export function delegatePlan(
     share,
     budget: budget.toString(),
     incomeBudget: incomeBudget.toString(),
-    capital: capital.toString(),
-    reserveYears,
-    runway,
+    projected: middleCash(projection).toString(),
+    floor: base.floor.toString(),
+    reserved: pendingFees(w).toString(),
+    spendable: spendable.toString(),
     fixedCosts: annual.toString(),
     loss: loss.toString(),
-    ...(covers !== undefined ? { covers } : {}),
     committed: committed.toString(),
     over,
     left: left.toString(),
@@ -490,26 +460,10 @@ export function delegatePlan(
   };
 }
 
-/**
- * How hard the club's money presses the delegated staff to sell (→ECON-33, →CLUB-18/24/52): 2 while
- * the runway test of the sales step fails at half its runway at the current wage bill, 1 while it
- * fails at the full runway, else 0; with the wage bill's share of the planned income in percent
- * (`share`) and the seasons of planned loss available capital covers (`seasons`, none without a
- * loss) and the step's runway in seasons (`runway`).
- */
+/** Sell harder below the cash floor or in any financial distress (→ECON-33). */
 export function wagePressure(w: World) {
-  const plan = delegatePlan(w, 'sales'),
-    revenue = BigInt(plan.revenue),
-    wages = BigInt(plan.committed),
-    level = !runwayTest(w, plan, {}, plan.runway / 2).ok ? 2 : plan.over ? 1 : 0;
-  return {
-    level: level as 0 | 1 | 2,
-    share: sharePercent(
-      revenue > 0n ? Number((wages * 10000n) / revenue) : wages > 0n ? 999990 : 0,
-    ),
-    seasons: plan.covers,
-    runway: plan.runway,
-  };
+  const plan = delegatePlan(w, 'sales');
+  return { level: (forcedSales(w.distress) ? 2 : plan.over || w.distress?.stage ? 1 : 0) as 0 | 1 | 2 };
 }
 
 /**
@@ -523,6 +477,7 @@ export function insolvencyStop(
   wage: bigint,
   quick = false,
   key: BudgetResponsibility = 'recruitment',
+  projection?: FinanceProjection,
 ) {
   const perRound = (BigInt(operatingCosts(w).annual) + wage) / BigInt(SEASON_ROUNDS),
     weeks = safetyRounds(w, key),
@@ -535,7 +490,7 @@ export function insolvencyStop(
   if (quick) return undefined;
   const played = Math.min(w.round, SEASON_ROUNDS),
     end =
-      BigInt(financeProjection(w).seasonEnd.low) -
+      BigInt((projection ?? financeProjection(w)).seasonEnd.low) -
       pendingFees(w) -
       spend -
       (wage * BigInt(SEASON_ROUNDS - played)) / BigInt(SEASON_ROUNDS);
@@ -570,10 +525,7 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
   );
   if (plan.key === 'academy') {
     lines.push(
-      sourceMessage('delegation.plan.capital', {
-        years: plan.reserveYears,
-        capital: money((BigInt(plan.budget) - BigInt(plan.incomeBudget)).toString()),
-      }),
+      sourceMessage('delegation.floor.summary', { projected: money(plan.projected), floor: money(plan.floor), spendable: money(plan.spendable) }),
       sourceMessage('delegation.plan.youth', {
         share,
         budget: money(plan.incomeBudget),
@@ -590,16 +542,7 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
       wages: money(plan.committed),
       loss: money(plan.loss),
     }),
-    plan.runway > 0
-      ? sourceMessage('delegation.plan.runway', {
-          years: plan.reserveYears,
-          capital: money(plan.capital),
-          seasons: plan.runway,
-        })
-      : sourceMessage('delegation.plan.runwayNone', {
-          years: plan.reserveYears,
-          capital: money(plan.capital),
-        }),
+    sourceMessage('delegation.floor.summary', { projected: money(plan.projected), floor: money(plan.floor), spendable: money(plan.spendable) }),
   );
   switch (plan.key) {
     case 'recruitment':
@@ -621,13 +564,7 @@ export function planLines(w: World, plan: DelegatePlan): string[] {
     case 'sales':
       lines.push(
         sourceMessage(
-          plan.runway > 0
-            ? plan.over
-              ? 'delegation.plan.salesPressed'
-              : 'delegation.plan.salesCalm'
-            : plan.over
-              ? 'delegation.plan.salesPressedIncome'
-              : 'delegation.plan.salesCalmIncome',
+          plan.over ? 'delegation.plan.salesPressedIncome' : 'delegation.plan.salesCalmIncome',
         ),
       );
       break;
@@ -728,6 +665,7 @@ export function applyDelegatePlans(
         attention: false,
       });
   }
+  warnCashFloor(w);
 }
 
 /** The projection moved by a tenth of the planned income, or sales brought in a twentieth. */

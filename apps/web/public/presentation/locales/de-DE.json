@@ -7021,6 +7021,13 @@
     "finance.distress.detail2": "Zwangsverkäufe und Beschränkungen für Ablöse- und Leihtransfers gelten. Vereinslose dürfen nur die Mindestkadergröße oder einen Torwart sichern. Schulden über {limit} lösen die Zwangsverwaltung aus.",
     "finance.distress.detail3": "Die Beschränkungen der Zwangsverkäufe bleiben bestehen. Der Eintritt zieht einmal pro Saison {points} Punkte ab und erlässt {percent}% der Schulden. Erholung erfordert Schulden unter {limit} am Saisonende.",
     "career.ended.record": "Die Vereinsführung endete in der Saison {season}. {kept}",
-    "league.points.administration": "−{points} Punkte · Zwangsverwaltung"
+    "league.points.administration": "−{points} Punkte · Zwangsverwaltung",
+    "delegation.floor.summary": "Saisonendbestand {projected} · Gelduntergrenze {floor} · darüber verfügbar {spendable}",
+    "delegation.floor.refused": "Nach dieser Zusage: Geld {projected}, Untergrenze {floor}, geplanter Jahresverlust {loss}. Die Untergrenze wird nicht eingehalten. Beim Mindestauftrag müssen die Kosten zudem im Einkommen bleiben.",
+    "delegation.floor.warningTitle": "Direktorwarnung · Saisonendbestand",
+    "delegation.floor.warning": "Der erwartete Saisonendbestand {projected} liegt nahe der finanziellen Warnschwelle {floor}. Prüfe Geldprognose und Ausgaben.",
+    "delegation.floor.forcedSale": "Zwangsverkäufe bei Finanznot −25 Pp.",
+    "market.sale.distress.warning": "Verkäufer mit finanzieller Warnung",
+    "market.sale.distress.forced": "Verkäufer unter Zwangsverkäufen oder Insolvenzverwaltung"
   }
 }

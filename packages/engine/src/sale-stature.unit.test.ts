@@ -18,8 +18,6 @@ const neutral: SaleContext = {
   prospect: false,
   cashCrisis: false,
   runway: 999,
-  wageLine: 0,
-  wageShare: 0,
   sellingDown: false,
   stance: 'open',
   transferRequest: false,

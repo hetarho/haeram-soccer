@@ -7018,6 +7018,13 @@
     "finance.distress.detail2": "강제 매각이 진행되고 이적료·임대 영입이 제한됩니다. 자유계약은 최소 인원이나 골키퍼 확보에만 허용됩니다. 부채가 {limit}를 초과하면 법정관리에 진입합니다.",
     "finance.distress.detail3": "매각 요구의 제한이 유지됩니다. 진입 시 시즌당 한 번 승점 {points}점이 차감되고 부채 {percent}%가 탕감됩니다. 시즌 마감 시 부채가 {limit} 미만이면 회복합니다.",
     "career.ended.record": "{season} 시즌에 구단 운영이 끝났어요. {kept}",
-    "league.points.administration": "−{points}점 · 법정관리"
+    "league.points.administration": "−{points}점 · 법정관리",
+    "delegation.floor.summary": "시즌 말 예상 현금 {projected} · 남길 현금 하한 {floor} · 하한 위 지출 여력 {spendable}",
+    "delegation.floor.refused": "이 약정 뒤 예상 현금 {projected}, 하한 {floor}, 계획 적자 연 {loss}으로 현금 하한 조건을 충족하지 못해요. 최소한만 요청은 지출도 수입 안에 머물러야 해요.",
+    "delegation.floor.warningTitle": "단장 경고 · 시즌 말 현금",
+    "delegation.floor.warning": "시즌 말 예상 현금 {projected}가 재정 위기 경고선 {floor}에 가까워요. 현금 전망과 지출을 확인해 주세요.",
+    "delegation.floor.forcedSale": "재정 위기 강제 매각 −25%p",
+    "market.sale.distress.warning": "판매 구단의 재정 위기 경고",
+    "market.sale.distress.forced": "판매 구단의 매각 요구 또는 법정관리"
   }
 }

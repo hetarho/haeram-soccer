@@ -7024,6 +7024,13 @@
     "finance.distress.detail2": "Se aplican ventas forzosas y restricciones a fichajes con traspaso y cesiones. Los agentes libres solo pueden cubrir el mínimo de plantilla o un portero. Una deuda superior a {limit} activa la administración judicial.",
     "finance.distress.detail3": "Siguen las restricciones de ventas forzosas. La entrada resta {points} puntos una vez por temporada y condona el {percent}% de la deuda. La recuperación exige deuda inferior a {limit} al cierre.",
     "career.ended.record": "La gestión del club terminó en la temporada {season}. {kept}",
-    "league.points.administration": "−{points} puntos · administración judicial"
+    "league.points.administration": "−{points} puntos · administración judicial",
+    "delegation.floor.summary": "Efectivo al cierre {projected} · mínimo {floor} · disponible sobre el mínimo {spendable}",
+    "delegation.floor.refused": "Tras este compromiso: efectivo {projected}, mínimo {floor}, pérdida anual prevista {loss}. No cumple el mínimo. La petición mínima exige además gastos dentro de los ingresos.",
+    "delegation.floor.warningTitle": "Aviso del director · efectivo al cierre",
+    "delegation.floor.warning": "El efectivo previsto al cierre {projected} se acerca al umbral de alerta financiera {floor}. Revisa la previsión y los gastos.",
+    "delegation.floor.forcedSale": "Ventas forzadas por dificultades financieras −25 pp",
+    "market.sale.distress.warning": "Vendedor con alerta financiera",
+    "market.sale.distress.forced": "Vendedor con ventas forzadas o administración judicial"
   }
 }

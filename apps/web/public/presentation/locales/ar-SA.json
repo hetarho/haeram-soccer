@@ -7033,6 +7033,13 @@
     "finance.distress.detail2": "يسري البيع القسري وقيود الانتقالات المدفوعة والإعارات. لا يُسمح باللاعبين الأحرار إلا لاستكمال الحد الأدنى للتشكيلة أو تأمين حارس. الدين الأعلى من {limit} يفرض الإدارة القضائية.",
     "finance.distress.detail3": "تستمر قيود البيع القسري. عند الدخول تُخصم {points} نقاط مرة واحدة في الموسم ويُعفى {percent}% من الدين. يتطلب التعافي دينًا أقل من {limit} عند ختام الموسم.",
     "career.ended.record": "انتهت إدارة النادي في موسم {season}. {kept}",
-    "league.points.administration": "−{points} نقاط · الإدارة القضائية"
+    "league.points.administration": "−{points} نقاط · الإدارة القضائية",
+    "delegation.floor.summary": "النقد بنهاية الموسم {projected} · الحد الأدنى {floor} · المتاح فوقه {spendable}",
+    "delegation.floor.refused": "بعد هذا الالتزام: النقد {projected}، والحد الأدنى {floor}، والخسارة السنوية المخططة {loss}. لم يتحقق شرط الحد الأدنى. ويشترط الطلب الأدنى أيضًا ألا تتجاوز التكاليف الإيرادات.",
+    "delegation.floor.warningTitle": "تحذير المدير · نقد نهاية الموسم",
+    "delegation.floor.warning": "النقد المتوقع بنهاية الموسم {projected} قريب من حد التحذير المالي {floor}. راجع التوقعات النقدية والإنفاق.",
+    "delegation.floor.forcedSale": "مبيعات إجبارية بسبب التعثر المالي −25 نقطة مئوية",
+    "market.sale.distress.warning": "البائع في مرحلة التحذير المالي",
+    "market.sale.distress.forced": "البائع تحت المبيعات الإجبارية أو الإدارة القضائية"
   }
 }

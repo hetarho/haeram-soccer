@@ -7021,6 +7021,13 @@
     "finance.distress.detail2": "Gedwongen verkopen en beperkingen op betaalde transfers en huur gelden. Vrije spelers mogen alleen het minimumaantal spelers of een keeper herstellen. Schuld boven {limit} leidt tot bewindvoering.",
     "finance.distress.detail3": "De beperkingen op gedwongen verkopen blijven gelden. Bij intrede worden eenmaal per seizoen {points} punten afgetrokken en wordt {percent}% van de schuld kwijtgescholden. Herstel vereist schuld onder {limit} bij seizoenseinde.",
     "career.ended.record": "Het clubbestuur eindigde in seizoen {season}. {kept}",
-    "league.points.administration": "−{points} punten · bewindvoering"
+    "league.points.administration": "−{points} punten · bewindvoering",
+    "delegation.floor.summary": "Geld aan seizoenseinde {projected} · ondergrens {floor} · daarboven besteedbaar {spendable}",
+    "delegation.floor.refused": "Na deze toezegging: geld {projected}, ondergrens {floor}, gepland jaarverlies {loss}. De ondergrenstoets faalt. Bij het minimale verzoek moeten de kosten ook binnen de inkomsten blijven.",
+    "delegation.floor.warningTitle": "Waarschuwing directeur · eindkas",
+    "delegation.floor.warning": "Het verwachte geld aan seizoenseinde {projected} nadert de financiële waarschuwingsgrens {floor}. Controleer de kasprognose en uitgaven.",
+    "delegation.floor.forcedSale": "Gedwongen verkopen bij financiële nood −25 pp",
+    "market.sale.distress.warning": "Verkoper met financiële waarschuwing",
+    "market.sale.distress.forced": "Verkoper onder gedwongen verkopen of bewind"
   }
 }

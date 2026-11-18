@@ -495,7 +495,7 @@ describe('contract talks (→CLUB-26)', () => {
     ).toMatchObject({ kind: 'contract-decline' });
     // The same loss is allowed when the cash covers it for the runway.
     const funded = verdict((annual, raise) => annual + raise - annual / 2n, 40n);
-    expect(BigInt(funded.plan.capital)).toBeGreaterThan(0n);
+    expect(BigInt(funded.plan.spendable)).toBeGreaterThan(0n);
     expect(funded.item.title).toContain('받아들였어요');
     // The plan's wage bill is the players' alone; the staff's sit in the other fixed costs.
     expect(past.plan.committed).toBe(operatingCosts(past.w).playerWages);

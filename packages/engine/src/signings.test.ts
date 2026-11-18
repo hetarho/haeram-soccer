@@ -444,13 +444,13 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     passFree(rich);
     expect(pendingLimit(rich)).toBe(3);
     rich.calendar = { day: opening + 3 };
-    const capital = BigInt(delegatePlan(rich, 'recruitment').capital);
+    const capital = BigInt(delegatePlan(rich, 'recruitment').spendable);
     staffSignings(rich);
     const pending = staffBids(rich).filter((bid) => bid.status === 'pending');
     expect(pending.length).toBeGreaterThan(1);
     expect(pending.length).toBeLessThanOrEqual(3);
     const reserved = pending.reduce((sum, bid) => sum + BigInt(bid.fee), 0n);
-    expect(BigInt(delegatePlan(rich, 'recruitment').capital)).toBe(capital - reserved);
+    expect(BigInt(delegatePlan(rich, 'recruitment').spendable)).toBe(capital - reserved);
     // A second call on the same day makes no move.
     const count = staffBids(rich).length;
     staffSignings(rich);
@@ -1237,7 +1237,7 @@ describe('the money bar: a rich club replaces its weak players (→CLUB-33, ECON
     // fits the capital the runway test leaves (→ECON-33).
     const plan = delegatePlan(modest, 'recruitment'),
       money = BigInt(plan.left),
-      seasons = BigInt(plan.runway + 1);
+      seasons = 2n;
     expect(seasons).toBe(2n);
     expect(low).toBe(70);
     expect(wageAt(modest, low) * seasons).toBeLessThanOrEqual(money);

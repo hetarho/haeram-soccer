@@ -1,3 +1,4 @@
+import { financeProjection } from './projection';
 import { distressSigningReason, distressArrivalAllowed } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { closeNeedFor, openNeeds } from './replacements';
@@ -39,7 +40,8 @@ import {
   delegatePlan,
   insolvencyStop,
   planLabel,
-  runwayTest,
+  floorTest,
+  warnCashFloor,
   spendingStance,
   type SpendingStance,
 } from './delegation';
@@ -215,7 +217,8 @@ export function signingVerdict(
   if (distress) return { ok: false as const, reason: distress };
   // A bid being settled replaces its own reservation; other live bids still tie up cash.
   const planning = bidId ? { ...w, bids: w.bids?.filter((bid) => bid.id !== bidId) } : w;
-  const plan = delegatePlan(planning, 'recruitment'),
+  const projection = financeProjection(planning),
+    plan = delegatePlan(planning, 'recruitment', undefined, undefined, projection),
     label = planLabel(w, 'recruitment'),
     wage = BigInt(player.wage);
   const no = (reason: string) => ({
@@ -223,7 +226,7 @@ export function signingVerdict(
     reason: sourceMessage('delegation.verdict.wrap', { reason, plan: label }),
   });
   if (need === 'short' && facts.freeAgent && !facts.loan) {
-    const stop = insolvencyStop(planning, 0n, wage);
+    const stop = insolvencyStop(planning, 0n, wage, false, 'recruitment', projection);
     return stop
       ? no(stop)
       : {
@@ -231,36 +234,10 @@ export function signingVerdict(
           reason: sourceMessage('delegation.verdict.shortFree', { plan: label }),
         };
   }
-  const bill = BigInt(plan.committed) + wage;
-  if (wage > 0n && bill > BigInt(plan.budget))
-    return no(
-      sourceMessage('delegation.verdict.wageRoom', {
-        bill: moneyLabel(w, bill.toString()),
-        budget: moneyLabel(w, plan.budget),
-      }),
-    );
-  const check = runwayTest(planning, plan, { fee: BigInt(fee), wage });
-  if (!check.ok)
-    return no(
-      check.runway === 0
-        ? check.loss > 0n
-          ? sourceMessage('delegation.verdict.incomeLoss', {
-              wage: moneyLabel(w, player.wage),
-              loss: moneyLabel(w, check.loss.toString()),
-            })
-          : sourceMessage('delegation.verdict.incomeFee', {
-              fee: moneyLabel(w, fee),
-              capital: moneyLabel(w, check.capital.toString()),
-            })
-        : sourceMessage('delegation.verdict.runwayFee', {
-            fee: moneyLabel(w, fee),
-            wage: moneyLabel(w, player.wage),
-            loss: moneyLabel(w, check.loss.toString()),
-            seasons: check.runway,
-            capital: moneyLabel(w, check.capital.toString()),
-          }),
-    );
-  const stop = insolvencyStop(planning, BigInt(fee), wage);
+  const check = floorTest(planning, plan, { fee: BigInt(fee), wage }, projection);
+  if (!check.ok) return no(sourceMessage('delegation.floor.refused', {
+    projected: moneyLabel(w, check.projected.toString()), floor: moneyLabel(w, check.floor.toString()), loss: moneyLabel(w, check.loss.toString()) }));
+  const stop = insolvencyStop(planning, BigInt(fee), wage, false, 'recruitment', projection);
   if (stop) return no(stop);
   return {
     ok: true as const,
@@ -691,21 +668,19 @@ function lineStarters(w: World) {
  */
 export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'signed' };
 /**
- * The money the bar reads (→ECON-33, →CLUB-33): the capital the runway test leaves at the current
- * wage bill (the recruitment plan's fee room), and the seasons a new wage must be carried for: the
- * step's runway plus one. None at the steps without a bar or when nothing is left.
+ * The money bar reads live spendable money at the current wage bill for two seasons. None at the steps without a bar or when nothing is left.
  */
 function barMoney(w: World) {
   const plan = delegatePlan(w, 'recruitment'),
     money = BigInt(plan.left);
   return plan.stance.signing.bar && money > 0n
-    ? { money, seasons: BigInt(plan.runway + 1) }
+    ? { money, seasons: 2n }
     : undefined;
 }
 /**
  * The 단장's money bar (→CLUB-33, →ECON-33), at the 선수 영입 steps he acts on with one (넉넉히,
  * 아낌없이): the highest OVR whose market wage at our division for a player aged `barAge` (→CLUB-25),
- * for the step's runway plus one season, fits the capital the runway test leaves at the current
+ * for two seasons, fits the spendable money left at the current
  * wage bill; none at the other steps or when not even the lowest fits. As NPC clubs read the level
  * a place can carry (`affordableLevel`), on money.
  */
@@ -906,6 +881,7 @@ function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, terms
     return false;
   }
   const p = signFreeAgent(w, offer, terms.wage);
+  warnCashFloor(w);
   w.bids = [...(w.bids || []), bid];
   addEvent(
     w,
@@ -1313,10 +1289,10 @@ function staffMove(w: World, day: number) {
       club,
     )) {
       const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
-      // His lowest wage step already failing the runway test rules out every higher one.
+      // His lowest wage step already failing the floor test rules out every higher one.
       if (
         !(need.kind === 'short' && offer.freeAgent) &&
-        !runwayTest(club, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }).ok
+        !floorTest(club, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }).ok
       )
         continue;
       const terms = wageOffer(club, offer, fee, need.kind);

@@ -7021,6 +7021,13 @@
     "finance.distress.detail2": "Zorunlu satışlar ile bonservisli ve kiralık transfer kısıtları uygulanır. Serbest oyuncular yalnızca asgari kadroyu veya kaleciyi tamamlayabilir. {limit} üzeri borç kayyum yönetimini başlatır.",
     "finance.distress.detail3": "Zorunlu satış kısıtları sürer. Girişte sezon başına bir kez {points} puan silinir ve borcun %{percent} kadarı affedilir. Toparlanma için sezon sonunda borç {limit} altında olmalıdır.",
     "career.ended.record": "Kulüp yönetimi {season} sezonunda sona erdi. {kept}",
-    "league.points.administration": "−{points} puan · kayyum yönetimi"
+    "league.points.administration": "−{points} puan · kayyum yönetimi",
+    "delegation.floor.summary": "Sezon sonu nakit {projected} · nakit tabanı {floor} · tabanın üstünde harcanabilir {spendable}",
+    "delegation.floor.refused": "Bu taahhütten sonra: nakit {projected}, taban {floor}, planlanan yıllık zarar {loss}. Nakit tabanı testi başarısız. Asgari talepte giderler de geliri aşmamalı.",
+    "delegation.floor.warningTitle": "Direktör uyarısı · sezon sonu nakit",
+    "delegation.floor.warning": "Sezon sonu tahmini nakit {projected}, mali sıkıntı uyarı sınırı {floor} yakınına geldi. Nakit tahminini ve harcamaları kontrol edin.",
+    "delegation.floor.forcedSale": "Mali sıkıntıda zorunlu satışlar −25 puan",
+    "market.sale.distress.warning": "Satıcı mali sıkıntı uyarısında",
+    "market.sale.distress.forced": "Satıcı zorunlu satış veya kayyum yönetiminde"
   }
 }

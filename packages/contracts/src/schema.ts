@@ -1375,6 +1375,7 @@ const worldSchema: z.ZodType<World> = z.object({
     })
     .optional(),
   delegationRequests: z.partialRecord(budgetResponsibilitySchema, spendRequestSchema).optional(),
+  delegationWarningSeason: season.optional(),
   budgetPlan: z.strictObject({ year: season, revenue: amount, sales: amount }).optional(),
   cupWinners: z.record(id, id),
   cups: z.array(domesticCup).max(10).optional(),

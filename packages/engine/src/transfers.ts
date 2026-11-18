@@ -73,7 +73,7 @@ import { ownStarters } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './transactions';
 import { locateOffer, transferOffers } from './scout-search';
-import { applyDelegatePlans, wagePressure } from './delegation';
+import { applyDelegatePlans, warnCashFloor } from './delegation';
 import { SAFETY_ROUNDS } from './delegation-info';
 import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
@@ -409,6 +409,7 @@ function completeSigning(
     fee,
   );
   bid.status = 'completed';
+  if (bid.staff) warnCashFloor(w);
 }
 function saleBlocker(w: World, p: Player | undefined) {
   if (!p || p.status !== 'active' || p.loanUntil) return sourceMessage('copy.transfers.b0b5964d37');
@@ -549,6 +550,7 @@ export function placeBid(
     ...(wage !== undefined ? { wage } : {}),
   };
   w.bids = [...(w.bids || []), bid];
+  if (bid.staff) warnCashFloor(w);
   addEvent(
     w,
     'transfer-bid',
@@ -1262,15 +1264,14 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
 export const UNTOUCHABLE_PRICE = { standard: 200, selling: 150, showcase: 175, hardball: 225 };
 /**
  * The staff and manager's answer to a big offer for an untouchable player when transfers are
- * delegated: the market card sets the price, the 단장's runway test failing at half the runway at
- * the current wage bill (→ECON-33) lowers it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
+ * delegated: the market card sets the price, forced sales in financial distress
+ * lower it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
  * nobody can replace.
  */
 export function untouchableVerdict(w: World, offered: number, essential: boolean) {
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     market = w.build?.market,
-    card = cardOf(buildOf(w), 'market').label,
-    pressure = wagePressure(w);
+    card = cardOf(buildOf(w), 'market').label;
   if (runway < SAFETY_ROUNDS)
     return { accept: true, reason: sourceMessage('copy.transfers.838216488c', { p0: runway }) };
   if (market === 'hold')
@@ -1278,16 +1279,9 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   const base = UNTOUCHABLE_PRICE[market ?? 'standard'],
     steps = [sourceMessage('copy.transfers.363d93e2b9', { p0: card, p1: base })];
   let bar = base;
-  if (pressure.level === 2) {
+  if (forcedSales(w.distress)) {
     bar -= 25;
-    // Within income (step 1) no loss is allowed: any planned loss is what presses him.
-    steps.push(
-      sourceMessage(
-        pressure.runway > 0
-          ? 'delegation.sale.runwayUntouchable'
-          : 'delegation.sale.incomeUntouchable',
-      ),
-    );
+    steps.push(sourceMessage('delegation.floor.forcedSale'));
   }
   if (essential) {
     bar += 25;
