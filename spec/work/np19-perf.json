@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-18T18:11:42.356Z",
-  "sourceCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+  "snapshotAt": "2026-11-18T18:51:29.974Z",
+  "sourceCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
   "group": {
     "id": "np19-perf",
     "branch": "gusta-session-self-improve-np19-f1c9b1b9",
@@ -61,9 +61,9 @@
           "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
         ],
         "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
-        "observed": "The diff is engine-only. On the tree merged with 24666400, the world hash and the ab.mjs output hashes match the base. Units 75/75, integration 33/33 and the task tier (1567 units) passed.",
+        "observed": "The diff is engine-only. On c3486278 with T982 applied, the world hash and the ab.mjs output hashes match the base. Units 75/75 and the task tier (1567 units) passed; integration 33/33 passed on the tree merged with 24666400.",
         "evidence": [
-          "artifacts/benchmarks/night-perf-261119/T982/final-1950.txt",
+          "artifacts/benchmarks/night-perf-261119/T982/final-c3486278-1950.txt",
           "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
           "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
         ],
@@ -258,20 +258,14 @@
   },
   "summary": {
     "total": 7,
-    "completed": 4,
-    "remaining": 3,
-    "running": 1,
-    "review": 1,
-    "blocked": 0,
+    "completed": 5,
+    "remaining": 2,
+    "running": 0,
+    "review": 0,
+    "blocked": 1,
     "unassigned": 1
   },
   "tasks": [
-    {
-      "id": "T982",
-      "title": "Scan market candidates without per-candidate string keys",
-      "dep": [],
-      "status": "ready"
-    },
     {
       "id": "T987",
       "title": "Settlement memos for market needs, prices, sellable lines, listings and rivals",
@@ -284,7 +278,7 @@
       "id": "T988",
       "title": "Compute free-agent settlement money facts only for clubs that read them",
       "dep": [],
-      "status": "doing"
+      "status": "blocked"
     }
   ],
   "attempts": [
@@ -296,19 +290,20 @@
         "T982"
       ],
       "lane": null,
-      "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2",
+      "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1",
       "contributors": [
         "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
-        "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2"
+        "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2",
+        "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-18T15:48:43.964Z",
       "startCommit": "9b3b38536002495cb760e0f3ec556ccde53488e1",
-      "verifiedCommit": "c9fde08e47814390fcea013315d53f1bd8e94803",
-      "submittedBase": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
-      "submissionId": "1c786e6a-b49b-4034-b876-3b6b66be6093",
-      "submittedAt": "2026-11-18T18:09:33.626Z",
+      "verifiedCommit": "07428bd3299ad8e2c231a7e434fec21081a69b7c",
+      "submittedBase": "c34862786c6f682bf0a092ba3f335b5469092957",
+      "submissionId": "ec992881-953f-4c79-b2e3-d998e61baf46",
+      "submittedAt": "2026-11-18T18:50:30.600Z",
       "risk": null,
       "agentChecks": [
         {
@@ -318,9 +313,9 @@
             "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
           ],
           "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
-          "observed": "The diff is engine-only. On the tree merged with 24666400, the world hash and the ab.mjs output hashes match the base. Units 75/75, integration 33/33 and the task tier (1567 units) passed.",
+          "observed": "The diff is engine-only. On c3486278 with T982 applied, the world hash and the ab.mjs output hashes match the base. Units 75/75 and the task tier (1567 units) passed; integration 33/33 passed on the tree merged with 24666400.",
           "evidence": [
-            "artifacts/benchmarks/night-perf-261119/T982/final-1950.txt",
+            "artifacts/benchmarks/night-perf-261119/T982/final-c3486278-1950.txt",
             "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
             "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
           ],
@@ -335,17 +330,30 @@
         }
       ],
       "dispatch": {
-        "id": "c8450b5f-8d74-4ff3-8781-2e7b95e7e2c7",
+        "id": "38e6f1a2-1c74-435e-adff-7a425516dec5",
         "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
-        "role": "worker",
-        "slot": 2,
-        "provider": "claude",
-        "model": "opus",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": "gpt-6.1-terra",
         "status": "finished",
-        "startedAt": "2026-11-18T17:32:00.028Z",
-        "finishedAt": "2026-11-18T18:09:33.658Z",
+        "startedAt": "2026-11-18T18:50:35.444Z",
+        "finishedAt": "2026-11-18T18:51:23.746Z",
         "error": null,
-        "summary": "I re-ran the T982 measurements against the assigned base 24666400 (T983 and T984 integrated), as review 6865d329 P2 asked. Part 2 is still faster on top of part 1, so it stays.\n\n**Results against 24666400** (`ab.mjs`, 6 processes, M1 Max shared at load 9–26; output hashes equal in every run):\n\n| Comparison | Workload | CPU ratio | 95% interval |\n|---|---|---|---|\n| Part 1 vs base | history | 0.904 | 0.896–0.914 |\n| Part 2 on top of part 1 | history | 0.964 | 0.949–0.982 |\n| Final vs base | history | 0.872 | 0.861–0.885 |\n| Final vs base | history-five | 0.856 | 0.811–0.905 |\n\n**Other checks on the merged tree:**\n- **World hash:** the 1950 generation-reference run printed `4161b5e0…5ce`, the base value (`final-1950.txt`).\n- **Units:** the npc-market and persisted-squads files pass, 75/75.\n- **Integration:** the named files pass, 6 files and 33/33 in 319 s. `calendar.progression-esp.test.ts` does not exist in this tree, so only the -eng file ran.\n- **Task tier:** `vibe check --tier task --diff-base 24666400` passed: typecheck, lint, format, i18n, and affected units 1567/1567 in 166 files (tree d2722d0e).\n\n**Files:**\n- The measurements against 9b3b3853 are kept in `artifacts/benchmarks/night-perf-261119/T982/base-9b3b3853/`. Their old `part1-1950.txt` and `part2-1950.txt` now show as deleted at the top level.\n- The new JSON and text results replace the files at the top level of the T982 folder.\n- The task result now records the new base, these measurements and the correction.\n\nI used `git mv` to move the old files, which staged them. I then unstaged with `git reset -q`, so the working tree holds the changes and the index matches HEAD again.\n\nThe full batch and the CI browser journeys are left to the coordinator's final gate."
+        "summary": "T982의 변경을 기준 커밋과 관련 SSOT, 작업자 검증 기록에 비추어 검토했습니다. 수정이 필요한 결함은 발견하지 못했습니다. 배정 기준에서의 성능 측정은 출력 해시 일치와 CPU 개선을 보고합니다. 통합 후보의 최종 검증은 코디네이터 호스트에 남습니다."
+      },
+      "review": {
+        "id": "56bcd72a-0bff-4d4a-b872-cf537315a5de",
+        "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T982의 변경을 기준 커밋과 관련 SSOT, 작업자 검증 기록에 비추어 검토했습니다. 수정이 필요한 결함은 발견하지 못했습니다. 배정 기준에서의 성능 측정은 출력 해시 일치와 CPU 개선을 보고합니다. 통합 후보의 최종 검증은 코디네이터 호스트에 남습니다.",
+        "findings": [],
+        "commit": "07428bd3299ad8e2c231a7e434fec21081a69b7c",
+        "baseCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+        "submissionId": "ec992881-953f-4c79-b2e3-d998e61baf46",
+        "createdAt": "2026-11-18T18:50:31.091Z",
+        "finishedAt": "2026-11-18T18:51:23.706Z"
       },
       "reviewHistory": [
         {
@@ -368,18 +376,39 @@
           "finishedAt": "2026-11-18T17:31:59.819Z",
           "invalidatedAt": "2026-11-18T17:31:59.866Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "511de60f-64de-4997-857e-13cff138ecc7",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 이전 리뷰에서 요청한 T984 적용 후 측정은 추가됐지만, 현재 배정된 상위 기준과 최종 통합 후보에 대한 성능 acceptance는 아직 입증되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T982.market-candidate-scan.md:12",
+              "message": "T982의 history 및 history-five 측정과 part 2 유지 판단은 모두 24666400을 기준으로 수행됐지만, 이번 배정의 baseCommit은 T985와 T986이 추가로 통합된 c3486278이며 제출 커밋에도 그 변경이 포함되어 있지 않습니다. 따라서 기록된 측정은 배정된 기준에 T982를 적용한 최종 후보의 해시 일치와 CPU 비율, part 2의 유지 조건을 직접 입증하지 못합니다. c3486278에 T982를 적용한 후보에서 part 1 대비 part 2와 최종 history/history-five A/B를 측정하고 결과를 기록해 주세요."
+            }
+          ],
+          "commit": "c9fde08e47814390fcea013315d53f1bd8e94803",
+          "baseCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+          "submissionId": "1c786e6a-b49b-4034-b876-3b6b66be6093",
+          "createdAt": "2026-11-18T18:13:44.086Z",
+          "finishedAt": "2026-11-18T18:14:19.797Z",
+          "invalidatedAt": "2026-11-18T18:14:19.846Z",
+          "invalidationReason": "correction assigned"
         }
       ],
       "steps": [
         {
           "taskId": "T982",
-          "commit": "c9fde08e47814390fcea013315d53f1bd8e94803",
-          "at": "2026-11-18T18:09:33.601Z",
+          "commit": "07428bd3299ad8e2c231a7e434fec21081a69b7c",
+          "at": "2026-11-18T18:50:30.572Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-11-18T18:07:30.646Z",
-              "finishedAt": "2026-11-18T18:09:33.328Z"
+              "startedAt": "2026-11-18T18:49:09.720Z",
+              "finishedAt": "2026-11-18T18:50:30.212Z"
             }
           ]
         }
@@ -387,8 +416,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-11-18T18:07:30.646Z",
-          "finishedAt": "2026-11-18T18:09:33.328Z"
+          "startedAt": "2026-11-18T18:49:09.720Z",
+          "finishedAt": "2026-11-18T18:50:30.212Z"
         }
       ]
     },
@@ -835,6 +864,8 @@
       "submittedBase": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
       "submissionId": "0f58dca0-86b9-4c06-b7b1-2124ef29d191",
       "submittedAt": "2026-11-18T18:08:32.924Z",
+      "integratedCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+      "integratedAt": "2026-11-18T18:13:40.803Z",
       "risk": null,
       "dispatch": {
         "id": "c240656c-2c15-4fd1-9994-c17f6f34af6f",
@@ -882,6 +913,13 @@
           "startedAt": "2026-11-18T18:06:59.123Z",
           "finishedAt": "2026-11-18T18:08:32.532Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-18T18:11:46.254Z",
+          "finishedAt": "2026-11-18T18:13:40.405Z"
+        }
       ]
     },
     {
@@ -896,9 +934,35 @@
       "contributors": [
         "np19-native-2"
       ],
-      "status": "doing",
+      "status": "blocked",
+      "reason": "coordinator hold: integrate T982 first so each unit is reviewed on one moving base; resumes after T982 integrates",
       "createdAt": "2026-11-18T18:09:19.245Z",
-      "startCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50"
+      "startCommit": "c1023944d06d29ae84a4a8a0c3288b38aa7bbf50",
+      "submittedBase": "c34862786c6f682bf0a092ba3f335b5469092957",
+      "submissionId": "a7f08e0b-c40a-4633-bd27-76bf1ab11346",
+      "submittedAt": "2026-11-18T18:24:05.353Z",
+      "risk": null,
+      "steps": [
+        {
+          "taskId": "T988",
+          "commit": "d851e9d5b459971eee987cf4405685385142cbd5",
+          "at": "2026-11-18T18:24:05.328Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-11-18T18:22:28.470Z",
+              "finishedAt": "2026-11-18T18:24:05.071Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-11-18T18:22:28.470Z",
+          "finishedAt": "2026-11-18T18:24:05.071Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -4829,6 +4893,771 @@
       "group": "np19-perf",
       "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
       "taskId": "T986",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1160,
+      "at": "2026-11-18T18:13:40.545Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-18T18:11:46.254Z",
+            "finishedAt": "2026-11-18T18:13:40.405Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1161,
+      "at": "2026-11-18T18:13:40.803Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "bcb96418-947b-483a-b65e-2ba31e8eba3e",
+      "taskId": "T986",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+        "integratedAt": "2026-11-18T18:13:40.803Z"
+      }
+    },
+    {
+      "sequence": 1162,
+      "at": "2026-11-18T18:13:44.086Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "511de60f-64de-4997-857e-13cff138ecc7",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "reviewing",
+          "commit": "c9fde08e47814390fcea013315d53f1bd8e94803",
+          "baseCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+          "submissionId": "1c786e6a-b49b-4034-b876-3b6b66be6093",
+          "createdAt": "2026-11-18T18:13:44.086Z"
+        }
+      }
+    },
+    {
+      "sequence": 1163,
+      "at": "2026-11-18T18:13:46.720Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "639b2b71-c4f8-46e3-9f74-3cd70fec2ca1",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-18T18:13:46.720Z"
+        }
+      }
+    },
+    {
+      "sequence": 1164,
+      "at": "2026-11-18T18:13:46.742Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "639b2b71-c4f8-46e3-9f74-3cd70fec2ca1",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-18T18:13:46.720Z"
+        }
+      }
+    },
+    {
+      "sequence": 1165,
+      "at": "2026-11-18T18:14:19.797Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T982의 구현과 작업자 검증 기록을 검토했습니다. 이전 리뷰에서 요청한 T984 적용 후 측정은 추가됐지만, 현재 배정된 상위 기준과 최종 통합 후보에 대한 성능 acceptance는 아직 입증되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+        "review": {
+          "id": "511de60f-64de-4997-857e-13cff138ecc7",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 이전 리뷰에서 요청한 T984 적용 후 측정은 추가됐지만, 현재 배정된 상위 기준과 최종 통합 후보에 대한 성능 acceptance는 아직 입증되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T982.market-candidate-scan.md:12",
+              "message": "T982의 history 및 history-five 측정과 part 2 유지 판단은 모두 24666400을 기준으로 수행됐지만, 이번 배정의 baseCommit은 T985와 T986이 추가로 통합된 c3486278이며 제출 커밋에도 그 변경이 포함되어 있지 않습니다. 따라서 기록된 측정은 배정된 기준에 T982를 적용한 최종 후보의 해시 일치와 CPU 비율, part 2의 유지 조건을 직접 입증하지 못합니다. c3486278에 T982를 적용한 후보에서 part 1 대비 part 2와 최종 history/history-five A/B를 측정하고 결과를 기록해 주세요."
+            }
+          ],
+          "commit": "c9fde08e47814390fcea013315d53f1bd8e94803",
+          "baseCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+          "submissionId": "1c786e6a-b49b-4034-b876-3b6b66be6093",
+          "createdAt": "2026-11-18T18:13:44.086Z",
+          "finishedAt": "2026-11-18T18:14:19.797Z"
+        }
+      }
+    },
+    {
+      "sequence": 1166,
+      "at": "2026-11-18T18:14:19.813Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "639b2b71-c4f8-46e3-9f74-3cd70fec2ca1",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-18T18:13:46.720Z",
+          "finishedAt": "2026-11-18T18:14:19.813Z",
+          "error": null,
+          "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 이전 리뷰에서 요청한 T984 적용 후 측정은 추가됐지만, 현재 배정된 상위 기준과 최종 통합 후보에 대한 성능 acceptance는 아직 입증되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1167,
+      "at": "2026-11-18T18:14:19.847Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1",
+        "contributors": [
+          "aaa0a658-4fd0-493f-9e5e-208d1c314462/worker-1",
+          "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-2",
+          "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "6865d329-3411-49c1-8738-a2448383ee67",
+            "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 제출 시 측정은 통과했지만, 배정된 상위 기준에 통합된 선발 최적화와 함께 T982의 성능 목표가 유지되는지 확인되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T982.market-candidate-scan.md:9",
+                "message": "T982의 part 2 유지 조건과 최종 성능 측정은 모두 원래 작업 기준인 9b3b3853에서 수행됐습니다. 배정된 baseCommit 24666400에는 같은 시장 정산 중 호출되는 world.ts 선발 알고리즘의 T984 최적화가 추가돼 있어, 기록된 비율은 두 최적화가 함께 적용된 후보에서 part 2가 여전히 빠르고 전체 CPU 비율이 1 미만임을 입증하지 못합니다. 해당 상위 기준에 T982를 적용한 후보에서 part 1 대비 part 2와 최종 history/history-five 측정을 다시 기록하고, part 2가 빨라지는 경우에만 유지해주세요."
+              }
+            ],
+            "commit": "6a4c0e53ddeccdb3cff1b49aa18ff4cac26ddc07",
+            "baseCommit": "24666400c47cfebf4196dfb5ec5059a3094bf299",
+            "submissionId": "e49fe795-beee-488c-bdca-1b1e01908bf7",
+            "createdAt": "2026-11-18T17:31:22.926Z",
+            "finishedAt": "2026-11-18T17:31:59.819Z",
+            "invalidatedAt": "2026-11-18T17:31:59.866Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "511de60f-64de-4997-857e-13cff138ecc7",
+            "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T982의 구현과 작업자 검증 기록을 검토했습니다. 이전 리뷰에서 요청한 T984 적용 후 측정은 추가됐지만, 현재 배정된 상위 기준과 최종 통합 후보에 대한 성능 acceptance는 아직 입증되지 않았습니다. 최종 통합 검증은 코디네이터 호스트에 남습니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T982.market-candidate-scan.md:12",
+                "message": "T982의 history 및 history-five 측정과 part 2 유지 판단은 모두 24666400을 기준으로 수행됐지만, 이번 배정의 baseCommit은 T985와 T986이 추가로 통합된 c3486278이며 제출 커밋에도 그 변경이 포함되어 있지 않습니다. 따라서 기록된 측정은 배정된 기준에 T982를 적용한 최종 후보의 해시 일치와 CPU 비율, part 2의 유지 조건을 직접 입증하지 못합니다. c3486278에 T982를 적용한 후보에서 part 1 대비 part 2와 최종 history/history-five A/B를 측정하고 결과를 기록해 주세요."
+              }
+            ],
+            "commit": "c9fde08e47814390fcea013315d53f1bd8e94803",
+            "baseCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+            "submissionId": "1c786e6a-b49b-4034-b876-3b6b66be6093",
+            "createdAt": "2026-11-18T18:13:44.086Z",
+            "finishedAt": "2026-11-18T18:14:19.797Z",
+            "invalidatedAt": "2026-11-18T18:14:19.846Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1168,
+      "at": "2026-11-18T18:14:19.954Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "06b5c15a-0bde-433f-a7fc-05ef04386955",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "starting",
+          "startedAt": "2026-11-18T18:14:19.954Z"
+        }
+      }
+    },
+    {
+      "sequence": 1169,
+      "at": "2026-11-18T18:14:20.293Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "06b5c15a-0bde-433f-a7fc-05ef04386955",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "running",
+          "startedAt": "2026-11-18T18:14:19.954Z"
+        }
+      }
+    },
+    {
+      "sequence": 1170,
+      "at": "2026-11-18T18:22:28.300Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1171,
+      "at": "2026-11-18T18:24:05.353Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "d851e9d5b459971eee987cf4405685385142cbd5",
+        "submittedBase": "c34862786c6f682bf0a092ba3f335b5469092957",
+        "submissionId": "a7f08e0b-c40a-4633-bd27-76bf1ab11346",
+        "submittedAt": "2026-11-18T18:24:05.353Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T988",
+            "commit": "d851e9d5b459971eee987cf4405685385142cbd5",
+            "at": "2026-11-18T18:24:05.328Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T18:22:28.470Z",
+                "finishedAt": "2026-11-18T18:24:05.071Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T18:22:28.470Z",
+            "finishedAt": "2026-11-18T18:24:05.071Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1172,
+      "at": "2026-11-18T18:24:47.916Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "43408213-eee0-4cf3-859c-31790072e0fa",
+      "taskId": "T988",
+      "previousStatus": "ready",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "coordinator hold: integrate T982 first so each unit is reviewed on one moving base; resumes after T982 integrates",
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 1173,
+      "at": "2026-11-18T18:49:08.475Z",
+      "type": "group",
+      "group": "np19-perf",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "agentChecks": [
+          {
+            "id": "T983-ab-identity",
+            "scenario": "The aggregate fitting and attribution speed-ups keep every aggregate and day output bit-identical and make the aggregate engine faster",
+            "steps": [
+              "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload aggregate --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+              "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload day --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-day.json"
+            ],
+            "expected": "Equal output hashes on both workloads; aggregate CPU-ratio interval entirely below 1",
+            "observed": "sameHash true on both (aggregate 09c4b698345ff9fc, day a56436ea3e565194); aggregate CPU ×0.768 (0.758–0.783) faster; own match days ×0.849 (0.836–0.866); other days ×0.997 (0.959–1.029), no difference",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+              "artifacts/benchmarks/night-perf-261119/T983/ab-day.json",
+              "artifacts/benchmarks/night-perf-261119/T983/README.md"
+            ],
+            "status": "pass",
+            "reason": "deterministic paired measurement run by the worker at task stage",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T983-final-gate",
+            "scenario": "Shared batch gate (verify:batch) and CI browser journeys on the integrated candidate",
+            "steps": [
+              "Coordinator runs pnpm run verify:batch on the fixed integrated candidate after all participating sessions are ready"
+            ],
+            "expected": "Batch gate passes; CI browser journeys pass after the push",
+            "observed": "Not run by this worker: ARCH-30 reserves builds, full integration and batch for the initiating coordinator's final gate, and browser journeys run only in CI",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "engine-only task unit; full suites belong to the host's shared final gate",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "host coordinator (np19-perf final gate)",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T982-ui-none",
+            "scenario": "T982 changes only engine code and adds no screen behaviour, so there is no computer-use scenario to observe.",
+            "steps": [
+              "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
+            ],
+            "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
+            "observed": "The diff is engine-only. On c3486278 with T982 applied, the world hash and the ab.mjs output hashes match the base. Units 75/75 and the task tier (1567 units) passed; integration 33/33 passed on the tree merged with 24666400.",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T982/final-c3486278-1950.txt",
+              "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
+              "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
+            ],
+            "status": "not-run",
+            "reason": "This is an engine-only result-identical speed-up with nothing to observe on screen. Browser journeys run only in CI after the coordinator's final batch gate.",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": "Adds no e2e; deterministic checks already cover the change."
+          },
+          {
+            "id": "T984-same-world",
+            "scenario": "1950 generation-reference world hash unchanged",
+            "steps": [
+              "pnpm exec tsx artifacts/benchmarks/generation-market-261116/gen-driver.mts 1950 generation-reference --hash"
+            ],
+            "expected": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce",
+            "observed": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce. The correction changed only tests; engine source is unchanged since this run.",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T984/gen-1950-hash.txt"
+            ],
+            "status": "pass",
+            "reason": "deterministic worker check",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T984-ab-measurement",
+            "scenario": "Paired A/B for history and day against base e8b4ada9, plus each part on its own",
+            "steps": [
+              "node scripts/perf/ab.mjs --base e8b4ada9 --workload history --procs 6 --json .../ab-history.json",
+              "node scripts/perf/ab.mjs --base e8b4ada9 --workload day --procs 6 --json .../ab-day.json",
+              "part 1 vs base and part 2 vs base+part 1, using a scratch copy of the tree"
+            ],
+            "expected": "Equal output hashes; each part kept only if its history interval is below 1 or not slower",
+            "observed": "Hashes equal in every run. History, both parts: 0.944 (0.933–0.955). Part 1 alone: 0.980 (0.974–0.989). Part 2 on top of part 1: 0.944 (0.930–0.957). Day: 0.994 (0.977–1.013), no difference. Engine source is unchanged by the correction.",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T984/ab-history.json",
+              "artifacts/benchmarks/night-perf-261119/T984/ab-day.json",
+              "artifacts/benchmarks/night-perf-261119/T984/ab-history-part1-vs-base.json",
+              "artifacts/benchmarks/night-perf-261119/T984/ab-history-part2-vs-part1.json"
+            ],
+            "status": "pass",
+            "reason": "measured on a shared Apple M1 Max, load1 12–48",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T984-named-tests",
+            "scenario": "The named existing test files still pass",
+            "steps": [
+              "pnpm exec vitest run world, persisted-squads, staff, training, npc-careers, player, calendar.progression-eng, season, full-model-throughput",
+              "rerun calendar.progression-eng alone after it timed out under load"
+            ],
+            "expected": "All pass unchanged",
+            "observed": "8 files passed together (131 tests). calendar.progression-eng timed out at 435 s against its 300 s limit when run beside the others at load around 48, then passed alone in 121 s. calendar.progression-esp no longer exists (T787 removed it) and was not run. world.test.ts and training.test.ts are now identical to base.",
+            "evidence": [
+              "scratchpad named.log / eng.log"
+            ],
+            "status": "pass",
+            "reason": "esp file absent from the tree",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T984-task-tier",
+            "scenario": "ARCH-30 task-tier checks",
+            "steps": [
+              "gusta vibe check --tier task --diff-base e8b4ada9 --task T984"
+            ],
+            "expected": "typecheck, lint, format, i18n and affected units pass, including the new unit tests",
+            "observed": "All passed: 1,493 unit tests, the four new selection-growth tests included",
+            "evidence": [
+              "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-c6b27ea3-25c8-41eb-b546-c32e45a08695.log"
+            ],
+            "status": "pass",
+            "reason": "",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "worker",
+            "candidate": null,
+            "duplicationReason": ""
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1174,
+      "at": "2026-11-18T18:49:08.475Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "agentChecks": [
+          {
+            "id": "T982-ui-none",
+            "scenario": "T982 changes only engine code and adds no screen behaviour, so there is no computer-use scenario to observe.",
+            "steps": [
+              "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
+            ],
+            "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
+            "observed": "The diff is engine-only. On c3486278 with T982 applied, the world hash and the ab.mjs output hashes match the base. Units 75/75 and the task tier (1567 units) passed; integration 33/33 passed on the tree merged with 24666400.",
+            "evidence": [
+              "artifacts/benchmarks/night-perf-261119/T982/final-c3486278-1950.txt",
+              "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
+              "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
+            ],
+            "status": "not-run",
+            "reason": "This is an engine-only result-identical speed-up with nothing to observe on screen. Browser journeys run only in CI after the coordinator's final batch gate.",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": "Adds no e2e; deterministic checks already cover the change."
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1175,
+      "at": "2026-11-18T18:49:08.531Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1176,
+      "at": "2026-11-18T18:49:09.296Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1177,
+      "at": "2026-11-18T18:49:09.349Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1178,
+      "at": "2026-11-18T18:50:30.600Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "c34862786c6f682bf0a092ba3f335b5469092957",
+        "submissionId": "ec992881-953f-4c79-b2e3-d998e61baf46",
+        "submittedAt": "2026-11-18T18:50:30.600Z",
+        "steps": [
+          {
+            "taskId": "T982",
+            "commit": "07428bd3299ad8e2c231a7e434fec21081a69b7c",
+            "at": "2026-11-18T18:50:30.572Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-11-18T18:49:09.720Z",
+                "finishedAt": "2026-11-18T18:50:30.212Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$GUSTA_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-11-18T18:49:09.720Z",
+            "finishedAt": "2026-11-18T18:50:30.212Z"
+          }
+        ],
+        "verifiedCommit": "07428bd3299ad8e2c231a7e434fec21081a69b7c"
+      }
+    },
+    {
+      "sequence": 1179,
+      "at": "2026-11-18T18:50:30.655Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "06b5c15a-0bde-433f-a7fc-05ef04386955",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": "opus",
+          "status": "finished",
+          "startedAt": "2026-11-18T18:14:19.954Z",
+          "finishedAt": "2026-11-18T18:50:30.655Z",
+          "error": null,
+          "summary": "I re-ran the T982 measurements against the assigned base c3486278 (with T985 and T986), as review 511de60f P2 asked. Part 2 is still faster on top of part 1, so it stays.\n\n**How the candidate was built:** this workspace's HEAD (c9fde08e) does not contain c3486278, and merging is the host's job. T985 and T986 change none of T982's files, so I measured a scratch tree instead: `git archive c3486278` with this workspace's `npc-market.ts` and `player-state.ts` copied over. That is c3486278 with T982 applied. I did not run the named integration files on this combined tree.\n\n**Results against c3486278** (`ab.mjs`, 6 processes, M1 Max shared at load 14–31; output hashes equal in every run):\n\n| Comparison | Workload | CPU ratio | 95% interval |\n|---|---|---|---|\n| Part 1 vs base | history | 0.913 | 0.899–0.929 |\n| Part 2 on top of part 1 | history | 0.975 | 0.957–0.994 |\n| Final vs base | history | 0.881 | 0.871–0.893 |\n| Final vs base | history-five | 0.837 | 0.809–0.861 |\n\n**Other checks:**\n- **World hash** (on the combined tree): the 1950 generation-reference run printed `4161b5e0…5ce`, the base value (`final-c3486278-1950.txt`).\n- **Task tier** (on this workspace): `vibe check --tier task --diff-base 24666400` passed: typecheck, lint, format, i18n, and affected units 1567/1567 (tree 6a16228b).\n\n**Files:**\n- The measurements against 9b3b3853 and 24666400 are kept in the `base-9b3b3853/` and `base-24666400/` folders.\n- The new results replace the files at the top level of `artifacts/benchmarks/night-perf-261119/T982`. The old top-level `final-1950.txt` now lives in `base-24666400/`.\n- The task result records the new base, these measurements and the correction.\n\n**Not run or done:**\n- The named integration files were last run (33/33) on the tree merged with 24666400.\n- The full batch, CI browser journeys and the c3486278 merge are left to the coordinator's final gate.\n- One scratch cleanup `rm -rf` was denied by the permission check, so I used fresh scratch directory names instead; nothing in the workspace was affected."
+        }
+      }
+    },
+    {
+      "sequence": 1180,
+      "at": "2026-11-18T18:50:31.091Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "56bcd72a-0bff-4d4a-b872-cf537315a5de",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "reviewing",
+          "commit": "07428bd3299ad8e2c231a7e434fec21081a69b7c",
+          "baseCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+          "submissionId": "ec992881-953f-4c79-b2e3-d998e61baf46",
+          "createdAt": "2026-11-18T18:50:31.091Z"
+        }
+      }
+    },
+    {
+      "sequence": 1181,
+      "at": "2026-11-18T18:50:35.444Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "38e6f1a2-1c74-435e-adff-7a425516dec5",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "starting",
+          "startedAt": "2026-11-18T18:50:35.444Z"
+        }
+      }
+    },
+    {
+      "sequence": 1182,
+      "at": "2026-11-18T18:50:35.470Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "38e6f1a2-1c74-435e-adff-7a425516dec5",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "running",
+          "startedAt": "2026-11-18T18:50:35.444Z"
+        }
+      }
+    },
+    {
+      "sequence": 1183,
+      "at": "2026-11-18T18:51:23.706Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "56bcd72a-0bff-4d4a-b872-cf537315a5de",
+          "owner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T982의 변경을 기준 커밋과 관련 SSOT, 작업자 검증 기록에 비추어 검토했습니다. 수정이 필요한 결함은 발견하지 못했습니다. 배정 기준에서의 성능 측정은 출력 해시 일치와 CPU 개선을 보고합니다. 통합 후보의 최종 검증은 코디네이터 호스트에 남습니다.",
+          "findings": [],
+          "commit": "07428bd3299ad8e2c231a7e434fec21081a69b7c",
+          "baseCommit": "c34862786c6f682bf0a092ba3f335b5469092957",
+          "submissionId": "ec992881-953f-4c79-b2e3-d998e61baf46",
+          "createdAt": "2026-11-18T18:50:31.091Z",
+          "finishedAt": "2026-11-18T18:51:23.706Z"
+        }
+      }
+    },
+    {
+      "sequence": 1184,
+      "at": "2026-11-18T18:51:23.746Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "38e6f1a2-1c74-435e-adff-7a425516dec5",
+          "runner": "7f821a7b-5ce0-4018-88a6-24f11dc17f6c",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": "gpt-6.1-terra",
+          "status": "finished",
+          "startedAt": "2026-11-18T18:50:35.444Z",
+          "finishedAt": "2026-11-18T18:51:23.746Z",
+          "error": null,
+          "summary": "T982의 변경을 기준 커밋과 관련 SSOT, 작업자 검증 기록에 비추어 검토했습니다. 수정이 필요한 결함은 발견하지 못했습니다. 배정 기준에서의 성능 측정은 출력 해시 일치와 CPU 개선을 보고합니다. 통합 후보의 최종 검증은 코디네이터 호스트에 남습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1185,
+      "at": "2026-11-18T18:51:23.840Z",
+      "type": "attempt",
+      "group": "np19-perf",
+      "attemptId": "81015110-b4aa-4987-84d1-b0430d70cd49",
+      "taskId": "T982",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

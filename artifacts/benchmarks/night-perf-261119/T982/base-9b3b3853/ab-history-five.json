@@ -1,0 +1,181 @@
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "9b3b38536002495cb760e0f3ec556ccde53488e1",
+  "cand": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/np19-perf-T982-81015110",
+  "procs": 6,
+  "jobs": 1,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "1fc9a9fb7a07eacb",
+    "cand": "78c90e7c0c1cc45e"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "b0e9f0e763c79d50"
+    ],
+    "cand": [
+      "b0e9f0e763c79d50"
+    ]
+  },
+  "season": {
+    "pairs": 6,
+    "ms": {
+      "base": {
+        "cpu": 14582.08,
+        "wall": 16606.594604500002
+      },
+      "cand": {
+        "cpu": 12613.839,
+        "wall": 13951.786812499999
+      }
+    },
+    "cpu": {
+      "ratio": 0.8572,
+      "lo": 0.8419,
+      "hi": 0.8706,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.846,
+      "lo": 0.8096,
+      "hi": 0.8761,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    23.662109375,
+    17.55859375,
+    13.15087890625,
+    12.19384765625,
+    12.6015625,
+    13.36767578125,
+    14.46728515625
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 13621.655999999999,
+            "wall": 14198.134290999998
+          },
+          "b": {
+            "cpu": 11790.876,
+            "wall": 11853.402417000001
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 13683.252,
+            "wall": 13772.291125000002
+          },
+          "b": {
+            "cpu": 11643.622,
+            "wall": 11686.918542000001
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 14397.399,
+            "wall": 15422.593166999999
+          },
+          "b": {
+            "cpu": 12707.903,
+            "wall": 13614.367874999998
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 15278.653,
+            "wall": 18643.814833000004
+          },
+          "b": {
+            "cpu": 12571.154,
+            "wall": 14289.20575
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 14766.761,
+            "wall": 17790.596042
+          },
+          "b": {
+            "cpu": 12816.54,
+            "wall": 15913.114624999998
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 14816.1,
+            "wall": 18960.538542000002
+          },
+          "b": {
+            "cpu": 12656.524,
+            "wall": 16211.241082999999
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    }
+  ]
+}
