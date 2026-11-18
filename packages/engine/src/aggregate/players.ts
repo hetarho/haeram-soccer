@@ -891,12 +891,15 @@ function attributeSide(
     for (let line = 0; line < n; line++)
       if (attempts[line]! > 0)
         creditMove(own.rows[line]!, traits, attempts[line]!, completed[line]!, broke[line]!);
+    // An untraced placed call keeps a scratch move only for the pairs read below (`offsidePairs`,
+    // `wins`); the line copies are made only for a recorded trace, which alone reads them (T986).
+    const recorded = moveTrace?.[index];
     const traced: AggregateTraceMove | undefined =
-      moveTrace?.[index] ?? (placed ? emptyTraceMove() : undefined);
-    if (traced) {
-      traced.attempts = attempts.slice();
-      traced.completed = completed.slice();
-      traced.broke = broke.slice();
+      recorded ?? (placed ? emptyTraceMove() : undefined);
+    if (recorded) {
+      recorded.attempts = attempts.slice();
+      recorded.completed = completed.slice();
+      recorded.broke = broke.slice();
     }
     if (move.offside > 0) {
       let offside: number[];
@@ -921,7 +924,7 @@ function attributeSide(
       }
       for (let line = 0; line < offside.length; line++)
         own.rows[line]!.detail[PD.offsides]! += offside[line]!;
-      if (traced) traced.offside = offside.slice();
+      if (recorded) recorded.offside = offside.slice();
     }
     // This is the same failed-attempt order the detail expands, after its explicit offsides.
     const failures = placed ? attempts.map((a, line) => a - completed[line]!) : [];
@@ -977,7 +980,7 @@ function attributeSide(
         for (const pair of pairs) split[pair.other]!++;
         traced!.wins = pairs;
       }
-      if (traced) traced.won = split.slice();
+      if (recorded) recorded.won = split.slice();
       for (let line = 0; line < split.length; line++) {
         const k = split[line]!;
         if (k === 0) continue;

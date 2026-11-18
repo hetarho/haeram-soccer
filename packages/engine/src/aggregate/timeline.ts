@@ -43,8 +43,13 @@ export function pairParticipants(
   weights: readonly number[],
   choose: (weights: readonly number[]) => number,
 ): { actor: number; other: number }[] {
-  const spread = (counts: readonly number[]) =>
-    counts.flatMap((n, line) => Array<number>(n).fill(line));
+  // Each line repeated `counts[line]` times in line order, pushed rather than built per line (T986).
+  const spread = (counts: readonly number[]) => {
+    const out: number[] = [];
+    for (let line = 0; line < counts.length; line++)
+      for (let k = counts[line]!; k > 0; k--) out.push(line);
+    return out;
+  };
   const left = spread(actors),
     right = spread(recipients);
   const fail = (p0: string): never => {

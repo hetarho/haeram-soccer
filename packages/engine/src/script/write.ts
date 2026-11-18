@@ -30,7 +30,7 @@ import { FLOATING, buildTouches, dealFixed, firstCell } from './touches';
 import { present, periodOf } from './windows';
 import { beatIncident, foulCards, incidentIndex, scriptPeriod } from './incidents';
 import { validateScript } from './validate';
-import { compareRecord, countScript } from './count';
+import { compareRecord, countScript, type Counted } from './count';
 import { planRestarts } from './restarts';
 import { minuteTimes, travel, deadOf } from './clock';
 import { TouchSearch } from './search';
@@ -101,12 +101,28 @@ export function writePeriods(
   detail: Settled,
   seed: string,
 ): { script: Script } | { problems: string[] } {
+  const written = writeCounted(detail, seed);
+  return 'problems' in written ? written : { script: written.script };
+}
+
+/**
+ * The placement core with the recount it already compared to the record. A script comes back only
+ * when `validateScript` found nothing and this count matched, so the own match reuses both rather
+ * than validating and counting the same script again (T986). Engine-internal: the public writer
+ * keeps its `{ script }` shape.
+ */
+export function writeCounted(
+  detail: Settled,
+  seed: string,
+): { script: Script; counted: Counted } | { problems: string[] } {
   const issues = detailIssues(detail);
   if (issues.length) return { problems: issues };
   const script = writeFitted(detail, seed);
   const problems = validateScript(detail, script);
-  if (!problems.length) problems.push(...compareRecord(detail, countScript(script, detail)));
-  return problems.length ? { problems } : { script };
+  if (problems.length) return { problems };
+  const counted = countScript(script, detail);
+  problems.push(...compareRecord(detail, counted));
+  return problems.length ? { problems } : { script, counted };
 }
 
 /**
