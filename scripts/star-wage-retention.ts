@@ -20,9 +20,7 @@ const current = structuredClone({ star: MARKET_CONFIG.star, premium: BALLON_DOR_
 const configure = (candidate: boolean) => {
   Object.assign(
     MARKET_CONFIG.star,
-    candidate
-      ? current.star
-      : { from: 100, full: 101, maximum: 1, globalFrom: 100, globalFull: 101 },
+    candidate ? current.star : { from: 100, full: 101, maximum: 1 },
   );
   Object.assign(
     BALLON_DOR_CONFIG.premium,

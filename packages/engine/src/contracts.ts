@@ -32,7 +32,6 @@ export {
   marketWage,
   marketValue,
   divisionFor,
-  ABILITY_FIT,
   wageDivision,
 } from './market-prices';
 import { ownStarters } from './world';

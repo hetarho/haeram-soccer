@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |
+| T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | doing@261118.mr18cx |
 | T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | todo |
 | T960 | Buyers value a young player's gain two seasons on | WORLD PLAYER CLUB | - | todo |
 | T961 | The chief scout lists players who would come first | CLUB | - | todo |
