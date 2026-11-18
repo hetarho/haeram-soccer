@@ -7,6 +7,9 @@ import { NPC_MARKET_ERA, npcMarketCaps } from '../../packages/engine/src/transfe
 import { MARKET_TUNABLES, setTunables } from './market-tunables';
 import {
   applyTunables,
+  bookStats,
+  median,
+  tableThird,
   distribution,
   flattenNumbers,
   inferReason,
@@ -21,6 +24,7 @@ import {
   spread,
   windowOf,
   type ClubRef,
+  type EndBook,
   type MoveFact,
   type SeasonInput,
 } from './market-seasons';
@@ -54,6 +58,7 @@ const input = (moves: MoveFact[], extra: Partial<SeasonInput> = {}): SeasonInput
   xiStart: {},
   xiLost: [],
   topThree: {},
+  divisionTopThree: {},
   contracts: { releases: 0, renewals: 0, expiring: 0 },
   retirements: 0,
   intake: [],
@@ -133,9 +138,39 @@ describe('season aggregation on synthetic moves', () => {
           { tier: 1, potential: 55 },
         ],
         books: [
-          { id: 'ENG:a', country: 'ENG', tier: 0, wages: 5, income: 10, cash: 2, nextTier: 0 },
-          { id: 'ENG:c', country: 'ENG', tier: 1, wages: 1, income: 3, cash: 1, nextTier: 0 },
-          { id: 'ENG:d', country: 'ENG', tier: 1, wages: 2, income: 3, cash: 1, nextTier: 2 },
+          {
+            id: 'ENG:a',
+            country: 'ENG',
+            tier: 0,
+            wages: 5,
+            income: 10,
+            costs: 1,
+            debt: 0,
+            cash: 2,
+            nextTier: 0,
+          },
+          {
+            id: 'ENG:c',
+            country: 'ENG',
+            tier: 1,
+            wages: 1,
+            income: 3,
+            costs: 1,
+            debt: 0,
+            cash: 1,
+            nextTier: 0,
+          },
+          {
+            id: 'ENG:d',
+            country: 'ENG',
+            tier: 1,
+            wages: 2,
+            income: 3,
+            costs: 1,
+            debt: 0,
+            cash: 1,
+            nextTier: 2,
+          },
         ],
       }),
     );
@@ -165,6 +200,161 @@ describe('season aggregation on synthetic moves', () => {
       given: { pull: 2 },
       seller: { surplus: 2 },
       buyer: { upgrade: 2 },
+    });
+  });
+});
+
+describe('calibration reads on synthetic season facts', () => {
+  const book = (id: string, extra: Partial<EndBook> = {}): EndBook => ({
+    id,
+    country: 'ENG',
+    tier: 0,
+    nextTier: 0,
+    wages: 60,
+    costs: 50,
+    income: 100,
+    cash: 20,
+    debt: 22,
+    transfersReceived: 30,
+    transfersPaid: 10,
+    rank: 1,
+    groupSize: 3,
+    ...extra,
+  });
+
+  it('uses the median of club ratios, excludes invalid denominators and never invents historical fees', () => {
+    const a = book('a');
+    const b = book('b', { income: 1000, wages: 200, costs: 200 });
+    const c = book('c', { income: 0, wages: 0, costs: 0, transfersReceived: undefined });
+    expect(median([])).toBeNull();
+    expect(median([9, 1, 5])).toBe(5);
+    expect(median([8, 2, 4, 6])).toBe(5);
+    const stats = bookStats([a, b, c]);
+    for (const [key, expected] of Object.entries({
+      wagesToIncome: 0.4,
+      costsToIncome: 0.35,
+      operatingResultToIncome: 0.25,
+      feesReceivedToIncome: 0.165,
+      netFeesToIncome: 0.11,
+      cashToIncome: 0.11,
+      debtToFixedCosts: 0.1275,
+    }))
+      expect(stats.median[key]).toBeCloseTo(expected);
+    expect(stats.operatingLossShare).toBe(1 / 3);
+    expect(stats.samples.wagesToIncome).toBe(2);
+    expect(bookStats([c]).median.feesReceivedToIncome).toBeNull();
+    expect(bookStats([]).operatingLossShare).toBeNull();
+    expect(a.wages).toBe(60);
+  });
+
+  it('partitions uneven groups by one-based rank/size and keeps country, tier and final-table thirds apart', () => {
+    expect(Array.from({ length: 8 }, (_, i) => tableThird(i + 1, 8))).toEqual([
+      'top',
+      'top',
+      'middle',
+      'middle',
+      'middle',
+      'bottom',
+      'bottom',
+      'bottom',
+    ]);
+    expect([1, 2, 3].map((rank) => tableThird(rank, 3))).toEqual(['top', 'middle', 'bottom']);
+    const stats = seasonStats(
+      input([], {
+        books: [
+          book(A.id, { rank: 3, nextTier: 1 }),
+          book(B.id, { rank: 1 }),
+          book(C.id, { tier: 1, nextTier: 0 }),
+          book(X.id, { country: 'ESP', rank: 2 }),
+        ],
+      }),
+    );
+    expect(stats.books.ENG.byTier.tier0.clubs).toBe(2);
+    expect(stats.books.ENG.byTier.tier1.clubs).toBe(1);
+    expect(stats.books.ENG.topFlightThirds.bottom.clubs).toBe(1);
+    expect(stats.books.ENG.topFlightThirds.middle.clubs).toBe(0);
+    expect(stats.books.ESP.topFlightThirds.middle.clubs).toBe(1);
+  });
+
+  it('filters the funnel by opening cohort and original seller, retaining repeat bids and separate refusals', () => {
+    const base = { from: C, to: A, playerId: 'star' };
+    const stats = seasonStats(
+      input([move('paid', C, A, 'star')], {
+        topThree: { star: C.id, stays: D.id, other: C.id },
+        divisionTopThree: { star: C.id, stays: D.id },
+        bids: [
+          { ...base, outcome: 'seller-refused' },
+          { ...base, outcome: 'player-refused' },
+          { ...base, outcome: 'completed' },
+          { ...base, playerId: 'other', outcome: 'completed' },
+          { ...base, from: D, outcome: 'completed' },
+          { ...base, to: D, outcome: 'completed' },
+        ],
+      }),
+    );
+    expect(stats.upwardFunnel.ENG.tier1).toEqual({
+      tracked: 2,
+      status: 'observed',
+      bids: 3,
+      sellerRefused: 1,
+      playerRefused: 1,
+      buyerRefused: 0,
+      completed: 1,
+      shareMovedUp: 0.5,
+    });
+    expect(seasonStats(input([])).upwardFunnel.ENG.tier1.bids).toBeNull();
+    expect(seasonStats(input([], { bids: [] })).upwardFunnel.ENG.tier1.bids).toBe(0);
+  });
+
+  it('keeps absent observers distinct from zero events, unique stage entrants and ageing denominators', () => {
+    const stats = seasonStats(
+      input([], {
+        renewalAnswers: [
+          { club: C.id, kind: 'offered' },
+          { club: C.id, kind: 'refused' },
+          { club: D.id, kind: 'releasedUnoffered' },
+          { club: 'unmeasured', kind: 'accepted' },
+        ],
+        distress: [
+          { club: C.id, stage: 1 },
+          { club: C.id, stage: 1 },
+          { club: C.id, stage: 3, pointsDeducted: 10 },
+          { club: D.id, stage: 3, pointsDeducted: 10 },
+          { club: X.id, stage: 2 },
+        ],
+        ageing: [
+          { age: 30, change: -2 },
+          { age: 30, change: 0 },
+          { age: 30, change: 1 },
+          { age: 39, change: -6 },
+        ],
+      }),
+    );
+    expect(stats.renewals).toEqual({
+      status: 'observed',
+      offered: 1,
+      accepted: 0,
+      refused: 1,
+      releasedUnoffered: 1,
+    });
+    expect(stats.distress.byCountry.ENG).toEqual({
+      entries: { stage1: 1, stage2: 0, stage3: 2 },
+      pointsDeducted: 20,
+    });
+    expect(stats.ageing[30]).toEqual({ players: 3, declinedShare: 1 / 3, meanOvrChange: -1 / 3 });
+    expect(Object.keys(stats.ageing)).toHaveLength(15);
+    expect(stats.ageing[24].meanOvrChange).toBeNull();
+    const absent = seasonStats(input([]));
+    expect(absent.renewals).toMatchObject({ status: 'absent', offered: null });
+    expect(absent.distress.byCountry.ENG.pointsDeducted).toBeNull();
+    const merged = mergeSeasons([[absent], [stats], [{ year: 1951 }]])[0]!;
+    expect(merged.measures['renewals.offered']).toMatchObject({ n: 1, mean: 1 });
+    expect(merged.measures['ageing.24.meanOvrChange']).toEqual({
+      n: 0,
+      mean: null,
+      sd: null,
+      min: null,
+      max: null,
     });
   });
 });
