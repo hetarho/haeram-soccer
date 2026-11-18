@@ -324,12 +324,164 @@
       "host": "ihaelam-ui-MacBookPro",
       "device": "ihaelam-ui-MacBookPro",
       "branch": "gusta-session-self-improve-np19-f1c9b1b9",
-      "head": "d999af702839e5a7b4de2e620042edcd7d0798c2",
+      "head": "b6c1737afb34e39ac35592234a122ce1e9d0e802",
       "land": "main",
       "status": "working",
-      "at": "2026-11-18T15:27:11.973Z",
-      "agentChecks": [],
-      "verificationCommands": []
+      "at": "2026-11-18T19:19:44.394Z",
+      "agentChecks": [
+        {
+          "id": "T983-ab-identity",
+          "scenario": "The aggregate fitting and attribution speed-ups keep every aggregate and day output bit-identical and make the aggregate engine faster",
+          "steps": [
+            "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload aggregate --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+            "node scripts/perf/ab.mjs --base 9b3b38536002495cb760e0f3ec556ccde53488e1 --workload day --procs 6 --json artifacts/benchmarks/night-perf-261119/T983/ab-day.json"
+          ],
+          "expected": "Equal output hashes on both workloads; aggregate CPU-ratio interval entirely below 1",
+          "observed": "sameHash true on both (aggregate 09c4b698345ff9fc, day a56436ea3e565194); aggregate CPU ×0.768 (0.758–0.783) faster; own match days ×0.849 (0.836–0.866); other days ×0.997 (0.959–1.029), no difference",
+          "evidence": [
+            "artifacts/benchmarks/night-perf-261119/T983/ab-aggregate.json",
+            "artifacts/benchmarks/night-perf-261119/T983/ab-day.json",
+            "artifacts/benchmarks/night-perf-261119/T983/README.md"
+          ],
+          "status": "pass",
+          "reason": "deterministic paired measurement run by the worker at task stage",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T983-final-gate",
+          "scenario": "Shared batch gate (verify:batch) and CI browser journeys on the integrated candidate",
+          "steps": [
+            "Coordinator runs pnpm run verify:batch on the fixed integrated candidate after all participating sessions are ready"
+          ],
+          "expected": "Batch gate passes; CI browser journeys pass after the push",
+          "observed": "Not run by this worker: ARCH-30 reserves builds, full integration and batch for the initiating coordinator's final gate, and browser journeys run only in CI",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "engine-only task unit; full suites belong to the host's shared final gate",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host coordinator (np19-perf final gate)",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T982-ui-none",
+          "scenario": "T982 changes only engine code and adds no screen behaviour, so there is no computer-use scenario to observe.",
+          "steps": [
+            "Confirm the diff touches only packages/engine/src/npc-market.ts, player-state.ts, npc-market.test.ts and benchmark artifacts"
+          ],
+          "expected": "No UI-visible change; correctness is covered by the same-world hash, ab.mjs output hashes and unit/integration tests",
+          "observed": "The diff is engine-only. On c3486278 with T982 applied, the world hash and the ab.mjs output hashes match the base. Units 75/75 and the task tier (1567 units) passed; integration 33/33 passed on the tree merged with 24666400.",
+          "evidence": [
+            "artifacts/benchmarks/night-perf-261119/T982/final-c3486278-1950.txt",
+            "artifacts/benchmarks/night-perf-261119/T982/ab-history.json",
+            "artifacts/benchmarks/night-perf-261119/T982/ab-history-five.json"
+          ],
+          "status": "not-run",
+          "reason": "This is an engine-only result-identical speed-up with nothing to observe on screen. Browser journeys run only in CI after the coordinator's final batch gate.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": "Adds no e2e; deterministic checks already cover the change."
+        },
+        {
+          "id": "T984-same-world",
+          "scenario": "1950 generation-reference world hash unchanged",
+          "steps": [
+            "pnpm exec tsx artifacts/benchmarks/generation-market-261116/gen-driver.mts 1950 generation-reference --hash"
+          ],
+          "expected": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce",
+          "observed": "worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce. The correction changed only tests; engine source is unchanged since this run.",
+          "evidence": [
+            "artifacts/benchmarks/night-perf-261119/T984/gen-1950-hash.txt"
+          ],
+          "status": "pass",
+          "reason": "deterministic worker check",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T984-ab-measurement",
+          "scenario": "Paired A/B for history and day against base e8b4ada9, plus each part on its own",
+          "steps": [
+            "node scripts/perf/ab.mjs --base e8b4ada9 --workload history --procs 6 --json .../ab-history.json",
+            "node scripts/perf/ab.mjs --base e8b4ada9 --workload day --procs 6 --json .../ab-day.json",
+            "part 1 vs base and part 2 vs base+part 1, using a scratch copy of the tree"
+          ],
+          "expected": "Equal output hashes; each part kept only if its history interval is below 1 or not slower",
+          "observed": "Hashes equal in every run. History, both parts: 0.944 (0.933–0.955). Part 1 alone: 0.980 (0.974–0.989). Part 2 on top of part 1: 0.944 (0.930–0.957). Day: 0.994 (0.977–1.013), no difference. Engine source is unchanged by the correction.",
+          "evidence": [
+            "artifacts/benchmarks/night-perf-261119/T984/ab-history.json",
+            "artifacts/benchmarks/night-perf-261119/T984/ab-day.json",
+            "artifacts/benchmarks/night-perf-261119/T984/ab-history-part1-vs-base.json",
+            "artifacts/benchmarks/night-perf-261119/T984/ab-history-part2-vs-part1.json"
+          ],
+          "status": "pass",
+          "reason": "measured on a shared Apple M1 Max, load1 12–48",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T984-named-tests",
+          "scenario": "The named existing test files still pass",
+          "steps": [
+            "pnpm exec vitest run world, persisted-squads, staff, training, npc-careers, player, calendar.progression-eng, season, full-model-throughput",
+            "rerun calendar.progression-eng alone after it timed out under load"
+          ],
+          "expected": "All pass unchanged",
+          "observed": "8 files passed together (131 tests). calendar.progression-eng timed out at 435 s against its 300 s limit when run beside the others at load around 48, then passed alone in 121 s. calendar.progression-esp no longer exists (T787 removed it) and was not run. world.test.ts and training.test.ts are now identical to base.",
+          "evidence": [
+            "scratchpad named.log / eng.log"
+          ],
+          "status": "pass",
+          "reason": "esp file absent from the tree",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T984-task-tier",
+          "scenario": "ARCH-30 task-tier checks",
+          "steps": [
+            "gusta vibe check --tier task --diff-base e8b4ada9 --task T984"
+          ],
+          "expected": "typecheck, lint, format, i18n and affected units pass, including the new unit tests",
+          "observed": "All passed: 1,493 unit tests, the four new selection-growth tests included",
+          "evidence": [
+            "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-c6b27ea3-25c8-41eb-b546-c32e45a08695.log"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "worker",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
+      "verificationCommands": [
+        "pnpm install --frozen-lockfile --offline && pnpm run typecheck && pnpm run lint"
+      ]
     },
     "888db1e43d02ae4eaa231897": {
       "id": "888db1e43d02ae4eaa231897",
