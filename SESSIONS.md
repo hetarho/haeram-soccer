@@ -198,6 +198,7 @@
 | T960 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 55890bf6e8a2 | 2026-11-18T03:56Z |
 
 ## log
+- 261118 fix T957 tests: base caeb52429605; uncovered keeper forces takeover fill; captured founding strengths and bounded class/age/extra bench distribution. Focused 51 tests and all five task-tier checks pass; evidence .tmp/mr18cx/T957-repair-worker-check.json. Archived receipt unchanged.
 - 261118 T960 done
 - 261118 T959 done
 - 261118 T958 done
@@ -217,4 +218,3 @@
 - 261117 T952 done
 - 261117 T944 T945 integrated
 - 261117 T946 T947 integrated
-- 261117 T916 done
