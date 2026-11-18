@@ -16,7 +16,7 @@ import { FORMATIONS, mainOvr } from './player';
 import { closeNpcSummer, closeNpcWindow, intakeNpcYouth } from './npc-careers';
 import { foundSquads } from './persisted-squads';
 import { clubStyle, generatedPlayer, invalidateNpcSquad, stature } from './world';
-import { formationOf, slotOvr } from './player-state';
+import { formationOf, freshSlotOvr, slotOvr, withSlotRatings } from './player-state';
 import { compareIds, random } from './primitives';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
@@ -154,6 +154,39 @@ describe('isolated NPC transfer windows', () => {
     // No rating outlives its settlement.
     for (const attr of ATTRIBUTES) q!.attrs[attr] = 20;
     expect(new SettlementRatings().of(q!, b)).toBe(slotOvr(q!, b!));
+  });
+
+  it('reads slot ratings through an open settlement and afresh once it closes, a throw included', () => {
+    const { w, seller } = fixture();
+    const p = w.squads![seller.id]!.find((q) => q.position !== 'GK')!;
+    const slots = Object.values(FORMATIONS).flatMap((formation) => formation.slots);
+    const slot = slots[0]!;
+    const open = new SettlementRatings(1);
+    withSlotRatings(open, () => {
+      // Inside, every read equals the unscoped computation bit for bit.
+      for (const s of slots) expect(Object.is(slotOvr(p, s), freshSlotOvr(p, s))).toBe(true);
+      const read = slotOvr(p, slot);
+      for (const a of ATTRIBUTES) p.attrs[a] = 30;
+      // The settlement's value stands; another multiplier is never cached.
+      expect(slotOvr(p, slot, 1)).toBe(read);
+      expect(slotOvr(p, slot, 0.9)).toBe(freshSlotOvr(p, slot, 0.9));
+      expect(freshSlotOvr(p, slot)).not.toBe(read);
+    });
+    expect(slotOvr(p, slot)).toBe(freshSlotOvr(p, slot));
+    const thrown = new SettlementRatings(1);
+    expect(() =>
+      withSlotRatings(thrown, () => {
+        slotOvr(p, slot);
+        throw new Error('settlement failed');
+      }),
+    ).toThrow('settlement failed');
+    for (const a of ATTRIBUTES) p.attrs[a] = 70;
+    expect(slotOvr(p, slot)).toBe(freshSlotOvr(p, slot));
+    expect(thrown.of(p, slot)).not.toBe(slotOvr(p, slot));
+    // A market day closes its settlement however it ends.
+    npcMarket(w);
+    for (const a of ATTRIBUTES) p.attrs[a] = 55;
+    expect(slotOvr(p, slot)).toBe(freshSlotOvr(p, slot));
   });
 
   it('refreshes ratings between settlements and between independent quote mutations', () => {
