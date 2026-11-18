@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T963 | The first leg of a tie at index 2 is a first leg | MATCH | - | todo |
+| T963 | The first leg of a tie at index 2 is a first leg | MATCH | - | doing@261118.mr18cx |
 | T964 | Angry fans stop coming, a loved owner's club draws more | ECON OWNER | - | todo |
 | T965 | Bigger clubs are slower to sell | CLUB LEAGUE | - | todo |
 | T966 | A loyal player is harder to lure away | CLUB PLAYER | T979 | todo |
