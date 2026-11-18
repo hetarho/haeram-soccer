@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r78 | Define the browser-demo rules for squad and growth.
+> r79 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its squad (→WORLD-16) becomes its own players, each as the player he was with his contract, filled to 20 with players generated at its level when it holds fewer (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -269,6 +269,7 @@
   | BEL | first, second | 2012– (start estimated) | 25 | aged 20 or under |
   | GER, FRA, NED; any other league before its first row | every division | every season | 40 in all | - |
   - ages are by the season's start year: "aged 21 or under" is born in that year − 21 or later.
+  - Spain's academy exemption follows recorded graduation from the registering club, including a return on a transfer, free signing or loan. Graduation from another club gives no exemption.
   - the 40-player ceiling counts everyone, exempt players included, under every rule. ← about the most a club carried with its reserves: some 30 professionals at an English club in the 1950s, about 35 players at a Ligue 1 club in 2022
   - the rule of the division the club plays in this season applies; a club over it (after a promotion, a new season's rule, or players ageing into the count) keeps its players and adds no counted player — no signing, loan, promotion or call-up — until it is under it.
   - the catalog keeps every row with its source, and a start or switch marked estimated shows as estimated (→ECON-3).
@@ -318,7 +319,7 @@
     | E | 보강 효과 없음 | otherwise |
   - the verdict names its slot, his value there and the starter's; its reasons add what the gap does not say, each a fact of the current world, at most two for and two against, in this order:
     - for: the manager's pick for an open request · he meets an open request · his line is short · growth room (potential − OVR) of 5 or more at 23 or under · a free agent, no fee · tactical fit up (→CLUB-14)
-    - against: on arrival 3 or more below settled (→PLAYER-11) · 29 or older, pace and stamina falling each season (→PLAYER-17) · outside the 단장's money checks for a signing (→CLUB-33), with its reason
+    - against: on arrival 3 or more below settled (→PLAYER-11) · at or past his own pace and stamina decline age (→!PLAYER-17) · outside the 단장's money checks for a signing (→CLUB-33), with its reason
   - the verdict reads exact facts (→PLAYER-18) whoever holds the chief scout post, as the shortlist is drawn; it changes nothing in the world and never gates an approach (→WEB-43).
 
 - CLUB-49 [o] Free agents (자유계약 선수) are players the world holds without a club; nobody becomes one because a list is read. ← a free signing is someone football let go, not a name made up for the owner
@@ -380,6 +381,7 @@
     | loyalty | + his loyalty term |
     | his club in financial distress (→ECON-24) | −0.5 |
   - his loyalty term: his loyalty weight (충성심, →PLAYER-7) × (0.15 a season at the club, at most 1.5, + 0.5 when he came through its academy); the same term counts against leaving in personal terms (→CLUB-53).
+  - A signing or loan begins a new stint. A takeover or return to the parent club from loan keeps the stint it resumes. A recorded academy graduate who re-signs for that club still earns the academy term (→!CLUB-44). Missing tenure or origin stays unknown.
   - the owner's talk shows his chance and its factors before the offer (→WEB-68); a delegated offer reports them.
   - a club nobody owns offers a renewal at his market wage at its club (→CLUB-25), for 1–3 seasons (1 from age 31), to a player it still wants — one in its XI or the bench cover of a line, or one aged 23 or under with potential at least 5 above its division's level — when the offer fits its money (→WORLD-17); it lets the others go.
 - CLUB-51 [o] The chief scout finds players among those who exist (→!CLUB-50); his ability sets how many he lists and how far he looks at home, 해외 스카우트망 (→ECON-16) how far abroad. ← the scout's two jobs are reading a player exactly (→PLAYER-18/24) and finding the right one
@@ -398,6 +400,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r79 261118 CLUB-44✎ academy exemption without an explicit return rule→recorded graduates of the registering club stay exempt on eligible returns; CLUB-47✎ fixed decline alert at 29→the player's own decline age; CLUB-54✎ tenure and academy term without return rules→a new stint on signing, resumed tenure on parent-club loan return or takeover, and retained documented academy origin on return
 - r78 261118 CLUB-25✎ ability-fit wage in force only after its gate, the club's division with 85–90 interpolation until then→in force for every club; +the curve's level set against ECON-36's wage bands; CLUB-28✎ free from 1996, 50% compensation before→free in every era, no compensation; CLUB-26✎ accepts any offer at the floor→answers through CLUB-54, the delegated raise without the runway test; CLUB-24✎ runway test at half the runway −25→forced sales (ECON-24) −25; CLUB-33✎ money bar for the runway plus one season→two seasons within the plan's spendable money; CLUB-51✎ +likely takers listed before likely refusers; CLUB-52✎ the 단장's runway rows −0.05/−0.10→the seller's distress −0.05/−0.25, +the seller's stature +0.10/+0.05/−0.05; CLUB-53✎ +loyalty against leaving; CLUB-54+ renewal answer, loyalty term and NPC renewal offers
 - r77 261118 CLUB-52/53✎ NPC draw keys per day→per window (`<year>:<window>:<buyer id>:<player id>`), so a pair retried on a later settlement day meets the same draw
 - r76 261118 CLUB-33✎ looks every 7th day, one move a look, none while a bid is pending→every 3rd day, pending bids up to 1/2/3 by step; money-bar upgrade cap at 아낌없이→at 넉넉히 and 아낌없이; money bar ×25 within the season's money→for the runway plus one season within the capital the runway test leaves; money-bar listing at once→once a signing for his line has joined in the window; upgrade candidates the shortlist then the reach→at 넉넉히/아낌없이 everyone within reach by slot gain after the manager's pick; money check squad share→runway test; CLUB-52✎ ours and another club's to us→+one club nobody owns's to another, sales-line factor→runway-test factor, +relegated starter −0.10, +player 5+ above his division bid from higher −0.10, final-season factors halved before 1995, +NPC draw key; CLUB-24✎ wage bill 10 points above the sales line→the runway test failing at half the runway; CLUB-26✎ delegated raise within the squad share→the runway test; CLUB-53✎ clubs nobody owns are not asked→they ask at the market wage with their own draw key
