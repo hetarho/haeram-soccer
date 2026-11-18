@@ -1108,7 +1108,7 @@ function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
  * reserved already (→ECON-33), the owner's come out of the cash as his deals would pay them.
  * `raising`: a haggle left out, as its raise is checked as his move.
  */
-function projection(w: World, day: number, raising?: TransferBid) {
+export function recruitmentProjection(w: World, day = currentDay(w), raising?: TransferBid) {
   const graduates = graduateIds(w),
     bids = windowBids(w, day),
     open = bids.filter(isOpen),
@@ -1163,7 +1163,7 @@ function replacementNeeds(w: World, day: number, arriving: readonly Player[]): S
  * every `lookDays`th day after it, every day while a replacement need no pending player would close
  * is open (plus a negotiator's next-day raises), he makes moves — a free agent signed or a
  * trait-priced bid — until the places his bids hold reach the step's count (`pendingLimit`), each
- * for the first need of the club as the window's bids would leave it (`projection`) that a
+ * for the first need of the club as the window's bids would leave it (`recruitmentProjection`) that a
  * candidate meets within the runway test, each pending fee reserved (→ECON-33). A negotiator's
  * haggle keeps its place until its raise the day after the answer (→CLUB-41), which comes before a
  * mediation's move and the look's. Short roles come before replacements and upgrades, and the
@@ -1190,7 +1190,7 @@ export function staffSignings(w: World) {
   if (moved || heldStaffBids(w, day).length >= limit) return;
   // Off a regular look he looks while a replacement need no pending player would close is open
   // (→CLUB-42), or past a negotiator's ended haggle.
-  const replacing = replacementNeeds(w, day, projection(w, day).arriving).length > 0;
+  const replacing = replacementNeeds(w, day, recruitmentProjection(w, day).arriving).length > 0;
   if (!regular && !replacing && !ended) return;
   // Every move records a bid for its player, who is never asked again in the window, so the look
   // ends when the places his bids hold reach the step's count or no candidate is left to move for.
@@ -1219,7 +1219,7 @@ function raiseHaggles(w: World, day: number) {
     }
     const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
     const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
-    const { club } = projection(w, day, retry),
+    const { club } = recruitmentProjection(w, day, retry),
       terms = wageOffer(club, offer, fee);
     const room =
       registrationRoom(club, { ...offer.player, joined: w.year }) ??
@@ -1258,7 +1258,7 @@ function raiseHaggles(w: World, day: number) {
 function staffMove(w: World, day: number) {
   // Every need, the registration ceiling and the step's room read the club as it stands once the
   // window's bids go through, so a pending player covers what his arrival would.
-  const { club, arriving } = projection(w, day),
+  const { club, arriving } = recruitmentProjection(w, day),
     players = activePlayers(club);
   if (players.length >= registration(club).ceiling) return false;
   const bids = windowBids(w, day),
@@ -1356,7 +1356,7 @@ export function pursueRequest(
     { offer, index } = picked,
     // His pursuit is his move: it reads the squad and wage bill the window's bids will leave; the
     // owner's own move reads the club as it is (→CLUB-33).
-    squad = actor === 'delegated' ? projection(w, day).club : w;
+    squad = actor === 'delegated' ? recruitmentProjection(w, day).club : w;
   const room = registrationRoom(squad, { ...offer.player, joined: w.year });
   if (room) return room;
   const fee = offer.freeAgent

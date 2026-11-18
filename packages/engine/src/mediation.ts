@@ -10,6 +10,8 @@ import {
   signingVerdict,
   requestLabel,
   pursueRequest,
+  recruitmentProjection,
+  meetsRequest,
 } from './signings';
 import { staffMember } from './staff';
 import { isDelegated } from './responsibilities';
@@ -22,19 +24,23 @@ export const requestTargetKey = (request: SigningRequest) =>
   request.kind === 'short' ? `line:${request.line}` : `slot:${request.slot}:${request.position}`;
 export function requestMet(w: World, request: SigningRequest, from: { year: number; day: number }) {
   const now = careerOrdinal(careerDate(w));
-  return (w.recruitmentArrivals ?? []).some(
-    (arrival) =>
-      careerOrdinal(arrival.at) >= careerOrdinal(from) &&
-      careerOrdinal(arrival.at) <= now &&
-      (request.position
-        ? (arrival.positions[request.position] ?? 0) >= 2
-        : lineOf(arrival.position) === request.line),
+  return (
+    (w.recruitmentArrivals ?? []).some(
+      (arrival) =>
+        careerOrdinal(arrival.at) >= careerOrdinal(from) &&
+        careerOrdinal(arrival.at) <= now &&
+        (request.position
+          ? (arrival.positions[request.position] ?? 0) >= 2
+          : lineOf(arrival.position) === request.line),
+    ) || recruitmentProjection(w).arriving.some((p) => meetsRequest(request, p))
   );
 }
 /** T170 consumes this explicit delegated resolver queue; no fabricated resolution is recorded. */
 export function delegatedMediations(w: World) {
   return isDelegated(w, 'recruitment')
-    ? (w.mediations ?? []).filter((m) => m.status === 'pending')
+    ? (w.mediations ?? []).filter(
+        (m) => m.status === 'pending' && !requestMet(w, m.target, m.created),
+      )
     : [];
 }
 export function detectMediations(w: World): RecruitmentMediation[] {
