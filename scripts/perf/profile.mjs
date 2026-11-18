@@ -2,14 +2,15 @@
  * Where a workload of the paired A/B bench (`ab.mjs`) spends its CPU, on this tree.
  *
  *   node scripts/perf/profile.mjs --workload own-match|aggregate|day|view|history [--reps n] [--warm n]
- *     [--top n] [--lines <function>] [--seed s]
+ *     [--skip n] [--top n] [--lines <function>] [--seed s]
  *
  * This tree's `workloads.ts` is bundled as `ab.mjs` bundles it (`bundle.mjs`; tsx's `__name`
- * wrappers would add 5–7%) and run in a child process under `--cpu-prof`: `--warm` reps, then
- * `--reps` measured reps. Printed: the top self and inclusive functions over the measured reps'
- * samples (the world's build, the warm-up and the digest left out), and with `--lines`, each
- * function of that name's hottest bundle lines with their text. V8 keeps line ticks per function
- * for the whole run, so the lines also count the warm-up. The profile and bundle paths are printed
+ * wrappers would add 5–7%) and run in a child process: `--skip` reps
+ * (for `history`, that many seasons from 1930, so a later decade can be profiled alone), `--warm`
+ * reps, then `--reps` measured reps, all unprofiled and untimed but the last. The child starts the
+ * V8 profiler through `node:inspector/promises` just before the measured reps and stops it after
+ * them, so every table covers those reps alone. Printed: the top self and inclusive functions, and
+ * with `--lines`, each function of that name's hottest bundle lines with their text. The profile and bundle paths are printed
  * so a profile can be reread.
  *
  * `--workload view` profiles a day as the Host plays it (`workloads.ts`): its reps are awaited.
@@ -42,6 +43,7 @@ const d = DEFAULTS[workload];
 if (!d) throw new Error(`unknown workload ${workload}`);
 const reps = Number(arg('--reps', d.reps)),
   warm = Number(arg('--warm', d.warm)),
+  skip = Number(arg('--skip', 0)),
   top = Number(arg('--top', 25)),
   lines = arg('--lines'),
   seed = arg('--seed', 'perf-261027');
@@ -51,44 +53,47 @@ mkdirSync(scratch, { recursive: true });
 const tree = arg('--tree', repo);
 const bundle = await bundleWorkloads(tree, join(scratch, `workloads-${process.pid}.mjs`));
 
-// The child: the measured window's ends on the profiler's clock (both CLOCK_MONOTONIC, in µs).
+// The child: skip reps and warm reps run unprofiled, the V8 profiler (inspector) covers only the
+// measured reps and the child writes the .cpuprofile itself.
 const CHILD = `
 import { pathToFileURL } from 'node:url';
-const { file, workload, seed, reps, warm } = JSON.parse(process.argv.at(-1));
+import { writeFileSync } from 'node:fs';
+import { Session } from 'node:inspector/promises';
+const { file, workload, seed, reps, warm, skip, out } = JSON.parse(process.argv.at(-1));
 const w = (await import(pathToFileURL(file).href)).workloadOf(workload, seed);
 // A rep that returns a promise (\`view\`) is awaited; a synchronous one runs without an await.
-for (let i = 0; i < warm; i++) {
-  const out = w.rep(false);
-  if (typeof out?.then === 'function') await out;
-}
-const from = process.hrtime.bigint() / 1000n;
-for (let i = 0; i < reps; i++) {
-  const out = w.rep(i < w.cycle);
-  if (typeof out?.then === 'function') await out;
-}
-const to = process.hrtime.bigint() / 1000n;
-console.log(JSON.stringify({ from: String(from), to: String(to), digest: w.digest() }));
+const run = async (cycled) => {
+  const r = w.rep(cycled);
+  if (typeof r?.then === 'function') await r;
+};
+for (let i = 0; i < skip; i++) await run(false);
+for (let i = 0; i < warm; i++) await run(false);
+const session = new Session();
+session.connect();
+await session.post('Profiler.enable');
+await session.post('Profiler.start');
+const from = process.hrtime.bigint();
+for (let i = 0; i < reps; i++) await run(i < w.cycle);
+const to = process.hrtime.bigint();
+const { profile } = await session.post('Profiler.stop');
+writeFileSync(out, JSON.stringify(profile));
+console.log(JSON.stringify({ ms: Number(to - from) / 1e6, digest: w.digest() }));
 `;
 const name = `${workload}-${process.pid}.cpuprofile`;
 const load1 = loadavg()[0];
+const file = join(scratch, name);
 const r = spawnSync(
   process.execPath,
   [
-    '--cpu-prof',
-    '--cpu-prof-dir',
-    scratch,
-    '--cpu-prof-name',
-    name,
     '--input-type=module',
     '-e',
     CHILD,
-    JSON.stringify({ file: bundle, workload, seed, reps, warm }),
+    JSON.stringify({ file: bundle, workload, seed, reps, warm, skip, out: file }),
   ],
   { encoding: 'utf8', maxBuffer: 1 << 26 },
 );
 if (r.status !== 0) throw new Error(`profiled run failed:\n${r.stderr}`);
 const run = JSON.parse(r.stdout.trim().split('\n').at(-1));
-const file = join(scratch, name);
 const prof = JSON.parse(readFileSync(file, 'utf8'));
 
 const parent = new Map();
@@ -100,18 +105,11 @@ const keyOf = (n) => {
   return f.url ? `${fn} ${basename(f.url)}:${f.lineNumber + 1}` : fn;
 };
 
-// Samples inside the measured window; the whole profile when the clocks do not line up.
-const from = Number(run.from),
-  to = Number(run.to);
-const stamps = [];
-let t = prof.startTime;
-for (const dt of prof.timeDeltas) stamps.push((t += dt));
-const inWindow = from >= prof.startTime && to <= prof.endTime;
+// The profile holds the measured reps alone.
 const self = new Map(),
   inclusive = new Map();
 let counted = 0;
 prof.samples.forEach((id, i) => {
-  if (inWindow && (stamps[i] < from || stamps[i] > to)) return;
   const node = byId.get(id);
   if (node.callFrame.functionName === '(idle)') return;
   counted++;
@@ -125,7 +123,7 @@ prof.samples.forEach((id, i) => {
     inclusive.set(k, (inclusive.get(k) ?? 0) + 1);
   }
 });
-const msPerSample = (to - from) / 1000 / Math.max(counted, 1);
+const msPerSample = run.ms / Math.max(counted, 1);
 const pct = (x, of) => `${((100 * x) / of).toFixed(1).padStart(5)}%`;
 const table = (title, m) => {
   console.log(`\n${title}`);
@@ -134,8 +132,8 @@ const table = (title, m) => {
 };
 
 console.log(
-  `${workload}: ${reps} reps after ${warm} warm, ${((to - from) / 1000).toFixed(0)} ms, ` +
-    `${counted} samples${inWindow ? '' : ' (whole profile: window not on the profile clock)'}, ` +
+  `${workload}: ${reps} reps after ${skip} skipped and ${warm} warm, ${run.ms.toFixed(0)} ms, ` +
+    `${counted} samples, ` +
     `load1 ${load1.toFixed(2)}, digest ${run.digest}`,
 );
 table('self', self);
