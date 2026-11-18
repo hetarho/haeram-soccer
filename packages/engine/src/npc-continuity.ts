@@ -133,8 +133,8 @@ function soldThisSeason(w: World, club: string, id: string) {
  * once he too is accounted for elsewhere. From his own stream he is up to `REFILL.age` years from
  * the place's age, so a year older each season (held at `REFILL.ages`' ends where the place's age
  * and his offset would leave them), and, while a sale or a loan emptied the place this season,
- * `REFILL.below` under the club's strength; from the next summer he plays at it. With
- * `SQUAD_SPREAD` at `spread` his class and age term (`spreadTerm`) go on top, as a squad member's.
+ * `REFILL.below` under the club's strength; from the next summer he plays at it. His class and age
+ * term (`spreadTerm`) go on top, as a squad member's.
  */
 function replacement(w: World, c: Club, p: Player, slot: number) {
   const place = squadPlaceAge(w.seed, c.id, w.year, slot),
@@ -290,6 +290,13 @@ export function returnLoan(w: World, p: Player) {
   const person = retainPerson(w, p, undefined, true);
   const parent = person.loan?.club;
   delete p.loanUntil;
+  if (parent === w.playerClub) {
+    const prior = w.players.find((q) => q.id === p.id);
+    if (prior?.joined === undefined) delete p.joined;
+    else p.joined = prior.joined;
+    if (prior?.graduate) p.graduate = true;
+    else delete p.graduate;
+  }
   movePerson(w, p, parent);
   delete person.loan;
   p.status = parent === w.playerClub ? 'active' : 'sold';

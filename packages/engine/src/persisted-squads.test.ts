@@ -172,7 +172,7 @@ describe('persisted playable squads', () => {
       }
       const players = w.squads![c.id]!;
       expect(players).toHaveLength(NPC_SQUAD.size);
-      for (const generated of npcSquad(w.seed, year, c)) {
+      for (const generated of npcSquad(w.seed, year, { ...c, strength: 55 })) {
         const stored = players.find((p) => p.id === generated.id)!;
         expect(stored.joined).toBe(year);
         expect(stored.graduate).toBeUndefined();
@@ -196,11 +196,11 @@ describe('persisted playable squads', () => {
     liveIds(w);
   });
 
-  it('keeps collision-free founding profiles and random draws unchanged', () => {
+  it('pins collision-free founding profiles with the production squad spread', () => {
     const w = worldMarketFixture();
     w.clubs[2].representative = true;
     foundSquads(w);
-    // Pre-loyalty/tenure roster capture still checks every earlier field and draw, including contracts.
+    // T957 production spread deliberately changes ability, potential and the resulting wage.
     const earlier = w.squads!.foreign!.map((p) => {
       const { loyalty: _loyalty, ...personality } = p.personality;
       void _loyalty;
@@ -210,7 +210,7 @@ describe('persisted playable squads', () => {
       return { ...earlier, personality };
     });
     expect(createHash('sha256').update(canonical(earlier)).digest('hex')).toBe(
-      '24d910ac22c903edcf094ad738be6ac1e3a2af5605a856e99cde6bf25b722bd5',
+      'b910bb8f1c6c659872ba5a34a2a18d1186c5993ed745508f4958f8ffd0aef88d',
     );
   });
 

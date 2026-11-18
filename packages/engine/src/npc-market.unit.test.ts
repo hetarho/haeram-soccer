@@ -32,6 +32,7 @@ import {
 } from './world';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
+import * as marketPrices from './market-prices';
 import { npcWageBill, npcWageBudget, npcWageLimit } from './books';
 import { operatingExpensesAt } from './finance';
 import { npcSaleContext, saleShare } from './sale-answer';
@@ -806,4 +807,116 @@ describe('targets by value, means from the wage budget, paid moves down (→WORL
       }
     }
   });
+});
+
+describe('loan returns preserve each club’s recorded origin', () => {
+  it.each([true, false])(
+    'keeps the borrower row when its own academy flag is %s',
+    (ownGraduate) => {
+      const { w, seller } = fixture(2000);
+      const p = target(w, seller);
+      w.squads![seller.id] = w.squads![seller.id]!.filter((q) => q.id !== p.id);
+      p.joined = w.year;
+      if (ownGraduate) p.graduate = true;
+      p.loanUntil = w.year + 1;
+      w.players.push(p);
+      w.playerRecords = {
+        [p.id]: {
+          moves: [],
+          loan: {
+            club: seller.id,
+            until: w.year + 1,
+            wage: p.wage,
+            contractUntil: w.year + 2,
+            year: w.year,
+            joined: w.year - 4,
+            ...(!ownGraduate ? { graduate: true } : {}),
+          },
+        },
+      };
+      returnNpcLoans(w);
+      expect(w.players.find((q) => q.id === p.id)).toMatchObject({
+        status: 'sold',
+        joined: w.year,
+      });
+      expect(p.graduate).toBe(ownGraduate ? true : undefined);
+      const returned = w.squads![seller.id]!.find((q) => q.id === p.id)!;
+      expect(returned.joined).toBe(w.year - 4);
+      expect(returned.graduate).toBe(ownGraduate ? undefined : true);
+    },
+  );
+
+  it('resumes an owned parent’s recorded stint for an old loan without people or optional facts', () => {
+    const { w, seller } = fixture();
+    const p = target(w, seller, { joined: w.year, graduate: undefined });
+    const prior = structuredClone(p);
+    prior.status = 'sold';
+    prior.joined = w.year - 5;
+    prior.graduate = true;
+    w.players.push(prior);
+    delete w.people;
+    w.playerRecords = {
+      [p.id]: {
+        moves: [],
+        loan: {
+          club: w.playerClub,
+          until: w.year + 1,
+          wage: p.wage,
+          contractUntil: w.year + 2,
+          year: w.year,
+        },
+      },
+    };
+    returnNpcLoans(w);
+    expect(w.players.find((q) => q.id === p.id)).toMatchObject({
+      status: 'active',
+      joined: w.year - 5,
+      graduate: true,
+    });
+    expect(w.squads![seller.id]!.some((q) => q.id === p.id)).toBe(false);
+  });
+});
+
+describe('a young target’s expected gain (→WORLD-16)', () => {
+  it.each([20, 25])(
+    'ranks a lower-division player aged %i at equal current gain and cost',
+    (age) => {
+      const { w, seller, buyer } = fixture();
+      for (const q of w.squads![seller.id]!.filter((q) => q.position === 'GK').slice(0, 2)) {
+        const weak = { ...structuredClone(q), id: `weak-${q.id}` };
+        for (const a of ATTRIBUTES) weak.attrs[a] = 55;
+        w.squads![buyer.id]!.push(weak);
+      }
+      buyer.books!.openingIncome = npcWageBill(w, buyer).toString();
+      buyer.levels = { academy: 3, ground: 3, coaching: 3 };
+      invalidateNpcSquad(w, buyer.id);
+      const lower = secondSeller(w, seller, 1);
+      // Other clubs have no keeper upgrade to pursue; the buyer has a slot need, not a short line.
+      target(w, seller, { retiring: w.year }, 90);
+      const older = keeperAt(w, lower, 'a-older-keeper', 75, { born: w.year - 26 });
+      const prospect = keeperAt(w, lower, 'z-prospect-keeper', 75, {
+        born: w.year - age,
+        potential: 95,
+      });
+      const ids = new Set([older.id, prospect.id]);
+      const valueAt = marketPrices.marketValueAt,
+        wageAt = marketPrices.marketWageAt;
+      const value = vi
+        .spyOn(marketPrices, 'marketValueAt')
+        .mockImplementation((...args) => (ids.has(args[3].id) ? '1000' : valueAt(...args)));
+      const wage = vi
+        .spyOn(marketPrices, 'marketWageAt')
+        .mockImplementation((...args) => (ids.has(args[3].id) ? '1000' : wageAt(...args)));
+      try {
+        const bids = observeBids(() => npcMarket(w)).filter((bid) => bid.to.id === buyer.id);
+        expect(bids[0]).toMatchObject({
+          playerId: age === 20 ? prospect.id : older.id,
+          outcome: 'completed',
+        });
+      } finally {
+        value.mockRestore();
+        wage.mockRestore();
+      }
+    },
+  );
 });

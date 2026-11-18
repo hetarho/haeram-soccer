@@ -980,7 +980,7 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
     expect(later.w.inbox!.filter((item) => item.ref === later.p.id && !item.read)).toEqual([]);
   });
 
-  it('brings compensation for an expiring 1990 contract, none for a 2000 one or nobody’s signing (→CLUB-28)', () => {
+  it('ends a 1960 or 2000 contract without compensation, with or without a signing (→CLUB-28)', () => {
     /** The close of the season before `year`, once the books of `year` are open. */
     const close = (year: number) => {
       const w = world('ENG', year);
@@ -992,25 +992,22 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
       });
       staying.until = year + 1;
       Object.assign(loaned, { until: year, loanUntil: year });
-      const cash = BigInt(w.cash),
-        value = marketValue(w, leaving, clubOf(w).tier);
-      const fee = year < 1996 ? ratio(value, 50n, 100n) : '0';
+      const cash = BigInt(w.cash);
+      const fee = '0';
       expect(prepareSuitor(w, leaving, fee)).toBeDefined();
       expireContracts(w);
       expect(leaving.status).toBe('sold');
       expect(leaving.unhappy).toBeUndefined();
       expect([staying.status, loaned.status]).toEqual(['active', 'active']);
-      return { w, cash, value, event: w.events.at(-1)! };
+      return { w, cash, event: w.events.at(-1)! };
     };
-    const before = close(1990),
-      paid = ratio(before.value, 50n, 100n);
-    expect(before.event).toMatchObject({ kind: 'free-transfer-compensation', amount: paid });
-    expect(BigInt(before.w.cash)).toBe(before.cash + BigInt(paid));
-    const bosman = close(2000);
-    expect(bosman.event.kind).toBe('contract-expiry');
-    expect(bosman.event.amount).toBeUndefined();
-    expect(BigInt(bosman.w.cash)).toBe(bosman.cash);
-    // The club he joins pays: in 1990 one no club signs brings nothing.
+    for (const year of [1960, 2000]) {
+      const closed = close(year);
+      expect(closed.event.kind).toBe('contract-expiry');
+      expect(closed.event.amount).toBeUndefined();
+      expect(BigInt(closed.w.cash)).toBe(closed.cash);
+    }
+    // An unsigned expiry also brings no fee.
     const unsigned = world('ENG', 1990);
     for (const p of activePlayers(unsigned)) p.until = 1992;
     const nobody = Object.assign(activePlayers(unsigned)[0], rated(unsigned, 1), { until: 1990 }),

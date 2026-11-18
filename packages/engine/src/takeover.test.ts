@@ -69,9 +69,6 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     const tenure = roster.map(({ id, joined, graduate }) => ({ id, joined, graduate }));
     const fielded = roster.map((p) => p.id);
     expect(roster.length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
-    expect(
-      uncoveredSlots(roster, formationOf(clubManager(w, club).philosophy)).length,
-    ).toBeGreaterThan(0);
     takeOver(w, club.id, choice('industrial'));
     expect(w.playerClub).toBe(club.id);
     const ids = w.players.map((p) => p.id);

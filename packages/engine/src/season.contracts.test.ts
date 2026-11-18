@@ -3,9 +3,8 @@ import { staffAuthority } from './testing';
 import { describe, expect, it, vi } from 'vitest';
 import * as contractsModule from './contracts';
 import * as freeAgentsModule from './free-agents';
-import { marketValue, marketWage } from './market-prices';
+import { marketWage } from './market-prices';
 import { careerDate } from './person-careers';
-import { ratio } from './primitives';
 import { moneyLabel } from './finance';
 import { message } from '../../contracts/src/messages';
 import type { Player, PersonCareer, World } from '../../contracts/src/types';
@@ -27,7 +26,6 @@ describe('closed season archive', () => {
     });
     const before = new Map(contracts);
     expect(before.size).toBe(22);
-    expect(contractsModule.EXPIRY_COMPENSATION).toBe(50);
     const oldJobs = new Map(
       w.players
         .filter((p) => before.has(p.id))
@@ -55,7 +53,6 @@ describe('closed season archive', () => {
       year: number;
       before: Snapshot;
       after: Snapshot;
-      fees: Map<string, string>;
       events: World['events'];
     }[] = [];
     const arrivals: {
@@ -74,28 +71,17 @@ describe('closed season archive', () => {
     // Movement observers omit some retired/unsigned cases. These scoped observers delegate the
     // real operations and read their boundaries; neither arguments nor results are replaced.
     const expiry = vi.spyOn(contractsModule, 'expireContracts').mockImplementation((...args) => {
-      const [world, division] = args;
+      const [world] = args;
       if (world !== w) return expire(...args);
       const prior = snapshots(world),
         at = careerDate(world),
         eventAt = world.events.length;
-      const fees = new Map(
-        prior.map(({ player }) => [
-          player.id,
-          ratio(
-            marketValue(world, player, division),
-            BigInt(contractsModule.EXPIRY_COMPENSATION),
-            100n,
-          ),
-        ]),
-      );
       const result = expire(...args);
       boundaries.push({
         at,
         year: world.year,
         before: prior,
         after: snapshots(world),
-        fees,
         events: structuredClone(world.events.slice(eventAt)),
       });
       return result;
@@ -260,8 +246,8 @@ describe('closed season archive', () => {
       expect(w.freeAgents?.some((row) => row.id === p.id)).toBe(false);
       expect(w.playerRecords?.[p.id]?.moves ?? []).toEqual(ended.moves);
     }
-    // Expiry compensation belongs only to a real external move at the existing50% value rule.
-    const compensated = boundary.after.flatMap((row) => {
+    // Every real external move at expiry carries a zero fee, in every era.
+    const departures = boundary.after.flatMap((row) => {
       const prior = boundary.before.find(({ player }) => player.id === row.player.id)!;
       return row.moves
         .slice(prior.moves.length)
@@ -274,26 +260,22 @@ describe('closed season archive', () => {
       ({ person }) => !!person.club && person.club !== w.playerClub,
     );
     expect(moved.length).toBeGreaterThan(0);
-    expect(compensated.map(({ row }) => row.player.id)).toEqual(
+    expect(departures.map(({ row }) => row.player.id)).toEqual(
       moved.map(({ player }) => player.id),
     );
-    for (const { row, move } of compensated) {
+    for (const { row, move } of departures) {
       expect(move).toMatchObject({
         ...boundary.at,
         from: w.playerClub,
         to: row.person.club,
-        fee: boundary.fees.get(row.player.id),
+        fee: '0',
       });
     }
     const paid = w.events.filter(
       (e) => e.year === year + 1 && e.kind === 'free-transfer-compensation',
     );
-    expect(paid).toHaveLength(compensated.length);
-    expect(paid.map((event) => event.amount)).toEqual(compensated.map(({ move }) => move.fee));
-    expect(paid.map((event) => event.title)).toEqual(
-      compensated.map(({ row }) => message('copy.contracts.721315c6c2', { p0: row.player.name })),
-    );
-    expect(boundary.events.filter((e) => e.kind === 'free-transfer-compensation')).toEqual(paid);
+    expect(paid).toEqual([]);
+    expect(boundary.events.filter((e) => e.kind === 'free-transfer-compensation')).toEqual([]);
     // No renewal was agreed; mandatory new free signings have their separate, explicit events.
     expect(w.events.filter((e) => e.kind === 'contract').map((e) => e.title)).toEqual(
       w.players.filter((p) => unhappy.has(p.id)).map((p) => `${p.name} 언해피 해소`),
@@ -329,6 +311,7 @@ describe('closed season archive', () => {
       expect(overall(p)).toBeGreaterThanOrEqual(level - 5 - 9);
       expect(overall(p)).toBeLessThan(xi - 15);
       expect(p.born).toBe(w.year - 18);
+      expect(p.graduate).toBe(true);
       // On the market wage of the division he joins.
       expect(p.wage).toBe(marketWageAt(own.country, w.year, own.tier, p));
     }

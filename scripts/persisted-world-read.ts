@@ -12,7 +12,7 @@ import { NPC_YOUTH } from '../packages/engine/src/npc-careers';
 import { NPC_MARKET } from '../packages/engine/src/npc-market';
 import {
   NPC_SQUAD,
-  SQUAD_SPREAD,
+  SQUAD_SPREAD_CONFIG,
   clubStyle,
   generateClubs,
   squad,
@@ -110,7 +110,7 @@ const configs = () => ({
     coachingAbility: CLUB_LEVELS.coachingAbility,
   },
   NPC_MARKET,
-  SQUAD_SPREAD,
+  SQUAD_SPREAD_CONFIG,
   CLUB_BOOKS,
   NPC_BACKING: NPC_BACKING.map((row) => ({ ...row, share: String(row.share) })),
 });

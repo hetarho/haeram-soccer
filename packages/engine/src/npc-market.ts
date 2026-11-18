@@ -16,9 +16,13 @@ import {
 import { npcContractTerm } from './free-agents';
 import { MARKET_CONFIG, marketValueAt, marketWageAt } from './market-prices';
 import { movePerson } from './npc-continuity';
-import { moveSquadPlayer } from './persisted-squads';
+import { CLUB_LEVELS, moveSquadPlayer } from './persisted-squads';
+import { TRAINING_GROUND } from './facility-model';
+import { clubManager } from './managerMarket';
+import { departmentMultiplier } from './staff';
+import { expectedOvr, type ExpectedDevelopmentLevels } from './training';
 import { formationOf, slotOvr } from './player-state';
-import { FORMATIONS, LINE_MINIMUM, lineOf, mainOvr, type Slot } from './player';
+import { ageingCurve, FORMATIONS, LINE_MINIMUM, lineOf, mainOvr, type Slot } from './player';
 import { compareIds, random, ratio } from './primitives';
 import { clubRegistration, registrationExempt } from './registration';
 import { SQUAD_MINIMUM } from './squad-size';
@@ -49,6 +53,9 @@ export const NPC_MARKET = {
   loanAge: 23,
   minimum: 18,
   termAge: 27,
+  /** A young target is valued for the higher of current gain and this mean-path horizon. */
+  prospectAge: 23,
+  prospectSeasons: 2,
   /** Targets a buyer bids for per need on one settlement day, by slot gain. */
   targetsPerNeed: 2,
   /** A bid's share of the asking fee, drawn per bid within this range. */
@@ -473,14 +480,18 @@ export function returnNpcLoans(w: World) {
       delete p.loanUntil;
       p.wage = currencyChange(parent.country, loan.year, w.year)?.(loan.wage) ?? loan.wage;
       p.until = loan.contractUntil;
-      delete p.graduate;
-      delete p.joined;
-      if (loan.graduate) p.graduate = true;
-      if (loan.joined !== undefined) p.joined = loan.joined;
+      // The borrower keeps its own history; only the returning copy resumes the parent's stint.
+      const returning = borrower?.id === w.playerClub ? structuredClone(p) : p;
+      const prior = parent.id === w.playerClub ? w.players.find((q) => q.id === id) : undefined;
+      delete returning.graduate;
+      delete returning.joined;
+      if (loan.graduate ?? prior?.graduate) returning.graduate = true;
+      const joined = loan.joined ?? prior?.joined;
+      if (joined !== undefined) returning.joined = joined;
       if (w.people?.[id]) {
-        movePerson(w, p, parent.id, borrower?.id === w.playerClub, undefined, borrower?.id);
+        movePerson(w, returning, parent.id, borrower?.id === w.playerClub, undefined, borrower?.id);
         delete w.people[id]!.loan;
-      } else moveSquadPlayer(w, p, parent.id, borrower?.id);
+      } else moveSquadPlayer(w, returning, parent.id, borrower?.id);
       if (borrower!.id === w.playerClub)
         addEvent(
           w,
@@ -586,7 +597,7 @@ function listings(w: World, clubs: Club[], settlement: Settlement) {
 }
 
 /** A player one division and line of the market holds, read once per settlement. */
-type Candidate = { player: Player; club: Club; ovr: number };
+type Candidate = { player: Player; club: Club; ovr: number; age: number; potential: number };
 const indexKey = (country: string, tier: number, line: Line) => `${country}:${tier}:${line}`;
 /** The first candidate rated at most `top` in a list sorted from the ablest down. */
 function firstAtMost(list: readonly Candidate[], top: number) {
@@ -697,6 +708,8 @@ export function npcMarket(w: World) {
         player: p,
         club: c,
         ovr: rating(p, settlement),
+        age: w.year - p.born,
+        potential: p.potential,
       });
     }
   }
@@ -805,6 +818,37 @@ export function npcMarket(w: World) {
           out.push({ country, tier: 0, listedOnly: false });
     return out;
   };
+  // Mean projections are read only after a target passes the existing search and money bounds.
+  // A player can fit several needs; neither his projection nor the buyer's levels are read twice.
+  const development = new Map<string, Omit<ExpectedDevelopmentLevels, 'ageing'>>();
+  const projections = new Map<string, Map<Player, number>>();
+  const curves = new Map<Player, ReturnType<typeof ageingCurve>>();
+  const projectedGain = (buyer: Club, cand: Candidate) => {
+    if (cand.age > NPC_MARKET.prospectAge || cand.potential <= cand.ovr || !buyer.levels) return 0;
+    let reads = projections.get(buyer.id);
+    if (!reads) projections.set(buyer.id, (reads = new Map()));
+    let future = reads.get(cand.player);
+    if (future === undefined) {
+      let levels = development.get(buyer.id);
+      if (!levels) {
+        levels = {
+          year: w.year,
+          youth: clubManager(w, buyer).youth,
+          ground: TRAINING_GROUND[buyer.levels.ground]!.growth,
+          coaching: departmentMultiplier(CLUB_LEVELS.coachingAbility[buyer.levels.coaching]!),
+        };
+        development.set(buyer.id, levels);
+      }
+      let curve = curves.get(cand.player);
+      if (!curve) {
+        curve = ageingCurve(w.seed, cand.player.id);
+        curves.set(cand.player, curve);
+      }
+      future = expectedOvr(cand.player, NPC_MARKET.prospectSeasons, { ...levels, ageing: curve });
+      reads.set(cand.player, future);
+    }
+    return Math.max(0, future - cand.ovr);
+  };
   /**
    * A need's targets within reach and means; a listed player first only on a tie. A slot need ranks
    * them by the value rule (`npcValueScore`), a line need by OVR. Each division's list runs from the
@@ -843,7 +887,7 @@ export function npcMarket(w: World) {
         if (!affords(buyer, price)) continue;
         const score = valued
           ? npcValueScore(
-              rated - need.best,
+              rated - need.best + projectedGain(buyer, cand),
               price.fee + price.wage * BigInt(NPC_MARKET.valueYears),
               referenceOf(buyer),
             )

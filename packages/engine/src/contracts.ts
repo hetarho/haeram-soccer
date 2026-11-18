@@ -15,7 +15,7 @@ import type {
 import { clamp, random, ratio, scaleBy } from './primitives';
 import { activePlayers, clubOf, overall, UNHAPPY_PENALTY } from './player-state';
 import { addEvent } from './events';
-import { marketValue, marketWage, marketWageAt, starPaySpread } from './market-prices';
+import { marketWage, marketWageAt, starPaySpread } from './market-prices';
 export {
   MARKET_CONFIG,
   STAR_SPREAD_CONFIG,
@@ -32,7 +32,6 @@ export {
   marketWage,
   marketValue,
   divisionFor,
-  ABILITY_FIT,
   wageDivision,
 } from './market-prices';
 import { ownStarters } from './world';
@@ -48,7 +47,6 @@ import { directionOption } from './direction';
 import { delegatePlan, insolvencyStop, planLabel, runwayTest } from './delegation';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom } from './calendar';
-import { credit } from './transactions';
 import { suitorFor } from './transfers';
 import { joinAtClose, npcContractTerm } from './free-agents';
 import { npcOffer, recordPlayerMove } from './npc-market';
@@ -801,22 +799,11 @@ export function transferRequests(w: World) {
     });
   }
 }
-/** Before the 1995 Bosman ruling's first summer an expiring contract still earned a fee (→CLUB-28). */
-export const BOSMAN_YEAR = 1996;
-/** The share of his value, in percent, his new club pays for a player whose contract ran out. */
-export const EXPIRY_COMPENSATION = 50;
-/**
- * Season close, once the new season's books are open (→CLUB-28): every player whose contract has
- * run out leaves. From 1996 he leaves on a free; before, the club he joins pays 50% of his value,
- * at `division`, the one he played in, and one no club signs brings nothing and joins the free
- * agents (→CLUB-49). Loan players go back when the loan ends, and announced retirements have
- * already retired.
- */
-export function expireContracts(w: World, division = clubOf(w).tier) {
+/** Unrenewed contracts end on a free transfer in every era (→CLUB-28/49). */
+export function expireContracts(w: World) {
   for (const p of activePlayers(w)) {
     if (p.loanUntil || p.until > w.year) continue;
-    const value = marketValue(w, p, division),
-      amount = w.year >= BOSMAN_YEAR ? '0' : ratio(value, BigInt(EXPIRY_COMPENSATION), 100n),
+    const amount = '0',
       club = suitorFor(w, p, random(`${w.seed}:expiry:${p.id}:${w.year}`), amount),
       where = club
         ? sourceMessage('copy.contracts.09184ea14a', { p0: club.name })
@@ -841,26 +828,11 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     } else movePerson(w, p, undefined, true);
     // One no club signs is a free agent (→CLUB-49).
     if (!club) joinAtClose(w, p);
-    if (w.year >= BOSMAN_YEAR || !club) {
-      addEvent(
-        w,
-        'contract-expiry',
-        sourceMessage('copy.contracts.41d78072fe', { p0: p.name }),
-        `${where} · ${w.year >= BOSMAN_YEAR ? sourceMessage('copy.contracts.185bbfe3e3') : sourceMessage('copy.contracts.cd546d58a6')}`,
-      );
-      continue;
-    }
-    credit(w, amount);
     addEvent(
       w,
-      'free-transfer-compensation',
-      sourceMessage('copy.contracts.721315c6c2', { p0: p.name }),
-      sourceMessage('copy.contracts.d063824c2b', {
-        p0: where,
-        p1: moneyLabel(w, value),
-        p2: EXPIRY_COMPENSATION,
-      }),
-      amount,
+      'contract-expiry',
+      sourceMessage('copy.contracts.41d78072fe', { p0: p.name }),
+      `${where} · ${sourceMessage('copy.contracts.185bbfe3e3')}`,
     );
   }
 }

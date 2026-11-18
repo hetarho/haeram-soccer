@@ -34,7 +34,7 @@ const vectors = [
     share: 0.03,
     wageUnits: 0.6713662069795455,
     valueUnits: 2.212080172900553,
-    wage: '578',
+    wage: '1068',
     value: '1904',
   },
   {
@@ -47,7 +47,7 @@ const vectors = [
     share: 0.275,
     wageUnits: 135.9569881607702,
     valueUnits: 271.9139763215404,
-    wage: '7712968',
+    wage: '17338243',
     value: '15425937',
   },
   {
@@ -73,7 +73,7 @@ const vectors = [
     share: 0.15,
     wageUnits: 36.86584172568527,
     valueUnits: 36.86584172568527,
-    wage: '824983884',
+    wage: '2074959466',
     value: '824983884',
   },
   {
@@ -99,7 +99,7 @@ const vectors = [
     share: 0.03,
     wageUnits: 8.147351021376446,
     valueUnits: 16.294702042752892,
-    wage: '103279',
+    wage: '907604',
     value: '206558',
   },
 ];
@@ -298,7 +298,12 @@ describe('era star pay spread (CLUB-48)', () => {
     ability: number,
     age: number,
     potential: number,
-  ) => footballQuote(code, year, prices.marketWageUnits(division, ability, age, potential));
+  ) =>
+    footballQuote(
+      code,
+      year,
+      prices.marketWageUnits(prices.wageDivision(code, division, ability), ability, age, potential),
+    );
   function withSpread<T>(table: typeof prices.STAR_SPREAD_CONFIG, run: () => T) {
     const kept = { ...prices.STAR_SPREAD_CONFIG };
     Object.assign(prices.STAR_SPREAD_CONFIG, table);
@@ -548,12 +553,13 @@ describe('exceptional-player wage demands', () => {
     expect(wage(95) / wage(80)).toBeGreaterThan(wage(90) / wage(80));
   });
 
-  it('international stars demand top-flight money in a lower division', () => {
-    for (const division of [1, 2, 3]) {
-      expect(wage(90, division)).toBe(wage(90));
-      expect(wage(99, division)).toBe(wage(99));
-      expect(wage(87, division)).toBeGreaterThan(wage(87) * prices.divisionShare(division));
-    }
+  it('keeps the raw wage curve on its supplied division; marketWageAt selects the paid division', () => {
+    for (const division of [1, 2, 3])
+      for (const ability of [87, 90, 99])
+        expect(wage(ability, division) / wage(ability)).toBeCloseTo(
+          prices.divisionShare(division),
+          12,
+        );
   });
 
   it('keeps wages monotonic across the star and international-market boundaries', () => {
@@ -573,16 +579,6 @@ describe('ability-fit wage (CLUB-25 r61, T712)', () => {
       born: year - age,
       potential,
     }) as Player;
-  /** Runs with the switch set, the saved value restored after. */
-  function withFit<T>(inForce: boolean, run: () => T) {
-    const kept = prices.ABILITY_FIT.inForce;
-    prices.ABILITY_FIT.inForce = inForce;
-    try {
-      return run();
-    } finally {
-      prices.ABILITY_FIT.inForce = kept;
-    }
-  }
   function withSpread<T>(spread: number, run: () => T) {
     const kept = { ...prices.STAR_SPREAD_CONFIG };
     Object.assign(prices.STAR_SPREAD_CONFIG, { shared: [[1970, spread]], own: {} });
@@ -595,52 +591,34 @@ describe('ability-fit wage (CLUB-25 r61, T712)', () => {
   const wageAt = (division: number, ability: number, age = 26, potential = ability, year = 1990) =>
     Number(prices.marketWageAt('ENG', year, division, player(ability, age, potential, year)));
 
-  it('is off in production: every wage is priced on the club division given', () => {
-    expect(prices.ABILITY_FIT.inForce).toBe(false);
-    for (const division of [0, 1, 2, 3, 4])
-      for (const ovr of [40, 55, 66, 72, 77, 90])
-        expect(prices.wageDivision('ENG', division, ovr)).toBe(division);
+  it("keeps a player suiting his club's division on that division", () => {
+    for (const ovr of [50, 60, 66]) {
+      expect(prices.wageDivision('ENG', 1, ovr)).toBe(1);
+      expect(wageAt(1, ovr)).toBe(
+        Number(
+          footballQuote(
+            'ENG',
+            1990,
+            prices.marketWageUnits(1, ovr, 26, ovr, prices.starPaySpread('ENG', 1990)),
+          ),
+        ),
+      );
+    }
+    expect(prices.wageDivision('ENG', 2, 55)).toBe(2);
   });
 
-  it("pays a player at or below his club division's typical strength on the club's division", () => {
-    withFit(true, () => {
-      // The second tier settles at 66 (`tierLevel(1)`), the third at 55.
-      for (const ovr of [50, 60, 66]) {
-        expect(prices.wageDivision('ENG', 1, ovr)).toBe(1);
-        expect(wageAt(1, ovr)).toBe(withFit(false, () => wageAt(1, ovr)));
+  it('pays top-flight ability on top-flight terms in every division', () => {
+    for (const ovr of [80, 86, 90])
+      for (const division of [1, 2, 3, 4]) {
+        expect(prices.wageDivision('ENG', division, ovr)).toBe(0);
+        expect(wageAt(division, ovr)).toBe(wageAt(0, ovr));
       }
-      expect(wageAt(2, 55)).toBe(withFit(false, () => wageAt(2, 55)));
-    });
+    // Between levels, fractional divisions retain their interpolation.
+    expect(prices.wageDivision('ENG', 2, 71.5)).toBe(0.5);
   });
 
-  it('pays a better player on the division his ability suits, never below his club division', () => {
-    withFit(true, () => {
-      for (const division of [1, 2, 3, 4])
-        for (const ovr of [60, 68, 72, 75]) {
-          const suits = prices.divisionFor('ENG', ovr);
-          if (suits >= division) continue;
-          expect(prices.wageDivision('ENG', division, ovr)).toBe(suits);
-          const fitted = wageAt(division, ovr);
-          expect(fitted).toBe(withFit(false, () => wageAt(suits, ovr)));
-          expect(fitted).toBeGreaterThan(withFit(false, () => wageAt(division, ovr)));
-        }
-    });
-  });
-
-  it("pays top-flight terms in every division from OVR 77, the top flight's typical strength", () => {
-    withFit(true, () => {
-      for (const ovr of [77, 80, 86])
-        for (const division of [1, 2, 3, 4]) expect(wageAt(division, ovr)).toBe(wageAt(0, ovr));
-    });
-  });
-
-  it("pays a second-tier player 40% of a top-flight club's wage at a second-tier club", () => {
-    withFit(true, () => {
-      const ratio = wageAt(1, 66) / wageAt(0, 66);
-      expect(ratio).toBeCloseTo(0.4, 3);
-      expect(ratio).toBeGreaterThanOrEqual(0.35);
-      expect(ratio).toBeLessThanOrEqual(0.5);
-    });
+  it('pays a second-tier player 40% of a top-flight wage', () => {
+    expect(wageAt(1, 66) / wageAt(0, 66)).toBeCloseTo(0.4, 3);
   });
 
   it('never lowers a wage as OVR or potential rises, in divisions 0–4 at spreads 0, 0.5 and 1', () => {
@@ -648,53 +626,49 @@ describe('ability-fit wage (CLUB-25 r61, T712)', () => {
     const check = (label: string, low: number, high: number) => {
       if (high < low) falls.push(`${label}: ${high} < ${low}`);
     };
-    withFit(true, () => {
-      for (const spread of [0, 0.5, 1])
-        withSpread(spread, () => {
-          for (const division of [0, 1, 2, 3, 4])
-            for (const age of [17, 21, 25, 30, 34]) {
-              const at = `division ${division} s ${spread} age ${age}`;
-              for (let ovr = 40; ovr < 98; ovr++)
-                for (const potential of [ovr, 85, 99])
-                  check(
-                    `${at} OVR ${ovr}→${ovr + 1} potential ${potential}`,
-                    wageAt(division, ovr, age, Math.max(potential, ovr)),
-                    wageAt(division, ovr + 1, age, Math.max(potential, ovr + 1)),
-                  );
-              for (let ovr = 40; ovr <= 98; ovr += 3)
-                for (let potential = ovr; potential < 99; potential++)
-                  check(
-                    `${at} OVR ${ovr} potential ${potential}→${potential + 1}`,
-                    wageAt(division, ovr, age, potential),
-                    wageAt(division, ovr, age, potential + 1),
-                  );
-            }
-        });
-    });
+    for (const spread of [0, 0.5, 1])
+      withSpread(spread, () => {
+        for (const division of [0, 1, 2, 3, 4])
+          for (const age of [17, 21, 25, 30, 34]) {
+            const at = `division ${division} s ${spread} age ${age}`;
+            for (let ovr = 40; ovr < 98; ovr++)
+              for (const potential of [ovr, 85, 99])
+                check(
+                  `${at} OVR ${ovr}→${ovr + 1} potential ${potential}`,
+                  wageAt(division, ovr, age, Math.max(potential, ovr)),
+                  wageAt(division, ovr + 1, age, Math.max(potential, ovr + 1)),
+                );
+            for (let ovr = 40; ovr <= 98; ovr += 3)
+              for (let potential = ovr; potential < 99; potential++)
+                check(
+                  `${at} OVR ${ovr} potential ${potential}→${potential + 1}`,
+                  wageAt(division, ovr, age, potential),
+                  wageAt(division, ovr, age, potential + 1),
+                );
+          }
+      });
     expect(falls.slice(0, 5)).toEqual([]);
   });
 
   it("reads W80 on the division the player's wage is paid on", () => {
-    withFit(true, () =>
-      withSpread(0.5, () => {
-        for (const division of [1, 2, 4])
-          for (const ovr of [70, 76, 82, 90]) {
-            const p = player(ovr, 27, ovr, 1990);
-            const paidOn = prices.wageDivision('ENG', division, ovr);
-            expect(prices.marketWageAt('ENG', 1990, division, p)).toBe(
-              footballQuote('ENG', 1990, prices.marketWageUnits(paidOn, ovr, 27, ovr, 0.5)),
-            );
-          }
-      }),
-    );
+    withSpread(0.5, () => {
+      for (const division of [1, 2, 4])
+        for (const ovr of [70, 76, 82, 90]) {
+          const p = player(ovr, 27, ovr, 1990);
+          const paidOn = prices.wageDivision('ENG', division, ovr);
+          expect(prices.marketWageAt('ENG', 1990, division, p)).toBe(
+            footballQuote('ENG', 1990, prices.marketWageUnits(paidOn, ovr, 27, ovr, 0.5)),
+          );
+        }
+    });
   });
 
   it("keeps transfer values on the selling club's division", () => {
     for (const division of [0, 1, 2, 4])
       for (const ovr of [55, 66, 72, 80]) {
         const p = player(ovr, 24, ovr + 5, 1990);
-        expect(withFit(true, () => prices.marketValueAt('ENG', 1990, division, p))).toBe(
-          withFit(false, () => prices.marketValueAt('ENG', 1990, division, p)),
+        expect(prices.marketValueAt('ENG', 1990, division, p)).toBe(
+          footballQuote('ENG', 1990, prices.marketValueUnits(division, ovr, 24, ovr + 5, 1990)),
         );
       }
   });

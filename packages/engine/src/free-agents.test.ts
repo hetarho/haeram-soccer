@@ -27,7 +27,7 @@ import {
   stature,
 } from './world';
 import { clubStyle } from './tactics';
-import { marketWageAt } from './market-prices';
+import { divisionFor, marketWageAt } from './market-prices';
 import { NPC_WAGE_DECISIONS, npcWageBill } from './books';
 import { LINE_MINIMUM, lineOf } from './player';
 import { operatingExpensesAt } from './finance';
@@ -198,6 +198,19 @@ describe('observed released-player source proof', () => {
 });
 
 describe('NPC contracts and need-based free agents on isolated squads', () => {
+  it('prices a released player on the division his ability suits', () => {
+    const { w, c, players } = npcBooksFixture();
+    c.country = 'ENG'; // Synthetic ids use the pool's English nationality fallback.
+    const p = players[0]!;
+    for (const a of ATTRIBUTES) p.attrs[a] = 65;
+    p.potential = 65;
+    const fits = divisionFor(c.country, 65);
+    joinFreeAgents(w, p, w.year, c.id);
+    expect(w.freeAgents!.find((q) => q.id === p.id)!.wage).toBe(
+      marketWageAt(c.country, w.year, fits, p),
+    );
+  });
+
   it.each([1951, 2020])(
     'matches the pre-change settlement for sparse and dense squads in %i',
     (year) => {
