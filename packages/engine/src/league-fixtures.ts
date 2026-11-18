@@ -66,7 +66,7 @@ export const emptyTable = (): TableRow => ({
 });
 
 /** The settled league ordering, shared by season outcomes and individual award team credit. */
-export function ranked(w: Pick<World, 'tables'>, clubs: readonly Club[]) {
+export function ranked<T extends Pick<Club, 'id'>>(w: Pick<World, 'tables'>, clubs: readonly T[]) {
   return [...clubs].sort((a, b) => {
     const x = w.tables[a.id] || emptyTable(),
       y = w.tables[b.id] || emptyTable();

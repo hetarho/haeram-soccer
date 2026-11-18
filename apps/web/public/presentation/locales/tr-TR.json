@@ -7020,6 +7020,7 @@
     "finance.distress.detail1": "Mali uyarı taraftar moralini düşürür. {rounds} tur boyunca {limit} üzeri borç zorunlu satışları başlatır.",
     "finance.distress.detail2": "Zorunlu satışlar ile bonservisli ve kiralık transfer kısıtları uygulanır. Serbest oyuncular yalnızca asgari kadroyu veya kaleciyi tamamlayabilir. {limit} üzeri borç kayyum yönetimini başlatır.",
     "finance.distress.detail3": "Zorunlu satış kısıtları sürer. Girişte sezon başına bir kez {points} puan silinir ve borcun %{percent} kadarı affedilir. Toparlanma için sezon sonunda borç {limit} altında olmalıdır.",
-    "career.ended.record": "Kulüp yönetimi {season} sezonunda sona erdi. {kept}"
+    "career.ended.record": "Kulüp yönetimi {season} sezonunda sona erdi. {kept}",
+    "league.points.administration": "−{points} puan · kayyum yönetimi"
   }
 }

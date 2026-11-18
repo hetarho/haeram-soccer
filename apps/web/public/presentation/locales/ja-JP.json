@@ -7017,6 +7017,7 @@
     "finance.distress.detail1": "財政警告によりファンの支持が下がります。負債が{limit}を超えた状態で{rounds}節続くと売却要求に移行します。",
     "finance.distress.detail2": "強制売却が行われ、移籍金を伴う獲得と期限付き移籍が制限されます。自由契約は最低人数またはGKの確保に限られます。負債が{limit}を超えると法的管理に移行します。",
     "finance.distress.detail3": "売却要求の制限が続きます。移行時にシーズンに一度、勝点{points}が減点され、負債の{percent}%が免除されます。シーズン終了時に負債が{limit}未満なら回復します。",
-    "career.ended.record": "{season}シーズンにクラブ運営が終了しました。{kept}"
+    "career.ended.record": "{season}シーズンにクラブ運営が終了しました。{kept}",
+    "league.points.administration": "−{points}点 · 法的管理"
   }
 }

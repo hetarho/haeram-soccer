@@ -7023,6 +7023,7 @@
     "finance.distress.detail1": "L’avertissement financier fait baisser le moral des supporters. Une dette supérieure à {limit} pendant {rounds} journées déclenche les ventes forcées.",
     "finance.distress.detail2": "Les ventes forcées et les restrictions sur les transferts payants et les prêts s’appliquent. Les joueurs libres ne peuvent que rétablir l’effectif minimum ou un gardien. Une dette supérieure à {limit} déclenche le redressement judiciaire.",
     "finance.distress.detail3": "Les restrictions des ventes forcées continuent. L’entrée retire {points} points une fois par saison et efface {percent}% de la dette. La sortie exige une dette inférieure à {limit} en fin de saison.",
-    "career.ended.record": "La gestion du club s’est terminée lors de la saison {season}. {kept}"
+    "career.ended.record": "La gestion du club s’est terminée lors de la saison {season}. {kept}",
+    "league.points.administration": "−{points} points · redressement judiciaire"
   }
 }

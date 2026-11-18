@@ -7020,6 +7020,7 @@
     "finance.distress.detail1": "Die Finanzwarnung senkt die Fanstimmung. Schulden über {limit} während {rounds} Spieltagen lösen Zwangsverkäufe aus.",
     "finance.distress.detail2": "Zwangsverkäufe und Beschränkungen für Ablöse- und Leihtransfers gelten. Vereinslose dürfen nur die Mindestkadergröße oder einen Torwart sichern. Schulden über {limit} lösen die Zwangsverwaltung aus.",
     "finance.distress.detail3": "Die Beschränkungen der Zwangsverkäufe bleiben bestehen. Der Eintritt zieht einmal pro Saison {points} Punkte ab und erlässt {percent}% der Schulden. Erholung erfordert Schulden unter {limit} am Saisonende.",
-    "career.ended.record": "Die Vereinsführung endete in der Saison {season}. {kept}"
+    "career.ended.record": "Die Vereinsführung endete in der Saison {season}. {kept}",
+    "league.points.administration": "−{points} Punkte · Zwangsverwaltung"
   }
 }

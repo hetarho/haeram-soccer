@@ -7023,6 +7023,7 @@
     "finance.distress.detail1": "L’avvertimento finanziario riduce il morale dei tifosi. Un debito superiore a {limit} per {rounds} giornate avvia le vendite forzate.",
     "finance.distress.detail2": "Si applicano vendite forzate e limiti ad acquisti a pagamento e prestiti. Gli svincolati possono solo ripristinare la rosa minima o un portiere. Un debito superiore a {limit} avvia l’amministrazione controllata.",
     "finance.distress.detail3": "Restano i limiti delle vendite forzate. L’ingresso sottrae {points} punti una volta a stagione e cancella il {percent}% del debito. Il recupero richiede un debito inferiore a {limit} a fine stagione.",
-    "career.ended.record": "La gestione del club è terminata nella stagione {season}. {kept}"
+    "career.ended.record": "La gestione del club è terminata nella stagione {season}. {kept}",
+    "league.points.administration": "−{points} punti · amministrazione controllata"
   }
 }

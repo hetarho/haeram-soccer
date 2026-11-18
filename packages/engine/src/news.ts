@@ -1,5 +1,5 @@
 import { linkPlayer } from './player-records';
-import { archivedLeaguePoints } from './league-fixtures';
+import { archivedLeaguePoints, leaguePoints } from './league-fixtures';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
 import type { Event, MatchRecord, Player, World } from '../../contracts/src/types';
@@ -1261,7 +1261,7 @@ function honours(w: World): NewsItem[] {
       ...base('league'),
       title: `${name}, ${last.tier === 0 ? sourceMessage('copy.news.a7e193f977') : sourceMessage('copy.news.e273562b7b', { p0: last.tier + 1 })}`,
       detail: sourceMessage('copy.news.6bf44c20c1', {
-        p0: last.points,
+        p0: leaguePoints(last),
         p1: last.won,
         p2: last.drawn,
         p3: last.lost,

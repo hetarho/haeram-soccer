@@ -67,7 +67,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T980 | League tables show deducted points | ECON LEAGUE ARCH | T969 | todo |
+| T980 | League tables show deducted points | ECON LEAGUE ARCH | T969 | doing@261118.mr18cx |
 | T971 | The 단장 plans to a season-end cash floor, not a loss runway | ECON CLUB STAFF | T967 | todo |
 | T972 | The budget page and verdicts speak of the cash floor | WEB ECON ARCH | T971 | todo |
 | T973 | Players answer renewal offers; clubs nobody owns offer by need | CLUB WORLD | T979 T967 | todo |

@@ -87,3 +87,5 @@ export {
   WORLD_START,
 } from './lib/startChoices';
 export { leagueName, LeaguePicker, useLeagueFixtures } from './ui/LeaguePicker';
+
+export { LeaguePoints, PointsDeduction } from './ui/PointsDeduction';

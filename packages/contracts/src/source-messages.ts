@@ -1,5 +1,6 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'league.points.administration': '−{points}점 · 법정관리',
   'finance.distress.nextBand': '{title} 잔고 {cash} · 다음 단계 부채 기준: {limit} 초과',
   'finance.distress.recoveryBand': '{title} 잔고 {cash} · 시즌 마감 시 부채 {limit} 미만이면 회복',
   'finance.cash.runway': '{title} 고정지출 {weeks}주분 남음',

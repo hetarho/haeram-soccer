@@ -7023,6 +7023,7 @@
     "finance.distress.detail1": "La advertencia financiera reduce el ánimo de la afición. Una deuda superior a {limit} durante {rounds} jornadas provoca ventas forzosas.",
     "finance.distress.detail2": "Se aplican ventas forzosas y restricciones a fichajes con traspaso y cesiones. Los agentes libres solo pueden cubrir el mínimo de plantilla o un portero. Una deuda superior a {limit} activa la administración judicial.",
     "finance.distress.detail3": "Siguen las restricciones de ventas forzosas. La entrada resta {points} puntos una vez por temporada y condona el {percent}% de la deuda. La recuperación exige deuda inferior a {limit} al cierre.",
-    "career.ended.record": "La gestión del club terminó en la temporada {season}. {kept}"
+    "career.ended.record": "La gestión del club terminó en la temporada {season}. {kept}",
+    "league.points.administration": "−{points} puntos · administración judicial"
   }
 }

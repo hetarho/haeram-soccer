@@ -17,6 +17,8 @@ import { Chart, type ChartBand } from './Chart';
 import { ClubLink } from '../../../entities/club';
 import { divisionName } from '../../../entities/player';
 import { compactMoney, number, seasonName } from '../../../presentation/format';
+import { LeaguePoints } from '../../../entities/league';
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import { Money } from '../../../shared/ui/Money';
 import {
   businessSign,
@@ -573,7 +575,7 @@ export function SeasonTable({
                         </span>
                       </td>
                       <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
-                        {localizeValue(w.tables[w.playerClub]?.points ?? 0)}
+                        <LeaguePoints row={w.tables[w.playerClub] ?? { points: 0 }} />
                       </td>
                       <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>—</td>
                       <td data-label="Elo">{localizeValue(clubOf(w).elo?.toFixed(0) ?? '—')}</td>
@@ -715,9 +717,9 @@ function OwnedSeasonRow({
             <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
               <span
                 className={t.cellText}
-                title={localizeValue(`${h.points} (${h.won}-${h.drawn}-${h.lost})`)}
+                title={localizeValue(`${number(leaguePoints(h))} (${h.won}-${h.drawn}-${h.lost})`)}
               >
-                {localizeValue(h.points)} ({localizeValue(h.won)}-{localizeValue(h.drawn)}-
+                <LeaguePoints row={h} /> ({localizeValue(h.won)}-{localizeValue(h.drawn)}-
                 {localizeValue(h.lost)})
               </span>
             </td>

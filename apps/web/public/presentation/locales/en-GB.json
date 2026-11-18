@@ -7020,6 +7020,7 @@
     "finance.distress.detail1": "The financial warning lowers fan mood. Debt above {limit} for {rounds} rounds triggers forced sales.",
     "finance.distress.detail2": "Forced sales apply and fee and loan signings are restricted. Free agents may only restore the squad minimum or a goalkeeper. Debt above {limit} triggers administration.",
     "finance.distress.detail3": "Forced-sale restrictions continue. Entry deducts {points} points once per season and writes off {percent}% of debt. Recovery requires debt below {limit} at season close.",
-    "career.ended.record": "Club management ended in the {season} season. {kept}"
+    "career.ended.record": "Club management ended in the {season} season. {kept}",
+    "league.points.administration": "−{points} points · administration"
   }
 }
