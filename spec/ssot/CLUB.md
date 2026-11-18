@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r81 | Define the browser-demo rules for squad and growth.
+> r82 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its squad (→WORLD-16) becomes its own players, each as the player he was with his contract, filled to 20 with players generated at its level when it holds fewer (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -100,7 +100,7 @@
 - CLUB-25 [o] Every player has a market wage from his OVR (→PLAYER-6), age and potential, the division he is paid on and the football index (→ECON-26); it rises steeply with OVR, so a star earns many times a squad player. ← players are paid what the market says they are worth
   - the estimated wage-era pilot (1992:1, 2005:1.5, 2025:2.5) was withdrawn after its lived books failed the every-nonproject-club solvency condition (measured261109). No additional wage-era factor is in production; player quotes retain the released curve and era star spread. The failed candidate and exact payroll observations are retained in the economy calibration artifacts. ← increasing wages across every club created a new2010 German book paying159.38% of its income
   - a signed wage remains fixed by its contract (→ECON-4); existing saves are not retrospectively repriced.
-  - the division he is paid on is his club's, or the division his ability suits when that is higher: between two tiers where his OVR falls between their typical strengths, the top flight from its typical strength up. A player good enough for a higher division asks its wage at any club, and every club pays on this rule alike, a club nobody owns in its books and its means level too (→~ECON-36, →~LEAGUE-10). ← lower clubs rose on players the market priced at their small division's wages (measured 261108: signings suiting a higher division carried 90.1% of 지역 유지's and 자수성가 축구팬's XI points above their league's median, paid 0.40 of the wage their ability suits)
+  - the division he is paid on is his club's, or the division his ability suits when that is higher: between two tiers where his OVR falls between their typical strengths (→WORLD-15: 80/70/60/50), the top flight from its typical strength up. A player good enough for a higher division asks its wage at any club, and every club pays on this rule alike, a club nobody owns in its books and its means level too (→~ECON-36, →~LEAGUE-10). ← lower clubs rose on players the market priced at their small division's wages (measured 261108: signings suiting a higher division carried 90.1% of 지역 유지's and 자수성가 축구팬's XI points above their league's median, paid 0.40 of the wage their ability suits)
     - in force for every club; reference careers (→LEAGUE-13) and the books of clubs nobody owns (→ECON-36) lived with it are measured against their bands, and a miss is corrected in the curve's level or the books, never by paying a player on his club's division alone.
   - wages above OVR 80 gain a convex scarcity premium: 1 + clamp((OVR − 80)/15, 0, 1)², reaching ×2 at 95. Age, potential and the football index still apply, and transfer values keep their separate curve. These star terms count in full only at the era's star pay spread of 1 (→!CLUB-48).
   - ordinary-squad targets before the exceptional-player correction, calibrated with →ECON-29: in a top flight a player rated 80 earns 6–10× one rated 60; a second-tier club pays a player whose ability suits the second tier 35–50% of what a top-flight club pays him. Measured 261013: 7.4× and 40%.
@@ -400,6 +400,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r82 261118 CLUB-25✎ implicit ability-fit tier anchors→WORLD-15's 80/70/60/50 levels
 - r81 261118 CLUB-33✎ the former runway test in the recruitment line→ECON-33's cash floor test
 - r80 261118 CLUB-25/48✎ residual out-of-production gate and interpolation wording→the ability-fit division pricing already in force from r78
 - r79 261118 CLUB-44✎ academy exemption without an explicit return rule→recorded graduates of the registering club stay exempt on eligible returns; CLUB-47✎ fixed decline alert at 29→the player's own decline age; CLUB-54✎ tenure and academy term without return rules→a new stint on signing, resumed tenure on parent-club loan return or takeover, and retained documented academy origin on return
