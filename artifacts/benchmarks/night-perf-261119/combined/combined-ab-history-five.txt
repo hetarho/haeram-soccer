@@ -1,0 +1,67 @@
+process 1/4: cpu ×0.831
+process 2/4: cpu ×0.780
+process 3/4: cpu ×0.814
+process 4/4: cpu ×0.700
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "d999af70",
+  "cand": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/pregate",
+  "procs": 4,
+  "jobs": 1,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "f80fa33ad16a29d3",
+    "cand": "509e926f0e3b3769"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "b0e9f0e763c79d50"
+    ],
+    "cand": [
+      "b0e9f0e763c79d50"
+    ]
+  },
+  "season": {
+    "pairs": 4,
+    "ms": {
+      "base": {
+        "cpu": 13466.373,
+        "wall": 13551.764625
+      },
+      "cand": {
+        "cpu": 10881.2915,
+        "wall": 10974.847813
+      }
+    },
+    "cpu": {
+      "ratio": 0.7797,
+      "lo": 0.7272,
+      "hi": 0.8223,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.6918,
+      "lo": 0.5061,
+      "hi": 0.8236,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    9.005859375,
+    6.94677734375,
+    5.59033203125,
+    5.47265625,
+    14.14306640625
+  ]
+}

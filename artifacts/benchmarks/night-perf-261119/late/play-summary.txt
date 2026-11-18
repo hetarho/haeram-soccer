@@ -1,0 +1,97 @@
+played 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+
+world part KB by played seasons
+people                          9485  10518  11476  12481  13498  14539  15531  16621  17667  18776  19843  20991  22100  23313  24504  25797  26994
+playerRecords                   2991   3414   3868   4261   4665   4923   5294   5529   5938   6218   6661   7048   7505   7934   8445   8808   9202
+squads                          8476   8438   8438   8406   8368   8296   8340   8353   8390   8385   8465   8481   8505   8530   8526   8498   8500
+ownMatches                         0    162    326    489    650    813    975   1138   1301   1464   1627   1789   1951   2113   2274   2441   2612
+fixtures                        1204   1204   1204   1204   1204   1204   1204   1204   1204   1204   1204   1204   1204   1204   1204   1204   1204
+recentResults                    775    775    775    775    775    775    778    791    802    814    826    850    872    892    914    928    941
+newsJournal                        1     50    100    151    209    264    313    373    428    477    530    577    625    680    731    784    837
+clubs                            656    656    656    657    657    657    657    658    658    658    658    657    656    657    657    657    657
+events                             0     27     52     74    104    126    150    179    202    223    254    275    299    328    352    374    404
+history                          125    138    153    167    181    196    212    228    245    261    277    295    313    331    349    368    385
+rankHistory                        0     18     37     55     73     91    109    127    145    163    163    163    163    163    164    164    164
+freeAgents                       148    145    147    146    146    146    145    144    146    146    146    146    146    147    147    147    146
+players                           17     28     38     42     51     61     63     76     87     89     98    110    112    120    131    133    142
+careerReads                        0     10     19     24     30     38     43     49     57     62     66     72     77     82     87     90     95
+staffMarket                       41     42     47     48     52     54     58     59     62     64     66     66     68     70     71     72     73
+tables                            47     47     47     47     47     47     47     47     47     47     47     47     47     47     47     47     47
+cups                              33     33     33     33     33     33     33     33     33     33     33     33     33     33     33     33     33
+inbox                              0     23     29     31     30     28     31     28     27     29     27     27     29     26     27     27     25
+
+view part KB by played seasons
+managers                         295    337    358    385    417    442    475    508    539    565    590    623    650    676    695    707    721
+world.clubs                      663    663    664    664    665    664    664    665    665    665    666    664    663    664    664    664    665
+coaches                           60     81     83     89     83     92    103    101     99    117    144    149    155    173    208    205    226
+world.rankHistory                  0     18     37     55     73     91    109    127    145    163    163    163    163    163    164    164    164
+world.players                     17     28     38     42     51     61     63     76     87     89     98    110    112    120    131    133    142
+world.ownMatches                   0    101    104    105    102    103    105    104    105    105    104    104    104    104    102    103    106
+world.history                     15     18     22     26     30     35     39     44     49     54     58     64     69     73     79     84     88
+world.fixtures                    78     78     78     78     78     78     78     78     78     78     78     78     78     78     78     78     78
+world.staffMarket                 41     42     47     48     52     54     58     59     62     64     66     66     68     70     71     72     73
+office                            53     57     58     58     59     60     61     61     62     63     63     64     65     66     66     67     68
+world.tables                      47     47     47     47     47     47     47     47     47     47     47     47     47     47     47     47     47
+world.inbox                        0     23     29     31     30     28     31     28     27     29     27     27     29     26     27     27     25
+world.events                       0     22     22     22     22     22     22     23     22     22     22     22     22     23     22     22     22
+world.discipline                   0     14     15     15     13     12     15     15     14     15     16     20     16     16     18     20     18
+world.europe                       0      0      0      0      0      0      8      8      8      8     16     16     16     16     16     16     16
+world.managerMarket               14     14     14     14     14     14     14     14     14     14     15     14     14     15     15     15     14
+news                               0     11     12     12     12     12     12     12     12     12     12     12     12     12     12     12     12
+world.bids                         0      0      0      0      5      5      0      7      8      8      9      9     10     10     11     11     11
+
+per probe: played year own ev json(MB) ser(MB) serMs cloneWorldMs viewMs fullPublishMs fullPostKB
+0 1950 0 1 24.0 23.0 72 224 18.6 1.8 1313
+1 1951 48 184 25.8 24.7 97 267 18.6 3.9 1595
+2 1952 96 353 27.5 26.3 104 292 14.3 4.4 1673
+3 1953 143 509 29.1 27.9 113 313 13.2 4.5 1736
+4 1954 190 712 30.8 29.5 131 339 22.2 5.5 1794
+5 1955 237 865 32.3 31.0 144 465 19.5 5.2 1869
+6 1956 284 1027 34.0 32.7 160 410 19.1 5.6 1959
+7 1957 331 1222 35.7 34.3 155 414 20.2 5.1 2022
+8 1958 378 1378 37.5 36.1 186 586 24.1 6.4 2090
+9 1959 425 1523 39.2 37.7 191 487 24.2 9.6 2169
+10 1960 472 1733 41.1 39.6 191 590 25.6 6.1 2240
+11 1961 519 1880 42.9 41.4 184 518 21.2 5.8 2304
+12 1962 566 2046 44.8 43.2 246 620 35.5 9.4 2346
+13 1963 613 2241 46.7 45.2 288 743 58.1 12.1 2402
+14 1964 660 2406 48.7 47.1 413 1169 36.6 9.8 2480
+15 1965 708 2557 50.7 49.0 352 974 43.6 8.9 2505
+16 1966 756 2759 52.5 50.9 323 778 31.7 9.1 2549
+
+reads (read ms + clone ms / bytes)
+0 archiveNow 1.5+0/0K | archivePrev 0.1+0.3/10K | clubRecords 0.1+0/0K | managerHistory 0.6+0/1K | headToHead 0.1+0/0K | newsPage 0.1+0/0K | fullStatsLeague 0.4+0/0K | fullStatsCup 0.1+0/0K
+1 archiveNow 0.2+0/4K | archivePrev 0+2.5/199K | clubRecords 0.3+0/2K | managerHistory 0.7+0/2K | headToHead 0.1+0/1K | newsPage 0.1+0.1/12K | fullStatsLeague 0.3+0/0K | fullStatsCup 0+0/0K
+2 archiveNow 0.2+0.1/4K | archivePrev 0+3.5/204K | clubRecords 0.2+0/2K | managerHistory 0.4+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.3+0/0K | fullStatsCup 0+0/0K
+3 archiveNow 0.2+0/1K | archivePrev 0+5.2/202K | clubRecords 0.4+0/2K | managerHistory 0.6+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.3+0/0K | fullStatsCup 0+0/0K
+4 archiveNow 0.2+0.1/9K | archivePrev 0.1+3.1/198K | clubRecords 0.3+0/2K | managerHistory 0.6+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.4+0/0K | fullStatsCup 0+0/0K
+5 archiveNow 0.2+0/2K | archivePrev 0.1+3.1/207K | clubRecords 0.4+0/2K | managerHistory 0.6+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.4+0/0K | fullStatsCup 0+0/0K
+6 archiveNow 0.4+0.1/3K | archivePrev 0.1+3.3/200K | clubRecords 0.5+0/2K | managerHistory 0.6+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.3+0/0K | fullStatsCup 0+0/0K
+7 archiveNow 0.3+0.1/8K | archivePrev 0.1+3.1/203K | clubRecords 0.4+0/2K | managerHistory 0.6+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.3+0/0K | fullStatsCup 0+0/0K
+8 archiveNow 0.4+0.1/3K | archivePrev 0.1+3.4/208K | clubRecords 0.5+0/2K | managerHistory 0.7+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.3+0/0K | fullStatsCup 0+0/0K
+9 archiveNow 0.4+0/1K | archivePrev 0.1+3.2/202K | clubRecords 0.6+0/2K | managerHistory 0.7+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.4+0/0K | fullStatsCup 0+0/0K
+10 archiveNow 0.4+0.1/10K | archivePrev 0.1+3.1/201K | clubRecords 0.5+0/2K | managerHistory 0.7+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.4+0/0K | fullStatsCup 0+0/0K
+11 archiveNow 0.4+0/1K | archivePrev 0.1+3.4/212K | clubRecords 0.7+0/2K | managerHistory 0.8+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.3+0/0K | fullStatsCup 0+0/0K
+12 archiveNow 0.5+0.1/3K | archivePrev 0.2+3.3/201K | clubRecords 0.8+0/2K | managerHistory 1+0.1/3K | headToHead 0.1+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.4+0/0K | fullStatsCup 0+0/0K
+13 archiveNow 1.3+0.1/8K | archivePrev 0.2+3.6/205K | clubRecords 1.9+0.1/2K | managerHistory 2.4+0.3/4K | headToHead 0.5+0.1/1K | newsPage 0.1+0.2/12K | fullStatsLeague 0.7+0/0K | fullStatsCup 0.1+0/0K
+14 archiveNow 0.7+0.1/4K | archivePrev 0.2+3.5/207K | clubRecords 0.8+0.1/2K | managerHistory 1.3+0.1/4K | headToHead 0.2+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.5+0/0K | fullStatsCup 0+0/0K
+15 archiveNow 1.2+0.1/1K | archivePrev 0.2+3.6/210K | clubRecords 0.9+0.1/2K | managerHistory 1.8+0.1/4K | headToHead 0.3+0/1K | newsPage 0.1+0.1/12K | fullStatsLeague 0.4+0/0K | fullStatsCup 0+0/0K
+16 archiveNow 0.7+0.1/10K | archivePrev 1.7+3.6/210K | clubRecords 0.9+0.1/2K | managerHistory 2.1+0.1/4K | headToHead 0.2+0/1K | newsPage 0+0.1/12K | fullStatsLeague 0.5+0/0K | fullStatsCup 0.1+0/0K
+
+day costs (mean/max ms) by kind
+1 other[n275] eng 11.7/459 view 13.9/41 pub 7.2/27 post 0/1 || round-own[n46] eng 439.2/782 view 22/44 pub 24.5/37 post 2.1/5 || cup-own[n1] eng 233.3/233 view 18.4/18 pub 10.1/10 post 0.4/0 || close[n1] eng 1253.9/1254 view 44.9/45 pub 23.2/23 post 5.4/5
+2 other[n274] eng 10.4/457 view 14.9/40 pub 8.8/28 post 0.1/1 || round-own[n46] eng 429.7/555 view 22.6/42 pub 27.7/39 post 3.3/6 || cup-own[n2] eng 285.9/351 view 17.3/19 pub 17.8/21 post 2/2 || close[n1] eng 1050.7/1051 view 42.3/42 pub 25.1/25 post 2.6/3
+3 other[n275] eng 11.3/442 view 15.8/40 pub 9.1/29 post 0.1/1 || round-own[n46] eng 433.1/605 view 23.3/44 pub 28.2/45 post 3.6/7 || cup-own[n1] eng 218.2/218 view 15.6/16 pub 14.2/14 post 3.4/3 || close[n1] eng 941.9/942 view 38.6/39 pub 26.9/27 post 4.8/5
+4 other[n275] eng 11.9/422 view 17.2/47 pub 9.8/29 post 0.1/2 || round-own[n46] eng 442/606 view 25.4/56 pub 29.9/44 post 3.7/8 || cup-own[n1] eng 242.4/242 view 17.1/17 pub 14.7/15 post 2.3/2 || close[n1] eng 1661.7/1662 view 42.8/43 pub 27.8/28 post 4.3/4
+5 other[n275] eng 11.6/448 view 19.1/46 pub 10.2/30 post 0.1/1 || round-own[n46] eng 443.7/642 view 27.5/51 pub 31.5/50 post 3.7/7 || cup-own[n1] eng 221.4/221 view 23.1/23 pub 16.9/17 post 3/3 || close[n1] eng 978/978 view 43.4/43 pub 28.5/29 post 5.3/5
+6 other[n275] eng 12.9/589 view 20.9/47 pub 11.5/32 post 0.1/3 || round-own[n46] eng 459.7/651 view 29.4/55 pub 32.9/51 post 3.9/8 || cup-own[n1] eng 232.1/232 view 26.6/27 pub 19/19 post 2.8/3 || close[n1] eng 1139.8/1140 view 48.7/49 pub 30.8/31 post 5.7/6
+7 other[n275] eng 12.5/453 view 22.3/47 pub 12.1/32 post 0.1/1 || round-own[n46] eng 461.8/634 view 31.3/57 pub 35.4/56 post 3.8/8 || cup-own[n1] eng 217.5/217 view 20.7/21 pub 17.6/18 post 2.4/2 || close[n1] eng 1618.3/1618 view 43.2/43 pub 28.3/28 post 5.5/6
+8 other[n275] eng 11.6/421 view 21.6/46 pub 11.8/53 post 0.1/1 || round-own[n46] eng 432.5/610 view 29.9/56 pub 33/49 post 3.6/7 || cup-own[n1] eng 205.9/206 view 25.3/25 pub 16.2/16 post 2.7/3 || close[n1] eng 1014.1/1014 view 49/49 pub 31.5/31 post 7.2/7
+9 other[n275] eng 12.9/488 view 24.6/52 pub 12.9/38 post 0.1/1 || round-own[n46] eng 461.3/627 view 33.5/64 pub 36.1/52 post 4/9 || cup-own[n1] eng 244.4/244 view 27.8/28 pub 19.1/19 post 2.4/2 || close[n1] eng 957.3/957 view 54.1/54 pub 32.4/32 post 5.6/6
+10 other[n275] eng 13.1/511 view 26.3/113 pub 13.3/41 post 0.1/1 || round-own[n46] eng 461/631 view 34.8/61 pub 37.5/53 post 4.1/7 || cup-own[n1] eng 213.3/213 view 27.3/27 pub 17.3/17 post 2.4/2 || close[n1] eng 2044.4/2044 view 51.1/51 pub 35.7/36 post 8.5/9
+11 other[n275] eng 13.7/538 view 28.2/92 pub 14.2/44 post 0.1/1 || round-own[n46] eng 465.6/695 view 37.2/66 pub 39.9/57 post 3.8/8 || cup-own[n1] eng 227.2/227 view 34.9/35 pub 20/20 post 2.8/3 || close[n1] eng 896.4/896 view 50.2/50 pub 36.2/36 post 6.1/6
+12 other[n275] eng 13.6/488 view 28.9/58 pub 14.3/41 post 0.1/1 || round-own[n46] eng 458.4/641 view 38.7/68 pub 39.6/53 post 3.5/7 || cup-own[n1] eng 242.4/242 view 31.5/31 pub 19.8/20 post 2.3/2 || close[n1] eng 1158.9/1159 view 59.5/60 pub 38.7/39 post 9.4/9
+13 other[n275] eng 14.9/711 view 32.8/85 pub 15.8/46 post 0.1/1 || round-own[n46] eng 509.3/833 view 46.4/95 pub 47.2/84 post 4/10 || cup-own[n1] eng 235.4/235 view 31.3/31 pub 20.7/21 post 3.3/3 || close[n1] eng 2659.2/2659 view 67.1/67 pub 47.5/48 post 7.5/7
+14 other[n275] eng 19.5/697 view 35.5/82 pub 16.9/62 post 0.1/1 || round-own[n46] eng 508.5/721 view 49.3/108 pub 48.6/96 post 3.7/13 || cup-own[n1] eng 343.4/343 view 44.5/44 pub 23.4/23 post 2.6/3 || close[n1] eng 1602.9/1603 view 80.2/80 pub 67.2/67 post 7/7
+15 other[n274] eng 17.7/725 view 38.4/142 pub 18/162 post 0.1/1 || round-own[n46] eng 527.3/885 view 52.9/100 pub 50.6/82 post 4.3/14 || cup-own[n2] eng 322.8/388 view 36.5/38 pub 26.8/31 post 2.5/3 || close[n1] eng 1643.3/1643 view 79.5/80 pub 61.7/62 post 14.7/15
+16 other[n274] eng 18.1/909 view 36.6/103 pub 17.1/49 post 0.1/1 || round-own[n46] eng 578.7/1005 view 48.2/92 pub 48.1/152 post 3.7/9 || cup-own[n2] eng 415.9/491 view 50.5/53 pub 30.5/37 post 2.5/3 || close[n1] eng 2293.8/2294 view 77.6/78 pub 39.4/39 post 11.1/11

@@ -1,0 +1,119 @@
+[
+ {
+  "name": "s1-base",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/base",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s1-base.json",
+   "SEED": "generation-reference"
+  }
+ },
+ {
+  "name": "s1-g9",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/g9",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s1-g9.json",
+   "SEED": "generation-reference"
+  }
+ },
+ {
+  "name": "s1-g1",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/g1",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s1-g1.json",
+   "SEED": "generation-reference"
+  }
+ },
+ {
+  "name": "s2-base",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/base",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s2-base.json",
+   "SEED": "perf-261027"
+  }
+ },
+ {
+  "name": "s2-g9",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/g9",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s2-g9.json",
+   "SEED": "perf-261027"
+  }
+ },
+ {
+  "name": "s2-g1",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/g1",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s2-g1.json",
+   "SEED": "perf-261027"
+  }
+ },
+ {
+  "name": "s3-base",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/base",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s3-base.json",
+   "SEED": "owner-261119"
+  }
+ },
+ {
+  "name": "s3-g9",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/g9",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s3-g9.json",
+   "SEED": "owner-261119"
+  }
+ },
+ {
+  "name": "s3-g1",
+  "args": [
+   "--import",
+   "tsx",
+   "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/tools/gstats.mts"
+  ],
+  "env": {
+   "WT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/g1",
+   "OUT": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/out/seeds9/s3-g1.json",
+   "SEED": "owner-261119"
+  }
+ }
+]

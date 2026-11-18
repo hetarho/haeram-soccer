@@ -1,0 +1,180 @@
+// Removal-experiment side (copied into each scratch tree as scripts/perf/side.ts and bundled from
+// it): open a cached lived world, step it one day as the Host plays it (engine day, view projection,
+// publication, posting clone), and summarise a season's results and NPC per-player facts.
+import v8 from 'node:v8';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import * as engine from '../../packages/engine/src/index';
+import { currentDay, SEASON_ROUNDS } from '../../packages/engine/src/calendar';
+import { npcMarketDays } from '../../packages/engine/src/npc-market';
+import { groupKey } from '../../packages/engine/src/league-fixtures';
+import { Host } from '../../apps/web/src/runtime/host';
+import { forPosting } from '../../apps/web/src/runtime/viewPublisher';
+
+export const cpu = () => {
+  const u = process.threadCpuUsage();
+  return (u.user + u.system) / 1000;
+};
+export const ROUNDS = SEASON_ROUNDS;
+
+export function open(file: string, host: boolean) {
+  const w: any = v8.deserialize(readFileSync(file));
+  w.cash = '99999999999';
+  const h = host ? (new Host() as any) : undefined;
+  let base = 0;
+  if (h) {
+    h.world = w;
+    base = h.publish().viewSeq;
+  }
+  let market = new Set(npcMarketDays(w.year).flat());
+  let marketYear = w.year;
+  return {
+    w,
+    step() {
+      if (w.critical) {
+        delete w.critical;
+        w.revision++;
+      }
+      if (marketYear !== w.year) {
+        market = new Set(npcMarketDays(w.year).flat());
+        marketYear = w.year;
+      }
+      const day = currentDay(w) + 1,
+        round = w.round,
+        year = w.year,
+        own = w.ownMatches.length;
+      const row: any = { day, year };
+      let a = cpu();
+      engine.advanceDays(w, 1, undefined, false);
+      row.engine = cpu() - a;
+      if (h) {
+        a = cpu();
+        const view = h.view();
+        row.view = cpu() - a;
+        a = cpu();
+        const reply = h.views.publish(view, base);
+        row.publish = cpu() - a;
+        a = cpu();
+        structuredClone(forPosting(reply));
+        row.post = cpu() - a;
+        base = reply.viewSeq;
+      }
+      row.kind =
+        w.year !== year
+          ? 'close'
+          : w.round > round
+            ? w.ownMatches.length > own
+              ? 'round-own'
+              : 'round'
+            : market.has(day)
+              ? 'market'
+              : w.ownMatches.length > own
+                ? 'cup-own'
+                : 'other';
+      return row;
+    },
+  };
+}
+
+const sd = (xs: number[]) => {
+  if (xs.length < 2) return 0;
+  const m = xs.reduce((a, b) => a + b, 0) / xs.length;
+  return Math.sqrt(xs.reduce((a, b) => a + (b - m) ** 2, 0) / (xs.length - 1));
+};
+const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0);
+
+/** A season's results and NPC per-player facts, for comparing a variant with its base. */
+export function stats(w: any) {
+  const year = w.year;
+  const league = w.fixtures.filter((f: any) => f.kind === 'league' && f.year === year && f.score);
+  let goals = 0,
+    home = 0,
+    draw = 0,
+    away = 0;
+  for (const f of league) {
+    goals += f.score.home + f.score.away;
+    if (f.score.home > f.score.away) home++;
+    else if (f.score.home === f.score.away) draw++;
+    else away++;
+  }
+  const n = league.length || 1;
+  const groups = new Map<string, number[]>();
+  for (const c of w.clubs) {
+    const t = w.tables[c.id];
+    if (!t || !t.played) continue;
+    const k = groupKey(c);
+    (groups.get(k) ?? groups.set(k, []).get(k)!).push(t.points / t.played);
+  }
+  const pointsSd = [...groups.entries()].map(([k, xs]) => ({ group: k, clubs: xs.length, ppgSd: +sd(xs).toFixed(3) }));
+  // Top scorers per league competition from the NPC season ledger.
+  const comps = (w.npcSeason?.competitions ?? []).filter((c: any) => c.kind === 'league');
+  const scorers = comps.map((c: any) => {
+    const gs = c.players
+      .map((p: any) => p.clubs.reduce((s: number, x: any) => s + x.metrics[0], 0))
+      .sort((a: number, b: number) => b - a);
+    return { group: c.groupKey, top: gs[0] ?? 0, top5: gs.slice(0, 5).reduce((a: number, b: number) => a + b, 0) };
+  });
+  // Per position: per-90 rates over players with at least 900 league minutes, mean and SD.
+  const M = { goals: 0, assists: 1, passes: 2, completed: 3, shots: 4, onTarget: 5, tackles: 6, interceptions: 7, dribbles: 8, saves: 9, minutes: 10 };
+  const PD = { keyPasses: 2, progressivePasses: 6, takeOns: 7, highTurnovers: 8, lineBreakingPasses: 11, crosses: 13, fouls: 19, foulsWon: 20, yellowCards: 21, offsides: 23 };
+  const per: Record<string, Record<string, number[]>> = {};
+  let appearances = 0,
+    starts = 0,
+    playersWithMinutes = 0,
+    yellow = 0;
+  for (const c of comps)
+    for (const p of c.players) {
+      let min = 0;
+      const sums: Record<string, number> = {};
+      for (const x of p.clubs) {
+        min += x.metrics[M.minutes];
+        appearances += x.appearances;
+        starts += x.starts;
+        yellow += x.detail[PD.yellowCards] ?? 0;
+        for (const [k, i] of Object.entries(M)) if (k !== 'minutes') sums[k] = (sums[k] ?? 0) + x.metrics[i];
+        for (const [k, i] of Object.entries(PD)) sums['d.' + k] = (sums['d.' + k] ?? 0) + x.detail[i];
+      }
+      if (min > 0) playersWithMinutes++;
+      if (min < 900) continue;
+      const pos = (per[p.position] ??= {});
+      for (const [k, v] of Object.entries(sums)) (pos[k] ??= []).push((90 * v) / min);
+    }
+  const positions = Object.fromEntries(
+    Object.entries(per).map(([pos, ks]) => [
+      pos,
+      Object.fromEntries(Object.entries(ks).map(([k, xs]) => [k, { mean: +mean(xs).toFixed(3), sd: +sd(xs).toFixed(3), n: xs.length }])),
+    ]),
+  );
+  const h = (x: unknown) => createHash('sha256').update(JSON.stringify(x)).digest('hex').slice(0, 12);
+  const played = w.fixtures.filter((f: any) => f.year === year && f.score);
+  const hashes = {
+    fixtureScores: h(played.map((f: any) => [f.id, f.score, f.shootout ?? null])),
+    fixturesPlayed: played.length,
+    cupScores: h((w.cups ?? []).map((c: any) => (c.fixtures ?? []).map((f: any) => [f.id, f.score ?? null]))),
+    tables: h(Object.entries(w.tables).sort()),
+    leagueGoalsAssists: h(comps.map((c: any) => c.players.map((p: any) => [p.id, p.clubs.map((x: any) => [x.club, x.appearances, x.metrics[0], x.metrics[1], x.metrics[10]])]))),
+    discipline: h(w.discipline ?? null),
+    squads: h(w.squads),
+    elo: h(w.clubs.map((c: any) => c.elo ?? null)),
+  };
+  return {
+    hashes,
+    year,
+    round: w.round,
+    leagueMatches: league.length,
+    goalsPerMatch: +(goals / n).toFixed(4),
+    home: +(home / n).toFixed(4),
+    draw: +(draw / n).toFixed(4),
+    away: +(away / n).toFixed(4),
+    pointsSd,
+    meanPpgSd: +mean(pointsSd.map((x) => x.ppgSd)).toFixed(4),
+    scorers,
+    meanTopScorer: +mean(scorers.map((s: any) => s.top)).toFixed(3),
+    appearances,
+    starts,
+    playersWithMinutes,
+    yellow,
+    npcInjured: Object.keys(w.npcInjuries ?? {}).length,
+    positions,
+  };
+}

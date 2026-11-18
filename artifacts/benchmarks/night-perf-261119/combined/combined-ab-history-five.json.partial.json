@@ -1,0 +1,114 @@
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "d999af70",
+  "cand": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/pregate",
+  "procs": 4,
+  "jobs": 1,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "f80fa33ad16a29d3",
+    "cand": "509e926f0e3b3769"
+  },
+  "completedProcesses": 4,
+  "completedProcessIndices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 12958.158000000001,
+            "wall": 13007.929999999998
+          },
+          "b": {
+            "cpu": 10767.330999999998,
+            "wall": 10866.951834000001
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 13399.993,
+            "wall": 13454.685125000002
+          },
+          "b": {
+            "cpu": 10456.439,
+            "wall": 10505.280792000001
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 13532.752999999999,
+            "wall": 13648.844125
+          },
+          "b": {
+            "cpu": 11013.027999999998,
+            "wall": 11082.743792000001
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 15698.561999999998,
+            "wall": 27854.414958
+          },
+          "b": {
+            "cpu": 10995.252,
+            "wall": 12043.025334
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "b0e9f0e763c79d50"
+      ]
+    }
+  ],
+  "load1": [
+    9.005859375,
+    6.94677734375,
+    5.59033203125,
+    5.47265625,
+    14.14306640625
+  ],
+  "complete": false
+}

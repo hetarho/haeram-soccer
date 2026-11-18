@@ -1,0 +1,92 @@
+process 1/4: cpu ×0.784
+process 2/4: cpu ×0.834
+process 3/4: cpu ×0.789
+process 4/4: cpu ×0.796
+{
+  "workload": "day",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "d999af70",
+  "cand": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/pregate",
+  "procs": 4,
+  "jobs": 1,
+  "reps": 60,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "f80fa33ad16a29d3",
+    "cand": "509e926f0e3b3769"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "a56436ea3e565194"
+    ],
+    "cand": [
+      "a56436ea3e565194"
+    ]
+  },
+  "other": {
+    "pairs": 28,
+    "ms": {
+      "base": {
+        "cpu": 12.493000000000393,
+        "wall": 13.463041500000145
+      },
+      "cand": {
+        "cpu": 12.128999999999905,
+        "wall": 20.21045799999979
+      }
+    },
+    "cpu": {
+      "ratio": 0.9492,
+      "lo": 0.8906,
+      "hi": 1.0293,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 0.9554,
+      "lo": 0.8967,
+      "hi": 1.0295,
+      "call": "no difference"
+    }
+  },
+  "own": {
+    "pairs": 36,
+    "ms": {
+      "base": {
+        "cpu": 479.9779999999996,
+        "wall": 494.2956664999997
+      },
+      "cand": {
+        "cpu": 370.19000000000005,
+        "wall": 375.25750000000016
+      }
+    },
+    "cpu": {
+      "ratio": 0.7965,
+      "lo": 0.7795,
+      "hi": 0.8202,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.7874,
+      "lo": 0.7524,
+      "hi": 0.8216,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    14.14306640625,
+    16.6474609375,
+    14.61572265625,
+    15.2255859375,
+    14.8447265625
+  ]
+}
