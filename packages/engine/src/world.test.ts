@@ -233,6 +233,55 @@ describe('automatic XI', () => {
     }
     return chosen.filter((p): p is Player => !!p);
   }
+  /**
+   * The full-scan `bestFreePairs` T984 replaced (every free pair rescanned per pick), copied as the
+   * reference the per-slot bests must match on finite values; non-finite values take the sort.
+   */
+  function scanLineup(
+    players: Player[],
+    tactic: Tactic,
+    manager?: Manager,
+    year?: number,
+    multiplier: (p: Player) => number = () => 1,
+  ): Player[] {
+    const slots = formationOf(tactic);
+    const width = slots.length;
+    const values = players.flatMap((p) =>
+      slots.map((slot) => selectionValue(p, slot, manager, year, multiplier(p))),
+    );
+    if (!values.every(Number.isFinite))
+      return sortedLineup(players, tactic, manager, year, multiplier);
+    const chosen: (Player | undefined)[] = Array(width);
+    const used = new Uint8Array(players.length);
+    for (;;) {
+      let bestPlayer = -1;
+      let bestSlot = -1;
+      let bestValue = 0;
+      for (let i = 0; i < players.length; i++) {
+        if (used[i]) continue;
+        for (let s = 0; s < width; s++) {
+          if (chosen[s]) continue;
+          const value = values[i * width + s]!;
+          if (
+            bestPlayer < 0 ||
+            value > bestValue ||
+            (value === bestValue &&
+              (s < bestSlot ||
+                (s === bestSlot && compareIds(players[i]!.id, players[bestPlayer]!.id) < 0)))
+          ) {
+            bestPlayer = i;
+            bestSlot = s;
+            bestValue = value;
+          }
+        }
+      }
+      if (bestPlayer < 0) break;
+      const p = players[bestPlayer]!;
+      chosen[bestSlot] = p;
+      for (let i = 0; i < players.length; i++) if (players[i]!.id === p.id) used[i] = 1;
+    }
+    return chosen.filter((p): p is Player => !!p);
+  }
   const base = POSITIONS.map((position, i) =>
     makePlayer('ENG', 'lineup-seed', `base:${position}`, 1950, 40 + i * 3, position, 19 + i),
   );
@@ -308,5 +357,34 @@ describe('automatic XI', () => {
       ),
       { numRuns: 300 },
     );
+  });
+  it('picks as the full-scan pass did on ties, shared ids and a non-finite value (T984)', () => {
+    const member = fc.record({
+      from: fc.integer({ min: 0, max: base.length - 1 }),
+      id: fc.integer({ min: 0, max: 12 }),
+      fatigue: fc.constantFrom(0, 10, 25, Number.NaN),
+    });
+    fc.assert(
+      fc.property(
+        fc.array(member, { maxLength: 30 }),
+        fc.constantFrom(...TACTICS),
+        fc.constantFrom(1, 0, 0.9),
+        (members, tactic, factor) => {
+          const squad = members.map((m) => twin(base[m.from]!, `p:${m.id}`, m.fatigue));
+          const multiplier = (p: Player) => (p.id.endsWith('3') ? factor : 1);
+          same(
+            lineup(squad, tactic, undefined, 1950, multiplier),
+            scanLineup(squad, tactic, undefined, 1950, multiplier),
+          );
+        },
+      ),
+      { numRuns: 300 },
+    );
+    const ties = [
+      ...base.slice(4, 9),
+      ...base.slice(4, 9).map((p, i) => twin(p, `twin:${9 - i}`)),
+      twin(base[5]!, 'twin:9'),
+    ];
+    for (const tactic of TACTICS) same(lineup(ties, tactic), scanLineup(ties, tactic));
   });
 });

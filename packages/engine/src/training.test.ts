@@ -25,6 +25,7 @@ import {
   trainingSummary,
 } from './index';
 import { careerWorld, CAREER_YEAR } from './career.testkit';
+import { growAttributes } from './training';
 
 /**
  * Each focus's fatigue: the assistant's rule trains this young squad in good spirits 하드 below 15,
@@ -74,6 +75,28 @@ const fatigue = (w: ReturnType<typeof world>) =>
   w.players.reduce((sum, player) => sum + player.fatigue, 0);
 
 describe('earned player growth and training choices', () => {
+  it('grows the attributes in ATTRIBUTES order, asking only and factor as the loop did (T984)', () => {
+    for (const source of world().players.slice(0, 6)) {
+      const player = structuredClone(source);
+      player.potential = 99;
+      const weights = weightsFor(player.position);
+      const asked: string[] = [],
+        factored: string[] = [];
+      const only = (a: (typeof ATTRIBUTES)[number]) => (asked.push(a), a !== 'passing');
+      const factor = (a: (typeof ATTRIBUTES)[number]) => (factored.push(a), 1.1);
+      expect(growAttributes(player, 2, factor, { only })).toBeGreaterThan(0);
+      const weighted = ATTRIBUTES.filter((a) => weights[a]);
+      // The weight sums ask every attribute, the steps every weighted one, in ATTRIBUTES order.
+      expect(asked).toEqual([...ATTRIBUTES, ...weighted]);
+      expect(factored).toEqual(weighted.filter((a) => a !== 'passing'));
+      const grown = structuredClone(source);
+      grown.potential = 99;
+      const unfiltered: string[] = [];
+      growAttributes(grown, 2, (a) => (unfiltered.push(a), 1));
+      expect(unfiltered).toEqual(weighted);
+    }
+  });
+
   it('hard focus numbers', () => {
     expect(trainingFocusInfo.balanced).toMatchObject({ recovery: 11, developmentMultiplier: 1 });
     expect(trainingFocusInfo.recovery).toMatchObject({ recovery: 16, developmentMultiplier: 0.4 });
