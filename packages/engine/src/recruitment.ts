@@ -1,7 +1,7 @@
 import { distressSigningReason } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { registrationRoom } from './registration';
-import type { Line, ScoutOffer, World } from '../../contracts/src/types';
+import type { Line, Player, ScoutOffer, World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost } from './transactions';
@@ -46,9 +46,8 @@ export function recruitmentContext(w: World) {
   };
 }
 
-/** Only selection/fit facts, without registration, financial runway or a full signing preview. */
-export function recruitmentFit(w: World, offer: TransferOffer, context = recruitmentContext(w)) {
-  const { before, opponentTactic, beforeStrength, beforeFit } = context;
+/** Automatic selection after the candidate arrives, including a squad with vacant slots. */
+export function recruitmentSelection(w: World, offer: TransferOffer, before: readonly Player[]) {
   const alreadyOwned = w.players.some(
     (player) => player.id === offer.player.id && player.status === 'active',
   );
@@ -67,6 +66,17 @@ export function recruitmentFit(w: World, offer: TransferOffer, context = recruit
         { ...w, players: [...w.players.filter((p) => p.id !== arriving.id), arriving] },
         clubOf(w),
       );
+  return {
+    arriving,
+    after,
+    willStart: !alreadyOwned && after.some((player) => player.id === offer.player.id),
+  };
+}
+
+/** Only selection/fit facts, without registration, financial runway or a full signing preview. */
+export function recruitmentFit(w: World, offer: TransferOffer, context = recruitmentContext(w)) {
+  const { before, opponentTactic, beforeStrength, beforeFit } = context;
+  const { arriving, after, willStart } = recruitmentSelection(w, offer, before);
   // The slot he would take (→CLUB-14): where he beats the starter by most at the slot, else the
   // weakest of his main position's; his 실효 OVR there on arrival and once settled (→PLAYER-11).
   const slots = formationOf(w.tactic);
@@ -105,7 +115,7 @@ export function recruitmentFit(w: World, offer: TransferOffer, context = recruit
     beforeFit,
     afterFit,
     fitDelta: afterFit - beforeFit,
-    willStart: !alreadyOwned && after.some((player) => player.id === offer.player.id),
+    willStart,
   };
 }
 
