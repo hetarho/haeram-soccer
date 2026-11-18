@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T07:04Z | T972 | gusta-session-start-mr18cx-5d3ec005 | 60eafe30521c | 9eeb147edbd8727c1a5f52aa |
+| mr18cx | hq-dev1-pve2-vm2 | autopilot | 2026-11-18T02:02Z | 2026-11-18T07:14Z | - | gusta-session-start-mr18cx-5d3ec005 | 52461276dd4b | 9eeb147edbd8727c1a5f52aa |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -212,8 +212,10 @@
 | T970 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 80599524 | 2026-11-18T06:24Z |
 | T980 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | ed654a00eb02 | 2026-11-18T06:37Z |
 | T971 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | fc6db4a9c86b | 2026-11-18T07:04Z |
+| T972 | mr18cx | gusta-session-start-mr18cx-5d3ec005 | 52461276dd4b | 2026-11-18T07:14Z |
 
 ## log
+- 261118 T972 done
 - 261118 T971 done
 - 261118 T980 done
 - 261118 T970 done
@@ -233,4 +235,3 @@
 - 261118 T959 done
 - 261118 T958 done
 - 261118 T957 done
-- 261118 T979 independent-review correction: preserve close-refill graduate, borrower history and parent-only loan facts with old-loan fallback; task check against 535d0f03 passed (159 files, 1516 tests), spec lint passed. Archived task unchanged; integration handoff retained.
