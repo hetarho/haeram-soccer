@@ -58,8 +58,9 @@ export function runFixture(definition: FixtureDefinition, trace?: FixtureTrace) 
   trace?.('prepared', w);
   // Explicit synthetic setup is portable input, followed only by normal engine commands.
   if (definition.setup === 'staff-playing-coach') {
-    const p = w.players[6],
-      person = w.people![p.id];
+    const answer = definition.commands.find((command) => command.type === 'answer-playing-coach');
+    const p = answer ? w.players.find((player) => player.id === answer.player)! : w.players[6];
+    const person = w.people![p.id];
     p.born = w.year - 35;
     p.retiring = w.year;
     p.qualities = { understanding: 4, teaching: 4, judgement: 4 };
