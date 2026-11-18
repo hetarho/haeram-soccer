@@ -1,3 +1,5 @@
+import { reportDistress, stepDistress } from './distress';
+export { DISTRESS_FLOW } from './distress';
 /**
  * Season books of every club nobody owns (→ECON-36): operating income, wages, costs and trading
  * settle before finite private backing covers a shortfall; remaining negative cash is debt. The
@@ -12,6 +14,7 @@ import {
   leagueMerit,
   leagueShare,
   operatingExpensesAt,
+  operatingCosts,
   resultBonus,
   type MatchResult,
 } from './finance';
@@ -91,8 +94,38 @@ export function booksOpen(w: World) {
  */
 export function booksClose(w: World) {
   if (hasOwner(w) && !w.owner) return;
+  if (w.distress)
+    w.distress = stepDistress(
+      w.distress,
+      BigInt(w.cash) < 0n ? -BigInt(w.cash) : 0n,
+      BigInt(operatingCosts(w).annual),
+      w,
+      true,
+    );
   const season = seasonIndex(w);
   for (const club of w.clubs) if (keepsBooks(w, club)) settleNpcBooks(w, club, season);
+}
+
+/** Current annual fixed costs of an NPC club, in the season's money (→ECON-30). */
+export function npcFixedCosts(w: World, club: Club) {
+  const last = club.books?.seasons[0];
+  return (
+    npcWageBill(w, club) +
+    BigInt(operatingExpenses(w, club, last, last && lastTier(w, club, last.year)))
+  );
+}
+/** Only clubs whose league round actually settled get a counter tick. */
+export function settleNpcDistress(w: World, fixtures: readonly Fixture[]) {
+  const played = new Set(
+    fixtures.filter((f) => f.kind === 'league' && f.score).flatMap((f) => [f.home, f.away]),
+  );
+  for (const club of w.clubs) {
+    if (!played.has(club.id) || !keepsBooks(w, club) || !club.books) continue;
+    const before = club.books.distress;
+    const after = stepDistress(before, BigInt(club.books.debt), npcFixedCosts(w, club), w);
+    if (after) club.books.distress = after;
+    reportDistress(w, club.id, before, after);
+  }
 }
 
 /**
@@ -216,9 +249,8 @@ export function settleNpcBooks(w: World, club: Club, season: SeasonIndex = seaso
   const capital = shortfall < allowance ? shortfall : allowance;
   book.ownerCapital = capital.toString();
   const result = beforeSupport + capital;
-  const ceiling = BigInt(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n)),
-    floor = -BigInt(scaleBy(book.income, CLUB_BOOKS.debtSeasons, 1000n));
-  const balance = result > ceiling ? ceiling : result < floor ? floor : result;
+  const ceiling = BigInt(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n));
+  const balance = result > ceiling ? ceiling : result;
   const next = currencyChange(club.country, w.year, seasonAfter(w.year));
   const carried = next ? next(balance.toString()) : balance.toString();
   if (club.books && keepsBooks(w, club)) {
@@ -226,10 +258,19 @@ export function settleNpcBooks(w: World, club: Club, season: SeasonIndex = seaso
     if (next) for (const p of clubPlayers(w, club)) p.wage = next(p.wage);
   }
   club.books = {
+    ...(books.distress ? { distress: books.distress } : {}),
     seasons: [book, ...books.seasons].slice(0, 2),
     cash: BigInt(carried) > 0n ? carried : '0',
     debt: BigInt(carried) < 0n ? (-BigInt(carried)).toString() : '0',
   };
+  const after = stepDistress(
+    books.distress,
+    balance < 0n ? -balance : 0n,
+    BigInt(book.wages) + BigInt(book.costs),
+    w,
+    true,
+  );
+  if (after) club.books.distress = after;
   return club.books;
 }
 

@@ -11,7 +11,14 @@ import type {
   MatchAppearance,
 } from './identity';
 import type { ManagerHistoryFacts } from './manager-history';
-import type { ClubBooks, DividendShare, EndCause, OwnerState, TakeoverLoan } from './owner';
+import type {
+  ClubBooks,
+  DistressState,
+  DividendShare,
+  EndCause,
+  OwnerState,
+  TakeoverLoan,
+} from './owner';
 import type { RecentResults } from './recent-results';
 import type { MatchScript, StagingSide } from './match-script';
 import type {
@@ -1454,7 +1461,9 @@ export interface World {
   critical?: string;
   /** League rounds settled in a row with negative cash (→ECON-24); absent while solvent. */
   insolvent?: number;
-  /** The day the club went bankrupt: the career is over and nothing advances (→ECON-24). */
+  /** Financial distress of the owned club (→ECON-24); absent in older saves. */
+  distress?: DistressState;
+  /** Recorded legacy bankruptcy, preserved for already ended careers (→SAVE-10). */
   bankrupt?: { year: number; round: number; day: number };
   receiptIds: string[];
   /** Yellow cards, bans and NPC injuries of every club (→MATCH-19, →LEAGUE-15); from rules 4.0.0. */

@@ -110,15 +110,16 @@ describe('owner money in the ledger (→ECON-10)', () => {
   });
 });
 
-describe('the club’s bankruptcy (→ECON-24, OWNER-16)', () => {
-  it('ends a taken-over career by its cause and leaves one without owner state as it was', () => {
+describe('the club’s financial distress (→ECON-24, OWNER-16)', () => {
+  it('enters administration without ending either career', () => {
     for (const owned of [true, false]) {
       const w = world(owned);
       w.round = 1;
       w.cash = (-BigInt(operatingCosts(w).annual) * 2n).toString();
       settleRound(w);
-      expect(w.bankrupt).toBeDefined();
-      expect(w.ended).toBe(owned ? 'club' : undefined);
+      expect(w.bankrupt).toBeUndefined();
+      expect(w.distress?.stage).toBe(3);
+      expect(w.ended).toBeUndefined();
     }
   });
 });

@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "id-ID",
   "messages": {
+    "finance.distress.stage1": "Peringatan keuangan",
+    "finance.distress.stage2": "Penjualan wajib",
+    "finance.distress.stage3": "Administrasi pengadilan",
+    "finance.distress.entry": "Klub memasuki tahap krisis keuangan: {stage}.",
     "player.personality.loyalty": "Loyalitas",
     "player.personality.loyalty.description": "Seberapa kuat masa bakti di klub dan asal dari akademinya mendorongnya untuk bertahan.",
     "navigation.dashboard": "Wisma klub",

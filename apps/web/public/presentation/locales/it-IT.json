@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "it-IT",
   "messages": {
+    "finance.distress.stage1": "Allarme finanziario",
+    "finance.distress.stage2": "Cessioni obbligatorie",
+    "finance.distress.stage3": "Amministrazione controllata",
+    "finance.distress.entry": "Il club è entrato in crisi finanziaria: {stage}.",
     "player.personality.loyalty": "Fedeltà",
     "player.personality.loyalty.description": "Quanto il tempo trascorso nel club e la formazione nel suo vivaio lo spingono a restare.",
     "navigation.dashboard": "Sede del club",

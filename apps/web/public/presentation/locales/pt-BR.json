@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "pt-BR",
   "messages": {
+    "finance.distress.stage1": "Alerta financeiro",
+    "finance.distress.stage2": "Vendas obrigatórias",
+    "finance.distress.stage3": "Administração judicial",
+    "finance.distress.entry": "O clube entrou em crise financeira: {stage}.",
     "player.personality.loyalty": "Lealdade",
     "player.personality.loyalty.description": "Quanto o tempo no clube e a formação na base dele incentivam o jogador a ficar.",
     "navigation.dashboard": "Sede do clube",

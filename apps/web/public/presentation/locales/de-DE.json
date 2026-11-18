@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "de-DE",
   "messages": {
+    "finance.distress.stage1": "Finanzwarnung",
+    "finance.distress.stage2": "Zwangsverkäufe",
+    "finance.distress.stage3": "Insolvenzverwaltung",
+    "finance.distress.entry": "Der Verein befindet sich in finanzieller Not: {stage}.",
     "player.personality.loyalty": "Loyalität",
     "player.personality.loyalty.description": "Wie stark ihn seine Zeit beim Verein und die Ausbildung in dessen Jugend zum Bleiben bewegen.",
     "navigation.dashboard": "Klubhaus",

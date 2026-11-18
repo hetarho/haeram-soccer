@@ -2,6 +2,10 @@
   "schemaVersion": 1,
   "id": "nl-NL",
   "messages": {
+    "finance.distress.stage1": "Financiële waarschuwing",
+    "finance.distress.stage2": "Gedwongen verkoop",
+    "finance.distress.stage3": "Bewindvoering",
+    "finance.distress.entry": "De club verkeert in financiële nood: {stage}.",
     "player.personality.loyalty": "Loyaliteit",
     "player.personality.loyalty.description": "Hoe sterk zijn tijd bij de club en een opleiding in de eigen jeugd hem aanmoedigen om te blijven.",
     "navigation.dashboard": "Clubhuis",

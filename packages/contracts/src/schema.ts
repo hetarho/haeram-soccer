@@ -123,8 +123,14 @@ export const budgetResponsibilitySchema = z.enum([
 ]);
 /** The owner's spending request to a delegated person (→ SpendRequest). */
 export const spendRequestSchema = z.literal([1, 2, 3, 4, 5]);
+const distress = z.strictObject({
+  stage: z.literal([1, 2, 3]).optional(),
+  overHalfRounds: z.number().int().min(0).optional(),
+  lastRound: z.strictObject({ year: season, round: z.number().int().min(0).max(46) }).optional(),
+});
 /** A club's books while nobody owns it (→ECON-36): the current and the last closed season. */
 export const clubBooksSchema = z.strictObject({
+  distress: distress.optional(),
   openingIncome: amount.optional(),
   transfersPaid: amount.optional(),
   transfersReceived: amount.optional(),
@@ -1355,6 +1361,7 @@ const worldSchema: z.ZodType<World> = z.object({
   lastChampions: champions,
   critical: text.optional(),
   insolvent: z.number().int().min(1).optional(),
+  distress: distress.optional(),
   bankrupt: z
     .strictObject({
       year: z.number().int(),

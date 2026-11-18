@@ -105,7 +105,7 @@ import { recordRecentResult, retainRecentResults } from './recent-results';
 import { careerEnded, hasOwner, ownerClose, ownerDay } from './owner';
 import { crossWar, seasonAfter } from './wartime';
 import { capFreeAgents, refreshFreeAgents, signFreeAgentAtClose } from './free-agents';
-import { booksClose } from './books';
+import { booksClose, settleNpcDistress } from './books';
 import { fanMoodAfterLeagueMatch, fanMoodClose, fanMoodRound } from './fan-mood';
 import {
   currentDay,
@@ -1015,11 +1015,15 @@ function playRound(
   advanceEurope(w, capture, undefined, observe);
   advanceCups(w, capture, undefined, observe);
   if (owned) {
-    settleRound(w);
+    settleRound(
+      w,
+      fixtures.some((f) => ownFixture(w, f) && f.kind === 'league' && !!f.score),
+    );
     fanMoodRound(w);
     // A manager at the floor of trust may resign once the round is settled (→STAFF-47).
     settleManagerTrust(w);
   }
+  settleNpcDistress(w, fixtures);
   snapshotStandings(w);
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {
