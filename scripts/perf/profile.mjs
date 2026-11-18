@@ -150,7 +150,7 @@ if (lines) {
   if (!ticks.size) console.log(`\nno function named ${lines} in the profile`);
   for (const [k, at] of ticks) {
     const total = [...at.values()].reduce((a, b) => a + b, 0);
-    console.log(`\nlines of ${k} (${total} ticks, warm-up included)`);
+    console.log(`\nlines of ${k} (${total} ticks, measured reps only)`);
     for (const [line, n] of [...at].sort((a, b) => b[1] - a[1]).slice(0, top))
       console.log(
         `${pct(n, total)} ${String(line).padStart(6)}  ${text[line - 1]?.trim().slice(0, 140)}`,
