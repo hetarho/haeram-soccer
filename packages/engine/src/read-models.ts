@@ -1,6 +1,7 @@
 /** Explicit writer maintenance; reads of either model remain pure. */
 import { ownMatchCount } from './own-matches';
 import { eventCount } from './events';
+import { archiveCount } from './archives';
 import type { World } from '../../contracts/src/types';
 import { initializeNewsJournal, refreshNewsJournal } from './news';
 import { initializeCareerReads, refreshCareerReads } from './career-reads';
@@ -30,7 +31,7 @@ export function needsReadModels(w: World) {
     j.year !== w.year ||
     s.matches !== ownMatchCount(w) ||
     s.events !== eventCount(w) ||
-    s.history !== w.history.length ||
+    s.history !== archiveCount(w) ||
     s.year !== w.year
   );
 }

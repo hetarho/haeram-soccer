@@ -12,6 +12,7 @@ import {
   personOf,
 } from '../../../../packages/engine/src/person-careers';
 import { archivedFinish } from '../../../../packages/engine/src/club-past';
+import { archiveOf } from '../../../../packages/engine/src/archives';
 import { seasonAfter, seasonFrom } from '../../../../packages/engine/src/wartime';
 
 /**
@@ -37,7 +38,6 @@ export interface Tenure {
  * it holds no row for, shows none rather than a guess.
  */
 function tenures(w: World, employment: readonly CareerEmployment[], at: CareerDate): Tenure[] {
-  const archives = new Map(w.history.map((season) => [season.year, season]));
   const result: Tenure[] = [];
   employment.forEach((job, index) => {
     if (job.role === 'player') return;
@@ -50,7 +50,8 @@ function tenures(w: World, employment: readonly CareerEmployment[], at: CareerDa
       const start = careerOrdinal({ year, day: 0 }),
         end = careerOrdinal({ year: seasonAfter(year), day: 0 });
       if (Math.max(from, start) >= Math.min(to, end)) continue;
-      const archive = archives.get(year),
+      // A whole archive, an older one from the store (→SAVE-32).
+      const archive = archiveOf(w, year),
         finish = archive && archivedFinish(w, archive.standings, club, archive.leagueDeductions);
       seasons.push({
         year,

@@ -10,6 +10,7 @@ import {
   type Slot,
 } from './player';
 import { dayCountedFrom } from './calendar';
+import { archiveSummaries } from './archives';
 
 const ownIndex = new WeakMap<readonly Club[], number>();
 /** The owner's club: its place in the clubs array is remembered and checked on every call. */
@@ -32,12 +33,15 @@ export function isOwnSeason(
 ) {
   return w.playerClub !== '' && (!w.owner || season.year >= w.owner.takeover.year);
 }
-type ArchiveWorld = Pick<World, 'history' | 'playerClub' | 'owner'>;
-/** The club's own archived seasons (→HIST-2), in the archive's order. */
+type ArchiveWorld = Pick<World, 'history' | 'historyBase' | 'playerClub' | 'owner'>;
+/**
+ * The club's own archived seasons (→HIST-2), in the archive's order. Once older archives have left
+ * memory (→SAVE-32) every season reads as the view sends it (`archiveSummaries`), without standings,
+ * brackets or scorers; a whole season comes from `archiveOf`.
+ */
 export function ownSeasons(w: ArchiveWorld) {
-  return w.playerClub !== '' && !w.owner
-    ? w.history
-    : w.history.filter((season) => isOwnSeason(w, season));
+  const all = w.historyBase ? archiveSummaries(w) : w.history;
+  return w.playerClub !== '' && !w.owner ? all : all.filter((season) => isOwnSeason(w, season));
 }
 /** The last archived season when it is the club's own; none before its first close. */
 export function lastOwnSeason(w: ArchiveWorld) {

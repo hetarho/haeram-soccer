@@ -9,6 +9,14 @@ import { peopleOf, personOf, restorePerson } from '../../../../packages/engine/s
 import { memoryRecordStore } from '../../../../tests/fixtures/node-sqlite';
 import { addEvent, eventAt, eventsOfKindPrefix } from '../../../../packages/engine/src/events';
 import { newsBefore, newsPage, newsTotal } from '../../../../packages/engine/src/news';
+import {
+  archiveAt,
+  archiveCount,
+  archiveOf,
+  archiveSummaries,
+  archiveYears,
+  coldArchiveCount,
+} from '../../../../packages/engine/src/archives';
 import { moveColdPeople, saveMovingCold } from './coldMovers';
 import { RowSaver } from './rowSaver';
 import { rowsToWorld, worldFacts } from './worldRows';
@@ -38,6 +46,7 @@ function tinyWorld() {
     players: [],
     manager: { id: 'm', person: 'kept' },
     ownMatches: [],
+    history: [],
     events: [],
     people: {
       gone1: person('gone1'),
@@ -330,5 +339,82 @@ describe('events and news before last season leave memory at a save (→SAVE-32)
     expect(Object.keys(w.newsJournal!.seasons)).toHaveLength(3);
     expect(store.get('event', '0')?.cold).toBe(false);
     expect(store.get('news_bucket', '1958')?.cold).toBe(false);
+  });
+});
+
+describe('season archives older than seven seasons leave memory at a save (→SAVE-32, →HIST-2)', () => {
+  /** A synthetic archive with standings, a continental table, a bracket and scorers; not playable. */
+  const archive = (year: number) => ({
+    year,
+    tier: 1,
+    group: 0,
+    rank: 2,
+    champions: [{ country: 'ENG', club: 'c1', cup: 'c2' }],
+    standings: [[0, 1, 0, 50]],
+    europe: [{ kind: 'ucl', name: 'Cup', winner: 'c1', standings: [[0, 3]] }],
+    brackets: [{ competition: 'cup', rounds: [] }],
+    scorers: [{ name: 'n', goals: 9 }],
+  });
+  /** Ten seasons archived, 1950–1959, the current season 1960. */
+  function archivesWorld() {
+    const w = tinyWorld();
+    w.people = {};
+    w.history = Array.from({ length: 10 }, (_, i) => archive(1950 + i)) as never;
+    return w;
+  }
+
+  it('writes the oldest cold with the grown base in the one save; every read answers the same', () => {
+    const store = memoryRecordStore();
+    const w = attachRecordStore(archivesWorld(), store);
+    const saver = new RowSaver(store);
+    saver.save(w);
+    const complete = worldFacts(w);
+    const summaries = archiveSummaries(w);
+    expect(summaries[0]).not.toHaveProperty('brackets');
+    expect(summaries[0]!.standings).toEqual([]);
+    expect(coldArchiveCount(w)).toBe(3);
+    saveMovingCold(w, saver);
+    expect(w.history.map((h) => h.year)).toEqual([1953, 1954, 1955, 1956, 1957, 1958, 1959]);
+    expect(w.historyBase).toBe(3);
+    expect(store.get('season_archive', '1952')).toMatchObject({ cold: true, seq: 2 });
+    expect(store.get('season_archive', '1953')?.cold).toBe(false);
+    expect(worldFacts(w)).toBe(complete);
+    // The view's season list is identical before and after the move.
+    expect(archiveSummaries(w)).toEqual(summaries);
+    expect(JSON.stringify(archiveSummaries(w))).toBe(JSON.stringify(summaries));
+    expect(archiveCount(w)).toBe(10);
+    expect(archiveYears(w)).toEqual(summaries.map((h) => h.year));
+    expect(archiveOf(w, 1951)).toEqual(archive(1951));
+    expect(archiveOf(w, 1958)).toEqual(archive(1958));
+    expect(archiveOf(w, 1940)).toBeUndefined();
+    expect(archiveAt(w, 0)).toEqual(archive(1950));
+    expect(archiveAt(w, 9)?.year).toBe(1959);
+    // The database alone opens with the base; a second save moves nothing more.
+    const opened = rowsToWorld(store, { includeCold: false });
+    expect(opened.historyBase).toBe(3);
+    expect(opened.history).toHaveLength(7);
+    expect(saveMovingCold(w, saver)).toMatchObject({ written: 0, deleted: 0 });
+  });
+
+  it('keeps the last seven archives in memory across the war gap', () => {
+    const w = archivesWorld();
+    w.history = [1932, 1933, 1934, 1935, 1936, 1937, 1938].map(archive) as never;
+    w.year = 1946;
+    expect(coldArchiveCount(w)).toBe(0);
+    w.history.unshift(archive(1931) as never);
+    expect(coldArchiveCount(w)).toBe(1);
+  });
+
+  it('keeps every archive and the base when the write fails', () => {
+    const fail = { now: false };
+    const store = failingStore(fail);
+    const w = attachRecordStore(archivesWorld(), store);
+    const saver = new RowSaver(store);
+    saver.save(w);
+    fail.now = true;
+    expect(() => saveMovingCold(w, saver)).toThrow('quota');
+    expect(w.history).toHaveLength(10);
+    expect(w.historyBase).toBeUndefined();
+    expect(store.get('season_archive', '1950')?.cold).toBe(false);
   });
 });

@@ -1348,6 +1348,7 @@ const worldSchema: z.ZodType<World> = z.object({
   npcSeason: npcSeasonSchema.optional(),
   managerHistory: managerHistoryFactsSchema.optional(),
   transfers: transferRecords.optional(),
+  historyBase: z.number().int().nonnegative().optional(),
   history: z.array(archive).max(2200),
   eventsBase: z.number().int().nonnegative().optional(),
   events: z.array(event).max(100000),
@@ -1563,7 +1564,7 @@ export function validateWorld(
     w.careerReads &&
     (w.careerReads.matches > ownMatchCount ||
       w.careerReads.events > eventCount ||
-      w.careerReads.history > w.history.length ||
+      w.careerReads.history > (w.historyBase ?? 0) + w.history.length ||
       w.careerReads.year > w.year)
   )
     throw new Error(sourceMessage('copy.schema.5c0f9fda74'));

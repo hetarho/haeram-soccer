@@ -4,6 +4,7 @@ import { COUNTRIES } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
 import { archivedLeaguePoints } from './league-fixtures';
 import { coefficientValue } from './europe-coefficients';
+import { archiveCount } from './archives';
 
 /** Quota bands include qualifying entrants, admitted directly in this demo (→EURO-11). */
 export const EUROPE_ACCESS_CONFIG = {
@@ -23,7 +24,7 @@ export const EUROPE_ACCESS_CONFIG = {
   },
   priority: ['ucl', 'cwc', 'uel', 'uecl'],
 } as const;
-type AccessWorld = Pick<World, 'year' | 'history' | 'clubs' | 'lastChampions'>;
+type AccessWorld = Pick<World, 'year' | 'history' | 'historyBase' | 'clubs' | 'lastChampions'>;
 export interface EuropeanEntry {
   competition: string;
   reason: string;
@@ -121,7 +122,7 @@ export function europeanAccess(w: AccessWorld): Map<string, EuropeanEntry> {
   const order = associationAccessOrder(w);
   for (const c of COUNTRIES) {
     const table = tables.get(c.code)!;
-    const cup = (last?.champions ?? (w.history.length ? [] : w.lastChampions)).find(
+    const cup = (last?.champions ?? (archiveCount(w) ? [] : w.lastChampions)).find(
       (ch) => ch.country === c.code,
     )?.cup;
     if (w.year < config.modernFrom) {

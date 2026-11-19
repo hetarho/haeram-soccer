@@ -8,6 +8,7 @@ import type { BracketArchive, CupRun, SeasonArchive, World } from '../../contrac
 import type { PreOwnerSeason } from '../../contracts/src/owner';
 import { domesticCupName } from './competition-keys';
 import { isOwnSeason } from './player-state';
+import { archiveOf, archiveYears } from './archives';
 import { compareIds } from './primitives';
 import { archivedLeaguePoints } from './league-fixtures';
 
@@ -95,15 +96,17 @@ function archivedRuns(season: SeasonArchive, id: string, index: number, code: st
  * owner. A founded career has none.
  */
 export function seasonsBeforeOwner(
-  w: Pick<World, 'clubs' | 'history' | 'playerClub' | 'owner'>,
+  w: Pick<World, 'clubs' | 'history' | 'historyBase' | 'playerClub' | 'owner'>,
 ): PreOwnerSeason[] {
   const id = w.owner?.takeover.clubId,
     index = w.clubs.findIndex((club) => club.id === id),
     code = w.clubs[index]?.country;
   if (!id || !code) return [];
-  return w.history
-    .filter((season) => !isOwnSeason(w, season))
-    .map((season) => {
+  // Whole archives, older ones from the store (→SAVE-32): finishes and runs read the tables.
+  return archiveYears(w)
+    .filter((year) => !isOwnSeason(w, { year }))
+    .map((year) => {
+      const season = archiveOf(w, year)!;
       const finish = archivedFinish(w, season.standings, index, season.leagueDeductions);
       const title = season.champions.some((entry) => entry.country === code && entry.club === id);
       return {

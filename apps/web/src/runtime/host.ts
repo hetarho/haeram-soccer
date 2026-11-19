@@ -144,6 +144,12 @@ import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { transferLedger } from '../../../../packages/engine/src/transfer-records';
 import { seasonsBeforeOwner } from '../../../../packages/engine/src/club-past';
 import { ownSeasons } from '../../../../packages/engine/src/player-state';
+import {
+  archiveCount,
+  archiveOf,
+  archiveSummaries,
+  archiveYears,
+} from '../../../../packages/engine/src/archives';
 import { requestSchema, type Request, type Reply, type View } from './protocol';
 import { ViewPublisher } from './viewPublisher';
 import { playDay, type DaySteps, type HelperPool } from './helperPool';
@@ -329,7 +335,7 @@ function managerHistoryKey(w: World) {
       ? `${facts.trackedFrom.revision}.${facts.serial}.${facts.tenures.length}.${facts.outcomes.length}`
       : '-',
     ownMatchCount(w),
-    w.history.length,
+    archiveCount(w),
     w.manager.id,
     w.manager.interim ? 1 : 0,
     provisionalPlace(w) ?? 0,
@@ -975,7 +981,7 @@ export class Host {
       ownMatchCount(w),
       eventCount(w),
       w.rankHistory?.length,
-      w.history.length,
+      archiveCount(w),
       w.newsJournal?.events,
       w.newsJournal?.matches,
     ].join(':');
@@ -1000,10 +1006,9 @@ export class Host {
   private preOwner(w: World): View['preOwner'] {
     const takeover = w.owner?.takeover;
     if (!takeover) return undefined;
-    const before = w.history.findIndex((season) => season.year >= takeover.year),
-      key = [w.id, takeover.year, takeover.clubId, before < 0 ? w.history.length : before].join(
-        ':',
-      );
+    const years = archiveYears(w),
+      before = years.findIndex((year) => year >= takeover.year),
+      key = [w.id, takeover.year, takeover.clubId, before < 0 ? years.length : before].join(':');
     if (this.preOwnerCache?.key !== key)
       this.preOwnerCache = { key, seasons: seasonsBeforeOwner(w) };
     return this.preOwnerCache.seasons;
@@ -1076,17 +1081,8 @@ export class Host {
           (f) => f.home === w.playerClub || f.away === w.playerClub || f.groupKey === ownGroup,
         ),
         // Brackets and scorer tables come with the archive request; the small rank series and Elo
-        // spread stay for the records charts.
-        history: w.history.map((h) => {
-          const season = {
-            ...h,
-            standings: [],
-            europe: h.europe.map((e) => ({ ...e, standings: [], secondStandings: undefined })),
-          };
-          delete season.brackets;
-          delete season.scorers;
-          return season;
-        }),
+        // spread stay for the records charts. Older seasons come from the store (→SAVE-32).
+        history: archiveSummaries(w),
         events: w.events.slice(-150),
         // Only the own country's cup is shown in full; the others report their winners.
         ...(w.cups
@@ -1211,7 +1207,7 @@ export class Host {
           requestId: request.requestId,
           ok: true,
           archive: {
-            season: w.history.find((h) => h.year === body.year),
+            season: archiveOf(w, body.year),
             matches: ownMatchesOfSeason(w, body.year),
             events: eventsOfYear(w, body.year),
             managers: eventsOfKindPrefix(w, 'manager-').map(({ event }) => event),

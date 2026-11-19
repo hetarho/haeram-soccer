@@ -64,6 +64,7 @@ export const WORLD_VIEW_FIELDS = {
   npcSeason: 'exclude',
   managerHistory: 'exclude',
   transfers: 'include',
+  historyBase: 'exclude',
   history: 'include',
   eventsBase: 'exclude',
   events: 'include',

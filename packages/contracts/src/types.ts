@@ -1430,6 +1430,12 @@ export interface World {
   managerHistory?: ManagerHistoryFacts;
   /** Our club's fee transfers (→HIST-20); absent until the first is recorded. */
   transfers?: TransferRecords;
+  /**
+   * Season archives older than the last seven that left memory at a save and are read from the
+   * record store (→SAVE-32): an archive's absolute index is this base plus its place in `history`.
+   * Absent is 0.
+   */
+  historyBase?: number;
   history: SeasonArchive[];
   /**
    * Events of seasons before last season that left memory at a save and are read from the record

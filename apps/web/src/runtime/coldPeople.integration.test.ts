@@ -21,6 +21,11 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { addEvent, eventsOfYear } from '../../../../packages/engine/src/events';
 import { newsBefore, newsPage, newsTotal } from '../../../../packages/engine/src/news';
 import { transferLedger } from '../../../../packages/engine/src/transfer-records';
+import {
+  archiveOf,
+  archiveSummaries,
+  HOT_ARCHIVE_SEASONS,
+} from '../../../../packages/engine/src/archives';
 import { clubRecords } from './clubRecords';
 import { createFixtureHelper } from './fixtureHelper';
 import { headToHead } from './headToHead';
@@ -72,12 +77,16 @@ function expectSameMatchReads(saved: World, reference: World) {
   expect(newsTotal(saved)).toBe(newsTotal(reference));
   expect(newsPage(saved, 0, 50)).toEqual(newsPage(reference, 0, 50));
   expect(newsBefore(saved)).toEqual(newsBefore(reference));
+  // Season archives older than seven seasons read alike from their cold rows (T1018).
+  expect(archiveSummaries(saved)).toEqual(archiveSummaries(reference));
+  for (const season of reference.history) expect(archiveOf(saved, season.year)).toEqual(season);
 }
 
 describe('people, player records and own matches leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
   it('plays a season alike with a cold move after every day and without saves', async () => {
-    // A season after the takeover, retired people its records link are kept (→HIST-23).
-    const start = simulatedWorld(CAREER, { seasons: 1 });
+    // Eight seasons after the takeover, so the run spans more than eight archived seasons and the
+    // oldest archives leave memory (T1018); retired people its records link are kept (→HIST-23).
+    const start = structuredClone(simulatedWorld(CAREER, { seasons: 8 }));
     // Synthetic funding avoids bankruptcy while every club, fixture and business day is simulated.
     start.cash = '99999999999';
     const referenceStore = memoryRecordStore();
@@ -95,6 +104,7 @@ describe('people, player records and own matches leaving memory at every save (�
     // Last season's own matches leave memory; every host read answers as before (T1016).
     expect(saved.ownMatchesBase).toBeGreaterThan(0);
     expect(saved.ownMatches.length).toBeLessThan(reference.ownMatches.length);
+    expect(saved.historyBase).toBeGreaterThan(0);
     expectSameMatchReads(saved, reference);
     expect(worldFacts(saved)).toBe(canonical(reference));
 
@@ -138,6 +148,10 @@ describe('people, player records and own matches leaving memory at every save (�
     expect(
       Object.keys(saved.newsJournal?.seasons ?? {}).every((y) => Number(y) >= saved.year - 1),
     ).toBe(true);
+    // Archives older than seven seasons followed across the close (T1018).
+    expect(saved.history.every((h) => h.year >= saved.year - HOT_ARCHIVE_SEASONS)).toBe(true);
+    expect(store.count('season_archive', { cold: true })).toBe(saved.historyBase);
+    expect(saved.historyBase).toBeGreaterThan(1);
     expectSameMatchReads(saved, reference);
     expect(worldFacts(saved)).toBe(canonical(reference));
   }, 900_000);

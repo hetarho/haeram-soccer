@@ -15,6 +15,7 @@ import { facilityStage } from '../../../../packages/engine/src/club-value';
 import { stadiumCapacity } from '../../../../packages/engine/src/facility-model';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { archivedFinish } from '../../../../packages/engine/src/club-past';
+import { archiveOf, archiveSummaries } from '../../../../packages/engine/src/archives';
 import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
 import { playerRecordOf } from '../../../../packages/engine/src/player-records';
 
@@ -75,13 +76,19 @@ export function clubProfile(w: World, clubId: string): ClubProfile | undefined {
     cup = 0,
     europe = 0;
   const seasons: ClubProfile['history']['seasons'] = [];
-  for (const season of w.history) {
+  // Titles from every season's summary, older ones from the store (→SAVE-32).
+  const archived = archiveSummaries(w);
+  for (const season of archived) {
     for (const champion of season.champions) {
       if (champion.club === clubId) league++;
       if (champion.cup === clubId) cup++;
     }
     europe += season.europe.filter((entry) => entry.winner === clubId).length;
-    const finish = archivedFinish(w, season.standings, index, season.leagueDeductions);
+  }
+  // Finishes read the tables: whole archives, newest first, only as far back as the profile shows.
+  for (let i = archived.length - 1; i >= 0 && seasons.length < PROFILE_SEASONS; i--) {
+    const season = archiveOf(w, archived[i]!.year)!,
+      finish = archivedFinish(w, season.standings, index, season.leagueDeductions);
     if (finish) seasons.push({ year: season.year, division: finish.tier, place: finish.place });
   }
   return {
@@ -97,7 +104,7 @@ export function clubProfile(w: World, clubId: string): ClubProfile | undefined {
       .sort((a, b) => b.ovr - a.ovr),
     staff,
     stadium: { seats: stadiumCapacity(facilityStage(w, club)) },
-    history: { league, cup, europe, seasons: seasons.reverse().slice(0, PROFILE_SEASONS) },
+    history: { league, cup, europe, seasons },
   };
 }
 

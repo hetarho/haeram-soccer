@@ -1,6 +1,7 @@
 import type { World } from '../../contracts/src/types';
 import { ownMatchAt, ownMatchCount } from './own-matches';
 import { eventAt, eventCount } from './events';
+import { archiveAt, archiveCount } from './archives';
 import { CAREER_READS_FORMAT } from '../../contracts/src/career-reads';
 import type { CareerReads, PlayerRead } from '../../contracts/src/career-reads';
 import { ownSideOf } from './material';
@@ -91,8 +92,9 @@ export function refreshCareerReads(w: World) {
   // `s.events` counts every event recorded, so it is an absolute index (→SAVE-32).
   while (s.events < eventCount(w))
     if (eventAt(w, s.events++)!.kind === 'promotion') s.promoted = true;
-  while (s.history < w.history.length) {
-    const h = w.history[s.history++];
+  // `s.history` counts every season archived, so it is an absolute index (→SAVE-32).
+  while (s.history < archiveCount(w)) {
+    const h = archiveAt(w, s.history++)!;
     // The world's seasons before the takeover are the club's past, not the owner's (→HIST-21).
     if (!isOwnSeason(w, h)) continue;
     if (s.lastTier !== undefined && s.lastTier > h.tier) s.promoted = true;

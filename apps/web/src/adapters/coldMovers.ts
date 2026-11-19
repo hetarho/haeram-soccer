@@ -24,6 +24,11 @@ import {
 } from '../../../../packages/engine/src/own-matches';
 import { coldEventCount, eventsBase, releaseEvents } from '../../../../packages/engine/src/events';
 import { coldNewsYears, releaseNewsBuckets } from '../../../../packages/engine/src/news';
+import {
+  coldArchiveCount,
+  historyBase,
+  releaseArchives,
+} from '../../../../packages/engine/src/archives';
 import type { RowSaver, SaveStats } from './rowSaver';
 
 /** What a mover does once the write holding its cold rows has committed. */
@@ -124,6 +129,26 @@ export function moveColdNews(w: World, saver: Pick<RowSaver, 'markCold'>): After
 }
 
 /**
+ * Marks the season archives older than the last seven seasons cold in the next save (→SAVE-32),
+ * with `historyBase` grown by their count in the same write; after it commits they leave
+ * `w.history` and the base counts them, so every absolute index and row stays, and every read of
+ * them goes to their cold rows (`archiveOf`, `archiveSummaries` and the other accessors).
+ */
+export function moveColdArchives(
+  w: World,
+  saver: Pick<RowSaver, 'markCold' | 'setField'>,
+): AfterCommit {
+  const n = coldArchiveCount(w);
+  if (!n) return () => {};
+  saver.markCold(
+    'season_archive',
+    w.history.slice(0, n).map((season) => String(season.year)),
+  );
+  saver.setField('historyBase', historyBase(w) + n);
+  return () => releaseArchives(w, n);
+}
+
+/**
  * Saves `w` as one write with every mover's cold rows (→SAVE-3, →SAVE-32); only a committed write
  * moves anything out of memory.
  */
@@ -135,6 +160,7 @@ export function saveMovingCold(w: World, saver: RowSaver): SaveStats {
     moveColdOwnMatches(w, saver),
     moveColdEvents(w, saver),
     moveColdNews(w, saver),
+    moveColdArchives(w, saver),
   ];
   const stats = saver.save(w);
   for (const done of after) done();

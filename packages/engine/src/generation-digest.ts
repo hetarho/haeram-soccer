@@ -16,6 +16,7 @@ import type {
 } from '../../contracts/src/types';
 import { BALLON_DOR_CONFIG } from './ballon-dor';
 import { eloOf } from './elo';
+import { archiveSummaries } from './archives';
 
 /** The feats of WEB-115, greatest first: a season with several shows the first. */
 export const FEAT_ORDER: readonly GenerationFeatKind[] = [
@@ -36,14 +37,15 @@ const ELO_TOP = 10;
 /** A league run is carded at its fifth title, then only when it becomes its country's longest. */
 const LEAGUE_RUN = 5;
 
-type DigestWorld = Pick<World, 'year' | 'clubs' | 'history'>;
+type DigestWorld = Pick<World, 'year' | 'clubs' | 'history' | 'historyBase'>;
 
 /**
  * The digest of the season just closed, once `w` stands on the next season's first day; nothing
  * before the first close.
  */
 export function seasonDigest(w: DigestWorld): GenerationDigest | undefined {
-  const archives = w.history,
+  // Every season, older ones from the store as summaries: a feat reads titles and podiums only.
+  const archives = archiveSummaries(w),
     last = archives.at(-1);
   if (!last) return undefined;
   const clubs = new Map(w.clubs.map((club) => [club.id, club]));

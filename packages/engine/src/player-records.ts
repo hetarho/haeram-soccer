@@ -5,6 +5,7 @@
  * through `playerRecord`, which brings it back first.
  */
 import { ownMatchesFrom } from './own-matches';
+import { archiveSummaries } from './archives';
 import { recordStoreOf } from '../../contracts/src/record-store';
 import type {
   MatchRecord,
@@ -168,7 +169,8 @@ export function restorePlayerLinks(w: World) {
   const restore = (id: string | undefined) => {
     if (id && available.has(id)) linkPlayer(w, id);
   };
-  for (const season of w.history) for (const place of season.ballonDor ?? []) restore(place.id);
+  for (const season of w.historyBase ? archiveSummaries(w) : w.history)
+    for (const place of season.ballonDor ?? []) restore(place.id);
   for (const match of ownMatchesFrom(w, 0)) {
     for (const line of match.players) if (line.metrics[M.minutes]! > 0) restore(line.id);
     for (const incident of match.incidents ?? []) {
