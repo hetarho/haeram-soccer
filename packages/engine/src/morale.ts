@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { ownMatchAt, ownMatchCount } from './own-matches';
 import type { MatchRecord, World } from '../../contracts/src/types';
 import { ownStarters } from './world';
 import { clamp } from './primitives';
@@ -41,7 +42,7 @@ export function moraleState(value: number): MoraleState {
 export const LEADER_MORALE = { each: 1, most: 3 } as const;
 /** 리더 among the starters of the last own match (→PLAYER-9). */
 export function leadersInLastXi(w: World) {
-  const last = w.ownMatches.at(-1);
+  const last = ownMatchAt(w, ownMatchCount(w) - 1);
   if (!last) return 0;
   const ids = new Set(last.players.map((line) => line.id));
   return w.players.filter((p) => ids.has(p.id) && p.traits.includes('leader')).length;

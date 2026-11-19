@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTRIES } from '../../catalogs/src/index';
-import type { World } from '../../contracts/src/types';
+import type { Player, World } from '../../contracts/src/types';
 import { clubRegistration } from './registration';
 import { historyWorld } from './history';
 import { LINE_MINIMUM, NPC_SQUAD, clubStyle, xiRating } from './world';
@@ -48,7 +48,7 @@ function firstDay(w: World) {
     expect(live.has(p.id)).toBe(false);
     live.add(p.id);
   }
-  if (POST_WAR_OPENINGS.has(w.year)) return;
+  if (POST_WAR_OPENINGS.has(w.year)) return live;
   for (const cp of COUNTRIES) {
     const means = cp.groups.map((_, tier) => {
       const clubs = w.clubs.filter((c) => c.country === cp.code && c.tier === tier);
@@ -57,10 +57,19 @@ function firstDay(w: World) {
     for (let tier = 1; tier < means.length; tier++)
       expect(means[tier]!, `${w.year}:${cp.code}:${tier}`).toBeLessThan(means[tier - 1]!);
   }
+  return live;
 }
 
-// Forty lived seasons take five to six minutes on a loaded local host and longer on CI's shared
-// runners; the limit stops a hang, while generation budgets stay ARCH-28's.
+/** Copy mutable rating inputs each day. Only a changed strength needs the full comparison. */
+function squadFacts(players: readonly Player[]) {
+  return players.map(({ id, attrs, positions }) => ({
+    id,
+    attrs: { ...attrs },
+    positions: { ...positions },
+  }));
+}
+
+// This limit caps the 1930–1970 integration run. World generation has its own ARCH-28 budget.
 const LIVED_WORLD_LIMIT_MS = 900000;
 
 describe('the persisted world from 1930 to 1970', () => {
@@ -129,9 +138,7 @@ describe('the persisted world from 1930 to 1970', () => {
                 c.id,
                 {
                   strength: c.strength,
-                  players: JSON.stringify(
-                    w.squads![c.id]!.map((p) => [p.id, p.attrs, p.positions]),
-                  ),
+                  players: squadFacts(w.squads![c.id]!),
                 },
               ]),
           );
@@ -182,12 +189,13 @@ describe('the persisted world from 1930 to 1970', () => {
             const last = before.get(c.id)!;
             if (last.strength !== c.strength)
               expect(
-                JSON.stringify(w.squads![c.id]!.map((p) => [p.id, p.attrs, p.positions])),
+                squadFacts(w.squads![c.id]!),
                 `${w.year}:${w.calendar?.day}:${c.id}`,
-              ).not.toBe(last.players);
+              ).not.toEqual(last.players);
           }
           if (w.year !== year) {
             years.push(w.year);
+            const live = firstDay(w);
             for (const place of w.history.at(-1)!.ballonDor ?? [])
               expect(w.playerRecords![place.id]!.linked).toBe(true);
             for (const [id, record] of Object.entries(w.playerRecords ?? {})) {
@@ -199,12 +207,9 @@ describe('the persisted world from 1930 to 1970', () => {
               if (record.retired) {
                 expect(record.linked).toBe(true);
                 expect(record.retired.profile.id).toBe(id);
-                expect(
-                  Object.values(w.squads!).some((players) => players.some((p) => p.id === id)),
-                ).toBe(false);
+                expect(live.has(id), `${w.year}:${id}:retired`).toBe(false);
               }
             }
-            firstDay(w);
             expect((w.freeAgents ?? []).length).toBeLessThanOrEqual(FREE_AGENT_CONFIG.cap);
             for (const c of w.clubs.filter((c) => !c.representative)) {
               const limit = npcWageLimit(w, c),

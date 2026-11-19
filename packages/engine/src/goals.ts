@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { ownMatchCount, ownMatchesFrom } from './own-matches';
 import { careerPromotion } from './career-reads';
 import type { World } from '../../contracts/src/types';
 import { clubOf, ownSeasons } from './player-state';
@@ -42,7 +43,7 @@ export function clubMilestones(w: World) {
     archived = w.careerReads ? [] : [...ownSeasons(w)].sort((a, b) => a.year - b.year),
     wins =
       w.careerReads?.wins ??
-      w.ownMatches.filter((match) =>
+      ownMatchesFrom(w, 0).filter((match) =>
         match.home === w.playerClub
           ? match.score.home > match.score.away
           : match.score.away > match.score.home,
@@ -57,7 +58,7 @@ export function clubMilestones(w: World) {
       sourceMessage('copy.goals.d2f198cf02'),
       sourceMessage('copy.goals.4e02a6760d'),
       Math.max(
-        w.ownMatches.length,
+        ownMatchCount(w),
         w.tables[w.playerClub]?.played || 0,
         w.careerReads?.bestPlayed ?? 0,
         ...archived.map((season) => season.played),

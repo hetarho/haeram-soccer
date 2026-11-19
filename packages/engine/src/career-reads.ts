@@ -1,4 +1,5 @@
 import type { World } from '../../contracts/src/types';
+import { ownMatchAt, ownMatchCount } from './own-matches';
 import { CAREER_READS_FORMAT } from '../../contracts/src/career-reads';
 import type { CareerReads, PlayerRead } from '../../contracts/src/career-reads';
 import { ownSideOf } from './material';
@@ -50,8 +51,9 @@ export function refreshCareerReads(w: World) {
   if (s.year !== w.year) {
     s.year = w.year;
   }
-  while (s.matches < w.ownMatches.length) {
-    const m = w.ownMatches[s.matches++];
+  // `s.matches` counts every own match settled, so it is an absolute index (→SAVE-32).
+  while (s.matches < ownMatchCount(w)) {
+    const m = ownMatchAt(w, s.matches++)!;
     const own = m.home === w.playerClub ? m.score.home : m.score.away;
     const other = m.home === w.playerClub ? m.score.away : m.score.home;
     if (own > other) s.wins++;

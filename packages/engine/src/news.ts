@@ -1,11 +1,13 @@
-import { linkPlayer } from './player-records';
+import { linkPlayer, playerRecordOf } from './player-records';
+import { ownMatchAt, ownMatchCount, ownMatchesFrom, ownMatchesOfSeason } from './own-matches';
 import { archivedLeaguePoints, leaguePoints } from './league-fixtures';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
-import type { Event, MatchRecord, Player, World } from '../../contracts/src/types';
+import type { Event, MatchRecord, Player, SeasonArchive, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
 import { clubOf, lastOwnSeason } from './player-state';
+import { seasonAfter } from './season-years';
 import { STYLE_INFO } from './styles';
 import { buildTitleName } from './build';
 
@@ -199,7 +201,9 @@ function advanceRuns(ctx: NewsContext, p: Played) {
 function newsContext(w: World): NewsContext {
   const people = new Map(w.players.map((p) => [p.id, p.name]));
   const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
-  const earlier = w.ownMatches.filter((m) => m.year < w.year).map((m) => played(w, m, clubNames));
+  const earlier = ownMatchesFrom(w, 0)
+    .filter((m) => m.year < w.year)
+    .map((m) => played(w, m, clubNames));
   const ctx: NewsContext = {
     w,
     name: clubOf(w).name,
@@ -294,8 +298,7 @@ export function deriveClubNews(w: World): NewsItem[] {
   const ctx = newsContext(w),
     news: NewsItem[] = [];
   const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
-  w.ownMatches
-    .filter((m) => m.year === w.year)
+  ownMatchesOfSeason(w, w.year)
     .map((m) => played(w, m, clubNames))
     .forEach((p, index) => {
       ctx.season.push(p.result);
@@ -308,7 +311,8 @@ export function deriveClubNews(w: World): NewsItem[] {
     const item = eventNews(w, ctx.name, event, index);
     if (item) news.push(item);
   });
-  news.push(...honours(w));
+  const closed = honourSeason(w);
+  if (closed) news.push(...honours(w, closed));
   return news.sort((a, b) => b.year - a.year || b.order - a.order);
 }
 
@@ -1239,11 +1243,14 @@ function tableNews(w: World, name: string): NewsItem[] {
   return items;
 }
 
-/** Trophies of the season that just closed: the league, the domestic cup and continental cups. */
-function honours(w: World): NewsItem[] {
-  // The club's own season only: honours of the world's season before the takeover are not ours.
+/** The club's own closed season becomes eligible once the next played season opens. */
+function honourSeason(w: World) {
   const last = lastOwnSeason(w);
-  if (!last || last.year !== w.year - 1) return [];
+  return last && seasonAfter(last.year) === w.year ? last : undefined;
+}
+
+/** Trophies of the season that just closed: the league, the domestic cup and continental cups. */
+function honours(w: World, last: SeasonArchive): NewsItem[] {
   const name = clubOf(w).name,
     items: NewsItem[] = [];
   const base = (kind: string) => ({
@@ -1699,7 +1706,7 @@ function appendHeadline(w: World, j: NewsJournal, item: NewsItem) {
 }
 function resetNewsSeason(w: World, j: NewsJournal, year: number, ctx: NewsContext) {
   // Season-scoped comparisons restart against the completed career's records.
-  const empty = newsContext({ ...w, ownMatches: [] });
+  const empty = newsContext({ ...w, ownMatches: [], ownMatchesBase: 0 });
   const next: NewsContext = {
     ...empty,
     hasHistory: j.matches > 0,
@@ -1728,8 +1735,8 @@ export function initializeNewsJournal(w: World) {
     numberJournal(w.newsJournal);
     return;
   }
-  const firstYear = w.ownMatches[0]?.year ?? w.year;
-  const ctx = newsContext({ ...w, ownMatches: [] });
+  const firstYear = ownMatchAt(w, 0)?.year ?? w.year;
+  const ctx = newsContext({ ...w, ownMatches: [], ownMatchesBase: 0 });
   w.newsJournal = {
     format: 1,
     year: firstYear,
@@ -1750,10 +1757,11 @@ export function refreshNewsJournal(w: World) {
   const j = w.newsJournal;
   if (!j) return;
   const table = `${w.year}:${w.round}:${w.rankHistory?.length ?? 0}`;
-  const honour = w.history.at(-1)?.year;
+  const closed = honourSeason(w);
+  const honour = closed?.year;
   const sources = journalSources.get(j);
   if (
-    j.matches === w.ownMatches.length &&
+    j.matches === ownMatchCount(w) &&
     j.events === w.events.length &&
     j.year === w.year &&
     sources?.table === table &&
@@ -1767,8 +1775,9 @@ export function refreshNewsJournal(w: World) {
   const names = new Map(w.players.map((p) => [p.id, p.name]));
   ctx.who = (id) => names.get(id) ?? sourceMessage('team.column.player');
   const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
-  while (j.matches < w.ownMatches.length) {
-    const m = w.ownMatches[j.matches];
+  // `j.matches` counts every own match settled, so it is an absolute index (→SAVE-32).
+  while (j.matches < ownMatchCount(w)) {
+    const m = ownMatchAt(w, j.matches)!;
     if (m.year !== j.year) ctx = resetNewsSeason(w, j, m.year, ctx);
     const p = played(w, m, clubNames),
       index = ctx.season.length;
@@ -1797,8 +1806,8 @@ export function refreshNewsJournal(w: World) {
   // These reads are bounded to the retained round window and the last season's honour row.
   if (sources?.table !== table)
     for (const item of tableNews(w, ctx.name)) appendHeadline(w, j, item);
-  if (!sources || sources.honour !== honour)
-    for (const item of honours(w)) appendHeadline(w, j, item);
+  if (closed && sources?.honour !== honour)
+    for (const item of honours(w, closed)) appendHeadline(w, j, item);
   journalSources.set(j, { table, honour });
   journalContexts.set(j, ctx);
   j.state = newsState(ctx);
@@ -1868,7 +1877,7 @@ export function newsBefore(w: World, before?: string, tag?: NewsTag): NewsItem[]
 
 /** Retirement never creates its own eligibility link; its profile must already be retained. */
 export function recordRetirementNews(w: World, player: Player, club?: string) {
-  if (!w.newsJournal || !w.playerRecords?.[player.id]?.retired) return;
+  if (!w.newsJournal || !playerRecordOf(w, player.id)?.retired) return;
   appendHeadline(w, w.newsJournal, {
     id: `${w.year}:retirement:${player.id}`,
     year: w.year,

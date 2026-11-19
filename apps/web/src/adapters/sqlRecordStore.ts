@@ -97,6 +97,11 @@ function where(
     clauses.push('kind >= ? AND kind < ?');
     params.push(filter.kindPrefix, filter.kindPrefix + PREFIX_END);
   }
+  if (filter.id !== undefined) {
+    need('id');
+    clauses.push('id = ?');
+    params.push(filter.id);
+  }
   if (filter.seqFrom !== undefined) {
     clauses.push('seq >= ?');
     params.push(filter.seqFrom);

@@ -126,6 +126,15 @@ import {
   currency,
 } from '../../../../packages/catalogs/src/index';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
+import {
+  hasOwnMatch,
+  latestOwnMatches,
+  ownMatchCount,
+  ownMatchesAgainst,
+  ownMatchesFrom,
+  ownMatchesOfSeason,
+  ownMatchSummaries,
+} from '../../../../packages/engine/src/own-matches';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { transferLedger } from '../../../../packages/engine/src/transfer-records';
 import { seasonsBeforeOwner } from '../../../../packages/engine/src/club-past';
@@ -164,8 +173,11 @@ function adoptIdentities(w: World, revised: boolean): World {
  */
 function settledAhead(live: World | undefined, candidate: World) {
   if (live?.id !== candidate.id) return false;
-  const held = new Set(candidate.ownMatches.map((m) => m.id));
-  return live.ownMatches.some((m) => !held.has(m.id));
+  // Settled matches only ever append, and earlier seasons' leave memory first (→SAVE-32).
+  return (
+    ownMatchCount(live) > ownMatchCount(candidate) ||
+    live.ownMatches.some((m) => !hasOwnMatch(candidate, m.id))
+  );
 }
 /** The own club's place in its league this season once a league match is played, else none. */
 function provisionalPlace(w: World) {
@@ -272,7 +284,7 @@ function managerHistorySource(w: World): ManagerHistorySource {
       ...(w.manager.person ? { person: w.manager.person } : {}),
       since: w.manager.since,
     },
-    matches: w.ownMatches.map((match, order) => ({
+    matches: ownMatchSummaries(w).map(({ match, order }) => ({
       match,
       at: { year: match.year, day: Math.max(0, fixtureDay(match)) },
       order,
@@ -310,7 +322,7 @@ function managerHistoryKey(w: World) {
     facts
       ? `${facts.trackedFrom.revision}.${facts.serial}.${facts.tenures.length}.${facts.outcomes.length}`
       : '-',
-    w.ownMatches.length,
+    ownMatchCount(w),
     w.history.length,
     w.manager.id,
     w.manager.interim ? 1 : 0,
@@ -954,7 +966,7 @@ export class Host {
       w.id,
       w.year,
       w.round,
-      w.ownMatches.length,
+      ownMatchCount(w),
       w.events.length,
       w.rankHistory?.length,
       w.history.length,
@@ -1053,7 +1065,7 @@ export class Host {
           ...(w.promises ?? []).filter((p) => p.status === 'pending'),
           ...(w.promises ?? []).filter((p) => p.status !== 'pending').slice(-20),
         ],
-        ownMatches: w.ownMatches.slice(-30),
+        ownMatches: latestOwnMatches(w, 30),
         fixtures: w.fixtures.filter(
           (f) => f.home === w.playerClub || f.away === w.playerClub || f.groupKey === ownGroup,
         ),
@@ -1079,8 +1091,9 @@ export class Host {
             }
           : {}),
       },
-      totalMatches: w.ownMatches.length,
-      tallies: tallies(w),
+      totalMatches: ownMatchCount(w),
+      // Without career reads the tallies count every own match, earlier seasons' from the store.
+      tallies: tallies(w.careerReads ? w : { ...w, ownMatches: ownMatchesFrom(w, 0) }),
       milestones: clubMilestones(w),
       ...(slow ? { managers: slow.managers, transfers: slow.transfers } : {}),
       sponsors: sponsorSlots(w),
@@ -1193,7 +1206,7 @@ export class Host {
           ok: true,
           archive: {
             season: w.history.find((h) => h.year === body.year),
-            matches: w.ownMatches.filter((m) => m.year === body.year),
+            matches: ownMatchesOfSeason(w, body.year),
             events: w.events.filter((e) => e.year === body.year),
             managers: w.events.filter((e) => e.kind.startsWith('manager-')),
           },
@@ -1225,7 +1238,7 @@ export class Host {
         return {
           requestId: request.requestId,
           ok: true,
-          clubRecords: clubRecords(w.ownMatches, w.playerClub),
+          clubRecords: clubRecords(ownMatchesFrom(w, 0), w.playerClub),
         };
       if (body.type !== 'head-to-head') throw new Error(sourceMessage('copy.host.1cc4f9bb1d'));
       if (body.club === w.playerClub || !w.clubs.some((club) => club.id === body.club))
@@ -1233,7 +1246,7 @@ export class Host {
       return {
         requestId: request.requestId,
         ok: true,
-        headToHead: headToHead(w.ownMatches, w.playerClub, body.club),
+        headToHead: headToHead(ownMatchesAgainst(w, body.club), w.playerClub, body.club),
       };
     } catch (error) {
       return failure(input, request, error);
@@ -1352,7 +1365,7 @@ export class Host {
             }
           } else if (cmd.type === 'advance-days' || cmd.type === 'next-match') {
             if (w.critical) throw new Error(sourceMessage('copy.host.0224ffabb2'));
-            const matchCount = w.ownMatches.length,
+            const matchCount = ownMatchCount(w),
               year = w.year,
               stop = new Set(cmd.type === 'advance-days' ? cmd.stop : []),
               known = new Set((w.inbox || []).map((item) => item.id));
@@ -1367,7 +1380,7 @@ export class Host {
               if (
                 w.critical ||
                 careerEnded(w) ||
-                (cmd.type === 'next-match' && w.ownMatches.length > matchCount)
+                (cmd.type === 'next-match' && ownMatchCount(w) > matchCount)
               )
                 break;
               // Every step ends when the season closes. A multi-day step also ends on the day any
@@ -1379,7 +1392,7 @@ export class Host {
                   stoppingReasons(w).some((item) => stop.has(item.kind))) ||
                 (cmd.type === 'advance-days' &&
                   n < limit - 1 &&
-                  (w.ownMatches.length > matchCount ||
+                  (ownMatchCount(w) > matchCount ||
                     (w.inbox || []).some((item) => !known.has(item.id))))
               )
                 break;

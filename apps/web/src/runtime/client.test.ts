@@ -604,8 +604,8 @@ describe('background worker publication', () => {
       addEventListener() {},
       removeEventListener() {},
     });
-    const notices = vi.spyOn(ChannelPort.prototype, 'postMessage');
     const client = await start(),
+      gameId = client.gameId!,
       worker = WorkerPort.instances[0],
       saves = () => worker.requests.filter((request) => request.body.type === 'save').length;
     await delegateMarket(client);
@@ -618,11 +618,13 @@ describe('background worker publication', () => {
     expect(saves()).toBe(baseSaves);
     expect(due).toHaveLength(1);
     expect(client.state.savedRevision).toBe(baseRevision);
+    expect(committed(gameId)).toBe(baseRevision);
     const foundedAt = client.state.savedAt!;
     due[0]();
     await client.whenSaved();
     expect(saves()).toBe(baseSaves + 1);
     expect(client.state.savedRevision).toBe(baseRevision + 2);
+    expect(committed(gameId)).toBe(baseRevision + 2);
     expect(client.state.savedAt).toBeGreaterThanOrEqual(foundedAt);
     // An owner decision asks at once; its command settles while the save's answer is held.
     let release = () => {};
@@ -635,15 +637,8 @@ describe('background worker publication', () => {
     release();
     await client.whenSaved();
     expect(client.state.savedRevision).toBe(baseRevision + 3);
+    expect(committed(gameId)).toBe(baseRevision + 3);
     expect(due).toHaveLength(1);
-    // Read-only tabs hear of every commit.
-    const posted = notices.mock.calls as unknown as [{ revision: number }][];
-    expect(posted.map(([notice]) => notice.revision)).toEqual([
-      0,
-      baseRevision,
-      baseRevision + 2,
-      baseRevision + 3,
-    ]);
   });
 
   it('refreshes season and manager archives without publishing or interrupting automatic work', async () => {

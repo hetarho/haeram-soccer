@@ -217,6 +217,7 @@ export function tacticalReport(record: MatchRecord, side: 0 | 1): TacticalReport
 
 /** Delete the closed season's own-match material (→MATCH-5, HIST-16). */
 export function reduceSeasonMaterial(w: World, archive: SeasonArchive): void {
+  // Memory holds the closing season's matches: only earlier seasons' leave it (→SAVE-32).
   for (const m of w.ownMatches) {
     if (m.year === archive.year) delete m.material;
   }

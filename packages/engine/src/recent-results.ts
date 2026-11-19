@@ -1,9 +1,13 @@
 import type { Fixture, World } from '../../contracts/src/types';
 import { RECENT_RESULT_LIMIT } from '../../contracts/src/recent-results';
 import { fixtureDay } from './calendar';
+import { ownMatchesFrom } from './own-matches';
 import { compareIds } from './primitives';
 
-type ResultSource = Pick<World, 'recentResults' | 'fixtures' | 'cups' | 'europe' | 'ownMatches'>;
+type ResultSource = Pick<
+  World,
+  'recentResults' | 'fixtures' | 'cups' | 'europe' | 'ownMatches' | 'ownMatchesBase'
+>;
 
 function byDate(a: Fixture, b: Fixture) {
   return a.year - b.year || fixtureDay(a) - fixtureDay(b) || compareIds(a.id, b.id);
@@ -35,7 +39,8 @@ function resultSources(w: ResultSource): Fixture[][] {
     w.fixtures,
     ...(w.cups ?? []).map((cup) => cup.fixtures),
     ...w.europe.map((tournament) => tournament.fixtures),
-    w.ownMatches,
+    // Every own match, those of earlier seasons read from their cold rows (→SAVE-32).
+    ownMatchesFrom(w, 0),
   ];
 }
 

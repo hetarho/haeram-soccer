@@ -1,5 +1,6 @@
 import { endPlayingCoachForDeparture } from './playing-coach';
 import { hasPerson, personOf } from './person-reads';
+import { lastPlayerMove } from './player-records';
 import { COUNTRIES } from '../../catalogs/src/index';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
@@ -246,7 +247,7 @@ export function movePerson(
     person.loan = { club: person.club, until: loanUntil };
   const previousClub = person.club;
   const at = careerDate(w);
-  const last = w.playerRecords?.[p.id]?.moves.at(-1);
+  const last = lastPlayerMove(w, p.id);
   const from =
     previousClub ??
     last?.to ??

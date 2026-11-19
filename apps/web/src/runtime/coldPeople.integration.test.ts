@@ -12,7 +12,15 @@ import { CAREER } from '../../../../packages/engine/src/finance.testkit';
 import { saveMovingCold } from '../adapters/coldMovers';
 import { RowSaver } from '../adapters/rowSaver';
 import { worldFacts } from '../adapters/worldRows';
+import {
+  ownMatchesAgainst,
+  ownMatchesFrom,
+  ownMatchesOfSeason,
+} from '../../../../packages/engine/src/own-matches';
+import type { World } from '../../../../packages/contracts/src/types';
+import { clubRecords } from './clubRecords';
 import { createFixtureHelper } from './fixtureHelper';
+import { headToHead } from './headToHead';
 import { HelperPool, playDay, type HelperPort } from './helperPool';
 import { storedWorld } from './host';
 
@@ -37,7 +45,26 @@ function open(store: RecordStore) {
   return { w, saver };
 }
 
-describe('people leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
+/**
+ * The host's own-match reads — club records, head-to-head and a season's archive — on `saved`, whose
+ * earlier seasons' matches are cold, against `reference`, which holds every match (→SAVE-32).
+ */
+function expectSameMatchReads(saved: World, reference: World) {
+  const own = reference.playerClub;
+  const opponent = reference.ownMatches.map((m) => (m.home === own ? m.away : m.home))[0]!;
+  expect(clubRecords(ownMatchesFrom(saved, 0), own)).toEqual(
+    clubRecords(reference.ownMatches, own),
+  );
+  expect(headToHead(ownMatchesAgainst(saved, opponent), own, opponent)).toEqual(
+    headToHead(reference.ownMatches, own, opponent),
+  );
+  for (const year of new Set(reference.ownMatches.map((m) => m.year)))
+    expect(ownMatchesOfSeason(saved, year)).toEqual(
+      reference.ownMatches.filter((m) => m.year === year),
+    );
+}
+
+describe('people, player records and own matches leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
   it('plays a season alike with a cold move after every day and without saves', async () => {
     // A season after the takeover, retired people its records link are kept (→HIST-23).
     const start = simulatedWorld(CAREER, { seasons: 1 });
@@ -52,6 +79,13 @@ describe('people leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
     saveMovingCold(saved, saver);
     const everyone = Object.keys(reference.people!).length;
     expect(Object.keys(saved.people!).length).toBeLessThan(everyone);
+    // Retired players' linked records leave with them (T1015).
+    const records = (w: typeof saved) => Object.keys(w.playerRecords ?? {}).length;
+    expect(records(saved)).toBeLessThan(records(reference));
+    // Last season's own matches leave memory; every host read answers as before (T1016).
+    expect(saved.ownMatchesBase).toBeGreaterThan(0);
+    expect(saved.ownMatches.length).toBeLessThan(reference.ownMatches.length);
+    expectSameMatchReads(saved, reference);
     expect(worldFacts(saved)).toBe(canonical(reference));
 
     // Fixture helpers play the saved world's other matches; the reference plays alone (→ARCH-6).
@@ -80,7 +114,14 @@ describe('people leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
     }
     expect(saved.year).toBe(year + 1);
     expect(store.count('person', { cold: true })).toBeGreaterThan(0);
+    expect(store.count('player_record', { cold: true })).toBeGreaterThan(0);
+    expect(records(saved)).toBeLessThan(records(reference));
     expect(Object.keys(saved.people!).length).toBeLessThan(Object.keys(reference.people!).length);
+    // The closed season's matches followed across the close (T1016).
+    expect(saved.ownMatches.every((m) => m.year === saved.year)).toBe(true);
+    expect(store.count('own_match', { cold: true })).toBe(saved.ownMatchesBase);
+    expect(store.count('own_match', { cold: true, year })).toBeGreaterThan(0);
+    expectSameMatchReads(saved, reference);
     expect(worldFacts(saved)).toBe(canonical(reference));
   }, 900_000);
 });

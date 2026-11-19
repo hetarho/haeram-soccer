@@ -107,11 +107,15 @@ export function worldToRows(w: World): StoredRow[] {
   return rows;
 }
 
-/** Rebuilds a world from its rows; `rowsOf` returns a table's rows in `seq` order. */
-function assemble(rowsOf: (table: RecordTable) => StoredRow[]): World {
+/**
+ * Rebuilds a world from its rows; `rowsOf` returns a table's rows in `seq` order. A `complete` world
+ * holds its cold rows too, so its arrays start at index 0 and carry no base.
+ */
+function assemble(rowsOf: (table: RecordTable) => StoredRow[], complete: boolean): World {
   const world: Fields = {};
   for (const { key, data } of rowsOf('world_field')) world[key] = JSON.parse(data);
   for (const [field, family] of Object.entries(FAMILIES)) {
+    if (complete && family.base) delete world[family.base];
     const container = world[field];
     if (container === undefined) continue;
     const rows = rowsOf(family.table);
@@ -131,7 +135,7 @@ function assemble(rowsOf: (table: RecordTable) => StoredRow[]): World {
  */
 export function rowsToWorld(store: RecordStore, options: { includeCold: boolean }): World {
   const filter: RowFilter = options.includeCold ? {} : { cold: false };
-  return assemble((table) => store.rows(table, filter));
+  return assemble((table) => store.rows(table, filter), options.includeCold);
 }
 
 const bySeq = (a: StoredRow, b: StoredRow) =>
@@ -157,5 +161,5 @@ export function worldFacts(w: World): string {
     const cold = store.rows(table, { cold: true }).filter((stored) => !keys.has(stored.key));
     if (cold.length) byTable.set(table, [...held, ...cold].sort(bySeq));
   }
-  return canonical(assemble((table) => byTable.get(table) ?? []));
+  return canonical(assemble((table) => byTable.get(table) ?? [], true));
 }
