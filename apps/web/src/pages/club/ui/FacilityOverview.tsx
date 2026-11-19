@@ -13,11 +13,13 @@ export function FacilityOverview({
   w,
   kind,
   title,
+  titleAction,
   children,
 }: {
   w: World;
   kind: FacilityScene;
   title: string;
+  titleAction?: { label: string; open: () => void };
   children?: ReactNode;
 }) {
   useTextLocale();
@@ -30,7 +32,20 @@ export function FacilityOverview({
     >
       <FacilityArt kind={kind} world={w} className={s.art} />
       <figcaption className={s.caption}>
-        <strong>{localizeValue(title)}</strong>
+        {titleAction ? (
+          <button
+            type="button"
+            data-ui="link"
+            aria-label={titleAction.label}
+            onClick={titleAction.open}
+          >
+            <span>
+              <strong>{localizeValue(title)}</strong>
+            </span>
+          </button>
+        ) : (
+          <strong>{localizeValue(title)}</strong>
+        )}
         {localizeValue(children != null && <span>{localizeValue(children)}</span>)}
       </figcaption>
     </figure>

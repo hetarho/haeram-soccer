@@ -36,7 +36,7 @@ import {
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { PlaceActivities } from './PlaceActivities';
 import { PlayerLink } from '../../../entities/player';
-import { openHome, openStaff, type TrainingTab } from '../../../shared/routing/state';
+import { openFacility, openHome, openStaff, type TrainingTab } from '../../../shared/routing/state';
 import { callLine, playerCallLine } from '../../../entities/player';
 import { multiplierLabel } from '../../../entities/player';
 import { ATTRIBUTES } from '../../../../../../packages/contracts/src/player';
@@ -81,16 +81,19 @@ export function FirstTeamTraining({ state }: { state: ClientState }) {
   useTextLocale();
   const w = state.view!.world;
   const outlook = developmentOutlook(w);
+  const title = w.trainingGround
+    ? displayMessage('copy.TrainingView.534b619186', { p0: w.trainingGround })
+    : displayMessage('facility.training.base');
   return (
     <>
       <FacilityOverview
         w={w}
         kind="training"
-        title={localizeValue(
-          w.trainingGround
-            ? sourceMessage('copy.TrainingView.534b619186', { p0: w.trainingGround })
-            : sourceMessage('facility.training.base'),
-        )}
+        title={title}
+        titleAction={{
+          label: displayMessage('facility.auto.openWork', { part: title }),
+          open: () => openFacility('training'),
+        }}
       >
         {richMessage('copy.TrainingView.c6035b28b3', {
           p0: focusName(outlook.focus.focus),

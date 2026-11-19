@@ -68,7 +68,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1037 | Expose continuation on the three facility work cards | ARCH ECON SAVE WEB | T1036 | todo |
+| T1037 | Expose continuation on the three facility work cards | ARCH ECON SAVE WEB | T1036 | doing@261119.facauto |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
