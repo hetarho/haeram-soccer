@@ -1,4 +1,4 @@
-/** Paired real-worker protocol benchmark. --base <ref> [--procs 8 --days 120 --warm 28 --json out] */
+/** Paired real-worker protocol benchmark. --base <ref> [--base-mode none|helpers --procs 8 --days 120 --warm 28 --json out] */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, cpSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve, join, dirname } from 'node:path';
@@ -53,19 +53,32 @@ async function bundle(spec, name) {
   return file;
 }
 const files = await Promise.all([bundle(base, 'base'), bundle(candidate, 'candidate')]);
+const modes = [arg('--base-mode', 'helpers'), arg('--cand-mode', 'helpers')];
+if (modes.some((mode) => !['none', 'helpers'].includes(mode)))
+  throw new Error('Modes must be none or helpers');
+const pairFile = join(scratch, 'helper-pair.mjs');
+const originalPair = readFileSync(join(here, 'helper-pair.mjs'), 'utf8');
+if (
+  !originalPair.includes('pool: new api.HelperPool(ports), workers') ||
+  !originalPair.includes('      if (!s.pool.active)')
+)
+  throw new Error('Helper benchmark runner no longer matches the mode adapter');
+const pairSource = originalPair
+  .replace(
+    'pool: new api.HelperPool(ports), workers',
+    `pool: new api.HelperPool(${JSON.stringify(modes)}[i] === 'none' ? [] : ports), workers`,
+  )
+  .replace(
+    '      if (!s.pool.active)',
+    `      if (${JSON.stringify(modes)}[i] !== 'none' && !s.pool.active)`,
+  );
+writeFileSync(pairFile, pairSource);
 const runs = [],
   loads = [loadavg()[0]];
 for (let p = 0; p < procs; p++) {
   const r = spawnSync(
     process.execPath,
-    [
-      join(here, 'helper-pair.mjs'),
-      ...files,
-      arg('--seed', 'perf-261027'),
-      days,
-      warm,
-      p % 2 ? 'BA' : 'AB',
-    ],
+    [pairFile, ...files, arg('--seed', 'perf-261027'), days, warm, p % 2 ? 'BA' : 'AB'],
     { encoding: 'utf8', maxBuffer: 1 << 26 },
   );
   if (r.status !== 0) throw new Error(r.stderr);
@@ -85,6 +98,7 @@ const own = (key) =>
 const summary = {
   base,
   candidate,
+  modes,
   procs,
   days,
   warm,

@@ -45,14 +45,21 @@ describe('incremental fixture helpers through campaign transitions', () => {
     let reference = careerWorld({ country: 'BEL', seed: 'replica-season' }, MATCH_MODEL_RELEASE);
     reference.cash = '99999999999';
     let helped = structuredClone(reference);
+    let shared = structuredClone(reference);
     const year = reference.year,
       maxDays = seasonLength(reference) + 15,
       ports = [channel(), channel()];
-    const pool = new HelperPool(ports.map((p) => p.port));
+    const pool = new HelperPool(
+      ports.map((p) => p.port),
+      undefined,
+      undefined,
+      false,
+    );
+    const sharedPool = new HelperPool([channel().port, channel().port]);
     let days = 0;
     while (reference.year === year || currentDay(reference) < 8) {
       expect(days++).toBeLessThan(maxDays);
-      for (const w of [reference, helped]) {
+      for (const w of [reference, helped, shared]) {
         // The host's explicit acknowledgement resumes an informational critical stop.
         if (w.critical) {
           delete w.critical;
@@ -62,23 +69,29 @@ describe('incremental fixture helpers through campaign transitions', () => {
       if (days === 29) {
         transfer(reference);
         transfer(helped);
+        transfer(shared);
       }
       if (days === 43) {
         reference = structuredClone(reference);
         helped = structuredClone(helped);
+        shared = structuredClone(shared);
       }
       const before = [reference.year, currentDay(reference)];
       advanceDays(reference, 1, undefined, false);
       await playDay(pool, helped, false, { advanceDays, prepareRound, completeRound });
+      await playDay(sharedPool, shared, false, { advanceDays, prepareRound, completeRound });
       expect(reference.bankrupt).toBeFalsy();
       expect([reference.year, currentDay(reference)]).not.toEqual(before);
-      if (days % 7 === 0 || reference.year !== year)
+      if (days % 7 === 0 || reference.year !== year) {
         expect(canonical(helped)).toBe(canonical(reference));
+        expect(canonical(shared)).toBe(canonical(reference));
+      }
     }
     expect(helped.year).toBe(year + 1);
     expect(helped.round).toBeGreaterThan(0);
     expect(canonical(helped)).toBe(canonical(reference));
     expect(pool.active).toBe(true);
+    expect(sharedPool.active).toBe(true);
     for (const p of ports) {
       expect(p.sent.filter((j) => j.copy !== undefined).length).toBeGreaterThanOrEqual(3);
       expect(p.sent.some((j) => j.patch !== undefined)).toBe(true);

@@ -7,7 +7,7 @@ import type {
 } from '../../../../packages/engine/src/round-jobs';
 import {
   HELPER_CONFIG,
-  HelperPool,
+  HelperPool as RealHelperPool,
   playDay,
   type DaySteps,
   type HelperJob,
@@ -15,6 +15,12 @@ import {
   type HelperReply,
 } from './helperPool';
 import { FIXTURE_HELPER_PROTOCOL } from './fixtureReplica';
+
+class HelperPool extends RealHelperPool {
+  constructor(ports: readonly HelperPort[], timeout = HELPER_CONFIG.timeoutMs) {
+    super(ports, timeout, async (_copy, jobs) => jobs.map(result));
+  }
+}
 
 /** A helper port that keeps what it was sent and answers only when the test says so. */
 class FakePort implements HelperPort {
@@ -57,14 +63,24 @@ afterEach(() => {
 });
 
 describe('HelperPool', () => {
+  it('enables two helpers only from the configured core threshold', () => {
+    expect(HELPER_CONFIG.count).toBe(2);
+    expect(HELPER_CONFIG.minCores).toBe(2);
+    expect([undefined, 1, 2].map((cores) => (cores ?? 0) >= HELPER_CONFIG.minCores)).toEqual([
+      false,
+      false,
+      true,
+    ]);
+  });
+
   it('splits the jobs, sends one JSON copy and returns results in fixture order', async () => {
     const ports = [new FakePort(), new FakePort()];
     const pool = new HelperPool(ports);
     const run = pool.run(copy, jobs);
     expect(ports[0]!.sent[0]!.protocol).toBe(FIXTURE_HELPER_PROTOCOL);
     expect(ports.map((port) => port.sent[0]!.jobs.map((job) => job.fixture.id))).toEqual([
-      ['f1', 'f2'],
-      ['f3', 'f4', 'f5'],
+      ['f1'],
+      ['f2', 'f3'],
     ]);
     expect(ports.map((port) => port.sent[0]!.copy)).toEqual([
       JSON.stringify(copy),
@@ -243,6 +259,21 @@ describe('playDay', () => {
     ports[0]!.answer();
     expect(await step).toBe(own);
     expect(engine.calls).toEqual(['prepare', 'own match', 'complete']);
+    expect(ids(engine.completed() as RoundJobResult[])).toEqual(['f1', 'f2', 'f3', 'f4', 'f5']);
+  });
+  it('computes the engine share only after the own match and merges it in fixture order', async () => {
+    const ports = [new FakePort(), new FakePort()];
+    const engine = steps(true);
+    const pool = new RealHelperPool(ports, undefined, async (_copy, share) => {
+      engine.calls.push('engine share');
+      return share.map(result);
+    });
+    const step = playDay(pool, world, false, engine.day);
+    expect(engine.calls).toEqual(['prepare', 'own match']);
+    ports[1]!.answer();
+    ports[0]!.answer();
+    await step;
+    expect(engine.calls).toEqual(['prepare', 'own match', 'engine share', 'complete']);
     expect(ids(engine.completed() as RoundJobResult[])).toEqual(['f1', 'f2', 'f3', 'f4', 'f5']);
   });
   it('a failed helper completes the day without results, so the engine computes the jobs', async () => {
