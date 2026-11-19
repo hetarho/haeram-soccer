@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r64 | Define the browser-demo rules for historical club economy.
+> r65 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -34,7 +34,7 @@
 
 - ECON-12 [o] Business decisions present immediate spend, post-decision cash, recurring fixed-cost changes and fixed-cost runway excluding future revenue before commitment.
 - ECON-32 [o] Facilities are three parts built separately: the stadium (경기장), the training ground (훈련장) and the academy facilities (유소년 시설). Costs are units on the football index (→ECON-26), paid when the work starts; each step costs a fixed multiple of the one before — the stadium ×2.5 from 600, the training ground ×4 from 1,500, the academy 0.8× the training ground — so no step is a bargain early or a wall later, and the whole still takes a career in every era (→ECON-29). ← real grounds grow stand by stand and by moving to new stadiums, and a training complex is a decision of its own, not a by-product of seats
-  - the owner starts the next work on a part in 구단 운영 (→WEB-14) at the cost quoted to him, refused when the part's level or that cost has changed since the quote; no staff rule starts one, and a work under way finishes as scheduled. ECON-29's reference club builds by its own rule.
+  - the owner can start a part's next work in 구단 운영 (→WEB-14) at the quoted cost. A manual start is refused if the part's level or that cost has changed since the quote. A work under way finishes as scheduled. Owner-authorized continuation follows →=ECON-43. Staff do not start works. ECON-29's reference club builds by its own rule.
   - the stadium climbs eight steps, each an expansion (증축: a new or second-tier stand, 180 days, the ground holding 10% fewer while it is built) or a rebuild (재건축: a new stadium, 540 days, the old ground in full use until the new one opens):
     | step | becomes | capacity | work | cost |
     |---|---|---|---|---|
@@ -59,6 +59,11 @@
   - the training ground's growth multiplies each settled round's development (→PLAYER-15) and the summer development of players under 27, its recovery adds to every first-team player's fatigue recovery each settled round, and its goodwill joins contract talks (→CLUB-26); the academy's terms add to the intake and its growth (→CLUB-16).
   - upkeep a year: the stadium 180 + 40L + 5L² units with L = (capacity − 2,500) / 5,000, the training ground and the academy 0, 40, 120, 300, 600 and 1,000 units by level; a part's upkeep and effect change when its work ends. One work at a time per part.
   - a save with the single facility level F loads as the highest stadium step whose capacity is at most 2,500 + 5,000F, and a training ground and academy level of F/4 rounded, at most 5.
+
+- ECON-43 [o] The owner enables automatic continuation separately for the stadium, the academy facilities and the first-team training ground (→!ECON-32, →=SAVE-33). The first work in a chain starts through the manual quote. Only completion of a work while its part is enabled authorizes the immediate next stage, including a stadium rebuild.
+  - A completion opens the finished stage on its normal day. Start its successor in that day's club settlement after the day's regular club cash movements if the ordinary manual spending rule allows it. If funds fall short, the part stays enabled and eligible. Retry at the first subsequent daily club settlement with sufficient funds, including the opening of a season. Use the current quote and the same available-cash rule, debit and construction records as a manual start.
+  - Each authorized stage starts once. When multiple eligible parts compete for cash at one settlement, process them in the existing stadium, training ground, academy order, using the cash remaining after each start.
+  - Disabling clears eligibility and leaves any active work to finish. Re-enabling an idle part requires another manual start. A successful manual start while a part is awaiting funds consumes the pending authorization and keeps continuation enabled for that work. At the completed maximum the option is off and the chain is finished.
 
 - ECON-13 [x] Marketing ranges separate total recovery from net profit and identify the four-round delay and uncertainty. Ticket drafts compare gate demand, income and hosting costs through the same gateProjection used by settlement; changing a draft has no game effect until applied.
 
@@ -264,6 +269,7 @@
   - funded operating deficits and wages above turnover are permitted. Exhausted backing and unsupported commitments remain observable. No support is chosen to force a title or strength target.
 
 ## chg
+- r65 261119 ECON-32✎ owner starts each quoted work→owner manual quote plus authorized continuation; ECON-43+ per-part automatic continuation after completion, funding retries and cancellation
 - r64 261118 ECON-38✎ takeover debt conversion left distress implicit→retain the club's distress state and league deductions; ECON-39✎ the former runway test→ECON-33's cash floor test; ECON-42✎ cash/debt bounds→cash ceiling and ECON-24's debt checks
 - r63 261118 ECON-24✎ bankruptcy ends a career at debt above a season's fixed costs→a financial distress ladder for every club (경고 / 매각 요구 with a signing ban and forced sales / 법정관리 with −10 points and half the debt written off), no club bankrupt; ECON-33✎ loss runway none/6/4/2/1 seasons and temperament reserves→a season-end cash floor by step (cash now within income / a season / half a season / zero / stage 1's line), floor test, the 단장 warns near stage 1; ECON-23✎ +the owner's club's following and gate × (1 + (팬 민심 − 60)/80, within 0.4–1.5); ECON-36✎ debt beyond 1.5 seasons written off→the distress ladder, +books bands (wages/income by tier and table third, operating losses, fees received, distress); ECON-11✎ debt limit→distress ladder; ECON-30✎ bankruptcy threshold→distress lines
 - r62 261118 ECON-33✎ squad share of income 45/55/62/70/80%, sales reinvested 10–70%, sales line 45–80% of income, reserve 50/40/30/2/1 · 40/30/20/1/0 · 30/20/10/0/0 years→no income share or wage ceiling: a loss runway of none/6/4/2/1 seasons that available capital must cover, reserve 1/1/0.5/0.5/0.25 · 1/0.5/0.25/0/0 · 0.5/0.25/0/0/0 years, selling harder when the runway test fails; upgrades at 4–5 up to the slots below the money bar; ECON-39✎ 짠물 while the wage bill is above the squad share→while the runway test fails
