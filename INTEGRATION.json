@@ -297,8 +297,8 @@
       "branch": "gusta-session-start-cx19-3baf6666",
       "head": "9fb29d7b7431cd57b7d347e0467747d543020713",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-18T15:27:38.769Z",
+      "status": "landed",
+      "at": "2026-11-19T03:34:11.407Z",
       "agentChecks": [
         {
           "id": "T981-ci-handoff",
@@ -320,7 +320,14 @@
         }
       ],
       "verificationCommands": [],
-      "reason": "superseded by corrected post-push CI handoff"
+      "reason": "superseded by corrected post-push CI handoff",
+      "landed": "36bcf488de73e197deb6a0517472d4efdf7e2032",
+      "reconciled": {
+        "at": "2026-11-19T03:34:11.407Z",
+        "from": "paused",
+        "reason": "landed on main 36bcf488 as 0.8.13 by the landing fork (owner 261119): mr18cx + cx19 merged with np19, verify:batch + timed-out rerun",
+        "verified": false
+      }
     },
     "85b2d45965b2d07e73f2e8fb": {
       "id": "85b2d45965b2d07e73f2e8fb",
