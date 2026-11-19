@@ -551,8 +551,8 @@
       "branch": "gusta-session-start-sv19-0cc2a73b",
       "head": "c79bfc8a54cf17ae1df0ebe4741a6016c81772f2",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-19T10:13:20.827Z",
+      "status": "ready",
+      "at": "2026-11-19T10:13:25.467Z",
       "agentChecks": [
         {
           "id": "T999-integration-e2e",
