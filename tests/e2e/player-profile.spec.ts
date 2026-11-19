@@ -56,12 +56,12 @@ for (const viewport of [{ width: 360, height: 740 }]) {
     await expect(profile.getByTestId('profile-adaptation')).toHaveText(/적응도 \d\.\d\d · ×[\d.]+/);
     // His own personality is exact.
     await expect(profile.getByTestId('profile-personality')).not.toContainText('~');
-    // Cards and bans, and the season heat map, before a match is played (→WEB-59, HIST-16).
+    // Cards and bans before a match is played; no heat map is drawn or kept (→WEB-59, MATCH-25).
     await expect(sheet.getByTestId('player-discipline')).toContainText(
       '이번 시즌 경고 0 · 퇴장 0 · 통산 경고 0 · 퇴장 0',
     );
     await expect(sheet.getByTestId('player-discipline')).toContainText('출장 정지 없음');
-    await expect(sheet.getByTestId('player-heat')).toContainText('터치 위치가 기록된 경기');
+    await expect(sheet.getByTestId('player-heat')).toHaveCount(0);
     expect(await sideways(sheet)).toBeLessThanOrEqual(1);
     await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
 

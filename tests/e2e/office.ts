@@ -243,7 +243,13 @@ export async function openOfficePage(page: Page) {
   await expect(page).toHaveURL(
     (url) => url.pathname === '/club-operations' && !url.searchParams.has('area'),
   );
-  await expect(office.getByTestId('office-effects')).toBeVisible();
+  // While the calendar runs the office's previews wait for a stopped clock (→WEB-119): the
+  // effects show once it stops, their loading line while it runs.
+  await expect(
+    office
+      .getByTestId('office-effects')
+      .or(office.getByText('효과를 불러오는 중…', { exact: true })),
+  ).toBeVisible();
   return office;
 }
 

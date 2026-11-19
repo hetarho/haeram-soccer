@@ -99,9 +99,10 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1019
+- gusta-implement-task T1019 (after sv19 lands T1003/T1004)
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
-- x10 cost levers (261119, owner from reports/261119-np19 D2/D4/D5/D8): T989–T998 and T1019–T1021 — NPC place-fit tolerance, unwatched own matches without script/material and heat maps removed, slow view reads only on a stopped clock with dimmed places, helpers from two cores; T998 is explore (1h). Start with `gusta-implement-task T989` (or /gusta-start).
+- x10 (261119): landed as 0.8.15 (9c3a60796) — unwatched own matches without script/material, heat maps removed, slow view reads only on a stopped clock with dimmed places, fixture helpers from three cores (three on 6–12 cores); a 10x automatic-play day ×0.72 on own match days and ×0.11 on other days (reports/261119-x10). T989 withdrawn, T1019 parked until T1003/T1004.
+- Speed follow-up (261119): the engine's other days are ×7.26 slower than 0.8.12 since mr18 (0.8.13); profile and cut them result-preserving first (leads in reports/261119-x10).
 - inspect work board for remaining tasks
 - np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked).
 - mr18cx (T953–T980, owner plan mr18) and cx19 (T981) landed together on main as 0.8.13 after merging np19; T978's measured calibration misses are in reports/261118-mr18cx. Follow-up: profile mr18's added per-season cost (+15–19% a lived owner season against 0.8.12); the cash and debt warnings still speak of bankruptcy (parked there).
