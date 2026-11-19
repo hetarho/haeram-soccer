@@ -185,7 +185,6 @@
     "facility.auto.enabled": "{part} · Prosecuzione automatica attivata.",
     "facility.auto.disabled": "{part} · Prosecuzione automatica disattivata.",
     "facility.auto.outcome": "Prosecuzione automatica dei lavori",
-    "facility.auto.openWork": "{part} · Apri la scheda dei lavori",
     "match.goal.cue": "GOL",
     "match.goal.side": "Gol di {team}",
     "match.goal.scorer": "{team} · Gol di {player}",

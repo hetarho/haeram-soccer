@@ -185,7 +185,6 @@
     "facility.auto.enabled": "{part} · Poursuite automatique activée.",
     "facility.auto.disabled": "{part} · Poursuite automatique désactivée.",
     "facility.auto.outcome": "Poursuite automatique des travaux",
-    "facility.auto.openWork": "{part} · Ouvrir la fiche des travaux",
     "match.goal.cue": "BUT",
     "match.goal.side": "But de {team}",
     "match.goal.scorer": "{team} · But de {player}",

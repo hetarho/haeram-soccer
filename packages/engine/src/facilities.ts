@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { careerEnded } from '../../contracts/src/owner';
 import type { FacilityPart, World } from '../../contracts/src/types';
 import { dayCountedFrom } from './calendar';
 import { addEvent } from './events';
@@ -187,7 +188,7 @@ export function progressFacilityWorks(w: World) {
 /** At the end of daily club business, spend remaining cash in the usual facility order. */
 export function continueFacilityWorks(w: World, pay: (w: World, amount: string) => boolean) {
   const settings = w.facilityAutoUpgrade;
-  if (!settings) return;
+  if (!settings || careerEnded(w)) return;
   for (const part of FACILITY_PARTS) {
     if (
       settings[part] === 'awaiting-funds' &&

@@ -182,7 +182,6 @@
     "facility.auto.enabled": "Automatic continuation is on for {part}.",
     "facility.auto.disabled": "Automatic continuation is off for {part}.",
     "facility.auto.outcome": "Automatic facility continuation",
-    "facility.auto.openWork": "Open the construction card for {part}",
     "match.goal.cue": "GOAL",
     "match.goal.side": "{team} score",
     "match.goal.scorer": "{team} · {player} scores",

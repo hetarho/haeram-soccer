@@ -178,6 +178,30 @@ describe('daily facility continuation (→ECON-43)', () => {
   const constructionSince = (w: ReturnType<typeof world>, from: number) =>
     w.events.slice(from).filter((event) => event.kind === 'facility');
 
+  it.each(['ended', 'bankrupt'] as const)(
+    'leaves funded pending work untouched on the opening club day when %s',
+    (ending) => {
+      const w = dailyWorld();
+      w.calendar = { day: 0 };
+      startWork(w, 'training');
+      w.academyFacility = 1;
+      w.facilityAutoUpgrade = { academy: 'awaiting-funds' };
+      w.cash = nextWork(w, 'academy')!.cost;
+      if (ending === 'ended') w.ended = 'owner';
+      else w.bankrupt = { year: w.year, round: 0, day: 0 };
+      const { cash, expense } = w;
+      const works = structuredClone(w.facilityWorks);
+      const count = w.events.length;
+
+      clubDay(w, false);
+
+      expect(w).toMatchObject({ cash, expense });
+      expect(w.facilityWorks).toEqual(works);
+      expect(w.facilityAutoUpgrade).toEqual({ academy: 'awaiting-funds' });
+      expect(constructionSince(w, count)).toEqual([]);
+    },
+  );
+
   it('opens the next stadium stage as a rebuild while the other parts stay independent', () => {
     const w = dailyWorld();
     w.stadium = 0;

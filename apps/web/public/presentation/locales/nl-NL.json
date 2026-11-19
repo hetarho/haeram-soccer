@@ -182,7 +182,6 @@
     "facility.auto.enabled": "{part} · Automatisch doorgaan is ingeschakeld.",
     "facility.auto.disabled": "{part} · Automatisch doorgaan is uitgeschakeld.",
     "facility.auto.outcome": "Automatisch doorgaan met bouwen",
-    "facility.auto.openWork": "{part} · Open de bouwkaart",
     "match.goal.cue": "DOELPUNT",
     "match.goal.side": "Doelpunt voor {team}",
     "match.goal.scorer": "{team} · Doelpunt van {player}",

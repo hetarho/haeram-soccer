@@ -22,7 +22,7 @@
 .caption strong {
   font-size: 15px;
 }
-.caption > span {
+.caption span {
   min-width: 0;
   color: var(--text-muted);
   font-size: 12px;

@@ -248,12 +248,6 @@ describe('club sections and 구단 운영 (→WEB-10/39/110)', () => {
     });
     returnToTask();
     expect(at()).toBe('/academy');
-    openTraining('training');
-    openFacility('training');
-    expect(at()).toBe('/club-operations?view=investment&area=firstTeam');
-    expect(useFacilityRequest.getState().request).toBe('training');
-    returnToTask();
-    expect(at()).toBe('/training');
     openFacility('stadium');
     openOperations('identity');
     openPrimary('dashboard');

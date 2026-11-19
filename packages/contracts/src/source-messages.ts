@@ -3342,7 +3342,6 @@ export const sourceMessages = {
   'facility.auto.enabled': '{part} 자동 착공을 켰어요.',
   'facility.auto.disabled': '{part} 자동 착공을 껐어요.',
   'facility.auto.outcome': '시설 자동 착공 설정',
-  'facility.auto.openWork': '{part} 공사 카드 열기',
   'copy.InvestmentView.8383739d64': '{p0} · {p1}일 소요',
   'copy.InvestmentView.8195d755b6': '공사비',
   'copy.InvestmentView.5f3f7a7be9': '재정 · 구단 잔고',

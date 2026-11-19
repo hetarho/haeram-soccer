@@ -194,7 +194,6 @@
     "facility.auto.enabled": "{part} · تم تفعيل المتابعة التلقائية.",
     "facility.auto.disabled": "{part} · تم إيقاف المتابعة التلقائية.",
     "facility.auto.outcome": "المتابعة التلقائية لأعمال المرافق",
-    "facility.auto.openWork": "{part} · افتح بطاقة أعمال البناء",
     "match.goal.cue": "هدف",
     "match.goal.side": "هدف لصالح {team}",
     "match.goal.scorer": "{team} · هدف سجله {player}",

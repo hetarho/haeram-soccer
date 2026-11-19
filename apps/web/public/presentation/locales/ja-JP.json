@@ -179,7 +179,6 @@
     "facility.auto.enabled": "{part}の自動着工をオンにしました。",
     "facility.auto.disabled": "{part}の自動着工をオフにしました。",
     "facility.auto.outcome": "施設の自動着工設定",
-    "facility.auto.openWork": "{part}の工事カードを開く",
     "match.goal.cue": "ゴール",
     "match.goal.side": "{team}が得点",
     "match.goal.scorer": "{team} · {player}が得点",

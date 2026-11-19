@@ -182,7 +182,6 @@
     "facility.auto.enabled": "{part} · Otomatik devam açıldı.",
     "facility.auto.disabled": "{part} · Otomatik devam kapatıldı.",
     "facility.auto.outcome": "Tesis çalışmalarını otomatik sürdürme",
-    "facility.auto.openWork": "{part} · İnşaat kartını aç",
     "match.goal.cue": "GOL",
     "match.goal.side": "{team} gol attı",
     "match.goal.scorer": "{team} · {player} gol attı",

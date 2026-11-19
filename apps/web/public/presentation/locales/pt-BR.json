@@ -185,7 +185,6 @@
     "facility.auto.enabled": "{part} · Continuação automática ativada.",
     "facility.auto.disabled": "{part} · Continuação automática desativada.",
     "facility.auto.outcome": "Continuação automática de obras",
-    "facility.auto.openWork": "{part} · Abrir cartão de obras",
     "match.goal.cue": "GOL",
     "match.goal.side": "Gol de {team}",
     "match.goal.scorer": "{team} · Gol de {player}",

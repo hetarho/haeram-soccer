@@ -182,7 +182,6 @@
     "facility.auto.enabled": "{part} · Automatische Fortsetzung aktiviert.",
     "facility.auto.disabled": "{part} · Automatische Fortsetzung deaktiviert.",
     "facility.auto.outcome": "Automatische Fortsetzung von Bauarbeiten",
-    "facility.auto.openWork": "{part} · Bauübersicht öffnen",
     "match.goal.cue": "TOR",
     "match.goal.side": "Tor für {team}",
     "match.goal.scorer": "{team} · Tor von {player}",

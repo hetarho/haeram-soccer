@@ -179,7 +179,6 @@
     "facility.auto.enabled": "{part} · Kelanjutan otomatis diaktifkan.",
     "facility.auto.disabled": "{part} · Kelanjutan otomatis dinonaktifkan.",
     "facility.auto.outcome": "Kelanjutan otomatis pekerjaan fasilitas",
-    "facility.auto.openWork": "{part} · Buka kartu pekerjaan konstruksi",
     "match.goal.cue": "GOL",
     "match.goal.side": "{team} mencetak gol",
     "match.goal.scorer": "{team} · {player} mencetak gol",
