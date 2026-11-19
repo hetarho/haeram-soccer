@@ -191,6 +191,7 @@
 - 261119 decided T1019: T1019 hold after sv19 stopped at its 22:00 stop-file → tk19 takes over the pushed sv19 branch (T1003-T1016, T1030-T1032 done) and runs T1019 on the record store in the same candidate as T1017/T1018/T1022, landing them together (alt: land sv19 first behind its own batch gate, then T1019 after a second gate). sv19 has no work in flight, so the conflict the hold avoided is gone.
 - 261119 decided T1018: Cold archive rule across the war gap: year < w.year - 7 alone would move 1932-1938 out at the 1946 restart and change last-season reads after a save -> also never move one of the last seven archives (alt: year rule alone | count rule alone). Determinism test starts from simulatedWorld(CAREER, seasons 8) so the run spans 9-10 archived seasons with daily saves over one season (alt: daily saves over nine seasons, about 9x the 900 s test)
 - 261119 decided T1018: T1018 runs on codex/gpt-6.1-terra@ultra instead of claude/opus@high: the last unit there ended it unfinished with no commit or newly checked acceptance (alt: the same route again)
+- 261119 decided ECON-43 T1036: 자금 재시도 시점과 동시 착공 순서 → 당일 구단 수입·지출 정산 뒤 현재 견적으로 검사하고 경합 시 기존 경기장·훈련장·유소년 순서로 남은 현금을 적용합니다. 대안은 개별 거래 직후 또는 가격순입니다. 실제 진행 경로가 공유하는 정산 시점과 재현 가능한 기존 순서를 사용합니다.
 
 ## log
 - 261119 gusta-create-task ECON CLUB WEB SAVE start
