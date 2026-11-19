@@ -71,8 +71,10 @@
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
 | T1026 | Prepare consumers for stopped-clock reads | WEB ARCH | - | todo |
 | T1027 | Prepare automatic-play view measurement | ARCH | - | todo |
-| T994 | Slow view reads wait for a stopped clock | WEB ARCH | T1026 T1027 | todo |
-| T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T994 | todo |
+| T994 | Prepare the stopped-clock read boundary | WEB ARCH | T1026 T1027 | todo |
+| T1028 | Activate stopped-clock reads | WEB ARCH | T994 | todo |
+| T1029 | Measure stopped-clock reads | WEB ARCH | T1028 | todo |
+| T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T1028 | todo |
 | T995 | Manager, staff and discipline places dim while the clock runs | WEB ARCH | T1020 | todo |
 | T996 | The scout's shortlist dims while the clock runs | WEB ARCH | T1020 T995 | todo |
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
