@@ -11,13 +11,13 @@ import {
   type ShirtPattern,
 } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
-import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
+import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { nextOwnFixture } from '../../packages/engine/src/index';
 import { legacyCrestMap } from '../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import {
   adoptedCareer,
-  containerOneCheckpoint,
+  legacyCareerCheckpoint,
   delegatedCareer,
   FUTURE_CHECKPOINTS,
   manifestOf,
@@ -363,7 +363,7 @@ async function expectAdopted(page: Page, legacy: World, original: string) {
   await expect.poll(() => committedRaw(page), { timeout: 20000 }).not.toBe(original);
   const { world, envelope } = await decode((await committedRaw(page))!);
   expect([envelope.schema, envelope.generation, envelope.parentGeneration]).toEqual([
-    MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+    PLAIN_WORLD_CHECKPOINT_SCHEMA,
     2,
     1,
   ]);
@@ -387,8 +387,8 @@ test('a pre-identity career keeps its crests and facts, gains only shirts on wri
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   const legacy = preIdentityCareer();
-  const raw = await containerOneCheckpoint(legacy);
-  expect(JSON.parse(raw).schema).toBe(1);
+  const raw = await legacyCareerCheckpoint(legacy);
+  expect(JSON.parse(raw).schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
   await seedCheckpoints(page, { active: raw, manifest: manifestOf(raw) });
   await page.goto('/journal');
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
@@ -418,7 +418,7 @@ test('a read-only tab installs nothing; taking ownership adopts the designs once
   await holder.goto('/');
   await expect(startFlow(holder)).toBeVisible();
   const legacy = preIdentityCareer();
-  const raw = await containerOneCheckpoint(legacy);
+  const raw = await legacyCareerCheckpoint(legacy);
   const manifest = manifestOf(raw);
   await page.setViewportSize({ width: 390, height: 844 });
   await seedCheckpoints(page, { active: raw, manifest });
@@ -512,7 +512,7 @@ test('a failed adoption write keeps the original checkpoint and still exports th
   await failableWrites(page);
   await page.setViewportSize({ width: 390, height: 844 });
   const legacy = preIdentityCareer();
-  const raw = await containerOneCheckpoint(legacy);
+  const raw = await legacyCareerCheckpoint(legacy);
   const manifest = manifestOf(raw);
   await seedCheckpoints(page, { active: raw, manifest });
   await failWrites(page, true);

@@ -5,8 +5,10 @@ import {
   SaveCompatibilityError,
   type CheckpointSchema,
 } from '../../../../packages/contracts/src/versions';
-export const INDEXED_CHECKPOINT_LIMIT = 6 * 1024 * 1024;
-export const PORTABLE_FILE_LIMIT = 8 * 1024 * 1024;
+/** An export file is at most 256 MiB (→SAVE-4); every import-size check reads this. */
+export const PORTABLE_FILE_LIMIT = 256 * 1024 * 1024;
+/** The database an export carries is at most 1 GiB; decompression stops at it (→SAVE-4, →ARCH-16). */
+export const DECOMPRESSED_LIMIT = 1024 * 1024 * 1024;
 export const MANIFEST = 'haeram-soccor:manifest';
 function checkpointGeneration(raw: string | null) {
   try {
@@ -17,15 +19,15 @@ function checkpointGeneration(raw: string | null) {
   }
 }
 /** Codec vocabulary is shared by recovery ownership and the validating worker. */
-export const SAVE_CODECS: readonly string[] = ['gzip-cjk14', 'gzip-base64', 'brotli-bmp127'];
-export type SaveCodec = 'gzip-cjk14' | 'gzip-base64' | 'brotli-bmp127';
+export const SAVE_CODECS: readonly string[] = ['gzip-base64'];
+export type SaveCodec = 'gzip-base64';
 export interface StoragePort {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
   removeItem(key: string): void;
 }
 export interface Envelope {
-  /** Container 1, 2 (identity-bearing) or 3 (match model); `World.schema` stays 1 in each. */
+  /** Container 5, the plain world, is the only one read or written; `World.schema` stays 1. */
   schema: CheckpointSchema;
   engine: string;
   catalog: string;

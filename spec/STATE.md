@@ -82,10 +82,6 @@
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
 | T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
 | T998 | Helper count by core class | ARCH | T997 | todo |
-| T999 | Checkpoints are always gzip, with no Brotli or CJK text codec | SAVE ARCH | - | todo |
-| T1000 | A save verifies its checksum; storage limits follow the browser quota | SAVE ARCH | T999 | todo |
-| T1001 | Checkpoints carry the plain world in one container | SAVE | T1000 | todo |
-| T1002 | The compact packing layer is deleted | SAVE ARCH KIT | T1001 | todo |
 | T1003 | Record-store port, save schema and an in-memory SQLite store for tests | ARCH SAVE | T1002 | todo |
 | T1004 | The world maps to rows and a saver writes only changed rows | SAVE ARCH | T1003 | todo |
 | T1005 | SQLite runs in the engine worker on OPFS | ARCH SAVE | T1003 | todo |
@@ -123,3 +119,5 @@
 - np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked).
 - mr18cx (T953–T980, owner plan mr18) and cx19 (T981) landed together on main as 0.8.13 after merging np19; T978's measured calibration misses are in reports/261118-mr18cx. Follow-up: profile mr18's added per-season cost (+15–19% a lived owner season against 0.8.12); the cash and debt warnings still speak of bankruptcy (parked there).
 - Historical era rules parked in ideation/historical-era-rules.
+- gusta-implement-task T1003 T989 T991
+- gusta-implement-task T953 T954

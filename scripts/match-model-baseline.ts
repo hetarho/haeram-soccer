@@ -423,7 +423,7 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
     checkpointAt: 'final round of the last season, before its close',
     checkpointChars: raw.length,
     checkpointBytes,
-    withinCheckpointLimit: checkpointBytes <= PERFORMANCE_CONFIG.storage.checkpointBytes,
+    withinPortableLimit: Buffer.byteLength(raw) <= PERFORMANCE_CONFIG.storage.portableFileBytes,
   });
   sampleMemory();
 }
