@@ -195,6 +195,7 @@
 - 261119 decided ECON-43 WEB-14 T1035: 최대 단계와 수동 개입 처리 → 최대 완공 시 끄고, 해제 후 쉬는 시설을 다시 켜면 수동 착공을 기다립니다. 자금 대기 중 수동 착공에 성공하면 대기 승인을 소진합니다. 대안은 최대에서 체크만 유지하거나 해제 전 예약을 복원하는 방식입니다. 표시 상태를 실제 착공 동의와 맞추고 같은 단계가 다시 청구될 여지를 없앱니다.
 - 261119 decided SAVE-33 T1033 T1035: 저장 및 명령 표현 → 시설별 값은 선택적 상태 하나로 보존하고 체크박스는 목표 불리언을 명시하는 명령을 보냅니다. 대안은 설정과 예약의 별도 배열 또는 토글 명령입니다. 모순 상태와 재전송 반전을 피하고 현행 일반 월드 필드 저장과 확인 절차를 재사용합니다.
 - 261119 decided WEB-14 T1037: 시설 화면의 진입과 표시 → 시설별 수동 견적 카드에 체크 상태와 수동·자금 대기 이유를 두고, 1군 훈련 페이지와 유소년 페이지는 해당 카드로 연결합니다. 대안은 각 팀 페이지에 별도 편집기 또는 별도 설정 화면을 두는 방식입니다. 어느 진입점에서나 동일한 구단 상태와 견적을 읽도록 합니다.
+- 261119 parked T1033 T1034 T1035 T1036 T1037: 시설 자동 증축 기획 커밋 3dccf57860e29164b1e823bf3703c15192f539ab. 기획 관문과 task-tier 정적 검사 통과(109초, 영향 단위 테스트 없음). main의 기존 공유 통합이 잠겨 plan-push가 integration-frozen으로 보류됐습니다. 잠금 해제 후 같은 기획 커밋을 vibe plan-push --commit 3dccf57860e29164b1e823bf3703c15192f539ab로 발행한 뒤 이 다섯 태스크를 진행합니다.
 
 ## log
 - 261119 Planning verification pass in 108835 ms: typecheck, lint, format, i18n (12 locales); affected unit selection empty for spec-only changes. Spec lint has one pre-existing warning. Browser acceptance remains host-owned.
