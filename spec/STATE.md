@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1036 | Continue funded facility work in daily club settlement | ARCH CLUB ECON SAVE | T1035 | doing@261119.facauto |
 | T1037 | Expose continuation on the three facility work cards | ARCH ECON SAVE WEB | T1036 | todo |
 
 ## work
