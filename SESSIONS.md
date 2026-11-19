@@ -182,6 +182,7 @@
 - 261119 decided T998: Hand off the three-helper full-season parity assertion to the shared integration gate, preserving its full coverage (alternative: run integration inside this task); ARCH-30 and the assigned unit contract reserve integration for the fixed candidate.
 - 261119 parked T1019: T1019 waits for sv19's SQLite record store and world-row saver (T1003/T1004): run it after they land on main, with the test scope of decided 00230e4a; heat is already never written since T993, so leaving the optional legacy fields until then has no gameplay or speed cost. The x10 loop skips it.
 - 261119 decided T1019: Split the interrupted heat removal at the career-read schema boundary: T1019 removes only career-read heat, T1031 removes match and archive contract fields and proves legacy keys drop, and T1032 completes SQLite persistence, size evidence and golden inspection after T1003/T1004 (alt: one cross-module task | wait for the entire SQLite redesign). All original acceptance remains assigned.
+- 261119 parked T1019: Planning split committed at ca28566aa; plan-push conflicts on spec/STATE.md and T1019 against origin/main 440695c4. plan-sync reports action none. Publish or reconcile the existing session task history through the host before resuming T1019; no implementation was performed.
 
 ## unlanded
 | id | tag | branch | commit | at |
