@@ -68,19 +68,22 @@ describe('revision 11 own matches on the result path', () => {
     }
     // T825/T827's unchanged sixty-fixture corpus remains in script/build.test.ts and sample.test.ts.
   });
-  it('an own match carries its material, xG, detail and incidents, and hands over staging only when watched', () => {
+  it('an own match keeps its facts and supplies material and staging only when watched', () => {
     const w = world(),
       f = ownFixtures(w)[0]!;
     const watched = simulateMatch(w, f, true),
       skipped = simulateMatch(w, f, false);
     fullPlayback(watched);
-    fullPlayback(skipped);
+    expect(validateFullMatchRecord(skipped.record)).toEqual([]);
     expect(watched.record.xg).toHaveLength(2);
     expect(watched.record.detail).toHaveLength(2);
     expect(watched.record.incidents).toBeDefined();
     expect(watched.staging).toHaveLength(2);
     expect(watched.staging!.map((s) => s.players.length)).toEqual(watched.record.lineCounts);
-    expect(skipped.record).toEqual(watched.record);
+    const { material: _material, ...record } = watched.record;
+    void _material;
+    expect(skipped.record).toEqual(record);
+    expect(skipped.record.material).toBeUndefined();
     expect(skipped.script).toBeUndefined();
     expect(skipped.staging).toBeUndefined();
   });
@@ -93,11 +96,15 @@ describe('revision 11 own matches on the result path', () => {
       expect(a).toBeDefined();
       expect(b).toBeDefined();
       fullPlayback(a!);
-      fullPlayback(b!);
-      expect(a!.record).toEqual(b!.record);
+      expect(validateFullMatchRecord(b!.record)).toEqual([]);
+      const { material: _material, ...record } = a!.record;
+      void _material;
+      expect(record).toEqual(b!.record);
       expect(a!.script).toBeDefined();
       expect(b!.script).toBeUndefined();
-      expect(canonical(watched)).toBe(canonical(skipped));
+      const comparable = structuredClone(watched);
+      for (const match of comparable.ownMatches) delete match.material;
+      expect(canonical(comparable)).toBe(canonical(skipped));
     }
   });
   it('an own cup tie level after ninety minutes plays extra time and a shoot-out on the same path', () => {
@@ -116,7 +123,9 @@ describe('revision 11 own matches on the result path', () => {
       expect(p.script!.beats.some((b) => b.kind === 'shootoutKick')).toBe(true);
       expect(validateScript(detail, p.script!)).toEqual([]);
       expect(compareRecord(detail, countScript(p.script!, detail), p.record)).toEqual([]);
-      expect(simulateMatch(w, f, false, { awayGoals: false }).record).toEqual(p.record);
+      const { material: _material, ...record } = p.record;
+      void _material;
+      expect(simulateMatch(w, f, false, { awayGoals: false }).record).toEqual(record);
       found = p;
       break;
     }
@@ -136,7 +145,7 @@ describe('revision 11 own matches on the result path', () => {
           fullPlayback(p);
           seen.push(p);
         },
-        false,
+        true,
       );
     expect(w.ended).toBeUndefined();
     expect(w.round).toBe(SEASON_ROUNDS);

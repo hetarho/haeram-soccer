@@ -131,7 +131,9 @@ describe('world progression', () => {
     // A released own match is pictured by staging its script (→MATCH-39, T838).
     const fast = simulateMatch(w, f, false),
       observed = stagedPlayback(simulateMatch(w, f, true));
-    expect(fast.record).toEqual(observed.record);
+    const { material: _material, ...observedRecord } = observed.record;
+    void _material;
+    expect(fast.record).toEqual(observedRecord);
     expect(observed.frames.at(-1)!.score).toEqual(observed.record.score);
     // One frame a minute, the added minutes of each half included.
     const added = observed.record.added!;

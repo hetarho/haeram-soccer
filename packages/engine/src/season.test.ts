@@ -237,14 +237,17 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       [ownCup, { awayGoals: false }],
     ];
     for (const [f, decide] of owns) {
-      // The released revision 11 settles it on the result path and writes its script and material
-      // whether watched or not; watching adds the script and staging inputs, never frames
+      // The released revision settles both on the result path; watching writes its script and
+      // material and supplies staging inputs, never frames
       // (→MATCH-7, MATCH-22, MATCH-38, T838).
       const quiet = simulateMatch(w, f, false, decide);
       const watched = simulateMatch(w, f, true, decide);
-      expect(watched.record).toEqual(quiet.record);
+      const { material: _material, ...record } = watched.record;
+      void _material;
+      expect(record).toEqual(quiet.record);
       expect(quiet.record.model).toBe(MATCH_MODEL_REVISION);
-      expect(quiet.record.material).toBeDefined();
+      expect(quiet.record.material).toBeUndefined();
+      expect(watched.record.material).toBeDefined();
       expect([quiet.frames, watched.frames]).toEqual([[], []]);
       expect(quiet.script).toBeUndefined();
       expect(watched.script?.beats.length).toBeGreaterThan(0);
@@ -305,7 +308,11 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
     const watched = advanceToNextMatch(read);
     const quiet = advanceToNextMatch(w, undefined, false);
     expect(watched!.script?.beats.length).toBeGreaterThan(0);
-    expect(quiet!.record).toEqual(watched!.record);
+    const { material: _material, ...record } = watched!.record;
+    void _material;
+    expect(quiet!.record).toEqual(record);
+    for (const match of read.ownMatches) delete match.material;
+    for (const match of w.ownMatches) delete match.material;
     expect(canonical(read)).toBe(canonical(w));
   });
 

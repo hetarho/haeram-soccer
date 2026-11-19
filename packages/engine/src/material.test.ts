@@ -37,10 +37,9 @@ describe('post-match material', () => {
     const npcFixture = { ...w.fixtures[0]!, id: 'npc', home: home!.id, away: away!.id };
     const play = (f: typeof ownFixture, observe: boolean) => simulateMatch(w, f, observe).record;
 
-    const own = play(ownFixture, false);
+    const own = play(ownFixture, true);
     expect(play(npcFixture, false).material).toBeUndefined();
-    // Observation never changes what is counted (→MATCH-7).
-    expect(play(ownFixture, true).material).toEqual(own.material);
+    expect(play(ownFixture, false).material).toBeUndefined();
 
     const m = own.material!;
     const side = ownSideOf(own, w.playerClub)!;
@@ -147,8 +146,9 @@ describe('post-match material', () => {
     expect(season.some((m) => m.id.startsWith(playoff))).toBe(false);
     const ownMatchIds = season.map((m) => m.id);
     expect(season.length).toBeGreaterThan(0);
-    // The saved own record keeps only the own lines and its material.
-    for (const m of season) expect(m.material).toBeDefined();
+    // Automatic matches keep no material; exercise retention with one watched result.
+    expect(season.every((m) => !m.material)).toBe(true);
+    season[0]!.material = new MaterialTally(0, 11).finish([XI, XI]);
     const year = w.year;
 
     closeSeason(w);
