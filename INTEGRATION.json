@@ -549,12 +549,89 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-sv19-0cc2a73b",
-      "head": "0d9468bd05e1ed4fb201bbc71440647220558a77",
+      "head": "377a2a5c0e42e0ab532b38ab538f11c7c270df18",
       "land": "main",
       "status": "working",
-      "at": "2026-11-19T03:48:04.539Z",
-      "agentChecks": [],
-      "verificationCommands": []
+      "at": "2026-11-19T03:48:27.299Z",
+      "agentChecks": [
+        {
+          "id": "T999-integration-e2e",
+          "scenario": "Export and checkpoint specs name gzip-base64 and the removed large-codec spec is gone",
+          "steps": [
+            "CI runs tests/e2e/management.spec.ts and tests/e2e/fast-checkpoint.spec.ts on the T999 commit"
+          ],
+          "expected": "Both specs pass with codec gzip-base64",
+          "observed": "Not run locally; browser journeys run only in CI (ARCH-30).",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "Browser specs run only in CI and the batch gate; this unit has no browser and ran only the task tier.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1000-integration-not-run",
+          "scenario": "A save verifies its own checksum, and a browser save/reload round trip stays within the new 256 MiB export limit",
+          "steps": [
+            "Run tests/e2e/fast-checkpoint.spec.ts on Chromium in CI against the fixed candidate"
+          ],
+          "expected": "Saving and reloading a large career commits and decodes within PORTABLE_FILE_LIMIT",
+          "observed": "Not run. This unit has no browser tools, and the spec is left unchanged because it is still valid against the new limit.",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "Browser journeys run only in CI (ARCH-30). This unit has no integration candidate.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": "Adds no new e2e. The existing fast-checkpoint spec is the only coverage and is maintained as is."
+        },
+        {
+          "id": "T1001-integration-e2e",
+          "scenario": "Browser journeys manager-history, full-model-continuity and club-identity-continuity read and write container-5 checkpoints (specs maintained to the new constant and legacyCareerCheckpoint fixture)",
+          "steps": [
+            "Run pnpm exec playwright test --project=chromium on the three edited specs in CI"
+          ],
+          "expected": "Specs pass with checkpoints in the plain-world container (schema 5)",
+          "observed": "Not run in this unit: browser journeys run only in CI (ARCH-30)",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "Browser specs run only in CI on Chromium; this tool-less unit does not execute them",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1002-integration-not-run",
+          "scenario": "A candidate that carries the packing deletion and 0.8.14 passes the batch gate (build, integration, contract) and the CI browser journeys.",
+          "steps": [
+            "The host fixes the candidate SHA once all live participating sessions are ready.",
+            "The host runs pnpm run verify:batch on it.",
+            "CI runs the Chromium shards after the push."
+          ],
+          "expected": "verify:batch and the Chromium shards pass with no import of a deleted packing module.",
+          "observed": "Not run in this unit. This unit has no integration host, and ARCH-30 leaves builds, integration and full suites to the shared final gate.",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "Integration-stage verification belongs to the capable host's final gate (ARCH-30). No candidate was observed.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "capable host",
+          "candidate": null,
+          "duplicationReason": "No duplicate e2e suite was added. Existing gate coverage is reused."
+        }
+      ],
+      "verificationCommands": [
+        "pnpm run verify:batch"
+      ]
     },
     "fa6c66b81ed935a24bc56d8b": {
       "id": "fa6c66b81ed935a24bc56d8b",
