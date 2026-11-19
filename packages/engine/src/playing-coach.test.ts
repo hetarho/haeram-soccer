@@ -11,7 +11,7 @@ import {
 import { stagePlayingCoach } from './testing';
 import { careerDate } from './person-careers';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import { encode, decode } from '../../../apps/web/src/adapters/persistence';
+import { roundTrip } from '../../../tests/fixtures/save-roundtrip';
 import { recordRetirementAnnouncement } from './careers';
 import { pendingDecisions } from './stopping';
 import { pendingWorkPreview } from './pending-work-preview';
@@ -266,5 +266,5 @@ it('preserves the player contract and complete saved career when a playing coach
   expect(person.coaching!.ability).toBe(learned);
   expect(w.manager.trust).toBe(trust);
   validateWorld(w);
-  expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
+  expect(canonical(roundTrip(w))).toBe(canonical(w));
 });

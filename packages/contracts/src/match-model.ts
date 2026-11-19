@@ -15,11 +15,7 @@ import type {
   Position,
   World,
 } from './types';
-import {
-  PLAIN_WORLD_CHECKPOINT_SCHEMA,
-  SaveCompatibilityError,
-  type CheckpointSchema,
-} from './versions';
+import { SaveCompatibilityError } from './versions';
 
 /**
  * The candidate model's revisions, oldest first; a world or record naming any other revision is
@@ -106,8 +102,6 @@ export const activeMatchModel = (w: Pick<World, 'matchModel'>): MatchModelRevisi
 /** Whether a world holds anything only the full model writes: its metadata, aggregates or records. */
 export const carriesMatchModel = (w: Pick<World, 'matchModel' | 'npcSeason' | 'ownMatches'>) =>
   !!w.matchModel || !!w.npcSeason || w.ownMatches.some((m) => m.model !== undefined);
-/** The checkpoint container every world is written in (→SAVE-2): the plain world, container 5. */
-export const checkpointSchemaFor = (): CheckpointSchema => PLAIN_WORLD_CHECKPOINT_SCHEMA;
 
 const count = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const day = z.number().int().min(0).max(365);

@@ -946,7 +946,7 @@ describe('the client holds the days computed ahead (WEB-18)', () => {
     expect(internals.held).toHaveLength(0);
     expect(c.state.view?.world.calendar?.day).toBe(2);
     await hold(3);
-    const load = internals.rpc({ type: 'inspect', raw: '{}', activate: true });
+    const load = internals.rpc({ type: 'open-game', gameId: 'game' });
     internals.received({ requestId: posted[4].requestId, ok: true, view: dayView(40), viewSeq: 6 });
     await load;
     expect(internals.held).toHaveLength(0);

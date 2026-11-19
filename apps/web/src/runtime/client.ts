@@ -4,13 +4,9 @@ import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/c
 import type { Command, GenerationDigest, World } from '../../../../packages/contracts/src/types';
 import type { ClubListing, StartChoice } from '../../../../packages/contracts/src/owner';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
-import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
-import { IndexedDbCheckpointKey } from '../adapters/previousStore';
 import { GameIndexStore } from '../adapters/games';
 import { readSaveFileHeader } from '../adapters/saveFile';
 import {
-  envelopeEngine,
-  isEarlierEngine,
   SaveCompatibilityError,
   isSaveCompatibilityError,
   type SAVE_COMPATIBILITY_CODE,
@@ -195,41 +191,16 @@ export class GameClient {
   private lockWait?: AbortController;
   private cancelled = false;
   private channel = new BroadcastChannel('haeram-soccor:updates');
-  private saves: SaveRepository<SaveWorldMetadata>;
-  private replacingIncompatible = false;
   private refreshPending = false;
-  private refreshGeneration = 0;
   private refreshSerial = 0;
   private storageListener = (event: StorageEvent) => {
     if (event.key === NOTIFICATIONS_KEY) notificationStore.sync();
-    if (event.key === 'haeram-soccor:manifest' && event.newValue) {
-      try {
-        this.refresh(JSON.parse(event.newValue).generation);
-      } catch {
-        /* validated reload reports corruption */
-      }
-    }
   };
   constructor(private notify: (state: ClientState) => void) {
-    const indexed = IndexedDbCheckpointKey.available();
-    this.saves = new SaveRepository(
-      localStorage,
-      async (raw) => {
-        const reply = await this.rpc({ type: 'inspect', raw, metadataOnly: true });
-        if (!reply.worldMetadata || !reply.envelope)
-          throw new Error(sourceMessage('copy.client.d9dbcef838'));
-        return { world: reply.worldMetadata, envelope: reply.envelope };
-      },
-      // The writer loads with the first save, keeping it out of the entry (→ARCH-28).
-      async (...args) => (await import('../adapters/checkpointWriter')).writeCheckpoint(...args),
-      // One availability decision for both IndexedDB keys (→SAVE-3).
-      indexed ? new IndexedDbCheckpointKey('previous') : undefined,
-      indexed ? new IndexedDbCheckpointKey('active') : undefined,
-    );
     this.worker.onmessage = (event: MessageEvent<Reply>) => this.received(event.data);
     this.worker.onerror = () => this.failWorker();
     this.startHelpers();
-    this.channel.onmessage = (event) => this.refresh(event.data?.generation);
+    this.channel.onmessage = () => this.refresh();
     window.addEventListener('storage', this.storageListener);
     notificationStore.sync();
   }
@@ -306,9 +277,8 @@ export class GameClient {
     for (const helper of this.helpers.splice(0)) helper.terminate();
     this.worker.postMessage({ type: 'helpers-failed' });
   }
-  private refresh(generation: number) {
-    if (!this.state.readonly || !Number.isSafeInteger(generation) || generation < 0) return;
-    this.refreshGeneration = Math.max(this.refreshGeneration, generation);
+  private refresh() {
+    if (!this.state.readonly) return;
     this.refreshSerial++;
     if (this.refreshPending) return;
     this.refreshPending = true;
@@ -317,13 +287,8 @@ export class GameClient {
         while (true) {
           const observed = this.refreshSerial;
           await this.load();
-          // Drain notices that arrived during this load. An unchanged, unsatisfied hint
-          // never spins; another actual notification is required for another attempt.
-          if (
-            this.saves.generationInfo.parentGeneration >= this.refreshGeneration ||
-            this.refreshSerial === observed
-          )
-            break;
+          // Drain notices that arrived during this load; another notification asks again.
+          if (this.refreshSerial === observed) break;
         }
       },
       { background: !!this.state.view },
@@ -566,8 +531,7 @@ export class GameClient {
           body.type === 'command' ||
           body.type === 'ack-critical' ||
           body.type === 'open-game' ||
-          body.type === 'import-game' ||
-          (body.type === 'inspect' && !!body.activate),
+          body.type === 'import-game',
         taking: automatic
           ? 'hold'
           : body.type === 'command' && body.command.type === 'read-inbox'
@@ -581,7 +545,6 @@ export class GameClient {
         session: this.session,
         requestId,
         expectedRevision: head?.world.revision ?? -1,
-        ...this.saves.generationInfo,
         viewBase: head ? this.viewSeq : undefined,
         body,
       });
@@ -624,8 +587,6 @@ export class GameClient {
       this.staging.replace();
     }
     const reply = await this.rpc(body, undefined, undefined, automatic);
-    if (starts && body.replace && this.saves.incompatibleCheckpoint)
-      this.replacingIncompatible = true;
     if (reply.playback) this.staging.replace(reply.playback);
     this.emit();
     // The engine answered without encoding; the caller asks for the background save.
@@ -715,7 +676,6 @@ export class GameClient {
     }
     // A save of a world no longer in play changes nothing shown.
     if (saved.worldId !== this.head?.world.id) return;
-    this.replacingIncompatible = false;
     this.state.savedRevision = saved.revision;
     this.state.savedAt = Date.now();
     this.state.saveFailed = false;
@@ -735,8 +695,6 @@ export class GameClient {
       this.emit();
       try {
         if (this.state.readonly) throw new Error(sourceMessage('copy.client.ef47a5dab0'));
-        if (this.saves.incompatibleCheckpoint && !replace)
-          throw new SaveCompatibilityError(sourceMessage('copy.client.d60567e568'));
         const reply = await this.rpc(
           { type: 'generate', choice, replace },
           undefined,
@@ -1010,26 +968,9 @@ export class GameClient {
     if (!reply.ok) throw new Error(reply.error ?? sourceMessage('copy.client.9c85eddfec'));
     return reply.fullStats;
   }
-  private rawBackup() {
-    return this.saves.recoveryRaw();
-  }
   /** Whether a game in play is stored, so an import would replace it. */
   hasStoredGame() {
-    try {
-      return this.saves.hasStored();
-    } catch {
-      return false; // unsupported storage is reported by the client
-    }
-  }
-  /**
-   * The rules version of an active checkpoint that cannot open because it is an earlier-rules
-   * career (→SAVE-16), read from its header; undefined otherwise.
-   */
-  earlierRules() {
-    if (!this.saves.incompatibleCheckpoint) return undefined;
-    const raw = this.rawBackup(),
-      engine = raw ? envelopeEngine(raw) : undefined;
-    return engine && isEarlierEngine(engine) ? engine : undefined;
+    return this.stored;
   }
   /**
    * A game's database as a `.haeram-save` file (→SAVE-9). The game in play is saved first, so the

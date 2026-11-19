@@ -2,7 +2,7 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { ClubPolicy, World } from '../../contracts/src/types';
-import { decode, encode } from '../../../apps/web/src/adapters/persistence';
+import { roundTrip } from '../../../tests/fixtures/save-roundtrip';
 import {
   advanceRound,
   clubOf,
@@ -353,7 +353,7 @@ describe('club operating policy', () => {
   it('validates and saves the policy while older saves still load', async () => {
     const w = world({ support: 4, recruitment: 2, globalMarketing: 3, tour: 2 });
     validateWorld(w);
-    const restored = (await decode(await encode(w, 1, 0))).world;
+    const restored = roundTrip(w);
     expect(restored.policy).toEqual({
       ...POLICY_DEFAULTS,
       support: 4,
@@ -363,7 +363,7 @@ describe('club operating policy', () => {
     });
     expect(canonical(restored)).toBe(canonical(w));
     const legacy = world();
-    expect(Object.hasOwn((await decode(await encode(legacy, 1, 0))).world, 'policy')).toBe(false);
+    expect(Object.hasOwn(roundTrip(legacy), 'policy')).toBe(false);
     for (const policy of [
       { support: 6, recruitment: 3 },
       { support: 3 },

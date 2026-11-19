@@ -2,7 +2,7 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
-import { decode, encode } from '../../../apps/web/src/adapters/persistence';
+import { roundTrip } from '../../../tests/fixtures/save-roundtrip';
 import { advanceRound, clubMilestones, clubOf, simulateSeason } from './index';
 import { holdRows, setNpcLevel, startWork } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -34,7 +34,7 @@ describe('milestones from retained club facts', () => {
       expect(item.current).toBeLessThanOrEqual(item.target);
       expect(item.progress).toBe(100);
     }
-    let restored = (await decode(await encode(w, 1, 0))).world;
+    let restored = roundTrip(w);
     expect(clubMilestones(restored)).toEqual(milestones);
     expect(canonical(restored)).toBe(canonical(w));
     // Force a losing roster, then let the real league close and archive its relegation. A club

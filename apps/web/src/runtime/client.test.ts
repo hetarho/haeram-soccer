@@ -6,7 +6,7 @@ import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixture
 import { canonical } from '../../../../packages/contracts/src/index';
 import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import type { MatchModelRelease } from '../../../../packages/engine/src/match-model';
-import type { StoragePort } from '../adapters/persistence';
+import type { StoragePort } from '../adapters/repository';
 import { AUTOSAVE_MS, GameClient, SAVE_DATA_UPDATED, type ClientState } from './client';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
@@ -389,7 +389,6 @@ describe('background worker publication', () => {
       command = worker.replies.findLast(({ request }) => request.body.type === 'command')!,
       save = worker.replies.findLast(({ request }) => request.body.type === 'save')!;
     expect(save.reply.view).toBeUndefined();
-    expect(worker.requests.some((request) => request.body.type === 'inspect')).toBe(false);
     expect(publications.length).toBeGreaterThan(0);
     expect(publications.every((state) => !state.busy && state.progress === 0)).toBe(true);
     expect(publications.some((state) => state.processing && state.activity === 'background')).toBe(
@@ -585,11 +584,6 @@ describe('background worker publication', () => {
     });
     expect(client.state.savedRevision).toBe(last.saved!.revision);
     expect(committed(client.gameId!)).toBe(last.saved!.revision);
-    expect(
-      WorkerPort.instances[0].requests.some(
-        (request) => request.body.type === 'inspect' || request.body.type === 'export',
-      ),
-    ).toBe(false);
   });
   it('saves one at a time and folds requests made meanwhile into one newer save', async () => {
     const client = await start(),

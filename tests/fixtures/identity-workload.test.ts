@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { roundTrip } from './save-roundtrip';
 import { LOAD_CATALOG } from '../../packages/catalogs/src/index';
 import { canonical, validateWorld } from '../../packages/contracts/src/index';
 import { CREST_PALETTE, KIT_ROLES, SHIRT_PATTERNS } from '../../packages/contracts/src/identity';
@@ -269,7 +269,7 @@ describe('the pending choice through a checkpoint', () => {
     const workload = identityWorkload();
     workload.edit(w, 0);
     const choice = workload.chooseKit(w);
-    const restored = (await decode(await encode(w, 2, 1))).world;
+    const restored = roundTrip(w);
     expect(canonical(restored)).toBe(loaded(w));
     assertPendingChoice(restored, choice);
     const continued = structuredClone(w);

@@ -2,7 +2,7 @@ import { lineOf } from './player';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
-import { decode, encode } from '../../../apps/web/src/adapters/persistence';
+import { roundTrip } from '../../../tests/fixtures/save-roundtrip';
 import {
   activePlayers,
   clubOf,
@@ -124,7 +124,7 @@ describe('recruitment build and budget previews', () => {
     expect(w.cash).toBe(preview.cashAfter);
     expect(operatingCost(w)).toBe(preview.annualAfter);
     expect(w.players.find((player) => player.id === offer.player.id)?.loanUntil).toBe(w.year + 1);
-    const restored = (await decode(await encode(w, 1, 0))).world;
+    const restored = roundTrip(w);
     // Ours now, he is never listed again, and his old terms preview as signed in both worlds.
     expect(transferOffers(restored).some((o) => o.player.id === offer.player.id)).toBe(false);
     expect(restored.players.find((p) => p.id === offer.player.id)?.loanUntil).toBe(w.year + 1);

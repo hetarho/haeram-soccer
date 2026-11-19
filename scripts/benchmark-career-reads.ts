@@ -12,7 +12,7 @@ import { clubMilestones } from '../packages/engine/src/goals';
 import { europeanCoefficient } from '../packages/engine/src/europe';
 import { eventsInSeason } from '../packages/engine/src/season-index';
 import { tallies } from '../apps/web/src/runtime/playerTallies';
-import { decode, checkpoint } from '../apps/web/src/adapters/persistence';
+import { openedSaveFile, saveFileOf } from '../tests/fixtures/save-roundtrip';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { PORTABLE_FILE_LIMIT } from '../apps/web/src/adapters/repository';
 
@@ -134,19 +134,18 @@ async function codec(w: World) {
     );
     const t = performance.now();
     try {
-      const { raw } = await checkpoint(world, 1, 0);
+      const raw = await saveFileOf(world);
       const checkpointMs = performance.now() - t;
       const verificationStarted = performance.now();
-      const restored = (await decode(raw)).world;
+      const restored = await openedSaveFile(raw);
       cases.push({
         label,
-        codec: JSON.parse(raw).codec,
-        fileBytes: Buffer.byteLength(raw),
+        codec: 'sqlite-1 gzip',
+        fileBytes: raw.length,
         originalFactsEqual:
           canonical({ ...restored, newsJournal: undefined, careerReads: undefined }) ===
           canonical(old),
-        checkpointUtf16Bytes: raw.length * 2,
-        withinPortableLimit: Buffer.byteLength(raw) <= PORTABLE_FILE_LIMIT,
+        withinPortableLimit: raw.length <= PORTABLE_FILE_LIMIT,
         encodeValidateMs: checkpointMs,
         independentVerificationMs: performance.now() - verificationStarted,
         summariesSurvive:
@@ -182,7 +181,7 @@ const report: Record<string, unknown> = {
 };
 if (process.argv.includes('--save')) {
   try {
-    report.localCareer = await codec((await decode(readFileSync(arg('--save'), 'utf8'))).world);
+    report.localCareer = await codec(await openedSaveFile(readFileSync(arg('--save'))));
   } catch (error) {
     report.localCareer = {
       failure: String(error),

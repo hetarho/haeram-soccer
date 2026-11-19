@@ -1,7 +1,6 @@
 import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { describe, expect, it } from 'vitest';
-import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import { Host } from '../../apps/web/src/runtime/host';
+import { gameHost, loadWorld, savedWorld } from '../../apps/web/src/runtime/host.testkit';
 import { canonical } from '../../packages/contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import type { World } from '../../packages/contracts/src/types';
@@ -26,18 +25,10 @@ const onRevision10 = () => {
   initializeReadModels(world);
   return world;
 };
-/** The writer tab's load of `raw` under `release`, as the client sends it (→SAVE-3/23). */
-async function writerLoad(raw: string) {
-  const host = new Host(undefined, { release: ENABLED_RELEASE });
-  const reply = await host.handle({
-    protocol: 1,
-    session: 'workload',
-    requestId: 'load',
-    expectedRevision: -1,
-    generation: 2,
-    parentGeneration: 1,
-    body: { type: 'inspect', raw, activate: true, upgrade: true },
-  });
+/** The writer tab's open of `world` under the release, as the client sends it (→SAVE-3/23). */
+async function writerLoad(world: World) {
+  const host = gameHost({ release: ENABLED_RELEASE });
+  const reply = await loadWorld(host, 'load', world);
   expect(reply.ok, reply.error).toBe(true);
   return { host, reply };
 }
@@ -45,11 +36,11 @@ async function writerLoad(raw: string) {
 describe('full-model workload (T286; →SAVE-23, HIST-17)', () => {
   it('writerActivation is what the host writer load holds and writes', async () => {
     const legacy = onRevision10();
-    const { host, reply } = await writerLoad(await encode(legacy, 1, 0));
+    const { host, reply } = await writerLoad(legacy);
     const predicted = writerActivation(legacy, ENABLED_RELEASE);
     expect(canonical(host.world)).toBe(canonical(predicted));
     expect(reply.upgraded).toBe(true);
-    expect(canonical((await decode(reply.raw!)).world)).toBe(canonical(predicted));
+    expect(canonical(savedWorld(host))).toBe(canonical(predicted));
     expect(predicted.revision).toBe(legacy.revision + 1);
     // Only the revision moves: its activation, tracking boundary and coverage stay.
     expect(predicted.matchModel).toEqual({

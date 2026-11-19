@@ -43,8 +43,7 @@ import {
   sponsorSlots,
   transferOffers,
 } from '../packages/engine/src/index';
-import { decode, encode } from '../apps/web/src/adapters/persistence';
-import { ACTIVE } from '../apps/web/src/adapters/repository';
+import { openedSaveFile, saveFileOf } from '../tests/fixtures/save-roundtrip';
 import {
   aggregatePlan,
   aggregateRecord,
@@ -383,7 +382,7 @@ const seasons: Record<string, unknown>[] = [];
 for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
   // The released model from the takeover: complete statistics tracked from the first day.
   const w = careerWorld({ country: 'ENG', seed });
-  let raw: string | undefined;
+  let raw: Uint8Array | undefined;
   for (let season = 0; season < settings.seasons; season++) {
     const last = season === settings.seasons - 1;
     const [, ms] = timed(() => {
@@ -393,8 +392,8 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
       if (last) while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
     });
     if (last) {
-      const [encoded, encodeMs] = await timedAsync(() => encode(w, 2, 1));
-      const [, decodeMs] = await timedAsync(() => decode(encoded));
+      const [encoded, encodeMs] = await timedAsync(() => saveFileOf(w));
+      const [, decodeMs] = await timedAsync(() => openedSaveFile(encoded));
       record('codec.encode', encodeMs);
       record('codec.decode', decodeMs);
       raw = encoded;
@@ -406,14 +405,14 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
       console.error(`${profile}: ${season + 1}/${settings.seasons} seasons`);
   }
   if (!raw) {
-    const [encoded, encodeMs] = await timedAsync(() => encode(w, 2, 1));
-    const [, decodeMs] = await timedAsync(() => decode(encoded));
+    const [encoded, encodeMs] = await timedAsync(() => saveFileOf(w));
+    const [, decodeMs] = await timedAsync(() => openedSaveFile(encoded));
     record('codec.encode', encodeMs);
     record('codec.decode', decodeMs);
     raw = encoded;
   }
-  // Conservative UTF-16 size of the active slot, as scripts/benchmark.ts counts it (→SAVE-4).
-  const checkpointBytes = 2 * (raw.length + ACTIVE.length);
+  // The `.haeram-save` file's size: the game's database compressed (→SAVE-4, →SAVE-9).
+  const checkpointBytes = raw.length;
   seasons.push({
     profile,
     seed,
@@ -423,7 +422,7 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
     checkpointAt: 'final round of the last season, before its close',
     checkpointChars: raw.length,
     checkpointBytes,
-    withinPortableLimit: Buffer.byteLength(raw) <= PERFORMANCE_CONFIG.storage.portableFileBytes,
+    withinPortableLimit: raw.length <= PERFORMANCE_CONFIG.storage.portableFileBytes,
   });
   sampleMemory();
 }

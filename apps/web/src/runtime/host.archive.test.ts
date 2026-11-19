@@ -14,15 +14,14 @@ import {
   ROUND_INTERVAL_DAYS,
   simulateSeason,
 } from '../../../../packages/engine/src/index';
-import { encode } from '../adapters/persistence';
 import { headToHead } from './headToHead';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
-import { input, playOn, req, startedHost, startedWorld } from './host.testkit';
+import { gameHost, input, loadWorld, playOn, req, startedHost, startedWorld } from './host.testkit';
 import type { View } from './protocol';
 
 // Archive and history reads: the reads, not the match model, are the subject.
-const host = () => new Host();
+const host = () => gameHost();
 /** A host with a game just started in it by `startedHost`. */
 const started = async () => (await startedHost(undefined, undefined, host())).host;
 /**
@@ -252,14 +251,7 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
     expect(source.round).toBe(4);
     expect(currentDay(source) % ROUND_INTERVAL_DAYS).not.toBe(0);
     const h = host();
-    const loaded = await h.handle(
-      req('load', -1, {
-        type: 'inspect',
-        raw: await encode(source),
-        activate: true,
-        upgrade: true,
-      }),
-    );
+    const loaded = await loadWorld(h, 'load', source);
     expect(loaded.upgraded, loaded.error).toBe(true);
     const w = h.world!,
       logged = w.events.length;

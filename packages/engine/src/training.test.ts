@@ -6,7 +6,7 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import { mainOvr, TRAINING_GAIN, weightsFor } from './player';
 import { settleRate } from './adaptation';
 import { TRAINING_INJURY, trainingInjuryChance } from './careers';
-import { decode, encode } from '../../../apps/web/src/adapters/persistence';
+import { roundTrip } from '../../../tests/fixtures/save-roundtrip';
 import { requestSchema } from '../../../apps/web/src/runtime/protocol';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import {
@@ -143,7 +143,7 @@ describe('earned player growth and training choices', () => {
 
   it('preserves focus, actual development and the boundary guard across export/import', async () => {
     const w = firstRound();
-    const restored = (await decode(await encode(w, 1, 0))).world;
+    const restored = roundTrip(w);
     expect(canonical(restored)).toBe(canonical(w));
     const before = canonical(restored);
     settleTraining(restored);
@@ -161,7 +161,7 @@ describe('earned player growth and training choices', () => {
     expect(old.hardStreak).toBeUndefined();
     expect(old.trainingAt).toBeUndefined();
     expect(old.players.every((player) => player.developed === undefined)).toBe(true);
-    const restored = (await decode(await encode(old, 1, 0))).world;
+    const restored = roundTrip(old);
     // A fresh squad of 20-year-olds in good spirits: the assistant trains them hard (→CLUB-13).
     expect(trainingSummary(restored).focus).toBe('hard');
     advanceRound(restored, undefined, false);

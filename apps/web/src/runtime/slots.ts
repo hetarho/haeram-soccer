@@ -52,21 +52,6 @@ export const earlierRules = (entry: Pick<GameEntry, 'engine'>) =>
   entry.engine !== undefined && !SUPPORTED_ENGINE_VERSIONS.includes(entry.engine)
     ? entry.engine
     : undefined;
-/** A slot card for an earlier-rules checkpoint the index never listed: nothing of it is decoded. */
-const unreadSummary = (): SlotSummary => ({
-  club: sourceMessage('copy.slots.e9a070fc85'),
-  country: '',
-  division: '',
-  date: '',
-  seasons: 0,
-  crest: {
-    shape: 'shield',
-    pattern: 'plain',
-    primary: '#3a6352',
-    secondary: '#12261f',
-    emblem: 'ball',
-  },
-});
 
 /**
  * Three game slots over one game in play (→WEB-62, →SAVE-14). Every occupied slot is its game's
@@ -103,23 +88,6 @@ export class GameSlots {
    */
   display(w: World | undefined): GameIndex {
     const index = this.read();
-    // An earlier-rules checkpoint in play never loads: its slot says so (→SAVE-16).
-    const earlier = w ? undefined : this.client.earlierRules();
-    if (earlier) {
-      const slot = this.home(index);
-      const entry = index.slots[slot];
-      index.slots[slot] = entry
-        ? { ...entry, engine: earlier }
-        : {
-            id: 'earlier',
-            worldId: 'earlier',
-            summary: unreadSummary(),
-            playedAt: '',
-            engine: earlier,
-          };
-      index.active = slot;
-      return index;
-    }
     if (!w || index.slots.some((entry) => entry?.worldId === w.id)) return index;
     const slot = this.home(index);
     index.slots[slot] = { id: 'in-play', worldId: w.id, summary: summarize(w), playedAt: '' };

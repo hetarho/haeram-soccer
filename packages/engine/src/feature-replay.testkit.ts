@@ -2,7 +2,7 @@ import { expect } from 'vitest';
 import { canonical, type World } from '../../contracts/src/index';
 import { Host } from '../../../apps/web/src/runtime/host';
 import type { Body } from '../../../apps/web/src/runtime/protocol';
-import { encode } from '../../../apps/web/src/adapters/persistence';
+import { loadWorld } from '../../../apps/web/src/runtime/host.testkit';
 
 let serial = 0;
 async function send(host: Host, body: Body) {
@@ -11,8 +11,6 @@ async function send(host: Host, body: Body) {
     session: 'feature-replay',
     requestId: `request-${++serial}`,
     expectedRevision: host.world?.revision ?? -1,
-    generation: 1,
-    parentGeneration: 0,
     body,
   });
   expect(reply.ok, reply.error).toBe(true);
@@ -34,6 +32,6 @@ export async function readAndReload(host: Host) {
   await send(host, { type: 'person-career', person });
   await send(host, { type: 'recruitment-history' });
   expect(canonical(host.world!)).toBe(before);
-  await send(host, { type: 'inspect', raw: await encode(host.world!), activate: true });
+  expect((await loadWorld(host, `reload-${++serial}`, host.world!)).ok).toBe(true);
   expect(canonical(host.world!)).toBe(before);
 }

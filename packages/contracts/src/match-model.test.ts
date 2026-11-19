@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   activeMatchModel,
   assertMatchModelFormat,
-  checkpointSchemaFor,
   frameTimeIssues,
   MATCH_MODEL_REVISION,
   matchModelStateSchema,
@@ -10,14 +9,8 @@ import {
 } from './match-model';
 import type { MatchFrame, World } from './types';
 import {
-  CURRENT_CHECKPOINT_SCHEMA,
   CURRENT_ENGINE_VERSION,
-  envelopeEngine,
-  FULL_MODEL_CHECKPOINT_SCHEMA,
-  isCheckpointSchema,
   isEarlierEngine,
-  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
-  PLAIN_WORLD_CHECKPOINT_SCHEMA,
   isSaveCompatibilityError,
   LEGACY_ENGINE_VERSIONS,
   SaveCompatibilityError,
@@ -72,32 +65,8 @@ describe('match-model metadata (→SAVE-23)', () => {
     rejects({ ownMatches: [oldRecord, { ...oldRecord, model: future }] });
     expect(matchModelStateSchema.safeParse({ ...state, revision: future }).success).toBe(false);
     expect(matchModelStateSchema.safeParse({ ...state, extra: 1 }).success).toBe(false);
-    // The plain-world container follows the packed ones; every earlier number is still recognised
-    // (so it fails as compatibility, not corruption) and the one after is a future one, whose
-    // header is no evidence of earlier rules.
-    expect(PLAIN_WORLD_CHECKPOINT_SCHEMA).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1);
-    for (const known of [
-      1,
-      CURRENT_CHECKPOINT_SCHEMA,
-      FULL_MODEL_CHECKPOINT_SCHEMA,
-      MANAGER_HISTORY_CHECKPOINT_SCHEMA,
-      PLAIN_WORLD_CHECKPOINT_SCHEMA,
-    ])
-      expect(isCheckpointSchema(known)).toBe(true);
-    expect(isCheckpointSchema(PLAIN_WORLD_CHECKPOINT_SCHEMA + 1)).toBe(false);
-    expect(
-      envelopeEngine(
-        `{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA},"engine":"${CURRENT_ENGINE_VERSION}"}`,
-      ),
-    ).toBe(CURRENT_ENGINE_VERSION);
-    expect(envelopeEngine(`{"schema":${PLAIN_WORLD_CHECKPOINT_SCHEMA + 1},"engine":"3.0.0"}`)).toBe(
-      undefined,
-    );
   });
 
-  it('writes every world in the plain-world container', () => {
-    expect(checkpointSchemaFor()).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-  });
 });
 
 describe('the match-time coordinate (→MATCH-12)', () => {

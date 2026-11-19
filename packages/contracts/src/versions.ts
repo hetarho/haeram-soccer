@@ -140,48 +140,9 @@ export const LEGACY_ENGINE_VERSIONS: readonly string[] = [
   '3.0.0',
   ...RULES_FOUR_VERSIONS,
 ];
-/**
- * The checkpoint container (envelope) schema, separate from `World.schema` and the bridge protocol,
- * which stay 1. Container 2 carries club identities (→SAVE-20), so a reader that knows only 1
- * refuses such a save instead of silently dropping the designs.
- */
-export const CURRENT_CHECKPOINT_SCHEMA = 2;
-/**
- * The container after the identity container, for checkpoints carrying full-model metadata, NPC
- * season aggregates or full records (→SAVE-23), so an older reader refuses them instead of dropping
- * fields. Only such worlds are written in it (`checkpointSchemaFor`); unactivated worlds keep the
- * current container.
- */
-export const FULL_MODEL_CHECKPOINT_SCHEMA = 3;
-/**
- * The container after the full-model one, for checkpoints carrying own-manager history facts or a
- * record linked to a tenure (→SAVE-24), with or without full-model data, so an older reader
- * refuses them instead of dropping the attribution.
- */
-export const MANAGER_HISTORY_CHECKPOINT_SCHEMA = 4;
-/**
- * The container after the packed ones: the plain world, `JSON.stringify(world)` gzipped (→SAVE-2,
- * →ARCH-12). It is the only container this version writes and reads; it carries every world,
- * whatever match-model or manager-history data it holds.
- */
-export const PLAIN_WORLD_CHECKPOINT_SCHEMA = 5;
-/** Containers this version reads; any other is a compatibility failure, never corruption. */
-export const SUPPORTED_CHECKPOINT_SCHEMAS = [PLAIN_WORLD_CHECKPOINT_SCHEMA] as const;
-/** Every container number a version has ever written (1–4 packed, 5 plain). */
-export const KNOWN_CHECKPOINT_SCHEMAS = [
-  1,
-  CURRENT_CHECKPOINT_SCHEMA,
-  FULL_MODEL_CHECKPOINT_SCHEMA,
-  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
-  PLAIN_WORLD_CHECKPOINT_SCHEMA,
-] as const;
 /** Whether a world holds own-manager history facts or an own record linked to a tenure. */
 export const carriesManagerHistory = (w: Pick<World, 'managerHistory' | 'ownMatches'>) =>
   !!w.managerHistory || w.ownMatches.some((m) => m.managerTenure !== undefined);
-export type CheckpointSchema = (typeof KNOWN_CHECKPOINT_SCHEMAS)[number];
-/** Recognises every known container so an older number fails as compatibility, not corruption. */
-export const isCheckpointSchema = (value: unknown): value is CheckpointSchema =>
-  (KNOWN_CHECKPOINT_SCHEMAS as readonly unknown[]).includes(value);
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;
 
 export class SaveCompatibilityError extends Error {
@@ -208,17 +169,6 @@ export const earlierRulesMessage = (engine: string) =>
 export const NEWER_GAME_MESSAGE = sourceMessage('copy.versions.29c62efe49', {
   p0: CURRENT_ENGINE_VERSION,
 });
-/**
- * The rules version an envelope names in its header, read without decoding its payload; none for a
- * container this version cannot read, whose header is not evidence of earlier rules.
- */
-export function envelopeEngine(raw: string) {
-  const header = raw.slice(0, 400);
-  const schema = /"schema"\s*:\s*(\d{1,9})\b/.exec(header)?.[1];
-  if (!isCheckpointSchema(Number(schema))) return undefined;
-  return /"engine"\s*:\s*"([^"]{1,20})"/.exec(header)?.[1];
-}
-
 export function isSaveCompatibilityError(error: unknown): error is SaveCompatibilityError {
   return (
     error instanceof SaveCompatibilityError ||

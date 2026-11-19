@@ -55,7 +55,6 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
     acknowledge: async () => undefined,
     setClockRunning: () => {},
     hasStoredGame: () => false,
-    earlierRules: () => undefined,
     exportFile: async () => {
       notify(sourceMessage('copy.client.62b45e9016'));
       return undefined;

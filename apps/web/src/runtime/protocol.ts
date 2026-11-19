@@ -26,7 +26,6 @@ import type {
   SeasonArchive,
   Event,
 } from '../../../../packages/contracts/src/types';
-import type { Envelope } from '../adapters/repository';
 import {
   budgetResponsibilitySchema,
   gameSettingsSchema,
@@ -50,9 +49,7 @@ import {
 } from '../../../../packages/contracts/src/identitySchema';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import {
-  assertMatchModelFormat,
   FULL_STATS_KINDS,
-  matchModelStateSchema,
   type FullStatsRead,
 } from '../../../../packages/contracts/src/match-model';
 import type { ManagerHistoryPage } from '../../../../packages/contracts/src/manager-history-view';
@@ -240,18 +237,9 @@ export const requestSchema = z.object({
   session: z.string().min(1).max(100),
   requestId: z.string().min(1).max(100),
   expectedRevision: z.number().int().min(-1),
-  generation: z.number().int().positive(),
-  parentGeneration: z.number().int().nonnegative(),
   /** The published view the client holds; a reply then carries only the parts that changed. */
   viewBase: z.number().int().nonnegative().optional(),
   body: z.discriminatedUnion('type', [
-    z.object({
-      type: z.literal('inspect'),
-      metadataOnly: z.boolean().optional(),
-      activate: z.boolean().optional(),
-      upgrade: z.boolean().optional(),
-      raw: z.string().max(PORTABLE_FILE_LIMIT),
-    }),
     // A new game (→WEB-2, WORLD-13): the world generated to the chosen decade, held by the worker
     // unsaved until one of its clubs is taken over; `replace` starts it beside a game in play.
     z.strictObject({
@@ -289,7 +277,6 @@ export const requestSchema = z.object({
       world: z.string().min(1).max(300),
     }),
     z.object({ type: z.literal('command'), command }),
-    z.object({ type: z.literal('export') }),
     // The game in play's database (→SAVE-2, →ARCH-6): `open-game` loads and validates it, then
     // plays it; `create-game` writes every row of the world in play into it after a takeover (or
     // an activated import, `replace`); `save` commits the rows changed since the last save.
@@ -450,7 +437,7 @@ export interface View {
 }
 /**
  * Published views each side keeps, so a reply can still name the base a client holds after a
- * request whose view it does not take (an export or a save inspection).
+ * request whose view it does not take (a game file's export or import).
  */
 export const PUBLISHED_VIEWS = 2;
 /**
@@ -538,21 +525,6 @@ export function applyViewDelta(base: View, delta: ViewDelta, share: ShareValue =
     }
   return view;
 }
-/** What a metadata-only inspection reports: identity, revision and any persisted match model. */
-export type WorldMetadata = Pick<World, 'id' | 'revision' | 'matchModel'>;
-/**
- * A checkpoint world's metadata (→SAVE-23): a future model revision is a typed compatibility
- * failure, a supported one is carried as a validated copy. It neither activates the world nor
- * changes any of its facts.
- */
-export function worldMetadataOf(w: World): WorldMetadata {
-  assertMatchModelFormat(w);
-  return {
-    id: w.id,
-    revision: w.revision,
-    ...(w.matchModel ? { matchModel: matchModelStateSchema.parse(w.matchModel) } : {}),
-  };
-}
 export interface Reply {
   requestId: string;
   ok: boolean;
@@ -565,10 +537,6 @@ export interface Reply {
   /** Sent instead of `view` when the request's `viewBase` is a view the host still remembers. */
   viewDelta?: ViewDelta;
   playback?: MatchPlayback;
-  raw?: string;
-  envelope?: Envelope;
-  candidate?: World;
-  worldMetadata?: WorldMetadata;
   archive?: { season?: SeasonArchive; matches: MatchRecord[]; events: Event[]; managers: Event[] };
   newsPage?: { world: string; items: NewsItem[]; next?: string };
   headToHead?: HeadToHead;

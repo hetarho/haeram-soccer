@@ -2,17 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
 import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
-import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
-import type { Club, World } from '../../../../packages/contracts/src/types';
-import {
-  CURRENT_ENGINE_VERSION,
-  isSaveCompatibilityError,
-} from '../../../../packages/contracts/src/versions';
+import type { Club } from '../../../../packages/contracts/src/types';
 import {
   applyViewDelta,
   applyViewPatch,
   requestSchema,
-  worldMetadataOf,
   type View,
   type ViewPatch,
 } from './protocol';
@@ -24,8 +18,6 @@ const request = (body: unknown) => ({
   session: 's',
   requestId: 'r',
   expectedRevision: 0,
-  generation: 1,
-  parentGeneration: 0,
   body,
 });
 
@@ -95,46 +87,6 @@ it('takes a next-fixture kit role in the engine vocabulary or null, nothing else
   expect(accepts({ type: 'match-kit', fixtureId: 'f:1', role: 'home', club: 'ENG:rival' })).toBe(
     false,
   );
-});
-
-it('carries supported match-model metadata and refuses a future one, changing nothing (→SAVE-23)', () => {
-  const matchModel = {
-    revision: MATCH_MODEL_REVISION,
-    activated: { year: 1990, day: 12, revision: 40 },
-    trackedFrom: { year: 1990, day: 13, round: 2 },
-    coverage: 'activation' as const,
-  };
-  const world = (extra: object) =>
-    ({
-      id: 'world',
-      revision: 41,
-      engine: CURRENT_ENGINE_VERSION,
-      ownMatches: [],
-      ...extra,
-    }) as unknown as World;
-  expect(worldMetadataOf(world({}))).toEqual({ id: 'world', revision: 41 });
-
-  const activated = world({ matchModel });
-  const before = structuredClone(activated);
-  const metadata = worldMetadataOf(activated);
-  expect(metadata).toEqual({ id: 'world', revision: 41, matchModel });
-  metadata.matchModel!.trackedFrom.round = 9;
-  expect(activated).toEqual(before);
-
-  for (const future of [
-    world({ matchModel: { ...matchModel, revision: 'continuous-aggregate-11' } }),
-    world({ ownMatches: [{ id: 'f:1', model: 'continuous-aggregate-11' }] }),
-  ]) {
-    const unchanged = structuredClone(future);
-    let error: unknown;
-    try {
-      worldMetadataOf(future);
-    } catch (e) {
-      error = e;
-    }
-    expect(isSaveCompatibilityError(error)).toBe(true);
-    expect(future).toEqual(unchanged);
-  }
 });
 
 it('reads one competition of complete statistics on request, never a playoff scope (→WEB-89)', () => {

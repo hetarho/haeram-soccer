@@ -1,6 +1,6 @@
 import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { expect } from 'vitest';
-import { Host } from './host';
+import { Host, storedWorld } from './host';
 import type { Body } from './protocol';
 import { canonical } from '../../../../packages/contracts/src/index';
 import type { StartChoice } from '../../../../packages/contracts/src/owner';
@@ -9,6 +9,7 @@ import { MATCH_MODEL_RELEASE, type MatchModelRelease } from '../../../../package
 import { generateHistory } from '../../../../packages/engine/src/history';
 import { clubListings } from '../../../../packages/engine/src/listing';
 import { takeOver } from '../../../../packages/engine/src/takeover';
+import { memoryGames, worldDatabase } from '../../../../tests/fixtures/save-file';
 /** The career (`careerWorld`, `simulatedWorld`) of the tests that build worlds to import. */
 export const input = { country: 'ENG' as const, seed: 'worker' };
 export const req = (id: string, revision: number, body: Body) => ({
@@ -16,8 +17,6 @@ export const req = (id: string, revision: number, body: Body) => ({
   session: 'session',
   requestId: id,
   expectedRevision: revision,
-  generation: 1,
-  parentGeneration: 0,
   body,
 });
 /**
@@ -79,4 +78,30 @@ export function playOn(h: Host, played: World, release: MatchModelRelease = MATC
   played.receiptIds = h.world!.receiptIds;
   initializeReadModels(played);
   h.world = played;
+}
+
+const gamesOf = new WeakMap<Host, ReturnType<typeof memoryGames>>();
+/** A host whose game files are in memory, so `loadWorld` can hand it a world to open. */
+export function gameHost(options: NonNullable<ConstructorParameters<typeof Host>[1]> = {}) {
+  const games = memoryGames();
+  const host = new Host(undefined, {
+    ...options,
+    openStore: async (gameId, open) => games.open(gameId, open),
+    gameFiles: { list: () => games.list(), remove: (gameId) => games.remove(gameId) },
+    databaseBytes: games.bytes,
+  });
+  gamesOf.set(host, games);
+  return host;
+}
+/**
+ * Writes `world` as a game's database and opens it in `host` (a `gameHost`), as a page opens the
+ * game in play: validated, with the writer's upgrade committed at once (→SAVE-5, →SAVE-10).
+ */
+export async function loadWorld(host: Host, id: string, world: World, gameId = 'game') {
+  await gamesOf.get(host)!.bytes.write(gameId, worldDatabase(world));
+  return host.handle(req(id, -1, { type: 'open-game', gameId }));
+}
+/** The world a `gameHost`'s game database holds now, read back as a game opens. */
+export function savedWorld(host: Host, gameId = 'game'): World {
+  return storedWorld(gamesOf.get(host)!.open(gameId, { create: false })!);
 }

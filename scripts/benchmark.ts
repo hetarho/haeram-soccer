@@ -36,9 +36,14 @@ import {
 } from '../packages/contracts/src/index';
 import { managerHistoryDateKey } from '../packages/contracts/src/manager-history';
 import type { ManagerHistoryPage } from '../packages/contracts/src/manager-history-view';
-import { encode, decode, PORTABLE_FILE_LIMIT } from '../apps/web/src/adapters/persistence';
-import { Host } from '../apps/web/src/runtime/host';
-import { ACTIVE } from '../apps/web/src/adapters/repository';
+import { Host, storedWorld } from '../apps/web/src/runtime/host';
+import { DECOMPRESSED_LIMIT, PORTABLE_FILE_LIMIT } from '../apps/web/src/adapters/repository';
+import { RowSaver } from '../apps/web/src/adapters/rowSaver';
+import { decodeSaveFile, encodeSaveFile, saveMetaOf } from '../apps/web/src/adapters/saveFile';
+import { sqlRecordStore } from '../apps/web/src/adapters/sqlRecordStore';
+import { nodeSqliteDriver } from '../tests/fixtures/node-sqlite';
+import { memoryGames } from '../tests/fixtures/save-file';
+import { gzip } from '../apps/web/src/adapters/compression';
 import { retainedWorkload } from '../tests/fixtures/retained-workload';
 import {
   appearanceSummary,
@@ -49,7 +54,6 @@ import {
   type IdentityWorkloadState,
   type WorkloadKitChoice,
 } from '../tests/fixtures/identity-workload';
-import { encodePayload, payloadBytes } from '../apps/web/src/adapters/compression';
 import {
   ACTIVATION_CAREER,
   assertCompleteModel,
@@ -182,7 +186,7 @@ const reuseKey = createHash('sha256')
   .digest('hex');
 const state = join('.tmp', 'benchmark', reuseKey.slice(0, 16));
 mkdirSync(state, { recursive: true });
-const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
+const sha256 = (text: string | Uint8Array) => createHash('sha256').update(text).digest('hex');
 let current: Phase = 'retained';
 let peakObservedHeapBytes = 0;
 let worst = { label: '', checkpointBytes: 0 };
@@ -209,30 +213,36 @@ async function measure(w: World, label: string) {
           throw new Error('Domestic capacity drift');
       }),
     );
-  const t = performance.now(),
-    raw = await encode(w, 2, 1),
-    encodingMs = performance.now() - t,
-    restored = (await decode(raw)).world,
-    decodingMs = performance.now() - t - encodingMs;
-  if (canonical(restored) !== worldCanonical) throw new Error('Lossless checkpoint failed');
-  // Both checkpoint copies live in IndexedDB (→SAVE-3).
-  const checkpointBytes = 2 * (raw.length + ACTIVE.length);
-  const envelope = JSON.parse(raw);
-  const compressedPayloadBytes = payloadBytes(envelope.codec, envelope.payload).length;
+  // The game database a save writes, its `.haeram-save` file and the world a reopened game holds.
+  const t = performance.now();
+  const driver = nodeSqliteDriver();
+  const store = sqlRecordStore(driver);
+  new RowSaver(store).save(w);
+  const dbBytes = driver.serialize();
+  const raw = await encodeSaveFile(saveMetaOf(store.meta()), dbBytes);
+  driver.close();
+  const encodingMs = performance.now() - t;
+  const decoded = await decodeSaveFile(raw);
+  const reopened = nodeSqliteDriver(':memory:', decoded.dbBytes);
+  const restored = storedWorld(sqlRecordStore(reopened));
+  reopened.close();
+  const decodingMs = performance.now() - t - encodingMs;
+  if (canonical(restored) !== worldCanonical) throw new Error('Lossless database save failed');
+  // The game's database is its one copy (→SAVE-2).
+  const checkpointBytes = dbBytes.length;
+  const compressedPayloadBytes = raw.length - (raw.indexOf(10, raw.indexOf(10) + 1) + 1);
   const decompressedJsonBytes = Buffer.byteLength(worldCanonical, 'utf8');
   const persistedStreams: Record<
     string,
-    { jsonBytes: number; compressedBytes: number; codec: string; standaloneToPayloadRatio: number }
+    { jsonBytes: number; compressedBytes: number; standaloneToPayloadRatio: number }
   > = {};
   for (const key of ['players', 'people'] as const) {
     const bytes = new TextEncoder().encode(canonical(w[key] ?? null));
-    const encoded = await encodePayload(bytes);
+    const compressedBytes = (await gzip(bytes, true, DECOMPRESSED_LIMIT)).length;
     persistedStreams[key] = {
       jsonBytes: bytes.length,
-      compressedBytes: payloadBytes(encoded.codec, encoded.payload).length,
-      codec: encoded.codec,
-      standaloneToPayloadRatio:
-        payloadBytes(encoded.codec, encoded.payload).length / compressedPayloadBytes,
+      compressedBytes,
+      standaloneToPayloadRatio: compressedBytes / compressedPayloadBytes,
     };
   }
   const heapBytes = process.memoryUsage().heapUsed;
@@ -266,14 +276,14 @@ async function measure(w: World, label: string) {
     trainingAt: w.trainingAt,
     managerTenures: w.managerHistory?.tenures.length ?? 0,
     managerOutcomes: w.managerHistory?.outcomes.length ?? 0,
-    container: envelope.schema,
+    container: decoded.header.format,
     compressedPayloadBytes,
     checkpointBytes,
-    fileBytes: Buffer.byteLength(raw, 'utf8'),
+    fileBytes: raw.length,
     heapBytes,
     encodingMs: Math.round(encodingMs),
     decodingMs: Math.round(decodingMs),
-    passed: Buffer.byteLength(raw, 'utf8') <= PORTABLE_FILE_LIMIT,
+    passed: raw.length <= PORTABLE_FILE_LIMIT,
   };
   measurements.push(result);
   console.error(
@@ -282,11 +292,11 @@ async function measure(w: World, label: string) {
   if (checkpointBytes > worst.checkpointBytes) {
     worst = { label, checkpointBytes };
     writeFileSync(join(state, `worst-${current}.world.json`), worldCanonical);
-    writeFileSync(join(state, `worst-${current}.haeram-save.json`), raw);
+    writeFileSync(join(state, `worst-${current}.haeram-save`), raw);
   }
   if (!result.passed) {
     writeFileSync('.tmp/release-storage-failure-world.json', worldCanonical);
-    writeFileSync('.tmp/release-storage-failure.haeram-save.json', raw);
+    writeFileSync('.tmp/release-storage-failure.haeram-save', raw);
     writeFileSync(
       '.tmp/release-storage-failure-metrics.json',
       JSON.stringify(
@@ -747,7 +757,7 @@ async function checkpoints(variant: Variant): Promise<CheckpointData> {
   const modelAtCentury = centuryModel(restored);
   let centuryCheckpointSha256: string | undefined;
   if (variant === 'baseline') {
-    writeFileSync('.tmp/release-century.haeram-save.json', raw);
+    writeFileSync('.tmp/release-century.haeram-save', raw);
     centuryCheckpointSha256 = sha256(raw);
   }
   const active = loadWorld(`${variant}-round23`);
@@ -772,20 +782,23 @@ async function checkpoints(variant: Variant): Promise<CheckpointData> {
   };
 }
 
-/** The writer tab's load of `raw` through the worker host, as the client sends it (→SAVE-3/23). */
-async function writerLoad(raw: string) {
-  const host = new Host();
-  const reply = await host.handle({
+/** The writer tab's open of a game file through the worker host, as the client sends it (→SAVE-3/23). */
+async function writerLoad(file: Uint8Array) {
+  const games = memoryGames();
+  const host = new Host(undefined, {
+    openStore: async (gameId, open) => games.open(gameId, open),
+    gameFiles: { list: () => games.list(), remove: (gameId) => games.remove(gameId) },
+    databaseBytes: games.bytes,
+  });
+  const imported = await host.handle({
     protocol: 1,
     session: 'benchmark',
     requestId: 'activation-load',
     expectedRevision: -1,
-    generation: 2,
-    parentGeneration: 1,
-    body: { type: 'inspect', raw, activate: true, upgrade: true },
+    body: { type: 'import-game', gameId: 'activation', file },
   });
-  if (!reply.ok || !host.world) throw new Error('Writer load failed: ' + reply.error);
-  return { world: host.world, raw: reply.raw };
+  if (!imported.ok || !host.world) throw new Error('Writer load failed: ' + imported.error);
+  return { world: host.world, written: storedWorld(games.open('activation', { create: false })!) };
 }
 /**
  * T286: a supported career saved before the full model's release — a career played
@@ -810,7 +823,7 @@ async function activation() {
   const activated = loaded.world;
   if (canonical(activated) !== canonical(writerActivation(legacy)))
     throw new Error('The writer load differs from writerActivation');
-  if (!loaded.raw || canonical((await decode(loaded.raw)).world) !== canonical(activated))
+  if (canonical(loaded.written) !== canonical(activated))
     throw new Error('The writer load did not write the activated career');
   assertRetainedContent(activated, before);
   if (
