@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T01:45Z | 2026-11-19T03:48Z | T1002 | gusta-session-start-sv19-0cc2a73b | 0d9468bd05e1 | ea1a0db8eec814a3c131d34b |
+| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T01:45Z | 2026-11-19T03:48Z | - | gusta-session-start-sv19-0cc2a73b | 0d9468bd05e1 | ea1a0db8eec814a3c131d34b |
 | x10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T03:36Z | 2026-11-19T03:37Z | T989 | gusta-session-start-x10-d3a275d5 | 4a9a550ad61a | fa6c66b81ed935a24bc56d8b |
 
 ## inbox
@@ -236,8 +236,10 @@
 | T999 | sv19 | gusta-session-start-sv19-0cc2a73b | 8ec26c2328de | 2026-11-19T01:57Z |
 | T1000 | sv19 | gusta-session-start-sv19-0cc2a73b | bb6cb07d49d3 | 2026-11-19T02:23Z |
 | T1001 | sv19 | gusta-session-start-sv19-0cc2a73b | 8d3ed6124 | 2026-11-19T03:28Z |
+| T1002 | sv19 | gusta-session-start-sv19-0cc2a73b | 0d9468bd05e1 | 2026-11-19T03:48Z |
 
 ## log
+- 261119 T1002 done
 - 261119 261119 mr18cx (T953–T980) + cx19 (T981) landed on main 36bcf488 as 0.8.13 after merging np19; verify:batch on 95e03065 (8 load timeouts rerun green), known +15–19% lived-season cost
 - 261119 T1001 done
 - 261119 T1000 done
@@ -257,4 +259,3 @@
 - 261118 np19 self-improve start: 7h engine perf run (00:25–07:25 KST): 4h behavior-preserving speedups (generation, 10x stalls), 3h gate+push main and feature-removal cost report
 - 261118 T981 done
 - 261118 gusta-create-task ARCH start
-- 261118 gusta-update-ssot ARCH r49: ARCH-23✎ ARCH-30✎ CI browser shards only
