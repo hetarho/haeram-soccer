@@ -551,8 +551,8 @@
       "branch": "gusta-session-start-sv19-0cc2a73b",
       "head": "004056bc7cac9acced12f3f447a7d2eae0fcf9eb",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-19T03:48:43.002Z",
+      "status": "paused",
+      "at": "2026-11-19T03:48:45.714Z",
       "agentChecks": [
         {
           "id": "T999-integration-e2e",
@@ -631,7 +631,8 @@
       ],
       "verificationCommands": [
         "pnpm run verify:batch"
-      ]
+      ],
+      "reason": "session-ended"
     },
     "fa6c66b81ed935a24bc56d8b": {
       "id": "fa6c66b81ed935a24bc56d8b",
