@@ -549,10 +549,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-sv19-0cc2a73b",
-      "head": "695acb6f3c2c050d8ef731d1b6ee70229e0f06da",
+      "head": "510c440d3af5fb55ec99e673f51dec037953a834",
       "land": "main",
       "status": "working",
-      "at": "2026-11-19T10:54:21.957Z",
+      "at": "2026-11-19T11:01:50.929Z",
       "agentChecks": [
         {
           "id": "T999-integration-e2e",
