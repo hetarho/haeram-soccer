@@ -645,8 +645,8 @@
       "branch": "gusta-session-start-x10-d3a275d5",
       "head": "693663adff40f2b281105d261c61eab35f0e85d9",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-19T08:16:39.836Z",
+      "status": "landed",
+      "at": "2026-11-19T09:09:33.157Z",
       "agentChecks": [
         {
           "id": "T993-save-integration",
@@ -1032,7 +1032,14 @@
       "verificationCommands": [
         "pnpm run verify:batch"
       ],
-      "reason": "session-ended"
+      "reason": "session-ended",
+      "landed": "9c3a60796d2e72141726363d23bd06e8779d6355",
+      "reconciled": {
+        "at": "2026-11-19T09:09:33.157Z",
+        "from": "paused",
+        "reason": "x10 landed outside the shared gate as 9c3a60796 (0.8.15) after its own verify:batch; sv19 was still mid-loop",
+        "verified": false
+      }
     }
   },
   "gate": null,
