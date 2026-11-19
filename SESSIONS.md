@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T04:31Z | 2026-11-19T07:02Z | T1008 | gusta-session-start-sv19-0cc2a73b | 8c53bba37124 | ea1a0db8eec814a3c131d34b |
+| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T04:31Z | 2026-11-19T07:22Z | - | gusta-session-start-sv19-0cc2a73b | 074a3a094b64 | ea1a0db8eec814a3c131d34b |
 | x10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T06:57Z | 2026-11-19T07:14Z | T1020 | gusta-session-start-x10-d3a275d5 | 587f7e251e0e | fa6c66b81ed935a24bc56d8b |
 
 ## inbox
@@ -267,8 +267,10 @@
 | T998 | x10 | gusta-session-start-x10-d3a275d5 | 8a8ed90c788b | 2026-11-19T06:47Z |
 | T994 | x10 | gusta-session-start-x10-d3a275d5 | 0409427cd1b5 | 2026-11-19T07:07Z |
 | T1028 | x10 | gusta-session-start-x10-d3a275d5 | 82ea799573dc | 2026-11-19T07:13Z |
+| T1008 | sv19 | gusta-session-start-sv19-0cc2a73b | 074a3a094b64 | 2026-11-19T07:22Z |
 
 ## log
+- 261119 T1008 done
 - 261119 T1028 done
 - 261119 T994 done
 - 261119 split commit dropped by the coordinator (e34ae5858); nothing to publish
@@ -288,4 +290,3 @@
 - 261119 T1027 done
 - 261119 T1026 done
 - 261119 superseded by the x10 unit's decision 67384b15: consumers and the measurement split into T1026/T1027, T994 keeps its five touches
-- 261119 T993 done
