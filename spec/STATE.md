@@ -69,7 +69,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
-| T994 | Prepare the stopped-clock read boundary | WEB ARCH | T1026 T1027 | todo |
 | T1028 | Activate stopped-clock reads | WEB ARCH | T994 | todo |
 | T1029 | Measure stopped-clock reads | WEB ARCH | T1028 | todo |
 | T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T1028 | todo |
@@ -107,6 +106,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- gusta-implement-task T1028
 - gusta-implement-task T1019
 - gusta-implement-task T1025
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
