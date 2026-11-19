@@ -60,7 +60,9 @@ export async function advanceOneRound(page: Page) {
 }
 /** Finish the observed season; fixture/event identity, rather than a fixed click count, ends it. */
 export async function finishSeason(page: Page) {
-  test.setTimeout(Math.max(test.info().timeout, 180000) + 90000);
+  // About 40 stops a season at 6–7 s each on CI, since each owner decision's save runs in the
+  // engine worker before the next step (→SAVE-3/8): 270 s ended one run at 1931.05.29.
+  test.setTimeout(Math.max(test.info().timeout, 180000) + 240000);
   await manual(page, true);
   const initial = await identity(page);
   for (let event = 0; event < 240; event++) {
