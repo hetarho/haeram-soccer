@@ -1281,8 +1281,8 @@
       "branch": "gusta-session-start-tk19-9706a3bf",
       "head": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-19T14:47:37.381Z",
+      "status": "ready",
+      "at": "2026-11-19T14:47:41.874Z",
       "agentChecks": [
         {
           "id": "T1017-shared-final-gate",
