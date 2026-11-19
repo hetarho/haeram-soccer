@@ -169,6 +169,7 @@
 - 261118 decided review/night-perf-261119: landing path: vibe check --tier batch refused outside the shared gate, whose ready participants include mr18cx (95 commits, +68k lines, the owner plan mr18, also prepared as 0.8.12; conflicts with T982 in npc-market.ts) → np19 gates its own candidate with pnpm run verify:batch and pushes main as a fast-forward, as xf18 and cf17 did; mr18cx stays for its owner to merge main and re-prepare 0.8.13 (alt: vibe integration finish merging mr18cx and cx19 under this gate | hold the push for mr18cx)
 - 261119 suggest ARCH-30: move task check `verification-plan:scripts/verification-plan.json#task` to the final gate (ARCH batch): it averaged 298s over 8 runs
 - 261119 decided T989: Split the interrupted tolerance work into fit implementation, actual-role season evidence, and fixture refresh (alternatives: repeat the entire unit | weaken the 0.1% criterion); T990 waits for the full chain and the measured position-average failure remains recorded.
+- 261119 parked T989: Planning split commit 5a982897ceb9e1397cbd19fdab17ec1c05d3c7d2 could not plan-push: origin/main has the original todo T989 while this session carries its doing state and prior implementation evidence; plan-sync reported no changes and the CLI reports a T989 conflict. Reconcile the planning branch against both histories before implementing the split.
 
 ## unlanded
 | id | tag | branch | commit | at |
