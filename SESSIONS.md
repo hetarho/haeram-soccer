@@ -204,6 +204,7 @@
 | T1038 | tk19 | gusta-session-start-tk19-9706a3bf | 9dc24fbd7064 | 2026-11-19T16:57Z |
 
 ## log
+- 261119 pushed 75ae6aa60 (0.8.19, slot seeding fix) to main as a fast-forward after verify:batch passed (541 files, 4510 tests)
 - 261119 fix e2e: seedSlot leaves the next start address on the slot screen (51 of 69 failures in CI 44569063692); 0.8.19 prepared
 - 261119 T1038 done
 - 261119 T1037 done
@@ -223,4 +224,3 @@
 - 261119 T1022 done
 - 261119 T1018 done
 - 261119 T1017 done
-- 261119 T1019 unparked: T1003/T1004 are on the tk19 candidate (taken over from sv19), landing together
