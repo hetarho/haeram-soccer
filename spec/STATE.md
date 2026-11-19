@@ -78,6 +78,7 @@
 | T995 | Manager, staff and discipline places dim while the clock runs | WEB ARCH | T1020 | todo |
 | T996 | The scout's shortlist dims while the clock runs | WEB ARCH | T1020 T995 | todo |
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
+| T1025 | An unwatched match's analysis and fixture row say why it has no maps | WEB MATCH ARCH | T992 | todo |
 | T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
 | T998 | Helper count by core class | ARCH | T997 | todo |
 | T1003 | Record-store port, save schema and an in-memory SQLite store for tests | ARCH SAVE | T1002 | todo |
