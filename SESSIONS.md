@@ -192,6 +192,7 @@
 - 261119 decided T1018: Cold archive rule across the war gap: year < w.year - 7 alone would move 1932-1938 out at the 1946 restart and change last-season reads after a save -> also never move one of the last seven archives (alt: year rule alone | count rule alone). Determinism test starts from simulatedWorld(CAREER, seasons 8) so the run spans 9-10 archived seasons with daily saves over one season (alt: daily saves over nine seasons, about 9x the 900 s test)
 - 261119 decided T1018: T1018 runs on codex/gpt-6.1-terra@ultra instead of claude/opus@high: the last unit there ended it unfinished with no commit or newly checked acceptance (alt: the same route again)
 - 261119 decided ECON-43 T1036: 자금 재시도 시점과 동시 착공 순서 → 당일 구단 수입·지출 정산 뒤 현재 견적으로 검사하고 경합 시 기존 경기장·훈련장·유소년 순서로 남은 현금을 적용합니다. 대안은 개별 거래 직후 또는 가격순입니다. 실제 진행 경로가 공유하는 정산 시점과 재현 가능한 기존 순서를 사용합니다.
+- 261119 decided ECON-43 WEB-14 T1035: 최대 단계와 수동 개입 처리 → 최대 완공 시 끄고, 해제 후 쉬는 시설을 다시 켜면 수동 착공을 기다립니다. 자금 대기 중 수동 착공에 성공하면 대기 승인을 소진합니다. 대안은 최대에서 체크만 유지하거나 해제 전 예약을 복원하는 방식입니다. 표시 상태를 실제 착공 동의와 맞추고 같은 단계가 다시 청구될 여지를 없앱니다.
 
 ## log
 - 261119 gusta-create-task ECON CLUB WEB SAVE start
