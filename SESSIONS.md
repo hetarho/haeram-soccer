@@ -172,6 +172,7 @@
 - 261119 decided T989: Split the interrupted tolerance work into fit implementation, actual-role season evidence, and fixture refresh (alternatives: repeat the entire unit | weaken the 0.1% criterion); T990 waits for the full chain and the measured position-average failure remains recorded.
 - 261119 parked T989: Planning split commit 5a982897ceb9e1397cbd19fdab17ec1c05d3c7d2 could not plan-push: origin/main has the original todo T989 while this session carries its doing state and prior implementation evidence; plan-sync reported no changes and the CLI reports a T989 conflict. Reconcile the planning branch against both histories before implementing the split.
 - 261119 suggest ARCH-30: move task check `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests` to the final gate (ARCH batch): it averaged 118s over 2 runs
+- 261119 suggest T993: T993 writer outputs without heat but contracts schema.ts requires material.heat and career-reads.ts requires heatPlayers; both files belong to downstream T1019 and lie outside T993 touches. Replan the contract boundary so the writer and schema change land atomically before closing T993; otherwise new saves fail validation.
 
 ## unlanded
 | id | tag | branch | commit | at |
