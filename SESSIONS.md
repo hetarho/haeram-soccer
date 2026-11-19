@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T10:24Z | 2026-11-19T11:01Z | T1013 | gusta-session-start-sv19-0cc2a73b | 510c440d3af5 | ea1a0db8eec814a3c131d34b |
+| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T10:24Z | 2026-11-19T11:05Z | - | gusta-session-start-sv19-0cc2a73b | 510c440d3af5 | ea1a0db8eec814a3c131d34b |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -279,8 +279,10 @@
 | T1010 | sv19 | gusta-session-start-sv19-0cc2a73b | 0774c67877f1 | 2026-11-19T09:46Z |
 | T1011 | sv19 | gusta-session-start-sv19-0cc2a73b | 03e9364c5bef | 2026-11-19T10:37Z |
 | T1012 | sv19 | gusta-session-start-sv19-0cc2a73b | ff6e9209986e | 2026-11-19T10:50Z |
+| T1013 | sv19 | gusta-session-start-sv19-0cc2a73b | 510c440d3af5 | 2026-11-19T11:05Z |
 
 ## log
+- 261119 T1013 done
 - 261119 T1012 done
 - 261119 T1011 done
 - 261119 T1010 done
@@ -300,4 +302,3 @@
 - 261119 kept as the test-scope rule for T1019 when it resumes after T1003/T1004
 - 261119 parked T1019 until T1003/T1004 land (see parked T1019)
 - 261119 answered by decided T1019 (tests belong to the task; no task-file edit)
-- 261119 resolved by 3ca3e2c8f: T993 took the schemas with optional heat fields; T993 done
