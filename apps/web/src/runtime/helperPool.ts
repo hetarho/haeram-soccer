@@ -14,11 +14,16 @@ import {
 export type { HelperJob, HelperReply } from './fixtureReplica';
 
 /**
- * Helper workers for an own match day's other league fixtures (→ARCH-6). Two suffice: our match
- * is the critical path, and four measured no faster. Below `minCores` the engine worker computes
+ * Helper workers for an own match day's other league fixtures (→ARCH-6). The measured core
+ * counts use three; other eligible devices use two. Below `minCores` the engine worker computes
  * them itself. A helper failing or answering later than `timeoutMs` ends their use for the session.
  */
-export const HELPER_CONFIG = { count: 2, minCores: 3, timeoutMs: 8000 } as const;
+export const HELPER_CONFIG = {
+  count: 2,
+  countByCores: { 6: 3, 8: 3, 12: 3 } as Readonly<Record<number, number>>,
+  minCores: 3,
+  timeoutMs: 8000,
+} as const;
 
 /** The engine worker's end of a helper's channel (a MessagePort in the browser). */
 export interface HelperPort {

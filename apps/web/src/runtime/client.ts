@@ -235,7 +235,9 @@ export class GameClient {
     if (!((navigator.hardwareConcurrency ?? 0) >= HELPER_CONFIG.minCores)) return;
     const ports: MessagePort[] = [];
     try {
-      for (let i = 0; i < HELPER_CONFIG.count; i++) {
+      const count =
+        HELPER_CONFIG.countByCores[navigator.hardwareConcurrency] ?? HELPER_CONFIG.count;
+      for (let i = 0; i < count; i++) {
         const helper = new Worker(new URL('./fixtureHelper.ts', import.meta.url), {
           type: 'module',
         });

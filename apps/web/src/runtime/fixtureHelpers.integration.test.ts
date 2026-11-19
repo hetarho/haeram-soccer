@@ -46,6 +46,7 @@ describe('incremental fixture helpers through campaign transitions', () => {
     reference.cash = '99999999999';
     let helped = structuredClone(reference);
     let shared = structuredClone(reference);
+    let three = structuredClone(reference);
     const year = reference.year,
       maxDays = seasonLength(reference) + 15,
       ports = [channel(), channel()];
@@ -56,10 +57,11 @@ describe('incremental fixture helpers through campaign transitions', () => {
       false,
     );
     const sharedPool = new HelperPool([channel().port, channel().port]);
+    const threePool = new HelperPool([channel().port, channel().port, channel().port]);
     let days = 0;
     while (reference.year === year || currentDay(reference) < 8) {
       expect(days++).toBeLessThan(maxDays);
-      for (const w of [reference, helped, shared]) {
+      for (const w of [reference, helped, shared, three]) {
         // The host's explicit acknowledgement resumes an informational critical stop.
         if (w.critical) {
           delete w.critical;
@@ -70,21 +72,25 @@ describe('incremental fixture helpers through campaign transitions', () => {
         transfer(reference);
         transfer(helped);
         transfer(shared);
+        transfer(three);
       }
       if (days === 43) {
         reference = structuredClone(reference);
         helped = structuredClone(helped);
         shared = structuredClone(shared);
+        three = structuredClone(three);
       }
       const before = [reference.year, currentDay(reference)];
       advanceDays(reference, 1, undefined, false);
       await playDay(pool, helped, false, { advanceDays, prepareRound, completeRound });
       await playDay(sharedPool, shared, false, { advanceDays, prepareRound, completeRound });
+      await playDay(threePool, three, false, { advanceDays, prepareRound, completeRound });
       expect(reference.bankrupt).toBeFalsy();
       expect([reference.year, currentDay(reference)]).not.toEqual(before);
       if (days % 7 === 0 || reference.year !== year) {
         expect(canonical(helped)).toBe(canonical(reference));
         expect(canonical(shared)).toBe(canonical(reference));
+        expect(canonical(three)).toBe(canonical(reference));
       }
     }
     expect(helped.year).toBe(year + 1);
@@ -92,6 +98,7 @@ describe('incremental fixture helpers through campaign transitions', () => {
     expect(canonical(helped)).toBe(canonical(reference));
     expect(pool.active).toBe(true);
     expect(sharedPool.active).toBe(true);
+    expect(threePool.active).toBe(true);
     for (const p of ports) {
       expect(p.sent.filter((j) => j.copy !== undefined).length).toBeGreaterThanOrEqual(3);
       expect(p.sent.some((j) => j.patch !== undefined)).toBe(true);
