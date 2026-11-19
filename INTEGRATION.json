@@ -1430,8 +1430,8 @@
       "branch": "gusta-session-start-facauto-7fb6ee3c",
       "head": "b09e9feb40184fe862175dfc406a4ea9b225636c",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-19T16:52:03.205Z",
+      "status": "paused",
+      "at": "2026-11-19T16:52:06.078Z",
       "agentChecks": [
         {
           "id": "facility-auto-controls",
@@ -1479,7 +1479,7 @@
         }
       ],
       "verificationCommands": [],
-      "reason": "Planning is published; the implementation candidate will be submitted after independent review and release preparation."
+      "reason": "session-ended"
     },
     "1196b79b10687deeb7d31da8": {
       "id": "1196b79b10687deeb7d31da8",
