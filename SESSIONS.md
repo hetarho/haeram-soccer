@@ -177,7 +177,6 @@
 - 261119 decided T1006: Game ID for a new career: the client creates a UUID at takeover and slots.sync lists the slot under it (one line in slots.ts), and activated imports reuse the ID the index lists for that world with create-game replace (alt: a game ID derived from the world ID | leave new careers unlisted until T1007). The under-10% save check is read on an ordinary day: the first day after a 1930 takeover opens every club's business and writes 420 of 2504 rows, later days 3 to 14.
 - 261119 suggest T994: T994 needs client.ts for the private read/RPC boundary and consumer files for undefined-safe access; its five-file touches omit these required paths. Replan the active task after releasing its claim, preserving acceptance and the 5-file limit, before implementation.
 - 261119 decided T994: T994 read boundary exceeds five files → prepare undefined-safe consumers and world-only benchmark digest as T1026/T1027, then keep host, protocol, client, store and progression in T994 with its acceptance intact (alt: broaden one task beyond five files | leave consumers unsafe).
-- 261119 decided T994: T994 needs paths outside its five touches → add apps/web/src/runtime/client.ts (the read RPC) and the direct consumers that stop compiling once the five View parts are optional (ClubStaff.tsx coaches[role], App.tsx if needed) with undefined-safe reads only; dimming stays in T1020/T995/T996/T1021; more than five touches is accepted here because the boundary must compile; main now holds the session's T994 copy, so plan-push of the touches edit applies cleanly (alt: split a T994b for consumers | keep the parts required and send empty values while running)
 
 ## unlanded
 | id | tag | branch | commit | at |
@@ -257,6 +256,7 @@
 | T993 | x10 | gusta-session-start-x10-d3a275d5 | b6af87d6f7c0 | 2026-11-19T05:35Z |
 
 ## log
+- 261119 superseded by the x10 unit's decision 67384b15: consumers and the measurement split into T1026/T1027, T994 keeps its five touches
 - 261119 T993 done
 - 261119 T1006 done
 - 261119 T990 done
@@ -276,4 +276,3 @@
 - 261119 gusta-update-ssot MATCH r69 HIST r28 WEB r223 ARCH r50 SAVE r71 (x10 cost levers D2 D4 D5 D8, heat maps removed)
 - 261119 plan x10-cost-levers start
 - 261119 plan save-storage start
-- 261118 T987 integrated
