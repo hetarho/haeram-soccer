@@ -50,7 +50,6 @@ import {
   type WorkloadKitChoice,
 } from '../tests/fixtures/identity-workload';
 import { encodePayload, payloadBytes } from '../apps/web/src/adapters/compression';
-import { pack } from '../apps/web/src/adapters/packing';
 import {
   ACTIVATION_CAREER,
   assertCompleteModel,
@@ -111,9 +110,9 @@ const ACTIVATED_SEASONS = smoke ? 1 : 2;
 
 let measurements: Record<string, unknown>[] = [];
 /**
- * The packed checkpoint's streams (top-level keys, objects one level down) by canonical JSON size
- * and by their size compressed alone with the checkpoint's brotli settings (→SAVE-2). Streams
- * compress jointly in the real payload, so the alone sizes rank them; they do not add up to it.
+ * The plain world's streams (top-level keys, objects one level down) by canonical JSON size and by
+ * their size compressed alone with brotli, a ranking aid (→SAVE-2). Streams compress jointly in
+ * the real payload, so the alone sizes rank them; they do not add up to it.
  */
 function streamSizes(w: World) {
   const streams: { stream: string; bytes: number; brotliBytes: number }[] = [];
@@ -127,7 +126,7 @@ function streamSizes(w: World) {
       }).length,
     });
   };
-  for (const [key, value] of Object.entries(pack(w)))
+  for (const [key, value] of Object.entries(w))
     if (value && typeof value === 'object' && !Array.isArray(value))
       for (const [sub, inner] of Object.entries(value)) {
         if (inner !== undefined) add(`${key}.${sub}`, inner);
@@ -218,16 +217,15 @@ async function measure(w: World, label: string) {
   if (canonical(restored) !== worldCanonical) throw new Error('Lossless checkpoint failed');
   // Both checkpoint copies live in IndexedDB (→SAVE-3).
   const checkpointBytes = 2 * (raw.length + ACTIVE.length);
-  const packed = pack(w);
   const envelope = JSON.parse(raw);
   const compressedPayloadBytes = payloadBytes(envelope.codec, envelope.payload).length;
-  const decompressedJsonBytes = Buffer.byteLength(canonical(packed), 'utf8');
+  const decompressedJsonBytes = Buffer.byteLength(worldCanonical, 'utf8');
   const persistedStreams: Record<
     string,
     { jsonBytes: number; compressedBytes: number; codec: string; standaloneToPayloadRatio: number }
   > = {};
-  for (const key of ['squads', 'playerRecords'] as const) {
-    const bytes = new TextEncoder().encode(canonical(packed[key] ?? null));
+  for (const key of ['players', 'people'] as const) {
+    const bytes = new TextEncoder().encode(canonical(w[key] ?? null));
     const encoded = await encodePayload(bytes);
     persistedStreams[key] = {
       jsonBytes: bytes.length,
@@ -430,7 +428,7 @@ function managerFacts(w: World) {
     Object.fromEntries(
       [...new Set(values)].sort().map((value) => [value, values.filter((v) => v === value).length]),
     );
-  const section = pack(w).managerHistory,
+  const section = w.managerHistory,
     sectionText = canonical(section ?? null);
   return {
     coverage: facts.coverage,

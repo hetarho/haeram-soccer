@@ -7,7 +7,7 @@ const BASE64_CODES = Uint8Array.from(
 const BASE64_PAD = '='.charCodeAt(0);
 const ascii = new TextDecoder();
 
-/** Padded standard base64, the same text `btoa` gives, written as ASCII codes (as bitpacking.ts). */
+/** Padded standard base64, the same text `btoa` gives, written as ASCII codes. */
 export function base64(bytes: Uint8Array) {
   const length = bytes.length,
     text = new Uint8Array(Math.ceil(length / 3) * 4);

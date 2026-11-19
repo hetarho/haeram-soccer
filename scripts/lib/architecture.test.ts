@@ -57,7 +57,10 @@ describe('runtime architecture boundaries', () => {
   );
   it('publishes views with only the view protocol: no engine, persistence, UI or browser state', () => {
     const files = closure('apps/web/src/runtime/viewPublisher.ts');
+    // repository.ts holds the portable file limit the protocol bounds an import with; it imports
+    // contracts only.
     expect(files.filter((name) => name.startsWith('apps/'))).toEqual([
+      'apps/web/src/adapters/repository.ts',
       'apps/web/src/runtime/protocol.ts',
       'apps/web/src/runtime/viewPublisher.ts',
     ]);
@@ -88,12 +91,6 @@ describe('runtime architecture boundaries', () => {
       expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
     expect(files.filter((name) => name.startsWith('apps/'))).toEqual([]);
     expect(packages(files).filter((name) => FRAMEWORK.test(name))).toEqual([]);
-  });
-  it('rebuilds packed fixtures without starting the season or a match', () => {
-    const files = closure('apps/web/src/adapters/packing.ts');
-    for (const forbidden of ['world', 'season', 'match', 'founding', 'aggregate/engine'])
-      expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
-    expect(files).toContain('packages/engine/src/league-fixtures.ts');
   });
   it('queries transfer windows with only the calendar, without negotiation or orchestration', () => {
     expect(closure('packages/engine/src/transfer-window.ts')).toEqual([
