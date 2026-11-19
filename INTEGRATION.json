@@ -1428,10 +1428,10 @@
       "host": "ihaelam-ui-MacBookPro",
       "device": "ihaelam-ui-MacBookPro",
       "branch": "gusta-session-start-facauto-7fb6ee3c",
-      "head": "d15ec6dbbcb2a442b4d46d8b0160e2af092bbc8c",
+      "head": "40a746bf2485144a828a9f9451aa23922b4aab9c",
       "land": "main",
-      "status": "ready",
-      "at": "2026-11-19T16:24:21.826Z",
+      "status": "working",
+      "at": "2026-11-19T16:26:18.081Z",
       "agentChecks": [
         {
           "id": "facility-auto-controls",
