@@ -274,10 +274,17 @@
       "branch": "gusta-session-start-mr18cx-5d3ec005",
       "head": "af4339d4a01ea4fc14a5ac2dfe8693993e6d4a9a",
       "land": "main",
-      "status": "ready",
-      "at": "2026-11-18T09:22:00.362Z",
+      "status": "landed",
+      "at": "2026-11-19T03:34:07.011Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "landed": "36bcf488de73e197deb6a0517472d4efdf7e2032",
+      "reconciled": {
+        "at": "2026-11-19T03:34:07.011Z",
+        "from": "ready",
+        "reason": "landed on main 36bcf488 as 0.8.13 by the landing fork (owner 261119): mr18cx + cx19 merged with np19, verify:batch + timed-out rerun",
+        "verified": false
+      }
     },
     "714447d9631e922b6b17af6a": {
       "id": "714447d9631e922b6b17af6a",
