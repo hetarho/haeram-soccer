@@ -180,7 +180,6 @@
 - 261119 decided T998: Use three helpers only at measured 6, 8 and 12 cores; keep two at all other eligible counts, including 4 where a repeat did not clear noise (alternatives: four helpers or extrapolate to unmeasured counts). Three clears noise on each adopted class and has the lower measured ratio at 6 and 12.
 - 261119 decided T998: Hand off the three-helper full-season parity assertion to the shared integration gate, preserving its full coverage (alternative: run integration inside this task); ARCH-30 and the assigned unit contract reserve integration for the fixed candidate.
 - 261119 parked T1019: T1019 waits for sv19's SQLite record store and world-row saver (T1003/T1004): run it after they land on main, with the test scope of decided 00230e4a; heat is already never written since T993, so leaving the optional legacy fields until then has no gameplay or speed cost. The x10 loop skips it.
-- 261119 parked T1019: Planning split committed at ca28566aa; plan-push conflicts on spec/STATE.md and T1019 against origin/main 440695c4. plan-sync reports action none. Publish or reconcile the existing session task history through the host before resuming T1019; no implementation was performed.
 
 ## unlanded
 | id | tag | branch | commit | at |
@@ -266,6 +265,7 @@
 | T998 | x10 | gusta-session-start-x10-d3a275d5 | 8a8ed90c788b | 2026-11-19T06:47Z |
 
 ## log
+- 261119 split commit dropped by the coordinator (e34ae5858); nothing to publish
 - 261119 withdrawn: the T1031/T1032 split was dropped (e34ae5858); T1019 stays whole and parked until T1003/T1004
 - 261119 kept as the test-scope rule for T1019 when it resumes after T1003/T1004
 - 261119 parked T1019 until T1003/T1004 land (see parked T1019)
@@ -285,4 +285,3 @@
 - 261119 T993 done
 - 261119 T1006 done
 - 261119 T990 done
-- 261119 T993 boundary published to main as 3ca3e2c8f (session copy of T993/T1019 verbatim); merge into the x10 session branch is clean
