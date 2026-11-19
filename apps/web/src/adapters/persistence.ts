@@ -7,7 +7,6 @@ import {
 } from '../../../../packages/catalogs/src/index';
 import {
   assertIdentityFormatVersions,
-  canonical,
   validateWorld,
   type World,
 } from '../../../../packages/contracts/src/index';
@@ -34,7 +33,7 @@ import {
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
 import { SAVE_CODECS, PORTABLE_FILE_LIMIT, type Envelope } from './repository';
-export { INDEXED_CHECKPOINT_LIMIT, PORTABLE_FILE_LIMIT } from './repository';
+export { PORTABLE_FILE_LIMIT, DECOMPRESSED_LIMIT } from './repository';
 export type { Envelope, StoragePort, SaveInspector, PreviousStore } from './repository';
 async function digest(bytes: Uint8Array) {
   return Array.from(
@@ -42,12 +41,13 @@ async function digest(bytes: Uint8Array) {
     (b) => b.toString(16).padStart(2, '0'),
   ).join('');
 }
-export async function encode(w: World, generation = 1, parentGeneration = 0): Promise<string> {
-  const schema = checkpointContainerFor(w);
-  const bytes = new TextEncoder().encode(canonical(pack(w)));
+/** Encodes once; the length is that of the exact uncompressed bytes the checksum covers. */
+async function encodeChecked(w: World, generation: number, parentGeneration: number) {
+  const bytes = new TextEncoder().encode(JSON.stringify(pack(w)));
   const checksum = await digest(bytes);
-  const envelope = (payload: Awaited<ReturnType<typeof encodePayload>>): Envelope => ({
-    schema,
+  const payload = await encodePayload(bytes);
+  const envelope: Envelope = {
+    schema: checkpointContainerFor(w),
     engine: w.engine,
     catalog: w.catalog,
     catalogHash: w.catalogHash,
@@ -57,9 +57,11 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
     codec: payload.codec,
     checksum,
     payload: payload.payload,
-  });
-  const payload = await encodePayload(bytes);
-  return JSON.stringify(envelope(payload));
+  };
+  return { raw: JSON.stringify(envelope), envelope, length: bytes.length };
+}
+export async function encode(w: World, generation = 1, parentGeneration = 0): Promise<string> {
+  return (await encodeChecked(w, generation, parentGeneration)).raw;
 }
 /**
  * Everything a checkpoint is checked for before its payload means anything: header, versions,
@@ -166,10 +168,17 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
   return { world, envelope: e };
 }
 /**
- * The codec worker's checkpoint (→ARCH-13): encoded, then decoded and validated as a load would, so
- * only a candidate that loads is ever handed to the checkpoint writer.
+ * A save verifies its own bytes (→SAVE-3, →ARCH-13): the payload is gunzipped again and its SHA-256
+ * and length compared with what was encoded. It never parses, unpacks or validates the world; that
+ * happens when a game opens or is imported (→SAVE-5).
  */
+export async function verifyPayload(envelope: Envelope, expectedLength: number) {
+  const bytes = await decodePayload(envelope.codec, envelope.payload);
+  if (bytes.length !== expectedLength || (await digest(bytes)) !== envelope.checksum)
+    throw new Error(sourceMessage('copy.persistence.0d2cd0c308'));
+}
 export async function checkpoint(w: World, generation = 1, parentGeneration = 0) {
-  const raw = await encode(w, generation, parentGeneration);
-  return { raw, envelope: (await decode(raw)).envelope };
+  const { raw, envelope, length } = await encodeChecked(w, generation, parentGeneration);
+  await verifyPayload(envelope, length);
+  return { raw, envelope };
 }

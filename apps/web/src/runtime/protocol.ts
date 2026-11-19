@@ -9,6 +9,7 @@ import {
 } from '../../../../packages/contracts/src/schema';
 import type { mediationPreview } from '../../../../packages/engine/src/mediation';
 import type { PersonCareerDetail } from './personCareer';
+import { PORTABLE_FILE_LIMIT } from '../adapters/repository';
 import type { StaffRole } from '../../../../packages/contracts/src/types';
 import type { staffCandidates } from '../../../../packages/engine/src/staff';
 import { z } from 'zod';
@@ -246,7 +247,7 @@ export const requestSchema = z.object({
       metadataOnly: z.boolean().optional(),
       activate: z.boolean().optional(),
       upgrade: z.boolean().optional(),
-      raw: z.string().max(8 * 1024 * 1024),
+      raw: z.string().max(PORTABLE_FILE_LIMIT),
     }),
     // A new game (→WEB-2, WORLD-13): the world generated to the chosen decade, held by the worker
     // unsaved until one of its clubs is taken over; `replace` starts it beside a game in play.

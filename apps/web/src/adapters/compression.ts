@@ -1,8 +1,7 @@
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { base64, unbase64 } from './base64';
-import type { SaveCodec } from './repository';
-const LIMIT = 32 * 1024 * 1024;
-async function gzip(bytes: Uint8Array, compress: boolean) {
+import { DECOMPRESSED_LIMIT, type SaveCodec } from './repository';
+async function gzip(bytes: Uint8Array, compress: boolean, limit: number) {
   const stream = new Blob([new Uint8Array(bytes).buffer])
     .stream()
     .pipeThrough(compress ? new CompressionStream('gzip') : new DecompressionStream('gzip'));
@@ -13,7 +12,7 @@ async function gzip(bytes: Uint8Array, compress: boolean) {
     const { value, done } = await reader.read();
     if (done) break;
     size += value.length;
-    if (size > LIMIT) {
+    if (size > limit) {
       await reader.cancel();
       throw new Error(sourceMessage('copy.compression.32374943f3'));
     }
@@ -32,14 +31,21 @@ export interface EncodedPayload {
   payload: string;
 }
 /** Every checkpoint and export is gzip in base64 (→SAVE-2, →ARCH-12): no other codec exists. */
-export async function encodePayload(bytes: Uint8Array): Promise<EncodedPayload> {
-  if (bytes.length > LIMIT) throw new Error(sourceMessage('copy.compression.32374943f3'));
-  return { codec: 'gzip-base64', payload: base64(await gzip(bytes, true)) };
+export async function encodePayload(
+  bytes: Uint8Array,
+  limit = DECOMPRESSED_LIMIT,
+): Promise<EncodedPayload> {
+  if (bytes.length > limit) throw new Error(sourceMessage('copy.compression.32374943f3'));
+  return { codec: 'gzip-base64', payload: base64(await gzip(bytes, true, limit)) };
 }
 export function payloadBytes(codec: SaveCodec, payload: string): Uint8Array {
   if (codec !== 'gzip-base64') throw new Error(sourceMessage('copy.persistence.62a3396f6d'));
   return unbase64(payload);
 }
-export async function decodePayload(codec: SaveCodec, payload: string): Promise<Uint8Array> {
-  return gzip(payloadBytes(codec, payload), false);
+export async function decodePayload(
+  codec: SaveCodec,
+  payload: string,
+  limit = DECOMPRESSED_LIMIT,
+): Promise<Uint8Array> {
+  return gzip(payloadBytes(codec, payload), false, limit);
 }

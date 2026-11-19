@@ -36,12 +36,7 @@ import {
 } from '../packages/contracts/src/index';
 import { managerHistoryDateKey } from '../packages/contracts/src/manager-history';
 import type { ManagerHistoryPage } from '../packages/contracts/src/manager-history-view';
-import {
-  encode,
-  decode,
-  INDEXED_CHECKPOINT_LIMIT,
-  PORTABLE_FILE_LIMIT,
-} from '../apps/web/src/adapters/persistence';
+import { encode, decode, PORTABLE_FILE_LIMIT } from '../apps/web/src/adapters/persistence';
 import { Host } from '../apps/web/src/runtime/host';
 import { ACTIVE } from '../apps/web/src/adapters/repository';
 import { retainedWorkload } from '../tests/fixtures/retained-workload';
@@ -280,9 +275,7 @@ async function measure(w: World, label: string) {
     heapBytes,
     encodingMs: Math.round(encodingMs),
     decodingMs: Math.round(decodingMs),
-    passed:
-      checkpointBytes <= INDEXED_CHECKPOINT_LIMIT &&
-      Buffer.byteLength(raw, 'utf8') <= PORTABLE_FILE_LIMIT,
+    passed: Buffer.byteLength(raw, 'utf8') <= PORTABLE_FILE_LIMIT,
   };
   measurements.push(result);
   console.error(
@@ -1031,7 +1024,6 @@ function report() {
     engine: era.engine,
     catalog: era.catalog,
     catalogHash: era.catalogHash,
-    checkpointLimit: INDEXED_CHECKPOINT_LIMIT,
     portableFileLimit: PORTABLE_FILE_LIMIT,
     measurements: all.flatMap((result) => result.measurements),
     worstCheckpoint: {

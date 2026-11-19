@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from 'vitest';
 import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { writeCheckpoint } from './checkpointWriter';
 import {
-  INDEXED_CHECKPOINT_LIMIT,
   PORTABLE_FILE_LIMIT,
   SaveRepository,
   type Envelope,
@@ -83,7 +82,7 @@ function setup(indexed = true) {
       : new SaveRepository(storage, inspect, writeCheckpoint);
   return { log, storage, previous, active, open };
 }
-/** The payload size whose checkpoint takes about `bytes` of conservative UTF-16. */
+/** The payload size whose checkpoint takes about `bytes`. */
 const sized = (bytes: number) => Math.floor(bytes / 2) - 300;
 
 describe('save repository', () => {
@@ -189,34 +188,26 @@ describe('save repository', () => {
     expect([previous.raw, active.raw]).toEqual([checkpoint(1, size), checkpoint(2, size)]);
     expect([...storage.data.keys()]).toEqual([MANIFEST]);
   });
-  it('enforces the IndexedDB checkpoint budget', async () => {
-    const { storage, active, open } = setup();
+  it('refuses a checkpoint above the export file limit before writing and keeps one just within', async () => {
+    const { storage, active, previous, open } = setup();
     const saves = open();
     await saves.commit(checkpoint(1));
-    const before = [new Map(storage.data), active.raw];
-    const limit = INDEXED_CHECKPOINT_LIMIT;
-    await expect(saves.commit(checkpoint(2, sized(limit) + 400))).rejects.toThrow('한도');
-    expect([storage.data, active.raw]).toEqual(before);
-    // The selected layout keeps a candidate just within its own bound.
-    await saves.commit(checkpoint(2, sized(limit)));
+    const before = [new Map(storage.data), active.raw, previous.raw];
+    await expect(saves.commit(checkpoint(2, PORTABLE_FILE_LIMIT))).rejects.toThrow('한도');
+    expect([storage.data, active.raw, previous.raw]).toEqual(before);
+    const within = checkpoint(2, 100);
+    const header = within.length - 100;
+    await saves.commit(checkpoint(2, PORTABLE_FILE_LIMIT - header));
     expect((await open().load())?.envelope.generation).toBe(2);
   });
-  it('keeps larger indexed active and previous copies but rejects an unexportable UTF-8 file before writing', async () => {
-    const { storage, previous, active, open } = setup();
+  it('keeps larger indexed active and previous copies', async () => {
+    const { previous, active, open } = setup();
     const saves = open();
     const big = sized(3_500_000);
     await saves.commit(checkpoint(1, big));
     await saves.commit(checkpoint(2, big));
     expect(active.raw).toBe(checkpoint(2, big));
     expect(previous.raw).toBe(checkpoint(1, big));
-    const before = [new Map(storage.data), active.raw, previous.raw];
-    const raw = checkpoint(3).replace(
-      'x'.repeat(100),
-      '한'.repeat(Math.ceil(PORTABLE_FILE_LIMIT / 3)),
-    );
-    expect(raw.length * 2).toBeLessThan(INDEXED_CHECKPOINT_LIMIT);
-    await expect(saves.commit(raw)).rejects.toThrow('한도');
-    expect([storage.data, active.raw, previous.raw]).toEqual(before);
   });
   it('requires IndexedDB and never reads, migrates or removes old checkpoint or strategy keys', async () => {
     const { storage, open } = setup(false);

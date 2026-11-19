@@ -5,8 +5,10 @@ import {
   SaveCompatibilityError,
   type CheckpointSchema,
 } from '../../../../packages/contracts/src/versions';
-export const INDEXED_CHECKPOINT_LIMIT = 6 * 1024 * 1024;
-export const PORTABLE_FILE_LIMIT = 8 * 1024 * 1024;
+/** An export file is at most 256 MiB (→SAVE-4); every import-size check reads this. */
+export const PORTABLE_FILE_LIMIT = 256 * 1024 * 1024;
+/** The database an export carries is at most 1 GiB; decompression stops at it (→SAVE-4, →ARCH-16). */
+export const DECOMPRESSED_LIMIT = 1024 * 1024 * 1024;
 export const MANIFEST = 'haeram-soccor:manifest';
 function checkpointGeneration(raw: string | null) {
   try {

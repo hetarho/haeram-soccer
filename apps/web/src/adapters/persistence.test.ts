@@ -31,10 +31,17 @@ import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
-import { checkpoint, encode, decode, type PreviousStore, type StoragePort } from './persistence';
-import { MANIFEST } from './repository';
+import {
+  checkpoint,
+  encode,
+  decode,
+  verifyPayload,
+  type PreviousStore,
+  type StoragePort,
+} from './persistence';
+import { MANIFEST, PORTABLE_FILE_LIMIT } from './repository';
 import { pack, unpack } from './packing';
-import { encodePayload } from './compression';
+import { decodePayload, encodePayload } from './compression';
 import {
   COMPATIBLE_ENGINE_VERSIONS,
   CURRENT_CHECKPOINT_SCHEMA,
@@ -99,11 +106,11 @@ const sha256 = async (bytes: Uint8Array<ArrayBuffer>) =>
     b.toString(16).padStart(2, '0'),
   ).join('');
 /**
- * An envelope over `packed` as a writer of container `schema` made it: canonical compact bytes,
+ * An envelope over `packed` as a writer of container `schema` made it: compact JSON bytes,
  * their real SHA-256 and the codec the writer picks, independently of today's `encode`.
  */
 async function seal(w: World, packed = pack(w), schema = 1, generation = 1, parentGeneration = 0) {
-  const bytes = new TextEncoder().encode(canonical(packed));
+  const bytes = new TextEncoder().encode(JSON.stringify(packed));
   const { codec, payload } = await encodePayload(bytes);
   return JSON.stringify({
     schema,
@@ -268,7 +275,7 @@ describe('recoverable persistence', () => {
     await expect(
       decode(JSON.stringify({ ...e, schema: MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1 })),
     ).rejects.toThrow('버전');
-    await expect(decode('x'.repeat(8 * 1024 * 1024 + 1))).rejects.toThrow('너무');
+    await expect(decode('x'.repeat(PORTABLE_FILE_LIMIT + 1))).rejects.toThrow('너무');
   });
   it('commits manifest last and retains previous world on quota failure', async () => {
     const port = new Memory();
@@ -330,6 +337,21 @@ describe('recoverable persistence', () => {
     expect(port.data).toEqual(before);
     expect(saves.generationInfo).toEqual({ generation: 3, parentGeneration: 2 });
     expect((await new Saves(port).load())?.envelope.generation).toBe(2);
+  });
+  it('verifies a checkpoint by its own bytes and throws on a corrupted payload', async () => {
+    const w = observed(1);
+    const { raw, envelope } = await checkpoint(w, 2, 1);
+    expect(JSON.parse(raw)).toEqual(envelope);
+    expect((await decode(raw)).world.id).toBe(w.id);
+    const length = (await decodePayload(envelope.codec, envelope.payload)).length;
+    await expect(verifyPayload(envelope, length)).resolves.toBeUndefined();
+    await expect(verifyPayload(envelope, length + 1)).rejects.toThrow('체크섬');
+    // Valid gzip, valid JSON, wrong bytes: the checksum alone rejects it.
+    const other = await encodePayload(new TextEncoder().encode('{"a":1}'));
+    await expect(verifyPayload({ ...envelope, payload: other.payload }, 7)).rejects.toThrow(
+      '체크섬',
+    );
+    await expect(verifyPayload({ ...envelope, payload: 'AAAA' }, length)).rejects.toThrow();
   });
   it('reports recovery when the selected manifest parent disagrees with the checkpoint', async () => {
     const port = new Memory();
