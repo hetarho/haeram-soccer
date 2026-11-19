@@ -4,7 +4,7 @@ import { WORLD_VIEW_FIELDS, projectWorldFacts } from './worldProjection';
 import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { Host, VIEW_PATCH, type OpenStore } from './host';
 import { applyViewDelta, type View } from './protocol';
 import type { RecordStore } from '../../../../packages/contracts/src/record-store';
@@ -20,14 +20,10 @@ import {
   clubNews,
   advanceRound,
   identityOf,
-  MATCH_MODEL_RELEASE,
   UnreleasedMatchModelError,
 } from '../../../../packages/engine/src/index';
 import type { GameSettings, World } from '../../../../packages/contracts/src/types';
-import {
-  MATCH_MODEL_REVISION,
-  type MatchModelState,
-} from '../../../../packages/contracts/src/match-model';
+import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
 import type { KitRole } from '../../../../packages/contracts/src/identity';
 import { PRIOR_CATALOG_HASHES } from '../../../../packages/contracts/src/versions';
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';

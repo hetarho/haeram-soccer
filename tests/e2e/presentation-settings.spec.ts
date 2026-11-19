@@ -761,7 +761,6 @@ test('a read-only game tab changes presentation without claiming ownership or is
 }) => {
   await routeSyntheticPresentation(page);
   await loadPausedGame(page);
-  const raw = await savedFacts(page);
   const viewer = await context.newPage();
   await routeSyntheticPresentation(viewer);
   await observeCommands(viewer);

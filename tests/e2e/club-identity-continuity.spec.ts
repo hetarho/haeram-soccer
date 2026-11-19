@@ -1,6 +1,5 @@
 import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
 import { worldOfSaveFile } from '../fixtures/save-file';
 import { seedSaveFile } from './slots';
 import { canonical } from '../../packages/contracts/src/index';
@@ -53,7 +52,6 @@ import {
   PHONE_VIEWPORTS,
   pitchImage,
   refuseNextDesignCommand,
-  requestButton,
   SAVE_DATA_UPDATED,
   savedFacts,
   savedWorld,
