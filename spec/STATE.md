@@ -26,7 +26,7 @@
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 11 | 11 | - | 0 |
 | CLUB | 83 | 83 | - | 0 |
-| MATCH | 69 | 69 | - | 0 |
+| MATCH | 70 | 70 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
 | ECON | 64 | 64 | - | 0 |
@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | todo |
 | T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T989 | todo |
 | T991 | Player sheets and tallies without season heat maps | WEB HIST MATCH ARCH | - | todo |
 | T992 | Post-match material without heat maps, and an unwatched match says why it has none | WEB MATCH ARCH | T991 | todo |
