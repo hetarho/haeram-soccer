@@ -643,10 +643,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-x10-d3a275d5",
-      "head": "c1493f7148e9625b82df8726ef1523f62f814b53",
+      "head": "395762a818360f060fda9d8e1f786e893ff47953",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-19T05:51:48.163Z",
+      "status": "working",
+      "at": "2026-11-19T05:52:52.933Z",
       "agentChecks": [
         {
           "id": "T993-save-integration",
