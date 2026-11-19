@@ -1,0 +1,12 @@
+import {writeFileSync} from 'node:fs';
+import v8 from 'node:v8';
+import {isDeepStrictEqual} from 'node:util';
+import * as a from '/tmp/t989-day-base.mjs';
+import * as b from '/tmp/t989-day-cand.mjs';
+writeFileSync('/tmp/t989-day-world.bin',v8.serialize(a.makeFresh()));
+const x=a.open('/tmp/t989-day-world.bin',false), y=b.open('/tmp/t989-day-world.bin',false);
+for(let i=0;i<60;i++){x.step(); y.step();}
+const differences={};
+function walk(p,q,path='') {if(isDeepStrictEqual(p,q))return; if(p&&q&&typeof p==='object'&&typeof q==='object') {for(const k of new Set([...Object.keys(p),...Object.keys(q)])) walk(p[k],q[k],path+'/'+k);} else {const key=path.replace(/\/\d+/g,'/#'); const e=differences[key]??={count:0,example:[path,p,q]}; e.count++;}}
+walk(x.w,y.w);
+writeFileSync('artifacts/benchmarks/x10-cost-levers/T989/day-differences.json',JSON.stringify({base:a.digestWorld(x.w),candidate:b.digestWorld(y.w),differences},null,2));

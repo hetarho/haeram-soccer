@@ -65,8 +65,8 @@ describe('placed attribution primitives', () => {
   });
   it('converges sooner for other fixtures while preserving group counts and place totals', () => {
     const source = [
-      { count: 50, weights: [1, 1, 0], placed: [1, 0.02, 0] },
-      { count: 50, weights: [1, 1, 0], placed: [0.1, 1, 0] },
+      { count: 50, weights: [1, 1, 0.001, 0], placed: [1, 0.02, 0.0001, 0] },
+      { count: 50, weights: [1, 1, 0.001, 0], placed: [0.1, 1, 0.002, 0] },
     ];
     const run = (tolerance: number) => {
       let reads = 0;
@@ -84,14 +84,14 @@ describe('placed attribution primitives', () => {
     const own = run(PLACE_FIT_TOLERANCE.own);
     const other = run(PLACE_FIT_TOLERANCE.other);
     expect(other.reads).toBeLessThan(own.reads);
-    const totals = [0, 0, 0];
+    const totals = [0, 0, 0, 0];
     other.fitted.forEach((row, i) => {
       const sum = row.reduce((a, b) => a + b, 0);
       const counts = row.map((weight) => (source[i]!.count * weight) / sum);
       expect(counts.reduce((a, b) => a + b, 0)).toBeCloseTo(source[i]!.count, 12);
       counts.forEach((count, p) => (totals[p]! += count));
     });
-    [50, 50, 0].forEach((expected, p) =>
+    [100 / 2.001, 100 / 2.001, 0.1 / 2.001, 0].forEach((expected, p) =>
       expect(Math.abs(totals[p]! - expected)).toBeLessThanOrEqual(expected * 1e-3),
     );
   });

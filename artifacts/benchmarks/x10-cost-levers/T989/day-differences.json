@@ -1,0 +1,22 @@
+{
+  "base": "03a996adee706518",
+  "candidate": "f7d8672976ec971a",
+  "differences": {
+    "/npcSeason/competitions/#/players/#/clubs/#/metrics/#": {
+      "count": 2646,
+      "example": [
+        "/npcSeason/competitions/0/players/2/clubs/0/metrics/7",
+        11,
+        12
+      ]
+    },
+    "/npcSeason/competitions/#/players/#/clubs/#/detail/#": {
+      "count": 3074,
+      "example": [
+        "/npcSeason/competitions/0/players/6/clubs/0/detail/6",
+        99,
+        100
+      ]
+    }
+  }
+}

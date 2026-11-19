@@ -1,0 +1,7828 @@
+{
+  "year": 1980,
+  "seasons": [
+    {
+      "year": 1980,
+      "hashesBase": {
+        "fixtureScores": "c113787da5e6",
+        "fixturesPlayed": 8502,
+        "cupScores": "082ee14b3157",
+        "tables": "0bbff00d27dd",
+        "leagueGoalsAssists": "c03942172ba8",
+        "discipline": "e4d3212ceec4",
+        "squads": "974ef23e6e2f",
+        "elo": "0dd69df7cdee"
+      },
+      "hashesCandidate": {
+        "fixtureScores": "c113787da5e6",
+        "fixturesPlayed": 8502,
+        "cupScores": "082ee14b3157",
+        "tables": "0bbff00d27dd",
+        "leagueGoalsAssists": "c03942172ba8",
+        "discipline": "e4d3212ceec4",
+        "squads": "974ef23e6e2f",
+        "elo": "0dd69df7cdee"
+      },
+      "roles": [
+        {
+          "pos": "GK",
+          "metric": "d.takeOns",
+          "base": 0.039,
+          "candidate": 0.04,
+          "relative": 0.025641025641025664
+        },
+        {
+          "pos": "GK",
+          "metric": "d.foulsWon",
+          "base": 0.045,
+          "candidate": 0.046,
+          "relative": 0.022222222222222244
+        },
+        {
+          "pos": "LM",
+          "metric": "d.offsides",
+          "base": 0.046,
+          "candidate": 0.047,
+          "relative": 0.02173913043478263
+        },
+        {
+          "pos": "GK",
+          "metric": "d.fouls",
+          "base": 0.113,
+          "candidate": 0.112,
+          "relative": 0.0088495575221239
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.highTurnovers",
+          "base": 0.121,
+          "candidate": 0.122,
+          "relative": 0.008264462809917363
+        },
+        {
+          "pos": "LB",
+          "metric": "d.takeOns",
+          "base": 0.278,
+          "candidate": 0.277,
+          "relative": 0.003597122302158276
+        },
+        {
+          "pos": "AM",
+          "metric": "d.fouls",
+          "base": 0.904,
+          "candidate": 0.907,
+          "relative": 0.003318584070796463
+        },
+        {
+          "pos": "LWB",
+          "metric": "tackles",
+          "base": 1.062,
+          "candidate": 1.059,
+          "relative": 0.002824858757062254
+        },
+        {
+          "pos": "RW",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.803,
+          "candidate": 0.805,
+          "relative": 0.0024906600249066024
+        },
+        {
+          "pos": "LW",
+          "metric": "interceptions",
+          "base": 0.407,
+          "candidate": 0.408,
+          "relative": 0.0024570024570024595
+        },
+        {
+          "pos": "RWB",
+          "metric": "dribbles",
+          "base": 0.416,
+          "candidate": 0.417,
+          "relative": 0.002403846153846156
+        },
+        {
+          "pos": "LW",
+          "metric": "d.foulsWon",
+          "base": 1.373,
+          "candidate": 1.37,
+          "relative": 0.0021849963583393237
+        },
+        {
+          "pos": "AM",
+          "metric": "d.foulsWon",
+          "base": 2.062,
+          "candidate": 2.066,
+          "relative": 0.0019398642095053366
+        },
+        {
+          "pos": "LWB",
+          "metric": "interceptions",
+          "base": 0.52,
+          "candidate": 0.521,
+          "relative": 0.0019230769230769247
+        },
+        {
+          "pos": "LM",
+          "metric": "d.highTurnovers",
+          "base": 0.522,
+          "candidate": 0.521,
+          "relative": 0.001915708812260538
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.046,
+          "candidate": 1.044,
+          "relative": 0.00191204588910134
+        },
+        {
+          "pos": "RW",
+          "metric": "d.offsides",
+          "base": 0.539,
+          "candidate": 0.538,
+          "relative": 0.0018552875695732854
+        },
+        {
+          "pos": "CB",
+          "metric": "d.foulsWon",
+          "base": 0.558,
+          "candidate": 0.559,
+          "relative": 0.0017921146953405033
+        },
+        {
+          "pos": "DM",
+          "metric": "d.crosses",
+          "base": 0.562,
+          "candidate": 0.563,
+          "relative": 0.001779359430604786
+        },
+        {
+          "pos": "LM",
+          "metric": "dribbles",
+          "base": 1.173,
+          "candidate": 1.175,
+          "relative": 0.001705029838022167
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.takeOns",
+          "base": 0.588,
+          "candidate": 0.589,
+          "relative": 0.0017006802721088452
+        },
+        {
+          "pos": "RWB",
+          "metric": "interceptions",
+          "base": 0.588,
+          "candidate": 0.589,
+          "relative": 0.0017006802721088452
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.foulsWon",
+          "base": 0.629,
+          "candidate": 0.63,
+          "relative": 0.0015898251192368853
+        },
+        {
+          "pos": "RB",
+          "metric": "interceptions",
+          "base": 1.316,
+          "candidate": 1.314,
+          "relative": 0.0015197568389057764
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.fouls",
+          "base": 0.726,
+          "candidate": 0.725,
+          "relative": 0.0013774104683195606
+        },
+        {
+          "pos": "DM",
+          "metric": "dribbles",
+          "base": 0.765,
+          "candidate": 0.766,
+          "relative": 0.0013071895424836613
+        },
+        {
+          "pos": "CB",
+          "metric": "d.fouls",
+          "base": 0.779,
+          "candidate": 0.778,
+          "relative": 0.0012836970474967917
+        },
+        {
+          "pos": "ST",
+          "metric": "d.fouls",
+          "base": 0.788,
+          "candidate": 0.789,
+          "relative": 0.0012690355329949248
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.fouls",
+          "base": 0.855,
+          "candidate": 0.856,
+          "relative": 0.001169590643274855
+        },
+        {
+          "pos": "ST",
+          "metric": "d.foulsWon",
+          "base": 0.919,
+          "candidate": 0.918,
+          "relative": 0.0010881392818280749
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.928,
+          "candidate": 0.929,
+          "relative": 0.0010775862068965526
+        },
+        {
+          "pos": "ST",
+          "metric": "interceptions",
+          "base": 0.935,
+          "candidate": 0.936,
+          "relative": 0.001069518716577541
+        },
+        {
+          "pos": "RB",
+          "metric": "d.fouls",
+          "base": 0.938,
+          "candidate": 0.937,
+          "relative": 0.0010660980810233368
+        },
+        {
+          "pos": "RB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.96,
+          "candidate": 0.959,
+          "relative": 0.0010416666666666677
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.crosses",
+          "base": 3.852,
+          "candidate": 3.848,
+          "relative": 0.0010384215991692638
+        },
+        {
+          "pos": "LB",
+          "metric": "d.fouls",
+          "base": 0.978,
+          "candidate": 0.979,
+          "relative": 0.0010224948875255633
+        },
+        {
+          "pos": "DM",
+          "metric": "d.foulsWon",
+          "base": 1.012,
+          "candidate": 1.013,
+          "relative": 0.0009881422924900097
+        },
+        {
+          "pos": "DM",
+          "metric": "d.takeOns",
+          "base": 1.171,
+          "candidate": 1.172,
+          "relative": 0.0008539709649870963
+        },
+        {
+          "pos": "RM",
+          "metric": "dribbles",
+          "base": 1.172,
+          "candidate": 1.171,
+          "relative": 0.0008532423208190187
+        },
+        {
+          "pos": "RW",
+          "metric": "d.foulsWon",
+          "base": 1.248,
+          "candidate": 1.249,
+          "relative": 0.0008012820512821409
+        },
+        {
+          "pos": "AM",
+          "metric": "d.takeOns",
+          "base": 2.578,
+          "candidate": 2.58,
+          "relative": 0.0007757951900699084
+        },
+        {
+          "pos": "ST",
+          "metric": "d.progressivePasses",
+          "base": 3.911,
+          "candidate": 3.908,
+          "relative": 0.0007670672462286152
+        },
+        {
+          "pos": "LM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.681,
+          "candidate": 2.679,
+          "relative": 0.0007459903021261559
+        },
+        {
+          "pos": "LM",
+          "metric": "d.fouls",
+          "base": 1.369,
+          "candidate": 1.368,
+          "relative": 0.0007304601899195689
+        },
+        {
+          "pos": "RM",
+          "metric": "d.foulsWon",
+          "base": 1.373,
+          "candidate": 1.374,
+          "relative": 0.000728332119446549
+        },
+        {
+          "pos": "LW",
+          "metric": "dribbles",
+          "base": 2.783,
+          "candidate": 2.781,
+          "relative": 0.0007186489399927344
+        },
+        {
+          "pos": "RM",
+          "metric": "d.fouls",
+          "base": 1.454,
+          "candidate": 1.453,
+          "relative": 0.0006877579092158802
+        },
+        {
+          "pos": "RB",
+          "metric": "d.crosses",
+          "base": 1.462,
+          "candidate": 1.463,
+          "relative": 0.0006839945280438522
+        },
+        {
+          "pos": "LB",
+          "metric": "interceptions",
+          "base": 1.477,
+          "candidate": 1.476,
+          "relative": 0.0006770480704130751
+        },
+        {
+          "pos": "LM",
+          "metric": "tackles",
+          "base": 1.482,
+          "candidate": 1.481,
+          "relative": 0.0006747638326584952
+        },
+        {
+          "pos": "CB",
+          "metric": "tackles",
+          "base": 1.551,
+          "candidate": 1.552,
+          "relative": 0.0006447453255964616
+        },
+        {
+          "pos": "LM",
+          "metric": "d.crosses",
+          "base": 4.771,
+          "candidate": 4.768,
+          "relative": 0.0006287989939216335
+        },
+        {
+          "pos": "CB",
+          "metric": "interceptions",
+          "base": 1.666,
+          "candidate": 1.667,
+          "relative": 0.0006002400960384825
+        },
+        {
+          "pos": "LB",
+          "metric": "tackles",
+          "base": 1.701,
+          "candidate": 1.7,
+          "relative": 0.0005878894767784315
+        },
+        {
+          "pos": "ST",
+          "metric": "dribbles",
+          "base": 1.913,
+          "candidate": 1.914,
+          "relative": 0.0005227391531625143
+        },
+        {
+          "pos": "DM",
+          "metric": "d.fouls",
+          "base": 1.981,
+          "candidate": 1.98,
+          "relative": 0.0005047955577991478
+        },
+        {
+          "pos": "LM",
+          "metric": "d.takeOns",
+          "base": 2.005,
+          "candidate": 2.006,
+          "relative": 0.0004987531172069276
+        },
+        {
+          "pos": "LB",
+          "metric": "d.crosses",
+          "base": 2.016,
+          "candidate": 2.017,
+          "relative": 0.0004960317460316914
+        },
+        {
+          "pos": "CM",
+          "metric": "d.fouls",
+          "base": 2.036,
+          "candidate": 2.035,
+          "relative": 0.0004911591355598673
+        },
+        {
+          "pos": "CM",
+          "metric": "tackles",
+          "base": 2.051,
+          "candidate": 2.052,
+          "relative": 0.0004875670404680106
+        },
+        {
+          "pos": "GK",
+          "metric": "completed",
+          "base": 2.056,
+          "candidate": 2.057,
+          "relative": 0.0004863813229571449
+        },
+        {
+          "pos": "RM",
+          "metric": "d.takeOns",
+          "base": 2.068,
+          "candidate": 2.069,
+          "relative": 0.0004835589941972388
+        },
+        {
+          "pos": "LWB",
+          "metric": "completed",
+          "base": 21.907,
+          "candidate": 21.917,
+          "relative": 0.00045647509928340547
+        },
+        {
+          "pos": "DM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.321,
+          "candidate": 2.32,
+          "relative": 0.00043084877208114344
+        },
+        {
+          "pos": "CM",
+          "metric": "d.foulsWon",
+          "base": 2.408,
+          "candidate": 2.407,
+          "relative": 0.00041528239202653233
+        },
+        {
+          "pos": "CM",
+          "metric": "d.takeOns",
+          "base": 2.5,
+          "candidate": 2.501,
+          "relative": 0.00039999999999995595
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.progressivePasses",
+          "base": 7.591,
+          "candidate": 7.594,
+          "relative": 0.00039520484784614856
+        },
+        {
+          "pos": "LW",
+          "metric": "d.takeOns",
+          "base": 5.092,
+          "candidate": 5.094,
+          "relative": 0.00039277297721929854
+        },
+        {
+          "pos": "RW",
+          "metric": "completed",
+          "base": 25.675,
+          "candidate": 25.665,
+          "relative": 0.00038948393378779214
+        },
+        {
+          "pos": "RM",
+          "metric": "d.crosses",
+          "base": 5.307,
+          "candidate": 5.305,
+          "relative": 0.0003768607499530182
+        },
+        {
+          "pos": "RM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.802,
+          "candidate": 2.801,
+          "relative": 0.00035688793718768375
+        },
+        {
+          "pos": "RW",
+          "metric": "d.crosses",
+          "base": 5.8,
+          "candidate": 5.802,
+          "relative": 0.0003448275862068586
+        },
+        {
+          "pos": "RW",
+          "metric": "dribbles",
+          "base": 2.919,
+          "candidate": 2.918,
+          "relative": 0.0003425830763959883
+        },
+        {
+          "pos": "AM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.939,
+          "candidate": 2.94,
+          "relative": 0.0003402517863218407
+        },
+        {
+          "pos": "RW",
+          "metric": "d.progressivePasses",
+          "base": 5.932,
+          "candidate": 5.93,
+          "relative": 0.00033715441672297166
+        },
+        {
+          "pos": "LB",
+          "metric": "d.progressivePasses",
+          "base": 8.959,
+          "candidate": 8.962,
+          "relative": 0.0003348588012055044
+        },
+        {
+          "pos": "RW",
+          "metric": "passes",
+          "base": 37.373,
+          "candidate": 37.361,
+          "relative": 0.00032108741604903155
+        },
+        {
+          "pos": "ST",
+          "metric": "d.takeOns",
+          "base": 3.453,
+          "candidate": 3.452,
+          "relative": 0.00028960324355629594
+        },
+        {
+          "pos": "CM",
+          "metric": "d.lineBreakingPasses",
+          "base": 3.556,
+          "candidate": 3.557,
+          "relative": 0.000281214848143951
+        },
+        {
+          "pos": "LB",
+          "metric": "passes",
+          "base": 30.476,
+          "candidate": 30.484,
+          "relative": 0.00026250164063534165
+        },
+        {
+          "pos": "LB",
+          "metric": "completed",
+          "base": 23.636,
+          "candidate": 23.642,
+          "relative": 0.0002538500592316901
+        },
+        {
+          "pos": "CB",
+          "metric": "d.progressivePasses",
+          "base": 8.362,
+          "candidate": 8.364,
+          "relative": 0.00023917723032775267
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.progressivePasses",
+          "base": 8.413,
+          "candidate": 8.415,
+          "relative": 0.00023772732675607887
+        },
+        {
+          "pos": "CB",
+          "metric": "completed",
+          "base": 20.058,
+          "candidate": 20.062,
+          "relative": 0.0001994216771363713
+        },
+        {
+          "pos": "LW",
+          "metric": "d.crosses",
+          "base": 5.029,
+          "candidate": 5.03,
+          "relative": 0.00019884668920269117
+        },
+        {
+          "pos": "CB",
+          "metric": "passes",
+          "base": 25.247,
+          "candidate": 25.252,
+          "relative": 0.00019804333188097617
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.crosses",
+          "base": 5.138,
+          "candidate": 5.139,
+          "relative": 0.0001946282600234204
+        },
+        {
+          "pos": "LWB",
+          "metric": "passes",
+          "base": 29.292,
+          "candidate": 29.297,
+          "relative": 0.000170695070326335
+        },
+        {
+          "pos": "LW",
+          "metric": "d.progressivePasses",
+          "base": 5.923,
+          "candidate": 5.924,
+          "relative": 0.0001688333614722833
+        },
+        {
+          "pos": "CM",
+          "metric": "d.progressivePasses",
+          "base": 23.891,
+          "candidate": 23.887,
+          "relative": 0.00016742706458489737
+        },
+        {
+          "pos": "LW",
+          "metric": "completed",
+          "base": 25.934,
+          "candidate": 25.93,
+          "relative": 0.0001542376802653403
+        },
+        {
+          "pos": "RWB",
+          "metric": "completed",
+          "base": 23.975,
+          "candidate": 23.978,
+          "relative": 0.00012513034410845103
+        },
+        {
+          "pos": "RB",
+          "metric": "d.progressivePasses",
+          "base": 8.196,
+          "candidate": 8.195,
+          "relative": 0.00012201073694478352
+        },
+        {
+          "pos": "LM",
+          "metric": "d.progressivePasses",
+          "base": 16.673,
+          "candidate": 16.675,
+          "relative": 0.00011995441732156447
+        },
+        {
+          "pos": "AM",
+          "metric": "completed",
+          "base": 68.138,
+          "candidate": 68.145,
+          "relative": 0.00010273268954167704
+        },
+        {
+          "pos": "DM",
+          "metric": "passes",
+          "base": 69.368,
+          "candidate": 69.375,
+          "relative": 0.00010091108292015055
+        },
+        {
+          "pos": "CM",
+          "metric": "completed",
+          "base": 82.419,
+          "candidate": 82.411,
+          "relative": 0.00009706499714866192
+        },
+        {
+          "pos": "CM",
+          "metric": "passes",
+          "base": 98.997,
+          "candidate": 98.988,
+          "relative": 0.00009091184581351295
+        },
+        {
+          "pos": "ST",
+          "metric": "passes",
+          "base": 23.079,
+          "candidate": 23.077,
+          "relative": 0.00008665886736855546
+        },
+        {
+          "pos": "LW",
+          "metric": "passes",
+          "base": 36.766,
+          "candidate": 36.763,
+          "relative": 0.00008159712778110521
+        },
+        {
+          "pos": "RM",
+          "metric": "passes",
+          "base": 63.003,
+          "candidate": 62.998,
+          "relative": 0.00007936130025558399
+        },
+        {
+          "pos": "AM",
+          "metric": "passes",
+          "base": 83.901,
+          "candidate": 83.895,
+          "relative": 0.00007151285443558751
+        },
+        {
+          "pos": "AM",
+          "metric": "d.progressivePasses",
+          "base": 18.767,
+          "candidate": 18.766,
+          "relative": 0.000053285021580498865
+        },
+        {
+          "pos": "DM",
+          "metric": "completed",
+          "base": 59.081,
+          "candidate": 59.084,
+          "relative": 0.00005077774580660641
+        },
+        {
+          "pos": "RB",
+          "metric": "completed",
+          "base": 20.651,
+          "candidate": 20.65,
+          "relative": 0.000048423805142667286
+        },
+        {
+          "pos": "RB",
+          "metric": "passes",
+          "base": 26.793,
+          "candidate": 26.794,
+          "relative": 0.00003732318142803054
+        },
+        {
+          "pos": "LM",
+          "metric": "passes",
+          "base": 60.741,
+          "candidate": 60.743,
+          "relative": 0.00003292668872758836
+        },
+        {
+          "pos": "LM",
+          "metric": "completed",
+          "base": 46.242,
+          "candidate": 46.243,
+          "relative": 0.000021625362224920523
+        },
+        {
+          "pos": "RM",
+          "metric": "completed",
+          "base": 47.086,
+          "candidate": 47.085,
+          "relative": 0.000021237735207867934
+        },
+        {
+          "pos": "GK",
+          "metric": "goals",
+          "base": 0.005,
+          "candidate": 0.005,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "assists",
+          "base": 0.003,
+          "candidate": 0.003,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "passes",
+          "base": 2.874,
+          "candidate": 2.874,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "shots",
+          "base": 0.038,
+          "candidate": 0.038,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "onTarget",
+          "base": 0.014,
+          "candidate": 0.014,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "tackles",
+          "base": 0.038,
+          "candidate": 0.038,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "interceptions",
+          "base": 0.114,
+          "candidate": 0.114,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "dribbles",
+          "base": 0.022,
+          "candidate": 0.022,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "saves",
+          "base": 1.892,
+          "candidate": 1.892,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.keyPasses",
+          "base": 0.022,
+          "candidate": 0.022,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.progressivePasses",
+          "base": 0.916,
+          "candidate": 0.916,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.highTurnovers",
+          "base": 0.049,
+          "candidate": 0.049,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.048,
+          "candidate": 0.048,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.crosses",
+          "base": 0.026,
+          "candidate": 0.026,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.yellowCards",
+          "base": 0.093,
+          "candidate": 0.093,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.offsides",
+          "base": 0.096,
+          "candidate": 0.096,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "goals",
+          "base": 0.029,
+          "candidate": 0.029,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "assists",
+          "base": 0.086,
+          "candidate": 0.086,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "shots",
+          "base": 0.299,
+          "candidate": 0.299,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "onTarget",
+          "base": 0.096,
+          "candidate": 0.096,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "dribbles",
+          "base": 0.175,
+          "candidate": 0.175,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "saves",
+          "base": 0.003,
+          "candidate": 0.003,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.keyPasses",
+          "base": 0.711,
+          "candidate": 0.711,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.highTurnovers",
+          "base": 0.293,
+          "candidate": 0.293,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.094,
+          "candidate": 1.094,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.foulsWon",
+          "base": 0.662,
+          "candidate": 0.662,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.yellowCards",
+          "base": 0.207,
+          "candidate": 0.207,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.offsides",
+          "base": 0.009,
+          "candidate": 0.009,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "goals",
+          "base": 0.051,
+          "candidate": 0.051,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "assists",
+          "base": 0.012,
+          "candidate": 0.012,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "shots",
+          "base": 0.485,
+          "candidate": 0.485,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "onTarget",
+          "base": 0.161,
+          "candidate": 0.161,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "dribbles",
+          "base": 0.164,
+          "candidate": 0.164,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.keyPasses",
+          "base": 0.154,
+          "candidate": 0.154,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.takeOns",
+          "base": 0.247,
+          "candidate": 0.247,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.highTurnovers",
+          "base": 0.29,
+          "candidate": 0.29,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.77,
+          "candidate": 0.77,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.crosses",
+          "base": 0.176,
+          "candidate": 0.176,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.yellowCards",
+          "base": 0.206,
+          "candidate": 0.206,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.offsides",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "goals",
+          "base": 0.026,
+          "candidate": 0.026,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "assists",
+          "base": 0.158,
+          "candidate": 0.158,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "shots",
+          "base": 0.243,
+          "candidate": 0.243,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "onTarget",
+          "base": 0.082,
+          "candidate": 0.082,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "dribbles",
+          "base": 0.35,
+          "candidate": 0.35,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.keyPasses",
+          "base": 1.241,
+          "candidate": 1.241,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.highTurnovers",
+          "base": 0.136,
+          "candidate": 0.136,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.foulsWon",
+          "base": 0.703,
+          "candidate": 0.703,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.yellowCards",
+          "base": 0.201,
+          "candidate": 0.201,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.offsides",
+          "base": 0.013,
+          "candidate": 0.013,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "goals",
+          "base": 0.133,
+          "candidate": 0.133,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "assists",
+          "base": 0.124,
+          "candidate": 0.124,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "shots",
+          "base": 1.351,
+          "candidate": 1.351,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "onTarget",
+          "base": 0.448,
+          "candidate": 0.448,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "interceptions",
+          "base": 1.004,
+          "candidate": 1.004,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "dribbles",
+          "base": 1.539,
+          "candidate": 1.539,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.keyPasses",
+          "base": 1.455,
+          "candidate": 1.455,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.highTurnovers",
+          "base": 0.823,
+          "candidate": 0.823,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.crosses",
+          "base": 0.794,
+          "candidate": 0.794,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.yellowCards",
+          "base": 0.192,
+          "candidate": 0.192,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.offsides",
+          "base": 0.022,
+          "candidate": 0.022,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "goals",
+          "base": 0.435,
+          "candidate": 0.435,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "assists",
+          "base": 0.081,
+          "candidate": 0.081,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "completed",
+          "base": 16.57,
+          "candidate": 16.57,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "shots",
+          "base": 3.499,
+          "candidate": 3.499,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "onTarget",
+          "base": 1.239,
+          "candidate": 1.239,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "tackles",
+          "base": 0.414,
+          "candidate": 0.414,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.keyPasses",
+          "base": 0.714,
+          "candidate": 0.714,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.highTurnovers",
+          "base": 1.277,
+          "candidate": 1.277,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.629,
+          "candidate": 0.629,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.crosses",
+          "base": 1.579,
+          "candidate": 1.579,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.yellowCards",
+          "base": 0.128,
+          "candidate": 0.128,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.offsides",
+          "base": 0.746,
+          "candidate": 0.746,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "goals",
+          "base": 0.026,
+          "candidate": 0.026,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "assists",
+          "base": 0.066,
+          "candidate": 0.066,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "shots",
+          "base": 0.263,
+          "candidate": 0.263,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "onTarget",
+          "base": 0.086,
+          "candidate": 0.086,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "tackles",
+          "base": 1.59,
+          "candidate": 1.59,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "dribbles",
+          "base": 0.143,
+          "candidate": 0.143,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "saves",
+          "base": 0.003,
+          "candidate": 0.003,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.keyPasses",
+          "base": 0.518,
+          "candidate": 0.518,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.takeOns",
+          "base": 0.231,
+          "candidate": 0.231,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.highTurnovers",
+          "base": 0.251,
+          "candidate": 0.251,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.foulsWon",
+          "base": 0.513,
+          "candidate": 0.513,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.yellowCards",
+          "base": 0.211,
+          "candidate": 0.211,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.offsides",
+          "base": 0.014,
+          "candidate": 0.014,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "goals",
+          "base": 0.086,
+          "candidate": 0.086,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "assists",
+          "base": 0.294,
+          "candidate": 0.294,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "shots",
+          "base": 0.951,
+          "candidate": 0.951,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "onTarget",
+          "base": 0.317,
+          "candidate": 0.317,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "interceptions",
+          "base": 0.79,
+          "candidate": 0.79,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.keyPasses",
+          "base": 2.36,
+          "candidate": 2.36,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.foulsWon",
+          "base": 1.36,
+          "candidate": 1.36,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.yellowCards",
+          "base": 0.176,
+          "candidate": 0.176,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "goals",
+          "base": 0.076,
+          "candidate": 0.076,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "assists",
+          "base": 0.299,
+          "candidate": 0.299,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "shots",
+          "base": 0.941,
+          "candidate": 0.941,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "onTarget",
+          "base": 0.29,
+          "candidate": 0.29,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "tackles",
+          "base": 1.592,
+          "candidate": 1.592,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "interceptions",
+          "base": 0.813,
+          "candidate": 0.813,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.keyPasses",
+          "base": 2.515,
+          "candidate": 2.515,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.progressivePasses",
+          "base": 16.896,
+          "candidate": 16.896,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.highTurnovers",
+          "base": 0.546,
+          "candidate": 0.546,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.yellowCards",
+          "base": 0.185,
+          "candidate": 0.185,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.offsides",
+          "base": 0.054,
+          "candidate": 0.054,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "goals",
+          "base": 0.071,
+          "candidate": 0.071,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "assists",
+          "base": 0.077,
+          "candidate": 0.077,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "shots",
+          "base": 0.735,
+          "candidate": 0.735,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "onTarget",
+          "base": 0.238,
+          "candidate": 0.238,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "tackles",
+          "base": 2.358,
+          "candidate": 2.358,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "interceptions",
+          "base": 2.632,
+          "candidate": 2.632,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.keyPasses",
+          "base": 0.873,
+          "candidate": 0.873,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.progressivePasses",
+          "base": 16.989,
+          "candidate": 16.989,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.highTurnovers",
+          "base": 1.408,
+          "candidate": 1.408,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.yellowCards",
+          "base": 0.2,
+          "candidate": 0.2,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.offsides",
+          "base": 0.011,
+          "candidate": 0.011,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "goals",
+          "base": 0.189,
+          "candidate": 0.189,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "assists",
+          "base": 0.248,
+          "candidate": 0.248,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "shots",
+          "base": 1.756,
+          "candidate": 1.756,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "onTarget",
+          "base": 0.583,
+          "candidate": 0.583,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "tackles",
+          "base": 0.313,
+          "candidate": 0.313,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "interceptions",
+          "base": 0.411,
+          "candidate": 0.411,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.keyPasses",
+          "base": 1.685,
+          "candidate": 1.685,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.takeOns",
+          "base": 5.347,
+          "candidate": 5.347,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.highTurnovers",
+          "base": 0.536,
+          "candidate": 0.536,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.fouls",
+          "base": 0.536,
+          "candidate": 0.536,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.yellowCards",
+          "base": 0.141,
+          "candidate": 0.141,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "goals",
+          "base": 0.028,
+          "candidate": 0.028,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "assists",
+          "base": 0.235,
+          "candidate": 0.235,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "passes",
+          "base": 32.948,
+          "candidate": 32.948,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "shots",
+          "base": 0.276,
+          "candidate": 0.276,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "onTarget",
+          "base": 0.1,
+          "candidate": 0.1,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "tackles",
+          "base": 1.206,
+          "candidate": 1.206,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.keyPasses",
+          "base": 1.589,
+          "candidate": 1.589,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.takeOns",
+          "base": 0.715,
+          "candidate": 0.715,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.yellowCards",
+          "base": 0.206,
+          "candidate": 0.206,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.offsides",
+          "base": 0.02,
+          "candidate": 0.02,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "goals",
+          "base": 0.207,
+          "candidate": 0.207,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "assists",
+          "base": 0.205,
+          "candidate": 0.205,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "shots",
+          "base": 1.835,
+          "candidate": 1.835,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "onTarget",
+          "base": 0.631,
+          "candidate": 0.631,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "tackles",
+          "base": 0.319,
+          "candidate": 0.319,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.keyPasses",
+          "base": 1.58,
+          "candidate": 1.58,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.highTurnovers",
+          "base": 0.54,
+          "candidate": 0.54,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.815,
+          "candidate": 0.815,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.fouls",
+          "base": 0.552,
+          "candidate": 0.552,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.yellowCards",
+          "base": 0.145,
+          "candidate": 0.145,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.offsides",
+          "base": 0.581,
+          "candidate": 0.581,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "goals",
+          "base": 0.146,
+          "candidate": 0.146,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "assists",
+          "base": 0.086,
+          "candidate": 0.086,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "shots",
+          "base": 1.465,
+          "candidate": 1.465,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "onTarget",
+          "base": 0.474,
+          "candidate": 0.474,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "tackles",
+          "base": 0.599,
+          "candidate": 0.599,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "interceptions",
+          "base": 1.209,
+          "candidate": 1.209,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "dribbles",
+          "base": 1.599,
+          "candidate": 1.599,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.keyPasses",
+          "base": 1.061,
+          "candidate": 1.061,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.highTurnovers",
+          "base": 0.93,
+          "candidate": 0.93,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.crosses",
+          "base": 0.404,
+          "candidate": 0.404,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.yellowCards",
+          "base": 0.218,
+          "candidate": 0.218,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.offsides",
+          "base": 0.046,
+          "candidate": 0.046,
+          "relative": 0
+        }
+      ],
+      "differences": {
+        "/npcSeason/competitions/#/players/#/clubs/#/metrics/#": {
+          "count": 10131,
+          "example": [
+            "/npcSeason/competitions/0/players/13/clubs/0/metrics/2",
+            1842,
+            1843
+          ]
+        },
+        "/npcSeason/competitions/#/players/#/clubs/#/detail/#": {
+          "count": 16229,
+          "example": [
+            "/npcSeason/competitions/0/players/14/clubs/0/detail/6",
+            348,
+            350
+          ]
+        }
+      }
+    },
+    {
+      "year": 1981,
+      "hashesBase": {
+        "fixtureScores": "19df9d494da0",
+        "fixturesPlayed": 8502,
+        "cupScores": "b6775a294afd",
+        "tables": "d3177ef7701e",
+        "leagueGoalsAssists": "2a403b349b6c",
+        "discipline": "fc00262fec47",
+        "squads": "42739eac034a",
+        "elo": "b4c7fca1217f"
+      },
+      "hashesCandidate": {
+        "fixtureScores": "19df9d494da0",
+        "fixturesPlayed": 8502,
+        "cupScores": "b6775a294afd",
+        "tables": "d3177ef7701e",
+        "leagueGoalsAssists": "2a403b349b6c",
+        "discipline": "fc00262fec47",
+        "squads": "42739eac034a",
+        "elo": "b4c7fca1217f"
+      },
+      "roles": [
+        {
+          "pos": "GK",
+          "metric": "tackles",
+          "base": 0.031,
+          "candidate": 0.03,
+          "relative": 0.03225806451612906
+        },
+        {
+          "pos": "GK",
+          "metric": "d.offsides",
+          "base": 0.086,
+          "candidate": 0.087,
+          "relative": 0.011627906976744198
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.highTurnovers",
+          "base": 0.131,
+          "candidate": 0.13,
+          "relative": 0.007633587786259549
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.highTurnovers",
+          "base": 0.145,
+          "candidate": 0.144,
+          "relative": 0.006896551724137938
+        },
+        {
+          "pos": "LWB",
+          "metric": "dribbles",
+          "base": 0.338,
+          "candidate": 0.336,
+          "relative": 0.0059171597633136145
+        },
+        {
+          "pos": "RWB",
+          "metric": "interceptions",
+          "base": 0.576,
+          "candidate": 0.573,
+          "relative": 0.005208333333333338
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.takeOns",
+          "base": 0.586,
+          "candidate": 0.583,
+          "relative": 0.005119453924914681
+        },
+        {
+          "pos": "CB",
+          "metric": "d.takeOns",
+          "base": 0.246,
+          "candidate": 0.245,
+          "relative": 0.004065040650406508
+        },
+        {
+          "pos": "RB",
+          "metric": "d.highTurnovers",
+          "base": 0.258,
+          "candidate": 0.257,
+          "relative": 0.0038759689922480654
+        },
+        {
+          "pos": "LB",
+          "metric": "d.takeOns",
+          "base": 0.27,
+          "candidate": 0.271,
+          "relative": 0.003703703703703707
+        },
+        {
+          "pos": "LW",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.84,
+          "candidate": 0.837,
+          "relative": 0.003571428571428575
+        },
+        {
+          "pos": "RWB",
+          "metric": "tackles",
+          "base": 1.212,
+          "candidate": 1.208,
+          "relative": 0.0033003300330033034
+        },
+        {
+          "pos": "RW",
+          "metric": "tackles",
+          "base": 0.311,
+          "candidate": 0.31,
+          "relative": 0.003215434083601289
+        },
+        {
+          "pos": "LW",
+          "metric": "tackles",
+          "base": 0.314,
+          "candidate": 0.315,
+          "relative": 0.003184713375796181
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.takeOns",
+          "base": 0.709,
+          "candidate": 0.711,
+          "relative": 0.0028208744710860392
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.foulsWon",
+          "base": 0.749,
+          "candidate": 0.751,
+          "relative": 0.0026702269692923924
+        },
+        {
+          "pos": "RW",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.802,
+          "candidate": 0.804,
+          "relative": 0.002493765586034915
+        },
+        {
+          "pos": "RWB",
+          "metric": "dribbles",
+          "base": 0.412,
+          "candidate": 0.413,
+          "relative": 0.00242718446601942
+        },
+        {
+          "pos": "LM",
+          "metric": "interceptions",
+          "base": 0.918,
+          "candidate": 0.916,
+          "relative": 0.002178649237472769
+        },
+        {
+          "pos": "RB",
+          "metric": "d.foulsWon",
+          "base": 0.499,
+          "candidate": 0.5,
+          "relative": 0.0020040080160320657
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.029,
+          "candidate": 1.027,
+          "relative": 0.001943634596695823
+        },
+        {
+          "pos": "AM",
+          "metric": "d.crosses",
+          "base": 0.517,
+          "candidate": 0.516,
+          "relative": 0.00193423597678917
+        },
+        {
+          "pos": "RW",
+          "metric": "d.highTurnovers",
+          "base": 0.521,
+          "candidate": 0.52,
+          "relative": 0.0019193857965451072
+        },
+        {
+          "pos": "LWB",
+          "metric": "interceptions",
+          "base": 0.571,
+          "candidate": 0.57,
+          "relative": 0.0017513134851138371
+        },
+        {
+          "pos": "LM",
+          "metric": "d.highTurnovers",
+          "base": 0.591,
+          "candidate": 0.592,
+          "relative": 0.0016920473773265668
+        },
+        {
+          "pos": "DM",
+          "metric": "d.takeOns",
+          "base": 1.219,
+          "candidate": 1.221,
+          "relative": 0.0016406890894175568
+        },
+        {
+          "pos": "ST",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.623,
+          "candidate": 0.624,
+          "relative": 0.0016051364365971123
+        },
+        {
+          "pos": "RW",
+          "metric": "d.foulsWon",
+          "base": 1.261,
+          "candidate": 1.259,
+          "relative": 0.0015860428231562267
+        },
+        {
+          "pos": "AM",
+          "metric": "d.lineBreakingPasses",
+          "base": 3.177,
+          "candidate": 3.172,
+          "relative": 0.001573811772112022
+        },
+        {
+          "pos": "LM",
+          "metric": "d.foulsWon",
+          "base": 1.407,
+          "candidate": 1.409,
+          "relative": 0.0014214641080312735
+        },
+        {
+          "pos": "DM",
+          "metric": "d.highTurnovers",
+          "base": 1.459,
+          "candidate": 1.461,
+          "relative": 0.001370801919122688
+        },
+        {
+          "pos": "LW",
+          "metric": "d.progressivePasses",
+          "base": 6.075,
+          "candidate": 6.067,
+          "relative": 0.0013168724279835403
+        },
+        {
+          "pos": "RM",
+          "metric": "tackles",
+          "base": 1.554,
+          "candidate": 1.552,
+          "relative": 0.001287001287001288
+        },
+        {
+          "pos": "DM",
+          "metric": "dribbles",
+          "base": 0.792,
+          "candidate": 0.793,
+          "relative": 0.0012626262626262636
+        },
+        {
+          "pos": "LM",
+          "metric": "tackles",
+          "base": 1.584,
+          "candidate": 1.582,
+          "relative": 0.0012626262626262636
+        },
+        {
+          "pos": "ST",
+          "metric": "interceptions",
+          "base": 0.912,
+          "candidate": 0.913,
+          "relative": 0.0010964912280701765
+        },
+        {
+          "pos": "LW",
+          "metric": "dribbles",
+          "base": 2.821,
+          "candidate": 2.818,
+          "relative": 0.0010634526763559425
+        },
+        {
+          "pos": "AM",
+          "metric": "d.fouls",
+          "base": 0.954,
+          "candidate": 0.953,
+          "relative": 0.0010482180293501057
+        },
+        {
+          "pos": "CM",
+          "metric": "interceptions",
+          "base": 1.001,
+          "candidate": 1.002,
+          "relative": 0.0009990009990011109
+        },
+        {
+          "pos": "AM",
+          "metric": "d.highTurnovers",
+          "base": 1.004,
+          "candidate": 1.003,
+          "relative": 0.0009960159362550915
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.028,
+          "candidate": 1.027,
+          "relative": 0.0009727626459145058
+        },
+        {
+          "pos": "DM",
+          "metric": "d.foulsWon",
+          "base": 1.043,
+          "candidate": 1.042,
+          "relative": 0.0009587727708532022
+        },
+        {
+          "pos": "LB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.051,
+          "candidate": 1.052,
+          "relative": 0.0009514747859182797
+        },
+        {
+          "pos": "LWB",
+          "metric": "tackles",
+          "base": 1.163,
+          "candidate": 1.162,
+          "relative": 0.0008598452278590816
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.crosses",
+          "base": 5.12,
+          "candidate": 5.124,
+          "relative": 0.000781249999999914
+        },
+        {
+          "pos": "LW",
+          "metric": "d.takeOns",
+          "base": 5.144,
+          "candidate": 5.14,
+          "relative": 0.0007776049766719377
+        },
+        {
+          "pos": "RB",
+          "metric": "interceptions",
+          "base": 1.329,
+          "candidate": 1.328,
+          "relative": 0.0007524454477049585
+        },
+        {
+          "pos": "AM",
+          "metric": "d.takeOns",
+          "base": 2.701,
+          "candidate": 2.699,
+          "relative": 0.0007404664938912343
+        },
+        {
+          "pos": "RB",
+          "metric": "d.crosses",
+          "base": 1.365,
+          "candidate": 1.366,
+          "relative": 0.0007326007326008146
+        },
+        {
+          "pos": "LB",
+          "metric": "interceptions",
+          "base": 1.454,
+          "candidate": 1.455,
+          "relative": 0.000687757909216033
+        },
+        {
+          "pos": "ST",
+          "metric": "d.crosses",
+          "base": 1.539,
+          "candidate": 1.538,
+          "relative": 0.0006497725795970695
+        },
+        {
+          "pos": "LB",
+          "metric": "tackles",
+          "base": 1.706,
+          "candidate": 1.707,
+          "relative": 0.0005861664712779086
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.progressivePasses",
+          "base": 8.668,
+          "candidate": 8.663,
+          "relative": 0.0005768343331793961
+        },
+        {
+          "pos": "LB",
+          "metric": "d.crosses",
+          "base": 1.877,
+          "candidate": 1.876,
+          "relative": 0.0005327650506127394
+        },
+        {
+          "pos": "GK",
+          "metric": "completed",
+          "base": 1.917,
+          "candidate": 1.918,
+          "relative": 0.0005216484089722951
+        },
+        {
+          "pos": "DM",
+          "metric": "d.fouls",
+          "base": 1.996,
+          "candidate": 1.995,
+          "relative": 0.0005010020040079608
+        },
+        {
+          "pos": "CM",
+          "metric": "tackles",
+          "base": 2.033,
+          "candidate": 2.034,
+          "relative": 0.0004918839153959124
+        },
+        {
+          "pos": "LM",
+          "metric": "d.takeOns",
+          "base": 2.04,
+          "candidate": 2.039,
+          "relative": 0.0004901960784313185
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.crosses",
+          "base": 4.27,
+          "candidate": 4.272,
+          "relative": 0.00046838407494160844
+        },
+        {
+          "pos": "AM",
+          "metric": "d.foulsWon",
+          "base": 2.147,
+          "candidate": 2.146,
+          "relative": 0.0004657661853748905
+        },
+        {
+          "pos": "LB",
+          "metric": "d.progressivePasses",
+          "base": 8.853,
+          "candidate": 8.857,
+          "relative": 0.0004518242403704461
+        },
+        {
+          "pos": "DM",
+          "metric": "tackles",
+          "base": 2.409,
+          "candidate": 2.408,
+          "relative": 0.00041511000415105434
+        },
+        {
+          "pos": "LM",
+          "metric": "d.progressivePasses",
+          "base": 17.196,
+          "candidate": 17.189,
+          "relative": 0.00040707141195635315
+        },
+        {
+          "pos": "DM",
+          "metric": "interceptions",
+          "base": 2.656,
+          "candidate": 2.655,
+          "relative": 0.0003765060240965113
+        },
+        {
+          "pos": "GK",
+          "metric": "passes",
+          "base": 2.676,
+          "candidate": 2.677,
+          "relative": 0.000373692077727911
+        },
+        {
+          "pos": "RM",
+          "metric": "d.crosses",
+          "base": 5.384,
+          "candidate": 5.382,
+          "relative": 0.00037147102526015373
+        },
+        {
+          "pos": "RM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.791,
+          "candidate": 2.792,
+          "relative": 0.0003582945180938337
+        },
+        {
+          "pos": "AM",
+          "metric": "d.progressivePasses",
+          "base": 20.284,
+          "candidate": 20.277,
+          "relative": 0.00034509958588039327
+        },
+        {
+          "pos": "RW",
+          "metric": "d.progressivePasses",
+          "base": 6.024,
+          "candidate": 6.022,
+          "relative": 0.0003320053120849568
+        },
+        {
+          "pos": "ST",
+          "metric": "completed",
+          "base": 16.09,
+          "candidate": 16.085,
+          "relative": 0.00031075201988806745
+        },
+        {
+          "pos": "LB",
+          "metric": "completed",
+          "base": 22.966,
+          "candidate": 22.973,
+          "relative": 0.00030479839763118943
+        },
+        {
+          "pos": "ST",
+          "metric": "d.takeOns",
+          "base": 3.394,
+          "candidate": 3.395,
+          "relative": 0.00029463759575718614
+        },
+        {
+          "pos": "CM",
+          "metric": "d.lineBreakingPasses",
+          "base": 3.577,
+          "candidate": 3.578,
+          "relative": 0.0002795638803466284
+        },
+        {
+          "pos": "ST",
+          "metric": "d.progressivePasses",
+          "base": 3.835,
+          "candidate": 3.834,
+          "relative": 0.00026075619295955405
+        },
+        {
+          "pos": "RW",
+          "metric": "completed",
+          "base": 26.213,
+          "candidate": 26.207,
+          "relative": 0.0002288940601991465
+        },
+        {
+          "pos": "ST",
+          "metric": "passes",
+          "base": 22.367,
+          "candidate": 22.362,
+          "relative": 0.00022354361335908069
+        },
+        {
+          "pos": "LW",
+          "metric": "passes",
+          "base": 37.071,
+          "candidate": 37.063,
+          "relative": 0.00021580210946550043
+        },
+        {
+          "pos": "LM",
+          "metric": "d.crosses",
+          "base": 4.931,
+          "candidate": 4.932,
+          "relative": 0.00020279862096944513
+        },
+        {
+          "pos": "CB",
+          "metric": "completed",
+          "base": 20.012,
+          "candidate": 20.016,
+          "relative": 0.00019988007195671513
+        },
+        {
+          "pos": "RB",
+          "metric": "completed",
+          "base": 20.016,
+          "candidate": 20.02,
+          "relative": 0.0001998401278977486
+        },
+        {
+          "pos": "RB",
+          "metric": "passes",
+          "base": 25.948,
+          "candidate": 25.953,
+          "relative": 0.0001926930784645832
+        },
+        {
+          "pos": "LM",
+          "metric": "completed",
+          "base": 48.094,
+          "candidate": 48.085,
+          "relative": 0.00018713353017009066
+        },
+        {
+          "pos": "DM",
+          "metric": "d.progressivePasses",
+          "base": 17.444,
+          "candidate": 17.447,
+          "relative": 0.00017197890392112554
+        },
+        {
+          "pos": "LB",
+          "metric": "passes",
+          "base": 29.533,
+          "candidate": 29.538,
+          "relative": 0.0001693021365929301
+        },
+        {
+          "pos": "RW",
+          "metric": "d.crosses",
+          "base": 6.012,
+          "candidate": 6.013,
+          "relative": 0.00016633399866938358
+        },
+        {
+          "pos": "RWB",
+          "metric": "completed",
+          "base": 24.484,
+          "candidate": 24.48,
+          "relative": 0.00016337199803959058
+        },
+        {
+          "pos": "LWB",
+          "metric": "passes",
+          "base": 31.333,
+          "candidate": 31.338,
+          "relative": 0.00015957616570397211
+        },
+        {
+          "pos": "RW",
+          "metric": "passes",
+          "base": 38.077,
+          "candidate": 38.071,
+          "relative": 0.00015757543924154287
+        },
+        {
+          "pos": "LWB",
+          "metric": "completed",
+          "base": 23.288,
+          "candidate": 23.291,
+          "relative": 0.00012882171075232366
+        },
+        {
+          "pos": "LM",
+          "metric": "passes",
+          "base": 63.425,
+          "candidate": 63.417,
+          "relative": 0.00012613322822223991
+        },
+        {
+          "pos": "RB",
+          "metric": "d.progressivePasses",
+          "base": 7.949,
+          "candidate": 7.95,
+          "relative": 0.00012580198767144722
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.progressivePasses",
+          "base": 7.976,
+          "candidate": 7.975,
+          "relative": 0.00012537612838519734
+        },
+        {
+          "pos": "AM",
+          "metric": "completed",
+          "base": 73.86,
+          "candidate": 73.851,
+          "relative": 0.00012185215272136936
+        },
+        {
+          "pos": "CB",
+          "metric": "passes",
+          "base": 25.195,
+          "candidate": 25.198,
+          "relative": 0.00011907124429450739
+        },
+        {
+          "pos": "RM",
+          "metric": "d.progressivePasses",
+          "base": 16.829,
+          "candidate": 16.827,
+          "relative": 0.00011884247430024906
+        },
+        {
+          "pos": "AM",
+          "metric": "passes",
+          "base": 90.507,
+          "candidate": 90.5,
+          "relative": 0.000077342084037754
+        },
+        {
+          "pos": "LW",
+          "metric": "completed",
+          "base": 26.293,
+          "candidate": 26.291,
+          "relative": 0.00007606587304601573
+        },
+        {
+          "pos": "RM",
+          "metric": "passes",
+          "base": 62.556,
+          "candidate": 62.553,
+          "relative": 0.00004795703050067322
+        },
+        {
+          "pos": "RM",
+          "metric": "completed",
+          "base": 46.812,
+          "candidate": 46.814,
+          "relative": 0.00004272408784077682
+        },
+        {
+          "pos": "RWB",
+          "metric": "passes",
+          "base": 33.501,
+          "candidate": 33.502,
+          "relative": 0.000029849855228344674
+        },
+        {
+          "pos": "CM",
+          "metric": "completed",
+          "base": 82.771,
+          "candidate": 82.769,
+          "relative": 0.000024163052276707288
+        },
+        {
+          "pos": "DM",
+          "metric": "completed",
+          "base": 60.393,
+          "candidate": 60.394,
+          "relative": 0.000016558210388582606
+        },
+        {
+          "pos": "DM",
+          "metric": "passes",
+          "base": 70.99,
+          "candidate": 70.989,
+          "relative": 0.00001408649105494526
+        },
+        {
+          "pos": "GK",
+          "metric": "goals",
+          "base": 0.003,
+          "candidate": 0.003,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "assists",
+          "base": 0.002,
+          "candidate": 0.002,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "shots",
+          "base": 0.033,
+          "candidate": 0.033,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "onTarget",
+          "base": 0.011,
+          "candidate": 0.011,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "interceptions",
+          "base": 0.101,
+          "candidate": 0.101,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "dribbles",
+          "base": 0.021,
+          "candidate": 0.021,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "saves",
+          "base": 1.929,
+          "candidate": 1.929,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.keyPasses",
+          "base": 0.02,
+          "candidate": 0.02,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.progressivePasses",
+          "base": 0.881,
+          "candidate": 0.881,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.takeOns",
+          "base": 0.036,
+          "candidate": 0.036,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.highTurnovers",
+          "base": 0.043,
+          "candidate": 0.043,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.039,
+          "candidate": 0.039,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.crosses",
+          "base": 0.023,
+          "candidate": 0.023,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.fouls",
+          "base": 0.099,
+          "candidate": 0.099,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.foulsWon",
+          "base": 0.047,
+          "candidate": 0.047,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.yellowCards",
+          "base": 0.086,
+          "candidate": 0.086,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "goals",
+          "base": 0.028,
+          "candidate": 0.028,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "assists",
+          "base": 0.172,
+          "candidate": 0.172,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "shots",
+          "base": 0.276,
+          "candidate": 0.276,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "onTarget",
+          "base": 0.093,
+          "candidate": 0.093,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.keyPasses",
+          "base": 1.289,
+          "candidate": 1.289,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.fouls",
+          "base": 0.741,
+          "candidate": 0.741,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.yellowCards",
+          "base": 0.188,
+          "candidate": 0.188,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.offsides",
+          "base": 0.014,
+          "candidate": 0.014,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "goals",
+          "base": 0.051,
+          "candidate": 0.051,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "assists",
+          "base": 0.012,
+          "candidate": 0.012,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "shots",
+          "base": 0.484,
+          "candidate": 0.484,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "onTarget",
+          "base": 0.165,
+          "candidate": 0.165,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "tackles",
+          "base": 1.561,
+          "candidate": 1.561,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "interceptions",
+          "base": 1.665,
+          "candidate": 1.665,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "dribbles",
+          "base": 0.158,
+          "candidate": 0.158,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.keyPasses",
+          "base": 0.148,
+          "candidate": 0.148,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.progressivePasses",
+          "base": 8.362,
+          "candidate": 8.362,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.highTurnovers",
+          "base": 0.284,
+          "candidate": 0.284,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.766,
+          "candidate": 0.766,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.crosses",
+          "base": 0.169,
+          "candidate": 0.169,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.fouls",
+          "base": 0.773,
+          "candidate": 0.773,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.foulsWon",
+          "base": 0.55,
+          "candidate": 0.55,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.yellowCards",
+          "base": 0.208,
+          "candidate": 0.208,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.offsides",
+          "base": 0.002,
+          "candidate": 0.002,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "goals",
+          "base": 0.132,
+          "candidate": 0.132,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "assists",
+          "base": 0.126,
+          "candidate": 0.126,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "passes",
+          "base": 99.396,
+          "candidate": 99.396,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "shots",
+          "base": 1.335,
+          "candidate": 1.335,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "onTarget",
+          "base": 0.443,
+          "candidate": 0.443,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "dribbles",
+          "base": 1.536,
+          "candidate": 1.536,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.keyPasses",
+          "base": 1.43,
+          "candidate": 1.43,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.progressivePasses",
+          "base": 23.981,
+          "candidate": 23.981,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.takeOns",
+          "base": 2.497,
+          "candidate": 2.497,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.highTurnovers",
+          "base": 0.82,
+          "candidate": 0.82,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.crosses",
+          "base": 0.76,
+          "candidate": 0.76,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.fouls",
+          "base": 2.056,
+          "candidate": 2.056,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.foulsWon",
+          "base": 2.408,
+          "candidate": 2.408,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.yellowCards",
+          "base": 0.19,
+          "candidate": 0.19,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.offsides",
+          "base": 0.022,
+          "candidate": 0.022,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "goals",
+          "base": 0.437,
+          "candidate": 0.437,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "assists",
+          "base": 0.081,
+          "candidate": 0.081,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "shots",
+          "base": 3.465,
+          "candidate": 3.465,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "onTarget",
+          "base": 1.226,
+          "candidate": 1.226,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "tackles",
+          "base": 0.406,
+          "candidate": 0.406,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "dribbles",
+          "base": 1.884,
+          "candidate": 1.884,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.keyPasses",
+          "base": 0.703,
+          "candidate": 0.703,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.highTurnovers",
+          "base": 1.261,
+          "candidate": 1.261,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.fouls",
+          "base": 0.773,
+          "candidate": 0.773,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.foulsWon",
+          "base": 0.884,
+          "candidate": 0.884,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.yellowCards",
+          "base": 0.132,
+          "candidate": 0.132,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.offsides",
+          "base": 0.756,
+          "candidate": 0.756,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "goals",
+          "base": 0.029,
+          "candidate": 0.029,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "assists",
+          "base": 0.081,
+          "candidate": 0.081,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "shots",
+          "base": 0.292,
+          "candidate": 0.292,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "onTarget",
+          "base": 0.096,
+          "candidate": 0.096,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "dribbles",
+          "base": 0.172,
+          "candidate": 0.172,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "saves",
+          "base": 0.003,
+          "candidate": 0.003,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.keyPasses",
+          "base": 0.668,
+          "candidate": 0.668,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.highTurnovers",
+          "base": 0.294,
+          "candidate": 0.294,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.fouls",
+          "base": 0.961,
+          "candidate": 0.961,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.foulsWon",
+          "base": 0.645,
+          "candidate": 0.645,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.yellowCards",
+          "base": 0.208,
+          "candidate": 0.208,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.offsides",
+          "base": 0.008,
+          "candidate": 0.008,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "goals",
+          "base": 0.025,
+          "candidate": 0.025,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "assists",
+          "base": 0.06,
+          "candidate": 0.06,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "shots",
+          "base": 0.249,
+          "candidate": 0.249,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "onTarget",
+          "base": 0.081,
+          "candidate": 0.081,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "tackles",
+          "base": 1.568,
+          "candidate": 1.568,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "dribbles",
+          "base": 0.145,
+          "candidate": 0.145,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "saves",
+          "base": 0.002,
+          "candidate": 0.002,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.keyPasses",
+          "base": 0.489,
+          "candidate": 0.489,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.takeOns",
+          "base": 0.222,
+          "candidate": 0.222,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.934,
+          "candidate": 0.934,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.fouls",
+          "base": 0.928,
+          "candidate": 0.928,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.yellowCards",
+          "base": 0.207,
+          "candidate": 0.207,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.offsides",
+          "base": 0.011,
+          "candidate": 0.011,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "goals",
+          "base": 0.071,
+          "candidate": 0.071,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "assists",
+          "base": 0.08,
+          "candidate": 0.08,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "shots",
+          "base": 0.738,
+          "candidate": 0.738,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "onTarget",
+          "base": 0.242,
+          "candidate": 0.242,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "saves",
+          "base": 0.003,
+          "candidate": 0.003,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.keyPasses",
+          "base": 0.89,
+          "candidate": 0.89,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.404,
+          "candidate": 2.404,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.crosses",
+          "base": 0.577,
+          "candidate": 0.577,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.yellowCards",
+          "base": 0.198,
+          "candidate": 0.198,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.offsides",
+          "base": 0.008,
+          "candidate": 0.008,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "goals",
+          "base": 0.156,
+          "candidate": 0.156,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "assists",
+          "base": 0.093,
+          "candidate": 0.093,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "shots",
+          "base": 1.536,
+          "candidate": 1.536,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "onTarget",
+          "base": 0.515,
+          "candidate": 0.515,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "tackles",
+          "base": 0.63,
+          "candidate": 0.63,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "interceptions",
+          "base": 1.3,
+          "candidate": 1.3,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "dribbles",
+          "base": 1.66,
+          "candidate": 1.66,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.keyPasses",
+          "base": 1.149,
+          "candidate": 1.149,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.yellowCards",
+          "base": 0.223,
+          "candidate": 0.223,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.offsides",
+          "base": 0.027,
+          "candidate": 0.027,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "goals",
+          "base": 0.206,
+          "candidate": 0.206,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "assists",
+          "base": 0.212,
+          "candidate": 0.212,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "shots",
+          "base": 1.855,
+          "candidate": 1.855,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "onTarget",
+          "base": 0.631,
+          "candidate": 0.631,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "interceptions",
+          "base": 0.393,
+          "candidate": 0.393,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.keyPasses",
+          "base": 1.573,
+          "candidate": 1.573,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.highTurnovers",
+          "base": 0.514,
+          "candidate": 0.514,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.crosses",
+          "base": 4.935,
+          "candidate": 4.935,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.fouls",
+          "base": 0.547,
+          "candidate": 0.547,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.foulsWon",
+          "base": 1.375,
+          "candidate": 1.375,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.yellowCards",
+          "base": 0.143,
+          "candidate": 0.143,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.offsides",
+          "base": 0.607,
+          "candidate": 0.607,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "goals",
+          "base": 0.192,
+          "candidate": 0.192,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "assists",
+          "base": 0.243,
+          "candidate": 0.243,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "shots",
+          "base": 1.817,
+          "candidate": 1.817,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "onTarget",
+          "base": 0.603,
+          "candidate": 0.603,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "interceptions",
+          "base": 0.411,
+          "candidate": 0.411,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "dribbles",
+          "base": 3.007,
+          "candidate": 3.007,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.keyPasses",
+          "base": 1.77,
+          "candidate": 1.77,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.takeOns",
+          "base": 5.42,
+          "candidate": 5.42,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.fouls",
+          "base": 0.546,
+          "candidate": 0.546,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.yellowCards",
+          "base": 0.149,
+          "candidate": 0.149,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.offsides",
+          "base": 0.549,
+          "candidate": 0.549,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "goals",
+          "base": 0.087,
+          "candidate": 0.087,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "assists",
+          "base": 0.312,
+          "candidate": 0.312,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "shots",
+          "base": 1.012,
+          "candidate": 1.012,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "onTarget",
+          "base": 0.33,
+          "candidate": 0.33,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "dribbles",
+          "base": 1.157,
+          "candidate": 1.157,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.keyPasses",
+          "base": 2.485,
+          "candidate": 2.485,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.844,
+          "candidate": 2.844,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.fouls",
+          "base": 1.41,
+          "candidate": 1.41,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.yellowCards",
+          "base": 0.18,
+          "candidate": 0.18,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.offsides",
+          "base": 0.041,
+          "candidate": 0.041,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "goals",
+          "base": 0.083,
+          "candidate": 0.083,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "assists",
+          "base": 0.305,
+          "candidate": 0.305,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "shots",
+          "base": 0.941,
+          "candidate": 0.941,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "onTarget",
+          "base": 0.311,
+          "candidate": 0.311,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "interceptions",
+          "base": 0.806,
+          "candidate": 0.806,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "dribbles",
+          "base": 1.197,
+          "candidate": 1.197,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.keyPasses",
+          "base": 2.583,
+          "candidate": 2.583,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.takeOns",
+          "base": 2.113,
+          "candidate": 2.113,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.highTurnovers",
+          "base": 0.528,
+          "candidate": 0.528,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.fouls",
+          "base": 1.41,
+          "candidate": 1.41,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.foulsWon",
+          "base": 1.375,
+          "candidate": 1.375,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.yellowCards",
+          "base": 0.19,
+          "candidate": 0.19,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.offsides",
+          "base": 0.06,
+          "candidate": 0.06,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "goals",
+          "base": 0.029,
+          "candidate": 0.029,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "assists",
+          "base": 0.214,
+          "candidate": 0.214,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "shots",
+          "base": 0.288,
+          "candidate": 0.288,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "onTarget",
+          "base": 0.098,
+          "candidate": 0.098,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.keyPasses",
+          "base": 1.612,
+          "candidate": 1.612,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.fouls",
+          "base": 0.818,
+          "candidate": 0.818,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.foulsWon",
+          "base": 0.634,
+          "candidate": 0.634,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.yellowCards",
+          "base": 0.184,
+          "candidate": 0.184,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.offsides",
+          "base": 0.014,
+          "candidate": 0.014,
+          "relative": 0
+        }
+      ],
+      "differences": {
+        "/npcSeason/competitions/#/players/#/clubs/#/metrics/#": {
+          "count": 9784,
+          "example": [
+            "/npcSeason/competitions/0/players/14/clubs/0/metrics/2",
+            942,
+            944
+          ]
+        },
+        "/npcSeason/competitions/#/players/#/clubs/#/detail/#": {
+          "count": 15784,
+          "example": [
+            "/npcSeason/competitions/0/players/14/clubs/0/detail/4",
+            6,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "year": 1982,
+      "hashesBase": {
+        "fixtureScores": "a75bc19d7bee",
+        "fixturesPlayed": 8502,
+        "cupScores": "9573161166a6",
+        "tables": "802e4b0cfe33",
+        "leagueGoalsAssists": "41133a9f2845",
+        "discipline": "6e46c4ba5fdc",
+        "squads": "edd89c4fea3e",
+        "elo": "5ab03b94d017"
+      },
+      "hashesCandidate": {
+        "fixtureScores": "a75bc19d7bee",
+        "fixturesPlayed": 8502,
+        "cupScores": "9573161166a6",
+        "tables": "802e4b0cfe33",
+        "leagueGoalsAssists": "41133a9f2845",
+        "discipline": "6e46c4ba5fdc",
+        "squads": "edd89c4fea3e",
+        "elo": "5ab03b94d017"
+      },
+      "roles": [
+        {
+          "pos": "GK",
+          "metric": "tackles",
+          "base": 0.032,
+          "candidate": 0.033,
+          "relative": 0.03125000000000003
+        },
+        {
+          "pos": "LM",
+          "metric": "d.offsides",
+          "base": 0.046,
+          "candidate": 0.047,
+          "relative": 0.02173913043478263
+        },
+        {
+          "pos": "RM",
+          "metric": "d.offsides",
+          "base": 0.056,
+          "candidate": 0.055,
+          "relative": 0.017857142857142873
+        },
+        {
+          "pos": "GK",
+          "metric": "interceptions",
+          "base": 0.105,
+          "candidate": 0.106,
+          "relative": 0.009523809523809533
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.highTurnovers",
+          "base": 0.139,
+          "candidate": 0.14,
+          "relative": 0.007194244604316552
+        },
+        {
+          "pos": "RB",
+          "metric": "d.takeOns",
+          "base": 0.224,
+          "candidate": 0.225,
+          "relative": 0.004464285714285718
+        },
+        {
+          "pos": "LW",
+          "metric": "d.offsides",
+          "base": 0.595,
+          "candidate": 0.597,
+          "relative": 0.0033613445378151293
+        },
+        {
+          "pos": "RW",
+          "metric": "tackles",
+          "base": 0.327,
+          "candidate": 0.326,
+          "relative": 0.003058103975535171
+        },
+        {
+          "pos": "LWB",
+          "metric": "dribbles",
+          "base": 0.357,
+          "candidate": 0.358,
+          "relative": 0.0028011204481792743
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.takeOns",
+          "base": 0.741,
+          "candidate": 0.739,
+          "relative": 0.0026990553306342805
+        },
+        {
+          "pos": "LW",
+          "metric": "interceptions",
+          "base": 0.401,
+          "candidate": 0.402,
+          "relative": 0.002493765586034915
+        },
+        {
+          "pos": "LM",
+          "metric": "interceptions",
+          "base": 0.843,
+          "candidate": 0.845,
+          "relative": 0.0023724792408066453
+        },
+        {
+          "pos": "AM",
+          "metric": "d.fouls",
+          "base": 0.922,
+          "candidate": 0.924,
+          "relative": 0.0021691973969631254
+        },
+        {
+          "pos": "LM",
+          "metric": "d.foulsWon",
+          "base": 1.389,
+          "candidate": 1.392,
+          "relative": 0.0021598272138228162
+        },
+        {
+          "pos": "RB",
+          "metric": "d.foulsWon",
+          "base": 0.506,
+          "candidate": 0.507,
+          "relative": 0.0019762845849802388
+        },
+        {
+          "pos": "AM",
+          "metric": "d.crosses",
+          "base": 0.52,
+          "candidate": 0.519,
+          "relative": 0.0019230769230769247
+        },
+        {
+          "pos": "LWB",
+          "metric": "interceptions",
+          "base": 0.539,
+          "candidate": 0.538,
+          "relative": 0.0018552875695732854
+        },
+        {
+          "pos": "LM",
+          "metric": "d.highTurnovers",
+          "base": 0.545,
+          "candidate": 0.546,
+          "relative": 0.0018348623853211023
+        },
+        {
+          "pos": "LWB",
+          "metric": "tackles",
+          "base": 1.155,
+          "candidate": 1.157,
+          "relative": 0.0017316017316017331
+        },
+        {
+          "pos": "ST",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.626,
+          "candidate": 0.625,
+          "relative": 0.0015974440894568705
+        },
+        {
+          "pos": "LB",
+          "metric": "d.foulsWon",
+          "base": 0.644,
+          "candidate": 0.643,
+          "relative": 0.001552795031055902
+        },
+        {
+          "pos": "RM",
+          "metric": "tackles",
+          "base": 1.486,
+          "candidate": 1.484,
+          "relative": 0.0013458950201884266
+        },
+        {
+          "pos": "LM",
+          "metric": "tackles",
+          "base": 1.503,
+          "candidate": 1.505,
+          "relative": 0.0013306719893546254
+        },
+        {
+          "pos": "ST",
+          "metric": "d.fouls",
+          "base": 0.786,
+          "candidate": 0.785,
+          "relative": 0.0012722646310432582
+        },
+        {
+          "pos": "RW",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.8,
+          "candidate": 0.799,
+          "relative": 0.0012500000000000011
+        },
+        {
+          "pos": "CM",
+          "metric": "d.highTurnovers",
+          "base": 0.82,
+          "candidate": 0.819,
+          "relative": 0.0012195121951219523
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.fouls",
+          "base": 0.846,
+          "candidate": 0.845,
+          "relative": 0.001182033096926715
+        },
+        {
+          "pos": "LW",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.85,
+          "candidate": 0.849,
+          "relative": 0.001176470588235295
+        },
+        {
+          "pos": "AM",
+          "metric": "d.takeOns",
+          "base": 2.564,
+          "candidate": 2.561,
+          "relative": 0.0011700468018721192
+        },
+        {
+          "pos": "ST",
+          "metric": "interceptions",
+          "base": 0.937,
+          "candidate": 0.938,
+          "relative": 0.001067235859124749
+        },
+        {
+          "pos": "RB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.943,
+          "candidate": 0.944,
+          "relative": 0.0010604453870625672
+        },
+        {
+          "pos": "LM",
+          "metric": "d.takeOns",
+          "base": 1.966,
+          "candidate": 1.964,
+          "relative": 0.0010172939979654128
+        },
+        {
+          "pos": "CM",
+          "metric": "interceptions",
+          "base": 0.995,
+          "candidate": 0.996,
+          "relative": 0.0010050251256281417
+        },
+        {
+          "pos": "DM",
+          "metric": "d.foulsWon",
+          "base": 1.061,
+          "candidate": 1.062,
+          "relative": 0.0009425070688031216
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.078,
+          "candidate": 1.077,
+          "relative": 0.0009276437847867457
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.105,
+          "candidate": 1.104,
+          "relative": 0.0009049773755655113
+        },
+        {
+          "pos": "LM",
+          "metric": "dribbles",
+          "base": 1.133,
+          "candidate": 1.132,
+          "relative": 0.0008826125330980688
+        },
+        {
+          "pos": "RWB",
+          "metric": "tackles",
+          "base": 1.171,
+          "candidate": 1.17,
+          "relative": 0.0008539709649872859
+        },
+        {
+          "pos": "LW",
+          "metric": "d.progressivePasses",
+          "base": 6.013,
+          "candidate": 6.008,
+          "relative": 0.000831531681357042
+        },
+        {
+          "pos": "RB",
+          "metric": "interceptions",
+          "base": 1.278,
+          "candidate": 1.277,
+          "relative": 0.0007824726134586165
+        },
+        {
+          "pos": "AM",
+          "metric": "interceptions",
+          "base": 1.282,
+          "candidate": 1.283,
+          "relative": 0.000780031201247964
+        },
+        {
+          "pos": "ST",
+          "metric": "d.highTurnovers",
+          "base": 1.289,
+          "candidate": 1.29,
+          "relative": 0.0007757951900699084
+        },
+        {
+          "pos": "LM",
+          "metric": "d.fouls",
+          "base": 1.364,
+          "candidate": 1.363,
+          "relative": 0.0007331378299121054
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.crosses",
+          "base": 4.175,
+          "candidate": 4.178,
+          "relative": 0.0007185628742515243
+        },
+        {
+          "pos": "LW",
+          "metric": "d.foulsWon",
+          "base": 1.428,
+          "candidate": 1.427,
+          "relative": 0.0007002801120447408
+        },
+        {
+          "pos": "RW",
+          "metric": "dribbles",
+          "base": 2.916,
+          "candidate": 2.914,
+          "relative": 0.0006858710562413511
+        },
+        {
+          "pos": "CM",
+          "metric": "dribbles",
+          "base": 1.528,
+          "candidate": 1.529,
+          "relative": 0.0006544502617800327
+        },
+        {
+          "pos": "CB",
+          "metric": "tackles",
+          "base": 1.544,
+          "candidate": 1.543,
+          "relative": 0.0006476683937824559
+        },
+        {
+          "pos": "RB",
+          "metric": "tackles",
+          "base": 1.545,
+          "candidate": 1.546,
+          "relative": 0.0006472491909385838
+        },
+        {
+          "pos": "AM",
+          "metric": "dribbles",
+          "base": 1.575,
+          "candidate": 1.574,
+          "relative": 0.000634920634920565
+        },
+        {
+          "pos": "CB",
+          "metric": "interceptions",
+          "base": 1.65,
+          "candidate": 1.649,
+          "relative": 0.0006060606060605394
+        },
+        {
+          "pos": "RW",
+          "metric": "completed",
+          "base": 25.874,
+          "candidate": 25.86,
+          "relative": 0.0005410837133802021
+        },
+        {
+          "pos": "RW",
+          "metric": "d.progressivePasses",
+          "base": 5.99,
+          "candidate": 5.987,
+          "relative": 0.0005008347245409204
+        },
+        {
+          "pos": "AM",
+          "metric": "d.foulsWon",
+          "base": 2.011,
+          "candidate": 2.01,
+          "relative": 0.0004972650422676947
+        },
+        {
+          "pos": "CM",
+          "metric": "d.fouls",
+          "base": 2.052,
+          "candidate": 2.051,
+          "relative": 0.00048732943469780206
+        },
+        {
+          "pos": "RW",
+          "metric": "passes",
+          "base": 37.725,
+          "candidate": 37.709,
+          "relative": 0.000424121935056282
+        },
+        {
+          "pos": "CM",
+          "metric": "d.takeOns",
+          "base": 2.488,
+          "candidate": 2.489,
+          "relative": 0.00040192926045011653
+        },
+        {
+          "pos": "RWB",
+          "metric": "completed",
+          "base": 24.91,
+          "candidate": 24.9,
+          "relative": 0.0004014452027298901
+        },
+        {
+          "pos": "GK",
+          "metric": "passes",
+          "base": 2.679,
+          "candidate": 2.68,
+          "relative": 0.0003732736095559291
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.progressivePasses",
+          "base": 8.118,
+          "candidate": 8.115,
+          "relative": 0.0003695491500369689
+        },
+        {
+          "pos": "LM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.725,
+          "candidate": 2.724,
+          "relative": 0.00036697247706417974
+        },
+        {
+          "pos": "RM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.761,
+          "candidate": 2.76,
+          "relative": 0.00036218761318375007
+        },
+        {
+          "pos": "LW",
+          "metric": "dribbles",
+          "base": 2.805,
+          "candidate": 2.806,
+          "relative": 0.0003565062388591408
+        },
+        {
+          "pos": "LM",
+          "metric": "d.progressivePasses",
+          "base": 16.63,
+          "candidate": 16.625,
+          "relative": 0.0003006614552013834
+        },
+        {
+          "pos": "ST",
+          "metric": "d.takeOns",
+          "base": 3.418,
+          "candidate": 3.417,
+          "relative": 0.0002925687536572071
+        },
+        {
+          "pos": "CM",
+          "metric": "d.lineBreakingPasses",
+          "base": 3.569,
+          "candidate": 3.57,
+          "relative": 0.00028019052956007
+        },
+        {
+          "pos": "LB",
+          "metric": "completed",
+          "base": 23.052,
+          "candidate": 23.058,
+          "relative": 0.0002602811035918891
+        },
+        {
+          "pos": "ST",
+          "metric": "d.progressivePasses",
+          "base": 3.901,
+          "candidate": 3.9,
+          "relative": 0.00025634452704431936
+        },
+        {
+          "pos": "CB",
+          "metric": "d.progressivePasses",
+          "base": 8.352,
+          "candidate": 8.354,
+          "relative": 0.00023946360153243433
+        },
+        {
+          "pos": "RM",
+          "metric": "completed",
+          "base": 46.256,
+          "candidate": 46.245,
+          "relative": 0.00023780698720172054
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.progressivePasses",
+          "base": 8.783,
+          "candidate": 8.781,
+          "relative": 0.0002277126266650224
+        },
+        {
+          "pos": "RM",
+          "metric": "passes",
+          "base": 61.758,
+          "candidate": 61.744,
+          "relative": 0.00022669127886270441
+        },
+        {
+          "pos": "LB",
+          "metric": "d.progressivePasses",
+          "base": 8.834,
+          "candidate": 8.836,
+          "relative": 0.00022639800769760787
+        },
+        {
+          "pos": "RWB",
+          "metric": "passes",
+          "base": 33.961,
+          "candidate": 33.954,
+          "relative": 0.00020611878331020574
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.crosses",
+          "base": 4.883,
+          "candidate": 4.882,
+          "relative": 0.0002047921359820467
+        },
+        {
+          "pos": "LW",
+          "metric": "d.crosses",
+          "base": 4.938,
+          "candidate": 4.939,
+          "relative": 0.00020251113811266383
+        },
+        {
+          "pos": "CB",
+          "metric": "completed",
+          "base": 19.991,
+          "candidate": 19.995,
+          "relative": 0.00020009004051830002
+        },
+        {
+          "pos": "CB",
+          "metric": "passes",
+          "base": 25.089,
+          "candidate": 25.094,
+          "relative": 0.00019929052572850885
+        },
+        {
+          "pos": "LM",
+          "metric": "d.crosses",
+          "base": 5.175,
+          "candidate": 5.176,
+          "relative": 0.00019323671497590994
+        },
+        {
+          "pos": "RM",
+          "metric": "d.crosses",
+          "base": 5.286,
+          "candidate": 5.285,
+          "relative": 0.0001891789632991763
+        },
+        {
+          "pos": "RW",
+          "metric": "d.takeOns",
+          "base": 5.326,
+          "candidate": 5.327,
+          "relative": 0.0001877581674803481
+        },
+        {
+          "pos": "ST",
+          "metric": "completed",
+          "base": 16.448,
+          "candidate": 16.445,
+          "relative": 0.00018239299610895633
+        },
+        {
+          "pos": "LB",
+          "metric": "passes",
+          "base": 29.79,
+          "candidate": 29.795,
+          "relative": 0.00016784155756974012
+        },
+        {
+          "pos": "RW",
+          "metric": "d.crosses",
+          "base": 5.976,
+          "candidate": 5.975,
+          "relative": 0.00016733601070956057
+        },
+        {
+          "pos": "AM",
+          "metric": "d.progressivePasses",
+          "base": 19.628,
+          "candidate": 19.625,
+          "relative": 0.00015284287752191327
+        },
+        {
+          "pos": "RB",
+          "metric": "d.progressivePasses",
+          "base": 7.952,
+          "candidate": 7.953,
+          "relative": 0.00012575452716301986
+        },
+        {
+          "pos": "RM",
+          "metric": "d.progressivePasses",
+          "base": 16.759,
+          "candidate": 16.757,
+          "relative": 0.00011933886270057232
+        },
+        {
+          "pos": "AM",
+          "metric": "passes",
+          "base": 87.673,
+          "candidate": 87.663,
+          "relative": 0.00011406020097413247
+        },
+        {
+          "pos": "LW",
+          "metric": "passes",
+          "base": 37.111,
+          "candidate": 37.107,
+          "relative": 0.00010778475384650868
+        },
+        {
+          "pos": "LM",
+          "metric": "completed",
+          "base": 46.742,
+          "candidate": 46.737,
+          "relative": 0.00010697017671463465
+        },
+        {
+          "pos": "DM",
+          "metric": "passes",
+          "base": 71.156,
+          "candidate": 71.163,
+          "relative": 0.00009837540052828702
+        },
+        {
+          "pos": "ST",
+          "metric": "passes",
+          "base": 22.827,
+          "candidate": 22.825,
+          "relative": 0.0000876155429974348
+        },
+        {
+          "pos": "DM",
+          "metric": "completed",
+          "base": 60.567,
+          "candidate": 60.572,
+          "relative": 0.00008255320554101339
+        },
+        {
+          "pos": "DM",
+          "metric": "d.progressivePasses",
+          "base": 17.438,
+          "candidate": 17.439,
+          "relative": 0.000057346025920473805
+        },
+        {
+          "pos": "AM",
+          "metric": "completed",
+          "base": 70.993,
+          "candidate": 70.989,
+          "relative": 0.0000563435831700404
+        },
+        {
+          "pos": "CM",
+          "metric": "completed",
+          "base": 82.563,
+          "candidate": 82.567,
+          "relative": 0.000048447851943251547
+        },
+        {
+          "pos": "LWB",
+          "metric": "completed",
+          "base": 23.386,
+          "candidate": 23.385,
+          "relative": 0.00004276062601546521
+        },
+        {
+          "pos": "CM",
+          "metric": "d.progressivePasses",
+          "base": 23.992,
+          "candidate": 23.993,
+          "relative": 0.00004168056018663177
+        },
+        {
+          "pos": "RB",
+          "metric": "passes",
+          "base": 25.945,
+          "candidate": 25.946,
+          "relative": 0.000038543071882876164
+        },
+        {
+          "pos": "LM",
+          "metric": "passes",
+          "base": 61.672,
+          "candidate": 61.67,
+          "relative": 0.000032429627707798335
+        },
+        {
+          "pos": "CB",
+          "metric": "goals",
+          "base": 0.053,
+          "candidate": 0.053,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "assists",
+          "base": 0.013,
+          "candidate": 0.013,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "shots",
+          "base": 0.492,
+          "candidate": 0.492,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "onTarget",
+          "base": 0.165,
+          "candidate": 0.165,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "dribbles",
+          "base": 0.163,
+          "candidate": 0.163,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.keyPasses",
+          "base": 0.147,
+          "candidate": 0.147,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.takeOns",
+          "base": 0.249,
+          "candidate": 0.249,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.highTurnovers",
+          "base": 0.285,
+          "candidate": 0.285,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.766,
+          "candidate": 0.766,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.crosses",
+          "base": 0.149,
+          "candidate": 0.149,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.fouls",
+          "base": 0.77,
+          "candidate": 0.77,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.foulsWon",
+          "base": 0.554,
+          "candidate": 0.554,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.yellowCards",
+          "base": 0.207,
+          "candidate": 0.207,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.offsides",
+          "base": 0.002,
+          "candidate": 0.002,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "goals",
+          "base": 0.134,
+          "candidate": 0.134,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "assists",
+          "base": 0.122,
+          "candidate": 0.122,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "passes",
+          "base": 99.171,
+          "candidate": 99.171,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "shots",
+          "base": 1.356,
+          "candidate": 1.356,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "onTarget",
+          "base": 0.448,
+          "candidate": 0.448,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "tackles",
+          "base": 2.042,
+          "candidate": 2.042,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.keyPasses",
+          "base": 1.424,
+          "candidate": 1.424,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.crosses",
+          "base": 0.745,
+          "candidate": 0.745,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.foulsWon",
+          "base": 2.406,
+          "candidate": 2.406,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.yellowCards",
+          "base": 0.188,
+          "candidate": 0.188,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.offsides",
+          "base": 0.021,
+          "candidate": 0.021,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "goals",
+          "base": 0.071,
+          "candidate": 0.071,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "assists",
+          "base": 0.074,
+          "candidate": 0.074,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "shots",
+          "base": 0.748,
+          "candidate": 0.748,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "onTarget",
+          "base": 0.243,
+          "candidate": 0.243,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "tackles",
+          "base": 2.406,
+          "candidate": 2.406,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "interceptions",
+          "base": 2.7,
+          "candidate": 2.7,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "dribbles",
+          "base": 0.8,
+          "candidate": 0.8,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.keyPasses",
+          "base": 0.896,
+          "candidate": 0.896,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.takeOns",
+          "base": 1.236,
+          "candidate": 1.236,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.highTurnovers",
+          "base": 1.466,
+          "candidate": 1.466,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.358,
+          "candidate": 2.358,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.crosses",
+          "base": 0.525,
+          "candidate": 0.525,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.fouls",
+          "base": 1.993,
+          "candidate": 1.993,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.yellowCards",
+          "base": 0.195,
+          "candidate": 0.195,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.offsides",
+          "base": 0.008,
+          "candidate": 0.008,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "goals",
+          "base": 0.424,
+          "candidate": 0.424,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "assists",
+          "base": 0.085,
+          "candidate": 0.085,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "shots",
+          "base": 3.449,
+          "candidate": 3.449,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "onTarget",
+          "base": 1.219,
+          "candidate": 1.219,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "tackles",
+          "base": 0.411,
+          "candidate": 0.411,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "dribbles",
+          "base": 1.9,
+          "candidate": 1.9,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.keyPasses",
+          "base": 0.728,
+          "candidate": 0.728,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.crosses",
+          "base": 1.605,
+          "candidate": 1.605,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.foulsWon",
+          "base": 0.898,
+          "candidate": 0.898,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.yellowCards",
+          "base": 0.135,
+          "candidate": 0.135,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.offsides",
+          "base": 0.774,
+          "candidate": 0.774,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "goals",
+          "base": 0.004,
+          "candidate": 0.004,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "assists",
+          "base": 0.002,
+          "candidate": 0.002,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "completed",
+          "base": 1.915,
+          "candidate": 1.915,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "shots",
+          "base": 0.031,
+          "candidate": 0.031,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "onTarget",
+          "base": 0.01,
+          "candidate": 0.01,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "dribbles",
+          "base": 0.02,
+          "candidate": 0.02,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "saves",
+          "base": 1.903,
+          "candidate": 1.903,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.keyPasses",
+          "base": 0.021,
+          "candidate": 0.021,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.progressivePasses",
+          "base": 0.867,
+          "candidate": 0.867,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.takeOns",
+          "base": 0.034,
+          "candidate": 0.034,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.highTurnovers",
+          "base": 0.046,
+          "candidate": 0.046,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.045,
+          "candidate": 0.045,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.crosses",
+          "base": 0.021,
+          "candidate": 0.021,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.fouls",
+          "base": 0.104,
+          "candidate": 0.104,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.foulsWon",
+          "base": 0.049,
+          "candidate": 0.049,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.yellowCards",
+          "base": 0.09,
+          "candidate": 0.09,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.offsides",
+          "base": 0.094,
+          "candidate": 0.094,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "goals",
+          "base": 0.031,
+          "candidate": 0.031,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "assists",
+          "base": 0.077,
+          "candidate": 0.077,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "shots",
+          "base": 0.309,
+          "candidate": 0.309,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "onTarget",
+          "base": 0.099,
+          "candidate": 0.099,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "tackles",
+          "base": 1.7,
+          "candidate": 1.7,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "interceptions",
+          "base": 1.491,
+          "candidate": 1.491,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "dribbles",
+          "base": 0.173,
+          "candidate": 0.173,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "saves",
+          "base": 0.003,
+          "candidate": 0.003,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.keyPasses",
+          "base": 0.649,
+          "candidate": 0.649,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.takeOns",
+          "base": 0.274,
+          "candidate": 0.274,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.highTurnovers",
+          "base": 0.302,
+          "candidate": 0.302,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.047,
+          "candidate": 1.047,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.crosses",
+          "base": 1.882,
+          "candidate": 1.882,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.fouls",
+          "base": 0.977,
+          "candidate": 0.977,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.yellowCards",
+          "base": 0.209,
+          "candidate": 0.209,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.offsides",
+          "base": 0.01,
+          "candidate": 0.01,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "goals",
+          "base": 0.024,
+          "candidate": 0.024,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "assists",
+          "base": 0.06,
+          "candidate": 0.06,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "completed",
+          "base": 20.033,
+          "candidate": 20.033,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "shots",
+          "base": 0.248,
+          "candidate": 0.248,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "onTarget",
+          "base": 0.079,
+          "candidate": 0.079,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "dribbles",
+          "base": 0.135,
+          "candidate": 0.135,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "saves",
+          "base": 0.002,
+          "candidate": 0.002,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.keyPasses",
+          "base": 0.502,
+          "candidate": 0.502,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.highTurnovers",
+          "base": 0.246,
+          "candidate": 0.246,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.crosses",
+          "base": 1.365,
+          "candidate": 1.365,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.fouls",
+          "base": 0.936,
+          "candidate": 0.936,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.yellowCards",
+          "base": 0.214,
+          "candidate": 0.214,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.offsides",
+          "base": 0.013,
+          "candidate": 0.013,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "goals",
+          "base": 0.186,
+          "candidate": 0.186,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "assists",
+          "base": 0.241,
+          "candidate": 0.241,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "shots",
+          "base": 1.773,
+          "candidate": 1.773,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "onTarget",
+          "base": 0.585,
+          "candidate": 0.585,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "interceptions",
+          "base": 0.411,
+          "candidate": 0.411,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.keyPasses",
+          "base": 1.745,
+          "candidate": 1.745,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.highTurnovers",
+          "base": 0.538,
+          "candidate": 0.538,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.fouls",
+          "base": 0.544,
+          "candidate": 0.544,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.foulsWon",
+          "base": 1.264,
+          "candidate": 1.264,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.yellowCards",
+          "base": 0.138,
+          "candidate": 0.138,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.offsides",
+          "base": 0.546,
+          "candidate": 0.546,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "goals",
+          "base": 0.207,
+          "candidate": 0.207,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "assists",
+          "base": 0.195,
+          "candidate": 0.195,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "completed",
+          "base": 26.285,
+          "candidate": 26.285,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "shots",
+          "base": 1.893,
+          "candidate": 1.893,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "onTarget",
+          "base": 0.637,
+          "candidate": 0.637,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "tackles",
+          "base": 0.311,
+          "candidate": 0.311,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.keyPasses",
+          "base": 1.539,
+          "candidate": 1.539,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.takeOns",
+          "base": 5.113,
+          "candidate": 5.113,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.highTurnovers",
+          "base": 0.53,
+          "candidate": 0.53,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.fouls",
+          "base": 0.551,
+          "candidate": 0.551,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.yellowCards",
+          "base": 0.146,
+          "candidate": 0.146,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "goals",
+          "base": 0.024,
+          "candidate": 0.024,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "assists",
+          "base": 0.193,
+          "candidate": 0.193,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "passes",
+          "base": 31.189,
+          "candidate": 31.189,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "shots",
+          "base": 0.278,
+          "candidate": 0.278,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "onTarget",
+          "base": 0.082,
+          "candidate": 0.082,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.keyPasses",
+          "base": 1.309,
+          "candidate": 1.309,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.takeOns",
+          "base": 0.611,
+          "candidate": 0.611,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.highTurnovers",
+          "base": 0.153,
+          "candidate": 0.153,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.fouls",
+          "base": 0.733,
+          "candidate": 0.733,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.foulsWon",
+          "base": 0.713,
+          "candidate": 0.713,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.yellowCards",
+          "base": 0.19,
+          "candidate": 0.19,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.offsides",
+          "base": 0.008,
+          "candidate": 0.008,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "goals",
+          "base": 0.035,
+          "candidate": 0.035,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "assists",
+          "base": 0.2,
+          "candidate": 0.2,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "shots",
+          "base": 0.293,
+          "candidate": 0.293,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "onTarget",
+          "base": 0.099,
+          "candidate": 0.099,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "interceptions",
+          "base": 0.634,
+          "candidate": 0.634,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "dribbles",
+          "base": 0.45,
+          "candidate": 0.45,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.keyPasses",
+          "base": 1.474,
+          "candidate": 1.474,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.foulsWon",
+          "base": 0.633,
+          "candidate": 0.633,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.yellowCards",
+          "base": 0.202,
+          "candidate": 0.202,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.offsides",
+          "base": 0.012,
+          "candidate": 0.012,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "goals",
+          "base": 0.076,
+          "candidate": 0.076,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "assists",
+          "base": 0.296,
+          "candidate": 0.296,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "shots",
+          "base": 0.958,
+          "candidate": 0.958,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "onTarget",
+          "base": 0.308,
+          "candidate": 0.308,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.keyPasses",
+          "base": 2.466,
+          "candidate": 2.466,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.yellowCards",
+          "base": 0.192,
+          "candidate": 0.192,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "goals",
+          "base": 0.135,
+          "candidate": 0.135,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "assists",
+          "base": 0.093,
+          "candidate": 0.093,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "shots",
+          "base": 1.433,
+          "candidate": 1.433,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "onTarget",
+          "base": 0.464,
+          "candidate": 0.464,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "tackles",
+          "base": 0.61,
+          "candidate": 0.61,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.keyPasses",
+          "base": 1.139,
+          "candidate": 1.139,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.highTurnovers",
+          "base": 0.945,
+          "candidate": 0.945,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.lineBreakingPasses",
+          "base": 3.101,
+          "candidate": 3.101,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.yellowCards",
+          "base": 0.227,
+          "candidate": 0.227,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.offsides",
+          "base": 0.021,
+          "candidate": 0.021,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "goals",
+          "base": 0.078,
+          "candidate": 0.078,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "assists",
+          "base": 0.308,
+          "candidate": 0.308,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "shots",
+          "base": 0.953,
+          "candidate": 0.953,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "onTarget",
+          "base": 0.297,
+          "candidate": 0.297,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "interceptions",
+          "base": 0.833,
+          "candidate": 0.833,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "dribbles",
+          "base": 1.163,
+          "candidate": 1.163,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.keyPasses",
+          "base": 2.472,
+          "candidate": 2.472,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.takeOns",
+          "base": 2.033,
+          "candidate": 2.033,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.highTurnovers",
+          "base": 0.503,
+          "candidate": 0.503,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.fouls",
+          "base": 1.402,
+          "candidate": 1.402,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.foulsWon",
+          "base": 1.373,
+          "candidate": 1.373,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.yellowCards",
+          "base": 0.192,
+          "candidate": 0.192,
+          "relative": 0
+        }
+      ],
+      "differences": {
+        "/npcSeason/competitions/#/players/#/clubs/#/detail/#": {
+          "count": 15436,
+          "example": [
+            "/npcSeason/competitions/0/players/13/clubs/0/detail/19",
+            22,
+            23
+          ]
+        },
+        "/npcSeason/competitions/#/players/#/clubs/#/metrics/#": {
+          "count": 9712,
+          "example": [
+            "/npcSeason/competitions/0/players/15/clubs/0/metrics/3",
+            1310,
+            1309
+          ]
+        }
+      }
+    },
+    {
+      "year": 1983,
+      "hashesBase": {
+        "fixtureScores": "f3a216d3f2ba",
+        "fixturesPlayed": 8502,
+        "cupScores": "76158d64eeb8",
+        "tables": "c6a062fc52a5",
+        "leagueGoalsAssists": "781dee7a7d3a",
+        "discipline": "bb791b3f8f79",
+        "squads": "e7fabc127709",
+        "elo": "ff2502219677"
+      },
+      "hashesCandidate": {
+        "fixtureScores": "f3a216d3f2ba",
+        "fixturesPlayed": 8502,
+        "cupScores": "76158d64eeb8",
+        "tables": "c6a062fc52a5",
+        "leagueGoalsAssists": "781dee7a7d3a",
+        "discipline": "bb791b3f8f79",
+        "squads": "e7fabc127709",
+        "elo": "ff2502219677"
+      },
+      "roles": [
+        {
+          "pos": "CM",
+          "metric": "d.offsides",
+          "base": 0.023,
+          "candidate": 0.022,
+          "relative": 0.04347826086956526
+        },
+        {
+          "pos": "GK",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.041,
+          "candidate": 0.04,
+          "relative": 0.024390243902439046
+        },
+        {
+          "pos": "GK",
+          "metric": "d.highTurnovers",
+          "base": 0.043,
+          "candidate": 0.042,
+          "relative": 0.023255813953488233
+        },
+        {
+          "pos": "LM",
+          "metric": "d.offsides",
+          "base": 0.055,
+          "candidate": 0.054,
+          "relative": 0.0181818181818182
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.fouls",
+          "base": 0.7,
+          "candidate": 0.694,
+          "relative": 0.008571428571428579
+        },
+        {
+          "pos": "CB",
+          "metric": "d.crosses",
+          "base": 0.156,
+          "candidate": 0.155,
+          "relative": 0.006410256410256416
+        },
+        {
+          "pos": "LWB",
+          "metric": "dribbles",
+          "base": 0.338,
+          "candidate": 0.336,
+          "relative": 0.0059171597633136145
+        },
+        {
+          "pos": "RB",
+          "metric": "d.highTurnovers",
+          "base": 0.243,
+          "candidate": 0.244,
+          "relative": 0.0041152263374485635
+        },
+        {
+          "pos": "LWB",
+          "metric": "interceptions",
+          "base": 0.518,
+          "candidate": 0.516,
+          "relative": 0.003861003861003864
+        },
+        {
+          "pos": "LM",
+          "metric": "interceptions",
+          "base": 0.83,
+          "candidate": 0.833,
+          "relative": 0.0036144578313253048
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.takeOns",
+          "base": 0.567,
+          "candidate": 0.565,
+          "relative": 0.0035273368606701973
+        },
+        {
+          "pos": "LB",
+          "metric": "d.highTurnovers",
+          "base": 0.294,
+          "candidate": 0.293,
+          "relative": 0.0034013605442176904
+        },
+        {
+          "pos": "LWB",
+          "metric": "tackles",
+          "base": 1.094,
+          "candidate": 1.091,
+          "relative": 0.002742230347349281
+        },
+        {
+          "pos": "LW",
+          "metric": "interceptions",
+          "base": 0.388,
+          "candidate": 0.389,
+          "relative": 0.002577319587628868
+        },
+        {
+          "pos": "ST",
+          "metric": "tackles",
+          "base": 0.405,
+          "candidate": 0.406,
+          "relative": 0.002469135802469138
+        },
+        {
+          "pos": "RWB",
+          "metric": "dribbles",
+          "base": 0.407,
+          "candidate": 0.406,
+          "relative": 0.002457002457002323
+        },
+        {
+          "pos": "RW",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.844,
+          "candidate": 0.846,
+          "relative": 0.0023696682464455
+        },
+        {
+          "pos": "AM",
+          "metric": "d.fouls",
+          "base": 0.926,
+          "candidate": 0.928,
+          "relative": 0.002159827213822896
+        },
+        {
+          "pos": "AM",
+          "metric": "d.crosses",
+          "base": 0.469,
+          "candidate": 0.468,
+          "relative": 0.002132196162046792
+        },
+        {
+          "pos": "RM",
+          "metric": "d.highTurnovers",
+          "base": 0.49,
+          "candidate": 0.491,
+          "relative": 0.002040816326530614
+        },
+        {
+          "pos": "LW",
+          "metric": "d.fouls",
+          "base": 0.506,
+          "candidate": 0.507,
+          "relative": 0.0019762845849802388
+        },
+        {
+          "pos": "RW",
+          "metric": "d.offsides",
+          "base": 0.53,
+          "candidate": 0.529,
+          "relative": 0.0018867924528301902
+        },
+        {
+          "pos": "RW",
+          "metric": "d.fouls",
+          "base": 0.556,
+          "candidate": 0.557,
+          "relative": 0.001798561151079138
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.115,
+          "candidate": 1.117,
+          "relative": 0.001793721973094172
+        },
+        {
+          "pos": "AM",
+          "metric": "tackles",
+          "base": 0.596,
+          "candidate": 0.595,
+          "relative": 0.00167785234899329
+        },
+        {
+          "pos": "DM",
+          "metric": "d.crosses",
+          "base": 0.607,
+          "candidate": 0.606,
+          "relative": 0.0016474464579901169
+        },
+        {
+          "pos": "RWB",
+          "metric": "interceptions",
+          "base": 0.609,
+          "candidate": 0.608,
+          "relative": 0.001642036124794747
+        },
+        {
+          "pos": "AM",
+          "metric": "interceptions",
+          "base": 1.278,
+          "candidate": 1.28,
+          "relative": 0.0015649452269170592
+        },
+        {
+          "pos": "LW",
+          "metric": "d.offsides",
+          "base": 0.64,
+          "candidate": 0.641,
+          "relative": 0.0015625000000000014
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.foulsWon",
+          "base": 0.684,
+          "candidate": 0.685,
+          "relative": 0.0014619883040935685
+        },
+        {
+          "pos": "RM",
+          "metric": "d.foulsWon",
+          "base": 1.376,
+          "candidate": 1.378,
+          "relative": 0.0014534883720930248
+        },
+        {
+          "pos": "LM",
+          "metric": "tackles",
+          "base": 1.493,
+          "candidate": 1.491,
+          "relative": 0.0013395847287340935
+        },
+        {
+          "pos": "CB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.758,
+          "candidate": 0.759,
+          "relative": 0.0013192612137203179
+        },
+        {
+          "pos": "LW",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.808,
+          "candidate": 0.809,
+          "relative": 0.0012376237623762387
+        },
+        {
+          "pos": "AM",
+          "metric": "dribbles",
+          "base": 1.682,
+          "candidate": 1.68,
+          "relative": 0.001189060642092748
+        },
+        {
+          "pos": "AM",
+          "metric": "d.takeOns",
+          "base": 2.666,
+          "candidate": 2.663,
+          "relative": 0.0011252813203301252
+        },
+        {
+          "pos": "ST",
+          "metric": "d.foulsWon",
+          "base": 0.917,
+          "candidate": 0.916,
+          "relative": 0.0010905125408942212
+        },
+        {
+          "pos": "LW",
+          "metric": "dribbles",
+          "base": 2.783,
+          "candidate": 2.78,
+          "relative": 0.0010779734099892612
+        },
+        {
+          "pos": "ST",
+          "metric": "interceptions",
+          "base": 0.929,
+          "candidate": 0.93,
+          "relative": 0.0010764262648008621
+        },
+        {
+          "pos": "RB",
+          "metric": "d.fouls",
+          "base": 0.931,
+          "candidate": 0.932,
+          "relative": 0.0010741138560687441
+        },
+        {
+          "pos": "AM",
+          "metric": "d.highTurnovers",
+          "base": 0.964,
+          "candidate": 0.965,
+          "relative": 0.0010373443983402498
+        },
+        {
+          "pos": "CM",
+          "metric": "interceptions",
+          "base": 0.986,
+          "candidate": 0.985,
+          "relative": 0.0010141987829614613
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.991,
+          "candidate": 0.992,
+          "relative": 0.0010090817356205861
+        },
+        {
+          "pos": "LW",
+          "metric": "d.takeOns",
+          "base": 5.052,
+          "candidate": 5.047,
+          "relative": 0.0009897070467141517
+        },
+        {
+          "pos": "DM",
+          "metric": "d.foulsWon",
+          "base": 1.089,
+          "candidate": 1.09,
+          "relative": 0.0009182736455464756
+        },
+        {
+          "pos": "RWB",
+          "metric": "tackles",
+          "base": 1.169,
+          "candidate": 1.168,
+          "relative": 0.0008554319931566397
+        },
+        {
+          "pos": "RM",
+          "metric": "dribbles",
+          "base": 1.173,
+          "candidate": 1.172,
+          "relative": 0.0008525149190111781
+        },
+        {
+          "pos": "DM",
+          "metric": "tackles",
+          "base": 2.396,
+          "candidate": 2.398,
+          "relative": 0.000834724540901596
+        },
+        {
+          "pos": "GK",
+          "metric": "passes",
+          "base": 2.55,
+          "candidate": 2.552,
+          "relative": 0.0007843137254902839
+        },
+        {
+          "pos": "RW",
+          "metric": "d.foulsWon",
+          "base": 1.275,
+          "candidate": 1.274,
+          "relative": 0.0007843137254901097
+        },
+        {
+          "pos": "RB",
+          "metric": "interceptions",
+          "base": 1.298,
+          "candidate": 1.297,
+          "relative": 0.000770416024653399
+        },
+        {
+          "pos": "LM",
+          "metric": "d.fouls",
+          "base": 1.374,
+          "candidate": 1.375,
+          "relative": 0.0007278020378456258
+        },
+        {
+          "pos": "RM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.812,
+          "candidate": 2.81,
+          "relative": 0.0007112375533427383
+        },
+        {
+          "pos": "RM",
+          "metric": "d.fouls",
+          "base": 1.418,
+          "candidate": 1.419,
+          "relative": 0.0007052186177715881
+        },
+        {
+          "pos": "LM",
+          "metric": "d.foulsWon",
+          "base": 1.42,
+          "candidate": 1.421,
+          "relative": 0.0007042253521127549
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.progressivePasses",
+          "base": 8.679,
+          "candidate": 8.673,
+          "relative": 0.0006913238852402612
+        },
+        {
+          "pos": "LB",
+          "metric": "interceptions",
+          "base": 1.454,
+          "candidate": 1.453,
+          "relative": 0.0006877579092158802
+        },
+        {
+          "pos": "RW",
+          "metric": "dribbles",
+          "base": 2.987,
+          "candidate": 2.989,
+          "relative": 0.0006695681285570069
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.progressivePasses",
+          "base": 7.69,
+          "candidate": 7.695,
+          "relative": 0.0006501950585175414
+        },
+        {
+          "pos": "RB",
+          "metric": "tackles",
+          "base": 1.549,
+          "candidate": 1.548,
+          "relative": 0.0006455777921238799
+        },
+        {
+          "pos": "AM",
+          "metric": "d.lineBreakingPasses",
+          "base": 3.15,
+          "candidate": 3.148,
+          "relative": 0.000634920634920565
+        },
+        {
+          "pos": "GK",
+          "metric": "completed",
+          "base": 1.821,
+          "candidate": 1.822,
+          "relative": 0.0005491488193300999
+        },
+        {
+          "pos": "LM",
+          "metric": "d.progressivePasses",
+          "base": 16.507,
+          "candidate": 16.498,
+          "relative": 0.0005452232386260581
+        },
+        {
+          "pos": "ST",
+          "metric": "dribbles",
+          "base": 1.874,
+          "candidate": 1.873,
+          "relative": 0.000533617929562493
+        },
+        {
+          "pos": "LM",
+          "metric": "d.takeOns",
+          "base": 1.921,
+          "candidate": 1.92,
+          "relative": 0.0005205622071838167
+        },
+        {
+          "pos": "CM",
+          "metric": "d.fouls",
+          "base": 2.027,
+          "candidate": 2.026,
+          "relative": 0.0004933399111989807
+        },
+        {
+          "pos": "RM",
+          "metric": "d.takeOns",
+          "base": 2.05,
+          "candidate": 2.049,
+          "relative": 0.0004878048780487268
+        },
+        {
+          "pos": "AM",
+          "metric": "d.foulsWon",
+          "base": 2.081,
+          "candidate": 2.082,
+          "relative": 0.0004805382027870687
+        },
+        {
+          "pos": "LM",
+          "metric": "d.crosses",
+          "base": 4.725,
+          "candidate": 4.727,
+          "relative": 0.0004232804232805647
+        },
+        {
+          "pos": "DM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.449,
+          "candidate": 2.448,
+          "relative": 0.0004083299305838669
+        },
+        {
+          "pos": "CM",
+          "metric": "d.takeOns",
+          "base": 2.46,
+          "candidate": 2.461,
+          "relative": 0.00040650406504060563
+        },
+        {
+          "pos": "LW",
+          "metric": "d.crosses",
+          "base": 5.038,
+          "candidate": 5.04,
+          "relative": 0.0003969829297339777
+        },
+        {
+          "pos": "DM",
+          "metric": "interceptions",
+          "base": 2.701,
+          "candidate": 2.7,
+          "relative": 0.0003702332469455349
+        },
+        {
+          "pos": "LM",
+          "metric": "d.lineBreakingPasses",
+          "base": 2.728,
+          "candidate": 2.729,
+          "relative": 0.00036656891495597134
+        },
+        {
+          "pos": "CB",
+          "metric": "d.progressivePasses",
+          "base": 8.292,
+          "candidate": 8.295,
+          "relative": 0.00036179450072360274
+        },
+        {
+          "pos": "RB",
+          "metric": "passes",
+          "base": 26.175,
+          "candidate": 26.167,
+          "relative": 0.00030563514804199117
+        },
+        {
+          "pos": "RB",
+          "metric": "completed",
+          "base": 20.14,
+          "candidate": 20.134,
+          "relative": 0.00029791459781530424
+        },
+        {
+          "pos": "ST",
+          "metric": "d.takeOns",
+          "base": 3.378,
+          "candidate": 3.377,
+          "relative": 0.00029603315571353876
+        },
+        {
+          "pos": "ST",
+          "metric": "d.progressivePasses",
+          "base": 3.888,
+          "candidate": 3.889,
+          "relative": 0.00025720164609050665
+        },
+        {
+          "pos": "CB",
+          "metric": "completed",
+          "base": 19.754,
+          "candidate": 19.759,
+          "relative": 0.0002531132935101248
+        },
+        {
+          "pos": "RB",
+          "metric": "d.progressivePasses",
+          "base": 7.946,
+          "candidate": 7.944,
+          "relative": 0.0002516989680342033
+        },
+        {
+          "pos": "AM",
+          "metric": "d.progressivePasses",
+          "base": 20.027,
+          "candidate": 20.022,
+          "relative": 0.0002496629550108632
+        },
+        {
+          "pos": "RM",
+          "metric": "d.progressivePasses",
+          "base": 16.686,
+          "candidate": 16.682,
+          "relative": 0.00023972192256989906
+        },
+        {
+          "pos": "LM",
+          "metric": "completed",
+          "base": 46.199,
+          "candidate": 46.188,
+          "relative": 0.00023810039178327844
+        },
+        {
+          "pos": "RW",
+          "metric": "passes",
+          "base": 38.868,
+          "candidate": 38.86,
+          "relative": 0.00020582484305862588
+        },
+        {
+          "pos": "LM",
+          "metric": "passes",
+          "base": 60.774,
+          "candidate": 60.762,
+          "relative": 0.00019745285813012892
+        },
+        {
+          "pos": "RW",
+          "metric": "d.takeOns",
+          "base": 5.426,
+          "candidate": 5.427,
+          "relative": 0.00018429782528555947
+        },
+        {
+          "pos": "LWB",
+          "metric": "completed",
+          "base": 22.031,
+          "candidate": 22.035,
+          "relative": 0.0001815623439699213
+        },
+        {
+          "pos": "AM",
+          "metric": "completed",
+          "base": 72.508,
+          "candidate": 72.496,
+          "relative": 0.0001654989794229665
+        },
+        {
+          "pos": "RW",
+          "metric": "d.crosses",
+          "base": 6.043,
+          "candidate": 6.042,
+          "relative": 0.00016548072149600099
+        },
+        {
+          "pos": "DM",
+          "metric": "completed",
+          "base": 61.579,
+          "candidate": 61.589,
+          "relative": 0.00016239302359567401
+        },
+        {
+          "pos": "CB",
+          "metric": "passes",
+          "base": 24.864,
+          "candidate": 24.868,
+          "relative": 0.00016087516087507172
+        },
+        {
+          "pos": "RW",
+          "metric": "d.progressivePasses",
+          "base": 6.255,
+          "candidate": 6.256,
+          "relative": 0.00015987210231819887
+        },
+        {
+          "pos": "RW",
+          "metric": "completed",
+          "base": 26.748,
+          "candidate": 26.744,
+          "relative": 0.00014954389113209718
+        },
+        {
+          "pos": "DM",
+          "metric": "passes",
+          "base": 72.408,
+          "candidate": 72.417,
+          "relative": 0.00012429565793835407
+        },
+        {
+          "pos": "RWB",
+          "metric": "completed",
+          "base": 24.95,
+          "candidate": 24.947,
+          "relative": 0.0001202404809619284
+        },
+        {
+          "pos": "LB",
+          "metric": "d.progressivePasses",
+          "base": 8.851,
+          "candidate": 8.852,
+          "relative": 0.00011298158400174508
+        },
+        {
+          "pos": "LWB",
+          "metric": "passes",
+          "base": 29.513,
+          "candidate": 29.51,
+          "relative": 0.00010165012028597952
+        },
+        {
+          "pos": "AM",
+          "metric": "passes",
+          "base": 89.137,
+          "candidate": 89.128,
+          "relative": 0.00010096817258826684
+        },
+        {
+          "pos": "LB",
+          "metric": "completed",
+          "base": 23.135,
+          "candidate": 23.137,
+          "relative": 0.00008644910309050752
+        },
+        {
+          "pos": "LW",
+          "metric": "passes",
+          "base": 36.916,
+          "candidate": 36.919,
+          "relative": 0.00008126557590205098
+        },
+        {
+          "pos": "DM",
+          "metric": "d.progressivePasses",
+          "base": 17.724,
+          "candidate": 17.725,
+          "relative": 0.000056420672534485566
+        },
+        {
+          "pos": "CM",
+          "metric": "d.progressivePasses",
+          "base": 23.682,
+          "candidate": 23.681,
+          "relative": 0.00004222616333070135
+        },
+        {
+          "pos": "CM",
+          "metric": "completed",
+          "base": 81.732,
+          "candidate": 81.729,
+          "relative": 0.000036705329613861326
+        },
+        {
+          "pos": "LB",
+          "metric": "passes",
+          "base": 29.766,
+          "candidate": 29.767,
+          "relative": 0.00003359537727612787
+        },
+        {
+          "pos": "CM",
+          "metric": "passes",
+          "base": 98.123,
+          "candidate": 98.12,
+          "relative": 0.000030573871569357986
+        },
+        {
+          "pos": "RWB",
+          "metric": "passes",
+          "base": 34.035,
+          "candidate": 34.034,
+          "relative": 0.000029381519024465095
+        },
+        {
+          "pos": "GK",
+          "metric": "goals",
+          "base": 0.004,
+          "candidate": 0.004,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "assists",
+          "base": 0.002,
+          "candidate": 0.002,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "shots",
+          "base": 0.035,
+          "candidate": 0.035,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "onTarget",
+          "base": 0.012,
+          "candidate": 0.012,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "tackles",
+          "base": 0.029,
+          "candidate": 0.029,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "interceptions",
+          "base": 0.103,
+          "candidate": 0.103,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "dribbles",
+          "base": 0.021,
+          "candidate": 0.021,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "saves",
+          "base": 1.934,
+          "candidate": 1.934,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.keyPasses",
+          "base": 0.018,
+          "candidate": 0.018,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.progressivePasses",
+          "base": 0.834,
+          "candidate": 0.834,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.takeOns",
+          "base": 0.036,
+          "candidate": 0.036,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.crosses",
+          "base": 0.024,
+          "candidate": 0.024,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.fouls",
+          "base": 0.1,
+          "candidate": 0.1,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.foulsWon",
+          "base": 0.043,
+          "candidate": 0.043,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.yellowCards",
+          "base": 0.087,
+          "candidate": 0.087,
+          "relative": 0
+        },
+        {
+          "pos": "GK",
+          "metric": "d.offsides",
+          "base": 0.117,
+          "candidate": 0.117,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "goals",
+          "base": 0.053,
+          "candidate": 0.053,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "assists",
+          "base": 0.012,
+          "candidate": 0.012,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "shots",
+          "base": 0.483,
+          "candidate": 0.483,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "onTarget",
+          "base": 0.168,
+          "candidate": 0.168,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "tackles",
+          "base": 1.548,
+          "candidate": 1.548,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "interceptions",
+          "base": 1.657,
+          "candidate": 1.657,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "dribbles",
+          "base": 0.156,
+          "candidate": 0.156,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.keyPasses",
+          "base": 0.147,
+          "candidate": 0.147,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.takeOns",
+          "base": 0.243,
+          "candidate": 0.243,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.highTurnovers",
+          "base": 0.29,
+          "candidate": 0.29,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.fouls",
+          "base": 0.789,
+          "candidate": 0.789,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.foulsWon",
+          "base": 0.546,
+          "candidate": 0.546,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.yellowCards",
+          "base": 0.211,
+          "candidate": 0.211,
+          "relative": 0
+        },
+        {
+          "pos": "CB",
+          "metric": "d.offsides",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "goals",
+          "base": 0.08,
+          "candidate": 0.08,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "assists",
+          "base": 0.082,
+          "candidate": 0.082,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "shots",
+          "base": 0.781,
+          "candidate": 0.781,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "onTarget",
+          "base": 0.264,
+          "candidate": 0.264,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "dribbles",
+          "base": 0.827,
+          "candidate": 0.827,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "saves",
+          "base": 0.007,
+          "candidate": 0.007,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.keyPasses",
+          "base": 0.92,
+          "candidate": 0.92,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.takeOns",
+          "base": 1.276,
+          "candidate": 1.276,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.highTurnovers",
+          "base": 1.47,
+          "candidate": 1.47,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.fouls",
+          "base": 2.013,
+          "candidate": 2.013,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.yellowCards",
+          "base": 0.19,
+          "candidate": 0.19,
+          "relative": 0
+        },
+        {
+          "pos": "DM",
+          "metric": "d.offsides",
+          "base": 0.009,
+          "candidate": 0.009,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "goals",
+          "base": 0.134,
+          "candidate": 0.134,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "assists",
+          "base": 0.124,
+          "candidate": 0.124,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "shots",
+          "base": 1.324,
+          "candidate": 1.324,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "onTarget",
+          "base": 0.447,
+          "candidate": 0.447,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "tackles",
+          "base": 2.025,
+          "candidate": 2.025,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "dribbles",
+          "base": 1.513,
+          "candidate": 1.513,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.keyPasses",
+          "base": 1.424,
+          "candidate": 1.424,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.highTurnovers",
+          "base": 0.818,
+          "candidate": 0.818,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.lineBreakingPasses",
+          "base": 3.503,
+          "candidate": 3.503,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.crosses",
+          "base": 0.765,
+          "candidate": 0.765,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.foulsWon",
+          "base": 2.378,
+          "candidate": 2.378,
+          "relative": 0
+        },
+        {
+          "pos": "CM",
+          "metric": "d.yellowCards",
+          "base": 0.192,
+          "candidate": 0.192,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "goals",
+          "base": 0.433,
+          "candidate": 0.433,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "assists",
+          "base": 0.083,
+          "candidate": 0.083,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "passes",
+          "base": 22.646,
+          "candidate": 22.646,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "completed",
+          "base": 16.293,
+          "candidate": 16.293,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "shots",
+          "base": 3.445,
+          "candidate": 3.445,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "onTarget",
+          "base": 1.215,
+          "candidate": 1.215,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.keyPasses",
+          "base": 0.701,
+          "candidate": 0.701,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.highTurnovers",
+          "base": 1.259,
+          "candidate": 1.259,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.632,
+          "candidate": 0.632,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.crosses",
+          "base": 1.506,
+          "candidate": 1.506,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.fouls",
+          "base": 0.791,
+          "candidate": 0.791,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.yellowCards",
+          "base": 0.134,
+          "candidate": 0.134,
+          "relative": 0
+        },
+        {
+          "pos": "ST",
+          "metric": "d.offsides",
+          "base": 0.748,
+          "candidate": 0.748,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "goals",
+          "base": 0.032,
+          "candidate": 0.032,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "assists",
+          "base": 0.078,
+          "candidate": 0.078,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "shots",
+          "base": 0.31,
+          "candidate": 0.31,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "onTarget",
+          "base": 0.102,
+          "candidate": 0.102,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "tackles",
+          "base": 1.723,
+          "candidate": 1.723,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "dribbles",
+          "base": 0.167,
+          "candidate": 0.167,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "saves",
+          "base": 0.004,
+          "candidate": 0.004,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.keyPasses",
+          "base": 0.639,
+          "candidate": 0.639,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.takeOns",
+          "base": 0.27,
+          "candidate": 0.27,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.lineBreakingPasses",
+          "base": 1.056,
+          "candidate": 1.056,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.crosses",
+          "base": 1.851,
+          "candidate": 1.851,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.fouls",
+          "base": 0.961,
+          "candidate": 0.961,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.foulsWon",
+          "base": 0.637,
+          "candidate": 0.637,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.yellowCards",
+          "base": 0.203,
+          "candidate": 0.203,
+          "relative": 0
+        },
+        {
+          "pos": "LB",
+          "metric": "d.offsides",
+          "base": 0.008,
+          "candidate": 0.008,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "goals",
+          "base": 0.192,
+          "candidate": 0.192,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "assists",
+          "base": 0.252,
+          "candidate": 0.252,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "shots",
+          "base": 1.78,
+          "candidate": 1.78,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "onTarget",
+          "base": 0.599,
+          "candidate": 0.599,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "tackles",
+          "base": 0.332,
+          "candidate": 0.332,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "interceptions",
+          "base": 0.413,
+          "candidate": 0.413,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "saves",
+          "base": 0.002,
+          "candidate": 0.002,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.keyPasses",
+          "base": 1.775,
+          "candidate": 1.775,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.highTurnovers",
+          "base": 0.531,
+          "candidate": 0.531,
+          "relative": 0
+        },
+        {
+          "pos": "RW",
+          "metric": "d.yellowCards",
+          "base": 0.149,
+          "candidate": 0.149,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "goals",
+          "base": 0.026,
+          "candidate": 0.026,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "assists",
+          "base": 0.069,
+          "candidate": 0.069,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "shots",
+          "base": 0.239,
+          "candidate": 0.239,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "onTarget",
+          "base": 0.081,
+          "candidate": 0.081,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "dribbles",
+          "base": 0.149,
+          "candidate": 0.149,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.keyPasses",
+          "base": 0.526,
+          "candidate": 0.526,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.takeOns",
+          "base": 0.24,
+          "candidate": 0.24,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.lineBreakingPasses",
+          "base": 0.934,
+          "candidate": 0.934,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.crosses",
+          "base": 1.469,
+          "candidate": 1.469,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.foulsWon",
+          "base": 0.514,
+          "candidate": 0.514,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.yellowCards",
+          "base": 0.208,
+          "candidate": 0.208,
+          "relative": 0
+        },
+        {
+          "pos": "RB",
+          "metric": "d.offsides",
+          "base": 0.016,
+          "candidate": 0.016,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "goals",
+          "base": 0.2,
+          "candidate": 0.2,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "assists",
+          "base": 0.22,
+          "candidate": 0.22,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "completed",
+          "base": 26.11,
+          "candidate": 26.11,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "shots",
+          "base": 1.829,
+          "candidate": 1.829,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "onTarget",
+          "base": 0.632,
+          "candidate": 0.632,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "tackles",
+          "base": 0.292,
+          "candidate": 0.292,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "saves",
+          "base": 0.001,
+          "candidate": 0.001,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.keyPasses",
+          "base": 1.579,
+          "candidate": 1.579,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.progressivePasses",
+          "base": 6.035,
+          "candidate": 6.035,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.highTurnovers",
+          "base": 0.529,
+          "candidate": 0.529,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.foulsWon",
+          "base": 1.365,
+          "candidate": 1.365,
+          "relative": 0
+        },
+        {
+          "pos": "LW",
+          "metric": "d.yellowCards",
+          "base": 0.137,
+          "candidate": 0.137,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "goals",
+          "base": 0.076,
+          "candidate": 0.076,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "assists",
+          "base": 0.269,
+          "candidate": 0.269,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "shots",
+          "base": 0.972,
+          "candidate": 0.972,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "onTarget",
+          "base": 0.304,
+          "candidate": 0.304,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "dribbles",
+          "base": 1.105,
+          "candidate": 1.105,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.keyPasses",
+          "base": 2.282,
+          "candidate": 2.282,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.highTurnovers",
+          "base": 0.549,
+          "candidate": 0.549,
+          "relative": 0
+        },
+        {
+          "pos": "LM",
+          "metric": "d.yellowCards",
+          "base": 0.18,
+          "candidate": 0.18,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "goals",
+          "base": 0.168,
+          "candidate": 0.168,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "assists",
+          "base": 0.096,
+          "candidate": 0.096,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "shots",
+          "base": 1.543,
+          "candidate": 1.543,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "onTarget",
+          "base": 0.522,
+          "candidate": 0.522,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.keyPasses",
+          "base": 1.154,
+          "candidate": 1.154,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.yellowCards",
+          "base": 0.223,
+          "candidate": 0.223,
+          "relative": 0
+        },
+        {
+          "pos": "AM",
+          "metric": "d.offsides",
+          "base": 0.042,
+          "candidate": 0.042,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "goals",
+          "base": 0.033,
+          "candidate": 0.033,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "assists",
+          "base": 0.23,
+          "candidate": 0.23,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "shots",
+          "base": 0.318,
+          "candidate": 0.318,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "onTarget",
+          "base": 0.112,
+          "candidate": 0.112,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.keyPasses",
+          "base": 1.636,
+          "candidate": 1.636,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.takeOns",
+          "base": 0.729,
+          "candidate": 0.729,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.highTurnovers",
+          "base": 0.145,
+          "candidate": 0.145,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.crosses",
+          "base": 5.268,
+          "candidate": 5.268,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.fouls",
+          "base": 0.809,
+          "candidate": 0.809,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.foulsWon",
+          "base": 0.63,
+          "candidate": 0.63,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.yellowCards",
+          "base": 0.19,
+          "candidate": 0.19,
+          "relative": 0
+        },
+        {
+          "pos": "RWB",
+          "metric": "d.offsides",
+          "base": 0.011,
+          "candidate": 0.011,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "goals",
+          "base": 0.072,
+          "candidate": 0.072,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "assists",
+          "base": 0.311,
+          "candidate": 0.311,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "passes",
+          "base": 61.459,
+          "candidate": 61.459,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "completed",
+          "base": 46.184,
+          "candidate": 46.184,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "shots",
+          "base": 0.938,
+          "candidate": 0.938,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "onTarget",
+          "base": 0.285,
+          "candidate": 0.285,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "tackles",
+          "base": 1.471,
+          "candidate": 1.471,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "interceptions",
+          "base": 0.783,
+          "candidate": 0.783,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.keyPasses",
+          "base": 2.444,
+          "candidate": 2.444,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.crosses",
+          "base": 5.162,
+          "candidate": 5.162,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.yellowCards",
+          "base": 0.189,
+          "candidate": 0.189,
+          "relative": 0
+        },
+        {
+          "pos": "RM",
+          "metric": "d.offsides",
+          "base": 0.062,
+          "candidate": 0.062,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "goals",
+          "base": 0.021,
+          "candidate": 0.021,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "assists",
+          "base": 0.16,
+          "candidate": 0.16,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "shots",
+          "base": 0.243,
+          "candidate": 0.243,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "onTarget",
+          "base": 0.076,
+          "candidate": 0.076,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "saves",
+          "base": 0.003,
+          "candidate": 0.003,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.keyPasses",
+          "base": 1.202,
+          "candidate": 1.202,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.highTurnovers",
+          "base": 0.135,
+          "candidate": 0.135,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.crosses",
+          "base": 3.816,
+          "candidate": 3.816,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.yellowCards",
+          "base": 0.2,
+          "candidate": 0.2,
+          "relative": 0
+        },
+        {
+          "pos": "LWB",
+          "metric": "d.offsides",
+          "base": 0.023,
+          "candidate": 0.023,
+          "relative": 0
+        }
+      ],
+      "differences": {
+        "/npcSeason/competitions/#/players/#/clubs/#/metrics/#": {
+          "count": 10267,
+          "example": [
+            "/npcSeason/competitions/0/players/13/clubs/0/metrics/2",
+            2320,
+            2316
+          ]
+        },
+        "/npcSeason/competitions/#/players/#/clubs/#/detail/#": {
+          "count": 16953,
+          "example": [
+            "/npcSeason/competitions/0/players/13/clubs/0/detail/4",
+            63,
+            62
+          ]
+        }
+      }
+    }
+  ]
+}
