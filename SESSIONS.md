@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T01:45Z | 2026-11-19T01:57Z | T999 | gusta-session-start-sv19-0cc2a73b | 8ec26c2328de | ea1a0db8eec814a3c131d34b |
+| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T01:45Z | 2026-11-19T01:57Z | - | gusta-session-start-sv19-0cc2a73b | 8ec26c2328de | ea1a0db8eec814a3c131d34b |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -232,8 +232,10 @@
 | T982 | work | gusta-session-self-improve-np19-f1c9b1b9 | 899f9ea9ccaa | 2026-11-18T18:54Z |
 | T988 | work | gusta-session-self-improve-np19-f1c9b1b9 | 430ebb17f923 | 2026-11-18T19:14Z |
 | T987 | work | gusta-session-self-improve-np19-f1c9b1b9 | b6c1737afb34 | 2026-11-18T19:19Z |
+| T999 | sv19 | gusta-session-start-sv19-0cc2a73b | 8ec26c2328de | 2026-11-19T01:57Z |
 
 ## log
+- 261119 T999 done
 - 261119 plan save-storage: ARCH r51 SAVE r72 WEB r224 KIT r11, T999–T1018 T1022 pushed 2edc3dbf0
 - 261119 gusta-create-task x10 cost levers: T989-T998 T1019-T1021
 - 261119 gusta-update-ssot MATCH r69 HIST r28 WEB r223 ARCH r50 SAVE r71 (x10 cost levers D2 D4 D5 D8, heat maps removed)
@@ -253,4 +255,3 @@
 - 261118 gusta-update-ssot ARCH start
 - 261118 T978 done
 - 261118 T977 done
-- 261118 T976 done
