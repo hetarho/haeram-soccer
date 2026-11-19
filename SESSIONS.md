@@ -180,6 +180,7 @@
 - 261119 decided T997: T997 measured two helpers slower on two cores → ARCH r52 starts the two helpers from three cores (HELPER_CONFIG.minCores 3), keeps the engine share wherever helpers run, and a two-core device computes alone; T997's first acceptance reads three cores and its fallback clause is now the rule (alt: keep two cores and accept 9% slower | drop the engine share)
 - 261119 decided T998: Use three helpers only at measured 6, 8 and 12 cores; keep two at all other eligible counts, including 4 where a repeat did not clear noise (alternatives: four helpers or extrapolate to unmeasured counts). Three clears noise on each adopted class and has the lower measured ratio at 6 and 12.
 - 261119 decided T998: Hand off the three-helper full-season parity assertion to the shared integration gate, preserving its full coverage (alternative: run integration inside this task); ARCH-30 and the assigned unit contract reserve integration for the fixed candidate.
+- 261119 suggest T1019: T1019 needs its test scope reconciled before implementation: career-reads.test.ts and schema.contract.test.ts require legacy heat preservation, while match-viewer/materialView and engine tests reference deleted heat fields. These files are outside touches; revising them is necessary for typecheck and truthful regression coverage. T1002 removed packing but SQLite record store is not yet present here.
 
 ## unlanded
 | id | tag | branch | commit | at |
