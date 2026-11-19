@@ -643,10 +643,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-x10-d3a275d5",
-      "head": "acc7443620c94f85f5fe0db1c0545d7c27729189",
+      "head": "7b79886db7809310144b0d0515af28e973e3583b",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-19T04:54:00.358Z",
+      "status": "working",
+      "at": "2026-11-19T04:58:38.113Z",
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "session-ended"
