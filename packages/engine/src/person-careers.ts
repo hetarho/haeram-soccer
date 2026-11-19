@@ -11,6 +11,8 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { currentDay } from './calendar';
+import { recordStoreOf } from '../../contracts/src/record-store';
+import { forgetColdPerson, personOf } from './person-reads';
 export { forgetColdPerson, hasPerson, personIdsWithPrefix, personOf } from './person-reads';
 const settlementDates = new WeakMap<World, CareerDate>();
 /** Rollover skips summer in the live clock; contracts settled at the close keep their actual date. */
@@ -31,12 +33,93 @@ export const compareCareerDates = (a: CareerDate, b: CareerDate) =>
   a.year - b.year || a.day - b.day;
 /**
  * The person `id` as held in memory, for a writer: a change only lasts on a person `w.people`
- * holds. Every read of someone who may lack a current role goes through `personOf` instead.
+ * holds, so a cold person is restored first (`restorePerson`). Every read of someone who may lack
+ * a current role goes through `personOf` instead.
  */
 export function resolvePerson(w: World, id: string) {
-  return w.people?.[id];
+  return w.people?.[id] ?? restorePerson(w, id);
 }
 type Registry = NonNullable<World['people']>;
+/**
+ * The IDs the world's current posts and offers name (→SAVE-32): our manager, our staff, the staff
+ * markets' free agents and the pending playing-coach proposals. A person they name keeps a current
+ * role whatever his own record says.
+ */
+export function referencedPeople(w: World): Set<string> {
+  const ids = new Set<string>();
+  if (w.manager?.person) ids.add(w.manager.person);
+  for (const member of w.staff ?? []) if (member.person) ids.add(member.person);
+  for (const free of Object.values(w.staffMarket?.free ?? {}))
+    for (const member of free ?? []) if (member.person) ids.add(member.person);
+  for (const id of Object.keys(w.playingCoachProposals ?? {})) ids.add(id);
+  return ids;
+}
+/**
+ * Whether `person` holds a current role, so the engine may still change him and memory keeps him
+ * (→SAVE-32): he plays or is free to; he holds a job or a manager beside him; he has a coaching
+ * profile, or a manager's profile below 70; a loan is recorded on him; or a current post or offer
+ * names him (`referencedPeople`, read once per walk by passing `referenced`). Every scan of
+ * `peopleOf` reads only people this holds for, so moving the others out changes no outcome.
+ */
+export function hasCurrentRole(
+  w: World,
+  person: PersonCareer,
+  referenced: ReadonlySet<string> = referencedPeople(w),
+): boolean {
+  return (
+    person.playing !== 'retired' ||
+    person.employment.some((job) => !job.to) ||
+    person.mentors.some((mentor) => !mentor.to) ||
+    !!person.coaching ||
+    (!!person.management && w.year - person.born < 70) ||
+    !!person.loan ||
+    referenced.has(person.id)
+  );
+}
+/**
+ * Brings the cold person `id` back into `w.people` for a write (→SAVE-32): at the place his stored
+ * `seq` gives him among those memory holds, so `peopleOf` reads everyone in the order a world that
+ * never moved him would. A person already in memory is returned as he is; one the world does not
+ * keep returns undefined. He is saved like any current person until he leaves memory again.
+ */
+export function restorePerson(w: World, id: string): PersonCareer | undefined {
+  const held = w.people?.[id];
+  if (held) return held;
+  const store = recordStoreOf(w);
+  const stored = store?.get('person', id);
+  if (!store || !stored?.cold) return undefined;
+  const person = personOf(w, id)!;
+  forgetColdPerson(w, id);
+  // Memory holds people in stored `seq` order, then those not saved yet, who came after him.
+  const people: Registry = {};
+  let placed = false;
+  for (const [key, other] of Object.entries(w.people ?? {})) {
+    if (!placed) {
+      const seq = store.get('person', key)?.seq;
+      if (seq === undefined || seq > stored.seq) {
+        people[id] = person;
+        placed = true;
+      }
+    }
+    people[key] = other;
+  }
+  if (!placed) people[id] = person;
+  w.people = people;
+  playingChanged(w);
+  return person;
+}
+/**
+ * Removes `ids` from `w.people` once their rows are saved cold (→SAVE-32), keeping everyone
+ * else's order, and drops every list read from the registry so the next read sees it without them.
+ */
+export function releasePeople(w: World, ids: Iterable<string>) {
+  const registry = w.people;
+  if (!registry) return;
+  for (const id of ids) delete registry[id];
+  peopleLists.delete(registry);
+  playingChanged(w);
+  employmentVersions.set(w, (employmentVersions.get(w) ?? 0) + 1);
+}
 /** Each registry's `Object.values`, read once (T450); `retainPerson` replaces it as it enrolls. */
 const peopleLists = new WeakMap<Registry, readonly PersonCareer[]>();
 const NOBODY: readonly PersonCareer[] = [];

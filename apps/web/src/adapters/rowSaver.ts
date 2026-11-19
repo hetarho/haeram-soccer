@@ -50,6 +50,8 @@ export class RowSaver {
   /** Per positional table, the highest `seq` the store holds or this saver wrote. */
   private top: Map<TableName, number> | undefined;
   private readonly cold = new Map<string, { table: RecordTable; key: string }>();
+  /** The positional tables the store holds cold rows of, read once and kept as saves add them. */
+  private coldTables: Set<TableName> | undefined;
 
   constructor(private readonly store: RecordStore) {}
 
@@ -73,7 +75,8 @@ export class RowSaver {
 
   /**
    * Marks records the current season no longer changes (→SAVE-32): the next save writes them cold,
-   * and their absence from memory afterwards never deletes them.
+   * and their absence from memory afterwards never deletes them. The marks last for that save only,
+   * committed or not, so each save's movers mark afresh what has left play by then.
    */
   markCold(table: RecordTable, keys: Iterable<string>): void {
     for (const key of keys) this.cold.set(id(table, key), { table, key });
@@ -81,6 +84,14 @@ export class RowSaver {
 
   /** Writes the rows of `w` changed since the previous save, with its metadata, in one write. */
   save(w: World): SaveStats {
+    try {
+      return this.write(w);
+    } finally {
+      this.cold.clear();
+    }
+  }
+
+  private write(w: World): SaveStats {
     const rows = this.stable(worldToRows(w));
     const put: StoredRow[] = [];
     const current = new Set<string>();
@@ -106,17 +117,19 @@ export class RowSaver {
     this.store.write({ put, delete: remove, meta: worldMeta(w) });
     for (const stored of put) {
       const at = id(stored.table, stored.key);
-      if (stored.cold) this.written.delete(at);
-      else this.written.set(at, stored);
+      if (stored.cold) {
+        this.coldTables?.add(stored.table);
+        this.written.delete(at);
+      } else this.written.set(at, stored);
     }
     for (const { table, key } of remove) this.written.delete(id(table, key));
-    this.cold.clear();
     return { written: put.length, deleted: remove.length, rows: rows.length };
   }
 
   /**
    * Keeps each surviving record's committed `seq` while memory order allows, so removing one record
-   * does not rewrite every record after it; a new or moved record takes the next free `seq`.
+   * does not rewrite every record after it; a record brought back from its cold row keeps that
+   * row's `seq` the same way, and a new or moved record takes the next free `seq`.
    */
   private stable(rows: StoredRow[]): StoredRow[] {
     const top = (this.top ??= this.storeTops());
@@ -124,7 +137,7 @@ export class RowSaver {
     return rows.map((stored) => {
       if (!POSITIONAL.has(stored.table)) return stored;
       const previous = last.get(stored.table) ?? -1;
-      const committed = this.written.get(id(stored.table, stored.key))?.seq;
+      const committed = this.written.get(id(stored.table, stored.key))?.seq ?? this.coldSeq(stored);
       const seq =
         committed !== undefined && committed > previous
           ? committed
@@ -133,6 +146,16 @@ export class RowSaver {
       top.set(stored.table, Math.max(seq, top.get(stored.table) ?? -1));
       return seq === stored.seq ? stored : { ...stored, seq };
     });
+  }
+
+  /** The `seq` of `stored`'s cold row, when the store holds it cold (→SAVE-32). */
+  private coldSeq(stored: StoredRow): number | undefined {
+    this.coldTables ??= new Set(
+      [...POSITIONAL].filter((table) => this.store.count(table, { cold: true, limit: 1 }) > 0),
+    );
+    if (!this.coldTables.has(stored.table)) return undefined;
+    const row = this.store.get(stored.table, stored.key);
+    return row?.cold ? row.seq : undefined;
   }
 
   private storeTops(): Map<TableName, number> {

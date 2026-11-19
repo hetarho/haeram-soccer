@@ -5,6 +5,7 @@ import {
   OBSOLETE_CAREER_READS_FORMAT,
 } from './career-reads';
 import { SaveCompatibilityError } from './versions';
+import type { RecordStore } from './record-store';
 import { newsJournalSchema } from './news';
 import { z } from 'zod';
 z.config({ jitless: true });
@@ -1532,10 +1533,26 @@ function scorerClubsValid<C extends string | number>(
   );
 }
 
-export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
+export function validateWorld(
+  input: unknown,
+  catalog?: LoadCatalog,
+  store?: Pick<RecordStore, 'get'>,
+): World {
   assertIdentityFormatVersions(input);
   assertMatchModelFormat(input);
   const w = worldSchema.parse(input);
+  type Person = NonNullable<typeof w.people>[string];
+  // A person memory no longer holds resolves through his cold row in the game's store (→SAVE-32).
+  const coldPeople = new Map<string, Person | undefined>();
+  const personAt = (key: string): Person | undefined => {
+    const held = w.people?.[key];
+    if (held || !store) return held;
+    if (!coldPeople.has(key)) {
+      const row = store.get('person', key);
+      coldPeople.set(key, row?.cold ? personCareer.parse(JSON.parse(row.data)) : undefined);
+    }
+    return coldPeople.get(key);
+  };
   if (
     w.careerReads &&
     (w.careerReads.matches > w.ownMatches.length ||
@@ -1635,7 +1652,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
     }
   }
   for (const [key, proposal] of Object.entries(w.playingCoachProposals || {})) {
-    if (key !== proposal.person || !w.people?.[key])
+    if (key !== proposal.person || !personAt(key))
       throw new Error(sourceMessage('copy.schema.08db35d6c8'));
     if (
       BigInt(proposal.totalWage) !== BigInt(proposal.playerWage) + BigInt(proposal.coachWage) ||
@@ -1692,8 +1709,8 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   for (const arrival of w.recruitmentArrivals ?? []) {
     const key = `${arrival.player}:${arrival.at.year}:${arrival.at.day}`;
     if (
-      !w.people?.[arrival.player] ||
-      w.people[arrival.player].name !== arrival.name ||
+      !personAt(arrival.player) ||
+      personAt(arrival.player)!.name !== arrival.name ||
       arrivalKeys.has(key)
     )
       throw new Error(sourceMessage('copy.schema.25021cbb1f'));
@@ -1835,7 +1852,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         throw new Error(sourceMessage('copy.schema.9e9554ba46'));
   }
   for (const player of [...w.players, ...(w.academy?.players || [])]) {
-    const person = w.people?.[player.id];
+    const person = personAt(player.id);
     if (player.joined !== undefined && (player.joined < player.born || player.joined > w.year))
       throw new Error(sourceMessage('copy.schema.4df6c52871'));
     if (w.people && player.qualities && !person)
@@ -1859,7 +1876,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   }
   for (const member of [w.manager, ...(w.staff || []), ...(w.managerMarket?.free || [])]) {
     if (!member.person) continue;
-    const person = w.people?.[member.person];
+    const person = personAt(member.person);
     if (
       !person ||
       person.id !== member.id ||
@@ -1873,7 +1890,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
     if (!member.person) continue;
     const role = 'role' in member ? member.role : 'manager';
     if (
-      !w.people?.[member.person]?.employment.some(
+      !personAt(member.person)?.employment.some(
         (job) => !job.to && job.club === w.playerClub && job.role === role,
       )
     )

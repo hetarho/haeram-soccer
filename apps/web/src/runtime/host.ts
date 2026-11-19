@@ -47,6 +47,7 @@ import {
 } from '../adapters/saveFile';
 export type { DatabaseBytes } from '../adapters/saveFile';
 import { RowSaver } from '../adapters/rowSaver';
+import { saveMovingCold } from '../adapters/coldMovers';
 import { rowsToWorld } from '../adapters/worldRows';
 import { SAVE_SCHEMA_VERSION } from '../adapters/saveSchema';
 import {
@@ -420,7 +421,8 @@ export function storedWorld(store: RecordStore): World {
   if (meta.catalog_hash !== pinned)
     throw new SaveCompatibilityError(sourceMessage('copy.persistence.98b9bb6b66'));
   const stored = rowsToWorld(store, { includeCold: false });
-  const valid = validateWorld(stored, LOAD_CATALOG) as unknown as Record<string, unknown>;
+  // People who left memory are references the store's cold rows resolve (→SAVE-32).
+  const valid = validateWorld(stored, LOAD_CATALOG, store) as unknown as Record<string, unknown>;
   // The fields keep their stored order, so the rows they are saved in keep their places.
   const world = Object.fromEntries([
     ...Object.keys(stored).flatMap((key) => (key in valid ? [[key, valid[key]]] : [])),
@@ -1247,7 +1249,8 @@ export class Host {
       game = this.game;
     if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
     if (!game) throw new Error(sourceMessage('copy.host.c64421732a'));
-    game.saver.save(w);
+    // People without a current role leave memory once this save commits (→SAVE-32).
+    saveMovingCold(w, game.saver);
     // A season closed since the last save: its save has committed, so it is backed up (→SAVE-31).
     // A failed copy is tried again at the next save.
     let backup: BackupInfo | undefined;
