@@ -81,7 +81,7 @@
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
 | T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
 | T998 | Helper count by core class | ARCH | T997 | todo |
-| T1006 | The engine worker opens and saves the game in play in its database | SAVE ARCH | T1004 T1005 | todo |
+| T1006 | The engine worker opens and saves the game in play in its database | SAVE ARCH | T1004 T1005 | doing@261119.sv19 |
 | T1007 | Game slots are database files | SAVE WEB | T1006 | todo |
 | T1008 | Export and import the gzip-compressed database as `.haeram-save` | SAVE ARCH | T1007 | todo |
 | T1009 | IndexedDB checkpoints, the repository and the JSON envelope are retired | SAVE ARCH | T1008 | todo |

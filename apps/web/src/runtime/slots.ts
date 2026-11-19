@@ -162,7 +162,8 @@ export class GameSlots {
       const replaced = index.slots[slot];
       if (replaced) void this.parked?.remove(replaced.id).catch(() => {});
       index.slots[slot] = {
-        id: crypto.randomUUID(),
+        // The game's database is named by the ID its client created it under (→SAVE-14).
+        id: this.client.gameId ?? crypto.randomUUID(),
         worldId: w.id,
         summary: summarize(w),
         playedAt: now,

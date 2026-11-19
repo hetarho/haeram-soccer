@@ -5,9 +5,10 @@ import { initializeReadModels } from '../../../../packages/engine/src/read-model
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
 import { describe, it, expect, vi } from 'vitest';
-import { Host, VIEW_PATCH } from './host';
-import { build } from './codec';
-import { applyViewDelta, type CodecJob, type View } from './protocol';
+import { Host, VIEW_PATCH, type OpenStore } from './host';
+import { applyViewDelta, type View } from './protocol';
+import type { RecordStore } from '../../../../packages/contracts/src/record-store';
+import { memoryRecordStore } from '../../../../tests/fixtures/node-sqlite';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { currentDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
@@ -52,12 +53,27 @@ import { HelperPool, type HelperJob, type HelperPort } from './helperPool';
 import { createFixtureHelper, serve as serveHelper } from './fixtureHelper';
 import { persistedFixturePlayer } from '../../../../packages/engine/src/player-fixtures.testkit';
 import { joinFreeAgents } from '../../../../packages/engine/src/free-agents';
-/** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
-function withCodec() {
-  const jobs: CodecJob[] = [];
-  const host = new Host();
-  host.codec = { postMessage: (job) => jobs.push(structuredClone(job)) };
-  return { host, jobs };
+/**
+ * A host whose games' databases are in memory and outlive it (→SAVE-2), with `reopened`: the world
+ * a new host opens from a game's database, as a reloaded page would.
+ */
+function withDatabase(progress?: ConstructorParameters<typeof Host>[0]) {
+  const files = new Map<string, RecordStore>();
+  const openStore: OpenStore = (gameId, { create }) => {
+    let store = files.get(gameId);
+    if (!store && create) files.set(gameId, (store = { ...memoryRecordStore(), close() {} }));
+    return store;
+  };
+  const host = new Host(progress, { openStore });
+  const reopened = async (gameId = 'game') => {
+    const next = new Host(undefined, { openStore });
+    const opened = await next.handle(req('open', -1, { type: 'open-game', gameId }));
+    if (!opened.ok) throw new Error(opened.error);
+    return next.world!;
+  };
+  const create = (gameId = 'game') =>
+    host.handle(req('create', host.world!.revision, { type: 'create-game', gameId }));
+  return { host, reopened, create };
 }
 describe('worker command protocol', () => {
   it('never projects persisted squads onto the UI thread', async () => {
@@ -331,31 +347,19 @@ describe('worker command protocol', () => {
     expect(h.world!.revision).toBe(0);
     expect(result.raw).toBeUndefined();
   });
-  it('hands the codec a snapshot of the current world and revision, whatever revision the client saw', async () => {
-    const { host: h, jobs } = withCodec();
+  it('saves the current world and revision in its database, whatever revision the client saw', async () => {
+    const { host: h, create, reopened } = withDatabase();
     await startedHost(undefined, undefined, h);
+    expect((await create()).ok).toBe(true);
     await h.handle(req('days', 0, { type: 'command', command: { type: 'advance-days', days: 2 } }));
     const revision = h.world!.revision;
     expect(revision).toBeGreaterThan(0);
-    const saving = await h.handle({
-      ...req('save', -1, { type: 'save' }),
-      generation: 4,
-    });
+    const saving = await h.handle(req('save', -1, { type: 'save' }));
     expect(saving.ok).toBe(true);
     expect(saving.view).toBeUndefined();
     expect(saving.raw).toBeUndefined();
-    expect(saving.saving).toEqual({ worldId: h.world!.id, revision });
-    expect(jobs).toHaveLength(1);
-    expect(jobs[0]).toMatchObject({
-      id: 'save',
-      generation: 4,
-      parentGeneration: 0,
-    });
-    const result = await build(jobs[0]);
-    if (!result.ok) throw new Error(result.error);
-    expect(result.revision).toBe(revision);
-    expect(result.envelope).toMatchObject({ worldId: h.world!.id, generation: 4 });
-    const saved = (await decode(result.raw)).world;
+    expect(saving.saved).toEqual({ gameId: 'game', worldId: h.world!.id, revision });
+    const saved = await reopened();
     expect(saved.revision).toBe(revision);
     expect(
       Object.keys(saved).filter(
@@ -364,18 +368,21 @@ describe('worker command protocol', () => {
           canonical(h.world![key as keyof typeof saved]),
       ),
     ).toEqual([]);
-    // Nothing is posted without a world or a codec port.
+    // Nothing is saved without a world or its database.
     expect((await new Host().handle(req('none', -1, { type: 'save' }))).ok).toBe(false);
-    const { host: unwired } = await startedHost();
-    expect((await unwired.handle(req('save', 0, { type: 'save' }))).error).toContain('저장 Worker');
+    const { host: unopened } = await startedHost();
+    expect((await unopened.handle(req('save', 0, { type: 'save' }))).ok).toBe(false);
   });
-  it('returns a restorable checkpoint when next-match progression is cancelled between days', async () => {
-    const jobs: CodecJob[] = [];
-    const h = new Host(() => {
+  it('saves a restorable game when next-match progression is cancelled between days', async () => {
+    const {
+      host: h,
+      create,
+      reopened,
+    } = withDatabase(() => {
       h.cancelled = true;
     });
-    h.codec = { postMessage: (job) => jobs.push(structuredClone(job)) };
     await startedHost(undefined, undefined, h);
+    await create();
     const result = await h.handle(
       req('match', 0, { type: 'command', command: { type: 'next-match' } }),
     );
@@ -383,16 +390,10 @@ describe('worker command protocol', () => {
     expect(result.cancelled).toBe(true);
     expect(result.view?.world.calendar?.day).toBe(1);
     expect(result.view?.world.ownMatches).toHaveLength(0);
-    await h.handle(req('save', -1, { type: 'save' }));
-    const checkpoint = await build(jobs[0]);
-    if (!checkpoint.ok) throw new Error(checkpoint.error);
-    const restored = new Host();
-    const loaded = await restored.handle(
-      req('restore', -1, { type: 'inspect', raw: checkpoint.raw, activate: true }),
-    );
-    expect(loaded.ok).toBe(true);
-    expect(restored.world?.calendar?.day).toBe(1);
-    expect(restored.world?.receiptIds).toContain('match');
+    expect((await h.handle(req('save', -1, { type: 'save' }))).ok).toBe(true);
+    const restored = await reopened();
+    expect(restored.calendar?.day).toBe(1);
+    expect(restored.receiptIds).toContain('match');
   });
   it('projects the complete own league schedule and round results without unrelated leagues', async () => {
     const { host: h } = await startedHost();
@@ -445,9 +446,10 @@ describe('worker command protocol', () => {
 describe('next-fixture kit requests (→KIT-6, SAVE-6)', () => {
   const kit = (id: string, revision: number, fixtureId: string, role: KitRole | null) =>
     req(id, revision, { type: 'command', command: { type: 'match-kit', fixtureId, role } });
-  it('duplicate kit receipt has one effect and the saved checkpoint keeps the choice', async () => {
-    const { host: h, jobs } = withCodec();
+  it('duplicate kit receipt has one effect and the saved game keeps the choice', async () => {
+    const { host: h, create, reopened } = withDatabase();
     await startedHost(undefined, undefined, h);
+    await create();
     const next = nextOwnFixture(h.world!)!;
     const first = kit('kit', 0, next.id, 'third');
     const [chosen, duplicate] = await Promise.all([h.handle(first), h.handle(first)]);
@@ -456,11 +458,9 @@ describe('next-fixture kit requests (→KIT-6, SAVE-6)', () => {
     expect(h.world!.revision).toBe(1);
     expect(h.world!.receiptIds.filter((id) => id === 'kit')).toHaveLength(1);
     expect(chosen.view!.world.kitChoice).toEqual({ fixtureId: next.id, role: 'third' });
-    // The owner decision's save builds a validated checkpoint that restores the choice.
+    // The owner decision's save commits the choice, which the reopened game keeps.
     await h.handle(req('save', -1, { type: 'save' }));
-    const checkpoint = await build(jobs[0]);
-    if (!checkpoint.ok) throw new Error(checkpoint.error);
-    expect((await decode(checkpoint.raw)).world.kitChoice).toEqual(h.world!.kitChoice);
+    expect((await reopened()).kitChoice).toEqual(h.world!.kitChoice);
     // Back to automatic, then the first request again: its stored answer, never a second effect.
     expect((await h.handle(kit('auto', 1, next.id, null))).ok).toBe(true);
     expect(await h.handle(first)).toBe(chosen);

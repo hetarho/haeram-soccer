@@ -54,6 +54,24 @@ export class RowSaver {
   constructor(private readonly store: RecordStore) {}
 
   /**
+   * Takes `w`, the world just opened from the store, as this saver's last commit, so the next save
+   * writes only what changed since (→SAVE-3). Each of its rows keeps the place (`seq`) the store
+   * gives it; a row is compared by the text `w` writes, so a validation that only reorders a
+   * record's keys rewrites nothing.
+   */
+  prime(w: World): void {
+    const held = new Map<string, number>();
+    for (const table of WORLD_TABLES)
+      for (const stored of this.store.rows(table, { cold: false }))
+        held.set(id(table, stored.key), stored.seq);
+    for (const stored of worldToRows(w)) {
+      const at = id(stored.table, stored.key);
+      const seq = held.get(at);
+      if (seq !== undefined) this.written.set(at, { ...stored, seq });
+    }
+  }
+
+  /**
    * Marks records the current season no longer changes (→SAVE-32): the next save writes them cold,
    * and their absence from memory afterwards never deletes them.
    */

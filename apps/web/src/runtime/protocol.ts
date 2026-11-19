@@ -233,6 +233,8 @@ const command = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('owner-inject'), amount: z.string().regex(/^\d{1,40}$/) }),
   z.strictObject({ type: z.literal('owner-dividend'), share: z.literal(DIVIDEND_SHARES) }),
 ]);
+/** A game's ID names its database file, so it is checked before it reaches the pool (→ARCH-11). */
+const gameId = z.string().regex(/^[A-Za-z0-9:_-]{1,100}$/);
 export const requestSchema = z.object({
   protocol: z.literal(1),
   session: z.string().min(1).max(100),
@@ -288,6 +290,15 @@ export const requestSchema = z.object({
     }),
     z.object({ type: z.literal('command'), command }),
     z.object({ type: z.literal('export') }),
+    // The game in play's database (→SAVE-2, →ARCH-6): `open-game` loads and validates it, then
+    // plays it; `create-game` writes every row of the world in play into it after a takeover (or
+    // an activated import, `replace`); `save` commits the rows changed since the last save.
+    z.strictObject({ type: z.literal('open-game'), gameId }),
+    z.strictObject({
+      type: z.literal('create-game'),
+      gameId,
+      replace: z.boolean().optional(),
+    }),
     z.object({ type: z.literal('save') }),
     z.strictObject({
       type: z.literal('news-page'),
@@ -566,18 +577,14 @@ export interface Reply {
   clubProfile?: ClubProfile;
   playerProfile?: PlayerProfileRead;
   cancelled?: boolean;
-  /** A save request handed this world revision to the codec worker; its checkpoint follows there. */
-  saving?: { worldId: string; revision: number };
+  /**
+   * A committed save of the game in play (→SAVE-3): the revision its transaction committed. Only a
+   * committed save is answered so; a failed write is an error reply.
+   */
+  saved?: { gameId: string; worldId: string; revision: number };
+  /**
+   * `open-game`'s answer: the game it opened at the revision its database holds, or `found: false`
+   * when the game has no database file, an empty slot (→SAVE-29).
+   */
+  opened?: { gameId: string; found: boolean; revision?: number };
 }
-/** A snapshot the engine worker posts straight to the codec worker (→ARCH-13). */
-export interface CodecJob {
-  /** The save request's ID, which the client waits on for the checkpoint. */
-  id: string;
-  world: World;
-  generation: number;
-  parentGeneration: number;
-}
-/** The codec's validated checkpoint for the client, or why none was built; nothing is written. */
-export type CodecResult =
-  | { id: string; ok: true; revision: number; raw: string; envelope: Envelope }
-  | { id: string; ok: false; error: string; errorCode?: typeof SAVE_COMPATIBILITY_CODE };

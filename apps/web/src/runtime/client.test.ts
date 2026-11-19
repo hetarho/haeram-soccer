@@ -14,12 +14,15 @@ import { AUTOSAVE_MS, GameClient, SAVE_DATA_UPDATED, type ClientState } from './
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
 import type { World } from '../../../../packages/contracts/src/types';
-import { Host } from './host';
-import { serve } from './codec';
+import { Host, type OpenStore } from './host';
+import type { RecordStore } from '../../../../packages/contracts/src/record-store';
+import { memoryRecordStore } from '../../../../tests/fixtures/node-sqlite';
+import { RowSaver } from '../adapters/rowSaver';
 import { serve as serveHelper } from './fixtureHelper';
 import { HELPER_CONFIG, HelperPool, type HelperPort } from './helperPool';
-import type { CodecResult, Reply, Request } from './protocol';
-import { earlierRules, GameSlots } from './slots';
+import type { Reply, Request } from './protocol';
+import { earlierRules, GameSlots, summarize } from './slots';
+import { rowsToWorld } from '../adapters/worldRows';
 import { GameIndexStore, type ParkedStore } from '../adapters/games';
 import { createGameStore, NOTIFICATIONS_KEY, type SystemNotification } from './store';
 import { START } from './host.testkit';
@@ -58,6 +61,46 @@ class MemoryStorage implements StoragePort {
   }
 }
 
+/**
+ * This browser's game databases (→SAVE-2), in memory and outliving every engine worker as OPFS
+ * files do; every write fails while `failWrites` holds, before it touches a row.
+ */
+let files = new Map<string, RecordStore>();
+let failWrites = false;
+const openStore: OpenStore = (gameId, { create }) => {
+  let store = files.get(gameId);
+  if (!store && create) {
+    const inner = memoryRecordStore();
+    store = {
+      ...inner,
+      write(changes) {
+        if (failWrites) throw new Error('QuotaExceededError');
+        inner.write(changes);
+      },
+      close() {},
+    };
+    files.set(gameId, store);
+  }
+  return store;
+};
+/** The revision a game's database last committed. */
+const committed = (gameId: string) => Number(files.get(gameId)?.meta().revision ?? -1);
+/** Lists the world in play in the slot index, as the app does once it is shown (→SAVE-14). */
+function listGame(client: GameClient) {
+  new GameSlots(client, new GameIndexStore(storage)).sync(client.state.view?.world);
+}
+/** `w` committed whole as the database of `gameId`, listed as the game in play in slot 1. */
+function seedGame(w: World, gameId = 'seeded') {
+  files.delete(gameId);
+  new RowSaver(openStore(gameId, { create: true }) as RecordStore).save(w);
+  const index = new GameIndexStore(storage);
+  const slots = index.read();
+  slots.slots[0] = { id: gameId, worldId: w.id, summary: summarize(w), playedAt: '' };
+  slots.active = 0;
+  index.write(slots);
+  return gameId;
+}
+
 /** Real host + persistence, with structured cloning at both worker boundaries. */
 class WorkerPort {
   static instances: WorkerPort[] = [];
@@ -67,8 +110,9 @@ class WorkerPort {
   replies: { request: Request; reply: Reply }[] = [];
   onmessage?: (event: MessageEvent<Reply>) => void;
   onerror?: () => void;
-  host = new Host((reply) => this.deliver(reply), { release: WorkerPort.release });
-  private codecPort?: MessagePort;
+  /** Save answers wait for this, so a test can hold a commit's answer while the game moves on. */
+  static saveGate = Promise.resolve();
+  host = new Host((reply) => this.deliver(reply), { release: WorkerPort.release, openStore });
   private helperPorts: MessagePort[] = [];
   constructor() {
     WorkerPort.instances.push(this);
@@ -82,13 +126,11 @@ class WorkerPort {
     input:
       | Request
       | { type: 'cancel' }
-      | { type: 'codec'; port: MessagePort }
       | { type: 'helpers'; ports: MessagePort[] }
       | { type: 'helpers-failed' },
   ) {
     if ('type' in input) {
-      if (input.type === 'codec') this.host.codec = this.codecPort = input.port;
-      else if (input.type === 'helpers') {
+      if (input.type === 'helpers') {
         this.helperPorts = input.ports;
         this.host.helpers = new HelperPool(input.ports as unknown as HelperPort[]);
       } else if (input.type === 'helpers-failed') this.host.helpers?.disable();
@@ -96,12 +138,13 @@ class WorkerPort {
       return;
     }
     this.requests.push(input);
-    void this.host.handle(structuredClone(input)).then((reply) => {
+    const saving = input.body.type === 'save' || input.body.type === 'create-game';
+    void this.host.handle(structuredClone(input)).then(async (reply) => {
+      if (saving) await WorkerPort.saveGate;
       this.replies.push({ request: input, reply: this.deliver(reply) });
     });
   }
   terminate() {
-    this.codecPort?.close();
     for (const port of this.helperPorts) port.close();
   }
 }
@@ -125,36 +168,9 @@ class HelperWorker {
   }
 }
 
-/** The codec worker as codec.ts wires it; snapshots arrive through a real MessageChannel port. */
-class CodecPort {
-  static instances: CodecPort[] = [];
-  results: CodecResult[] = [];
-  onmessage?: (event: MessageEvent<CodecResult>) => void;
-  onerror?: () => void;
-  /** Answers wait for this, so a test can hold a checkpoint while the game moves on. */
-  gate = Promise.resolve();
-  private port?: MessagePort;
-  constructor() {
-    CodecPort.instances.push(this);
-  }
-  postMessage(input: { type: 'port'; port: MessagePort }) {
-    this.port = input.port;
-    serve(input.port, (result) => {
-      void this.gate.then(() => {
-        const cloned = structuredClone(result);
-        this.results.push(cloned);
-        this.onmessage?.({ data: cloned } as MessageEvent<CodecResult>);
-      });
-    });
-  }
-  terminate() {
-    this.port?.close();
-  }
-}
-
 function FakeWorker(url: URL) {
   if (String(url).endsWith('fixtureHelper.ts')) return new HelperWorker();
-  return String(url).endsWith('codec.ts') ? new CodecPort() : new WorkerPort();
+  return new WorkerPort();
 }
 
 class ChannelPort {
@@ -194,6 +210,7 @@ async function start(notify: (state: ClientState) => void = () => {}) {
   clients.push(client);
   await client.start();
   await startGame(client);
+  listGame(client);
   await client.whenSaved();
   return client;
 }
@@ -211,7 +228,9 @@ beforeEach(() => {
   storage = new MemoryStorage();
   WorkerPort.instances = [];
   WorkerPort.release = undefined;
-  CodecPort.instances = [];
+  WorkerPort.saveGate = Promise.resolve();
+  files = new Map();
+  failWrites = false;
   HelperWorker.instances = [];
   ChannelPort.instances = [];
   vi.stubGlobal('Worker', FakeWorker);
@@ -386,31 +405,29 @@ describe('background worker publication', () => {
     expect(client.reveal()).toBe(0);
   });
 
-  it('serializes overlapping background ticks with current revisions and checkpoint generations', async () => {
+  it('serializes overlapping background ticks with current revisions and one save at a time', async () => {
     const client = await start();
     await Promise.all([
       client.command({ type: 'advance-days', days: 1 }, { background: true }),
       client.command({ type: 'advance-days', days: 1 }, { background: true }),
     ]);
     await client.whenSaved();
-    const requests = WorkerPort.instances[0].requests,
-      commands = requests.filter((request) => request.body.type === 'command'),
-      generations = requests
-        .filter((request) => request.body.type === 'save')
-        .map((request) => request.generation);
-    expect(commands.map((request) => request.expectedRevision)).toEqual([0, 1]);
-    // The takeover, then the ticks' saves (folded when one was still building): every checkpoint
-    // follows the last committed one.
-    expect(generations).toEqual(generations.map((_, index) => index + 1));
-    expect(generations.length).toBeGreaterThan(1);
-    expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!).generation).toBe(
-      generations.at(-1),
-    );
+    const replies = WorkerPort.instances[0].replies,
+      commands = replies.filter(({ request }) => request.body.type === 'command'),
+      saved = replies
+        .filter(({ request }) => ['create-game', 'save'].includes(request.body.type))
+        .map(({ reply }) => reply.saved!.revision);
+    expect(commands.map(({ request }) => request.expectedRevision)).toEqual([0, 1]);
+    // The takeover's game created whole, then the ticks' saves (folded when one was still
+    // running): each commits a revision no older than the one before.
+    expect(saved[0]).toBe(0);
+    expect(saved.length).toBeGreaterThan(1);
+    expect(saved).toEqual([...saved].sort((a, b) => a - b));
+    expect(committed(client.gameId!)).toBe(2);
     expect(client.state.view?.world.calendar?.day).toBe(2);
     expect(client.state.savedRevision).toBe(2);
     expect(client.state.error).toBeUndefined();
   });
-
   it('manual next-event saves its final boundary without foreground progress feedback', async () => {
     const publications: ClientState[] = [],
       client = await start((state) => publications.push(state));
@@ -450,11 +467,11 @@ describe('background worker publication', () => {
     clients.push(reader);
     await reader.start();
     expect(reader.state.readonly).toBe(true);
-    expect(reader.state.view?.world.revision).toBe(0);
+    // The game's database opens in the playing tab only (→SAVE-6).
+    expect(reader.state.view).toBeUndefined();
     await reader.command({ type: 'advance-days', days: 1 }, { background: true });
     expect(reader.state.error).toContain('읽기 전용');
-    expect(reader.state.view?.world.calendar?.day).toBe(0);
-    expect(reader.state.savedRevision).toBe(0);
+    expect(reader.state.savedRevision).toBe(-1);
     expect(
       WorkerPort.instances[1].requests.some((request) => request.body.type === 'command'),
     ).toBe(false);
@@ -468,7 +485,7 @@ describe('background worker publication', () => {
     await reader.start();
     expect(reader.state.readonly).toBe(true);
     expect(reader.state.notice).toContain('Web Locks');
-    expect(reader.state.view?.world.revision).toBe(0);
+    expect(reader.state.view).toBeUndefined();
     expect(notifications()).toHaveLength(0);
   });
 
@@ -495,10 +512,9 @@ describe('background worker publication', () => {
     expect(notifications()).toMatchObject([{ text: expect.stringContaining('이어서 플레이') }]);
     await vi.waitFor(() => expect(reader.state.view?.world.revision).toBe(0));
   });
-  it('retains memory progress and the last recoverable checkpoint when background saving fails', async () => {
-    const client = await start(),
-      manifest = storage.getItem('haeram-soccor:manifest')!;
-    storage.fail = 'indexed:active';
+  it('retains memory progress and the last committed save when background saving fails', async () => {
+    const client = await start();
+    failWrites = true;
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
     await client.whenSaved();
     expect(client.state.error).toContain('저장 실패');
@@ -508,63 +524,63 @@ describe('background worker publication', () => {
     expect(client.state.savedRevision).toBe(0);
     expect(client.state.processing).toBe(false);
     expect(client.state.busy).toBe(false);
-    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
-    const saved = await decode(storage.getItem('indexed:active')!);
-    expect(saved.world.calendar?.day).toBe(0);
+    expect(committed(client.gameId!)).toBe(0);
+    // The failed save is never acknowledged; a retry writes the same changes.
+    failWrites = false;
+    await client.retrySave();
+    expect(client.state.saveFailed).toBe(false);
+    expect(client.state.savedRevision).toBe(1);
+    expect(committed(client.gameId!)).toBe(1);
   });
-
-  it('commits the codec checkpoint as built, without an inspect round trip', async () => {
+  it('commits the save in the engine worker, without an inspect or export round trip', async () => {
     const client = await start();
     await client.command({ type: 'advance-days', days: 1 });
     await client.whenSaved();
-    const last = CodecPort.instances[0].results.at(-1)!;
-    if (!last.ok) throw new Error(last.error);
-    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
-    expect(manifest.generation).toBe(last.envelope.generation);
-    expect(storage.getItem('indexed:active')).toBe(last.raw);
-    expect(last.revision).toBe(client.state.view!.world.revision);
-    expect(client.state.savedRevision).toBe(last.revision);
+    const last = WorkerPort.instances[0].replies.findLast(
+      ({ request }) => request.body.type === 'save',
+    )!.reply;
+    expect(last.saved).toEqual({
+      gameId: client.gameId,
+      worldId: client.state.view!.world.id,
+      revision: client.state.view!.world.revision,
+    });
+    expect(client.state.savedRevision).toBe(last.saved!.revision);
+    expect(committed(client.gameId!)).toBe(last.saved!.revision);
     expect(
       WorkerPort.instances[0].requests.some(
         (request) => request.body.type === 'inspect' || request.body.type === 'export',
       ),
     ).toBe(false);
-    expect((await decode(last.raw)).world.calendar?.day).toBe(1);
   });
-
-  it('builds one checkpoint at a time and folds requests made meanwhile into one newer save', async () => {
+  it('saves one at a time and folds requests made meanwhile into one newer save', async () => {
     const client = await start(),
       worker = WorkerPort.instances[0],
-      codec = CodecPort.instances[0],
       saves = () => worker.requests.filter((request) => request.body.type === 'save');
-    storage.fail = 'indexed:active';
+    failWrites = true;
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
     await client.whenSaved();
     expect(client.state.savedRevision).toBe(0);
-    storage.fail = '';
+    failWrites = false;
     let release = () => {};
-    codec.gate = new Promise<void>((resolve) => (release = resolve));
+    WorkerPort.saveGate = new Promise<void>((resolve) => (release = resolve));
     const first = client.save();
-    await vi.waitFor(() => expect(saves()).toHaveLength(3));
-    // While that checkpoint is held, a tick and another request each ask for a save.
+    await vi.waitFor(() => expect(saves()).toHaveLength(2));
+    // While that save's answer is held, a tick and another request each ask for a save.
     const tick = client.command({ type: 'advance-days', days: 1 }, { background: true });
     await vi.waitFor(() => expect(client.state.view?.world.calendar?.day).toBe(2));
     const again = client.save();
-    expect(saves()).toHaveLength(3);
+    expect(saves()).toHaveLength(2);
     release();
     await Promise.all([first, tick, again]);
-    expect(saves().map((request) => request.generation)).toEqual([1, 2, 2, 3]);
-    expect(codec.results.map((result) => result.ok && result.revision)).toEqual([0, 1, 1, 2]);
+    expect(
+      worker.replies
+        .filter(({ request }) => request.body.type === 'save')
+        .map(({ reply }) => reply.saved?.revision),
+    ).toEqual([undefined, 1, 2]);
     expect(client.state.savedRevision).toBe(2);
+    expect(committed(client.gameId!)).toBe(2);
     expect(client.state.error).toBeUndefined();
-    const manifest = storage.getItem('haeram-soccor:manifest');
-    expect(JSON.parse(manifest!).generation).toBe(3);
-    // A late answer for a checkpoint already superseded is never written.
-    codec.onmessage?.({ data: codec.results[2] } as MessageEvent<CodecResult>);
-    await client.whenSaved();
-    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
   });
-
   it('saves automatic days when the autosave comes due and an owner decision at once, neither command waiting', async () => {
     // The autosave timer is held here so the test can bring it due.
     const due: (() => void)[] = [];
@@ -577,7 +593,6 @@ describe('background worker publication', () => {
     const notices = vi.spyOn(ChannelPort.prototype, 'postMessage');
     const client = await start(),
       worker = WorkerPort.instances[0],
-      codec = CodecPort.instances[0],
       saves = () => worker.requests.filter((request) => request.body.type === 'save').length;
     await delegateMarket(client);
     const baseRevision = client.state.view!.world.revision,
@@ -595,9 +610,9 @@ describe('background worker publication', () => {
     expect(saves()).toBe(baseSaves + 1);
     expect(client.state.savedRevision).toBe(baseRevision + 2);
     expect(client.state.savedAt).toBeGreaterThanOrEqual(foundedAt);
-    // An owner decision asks at once; its command settles while the checkpoint is still held.
+    // An owner decision asks at once; its command settles while the save's answer is held.
     let release = () => {};
-    codec.gate = new Promise<void>((resolve) => (release = resolve));
+    WorkerPort.saveGate = new Promise<void>((resolve) => (release = resolve));
     await client.command({ type: 'advance-days', days: 1 });
     expect(client.state.view?.world.revision).toBe(baseRevision + 3);
     await vi.waitFor(() => expect(saves()).toBe(baseSaves + 2));
@@ -646,6 +661,8 @@ describe('background worker publication', () => {
       client = await start((state) => publications.push(state));
     await delegateMarket(client);
     await client.command({ type: 'next-match' });
+    // The decision's save publishes its commit; the read afterwards publishes nothing.
+    await client.whenSaved();
     const w = client.state.view!.world,
       met = w.ownMatches.at(-1)!,
       club = met.home === w.playerClub ? met.away : met.home;
@@ -690,7 +707,7 @@ describe('background worker publication', () => {
   });
 });
 
-async function legacyCheckpoint(withHistory = false) {
+function legacyCheckpoint(withHistory = false) {
   // Earlier rules never recorded the full model or tracked manager history (→SAVE-23/24), so they
   // never used either container.
   const legacy = withoutManagerHistory(
@@ -701,13 +718,7 @@ async function legacyCheckpoint(withHistory = false) {
   legacy.cash = '98765432101234567890';
   delete legacy.hardStreak;
   delete legacy.players[0].developed;
-  const raw = await encode(legacy, 7, 6);
-  storage.setItem('indexed:active', raw);
-  storage.setItem(
-    'haeram-soccor:manifest',
-    JSON.stringify({ worldId: legacy.id, generation: 7, parentGeneration: 6 }),
-  );
-  return { legacy, raw };
+  return { legacy };
 }
 
 /** A supported career saved before club identities: no designs and no recorded appearances. */
@@ -717,63 +728,50 @@ function withoutIdentities(w: World) {
   return w;
 }
 /**
- * That career on today's match model, committed as the game in play, generation 7: its designs
- * are the only upgrade the writer commits.
+ * That career on today's match model, committed as the game in play: its designs are the only
+ * upgrade the writer commits.
  */
-async function identitylessCheckpoint() {
+function identitylessCheckpoint() {
   const legacy = withoutIdentities(simulatedWorld(founding, { rounds: 2 }));
-  const raw = await encode(legacy, 7, 6);
-  storage.setItem('indexed:active', raw);
-  storage.setItem(
-    'haeram-soccor:manifest',
-    JSON.stringify({ worldId: legacy.id, generation: 7, parentGeneration: 6 }),
-  );
-  return { legacy, raw };
+  return { legacy, gameId: seedGame(legacy) };
 }
 
 describe('supported-career identity adoption (→SAVE-21)', () => {
-  it('adoption commits through the existing save repository', async () => {
-    const { legacy, raw } = await identitylessCheckpoint();
+  it('adoption commits to the game database at once', async () => {
+    const { legacy, gameId } = identitylessCheckpoint();
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
     expect(client.state.error).toBeUndefined();
     expect(client.state.view!.world.clubs.every((club) => club.identity)).toBe(true);
     expect(client.state.savedRevision).toBe(legacy.revision + 1);
-    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
-    expect(manifest).toMatchObject({ worldId: legacy.id, generation: 8, parentGeneration: 7 });
-    const saved = (await decode(storage.getItem('indexed:active')!)).world;
-    expect(saved.revision).toBe(legacy.revision + 1);
+    expect(committed(gameId)).toBe(legacy.revision + 1);
+    const saved = rowsToWorld(files.get(gameId)!, { includeCold: false });
     expect(saved.clubs.every((club) => club.identity)).toBe(true);
     expect(saved.ownMatches.every((m) => !('appearance' in m))).toBe(true);
-    // The career as it was stays the previous copy until a newer save commits.
-    expect(storage.getItem('indexed:previous')).toBe(raw);
     expect(notifications()).toMatchObject([{ text: SAVE_DATA_UPDATED, read: false }]);
-    // Loading the adopted career again changes nothing and tells nothing more.
-    const committed = new Map(storage.data);
+    // Opening the adopted career again changes nothing and tells nothing more.
     await client.reload();
     expect(client.state.savedRevision).toBe(legacy.revision + 1);
-    expect(storage.data).toEqual(committed);
+    expect(committed(gameId)).toBe(legacy.revision + 1);
+    expect(notifications()).toHaveLength(1);
   });
-
-  it('failure preserves old raw data and export access', async () => {
-    const { legacy, raw } = await identitylessCheckpoint();
-    const manifest = storage.getItem('haeram-soccor:manifest');
-    storage.fail = 'indexed:active';
+  it('failure preserves the stored game and export access', async () => {
+    const { legacy, gameId } = identitylessCheckpoint();
+    failWrites = true;
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
     expect(client.state.error).toContain('갱신한 저장 데이터를 저장하지 못했어요');
     expect(client.state.saveFailed).toBe(true);
-    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
-    expect(storage.getItem('indexed:active')).toBe(raw);
+    expect(committed(gameId)).toBe(legacy.revision);
     expect(notifications()).toEqual([]);
     // The adopted career stays in memory and exportable.
     const exported = (await decode((await client.exportFile())!)).world;
     expect(exported.id).toBe(legacy.id);
     expect(exported.revision).toBe(legacy.revision + 1);
     expect(exported.clubs.every((club) => club.identity)).toBe(true);
-    expect(canonical((await decode(storage.getItem('indexed:active')!)).world)).toBe(
+    expect(canonical(rowsToWorld(files.get(gameId)!, { includeCold: false }))).toBe(
       canonical(legacy),
     );
   });
@@ -781,23 +779,17 @@ describe('supported-career identity adoption (→SAVE-21)', () => {
 
 /**
  * A supported career saved before the full match model (no model data, `withoutMatchModel`), the
- * game in play at generation 7.
+ * game in play.
  */
-async function preModelCheckpoint() {
+function preModelCheckpoint() {
   const career = withoutMatchModel(simulatedWorld(founding, { rounds: 2 }));
-  const raw = await encode(career, 7, 6);
-  storage.setItem('indexed:active', raw);
-  storage.setItem(
-    'haeram-soccor:manifest',
-    JSON.stringify({ worldId: career.id, generation: 7, parentGeneration: 6 }),
-  );
-  return { career, raw };
+  return { career, gameId: seedGame(career) };
 }
 
 describe('full match-model activation (→SAVE-23)', () => {
-  it('activation commits through the existing save repository', async () => {
+  it('activation commits to the game database at once', async () => {
     WorkerPort.release = ENABLED_RELEASE;
-    const { career, raw } = await preModelCheckpoint();
+    const { career, gameId } = preModelCheckpoint();
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
@@ -805,118 +797,40 @@ describe('full match-model activation (→SAVE-23)', () => {
     const world = client.state.view!.world;
     expect(world.matchModel?.coverage).toBe('activation');
     expect(client.state.savedRevision).toBe(career.revision + 1);
-    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
-    expect(manifest).toMatchObject({ worldId: career.id, generation: 8, parentGeneration: 7 });
-    const saved = await decode(storage.getItem('indexed:active')!);
-    // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
-    expect(saved.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-    expect(saved.world.matchModel).toEqual(world.matchModel);
-    // The career as it was stays the previous copy until a newer save commits.
-    expect(storage.getItem('indexed:previous')).toBe(raw);
+    expect(committed(gameId)).toBe(career.revision + 1);
+    expect(rowsToWorld(files.get(gameId)!, { includeCold: false }).matchModel).toEqual(
+      world.matchModel,
+    );
     expect(notifications()).toMatchObject([{ text: SAVE_DATA_UPDATED, read: false }]);
-    // Loading the activated career again changes nothing and tells nothing more.
-    const committed = new Map(storage.data);
+    // Opening the activated career again changes nothing and tells nothing more.
     await client.reload();
     expect(client.state.view!.world.matchModel).toEqual(world.matchModel);
-    expect(storage.data).toEqual(committed);
+    expect(committed(gameId)).toBe(career.revision + 1);
+    expect(notifications()).toHaveLength(1);
   });
-
-  it('failure preserves old raw data and export access', async () => {
+  it('failure preserves the stored game and export access', async () => {
     WorkerPort.release = ENABLED_RELEASE;
-    const { career, raw } = await preModelCheckpoint();
-    const manifest = storage.getItem('haeram-soccor:manifest');
-    storage.fail = 'indexed:active';
+    const { career, gameId } = preModelCheckpoint();
+    failWrites = true;
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
     expect(client.state.error).toContain('갱신한 저장 데이터를 저장하지 못했어요');
     expect(client.state.saveFailed).toBe(true);
-    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
-    expect(storage.getItem('indexed:active')).toBe(raw);
+    expect(committed(gameId)).toBe(career.revision);
     expect(notifications()).toEqual([]);
     // The activated career stays in memory and exportable.
     const exported = await decode((await client.exportFile())!);
     expect(exported.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(exported.world.revision).toBe(career.revision + 1);
     expect(exported.world.matchModel?.trackedFrom.round).toBe(career.round + 1);
-    expect(canonical((await decode(raw)).world)).toBe(canonical(career));
+    expect(canonical(rowsToWorld(files.get(gameId)!, { includeCold: false }))).toBe(
+      canonical(career),
+    );
   });
-
-  it('a read-only tab neither activates nor writes', async () => {
+  it('a read-only tab neither opens, activates nor writes', async () => {
     WorkerPort.release = ENABLED_RELEASE;
-    await preModelCheckpoint();
-    const stored = new Map(storage.data);
-    vi.stubGlobal('navigator', {
-      locks: {
-        request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
-          callback(null),
-      },
-    });
-    const reader = new GameClient(() => {});
-    clients.push(reader);
-    await reader.start();
-    expect(reader.state.readonly).toBe(true);
-    expect(reader.state.view!.world.matchModel).toBeUndefined();
-    expect(storage.data).toEqual(stored);
-  });
-
-  it('keeps a revealed playback of this career across a reload that holds its match', async () => {
-    const client = await start();
-    const founded = new Map(storage.data);
-    await client.command({ type: 'advance', rounds: 1 });
-    await client.whenSaved();
-    const playback = client.state.playback!;
-    expect(playback.record.id).toBe(client.state.view!.world.ownMatches.at(-1)!.id);
-    await client.reload();
-    // A released match's playback keeps its record and script and stages its picture again from
-    // the script (T834, →MATCH-39), so the object is new while the match is the same.
-    expect(playback.script?.beats.length).toBeGreaterThan(0);
-    expect(client.state.playback?.record).toBe(playback.record);
-    expect(client.state.playback?.script).toBe(playback.script);
-    // A checkpoint without that match replays its fixture: the playback goes.
-    storage.data = new Map(founded);
-    await client.reload();
-    expect(client.state.view!.world.ownMatches).toHaveLength(0);
-    expect(client.state.playback).toBeUndefined();
-  });
-});
-
-/**
- * A founded career of the rules-4.0.0 line (game version 0.7.0), the game in play at generation 7,
- * written as that line wrote it: the full match model and the managers' history.
- */
-async function rules4Checkpoint() {
-  const career = simulatedWorld(founding, { rounds: 2 });
-  const raw = await encode({ ...structuredClone(career), engine: '0.7.0' }, 7, 6);
-  storage.setItem('indexed:active', raw);
-  storage.setItem(
-    'haeram-soccor:manifest',
-    JSON.stringify({ worldId: career.id, generation: 7, parentGeneration: 6 }),
-  );
-  return { career, raw };
-}
-
-describe('founded rules-4.0.0-line careers in game version 0.8.0 (→SAVE-26)', () => {
-  it('the writer keeps a 0.7.0 career as stored and names its rules (→SAVE-26/29)', async () => {
-    await rules4Checkpoint();
-    const stored = new Map(storage.data);
-    const client = new GameClient(() => {});
-    clients.push(client);
-    await client.start();
-    expect(client.state.view).toBeUndefined();
-    expect(client.state.errorCode).toBe('save-compatibility');
-    expect(client.state.error).toContain('규칙 0.7.0 커리어');
-    expect(client.earlierRules()).toBe('0.7.0');
-    // Nothing converted, cleared or announced: the stored career stays as it was.
-    expect(storage.data).toEqual(stored);
-    const said = notifications().length;
-    await client.reload();
-    expect(notifications()).toHaveLength(said);
-  });
-
-  it('a read-only tab leaves a 0.7.0 save as stored and names its rules', async () => {
-    await rules4Checkpoint();
-    const stored = new Map(storage.data);
+    const { career, gameId } = preModelCheckpoint();
     vi.stubGlobal('navigator', {
       locks: {
         request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
@@ -928,10 +842,55 @@ describe('founded rules-4.0.0-line careers in game version 0.8.0 (→SAVE-26)', 
     await reader.start();
     expect(reader.state.readonly).toBe(true);
     expect(reader.state.view).toBeUndefined();
-    expect(reader.state.errorCode).toBe('save-compatibility');
-    expect(reader.state.error).toContain('규칙 0.7.0 커리어');
-    expect(reader.earlierRules()).toBe('0.7.0');
-    expect(storage.data).toEqual(stored);
+    expect(committed(gameId)).toBe(career.revision);
+  });
+  it('keeps a revealed playback of this career across a reload that holds its match', async () => {
+    const client = await start();
+    const founded = (await decode((await client.exportFile())!)).world;
+    await client.command({ type: 'advance', rounds: 1 });
+    await client.whenSaved();
+    const playback = client.state.playback!;
+    expect(playback.record.id).toBe(client.state.view!.world.ownMatches.at(-1)!.id);
+    await client.reload();
+    // A released match's playback keeps its record and script and stages its picture again from
+    // the script (T834, →MATCH-39), so the object is new while the match is the same.
+    expect(playback.script?.beats.length).toBeGreaterThan(0);
+    expect(client.state.playback?.record).toBe(playback.record);
+    expect(client.state.playback?.script).toBe(playback.script);
+    // A game saved without that match replays its fixture: the playback goes.
+    seedGame(founded, client.gameId);
+    await client.reload();
+    expect(client.state.view!.world.ownMatches).toHaveLength(0);
+    expect(client.state.playback).toBeUndefined();
+  });
+});
+
+/**
+ * A founded career of the rules-4.0.0 line (game version 0.7.0), the game in play, written as that
+ * line wrote it: the full match model and the managers' history.
+ */
+function rules4Checkpoint() {
+  const career = simulatedWorld(founding, { rounds: 2 });
+  return { career, gameId: seedGame({ ...structuredClone(career), engine: '0.7.0' }) };
+}
+
+describe('founded rules-4.0.0-line careers in game version 0.8.0 (→SAVE-26)', () => {
+  it('the writer keeps a 0.7.0 career as stored and names its rules (→SAVE-26/29)', async () => {
+    const { gameId } = rules4Checkpoint();
+    const stored = JSON.stringify([files.get(gameId)!.meta(), files.get(gameId)!.count('squad')]);
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.view).toBeUndefined();
+    expect(client.state.errorCode).toBe('save-compatibility');
+    expect(client.state.error).toContain('규칙 0.7.0 커리어');
+    // Nothing converted, cleared or announced: the stored career stays as it was.
+    expect(JSON.stringify([files.get(gameId)!.meta(), files.get(gameId)!.count('squad')])).toBe(
+      stored,
+    );
+    const said = notifications().length;
+    await client.reload();
+    expect(notifications()).toHaveLength(said);
   });
 });
 
@@ -970,6 +929,7 @@ describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => 
 
     const reply = await client.takeOver(club.clubId);
     expect(reply?.ok).toBe(true);
+    listGame(client);
     expect(client.state.start).toBeUndefined();
     const w = client.state.view!.world;
     expect(w.playerClub).toBe(club.clubId);
@@ -1020,19 +980,12 @@ describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => 
 });
 
 describe('manager-history reads (→HIST-18, WEB-92)', () => {
-  it('reads a page in a read-only tab without the command queue, a write or a view', async () => {
+  it('reads a page in a reopened tab without the command queue, a write or a view', async () => {
     await start();
     const stored = new Map(storage.data);
-    vi.stubGlobal('navigator', {
-      locks: {
-        request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
-          callback(null),
-      },
-    });
     const reader = new GameClient(() => {});
     clients.push(reader);
     await reader.start();
-    expect(reader.state.readonly).toBe(true);
     const view = reader.state.view!;
     expect(view.managerHistoryKey).toEqual(expect.any(String));
     expect(view.world).not.toHaveProperty('managerHistory');
@@ -1079,136 +1032,51 @@ describe('manager-history reads (→HIST-18, WEB-92)', () => {
 });
 
 describe('earlier-rules and future saves: compatibility recovery', () => {
-  it('protects unsupported indexed gameplay without an automatic beta reset', async () => {
-    await legacyCheckpoint();
+  it('protects an unsupported game database without an automatic beta reset', async () => {
+    const { legacy } = legacyCheckpoint();
+    const gameId = seedGame(legacy);
+    const before = JSON.stringify([files.get(gameId)!.meta(), files.get(gameId)!.count('squad')]);
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
     expect(client.state.errorCode).toBe('save-compatibility');
     expect(client.state.view).toBeUndefined();
-    expect(storage.getItem('indexed:active')).not.toBeNull();
-    expect(storage.getItem('haeram-soccor:manifest')).not.toBeNull();
-    expect(storage.getItem('haeram-soccor:device')).toBeNull();
+    expect(JSON.stringify([files.get(gameId)!.meta(), files.get(gameId)!.count('squad')])).toBe(
+      before,
+    );
   });
-
-  it.each([true, false])(
-    'returns a typed error and exports the selected future checkpoint with manifest=%s',
-    async (hasManifest) => {
-      await legacyCheckpoint();
-      const old = storage.getItem('indexed:active')!;
-      const future = JSON.stringify({ ...JSON.parse(old), engine: '9.0.0', generation: 8 });
-      storage.setItem('indexed:previous', old);
-      storage.setItem('indexed:active', future);
-      if (hasManifest)
-        storage.setItem(
-          'haeram-soccor:manifest',
-          JSON.stringify({
-            worldId: JSON.parse(old).worldId,
-            generation: 8,
-            parentGeneration: 7,
-          }),
-        );
-      else storage.removeItem('haeram-soccor:manifest');
-      const before = new Map(storage.data);
-      const client = new GameClient(() => {});
-      clients.push(client);
-      await client.start();
-      expect(client.state.errorCode).toBe('save-compatibility');
-      expect(client.state.error).toContain('지원하지 않는');
-      expect(client.state.view).toBeUndefined();
-      expect(storage.data).toEqual(before);
-      expect(await client.exportFile()).toBe(future);
-      expect(storage.data).toEqual(before);
-      expect(
-        WorkerPort.instances[0].requests.some(
-          (request) => request.body.type === 'inspect' && request.body.activate,
-        ),
-      ).toBe(false);
-      await client.importFile(future);
-      expect(client.state.errorCode).toBe('save-compatibility');
-      expect(client.state.view).toBeUndefined();
-      expect(await client.exportFile()).toBe(future);
-      // A new game needs the explicit replacement: the start keeps the refusal, nothing is listed.
-      await client.generate({ ...START, seed: 'client-background' });
-      expect(client.state.start?.error).toContain('호환되지 않는 기록');
-      expect(client.state.start?.listings).toBeUndefined();
-      expect(client.state.view).toBeUndefined();
-      expect(storage.data).toEqual(before);
-      client.leaveStart();
-      const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery' });
-      await client.importFile(await encode(replacement));
-      expect(client.state.error).toBeUndefined();
-      expect(client.state.view?.world.id).toBe(replacement.id);
-      expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!)).toEqual({
-        worldId: replacement.id,
-        generation: 9,
-        parentGeneration: 8,
-      });
-      expect(storage.getItem('indexed:previous')).toBe(future);
-    },
-  );
-
-  it('still recovers a compatible predecessor when the selected checkpoint is actually corrupt', async () => {
-    const client = await start();
-    await client.command({ type: 'advance-days', days: 1 });
-    await client.whenSaved();
-    storage.setItem('indexed:active', 'corrupt');
-    client.dispose();
-    clients.splice(clients.indexOf(client), 1);
-    const restored = new GameClient(() => {});
-    clients.push(restored);
-    await restored.start();
-    expect(restored.state.error).toBeUndefined();
-    expect(restored.state.notice).toBeUndefined();
-    expect(notifications()).toMatchObject([
-      { text: expect.stringContaining('체크포인트로 복구'), read: false },
-    ]);
-    // Until a save moves the manifest off the corrupt slot, every load recovers; it tells once.
-    await restored.reload();
-    expect(notifications()).toHaveLength(1);
-    expect(restored.state.view?.world.calendar?.day).toBe(0);
-    expect(restored.state.savedRevision).toBe(0);
-    await restored.command({ type: 'advance-days', days: 1 });
-    await restored.whenSaved();
-    expect(restored.state.error).toBeUndefined();
-    expect(restored.state.savedRevision).toBe(1);
-  });
-
-  it('keeps an explicitly imported replacement exportable and retryable after future-save write failure', async () => {
-    const { raw } = await legacyCheckpoint();
-    const future = JSON.stringify({ ...JSON.parse(raw), engine: '9.0.0' });
-    storage.setItem('indexed:active', future);
-    const manifest = storage.getItem('haeram-soccor:manifest');
+  it('refuses a future game database as stored, naming it unsupported', async () => {
+    const career = simulatedWorld(founding, { rounds: 2 });
+    const gameId = seedGame({ ...structuredClone(career), engine: '9.0.0' });
+    const before = JSON.stringify(files.get(gameId)!.meta());
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
     expect(client.state.errorCode).toBe('save-compatibility');
-    await client.generate({ ...START, seed: 'client-background' });
-    expect(client.state.start?.error).toContain('호환되지 않는 기록');
+    expect(client.state.error).toContain('지원하지 않는');
     expect(client.state.view).toBeUndefined();
-    client.leaveStart();
-    storage.fail = 'indexed:active';
+    expect(JSON.stringify(files.get(gameId)!.meta())).toBe(before);
+  });
+
+  it('keeps an explicitly imported replacement exportable and retryable after a write failure', async () => {
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    failWrites = true;
     const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery-quota' });
     initializeReadModels(replacement);
     await client.importFile(await encode(replacement));
     expect(client.state.error).toContain('Quota');
     expect(client.state.view?.world.id).toBe(replacement.id);
     expect(client.state.savedRevision).toBe(-1);
-    expect(storage.getItem('indexed:active')).toBe(future);
-    expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
     expect(canonical((await decode((await client.exportFile())!)).world)).toBe(
       canonical(replacement),
     );
-    storage.fail = '';
+    failWrites = false;
     await client.retrySave();
     expect(client.state.error).toBeUndefined();
     expect(client.state.savedRevision).toBe(0);
-    expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!)).toEqual({
-      worldId: replacement.id,
-      generation: 8,
-      parentGeneration: 7,
-    });
-    expect(storage.getItem('indexed:previous')).toBe(future);
+    expect(committed(client.gameId!)).toBe(0);
   });
 });
 
@@ -1250,7 +1118,9 @@ describe('game slots', () => {
     await slots.continue(0);
     expect(client.state.view!.world.id).toBe(first);
     expect(slots.read().active).toBe(0);
-    expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!).worldId).toBe(first);
+    // Back in play, its game's database holds it as switched in.
+    expect(client.gameId).toBe(slots.read().slots[0]!.id);
+    expect(committed(client.gameId!)).toBe(client.state.view!.world.revision);
     // The second game kept the day it had played before it was parked.
     await slots.continue(1);
     expect(client.state.view!.world.id).toBe(second);
@@ -1343,30 +1213,19 @@ describe('game slots', () => {
   });
 });
 
-it('exports verified current bytes after storage corruption and never reuses another world at the same revision', async () => {
+it('exports the world in play and never another world at the same revision', async () => {
   const client = await start(),
-    original = (await client.exportFile())!;
-  const oldWorld = (await decode(original)).world;
-  storage.setItem('indexed:active', 'external corruption');
-  expect(await client.exportFile()).toBe(original);
-  const codec = CodecPort.instances[0];
-  let release!: () => void;
-  codec.gate = new Promise<void>((resolve) => {
-    release = resolve;
-  });
-  try {
-    await startGame(client, 'other-world-same-revision', true);
-    const current = (await decode((await client.exportFile())!)).world;
-    expect(current.revision).toBe(oldWorld.revision);
-    expect(current.id).not.toBe(oldWorld.id);
-    expect(current.id).toBe(client.state.view!.world.id);
-  } finally {
-    release();
-    await client.whenSaved();
-  }
+    oldWorld = (await decode((await client.exportFile())!)).world;
+  expect(oldWorld.id).toBe(client.state.view!.world.id);
+  await startGame(client, 'other-world-same-revision', true);
+  await client.whenSaved();
+  const current = (await decode((await client.exportFile())!)).world;
+  expect(current.revision).toBe(oldWorld.revision);
+  expect(current.id).not.toBe(oldWorld.id);
+  expect(current.id).toBe(client.state.view!.world.id);
 });
 
-it('drains newer notices across more than two read-only loads without spinning on an unchanged hint', async () => {
+it('opens no game in a read-only tab, however many commits it hears of (→SAVE-6)', async () => {
   const writer = await start();
   vi.stubGlobal('navigator', {
     locks: {
@@ -1377,78 +1236,13 @@ it('drains newer notices across more than two read-only loads without spinning o
   const reader = new GameClient(() => {});
   clients.push(reader);
   await reader.start();
-  const worker = WorkerPort.instances[1],
-    channel = ChannelPort.instances[1];
-  const original = worker.postMessage.bind(worker),
-    held: (() => void)[] = [];
-  const post = vi.spyOn(worker, 'postMessage').mockImplementation((input) => {
-    if ('body' in input && input.body.type === 'inspect' && input.body.activate)
-      held.push(() => original(input));
-    else original(input);
-  });
-  const notice = (generation: number) =>
-    channel.onmessage?.({ data: { generation } } as MessageEvent<{ generation: number }>);
-  try {
-    for (let i = 1; i <= 4; i++) {
-      const previous = writer.state.savedRevision;
-      await writer.command(
-        {
-          type: 'settings',
-          settings: { ...writer.state.view!.world.settings!, mode: i % 2 ? 'manual' : 'automatic' },
-        },
-        { background: true },
-      );
-      await writer.whenSaved();
-      expect(writer.state.savedRevision).toBeGreaterThan(previous);
-      notice(JSON.parse(storage.getItem('haeram-soccor:manifest')!).generation);
-      if (i > 1) held.shift()!();
-      await vi.waitFor(() =>
-        expect(
-          held,
-          `generation ${i}; channels ${ChannelPort.instances.length}; readonly ${reader.state.readonly}; requests ${worker.requests.map((r) => r.body.type).join(',')}`,
-        ).toHaveLength(1),
-      );
-    }
-    held.shift()!();
-    await reader.whenIdle();
-    expect(reader.state.view!.world.revision).toBe(writer.state.savedRevision);
-    expect(reader.state.readonly).toBe(true);
-    expect(worker.requests.some((request) => request.body.type === 'command')).toBe(false);
-    const before = worker.requests.filter((request) => request.body.type === 'inspect').length;
-    notice(999999);
-    notice(999999);
-    await vi.waitFor(() => expect(held).toHaveLength(1));
-    held.shift()!();
-    await reader.whenIdle();
-    expect(
-      worker.requests.filter((request) => request.body.type === 'inspect').length - before,
-    ).toBeLessThanOrEqual(2);
-    expect(reader.state.view!.world.revision).toBe(writer.state.savedRevision);
-    // A bogus high generation must not mask real newer notices arriving during later loads.
-    for (let i = 5; i <= 6; i++) {
-      const previous = writer.state.savedRevision;
-      await writer.command(
-        {
-          type: 'settings',
-          settings: { ...writer.state.view!.world.settings!, mode: i % 2 ? 'manual' : 'automatic' },
-        },
-        { background: true },
-      );
-      await writer.whenSaved();
-      expect(writer.state.savedRevision).toBeGreaterThan(previous);
-      notice(JSON.parse(storage.getItem('haeram-soccor:manifest')!).generation);
-      if (i > 5) held.shift()!();
-      await vi.waitFor(() => expect(held).toHaveLength(1));
-    }
-    held.shift()!();
-    await reader.whenIdle();
-    expect(reader.state.view!.world.revision).toBe(writer.state.savedRevision);
-    const inspected = worker.requests.length;
-    for (const invalid of [NaN, -1, 0.5]) notice(invalid);
-    await reader.whenIdle();
-    expect(worker.requests).toHaveLength(inspected);
-  } finally {
-    post.mockRestore();
-    for (const release of held) release();
-  }
+  await writer.command({ type: 'advance-days', days: 1 }, { background: true });
+  await writer.whenSaved();
+  ChannelPort.instances[1].onmessage?.({
+    data: { revision: writer.state.savedRevision },
+  } as unknown as MessageEvent<{ generation: number }>);
+  await reader.whenIdle();
+  expect(reader.state.readonly).toBe(true);
+  expect(reader.state.view).toBeUndefined();
+  expect(WorkerPort.instances[1].requests).toHaveLength(0);
 });

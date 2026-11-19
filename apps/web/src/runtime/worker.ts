@@ -7,12 +7,8 @@ self.onmessage = (event: MessageEvent) => {
     host.cancelled = true;
     return;
   }
-  // The client hands over its codec worker's port before any request.
-  if (event.data?.type === 'codec') {
-    host.codec = event.data.port;
-    return;
-  }
-  // And its fixture helpers' ports, when it could create them; a helper error ends their use.
+  // The client hands over its fixture helpers' ports when it could create them; a helper error
+  // ends their use.
   if (event.data?.type === 'helpers') {
     host.helpers = new HelperPool(event.data.ports);
     return;

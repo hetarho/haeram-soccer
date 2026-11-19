@@ -6,6 +6,7 @@ import type { ClubListing, StartChoice } from '../../../../packages/contracts/sr
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
 import { IndexedDbCheckpointKey } from '../adapters/previousStore';
+import { GameIndexStore } from '../adapters/games';
 import {
   envelopeEngine,
   isEarlierEngine,
@@ -13,21 +14,16 @@ import {
   isSaveCompatibilityError,
   type SAVE_COMPATIBILITY_CODE,
 } from '../../../../packages/contracts/src/versions';
-import {
-  applyViewDelta,
-  PUBLISHED_VIEWS,
-  type Body,
-  type CodecResult,
-  type Reply,
-  type View,
-} from './protocol';
+import { applyViewDelta, PUBLISHED_VIEWS, type Body, type Reply, type View } from './protocol';
 import { NOTIFICATIONS_KEY, notificationStore, shareValue, shareView } from './store';
 import { HELPER_CONFIG } from './helperPool';
 import { PlaybackStaging } from './staging';
-/** Bound the engine snapshot RPC separately from expensive background compression. */
-const CHECKPOINT_TIMEOUT_MS = 60000;
-// Large lossless careers compress in the separate codec worker; engine RPC stays bounded below.
-const CODEC_TIMEOUT_MS = 600000;
+/**
+ * How long opening, creating, saving or exporting a game may take in the engine worker: a save
+ * may queue behind a long command that reports only its own progress, and a new career's first
+ * save writes every row.
+ */
+const STORAGE_TIMEOUT_MS = 600000;
 /**
  * How long a world's generation may go without reaching its next season (→WORLD-13, ARCH-28):
  * each season it reaches is a progress message that restarts the watchdog.
@@ -109,6 +105,16 @@ function withRead(view: View, read: Set<string>): View {
     },
   };
 }
+/** The slot index's game in play (→SAVE-14), when one is. */
+function activeGameId() {
+  const index = new GameIndexStore(localStorage).read();
+  return index.active === null ? undefined : index.slots[index.active]?.id;
+}
+/** The game ID the slot index lists `worldId` under, else a new one. */
+function gameIdFor(worldId: string) {
+  const listed = new GameIndexStore(localStorage).read().slots.find((e) => e?.worldId === worldId);
+  return listed?.id ?? crypto.randomUUID();
+}
 export class GameClient {
   private automaticPending = 0;
   state: ClientState = {
@@ -131,15 +137,18 @@ export class GameClient {
     this.staging.watching(watching);
   }
   private worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
-  /** Builds and validates every checkpoint from the engine worker's snapshots (→ARCH-13). */
-  private codec = new Worker(new URL('./codec.ts', import.meta.url), { type: 'module' });
-  /** Checkpoints the codec is building, by the save request that asked for them. */
-  private builds = new Map<string, { resolve: (result: CodecResult) => void; timer: number }>();
+  /**
+   * The game in play's ID in the slot index, naming its database (→SAVE-14); `stored` once the
+   * engine worker holds that database, so a save writes the changed rows, else its first save
+   * creates it whole (replacing what it held only for an activated import or parked game).
+   */
+  gameId?: string;
+  private stored = false;
+  private createReplaces = false;
   /** The fixture helpers, computing an own match day's other fixtures for the engine (→ARCH-6). */
   private helpers: Worker[] = [];
-  /** The save being built and committed, and whether a newer one was asked for meanwhile. */
+  /** The save being committed, and whether a newer one was asked for meanwhile. */
   private saving?: Promise<void>;
-  private savedCheckpoint?: { raw: string; worldId: string; revision: number };
   private saveWanted = false;
   /** Saves automatic progress no later than AUTOSAVE_MS after its first unsaved day. */
   private autosaveTimer?: number;
@@ -211,16 +220,6 @@ export class GameClient {
     );
     this.worker.onmessage = (event: MessageEvent<Reply>) => this.received(event.data);
     this.worker.onerror = () => this.failWorker();
-    // Nested workers are not dependable on every browser (→ARCH-18), so the client creates the
-    // codec and hands the engine worker a port to it: snapshots never pass through this thread.
-    const codecChannel = new MessageChannel();
-    this.codec.postMessage({ type: 'port', port: codecChannel.port1 }, [codecChannel.port1]);
-    this.worker.postMessage({ type: 'codec', port: codecChannel.port2 }, [codecChannel.port2]);
-    this.codec.onmessage = (event: MessageEvent<CodecResult>) => this.built(event.data);
-    this.codec.onerror = () => {
-      for (const id of [...this.builds.keys()])
-        this.built({ id, ok: false, error: sourceMessage('copy.client.f7f205cc44') });
-    };
     this.startHelpers();
     this.channel.onmessage = (event) => this.refresh(event.data?.generation);
     window.addEventListener('storage', this.storageListener);
@@ -228,8 +227,8 @@ export class GameClient {
   }
   /**
    * Creates the fixture helpers on a device with the cores for them and hands their ports to the
-   * engine worker, as for the codec (→ARCH-6/18). Without them, after a creation failure or once
-   * one errors, the engine worker computes every fixture itself.
+   * engine worker: nested workers are not dependable on every browser (→ARCH-6/18). Without them,
+   * after a creation failure or once one errors, the engine worker computes every fixture itself.
    */
   private startHelpers() {
     if (!((navigator.hardwareConcurrency ?? 0) >= HELPER_CONFIG.minCores)) return;
@@ -393,61 +392,57 @@ export class GameClient {
         /* aborted on dispose */
       });
   }
+  /**
+   * Opens the game in play — the slot index's active game — in the engine worker, which validates
+   * its database and commits any writer upgrade at once (→SAVE-5, →SAVE-10). A game without a
+   * database file reads as an empty slot (→SAVE-29). A read-only tab opens nothing: a game's
+   * database opens in one tab only (→SAVE-6).
+   */
   private async load() {
     await this.whenSaved();
-    const result = await this.saves.load();
-    if (result) {
+    const gameId = this.state.readonly ? undefined : activeGameId();
+    if (gameId) {
       const playback = this.state.playback,
-        career = this.state.view?.world.id;
-      const reply = await this.rpc({
-        type: 'inspect',
-        raw: result.raw,
-        activate: true,
-        upgrade: !this.state.readonly,
-      });
-      // A revealed playback of this career whose match the checkpoint holds finishes under the
-      // model it was settled with, even when this load activates a newer one (→SAVE-23).
-      const world = this.state.view?.world;
-      this.staging.replace(
-        playback &&
-          world?.id === career &&
-          world?.ownMatches.some((match) => match.id === playback.record.id)
-          ? playback.script
-            ? { ...playback, frames: [] }
-            : playback
-          : undefined,
-      );
-      this.state.savedRevision = result.world.revision;
-      this.savedCheckpoint = {
-        raw: result.raw,
-        worldId: result.envelope.worldId,
-        revision: result.world.revision,
-      };
-      this.state.savedAt = undefined;
-      this.state.saveFailed = false;
-      // The writer tells; read-only tabs reloading the same checkpoint would only repeat it.
-      if (result.recovered && !this.state.readonly)
-        notificationStore.add(sourceMessage('copy.client.6138a2ccc4'));
-      if (reply.upgraded && reply.raw) {
-        try {
-          await this.saves.commit(reply.raw);
-          this.state.savedRevision = this.state.view!.world.revision;
-          this.savedCheckpoint = {
-            raw: reply.raw,
-            worldId: this.state.view!.world.id,
-            revision: this.state.view!.world.revision,
-          };
+        before = this.state.view?.world,
+        career = before?.id;
+      let reply: Reply;
+      try {
+        reply = await this.rpc({ type: 'open-game', gameId }, undefined, STORAGE_TIMEOUT_MS);
+      } catch (error) {
+        const opened = this.state.view?.world;
+        if (!opened || (opened.id === career && opened.revision === before?.revision)) throw error;
+        // The upgraded game is in play, its commit failed: memory keeps it, exportable (→SAVE-10).
+        this.gameId = gameId;
+        this.stored = true;
+        this.state.savedRevision = -1;
+        this.state.saveFailed = true;
+        throw new Error(sourceMessage('copy.client.042fb5736b', { p0: String(error) }));
+      }
+      if (reply.opened?.found) {
+        // A revealed playback of this career whose match the game holds finishes under the model
+        // it was settled with, even when this load activates a newer one (→SAVE-23).
+        const world = this.state.view?.world;
+        this.staging.replace(
+          playback &&
+            world?.id === career &&
+            world?.ownMatches.some((match) => match.id === playback.record.id)
+            ? playback.script
+              ? { ...playback, frames: [] }
+              : playback
+            : undefined,
+        );
+        this.gameId = gameId;
+        this.stored = true;
+        this.createReplaces = false;
+        this.state.savedRevision = reply.opened.revision ?? -1;
+        this.state.savedAt = undefined;
+        this.state.saveFailed = false;
+        if (reply.upgraded) {
           this.state.savedAt = Date.now();
           // A catalog pin, missing club designs (→SAVE-21) or the full match model (→SAVE-23) are
           // updated, never the gameplay rules or a settled fact.
           notificationStore.add(SAVE_DATA_UPDATED);
-          this.channel.postMessage({
-            revision: this.state.savedRevision,
-            generation: this.saves.generationInfo.parentGeneration,
-          });
-        } catch (error) {
-          this.state.saveFailed = true;
-          throw new Error(sourceMessage('copy.client.042fb5736b', { p0: String(error) }));
+          this.channel.postMessage({ revision: this.state.savedRevision });
         }
       }
     }
@@ -521,6 +516,7 @@ export class GameClient {
           body.type === 'take-over' ||
           body.type === 'command' ||
           body.type === 'ack-critical' ||
+          body.type === 'open-game' ||
           (body.type === 'inspect' && !!body.activate),
         taking: automatic
           ? 'hold'
@@ -586,9 +582,9 @@ export class GameClient {
     return reply;
   }
   /**
-   * Saves the world in play through the codec worker (→SAVE-8). One checkpoint is built at a time;
-   * requests made meanwhile become one newer save after it. Resolves once the world as it stood at
-   * the latest request is committed; a failure becomes the save error and rejects.
+   * Saves the world in play in its database, in the engine worker (→SAVE-8). One save runs at a
+   * time; requests made meanwhile become one newer save after it. Resolves once the world as it
+   * stood at the latest request is committed; a failure becomes the save error and rejects.
    */
   save(): Promise<void> {
     clearTimeout(this.autosaveTimer);
@@ -614,7 +610,7 @@ export class GameClient {
       this.saveSoon();
     }, AUTOSAVE_MS);
   }
-  /** Settles once no checkpoint is being built or waiting, whatever came of it. */
+  /** Settles once no save is running or waiting, whatever came of it. */
   whenSaved(): Promise<void> {
     return this.saving?.catch(() => {}) ?? Promise.resolve();
   }
@@ -636,71 +632,34 @@ export class GameClient {
     }
   }
   /**
-   * One checkpoint of the engine's current world, committed with the envelope the codec validated.
-   * During automatic play it may hold days not yet shown (→SAVE-8).
+   * One save of the engine's current world: its changed rows, or every row on the game's first
+   * save, answered once the transaction commits (→SAVE-3). During automatic play it may hold days
+   * not yet shown (→SAVE-8).
    */
   private async saveOnce() {
     const w = this.head?.world;
     if (!w || this.state.readonly || w.revision === this.state.savedRevision) return;
-    const requestId = this.requestId();
-    const built = new Promise<CodecResult>((resolve) =>
-      this.builds.set(requestId, {
-        resolve,
-        timer: window.setTimeout(
-          () =>
-            this.built({
-              id: requestId,
-              ok: false,
-              error: sourceMessage('copy.client.91046c8a4d'),
-            }),
-          CODEC_TIMEOUT_MS,
-        ),
-      }),
-    );
-    try {
-      // A background save may queue behind a long command that only reports its own progress.
-      await this.rpc({ type: 'save' }, requestId, CHECKPOINT_TIMEOUT_MS);
-    } catch (error) {
-      this.built({ id: requestId, ok: false, error: String(error) });
-      throw error;
+    const gameId = this.gameId;
+    if (!gameId) throw new Error(sourceMessage('copy.host.c64421732a'));
+    const body: Body = this.stored
+      ? { type: 'save' }
+      : { type: 'create-game', gameId, ...(this.createReplaces ? { replace: true } : {}) };
+    const reply = await this.rpc(body, undefined, STORAGE_TIMEOUT_MS);
+    const saved = reply.saved;
+    if (!saved) throw new Error(sourceMessage('copy.client.d9dbcef838'));
+    if (saved.gameId === this.gameId) {
+      this.stored = true;
+      this.createReplaces = false;
     }
-    const result = await built;
-    if (!result.ok)
-      throw result.errorCode === 'save-compatibility'
-        ? new SaveCompatibilityError(result.error)
-        : new Error(result.error);
-    // A checkpoint of a world no longer in play, or no newer than the committed one, is dropped.
-    if (
-      result.envelope.worldId !== this.head?.world.id ||
-      result.envelope.generation <= this.saves.generationInfo.parentGeneration
-    )
-      return;
-    await this.saves.commit(result.raw, {
-      envelope: result.envelope,
-      replaceIncompatible: this.replacingIncompatible,
-    });
+    // A save of a world no longer in play changes nothing shown.
+    if (saved.worldId !== this.head?.world.id) return;
     this.replacingIncompatible = false;
-    this.state.savedRevision = result.revision;
-    this.savedCheckpoint = {
-      raw: result.raw,
-      worldId: result.envelope.worldId,
-      revision: result.revision,
-    };
+    this.state.savedRevision = saved.revision;
     this.state.savedAt = Date.now();
     this.state.saveFailed = false;
-    // Read-only tabs reload on every commit.
-    this.channel.postMessage({
-      revision: result.revision,
-      generation: this.saves.generationInfo.parentGeneration,
-    });
+    // Read-only tabs hear of every commit.
+    this.channel.postMessage({ revision: saved.revision });
     this.emit();
-  }
-  private built(result: CodecResult) {
-    const build = this.builds.get(result.id);
-    if (!build) return;
-    clearTimeout(build.timer);
-    this.builds.delete(result.id);
-    build.resolve(result);
   }
   /**
    * Generates a new game's world to the chosen decade (→WEB-2, WORLD-13): the worker reports each
@@ -737,11 +696,21 @@ export class GameClient {
   takeOver(clubId: string) {
     return this.enqueue(async () => {
       const replace = !!this.state.start?.replace;
-      const reply = await this.mutate({
-        type: 'take-over',
-        clubId,
-        ...(replace ? { replace } : {}),
-      });
+      // The new career's database, created on its first save (→SAVE-2). Set before the takeover's
+      // view is published, so the slot index lists the career under it.
+      const previous = { gameId: this.gameId, stored: this.stored, replaces: this.createReplaces };
+      this.gameId = crypto.randomUUID();
+      this.stored = false;
+      this.createReplaces = false;
+      let reply: Reply;
+      try {
+        reply = await this.mutate({ type: 'take-over', clubId, ...(replace ? { replace } : {}) });
+      } catch (error) {
+        this.gameId = previous.gameId;
+        this.stored = previous.stored;
+        this.createReplaces = previous.replaces;
+        throw error;
+      }
       delete this.state.start;
       this.saveSoon();
       return reply;
@@ -1007,13 +976,8 @@ export class GameClient {
         this.state.error = sourceMessage('copy.client.4106edaaff');
         return this.rawBackup();
       }
-      const head = this.head;
-      if (head && !this.failed) {
-        const saved = this.savedCheckpoint,
-          current = head.world;
-        if (saved?.worldId === current.id && saved.revision === current.revision) return saved.raw;
-        return (await this.rpc({ type: 'export' }, this.requestId(), CODEC_TIMEOUT_MS)).raw;
-      }
+      if (this.head && !this.failed)
+        return (await this.rpc({ type: 'export' }, this.requestId(), STORAGE_TIMEOUT_MS)).raw;
       return this.rawBackup();
     });
   }
@@ -1022,6 +986,10 @@ export class GameClient {
     if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
     await this.whenSaved();
     await this.rpc({ type: 'inspect', raw, activate: true, upgrade: true });
+    // Its database is the slot's that lists its world, else a new one, written whole by the save.
+    this.gameId = gameIdFor(this.head!.world.id);
+    this.stored = false;
+    this.createReplaces = true;
     this.replacingIncompatible = this.saves.incompatibleCheckpoint;
     this.state.savedRevision = -1;
     this.staging.replace();
@@ -1035,15 +1003,15 @@ export class GameClient {
     return (await this.enqueue(async () => (await this.activate(raw), true))) === true;
   }
   /**
-   * The committed checkpoint of the game in play, saved first if the latest revision is not yet
-   * on disk, so parking never leaves progress behind.
+   * The game in play as a checkpoint envelope, saved first if the latest revision is not yet in
+   * its database, so parking never leaves progress behind.
    */
   async checkpoint() {
     return (
       (await this.enqueue(async () => {
         if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
         await this.save();
-        return this.saves.committedRaw() ?? undefined;
+        return (await this.rpc({ type: 'export' }, this.requestId(), STORAGE_TIMEOUT_MS)).raw;
       })) ?? undefined
     );
   }
@@ -1062,6 +1030,8 @@ export class GameClient {
       await this.saves.clearActive();
       await this.saves.clearPrevious().catch(() => {});
       // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
+      this.gameId = undefined;
+      this.stored = false;
       this.state.view = undefined;
       delete this.state.start;
       this.held = [];
@@ -1083,13 +1053,10 @@ export class GameClient {
       waiter.reject(new Error(sourceMessage('copy.client.250bdea6bf')));
     }
     this.waiters.clear();
-    for (const id of [...this.builds.keys()])
-      this.built({ id, ok: false, error: sourceMessage('copy.client.250bdea6bf') });
     this.lockWait?.abort();
     this.release?.();
     this.channel.close();
     this.worker.terminate();
-    this.codec.terminate();
     for (const helper of this.helpers) helper.terminate();
   }
 }

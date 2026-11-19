@@ -12,7 +12,21 @@ import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { personCareer } from './personCareer';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { officeRead } from './officeRead';
-import { openGamePool, type GamePool } from '../adapters/sqliteWasm';
+import {
+  gameDriver,
+  gameFileName,
+  listFiles,
+  openGamePool,
+  type GamePool,
+} from '../adapters/sqliteWasm';
+import { sqlRecordStore } from '../adapters/sqlRecordStore';
+import { RowSaver } from '../adapters/rowSaver';
+import { rowsToWorld } from '../adapters/worldRows';
+import { SAVE_SCHEMA_VERSION } from '../adapters/saveSchema';
+import {
+  attachRecordStore,
+  type RecordStore,
+} from '../../../../packages/contracts/src/record-store';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
 import { readingOnce, startingSquad, rating } from '../../../../packages/engine/src/world';
 import { staffMarket } from '../../../../packages/engine/src/staff';
@@ -64,24 +78,32 @@ import type {
 } from '../../../../packages/contracts/src/manager-history-view';
 import type { World, MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
+  earlierRulesMessage,
+  isEarlierEngine,
   isSaveCompatibilityError,
+  NEWER_GAME_MESSAGE,
+  PARITY_LEVEL_CATALOGS,
+  PRIOR_CATALOG_HASHES,
+  RELEVELLED_MONEY_MESSAGE,
+  SaveCompatibilityError,
+  SUPPORTED_ENGINE_VERSIONS,
   upgradeWorldRules,
 } from '../../../../packages/contracts/src/versions';
-import { CURRENT_CATALOG } from '../../../../packages/catalogs/src/index';
+import { validateWorld } from '../../../../packages/contracts/src/index';
+import {
+  CATALOG_HASH,
+  CATALOG_VERSION,
+  CURRENT_CATALOG,
+  LOAD_CATALOG,
+  currency,
+} from '../../../../packages/catalogs/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { transferLedger } from '../../../../packages/engine/src/transfer-records';
 import { seasonsBeforeOwner } from '../../../../packages/engine/src/club-past';
 import { ownSeasons } from '../../../../packages/engine/src/player-state';
-import {
-  requestSchema,
-  worldMetadataOf,
-  type CodecJob,
-  type Request,
-  type Reply,
-  type View,
-} from './protocol';
+import { requestSchema, worldMetadataOf, type Request, type Reply, type View } from './protocol';
 import { ViewPublisher } from './viewPublisher';
 import { playDay, type DaySteps, type HelperPool } from './helperPool';
 const DAY_STEPS: DaySteps = { prepareRound, completeRound, advanceDays };
@@ -275,6 +297,72 @@ function seasonsBefore(decade: TakeoverDecade) {
   for (let year: number = HISTORY_START; year < first; year = seasonAfter(year)) seasons++;
   return seasons;
 }
+/**
+ * Opens a game's record store: its database in the store's file, or none when the game has no file
+ * and `create` is not asked (→SAVE-29). An unsupported schema is refused before anything is written.
+ */
+export type OpenStore = (
+  gameId: string,
+  options: { create: boolean },
+) => RecordStore | undefined | Promise<RecordStore | undefined>;
+/** A game's database in the engine worker's OPFS pool (→ARCH-11). */
+function poolStore(pool: GamePool, gameId: string, create: boolean) {
+  const fileName = gameFileName(gameId);
+  if (!create && !listFiles(pool).includes(fileName)) return undefined;
+  const driver = gameDriver(pool, fileName);
+  try {
+    return sqlRecordStore(driver);
+  } catch (error) {
+    driver.close();
+    throw error;
+  }
+}
+/**
+ * The world a game's database holds in memory, checked as an import is (→SAVE-5, →SAVE-11): its
+ * schema, rules and catalog versions with the catalog's hash, then the world itself, its pins, its
+ * currency and money level. An unsupported version is a compatibility failure; nothing is written.
+ */
+export function storedWorld(store: RecordStore): World {
+  const meta = store.meta();
+  if (!meta.world_id || !meta.engine || !meta.catalog || !meta.revision)
+    throw new Error(sourceMessage('copy.persistence.830e86ddaf'));
+  if (meta.schema_version !== String(SAVE_SCHEMA_VERSION))
+    throw new SaveCompatibilityError(sourceMessage('copy.persistence.52d3e36f5e'));
+  if (!SUPPORTED_ENGINE_VERSIONS.includes(meta.engine))
+    throw new SaveCompatibilityError(
+      isEarlierEngine(meta.engine) ? earlierRulesMessage(meta.engine) : NEWER_GAME_MESSAGE,
+      meta.engine,
+    );
+  // An older catalog is accepted by the fingerprint recorded with it (→SAVE-10); the pin moves to
+  // the current catalog on writer activation, never while reading.
+  const pinned =
+    meta.catalog === CATALOG_VERSION ? CATALOG_HASH : PRIOR_CATALOG_HASHES[meta.catalog];
+  if (!pinned) throw new SaveCompatibilityError(sourceMessage('copy.persistence.db51c3b436'));
+  if (meta.catalog_hash !== pinned)
+    throw new SaveCompatibilityError(sourceMessage('copy.persistence.98b9bb6b66'));
+  const stored = rowsToWorld(store, { includeCold: false });
+  const valid = validateWorld(stored, LOAD_CATALOG) as unknown as Record<string, unknown>;
+  // The fields keep their stored order, so the rows they are saved in keep their places.
+  const world = Object.fromEntries([
+    ...Object.keys(stored).flatMap((key) => (key in valid ? [[key, valid[key]]] : [])),
+    ...Object.keys(valid).flatMap((key) => (key in stored ? [] : [[key, valid[key]]])),
+  ]) as unknown as World;
+  const country = world.clubs.find((c) => c.id === world.playerClub)!.country;
+  if (
+    world.id !== meta.world_id ||
+    world.engine !== meta.engine ||
+    world.catalog !== meta.catalog ||
+    world.catalogHash !== meta.catalog_hash ||
+    String(world.revision) !== meta.revision ||
+    world.currency !== currency(country, world.year).code
+  )
+    throw new Error(sourceMessage('copy.persistence.450e2c9cf6'));
+  // Only England's money kept its level when the catalog re-levelled the rest (→ECON-35): elsewhere
+  // a career's records would mix two levels, so it is refused, never reinterpreted (→SAVE-10).
+  if (country !== 'ENG' && PARITY_LEVEL_CATALOGS.includes(world.catalog))
+    throw new SaveCompatibilityError(RELEVELLED_MONEY_MESSAGE);
+  return world;
+}
 const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
   requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
   ok: false,
@@ -294,8 +382,12 @@ export class Host {
   /** Numbers, retains and diffs the views this host publishes. */
   private views = new ViewPublisher();
   cancelled = false;
-  /** The port to the client's codec worker, which builds every checkpoint (→ARCH-13). */
-  codec?: { postMessage(job: CodecJob): void };
+  /**
+   * The game in play's database and the saver that knows its last commit (→SAVE-3, →ARCH-6): the
+   * engine worker alone writes it, between simulation steps.
+   */
+  private game?: { id: string; store: RecordStore; saver: RowSaver };
+  private openStore: OpenStore;
   /** The client's fixture helpers, when it created them (→ARCH-6); without, every fixture plays here. */
   helpers?: HelperPool;
   /** An own match day waiting for its helpers: the world is mid-day, so reads wait for it. */
@@ -312,9 +404,108 @@ export class Host {
   private gamePool?: Promise<GamePool>;
   constructor(
     private progress: (reply: Reply) => void = () => {},
-    options: { release?: MatchModelRelease } = {},
+    options: { release?: MatchModelRelease; openStore?: OpenStore } = {},
   ) {
     this.release = options.release ?? MATCH_MODEL_RELEASE;
+    this.openStore =
+      options.openStore ??
+      (async (gameId, { create }) => poolStore(await this.databases(), gameId, create));
+  }
+  /** Closes the game in play's database; the world it held stays in memory. */
+  private closeGame() {
+    const game = this.game;
+    this.game = undefined;
+    game?.store.close();
+  }
+  /**
+   * The writer's activation of a loaded world (→SAVE-10/21/23/24/28): its rules and catalog pin,
+   * missing identities, match model, squads, manager history and read models brought up to date, or
+   * `w` itself when nothing changes. `w` is never changed, and the revision moves once.
+   */
+  private writerUpgrade(w: World): World {
+    const rules = upgradeWorldRules(w, CURRENT_CATALOG);
+    const identified = adoptIdentities(rules, rules !== w);
+    const modelled = this.adoptModel(identified, identified !== w);
+    const squadWorld = adoptSquads(modelled, modelled !== w);
+    let activated = this.adoptManagerHistory(squadWorld, squadWorld !== w);
+    if (needsReadModels(activated) && !settledAhead(this.world, activated)) {
+      const journalled = structuredClone(activated);
+      initializeReadModels(journalled);
+      if (activated === w) journalled.revision++;
+      activated = journalled;
+    }
+    return activated;
+  }
+  /**
+   * Opens a game's database as the game in play (→SAVE-5, →SAVE-10): its world is validated, any
+   * writer upgrade is committed at once, and the saver starts from the rows it holds, so the next
+   * save writes only what changed. A failed check closes the file untouched and keeps the game in
+   * play; a game without a file is an empty slot.
+   */
+  private async openGame(r: Request, gameId: string): Promise<Reply> {
+    const store = await this.openStore(gameId, { create: false });
+    if (!store)
+      return {
+        requestId: r.requestId,
+        ok: true,
+        opened: { gameId, found: false },
+        ...this.publish(r.viewBase),
+      };
+    let world: World, activated: World, saver: RowSaver;
+    try {
+      world = storedWorld(store);
+      activated = this.writerUpgrade(world);
+      saver = new RowSaver(store);
+      saver.prime(world);
+    } catch (error) {
+      store.close();
+      throw error;
+    }
+    this.closeGame();
+    this.game = { id: gameId, store, saver };
+    this.world = attachRecordStore(activated, store);
+    this.inspected = undefined;
+    // The upgrade is saved before anything plays on it; a failure keeps the old rows and the
+    // upgraded world in memory, exportable (→SAVE-10).
+    if (activated !== world) saver.save(activated);
+    return {
+      requestId: r.requestId,
+      ok: true,
+      opened: { gameId, found: true, revision: activated.revision },
+      upgraded: activated !== world || undefined,
+      ...this.publish(r.viewBase),
+    };
+  }
+  /**
+   * Writes every row of the world in play into its game's new database (→SAVE-2): after a takeover,
+   * or an activated import or parked game when `replace` (the rows it held then give way to these,
+   * in the same transaction). An occupied database is never overwritten otherwise.
+   */
+  private async createGame(r: Request, gameId: string, replace: boolean): Promise<Reply> {
+    const w = this.world;
+    if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
+    this.closeGame();
+    const store = await this.openStore(gameId, { create: true });
+    if (!store) throw new Error(sourceMessage('copy.host.c64421732a'));
+    try {
+      const saver = new RowSaver(store);
+      if (store.meta().world_id !== undefined) {
+        if (!replace) throw new Error(sourceMessage('copy.host.76a7247c60'));
+        // What the database held is taken as committed, so the save removes what `w` lacks.
+        saver.prime(rowsToWorld(store, { includeCold: false }));
+      }
+      saver.save(w);
+      this.game = { id: gameId, store, saver };
+      attachRecordStore(w, store);
+    } catch (error) {
+      store.close();
+      throw error;
+    }
+    return {
+      requestId: r.requestId,
+      ok: true,
+      saved: { gameId, worldId: w.id, revision: w.revision },
+    };
   }
   /**
    * The engine worker's game database pool, opened once on first use; a capability failure is
@@ -677,20 +868,21 @@ export class Host {
     }
   }
   /**
-   * Posts the world as it stands after every earlier command to the codec worker, whatever revision
-   * the client last saw; posting copies it, so the next command never waits for the checkpoint.
+   * Commits the rows of the world as it stands after every earlier command that changed since the
+   * last save, whatever revision the client last saw (→SAVE-3, →SAVE-8). It runs in the command
+   * queue, so never in the middle of a day; only a committed transaction is answered as saved.
    */
   private save(r: Request): Reply {
-    const w = this.world;
+    const w = this.world,
+      game = this.game;
     if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
-    if (!this.codec) throw new Error(sourceMessage('copy.host.c64421732a'));
-    this.codec.postMessage({
-      id: r.requestId,
-      world: w,
-      generation: r.generation,
-      parentGeneration: r.parentGeneration,
-    });
-    return { requestId: r.requestId, ok: true, saving: { worldId: w.id, revision: w.revision } };
+    if (!game) throw new Error(sourceMessage('copy.host.c64421732a'));
+    game.saver.save(w);
+    return {
+      requestId: r.requestId,
+      ok: true,
+      saved: { gameId: game.id, worldId: w.id, revision: w.revision },
+    };
   }
   private async execute(input: unknown): Promise<Reply> {
     let request: Request | undefined;
@@ -703,6 +895,9 @@ export class Host {
       const previous = this.acknowledgments.get(r.requestId);
       if (previous) return previous;
       if (r.body.type === 'save') return this.save(r);
+      if (r.body.type === 'open-game') return await this.openGame(r, r.body.gameId);
+      if (r.body.type === 'create-game')
+        return await this.createGame(r, r.body.gameId, !!r.body.replace);
       if (r.body.type !== 'inspect' && r.expectedRevision !== (this.world?.revision ?? -1))
         throw new Error(sourceMessage('copy.host.724fb562f2'));
       if (this.world?.receiptIds.includes(r.requestId))
@@ -722,30 +917,18 @@ export class Host {
         const result =
           this.inspected?.raw === r.body.raw ? this.inspected.result : await decode(r.body.raw);
         this.inspected = r.body.activate ? undefined : { raw: r.body.raw, result };
-        const rules = r.body.upgrade
-          ? upgradeWorldRules(result.world, CURRENT_CATALOG)
-          : result.world;
         // Only the writer's activation adopts missing identities (→SAVE-21) and records the full
         // match model (→SAVE-23); inspection and read-only tabs keep the career exactly as stored.
-        const writer = r.body.activate && r.body.upgrade;
-        const identified = writer ? adoptIdentities(rules, rules !== result.world) : rules;
-        const modelled = writer
-          ? this.adoptModel(identified, identified !== result.world)
-          : identified;
-        const squadWorld = writer ? adoptSquads(modelled, modelled !== result.world) : modelled;
-        let activated = writer
-          ? this.adoptManagerHistory(squadWorld, squadWorld !== result.world)
-          : squadWorld;
-        if (writer && needsReadModels(activated) && !settledAhead(this.world, activated)) {
-          const journalled = structuredClone(activated);
-          initializeReadModels(journalled);
-          if (activated === result.world) journalled.revision++;
-          activated = journalled;
-        }
+        const activated =
+          r.body.activate && r.body.upgrade ? this.writerUpgrade(result.world) : result.world;
         upgraded = activated !== result.world;
         if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
         else if (!r.body.activate) candidate = structuredClone(activated);
-        if (r.body.activate) this.world = activated;
+        if (r.body.activate) {
+          // The activated world belongs to no database until the client creates its game's.
+          this.closeGame();
+          this.world = activated;
+        }
         if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);
         envelope = result.envelope;
       } else if (r.body.type === 'generate') {
@@ -777,13 +960,16 @@ export class Host {
         if (!this.start) throw new Error(sourceMessage('copy.host.f3db275cee'));
         if (this.world && !r.body.replace) throw new Error(sourceMessage('copy.host.76a7247c60'));
         // `takeOver` refuses before it changes anything, so a refused club leaves the list open.
-        this.world = takeOver(
+        const taken = takeOver(
           this.start.world,
           r.body.clubId,
           this.start.choice,
           undefined,
           this.release,
         );
+        // The new career gets its own database once the client creates it (→SAVE-2).
+        this.closeGame();
+        this.world = taken;
         initializeReadModels(this.world);
         this.start = undefined;
         changed = true;
