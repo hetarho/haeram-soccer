@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r70 | Define the browser-demo rules for browser persistence and protocol.
+> r71 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -66,7 +66,7 @@
 - SAVE-19 [o] The grid match engine (→MATCH-1, →MATCH-14–25) with the 16-attribute player model (→PLAYER-2), discipline and unavailability (→MATCH-19, →CLUB-45, →LEAGUE-15) and post-match material (→MATCH-5) starts new careers at an incompatible rules 4.0.0 boundary; active engine rules are 4.0.0. ← one engine to maintain; earlier players have no 판단력 or 침착성 to convert
   - Historical release cleanup is retired; unsupported careers follow →!SAVE-11/29.
   - a legacy file import is refused with its required rules; future or unrecognized incompatible files/slots still follow →SAVE-5/11.
-  - a 4.0.0 career persists the current season's post-match material, the season heat maps, the spatial counter and discipline totals, current bans and every club's unavailable list, within →SAVE-4 and a passing 100-season benchmark (→HIST-9).
+  - a 4.0.0 career persists the current season's post-match material of watched matches, the spatial counter and discipline totals, current bans and every club's unavailable list, within →SAVE-4 and a passing 100-season benchmark (→HIST-9).
 
 - SAVE-20 [o] A game's saved state reproduces its applied club representative colours, crest compositions, home/away/third kits with their shorts and socks, and the goalkeeper kit (→KIT-1/2/3/8/11), including custom colours and patterns, and an explicit own-kit selection for its named forthcoming fixture (→KIT-6).
   - Reload, slot parking/restoration and export/import recover the same designs and applicable fixture choice; do not reroll another colour, emblem or pattern on read.
@@ -115,6 +115,7 @@
 - SAVE-30 [o] A supported career saved with per-decision 재정 기조 or per-person wage caps opens with every other fact kept: those are dropped on load and every delegated decision runs at 적당히 (→ECON-33). A career whose direction still carries the retired club 재정 기조 row, which the game's UI never wrote, is refused as incompatible, failing safe (→ARCH-16, →SAVE-5); it is never converted. ← removing an owner control must not end a career, and no shim is kept for a row no UI wrote
 
 ## chg
+- r71 261119 SAVE-19✎ persisted every own match's material and the season heat maps→watched matches' material only, no heat maps
 - r70 261114 SAVE-10✎ stale 0.7.0-only label→one coherently prepared current release with explicit compatible rules-5 patch labels including 0.8.0; metadata-only writer upgrade preserves facts and absent fields, incompatible/future rules remain refused
 - r69 261114 SAVE-27✎ books without financing breakdown→optional lossless income components/owner capital, absent older facts preserved and prospective support
 - r68 261113 SAVE-17✎ per-decision 재정 기조 and wage caps→the owner's spending request per delegated decision (absent = 적당히) and the 단장's season plan (season, planned income, sales at the plan); SAVE-30+ per-decision 재정 기조 and wage caps dropped on load, a retired 재정 기조 direction row refused as incompatible

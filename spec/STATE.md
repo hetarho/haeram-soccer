@@ -20,19 +20,19 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 49 | 49 | - | 2 |
-| WEB | 222 | 222 | - | 0 |
+| ARCH | 50 | 50 | - | 2 |
+| WEB | 223 | 223 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 83 | 83 | - | 0 |
-| MATCH | 68 | 68 | - | 0 |
+| MATCH | 69 | 69 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
 | ECON | 64 | 64 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 27 | 27 | - | 0 |
-| SAVE | 70 | 70 | - | 0 |
+| HIST | 28 | 28 | - | 0 |
+| SAVE | 71 | 71 | - | 0 |
 | OWNER | 8 | 8 | - | 0 |
 | PLAYER | 20 | 20 | - | 0 |
 
@@ -97,6 +97,19 @@
 | T977 | Rebase the wage curve's level on the 80/70/60/50 world | CLUB ECON | T953 T958 T967 T968 | todo |
 | T978 | Calibrate the combined world: levels, moves, books, distress, ageing | LEAGUE WORLD ECON PLAYER CLUB MATCH | T953 T954 T955 T957 T958 T959 T960 T961 T962 T963 T964 T965 T966 T967 T968 T969 T970 T971 T972 T973 T974 T975 T976 T977 T979 T980 | todo |
 | T981 | CI runs only the Chromium browser shards | ARCH | - | todo |
+| T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | todo |
+| T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T989 | todo |
+| T991 | Player sheets and tallies without season heat maps | WEB HIST MATCH ARCH | - | todo |
+| T992 | Post-match material without heat maps, and an unwatched match says why it has none | WEB MATCH ARCH | T991 | todo |
+| T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | todo |
+| T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 | todo |
+| T994 | Slow view reads wait for a stopped clock | WEB ARCH | - | todo |
+| T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T994 | todo |
+| T995 | Manager, staff and discipline places dim while the clock runs | WEB ARCH | T1020 | todo |
+| T996 | The scout's shortlist dims while the clock runs | WEB ARCH | T1020 T995 | todo |
+| T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
+| T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
+| T998 | Helper count by core class | ARCH | T997 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -110,6 +123,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- x10 cost levers (261119, owner from reports/261119-np19 D2/D4/D5/D8): T989–T998 and T1019–T1021 — NPC place-fit tolerance, unwatched own matches without script/material and heat maps removed, slow view reads only on a stopped clock with dimmed places, helpers from two cores; T998 is explore (1h). Start with `gusta-implement-task T989` (or /gusta-start).
 - inspect work board for remaining tasks
 - np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked). mr18cx must merge main (npc-market.ts) and re-prepare 0.8.13.
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).

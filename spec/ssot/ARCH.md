@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r49 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r50 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -59,7 +59,8 @@
   - Worker messages include protocol version, session ID, request ID, expected world revision, and validated payloads.
   - Duplicate requests do not repeat recruitment fees, sponsor payments, currency transitions, or fixture settlement.
   - Publish bounded UI projections/deltas, not the complete world on every simulation step.
-  - On a day with our league fixture, the day's other league fixtures may be computed on helper workers from a read-only copy of what those fixtures read, while the engine worker plays our match; the engine worker stays the sole writer and records every result in fixture order. Without helpers (creation failure or too few cores) it computes them itself. Both paths give identical worlds, checked by a test comparing a season played each way. ← other clubs' fixtures are about 40% of an own match day (measured 261027)
+  - On a day with our league fixture, the day's other league fixtures may be computed on helper workers from a read-only copy of what those fixtures read, while the engine worker plays our match; the engine worker stays the sole writer and records every result in fixture order. Without helpers (creation failure or a single core) it computes them itself. Both paths give identical worlds, checked by a test comparing a season played each way. ← other clubs' fixtures are about 40% of an own match day (measured 261027)
+  - every device with two or more cores runs two helpers, never one, and more than two only where more measured faster (→ARCH-34); the engine worker takes its own share of those fixtures once our match is played. ← below four cores the engine worker used to compute them all alone; on two or three cores one helper is slower than none and two are faster (estimated 261119)
   - Read-only requests (head-to-head) are validated like commands but answered between simulation steps, without the revision check, receipt or view, so a read never waits behind a season command or flickers the busy state.
   - A watched match is staged off the UI thread by a worker of its own from the script the engine worker sent: it reads no world, writes nothing and delivers frames in bounded steps ahead of the presentation (→MATCH-39).
   - A worker failure restores the last committed checkpoint and reports any uncommitted progress; it does not silently invent a continuation.
@@ -280,6 +281,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r50 261119 ARCH-6✎ helpers from four cores, the engine worker idle while they run→two helpers from two cores (never one), more only where measured faster, the engine worker takes a share
 - r49 261119 ARCH-23✎ CI checks, unit and three integration jobs beside the browser shards (limits 20/20/75 min)→browser shards only; deterministic checks run once in the batch on the gate host, no second-platform contract run · ARCH-30✎ CI including every browser journey→CI only the browser journeys
 - r48 261117 ARCH-33✎ measurement provenance without a durable recipe requirement→versioned calibration recipes, exact patches/manifests and hash-matched independent review before heavy execution
 - r47 261117 ARCH-30✎ batch command carrying its own frozen offline install→prepare `pnpm install --frozen-lockfile --offline` in every CLI-created worktree; no task or batch command installs dependencies
