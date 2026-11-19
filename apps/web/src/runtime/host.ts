@@ -10,7 +10,7 @@ import { worldMarketPage, worldMarketDetail } from '../../../../packages/engine/
 import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { personCareer } from './personCareer';
-import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { nextOwnFixture, seasonDate } from '../../../../packages/engine/src/calendar';
 import { officeRead } from './officeRead';
 import {
   exportFile,
@@ -20,8 +20,21 @@ import {
   importFile,
   listFiles,
   openGamePool,
+  poolBackupFiles,
+  type BackupFiles,
   type GamePool,
 } from '../adapters/sqliteWasm';
+import {
+  checkIntegrity,
+  currentSide,
+  dropBackups,
+  isSaveCorruptedError,
+  openFailure,
+  rotateBackup,
+  seasonClosed,
+  SaveCorruptedError,
+  type BackupInfo,
+} from './seasonBackup';
 import { sqlRecordStore } from '../adapters/sqlRecordStore';
 import {
   databaseSaveMeta,
@@ -372,6 +385,8 @@ function poolStore(pool: GamePool, gameId: string, create: boolean) {
   if (!create && !listFiles(pool).includes(fileName)) return undefined;
   const driver = gameDriver(pool, fileName);
   try {
+    // A database that is not whole offers its backup, not a guess at its rows (→SAVE-31).
+    if (!create) checkIntegrity(driver);
     return sqlRecordStore(driver);
   } catch (error) {
     driver.close();
@@ -444,10 +459,18 @@ export class Host {
    * The game in play's database and the saver that knows its last commit (→SAVE-3, →ARCH-6): the
    * engine worker alone writes it, between simulation steps.
    */
-  private game?: { id: string; store: RecordStore; saver: RowSaver };
+  private game?: {
+    id: string;
+    store: RecordStore;
+    saver: RowSaver;
+    /** The season the last save or open held, so a save that finds another one follows a close. */
+    year: number;
+  };
   private openStore: OpenStore;
   private files: GameFiles;
   private bytes: DatabaseBytes;
+  /** The season backup files; none for a host given its own stores or bytes port (tests). */
+  private backups?: BackupFiles | (() => Promise<BackupFiles>);
   /** The client's fixture helpers, when it created them (→ARCH-6); without, every fixture plays here. */
   helpers?: HelperPool;
   /** An own match day waiting for its helpers: the world is mid-day, so reads wait for it. */
@@ -469,6 +492,7 @@ export class Host {
       openStore?: OpenStore;
       gameFiles?: GameFiles;
       databaseBytes?: DatabaseBytes;
+      backupFiles?: BackupFiles;
     } = {},
   ) {
     this.release = options.release ?? MATCH_MODEL_RELEASE;
@@ -486,9 +510,52 @@ export class Host {
         scratch: async (bytes) => poolBytes(await this.databases()).scratch(bytes),
         write: async (id, bytes) => poolBytes(await this.databases()).write(id, bytes),
       } satisfies DatabaseBytes);
+    this.backups =
+      options.backupFiles ??
+      (options.databaseBytes || options.openStore || options.gameFiles
+        ? undefined
+        : async () => poolBackupFiles(await this.databases()));
     this.openStore =
       options.openStore ??
       (async (gameId, { create }) => poolStore(await this.databases(), gameId, create));
+  }
+  private async backupFiles(): Promise<BackupFiles | undefined> {
+    return typeof this.backups === 'function' ? this.backups() : this.backups;
+  }
+  /** The revision of a database that passes its integrity check, else undefined (→SAVE-31). */
+  private async intactRevision(bytes: Uint8Array): Promise<number | undefined> {
+    const scratch = await this.bytes.scratch(bytes);
+    try {
+      checkIntegrity(scratch.driver);
+      return Number(sqlRecordStore(scratch.driver).meta().revision) || 0;
+    } catch {
+      return undefined;
+    } finally {
+      scratch.release();
+    }
+  }
+  /**
+   * Copies a game's committed database into its backup (→SAVE-31) as the backup of `w`'s season;
+   * the previous backup stays until the copy is whole. A failed copy leaves the previous backup
+   * and reports nothing to the save it follows, which is already committed.
+   */
+  private async backUp(gameId: string, w: World): Promise<BackupInfo | undefined> {
+    const files = await this.backupFiles();
+    if (!files) return undefined;
+    try {
+      const bytes = await this.bytes.read(gameId);
+      if (!bytes) return undefined;
+      const side = await rotateBackup(files, gameId, bytes, (b) => this.intactRevision(b));
+      return { side, season: w.year, date: seasonDate(w) };
+    } catch {
+      return undefined;
+    }
+  }
+  /** Deletes a game's database and its backups (→SAVE-14). */
+  private async removeGame(gameId: string) {
+    await this.files.remove(gameId);
+    const files = await this.backupFiles();
+    if (files) await dropBackups(files, gameId);
   }
   /** Closes the game in play's database; the world it held stays in memory. */
   private closeGame() {
@@ -522,7 +589,12 @@ export class Host {
    * play; a game without a file is an empty slot.
    */
   private async openGame(r: Request, gameId: string): Promise<Reply> {
-    const store = await this.openStore(gameId, { create: false });
+    let store: RecordStore | undefined;
+    try {
+      store = await this.openStore(gameId, { create: false });
+    } catch (error) {
+      throw openFailure(error);
+    }
     if (!store)
       return {
         requestId: r.requestId,
@@ -530,22 +602,31 @@ export class Host {
         opened: { gameId, found: false },
         ...this.publish(r.viewBase),
       };
-    return this.playStore(r, gameId, store);
+    return this.playStore(r, gameId, store, undefined, true);
   }
   /**
    * Makes an opened database the game in play: its world is validated (unless `checked` already
    * holds the validated world and its writer upgrade, as an import's), the upgrade is committed at
-   * once and the saver starts from the rows the database holds. A failed check closes the store.
+   * once and the saver starts from the rows the database holds. A failed check closes the store;
+   * rows that fail to load for any reason but compatibility are corruption (→SAVE-11, →SAVE-31).
+   * With `backup`, the database as it stands is first copied into the game's backup when the
+   * writer upgrade would change it (→SAVE-10), the copy of the world the game last saved.
    */
-  private playStore(
+  private async playStore(
     r: Request,
     gameId: string,
     store: RecordStore,
     checked?: { world: World; activated: World },
-  ): Reply {
+    backup = false,
+  ): Promise<Reply> {
     let world: World, activated: World, saver: RowSaver;
     try {
       world = checked?.world ?? storedWorld(store);
+    } catch (error) {
+      store.close();
+      throw openFailure(error);
+    }
+    try {
       activated = checked?.activated ?? this.writerUpgrade(world);
       saver = new RowSaver(store);
       saver.prime(world);
@@ -554,15 +635,20 @@ export class Host {
       throw error;
     }
     this.closeGame();
-    this.game = { id: gameId, store, saver };
+    this.game = { id: gameId, store, saver, year: activated.year };
     this.world = attachRecordStore(activated, store);
-    // The upgrade is saved before anything plays on it; a failure keeps the old rows and the
-    // upgraded world in memory, exportable (→SAVE-10).
-    if (activated !== world) saver.save(activated);
+    // The backup of the world as it was comes first, then the upgrade is saved before anything
+    // plays on it; a failure keeps the old rows and the upgraded world in memory, exportable
+    // (→SAVE-10, →SAVE-31).
+    let backedUp: BackupInfo | undefined;
+    if (activated !== world) {
+      if (backup) backedUp = await this.backUp(gameId, world);
+      saver.save(activated);
+    }
     return {
       requestId: r.requestId,
       ok: true,
-      opened: { gameId, found: true, revision: activated.revision },
+      opened: { gameId, found: true, revision: activated.revision, backup: backedUp },
       upgraded: activated !== world || undefined,
       ...this.publish(r.viewBase),
     };
@@ -642,9 +728,42 @@ export class Host {
     await this.bytes.write(body.gameId, dbBytes);
     const store = await this.openStore(body.gameId, { create: false });
     if (!store) throw new Error(sourceMessage('copy.host.c64421732a'));
-    const reply = this.playStore(r, body.gameId, store, checked);
-    if (body.replaces && body.replaces !== body.gameId) await this.files.remove(body.replaces);
+    // Backups of a game this file replaces held another career (→SAVE-31).
+    const files = await this.backupFiles();
+    if (files) await dropBackups(files, body.gameId);
+    const reply = await this.playStore(r, body.gameId, store, checked);
+    if (body.replaces && body.replaces !== body.gameId) await this.removeGame(body.replaces);
     return reply;
+  }
+  /**
+   * Recovery of a corrupted game (→SAVE-31, →WEB-66): the current backup is checked whole as an
+   * import is — integrity, versions, world — and only then copied over the game's file, which is
+   * opened as the game in play. Never run on its own: the owner accepted the offer. Any failure
+   * leaves the game's file as it was.
+   */
+  private async restoreBackup(r: Request, gameId: string): Promise<Reply> {
+    const files = await this.backupFiles();
+    const side = files && (await currentSide(files, gameId, (b) => this.intactRevision(b)));
+    const bytes = files && side && (await files.read(gameId, side));
+    if (!bytes) throw new Error(sourceMessage('backup.missing'));
+    let checked: { world: World; activated: World };
+    const scratch = await this.bytes.scratch(bytes);
+    try {
+      checkIntegrity(scratch.driver);
+      const world = storedWorld(sqlRecordStore(scratch.driver));
+      checked = { world, activated: this.writerUpgrade(world) };
+    } catch (error) {
+      throw isSaveCompatibilityError(error)
+        ? error
+        : new SaveCorruptedError(sourceMessage('backup.unreadable'), { cause: error });
+    } finally {
+      scratch.release();
+    }
+    if (this.game?.id === gameId) this.closeGame();
+    await this.bytes.write(gameId, bytes);
+    const store = await this.openStore(gameId, { create: false });
+    if (!store) throw new Error(sourceMessage('copy.host.c64421732a'));
+    return this.playStore(r, gameId, store, checked);
   }
   /**
    * Releases the game in play's database after the client's save (→SAVE-14): no game is in play
@@ -666,7 +785,7 @@ export class Host {
       this.closeGame();
       this.world = undefined;
     }
-    await this.files.remove(gameId);
+    await this.removeGame(gameId);
     return { requestId: r.requestId, ok: true };
   }
   /**
@@ -678,6 +797,11 @@ export class Host {
     const w = this.world;
     if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
     this.closeGame();
+    // A new career over an occupied slot's file has no use for the old career's backups (→SAVE-31).
+    if (replace) {
+      const files = await this.backupFiles();
+      if (files) await dropBackups(files, gameId);
+    }
     const store = await this.openStore(gameId, { create: true });
     if (!store) throw new Error(sourceMessage('copy.host.c64421732a'));
     try {
@@ -688,7 +812,7 @@ export class Host {
         saver.prime(rowsToWorld(store, { includeCold: false }));
       }
       saver.save(w);
-      this.game = { id: gameId, store, saver };
+      this.game = { id: gameId, store, saver, year: w.year };
       attachRecordStore(w, store);
     } catch (error) {
       store.close();
@@ -1065,16 +1189,23 @@ export class Host {
    * last save, whatever revision the client last saw (→SAVE-3, →SAVE-8). It runs in the command
    * queue, so never in the middle of a day; only a committed transaction is answered as saved.
    */
-  private save(r: Request): Reply {
+  private async save(r: Request): Promise<Reply> {
     const w = this.world,
       game = this.game;
     if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
     if (!game) throw new Error(sourceMessage('copy.host.c64421732a'));
     game.saver.save(w);
+    // A season closed since the last save: its save has committed, so it is backed up (→SAVE-31).
+    // A failed copy is tried again at the next save.
+    let backup: BackupInfo | undefined;
+    if (seasonClosed(game.year, w.year)) {
+      backup = await this.backUp(game.id, w);
+      if (backup) game.year = w.year;
+    }
     return {
       requestId: r.requestId,
       ok: true,
-      saved: { gameId: game.id, worldId: w.id, revision: w.revision },
+      saved: { gameId: game.id, worldId: w.id, revision: w.revision, backup },
     };
   }
   private async execute(input: unknown): Promise<Reply> {
@@ -1087,7 +1218,8 @@ export class Host {
       this.session = r.session;
       const previous = this.acknowledgments.get(r.requestId);
       if (previous) return previous;
-      if (r.body.type === 'save') return this.save(r);
+      if (r.body.type === 'save') return await this.save(r);
+      if (r.body.type === 'restore-backup') return await this.restoreBackup(r, r.body.gameId);
       if (r.body.type === 'open-game') return await this.openGame(r, r.body.gameId);
       if (r.body.type === 'close-game') return this.releaseGame(r);
       if (r.body.type === 'delete-game') return await this.deleteGame(r, r.body.gameId);
@@ -1252,7 +1384,8 @@ export class Host {
     } catch (error) {
       return {
         ...failure(input, request, error),
-        errorCode: isSaveCompatibilityError(error) ? error.code : undefined,
+        errorCode:
+          isSaveCompatibilityError(error) || isSaveCorruptedError(error) ? error.code : undefined,
         ...this.publish(request?.viewBase),
       };
     }

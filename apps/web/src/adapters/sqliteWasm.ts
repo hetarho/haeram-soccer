@@ -163,3 +163,42 @@ export const pause = (pool: GamePool): void => void pool.pauseVfs();
 export async function unpause(pool: GamePool) {
   await pool.unpauseVfs();
 }
+
+export type BackupSide = 'a' | 'b';
+/** The current backup, as the slot index records it (→SAVE-31): its file, season and game date. */
+export interface BackupInfo {
+  side: BackupSide;
+  /** The year the backup's season began in. */
+  season: number;
+  date: string;
+}
+/** A game's backup files (→SAVE-31), by side. */
+export interface BackupFiles {
+  /** The sides that have a file. */
+  sides(gameId: string): Promise<BackupSide[]>;
+  read(gameId: string, side: BackupSide): Promise<Uint8Array | undefined>;
+  /** Writes the side's file whole, replacing what it held. */
+  write(gameId: string, side: BackupSide, bytes: Uint8Array): Promise<void>;
+  remove(gameId: string, side: BackupSide): Promise<void>;
+}
+
+/** The backup files of the game pool; a copy needs room beside the game's file and its other side. */
+export function poolBackupFiles(pool: GamePool): BackupFiles {
+  const sides: BackupSide[] = ['a', 'b'];
+  return {
+    sides: async (gameId) => {
+      const names = listFiles(pool);
+      return sides.filter((side) => names.includes(backupFileName(gameId, side)));
+    },
+    read: async (gameId, side) => {
+      const name = backupFileName(gameId, side);
+      return listFiles(pool).includes(name) ? exportFile(pool, name) : undefined;
+    },
+    write: async (gameId, side, bytes) => {
+      // The pool never grows by itself on an import.
+      await pool.reserveMinimumCapacity(pool.getFileCount() + 2);
+      await importFile(pool, backupFileName(gameId, side), bytes);
+    },
+    remove: async (gameId, side) => void deleteFile(pool, backupFileName(gameId, side)),
+  };
+}

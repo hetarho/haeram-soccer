@@ -14,6 +14,12 @@ import {
 import { applyViewDelta, PUBLISHED_VIEWS, type Body, type Reply, type View } from './protocol';
 import { NOTIFICATIONS_KEY, notificationStore, shareValue, shareView } from './store';
 import { HELPER_CONFIG } from './helperPool';
+import {
+  isSaveCorruptedError,
+  SaveCorruptedError,
+  type BackupInfo,
+  type SAVE_CORRUPTED_CODE,
+} from './seasonBackup';
 import { PlaybackStaging } from './staging';
 /**
  * How long opening, creating, saving or exporting a game may take in the engine worker: a save
@@ -63,7 +69,12 @@ export interface ClientState {
   /** The last save failed and nothing newer is committed: progress waits for a retry. */
   saveFailed?: boolean;
   error?: string;
-  errorCode?: typeof SAVE_COMPATIBILITY_CODE;
+  errorCode?: typeof SAVE_COMPATIBILITY_CODE | typeof SAVE_CORRUPTED_CODE;
+  /**
+   * A game that failed to open as corrupted, with the backup the slot index records for it, if any
+   * (→SAVE-31): the recovery offer. Compatibility failures never set it (→SAVE-11).
+   */
+  recovery?: { gameId: string; backup?: BackupInfo };
   /**
    * Why this tab is read-only, for its HUD badge (→WEB-10). App notices are system notifications
    * in the inbox instead (→WEB-66).
@@ -269,7 +280,9 @@ export class GameClient {
       pending.reject(
         r.errorCode === 'save-compatibility'
           ? new SaveCompatibilityError(r.error)
-          : new Error(r.error || sourceMessage('copy.client.aa2516a9e3')),
+          : r.errorCode === 'save-corrupted'
+            ? new SaveCorruptedError(r.error)
+            : new Error(r.error || sourceMessage('copy.client.aa2516a9e3')),
       );
   }
   private helpersFailed() {
@@ -395,11 +408,21 @@ export class GameClient {
   hasGameFile(gameId: string) {
     return !this.gameFiles || this.gameFiles.has(gameId) || gameId === this.gameId;
   }
-  /** Opens one game's database as the game in play; false when it has no file. */
-  private async open(gameId: string) {
+  /**
+   * Opens one game's database as the game in play; false when it has no file. A corrupted one
+   * offers recovery from its backup (→SAVE-31) and is rejected as it failed.
+   */
+  private async open(gameId: string, body: Body = { type: 'open-game', gameId }) {
     const playback = this.state.playback,
       career = this.state.view?.world.id;
-    const reply = await this.opening({ type: 'open-game', gameId }, gameId);
+    let reply: Reply;
+    try {
+      reply = await this.opening(body, gameId);
+    } catch (error) {
+      if (isSaveCorruptedError(error))
+        this.state.recovery = { gameId, backup: new GameIndexStore(localStorage).backupOf(gameId) };
+      throw error;
+    }
     if (!reply.opened?.found) {
       this.gameFiles?.delete(gameId);
       return false;
@@ -451,6 +474,9 @@ export class GameClient {
     this.stored = true;
     this.createReplaces = false;
     this.gameFiles?.add(gameId);
+    delete this.state.recovery;
+    if (reply.opened?.backup)
+      new GameIndexStore(localStorage).setBackup(gameId, reply.opened.backup);
     this.state.savedRevision = reply.opened?.revision ?? -1;
     this.state.savedAt = undefined;
     this.state.saveFailed = false;
@@ -566,7 +592,8 @@ export class GameClient {
         return await fn();
       } catch (error) {
         this.state.error = String(error);
-        this.state.errorCode = isSaveCompatibilityError(error) ? error.code : undefined;
+        this.state.errorCode =
+          isSaveCompatibilityError(error) || isSaveCorruptedError(error) ? error.code : undefined;
         return undefined;
       } finally {
         this.state.busy = false;
@@ -670,6 +697,8 @@ export class GameClient {
     const saved = reply.saved;
     if (!saved) throw new Error(sourceMessage('copy.client.d9dbcef838'));
     this.gameFiles?.add(saved.gameId);
+    // The season backup a close wrote is the slot index's to record (→SAVE-31).
+    if (saved.backup) new GameIndexStore(localStorage).setBackup(saved.gameId, saved.backup);
     if (saved.gameId === this.gameId) {
       this.stored = true;
       this.createReplaces = false;
@@ -993,9 +1022,31 @@ export class GameClient {
       ).file;
     });
   }
-  /** The game in play as a `.haeram-save` file; undefined while none is in play. */
+  /**
+   * The game in play as a `.haeram-save` file; undefined while none is in play. A corrupted game
+   * that offers recovery is exported as it is, before recovery replaces it (→SAVE-31).
+   */
   exportFile() {
-    return this.gameId ? this.exportGame(this.gameId) : Promise.resolve(undefined);
+    const gameId = this.gameId ?? this.state.recovery?.gameId;
+    return gameId ? this.exportGame(gameId) : Promise.resolve(undefined);
+  }
+  /**
+   * Accepts the recovery offer of a corrupted game: its season backup is copied over its file and
+   * opened, a 시스템 notification says so (→SAVE-31, →WEB-66). Later progress is lost; this is
+   * never run without the owner's choice.
+   */
+  recoverFromBackup() {
+    return this.enqueue(async () => {
+      const recovery = this.state.recovery;
+      if (!recovery) return;
+      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
+      await this.open(recovery.gameId, { type: 'restore-backup', gameId: recovery.gameId });
+      const backup = recovery.backup;
+      if (backup)
+        notificationStore.add(
+          sourceMessage('backup.restored', { season: String(backup.season), date: backup.date }),
+        );
+    });
   }
   /**
    * Imports a `.haeram-save` file as the game in play (→SAVE-9). The engine worker checks it whole

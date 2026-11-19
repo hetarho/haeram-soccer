@@ -48,6 +48,7 @@ import {
   kitRoleSchema,
 } from '../../../../packages/contracts/src/identitySchema';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
+import type { BackupInfo, SAVE_CORRUPTED_CODE } from './seasonBackup';
 import {
   FULL_STATS_KINDS,
   type FullStatsRead,
@@ -293,6 +294,9 @@ export const requestSchema = z.object({
     z.strictObject({ type: z.literal('close-game') }),
     z.strictObject({ type: z.literal('delete-game'), gameId }),
     z.strictObject({ type: z.literal('list-games') }),
+    // `restore-backup` copies a game's season backup over its database file and opens it (→SAVE-31);
+    // the client asks only after the owner accepted the offer a corrupted open made.
+    z.strictObject({ type: z.literal('restore-backup'), gameId }),
     // The portable save file (→SAVE-9): `export-game` answers a game's database as one file
     // (the client has saved the game in play first); `import-game` checks a file whole in a
     // temporary database and only then makes it the game `gameId`'s file and the game in play,
@@ -529,7 +533,7 @@ export interface Reply {
   requestId: string;
   ok: boolean;
   error?: string;
-  errorCode?: typeof SAVE_COMPATIBILITY_CODE;
+  errorCode?: typeof SAVE_COMPATIBILITY_CODE | typeof SAVE_CORRUPTED_CODE;
   upgraded?: boolean;
   view?: View;
   /** Names the view this reply publishes, whole or as a delta, for later requests' `viewBase`. */
@@ -570,12 +574,18 @@ export interface Reply {
    * A committed save of the game in play (→SAVE-3): the revision its transaction committed. Only a
    * committed save is answered so; a failed write is an error reply.
    */
-  saved?: { gameId: string; worldId: string; revision: number };
+  saved?: {
+    gameId: string;
+    worldId: string;
+    revision: number;
+    /** The season backup this save wrote after a season close (→SAVE-31), the slot index's to keep. */
+    backup?: BackupInfo;
+  };
   /**
    * `open-game`'s answer: the game it opened at the revision its database holds, or `found: false`
    * when the game has no database file, an empty slot (→SAVE-29).
    */
-  opened?: { gameId: string; found: boolean; revision?: number };
+  opened?: { gameId: string; found: boolean; revision?: number; backup?: BackupInfo };
   /** `list-games`' answer: the IDs of the games whose database files exist (→SAVE-29). */
   games?: string[];
   /** `export-game`'s answer: the game's database as a portable `.haeram-save` file (→SAVE-9). */
