@@ -174,7 +174,6 @@
 - 261119 suggest ARCH-30: move task check `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests` to the final gate (ARCH batch): it averaged 118s over 2 runs
 - 261119 suggest T993: T993 writer outputs without heat but contracts schema.ts requires material.heat and career-reads.ts requires heatPlayers; both files belong to downstream T1019 and lie outside T993 touches. Replan the contract boundary so the writer and schema change land atomically before closing T993; otherwise new saves fail validation.
 - 261119 decided T993: Writer and save schemas must land together → make legacy heat fields optional in T993, leaving removal and legacy-key dropping to T1019 (alt: ship an unreadable writer | defer the writer).
-- 261119 parked T993: Plan publication for the compatible heat-free writer boundary was rejected twice on T993 because origin/main has its todo document while this session has doing and partial results; plan-sync reports no action. Publish the reconciliation without overwriting session history, then implement and verify before task done.
 
 ## unlanded
 | id | tag | branch | commit | at |
@@ -251,6 +250,7 @@
 | T1005 | sv19 | gusta-session-start-sv19-0cc2a73b | 686e1a3fff60 | 2026-11-19T04:55Z |
 
 ## log
+- 261119 T993 boundary published to main as 3ca3e2c8f (session copy of T993/T1019 verbatim); merge into the x10 session branch is clean
 - 261119 T1005 done
 - 261119 T992 done
 - 261119 T1004 done
@@ -270,4 +270,3 @@
 - 261118 T988 integrated
 - 261118 T982 integrated
 - 261118 T986 integrated
-- 261118 T985 integrated
