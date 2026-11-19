@@ -412,6 +412,8 @@
     "copy.checkpointWriter.4a44044c3b": "Você atingiu seu limite de armazenamento. Exporte seu progresso atual para um arquivo.",
     "copy.checkpointWriter.d86e4f08f5": "Falha na validação de leitura do manifesto",
     "copy.compression.32374943f3": "O limite de descompactação para arquivos salvos foi excedido.",
+    "copy.sqliteWasm.opfsMissing": "Este navegador não oferece o armazenamento de arquivos (OPFS) de que o jogo precisa para salvar. Abra-o na versão mais recente do Chrome.",
+    "copy.sqliteWasm.sqliteFailed": "Não foi possível iniciar o banco de dados do jogo (SQLite). Feche o jogo em outras abas ou recarregue a página.",
     "copy.compression.799ea5e9b6": "Falha ao salvar compactação.",
     "copy.persistence.0bcc75e929": "O cabeçalho do catálogo de armazenamento está incorreto.",
     "copy.persistence.db51c3b436": "Versão do catálogo de armazenamento não suportada. Por favor, mantenha o arquivo original.",

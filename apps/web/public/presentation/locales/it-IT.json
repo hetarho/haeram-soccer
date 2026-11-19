@@ -473,6 +473,8 @@
     "copy.checkpointWriter.4a44044c3b": "Hai raggiunto il limite di spazio di archiviazione.Esporta i tuoi progressi attuali in un file.",
     "copy.checkpointWriter.d86e4f08f5": "Convalida della lettura del manifest non riuscita",
     "copy.compression.32374943f3": "Il limite di decompressione per i file salvati è stato superato.",
+    "copy.sqliteWasm.opfsMissing": "Questo browser non supporta l’archiviazione file (OPFS) di cui il gioco ha bisogno per salvare. Aprilo nell’ultima versione di Chrome.",
+    "copy.sqliteWasm.sqliteFailed": "Impossibile avviare il database del gioco (SQLite). Chiudi il gioco nelle altre schede o ricarica la pagina.",
     "copy.compression.799ea5e9b6": "La compressione del salvataggio non è riuscita.",
     "copy.csv.d355613952": "CSV richiede numeri finiti.",
     "copy.dense.70b715337f": "Corruzione dell'intestazione della codifica di archiviazione",

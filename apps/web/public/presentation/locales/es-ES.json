@@ -286,6 +286,8 @@
     "copy.checkpointWriter.4a44044c3b": "Has alcanzado tu límite de almacenamiento. Exporta tu progreso actual a un archivo.",
     "copy.checkpointWriter.d86e4f08f5": "Error en la validación de lectura del manifiesto",
     "copy.compression.32374943f3": "Se ha superado el límite de descompresión de archivos guardados.",
+    "copy.sqliteWasm.opfsMissing": "Este navegador no admite el almacenamiento de archivos (OPFS) que el juego necesita para guardar. Ábrelo en la última versión de Chrome.",
+    "copy.sqliteWasm.sqliteFailed": "No se pudo iniciar la base de datos del juego (SQLite). Cierra el juego en otras pestañas o recarga la página.",
     "copy.compression.799ea5e9b6": "Error al guardar la compresión.",
     "copy.persistence.0bcc75e929": "El encabezado del catálogo de almacenamiento es incorrecto.",
     "copy.persistence.db51c3b436": "Versión del catálogo de almacenamiento no compatible. Por favor conserve el archivo original.",

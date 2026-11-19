@@ -280,6 +280,8 @@
     "copy.checkpointWriter.4a44044c3b": "Anda telah mencapai batas penyimpanan Anda.Ekspor kemajuan Anda saat ini ke file.",
     "copy.checkpointWriter.d86e4f08f5": "Validasi pembacaan manifes gagal",
     "copy.compression.32374943f3": "Batas dekompresi untuk file yang disimpan telah terlampaui.",
+    "copy.sqliteWasm.opfsMissing": "Browser ini tidak mendukung penyimpanan file (OPFS) yang dibutuhkan game untuk menyimpan. Buka di Chrome terbaru.",
+    "copy.sqliteWasm.sqliteFailed": "Basis data game (SQLite) tidak dapat dimulai. Tutup game di tab lain atau muat ulang halaman.",
     "copy.compression.799ea5e9b6": "Gagal menyimpan kompresi.",
     "copy.csv.d355613952": "CSV membutuhkan jumlah yang terbatas.",
     "copy.dense.70b715337f": "Kerusakan header pengkodean penyimpanan",

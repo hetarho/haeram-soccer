@@ -283,6 +283,8 @@
     "copy.checkpointWriter.4a44044c3b": "U heeft uw opslaglimiet bereikt.Exporteer uw huidige voortgang naar een bestand.",
     "copy.checkpointWriter.d86e4f08f5": "Manifest-leesvalidatie mislukt",
     "copy.compression.32374943f3": "De decompressielimiet voor opgeslagen bestanden is overschreden.",
+    "copy.sqliteWasm.opfsMissing": "Deze browser ondersteunt de bestandsopslag (OPFS) niet die het spel nodig heeft om op te slaan. Open het in de nieuwste Chrome.",
+    "copy.sqliteWasm.sqliteFailed": "De speldatabase (SQLite) kon niet starten. Sluit het spel in andere tabbladen of laad de pagina opnieuw.",
     "copy.compression.799ea5e9b6": "Compressie voor opslaan is mislukt.",
     "copy.csv.d355613952": "CSV vereist eindige getallen.",
     "copy.dense.70b715337f": "Headercorruptie van opslagcodering",

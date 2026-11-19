@@ -12,6 +12,7 @@ import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { personCareer } from './personCareer';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { officeRead } from './officeRead';
+import { openGamePool, type GamePool } from '../adapters/sqliteWasm';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
 import { readingOnce, startingSquad, rating } from '../../../../packages/engine/src/world';
 import { staffMarket } from '../../../../packages/engine/src/staff';
@@ -307,11 +308,24 @@ export class Host {
   private start?: { world: World; choice: StartChoice };
   /** Whether founding and writer activation record the full match model; only tests set it. */
   private release: MatchModelRelease;
+  /** The game database pool, installed on first use; games open through it (→ARCH-11). */
+  private gamePool?: Promise<GamePool>;
   constructor(
     private progress: (reply: Reply) => void = () => {},
     options: { release?: MatchModelRelease } = {},
   ) {
     this.release = options.release ?? MATCH_MODEL_RELEASE;
+  }
+  /**
+   * The engine worker's game database pool, opened once on first use; a capability failure is
+   * reported to the caller and tried again on the next call (→ARCH-11, →ARCH-17).
+   */
+  databases(): Promise<GamePool> {
+    this.gamePool ??= openGamePool().catch((error: unknown) => {
+      this.gamePool = undefined;
+      throw error;
+    });
+    return this.gamePool;
   }
   /**
    * SAVE-23: a copy of the validated candidate on the full match model, or on its later revision

@@ -286,6 +286,8 @@
     "copy.checkpointWriter.4a44044c3b": "Vous avez atteint votre limite de stockage. Exportez votre progression actuelle dans un fichier.",
     "copy.checkpointWriter.d86e4f08f5": "Échec de la validation de lecture du manifeste",
     "copy.compression.32374943f3": "La limite de décompression des fichiers enregistrés a été dépassée.",
+    "copy.sqliteWasm.opfsMissing": "Ce navigateur ne prend pas en charge le stockage de fichiers (OPFS) dont le jeu a besoin pour sauvegarder. Ouvrez-le dans la dernière version de Chrome.",
+    "copy.sqliteWasm.sqliteFailed": "La base de données du jeu (SQLite) n’a pas pu démarrer. Fermez le jeu dans les autres onglets ou rechargez la page.",
     "copy.compression.799ea5e9b6": "Échec de l'enregistrement de la compression.",
     "copy.csv.d355613952": "CSV nécessite des nombres finis.",
     "copy.dense.70b715337f": "Corruption de l'en-tête d'encodage du stockage",

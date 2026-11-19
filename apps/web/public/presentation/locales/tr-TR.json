@@ -546,6 +546,8 @@
     "copy.checkpointWriter.4a44044c3b": "Depolama sınırınıza ulaştınız.Mevcut ilerlemenizi bir dosyaya aktarın.",
     "copy.checkpointWriter.d86e4f08f5": "Bildirim okuma doğrulaması başarısız oldu",
     "copy.compression.32374943f3": "Kaydedilen dosyalar için sıkıştırmayı açma sınırı aşıldı.",
+    "copy.sqliteWasm.opfsMissing": "Bu tarayıcı, oyunun kayıt için ihtiyaç duyduğu dosya depolamasını (OPFS) desteklemiyor. Oyunu en güncel Chrome’da açın.",
+    "copy.sqliteWasm.sqliteFailed": "Oyun veritabanı (SQLite) başlatılamadı. Oyunu diğer sekmelerde kapatın veya sayfayı yenileyin.",
     "copy.compression.799ea5e9b6": "Kaydetme sıkıştırması başarısız oldu.",
     "copy.csv.d355613952": "CSV sonlu sayılar gerektirir.",
     "copy.dense.70b715337f": "Depolama kodlama başlığı bozulması",

@@ -283,6 +283,8 @@
     "copy.checkpointWriter.4a44044c3b": "Sie haben Ihr Speicherlimit erreicht. Exportieren Sie Ihren aktuellen Fortschritt in eine Datei.",
     "copy.checkpointWriter.d86e4f08f5": "Die Manifest-Lesevalidierung ist fehlgeschlagen",
     "copy.compression.32374943f3": "Das Dekomprimierungslimit für gespeicherte Dateien wurde überschritten.",
+    "copy.sqliteWasm.opfsMissing": "Dieser Browser unterstützt den Dateispeicher (OPFS) nicht, den das Spiel zum Speichern braucht. Öffne es im aktuellen Chrome.",
+    "copy.sqliteWasm.sqliteFailed": "Die Spieldatenbank (SQLite) konnte nicht starten. Schließe das Spiel in anderen Tabs oder lade die Seite neu.",
     "copy.compression.799ea5e9b6": "Das Speichern der Komprimierung ist fehlgeschlagen.",
     "copy.csv.d355613952": "CSV erfordert endliche Zahlen.",
     "copy.dense.70b715337f": "Beschädigung des Speichercodierungsheaders",

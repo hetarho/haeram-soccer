@@ -542,6 +542,8 @@
     "copy.checkpointWriter.4a44044c3b": "ストレージ容量制限に達しました。現在の進行状況をファイルにエクスポートします。",
     "copy.checkpointWriter.d86e4f08f5": "マニフェスト読み取り検証に失敗しました",
     "copy.compression.32374943f3": "保存ファイルの解凍制限を超えました。",
+    "copy.sqliteWasm.opfsMissing": "このブラウザは、ゲームの保存に必要なファイルストレージ(OPFS)に対応していません。最新の Chrome で開いてください。",
+    "copy.sqliteWasm.sqliteFailed": "ゲームデータベース(SQLite)を起動できませんでした。他のタブでゲームを閉じるか、ページを再読み込みしてください。",
     "copy.compression.799ea5e9b6": "保存圧縮に失敗しました。",
     "copy.csv.d355613952": "CSVには有限の数が必要です。",
     "copy.dense.70b715337f": "ストレージエンコーディングヘッダーの破損",

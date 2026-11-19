@@ -283,6 +283,8 @@
     "copy.checkpointWriter.4a44044c3b": "You have reached your storage limit. Export your current progress to a file.",
     "copy.checkpointWriter.d86e4f08f5": "Manifest read validation failed",
     "copy.compression.32374943f3": "The decompression limit for saved files has been exceeded.",
+    "copy.sqliteWasm.opfsMissing": "This browser does not support the file storage (OPFS) the game needs to save. Open it in the latest Chrome.",
+    "copy.sqliteWasm.sqliteFailed": "The game database (SQLite) could not start. Close the game in other tabs or reload the page.",
     "copy.compression.799ea5e9b6": "Save compression failed.",
     "copy.csv.d355613952": "CSV requires finite numbers.",
     "copy.dense.70b715337f": "Storage encoding header corruption",

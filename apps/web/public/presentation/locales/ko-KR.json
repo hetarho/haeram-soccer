@@ -280,6 +280,8 @@
     "copy.checkpointWriter.4a44044c3b": "저장 용량 한도에 도달했습니다. 현재 진행을 파일로 내보내세요.",
     "copy.checkpointWriter.d86e4f08f5": "매니페스트 읽기 검증 실패",
     "copy.compression.32374943f3": "저장 파일의 압축 해제 한도를 초과했습니다.",
+    "copy.sqliteWasm.opfsMissing": "이 브라우저는 게임 저장에 필요한 파일 저장소(OPFS)를 지원하지 않습니다. 최신 Chrome에서 열어 주세요.",
+    "copy.sqliteWasm.sqliteFailed": "게임 데이터베이스(SQLite)를 시작하지 못했습니다. 다른 탭에서 게임을 닫거나 페이지를 새로 고쳐 주세요.",
     "copy.compression.799ea5e9b6": "저장 압축에 실패했습니다.",
     "copy.csv.d355613952": "CSV에는 유한한 숫자가 필요합니다.",
     "copy.dense.70b715337f": "저장 인코딩 헤더 손상",
