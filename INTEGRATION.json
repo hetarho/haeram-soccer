@@ -1895,19 +1895,19 @@
           "Push and let the CI Chromium shards run every browser journey"
         ],
         "expected": "The batch gate and every Chromium journey pass; news, archive and transfer-ledger reads behave the same after a save that moves earlier seasons' events and news buckets cold",
-        "observed": "Not run in this unit. Task-tier checks passed (190 files, 1840 tests). The integration files coldPeople (2/2), host.archive, newsJournal, host, saveRoundTrip and seasonBackup.host (5 files, 59 tests) also passed locally.",
+        "observed": "The batch gate passed on the candidate, but its Chromium CI failed 68 journeys: 52 stopped at slots.ts:11 because the seeding import left the tab in the game (fixed in 75ae6aa60, whose run then failed 8), and 16 waited on a busy engine worker (6 of them at season-progression.ts:35, management.spec.ts:22 still refusing the free agent detail). The remaining failures are tasked as T1039.",
         "evidence": [
-          "vibe check --tier task --diff-base c727840a4e05add8f6052a8487949d234d93578c --task T1017: ok",
-          "pnpm exec vitest run --project integration apps/web/src/runtime/coldPeople.integration.test.ts: 2 passed",
-          "pnpm exec vitest run --project integration host.archive/newsJournal/host/saveRoundTrip/seasonBackup.host: 5 files, 59 tests passed"
+          "pnpm run verify:batch on e16be77cfc6f871140bbdb820384d5d5a0a07307: ok, 541 files, 4510 passed, 3 skipped, 0 failed",
+          "CI https://github.com/hetarho/haeram-soccer/actions/runs/44574533210 on e16be77cfc6f871140bbdb820384d5d5a0a07307: e2e chromium 1/3, 2/3, 3/3 failed, 68 failed, 239 passed",
+          "CI https://github.com/hetarho/haeram-soccer/actions/runs/44590362467 on 75ae6aa60 (this candidate plus the slot seeding fix): 8 failed, shard 2/3 passed"
         ],
-        "status": "not-run",
-        "reason": "Builds, the batch gate, the remaining integration suites and the browser journeys are left to the shared final gate and to CI under ARCH-30",
+        "status": "fail",
+        "reason": "Observed from the exact candidate CI run after the fast-forward push; browser journeys run only in CI under ARCH-30",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "e16be77cfc6f871140bbdb820384d5d5a0a07307",
         "duplicationReason": ""
       },
       {
@@ -1958,15 +1958,19 @@
           "After the push, let CI run the three Chromium shards."
         ],
         "expected": "Batch checks and browser journeys pass on the candidate.",
-        "observed": "Not run in this unit; only task-tier checks (typecheck, lint, format, i18n, affected unit tests: 219 files, 2051 tests) ran and passed.",
-        "evidence": [],
-        "status": "not-run",
-        "reason": "Builds, integration and full suites belong to the shared final gate; this unit has no integration tool.",
+        "observed": "The batch gate passed on the candidate, but its Chromium CI failed 68 journeys: 52 stopped at slots.ts:11 because the seeding import left the tab in the game (fixed in 75ae6aa60, whose run then failed 8), and 16 waited on a busy engine worker (6 of them at season-progression.ts:35, management.spec.ts:22 still refusing the free agent detail). The remaining failures are tasked as T1039.",
+        "evidence": [
+          "pnpm run verify:batch on e16be77cfc6f871140bbdb820384d5d5a0a07307: ok, 541 files, 4510 passed, 3 skipped, 0 failed",
+          "CI https://github.com/hetarho/haeram-soccer/actions/runs/44574533210 on e16be77cfc6f871140bbdb820384d5d5a0a07307: e2e chromium 1/3, 2/3, 3/3 failed, 68 failed, 239 passed",
+          "CI https://github.com/hetarho/haeram-soccer/actions/runs/44590362467 on 75ae6aa60 (this candidate plus the slot seeding fix): 8 failed, shard 2/3 passed"
+        ],
+        "status": "fail",
+        "reason": "Observed from the exact candidate CI run after the fast-forward push; browser journeys run only in CI under ARCH-30",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "e16be77cfc6f871140bbdb820384d5d5a0a07307",
         "duplicationReason": ""
       },
       {
@@ -1978,19 +1982,19 @@
           "Compare the failed list with run 44551084336; progression-settings.spec.ts:257 and management.spec.ts:22 are expected to still need work"
         ],
         "expected": "Journeys fixed by the held-pool retry, the request-timer change, the import-input wait, the HUD-menu read over an open sheet and the widened time budgets pass; the rest of the suite stays green",
-        "observed": "Not run: browser journeys run only in CI after the push (ARCH-30); this unit has no browser and does not push",
+        "observed": "The batch gate passed on the candidate, but its Chromium CI failed 68 journeys: 52 stopped at slots.ts:11 because the seeding import left the tab in the game (fixed in 75ae6aa60, whose run then failed 8), and 16 waited on a busy engine worker (6 of them at season-progression.ts:35, management.spec.ts:22 still refusing the free agent detail). The remaining failures are tasked as T1039.",
         "evidence": [
-          "CI run 44551084336 traces: NoModificationAllowedError on haeram-soccor-games after page.reload (mediation x3, cups-and-club)",
-          "Final snapshots show '계산 Worker가 종료되었거나 응답하지 않습니다' after commands that followed owner decisions (records, recruitment, management browse, cups-and-club, stable-controls)",
-          "vibe check --tier task passed at tree a7610e6942ad (typecheck, lint, format, i18n, affected units)"
+          "pnpm run verify:batch on e16be77cfc6f871140bbdb820384d5d5a0a07307: ok, 541 files, 4510 passed, 3 skipped, 0 failed",
+          "CI https://github.com/hetarho/haeram-soccer/actions/runs/44574533210 on e16be77cfc6f871140bbdb820384d5d5a0a07307: e2e chromium 1/3, 2/3, 3/3 failed, 68 failed, 239 passed",
+          "CI https://github.com/hetarho/haeram-soccer/actions/runs/44590362467 on 75ae6aa60 (this candidate plus the slot seeding fix): 8 failed, shard 2/3 passed"
         ],
-        "status": "not-run",
-        "reason": "Integration-stage browser journeys belong to CI after the host's push; local Playwright runs are not allowed (ARCH-30)",
+        "status": "fail",
+        "reason": "Observed from the exact candidate CI run after the fast-forward push; browser journeys run only in CI under ARCH-30",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "e16be77cfc6f871140bbdb820384d5d5a0a07307",
         "duplicationReason": ""
       },
       {
@@ -2002,18 +2006,19 @@
           "Check progression-settings.spec.ts:257, management.spec.ts:22, mediation.spec.ts:222, cups-and-club.spec.ts:205/:252, records.spec.ts:79, recruitment.spec.ts, club-identity-*.spec.ts, analysis.spec.ts:97, staff.spec.ts:282, second-career.spec.ts:292, stable-controls-and-pacing.spec.ts:32"
         ],
         "expected": "All listed journeys pass; if management.spec.ts:22 still refuses the free agent's detail, capture the worker's world id/revision and free-agent count when the detail is answered",
-        "observed": "Not run: browser journeys run only in CI after the push (ARCH-30); this unit has no push",
+        "observed": "The batch gate passed on the candidate, but its Chromium CI failed 68 journeys: 52 stopped at slots.ts:11 because the seeding import left the tab in the game (fixed in 75ae6aa60, whose run then failed 8), and 16 waited on a busy engine worker (6 of them at season-progression.ts:35, management.spec.ts:22 still refusing the free agent detail). The remaining failures are tasked as T1039.",
         "evidence": [
-          "CI run 44551084336 traces (cause per group in spec/tasks/done/T1038.fix-ci.md result)",
-          "vibe check --tier task passed on 9dc24fbd7"
+          "pnpm run verify:batch on e16be77cfc6f871140bbdb820384d5d5a0a07307: ok, 541 files, 4510 passed, 3 skipped, 0 failed",
+          "CI https://github.com/hetarho/haeram-soccer/actions/runs/44574533210 on e16be77cfc6f871140bbdb820384d5d5a0a07307: e2e chromium 1/3, 2/3, 3/3 failed, 68 failed, 239 passed",
+          "CI https://github.com/hetarho/haeram-soccer/actions/runs/44590362467 on 75ae6aa60 (this candidate plus the slot seeding fix): 8 failed, shard 2/3 passed"
         ],
-        "status": "not-run",
-        "reason": "Chromium journeys are CI-only after the code push, which the host performs",
+        "status": "fail",
+        "reason": "Observed from the exact candidate CI run after the fast-forward push; browser journeys run only in CI under ARCH-30",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "e16be77cfc6f871140bbdb820384d5d5a0a07307",
         "duplicationReason": ""
       }
     ],
