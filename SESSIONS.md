@@ -191,6 +191,7 @@
 - 261119 decided WEB-14 T1037: 시설 화면의 진입과 표시 → 시설별 수동 견적 카드에 체크 상태와 수동·자금 대기 이유를 두고, 1군 훈련 페이지와 유소년 페이지는 해당 카드로 연결합니다. 대안은 각 팀 페이지에 별도 편집기 또는 별도 설정 화면을 두는 방식입니다. 어느 진입점에서나 동일한 구단 상태와 견적을 읽도록 합니다.
 - 261119 parked T1033 T1034 T1035 T1036 T1037: 시설 자동 증축 기획 커밋 3dccf57860e29164b1e823bf3703c15192f539ab. 기획 관문과 task-tier 정적 검사 통과(109초, 영향 단위 테스트 없음). main의 기존 공유 통합이 잠겨 plan-push가 integration-frozen으로 보류됐습니다. 잠금 해제 후 같은 기획 커밋을 vibe plan-push --commit 3dccf57860e29164b1e823bf3703c15192f539ab로 발행한 뒤 이 다섯 태스크를 진행합니다.
 - 261119 parked SAVE-3: Worker save cost after the record store: CI traces of 0.8.16-0.8.17 show 6-7 s of engine-worker save after each owner decision at a 다음 이벤트 stop, so long journeys need widened waits (T1038). Profile the changed-row save on OPFS and cut it before relying on the widened waits; not measured locally (browser journeys run only in CI).
+- 261119 parked ARCH-30: The preview server serves sqlite3 wasm as application/octet-stream, so the worker logs wasm streaming compile failed and falls back to ArrayBuffer instantiation; not fatal. Serve .wasm as application/wasm in scripts/preview.mjs if the preview owns that header.
 
 ## unlanded
 | id | tag | branch | commit | at |
