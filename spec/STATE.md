@@ -68,7 +68,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | todo |
+| T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | doing@261119.x10 |
 | T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T989 | todo |
 | T991 | Player sheets and tallies without season heat maps | WEB HIST MATCH ARCH | - | todo |
 | T992 | Post-match material without heat maps, and an unwatched match says why it has none | WEB MATCH ARCH | T991 | todo |

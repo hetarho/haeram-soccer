@@ -116,7 +116,12 @@ let FIT_SCRATCH = new Float64Array(0);
  * expectation while the per-group normalisation preserves the group's count. Pins (shots and
  * their feeds) are excluded from both matrices, so their already drawn credits stay exact.
  */
-export function fitPlaceWeights(groups: readonly PlaceGroup[]): number[][] {
+export const PLACE_FIT_TOLERANCE = { own: 1e-10, other: 1e-3 } as const;
+
+export function fitPlaceWeights(
+  groups: readonly PlaceGroup[],
+  tolerance: number = PLACE_FIT_TOLERANCE.own,
+): number[][] {
   if (groups.length === 0) return [];
   const n = groups[0]!.weights.length;
   const size = n * (groups.length + 3);
@@ -153,7 +158,13 @@ export function fitPlaceWeights(groups: readonly PlaceGroup[]): number[][] {
     // bias in asymmetric classes. The configured iteration count remains the bounded cap.
     let converged = true;
     for (let p = 0; p < n; p++)
-      if (!(Math.abs(actual[p]! - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!))) {
+      if (
+        !(
+          Math.abs(actual[p]! - expected[p]!) <=
+          tolerance *
+            (tolerance === PLACE_FIT_TOLERANCE.own ? Math.max(1, expected[p]!) : expected[p]!)
+        )
+      ) {
         converged = false;
         break;
       }

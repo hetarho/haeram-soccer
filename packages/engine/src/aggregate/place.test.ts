@@ -10,6 +10,7 @@ import { applyOverrides, restoreDefaults } from '../tunables';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC } from './config';
 import {
   PLACE_ROWS,
+  PLACE_FIT_TOLERANCE,
   clearPlaceTables,
   fitPlaceWeights,
   opposingCell,
@@ -60,6 +61,38 @@ describe('placed attribution primitives', () => {
         },
       ),
       { seed: 849, numRuns: 100 },
+    );
+  });
+  it('converges sooner for other fixtures while preserving group counts and place totals', () => {
+    const source = [
+      { count: 50, weights: [1, 1, 0], placed: [1, 0.02, 0] },
+      { count: 50, weights: [1, 1, 0], placed: [0.1, 1, 0] },
+    ];
+    const run = (tolerance: number) => {
+      let reads = 0;
+      const groups = source.map((g) => ({
+        ...g,
+        placed: new Proxy(g.placed, {
+          get(target, key, receiver) {
+            if (key === '0') reads++;
+            return Reflect.get(target, key, receiver);
+          },
+        }),
+      }));
+      return { fitted: fitPlaceWeights(groups, tolerance), reads };
+    };
+    const own = run(PLACE_FIT_TOLERANCE.own);
+    const other = run(PLACE_FIT_TOLERANCE.other);
+    expect(other.reads).toBeLessThan(own.reads);
+    const totals = [0, 0, 0];
+    other.fitted.forEach((row, i) => {
+      const sum = row.reduce((a, b) => a + b, 0);
+      const counts = row.map((weight) => (source[i]!.count * weight) / sum);
+      expect(counts.reduce((a, b) => a + b, 0)).toBeCloseTo(source[i]!.count, 12);
+      counts.forEach((count, p) => (totals[p]! += count));
+    });
+    [50, 50, 0].forEach((expected, p) =>
+      expect(Math.abs(totals[p]! - expected)).toBeLessThanOrEqual(expected * 1e-3),
     );
   });
   it('releases revision 11', () => {

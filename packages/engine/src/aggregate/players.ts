@@ -21,6 +21,7 @@ import {
   PLACE_ROWS,
   clearPlaceTables,
   fitPlaceWeights,
+  PLACE_FIT_TOLERANCE,
   opposingCell,
   placeKey,
   placeRow,
@@ -265,6 +266,7 @@ class SideLines {
     private readonly input: AggregateInput,
     private readonly plan: AggregatePlan,
     private readonly participation: AggregateParticipation,
+    private readonly ownFixture: boolean,
   ) {
     this.rows = input.sides[side].lines.map(() => ({
       metrics: zeroMetrics(),
@@ -495,7 +497,10 @@ class SideLines {
       classes.set(key, list);
     });
     for (const list of classes.values()) {
-      const weights = fitPlaceWeights(list.map((g) => g.group));
+      const weights = fitPlaceWeights(
+        list.map((g) => g.group),
+        this.ownFixture ? PLACE_FIT_TOLERANCE.own : PLACE_FIT_TOLERANCE.other,
+      );
       list.forEach((g, i) => fitted.set(g.index, weights[i]!));
     }
     return fitted;
@@ -641,10 +646,11 @@ export function attributePlayerFacts(
   facts: AggregateTeamFacts,
   streams: AggregateStreams,
   trace?: AggregateAttributionTrace,
+  ownFixture = true,
 ): AggregatePlayerFacts {
   const sides = [
-    new SideLines(0, input, plan, participation),
-    new SideLines(1, input, plan, participation),
+    new SideLines(0, input, plan, participation, ownFixture),
+    new SideLines(1, input, plan, participation, ownFixture),
   ] as const;
   const credits: AggregateShotCredit[] = [];
   if (trace)

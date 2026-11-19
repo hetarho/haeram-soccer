@@ -380,6 +380,7 @@ export function playAggregate(
   decide?: DecideRule,
   limits: AggregateRebalanceLimits = PC.changes,
   trace?: AggregateAttributionTrace,
+  ownFixture = true,
 ): AggregateMatch {
   const era = eraRules(f.year);
   const base = buildAggregateInput(prepared, UNPLANNED, rosters);
@@ -409,6 +410,7 @@ export function playAggregate(
       match.facts,
       streams,
       trace,
+      ownFixture,
     );
     return { ...match, plan, players, retry, ...(shootout && { shootout }) };
   }
@@ -483,7 +485,7 @@ export function aggregateRecord(
 export function simulateAggregate(w: World, f: Fixture, decide?: DecideRule): MatchPlayback {
   const prepared = prepareMatch(w, f);
   const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
-  const match = playAggregate(w, f, prepared, rosters, decide);
+  const match = playAggregate(w, f, prepared, rosters, decide, undefined, undefined, false);
   return {
     record: aggregateRecord(f, rosters, match, MATCH_MODEL_REVISION),
     frames: [],
