@@ -643,10 +643,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-x10-d3a275d5",
-      "head": "e9527384f200ed393b62c3b2f83c237d8e6bd1fa",
+      "head": "474952b31b2ed40060a815e566941bd401a9136a",
       "land": "main",
       "status": "working",
-      "at": "2026-11-19T08:05:23.107Z",
+      "at": "2026-11-19T08:16:19.745Z",
       "agentChecks": [
         {
           "id": "T993-save-integration",
@@ -833,6 +833,198 @@
           "stage": "integration",
           "required": false,
           "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T994-stopped-reads-round-trip",
+          "scenario": "Host and worker round trip of the stopped-reads read on a real worker. It must agree with the published projection and leave the world unchanged.",
+          "steps": [
+            "Start the built app and take over a club.",
+            "Send the stopped-reads request through the client read gate for the current world.",
+            "Compare its five parts with the latest published view, then confirm no view was published and the world revision is unchanged."
+          ],
+          "expected": "The reply carries the current world id and revision with coaches, managers, transfers, disciplineNames and office equal to the published projection. No view is published and no facts change.",
+          "observed": "Not run: this unit has no worker or browser tool. Host-level unit tests cover agreement with the projection at takeover and after 3 days, an unchanged canonical world, no view/delta/receipt, refusal for another world or session, and answering ahead of a queued command. The read-gate table test also covers the new read.",
+          "evidence": [
+            "spec/tasks/T994.stopped-clock-reads.md",
+            "apps/web/src/runtime/host.archive.test.ts"
+          ],
+          "status": "not-run",
+          "reason": "Integration-stage host/worker round trips need a capable host with a built worker. This unit ran only the task tier, which passed.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "capable host (shared final gate)",
+          "candidate": null,
+          "duplicationReason": "No new e2e suite was added. The unit tests cover the same invariants and this round trip is left to the shared final gate."
+        },
+        {
+          "id": "T1028-host-roundtrip",
+          "scenario": "Automatic play omits the five deferred reads, then restores current data after the stopped clock drains.",
+          "steps": [
+            "On the fixed integration candidate, run automatic play with computed days ahead, stop it, and inspect the host/worker replies and restored views.",
+            "Confirm manual progression and the live approval queue still show current data."
+          ],
+          "expected": "Automatic day replies omit the five reads; after all computed days are shown, one matching stopped read restores them, while approvals remain live.",
+          "observed": "Not run in this unit; the integration candidate has not been fixed.",
+          "evidence": [
+            "Task checks: 518 affected unit tests passed; 40 progression run-ahead tests passed after the immediate-stop fix.",
+            "Spec lint passed with no new errors; T1028 is archived as done@261119."
+          ],
+          "status": "not-run",
+          "reason": "Host/worker integration and browser acceptance are reserved for the capable host's shared final gate.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1020-fixed-candidate",
+          "scenario": "T1020 integration acceptance on the host's fixed candidate",
+          "steps": [
+            "Host checks the hook and dim wrapper against T1020's acceptance criteria after participating sessions are ready."
+          ],
+          "expected": "The fixed candidate provides stopped-read values or running state, and dims and blocks the dependent UI with one localized, accessible reason.",
+          "observed": "Not run in this unit; no fixed integration candidate was available.",
+          "evidence": [
+            "Task-tier checks passed: typecheck, lint, format, i18n (12 locales), and affected units (312 files, 2,860 tests).",
+            "Spec lint completed with no errors; it reported 24 existing stale-base warnings and 90 review hints."
+          ],
+          "status": "not-run",
+          "reason": "This unit had no computer-use tooling or fixed integration candidate. The capable host owns candidate acceptance.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "capable host",
+          "candidate": null,
+          "duplicationReason": "No additional e2e suite was added; candidate integration acceptance remains with the host."
+        },
+        {
+          "id": "T1029-host-acceptance",
+          "scenario": "Automatic play defers stopped-clock reads and restores them after stopping.",
+          "steps": [
+            "On the fixed integration candidate, run automatic play, stop the clock, and inspect the affected views and approval queue."
+          ],
+          "expected": "Affected reads are unavailable during play and return for the current day after stopping; approvals remain available.",
+          "observed": "Not run in this tool-less unit; no integration candidate was observed.",
+          "evidence": [
+            "spec/tasks/done/T1029.measure-stopped-clock-reads.md",
+            "artifacts/benchmarks/x10-cost-levers/T994/ab-view.json"
+          ],
+          "status": "not-run",
+          "reason": "Computer-use acceptance belongs to the capable host on its fixed integration candidate.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T995-browser-journeys",
+          "scenario": "Manager and staff candidate places and the discipline table during automatic play",
+          "steps": [
+            "Open the affected places while the clock runs, then stop it and read the current day's projections."
+          ],
+          "expected": "Running places show the dimmed reason and accept no input; after reads arrive, they show current-day facts.",
+          "observed": "Not run by this unit; handed to the host's post-push Chromium CI.",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "Browser journeys are reserved for host CI after push; no browser agent was available in this unit.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "gusta-start host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T996-ci-browsers",
+          "scenario": "Recruitment shortlist remains unavailable during automatic play and browser journeys verify the user flow",
+          "steps": [
+            "After push, run the declared Chromium browser journeys on CI."
+          ],
+          "expected": "Supported browser journeys pass with the shortlist dimmed during automatic play.",
+          "observed": "Not run in this unit; CI handoff recorded.",
+          "evidence": [
+            "Task-tier check passed all five checks; 204 affected unit tests passed.",
+            "Spec lint found no errors; 20 existing stale-base warnings and 90 review hints remain."
+          ],
+          "status": "not-run",
+          "reason": "CI browser journeys run after push; host owns that integration check.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1021-UI",
+          "scenario": "Office previews during automatic progression",
+          "steps": [
+            "Open the home and owner office while automatic progression runs.",
+            "Check the investment gallery, preview content, approval controls, and owner queue.",
+            "Stop the clock and revisit the previews."
+          ],
+          "expected": "Only office-derived previews are dimmed and inert while the clock runs; approval access stays usable, and current previews return after the stop.",
+          "observed": "Not observed in a browser. Component and hook tests passed; existing ProgressControls tests verify the approval button and count stay enabled while running.",
+          "evidence": [
+            "Affected unit checks: 20 files, 237 tests passed after correcting one failed assertion.",
+            "ProgressControls.test.ts covers the approval button and count while running."
+          ],
+          "status": "not-run",
+          "reason": "This unit had no computer-use or browser tool; integration acceptance is handed to the capable host.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "capable host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1025-unit",
+          "scenario": "Missing match material shows the correct current-season or earlier-season message, without an inaccurate touch caption.",
+          "steps": [
+            "Render the missing-material view for a current-season match, then an earlier-season match."
+          ],
+          "expected": "Current-season copy says the match was not watched; earlier-season copy says maps are not kept. No 최다 터치 caption appears.",
+          "observed": "Both message cases and caption removal passed. The task tier reported 224 affected unit tests passing; lint and format passed on rerun after fixes.",
+          "evidence": [
+            "vibe check --tier task; affected-units log check-105565a2-28b4-45db-aa8e-561335b45a0a",
+            "vibe check --tier task -- pnpm run lint; log check-f93edca4-a0a2-4bd3-a015-bf962272398a",
+            "vibe check --tier task -- pnpm run format:check; log check-badbd3aa-e2a0-40e3-8e90-861d0540b5cf",
+            "gusta lint: spec consistency normal; 18 pre-existing freshness warnings"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "x10",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1025-browser",
+          "scenario": "Open final analysis for an own match settled through automatic play and see the not-watched message.",
+          "steps": [
+            "Run the added journey in tests/e2e/match-material.spec.ts in the post-push Chromium CI shards."
+          ],
+          "expected": "The fixture row and opened final analysis both show the not-watched message.",
+          "observed": "Journey added; browser execution is pending CI.",
+          "evidence": [
+            "tests/e2e/match-material.spec.ts"
+          ],
+          "status": "not-run",
+          "reason": "ARCH-30 reserves browser journeys for post-push CI; local Playwright was not run. Capable host owns the integration check.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "capable host",
           "candidate": null,
           "duplicationReason": ""
         }
