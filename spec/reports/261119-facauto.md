@@ -143,9 +143,10 @@ Agent acceptance — review missing or incorrect criteria.
 | facility-auto-controls / integration / host (required) | 모든 시설 작업 진입점에서 시설별 체크박스와 저장 상태를 확인한다. | 홈 카드, 재정·투자의 효과 링크, 직접 주소에서 경기장·유소년·1군 훈련장 작업 카드를 연다.<br>팀의 유소년과 훈련 화면에서 시설 작업 카드로 이동하고 돌아온다.<br>한 시설만 체크하고 다른 시설을 확인한 뒤 저장, 새로고침, 언어 전환을 수행한다. | 세 시설의 체크 상태가 서로 독립적으로 저장된다. 키보드로 조작할 수 있고, 체크한 유휴 시설은 수동 시작 대기로 표시된다. 경기장 라벨에는 재건축 포함이 명시되며 언어를 바꾸면 표시 문구도 바뀐다. | 미실행 | replaces e2e:facility-auto-upgrade:controls-and-reload | not-run |
 | facility-auto-progression / integration / host (required) | 실제 구단 진행에서 완공, 재건축, 자금 대기, 취소와 최대 단계를 확인한다. | 짧은 검증용 커리어에서 경기장 자동 증축을 켜고 첫 공사를 수동 견적으로 시작한 뒤 완공일까지 진행한다.<br>자금이 부족한 완공 사례를 저장하고 다시 연 뒤, 자금이 확보되는 첫 일일 정산까지 진행한다.<br>공사 중 체크를 해제하고 완공까지 진행한다. 별도로 최대 단계 완공을 확인한다. | 경기장은 완공 뒤 다음 재건축을 한 번 시작한다. 자금 대기는 저장 후에도 유지되며, 자금 조건을 처음 충족한 정산에서 기존 견적 금액이 한 번 청구되고 공사 기록이 한 건 생긴다. 체크 해제 후에도 진행 중인 공사는 완공되며 다음 공사는 시작되지 않는다. 최대 단계에서 체크가 꺼진다. | 미실행 | replaces e2e:facility-auto-upgrade:completion-and-retry | not-run |
 <!-- gusta:agent-acceptance:end -->
-- time: 11m — planning 11m/1 (model 9m, task checks 2m), gate 0m, CI 0m, host 1m; slowest T1033 T1034 T1035 T1036 T1037 11m
+- shared integration: waiting-agent (df8fe8a85d7a15ccfdc684dc440a78d657173e0c); full verification is not repeated automatically.
+- time: 12m — planning 11m/1 (model 9m, task checks 2m), gate 0m, CI 0m, host 1m; slowest T1033 T1034 T1035 T1036 T1037 11m
 - task checks: 1 runs, 2m
 
 ## next
-- loop stopped: max-units
+- loop stopped: integration-waiting
 - verification: 0 rounds, 0 failed; pending repair: -; code pushed: false
