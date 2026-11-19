@@ -69,7 +69,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
-| T994 | Slow view reads wait for a stopped clock | WEB ARCH | - | todo |
+| T994 | Slow view reads wait for a stopped clock | WEB ARCH | - | doing@261119.x10 |
 | T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T994 | todo |
 | T995 | Manager, staff and discipline places dim while the clock runs | WEB ARCH | T1020 | todo |
 | T996 | The scout's shortlist dims while the clock runs | WEB ARCH | T1020 T995 | todo |
