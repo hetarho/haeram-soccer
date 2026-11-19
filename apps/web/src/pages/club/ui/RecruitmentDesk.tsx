@@ -1638,14 +1638,16 @@ export function RecruitmentDesk({
                   : sourceMessage('copy.RecruitmentDesk.fcdba43502'),
               )}
             </p>
-            <RecruitmentNeeds
-              w={w}
-              offers={state.view!.transfers}
-              onRole={(line) => {
-                changeQuery({ line });
-                setPanel(undefined);
-              }}
-            />
+            {state.view?.transfers && (
+              <RecruitmentNeeds
+                w={w}
+                offers={state.view!.transfers}
+                onRole={(line) => {
+                  changeQuery({ line });
+                  setPanel(undefined);
+                }}
+              />
+            )}
             {/* The 영입 area of the club's direction as founded (→ECON-25); it only reads. */}
             <DirectionFacts w={w} rows={['scouting', 'recruitment', 'recruitmentSupport']} />
             <div data-surface="sheet" className={s.summary}>
@@ -1671,26 +1673,28 @@ export function RecruitmentDesk({
               ),
             )}
             <RecruitmentCommitments w={w} client={client} />
-            <ScoutShortlist
-              w={w}
-              offers={state.view!.transfers}
-              disabled={false}
-              onOpen={(index) => {
-                const offer = state.view!.transfers[index];
-                if (!offer) return;
-                setPanel(undefined);
-                setViewing(
-                  offer.source.kind === 'club'
-                    ? {
-                        world: w.id,
-                        kind: 'club',
-                        clubId: offer.source.club,
-                        playerId: offer.player.id,
-                      }
-                    : { world: w.id, kind: 'offer', playerId: offer.player.id },
-                );
-              }}
-            />
+            {state.view?.transfers && (
+              <ScoutShortlist
+                w={w}
+                offers={state.view!.transfers}
+                disabled={false}
+                onOpen={(index) => {
+                  const offer = state.view?.transfers?.[index];
+                  if (!offer) return;
+                  setPanel(undefined);
+                  setViewing(
+                    offer.source.kind === 'club'
+                      ? {
+                          world: w.id,
+                          kind: 'club',
+                          clubId: offer.source.club,
+                          playerId: offer.player.id,
+                        }
+                      : { world: w.id, kind: 'offer', playerId: offer.player.id },
+                  );
+                }}
+              />
+            )}
             <OfferAnswers w={w} />
           </Dialog>
         ),

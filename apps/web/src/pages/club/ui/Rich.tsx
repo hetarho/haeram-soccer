@@ -474,11 +474,12 @@ export function ManagerMarket({
     [hiring, setHiring] = useTaskState<string | undefined>(w.id, 'manager-hiring', undefined),
     [term, setTerm] = useTaskState<ContractTerm>(w.id, 'manager-hire-term', 1);
   const disabled = useGameState(gameActionsBlocked);
+  if (!v.managers) return null;
   const format = (value: bigint | string) => <Money value={value} code={c.country} year={w.year} />;
   // Replacing a contracted manager pays him 25% of his wage per season left; an interim leaves
   // freely.
   const payoff = BigInt(managerPayoff(w));
-  const outlay = (candidate: (typeof v.managers)[number]) =>
+  const outlay = (candidate: NonNullable<typeof v.managers>[number]) =>
     BigInt(candidate.fee) +
     BigInt(candidate.compensation ?? '0') +
     BigInt(candidate.coachingRelease ?? '0') +
@@ -488,7 +489,7 @@ export function ManagerMarket({
       (candidate) => candidate.source === 'free' || candidate.source === 'internal',
     ),
     others = v.managers.filter((candidate) => candidate.source === 'club');
-  const card = (candidate: (typeof v.managers)[number]) => (
+  const card = (candidate: NonNullable<typeof v.managers>[number]) => (
     <article data-surface="panel" className={s.card} key={candidate.id}>
       <div className={s.personHead}>
         <OvrBadge

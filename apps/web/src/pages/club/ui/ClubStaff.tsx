@@ -485,10 +485,8 @@ export function CoachingStaff({
     plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
   const members = new Map((w.staff || []).map((member) => [member.role, member]));
-  const projectedCandidates = useGameState((state) =>
-    role ? state.view?.coaches[role] : undefined,
-  );
-  const candidates = role ? (projectedCandidates ?? staffCandidates(w, role)) : [];
+  const coaches = useGameState((state) => state.view?.coaches);
+  const candidates = role && coaches ? (coaches[role] ?? staffCandidates(w, role)) : [];
   const chosen = candidates.find((candidate) => candidate.id === pick);
   const current = role ? members.get(role) : undefined;
   const owed = releaseCost(w, current);
@@ -693,7 +691,7 @@ export function CoachingStaff({
         )}
       </ul>
       {localizeValue(
-        role && (
+        role && coaches && (
           <Dialog
             label={displayMessage('copy.ClubStaff.aeb9824561', { p0: STAFF_INFO[role].label })}
             onClose={() => {
@@ -954,11 +952,12 @@ export function StaffMarket({
   const [term, setTerm] = useTaskState<ContractTerm>(w.id, 'staff-market-term', DELEGATED_TERM);
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
-  const projected = useGameState((state) => state.view?.coaches[role]);
-  const candidates = projected ?? staffCandidates(w, role);
+  const coaches = useGameState((state) => state.view?.coaches);
+  const candidates = coaches ? (coaches[role] ?? staffCandidates(w, role)) : [];
   const current = w.staff?.find((member) => member.role === role);
   const chosen = candidates.find((candidate) => candidate.id === pick);
   const owed = releaseCost(w, current);
+  if (!coaches) return null;
   return (
     <section
       data-surface="panel"
@@ -1170,6 +1169,8 @@ export function ManagerPost({ w }: { w: World; client?: GameClient }) {
 /** Whom 선호 학파 and 감독 기조 would appoint if the post fell vacant (→STAFF-18), or why nobody. */
 function ManagerPreview({ w, title }: { w: World; title: string }) {
   useTextLocale();
+  const managers = useGameState((state) => state.view?.managers);
+  if (!managers) return null;
   const preview = managerPickPreview(w),
     pick = preview.pick,
     club = clubOf(w),
@@ -1220,6 +1221,8 @@ function ManagerPreview({ w, title }: { w: World; title: string }) {
 /** Whom 코치 기조 would hire today in a department (→STAFF-15), or why nobody. */
 function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: string }) {
   useTextLocale();
+  const coaches = useGameState((state) => state.view?.coaches);
+  if (!coaches) return null;
   const preview = coachPickPreview(w, role),
     pick = preview.pick,
     c = coachCriteriaOf(w),

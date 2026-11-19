@@ -69,7 +69,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
-| T1026 | Prepare consumers for stopped-clock reads | WEB ARCH | - | todo |
 | T1027 | Prepare automatic-play view measurement | ARCH | - | todo |
 | T994 | Prepare the stopped-clock read boundary | WEB ARCH | T1026 T1027 | todo |
 | T1028 | Activate stopped-clock reads | WEB ARCH | T994 | todo |
@@ -113,7 +112,7 @@
 ## next
 - gusta-implement-task T1019
 - gusta-implement-task T1025
-- gusta-implement-task T1026 T1027
+- gusta-implement-task T1027
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 cost levers (261119, owner from reports/261119-np19 D2/D4/D5/D8): T989–T998 and T1019–T1021 — NPC place-fit tolerance, unwatched own matches without script/material and heat maps removed, slow view reads only on a stopped clock with dimmed places, helpers from two cores; T998 is explore (1h). Start with `gusta-implement-task T989` (or /gusta-start).
 - inspect work board for remaining tasks
