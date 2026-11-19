@@ -7,6 +7,7 @@ import type { FullStatsScope } from '../../../../packages/contracts/src/match-mo
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
 import { IndexedDbCheckpointKey } from '../adapters/previousStore';
 import { GameIndexStore } from '../adapters/games';
+import { readSaveFileHeader } from '../adapters/saveFile';
 import {
   envelopeEngine,
   isEarlierEngine,
@@ -432,14 +433,28 @@ export class GameClient {
   /** Opens one game's database as the game in play; false when it has no file. */
   private async open(gameId: string) {
     const playback = this.state.playback,
-      before = this.state.view?.world,
-      career = before?.id;
-    let reply: Reply;
+      career = this.state.view?.world.id;
+    const reply = await this.opening({ type: 'open-game', gameId }, gameId);
+    if (!reply.opened?.found) {
+      this.gameFiles?.delete(gameId);
+      return false;
+    }
+    this.adopt(gameId, reply, playback, career);
+    return true;
+  }
+  /**
+   * Asks the engine worker to put a game's database in play (`open-game`, or `import-game` for a
+   * file checked first). A write that failed after the game was in play leaves the upgraded game
+   * in memory, exportable (→SAVE-10).
+   */
+  private async opening(body: Body, gameId: string): Promise<Reply> {
+    const before = this.state.view?.world;
     try {
-      reply = await this.rpc({ type: 'open-game', gameId }, undefined, STORAGE_TIMEOUT_MS);
+      return await this.rpc(body, undefined, STORAGE_TIMEOUT_MS);
     } catch (error) {
       const opened = this.state.view?.world;
-      if (!opened || (opened.id === career && opened.revision === before?.revision)) throw error;
+      if (!opened || (opened.id === before?.id && opened.revision === before?.revision))
+        throw error;
       // The upgraded game is in play, its commit failed: memory keeps it, exportable (→SAVE-10).
       this.gameId = gameId;
       this.stored = true;
@@ -447,10 +462,14 @@ export class GameClient {
       this.state.saveFailed = true;
       throw new Error(sourceMessage('copy.client.042fb5736b', { p0: String(error) }));
     }
-    if (!reply.opened?.found) {
-      this.gameFiles?.delete(gameId);
-      return false;
-    }
+  }
+  /** Takes the game a worker reply opened as the game in play. */
+  private adopt(
+    gameId: string,
+    reply: Reply,
+    playback: ClientState['playback'],
+    career: string | undefined,
+  ) {
     // A revealed playback of this career whose match the game holds finishes under the model it
     // was settled with, even when this load activates a newer one (→SAVE-23).
     const world = this.state.view?.world;
@@ -467,7 +486,7 @@ export class GameClient {
     this.stored = true;
     this.createReplaces = false;
     this.gameFiles?.add(gameId);
-    this.state.savedRevision = reply.opened.revision ?? -1;
+    this.state.savedRevision = reply.opened?.revision ?? -1;
     this.state.savedAt = undefined;
     this.state.saveFailed = false;
     if (reply.upgraded) {
@@ -477,7 +496,6 @@ export class GameClient {
       notificationStore.add(SAVE_DATA_UPDATED);
       this.channel.postMessage({ revision: this.state.savedRevision });
     }
-    return true;
   }
   /**
    * The whole view a reply carries, rebuilt on the base it names when it sends only changes;
@@ -548,6 +566,7 @@ export class GameClient {
           body.type === 'command' ||
           body.type === 'ack-critical' ||
           body.type === 'open-game' ||
+          body.type === 'import-game' ||
           (body.type === 'inspect' && !!body.activate),
         taking: automatic
           ? 'hold'
@@ -1012,34 +1031,63 @@ export class GameClient {
       engine = raw ? envelopeEngine(raw) : undefined;
     return engine && isEarlierEngine(engine) ? engine : undefined;
   }
-  exportFile() {
+  /**
+   * A game's database as a `.haeram-save` file (→SAVE-9). The game in play is saved first, so the
+   * file holds its latest progress, or what memory holds when that save fails; any other game is
+   * exported as last saved, even one of rules this version cannot open (→SAVE-11). Undefined when
+   * the game has no file.
+   */
+  exportGame(gameId: string) {
     return this.enqueue(async () => {
-      const incompatible = this.saves.incompatibleCheckpoint;
-      if (incompatible && !this.replacingIncompatible) {
-        this.state.error = sourceMessage('copy.client.4106edaaff');
-        return this.rawBackup();
-      }
-      if (this.head && !this.failed)
-        return (await this.rpc({ type: 'export' }, this.requestId(), STORAGE_TIMEOUT_MS)).raw;
-      return this.rawBackup();
+      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
+      // A save that fails keeps the progress exportable from memory (→SAVE-3, →SAVE-10).
+      let memory = false;
+      if (gameId === this.gameId) await this.save().catch(() => (memory = true));
+      return (
+        await this.rpc(
+          { type: 'export-game', gameId, ...(memory ? { memory } : {}) },
+          undefined,
+          STORAGE_TIMEOUT_MS,
+        )
+      ).file;
     });
   }
-  /** Validates a checkpoint envelope, makes it the game in play and commits it (→SAVE-5). */
-  private async activate(raw: string) {
-    if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
-    await this.whenSaved();
-    await this.rpc({ type: 'inspect', raw, activate: true, upgrade: true });
-    // Its database is the slot's that lists its world, else a new one, written whole by the save.
-    this.gameId = gameIdFor(this.head!.world.id);
-    this.stored = false;
-    this.createReplaces = true;
-    this.replacingIncompatible = this.saves.incompatibleCheckpoint;
-    this.state.savedRevision = -1;
-    this.staging.replace();
-    await this.save();
+  /** The game in play as a `.haeram-save` file; undefined while none is in play. */
+  exportFile() {
+    return this.gameId ? this.exportGame(this.gameId) : Promise.resolve(undefined);
   }
-  importFile(raw: string) {
-    return this.enqueue(() => this.activate(raw));
+  /**
+   * Imports a `.haeram-save` file as the game in play (→SAVE-9). The engine worker checks it whole
+   * before anything is replaced; a refused file leaves every game and the game in play as they
+   * were. The game of the slot being replaced loses its file only after the import is in place.
+   */
+  importFile(file: Uint8Array) {
+    return this.enqueue(async () => {
+      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
+      await this.whenSaved();
+      // A file of another format is refused here, before the worker is asked.
+      const { header } = readSaveFileHeader(file);
+      // The game's database is the slot's that lists its world, else a new one.
+      const gameId = gameIdFor(header.worldId);
+      const replaces = this.replacedGame;
+      const playback = this.state.playback,
+        career = this.state.view?.world.id;
+      const reply = await this.opening(
+        {
+          type: 'import-game',
+          gameId,
+          ...(replaces && replaces !== gameId ? { replaces } : {}),
+          file,
+        },
+        gameId,
+      );
+      if (replaces) {
+        this.gameFiles?.delete(replaces);
+        this.replacedGame = undefined;
+      }
+      this.staging.replace();
+      this.adopt(gameId, reply, playback, career);
+    });
   }
   /**
    * Switches games (→SAVE-14): the game in play is saved and closed, then the next game's database
@@ -1079,19 +1127,6 @@ export class GameClient {
   /** The game whose file goes when the next new game's is created, in the same slot (→WEB-62). */
   replaceOnCreate(gameId: string | undefined) {
     this.replacedGame = gameId;
-  }
-  /**
-   * The game in play as a checkpoint envelope, saved first if the latest revision is not yet in
-   * its database, so parking never leaves progress behind.
-   */
-  async checkpoint() {
-    return (
-      (await this.enqueue(async () => {
-        if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
-        await this.save();
-        return (await this.rpc({ type: 'export' }, this.requestId(), STORAGE_TIMEOUT_MS)).raw;
-      })) ?? undefined
-    );
   }
   /** Reloads the committed game in play, e.g. after a switch that could not finish. */
   reload() {

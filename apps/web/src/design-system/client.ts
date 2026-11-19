@@ -60,8 +60,8 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
       notify(sourceMessage('copy.client.62b45e9016'));
       return undefined;
     },
-    checkpoint: async () => {
-      await command();
+    exportGame: async () => {
+      notify(sourceMessage('copy.client.62b45e9016'));
       return undefined;
     },
     switchTo: async () => {

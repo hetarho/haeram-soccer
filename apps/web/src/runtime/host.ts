@@ -13,14 +13,24 @@ import { personCareer } from './personCareer';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { officeRead } from './officeRead';
 import {
+  exportFile,
   gameDriver,
   deleteFile,
   gameFileName,
+  importFile,
   listFiles,
   openGamePool,
   type GamePool,
 } from '../adapters/sqliteWasm';
 import { sqlRecordStore } from '../adapters/sqlRecordStore';
+import {
+  databaseSaveMeta,
+  decodeSaveFile,
+  encodeSaveFile,
+  saveMetaOf,
+  type DatabaseBytes,
+} from '../adapters/saveFile';
+export type { DatabaseBytes } from '../adapters/saveFile';
 import { RowSaver } from '../adapters/rowSaver';
 import { rowsToWorld } from '../adapters/worldRows';
 import { SAVE_SCHEMA_VERSION } from '../adapters/saveSchema';
@@ -314,6 +324,48 @@ export interface GameFiles {
   list(): string[] | Promise<string[]>;
   remove(gameId: string): void | Promise<void>;
 }
+/** An import's temporary database: one at a time, so a left-over one is a crashed import's. */
+const IMPORT_FILE = /^\/import-[A-Za-z0-9-]+\.sqlite3$/;
+/** The database files of the engine worker's OPFS pool, as bytes (→ARCH-11). */
+function poolBytes(pool: GamePool): DatabaseBytes {
+  const present = (gameId: string) => listFiles(pool).includes(gameFileName(gameId));
+  // The pool never grows by itself on an import, so room for the scratch file and the game's.
+  const room = () => pool.reserveMinimumCapacity(pool.getFileCount() + 2);
+  return {
+    read: (gameId) => (present(gameId) ? exportFile(pool, gameFileName(gameId)) : undefined),
+    meta: (gameId) => {
+      if (!present(gameId)) return undefined;
+      const driver = gameDriver(pool, gameFileName(gameId));
+      try {
+        return databaseSaveMeta(driver);
+      } finally {
+        driver.close();
+      }
+    },
+    scratch: async (bytes) => {
+      for (const name of listFiles(pool)) if (IMPORT_FILE.test(name)) deleteFile(pool, name);
+      const name = `/import-${crypto.randomUUID()}.sqlite3`;
+      await room();
+      if (bytes) await importFile(pool, name, bytes);
+      const driver = gameDriver(pool, name);
+      return {
+        driver,
+        bytes: () => exportFile(pool, name),
+        release: () => {
+          try {
+            driver.close();
+          } finally {
+            deleteFile(pool, name);
+          }
+        },
+      };
+    },
+    write: async (gameId, bytes) => {
+      await room();
+      await importFile(pool, gameFileName(gameId), bytes);
+    },
+  };
+}
 const GAME_FILE = /^\/game-([A-Za-z0-9:_-]{1,100})\.sqlite3$/;
 /** A game's database in the engine worker's OPFS pool (→ARCH-11). */
 function poolStore(pool: GamePool, gameId: string, create: boolean) {
@@ -399,6 +451,7 @@ export class Host {
   private game?: { id: string; store: RecordStore; saver: RowSaver };
   private openStore: OpenStore;
   private files: GameFiles;
+  private bytes: DatabaseBytes;
   /** The client's fixture helpers, when it created them (→ARCH-6); without, every fixture plays here. */
   helpers?: HelperPool;
   /** An own match day waiting for its helpers: the world is mid-day, so reads wait for it. */
@@ -415,7 +468,12 @@ export class Host {
   private gamePool?: Promise<GamePool>;
   constructor(
     private progress: (reply: Reply) => void = () => {},
-    options: { release?: MatchModelRelease; openStore?: OpenStore; gameFiles?: GameFiles } = {},
+    options: {
+      release?: MatchModelRelease;
+      openStore?: OpenStore;
+      gameFiles?: GameFiles;
+      databaseBytes?: DatabaseBytes;
+    } = {},
   ) {
     this.release = options.release ?? MATCH_MODEL_RELEASE;
     this.files = options.gameFiles ?? {
@@ -423,6 +481,15 @@ export class Host {
         listFiles(await this.databases()).flatMap((name) => GAME_FILE.exec(name)?.[1] ?? []),
       remove: async (gameId) => void deleteFile(await this.databases(), gameFileName(gameId)),
     };
+    this.bytes =
+      options.databaseBytes ??
+      // The pool opens on first use, so each call reaches it through `databases()`.
+      ({
+        read: async (id) => poolBytes(await this.databases()).read(id),
+        meta: async (id) => poolBytes(await this.databases()).meta(id),
+        scratch: async (bytes) => poolBytes(await this.databases()).scratch(bytes),
+        write: async (id, bytes) => poolBytes(await this.databases()).write(id, bytes),
+      } satisfies DatabaseBytes);
     this.openStore =
       options.openStore ??
       (async (gameId, { create }) => poolStore(await this.databases(), gameId, create));
@@ -467,10 +534,23 @@ export class Host {
         opened: { gameId, found: false },
         ...this.publish(r.viewBase),
       };
+    return this.playStore(r, gameId, store);
+  }
+  /**
+   * Makes an opened database the game in play: its world is validated (unless `checked` already
+   * holds the validated world and its writer upgrade, as an import's), the upgrade is committed at
+   * once and the saver starts from the rows the database holds. A failed check closes the store.
+   */
+  private playStore(
+    r: Request,
+    gameId: string,
+    store: RecordStore,
+    checked?: { world: World; activated: World },
+  ): Reply {
     let world: World, activated: World, saver: RowSaver;
     try {
-      world = storedWorld(store);
-      activated = this.writerUpgrade(world);
+      world = checked?.world ?? storedWorld(store);
+      activated = checked?.activated ?? this.writerUpgrade(world);
       saver = new RowSaver(store);
       saver.prime(world);
     } catch (error) {
@@ -491,6 +571,85 @@ export class Host {
       upgraded: activated !== world || undefined,
       ...this.publish(r.viewBase),
     };
+  }
+  /**
+   * A game's database as a portable file (→SAVE-9): the committed bytes behind a header naming its
+   * versions, readable for a game of earlier or newer rules too, which stays exportable untouched
+   * (→SAVE-11). The game in play was saved by the client first; a game without a file is an error.
+   * With `memory`, the game in play as it stands, when its save failed (→SAVE-3).
+   */
+  private async exportGame(r: Request, gameId: string, memory = false): Promise<Reply> {
+    const playing = this.game?.id === gameId ? this.game : undefined;
+    if (memory && playing && this.world) return this.exportMemory(r, this.world);
+    const bytes = await this.bytes.read(gameId);
+    const meta = playing
+      ? saveMetaOf(playing.store.meta())
+      : bytes && (await this.bytes.meta(gameId));
+    if (!bytes || !meta) throw new Error(sourceMessage('copy.host.c64421732a'));
+    return { requestId: r.requestId, ok: true, file: await encodeSaveFile(meta, bytes) };
+  }
+  /**
+   * The world in play written into a copy of its committed database: what a failed save left in
+   * memory stays exportable (→SAVE-3, →SAVE-10).
+   */
+  private async exportMemory(r: Request, w: World): Promise<Reply> {
+    const committed = await this.bytes.read(this.game!.id);
+    const scratch = await this.bytes.scratch(committed);
+    try {
+      const store = sqlRecordStore(scratch.driver);
+      const saver = new RowSaver(store);
+      // What the copy holds is taken as committed, so the save writes what the world changed.
+      if (committed) saver.prime(rowsToWorld(store, { includeCold: false }));
+      saver.save(w);
+      const file = await encodeSaveFile(saveMetaOf(store.meta()), scratch.bytes());
+      return { requestId: r.requestId, ok: true, file };
+    } finally {
+      scratch.release();
+    }
+  }
+  /**
+   * Imports a save file (→SAVE-9, →ARCH-16). Everything is checked before a slot is touched: the
+   * header, the limits and the checksum (→SAVE-4), then the database in a scratch file — its
+   * integrity check, schema, rules and catalog versions and the world it holds, with the writer
+   * upgrade it would get — and the header against what the database says. Only then does it
+   * become `gameId`'s file and the game in play, and the file of the game it `replaces` go; any
+   * failure leaves every file and the game in play as they were.
+   */
+  private async importGame(
+    r: Request,
+    body: { gameId: string; replaces?: string; file: Uint8Array },
+  ): Promise<Reply> {
+    const { header, dbBytes } = await decodeSaveFile(body.file);
+    let checked: { world: World; activated: World };
+    const scratch = await this.bytes.scratch(dbBytes);
+    try {
+      const verdict = scratch.driver.get<{ integrity_check: string }>('PRAGMA integrity_check');
+      if (verdict?.integrity_check !== 'ok')
+        throw new Error(sourceMessage('copy.saveFile.integrity'));
+      const store = sqlRecordStore(scratch.driver);
+      // What the header says must be what the database says, before the world is read.
+      const stored = saveMetaOf(store.meta());
+      if (
+        stored.schema !== header.schema ||
+        stored.engine !== header.engine ||
+        stored.catalog !== header.catalog ||
+        stored.catalogHash !== header.catalogHash ||
+        stored.worldId !== header.worldId
+      )
+        throw new Error(sourceMessage('copy.persistence.450e2c9cf6'));
+      const world = storedWorld(store);
+      checked = { world, activated: this.writerUpgrade(world) };
+    } finally {
+      scratch.release();
+    }
+    // The game's own file cannot be written while it is open.
+    if (this.game?.id === body.gameId) this.closeGame();
+    await this.bytes.write(body.gameId, dbBytes);
+    const store = await this.openStore(body.gameId, { create: false });
+    if (!store) throw new Error(sourceMessage('copy.host.c64421732a'));
+    const reply = this.playStore(r, body.gameId, store, checked);
+    if (body.replaces && body.replaces !== body.gameId) await this.files.remove(body.replaces);
+    return reply;
   }
   /**
    * Releases the game in play's database after the client's save (→SAVE-14): no game is in play
@@ -939,6 +1098,9 @@ export class Host {
       if (r.body.type === 'open-game') return await this.openGame(r, r.body.gameId);
       if (r.body.type === 'close-game') return this.releaseGame(r);
       if (r.body.type === 'delete-game') return await this.deleteGame(r, r.body.gameId);
+      if (r.body.type === 'export-game')
+        return await this.exportGame(r, r.body.gameId, r.body.memory);
+      if (r.body.type === 'import-game') return await this.importGame(r, r.body);
       if (r.body.type === 'list-games')
         return { requestId: r.requestId, ok: true, games: [...(await this.files.list())] };
       if (r.body.type === 'create-game')

@@ -2,6 +2,7 @@ import { openClubhouse, openClubRecords } from './competition-navigation';
 import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import type { DesignStudio, KitRole } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { DESIGNERS } from '../../packages/engine/src/design-fees';
@@ -42,18 +43,18 @@ async function openMenu(page: Page) {
 }
 const closeMenu = (menu: Locator) =>
   menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-/** The file 기록 내보내기 downloads from the HUD menu, as text; mid-edit in the office too. */
+/** The `.haeram-save` file 기록 내보내기 downloads from the HUD menu; mid-edit in the office too. */
 export const exportRaw = (page: Page) =>
   aroundOffice(page, async () => {
     const menu = await openMenu(page);
     const downloading = page.waitForEvent('download');
     await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-    const raw = await readFile((await (await downloading).path())!, 'utf8');
+    const raw = await readFile((await (await downloading).path())!);
     await closeMenu(menu);
     return raw;
   });
 export const exportWorld = async (page: Page): Promise<World> =>
-  (await decode(await exportRaw(page))).world;
+  worldOfSaveFile(await exportRaw(page));
 /** 저장 재시도 from the HUD menu, after a failed checkpoint. */
 export const retrySave = (page: Page) =>
   aroundOffice(page, async () => {

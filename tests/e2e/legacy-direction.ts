@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { encode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf } from '../fixtures/save-file';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { acknowledgeEvents } from './events';
 
@@ -12,9 +12,9 @@ export async function importLegacyDirection(page: Page, preset: string, seed = '
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'legacy-direction.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(await encode(world)),
+      name: 'legacy-direction.haeram-save',
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(await saveFileOf(world)),
     });
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await acknowledgeEvents(page);

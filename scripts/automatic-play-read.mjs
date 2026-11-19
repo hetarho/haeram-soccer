@@ -17,7 +17,7 @@ import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import { operate } from '../packages/engine/src/index.ts';
 import { careerWorld } from '../packages/engine/src/career.testkit.ts';
-import { encode } from '../apps/web/src/adapters/persistence.ts';
+import { saveFileOf } from '../tests/fixtures/save-file.ts';
 
 const args = new Map(
   process.argv
@@ -51,7 +51,7 @@ async function career() {
   settings.mode = 'automatic';
   settings.observations = { matchEve: false, windowOpen: false };
   operate(w, { type: 'settings', settings });
-  return Buffer.from(await encode(w, 1, 0));
+  return Buffer.from(await saveFileOf(w));
 }
 
 /** Page-side recorder: shown dates, long tasks and the fixture helpers' lives. */
@@ -111,8 +111,8 @@ async function run(browser, origin, raw, pace, days) {
   await page.goto(origin);
   await page.getByRole('button', { name: '클럽 창단' }).waitFor();
   await page.locator('input[type=file]').last().setInputFiles({
-    name: 'automatic-read.json',
-    mimeType: 'application/json',
+    name: 'automatic-read.haeram-save',
+    mimeType: 'application/octet-stream',
     buffer: raw,
   });
   await page

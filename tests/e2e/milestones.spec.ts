@@ -3,7 +3,7 @@ import { STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { delegateSales, dismissMatchReport } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import { clubMilestones } from '../../packages/engine/src/goals';
 import type { World } from '../../packages/contracts/src/types';
 import { expectHomeBounds, settle } from './layout';
@@ -17,9 +17,9 @@ async function exportWorld(page: Page): Promise<World> {
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
-  const raw = await readFile((await download.path())!, 'utf8');
+  const raw = await readFile((await download.path())!);
   await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  return (await decode(raw)).world;
+  return worldOfSaveFile(raw);
 }
 
 async function expectCompactHome(page: Page) {

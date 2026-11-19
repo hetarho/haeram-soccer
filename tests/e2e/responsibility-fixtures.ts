@@ -28,7 +28,7 @@ import { detectMediations, resolveMediation } from '../../packages/engine/src/me
 import { lineOf } from '../../packages/engine/src/player';
 import { staffAuthority } from '../../packages/engine/src/testing';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
-import { encode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf } from '../fixtures/save-file';
 import { cachedWorld } from '../fixtures/worlds';
 import { startFlow } from './start';
 
@@ -65,9 +65,9 @@ export async function importResponsibilityCareer(page: Page, world: World) {
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'responsibilities.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(await encode(world, 1, 0)),
+      name: 'responsibilities.haeram-save',
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(await saveFileOf(world)),
     });
   // A 35-round career on the released model: CI WebKit 40233059787 opened it in over 5 s.
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 15000 });

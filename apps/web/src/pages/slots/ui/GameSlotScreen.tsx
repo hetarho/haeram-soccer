@@ -4,6 +4,7 @@ import { localizeValue, useTextLocale } from '../../../presentation/text';
 import { useEffect, useState } from 'react';
 import type { GameEntry } from '../../../adapters/games';
 import { PORTABLE_FILE_LIMIT } from '../../../adapters/repository';
+import { SAVE_FILE_EXTENSION } from '../../../adapters/saveFile';
 import { BetaMark } from '../../../shared/ui/BetaMark';
 import { earlierRules, summarize, type GameSlots } from '../../../runtime/slots';
 import { gameStore, useGameState } from '../../../runtime/store';
@@ -40,7 +41,7 @@ export function GameSlotScreen({
   onEnter: () => void;
   /** Readies the slot (saving the game in play) and opens founding for it. */
   onNew: (slot: number) => Promise<void>;
-  onExport: (raw: string, label: string) => void;
+  onExport: (file: Uint8Array, label: string) => void;
   /** The game in play was deleted: a fresh page reads what remains, on this screen. */
   onRemovedInPlay: () => void;
 }) {
@@ -85,9 +86,9 @@ export function GameSlotScreen({
     world && entry.worldId === world.id ? summarize(world) : entry.summary;
   const exportSlot = (slot: number) =>
     run('slots.exporting', async () => {
-      const raw = await slots.exportRaw(slot);
-      if (!raw) throw new Error(t('slots.missingRecord'));
-      onExport(raw, entryOf(slot)!.summary.club);
+      const file = await slots.exportFile(slot);
+      if (!file) throw new Error(t('slots.missingRecord'));
+      onExport(file, entryOf(slot)!.summary.club);
     });
   const importInto = (slot: number, file?: File) => {
     if (!file) return;
@@ -96,7 +97,7 @@ export function GameSlotScreen({
       return;
     }
     void run('slots.importing', async () => {
-      await slots.importInto(slot, await file.text());
+      await slots.importInto(slot, new Uint8Array(await file.arrayBuffer()));
       onEnter();
     });
   };
@@ -174,7 +175,7 @@ export function GameSlotScreen({
                       <input
                         className={a.fileInput}
                         type="file"
-                        accept="application/json,.json"
+                        accept={SAVE_FILE_EXTENSION}
                         disabled={locked || (!!world && !slots.available)}
                         onChange={(event) => {
                           importInto(slot, event.target.files?.[0]);

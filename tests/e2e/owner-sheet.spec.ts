@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { encode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf } from '../fixtures/save-file';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { withOwner } from '../../packages/engine/src/testing';
 import type { World } from '../../packages/contracts/src/types';
@@ -15,9 +15,9 @@ async function importCareer(page: Page, w: World) {
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'owner-sheet.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(await encode(w)),
+      name: 'owner-sheet.haeram-save',
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(await saveFileOf(w)),
     });
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await acknowledgeEvents(page);

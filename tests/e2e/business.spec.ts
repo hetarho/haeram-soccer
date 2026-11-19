@@ -2,7 +2,7 @@ import { STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { importLegacyDirection } from './legacy-direction';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf, worldOfSaveFile } from '../fixtures/save-file';
 import { ownerClose } from '../../packages/engine/src/owner';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { operatingLossWorld } from '../fixtures/business';
@@ -42,9 +42,9 @@ const exportWorld = (page: Page): Promise<World> =>
     const downloading = page.waitForEvent('download');
     await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
     const file = await downloading;
-    const raw = await readFile((await file.path())!, 'utf8');
+    const raw = await readFile((await file.path())!);
     await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-    return (await decode(raw)).world;
+    return worldOfSaveFile(raw);
   });
 
 /** Starts a standard takeover, or imports an existing saved direction for legacy coverage. */
@@ -115,7 +115,11 @@ async function importCareer(page: Page, w: World, name: string) {
   await page
     .locator('input[type=file]')
     .last()
-    .setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(await encode(w)) });
+    .setInputFiles({
+      name,
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(await saveFileOf(w)),
+    });
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // The imported career carries unread attention events.
   await acknowledgeEvents(page);
@@ -359,9 +363,9 @@ test('ends an owner bankruptcy career on the game-over page and starts a new gam
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'synthetic-bankruptcy.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(await encode(fixture)),
+      name: 'synthetic-bankruptcy.haeram-save',
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(await saveFileOf(fixture)),
     });
   const over = page.getByTestId('game-over');
   // The page names the club taken over, not a founding's chosen name (→WEB-56).

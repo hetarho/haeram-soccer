@@ -6,9 +6,18 @@ import { DatabaseSync, type SQLInputValue, type StatementSync } from 'node:sqlit
 import type { RecordStore } from '../../packages/contracts/src/record-store';
 import { sqlRecordStore, type SqlDriver } from '../../apps/web/src/adapters/sqlRecordStore';
 
-/** A driver over `DatabaseSync`, caching one prepared statement per SQL string. */
-export function nodeSqliteDriver(path = ':memory:'): SqlDriver {
+/** A driver that can also write its database out as the bytes of a SQLite file. */
+export interface SerializableDriver extends SqlDriver {
+  serialize(): Uint8Array;
+}
+
+/**
+ * A driver over `DatabaseSync`, caching one prepared statement per SQL string; `bytes` is a SQLite
+ * file's content to start from (in memory), and `serialize` writes it out again.
+ */
+export function nodeSqliteDriver(path = ':memory:', bytes?: Uint8Array): SerializableDriver {
   const db = new DatabaseSync(path);
+  if (bytes) db.deserialize(bytes);
   const statements = new Map<string, StatementSync>();
   const prepared = (sql: string) => {
     let statement = statements.get(sql);
@@ -20,6 +29,7 @@ export function nodeSqliteDriver(path = ':memory:'): SqlDriver {
   };
   const values = (params: unknown[] = []) => params as SQLInputValue[];
   return {
+    serialize: () => db.serialize(),
     exec: (sql) => db.exec(sql),
     run: (sql, params) => {
       prepared(sql).run(...values(params));

@@ -3,7 +3,8 @@ import { clubhouseTab, openLeague } from './competition-navigation';
 import { advanceOneRound } from './season-progression';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { decode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf, worldOfSaveFile } from '../fixtures/save-file';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { currentDay } from '../../packages/engine/src/calendar';
 import { configureResponsibilities } from './events';
@@ -92,7 +93,7 @@ test('recovers prior checkpoint after active corruption without clearing another
   await saveMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
   await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  const restored = (await decode(readFileSync((await download.path())!, 'utf8'))).world;
+  const restored = await worldOfSaveFile(readFileSync((await download.path())!));
   expect({
     day: currentDay(restored),
     round: restored.round,
@@ -165,7 +166,7 @@ test('quota failure preserves disk save, exports actual memory progress and retr
   const saveMenu = await openSaveMenu(page);
   await saveMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await event;
-  const memory = (await decode(readFileSync((await download.path())!, 'utf8'))).world;
+  const memory = await worldOfSaveFile(readFileSync((await download.path())!));
   expect(memory.round).toBe(1);
   expect(memory.revision).toBe(revision);
   await page.evaluate(() => {
@@ -190,7 +191,7 @@ test('unsupported import leaves the current world and manifest intact', async ({
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'future.json',
+      name: 'future.haeram-save',
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(future)),
     });
@@ -345,9 +346,9 @@ test('a new game beside a parked game shows none of its club, cash or bands', as
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'parked-crisis.json',
+      name: 'parked-crisis.haeram-save',
       mimeType: 'application/json',
-      buffer: Buffer.from(await encode(fixture)),
+      buffer: Buffer.from(await saveFileOf(fixture)),
     });
   const alarm = page.getByTestId('cash-alarm');
   const notice = page.getByText('감독이 떠났어요.');

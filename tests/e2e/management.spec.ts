@@ -10,7 +10,7 @@ import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import { freeAgentsOf } from '../../packages/engine/src/free-agents';
 import { worldMarketOffer } from '../../packages/engine/src/world-market';
 import { recruitmentPreview } from '../../packages/engine/src/recruitment';
@@ -55,7 +55,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await exportMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const saved = await exported;
   await exportMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  const { world } = await decode(readFileSync((await saved.path())!, 'utf8'));
+  const world = await worldOfSaveFile(readFileSync((await saved.path())!));
   const initialCount = world.players.filter((p) => p.status === 'active').length;
   const released = await releasedMarketPlayer(world);
   expect(released?.available && released.freeAgent).toBe(true);
@@ -157,16 +157,15 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   const file = await download;
   await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   const raw = readFileSync((await file.path())!);
-  expect(JSON.parse(raw.toString()).codec).toBe('gzip-base64');
+  expect(raw.subarray(0, 8).toString()).toBe('HRSAVE1\n');
   await openClubhouse(page);
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');
-  await (
-    await openSaveMenu(page)
-  )
-    .locator('input[type=file]')
-    .last()
-    .setInputFiles({ name: 'career.json', mimeType: 'application/json', buffer: raw });
+  await (await openSaveMenu(page)).locator('input[type=file]').last().setInputFiles({
+    name: 'career.haeram-save',
+    mimeType: 'application/octet-stream',
+    buffer: raw,
+  });
   await expect(page.getByRole('dialog', { name: '기록 가져오기 확인' })).toBeVisible();
   await page.getByRole('button', { name: '기록 교체하고 가져오기' }).click();
   await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1931');

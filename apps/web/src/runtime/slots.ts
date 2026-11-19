@@ -208,9 +208,9 @@ export class GameSlots {
     this.pending = undefined;
     this.client.replaceOnCreate(undefined);
   }
-  async importInto(slot: number, raw: string) {
+  async importInto(slot: number, file: Uint8Array) {
     await this.prepare(slot);
-    await this.client.importFile(raw);
+    await this.client.importFile(file);
     if (this.client.state.error) {
       this.cancel();
       throw new Error(this.client.state.error);
@@ -218,20 +218,19 @@ export class GameSlots {
     this.sync(this.client.state.view?.world, true);
   }
   /**
-   * A slot's checkpoint envelope for export: the game in play's. A game not in play has none to
-   * read until export carries database files (→SAVE-9).
+   * A slot's game as a `.haeram-save` file (→SAVE-9): the game in play is saved first, any other
+   * game is exported as last saved, one of earlier or newer rules included (→SAVE-11).
    */
-  async exportRaw(slot: number) {
-    const index = this.display(this.client.state.view?.world);
-    const entry = index.slots[slot];
+  async exportFile(slot: number) {
+    const entry = this.display(this.client.state.view?.world).slots[slot];
     if (!entry) return undefined;
-    // The game in play, or an earlier-rules checkpoint kept raw in its place.
-    if (
-      this.client.state.view?.world.id === entry.worldId ||
-      (index.active === slot && this.client.earlierRules())
-    )
-      return this.client.exportFile();
-    return undefined;
+    // A world in play the index never listed is exported under the ID its database has; an entry
+    // that only names an unread earlier checkpoint has no database to export (→SAVE-29).
+    const id = entry.id === 'in-play' ? this.client.gameId : entry.id;
+    if (!id || id === 'earlier') return undefined;
+    const file = await this.client.exportGame(checkedGameId(id));
+    if (!file && this.client.state.error) throw new Error(this.client.state.error);
+    return file;
   }
   /** Deletes a slot's game; true when it was the game in play, which the app then reloads away. */
   async remove(slot: number) {

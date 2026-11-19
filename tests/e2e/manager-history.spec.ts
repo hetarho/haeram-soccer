@@ -1,9 +1,9 @@
 import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { expect, test, type Page } from '@playwright/test';
-import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { encode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import { canonical } from '../../packages/contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
-import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { seasonName } from '../../apps/web/src/presentation/format';
 import {
   managerActivationCareer,
@@ -205,8 +205,7 @@ test('starts tracking an older career at the writer, never in a read-only tab', 
     await expect(managerHistoryList(page)).toContainText(event.title);
 
   // Older facts and the known service year as they were; nothing before tracking attributed.
-  const activated = await decode(await exportRaw(page));
-  expect(activated.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
+  const activated = { world: await worldOfSaveFile(await exportRaw(page)) };
   const facts = activated.world.managerHistory!;
   expect(facts.coverage).toBe('activation');
   // The same writer load moves the career to the released revision there too (→SAVE-23).
@@ -253,14 +252,14 @@ test('starts tracking an older career at the writer, never in a read-only tab', 
       .locator('input[type=file]')
       .last()
       .setInputFiles({
-        name: 'manager-history.haeram-save.json',
-        mimeType: 'application/json',
+        name: 'manager-history.haeram-save',
+        mimeType: 'application/octet-stream',
         buffer: Buffer.from(file),
       });
     await expect(other.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
     await openManagerHistory(other);
     await expect(tenureCard(other, career.current)).toHaveText(line, { useInnerText: true });
-    expect(canonical(await exportWorld(other))).toBe(canonical((await decode(file)).world));
+    expect(canonical(await exportWorld(other))).toBe(canonical(await worldOfSaveFile(file)));
   } finally {
     await elsewhere.close();
   }
