@@ -1,9 +1,15 @@
-import { expect, it } from 'vitest';
-import { canonical } from '../../contracts/src/index';
-import { Host } from '../../../apps/web/src/runtime/host';
+import { it } from 'vitest';
+import type { Host } from '../../../apps/web/src/runtime/host';
+import { gameHost } from '../../../apps/web/src/runtime/host.testkit';
 import { retainedReplaySeed } from '../../../tests/fixtures/replay-seed';
 import { currentDay } from './index';
-import { command, facts, readAndReload } from './feature-replay.testkit';
+import {
+  command,
+  expectReplayFacts,
+  facts,
+  openWorld,
+  readAndReload,
+} from './feature-replay.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
 // The retained one is built over three and a half seasons and then crosses a season close,
@@ -21,10 +27,10 @@ for (const retained of [true])
       const seed = retainedReplaySeed();
       seed.settings!.mode = 'manual';
       seed.settings!.observations = { matchEve: true, windowOpen: false };
-      const manual = new Host(),
-        daily = new Host(),
-        batch = new Host();
-      for (const host of [manual, daily, batch]) host.world = structuredClone(seed);
+      const manual = gameHost(),
+        daily = gameHost(),
+        batch = gameHost();
+      for (const host of [manual, daily, batch]) await openWorld(host, seed);
       batch.world!.settings!.mode = 'automatic';
       for (let stop = 0; stop < 4; stop++) {
         await command(manual, { type: 'next-event' });
@@ -47,17 +53,8 @@ for (const retained of [true])
           await command(batch, { type: 'advance-days', days, stop: ['match'] });
           await readAndReload(batch);
         }
-        for (const host of [daily, batch]) {
-          const actual = JSON.parse(facts(host.world!)),
-            expected = JSON.parse(facts(manual.world!));
-          const differences = Object.keys({ ...actual, ...expected }).filter(
-            (key) => canonical(actual[key]) !== canonical(expected[key]),
-          );
-          expect(
-            differences,
-            'Complete canonical gameplay equality, differing top-level fields',
-          ).toEqual([]);
-        }
+        const expected = facts(manual.world!);
+        for (const host of [daily, batch]) expectReplayFacts(host.world!, expected);
         await readAndReload(manual);
       }
     },

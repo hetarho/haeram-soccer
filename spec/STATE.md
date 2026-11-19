@@ -72,7 +72,7 @@
 | T1017 | Events and news before last season leave memory at save | SAVE ARCH HIST | T1016 | todo |
 | T1018 | Season archives older than seven seasons leave memory at save | SAVE ARCH HIST | T1017 | todo |
 | T1022 | Save database measurements and release preparation | ARCH SAVE | T1018 T1012 | todo |
-| T1032 | Fix phase 1 gate failure | ARCH | - | todo |
+| T1032 | Fix phase 1 gate failure | ARCH | - | doing@261119.sv19 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |

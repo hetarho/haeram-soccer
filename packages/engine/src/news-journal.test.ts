@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { newsJournalSchema } from '../../contracts/src/news';
+import type { SeasonArchive } from '../../contracts/src/types';
 import {
   clubNews,
   deriveClubNews,
@@ -54,6 +55,38 @@ describe('incremental news journal', () => {
     expect(news.some((item) => item.year === 1930)).toBe(true);
     expect(w.newsJournal?.state.totalWins).toBe(6);
     expect(w.newsJournal?.state.careerGoals).toEqual([['scorer', 6]]);
+  });
+  it.each([
+    [1930, 1931],
+    [1938, 1946],
+  ])('records %i honours once when %i opens, with or without a reload', (closed, opening) => {
+    const w = facts();
+    w.year = closed;
+    initializeNewsJournal(w);
+    w.history.push({
+      year: closed,
+      rank: 1,
+      tier: 0,
+      points: 88,
+      won: 28,
+      drawn: 4,
+      lost: 6,
+      champions: [],
+      europe: [],
+    } as unknown as SeasonArchive);
+    refreshNewsJournal(w);
+    expect(newsTotal(w)).toBe(0);
+
+    const reloaded = structuredClone(w);
+    for (const world of [w, reloaded]) {
+      world.year = opening;
+      refreshNewsJournal(world);
+      refreshNewsJournal(world);
+      expect(newsPage(world)).toMatchObject([
+        { id: `${closed}:honour:league`, sequence: 1, celebrate: true },
+      ]);
+    }
+    expect(w.newsJournal).toEqual(reloaded.newsJournal);
   });
   it('rebuilds once, resumes persisted counters and never revisits already consumed matches/events', () => {
     const w = facts();

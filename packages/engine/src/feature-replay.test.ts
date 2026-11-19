@@ -12,7 +12,13 @@ import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { onPreviousRevision } from '../../../tests/fixtures/earlier-saves';
-import { command, facts, openWorld, readAndReload } from './feature-replay.testkit';
+import {
+  command,
+  expectReplayFacts,
+  facts,
+  openWorld,
+  readAndReload,
+} from './feature-replay.testkit';
 import { careerWorld } from './career.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
@@ -61,17 +67,8 @@ for (const retained of [false])
           await command(batch, { type: 'advance-days', days, stop: ['match'] });
           await readAndReload(batch);
         }
-        for (const host of [daily, batch]) {
-          const actual = JSON.parse(facts(host.world!)),
-            expected = JSON.parse(facts(manual.world!));
-          const differences = Object.keys({ ...actual, ...expected }).filter(
-            (key) => canonical(actual[key]) !== canonical(expected[key]),
-          );
-          expect(
-            differences,
-            'Complete canonical gameplay equality, differing top-level fields',
-          ).toEqual([]);
-        }
+        const expected = facts(manual.world!);
+        for (const host of [daily, batch]) expectReplayFacts(host.world!, expected);
         await readAndReload(manual);
       }
     },

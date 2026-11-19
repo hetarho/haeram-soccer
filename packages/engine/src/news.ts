@@ -3,10 +3,11 @@ import { ownMatchAt, ownMatchCount, ownMatchesFrom, ownMatchesOfSeason } from '.
 import { archivedLeaguePoints, leaguePoints } from './league-fixtures';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
-import type { Event, MatchRecord, Player, World } from '../../contracts/src/types';
+import type { Event, MatchRecord, Player, SeasonArchive, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
 import { clubOf, lastOwnSeason } from './player-state';
+import { seasonAfter } from './season-years';
 import { STYLE_INFO } from './styles';
 import { buildTitleName } from './build';
 
@@ -310,7 +311,8 @@ export function deriveClubNews(w: World): NewsItem[] {
     const item = eventNews(w, ctx.name, event, index);
     if (item) news.push(item);
   });
-  news.push(...honours(w));
+  const closed = honourSeason(w);
+  if (closed) news.push(...honours(w, closed));
   return news.sort((a, b) => b.year - a.year || b.order - a.order);
 }
 
@@ -1241,11 +1243,14 @@ function tableNews(w: World, name: string): NewsItem[] {
   return items;
 }
 
-/** Trophies of the season that just closed: the league, the domestic cup and continental cups. */
-function honours(w: World): NewsItem[] {
-  // The club's own season only: honours of the world's season before the takeover are not ours.
+/** The club's own closed season becomes eligible once the next played season opens. */
+function honourSeason(w: World) {
   const last = lastOwnSeason(w);
-  if (!last || last.year !== w.year - 1) return [];
+  return last && seasonAfter(last.year) === w.year ? last : undefined;
+}
+
+/** Trophies of the season that just closed: the league, the domestic cup and continental cups. */
+function honours(w: World, last: SeasonArchive): NewsItem[] {
   const name = clubOf(w).name,
     items: NewsItem[] = [];
   const base = (kind: string) => ({
@@ -1752,7 +1757,8 @@ export function refreshNewsJournal(w: World) {
   const j = w.newsJournal;
   if (!j) return;
   const table = `${w.year}:${w.round}:${w.rankHistory?.length ?? 0}`;
-  const honour = w.history.at(-1)?.year;
+  const closed = honourSeason(w);
+  const honour = closed?.year;
   const sources = journalSources.get(j);
   if (
     j.matches === ownMatchCount(w) &&
@@ -1800,8 +1806,8 @@ export function refreshNewsJournal(w: World) {
   // These reads are bounded to the retained round window and the last season's honour row.
   if (sources?.table !== table)
     for (const item of tableNews(w, ctx.name)) appendHeadline(w, j, item);
-  if (!sources || sources.honour !== honour)
-    for (const item of honours(w)) appendHeadline(w, j, item);
+  if (closed && sources?.honour !== honour)
+    for (const item of honours(w, closed)) appendHeadline(w, j, item);
   journalSources.set(j, { table, honour });
   journalContexts.set(j, ctx);
   j.state = newsState(ctx);
