@@ -645,8 +645,8 @@
       "branch": "gusta-session-start-x10-d3a275d5",
       "head": "51fbe90e7a69bd5070fc660d0c6df23b78b3a0ab",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-19T06:47:55.954Z",
+      "status": "paused",
+      "at": "2026-11-19T06:47:59.757Z",
       "agentChecks": [
         {
           "id": "T993-save-integration",
