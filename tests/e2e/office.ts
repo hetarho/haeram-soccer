@@ -403,17 +403,28 @@ export async function openTeamWork(
 
 /**
  * Opens first-team training (→WEB-39/116): the office's growth value lists the training focus among
- * its factors, and the focus opens the training page.
+ * its factors, and the focus opens the training page; while the calendar runs, 코치진 leads there.
  */
 export async function openTraining(page: Page) {
   const focus = page.getByTestId('training-focus');
   if (new URL(page.url()).pathname === '/training' && (await focus.isVisible())) return;
   const office = await openOfficePage(page);
-  await office.locator('[data-effect="growth"]').click();
-  await page
-    .getByTestId('effect-factors')
-    .getByRole('button', { name: /^훈련 방향/ })
-    .click();
+  const growth = office.locator('[data-effect="growth"]');
+  if (await growth.isVisible()) {
+    await growth.click();
+    await page
+      .getByTestId('effect-factors')
+      .getByRole('button', { name: /^훈련 방향/ })
+      .click();
+  } else {
+    // While the calendar runs the office's effects wait for a stopped clock (→WEB-119); the
+    // first-team coach's post in 코치진 opens training as well (→WEB-43/70).
+    await openTeamWork(page, '코치진');
+    await page
+      .locator('li[data-role="assistant"]')
+      .getByRole('button', { name: '훈련에서 보기', exact: true })
+      .click();
+  }
   await expect(page).toHaveURL((url) => url.pathname === '/training');
   await expect(focus).toBeVisible();
 }
