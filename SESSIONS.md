@@ -197,6 +197,7 @@
 - 261119 decided WEB-14 T1037: 시설 화면의 진입과 표시 → 시설별 수동 견적 카드에 체크 상태와 수동·자금 대기 이유를 두고, 1군 훈련 페이지와 유소년 페이지는 해당 카드로 연결합니다. 대안은 각 팀 페이지에 별도 편집기 또는 별도 설정 화면을 두는 방식입니다. 어느 진입점에서나 동일한 구단 상태와 견적을 읽도록 합니다.
 
 ## log
+- 261119 Planning verification pass in 108835 ms: typecheck, lint, format, i18n (12 locales); affected unit selection empty for spec-only changes. Spec lint has one pre-existing warning. Browser acceptance remains host-owned.
 - 261119 gusta-create-task T1033 T1034 T1035 T1036 T1037: saved state, copy, command, settlement and UI
 - 261119 gusta-create-task ECON CLUB WEB SAVE start
 - 261119 gusta-update-ssot ECON@65 CLUB@84 WEB@225 SAVE@73: facility continuation, paid starts and save states
@@ -216,4 +217,3 @@
 - 261119 T1013 done
 - 261119 T1012 done
 - 261119 T1011 done
-- 261119 T1010 done
