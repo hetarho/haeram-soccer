@@ -68,7 +68,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1038 | Fix CI failure | ARCH SAVE | - | todo |
+| T1038 | Fix CI failure | ARCH SAVE | - | doing@261119.tk19 |
 | T1033 | Persist per-facility continuation state | ECON SAVE WEB | - | todo |
 | T1034 | Localize facility continuation controls and status | ARCH ECON WEB | - | todo |
 | T1035 | Route owner facility continuation commands | ARCH ECON SAVE WEB | T1033 T1034 | todo |
