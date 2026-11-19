@@ -4,7 +4,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
-import { committedRaw, openRecordedMatch } from './club-identity-helpers';
+import { openRecordedMatch } from './club-identity-helpers';
 import {
   GOAL_FEEDBACK_CONFIG,
   goalInstants,
@@ -31,9 +31,15 @@ function goalWorld() {
   return world;
 }
 
+/**
+ * What the page has committed: its save status once every revision is on disk, which names the
+ * revision, so an equal status means no save has run since. The theatre has no settings menu to
+ * export from.
+ */
 async function savedRaw(page: Page) {
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  return (await committedRaw(page))!;
+  const status = page.getByTestId('save-status');
+  await expect(status).toContainText('저장 완료');
+  return (await status.textContent())!;
 }
 
 /** Counts every GOAL cue the page mounts, so a celebration repeated on return would show. */

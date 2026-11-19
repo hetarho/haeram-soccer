@@ -28,24 +28,6 @@ import { createGameStore, NOTIFICATIONS_KEY, type SystemNotification } from './s
 import { START } from './host.testkit';
 import { divisionName } from '../presentation/competitionLabels';
 
-vi.mock('../adapters/previousStore', () => ({
-  IndexedDbCheckpointKey: class {
-    static available() {
-      return true;
-    }
-    constructor(private key: 'active' | 'previous') {}
-    async read() {
-      return storage.getItem('indexed:' + this.key);
-    }
-    async write(raw: string) {
-      storage.setItem('indexed:' + this.key, raw);
-    }
-    async clear() {
-      storage.removeItem('indexed:' + this.key);
-    }
-  },
-}));
-
 class MemoryStorage implements StoragePort {
   data = new Map<string, string>();
   fail = '';
@@ -941,11 +923,7 @@ describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => 
     expect(generated?.ok).toBe(true);
     // Nothing is in play or saved until the takeover (→WORLD-13).
     expect(client.state.view).toBeUndefined();
-    expect(
-      ['indexed:active', 'indexed:previous', 'haeram-soccor:manifest'].map((key) =>
-        storage.getItem(key),
-      ),
-    ).toEqual([null, null, null]);
+    expect(storage.getItem('haeram-soccor:games')).toBeNull();
     const start = client.state.start!;
     expect(start.choice).toEqual(choice);
     expect(BigInt(start.fortune!)).toBeGreaterThan(0n);

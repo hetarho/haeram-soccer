@@ -265,7 +265,13 @@ test('a page that closed with the clock running plays the time away on return an
   // The owner left the clock running at x1 and came back ten minutes later; the away limit is
   // a month, so 30 of the 600 owed days are played.
   const worldId = await page.evaluate(
-    () => JSON.parse(localStorage.getItem('haeram-soccor:manifest')!).worldId as string,
+    () =>
+      (
+        JSON.parse(localStorage.getItem('haeram-soccor:games')!) as {
+          slots: ({ worldId: string } | null)[];
+          active: number;
+        }
+      ).slots[0]!.worldId,
   );
   // Written as the next page starts, after the leaving page stored its own (stopped) clock.
   await page.addInitScript((worldId) => {

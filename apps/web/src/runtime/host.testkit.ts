@@ -98,8 +98,12 @@ export function gameHost(options: NonNullable<ConstructorParameters<typeof Host>
  * game in play: validated, with the writer's upgrade committed at once (→SAVE-5, →SAVE-10).
  */
 export async function loadWorld(host: Host, id: string, world: World, gameId = 'game') {
-  await gamesOf.get(host)!.bytes.write(gameId, worldDatabase(world));
+  await installWorld(host, world, gameId);
   return host.handle(req(id, -1, { type: 'open-game', gameId }));
+}
+/** Writes `world` as a game's database in a `gameHost`'s files, for the caller to open. */
+export async function installWorld(host: Host, world: World, gameId = 'game') {
+  await gamesOf.get(host)!.bytes.write(gameId, worldDatabase(world));
 }
 /** The world a `gameHost`'s game database holds now, read back as a game opens. */
 export function savedWorld(host: Host, gameId = 'game'): World {

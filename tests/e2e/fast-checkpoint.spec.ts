@@ -2,9 +2,9 @@ import { expect, test } from '@playwright/test';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { PORTABLE_FILE_LIMIT } from '../../apps/web/src/adapters/repository';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { committedRaw } from './club-identity-helpers';
+import { exportRaw } from './club-identity-helpers';
 
 // Synthetic note details make a >3 MiB checkpoint while keeping the gzip file below 8 MiB.
 test('saves and reloads a larger portable gzip checkpoint through IndexedDB', async ({ page }) => {
@@ -32,18 +32,15 @@ test('saves and reloads a larger portable gzip checkpoint through IndexedDB', as
   initializeReadModels(w);
   await importResponsibilityCareer(page, w);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료', { timeout: 90000 });
-  const raw = await committedRaw(page);
-  if (raw === null) throw new Error('저장된 체크포인트가 없습니다.');
-  expect(raw.length * 2).toBeGreaterThan(3 * 1024 * 1024);
-  expect(Buffer.byteLength(raw)).toBeLessThan(PORTABLE_FILE_LIMIT);
-  expect(JSON.parse(raw).codec).toBe('gzip-base64');
-  const saved = (await decode(raw)).world;
+  const file = await exportRaw(page);
+  expect(file.length).toBeGreaterThan(1024 * 1024);
+  expect(file.length).toBeLessThan(PORTABLE_FILE_LIMIT);
+  expect(new TextDecoder().decode(file.subarray(0, 8))).toBe('HRSAVE1\n');
+  const saved = await worldOfSaveFile(file);
   expect(saved.events).toEqual(w.events);
   expect(saved.newsJournal).toEqual(w.newsJournal);
   expect(saved.careerReads).toEqual(w.careerReads);
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 90000 });
-  const reloaded = await committedRaw(page);
-  if (reloaded === null) throw new Error('재로딩한 체크포인트가 없습니다.');
-  expect((await decode(reloaded)).world.events).toEqual(w.events);
+  expect((await worldOfSaveFile(await exportRaw(page))).events).toEqual(w.events);
 });

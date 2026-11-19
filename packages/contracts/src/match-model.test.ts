@@ -66,7 +66,6 @@ describe('match-model metadata (→SAVE-23)', () => {
     expect(matchModelStateSchema.safeParse({ ...state, revision: future }).success).toBe(false);
     expect(matchModelStateSchema.safeParse({ ...state, extra: 1 }).success).toBe(false);
   });
-
 });
 
 describe('the match-time coordinate (→MATCH-12)', () => {

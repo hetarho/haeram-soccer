@@ -377,52 +377,22 @@ try {
     () => document.documentElement.scrollWidth > innerWidth,
   );
   await mobile.context.close();
-  const raw = readFileSync('.tmp/release-century.haeram-save.json', 'utf8'),
-    envelope = JSON.parse(raw);
-  const centuryCheckpointSha256 = createHash('sha256').update(raw).digest('hex');
+  const file = readFileSync('.tmp/release-century.haeram-save');
+  const centuryCheckpointSha256 = createHash('sha256').update(file).digest('hex');
   if (centuryCheckpointSha256 !== storageReport.centuryCheckpointSha256)
-    throw new Error('Century checkpoint differs from the verified storage artifact');
+    throw new Error('Century save file differs from the verified storage artifact');
   const restoreContext = await browser.newContext();
   const restored = await restoreContext.newPage();
-  await restored.goto(`${origin}/404.html`);
-  await restored.evaluate(
-    ({ raw, envelope }) =>
-      new Promise((resolve, reject) => {
-        const open = indexedDB.open('haeram-soccor', 2);
-        open.onupgradeneeded = () => {
-          for (const name of ['games', 'checkpoints'])
-            if (!open.result.objectStoreNames.contains(name)) open.result.createObjectStore(name);
-        };
-        open.onerror = () => reject(open.error);
-        open.onsuccess = () => {
-          const db = open.result,
-            tx = db.transaction('checkpoints', 'readwrite');
-          tx.objectStore('checkpoints').put(raw, 'active');
-          tx.oncomplete = () => {
-            db.close();
-            localStorage.setItem(
-              'haeram-soccor:manifest',
-              JSON.stringify({
-                worldId: envelope.worldId,
-                generation: envelope.generation,
-                parentGeneration: envelope.parentGeneration,
-              }),
-            );
-            resolve();
-          };
-          tx.onerror = tx.onabort = () => {
-            db.close();
-            reject(tx.error);
-          };
-        };
-      }),
-    { raw, envelope },
-  );
+  await restored.goto(`${origin}/`);
   restored.on('pageerror', (error) => errors.push(error.message));
+  // Importing the century game's file opens it as the game in play (→SAVE-9, →SAVE-14), so this
+  // measures validating and loading the century career itself.
   const t = performance.now();
-  // An in-game address continues the game in play without the slot screen (→WEB-62), so this
-  // measures loading the century career itself.
-  await restored.goto(`${origin}/journal`);
+  await restored.getByLabel('기록 파일 가져오기').setInputFiles({
+    name: 'century.haeram-save',
+    mimeType: 'application/octet-stream',
+    buffer: file,
+  });
   // The century checkpoint is 100 seasons after the 1950 founding: the progress controls' calendar
   // names its season (the date line reads 2050년 8월 1일 since the controls were compacted).
   await expect(restored.locator('[data-testid="calendar"][data-season]')).toHaveAttribute(

@@ -62,7 +62,6 @@ it('feature-state-lossless-roundtrip and continued-career-parity preserve roles,
   expect(canonical(roundTrip(restored))).toBe(canonical(original));
 });
 
-
 describe('a taken-over career (→SAVE-27)', () => {
   it('round-trips the owner, the takeover loan, every club’s books and the seasons before the owner', () => {
     // The world after its 1930/31 season, nobody's yet: every league club keeps books and the

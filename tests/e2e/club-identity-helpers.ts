@@ -1,7 +1,7 @@
 import { openClubhouse, openClubRecords } from './competition-navigation';
 import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { canonical } from '../../packages/contracts/src/index';
 import { worldOfSaveFile } from '../fixtures/save-file';
 import type { DesignStudio, KitRole } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
@@ -27,7 +27,6 @@ export const PHONE_VIEWPORTS = [
 export const KIT_LABEL: Record<KitRole, string> = { home: '홈', away: '어웨이', third: '세컨' };
 /** `SAVE_DATA_UPDATED` of runtime/client.ts, the writer's notice after an adoption is committed. */
 export const SAVE_DATA_UPDATED = '기존 기록을 보존하고 저장 데이터를 현재 형식으로 갱신했어요.';
-const MANIFEST = 'haeram-soccor:manifest';
 
 export const ownClub = (w: World) => w.clubs.find((club) => club.id === w.playerClub)!;
 export const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
@@ -76,52 +75,17 @@ export const closeNotices = (inbox: Locator) =>
 export const notice = (inbox: Locator, text: string) =>
   inbox.getByRole('listitem').filter({ hasText: text });
 
-/** The game in play's IndexedDB active checkpoint. */
-export const committedRaw = (page: Page) => idbGet(page, 'checkpoints', 'active');
+/** The game in play as a `.haeram-save` file: the export saves it first, so it is what is committed. */
+export const committedRaw = exportRaw;
+/** The canonical text of the game in play as exported, to compare what was saved at two moments. */
+export async function savedFacts(page: Page) {
+  return canonical(await exportWorld(page));
+}
 /** The committed world, once the save status says every revision is on disk. */
 export async function savedWorld(page: Page) {
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  return (await decode((await committedRaw(page))!)).world;
+  return exportWorld(page);
 }
-
-export { idbGet, idbPut, seedCheckpoints } from './checkpoint-storage';
-import { idbGet } from './checkpoint-storage';
-/** Active, commit manifest and verified IndexedDB predecessor. */
-export async function checkpointStorage(page: Page) {
-  return {
-    active: await idbGet(page, 'checkpoints', 'active'),
-    manifest: await page.evaluate((key) => localStorage.getItem(key), MANIFEST),
-    previous: await idbGet(page, 'checkpoints', 'previous'),
-  };
-}
-const FAIL_FLAG = 'haeram-test:fail-writes';
-/**
- * Makes this page's writes of the active checkpoint, IndexedDB `checkpoints/active` (→SAVE-3),
- * throw a quota error whenever the flag `failWrites` sets is on; the flag lives in sessionStorage,
- * so it holds across navigations.
- */
-export async function failableWrites(page: Page) {
-  await page.addInitScript(
-    ({ flag }) => {
-      const put = IDBObjectStore.prototype.put;
-      IDBObjectStore.prototype.put = function (
-        this: IDBObjectStore,
-        value: unknown,
-        key?: IDBValidKey,
-      ) {
-        if (this.name === 'checkpoints' && key === 'active' && sessionStorage.getItem(flag) === '1')
-          throw new DOMException('Synthetic quota failure', 'QuotaExceededError');
-        return put.call(this, value, key);
-      };
-    },
-    { flag: FAIL_FLAG },
-  );
-}
-export const failWrites = (page: Page, on: boolean) =>
-  page.evaluate(
-    ({ flag, on }) => (on ? sessionStorage.setItem(flag, '1') : sessionStorage.removeItem(flag)),
-    { flag: FAIL_FLAG, on },
-  );
 
 interface IdentityProbe {
   sent: Record<string, number>;

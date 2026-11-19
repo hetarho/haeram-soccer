@@ -13,7 +13,6 @@ describe('gzip compression of a game file', () => {
   it('stops decompressing at the limit', async () => {
     const limit = 64 * 1024;
     const over = new Uint8Array(limit + 1);
-    await expect(gzip(over, true, limit)).rejects.toThrow('한도');
     const bomb = new Uint8Array(gzipSync(over));
     await expect(gzip(bomb, false, limit)).rejects.toThrow('한도');
     expect((await gzip(bomb, false, limit + 1)).length).toBe(limit + 1);

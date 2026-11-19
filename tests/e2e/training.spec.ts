@@ -1,10 +1,9 @@
-import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
 import { teamEntry } from './office';
 import { STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import {
   activePlayers,
   autoTrainingAdvice,
@@ -14,7 +13,6 @@ import {
   overall,
   trainingFocusInfo,
 } from '../../packages/engine/src/index';
-import { encode } from '../../apps/web/src/adapters/persistence';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import type { TrainingFocus, World } from '../../packages/contracts/src/types';
 import { expectHomeBounds } from './layout';
@@ -25,7 +23,7 @@ import {
   matchReport,
   setResponsibility,
 } from './events';
-import { continueSlot } from './slots';
+import { continueSlot, seedSlot } from './slots';
 import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
 import { generateHistory } from '../../packages/engine/src/history';
 import { takeOver } from '../../packages/engine/src/takeover';
@@ -40,8 +38,7 @@ const FOCUS: Record<TrainingFocus, string> = {
 
 /** Puts a world in slot 1, to continue from the slot screen. */
 async function seed(page: Page, w: World) {
-  const raw = await encode(w, 1, 0);
-  await seedRawCheckpoint(page, raw);
+  await seedSlot(page, w);
 }
 const founded = (seed: string) => careerWorld({ country: 'ENG', seed });
 
@@ -51,9 +48,9 @@ async function exportWorld(page: Page): Promise<World> {
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
-  const raw = await readFile((await download.path())!, 'utf8');
+  const file = await readFile((await download.path())!);
   await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  return (await decode(raw)).world;
+  return worldOfSaveFile(file);
 }
 
 function abilities(w: World) {

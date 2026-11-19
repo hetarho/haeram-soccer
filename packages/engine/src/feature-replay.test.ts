@@ -4,7 +4,7 @@ import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
 import type { World } from '../../contracts/src/types';
 import { Host } from '../../../apps/web/src/runtime/host';
 import type { Body } from '../../../apps/web/src/runtime/protocol';
-import { gameHost, loadWorld } from '../../../apps/web/src/runtime/host.testkit';
+import { gameHost, installWorld } from '../../../apps/web/src/runtime/host.testkit';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { currentDay, advanceDays } from './index';
@@ -12,7 +12,7 @@ import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { onPreviousRevision } from '../../../tests/fixtures/earlier-saves';
-import { command, facts, readAndReload } from './feature-replay.testkit';
+import { command, facts, openWorld, readAndReload } from './feature-replay.testkit';
 import { careerWorld } from './career.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
@@ -38,7 +38,7 @@ for (const retained of [false])
       const manual = gameHost(),
         daily = gameHost(),
         batch = gameHost();
-      for (const host of [manual, daily, batch]) host.world = structuredClone(seed);
+      for (const host of [manual, daily, batch]) await openWorld(host, seed);
       batch.world!.settings!.mode = 'automatic';
       for (let stop = 0; stop < 4; stop++) {
         await command(manual, { type: 'next-event' });
@@ -81,7 +81,6 @@ for (const retained of [false])
 describe("a career on the revision before today's (→SAVE-23, HIST-17)", () => {
   const founding = { country: 'ENG' as const, seed: 'feature-replay' };
   let serial = 0;
-  let loads = 0;
   async function send(host: Host, body: Body) {
     const reply = await host.handle({
       protocol: 1,
@@ -93,7 +92,10 @@ describe("a career on the revision before today's (→SAVE-23, HIST-17)", () => 
     expect(reply.ok, reply.error).toBe(true);
     return reply;
   }
-  const load = (host: Host, world: World) => loadWorld(host, `load-${++loads}`, world);
+  const load = async (host: Host, world: World) => {
+    await installWorld(host, world);
+    return send(host, { type: 'open-game', gameId: 'game' });
+  };
   /**
    * A supported career three rounds in, saved by the game before this one (its labels name the
    * revision before today's, →SAVE-23), then moved on by its writer and played to an own result.

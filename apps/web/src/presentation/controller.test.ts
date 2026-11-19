@@ -79,7 +79,7 @@ function setup(
   });
   const storage = new Map<string, string>([
     ['haeram-soccor:presentation', JSON.stringify(saved)],
-    ['haeram-soccor:manifest', 'unchanged checkpoint manifest'],
+    ['haeram-soccor:games', 'unchanged game index'],
   ]);
   const writes = vi.fn((key: string, value: string) => {
     storage.set(key, value);
@@ -514,7 +514,7 @@ describe('one presentation controller', () => {
     await controller.initialize();
     await controller.select({ localeId: 'en-US', themeId: 'synthetic-two' });
     expect(writes.mock.calls.every(([key]) => key === 'haeram-soccor:presentation')).toBe(true);
-    expect(storage.get('haeram-soccor:manifest')).toBe('unchanged checkpoint manifest');
+    expect(storage.get('haeram-soccor:games')).toBe('unchanged game index');
     expect(storage.get('haeram-soccor:slot:a')).toBe(storedProse);
     // No game client, ownership, world or progression port is needed to make a selection.
     expect(controller.getSnapshot().locale?.id).toBe('en-US');

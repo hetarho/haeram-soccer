@@ -29,9 +29,7 @@ import {
   type MatchModelState,
 } from '../../../../packages/contracts/src/match-model';
 import type { KitRole } from '../../../../packages/contracts/src/identity';
-import {
-  PRIOR_CATALOG_HASHES,
-} from '../../../../packages/contracts/src/versions';
+import { PRIOR_CATALOG_HASHES } from '../../../../packages/contracts/src/versions';
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
 import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
@@ -638,7 +636,9 @@ describe('durable milestone projection', () => {
     expect(won).toBe(true);
     expect(losses).toBe(30);
     for (let i = 0; i < 160; i++) addEvent(world, 'fixture-note', '기록 보관', '후속 기록');
-    const reply = await host.handle(req('milestone-read', world.revision, { type: 'command', command: { type: 'read-inbox' } }));
+    const reply = await host.handle(
+      req('milestone-read', world.revision, { type: 'command', command: { type: 'read-inbox' } }),
+    );
     expect(reply.ok).toBe(true);
     expect(reply.view!.world.ownMatches).toHaveLength(30);
     expect(

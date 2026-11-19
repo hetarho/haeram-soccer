@@ -1,7 +1,6 @@
 import { contractRenewalChance } from '../../packages/engine/src/contracts';
 import { message } from '../../packages/contracts/src/messages';
 import { approvalQueue } from './office';
-import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
@@ -11,11 +10,11 @@ import {
   talksRound,
   UNHAPPY_CONFIG,
 } from '../../packages/engine/src/index';
-import { encode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf } from '../fixtures/save-roundtrip';
 import { contractTalkCareer } from './responsibility-fixtures';
 import { eventCard, reviewInOffice } from './events';
 import { openClubhouse } from './competition-navigation';
-import { continueSlot } from './slots';
+import { continueSlot, seedSaveFile } from './slots';
 import { savedWorld } from './club-identity-helpers';
 import { importLegacyDirection } from './legacy-direction';
 
@@ -33,13 +32,13 @@ async function talking() {
   for (const item of w.inbox ?? []) if (item.kind !== 'contract-talk') item.read = true;
   return {
     renewal: contractRenewalChance(w, player, player.talk!),
-    raw: await encode(w, 1, 0),
+    file: await saveFileOf(w),
     name: player.name,
     dueDay: currentDay(w) + UNHAPPY_CONFIG.requestDays,
   };
 }
-async function seed(page: Page, raw: string) {
-  await seedRawCheckpoint(page, raw);
+async function seed(page: Page, file: Uint8Array) {
+  await seedSaveFile(page, file);
 }
 
 test('declines a contract talk: the badge, then the transfer request', async ({
@@ -52,8 +51,8 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // 1 January. On the takeover the journey reached its last check as the slow 90 s ran out
   // (dfa39857's Chromium run), so it has the 180 s of the other journeys that live a season first.
   test.setTimeout(180_000);
-  const { raw, name, dueDay, renewal } = await talking();
-  await seed(page, raw);
+  const { file, name, dueDay, renewal } = await talking();
+  await seed(page, file);
   await page.goto('/');
   await continueSlot(page);
   const card = eventCard(page);

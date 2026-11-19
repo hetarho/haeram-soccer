@@ -1102,8 +1102,7 @@ export class Host {
         throw new Error(sourceMessage('copy.host.724fb562f2'));
       if (this.world?.receiptIds.includes(r.requestId))
         throw new Error(sourceMessage('copy.host.e7fd0c8c21'));
-      let playback: MatchPlayback | undefined,
-        start: Reply['start'];
+      let playback: MatchPlayback | undefined, start: Reply['start'];
       let changed = false;
       this.cancelled = false;
       if (r.body.type === 'generate') {

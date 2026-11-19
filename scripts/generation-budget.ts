@@ -229,30 +229,11 @@ const MARKS = `
     shownCard = card;
   }).observe(document, { childList: true, subtree: true });`;
 
-/** The committed checkpoint of the game in play (→SAVE-3), read back from IndexedDB. */
-const ACTIVE_CHECKPOINT = `new Promise((resolve, reject) => {
-  const open = indexedDB.open('haeram-soccor');
-  open.onerror = () => reject(open.error);
-  open.onsuccess = () => {
-    const request = open.result.transaction('checkpoints').objectStore('checkpoints').get('active');
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => {
-      const raw = request.result;
-      open.result.close();
-      const envelope = JSON.parse(raw);
-      const payload = typeof envelope.payload === 'string' ? envelope.payload : '';
-      resolve({
-        utf16Units: raw.length,
-        conservativeUtf16Bytes: (raw.length + 'active'.length) * 2,
-        utf8Bytes: new TextEncoder().encode(raw).length,
-        payloadUnits: payload.length,
-        codec: envelope.codec,
-        generation: envelope.generation,
-        fields: Object.keys(envelope),
-      });
-    };
-  };
-})`;
+/**
+ * What the origin's storage holds once the first save has committed (→SAVE-3): the game database
+ * in OPFS, as the browser's own estimate of its usage.
+ */
+const SAVED_STORAGE = `navigator.storage.estimate().then(({ usage }) => ({ storageUsageBytes: usage ?? 0 }))`;
 
 async function run(
   browser: Awaited<ReturnType<typeof chromium.launch>>,
@@ -381,8 +362,8 @@ async function run(
     const savedMs = Math.round(performance.now() - takeoverStart);
     sampling = false;
     await sampler;
-    const checkpoint = (await page.evaluate(ACTIVE_CHECKPOINT)) as {
-      conservativeUtf16Bytes: number;
+    const checkpoint = (await page.evaluate(SAVED_STORAGE)) as {
+      storageUsageBytes: number;
     };
     const worker = [...workers.workers.values()].map(({ url, throttle }) => ({ url, throttle }));
 
@@ -462,7 +443,7 @@ async function run(
       `${decade} ${mode}: generation ${(generationMs / 1000).toFixed(1)} s` +
         ` (worker ${((result.workerGenerationMs ?? 0) / 1000).toFixed(1)} s, renderer CPU ${(generationCpuMs / 1000).toFixed(1)} s, ${seasons.length} seasons),` +
         ` renderer peak ${result.memory.peakRendererRssMiB} MiB, worker heap ${result.memory.peakWorkerHeapMiB} MiB,` +
-        ` checkpoint ${checkpoint.conservativeUtf16Bytes} B UTF-16,` +
+        ` storage ${checkpoint.storageUsageBytes} B,` +
         ` takeover saved ${(savedMs / 1000).toFixed(1)} s; workers ${worker.map((item) => item.throttle).join(', ')}`,
     );
     return result;
