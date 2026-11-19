@@ -1444,7 +1444,7 @@
       "host": "ihaelam-ui-MacBookPro.local",
       "pid": 28897
     },
-    "phase": "checking",
+    "phase": "failed",
     "land": "main",
     "base": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
     "cohort": [
@@ -1615,16 +1615,314 @@
     "at": "2026-11-19T16:07:36.295Z",
     "deadline": "2026-11-19T17:07:24.995Z",
     "candidate": "1b88214d718614dcbff5f957716f70912fbffc64",
-    "checks": [],
-    "agentChecks": [],
-    "rounds": [],
+    "checks": [
+      {
+        "command": "verification-plan:scripts/verification-plan.json",
+        "schemaVersion": 1,
+        "ok": false,
+        "exitCode": 1,
+        "cached": false,
+        "timedOut": false,
+        "cancelled": false,
+        "stale": false,
+        "ms": 831908,
+        "scope": {
+          "TIER": "batch",
+          "DIFF_BASE": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
+          "TASK": "",
+          "TASKS": ""
+        },
+        "commit": "1b88214d718614dcbff5f957716f70912fbffc64",
+        "tree": "22a38db9ef9c34fd0dabff8ae90c9b0dc0f97d1a",
+        "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-2344f20b-0302-4c24-a50d-4b46ce988947.log",
+        "tail": [
+          "      Tests  1 failed | 4491 passed | 3 skipped (4495)",
+          "   Start at  01:08:26",
+          "   Duration  796.17s (tests 96%, import 3%, transform 1%)",
+          "",
+          "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/vitest-results.json",
+          "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":31783,\"started\":\"2026-11-19T16:08:25.266Z\",\"exitCode\":1,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-19T16:21:42.400Z\",\"elapsedMs\":797131,\"commandExitCode\":1,\"afterExitCode\":1}",
+          "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/report.json\"}",
+          " ELIFECYCLE  Command failed with exit code 1."
+        ],
+        "failedTests": [
+          "× is every package version and the rules a world plays 4ms",
+          "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
+        ],
+        "plan": {
+          "source": "scripts/verification-plan.json",
+          "checks": [
+            "verify-batch"
+          ]
+        },
+        "checks": [
+          {
+            "id": "verify-batch",
+            "command": "pnpm run verify:batch",
+            "inputs": [
+              "*.json",
+              "*.mjs",
+              "*.toml",
+              "*.ts",
+              "*.yaml",
+              ".github",
+              ".gitignore",
+              ".node-version",
+              ".prettierignore",
+              "apps",
+              "artifacts",
+              "packages",
+              "patches",
+              "scripts",
+              "tests"
+            ],
+            "inputFingerprint": "4f1f578e39557d190b09c00fda939f5fcba170b68dbaf2c85277a6dd871efc9b",
+            "executionFingerprint": "07ffb54cf0816dd7061414cd3bacd97128d03d53b0241d13e44d6d532260f395",
+            "ok": false,
+            "status": "failed",
+            "exitCode": 1,
+            "cached": false,
+            "timedOut": false,
+            "cancelled": false,
+            "stale": false,
+            "ms": 831537,
+            "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-2344f20b-0302-4c24-a50d-4b46ce988947.log",
+            "failedTests": [
+              "× is every package version and the rules a world plays 4ms",
+              "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
+            ],
+            "tail": [
+              "      Tests  1 failed | 4491 passed | 3 skipped (4495)",
+              "   Start at  01:08:26",
+              "   Duration  796.17s (tests 96%, import 3%, transform 1%)",
+              "",
+              "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/vitest-results.json",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":31783,\"started\":\"2026-11-19T16:08:25.266Z\",\"exitCode\":1,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-19T16:21:42.400Z\",\"elapsedMs\":797131,\"commandExitCode\":1,\"afterExitCode\":1}",
+              "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/report.json\"}",
+              " ELIFECYCLE  Command failed with exit code 1."
+            ],
+            "cleanup": {
+              "scope": "process-group",
+              "signalled": false,
+              "escalated": false
+            }
+          }
+        ],
+        "failedCheckIds": [
+          "verify-batch"
+        ],
+        "cleanup": {
+          "scope": "process-group",
+          "signalled": false,
+          "escalated": false
+        }
+      }
+    ],
+    "agentChecks": [
+      {
+        "id": "T1017-shared-final-gate",
+        "scenario": "The shared final batch gate and the CI browser journeys run on the integrated candidate that holds T1017's events/news cold movers",
+        "steps": [
+          "Run pnpm run verify:batch on the integrated candidate, including worldRows.world.test.ts and host.database.test.ts",
+          "Push and let the CI Chromium shards run every browser journey"
+        ],
+        "expected": "The batch gate and every Chromium journey pass; news, archive and transfer-ledger reads behave the same after a save that moves earlier seasons' events and news buckets cold",
+        "observed": "Not run in this unit. Task-tier checks passed (190 files, 1840 tests). The integration files coldPeople (2/2), host.archive, newsJournal, host, saveRoundTrip and seasonBackup.host (5 files, 59 tests) also passed locally.",
+        "evidence": [
+          "vibe check --tier task --diff-base c727840a4e05add8f6052a8487949d234d93578c --task T1017: ok",
+          "pnpm exec vitest run --project integration apps/web/src/runtime/coldPeople.integration.test.ts: 2 passed",
+          "pnpm exec vitest run --project integration host.archive/newsJournal/host/saveRoundTrip/seasonBackup.host: 5 files, 59 tests passed"
+        ],
+        "status": "not-run",
+        "reason": "Builds, the batch gate, the remaining integration suites and the browser journeys are left to the shared final gate and to CI under ARCH-30",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1018-saved-run-equals-unsaved",
+        "scenario": "A career spanning more than eight archived seasons, saved with cold moves every day for a season, equals the unsaved run",
+        "steps": [
+          "Run `pnpm exec vitest run --project integration apps/web/src/runtime/coldPeople.integration.test.ts`"
+        ],
+        "expected": "worldFacts(saved) equals canonical(reference), historyBase is above 1, and the archive reads match",
+        "observed": "Test Files 1 passed, Tests 2 passed, duration 254.58 s. It ran on the tree before the one-line player-records fix.",
+        "evidence": [
+          "apps/web/src/runtime/coldPeople.integration.test.ts"
+        ],
+        "status": "pass",
+        "reason": "Affected integration file actually run locally",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "implementer",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1018-season-archives",
+        "scenario": "Season list and archive detail remain identical after a cold save.",
+        "steps": [
+          "On the host's fixed integration candidate, inspect a career with more than eight archived seasons before and after saving; open an older season's archive detail."
+        ],
+        "expected": "The season list and retained archive detail match before and after the cold move.",
+        "observed": "Not observed in this tool-less unit.",
+        "evidence": [
+          "Unit checks passed; the earlier integration run passed before the final player-records fix and must be rerun on the combined candidate."
+        ],
+        "status": "not-run",
+        "reason": "Computer-use acceptance is assigned to the capable host at the integration gate.",
+        "replaces": [],
+        "stage": "integration",
+        "required": false,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1022-integration-batch",
+        "scenario": "Final batch gate (verify:batch) and Chromium CI shards on the 0.8.16 release candidate.",
+        "steps": [
+          "Sync main, then run pnpm run verify:batch on the candidate.",
+          "After the push, let CI run the three Chromium shards."
+        ],
+        "expected": "Batch checks and browser journeys pass on the candidate.",
+        "observed": "Not run in this unit; only task-tier checks (typecheck, lint, format, i18n, affected unit tests: 219 files, 2051 tests) ran and passed.",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "Builds, integration and full suites belong to the shared final gate; this unit has no integration tool.",
+        "replaces": [],
+        "stage": "integration",
+        "required": true,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      }
+    ],
+    "rounds": [
+      {
+        "candidate": "1b88214d718614dcbff5f957716f70912fbffc64",
+        "checks": [
+          {
+            "command": "verification-plan:scripts/verification-plan.json",
+            "schemaVersion": 1,
+            "ok": false,
+            "exitCode": 1,
+            "cached": false,
+            "timedOut": false,
+            "cancelled": false,
+            "stale": false,
+            "ms": 831908,
+            "scope": {
+              "TIER": "batch",
+              "DIFF_BASE": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
+              "TASK": "",
+              "TASKS": ""
+            },
+            "commit": "1b88214d718614dcbff5f957716f70912fbffc64",
+            "tree": "22a38db9ef9c34fd0dabff8ae90c9b0dc0f97d1a",
+            "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-2344f20b-0302-4c24-a50d-4b46ce988947.log",
+            "tail": [
+              "      Tests  1 failed | 4491 passed | 3 skipped (4495)",
+              "   Start at  01:08:26",
+              "   Duration  796.17s (tests 96%, import 3%, transform 1%)",
+              "",
+              "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/vitest-results.json",
+              "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":31783,\"started\":\"2026-11-19T16:08:25.266Z\",\"exitCode\":1,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-19T16:21:42.400Z\",\"elapsedMs\":797131,\"commandExitCode\":1,\"afterExitCode\":1}",
+              "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/report.json\"}",
+              " ELIFECYCLE  Command failed with exit code 1."
+            ],
+            "failedTests": [
+              "× is every package version and the rules a world plays 4ms",
+              "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
+            ],
+            "plan": {
+              "source": "scripts/verification-plan.json",
+              "checks": [
+                "verify-batch"
+              ]
+            },
+            "checks": [
+              {
+                "id": "verify-batch",
+                "command": "pnpm run verify:batch",
+                "inputs": [
+                  "*.json",
+                  "*.mjs",
+                  "*.toml",
+                  "*.ts",
+                  "*.yaml",
+                  ".github",
+                  ".gitignore",
+                  ".node-version",
+                  ".prettierignore",
+                  "apps",
+                  "artifacts",
+                  "packages",
+                  "patches",
+                  "scripts",
+                  "tests"
+                ],
+                "inputFingerprint": "4f1f578e39557d190b09c00fda939f5fcba170b68dbaf2c85277a6dd871efc9b",
+                "executionFingerprint": "07ffb54cf0816dd7061414cd3bacd97128d03d53b0241d13e44d6d532260f395",
+                "ok": false,
+                "status": "failed",
+                "exitCode": 1,
+                "cached": false,
+                "timedOut": false,
+                "cancelled": false,
+                "stale": false,
+                "ms": 831537,
+                "log": "/Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-2344f20b-0302-4c24-a50d-4b46ce988947.log",
+                "failedTests": [
+                  "× is every package version and the rules a world plays 4ms",
+                  "FAIL  |unit| packages/contracts/src/versions.test.ts > the current game version (→SAVE-10, SAVE-26) > is every package version and the rules a world plays"
+                ],
+                "tail": [
+                  "      Tests  1 failed | 4491 passed | 3 skipped (4495)",
+                  "   Start at  01:08:26",
+                  "   Duration  796.17s (tests 96%, import 3%, transform 1%)",
+                  "",
+                  "JSON report written to /Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/vitest-results.json",
+                  "{\"event\":\"verification-stage\",\"stage\":\"test:unit+integration+contract\",\"status\":\"failed\",\"command\":\"pnpm exec vitest run --project unit --project integration --project contract --reporter=default --reporter=json --outputFile=.tmp/verification/vitest-results.json\",\"argv\":[\"pnpm\",\"exec\",\"vitest\",\"run\",\"--project\",\"unit\",\"--project\",\"integration\",\"--project\",\"contract\",\"--reporter=default\",\"--reporter=json\",\"--outputFile=.tmp/verification/vitest-results.json\"],\"pid\":31783,\"started\":\"2026-11-19T16:08:25.266Z\",\"exitCode\":1,\"stdoutPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/test_unit_integration_contract.stdout.log\",\"stderrPath\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/test_unit_integration_contract.stderr.log\",\"finished\":\"2026-11-19T16:21:42.400Z\",\"elapsedMs\":797131,\"commandExitCode\":1,\"afterExitCode\":1}",
+                  "{\"event\":\"verification-finished\",\"status\":\"failed\",\"passed\":false,\"exitCode\":1,\"report\":\"/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e/.tmp/verification/2026-11-19T16-07-51-327Z-31287/report.json\"}",
+                  " ELIFECYCLE  Command failed with exit code 1."
+                ],
+                "cleanup": {
+                  "scope": "process-group",
+                  "signalled": false,
+                  "escalated": false
+                }
+              }
+            ],
+            "failedCheckIds": [
+              "verify-batch"
+            ],
+            "cleanup": {
+              "scope": "process-group",
+              "signalled": false,
+              "escalated": false
+            }
+          }
+        ],
+        "at": "2026-11-19T16:21:43.851Z"
+      }
+    ],
     "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e",
     "branch": "integration/4da79c0b-6a57-4ddf-befd-9f3c22437a9e",
     "version": {
       "level": "patch",
       "from": "0.8.16",
       "to": "0.8.17"
-    }
+    },
+    "ciCommands": [
+      "pnpm exec playwright test --project=chromium --shard=1/3",
+      "pnpm exec playwright test --project=chromium --shard=2/3",
+      "pnpm exec playwright test --project=chromium --shard=3/3"
+    ]
   },
   "history": [
     {
