@@ -69,8 +69,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | doing@261119.x10 |
-| T1023 | Verify NPC place-fit role averages across seasons | MATCH ARCH | T989 | todo |
-| T1024 | Refresh NPC place-fit fixtures | MATCH ARCH | T989 T1023 | todo |
 | T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T1024 | todo |
 | T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | todo |
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |

@@ -270,7 +270,7 @@ export function simulateMatch(
   const prepared = prepareMatch(w, f);
   const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
   const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
-  const match = playAggregate(w, f, prepared, rosters, decide, undefined, trace, true);
+  const match = playAggregate(w, f, prepared, rosters, decide, undefined, trace);
   const record = aggregateRecord(f, rosters, match, model);
   const managers = prepared.teams.map((club) =>
     club.id === w.playerClub ? w.manager : clubManager(w, club),
