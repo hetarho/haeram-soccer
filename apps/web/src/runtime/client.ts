@@ -922,6 +922,21 @@ export class GameClient {
     if (!reply.clubRecords) throw new Error(sourceMessage('copy.client.3a2136dd0f'));
     return reply.clubRecords;
   }
+  /**
+   * The five slow projection parts for the current world with its identity and revision (→WEB-119),
+   * read like head-to-head without the command queue; changes no fact and publishes no view. A reply
+   * for another career is refused.
+   */
+  async stoppedReads() {
+    const world = this.state.view?.world.id;
+    if (!world) throw new Error(sourceMessage('copy.client.a198ec6115'));
+    const reply = await this.read({ type: 'stopped-reads', world });
+    if (!reply.ok || !reply.stoppedReads)
+      throw new Error(reply.error ?? sourceMessage('copy.host.f8fc259198'));
+    if (this.state.view?.world.id !== world || reply.stoppedReads.world !== world)
+      throw new Error(sourceMessage('copy.host.f8fc259198'));
+    return reply.stoppedReads;
+  }
   /** Bounded market page, admitted through the same displayed-day read gate as other previews. */
   async worldMarket(query: Omit<WorldMarketQuery, 'world'> = {}) {
     const world = this.state.view?.world.id;

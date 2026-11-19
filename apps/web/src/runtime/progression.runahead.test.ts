@@ -781,6 +781,7 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     ['manager-history', (c) => c.managerHistory()],
     ['league-fixtures', (c) => c.leagueFixtures({ code: 'GER', tier: 0, group: 0 })],
     ['full-stats', (c) => c.fullStats({ kind: 'league', groupKey: 'ENG:0:0' })],
+    ['stopped-reads', (c) => c.stoppedReads()],
   ])('the %s read goes only once the held days are shown at the pace', async (type, read) => {
     const fake = worker(quiet());
     const controller = clock(fake);

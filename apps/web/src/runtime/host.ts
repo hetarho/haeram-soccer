@@ -362,6 +362,7 @@ export class Host {
       type === 'league-fixtures' ||
       type === 'full-stats' ||
       type === 'club-records' ||
+      type === 'stopped-reads' ||
       type === 'archive' ||
       type === 'manager-history' ||
       type === 'club-profile' ||
@@ -447,7 +448,22 @@ export class Host {
     if (!w) return;
     return readingOnce(w, () => this.projection(w));
   }
+  /**
+   * The five parts of the projection that cost the most each day (→WEB-119), shared by the full
+   * projection and the `stopped-reads` read so both give the same answer for the same world. Call it
+   * inside a read scope (→ARCH-6): the parts that read the own XI then share one choice of it.
+   */
+  private slowReads(w: World) {
+    return {
+      coaches: staffMarket(w),
+      managers: managerCandidates(w),
+      transfers: transferOffers(w),
+      disciplineNames: disciplineNames(w),
+      office: officeRead(w),
+    };
+  }
   private projection(w: World): View {
+    const slow = this.slowReads(w);
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
     const next = nextOwnFixture(w);
@@ -458,11 +474,11 @@ export class Host {
     // so are the manager-history facts; the free-agent pool stays on the worker (→CLUB-49).
     const projected = projectWorldFacts(w);
     return {
-      coaches: staffMarket(w),
+      coaches: slow.coaches,
       world: {
         ...projected,
         clubs: w.clubs.map((club) => ({ ...club, rating: rating(w, club) })),
-        disciplineNames: disciplineNames(w),
+        disciplineNames: slow.disciplineNames,
         renewalChances: contractRenewalReads(w),
         // Browser projections omit `people`; resolving names there would regenerate old identities.
         nextOpponentLineup:
@@ -516,13 +532,13 @@ export class Host {
       totalMatches: w.ownMatches.length,
       tallies: tallies(w),
       milestones: clubMilestones(w),
-      managers: managerCandidates(w),
-      transfers: transferOffers(w),
+      managers: slow.managers,
+      transfers: slow.transfers,
       sponsors: sponsorSlots(w),
       annualCost: operatingCost(w),
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
-      office: officeRead(w),
+      office: slow.office,
       news: this.news(w),
       newsTotal: newsTotal(w),
       managerHistoryKey: managerHistoryKey(w),
@@ -554,6 +570,18 @@ export class Host {
         return { requestId: request.requestId, ok: true, clubProfile: profile };
       }
       if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
+      if (body.type === 'stopped-reads') {
+        if (body.world !== w.id) throw new Error(sourceMessage('copy.host.f8fc259198'));
+        return {
+          requestId: request.requestId,
+          ok: true,
+          stoppedReads: {
+            world: w.id,
+            revision: w.revision,
+            ...readingOnce(w, () => this.slowReads(w)),
+          },
+        };
+      }
       if (body.type === 'news-page') {
         if (body.world !== w.id) throw new Error(sourceMessage('copy.host.ef27d088a0'));
         const items = newsBefore(w, body.before, body.tag);

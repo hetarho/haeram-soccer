@@ -130,6 +130,65 @@ describe('worker command protocol', () => {
   });
 });
 
+describe('the stopped-reads read (→WEB-119)', () => {
+  it('answers the five slow parts as the projection does, changing and publishing nothing', async () => {
+    const { host: h, reply: taken } = await startedHost(undefined, undefined, host());
+    const w = h.world!;
+    const check = async (view: View, id: string) => {
+      const before = canonical(w),
+        read = await h.handle(req(id, -1, { type: 'stopped-reads', world: w.id }));
+      expect(read.ok).toBe(true);
+      expect(read.view).toBeUndefined();
+      expect(read.viewDelta).toBeUndefined();
+      expect(canonical(w)).toBe(before);
+      expect(read.stoppedReads).toEqual({
+        world: w.id,
+        revision: w.revision,
+        coaches: view.coaches,
+        managers: view.managers,
+        transfers: view.transfers,
+        disciplineNames: view.world.disciplineNames,
+        office: view.office,
+      });
+      expect(w.receiptIds).not.toContain(id);
+    };
+    await check(taken.view!, 'at-takeover');
+    // And for a world some days on, whose projection a command published.
+    const days = await h.handle(
+      req('days', w.revision, { type: 'command', command: { type: 'advance-days', days: 3 } }),
+    );
+    await check(days.view!, 'days-on');
+  });
+  it('is refused for another world or another session', async () => {
+    const h = await started();
+    const w = h.world!,
+      before = canonical(w);
+    expect(
+      (await h.handle(req('other', -1, { type: 'stopped-reads', world: 'elsewhere' }))).ok,
+    ).toBe(false);
+    const stale = { ...req('old', -1, { type: 'stopped-reads', world: w.id }), session: 'expired' };
+    expect((await h.handle(stale)).ok).toBe(false);
+    expect(canonical(w)).toBe(before);
+  });
+  it('is answered between a queued command’s steps, without waiting for it', async () => {
+    const h = await started();
+    const w = h.world!;
+    let advanced = false;
+    const step = h
+      .handle(
+        req('step', w.revision, { type: 'command', command: { type: 'advance-days', days: 3 } }),
+      )
+      .then((reply) => {
+        advanced = true;
+        return reply;
+      });
+    const read = await h.handle(req('early', -1, { type: 'stopped-reads', world: w.id }));
+    expect(advanced).toBe(false);
+    expect(read.ok).toBe(true);
+    expect((await step).ok).toBe(true);
+  });
+});
+
 describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
   /** The started game grown through a season, its manager then replaced `hires` times today. */
   async function career(hires = 0, untracked = false) {
