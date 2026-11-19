@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r50 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r51 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -12,6 +12,7 @@
   - pnpm workspaces; the pnpm release is pinned by `packageManager`; stable dependency versions and the exact active-LTS Node release are pinned at scaffolding; commit the lockfile.
   - CSS Modules and CSS design tokens; Canvas 2D for the simplified pitch; SVG for initial charts; semantic HTML for tables and controls.
   - Zustand holds UI selections and engine read models; Zod validates external/serialized boundaries.
+  - SQLite is the save database (→ARCH-11).
   - The first web release requires neither sign-in nor a game backend. Supabase is not a runtime dependency of local play.
   - `gusta` remains an npx tool, not an application dependency.
 - ARCH-3 [o] Repository structure separates domain code, contracts, data, browser adapters, and future platform code.
@@ -25,8 +26,8 @@
   | `apps/web/src/entities` | one domain noun each (club, player, league, match, office): its views, Canvas painting and framework-free view helpers (`*.ts`) |
   | `apps/web/src/shared` | game-free UI kit, shared styles, formatting and navigation state |
   | `apps/web/src/lab`, `constants`, `design-system` | separate developer tool entries; they import slices through their public API |
-  | `apps/web/src/runtime` | main-thread client and store, engine worker host, protocol, view publisher, codec worker, read models shared with the worker |
-  | `apps/web/src/adapters` | browser storage repositories, checkpoint commit, save codec and packing, preference stores, resource loaders |
+  | `apps/web/src/runtime` | main-thread client and store, engine worker host, protocol, view publisher, read models shared with the worker |
+  | `apps/web/src/adapters` | browser storage repositories, the SQLite record store and game files, export/import, preference stores, resource loaders |
   | `apps/web/src/presentation` | locale/theme registry and controller, shared presentation labels and assets (→ARCH-32) |
   | `packages/contracts` | commands, events, projections, save/catalog DTOs, boundary schemas |
   | `packages/engine` | framework-independent simulation and domain state; `aggregate/` settles matches, `script/` and `staging/` write and stage an own match's picture |
@@ -38,7 +39,7 @@
   | `spec` | current policies, implementation tasks, standalone state |
   | `apps/flutter` | future Flutter application; do not scaffold in the web milestone |
 - ARCH-4 [o] Dependency direction: contracts → engine/catalogs → platform adapters → UI.
-  - Engine imports DTO types and injected catalogs; it does not import React, Zustand, DOM, browser storage, HTTP clients, or rendering.
+  - Engine imports DTO types, injected catalogs and an injected record store (→ARCH-36); it does not import React, Zustand, DOM, browser storage, SQLite, HTTP clients, or rendering.
   - Catalogs are data; schema validation occurs before they enter the engine.
   - React may display projections and submit commands; it does not directly modify canonical game state.
   - UI code imports engine values only from read leaves: modules whose runtime import closure reaches no world generation, season or match orchestration (settlement, script writing or staging). Constants, labels and pure reads the UI needs live in such leaves beside their data. ← a label or read pulled through an orchestration module ties the screen and its tests to every engine change
@@ -56,6 +57,7 @@
   - Decide the PRNG algorithm and simulation tick parameters with portable fixtures before implementing dependent domain systems.
 - ARCH-6 [o] One engine instance in a Web Worker is the sole writer for the active world. ← keep computation off the UI thread and centralize mutations
   - Browser commands are serialized; simulation runs in interruptible bounded batches.
+  - The engine worker owns the game's database: it saves (→SAVE-3) and reads on demand the records not held in memory (→SAVE-32); no other worker writes it.
   - Worker messages include protocol version, session ID, request ID, expected world revision, and validated payloads.
   - Duplicate requests do not repeat recruitment fees, sponsor payments, currency transitions, or fixture settlement.
   - Publish bounded UI projections/deltas, not the complete world on every simulation step.
@@ -63,7 +65,7 @@
   - every device with two or more cores runs two helpers, never one, and more than two only where more measured faster (→ARCH-34); the engine worker takes its own share of those fixtures once our match is played. ← below four cores the engine worker used to compute them all alone; on two or three cores one helper is slower than none and two are faster (estimated 261119)
   - Read-only requests (head-to-head) are validated like commands but answered between simulation steps, without the revision check, receipt or view, so a read never waits behind a season command or flickers the busy state.
   - A watched match is staged off the UI thread by a worker of its own from the script the engine worker sent: it reads no world, writes nothing and delivers frames in bounded steps ahead of the presentation (→MATCH-39).
-  - A worker failure restores the last committed checkpoint and reports any uncommitted progress; it does not silently invent a continuation.
+  - A worker failure restores the last committed save and reports any uncommitted progress; it does not silently invent a continuation.
   - Vite provides worker bundling: [Vite worker support](https://vite.dev/guide/features.html#web-workers).
 - ARCH-7 [o] Render match snapshots with Canvas 2D and interpolation; animation is presentation only.
   - `requestAnimationFrame` does not execute football rules or advance the world calendar.
@@ -88,44 +90,42 @@
   - Historical gaps and future estimates have explicit source status.
   - World generation is local and seeded; it does not require an LLM or external API call.
   - Keep supported old catalog versions available when needed by saves, or provide an explicit tested migration.
-- ARCH-11 [o] The browser save repository keeps game checkpoints in IndexedDB for the web demo.
-  - Checkpoint layout and storage fallback follow →SAVE-3; parked game slots follow →SAVE-14. Small settings, the manifest and the slot index live in localStorage; export/import files stay the portable copy.
-  - Namespace application keys; do not clear unrelated origin storage.
-  - UI-thread adapters own browser storage reads/writes; workers handle serialization, compression, checksum calculation, and validation.
-  - localStorage is synchronous; its documented typical allowance is 5 MiB per origin, not a guaranteed amount available to the application, so it holds checkpoints only as →SAVE-3's fallback. [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API), [storage quotas](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria)
-- ARCH-12 [o] Save format: versioned JSON envelope with losslessly compressed canonical state and a SHA-256 integrity checksum (→SAVE-2).
-  - Envelope fields and codec selection follow →SAVE-2.
-  - Use browser Compression/Decompression Streams in a worker; support is checked at startup. [CompressionStream](https://developer.mozilla.org/en-US/docs/Web/API/CompressionStream)
-  - Large checkpoints use a pinned pure-JavaScript Brotli codec in the background codec worker; lazy-load it only when needed. Bound decoder output and window allocation before growth; preserve the existing content-security policy.
+- ARCH-11 [o] Each game is one SQLite database file (→SAVE-2) in one schema shared by the web and the app: on the web in OPFS, opened by the engine worker; in the app in native SQLite. ← a game file moves from the browser to the app unchanged
+  - web: the official SQLite WebAssembly build `@sqlite.org/sqlite-wasm` with its OPFS SyncAccessHandle-pool storage, which needs neither cross-origin isolation headers nor SharedArrayBuffer.
+  - the engine reaches the database only through the record-store port (→!ARCH-36).
+  - the schema version lives in the database (→SAVE-1); a schema change raises it, and an older or newer schema follows →SAVE-11.
+  - small settings, the game-slot index and device data stay in localStorage, owned by UI-thread adapters; game data never does.
+  - Namespace application keys and files; do not clear unrelated origin storage.
+  - OPFS or SQLite unavailable ⇒ a readable capability error (→ARCH-17); there is no alternate game store.
+- ARCH-12 [o] The portable save is the game's database compressed with gzip behind a versioned header carrying a SHA-256 checksum (→SAVE-9); the app imports the same file.
+  - Use browser Compression/Decompression Streams in the worker; decompression stops at →SAVE-4's limit.
   - Checksum detects accidental corruption; it is not proof that a client-authored result is honest.
-  - Export the envelope as a portable `.haeram-save.json` file; Flutter can decode the same format.
-- ARCH-13 [o] Checkpoint commit order, verified predecessor and storage fallback follow →SAVE-3; only acknowledge a successfully committed generation.
-  - Build and validate the complete candidate checkpoint in a background codec worker before touching checkpoint storage; the simulation and UI never wait for it.
-  - Keep the previously committed checkpoint loadable until a newer checkpoint commits successfully.
+  - Saves use no other codec, text encoding or compact packing. ← encoding to fit a fixed text budget cost more than it saved (measured 261119: packing was about half of a save)
+- ARCH-13 [o] A save commits the rows changed since the previous save in one transaction (→SAVE-3); only a committed save is acknowledged.
+  - the simulation pauses for the transaction between steps; the UI never waits for a save.
   - On quota/write errors retain the last committed save, preserve recoverable in-memory state, offer export/retry, and do not report success.
-  - Autosave committed decisions at once and automatic progression in the background at a bounded interval (→SAVE-8), never per simulation step or animation frame; expose when the game was last saved.
-  - On load validate the manifest and selected slot; use the compatible previous checkpoint for recovery, explaining the recovered generation.
-  - Missing/invalid manifests require deterministic validated-slot recovery; invalid saves are never replaced with a fresh world automatically.
+  - Autosave committed decisions at once and automatic progression at a bounded interval (→SAVE-8), never per simulation step or animation frame; expose when the game was last saved.
+  - On open validate the database's versions and integrity, then the world (→SAVE-5); a corrupted database offers recovery from its season backup (→SAVE-31), naming the backup's date.
+  - Invalid saves are never replaced with a fresh world automatically.
 - ARCH-14 [o] Storage and longevity must pass an early measurement gate.
-  - Per-checkpoint and total localStorage budgets follow →SAVE-4, conservatively accounting for key/value UTF-16 size.
-  - Catch actual quota failures even when estimated usage is below budget; do not assume other applications or browser modes leave the full quota available.
-  - Measure representative eight-country worlds at the takeover (after world generation), a mid-career checkpoint, and 100 simulated seasons before polishing the complete UI.
+  - Storage limits follow →SAVE-4; catch actual quota failures and do not assume other applications or browser modes leave the full quota available.
+  - Measure representative eight-country worlds at the takeover (after world generation), a mid-career save, and 100 simulated seasons: database size, save time, open time and engine memory.
   - A 100-season capacity claim requires a passing recorded benchmark.
-  - If the budget fails, optimize encoding within the retention policy (→ARCH-25); do not silently prune agreed history or move checkpoints to cloud storage.
+  - If capacity fails, change the schema or row layout within the retention policy (→ARCH-25); do not silently prune agreed history or move saves to cloud storage.
 - ARCH-15 [o] Persist game facts and history, not rendering noise.
   - Persist current world state, settled fixtures, season standings/honors, meaningful club/personnel/economic decisions, and the player's club career records.
   - Use compact IDs, shared dictionaries, and aggregate rows; do not save React stores, event subscriptions, per-frame coordinates, or repeated whole-player objects.
   - Old pitch animation traces are not required for continuing a career; ordinary match and season facts remain distinct from optional replay detail.
   - NPC historical metric retention follows →ARCH-25; existing facts may not be silently removed during updates or imports.
 - ARCH-16 [o] Save import and migration are fail-safe.
-  - Validate envelope, codec, checksum, declared versions, referential integrity, field bounds, and decompressed-size limits before applying an import.
+  - Validate the header, decompressed-size limit, checksum, database integrity, declared versions, referential integrity and field bounds before applying an import.
   - Set explicit bounded import limits from measured fixtures at scaffolding; decompression must stop when its limit is exceeded.
   - Migrations are versioned pure transformations with old-save fixtures and round-trip checks; keep the original until the replacement commits.
   - Unsupported future schemas or unavailable catalog versions open in a recovery/export path; never overwrite them with an empty save.
   - Saving failures, catalog incompatibility, or worker failures have typed, actionable errors.
-- ARCH-17 [o] Only one browser tab may write an active world.
-  - Use an exclusive Web Lock for the active save and BroadcastChannel/storage-event notifications for read-only tabs.
-  - A second tab explains its read-only state; it does not compete with the first tab's progression.
+- ARCH-17 [o] Only one browser tab plays a game at a time (→SAVE-6). ← the database file opens in one tab only
+  - An exclusive Web Lock guards the open game database; BroadcastChannel carries the request to continue in another tab.
+  - Another tab shows that the game is playing elsewhere, with 여기서 이어 하기; it never opens the database or shows a read-only copy.
   - Feature-detect required browser capabilities; unsupported capabilities produce a readable recovery/compatibility path instead of a partial writer.
 - ARCH-18 [o] Web UI supports the browsers and platforms of →!ARCH-35 with responsive desktop and mobile controls.
   - Browser tests run only on →!ARCH-35's supported browsers and exercise touch-sized mobile layouts.
@@ -261,19 +261,22 @@
   - support-review: before beta or the first external players
   - validation-baseline: Playwright 1.63.0 with Chromium 153.0.8010.12 (r1243), Node 24.22.1, pnpm 10.34.6; observed 261116
   - The pre-1.0 BETA mark (→~WEB-101) is player-facing naming; it does not widen this stage's support.
+- ARCH-36 [o] The engine reads and writes persisted rows only through a record-store port of domain operations; the SQLite adapter implements it (→ARCH-11), and tests and tools run the same schema through an in-memory SQLite adapter. ← domain code stays free of SQL and its tests need no browser
+  - record-store reads return rows in a defined order keyed by stable IDs; reading never changes an outcome (→!ARCH-5).
+  - the port is synchronous inside the engine worker, so a simulation step reads a record where it needs it.
 
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → tasks → implementation.
 - Local play: UI command → validated bridge → engine worker → domain facts/projections → UI statistics/Canvas.
 - Presentation: locale/theme registry → selected validated JSON pack → shared presentation consumers; a preference change loads resources without issuing a game command.
-- Save: safe game boundary → background candidate envelope/codec/checksum → validated checkpoint commit (→SAVE-3) → committed acknowledgment.
-- Recovery: startup → capability check → save validation → load(current|previous compatible|export/recovery) → worker initialization.
+- Save: safe game boundary → changed rows → one transaction in the engine worker (→SAVE-3) → committed acknowledgment; season close → backup copy (→SAVE-31).
+- Recovery: startup → capability check → open game database → version/integrity/world validation → play | offer season backup | export/recovery.
 - Verification: task checks per task → batch once on the final candidate before a code push → CI browser journeys after the push (→ARCH-30).
 - Release: locked install → verification → static build → preview smoke checks → stable production deployment → compatible rollback path.
-- Future mobile: portable contracts/catalogs/fixtures → Dart engine parity → Flutter views/persistence → commercial-release validation.
+- Future mobile: portable contracts/catalogs/fixtures and the save schema → Dart engine parity → Flutter views over native SQLite opening the same game files → commercial-release validation.
 
 ## constraints
-- The web demo's primary save store is IndexedDB, with localStorage only as →SAVE-3's bounded fallback; cloud synchronization is not an implicit fallback.
+- Each game is a SQLite database in OPFS (→ARCH-11); localStorage holds only small metadata; cloud synchronization is not an implicit fallback.
 - Animation, network availability, frontend render count, and device time must not redefine game results.
 - Browser storage capacity and complete catalog coverage require measured/validated evidence before release claims.
 - A long-career capacity claim requires benchmark evidence; a passing UI demonstration is insufficient.
@@ -281,6 +284,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r51 261119 ARCH-2✎ +SQLite save database · ARCH-3✎ runtime codec worker, adapters save codec and packing→SQLite record store, game files, export/import · ARCH-4✎ engine imports DTOs and catalogs→+an injected record store · ARCH-6✎ +the engine worker owns the game database; restores the last committed checkpoint→save · ARCH-11✎ IndexedDB checkpoints with UI-thread storage and worker codec→one SQLite database per game shared by web and app (official WASM build, OPFS pool), schema version · ARCH-12✎ JSON envelope with gzip/pure-JS Brotli and .haeram-save.json→gzip database behind a versioned SHA-256 header, no other codec/encoding/packing · ARCH-13✎ validated candidate in a codec worker with verified predecessor→changed rows in one transaction, season-backup recovery offered · ARCH-14✎ UTF-16 localStorage budgets, optimize encoding→SAVE-4 limits, database size/save/open/memory measured, schema change within retention · ARCH-16✎ envelope/codec validation→header/integrity validation · ARCH-17✎ read-only second tab→one playing tab, another offers 여기서 이어 하기 · ARCH-36+ record-store port, ordered reads, synchronous in the engine worker
 - r50 261119 ARCH-6✎ helpers from four cores, the engine worker idle while they run→two helpers from two cores (never one), more only where measured faster, the engine worker takes a share
 - r49 261119 ARCH-23✎ CI checks, unit and three integration jobs beside the browser shards (limits 20/20/75 min)→browser shards only; deterministic checks run once in the batch on the gate host, no second-platform contract run · ARCH-30✎ CI including every browser journey→CI only the browser journeys
 - r48 261117 ARCH-33✎ measurement provenance without a durable recipe requirement→versioned calibration recipes, exact patches/manifests and hash-matched independent review before heavy execution

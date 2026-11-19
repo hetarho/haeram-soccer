@@ -1,5 +1,5 @@
 # KIT Club identity and match kits
-> r10 | Let owners design a recognisable club and see its selected kits in match observation.
+> r11 | Let owners design a recognisable club and see its selected kits in match observation.
 
 ## decisions
 - KIT-1 [o] The editor offers exactly three colour choices: 홈 (home), 어웨이 (away) and 세컨 (third). Each is its named shirt’s base colour.
@@ -30,7 +30,7 @@
   - A club without a designed goalkeeper kit, including every opponent, uses automatically chosen distinguishable goalkeeper colours. Automatic colours avoid designed kits.
   - A new draft starts from an automatically chosen colour distinguishable from the club's own three kits.
 - KIT-9 [o] In a career the own club's representative colours, crest and shirt designs change only by adopting a designer draft (→!WEB-108); choosing colours, commissioning, viewing drafts, discarding or redrawing does not change the applied identity. Adopting a draft lowers 팬 민심 (→OWNER-12); the club's name never changes.
-  - Read-only viewers may inspect identity and delivered drafts; only the writing owner may commission or adopt under →SAVE-6.
+  - Only the tab playing the game (→SAVE-6) commissions or adopts.
   - Editing another club's identity is not an owner action.
 - KIT-10 [o] Changing any named colour updates the draft’s three-colour palette, corresponding shirt bases, linked pattern/trim regions and home/away crest colours immediately, preserving every chosen pattern and crest component.
   - There is no editor before the takeover (→WEB-86); designer drafts start with these linked colours.
@@ -61,12 +61,13 @@
 - Management: applied identity → designer commission → delivered drafts → adopt or leave the applied identity; effect timing follows →KIT-12.
 
 ## constraints
-- Stable implementation interfaces and validation are defined in `packages/contracts/src/identity.ts` and `identitySchema.ts`; checkpoint encoding is defined in `apps/web/src/adapters/identityPacking.ts`. Product policy remains in this document and persistence follows →SAVE-20/21.
+- Stable implementation interfaces and validation are defined in `packages/contracts/src/identity.ts` and `identitySchema.ts`. Product policy remains in this document and persistence follows →SAVE-20/21.
 - KIT owns identity and selection policies; →WEB-49/86/87/88 own their presentation and →SAVE-20/21 own persistence and compatibility.
 - Cosmetic options do not authorise changes to gameplay, background progression, retained-history lifetimes or the rules-4.0.0 boundary.
 - The storage, responsiveness and reference-device budgets remain →SAVE-4/13 and →WEB-19; pattern detail must remain legible at the desktop match scale and in the large previews; at phone widths team colours, facing and large actions must remain legible (→MATCH-36).
 
 ## chg
+- r11 261119 KIT-9✎ read-only viewers inspect identity and drafts→only the tab playing the game commissions or adopts (SAVE-6 has no read-only view) · constraints✎ checkpoint encoding in identityPacking.ts→removed (no compact packing, SAVE-2)
 - r10 261109 KIT-2✎ catalogue path `apps/web/src/ui/crests.ts`→`apps/web/src/entities/club/lib/crests.ts` (T720 move; content unchanged)
 - r9 261103 KIT-2✎ crest editing from ready-made designs with 랜덤 and 직접 꾸미기→designers compose crests from the component catalogue, no ready-made crests; flow✎ Crest and Management through the designer commission
 - r8 261103 KIT-9✎ +adopting a draft lowers 팬 민심, the name never changes; KIT-10✎ editor before founding→no editor before the takeover, designer drafts start linked; KIT-14- founding crests and drafts removed; flow✎ Founding→Takeover keeps the generated identity
