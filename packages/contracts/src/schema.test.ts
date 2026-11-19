@@ -14,6 +14,22 @@ import { careerWorld } from '../../engine/src/career.testkit';
 
 const world = () => careerWorld({ seed: 'withdrawn-interventions' });
 
+it('keeps older work and validates only known facility continuation states', () => {
+  const w = world();
+  w.facilityWorks = { stadium: { to: 1, year: w.year, day: 0 } };
+  const older = validateWorld(w, LOAD_CATALOG);
+  expect(older.facilityWorks).toEqual(w.facilityWorks);
+  expect(older).not.toHaveProperty('facilityAutoUpgrade');
+
+  w.facilityAutoUpgrade = { stadium: 'armed', academy: 'awaiting-funds' };
+  expect(validateWorld(w, LOAD_CATALOG).facilityAutoUpgrade).toEqual(w.facilityAutoUpgrade);
+  for (const invalid of [{ offices: 'armed' }, { stadium: 'off' }]) {
+    expect(() => validateWorld({ ...w, facilityAutoUpgrade: invalid }, LOAD_CATALOG)).toThrow(
+      ZodError,
+    );
+  }
+});
+
 describe('owner interventions withdrawn (→SAVE-25)', () => {
   it('drops removed care state from an older save', () => {
     const w = world();

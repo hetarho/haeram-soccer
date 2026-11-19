@@ -21,6 +21,7 @@ const features = () => cachedWorld('feature-state', () => featureState());
 describe('a game saved into its database and opened again (→SAVE-2/3/5)', () => {
   it('opens a played career exactly as it was saved', () => {
     const w = simulatedWorld(input, { rounds: 2 });
+    w.facilityAutoUpgrade = { training: 'armed', academy: 'awaiting-funds' };
     expect(canonical(roundTrip(w))).toBe(canonical(w));
   });
 

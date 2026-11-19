@@ -12,6 +12,19 @@ function fixture() {
   return w;
 }
 
+it('projects absent and saved facility continuation settings alongside active work', () => {
+  const w = fixture();
+  w.facilityWorks = { stadium: { to: 1, year: w.year, day: 0 } };
+  const older = projectWorldFacts(w);
+  expect(older).not.toHaveProperty('facilityAutoUpgrade');
+  expect(older.facilityWorks).toEqual(w.facilityWorks);
+
+  w.facilityAutoUpgrade = { stadium: 'armed', academy: 'awaiting-funds' };
+  const projected = projectWorldFacts(w);
+  expect(projected.facilityAutoUpgrade).toEqual(w.facilityAutoUpgrade);
+  expect(projected.facilityWorks).toEqual(w.facilityWorks);
+});
+
 it('classifies all top-level fields and excludes the persisted registry', () => {
   const w = fixture();
   foundSquads(w);

@@ -1365,6 +1365,9 @@ const worldSchema: z.ZodType<World> = z.object({
       z.strictObject({ to: z.number().int().min(1).max(8), year: season, day: seasonDay }),
     )
     .optional(),
+  facilityAutoUpgrade: z
+    .partialRecord(z.enum(['stadium', 'training', 'academy']), z.enum(['armed', 'awaiting-funds']))
+    .optional(),
   ticket: z.number().finite().min(0.01).max(10),
   campaigns: z
     .array(
