@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T981 | CI runs only the Chromium browser shards | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -83,7 +82,6 @@
 
 ## next
 - inspect work board for remaining tasks
-- np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked). mr18cx must merge main (npc-market.ts) and re-prepare 0.8.13.
-- Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
+- np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked).
+- mr18cx (T953–T980, owner plan mr18) and cx19 (T981) landed together on main as 0.8.13 after merging np19; T978's measured calibration misses are in reports/261118-mr18cx.
 - Historical era rules parked in ideation/historical-era-rules.
-- T981 (ARCH r49, from gusta-update 0.17.8): CI keeps only the Chromium browser shards; run `gusta-implement-task T981` independently of T953–T980.
