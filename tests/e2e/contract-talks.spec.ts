@@ -14,7 +14,7 @@ import { saveFileOf } from '../fixtures/save-roundtrip';
 import { contractTalkCareer } from './responsibility-fixtures';
 import { eventCard, reviewInOffice } from './events';
 import { openClubhouse } from './competition-navigation';
-import { continueSlot, seedSaveFile } from './slots';
+import { continueSlot, seedSlotFile } from './slots';
 import { savedWorld } from './club-identity-helpers';
 import { importLegacyDirection } from './legacy-direction';
 
@@ -38,7 +38,7 @@ async function talking() {
   };
 }
 async function seed(page: Page, file: Uint8Array) {
-  await seedSaveFile(page, file);
+  await seedSlotFile(page, file);
 }
 
 test('declines a contract talk: the badge, then the transfer request', async ({
