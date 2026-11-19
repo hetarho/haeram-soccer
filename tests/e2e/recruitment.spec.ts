@@ -682,7 +682,7 @@ test('the market ends with who answers offers and reads the recruitment level as
 
   // The sale bar the staff apply shows at every level.
   await expect(offers).toContainText('130%');
-  await expect(offers).toContainText('80% 밑으로는 팔지 않아요');
+  await expect(offers).toContainText('평소에는 평가 가치의 80% 밑으로 팔지 않으며');
   await closeMarketPanel(page, '영입 정보');
   await chooseLevel(page, 4);
   await marketInfo(page);
