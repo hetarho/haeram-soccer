@@ -42,7 +42,6 @@ beforeEach(() =>
       ...initialClientState,
       busy: false,
       processing: false,
-      readonly: false,
       view: {
         world: { ...baseWorld, settings: defaultSettings() },
         office: officeRead(baseWorld),
@@ -212,20 +211,10 @@ describe('owner office page', () => {
     const markup = render();
     expect(markup).not.toMatch(/data-ui="secondary" aria-pressed="true"[^>]*>전체 (직접|자동)/);
   });
-  it('disables every mutation in readonly state', () => {
-    gameStore.setState({ readonly: true });
-    const markup = render();
-    expect(markup).toContain('읽기 전용');
-    expect(
-      [...markup.matchAll(/<button[^>]*aria-pressed[^>]*>/g)].every(([tag]) =>
-        tag.includes('disabled=""'),
-      ),
-    ).toBe(true);
-  });
 });
 
 describe('approval return controls', () => {
-  it('holds the named return for queued and active submissions, then allows it even in read-only mode', () => {
+  it('holds the named return for queued and active submissions, then allows it', () => {
     const request: ApprovalRequest = {
       world: 'office',
       desk: 'players',
@@ -245,13 +234,12 @@ describe('approval return controls', () => {
         return gameStore.getState();
       },
     } as GameClient;
-    for (const [busy, pendingActions, readonly] of [
-      [false, 0, false],
-      [false, 1, false],
-      [true, 0, false],
-      [false, 0, true],
+    for (const [busy, pendingActions] of [
+      [false, 0],
+      [false, 1],
+      [true, 0],
     ] as const) {
-      gameStore.setState({ busy, pendingActions, readonly });
+      gameStore.setState({ busy, pendingActions });
       const markup = renderToStaticMarkup(
         createElement(ApprovalRequestHost, {
           client,

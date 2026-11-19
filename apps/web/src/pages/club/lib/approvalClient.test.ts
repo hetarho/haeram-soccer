@@ -36,7 +36,6 @@ function fixture() {
       ...initialClientState,
       busy: false,
       processing: false,
-      readonly: false,
       view: { world } as View,
     },
     command,
@@ -128,7 +127,7 @@ describe('request command continuity', () => {
       expect(f.command).toHaveBeenCalledOnce();
     },
   );
-  it.each(['busy', 'processing', 'clockRunning', 'pendingActions', 'readonly', 'error'] as const)(
+  it.each(['busy', 'processing', 'clockRunning', 'pendingActions', 'error'] as const)(
     'retains the %s protection',
     async (key) => {
       const f = fixture();

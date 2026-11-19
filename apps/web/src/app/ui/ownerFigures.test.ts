@@ -112,7 +112,6 @@ function show(w: World, state: Partial<ClientState> = {}) {
     ...initialClientState,
     busy: false,
     processing: false,
-    readonly: false,
     clockRunning: false,
     view: { world: w } as View,
     ...state,
@@ -514,8 +513,6 @@ describe('the HUD and the 구단주 sheet (→WEB-114, WEB-97)', () => {
     show(w);
     expect(ownerLock(gameStore.getState(), true)).toBeUndefined();
     expect(ownerLock(gameStore.getState(), false)).toBe('이 화면에서는 볼 수만 있어요.');
-    show(w, { readonly: true });
-    expect(ownerLock(gameStore.getState(), true)).toBe('읽기 전용 탭에서는 정할 수 없어요.');
   });
 });
 

@@ -17,10 +17,7 @@ const world = (day = 6) =>
   }) as unknown as World;
 const publish = (w: World) => gameStore.setState({ view: { world: w } as View });
 beforeEach(() => {
-  gameStore.setState(
-    { ...initialClientState, busy: false, processing: false, readonly: false },
-    true,
-  );
+  gameStore.setState({ ...initialClientState, busy: false, processing: false }, true);
   publish(world());
 });
 afterEach(() => gameStore.setState(initialClientState, true));
@@ -69,17 +66,15 @@ describe('match-eve observation entry', () => {
     expect(p.endWatch).toHaveBeenCalledOnce();
     expect(p.open).not.toHaveBeenCalled();
   });
-  it.each(['world', 'day', 'readonly', 'critical'])(
+  it.each(['world', 'day', 'critical'])(
     'rechecks %s after admitted work settles',
     async (change) => {
       const p = ports(async () => {
-        if (change === 'readonly') gameStore.setState({ readonly: true });
-        else
-          publish({
-            ...world(change === 'day' ? 7 : 6),
-            ...(change === 'world' ? { id: 'other' } : {}),
-            ...(change === 'critical' ? { critical: 'stop' } : {}),
-          });
+        publish({
+          ...world(change === 'day' ? 7 : 6),
+          ...(change === 'world' ? { id: 'other' } : {}),
+          ...(change === 'critical' ? { critical: 'stop' } : {}),
+        });
       });
       await watchNextMatch(p.client, p.controller, p.open, { fromEve: true });
       expect(p.command).not.toHaveBeenCalled();

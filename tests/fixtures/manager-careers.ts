@@ -104,7 +104,7 @@ export async function managerJourneyCareer(): Promise<ManagerJourneyCareer> {
 export interface ManagerActivationCareer {
   /** The career as a writer before this feature saved it: no facts and no links. */
   world: World;
-  /** What a read-only tab shows of it as stored: the manager in charge and the older events. */
+  /** What the career shows as stored, before activation: the manager in charge and the older events. */
   untracked: { current: ManagerTenureView; legacy: ManagerLegacyView[] };
   /** What the writer's activation at load shows, read from the same world activated in Node. */
   views: ReturnType<typeof managerRowView>[];

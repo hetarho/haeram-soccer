@@ -50,7 +50,6 @@ export const initialClientState: ClientState = {
   busy: true,
   processing: true,
   activity: 'foreground',
-  readonly: true,
   savedRevision: -1,
   progress: 0,
 };
@@ -93,7 +92,6 @@ export function gameActionsBlocked(
     (!options?.preview && (state.clockRunning || state.processing)) ||
     state.busy ||
     state.pendingActions ||
-    state.readonly ||
     (state.error && !options?.recovery)
   );
 }

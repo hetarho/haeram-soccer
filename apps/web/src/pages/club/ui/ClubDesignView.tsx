@@ -177,7 +177,6 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
   const w = state.view!.world;
   const code = w.clubs.find((club) => club.id === w.playerClub)!.country;
   const applied = identityOf(w, w.playerClub);
-  const readonly = useGameState((current) => current.readonly);
   const blocked = useGameState(gameActionsBlocked);
   const [step, setStep] = useState<Step>(FRESH_DESIGN_FORM.step);
   const [colours, setColours] = useState<ColourPick[]>(FRESH_DESIGN_FORM.colours);
@@ -185,7 +184,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const commission = w.designCommission;
-  const busy = readonly || blocked || pending;
+  const busy = blocked || pending;
 
   const send = async (command: DesignCommand) => {
     setPending(true);
@@ -278,7 +277,6 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
             type="button"
             data-ui="primary"
             className={s.request}
-            disabled={readonly}
             onClick={() => {
               setColours([]);
               setError(undefined);
@@ -287,9 +285,6 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
           >
             {richMessage('copy.ClubDesignView.5edef58fc5')}
           </button>
-          {localizeValue(
-            readonly && <p className={s.note}>{richMessage('copy.ClubDesignView.b095395188')}</p>,
-          )}
         </div>
       </section>
     );

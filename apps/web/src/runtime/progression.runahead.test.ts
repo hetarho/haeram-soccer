@@ -92,7 +92,6 @@ function worker(
     busy: false,
     processing: false,
     activity: 'idle',
-    readonly: false,
     savedRevision: template.revision,
     view: { world: at(day) } as View,
   });
@@ -843,7 +842,6 @@ describe('the client holds the days computed ahead (WEB-18)', () => {
         busy: false,
         processing: false,
         activity: 'idle',
-        readonly: false,
         view: shown,
       },
       held: [],

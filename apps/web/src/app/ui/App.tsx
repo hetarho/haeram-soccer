@@ -256,7 +256,6 @@ function useContentState(): ClientState {
   useLocale(); // Locale changes refresh memoized view boundaries without resetting them.
   const world = useGameState(selectContentWorld);
   const busy = useGameState((state) => state.busy);
-  const readonly = useGameState((state) => state.readonly);
   const totalMatches = useGameState((state) => state.view?.totalMatches);
   const annualCost = useGameState((state) => state.view?.annualCost);
   const milestones = useGameState((state) => state.view?.milestones);
@@ -267,7 +266,6 @@ function useContentState(): ClientState {
   return {
     ...state,
     busy,
-    readonly,
     view:
       world && state.view
         ? {
@@ -302,7 +300,6 @@ const ConnectedStart = memo(function ConnectedStart({
 }) {
   useTextLocale();
   const busy = useGameState((state) => state.busy);
-  const readonly = useGameState((state) => state.readonly);
   const failed = useGameState((state) => !!state.error);
   const loading = useGameState((state) => state.busy && !state.view && !state.start);
   const start = useGameState((state) => state.start);
@@ -318,7 +315,7 @@ const ConnectedStart = memo(function ConnectedStart({
       onBack={onBack}
       busy={busy}
       // A game that failed to load is replaced only explicitly, as at the slot screen (→WEB-62).
-      readonly={readonly || (!replace && failed && !start)}
+      locked={!replace && failed && !start}
       initial={start?.choice}
       progress={start && !start.listings ? { season: start.season ?? WORLD_START } : undefined}
       digest={start?.digest}
@@ -467,32 +464,12 @@ const GameHud = memo(function GameHud({
           </span>
         ),
       )}
-      <ReadonlyBadge />
       {localizeValue(!playing && <PresentationSettingsTrigger />)}
       {localizeValue(playing && <HudCash client={client} />)}
       {localizeValue(playing && <CommunicationsButton className={s.hudNotifications} />)}
     </header>
   );
 });
-/** Read-only ownership is a small HUD badge that explains itself on tap (→WEB-10). */
-function ReadonlyBadge() {
-  useTextLocale();
-  const { t } = useLocale();
-  const readonly = useGameState((state) => state.readonly && !!state.view);
-  const notice = useGameState((state) => state.notice);
-  const [open, setOpen] = useState(false);
-  if (!readonly) return null;
-  const text = notice || t('shell.readonlyNotice');
-  return (
-    <span className={s.readonlyBadge} role="status">
-      <button aria-expanded={open} title={localizeValue(text)} onClick={() => setOpen(!open)}>
-        <PixelIcon name="eye" size={14} />
-        {localizeValue(t('shell.readonly'))}
-      </button>
-      <span className={open ? s.readonlyDetail : s.srOnly}>{localizeValue(text)}</span>
-    </span>
-  );
-}
 const RuntimeFeedback = memo(function RuntimeFeedback({
   client,
   localError,
@@ -509,7 +486,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   const { t } = useLocale();
   const state = useGameState((state) => state);
   const critical = playing ? state.view?.world.critical : undefined;
-  const blocked = state.busy || state.readonly;
+  const blocked = state.busy;
   const error = state.error || localError;
   const recovery = state.recovery;
   return (
@@ -535,7 +512,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
                     recovery?.backup && (
                       <button
                         data-ui="primary"
-                        disabled={state.busy || state.readonly}
+                        disabled={state.busy}
                         onClick={() => void client.recoverFromBackup()}
                       >
                         {localizeValue(t('backup.restore'))}
@@ -693,7 +670,7 @@ function SaveActions({
         !compact && w && state.saveFailed && state.savedRevision !== w.revision && (
           <button
             data-ui="navigation"
-            disabled={state.busy || state.readonly}
+            disabled={state.busy}
             onClick={() => void client.retrySave()}
           >
             {localizeValue(t('save.retry'))}
@@ -728,7 +705,7 @@ function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) 
           className={s.fileInput}
           type="file"
           accept={SAVE_FILE_EXTENSION}
-          disabled={state.busy || state.readonly}
+          disabled={state.busy}
           onChange={(event) => {
             void onImport(event.target.files?.[0]);
             event.target.value = '';

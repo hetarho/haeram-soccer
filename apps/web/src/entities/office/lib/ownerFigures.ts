@@ -522,14 +522,13 @@ export function ownerStatuses(w: World): OwnerStatus[] {
 
 /**
  * Why the owner's controls are locked (→WEB-97), or undefined while they are open: the career's
- * end, a blocking club alert, a read-only tab, the running clock or work still settling, and a
+ * end, a blocking club alert, the running clock or work still settling, and a
  * sheet opened where no command can be sent.
  */
 export function ownerLock(state: ClientState, connected: boolean): string | undefined {
   const w = state.view?.world;
   if (!w || careerOver(w)) return sourceMessage('copy.ownerFigures.13ed83a888');
   if (w.critical) return sourceMessage('copy.ownerFigures.37b69c4bc8');
-  if (state.readonly) return sourceMessage('copy.ownerFigures.05d3f0c469');
   if (state.clockRunning || state.processing) return sourceMessage('copy.ownerFigures.dd737e80ef');
   if (gameActionsBlocked(state)) return sourceMessage('copy.ownerFigures.60c01a5709');
   if (!connected) return sourceMessage('copy.ownerFigures.ff6cbf3618');

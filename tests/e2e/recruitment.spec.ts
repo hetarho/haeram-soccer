@@ -264,19 +264,11 @@ test('pages the global market by OVR, filters all scopes, and approaches a non-r
   );
   await page.getByRole('button', { name: '필터 지우기', exact: true }).click();
   await expect.poll(ids).toEqual(first.items.map((row) => row.player.id));
-  // A second tab can still inspect and filter while its writer protection disables commands.
-  const readonly = await context.newPage();
-  await readonly.goto('/first-team?view=market');
-  await expect(readonly.getByText('읽기 전용', { exact: false }).first()).toBeVisible();
-  const readCard = await marketCandidate(
-    readonly,
-    first.items[0].player.id,
-    first.items[0].player.name,
-  );
-  await expect(
-    readCard.getByRole('button', { name: /^(이적 제안|자유계약 영입|계약 완료)$/ }),
-  ).toBeDisabled();
-  await readonly.close();
+  // A second tab opens no game and so shows no market while this one plays (→SAVE-6).
+  const second = await context.newPage();
+  await second.goto('/first-team?view=market');
+  await expect(second.getByTestId('playing-elsewhere')).toBeVisible();
+  await second.close();
   const target = expected({ page: 1 }).items.find(
     (row) => row.available && !row.recommended && row.source,
   )!;

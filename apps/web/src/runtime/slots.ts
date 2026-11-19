@@ -83,8 +83,8 @@ export class GameSlots {
     return slot < 0 ? 0 : slot;
   }
   /**
-   * The index as the slot screen shows it: the world in play always has its slot, even in a
-   * read-only tab that may not write the index.
+   * The index as the slot screen shows it: the world in play always has its slot, even before
+   * the index lists it.
    */
   display(w: World | undefined): GameIndex {
     const index = this.read();
@@ -98,16 +98,13 @@ export class GameSlots {
   get available() {
     return typeof navigator !== 'undefined' && !!navigator.storage?.getDirectory;
   }
-  private writable() {
-    if (this.client.state.readonly) throw new Error(sourceMessage('copy.slots.6a26f8d2c4'));
-  }
   /**
    * Lists the world in play: a world listed under a slot makes that slot active; an unlisted one
    * takes the slot it is going into, else the active slot, else the first empty one.
    */
   sync(w: World | undefined, played = false): GameIndex {
     const index = this.index.read();
-    if (!w || this.client.state.readonly) return index;
+    if (!w) return index;
     let slot = index.slots.findIndex((entry) => entry?.worldId === w.id);
     const now = new Date().toISOString();
     if (slot < 0) {
@@ -150,7 +147,6 @@ export class GameSlots {
       this.sync(inPlay, true);
       return;
     }
-    this.writable();
     checkedGameId(entry.id);
     this.pending = slot;
     if (!(await this.client.switchTo(entry.id))) {
@@ -164,7 +160,6 @@ export class GameSlots {
    * slot holds loses its file when the new game's is created (→WEB-62).
    */
   async prepare(slot: number) {
-    this.writable();
     const entry = this.read().slots[slot];
     if (entry) checkedGameId(entry.id);
     await this.client.saveGame();
@@ -202,7 +197,6 @@ export class GameSlots {
   }
   /** Deletes a slot's game; true when it was the game in play, which the app then reloads away. */
   async remove(slot: number) {
-    this.writable();
     const index = this.index.read();
     // An earlier-rules checkpoint the index never listed is still the game in play's slot.
     const shown = this.display(this.client.state.view?.world);

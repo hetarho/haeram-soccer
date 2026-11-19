@@ -52,8 +52,7 @@ export function MediationReview({
       value: Awaited<ReturnType<GameClient['mediationPreview']>>;
     }>(),
     [error, setError] = useState<string>();
-  const disabled = useGameState(gameActionsBlocked),
-    readonly = useGameState((state) => state.readonly);
+  const disabled = useGameState(gameActionsBlocked);
   const preview = checked?.id === record.id ? checked.value : undefined;
   const ready =
     checked?.id === record.id && checked.support === support && checked.revision === w.revision;
@@ -260,11 +259,7 @@ export function MediationReview({
             {localizeValue(
               disabled && (
                 <p className={s.hint}>
-                  {localizeValue(
-                    readonly
-                      ? sourceMessage('copy.MediationReview.4f5844a277')
-                      : sourceMessage('copy.MediationReview.dde347e328'),
-                  )}
+                  {localizeValue(sourceMessage('copy.MediationReview.dde347e328'))}
                 </p>
               ),
             )}

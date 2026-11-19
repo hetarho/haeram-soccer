@@ -43,7 +43,6 @@ beforeEach(() => {
       ...initialClientState,
       busy: false,
       processing: false,
-      readonly: false,
       view: { world: world() } as View,
     },
     true,
@@ -151,7 +150,7 @@ describe('controller approval overview', () => {
       const controller = {
         store: createStore(() => ({ running: true, pace: 'x1' })),
       } as unknown as ProgressionController;
-      gameStore.setState({ busy: true, readonly: true });
+      gameStore.setState({ busy: true, error: 'failed' });
       const markup = renderToStaticMarkup(
         createElement(ProgressControls, { client: {} as GameClient, controller }),
       );
@@ -187,7 +186,7 @@ describe('controller 결재함 (→WEB-18)', () => {
     'stays enabled in %s mode, also with nothing waiting and while running',
     (mode, running) => {
       gameStore.getState().view!.world.settings!.mode = mode;
-      gameStore.setState({ busy: true, readonly: true });
+      gameStore.setState({ busy: true });
       const controller = {
         store: createStore(() => ({ running, pace: 'x1' })),
       } as unknown as ProgressionController;

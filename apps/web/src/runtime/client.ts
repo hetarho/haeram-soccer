@@ -69,7 +69,6 @@ export interface ClientState {
   /** Continuous automatic play, including the gaps between worker day calculations. */
   clockRunning?: boolean;
   activity: 'idle' | 'foreground' | 'background';
-  readonly: boolean;
   /**
    * The game plays in another tab (→SAVE-6): this tab shows that, with 여기서 이어 하기, and
    * opens no game database.
@@ -87,11 +86,6 @@ export interface ClientState {
    * (→SAVE-31): the recovery offer. Compatibility failures never set it (→SAVE-11).
    */
   recovery?: { gameId: string; backup?: BackupInfo };
-  /**
-   * Why this tab is read-only, for its HUD badge (→WEB-10). App notices are system notifications
-   * in the inbox instead (→WEB-66).
-   */
-  notice?: string;
   progress: number;
   playback?: Reply['playback'];
   /** The latest committed player command and the world it changed, for outcome feedback. */
@@ -142,7 +136,6 @@ export class GameClient {
     busy: true,
     processing: true,
     activity: 'foreground',
-    readonly: true,
     savedRevision: -1,
     progress: 0,
   };
@@ -333,9 +326,12 @@ export class GameClient {
       return;
     }
     if (!navigator.locks) {
-      // No tab may write without the lock, so this one stays read-only and its badge says why.
-      this.state.notice = sourceMessage('copy.client.2313251099');
-      await this.enqueue(() => this.load());
+      // No tab may play without the lock, so none opens a game (→SAVE-6, →ARCH-17).
+      this.state.busy = false;
+      this.state.processing = false;
+      this.state.activity = 'idle';
+      this.state.error = sourceMessage('copy.client.2313251099');
+      this.emit();
       return;
     }
     this.tab = new PlayingTab(
@@ -354,12 +350,13 @@ export class GameClient {
     if (this.tab.playing || this.failed) return;
     // Another tab plays: this one waits without opening the game's database (→SAVE-6).
     this.state.elsewhere = this.tab.elsewhere;
-    await this.enqueue(() => this.load());
+    this.state.busy = false;
+    this.state.processing = false;
+    this.state.activity = 'idle';
+    this.emit();
   }
   /** This tab now plays: it opens the game in play, saying so when it took it from another tab. */
   private async acquired(moved: boolean) {
-    this.state.readonly = false;
-    delete this.state.notice;
     delete this.state.elsewhere;
     if (moved) notificationStore.add(sourceMessage('tab.takenHere'));
     await this.enqueue(() => this.load());
@@ -379,7 +376,6 @@ export class GameClient {
       await this.rpc({ type: 'close-game', pause: true }, undefined, STORAGE_TIMEOUT_MS);
       this.leaveGame();
       this.gameFiles = undefined;
-      this.state.readonly = true;
       closed = true;
     });
     // The queue reports its own failure as the error shown; the game then stays in this tab.
@@ -392,13 +388,13 @@ export class GameClient {
   /**
    * Opens the game in play — the slot index's active game — in the engine worker, which validates
    * its database and commits any writer upgrade at once (→SAVE-5, →SAVE-10). A game without a
-   * database file reads as an empty slot (→SAVE-29). A read-only tab opens nothing: a game's
+   * database file reads as an empty slot (→SAVE-29). Only the playing tab calls it: a game's
    * database opens in one tab only (→SAVE-6).
    */
   private async load() {
     await this.whenSaved();
-    if (!this.state.readonly) await this.listGames();
-    const gameId = this.state.readonly ? undefined : activeGameId();
+    await this.listGames();
+    const gameId = activeGameId();
     if (gameId) await this.open(gameId);
     this.emit();
   }
@@ -617,7 +613,6 @@ export class GameClient {
     return task;
   }
   private async mutate(body: Body, automatic = false) {
-    if (this.state.readonly) throw new Error(sourceMessage('copy.client.ef47a5dab0'));
     // A new career's first world, the club taken over, is saved whole (→SAVE-3).
     const starts = body.type === 'take-over';
     if (starts) {
@@ -653,7 +648,7 @@ export class GameClient {
   }
   /** Automatic progress is saved within AUTOSAVE_MS, or sooner when anything else saves. */
   private autosave() {
-    if (this.autosaveTimer !== undefined || this.state.readonly) return;
+    if (this.autosaveTimer !== undefined) return;
     this.autosaveTimer = window.setTimeout(() => {
       this.autosaveTimer = undefined;
       this.saveSoon();
@@ -687,7 +682,7 @@ export class GameClient {
    */
   private async saveOnce() {
     const w = this.head?.world;
-    if (!w || this.state.readonly || w.revision === this.state.savedRevision) return;
+    if (!w || w.revision === this.state.savedRevision) return;
     const gameId = this.gameId;
     if (!gameId) throw new Error(sourceMessage('copy.host.c64421732a'));
     if (!this.stored && this.replacedGame) {
@@ -732,7 +727,6 @@ export class GameClient {
       this.state.progress = 0;
       this.emit();
       try {
-        if (this.state.readonly) throw new Error(sourceMessage('copy.client.ef47a5dab0'));
         const reply = await this.rpc(
           { type: 'generate', choice, replace },
           undefined,
@@ -1061,7 +1055,6 @@ export class GameClient {
    */
   exportGame(gameId: string) {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       // A save that fails keeps the progress exportable from memory (→SAVE-3, →SAVE-10).
       let memory = false;
       if (gameId === this.gameId) await this.save().catch(() => (memory = true));
@@ -1091,7 +1084,6 @@ export class GameClient {
     return this.enqueue(async () => {
       const recovery = this.state.recovery;
       if (!recovery) return;
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       await this.open(recovery.gameId, { type: 'restore-backup', gameId: recovery.gameId });
       const backup = recovery.backup;
       if (backup)
@@ -1107,7 +1099,6 @@ export class GameClient {
    */
   importFile(file: Uint8Array) {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       await this.whenSaved();
       // A file of another format is refused here, before the worker is asked.
       const { header } = readSaveFileHeader(file);
@@ -1141,7 +1132,6 @@ export class GameClient {
   async switchTo(gameId: string) {
     return (
       (await this.enqueue(async () => {
-        if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
         const previous = this.gameId;
         clearTimeout(this.autosaveTimer);
         this.autosaveTimer = undefined;
@@ -1164,7 +1154,6 @@ export class GameClient {
   /** Saves the game in play, so another game may take its slot or its place (→SAVE-14). */
   saveGame() {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       await this.save();
     });
   }
@@ -1193,7 +1182,6 @@ export class GameClient {
    */
   deleteGame(gameId: string) {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       // No autosave may bring the removed game back.
       clearTimeout(this.autosaveTimer);
       this.autosaveTimer = undefined;

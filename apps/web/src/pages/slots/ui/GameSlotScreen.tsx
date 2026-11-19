@@ -48,7 +48,6 @@ export function GameSlotScreen({
   useTextLocale();
   const { t } = useLocale();
   const world = useGameState((state) => state.view?.world);
-  const readonly = useGameState((state) => state.readonly);
   const loading = useGameState((state) => state.busy && !state.view);
   const clientError = useGameState((state) => state.error);
   const [index, setIndex] = useState(() => slots.display(world));
@@ -101,7 +100,6 @@ export function GameSlotScreen({
       onEnter();
     });
   };
-  const locked = readonly || busy;
   return (
     <section
       className={s.screen}
@@ -117,13 +115,6 @@ export function GameSlotScreen({
         <PresentationSettingsTrigger />
         <p>{localizeValue(t('slots.description'))}</p>
       </header>
-      {localizeValue(
-        readonly && (
-          <p data-surface="inset" className={s.note} role="status">
-            {localizeValue(t('slots.readonly'))}
-          </p>
-        ),
-      )}
       {localizeValue(
         !slots.available && (
           <p data-surface="inset" className={s.note} role="status">
@@ -165,18 +156,18 @@ export function GameSlotScreen({
                     <button
                       data-ui="primary"
                       className={a.primary}
-                      disabled={locked || (!!world && !slots.available)}
+                      disabled={busy || (!!world && !slots.available)}
                       onClick={() => void run('slots.preparing', async () => onNew(slot))}
                     >
                       {localizeValue(t('slots.new'))}
                     </button>
-                    <label className={`${a.fileButton} ${locked ? s.disabled : ''}`}>
+                    <label className={`${a.fileButton} ${busy ? s.disabled : ''}`}>
                       {localizeValue(t('slots.import'))}
                       <input
                         className={a.fileInput}
                         type="file"
                         accept={SAVE_FILE_EXTENSION}
-                        disabled={locked || (!!world && !slots.available)}
+                        disabled={busy || (!!world && !slots.available)}
                         onChange={(event) => {
                           importInto(slot, event.target.files?.[0]);
                           event.target.value = '';
@@ -236,7 +227,7 @@ export function GameSlotScreen({
                     <button disabled={busy} onClick={() => void exportSlot(slot)}>
                       {localizeValue(t('slots.export'))}
                     </button>
-                    <button disabled={locked} onClick={() => setConfirm({ kind: 'delete', slot })}>
+                    <button disabled={busy} onClick={() => setConfirm({ kind: 'delete', slot })}>
                       {localizeValue(t('slots.delete'))}
                     </button>
                   </div>
@@ -278,7 +269,7 @@ export function GameSlotScreen({
                   <button
                     data-ui="primary"
                     className={a.primary}
-                    disabled={busy || (readonly && !inPlay)}
+                    disabled={busy}
                     onClick={() =>
                       void run('slots.loadingGame', async () => {
                         await slots.continue(slot);
@@ -297,15 +288,12 @@ export function GameSlotScreen({
                         {localizeValue(t('slots.export'))}
                       </button>
                       <button
-                        disabled={locked}
+                        disabled={busy}
                         onClick={() => setConfirm({ kind: 'overwrite', slot })}
                       >
                         {localizeValue(t('slots.overwrite'))}
                       </button>
-                      <button
-                        disabled={locked}
-                        onClick={() => setConfirm({ kind: 'delete', slot })}
-                      >
+                      <button disabled={busy} onClick={() => setConfirm({ kind: 'delete', slot })}>
                         {localizeValue(t('slots.delete'))}
                       </button>
                     </div>

@@ -18,7 +18,6 @@ export async function watchNextMatch(
   await client.whenIdle();
   const state = gameStore.getSnapshot();
   if (
-    state.readonly ||
     state.error ||
     state.view?.world.critical ||
     (state.view && careerEnded(state.view.world)) ||

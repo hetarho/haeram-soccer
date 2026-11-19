@@ -13,7 +13,6 @@ function clientWithQueue(result = Promise.resolve({ ok: true } as Reply)) {
       busy: false,
       processing: false,
       activity: 'idle',
-      readonly: false,
     },
     automaticPending: 0,
     clockEpoch: 0,
@@ -160,15 +159,12 @@ describe('calendar edit protection', () => {
     client.setClockRunning(false);
     expect(notify.mock.calls.map(([state]) => state.clockRunning)).toEqual([true, false]);
   });
-  it('keeps save import available for recovery errors while retaining clock and ownership locks', () => {
+  it('keeps save import available for recovery errors while retaining the clock lock', () => {
     const { client } = clientWithQueue();
     client.state.error = 'damaged save';
     expect(gameActionsBlocked(client.state)).toBe(true);
     expect(gameActionsBlocked(client.state, { recovery: true })).toBe(false);
     client.setClockRunning(true);
-    expect(gameActionsBlocked(client.state, { recovery: true })).toBe(true);
-    client.setClockRunning(false);
-    client.state.readonly = true;
     expect(gameActionsBlocked(client.state, { recovery: true })).toBe(true);
   });
   it('allows previews during calendar work but protects drafts while an owner change is pending', () => {
@@ -180,7 +176,7 @@ describe('calendar edit protection', () => {
     expect(gameActionsBlocked(client.state, { preview: true })).toBe(true);
   });
 
-  it.each(['readonly', 'busy', 'processing', 'error'] as const)(
+  it.each(['busy', 'processing', 'error'] as const)(
     'retains %s protection after stopping',
     (key) => {
       const { client } = clientWithQueue();

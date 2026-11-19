@@ -1602,43 +1602,6 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-/* Read-only ownership: a small chip instead of a banner over the content. */
-.readonlyBadge {
-  position: relative;
-  flex-shrink: 0;
-}
-.readonlyBadge > button {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  min-height: 32px;
-  padding: 2px 9px;
-  border-radius: var(--control-radius);
-  font-size: var(--label-size);
-  font-weight: 700;
-  color: var(--gold);
-  border-color: var(--gold-edge);
-  background: var(--surface-grain, none) var(--warm-tint);
-  box-shadow: none;
-  white-space: nowrap;
-  font-family: var(--display);
-}
-.readonlyDetail {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 40;
-  width: min(260px, 80vw);
-  padding: 9px 11px;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--gold-edge);
-  background: var(--surface-grain, none) var(--surface-2);
-  box-shadow: none;
-  font-size: var(--label-size);
-  line-height: 1.45;
-  color: var(--text);
-  font-family: var(--display);
-}
 .hudClub b {
   font-size: var(--body-size);
   font-weight: 700;

@@ -69,7 +69,7 @@ import { closeMatchDetails, openMatchDetails, STAGING_TIMEOUT_MS } from './watch
 /**
  * KIT-9/12/15, WEB-86/87/108, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played
  * in stay exact through the takeover, settlement, a later adopted commission, export/import, reload,
- * slot parking, read-only inspection, failed writes and newer data. Evidence is the stored
+ * slot parking, a second tab, failed writes and newer data. Evidence is the stored
  * checkpoints and the exported files decoded in Node against literal or delivered designs, beside
  * what the page draws.
  */

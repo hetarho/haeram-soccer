@@ -52,7 +52,6 @@ export function activityUnavailable(state: ClientState, expected: Pick<World, 'i
     return sourceMessage('copy.placeActivityChoices.28162087be');
   if (careerEnded(w) || w.critical) return sourceMessage('copy.ownerFigures.37b69c4bc8');
   if (!gameActionsBlocked(state)) return undefined;
-  if (state.readonly) return sourceMessage('copy.placeActivityChoices.8dd5f8bdad');
   if (state.clockRunning || state.processing)
     return sourceMessage('copy.placeActivityChoices.3297b53108');
   if (state.error) return state.error;

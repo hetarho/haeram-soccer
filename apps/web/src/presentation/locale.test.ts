@@ -147,7 +147,6 @@ describe('locale messages', () => {
       '기록',
     ]);
     expect(t('shell.menu')).toBe('설정');
-    expect(t('shell.readonlyNotice')).toBe('다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.');
     expect(t('shell.loadingView')).toBe('화면을 여는 중…');
     expect(t('shell.cashDetails', { amount: '£1,500', status: '안정' })).toBe(
       '운영 자금 £1,500 · 안정 · 자금 상황 보기',

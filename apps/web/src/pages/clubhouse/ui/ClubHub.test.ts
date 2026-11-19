@@ -81,7 +81,6 @@ beforeEach(() => {
       ...initialClientState,
       busy: false,
       processing: false,
-      readonly: false,
       view: { world: world() } as View,
     },
     true,

@@ -218,7 +218,7 @@ test("our away shirt maps to the away side and leaves the manager's XI alone", a
   expect('kitChoice' in (await savedWorld(page))).toBe(false);
 });
 
-test('a warned cup-tie clash can be confirmed, reads read-only elsewhere and returns to automatic selection', async ({
+test('a warned cup-tie clash can be confirmed, returns to automatic selection', async ({
   page,
   context,
 }) => {
@@ -259,21 +259,13 @@ test('a warned cup-tie clash can be confirmed, reads read-only elsewhere and ret
     .poll(async () => (await savedWorld(page)).kitChoice)
     .toEqual({ fixtureId: next.id, role: 'home' });
 
+  // Another tab opens no game while this one plays, so it shows no kit to change (→SAVE-6).
   const viewer = await context.newPage();
   try {
     await viewer.setViewportSize({ width: 390, height: 844 });
     await viewer.goto('/journal');
-    await expect(viewer.getByTestId('club-hub')).toBeVisible();
-    const view = await openKit(viewer, hubPreparation(viewer));
-    await expect(view.kit.getByTestId('fixture-kit-summary')).toHaveText(/· 직접 고름$/);
-    await expect(view.kit).toContainText('읽기 전용 탭에서는 유니폼을 정할 수 없어요.');
-    for (const role of KIT_ROLES) await expect(radio(view.kit, role)).toBeDisabled();
-    await expect(
-      view.kit.getByRole('button', { name: '이 유니폼으로 정하기', exact: true }),
-    ).toBeDisabled();
-    await expect(
-      view.kit.getByRole('button', { name: '자동 선택으로 되돌리기', exact: true }),
-    ).toBeDisabled();
+    await expect(viewer.getByTestId('playing-elsewhere')).toBeVisible();
+    await expect(viewer.getByTestId('club-hub')).toHaveCount(0);
   } finally {
     await viewer.close();
   }

@@ -246,11 +246,6 @@ export function OwnerOffice({
       )}
       {localizeValue(!scope && <FacilityArt kind="manager" world={w} className={s.hero} eager />)}
       {localizeValue(
-        state.readonly && (
-          <p className={s.message}>{richMessage('copy.OwnerOfficeView.c6b3435977')}</p>
-        ),
-      )}
-      {localizeValue(
         message && !proposal && (
           <p role="alert" className={s.message}>
             {localizeValue(message)}
