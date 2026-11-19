@@ -6,7 +6,7 @@ import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixture
 import { canonical } from '../../../../packages/contracts/src/index';
 import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import type { MatchModelRelease } from '../../../../packages/engine/src/match-model';
-import type { StoragePort } from '../adapters/persistence';
+import type { StoragePort } from '../adapters/repository';
 import { AUTOSAVE_MS, GameClient, SAVE_DATA_UPDATED, type ClientState } from './client';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
@@ -27,24 +27,6 @@ import { GameIndexStore } from '../adapters/games';
 import { createGameStore, NOTIFICATIONS_KEY, type SystemNotification } from './store';
 import { START } from './host.testkit';
 import { divisionName } from '../presentation/competitionLabels';
-
-vi.mock('../adapters/previousStore', () => ({
-  IndexedDbCheckpointKey: class {
-    static available() {
-      return true;
-    }
-    constructor(private key: 'active' | 'previous') {}
-    async read() {
-      return storage.getItem('indexed:' + this.key);
-    }
-    async write(raw: string) {
-      storage.setItem('indexed:' + this.key, raw);
-    }
-    async clear() {
-      storage.removeItem('indexed:' + this.key);
-    }
-  },
-}));
 
 class MemoryStorage implements StoragePort {
   data = new Map<string, string>();
@@ -389,7 +371,6 @@ describe('background worker publication', () => {
       command = worker.replies.findLast(({ request }) => request.body.type === 'command')!,
       save = worker.replies.findLast(({ request }) => request.body.type === 'save')!;
     expect(save.reply.view).toBeUndefined();
-    expect(worker.requests.some((request) => request.body.type === 'inspect')).toBe(false);
     expect(publications.length).toBeGreaterThan(0);
     expect(publications.every((state) => !state.busy && state.progress === 0)).toBe(true);
     expect(publications.some((state) => state.processing && state.activity === 'background')).toBe(
@@ -585,11 +566,6 @@ describe('background worker publication', () => {
     });
     expect(client.state.savedRevision).toBe(last.saved!.revision);
     expect(committed(client.gameId!)).toBe(last.saved!.revision);
-    expect(
-      WorkerPort.instances[0].requests.some(
-        (request) => request.body.type === 'inspect' || request.body.type === 'export',
-      ),
-    ).toBe(false);
   });
   it('saves one at a time and folds requests made meanwhile into one newer save', async () => {
     const client = await start(),
@@ -947,11 +923,7 @@ describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => 
     expect(generated?.ok).toBe(true);
     // Nothing is in play or saved until the takeover (→WORLD-13).
     expect(client.state.view).toBeUndefined();
-    expect(
-      ['indexed:active', 'indexed:previous', 'haeram-soccor:manifest'].map((key) =>
-        storage.getItem(key),
-      ),
-    ).toEqual([null, null, null]);
+    expect(storage.getItem('haeram-soccor:games')).toBeNull();
     const start = client.state.start!;
     expect(start.choice).toEqual(choice);
     expect(BigInt(start.fortune!)).toBeGreaterThan(0n);

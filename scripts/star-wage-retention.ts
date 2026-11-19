@@ -2,7 +2,7 @@
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
-import { decode } from '../apps/web/src/adapters/persistence';
+import { openedSaveFile } from '../tests/fixtures/save-roundtrip';
 import { ATTRIBUTES } from '../packages/contracts/src/player';
 import type { BallonDorPlace } from '../packages/contracts/src/types';
 import { BALLON_DOR_CONFIG } from '../packages/engine/src/ballon-dor';
@@ -12,9 +12,9 @@ import { recentRevenue, wageBill } from '../packages/engine/src/finance';
 import { clubOf } from '../packages/engine/src/player-state';
 import { measurementIdentity } from './lib/measurement-identity';
 
-const source = process.argv[2] ?? '/tmp/haeram-2036.haeram-save.json';
-const raw = readFileSync(source, 'utf8');
-const { world: w } = await decode(raw);
+const source = process.argv[2] ?? '/tmp/haeram-2036.haeram-save';
+const raw = readFileSync(source);
+const w = await openedSaveFile(raw);
 const identity = measurementIdentity('scripts/star-wage-retention.ts');
 const current = structuredClone({ star: MARKET_CONFIG.star, premium: BALLON_DOR_CONFIG.premium });
 const configure = (candidate: boolean) => {

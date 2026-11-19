@@ -10,7 +10,6 @@ import {
   CURRENT_ENGINE_VERSION,
   COMPATIBLE_ENGINE_VERSIONS,
   earlierRulesMessage,
-  envelopeEngine,
   isEarlierEngine,
   LEGACY_ENGINE_VERSIONS,
   NEWER_GAME_MESSAGE,
@@ -108,7 +107,6 @@ describe('the current game version (→SAVE-10, SAVE-26)', () => {
       expect(() => upgradeWorldRules(stored, PIN)).toThrow(SaveCompatibilityError);
       expect(stored).toEqual(before);
     }
-    expect(envelopeEngine('{"schema":4,"engine":"0.7.0"}')).toBe('0.7.0');
     expect(earlierRulesMessage('0.7.0')).toBe(
       '이 저장은 규칙 0.7.0 커리어입니다 — 게임 버전 ' +
         CURRENT_ENGINE_VERSION +

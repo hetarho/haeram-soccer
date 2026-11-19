@@ -108,13 +108,12 @@ import {
   LOAD_CATALOG,
   currency,
 } from '../../../../packages/catalogs/src/index';
-import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { transferLedger } from '../../../../packages/engine/src/transfer-records';
 import { seasonsBeforeOwner } from '../../../../packages/engine/src/club-past';
 import { ownSeasons } from '../../../../packages/engine/src/player-state';
-import { requestSchema, worldMetadataOf, type Request, type Reply, type View } from './protocol';
+import { requestSchema, type Request, type Reply, type View } from './protocol';
 import { ViewPublisher } from './viewPublisher';
 import { playDay, type DaySteps, type HelperPool } from './helperPool';
 const DAY_STEPS: DaySteps = { prepareRound, completeRound, advanceDays };
@@ -435,9 +434,6 @@ export class Host {
   private session?: string;
   private acknowledgments = new Map<string, Reply>();
   private queue = Promise.resolve();
-  // One immutable, fully validated inspection, consumed on activation. Match the complete raw
-  // string; never reuse a live world or trust header/checksum identity alone.
-  private inspected?: { raw: string; result: Awaited<ReturnType<typeof decode>> };
   private newsCache?: { key: string; news: View['news'] };
   private ledgerCache?: { events: World['events']; end: number; ledger: View['transferLedger'] };
   private preOwnerCache?: { key: string; seasons: View['preOwner'] };
@@ -560,7 +556,6 @@ export class Host {
     this.closeGame();
     this.game = { id: gameId, store, saver };
     this.world = attachRecordStore(activated, store);
-    this.inspected = undefined;
     // The upgrade is saved before anything plays on it; a failure keeps the old rows and the
     // upgraded world in memory, exportable (→SAVE-10).
     if (activated !== world) saver.save(activated);
@@ -659,7 +654,6 @@ export class Host {
     if (this.game) {
       this.closeGame();
       this.world = undefined;
-      this.inspected = undefined;
     }
     return { requestId: r.requestId, ok: true };
   }
@@ -671,7 +665,6 @@ export class Host {
     if (this.game?.id === gameId) {
       this.closeGame();
       this.world = undefined;
-      this.inspected = undefined;
     }
     await this.files.remove(gameId);
     return { requestId: r.requestId, ok: true };
@@ -1105,40 +1098,14 @@ export class Host {
         return { requestId: r.requestId, ok: true, games: [...(await this.files.list())] };
       if (r.body.type === 'create-game')
         return await this.createGame(r, r.body.gameId, !!r.body.replace);
-      if (r.body.type !== 'inspect' && r.expectedRevision !== (this.world?.revision ?? -1))
+      if (r.expectedRevision !== (this.world?.revision ?? -1))
         throw new Error(sourceMessage('copy.host.724fb562f2'));
       if (this.world?.receiptIds.includes(r.requestId))
         throw new Error(sourceMessage('copy.host.e7fd0c8c21'));
-      let playback: MatchPlayback | undefined,
-        raw: string | undefined,
-        envelope: Reply['envelope'],
-        candidate: World | undefined,
-        worldMetadata: Reply['worldMetadata'],
-        start: Reply['start'],
-        upgraded = false;
+      let playback: MatchPlayback | undefined, start: Reply['start'];
       let changed = false;
       this.cancelled = false;
-      if (r.body.type === 'inspect') {
-        if (r.body.upgrade && !r.body.activate)
-          throw new Error(sourceMessage('copy.host.c1ad8fe4da'));
-        const result =
-          this.inspected?.raw === r.body.raw ? this.inspected.result : await decode(r.body.raw);
-        this.inspected = r.body.activate ? undefined : { raw: r.body.raw, result };
-        // Only the writer's activation adopts missing identities (→SAVE-21) and records the full
-        // match model (→SAVE-23); inspection and read-only tabs keep the career exactly as stored.
-        const activated =
-          r.body.activate && r.body.upgrade ? this.writerUpgrade(result.world) : result.world;
-        upgraded = activated !== result.world;
-        if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
-        else if (!r.body.activate) candidate = structuredClone(activated);
-        if (r.body.activate) {
-          // The activated world belongs to no database until the client creates its game's.
-          this.closeGame();
-          this.world = activated;
-        }
-        if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);
-        envelope = result.envelope;
-      } else if (r.body.type === 'generate') {
+      if (r.body.type === 'generate') {
         if (this.world && !r.body.replace) throw new Error(sourceMessage('copy.host.76a7247c60'));
         const { choice } = r.body,
           total = seasonsBefore(choice.decade);
@@ -1266,8 +1233,7 @@ export class Host {
           delete w.critical;
           w.revision++;
           changed = true;
-        } else if (r.body.type === 'export')
-          raw = await encode(w, r.generation, r.parentGeneration);
+        }
       }
       if (changed && this.world)
         this.world.receiptIds = [...this.world.receiptIds.slice(-199), r.requestId];
@@ -1276,13 +1242,8 @@ export class Host {
         ok: true,
         ...this.publish(r.viewBase),
         playback,
-        raw,
-        envelope,
-        candidate,
-        worldMetadata,
         start,
         cancelled: this.cancelled,
-        upgraded: upgraded || undefined,
       };
       this.acknowledgments.set(r.requestId, reply);
       if (this.acknowledgments.size > 32)

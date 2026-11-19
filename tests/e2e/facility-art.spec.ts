@@ -1,13 +1,11 @@
-import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse } from './competition-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { checkpoint } from '../../apps/web/src/adapters/persistence';
 import { advanceDays, operate } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { startWork } from '../../packages/engine/src/testing';
 import type { World } from '../../packages/contracts/src/types';
-import { continueSlot } from './slots';
+import { continueSlot, seedSlot } from './slots';
 import { acknowledgeEvents } from './events';
 import { expectHomeBounds, settle } from './layout';
 import { enterOffice, homeAreas, officeDialog } from './office';
@@ -50,8 +48,7 @@ function artWorld(year: number, stadium = 0, trainingGround = 0, academyFacility
 }
 
 async function load(page: Page, world: World) {
-  const { raw } = await checkpoint(world, 1, 0);
-  await seedRawCheckpoint(page, raw);
+  await seedSlot(page, world);
   await page.goto('/');
   await continueSlot(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();

@@ -3,7 +3,7 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
-import { decode, encode } from '../../../apps/web/src/adapters/persistence';
+import { roundTrip } from '../../../tests/fixtures/save-roundtrip';
 import { advanceRound, clubMilestones, progressFacilityWorks, seasonDayOf } from './index';
 import { advanceToNextMatch, sellPlayer, startWork } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -105,7 +105,7 @@ describe('milestones from retained club facts', () => {
   it('does not invent growth for older saves with no such retained facts', async () => {
     const w = world();
     expect(w.players.every((player) => player.developed === undefined)).toBe(true);
-    const restored = (await decode(await encode(w, 1, 0))).world;
+    const restored = roundTrip(w);
     expect(byId(restored, 'player-growth').done).toBe(false);
     expect(clubMilestones(restored)).toEqual(clubMilestones(w));
     const before = canonical(restored),

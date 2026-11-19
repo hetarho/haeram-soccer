@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
-import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../contracts/src/versions';
 import type { World } from '../../contracts/src/types';
 import { Host } from '../../../apps/web/src/runtime/host';
 import type { Body } from '../../../apps/web/src/runtime/protocol';
-import { decode, encode } from '../../../apps/web/src/adapters/persistence';
+import { gameHost, installWorld } from '../../../apps/web/src/runtime/host.testkit';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { currentDay, advanceDays } from './index';
@@ -13,7 +12,7 @@ import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { onPreviousRevision } from '../../../tests/fixtures/earlier-saves';
-import { command, facts, readAndReload } from './feature-replay.testkit';
+import { command, facts, openWorld, readAndReload } from './feature-replay.testkit';
 import { careerWorld } from './career.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
@@ -36,10 +35,10 @@ for (const retained of [false])
       });
       seed.settings!.mode = 'manual';
       seed.settings!.observations = { matchEve: true, windowOpen: false };
-      const manual = new Host(),
-        daily = new Host(),
-        batch = new Host();
-      for (const host of [manual, daily, batch]) host.world = structuredClone(seed);
+      const manual = gameHost(),
+        daily = gameHost(),
+        batch = gameHost();
+      for (const host of [manual, daily, batch]) await openWorld(host, seed);
       batch.world!.settings!.mode = 'automatic';
       for (let stop = 0; stop < 4; stop++) {
         await command(manual, { type: 'next-event' });
@@ -88,15 +87,15 @@ describe("a career on the revision before today's (→SAVE-23, HIST-17)", () => 
       session: 'activation',
       requestId: `activation-${++serial}`,
       expectedRevision: host.world?.revision ?? -1,
-      generation: 1,
-      parentGeneration: 0,
       body,
     });
     expect(reply.ok, reply.error).toBe(true);
     return reply;
   }
-  const load = (host: Host, raw: string) =>
-    send(host, { type: 'inspect', raw, activate: true, upgrade: true });
+  const load = async (host: Host, world: World) => {
+    await installWorld(host, world);
+    return send(host, { type: 'open-game', gameId: 'game' });
+  };
   /**
    * A supported career three rounds in, saved by the game before this one (its labels name the
    * revision before today's, →SAVE-23), then moved on by its writer and played to an own result.
@@ -105,8 +104,8 @@ describe("a career on the revision before today's (→SAVE-23, HIST-17)", () => 
   const activated = () =>
     (built ??= (async () => {
       const before = onPreviousRevision(structuredClone(simulatedWorld(founding, { rounds: 3 })));
-      const host = new Host(undefined, { release: ENABLED_RELEASE });
-      await load(host, await encode(before));
+      const host = gameHost({ release: ENABLED_RELEASE });
+      await load(host, before);
       const at = structuredClone(host.world!);
       for (let n = 0; n < 3 && host.world!.ownMatches.length === before.ownMatches.length; n++)
         await send(host, { type: 'command', command: { type: 'advance', rounds: 1 } });
@@ -121,14 +120,11 @@ describe("a career on the revision before today's (→SAVE-23, HIST-17)", () => 
     expect(added.every((m) => m.model === MATCH_MODEL_REVISION && m.appearance)).toBe(true);
     expect(w.npcSeason!.competitions.length).toBeGreaterThan(0);
     // A reload follows the recorded model whatever the switch says, and writes nothing.
-    const reloaded = new Host();
-    expect((await load(reloaded, await encode(w))).upgraded).toBeUndefined();
-    // An exported file imported into a writer with the switch on is not activated again.
-    const exported = (await send(host, { type: 'export' })).raw!;
-    // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
-    expect((await decode(exported)).envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-    const imported = new Host(undefined, { release: ENABLED_RELEASE });
-    expect((await load(imported, exported)).upgraded).toBeUndefined();
+    const reloaded = gameHost();
+    expect((await load(reloaded, w)).upgraded).toBeUndefined();
+    // A career saved with the switch on, opened by a writer with it on, is not activated again.
+    const imported = gameHost({ release: ENABLED_RELEASE });
+    expect((await load(imported, w)).upgraded).toBeUndefined();
     for (const copy of [reloaded.world!, imported.world!]) {
       expect(copy.npcSeason).toEqual(w.npcSeason);
       expect(copy.matchModel).toEqual(w.matchModel);

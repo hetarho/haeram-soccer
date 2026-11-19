@@ -1,8 +1,7 @@
 import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
-import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { worldOfSaveFile } from '../fixtures/save-file';
+import { seedSaveFile } from './slots';
 import { canonical } from '../../packages/contracts/src/index';
 import {
   KIT_ROLES,
@@ -12,16 +11,14 @@ import {
   type ShirtPattern,
 } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
-import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { nextOwnFixture } from '../../packages/engine/src/index';
 import { legacyCrestMap } from '../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import {
   adoptedCareer,
-  legacyCareerCheckpoint,
+  legacyCareerFile,
   delegatedCareer,
-  FUTURE_CHECKPOINTS,
-  manifestOf,
+  FUTURE_FILES,
   preIdentityCareer,
 } from '../fixtures/club-identity';
 import { colourArea, torsoShare, wornFigures } from '../fixtures/figure-evidence';
@@ -30,22 +27,17 @@ import {
   adoptDraft,
   appliedPanel,
   canvasPixels,
-  checkpointStorage,
   closeNotices,
   closePreparation,
   commission,
   type CommissionColours,
-  committedRaw,
   continueGame,
   crestFill,
   draftItems,
   draftsPanel,
   exportRaw,
   exportWorld,
-  failableWrites,
-  failWrites,
   hud,
-  idbGet,
   identityCommands,
   KIT_LABEL,
   keepScreenshot,
@@ -60,11 +52,9 @@ import {
   PHONE_VIEWPORTS,
   pitchImage,
   refuseNextDesignCommand,
-  requestButton,
-  retrySave,
   SAVE_DATA_UPDATED,
+  savedFacts,
   savedWorld,
-  seedCheckpoints,
   takeOverHere,
   visiblePitch,
   watchIdentityCommands,
@@ -313,20 +303,9 @@ test('a shirt chosen for the next fixture and a waiting commission survive reloa
   await expectChoice();
   await expectDrafts();
 
-  // A new game in slot 2 parks this one first (→SAVE-14).
+  // A new game in slot 2 saves and closes this one first (→SAVE-14).
   await newGameIn(page, 2);
   await takeOverHere(page, 'identity-continuity-other');
-  const index = await page.evaluate(
-    () =>
-      JSON.parse(localStorage.getItem('haeram-soccor:games')!) as {
-        slots: ({ id: string; worldId: string } | null)[];
-      },
-  );
-  expect(index.slots[0]?.worldId).toBe(w.id);
-  const parked = (await decode((await idbGet(page, 'games', index.slots[0]!.id))!)).world;
-  expect(parked.kitChoice).toEqual(choice);
-  expect(parked.designCommission).toEqual(waiting);
-  expect(ownClub(parked).identity).toEqual(applied);
   const second = await savedWorld(page);
   expect(second.id).not.toBe(w.id);
   expect('kitChoice' in second).toBe(false);
@@ -349,10 +328,9 @@ test('a shirt chosen for the next fixture and a waiting commission survive reloa
 });
 
 /**
- * Writer activation has committed the pre-identity career once (→SAVE-3/21): at the next
- * generation, missing designs installed with every visible crest and colour kept (→KIT-15), no
- * recorded kit invented, the released full match model and manager tracking started there in its
- * container (→SAVE-23/24), and the original kept verbatim as the verified previous copy.
+ * Writer activation has saved the pre-identity career once (→SAVE-3/21): missing designs installed
+ * with every visible crest and colour kept (→KIT-15), no recorded kit invented, and the released
+ * full match model and manager tracking started there (→SAVE-23/24).
  */
 function expectedAdoption(legacy: World) {
   const expected = adoptedCareer(legacy);
@@ -360,15 +338,11 @@ function expectedAdoption(legacy: World) {
   return expected;
 }
 
-async function expectAdopted(page: Page, legacy: World, original: string) {
-  await expect.poll(() => committedRaw(page), { timeout: 20000 }).not.toBe(original);
-  const { world, envelope } = await decode((await committedRaw(page))!);
-  expect([envelope.schema, envelope.generation, envelope.parentGeneration]).toEqual([
-    PLAIN_WORLD_CHECKPOINT_SCHEMA,
-    2,
-    1,
-  ]);
-  expect(canonical(world)).toBe(canonical(expectedAdoption(legacy)));
+async function expectAdopted(page: Page, legacy: World) {
+  await expect
+    .poll(async () => canonical(await savedWorld(page)), { timeout: 20000 })
+    .toBe(canonical(expectedAdoption(legacy)));
+  const world = await savedWorld(page);
   const crests = legacyCrestMap(legacy);
   for (const club of world.clubs) {
     const before = legacy.clubs.find((c) => c.id === club.id)!;
@@ -378,8 +352,6 @@ async function expectAdopted(page: Page, legacy: World, original: string) {
   }
   expect(world.ownMatches.length).toBeGreaterThan(0);
   expect(world.ownMatches.some((match) => 'appearance' in match)).toBe(false);
-  expect(await idbGet(page, 'checkpoints', 'previous')).toBe(original);
-  // The updated career and verified predecessor are in IndexedDB (→SAVE-3).
 }
 
 test('a pre-identity career keeps its crests and facts, gains only shirts on writer activation and says its kits were not recorded', async ({
@@ -388,12 +360,9 @@ test('a pre-identity career keeps its crests and facts, gains only shirts on wri
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   const legacy = preIdentityCareer();
-  const raw = await legacyCareerCheckpoint(legacy);
-  expect(JSON.parse(raw).schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-  await seedCheckpoints(page, { active: raw, manifest: manifestOf(raw) });
-  await page.goto('/journal');
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
-  await expectAdopted(page, legacy, raw);
+  // The writer opens the career from its file and adopts the designs as it loads (→SAVE-21).
+  await seedSaveFile(page, await legacyCareerFile(legacy));
+  await expectAdopted(page, legacy);
   const crest = legacyCrestMap(legacy).get(legacy.playerClub)!;
   await expect(crestFill(hud(page), crest.primary)).not.toHaveCount(0);
   const inbox = await openNotices(page);
@@ -407,66 +376,23 @@ test('a pre-identity career keeps its crests and facts, gains only shirts on wri
   await page.reload();
   // A reload restores the view it left, so the loaded game shows as the season HUD, not home.
   await expect(page.getByRole('region', { name: /^시즌 진행/ })).toBeVisible({ timeout: 30000 });
-  expect(JSON.parse((await committedRaw(page))!).generation).toBe(2);
+  expect(canonical(await savedWorld(page))).toBe(canonical(expectedAdoption(legacy)));
 });
 
-test('a read-only tab installs nothing; taking ownership adopts the designs once through the writer', async ({
-  page,
-  context,
-}) => {
+test('a refused adoption keeps the committed save, the drafts and the export', async ({ page }) => {
   test.slow();
-  const holder = await context.newPage();
-  await holder.goto('/');
-  await expect(startFlow(holder)).toBeVisible();
-  const legacy = preIdentityCareer();
-  const raw = await legacyCareerCheckpoint(legacy);
-  const manifest = manifestOf(raw);
-  await page.setViewportSize({ width: 390, height: 844 });
-  await seedCheckpoints(page, { active: raw, manifest });
-  await page.goto('/journal');
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
-  const readOnly = page.getByRole('status').filter({ hasText: '읽기 전용' });
-  await expect(readOnly.first()).toBeVisible();
-  // Inspection shows the designs the career would adopt, without installing them (→SAVE-6/21).
-  const crest = legacyCrestMap(legacy).get(legacy.playerClub)!;
-  await expect(crestFill(hud(page), crest.primary)).not.toHaveCount(0);
-  const view = await openDesign(page);
-  await expect(view).toContainText('읽기 전용 상태에서는 의뢰할 수 없어요.');
-  await expect(requestButton(view)).toBeDisabled();
-  await expect(crestFill(view, crest.primary)).not.toHaveCount(0);
-  // Nothing was installed in memory or written: the export is the stored checkpoint itself.
-  expect(await exportRaw(page)).toBe(raw);
-  expect(await checkpointStorage(page)).toEqual({ active: raw, manifest, previous: null });
-
-  // The writer closes; this tab takes over and adopts through the validated writer path, once.
-  await holder.close();
-  await expect(readOnly).toHaveCount(0, { timeout: 20000 });
-  await expectAdopted(page, legacy, raw);
-  await expect(requestButton(view)).toBeEnabled();
-  await expect(crestFill(view, crest.primary)).not.toHaveCount(0);
-  const inbox = await openNotices(page);
-  await expect(notice(inbox, '다른 탭이 닫혀 이 탭에서 이어서 플레이합니다.')).toHaveCount(1);
-  await expect(notice(inbox, SAVE_DATA_UPDATED)).toHaveCount(1);
-});
-
-test('a refused adoption and a failed checkpoint keep the committed save, the drafts and the export', async ({
-  page,
-}) => {
-  test.slow();
-  await failableWrites(page);
   await watchIdentityCommands(page);
   await page.setViewportSize({ width: 390, height: 844 });
   const w = delegatedCareer('identity-continuity-failures');
   await importResponsibilityCareer(page, w);
   const view = await openDesign(page);
-  // A first adoption commits, so the committed checkpoint has a verified previous copy (→SAVE-3).
+  // A first adoption commits (→SAVE-3).
   const first = await commission(page, view, ['#2b9348']);
   await adoptDraft(view, 0);
   const committed = first.drafts[0]!;
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(committed);
   const { drafts } = await commission(page, view, COMMISSIONED);
-  const before = await checkpointStorage(page);
-  expect(before.previous).not.toBeNull();
+  const before = await savedFacts(page);
 
   // The host refuses an outdated adoption before any effect: drafts, disk and export are untouched.
   await refuseNextDesignCommand(page);
@@ -474,7 +400,7 @@ test('a refused adoption and a failed checkpoint keep the committed save, the dr
   await expect(view.getByRole('alert')).toBeVisible();
   expect(await identityCommands(page)).toEqual({ 'design-commission': 2, 'adopt-design': 2 });
   await expect(draftItems(view)).toHaveCount(drafts.length);
-  expect(await checkpointStorage(page)).toEqual(before);
+  expect(await savedFacts(page)).toBe(before);
   expect(ownClub(await savedWorld(page)).identity).toEqual(committed);
   // The export steps out of the office and back (→WEB-39): the notice closes, the drafts stay.
   const exported = await exportWorld(page);
@@ -482,20 +408,9 @@ test('a refused adoption and a failed checkpoint keep the committed save, the dr
   expect(exported.designCommission?.drafts).toEqual(drafts);
   await expect(draftItems(view)).toHaveCount(drafts.length);
 
-  // Adopted, but its checkpoint cannot be written: the committed save stays loadable and the
-  // adopted design remains exportable from memory until a retry commits it (→SAVE-3/8).
-  await failWrites(page, true);
+  // A later adoption commits, and survives a reload.
   await adoptDraft(view, 1);
-  await expect(page.getByRole('alert').filter({ hasText: '저장 실패' })).toBeVisible();
   const adopted = drafts[1]!;
-  const failed = await checkpointStorage(page);
-  expect([failed.active, failed.manifest]).toEqual([before.active, before.manifest]);
-  // The committed checkpoint was copied and read back as the previous copy before the write.
-  expect(failed.previous).toBe(before.active);
-  expect(ownClub((await decode(failed.active!)).world).identity).toEqual(committed);
-  expect(ownClub(await exportWorld(page)).identity).toEqual(adopted);
-  await failWrites(page, false);
-  await retrySave(page);
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(adopted);
   await page.reload();
   // A reload restores the view it left: the office's 구단 디자인 area, not home.
@@ -506,55 +421,22 @@ test('a refused adoption and a failed checkpoint keep the committed save, the dr
   expect('designCommission' in reloaded).toBe(false);
 });
 
-test('a failed adoption write keeps the original checkpoint and still exports the adopted career', async ({
-  page,
-}) => {
-  test.slow();
-  await failableWrites(page);
-  await page.setViewportSize({ width: 390, height: 844 });
-  const legacy = preIdentityCareer();
-  const raw = await legacyCareerCheckpoint(legacy);
-  const manifest = manifestOf(raw);
-  await seedCheckpoints(page, { active: raw, manifest });
-  await failWrites(page, true);
-  await page.goto('/journal');
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
-  await expect(
-    page.getByRole('alert').filter({ hasText: '갱신한 저장 데이터를 저장하지 못했어요' }),
-  ).toBeVisible();
-  // The original is still the committed checkpoint, now also its verified previous copy.
-  expect(await checkpointStorage(page)).toEqual({ active: raw, manifest, previous: raw });
-  expect(canonical(await exportWorld(page))).toBe(canonical(expectedAdoption(legacy)));
-  const inbox = await openNotices(page);
-  await expect(notice(inbox, SAVE_DATA_UPDATED)).toHaveCount(0);
-  await closeNotices(inbox);
-  await failWrites(page, false);
-  await retrySave(page);
-  await expectAdopted(page, legacy, raw);
-});
-
-for (const [name, write] of Object.entries(FUTURE_CHECKPOINTS))
-  test(`newer save data (${name}) over a valid older predecessor stays protected`, async ({
+for (const [name, write] of Object.entries(FUTURE_FILES))
+  test(`newer save data (${name}) is refused on import and leaves every slot untouched`, async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    const w = delegatedCareer('identity-continuity-future');
-    const older = await encode(w, 1, 0);
-    const newer = await write(w, 2, 1);
-    const stored = { active: newer, manifest: manifestOf(newer), previous: older };
-    await seedCheckpoints(page, stored);
+    const newer = await write(delegatedCareer('identity-continuity-future'));
     await page.goto('/');
-    const refused = page.getByRole('alert').filter({ hasText: '지원하지 않는' });
-    await expect(refused.first()).toBeVisible();
+    await expect(startFlow(page)).toBeVisible();
+    await page.getByLabel('기록 파일 가져오기').setInputFiles({
+      name: 'newer.haeram-save',
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(newer),
+    });
+    await expect(
+      page.getByRole('alert').filter({ hasText: '지원하지 않는' }).first(),
+    ).toBeVisible();
     await expect(page.getByTestId('club-hub')).toHaveCount(0);
-    expect(await checkpointStorage(page)).toEqual(stored);
-    // Recovery exports the newer file exactly (→SAVE-11).
-    const downloading = page.waitForEvent('download');
-    await refused.getByRole('button', { name: '복구 기록 내보내기', exact: true }).click();
-    expect(await readFile((await (await downloading).path())!, 'utf8')).toBe(newer);
-    // Another load protects it again instead of falling back to the valid predecessor.
-    await page.reload();
-    await expect(refused.first()).toBeVisible();
-    await expect(page.getByTestId('club-hub')).toHaveCount(0);
-    expect(await checkpointStorage(page)).toEqual(stored);
+    expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:games'))).toBeNull();
   });

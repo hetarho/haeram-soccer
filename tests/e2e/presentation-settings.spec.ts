@@ -2,7 +2,7 @@ import { openPersonnel } from './personnel-navigation';
 import { clubhouseTab, openLeague } from './competition-navigation';
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { canonical } from '../../packages/contracts/src/index';
 import { simulatedWorld } from '../fixtures/worlds';
 import {
   FIXTURE_BACKGROUND,
@@ -15,7 +15,7 @@ import {
 } from '../fixtures/presentation';
 import { chooseOption, selectOptions } from './select';
 import { continueSlot, seedSlot } from './slots';
-import { committedRaw, savedWorld } from './club-identity-helpers';
+import { exportWorld, savedFacts, savedWorld } from './club-identity-helpers';
 import { expectHomeBounds, settle } from './layout';
 import { textContrast } from './contrast';
 import { leaveOffice, openArea, openOfficePage } from './office';
@@ -71,7 +71,7 @@ for (const entry of baseline.localeRegistry.entries.filter(
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth - innerWidth),
       ).toBeLessThanOrEqual(1);
-      expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
+      expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:games'))).toBeNull();
       await page.reload();
       await expect(start).toBeVisible();
       await expect(page.locator('html')).toHaveAttribute('lang', entry.id);
@@ -79,7 +79,7 @@ for (const entry of baseline.localeRegistry.entries.filter(
       await expect(page.getByTestId('presentation-settings-trigger')).toHaveText(
         pack.messages['presentation.open'],
       );
-      expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
+      expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:games'))).toBeNull();
     });
 }
 
@@ -409,7 +409,7 @@ for (const width of [390, 1380])
     }) => {
       await page.setViewportSize({ width, height: 844 });
       await loadPausedGame(page);
-      const raw = await committedRaw(page);
+      const raw = await savedFacts(page);
       const date = await page.getByTestId('calendar').innerText();
       // 훈련 keeps its training ground (→WEB-70/72); its era/stage scene changes with the pack.
       await openPersonnel(page, 'training');
@@ -440,7 +440,7 @@ for (const width of [390, 1380])
       await expect(art).toBeVisible();
       expect(await background(page)).toBe(pack.tokens.palette.bg);
       await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
-      expect(await committedRaw(page)).toBe(raw);
+      expect(await savedFacts(page)).toBe(raw);
       await openSettings(page);
       await chooseOption(page.getByTestId('presentation-theme'), baseline.theme.id);
       await expect.poll(() => background(page)).toBe(baseline.theme.tokens.palette.bg);
@@ -450,7 +450,7 @@ for (const width of [390, 1380])
       await page.reload();
       await expect(art).toBeVisible();
       expect(await background(page)).toBe(baseline.theme.tokens.palette.bg);
-      expect(await committedRaw(page)).toBe(raw);
+      expect(await savedFacts(page)).toBe(raw);
       await expectHomeBounds(page);
     });
 
@@ -598,11 +598,11 @@ test('a failed initial default resource offers retry without creating game data'
   });
   await page.goto('/');
   await expect(page.getByTestId('presentation-initial-error')).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:games'))).toBeNull();
   await page.getByTestId('presentation-retry').click();
   await expect(startFlow(page)).toBeVisible();
   expect(attempts).toBeGreaterThanOrEqual(2);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:games'))).toBeNull();
 });
 
 test('denied preference storage keeps data-only selections usable for this session', async ({
@@ -660,7 +660,7 @@ test('a failed theme selection retains the usable pack and retries without losin
   await closeSettings(page);
   await expect(tier).toHaveAttribute('aria-pressed', 'true');
   expect(fixture.requests.get(fixture.themeUrl)).toBeGreaterThanOrEqual(2);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:games'))).toBeNull();
 });
 
 test('unseen routed locale and theme change actual resources while game facts, the section and Korean prose stay exact', async ({
@@ -670,8 +670,8 @@ test('unseen routed locale and theme change actual resources while game facts, t
   const fixture = await routeSyntheticPresentation(page);
   await observeCommands(page);
   await loadPausedGame(page);
-  const raw = (await committedRaw(page))!;
-  const world = (await decode(raw)).world;
+  const world = await exportWorld(page);
+  const raw = canonical(world);
   const date = await page.getByTestId('calendar').innerText();
   const sent = await commands(page);
   const marketing = (await openArea(page, '팬 · 마케팅')).locator(
@@ -695,7 +695,7 @@ test('unseen routed locale and theme change actual resources while game facts, t
   expect(page.url()).toBe(address);
   await expect(marketing).toContainText('현재 적용');
   expect(await commands(page)).toBe(sent);
-  expect(await committedRaw(page)).toBe(raw);
+  expect(await savedFacts(page)).toBe(raw);
   await leaveOffice(page);
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
@@ -743,7 +743,7 @@ test('unseen routed locale and theme change actual resources while game facts, t
   expect(
     await page.evaluate((key) => JSON.parse(localStorage.getItem(key)!), PREFERENCE_KEY),
   ).toEqual({ localeId: FIXTURE_LOCALE, themeId: FIXTURE_THEME });
-  const after = (await decode((await committedRaw(page))!)).world;
+  const after = await exportWorld(page);
   expect(after).toEqual(world);
   expect(after.events).toContainEqual(
     expect.objectContaining({ title: STORED_KOREAN_TITLE, detail: STORED_KOREAN_DETAIL }),
@@ -761,7 +761,6 @@ test('a read-only game tab changes presentation without claiming ownership or is
 }) => {
   await routeSyntheticPresentation(page);
   await loadPausedGame(page);
-  const raw = await committedRaw(page);
   const viewer = await context.newPage();
   await routeSyntheticPresentation(viewer);
   await observeCommands(viewer);
@@ -788,6 +787,5 @@ test('a read-only game tab changes presentation without claiming ownership or is
   await closeSettings(viewer);
   await expect(viewer.getByRole('button', { name: '읽기 전용', exact: true })).toBeVisible();
   expect(await commands(viewer)).toBe(sent);
-  expect(await committedRaw(viewer)).toBe(raw);
   await viewer.close();
 });

@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { decode } from '../apps/web/src/adapters/persistence';
+import { openedSaveFile } from '../tests/fixtures/save-roundtrip';
 import { simulateSeason } from '../packages/engine/src/season';
 import { MARKET_CONFIG } from '../packages/engine/src/market-prices';
 import { BALLON_DOR_CONFIG } from '../packages/engine/src/ballon-dor';
@@ -21,7 +21,7 @@ interface Job {
   variant: 'baseline' | 'candidate';
 }
 const candidate = structuredClone({ star: MARKET_CONFIG.star, premium: BALLON_DOR_CONFIG.premium });
-const source = option('save', '/tmp/haeram-2036.haeram-save.json');
+const source = option('save', '/tmp/haeram-2036.haeram-save');
 const seasons = Number(option('seasons', '4'));
 async function run(job: Job) {
   Object.assign(
@@ -32,7 +32,7 @@ async function run(job: Job) {
     BALLON_DOR_CONFIG.premium,
     job.variant === 'baseline' ? { winner: 1.2, podium: 1.1, repeatWinner: 0 } : candidate.premium,
   );
-  const { world: w } = await decode(readFileSync(source, 'utf8'));
+  const w = await openedSaveFile(readFileSync(source));
   if (job.seed) w.seed = `${w.seed}:wage-forecast:${job.seed}`;
   const originalYears = w.history.length,
     startEvents = w.events.length;

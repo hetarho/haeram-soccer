@@ -825,10 +825,9 @@ export function App() {
   useEffect(() => {
     if (!client || launched.current || !settled) return;
     launched.current = true;
-    // An earlier-rules career stays on the slot screen, which offers its export and delete
-    // (→SAVE-16); any other failure opens the recovery path.
-    if (loadFailed) setScreen(client.earlierRules() && slots ? 'slots' : 'game');
-  }, [client, settled, loadFailed, slots]);
+    // A game that fails to open shows the recovery path.
+    if (loadFailed) setScreen('game');
+  }, [client, settled, loadFailed]);
   const openSlots = () => {
     // Leaving play shows the days computed ahead at once, so the slot card has the saved date.
     controller?.pause(true);
@@ -964,7 +963,7 @@ export function App() {
     setLocalError('');
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
-    // The stored game in play counts its IndexedDB active copy (→SAVE-3).
+    // The stored game in play has its database file (→SAVE-3).
     if (w || client?.hasStoredGame()) {
       setMoreOpen(false);
       setPendingImport(bytes);

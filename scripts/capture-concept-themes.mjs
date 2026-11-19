@@ -33,7 +33,8 @@ try {
     .getByTestId('save-status')
     .filter({ hasText: '저장 완료' })
     .waitFor({ timeout: 60000 });
-  const saved = await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'));
+  // The save status names the revision committed to the game's database (→SAVE-3).
+  const saved = await page.getByTestId('save-status').textContent();
   const date = await page.getByTestId('calendar').innerText();
   for (const theme of ['matchday-print', 'sticker-club']) {
     await page.getByRole('button', { name: '설정', exact: true }).click();
@@ -110,8 +111,8 @@ try {
     if (restored !== theme) throw new Error(`Preference lost: ${theme}`);
     if ((await page.getByTestId('calendar').innerText()) !== date)
       throw new Error('Game date changed');
-    if ((await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))) !== saved)
-      throw new Error('Save manifest changed');
+    if ((await page.getByTestId('save-status').textContent()) !== saved)
+      throw new Error('Saved revision changed');
     await page.setViewportSize({ width: 1380, height: 920 });
     await page.locator('aside').getByRole('button', { name: '1군', exact: true }).click();
     await page

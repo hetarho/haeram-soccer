@@ -2,7 +2,7 @@ import { expect } from 'vitest';
 import { canonical, type World } from '../../contracts/src/index';
 import { Host } from '../../../apps/web/src/runtime/host';
 import type { Body } from '../../../apps/web/src/runtime/protocol';
-import { encode } from '../../../apps/web/src/adapters/persistence';
+import { installWorld } from '../../../apps/web/src/runtime/host.testkit';
 
 let serial = 0;
 async function send(host: Host, body: Body) {
@@ -11,8 +11,6 @@ async function send(host: Host, body: Body) {
     session: 'feature-replay',
     requestId: `request-${++serial}`,
     expectedRevision: host.world?.revision ?? -1,
-    generation: 1,
-    parentGeneration: 0,
     body,
   });
   expect(reply.ok, reply.error).toBe(true);
@@ -28,12 +26,17 @@ export function facts(world: World) {
   copy.settings!.mode = 'automatic';
   return canonical(copy);
 }
+/** Opens `world` in a `gameHost` as the writer's activation does, so reloads of it change nothing. */
+export async function openWorld(host: Host, world: World) {
+  await installWorld(host, world);
+  await send(host, { type: 'open-game', gameId: 'game' });
+}
 export async function readAndReload(host: Host) {
   const before = canonical(host.world!);
   const person = host.world!.players[0].id;
   await send(host, { type: 'person-career', person });
   await send(host, { type: 'recruitment-history' });
   expect(canonical(host.world!)).toBe(before);
-  await send(host, { type: 'inspect', raw: await encode(host.world!), activate: true });
+  await openWorld(host, host.world!);
   expect(canonical(host.world!)).toBe(before);
 }

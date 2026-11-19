@@ -1,4 +1,3 @@
-import { seedRawCheckpoint } from './checkpoint-storage';
 import {
   clubhouseTab,
   openClubhouse,
@@ -8,11 +7,10 @@ import {
 } from './competition-navigation';
 import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
-import { encode } from '../../apps/web/src/adapters/persistence';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import type { World } from '../../packages/contracts/src/types';
 import { configureResponsibilities, matchReport } from './events';
-import { continueSlot } from './slots';
+import { continueSlot, seedSlot } from './slots';
 import { chooseOption } from './select';
 import { openClubOverview } from './office';
 import { startCareer } from './start';
@@ -290,8 +288,7 @@ test('watching a match pauses the calendar and retains playback across page swit
 
 /** Puts a world in slot 1, to continue from the slot screen. */
 async function seed(page: Page, w: World) {
-  const raw = await encode(w, 1, 0);
-  await seedRawCheckpoint(page, raw);
+  await seedSlot(page, w);
 }
 
 test('the club overview flags tired starters and offers no remedy (→WEB-44)', async ({ page }) => {

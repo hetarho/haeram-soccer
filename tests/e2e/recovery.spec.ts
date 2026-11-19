@@ -2,15 +2,12 @@ import { openPersonnel } from './personnel-navigation';
 import { clubhouseTab, openLeague } from './competition-navigation';
 import { advanceOneRound } from './season-progression';
 import { test, expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-import { decode } from '../../apps/web/src/adapters/persistence';
-import { saveFileOf, worldOfSaveFile } from '../fixtures/save-file';
+import { saveFileOf } from '../fixtures/save-file';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
-import { currentDay } from '../../packages/engine/src/calendar';
-import { configureResponsibilities } from './events';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
 import { openSaveMenu } from './save-menu';
-import { committedRaw, idbGet, idbPut } from './club-identity-helpers';
+import { savedFacts } from './club-identity-helpers';
+import { FUTURE_FILES } from '../fixtures/club-identity';
 import { startCareer, startFlow } from './start';
 const found = async (page: import('@playwright/test').Page) => {
   await page.goto('/');
@@ -64,127 +61,13 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await expect(second.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
   await second.close();
 });
-test('recovers prior checkpoint after active corruption without clearing another application key', async ({
-  page,
-}) => {
-  // Two rounds, a reload, the recovery and an export: Firefox CI 39971746291 reached the last
-  // reload at 30.0 s with every step on time.
-  test.slow();
+test('unsupported import leaves the current world intact', async ({ page }) => {
   await found(page);
-  const first = await advanceRound(page);
-  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${first} ·`);
-  await page.evaluate(() => localStorage.setItem('another-app:keep', 'present'));
-  // The active copy and its committed predecessor are kept in IndexedDB (→SAVE-3).
-  const previousRaw = (await idbGet(page, 'checkpoints', 'previous'))!;
-  await idbPut(page, 'checkpoints', 'active', 'corrupt');
-  const previous = (await decode(previousRaw)).world;
-  await page.reload();
-  // The recovery is an unread system notification in the HUD inbox, never a banner (→WEB-66).
-  await page.getByRole('button', { name: /^알림·뉴스 · 새 소식/ }).click();
-  const inbox = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
-  await expect(inbox.getByRole('listitem').filter({ hasText: '시스템' })).toContainText(
-    '체크포인트로 복구',
+  const before = await savedFacts(page);
+  // A file of a database schema this version does not know, and an old JSON envelope.
+  const future = await FUTURE_FILES['database schema 2'](
+    careerWorld({ country: 'ENG', seed: 'recovery-future' }),
   );
-  await inbox.getByRole('button', { name: '닫기', exact: true }).click();
-  await expect(page.getByRole('status').filter({ hasText: '체크포인트로 복구' })).toHaveCount(0);
-  await expect(page.getByTestId('game-round')).toHaveText(`${previous.round}`);
-  const downloading = page.waitForEvent('download');
-  const saveMenu = await openSaveMenu(page);
-  await saveMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-  const download = await downloading;
-  await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  const restored = await worldOfSaveFile(readFileSync((await download.path())!));
-  expect({
-    day: currentDay(restored),
-    round: restored.round,
-    cash: restored.cash,
-    players: restored.players,
-    matches: restored.ownMatches,
-  }).toEqual({
-    day: currentDay(previous),
-    round: previous.round,
-    cash: previous.cash,
-    players: previous.players,
-    matches: previous.ownMatches,
-  });
-
-  expect(await page.evaluate(() => localStorage.getItem('another-app:keep'))).toBe('present');
-  const again = await advanceRound(page);
-  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${again} ·`);
-  await page.reload();
-  await expect(page.getByTestId('game-round')).toHaveText(`${previous.round + 1}`);
-});
-test('quota failure preserves disk save, exports actual memory progress and retries', async ({
-  page,
-}) => {
-  // A takeover, a round, an export and a retry: 42 s in a local Firefox run against 30 s.
-  test.slow();
-  await page.addInitScript(() => {
-    const original = Storage.prototype.setItem;
-    Storage.prototype.setItem = function (k, v) {
-      if (
-        (globalThis as typeof globalThis & { failWrites?: boolean }).failWrites &&
-        k.startsWith('haeram-soccor:')
-      )
-        throw new DOMException('Synthetic quota failure', 'QuotaExceededError');
-      original.call(this, k, v);
-    };
-  });
-  await found(page);
-  // Prepare the first match before failing storage: once a write fails, public progression
-  // correctly stops until retry. One match action then demonstrates unsaved memory progress.
-  await configureResponsibilities(page, {
-    responsibilities: { recruitment: 'delegated', sales: 'delegated' },
-    mode: 'manual',
-    observations: { matchEve: true, windowOpen: false },
-  });
-  await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
-  await expect(page.getByTestId('event-card')).toContainText('내일 경기');
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  const before = await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'));
-  await page.evaluate(() => {
-    (globalThis as typeof globalThis & { failWrites?: boolean }).failWrites = true;
-  });
-  const revision = await advanceRound(page);
-  await expect(page.getByRole('alert')).toContainText('저장 실패');
-  const alerts = page.getByTestId('runtime-alerts');
-  await expect(
-    alerts.getByRole('button', { name: '저장 다시 불러오기', exact: true }),
-  ).toBeVisible();
-  expect(
-    await alerts.evaluate((element) => ({
-      portal: element.parentElement === document.body,
-      position: getComputedStyle(element).position,
-    })),
-  ).toEqual({ portal: true, position: 'fixed' });
-  // The status names the last committed save beside the revision this match reached.
-  await expect(page.getByTestId('save-status')).toContainText(
-    new RegExp(`(방금|초 전) 저장 · r${revision} ·`),
-  );
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(before);
-  const event = page.waitForEvent('download');
-  const saveMenu = await openSaveMenu(page);
-  await saveMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-  const download = await event;
-  const memory = await worldOfSaveFile(readFileSync((await download.path())!));
-  expect(memory.round).toBe(1);
-  expect(memory.revision).toBe(revision);
-  await page.evaluate(() => {
-    (globalThis as typeof globalThis & { failWrites?: boolean }).failWrites = false;
-  });
-  await page.getByRole('button', { name: '저장 재시도' }).click();
-  await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
-  await page.reload();
-  await expect(page.getByTestId('game-round')).toHaveText('1');
-});
-test('unsupported import leaves the current world and manifest intact', async ({ page }) => {
-  await found(page);
-  const data = {
-    manifest: (await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest')))!,
-    raw: (await committedRaw(page))!,
-  };
-  const future = { ...JSON.parse(data.raw), schema: 99 };
   await (
     await openSaveMenu(page)
   )
@@ -192,17 +75,15 @@ test('unsupported import leaves the current world and manifest intact', async ({
     .last()
     .setInputFiles({
       name: 'future.haeram-save',
-      mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify(future)),
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(future),
     });
   await page.getByRole('button', { name: '기록 교체하고 가져오기' }).click();
   await expect(page.getByRole('alert')).toContainText('지원하지 않는');
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(
-    data.manifest,
-  );
   await expect(page.getByTestId('game-round')).toHaveText('0');
+  expect(await savedFacts(page)).toBe(before);
 });
-test('a terminated real worker exposes recovery and retains the last committed checkpoint', async ({
+test('a terminated real worker exposes recovery and retains the last committed save', async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -217,7 +98,6 @@ test('a terminated real worker exposes recovery and retains the last committed c
     };
   });
   await found(page);
-  const manifest = await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'));
   await page.evaluate(() => {
     const worker = (globalThis as typeof globalThis & { testWorker?: Worker }).testWorker!;
     const handler = worker.onerror;
@@ -230,7 +110,6 @@ test('a terminated real worker exposes recovery and retains the last committed c
     );
   });
   await expect(page.getByRole('alert')).toContainText('Worker가 종료');
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBe(manifest);
   await page.reload();
   await expect(page.getByTestId('game-round')).toHaveText('0');
   await expect(

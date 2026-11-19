@@ -1,10 +1,10 @@
 import { expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { CAREER_YEAR } from '../../../../packages/engine/src/career.testkit';
-import { checkpoint, decode } from './persistence';
+import { roundTrip } from '../../../../tests/fixtures/save-roundtrip';
 import { tenRichSeasons } from './persistence.testkit';
 
-it('builds an IndexedDB codec checkpoint of a 10-season career that decodes to the same world', async () => {
+it('saves a 10-season career into its database and opens the same world', () => {
   const w = tenRichSeasons();
   expect(w.history).toHaveLength(10);
   expect(w.history.map((season) => season.year)).toEqual(
@@ -28,8 +28,5 @@ it('builds an IndexedDB codec checkpoint of a 10-season career that decodes to t
     expect(BigInt(season.fortune)).toBe(fortune);
   }
   expect(BigInt(owner.fortune)).toBe(fortune);
-  const { raw, envelope } = await checkpoint(w, 5, 4);
-  expect(envelope).toMatchObject({ worldId: w.id, generation: 5, parentGeneration: 4 });
-  expect(JSON.parse(raw)).toEqual(envelope);
-  expect(canonical((await decode(raw)).world)).toBe(canonical(w));
+  expect(canonical(roundTrip(w))).toBe(canonical(w));
 }, 600000);

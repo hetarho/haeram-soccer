@@ -4,13 +4,13 @@ import { WORLD_VIEW_FIELDS, projectWorldFacts } from './worldProjection';
 import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { Host, VIEW_PATCH, type OpenStore } from './host';
 import { applyViewDelta, type View } from './protocol';
 import type { RecordStore } from '../../../../packages/contracts/src/record-store';
 import { memoryRecordStore } from '../../../../tests/fixtures/node-sqlite';
 import { canonical } from '../../../../packages/contracts/src/index';
-import { decode, encode } from '../adapters/persistence';
+import { roundTrip } from '../../../../tests/fixtures/save-roundtrip';
 import { currentDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import {
   operate,
@@ -20,20 +20,12 @@ import {
   clubNews,
   advanceRound,
   identityOf,
-  MATCH_MODEL_RELEASE,
   UnreleasedMatchModelError,
 } from '../../../../packages/engine/src/index';
 import type { GameSettings, World } from '../../../../packages/contracts/src/types';
-import {
-  MATCH_MODEL_REVISION,
-  type MatchModelState,
-} from '../../../../packages/contracts/src/match-model';
-import { encodePayload } from '../adapters/compression';
+import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
 import type { KitRole } from '../../../../packages/contracts/src/identity';
-import {
-  PLAIN_WORLD_CHECKPOINT_SCHEMA,
-  PRIOR_CATALOG_HASHES,
-} from '../../../../packages/contracts/src/versions';
+import { PRIOR_CATALOG_HASHES } from '../../../../packages/contracts/src/versions';
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
 import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
@@ -48,7 +40,16 @@ import {
 } from '../../../../tests/fixtures/earlier-saves';
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
-import { input, playOn, req, startedHost, startedWorld } from './host.testkit';
+import {
+  gameHost,
+  input,
+  loadWorld,
+  playOn,
+  req,
+  savedWorld,
+  startedHost,
+  startedWorld,
+} from './host.testkit';
 import { HelperPool, type HelperJob, type HelperPort } from './helperPool';
 import { createFixtureHelper, serve as serveHelper } from './fixtureHelper';
 import { persistedFixturePlayer } from '../../../../packages/engine/src/player-fixtures.testkit';
@@ -244,8 +245,6 @@ describe('worker command protocol', () => {
     expect(days.ok).toBe(true);
     expect(days.view?.world.calendar?.day).toBe(3);
     expect(days.view?.world.round).toBe(0);
-    // A command is answered without encoding: checkpoints come from the codec worker.
-    expect(days.raw).toBeUndefined();
     expect(await h.handle(dayRequest)).toBe(days);
     // A real sale offer may have arrived on that date; reading it cannot authorize travel.
     for (const bid of h.world!.bids || [])
@@ -345,7 +344,6 @@ describe('worker command protocol', () => {
     expect(result.ok).toBe(false);
     expect(h.world!.calendar?.day).toBe(0);
     expect(h.world!.revision).toBe(0);
-    expect(result.raw).toBeUndefined();
   });
   it('saves the current world and revision in its database, whatever revision the client saw', async () => {
     const { host: h, create, reopened } = withDatabase();
@@ -357,7 +355,6 @@ describe('worker command protocol', () => {
     const saving = await h.handle(req('save', -1, { type: 'save' }));
     expect(saving.ok).toBe(true);
     expect(saving.view).toBeUndefined();
-    expect(saving.raw).toBeUndefined();
     expect(saving.saved).toEqual({ gameId: 'game', worldId: h.world!.id, revision });
     const saved = await reopened();
     expect(saved.revision).toBe(revision);
@@ -498,69 +495,32 @@ function withoutIdentities(w: World) {
 }
 /** A career saved before club identities, on today's match model. */
 const preIdentity = (span?: { rounds: number }) => withoutIdentities(simulatedWorld(input, span));
-const activate = (id: string, raw: string, upgrade = true) =>
-  req(id, -1, { type: 'inspect', raw, activate: true, upgrade });
 
 describe('supported-career persisted squad adoption', () => {
-  it('keeps inspection unchanged and saves founded squads only on writer activation', async () => {
+  it('saves founded squads only on writer activation', async () => {
     const legacy = startedWorld();
     delete legacy.squads;
-    const raw = await encode(legacy);
-    const h = new Host();
-    const inspected = await h.handle(req('squad-inspect', -1, { type: 'inspect', raw }));
-    expect(inspected.ok, inspected.error).toBe(true);
-    expect(inspected.candidate).not.toHaveProperty('squads');
-    expect(inspected.raw).toBeUndefined();
-    const readonly = await h.handle(activate('squad-readonly', raw, false));
-    expect(readonly.ok, readonly.error).toBe(true);
-    expect(h.world).not.toHaveProperty('squads');
-    const written = await h.handle(activate('squad-writer', raw));
+    const h = gameHost();
+    const written = await loadWorld(h, 'squad-writer', legacy);
     expect(written.ok, written.error).toBe(true);
     expect(written.upgraded).toBe(true);
     expect(h.world!.squads).toBeDefined();
-    expect(written.raw).toBeDefined();
-    const saved = await decode(written.raw!);
-    expect(saved.world.squads).toEqual(h.world!.squads);
-    const reloaded = await h.handle(activate('squad-again', written.raw!));
+    expect(savedWorld(h).squads).toEqual(h.world!.squads);
+    const again = gameHost();
+    const reloaded = await loadWorld(again, 'squad-again', savedWorld(h));
     expect(reloaded.ok, reloaded.error).toBe(true);
     expect(reloaded.upgraded).toBeUndefined();
-    expect(reloaded.raw).toBeUndefined();
   });
 });
 
 describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
-  it('inspect/read-only activation does not install identities or increment revision', async () => {
-    const legacy = preIdentity({ rounds: 2 });
-    const raw = await encode(legacy);
-    const h = new Host();
-    const inspected = await h.handle(req('inspect', -1, { type: 'inspect', raw }));
-    expect(inspected.ok, inspected.error).toBe(true);
-    expect(inspected.upgraded).toBeUndefined();
-    expect(canonical(inspected.candidate)).toBe(canonical(legacy));
-    const metadata = await h.handle(req('meta', -1, { type: 'inspect', raw, metadataOnly: true }));
-    expect(metadata.worldMetadata).toEqual({
-      id: legacy.id,
-      revision: legacy.revision,
-      matchModel: legacy.matchModel,
-    });
-    expect(
-      (await h.handle(req('upgrade-only', -1, { type: 'inspect', raw, upgrade: true }))).ok,
-    ).toBe(false);
-    const readonly = await h.handle(activate('readonly', raw, false));
-    expect(readonly.ok, readonly.error).toBe(true);
-    expect(readonly.upgraded).toBeUndefined();
-    expect(readonly.raw).toBeUndefined();
-    expect(canonical(h.world)).toBe(canonical(legacy));
-    expect(h.world!.clubs.some((club) => club.identity)).toBe(false);
-  });
-
   it('writer adoption preserves exact legacy crests and sporting facts', async () => {
     const legacy = preIdentity({ rounds: 2 });
     expect(legacy.ownMatches.length).toBeGreaterThan(0);
     const crests = legacyCrestMap({ ...legacy, clubs: legacy.clubs.slice() });
     // On today's model, so the designs are the only upgrade; the next case adds the model.
-    const h = new Host();
-    const reply = await h.handle(activate('adopt', await encode(legacy)));
+    const h = gameHost();
+    const reply = await loadWorld(h, 'adopt', legacy);
     expect(reply.ok, reply.error).toBe(true);
     expect(reply.upgraded).toBe(true);
     const w = h.world!;
@@ -581,13 +541,12 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
         clubs: w.clubs.map((club) => ({ ...club, identity: undefined })),
       }),
     ).toBe(canonical(legacy));
-    // The validated candidate the client commits is the adopted world.
-    expect(canonical((await decode(reply.raw!)).world)).toBe(canonical(w));
-    const again = new Host();
-    const repeat = await again.handle(activate('again', reply.raw!));
+    // The database holds the adopted world.
+    expect(canonical(savedWorld(h))).toBe(canonical(w));
+    const again = gameHost();
+    const repeat = await loadWorld(again, 'again', savedWorld(h));
     expect(repeat.ok, repeat.error).toBe(true);
     expect(repeat.upgraded).toBeUndefined();
-    expect(repeat.raw).toBeUndefined();
     expect(canonical(again.world)).toBe(canonical(w));
   });
 
@@ -597,8 +556,8 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
     pinned.catalog = '2026-demo-2';
     pinned.catalogHash = PRIOR_CATALOG_HASHES['2026-demo-2'];
     // With the release on, the full model is one more upgrade in the same writer activation.
-    const h = new Host(undefined, { release: ENABLED_RELEASE });
-    const both = await h.handle(activate('both', await encode(pinned)));
+    const h = gameHost({ release: ENABLED_RELEASE });
+    const both = await loadWorld(h, 'both', pinned);
     expect(both.ok, both.error).toBe(true);
     expect(both.upgraded).toBe(true);
     expect(h.world!.revision).toBe(10);
@@ -607,8 +566,8 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
     expect(h.world!.matchModel?.activated.revision).toBe(10);
     const top = preIdentity();
     top.revision = Number.MAX_SAFE_INTEGER;
-    const full = new Host(undefined, { release: ENABLED_RELEASE });
-    const refused = await full.handle(activate('top', await encode(top)));
+    const full = gameHost({ release: ENABLED_RELEASE });
+    const refused = await loadWorld(full, 'top', top);
     expect(refused.ok).toBe(false);
     expect(refused.error).toContain('revision');
     expect(full.world).toBeUndefined();
@@ -620,8 +579,8 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
     const future = simulatedWorld(input);
     future.clubs[0].identity = { ...future.clubs[0].identity!, version: 3 as 2 };
     for (const world of [earlier, future]) {
-      const h = new Host();
-      const reply = await h.handle(activate('incompatible', await encode(world)));
+      const h = gameHost();
+      const reply = await loadWorld(h, 'incompatible', world);
       expect(reply.ok).toBe(false);
       expect(reply.errorCode).toBe('save-compatibility');
       expect(h.world).toBeUndefined();
@@ -673,7 +632,9 @@ describe('durable milestone projection', () => {
     expect(won).toBe(true);
     expect(losses).toBe(30);
     for (let i = 0; i < 160; i++) addEvent(world, 'fixture-note', '기록 보관', '후속 기록');
-    const reply = await host.handle(req('milestone-export', world.revision, { type: 'export' }));
+    const reply = await host.handle(
+      req('milestone-read', world.revision, { type: 'command', command: { type: 'read-inbox' } }),
+    );
     expect(reply.ok).toBe(true);
     expect(reply.view!.world.ownMatches).toHaveLength(30);
     expect(
@@ -690,7 +651,7 @@ describe('durable milestone projection', () => {
 });
 
 describe('career view projection', () => {
-  it('omits lifetime registry in views, preserves canonical export and leaves revision and draws unchanged', async () => {
+  it('omits lifetime registry in views, preserves the saved career and leaves revision and draws unchanged', async () => {
     const { host: h, reply: started } = await startedHost();
     const held = persistedFixturePlayer(h.world!)!;
     expect(joinFreeAgents(h.world!, held.player, h.world!.year)).toBe(true);
@@ -700,14 +661,11 @@ describe('career view projection', () => {
     expect(started.view!.world).not.toHaveProperty('freeAgents');
     const before = canonical(h.world!),
       revision = h.world!.revision;
-    const exported = await h.handle(req('career-export', revision, { type: 'export' }));
-    expect(exported.view!.world.people).toBeUndefined();
-    expect(exported.view!.world).not.toHaveProperty('freeAgents');
+    const saved = roundTrip(h.world!);
     expect(canonical(h.world!)).toBe(before);
-    const saved = await decode(exported.raw!);
-    expect(Object.keys(saved.world.people!).sort()).toEqual(Object.keys(h.world!.people!).sort());
-    expect(canonical(saved.world.people)).toBe(canonical(h.world!.people));
-    expect(canonical(saved.world.freeAgents)).toBe(canonical(h.world!.freeAgents));
+    expect(Object.keys(saved.people!).sort()).toEqual(Object.keys(h.world!.people!).sort());
+    expect(canonical(saved.people)).toBe(canonical(h.world!.people));
+    expect(canonical(saved.freeAgents)).toBe(canonical(h.world!.freeAgents));
     expect(h.world!.revision).toBe(revision);
   });
 });
@@ -795,114 +753,9 @@ describe('retained recruitment decision reads', () => {
   });
 });
 
-it('consumes only an exact validated inspection without sharing a live world or reusing changed bytes', async () => {
-  const { careerWorld } = await import('../../../../packages/engine/src/career.testkit');
-  const source = careerWorld(input),
-    raw = await encode(source),
-    host = new Host();
-  const persistence = await import('../adapters/persistence');
-  const spy = vi.spyOn(persistence, 'decode');
-  try {
-    const inspected = await host.handle(req('inspect-once', -1, { type: 'inspect', raw }));
-    expect(inspected.ok).toBe(true);
-    inspected.candidate!.cash = '0';
-    const metadata = await host.handle(
-      req('inspect-metadata', -1, { type: 'inspect', raw, metadataOnly: true }),
-    );
-    // It carries the released model, which every takeover records.
-    expect(metadata.worldMetadata).toEqual({
-      id: source.id,
-      revision: source.revision,
-      matchModel: source.matchModel,
-    });
-    expect(metadata.worldMetadata!.matchModel?.revision).toBe(MATCH_MODEL_RELEASE.revision);
-    expect(metadata.candidate).toBeUndefined();
-    metadata.worldMetadata!.revision = 999;
-    const activated = await host.handle(
-      req('activate-inspected', -1, { type: 'inspect', raw, activate: true }),
-    );
-    expect(activated.ok).toBe(true);
-    expect(activated.candidate).toBeUndefined();
-    expect(canonical(host.world)).toBe(canonical(source));
-    expect(spy).toHaveBeenCalledTimes(1);
-    host.world!.cash = '123';
-    const fresh = await host.handle(req('inspect-original', 0, { type: 'inspect', raw }));
-    expect(fresh.candidate!.cash).toBe(source.cash);
-    expect(spy).toHaveBeenCalledTimes(2);
-    const corrupt = JSON.stringify({ ...JSON.parse(raw), checksum: '0'.repeat(64) });
-    expect(
-      (
-        await host.handle(
-          req('changed-bytes', 0, { type: 'inspect', raw: corrupt, activate: true }),
-        )
-      ).ok,
-    ).toBe(false);
-    expect(spy).toHaveBeenCalledTimes(3);
-    expect(host.world!.cash).toBe('123');
-  } finally {
-    spy.mockRestore();
-  }
-});
-
-/** A checkpoint of `w` in the plain-world container, without validating `w` first. */
-async function sealed(w: World) {
-  const bytes = new TextEncoder().encode(JSON.stringify(w));
-  const { codec, payload } = await encodePayload(bytes);
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
-  return JSON.stringify({
-    schema: PLAIN_WORLD_CHECKPOINT_SCHEMA,
-    engine: w.engine,
-    catalog: w.catalog,
-    catalogHash: w.catalogHash,
-    worldId: w.id,
-    generation: 1,
-    parentGeneration: 0,
-    codec,
-    checksum: Array.from(digest, (b) => b.toString(16).padStart(2, '0')).join(''),
-    payload,
-  });
-}
-
-it('reports supported match-model metadata and refuses a future one without activating (→SAVE-23)', async () => {
-  const { careerWorld } = await import('../../../../packages/engine/src/career.testkit');
-  const source = careerWorld(input);
-  const matchModel: MatchModelState = {
-    revision: MATCH_MODEL_REVISION,
-    activated: { year: source.year, day: 0, revision: source.revision },
-    trackedFrom: { year: source.year, day: 1, round: source.round },
-    coverage: 'activation',
-  };
-  const host = new Host();
-  const supported = await host.handle(
-    req('meta-model', -1, {
-      type: 'inspect',
-      raw: await sealed({ ...source, matchModel }),
-      metadataOnly: true,
-    }),
-  );
-  expect(supported.ok, supported.error).toBe(true);
-  expect(supported.worldMetadata).toEqual({ id: source.id, revision: source.revision, matchModel });
-  expect(host.world).toBeUndefined();
-  const future = await host.handle(
-    req('meta-future', -1, {
-      type: 'inspect',
-      raw: await sealed({
-        ...source,
-        matchModel: { ...matchModel, revision: 'continuous-aggregate-11' },
-      } as unknown as World),
-      metadataOnly: true,
-    }),
-  );
-  expect(future.ok).toBe(false);
-  expect(future.errorCode).toBe('save-compatibility');
-  expect(future.worldMetadata).toBeUndefined();
-  expect(host.world).toBeUndefined();
-});
-
 describe('prospective match-model activation (→SAVE-23)', () => {
-  const enabled = () => new Host(undefined, { release: ENABLED_RELEASE });
-  const load = (host: Host, id: string, raw: string, upgrade = true) =>
-    host.handle(req(id, -1, { type: 'inspect', raw, activate: true, upgrade }));
+  const enabled = () => gameHost({ release: ENABLED_RELEASE });
+  const load = (host: Host, id: string, world: World) => loadWorld(host, id, world);
   const round = (host: Host, id: string) =>
     host.handle(
       req(id, host.world!.revision, { type: 'command', command: { type: 'advance', rounds: 1 } }),
@@ -929,14 +782,14 @@ describe('prospective match-model activation (→SAVE-23)', () => {
       ['earlier', onPreviousRevision(simulatedWorld(input, { rounds: 2 }))],
     ] as const) {
       const host = enabled();
-      const reply = await load(host, `released-${label}`, await encode(source));
+      const reply = await load(host, `released-${label}`, source);
       expect(reply.ok, reply.error).toBe(true);
       expect(reply.upgraded).toBe(true);
       // The writer load moves it before the next fixture: nothing has been played since.
       expect(host.world!.round).toBe(source.round);
       expect(host.world!.matchModel!.revision).toBe(MATCH_MODEL_REVISION);
       expect(host.world!.npcSeason!.model).toBe(MATCH_MODEL_REVISION);
-      expect(canonical((await decode(reply.raw!)).world)).toBe(canonical(host.world!));
+      expect(canonical(savedWorld(host))).toBe(canonical(host.world!));
       const played = await round(host, `released-${label}-next`);
       expect(played.ok, played.error).toBe(true);
       expect(played.playback!.record.model).toBe(MATCH_MODEL_REVISION);
@@ -957,7 +810,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     const source = onPreviousRevision(simulatedWorld(input, { rounds: 2 }));
     expect(source.ownMatches.length).toBeGreaterThan(0);
     const host = enabled();
-    const reply = await load(host, 'released-labels', await encode(source));
+    const reply = await load(host, 'released-labels', source);
     expect(reply.upgraded).toBe(true);
     // Every settled own match keeps its record and the revision that settled it.
     expect(canonical(host.world!.ownMatches)).toBe(canonical(source.ownMatches));
@@ -975,7 +828,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
   it('activates supported careers only prospectively', async () => {
     const source = career();
     const host = enabled();
-    const reply = await load(host, 'model-activate', await encode(source));
+    const reply = await load(host, 'model-activate', source);
     expect(reply.ok, reply.error).toBe(true);
     expect(reply.upgraded).toBe(true);
     const w = host.world!;
@@ -990,14 +843,11 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     expect(w.npcSeason!.competitions).toEqual([]);
     // Nothing settled is replayed, rewritten or backfilled.
     expect(settled(w)).toBe(settled(source));
-    // It is written in the container of a tracked career, model data included, validated as any
-    // checkpoint (→SAVE-23/24).
-    const written = await decode(reply.raw!);
-    expect(written.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-    expect(canonical(written.world)).toBe(canonical(w));
+    // It is written to the database with its model data, validated as any game opens (→SAVE-23/24).
+    expect(canonical(savedWorld(host))).toBe(canonical(w));
     // Loading it again keeps the recorded boundary and writes nothing.
     const again = enabled();
-    const reloaded = await load(again, 'model-reload', reply.raw!);
+    const reloaded = await load(again, 'model-reload', savedWorld(host));
     expect(reloaded.upgraded).toBeUndefined();
     expect(canonical(again.world)).toBe(canonical(w));
     // New results carry the model; the earlier ones stay as settled.
@@ -1017,55 +867,22 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     });
   });
 
-  it('read only does not persist activation', async () => {
+  it('keeps the original rows when it fails and refuses a future model', async () => {
     const source = career();
-    const raw = await encode(source);
     const host = enabled();
-    const metadata = await host.handle(
-      req('model-meta', -1, { type: 'inspect', raw, metadataOnly: true }),
-    );
-    expect(metadata.worldMetadata).toEqual({ id: source.id, revision: source.revision });
-    const inspected = await host.handle(req('model-inspect', -1, { type: 'inspect', raw }));
-    expect(inspected.candidate!.matchModel).toBeUndefined();
-    expect(
-      (await host.handle(req('model-inspect-up', -1, { type: 'inspect', raw, upgrade: true }))).ok,
-    ).toBe(false);
-    expect(host.world).toBeUndefined();
-    // A read-only tab activates the career as stored: no model, no upgrade, nothing to write.
-    const readOnly = await load(host, 'model-read-only', raw, false);
-    expect(readOnly.ok, readOnly.error).toBe(true);
-    expect(readOnly.upgraded).toBeUndefined();
-    expect(readOnly.raw).toBeUndefined();
-    expect(canonical(host.world)).toBe(canonical(source));
-  });
-
-  it('failed activation keeps exportable state', async () => {
-    const source = career();
-    const disk = await encode(source);
-    const host = enabled();
-    const reply = await load(host, 'model-write', disk);
+    const reply = await load(host, 'model-write', source);
     expect(reply.upgraded).toBe(true);
-    // The commit of `reply.raw` fails: the disk keeps `disk`, the activated career stays live.
-    const exported = await host.handle(
-      req('model-export', host.world!.revision, { type: 'export' }),
-    );
-    const saved = await decode(exported.raw!);
-    expect(saved.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-    expect(canonical(saved.world)).toBe(canonical(host.world));
-    expect(canonical((await decode(disk)).world)).toBe(canonical(source));
-    // A retry from the kept checkpoint activates at the same boundary.
+    // The database holds the activated career; a retry from the original activates at the same
+    // boundary.
+    expect(canonical(savedWorld(host))).toBe(canonical(host.world));
     const retry = enabled();
-    await load(retry, 'model-retry', disk);
+    await load(retry, 'model-retry', source);
     expect(canonical(retry.world)).toBe(canonical(host.world));
     // A future model stays a compatibility failure, never activated over.
-    const future = await load(
-      retry,
-      'model-future',
-      await sealed({
-        ...source,
-        matchModel: { ...host.world!.matchModel!, revision: 'continuous-aggregate-11' },
-      } as unknown as World),
-    );
+    const future = await load(retry, 'model-future', {
+      ...source,
+      matchModel: { ...host.world!.matchModel!, revision: 'continuous-aggregate-11' },
+    } as unknown as World);
     expect(future.ok).toBe(false);
     expect(future.errorCode).toBe('save-compatibility');
     expect(canonical(retry.world)).toBe(canonical(host.world));
@@ -1073,8 +890,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
 });
 
 describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
-  const load = (host: Host, id: string, raw: string, upgrade = true) =>
-    host.handle(req(id, -1, { type: 'inspect', raw, activate: true, upgrade }));
+  const load = (host: Host, id: string, world: World) => loadWorld(host, id, world);
   const round = (host: Host, id: string) =>
     host.handle(
       req(id, host.world!.revision, { type: 'command', command: { type: 'advance', rounds: 1 } }),
@@ -1085,13 +901,13 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
    */
   const older = () => withoutManagerHistory(simulatedWorld(input, { rounds: 3 }));
   /** A writer host on today's model: tracking is the cases' subject. */
-  const writer = () => new Host();
+  const writer = () => gameHost();
 
   it('starts a supported older career at its writer activation', async () => {
     const source = older();
     source.manager.since = source.year - 2;
     const host = writer();
-    const reply = await load(host, 'track-old', await encode(source));
+    const reply = await load(host, 'track-old', source);
     expect(reply.ok, reply.error).toBe(true);
     expect(reply.upgraded).toBe(true);
     const w = host.world!;
@@ -1121,7 +937,6 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
     expect(canonical(rest)).toBe(canonical(before));
     expect(canonical(w.npcSeason)).toBe(canonical(source.npcSeason));
     expect(w.ownMatches.every((m) => m.managerTenure === undefined)).toBe(true);
-    expect((await decode(reply.raw!)).envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     // New results are attributed; the heavy facts never travel in a view.
     const played = await round(host, 'track-round');
     expect(played.ok, played.error).toBe(true);
@@ -1131,17 +946,16 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
     expect(reply.view!.world).not.toHaveProperty('managerHistory');
     // Loaded again, a tracked career changes nothing.
     const again = writer();
-    expect((await load(again, 'track-again', reply.raw!)).upgraded).toBeUndefined();
+    expect((await load(again, 'track-again', savedWorld(host))).upgraded).toBeUndefined();
   });
 
   it('waits for a queued or revealed own match before tracking starts', async () => {
     const source = older();
-    const disk = await encode(source);
     const host = writer();
     host.world = structuredClone(source);
     const [watched, loaded] = await Promise.all([
       round(host, 'track-queued'),
-      load(host, 'track-behind', disk),
+      load(host, 'track-behind', source),
     ]);
     expect(watched.ok, watched.error).toBe(true);
     expect(watched.playback!.record).not.toHaveProperty('managerTenure');
@@ -1151,40 +965,20 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
     const replay = await round(host, 'track-replayed');
     expect(canonical(replay.playback!.record)).toBe(canonical(watched.playback!.record));
     const held = structuredClone(host.world!);
-    expect((await load(host, 'track-held', await encode(held))).upgraded).toBe(true);
+    expect((await load(host, 'track-held', held)).upgraded).toBe(true);
     expect(host.world!.managerHistory!.coverage).toBe('activation');
     expect(host.world!.ownMatches.every((m) => m.managerTenure === undefined)).toBe(true);
   });
 
-  it('never tracks from a read-only load or an inspection', async () => {
+  it('keeps the tracked career in its database and starts a retry at the same boundary', async () => {
     const source = older();
-    const raw = await encode(source);
     const host = writer();
-    const inspected = await host.handle(req('track-inspect', -1, { type: 'inspect', raw }));
-    expect(inspected.candidate).not.toHaveProperty('managerHistory');
-    const readOnly = await load(host, 'track-read-only', raw, false);
-    expect(readOnly.upgraded).toBeUndefined();
-    expect(readOnly.raw).toBeUndefined();
-    expect(canonical(host.world)).toBe(canonical(source));
-  });
-
-  it('keeps the previous checkpoint and the tracked career exportable when the write fails', async () => {
-    const source = older();
-    const disk = await encode(source);
-    const host = writer();
-    const reply = await load(host, 'track-write', disk);
+    const reply = await load(host, 'track-write', source);
     expect(reply.upgraded).toBe(true);
-    // The commit of `reply.raw` fails: the disk keeps `disk`, the tracked career stays live.
-    const exported = await host.handle(
-      req('track-export', host.world!.revision, { type: 'export' }),
-    );
-    const saved = await decode(exported.raw!);
-    expect(saved.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-    expect(canonical(saved.world)).toBe(canonical(host.world));
-    expect((await decode(disk)).world).not.toHaveProperty('managerHistory');
-    // A retry from the kept checkpoint starts at the same boundary.
+    expect(canonical(savedWorld(host))).toBe(canonical(host.world));
+    expect(source).not.toHaveProperty('managerHistory');
     const retry = writer();
-    await load(retry, 'track-retry', disk);
+    await load(retry, 'track-retry', source);
     expect(canonical(retry.world)).toBe(canonical(host.world));
   });
 });

@@ -1,6 +1,7 @@
 import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { expect, test, type Page } from '@playwright/test';
-import { encode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf } from '../fixtures/save-roundtrip';
+import { seedSaveFile } from './slots';
 import { worldOfSaveFile } from '../fixtures/save-file';
 import { canonical } from '../../packages/contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
@@ -11,7 +12,6 @@ import {
   type ManagerJourneyCareer,
 } from '../fixtures/manager-careers';
 import {
-  committedRaw,
   exportRaw,
   exportWorld,
   newGameIn,
@@ -20,7 +20,6 @@ import {
   openNotices,
   closeNotices,
   SAVE_DATA_UPDATED,
-  seedCheckpoints,
   takeOverHere,
 } from './club-identity-helpers';
 import { horizontalOverflow } from './layout';
@@ -148,45 +147,12 @@ for (const viewport of VIEWPORTS)
     expect(canonical(await exportWorld(page))).toBe(canonical(career.world));
   });
 
-test('starts tracking an older career at the writer, never in a read-only tab', async ({
-  page,
-  context,
-  browser,
-}) => {
+test('starts tracking an older career at the writer that opens it', async ({ page, browser }) => {
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   const career = await managerActivationCareer();
-  const raw = await encode(career.world, 1, 0);
-  const envelope = JSON.parse(raw);
-  // Another tab holds the writer lock: this one opens the stored career read-only (→SAVE-6).
-  const holder = await context.newPage();
-  await holder.goto('/');
-  await expect(startFlow(holder)).toBeVisible();
-  await seedCheckpoints(page, {
-    active: raw,
-    manifest: JSON.stringify({
-      slot: 0,
-      worldId: envelope.worldId,
-      generation: envelope.generation,
-      parentGeneration: envelope.parentGeneration,
-    }),
-  });
-  await page.goto('/journal');
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
-  await expect(page.getByRole('status').filter({ hasText: '읽기 전용' }).first()).toBeVisible();
-  await openManagerHistory(page);
-  // As stored: the manager in charge without a summary, and the older readable events.
-  const stored = tenureCard(page, career.untracked.current);
-  await expect(stored).toContainText(career.untracked.current.tracking!);
-  for (const event of career.untracked.legacy)
-    await expect(managerHistoryList(page)).toContainText(event.title);
-  expect(await committedRaw(page)).toBe(raw);
-
-  // The writer closes: this tab takes over and starts tracking at its load (→SAVE-24).
-  await holder.close();
-  await expect(page.getByRole('status').filter({ hasText: '읽기 전용' })).toHaveCount(0, {
-    timeout: 30000,
-  });
+  // The writer opens the older career from its file and starts tracking at that load (→SAVE-24).
+  await seedSaveFile(page, await saveFileOf(career.world));
   await expect(page.getByTestId('save-status')).toContainText('저장 완료', { timeout: 30000 });
   const inbox = await openNotices(page);
   await expect(notice(inbox, SAVE_DATA_UPDATED)).toHaveCount(1);

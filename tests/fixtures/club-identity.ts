@@ -1,7 +1,9 @@
-import { encode } from '../../apps/web/src/adapters/persistence';
+import { RowSaver } from '../../apps/web/src/adapters/rowSaver';
+import { SAVE_SCHEMA_VERSION } from '../../apps/web/src/adapters/saveSchema';
+import { encodeSaveFile, saveMetaOf } from '../../apps/web/src/adapters/saveFile';
+import { sqlRecordStore } from '../../apps/web/src/adapters/sqlRecordStore';
 import type { ClubIdentity, KitRole } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
-import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import {
   activateMatchModel,
   ensureManagerHistory,
@@ -12,6 +14,8 @@ import {
 } from '../../packages/engine/src/index';
 import { careerWorld, type CareerInput } from '../../packages/engine/src/career.testkit';
 import { withoutMatchModel } from './earlier-saves';
+import { nodeSqliteDriver } from './node-sqlite';
+import { saveFileOf } from './save-file';
 import { simulatedWorld, withoutManagerHistory } from './worlds';
 
 /**
@@ -80,13 +84,11 @@ export function preIdentityCareer(): World {
   return w;
 }
 /**
- * The checkpoint of a pre-identity career `w` in the plain-world container (→SAVE-2): without
- * identities or appearances it holds nothing a later writer adds, and it is what a supported
- * earlier career looks like once it is saved by this version.
+ * The save file of a pre-identity career `w` (→SAVE-9): without identities or appearances it holds
+ * nothing a later writer adds, and it is what a supported earlier career looks like once it is
+ * saved by this version.
  */
-export async function legacyCareerCheckpoint(w: World, generation = 1, parentGeneration = 0) {
-  return encode(w, generation, parentGeneration);
-}
+export const legacyCareerFile = saveFileOf;
 /**
  * What writer activation makes of a pre-identity career: missing designs, one revision, the full
  * match model recorded there when `release` is on (the build's switch by default, →SAVE-23) and
@@ -101,38 +103,30 @@ export function adoptedCareer(legacy: World, release: MatchModelRelease = MATCH_
   return w;
 }
 
-/** The game-in-play manifest naming `raw` as the committed IndexedDB checkpoint (→SAVE-3). */
-export function manifestOf(raw: string) {
-  const { worldId, generation, parentGeneration } = JSON.parse(raw) as {
-    worldId: string;
-    generation: number;
-    parentGeneration: number;
-  };
-  return JSON.stringify({ worldId, generation, parentGeneration });
-}
-
 /**
- * Newer data a later version may write over a valid predecessor: an envelope schema this version
- * does not know, or a newer own-club identity format inside a valid current envelope.
+ * Newer data a later version may write over a valid game: a database schema this version does not
+ * know, or a newer own-club identity format inside a valid current database.
  */
-export const FUTURE_CHECKPOINTS: Record<
-  string,
-  (w: World, generation: number, parentGeneration: number) => Promise<string>
-> = {
-  // The container after the plain-world one (→SAVE-2), which this version cannot know.
-  [`envelope schema ${PLAIN_WORLD_CHECKPOINT_SCHEMA + 1}`]: async (
-    w,
-    generation,
-    parentGeneration,
-  ) =>
-    JSON.stringify({
-      ...JSON.parse(await encode(w, generation, parentGeneration)),
-      schema: PLAIN_WORLD_CHECKPOINT_SCHEMA + 1,
-    }),
-  'identity format 3': async (w, generation, parentGeneration) => {
+export const FUTURE_FILES: Record<string, (w: World) => Promise<Uint8Array>> = {
+  [`database schema ${SAVE_SCHEMA_VERSION + 1}`]: async (w) => {
+    const driver = nodeSqliteDriver();
+    try {
+      const store = sqlRecordStore(driver);
+      new RowSaver(store).save(w);
+      store.write({
+        put: [],
+        delete: [],
+        meta: { schema_version: String(SAVE_SCHEMA_VERSION + 1) },
+      });
+      return await encodeSaveFile(saveMetaOf(store.meta()), driver.serialize());
+    } finally {
+      driver.close();
+    }
+  },
+  'identity format 3': async (w) => {
     const future = structuredClone(w);
     const own = future.clubs.find((club) => club.id === future.playerClub)!;
     own.identity = { ...identityOf(future, own.id), version: 3 } as unknown as ClubIdentity;
-    return encode(future, generation, parentGeneration);
+    return saveFileOf(future);
   },
 };
