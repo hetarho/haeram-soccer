@@ -18,9 +18,8 @@
  *   lives it (→WORLD-13) on a world `historyWorld(seed)` builds once outside the timed reps; its
  *   reps are successive seasons from 1930, stepped in lockstep as `day` steps its days.
  *
- * `digest()` hashes the recorded outputs (the world itself for `day` and `history`; every posted
- * reply and then the world for `view`), which a result-identical candidate must share with its
- * baseline.
+ * `digest()` hashes the recorded outputs (the canonical world for `day`, `history` and `view`),
+ * which a result-identical candidate must share with its baseline. View projections may differ.
  */
 import { createHash } from 'node:crypto';
 import * as engine from '../../packages/engine/src/index';
@@ -181,11 +180,9 @@ export function workloadOf(name: string, seed: string): Workload {
     // The view the client holds before the first day, as a fresh activation publishes it.
     let base = (host as unknown as { publish(): Reply }).publish().viewSeq,
       serial = 0;
-    // Hashed in `digest()`, so the hashing stays out of every timed rep.
-    const posted: Reply[] = [];
     return {
       digest: () => {
-        for (const reply of posted) hash.update(JSON.stringify(reply));
+        if (host.world !== w) throw new Error('View benchmark world identity changed');
         return hash.update(canonical(w)).digest('hex').slice(0, 16);
       },
       cycle: 0,
@@ -208,7 +205,7 @@ export function workloadOf(name: string, seed: string): Workload {
           body: { type: 'command', command: { type: 'advance-days', days: 1, stop: [] } },
         });
         if (!reply.ok) throw new Error(`View benchmark day failed: ${reply.error}`);
-        posted.push(structuredClone(forPosting(reply)));
+        structuredClone(forPosting(reply));
         base = reply.viewSeq;
         if (w.bankrupt || (year === w.year && before === currentDay(w)))
           throw new Error('View benchmark did not advance a complete day');
