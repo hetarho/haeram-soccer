@@ -95,6 +95,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/identity-operations.test.ts',
   'packages/engine/src/investment.test.ts',
   'packages/engine/src/kit-selection.test.ts',
+  'packages/engine/src/knockout-legs.test.ts',
   'packages/engine/src/knockout.test.ts',
   'packages/engine/src/manager-history-capture.test.ts',
   'packages/engine/src/managerMarket.test.ts',

@@ -58,10 +58,11 @@ function equip(w: World, count: number) {
   expect(activePlayers(w)).toHaveLength(count);
   return w;
 }
-function sell(w: World, p: Player) {
-  const fee = '100000';
+const fee = '100000';
+/** A club that would buy `p` at `fee` once one of its players of his line leaves, if any. */
+function vacancyFor(w: World, p: Player) {
   // A buyer must actually need this line and fund the unchanged fee and wages.
-  const vacancy = w.clubs
+  return w.clubs
     .filter((club) => club.id !== w.playerClub && !club.representative)
     .map((club) => ({
       club,
@@ -79,6 +80,11 @@ function sell(w: World, p: Player) {
       );
       return !!npcOffer(trial, club, p, clubOf(trial), fee);
     });
+}
+/** A player of `candidates` some club would buy (→WORLD-16): not every bench player has a buyer. */
+const saleable = (w: World, candidates: Player[]) => candidates.find((p) => vacancyFor(w, p))!;
+function sell(w: World, p: Player) {
+  const vacancy = vacancyFor(w, p);
   expect(vacancy).toBeDefined();
   const { club, departing } = vacancy!;
   expect(joinFreeAgents(w, departing!, w.year)).toBe(true);
@@ -117,14 +123,20 @@ describe('replacement needs', () => {
       starters = new Set(ownStarters(rich).map((p) => p.id));
     sell(
       rich,
-      activePlayers(rich).find((p) => !starters.has(p.id))!,
+      saleable(
+        rich,
+        activePlayers(rich).filter((p) => !starters.has(p.id)),
+      ),
     );
     expect(openNeeds(rich)).toEqual([]);
     const thin = world(),
       ids = new Set(ownStarters(thin).map((p) => p.id));
     sell(
       thin,
-      activePlayers(thin).find((p) => !ids.has(p.id))!,
+      saleable(
+        thin,
+        activePlayers(thin).filter((p) => !ids.has(p.id)),
+      ),
     );
     expect(activePlayers(thin)).toHaveLength(19);
     expect(openNeeds(thin)).toHaveLength(1);

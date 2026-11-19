@@ -362,10 +362,22 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     director!.trait = 'negotiator';
     director!.ability = 30;
     passFree(w);
-    transferOffers(w).forEach((offer, index) => {
-      if (!offer.freeAgent && bidOutlook(w, index, ratio(offer.fee, 80n, 100n)).counter < 1)
-        tried(w, offer.player.id);
-    });
+    // He looks over everyone in the chief scout's reach, not only the listed few (→CLUB-33).
+    const listed = transferOffers(w);
+    for (const offer of reachOffers(w)) {
+      if (offer.freeAgent || offer.source.kind !== 'club') continue;
+      const index = listed.findIndex((one) => one.player.id === offer.player.id);
+      const target =
+        index >= 0
+          ? index
+          : {
+              world: w.id,
+              kind: 'club' as const,
+              clubId: offer.source.club,
+              playerId: offer.player.id,
+            };
+      if (bidOutlook(w, target, ratio(offer.fee, 80n, 100n)).counter < 1) tried(w, offer.player.id);
+    }
     staffSignings(w);
     const [bid] = staffBids(w);
     expect(bid).toBeDefined();

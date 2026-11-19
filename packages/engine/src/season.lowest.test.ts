@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { country } from '../../catalogs/src/index';
 import { clubOf } from './index';
 import { FAN_MOOD } from './owner-config';
+import { fanMoodAfter } from './fan-mood-read';
 import { closeLowest, lastRound } from './season.testkit';
 
 describe('the last professional division relegates nobody (→LEAGUE-16)', () => {
@@ -22,9 +23,12 @@ describe('the last professional division relegates nobody (→LEAGUE-16)', () =>
     expect(drivers.filter((e) => e.title === '최하위')).toHaveLength(1);
     expect(drivers.some((e) => e.title === '강등')).toBe(false);
     const titles = drivers.filter((e) => e.title.endsWith('우승')).length;
+    // Each result moves it as the fans' disposition scales results (→OWNER-12).
     let expected = mood;
-    for (let n = 0; n < titles; n++) expected = Math.min(FAN_MOOD.max, expected + FAN_MOOD.title);
-    expected = Math.max(FAN_MOOD.min, expected + FAN_MOOD.lastInLowest);
+    const after = (change: number) =>
+      fanMoodAfter({ owner: { ...w.owner!, fanMood: expected } }, change, 'results');
+    for (let n = 0; n < titles; n++) expected = after(FAN_MOOD.title);
+    expected = after(FAN_MOOD.lastInLowest);
     expect(w.owner!.fanMood).toBeCloseTo(expected, 5);
   });
 });

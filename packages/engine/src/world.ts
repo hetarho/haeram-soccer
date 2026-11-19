@@ -204,6 +204,9 @@ function drawPlayer(
   };
   // His overall, read once: it moves with his attributes alone (T669).
   const ovr = overall(player);
+  // Headroom is drawn over his level; attributes drawn at that level can read a point above it,
+  // and a generated player's potential is never below his OVR (→WORLD-6, PLAYER-15).
+  if (player.potential < ovr) player.potential = Math.min(99, ovr);
   player.wage = marketWageAt(code, year, division ?? divisionFor(code, ovr), player, ovr);
   player.agent = drawAgent(r, ovr);
   return player;
