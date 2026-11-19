@@ -73,7 +73,9 @@
 | T992 | Post-match material without heat maps, and an unwatched match says why it has none | WEB MATCH ARCH | T991 | todo |
 | T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | todo |
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
-| T994 | Slow view reads wait for a stopped clock | WEB ARCH | - | todo |
+| T1026 | Prepare consumers for stopped-clock reads | WEB ARCH | - | todo |
+| T1027 | Prepare automatic-play view measurement | ARCH | - | todo |
+| T994 | Slow view reads wait for a stopped clock | WEB ARCH | T1026 T1027 | todo |
 | T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T994 | todo |
 | T995 | Manager, staff and discipline places dim while the clock runs | WEB ARCH | T1020 | todo |
 | T996 | The scout's shortlist dims while the clock runs | WEB ARCH | T1020 T995 | todo |
