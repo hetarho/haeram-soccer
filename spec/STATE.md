@@ -26,7 +26,7 @@
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 11 | 11 | - | 0 |
 | CLUB | 83 | 83 | - | 0 |
-| MATCH | 69 | 69 | - | 0 |
+| MATCH | 70 | 70 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
 | ECON | 64 | 64 | - | 0 |
@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | todo |
 | T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T989 | todo |
 | T991 | Player sheets and tallies without season heat maps | WEB HIST MATCH ARCH | - | todo |
 | T992 | Post-match material without heat maps, and an unwatched match says why it has none | WEB MATCH ARCH | T991 | todo |
@@ -94,6 +93,7 @@
 | T1017 | Events and news before last season leave memory at save | SAVE ARCH HIST | T1016 | todo |
 | T1018 | Season archives older than seven seasons leave memory at save | SAVE ARCH HIST | T1017 | todo |
 | T1022 | Save database measurements and release preparation | ARCH SAVE | T1018 T1012 | todo |
+| T1025 | An unwatched match's analysis and fixture row say why it has no maps | WEB MATCH ARCH | T992 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
