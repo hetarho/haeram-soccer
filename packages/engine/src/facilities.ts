@@ -107,15 +107,20 @@ export function setFacilityContinuation(
 /**
  * Starts the next work on a part, paying for it now (→ECON-32). The owner's investment command
  * validates its displayed quote first; the calibration harness can also build by its own rule.
+ * Returning false from the payment callback defers the start.
  */
-export function startFacilityWork(w: World, part: FacilityPart, pay: (amount: string) => void) {
+export function startFacilityWork(
+  w: World,
+  part: FacilityPart,
+  pay: (amount: string) => boolean | void,
+) {
   if (!FACILITY_PARTS.includes(part)) throw new Error(sourceMessage('copy.facilities.7038e27864'));
   if (w.facilityWorks?.[part])
     throw new Error(sourceMessage('copy.facilities.4c738d3593', { p0: FACILITY_PART_LABEL[part] }));
   const next = nextWork(w, part);
   if (!next)
     throw new Error(sourceMessage('copy.facilities.198b4bded8', { p0: FACILITY_PART_LABEL[part] }));
-  pay(next.cost);
+  if (pay(next.cost) === false) return;
   w.facilityWorks = {
     ...w.facilityWorks,
     [part]: { to: next.to, year: w.year, day: dayCountedFrom(w, w.year) },
@@ -147,6 +152,8 @@ export function progressFacilityWorks(w: World) {
     else if (part === 'training') w.trainingGround = work.to;
     else w.academyFacility = work.to;
     delete works[part];
+    if (w.facilityAutoUpgrade?.[part])
+      setFacilityContinuation(w, part, work.to < partTop(part) ? 'awaiting-funds' : undefined);
     addEvent(
       w,
       'facility-open',
@@ -175,4 +182,18 @@ export function progressFacilityWorks(w: World) {
     );
   }
   if (!works.stadium && !works.training && !works.academy) delete w.facilityWorks;
+}
+
+/** At the end of daily club business, spend remaining cash in the usual facility order. */
+export function continueFacilityWorks(w: World, pay: (w: World, amount: string) => boolean) {
+  const settings = w.facilityAutoUpgrade;
+  if (!settings) return;
+  for (const part of FACILITY_PARTS) {
+    if (
+      settings[part] === 'awaiting-funds' &&
+      !w.facilityWorks?.[part] &&
+      partLevel(w, part) < partTop(part)
+    )
+      startFacilityWork(w, part, (amount) => pay(w, amount));
+  }
 }

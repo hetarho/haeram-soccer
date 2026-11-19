@@ -11,9 +11,12 @@ import {
   progressFacilityWorks,
   stadiumCapacity,
   trainingGroundTerms,
+  workDays,
 } from './index';
 import { startWork } from './testing';
 import { careerWorld } from './career.testkit';
+import { clubDay } from './season';
+import { settingsOf } from './responsibilities';
 
 const world = (seed = 'facility-parts') => {
   const w = careerWorld({ seed });
@@ -161,5 +164,120 @@ describe('owner facility continuation settings (→ECON-43)', () => {
     expect(w.facilityAutoUpgrade).toEqual({ training: 'armed', academy: 'armed' });
     expect(waiting.training).toBe('awaiting-funds');
     expect(w.events.slice(count)).toMatchObject([{ kind: 'facility', amount: cost }]);
+  });
+});
+
+describe('daily facility continuation (→ECON-43)', () => {
+  const completionDay = 205;
+  function dailyWorld() {
+    const w = world();
+    // Leave ordinary staff hiring and sponsor decisions to the owner in these balance fixtures.
+    w.settings = settingsOf({});
+    return w;
+  }
+  const constructionSince = (w: ReturnType<typeof world>, from: number) =>
+    w.events.slice(from).filter((event) => event.kind === 'facility');
+
+  it('opens the next stadium stage as a rebuild while the other parts stay independent', () => {
+    const w = dailyWorld();
+    w.stadium = 0;
+    w.calendar = { day: completionDay - workDays('stadium', 1) };
+    startWork(w, 'stadium');
+    w.calendar = { day: completionDay - workDays('training', 1) };
+    startWork(w, 'training');
+    operate(w, { type: 'facility-auto-upgrade', part: 'stadium', enabled: true });
+    operate(w, { type: 'facility-auto-upgrade', part: 'academy', enabled: true });
+    const quote = nextWork({ ...w, stadium: 1 }, 'stadium')!;
+    expect(quote).toMatchObject({ kind: 'rebuild', to: 2 });
+    const { cash, expense } = w;
+    const count = w.events.length;
+
+    w.calendar = { day: completionDay };
+    clubDay(w, false);
+
+    expect(w.stadium).toBe(1);
+    expect(w.trainingGround).toBe(1);
+    expect(w.academyFacility).toBe(0);
+    expect(w.facilityWorks).toEqual({ stadium: { to: 2, year: w.year, day: completionDay } });
+    expect(w.facilityAutoUpgrade).toEqual({ stadium: 'armed', academy: 'armed' });
+    expect(stadiumCapacity(w)).toBe(5000);
+    expect(w.cash).toBe((BigInt(cash) - BigInt(quote.cost)).toString());
+    expect(w.expense).toBe((BigInt(expense) + BigInt(quote.cost)).toString());
+    expect(constructionSince(w, count)).toMatchObject([{ amount: quote.cost }]);
+  });
+
+  it('spends by part order and retries an unfunded completion once at exact cost', () => {
+    const w = dailyWorld();
+    w.stadium = w.trainingGround = w.academyFacility = 0;
+    w.calendar = { day: completionDay };
+    w.facilityWorks = {
+      stadium: { to: 1, year: w.year, day: completionDay - workDays('stadium', 1) },
+      training: { to: 1, year: w.year, day: completionDay - workDays('training', 1) },
+      academy: { to: 1, year: w.year, day: completionDay - workDays('academy', 1) },
+    };
+    w.facilityAutoUpgrade = { academy: 'armed', training: 'armed', stadium: 'armed' };
+    const stadium = nextWork({ ...w, stadium: 1 }, 'stadium')!.cost;
+    const training = nextWork({ ...w, trainingGround: 1 }, 'training')!.cost;
+    const academy = nextWork({ ...w, academyFacility: 1 }, 'academy')!.cost;
+    const funds = BigInt(stadium) + BigInt(training);
+    const expense = BigInt(w.expense);
+    const count = w.events.length;
+    w.cash = funds.toString();
+
+    clubDay(w, false);
+
+    expect(w.cash).toBe('0');
+    expect(w.expense).toBe((expense + funds).toString());
+    expect(constructionSince(w, count).map(({ amount }) => amount)).toEqual([stadium, training]);
+    expect(w.academyFacility).toBe(1);
+    expect(w.facilityWorks?.academy).toBeUndefined();
+    expect(w.facilityAutoUpgrade?.academy).toBe('awaiting-funds');
+
+    w.calendar = { day: completionDay + 1 };
+    w.cash = academy;
+    clubDay(w, false);
+    expect(w.cash).toBe('0');
+    expect(w.expense).toBe((expense + funds + BigInt(academy)).toString());
+    expect(w.facilityWorks?.academy).toEqual({ to: 2, year: w.year, day: completionDay + 1 });
+    expect(w.facilityAutoUpgrade?.academy).toBe('armed');
+    w.calendar = { day: completionDay + 2 };
+    w.cash = academy;
+    clubDay(w, false);
+    expect(w.cash).toBe(academy);
+    expect(constructionSince(w, count).map(({ amount }) => amount)).toEqual([
+      stadium,
+      training,
+      academy,
+    ]);
+  });
+
+  it('stops at the maximum and does not restore cancelled authorization when re-enabled', () => {
+    const w = dailyWorld();
+    const top = partTop('training');
+    w.trainingGround = top - 1;
+    w.academyFacility = 1;
+    w.facilityWorks = {
+      training: { to: top, year: w.year, day: completionDay - workDays('training', top) },
+    };
+    w.facilityAutoUpgrade = { training: 'armed', academy: 'awaiting-funds' };
+    const enable = { type: 'facility-auto-upgrade', part: 'academy', enabled: true } as const;
+    operate(w, { ...enable, enabled: false });
+    const { cash, expense } = w;
+    const count = w.events.length;
+
+    w.calendar = { day: completionDay };
+    clubDay(w, false);
+    expect(w.trainingGround).toBe(top);
+    expect(w.facilityWorks).toBeUndefined();
+    expect(w.facilityAutoUpgrade).toBeUndefined();
+    expect(w).toMatchObject({ cash, expense });
+
+    operate(w, enable);
+    w.calendar = { day: completionDay + 1 };
+    clubDay(w, false);
+    expect(w.facilityWorks).toBeUndefined();
+    expect(w.facilityAutoUpgrade).toEqual({ academy: 'armed' });
+    expect(w).toMatchObject({ cash, expense });
+    expect(constructionSince(w, count)).toEqual([]);
   });
 });

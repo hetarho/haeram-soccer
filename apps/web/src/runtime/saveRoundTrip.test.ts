@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
-import { advanceDays, operate } from '../../../../packages/engine/src/index';
+import { advanceDays, nextWork, operate } from '../../../../packages/engine/src/index';
 import { judgePromises } from '../../../../packages/engine/src/promises';
 import { historyWorld, liveHistory } from '../../../../packages/engine/src/history';
 import { pricedClubs, tierFortune } from '../../../../packages/engine/src/club-value';
@@ -19,10 +19,21 @@ import { input } from './host.testkit';
 const features = () => cachedWorld('feature-state', () => featureState());
 
 describe('a game saved into its database and opened again (→SAVE-2/3/5)', () => {
-  it('opens a played career exactly as it was saved', () => {
+  it('opens a played career exactly as saved and resumes a funded facility wait in play', () => {
     const w = simulatedWorld(input, { rounds: 2 });
+    w.academyFacility = 1;
     w.facilityAutoUpgrade = { training: 'armed', academy: 'awaiting-funds' };
-    expect(canonical(roundTrip(w))).toBe(canonical(w));
+    const restored = roundTrip(w);
+    expect(canonical(restored)).toBe(canonical(w));
+    const next = nextWork(restored, 'academy')!;
+    const count = restored.events.length;
+    restored.cash = '999999999999';
+    advanceDays(restored, 1, undefined, false);
+    expect(restored.facilityWorks?.academy).toMatchObject({ to: next.to });
+    expect(restored.facilityAutoUpgrade).toEqual({ training: 'armed', academy: 'armed' });
+    expect(restored.events.slice(count).filter((event) => event.kind === 'facility')).toMatchObject(
+      [{ amount: next.cost }],
+    );
   });
 
   it('refuses a newer game’s data as incompatible, never as corruption (→SAVE-11)', async () => {
