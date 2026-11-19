@@ -396,7 +396,7 @@ export interface View {
   /** Club news derived from the full career; the projected world keeps only recent records. */
   news: NewsItem[];
   newsTotal?: number;
-  /** Appearances, cards and this season's heat maps from every own match (→HIST-13, HIST-16). */
+  /** Appearances and cards from every own match (→HIST-13, HIST-16). */
   tallies: Tallies;
   /**
    * Changes whenever the `manager-history` read would answer differently: the facts, a settled own

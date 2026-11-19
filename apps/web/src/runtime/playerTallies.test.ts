@@ -1,6 +1,5 @@
 import { expect, it } from 'vitest';
 import type { MatchRecord, Player } from '../../../../packages/contracts/src/types';
-import { MATERIAL_LAYOUT } from '../../../../packages/engine/src/material';
 import { tallies } from './playerTallies';
 
 const OWN = 'own';
@@ -10,14 +9,8 @@ const line = (id: string, minutes: number) => ({
   id,
   metrics: Object.assign(Array<number>(11).fill(0), { 10: minutes }),
 });
-/** An own home match against `rival`: its lines, incidents and optional heat material. */
-const match = (
-  year: number,
-  kind: string,
-  lines: [string, number][],
-  incidents: object[] = [],
-  heat?: number[][],
-) =>
+/** An own home match against `rival`: its lines and incidents. */
+const match = (year: number, kind: string, lines: [string, number][], incidents: object[] = []) =>
   ({
     id: `${kind}:${year}:${lines.length}:${incidents.length}`,
     year,
@@ -26,23 +19,10 @@ const match = (
     away: 'rival',
     players: lines.map(([id, minutes]) => line(id, minutes)),
     incidents,
-    ...(heat
-      ? {
-          // Each own line's 40 cells, then the own side's total and the opponent's.
-          material: {
-            shots: [],
-            network: [],
-            report: [],
-            heat: [...heat, [], []].flatMap((cells) =>
-              Array.from({ length: MATERIAL_LAYOUT.cells }, (_, i) => cells[i] ?? 0),
-            ),
-          },
-        }
-      : {}),
   }) as unknown as MatchRecord;
 const players = (...ids: string[]) => ids.map((id) => ({ id }) as Player);
 
-it('tallies appearances, substitutes, cards and season heat of own players', () => {
+it('tallies appearances, substitutes and cards of own players', () => {
   const w = {
     year: YEAR,
     playerClub: OWN,
@@ -63,17 +43,13 @@ it('tallies appearances, substitutes, cards and season heat of own players', () 
           { kind: 'sub', side: 0, player: 'former', other: 'sub' },
           { kind: 'red', side: 1, player: 'theirs' },
         ],
-        [[3, 0, 0, 0, 0, 1]],
       ),
       match(YEAR, 'cup', [['sub', 90]], [{ kind: 'red', side: 0, player: 'sub' }]),
     ],
   };
-  const heat = Array<number>(MATERIAL_LAYOUT.cells).fill(0);
-  heat[0] = 3;
-  heat[5] = 1;
   expect(tallies(w)).toEqual({
     players: {
-      starter: { apps: [1, 1], sub: [0, 0], yellow: [2, 2], red: [1, 1], heat },
+      starter: { apps: [1, 1], sub: [0, 0], yellow: [2, 2], red: [1, 1] },
       sub: { apps: [2, 2], sub: [1, 1], yellow: [0, 0], red: [1, 1] },
       former: { apps: [0, 1], sub: [0, 0], yellow: [0, 1], red: [0, 0] },
     },
@@ -87,9 +63,7 @@ it('reuses the tallies until an own match is added or the season turns', () => {
     year: YEAR,
     playerClub: OWN,
     players: players('a'),
-    ownMatches: [
-      match(YEAR, 'league', [['a', 90]], [{ kind: 'red', side: 0, player: 'a' }], [[2]]),
-    ],
+    ownMatches: [match(YEAR, 'league', [['a', 90]], [{ kind: 'red', side: 0, player: 'a' }])],
   };
   const first = tallies(w);
   // A later revision of the same world, with no match played, keeps the read.
@@ -103,7 +77,7 @@ it('reuses the tallies until an own match is added or the season turns', () => {
   const played = tallies(w);
   expect(played).not.toBe(first);
   expect(played.players.a!.apps).toEqual([2, 2]);
-  // The season turning keeps the career and empties the new season, its heat and league reds.
+  // The season turning keeps the career and empties the new season and league reds.
   const turned = tallies({ ...w, year: YEAR + 1 });
   expect(turned).not.toBe(played);
   expect(turned).toEqual({
