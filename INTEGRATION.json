@@ -1427,7 +1427,7 @@
       "host": "ihaelam-ui-MacBookPro.local",
       "pid": 43321
     },
-    "phase": "waiting-agent",
+    "phase": "verified",
     "land": "main",
     "base": "781ae0108be8a0ad4693e59b9107277333337b2c",
     "cohort": [
@@ -1702,19 +1702,18 @@
           "Push and let the CI Chromium shards run every browser journey"
         ],
         "expected": "The batch gate and every Chromium journey pass; news, archive and transfer-ledger reads behave the same after a save that moves earlier seasons' events and news buckets cold",
-        "observed": "Not run in this unit. Task-tier checks passed (190 files, 1840 tests). The integration files coldPeople (2/2), host.archive, newsJournal, host, saveRoundTrip and seasonBackup.host (5 files, 59 tests) also passed locally.",
+        "observed": "The shared batch gate passed on the fixed candidate: unit, integration and contract projects 539 files, 4492 tests passed, 0 failed; worldRows.world (2), host.database (11), host.archive (13), newsJournal (4), saveRoundTrip (4), seasonBackup.host (3) all passed there. The Chromium journeys run in CI after the push, which the landing waits on.",
         "evidence": [
-          "vibe check --tier task --diff-base c727840a4e05add8f6052a8487949d234d93578c --task T1017: ok",
-          "pnpm exec vitest run --project integration apps/web/src/runtime/coldPeople.integration.test.ts: 2 passed",
-          "pnpm exec vitest run --project integration host.archive/newsJournal/host/saveRoundTrip/seasonBackup.host: 5 files, 59 tests passed"
+          "pnpm run verify:batch on eb5c6882b04dd2106321c2eda1f04b85f321e580: ok, 539 files, 4492 passed, 3 skipped, 0 failed, 987 s (log /Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-df6135ea-0315-49a6-b399-8dd0a1d24bb2.log)",
+          ".tmp/verification/vitest-results.json in the gate worktree: worldRows.world.test.ts and host.database.test.ts passed"
         ],
-        "status": "not-run",
-        "reason": "Builds, the batch gate, the remaining integration suites and the browser journeys are left to the shared final gate and to CI under ARCH-30",
+        "status": "pass",
+        "reason": "Batch stage observed on the exact candidate; browser journeys are CI-only under ARCH-30",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
         "duplicationReason": ""
       },
       {
@@ -1724,17 +1723,18 @@
           "Run `pnpm exec vitest run --project integration apps/web/src/runtime/coldPeople.integration.test.ts`"
         ],
         "expected": "worldFacts(saved) equals canonical(reference), historyBase is above 1, and the archive reads match",
-        "observed": "Test Files 1 passed, Tests 2 passed, duration 254.58 s. It ran on the tree before the one-line player-records fix.",
+        "observed": "apps/web/src/runtime/coldPeople.integration.test.ts passed 2 of 2 in the batch gate on the fixed candidate, which includes the final player-records fix.",
         "evidence": [
-          "apps/web/src/runtime/coldPeople.integration.test.ts"
+          "pnpm run verify:batch on eb5c6882b04dd2106321c2eda1f04b85f321e580: ok, 539 files, 4492 passed, 3 skipped, 0 failed, 987 s (log /Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-df6135ea-0315-49a6-b399-8dd0a1d24bb2.log)",
+          ".tmp/verification/vitest-results.json: apps/web/src/runtime/coldPeople.integration.test.ts passed (2)"
         ],
         "status": "pass",
-        "reason": "Affected integration file actually run locally",
+        "reason": "Rerun on the exact candidate by the batch gate",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "implementer",
-        "candidate": null,
+        "candidate": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
         "duplicationReason": ""
       },
       {
@@ -1765,15 +1765,17 @@
           "After the push, let CI run the three Chromium shards."
         ],
         "expected": "Batch checks and browser journeys pass on the candidate.",
-        "observed": "Not run in this unit; only task-tier checks (typecheck, lint, format, i18n, affected unit tests: 219 files, 2051 tests) ran and passed.",
-        "evidence": [],
-        "status": "not-run",
-        "reason": "Builds, integration and full suites belong to the shared final gate; this unit has no integration tool.",
+        "observed": "Main had not moved (base 781ae0108); the batch gate passed on the 0.8.16 candidate: 539 files, 4492 tests passed, 0 failed. The three Chromium shards run in CI after the push.",
+        "evidence": [
+          "pnpm run verify:batch on eb5c6882b04dd2106321c2eda1f04b85f321e580: ok, 539 files, 4492 passed, 3 skipped, 0 failed, 987 s (log /Users/ihaelam/project/haeram-soccer/.git/gusta/v1/logs/check-df6135ea-0315-49a6-b399-8dd0a1d24bb2.log)"
+        ],
+        "status": "pass",
+        "reason": "Batch stage observed on the exact candidate; browser journeys are CI-only under ARCH-30",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "host",
-        "candidate": null,
+        "candidate": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
         "duplicationReason": ""
       }
     ],
