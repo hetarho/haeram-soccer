@@ -643,10 +643,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-x10-d3a275d5",
-      "head": "8a8ed90c788b0a2f74167c2eac41dc4b0ebde94b",
+      "head": "355bb0eb5fc941a87d7586f31a541d2b2811baff",
       "land": "main",
       "status": "working",
-      "at": "2026-11-19T06:23:00.008Z",
+      "at": "2026-11-19T06:47:35.605Z",
       "agentChecks": [
         {
           "id": "T993-save-integration",
@@ -772,6 +772,67 @@
           "stage": "integration",
           "required": false,
           "owner": "capable host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1027-integration",
+          "scenario": "통합 후보에서 자동 진행 뷰 workload의 월드 결과를 비교한다.",
+          "steps": [
+            "동일한 workload recipe로 양쪽을 실행하고 정규 월드 해시를 비교한다."
+          ],
+          "expected": "projection 차이와 관계없이 동일한 월드 사실은 같은 해시를 낸다.",
+          "observed": "통합 후보와 짝 비교 측정은 이 단위에서 실행하지 않았다.",
+          "evidence": [
+            "T1029에 측정 인계",
+            "커밋 2b3161d14"
+          ],
+          "status": "not-run",
+          "reason": "통합 후보 검증과 측정은 호스트 및 T1029 담당이다.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T997-season-parity",
+          "scenario": "Compare a season played without helpers, with two helpers, and with two helpers plus the engine share.",
+          "steps": [
+            "Run pnpm exec vitest run --project integration apps/web/src/runtime/fixtureHelpers.integration.test.ts on the fixed integration candidate."
+          ],
+          "expected": "All three paths produce identical worlds.",
+          "observed": "Not run in this unit; handed off to the shared integration gate.",
+          "evidence": [
+            "spec/tasks/done/T997.helpers-from-two-cores.md"
+          ],
+          "status": "not-run",
+          "reason": "Integration checks are reserved for the capable host's shared final gate.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T998-season-parity",
+          "scenario": "세 헬퍼를 사용한 시즌 진행이 헬퍼 없는 진행과 같은 월드를 생성한다",
+          "steps": [
+            "고정 통합 후보에서 pnpm exec vitest run --project integration apps/web/src/runtime/fixtureHelpers.integration.test.ts 실행"
+          ],
+          "expected": "전체 시즌과 선수 이적 및 재로드 이후에도 정규화된 월드가 일치한다",
+          "observed": "통합 단계로 인계했으며 이 단위에서는 실행하지 않았다",
+          "evidence": [
+            "spec/tasks/done/T998.helper-count-by-cores.md"
+          ],
+          "status": "not-run",
+          "reason": "전체 시즌 검사는 공동 통합 관문에서 실행한다",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
           "candidate": null,
           "duplicationReason": ""
         }
