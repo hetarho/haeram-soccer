@@ -31,7 +31,7 @@ import { PlayerDetailHost } from '../widgets/player-detail';
 import { PersonCareerLink } from '../features/person-career';
 import { Term } from '../shared/ui/Term';
 import { Chart } from '../pages/club';
-import { HeatPitch, MaterialPitch } from '../entities/match';
+import { MaterialPitch } from '../entities/match';
 import { FormationPitch } from '../entities/player';
 import {
   PresentationSettings,
@@ -522,26 +522,15 @@ function Charts() {
         />
       </Section>
       <Section title={displayMessage('copy.stories.a05d8e00e4')}>
-        <div className="ds-grid">
-          <MaterialPitch label={displayMessage('copy.stories.6e427f1cbb')}>
-            <circle
-              cx="55"
-              cy="40"
-              r="5"
-              fill="var(--accent)"
-              data-label={sourceMessage('copy.stories.8ed79e92e2')}
-            />
-          </MaterialPitch>
-          <HeatPitch
-            map={{
-              cells: Array.from({ length: 40 }, (_, i) =>
-                Math.round(24 * Math.exp(-((Math.floor(i / 5) - 5) ** 2 + ((i % 5) - 1) ** 2) / 3)),
-              ),
-              touches: 225,
-            }}
-            label={displayMessage('copy.stories.7eab29dbe3')}
+        <MaterialPitch label={displayMessage('copy.stories.8ed79e92e2')}>
+          <circle
+            cx="55"
+            cy="40"
+            r="5"
+            fill="var(--accent)"
+            data-label={sourceMessage('copy.stories.8ed79e92e2')}
           />
-        </div>
+        </MaterialPitch>
       </Section>
       <Section title={displayMessage('copy.stories.9c5e998784')}>
         <div className="ds-grid">

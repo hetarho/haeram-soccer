@@ -25,8 +25,6 @@ export {
   UNRECORDED_LOOK,
 } from './lib/matchAppearance';
 export {
-  heatChoices,
-  heatOf,
   networkView,
   NETWORK_VIEW,
   ownSide,

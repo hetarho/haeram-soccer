@@ -54,7 +54,6 @@ export const verbatimParameters: Readonly<Record<string, readonly string[]>> = {
   'copy.FixtureKitSelector.1ec292bad8': ['p0'],
   'copy.MatchCharts.1ba621cb8b': ['p0'],
   'copy.MatchMaterial.6a8d34feb6': ['p1'],
-  'copy.MatchMaterial.4ea1afd010': ['p2'],
   'copy.MatchReportCard.d8bc1c7304': ['p0', 'p1'],
   'copy.MediationReview.c01fa0dea6': ['p0'],
   'copy.MediationReview.8f6cf5909a': ['p0'],

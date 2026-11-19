@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { REPORT_SLOTS } from '../../../../../../packages/engine/src/material';
-import { cellName, cellOf } from '../../../../../../packages/engine/src/match/pitch';
 import {
   dotRadius,
-  heatCells,
-  heatOf,
   networkView,
   NETWORK_VIEW,
   VIEW,
@@ -18,13 +15,6 @@ import {
 
 /** A saved own match: the own club away, only its two lines kept, after the §9.4 layout. */
 function savedRecord() {
-  const heat = new Array<number>(4 * 40).fill(0);
-  // Line 0: 6 touches in one cell, 2 in another; the own total and the opponent's after the lines.
-  heat[cellOf([60, 30])] = 6;
-  heat[cellOf([90, 10])] = 2;
-  heat[2 * 40 + cellOf([60, 30])] = 6;
-  heat[2 * 40 + cellOf([90, 10])] = 2;
-  heat[3 * 40 + cellOf([20, 34])] = 5;
   const report = new Array<number>(60).fill(0);
   const own = 30;
   report[own + REPORT_SLOTS.finalThirdEntries + 3] = 12;
@@ -47,7 +37,7 @@ function savedRecord() {
     material: {
       // Own goal by p1 (0.45 xG, header); opponent miss (0.05 xG, foot).
       shots: [1, 0, 950, 340, 45, 0, 1, 0, 3, 800, 200, 5, 3, 0],
-      heat,
+      heat: Array(4 * 40).fill(0),
       network: [600, 300, 8, 400, 340, 0],
       report,
     },
@@ -69,8 +59,8 @@ function networkRecord(touches: number[], pairs: number[]) {
   record.lineCounts = [0, touches.length];
   record.material = {
     shots: [],
-    report: [],
     heat: Array((touches.length + 2) * 40).fill(0),
+    report: [],
     network: [...touches.flatMap((touches, i) => [100 + i * 80, 100 + i * 30, touches]), ...pairs],
   };
   return record;
@@ -174,25 +164,6 @@ describe('post-match material views', () => {
     expect(goal.label).toContain('헤더');
     expect(miss).toMatchObject({ own: false, header: false });
     expect(miss.label).toContain('상대 선수');
-  });
-
-  it('shades heat cells by share', () => {
-    const record = savedRecord();
-    const cells = heatCells(heatOf(record, w, 'p1'));
-    expect(cells).toHaveLength(40);
-    const busy = cells[cellOf([60, 30])]!,
-      quiet = cells[cellOf([90, 10])]!;
-    expect(busy.share).toBeCloseTo(0.75);
-    expect(busy.shade).toBe(1);
-    expect(quiet.share).toBeCloseTo(0.25);
-    expect(quiet.shade).toBeCloseTo(1 / 3);
-    expect(cells.filter((c) => c.touches === 0).every((c) => c.shade === 0)).toBe(true);
-    expect(busy.label).toBe(`${cellName(busy.cell)} · 터치 6번 (75%)`);
-    // The own total equals the one player here; the opponent has its own map.
-    expect(heatCells(heatOf(record, w, 'own'))[busy.cell]!.share).toBeCloseTo(0.75);
-    expect(heatCells(heatOf(record, w, 'opponent'))[cellOf([20, 34])]!.shade).toBe(1);
-    // An empty map shades nothing.
-    expect(heatCells(undefined).every((c) => c.shade === 0 && c.share === 0)).toBe(true);
   });
 
   it('builds report sentences with lane names', () => {

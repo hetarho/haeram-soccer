@@ -53,6 +53,9 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
       valid = false;
     };
   }, [client, selected]);
+  const materialMatches = new Set(
+    w.ownMatches.filter((match) => match.material).map((match) => match.id),
+  );
   const fixtures = ownSeasonFixtures(w).filter(
     (f) =>
       (scope === 'all' || (scope === 'completed' ? !!f.score : !f.score)) &&
@@ -203,14 +206,16 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                               >
                                 {richMessage('copy.FixtureNotebook.5624f76fe0')}
                               </button>
-                              <button
-                                onClick={() => {
-                                  setLoaded(undefined);
-                                  setSelected({ id: f.id, year: f.year, view: 'material' });
-                                }}
-                              >
-                                {richMessage('copy.stories.a3b55318c6')}
-                              </button>
+                              {materialMatches.has(f.id) && (
+                                <button
+                                  onClick={() => {
+                                    setLoaded(undefined);
+                                    setSelected({ id: f.id, year: f.year, view: 'material' });
+                                  }}
+                                >
+                                  {richMessage('copy.stories.a3b55318c6')}
+                                </button>
+                              )}
                             </>
                           ) : undefined
                         }

@@ -38,10 +38,6 @@
   stroke: var(--analysis-pitch-line, var(--pitch-line, #d7dcc5c0));
   stroke-width: 0.6;
 }
-.heat {
-  fill: var(--warm);
-  stroke: none;
-}
 .picked {
   fill: none;
   stroke: var(--chart-primary, var(--accent));
@@ -144,14 +140,6 @@
 }
 .otherKey {
   background: var(--surface-grain, none) var(--cool);
-}
-.picker {
-  display: grid;
-  gap: 6px;
-  margin: 4px 0 8px;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--display);
 }
 .roster {
   display: grid;

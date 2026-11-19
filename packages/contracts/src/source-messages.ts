@@ -1720,7 +1720,7 @@ export const sourceMessages = {
   'copy.catalog.ed15aa1b74':
     '승·무·패와 점수 배지, 홈·원정 배지, 포지션 계열 4색 배지, 감독·단장·코치진 직책 배지, 능력치 등급, 잠재력, 금액과 상세 정보 링크.',
   'copy.catalog.a066fd16b4': '그래프 · 분석 피치',
-  'copy.catalog.e21e9778fe': '선 그래프, 인터랙티브 분석 피치, 히트맵과 포메이션.',
+  'copy.catalog.e21e9778fe': '선 그래프, 인터랙티브 전술 피치와 포메이션.',
   'copy.catalog.dc83397af0': '테마 · 언어 설정',
   'copy.catalog.cffd2b21c9': '실제 게임에서 사용하는 화면 설정 컨트롤과 선택 창.',
   'copy.catalog.608c798e22': '클럽하우스 전체',
@@ -1957,9 +1957,7 @@ export const sourceMessages = {
   'copy.stories.74426b646c': '금액 · BETA',
   'copy.stories.57e41b8a97': '상세 정보 링크',
   'copy.stories.0c2041254e': '시즌별 전력',
-  'copy.stories.6e427f1cbb': '공격 방향 분석',
   'copy.stories.8ed79e92e2': '예시 공격 위치',
-  'copy.stories.7eab29dbe3': '선수 터치 히트맵',
   'copy.stories.271c77b3ac': '{p0} 엠블럼',
   'copy.stories.d4f4589c92': '{p0} 유니폼',
   'copy.stories.df68ee56ca': 'Dialog · 실제 대화상자',
@@ -3265,8 +3263,6 @@ export const sourceMessages = {
   'copy.GlossarySheet.38e5fc7535': '모든 지표 보기',
   'copy.GlossarySheet.2360b8a292':
     '축구 데이터 매체(Opta·FBref 등)가 쓰는 정의와, 이 게임이 실제로 세는 방식을 함께 적었어요.',
-  'copy.HeatPitch.1c10e2f16d': '칸이나 표시를 누르면 이름과 기록이 보여요 · 오른쪽으로 공격',
-  'copy.HeatPitch.9971836ad6': '{p0} · 가장 많은 곳 {p1}',
   'shell.cash': '운영 자금',
   'copy.HudCash.5262848bba': ' · 사업자금 {p0}',
   'copy.HudCash.d6cbac6325': '구단 자금 {p0}{p1} · 자금 관리',
@@ -3559,11 +3555,10 @@ export const sourceMessages = {
   'copy.MatchCharts.56d6eb6b14': '{p0}: {p1} {p2} (실선), {p3} {p4} (점선) · {p5}분까지',
   'copy.MatchCharts.47d655339a': '{p0}′ {p1} 골',
   'copy.MatchMaterial.4783334a0f': '슛 지도',
-  'copy.MatchMaterial.c1fc5bb4a0': '히트맵',
   'copy.MatchMaterial.db54860add': '패스 연결망',
   'copy.MatchMaterial.4932b1af38': '전술 해설',
-  'copy.MatchMaterial.d12e529078':
-    '이 경기의 지도는 보관하지 않아요 — 선수의 시즌 히트맵을 확인하세요',
+  'copy.MatchMaterial.d12e529078': '경기 지도는 시즌이 끝나면 보관하지 않아요.',
+  'copy.MatchMaterial.d59195b9a8': '이 경기는 관전하지 않아 지도가 없어요.',
   'copy.MatchMaterial.1a923aba55': '{p0} 선수 기록',
   'copy.MatchMaterial.6a8d34feb6': '이 경기의 최다 터치:{p0}{p1}',
   'copy.MatchMaterial.1d3ede7cc3': '경기 자료 보기',
@@ -3573,12 +3568,6 @@ export const sourceMessages = {
   'copy.MatchMaterial.870b086e6f': '{p0} 상대 {p1}',
   'copy.MatchMaterial.cf5a470964':
     '크기 = xG · 채움 = 골 · 마름모 = 헤더 · 두 팀 모두 오른쪽으로 공격',
-  'copy.MatchMaterial.c4df6fb3de': '히트맵 대상',
-  'copy.MatchMaterial.caf76bdaa3': '히트맵 대상{p0}{p1}',
-  'copy.MatchMaterial.bbb9a18045': '{p0} 히트맵 · 터치 {p1}번',
-  'copy.MatchMaterial.3acc063cd8': ' · 상대도 오른쪽으로 공격',
-  'copy.MatchMaterial.4ea1afd010':
-    '{p0} · 터치 {p1}번 · 파랑에서 빨강으로 갈수록 터치가 많아요{p2}',
   'copy.MatchMaterial.2a1cc2e03e': '패스 연결망: 우리 선수 {p0}명, 연결 {p1}개',
   'copy.MatchMaterial.e86b9ed7bd':
     '원은 평균 위치에 놓이며 크기는 성공 패스 수를 나타내요. 선 굵기 = 두 선수 사이 성공 패스, 화살표 = 패스 방향이에요. 합계 {minPasses}번 이상인 연결만 보여요.',
@@ -5091,7 +5080,6 @@ export const sourceMessages = {
   'copy.materialView.f3db88d1c1': '으로',
   'copy.materialView.56afb7f831': '상대 선수',
   'copy.materialView.96252d8ea3': ' · 헤더',
-  'copy.materialView.2724192be5': '{p0} · 터치 {p1}번 ({p2}%)',
   'copy.materialView.921afb8470': '{p0}번째 선수',
   'copy.materialView.38aeab08e9':
     '{player} · 등번호 {number} · 성공 패스 {passes}번 · 터치 {touches}번',
@@ -6980,7 +6968,7 @@ export const sourceMessages = {
   'copy.stories.16d1c9050a': 'Table',
   'copy.stories.ef2f1fee9e': 'OfficeBar',
   'copy.stories.3e5b90ae05': 'Chart',
-  'copy.stories.a05d8e00e4': 'MaterialPitch · HeatPitch',
+  'copy.stories.a05d8e00e4': 'MaterialPitch',
   'copy.stories.9c5e998784': 'FormationPitch',
   'copy.stories.4e33739903': 'ClubCrest',
   'copy.stories.b5f801ed2c': 'KitSwatch',

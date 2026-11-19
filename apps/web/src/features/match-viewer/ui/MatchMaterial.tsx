@@ -4,10 +4,8 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useId, useMemo, useState, type CSSProperties } from 'react';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { BAND_EDGES, LANE_EDGES, PITCH } from '../../../../../../packages/engine/src/match/pitch';
-import { FIELD, HeatPitch, MaterialPitch } from '../../../entities/match';
+import { FIELD, MaterialPitch } from '../../../entities/match';
 import {
-  heatChoices,
-  heatOf,
   networkView,
   NETWORK_VIEW,
   matchLook,
@@ -25,20 +23,18 @@ import networkStyle from './PassNetwork.module.css';
 import { TabList } from '../../../shared/ui/PageTabs';
 import { openPlayer } from '../../../entities/player';
 import { Segments } from '../../../shared/ui/Segments';
-import { Select } from '../../../shared/ui/Select';
 import s from '../../../shared/ui/styles/MatchMaterial.module.css';
 import app from '../../../shared/ui/styles/App.module.css';
 
-type Tab = 'shots' | 'heat' | 'network' | 'report';
+type Tab = 'shots' | 'network' | 'report';
 const TABS = [
   ['shots', sourceMessage('copy.MatchMaterial.4783334a0f')],
-  ['heat', sourceMessage('copy.MatchMaterial.c1fc5bb4a0')],
   ['network', sourceMessage('copy.MatchMaterial.db54860add')],
   ['report', sourceMessage('copy.MatchMaterial.4932b1af38')],
 ] as const;
 
 /**
- * An own match's post-match material (→WEB-84, MATCH-25): shot map, heat maps, pass network and
+ * An own match's post-match material (→WEB-84, MATCH-25): shot map, pass network and
  * tactical report, each on the theatre's 1.9:1 pitch. Loaded lazily, outside the entry (→ARCH-28).
  */
 export function MatchMaterial({ record, w }: { record: MatchRecord; w: World }) {
@@ -50,7 +46,11 @@ export function MatchMaterial({ record, w }: { record: MatchRecord; w: World }) 
     return (
       <section className={s.material} aria-label={displayMessage('copy.stories.a3b55318c6')}>
         <p data-surface="inset" className={s.missing} role="status">
-          {richMessage('copy.MatchMaterial.d12e529078')}
+          {richMessage(
+            record.year === w.year
+              ? 'copy.MatchMaterial.d59195b9a8'
+              : 'copy.MatchMaterial.d12e529078',
+          )}
         </p>
         {localizeValue(
           top && (
@@ -89,7 +89,6 @@ export function MatchMaterial({ record, w }: { record: MatchRecord; w: World }) 
       />
       <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${tab}`}>
         {localizeValue(tab === 'shots' && <ShotMap record={record} w={w} />)}
-        {localizeValue(tab === 'heat' && <HeatMaps record={record} w={w} />)}
         {localizeValue(tab === 'network' && <Network record={record} w={w} />)}
         {localizeValue(tab === 'report' && <Report record={record} w={w} />)}
       </div>
@@ -164,55 +163,6 @@ function ShotMap({ record, w }: { record: MatchRecord; w: World }) {
         }),
       )}
     </MaterialPitch>
-  );
-}
-
-function HeatMaps({ record, w }: { record: MatchRecord; w: World }) {
-  useTextLocale();
-  const choices = useMemo(() => heatChoices(record, w), [record, w]);
-  const [who, setWho] = useState('own');
-  const map = useMemo(() => heatOf(record, w, who), [record, w, who]);
-  const chosen =
-    choices.find((c) => c.id === who)?.label ?? sourceMessage('copy.BallonDorView.8434ac1486');
-  return (
-    <>
-      <label className={s.picker}>
-        {richMessage('copy.MatchMaterial.caf76bdaa3', {
-          p0: ' ',
-          p1: (
-            <Select
-              aria-label={displayMessage('copy.MatchMaterial.c4df6fb3de')}
-              value={who}
-              onValueChange={setWho}
-            >
-              {localizeValue(
-                choices.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {localizeValue(c.label)}
-                  </option>
-                )),
-              )}
-            </Select>
-          ),
-        })}
-      </label>
-      <HeatPitch
-        map={map}
-        label={displayMessage('copy.MatchMaterial.bbb9a18045', {
-          p0: chosen,
-          p1: map?.touches ?? 0,
-        })}
-        legend={
-          <p className={s.caption}>
-            {richMessage('copy.MatchMaterial.4ea1afd010', {
-              p0: chosen,
-              p1: map?.touches ?? 0,
-              p2: who === 'opponent' && sourceMessage('copy.MatchMaterial.3acc063cd8'),
-            })}
-          </p>
-        }
-      />
-    </>
   );
 }
 

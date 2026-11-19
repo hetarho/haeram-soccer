@@ -77,11 +77,17 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
           </small>
         </b>
       </div>
-      <div className={s.controls}>
-        <button type="button" aria-expanded={material} onClick={() => setMaterial((open) => !open)}>
-          {richMessage('copy.stories.a3b55318c6')}
-        </button>
-      </div>
+      {record.material && (
+        <div className={s.controls}>
+          <button
+            type="button"
+            aria-expanded={material}
+            onClick={() => setMaterial((open) => !open)}
+          >
+            {richMessage('copy.stories.a3b55318c6')}
+          </button>
+        </div>
+      )}
       {localizeValue(
         material && (
           <Suspense

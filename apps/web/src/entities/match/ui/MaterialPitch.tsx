@@ -1,15 +1,12 @@
-import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { localizeValue, useTextLocale } from '../../../presentation/text';
-import { useId, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react';
-import type { HeatMap } from '../../../../../../packages/engine/src/material';
+import { useId, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import {
   BAND_EDGES,
   LANE_EDGES,
   PITCH,
   cellName,
 } from '../../../../../../packages/engine/src/match/pitch';
-import { paintHeat } from '../lib/heatPaint';
-import { VIEW, cellAt, cellRect, heatCells, px, py } from '../lib/materialView';
+import { VIEW, cellAt, cellRect, px, py } from '../lib/materialView';
 import s from '../../../shared/ui/styles/MatchMaterial.module.css';
 import { usePitchSkin } from '../model/usePitchSkin';
 
@@ -64,15 +61,12 @@ function Markings() {
 export function MaterialPitch({
   label,
   children,
-  heat,
   describe,
   describeMark,
   legend,
 }: {
   label: string;
   children?: ReactNode;
-  /** A heat map's layer, over the grass and under the markings. */
-  heat?: ReactNode;
   /** What a tap on a cell says beyond its name. */
   describe?: (cell: number) => string;
   /** Interactive diagrams expose their marked buttons and resolve selection in the current locale. */
@@ -159,7 +153,6 @@ export function MaterialPitch({
             </>
           ),
         )}
-        {localizeValue(heat)}
         <Markings />
         <path
           className={s.arrow}
@@ -174,84 +167,9 @@ export function MaterialPitch({
         )}
       </svg>
       <figcaption className={s.caption} aria-live="polite">
-        {note?.mark && describeMark
-          ? describeMark(note.mark)
-          : localizeValue(note?.text ?? sourceMessage('copy.HeatPitch.1c10e2f16d'))}
+        {note?.mark && describeMark ? describeMark(note.mark) : localizeValue(note?.text ?? '')}
       </figcaption>
       {localizeValue(legend)}
     </figure>
-  );
-}
-
-/** Painted maps by their cells, so a tab switch or a reopened sheet never repaints (bounded). */
-const painted = new Map<string, string | undefined>();
-const PAINTED_KEPT = 32;
-
-function paintedHeat(cells: readonly number[]) {
-  const key = cells.join(',');
-  if (painted.has(key)) return painted.get(key);
-  const url =
-    typeof document === 'undefined'
-      ? undefined
-      : paintHeat(document.createElement('canvas'), cells);
-  if (painted.size >= PAINTED_KEPT) painted.delete(painted.keys().next().value!);
-  painted.set(key, url);
-  return url;
-}
-
-/**
- * A heat map on the material pitch (→WEB-99): the canvas-painted blobs as one image layer under the
- * markings, or the cells shaded by their share where the browser has no 2D canvas. A tap names the
- * cell and its touches; the label adds the busiest cell for assistive technology.
- */
-export function HeatPitch({
-  map,
-  label,
-  legend,
-}: {
-  map: HeatMap | undefined;
-  /** What the map is, with its total touches; the busiest cell's name is appended. */
-  label: string;
-  legend?: ReactNode;
-}) {
-  useTextLocale();
-  const cells = useMemo(() => heatCells(map), [map]);
-  const touches = useMemo(() => cells.map((c) => c.touches), [cells]);
-  const url = useMemo(() => paintedHeat(touches), [touches]);
-  const busiest = cells.reduce((top, c) => (c.touches > top.touches ? c : top), cells[0]!);
-  return (
-    <MaterialPitch
-      label={localizeValue(
-        busiest.touches
-          ? sourceMessage('copy.HeatPitch.9971836ad6', { p0: label, p1: cellName(busiest.cell) })
-          : label,
-      )}
-      describe={(cell) => cells[cell]!.label}
-      legend={legend}
-      heat={
-        url ? (
-          <image
-            href={url}
-            width={VIEW.width}
-            height={VIEW.height}
-            preserveAspectRatio="none"
-            pointerEvents="none"
-            data-testid="heat-image"
-          />
-        ) : (
-          cells.map((c) => (
-            <rect
-              key={c.cell}
-              className={s.heat}
-              x={c.x}
-              y={c.y}
-              width={c.width}
-              height={c.height}
-              fillOpacity={c.shade * 0.82}
-            />
-          ))
-        )
-      }
-    />
   );
 }

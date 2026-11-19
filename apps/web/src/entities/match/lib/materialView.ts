@@ -6,12 +6,10 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
  */
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import {
-  heatMap,
   ownSideOf,
   passNetwork,
   shotMap,
   tacticalReport,
-  type HeatMap,
   type ShotResult,
   type TacticalReport,
 } from '../../../../../../packages/engine/src/material';
@@ -135,59 +133,6 @@ export function cellRect(cell: number) {
   const x = px(BAND_EDGES[band]!),
     y = py(LANE_EDGES[lane]!);
   return { x, y, width: px(BAND_EDGES[band + 1]!) - x, height: py(LANE_EDGES[lane + 1]!) - y };
-}
-
-export interface HeatCell {
-  cell: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  touches: number;
-  /** Share of the map's touches, 0–1. */
-  share: number;
-  /** Shade, 0–1: the share against the busiest cell's. */
-  shade: number;
-  label: string;
-}
-
-/** The 40 cells of a heat map shaded by their share of its touches. */
-export function heatCells(map: HeatMap | undefined): HeatCell[] {
-  const cells = map?.cells ?? new Array<number>(40).fill(0);
-  const total = map?.touches ?? 0;
-  const most = Math.max(0, ...cells);
-  return cells.map((touches, cell) => {
-    const share = total ? touches / total : 0;
-    return {
-      cell,
-      ...cellRect(cell),
-      touches,
-      share,
-      shade: most ? touches / most : 0,
-      label: sourceMessage('copy.materialView.2724192be5', {
-        p0: cellName(cell),
-        p1: touches,
-        p2: Math.round(share * 100),
-      }),
-    };
-  });
-}
-
-/** The heat maps to choose from: both sides, then each own player with touches. */
-export function heatChoices(record: MatchRecord, w: Pick<World, 'players' | 'playerClub'>) {
-  const own = ownSide(record, w);
-  const choices: { id: string; label: string }[] = [
-    { id: 'own', label: sourceMessage('copy.BallonDorView.8434ac1486') },
-    { id: 'opponent', label: sourceMessage('copy.MatchBriefing.1a46398092') },
-  ];
-  for (const node of passNetwork(record, own)?.nodes ?? [])
-    if (node.player && node.touches > 0)
-      choices.push({ id: node.player, label: nameOf(w, node.player) ?? node.player });
-  return choices;
-}
-
-export function heatOf(record: MatchRecord, w: Pick<World, 'players' | 'playerClub'>, who: string) {
-  return heatMap(record, who, ownSide(record, w));
 }
 
 /** Sizes in pitch-width fractions and CSS px at the reference drawing width, scaled by SVG. */
@@ -376,22 +321,16 @@ export function sideReport(record: MatchRecord, side: 0 | 1) {
 }
 
 /**
- * The own player of the match with the most touches, for a match whose maps are gone: his season
- * heat map holds them (→MATCH-5). Without season maps, the one with the most passes.
+ * The own player with the most passes when an older match has no retained material.
  */
-export function topToucher(
-  record: MatchRecord,
-  w: Pick<World, 'players' | 'playerClub' | 'history'>,
-) {
+export function topToucher(record: MatchRecord, w: Pick<World, 'players' | 'playerClub'>) {
   const own = ownSide(record, w);
   const counts = record.lineCounts;
   const first = counts && own === 1 ? counts[0] : 0;
   const lines = counts ? record.players.slice(first, first + counts[own]) : record.players;
-  const heat = w.history.find((h) => h.year === record.year)?.heat;
-  const touches = (id: string) => heat?.[id]?.reduce((a, b) => a + b, 0) ?? 0;
   let best: { id: string; score: [number, number] } | undefined;
   for (const line of lines) {
-    const score: [number, number] = [touches(line.id), line.metrics[2] ?? 0];
+    const score: [number, number] = [line.metrics[2] ?? 0, line.metrics[0] ?? 0];
     if (
       !best ||
       score[0] > best.score[0] ||
