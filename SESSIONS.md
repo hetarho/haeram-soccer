@@ -190,6 +190,7 @@
 - 261119 suggest ARCH-30: move task check `pnpm run typecheck` to the final gate (ARCH batch): it averaged 71s over 2 runs
 - 261119 decided T1019: T1019 hold after sv19 stopped at its 22:00 stop-file → tk19 takes over the pushed sv19 branch (T1003-T1016, T1030-T1032 done) and runs T1019 on the record store in the same candidate as T1017/T1018/T1022, landing them together (alt: land sv19 first behind its own batch gate, then T1019 after a second gate). sv19 has no work in flight, so the conflict the hold avoided is gone.
 - 261119 decided T1018: Cold archive rule across the war gap: year < w.year - 7 alone would move 1932-1938 out at the 1946 restart and change last-season reads after a save -> also never move one of the last seven archives (alt: year rule alone | count rule alone). Determinism test starts from simulatedWorld(CAREER, seasons 8) so the run spans 9-10 archived seasons with daily saves over one season (alt: daily saves over nine seasons, about 9x the 900 s test)
+- 261119 decided T1018: T1018 runs on codex/gpt-6.1-terra@ultra instead of claude/opus@high: the last unit there ended it unfinished with no commit or newly checked acceptance (alt: the same route again)
 
 ## unlanded
 | id | tag | branch | commit | at |
