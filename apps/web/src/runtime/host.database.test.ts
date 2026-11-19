@@ -181,6 +181,11 @@ const fileHost = (files = memoryGames()) => ({
   }),
 });
 const sameWorld = (a: Host, b: Host) => canonical(a.world) === canonical(b.world);
+/**
+ * Byte equality of two database images. `toEqual` walks a multi-megabyte array element by element,
+ * which alone took minutes here.
+ */
+const sameBytes = (a: Uint8Array, b: Uint8Array) => Buffer.from(a).equals(Buffer.from(b));
 /** Imports parse and validate a whole world: slow on a loaded machine. */
 const SLOW = 300_000;
 const failure = (reply: { ok: boolean; error?: string }) => reply.error ?? '';
@@ -296,7 +301,7 @@ describe('the portable save file (→SAVE-9, →ARCH-16)', () => {
       );
       expect(reply.ok, reply.error).toBe(true);
       // The file holds the world as it stands in memory; the committed file is as it was.
-      expect(files.games.get('copy')!.game.driver.serialize()).toEqual(committed);
+      expect(sameBytes(files.games.get('copy')!.game.driver.serialize(), committed)).toBe(true);
       const other = fileHost();
       const again = await other.host.handle(
         req('import', -1, { type: 'import-game', gameId: 'again', file: reply.file! }),
@@ -348,7 +353,7 @@ describe('the portable save file (→SAVE-9, →ARCH-16)', () => {
         expect(reply.ok, name).toBe(false);
         expect(files.list(), name).toEqual(['mine']);
         expect(canonical(host.world), name).toBe(before);
-        expect(files.games.get('mine')!.game.driver.serialize(), name).toEqual(rows);
+        expect(sameBytes(files.games.get('mine')!.game.driver.serialize(), rows), name).toBe(true);
       }
       // The game in play still saves.
       expect((await host.handle(req('save', -1, { type: 'save' }))).ok).toBe(true);

@@ -40,6 +40,7 @@ import { isBudgetResponsibility } from '../../../../../packages/engine/src/deleg
 import { INVESTMENT_AREAS } from '../../shared/routing/investmentAreas';
 import { closeDecisionSettings, openInvestment } from '../../shared/routing/state';
 import { PendingHandover } from '../../features/approvals';
+import { RunningDimmer } from '../../shared/ui/RunningDimmer';
 import s from '../../shared/ui/styles/OwnerOffice.module.css';
 const ApprovalWorkbench = lazy(() =>
   import('../../pages/club/ui/Rich').then((module) => ({ default: module.ApprovalWorkbench })),
@@ -245,11 +246,6 @@ export function OwnerOffice({
       )}
       {localizeValue(!scope && <FacilityArt kind="manager" world={w} className={s.hero} eager />)}
       {localizeValue(
-        state.readonly && (
-          <p className={s.message}>{richMessage('copy.OwnerOfficeView.c6b3435977')}</p>
-        ),
-      )}
-      {localizeValue(
         message && !proposal && (
           <p role="alert" className={s.message}>
             {localizeValue(message)}
@@ -328,7 +324,9 @@ export function OwnerOffice({
                   {localizeValue(
                     settings.responsibilities[key] === 'delegated' ? (
                       isBudgetResponsibility(key) ? (
-                        <DelegationRequest w={w} client={client} responsibility={key} />
+                        <RunningDimmer>
+                          <DelegationRequest w={w} client={client} responsibility={key} />
+                        </RunningDimmer>
                       ) : (
                         <p className={s.cardNote}>{richMessage('delegation.sponsors.note')}</p>
                       )

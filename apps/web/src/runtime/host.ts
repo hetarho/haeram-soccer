@@ -20,7 +20,9 @@ import {
   importFile,
   listFiles,
   openGamePool,
+  pause as pausePool,
   poolBackupFiles,
+  unpause as unpausePool,
   type BackupFiles,
   type GamePool,
 } from '../adapters/sqliteWasm';
@@ -45,10 +47,12 @@ import {
 } from '../adapters/saveFile';
 export type { DatabaseBytes } from '../adapters/saveFile';
 import { RowSaver } from '../adapters/rowSaver';
+import { saveMovingCold } from '../adapters/coldMovers';
 import { rowsToWorld } from '../adapters/worldRows';
 import { SAVE_SCHEMA_VERSION } from '../adapters/saveSchema';
 import {
   attachRecordStore,
+  cloneWorld,
   type RecordStore,
 } from '../../../../packages/contracts/src/record-store';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
@@ -143,7 +147,7 @@ import { divisionName, kindLabel } from '../presentation/competitionLabels';
  */
 function adoptIdentities(w: World, revised: boolean): World {
   if (w.clubs.every((club) => club.identity)) return w;
-  const candidate = structuredClone(w);
+  const candidate = cloneWorld(w);
   if (!installMissingIdentities(candidate)) return w;
   if (!revised) {
     if (!Number.isSafeInteger(candidate.revision + 1))
@@ -417,7 +421,8 @@ export function storedWorld(store: RecordStore): World {
   if (meta.catalog_hash !== pinned)
     throw new SaveCompatibilityError(sourceMessage('copy.persistence.98b9bb6b66'));
   const stored = rowsToWorld(store, { includeCold: false });
-  const valid = validateWorld(stored, LOAD_CATALOG) as unknown as Record<string, unknown>;
+  // People who left memory are references the store's cold rows resolve (→SAVE-32).
+  const valid = validateWorld(stored, LOAD_CATALOG, store) as unknown as Record<string, unknown>;
   // The fields keep their stored order, so the rows they are saved in keep their places.
   const world = Object.fromEntries([
     ...Object.keys(stored).flatMap((key) => (key in valid ? [[key, valid[key]]] : [])),
@@ -485,6 +490,9 @@ export class Host {
   private release: MatchModelRelease;
   /** The game database pool, installed on first use; games open through it (→ARCH-11). */
   private gamePool?: Promise<GamePool>;
+  /** Whether the pool's handles were given to another tab (→SAVE-6), and their return under way. */
+  private poolPaused = false;
+  private resuming?: Promise<void>;
   constructor(
     private progress: (reply: Reply) => void = () => {},
     options: {
@@ -575,7 +583,7 @@ export class Host {
     const squadWorld = adoptSquads(modelled, modelled !== w);
     let activated = this.adoptManagerHistory(squadWorld, squadWorld !== w);
     if (needsReadModels(activated) && !settledAhead(this.world, activated)) {
-      const journalled = structuredClone(activated);
+      const journalled = cloneWorld(activated);
       initializeReadModels(journalled);
       if (activated === w) journalled.revision++;
       activated = journalled;
@@ -769,10 +777,20 @@ export class Host {
    * Releases the game in play's database after the client's save (→SAVE-14): no game is in play
    * until the next `open-game`. A world not yet in a database stays what it is, nobody's file.
    */
-  private releaseGame(r: Request): Reply {
-    if (this.game) {
+  private async releaseGame(r: Request, pause: boolean): Promise<Reply> {
+    if (this.game || pause) {
       this.closeGame();
       this.world = undefined;
+    }
+    if (pause) {
+      // Another tab takes the game (→SAVE-6): nothing of it stays here, and the pool lets go.
+      this.start = undefined;
+      const pool = await this.gamePool?.catch(() => undefined);
+      if (pool && !this.poolPaused) {
+        await this.resuming;
+        pausePool(pool);
+        this.poolPaused = true;
+      }
     }
     return { requestId: r.requestId, ok: true };
   }
@@ -828,12 +846,22 @@ export class Host {
    * The engine worker's game database pool, opened once on first use; a capability failure is
    * reported to the caller and tried again on the next call (→ARCH-11, →ARCH-17).
    */
-  databases(): Promise<GamePool> {
+  async databases(): Promise<GamePool> {
     this.gamePool ??= openGamePool().catch((error: unknown) => {
       this.gamePool = undefined;
       throw error;
     });
-    return this.gamePool;
+    const pool = await this.gamePool;
+    // A pool paused for another tab takes its handles back once this tab plays again (→SAVE-6).
+    if (this.poolPaused)
+      await (this.resuming ??= unpausePool(pool)
+        .then(() => {
+          this.poolPaused = false;
+        })
+        .finally(() => {
+          this.resuming = undefined;
+        }));
+    return pool;
   }
   /**
    * SAVE-23: a copy of the validated candidate on the full match model, or on its later revision
@@ -845,7 +873,7 @@ export class Host {
    */
   private adoptModel(w: World, revised: boolean): World {
     if (!activatesMatchModel(w, this.release) || settledAhead(this.world, w)) return w;
-    const candidate = structuredClone(w);
+    const candidate = cloneWorld(w);
     if (!revised) {
       if (!Number.isSafeInteger(candidate.revision + 1))
         throw new Error(sourceMessage('copy.host.b53dad7fec'));
@@ -884,6 +912,7 @@ export class Host {
       type === 'league-fixtures' ||
       type === 'full-stats' ||
       type === 'club-records' ||
+      type === 'stopped-reads' ||
       type === 'archive' ||
       type === 'manager-history' ||
       type === 'club-profile' ||
@@ -965,11 +994,26 @@ export class Host {
    * This world's view, projected inside one read scope (→ARCH-6): the projection is synchronous and
    * changes nothing, so the parts that read the own XI share one choice of it.
    */
-  private view(w = this.world): View | undefined {
+  private view(w = this.world, deferSlow = false): View | undefined {
     if (!w) return;
-    return readingOnce(w, () => this.projection(w));
+    return readingOnce(w, () => this.projection(w, deferSlow));
   }
-  private projection(w: World): View {
+  /**
+   * The five parts of the projection that cost the most each day (→WEB-119), shared by the full
+   * projection and the `stopped-reads` read so both give the same answer for the same world. Call it
+   * inside a read scope (→ARCH-6): the parts that read the own XI then share one choice of it.
+   */
+  private slowReads(w: World) {
+    return {
+      coaches: staffMarket(w),
+      managers: managerCandidates(w),
+      transfers: transferOffers(w),
+      disciplineNames: disciplineNames(w),
+      office: officeRead(w),
+    };
+  }
+  private projection(w: World, deferSlow = false): View {
+    const slow = deferSlow ? undefined : this.slowReads(w);
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
     const next = nextOwnFixture(w);
@@ -980,11 +1024,11 @@ export class Host {
     // so are the manager-history facts; the free-agent pool stays on the worker (→CLUB-49).
     const projected = projectWorldFacts(w);
     return {
-      coaches: staffMarket(w),
+      ...(slow ? { coaches: slow.coaches } : {}),
       world: {
         ...projected,
         clubs: w.clubs.map((club) => ({ ...club, rating: rating(w, club) })),
-        disciplineNames: disciplineNames(w),
+        ...(slow ? { disciplineNames: slow.disciplineNames } : {}),
         renewalChances: contractRenewalReads(w),
         // Browser projections omit `people`; resolving names there would regenerate old identities.
         nextOpponentLineup:
@@ -1038,13 +1082,12 @@ export class Host {
       totalMatches: w.ownMatches.length,
       tallies: tallies(w),
       milestones: clubMilestones(w),
-      managers: managerCandidates(w),
-      transfers: transferOffers(w),
+      ...(slow ? { managers: slow.managers, transfers: slow.transfers } : {}),
       sponsors: sponsorSlots(w),
       annualCost: operatingCost(w),
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
-      office: officeRead(w),
+      ...(slow ? { office: slow.office } : {}),
       news: this.news(w),
       newsTotal: newsTotal(w),
       managerHistoryKey: managerHistoryKey(w),
@@ -1053,8 +1096,8 @@ export class Host {
     };
   }
   /** The view for a reply (→ARCH-6): this world's view, whole or as the changes since `base`. */
-  private publish(base?: number): Pick<Reply, 'view' | 'viewSeq' | 'viewDelta'> {
-    return this.views.publish(this.view(), base);
+  private publish(base?: number, deferSlow = false): Pick<Reply, 'view' | 'viewSeq' | 'viewDelta'> {
+    return this.views.publish(this.view(this.world, deferSlow), base);
   }
   /**
    * Read-only requests, validated like commands but answered from the live world without a
@@ -1076,6 +1119,18 @@ export class Host {
         return { requestId: request.requestId, ok: true, clubProfile: profile };
       }
       if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
+      if (body.type === 'stopped-reads') {
+        if (body.world !== w.id) throw new Error(sourceMessage('copy.host.f8fc259198'));
+        return {
+          requestId: request.requestId,
+          ok: true,
+          stoppedReads: {
+            world: w.id,
+            revision: w.revision,
+            ...readingOnce(w, () => this.slowReads(w)),
+          },
+        };
+      }
       if (body.type === 'news-page') {
         if (body.world !== w.id) throw new Error(sourceMessage('copy.host.ef27d088a0'));
         const items = newsBefore(w, body.before, body.tag);
@@ -1194,7 +1249,8 @@ export class Host {
       game = this.game;
     if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
     if (!game) throw new Error(sourceMessage('copy.host.c64421732a'));
-    game.saver.save(w);
+    // People without a current role leave memory once this save commits (→SAVE-32).
+    saveMovingCold(w, game.saver);
     // A season closed since the last save: its save has committed, so it is backed up (→SAVE-31).
     // A failed copy is tried again at the next save.
     let backup: BackupInfo | undefined;
@@ -1221,7 +1277,7 @@ export class Host {
       if (r.body.type === 'save') return await this.save(r);
       if (r.body.type === 'restore-backup') return await this.restoreBackup(r, r.body.gameId);
       if (r.body.type === 'open-game') return await this.openGame(r, r.body.gameId);
-      if (r.body.type === 'close-game') return this.releaseGame(r);
+      if (r.body.type === 'close-game') return await this.releaseGame(r, !!r.body.pause);
       if (r.body.type === 'delete-game') return await this.deleteGame(r, r.body.gameId);
       if (r.body.type === 'export-game')
         return await this.exportGame(r, r.body.gameId, r.body.memory);
@@ -1372,7 +1428,12 @@ export class Host {
       const reply: Reply = {
         requestId: r.requestId,
         ok: true,
-        ...this.publish(r.viewBase),
+        ...this.publish(
+          r.viewBase,
+          r.body.type === 'command' &&
+            r.body.automatic === true &&
+            r.body.command.type === 'advance-days',
+        ),
         playback,
         start,
         cancelled: this.cancelled,

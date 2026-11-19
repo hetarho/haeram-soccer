@@ -11,10 +11,7 @@ const world = () =>
   ({ id: 'career', year: 1950, calendar: { day: 12 }, settings: defaultSettings() }) as World;
 const publish = (w: World) => gameStore.setState({ view: { world: w } as View });
 beforeEach(() => {
-  gameStore.setState(
-    { ...initialClientState, busy: false, processing: false, readonly: false },
-    true,
-  );
+  gameStore.setState({ ...initialClientState, busy: false, processing: false }, true);
   publish(world());
 });
 afterEach(() => gameStore.setState(initialClientState, true));
@@ -57,7 +54,6 @@ describe('progression mode shortcut', () => {
     expect(gameStore.getState().view!.world.calendar!.day).toBe(12);
   });
   it.each([
-    'readonly',
     'error',
     'busy',
     'processing',

@@ -45,7 +45,9 @@ describe('tactical roster tradeoffs', () => {
       w.tactic = tactic;
       const fast = simulateMatch(w, fixture, false);
       const observed = simulateMatch(w, fixture, true);
-      expect(canonical(observed.record)).toBe(canonical(fast.record));
+      const { material: _material, ...record } = observed.record;
+      void _material;
+      expect(canonical(record)).toBe(canonical(fast.record));
       expect(observed.squads[0].slice(0, 11).map((player) => player.id)).toEqual(
         ownStarters(w, fixture).map((player) => player.id),
       );

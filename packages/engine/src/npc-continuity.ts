@@ -1,4 +1,5 @@
 import { endPlayingCoachForDeparture } from './playing-coach';
+import { hasPerson, personOf } from './person-reads';
 import { COUNTRIES } from '../../catalogs/src/index';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { coachingGrade } from './aptitude';
@@ -59,7 +60,7 @@ export function isFreeAgent(w: { freeAgents?: readonly { id: string }[] }, id: s
   return ids.has(id);
 }
 /** Whether a generated identity is accounted for elsewhere: registered, or a free agent. */
-const departed = (w: World, id: string) => !!w.people?.[id] || isFreeAgent(w, id);
+const departed = (w: World, id: string) => hasPerson(w, id) || isFreeAgent(w, id);
 
 /** Registry enrollment occurs in simulation lifecycle, never from a read-only roster query. */
 export function materializePeople(w: World) {
@@ -90,7 +91,7 @@ export function materializePeople(w: World) {
       // A free agent's place is filled for the season he is one by someone nobody records.
       if (isFreeAgent(w, p.id)) continue;
       // The old generated identity can have moved or retired. Its vacant place gets a new person.
-      if (w.people?.[p.id]) p = replacement(w, c, p, slot);
+      if (hasPerson(w, p.id)) p = replacement(w, c, p, slot);
       if ((coachingGrade(p) ?? 0) < 4) continue;
       const person = retainPerson(w, p, c.id);
       person.origin = { club: c.id, slot };
@@ -114,7 +115,7 @@ export const REFILL = {
  * person's jobs of the season are read (`seasonPlayerJobs`), all a fixture's read copy carries.
  */
 function soldThisSeason(w: World, club: string, id: string) {
-  const person = w.people?.[id];
+  const person = personOf(w, id);
   if (person?.playing !== 'active') return false;
   const jobs = seasonPlayerJobs(person, w.year);
   return jobs.some((job) => {

@@ -677,7 +677,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
   retainRecentResults(w);
   refreshReadModels(w);
-  // The season's own match material, the playoff's included, becomes one heat map per own player
+  // The season's own match material, the playoff's included, expires at the close
   // (→MATCH-5).
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   // The final table and any promotion are credited before the close's departures (→HIST-19).
@@ -975,13 +975,21 @@ function roundFixtures(w: World, round: number) {
   const clubs = new Set(fixtures.flatMap((f) => [f.home, f.away]));
   return { fixtures, clubs, sequential: clubs.size < 2 * fixtures.length };
 }
+/**
+ * Whether every job's clubs play from stored squads, which a helper reads whole from the copy. A
+ * generated roster asks whether its places' identities are kept people (`departed`), and a person
+ * kept only as a cold row is absent from the copy (→SAVE-32): such a round stays on the engine.
+ */
+function helperReadable(w: World, jobs: readonly RoundJob[]) {
+  return jobs.every(({ fixture }) => !!w.squads?.[fixture.home] && !!w.squads[fixture.away]);
+}
 /** Phase one's start: the simulator, only on a day with our fixture, gets the other fixtures. */
 function beginRound(w: World, observe: boolean, simulator?: RoundSimulator): RoundPhase {
   w.round++;
   const { fixtures, sequential } = roundFixtures(w, w.round);
   const jobs = sequential ? [] : roundJobs(w, fixtures);
   const phase: RoundPhase = { fixtures, sequential, jobs, played: new Map(), observe };
-  if (simulator && !sequential && jobs.length < fixtures.length) {
+  if (simulator && !sequential && jobs.length < fixtures.length && helperReadable(w, jobs)) {
     phase.collect = simulator(readCopy(w), jobs);
     for (const f of fixtures) if (ownFixture(w, f)) phase.played.set(f, playFixture(w, f, observe));
   }

@@ -36,7 +36,6 @@ function setup(current?: MatchPlayback, world = w) {
     busy: false,
     processing: false,
     activity: 'idle',
-    readonly: false,
     savedRevision: w.revision,
     playback: current,
     view: { world } as View,
@@ -59,6 +58,7 @@ function setup(current?: MatchPlayback, world = w) {
     },
     cancel: vi.fn(),
     saveSoon,
+    refreshStoppedReads: vi.fn(async () => {}),
     setClockRunning: (clockRunning: boolean) => gameStore.setState({ clockRunning }),
   } as unknown as GameClient;
   const controller = new ProgressionController(client, ONE_DAY_AT_A_TIME);
@@ -772,15 +772,9 @@ describe('explicit automatic and manual modes', () => {
     const s = setup(current, world);
     controller = s.controller;
     useMatchView.getState().set({ matchId: current.record.id, finished: false });
-    for (const blocked of [
-      { readonly: true },
-      { error: 'failed' },
-      { processing: true },
-      { pendingActions: 1 },
-    ]) {
+    for (const blocked of [{ error: 'failed' }, { processing: true }, { pendingActions: 1 }]) {
       gameStore.publish({
         ...gameStore.getSnapshot(),
-        readonly: false,
         error: undefined,
         processing: false,
         pendingActions: 0,
@@ -828,20 +822,14 @@ describe('explicit automatic and manual modes', () => {
     await controller.playThrough();
     expect(s.command).toHaveBeenCalledWith({ type: 'advance-days', days: 1 }, { background: true });
   });
-  it('keeps report reopening behind ownership, processing, action and recovery protections', async () => {
+  it('keeps report reopening behind processing, action and recovery protections', async () => {
     const world = manual();
     world.calendar = { day: 6 };
     const s = setup(undefined, world);
     controller = s.controller;
-    for (const blocked of [
-      { readonly: true },
-      { error: 'failed' },
-      { processing: true },
-      { pendingActions: 1 },
-    ]) {
+    for (const blocked of [{ error: 'failed' }, { processing: true }, { pendingActions: 1 }]) {
       gameStore.publish({
         ...gameStore.getSnapshot(),
-        readonly: false,
         error: undefined,
         processing: false,
         pendingActions: 0,
@@ -975,24 +963,15 @@ describe('explicit automatic and manual modes', () => {
     expect(controller.store.getState().matchEve).toBeUndefined();
     expect(controller.store.getState().running).toBe(false);
   });
-  it('keeps manual requests blocked by ownership and worker/save errors, never by owner approvals', async () => {
+  it('keeps manual requests blocked by worker/save errors, never by owner approvals', async () => {
     const world = manual(),
       s = setup(undefined, world);
     controller = s.controller;
-    for (const blocked of [
-      { readonly: true },
-      { error: 'save failed' },
-      { error: 'worker failed' },
-    ]) {
-      gameStore.publish({
-        ...gameStore.getSnapshot(),
-        readonly: false,
-        error: undefined,
-        ...blocked,
-      });
+    for (const blocked of [{ error: 'save failed' }, { error: 'worker failed' }]) {
+      gameStore.publish({ ...gameStore.getSnapshot(), ...blocked });
       await controller.nextEvent();
     }
-    gameStore.publish({ ...gameStore.getSnapshot(), readonly: false, error: undefined });
+    gameStore.publish({ ...gameStore.getSnapshot(), error: undefined });
     expect(s.command).not.toHaveBeenCalled();
     world.settings!.responsibilities.manager = 'direct';
     world.manager.interim = true;

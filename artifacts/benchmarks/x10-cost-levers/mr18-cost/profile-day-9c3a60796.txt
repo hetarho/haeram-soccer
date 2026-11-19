@@ -1,0 +1,68 @@
+day: 40 reps after 0 skipped and 10 warm, 11686 ms, 7620 samples, load1 17.58, digest 6a21fd6ce7e2e3fc
+
+self
+ 15.0%   1753 ms  fitPlaceWeights workloads-772640.mjs:49002
+  5.0%    583 ms  attributeSide workloads-772640.mjs:49298
+  2.6%    299 ms  selectionValue workloads-772640.mjs:66701
+  2.4%    279 ms  weightsAt workloads-772640.mjs:49784
+  2.3%    271 ms  share workloads-772640.mjs:49706
+  2.3%    268 ms  lineup workloads-772640.mjs:66706
+  2.2%    252 ms  (garbage collector)
+  2.0%    239 ms  recruitmentSelection workloads-772640.mjs:42276
+  1.5%    178 ms  (anonymous) workloads-772640.mjs:49814
+  1.4%    167 ms  multinomialInto workloads-772640.mjs:47665
+  1.4%    161 ms  targetsFor workloads-772640.mjs:58422
+  1.3%    156 ms  weightEntry workloads-772640.mjs:28294
+  1.3%    156 ms  ownMultiplier workloads-772640.mjs:33503
+  1.2%    136 ms  (anonymous) workloads-772640.mjs:50037
+  1.1%    129 ms  (anonymous) workloads-772640.mjs:50314
+  1.1%    127 ms  (anonymous) workloads-772640.mjs:49039
+  0.9%    109 ms  sideUnits workloads-772640.mjs:47080
+  0.9%    106 ms  levelFactor workloads-772640.mjs:28332
+  0.9%    106 ms  sideCounters workloads-772640.mjs:46346
+  0.8%     97 ms  within workloads-772640.mjs:49200
+  0.8%     95 ms  pickAt workloads-772640.mjs:49851
+  0.8%     92 ms  noneOf workloads-772640.mjs:47878
+  0.7%     87 ms  passGroup workloads-772640.mjs:50122
+  0.7%     84 ms  generateTeamFacts workloads-772640.mjs:49959
+  0.7%     84 ms  (anonymous) workloads-772640.mjs:58251
+  0.7%     80 ms  participationTimelineIssues workloads-772640.mjs:47728
+  0.6%     75 ms  binomial workloads-772640.mjs:49928
+  0.6%     75 ms  sharesOf workloads-772640.mjs:49738
+  0.6%     74 ms  matchdaySquad workloads-772640.mjs:56487
+  0.6%     71 ms  playPeriod workloads-772640.mjs:47977
+
+inclusive
+ 97.5%  11390 ms  (anonymous) [eval1]:0
+ 97.5%  11389 ms  stepDay workloads-772640.mjs:63839
+ 97.5%  11389 ms  advanceDays workloads-772640.mjs:63916
+ 97.5%  11389 ms  rep workloads-772640.mjs:76143
+ 97.5%  11389 ms  run [eval1]:8
+ 67.3%   7863 ms  playRound workloads-772640.mjs:63779
+ 66.2%   7739 ms  simulateMatch workloads-772640.mjs:55255
+ 65.5%   7651 ms  simulateAggregate workloads-772640.mjs:50669
+ 61.5%   7190 ms  (anonymous) workloads-772640.mjs:63794
+ 61.4%   7181 ms  playFixture2 workloads-772640.mjs:63759
+ 60.5%   7067 ms  playAggregate workloads-772640.mjs:50591
+ 42.9%   5012 ms  attributePlayerFacts workloads-772640.mjs:49233
+ 41.7%   4869 ms  attributeSide workloads-772640.mjs:49298
+ 24.3%   2839 ms  clubDay workloads-772640.mjs:63889
+ 24.2%   2833 ms  fitMoves workloads-772640.mjs:49810
+ 24.1%   2816 ms  dailyMarket workloads-772640.mjs:59844
+ 16.7%   1952 ms  settleParticipation workloads-772640.mjs:50565
+ 16.1%   1880 ms  fitPlaceWeights workloads-772640.mjs:49002
+ 13.4%   1569 ms  generateTeamFacts workloads-772640.mjs:49959
+ 12.2%   1426 ms  npcMarket workloads-772640.mjs:58233
+ 12.1%   1419 ms  withSlotRatings workloads-772640.mjs:33466
+ 12.0%   1405 ms  (anonymous) workloads-772640.mjs:58251
+ 11.3%   1319 ms  transferOffers workloads-772640.mjs:42025
+ 11.3%   1316 ms  listable workloads-772640.mjs:43420
+ 11.1%   1294 ms  search workloads-772640.mjs:41942
+ 10.8%   1262 ms  (anonymous) workloads-772640.mjs:41964
+ 10.6%   1242 ms  consider workloads-772640.mjs:41944
+  9.8%   1143 ms  staffSignings workloads-772640.mjs:43809
+  9.8%   1143 ms  resolvedTermsContext workloads-772640.mjs:67293
+  9.8%   1140 ms  detectMediations workloads-772640.mjs:42414
+
+profile /tmp/haeram-perf-profile/day-772640.cpuprofile
+bundle /tmp/haeram-perf-profile/workloads-772640.mjs

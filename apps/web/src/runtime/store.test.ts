@@ -29,7 +29,6 @@ const state = (v: View): ClientState => ({
   busy: false,
   processing: false,
   activity: 'idle',
-  readonly: false,
   savedRevision: v.world.revision,
   progress: 0,
 });
@@ -59,13 +58,13 @@ describe('selective simulation snapshots', () => {
     store.publish(state(prepared), { viewShared: true });
     store.publish({ ...state(prepared), processing: true }, { viewShared: true });
     store.publish({ ...state(prepared), savedRevision: 0 }, { viewShared: true });
-    store.publish({ ...state(prepared), readonly: true }, { viewShared: true });
-    store.publish({ ...state(prepared), readonly: true }, { viewShared: true });
+    store.publish({ ...state(prepared), busy: true }, { viewShared: true });
+    store.publish({ ...state(prepared), busy: true }, { viewShared: true });
     expect(reads).toBe(0);
     expect(changedViews).toBe(1);
     expect(publications).toBe(4);
     expect(store.getSnapshot().view).toBe(prepared);
-    expect(store.getSnapshot().readonly).toBe(true);
+    expect(store.getSnapshot().busy).toBe(true);
   });
 
   it('preserves prepared snapshots, then reconciles an unprepared publication normally', () => {

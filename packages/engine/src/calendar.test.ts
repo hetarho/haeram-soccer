@@ -107,8 +107,12 @@ describe('persistent season calendar', () => {
     const p = advanceToNextMatch(w);
     const fastPlayback = advanceToNextMatch(fast, undefined, false);
     expect(fastPlayback?.script).toBeUndefined();
-    expect(fastPlayback?.record).toEqual(p?.record);
-    expect(canonical(fast)).toBe(canonical(w));
+    const { material: _material, ...record } = p!.record;
+    void _material;
+    expect(fastPlayback?.record).toEqual(record);
+    const comparable = structuredClone(w);
+    for (const match of comparable.ownMatches) delete match.material;
+    expect(canonical(fast)).toBe(canonical(comparable));
     expect(p?.record.id).toBe('midweek');
     // Watching adds the script the staging plays, never frames (→MATCH-38/39).
     expect(p?.script?.beats.length).toBeGreaterThan(0);

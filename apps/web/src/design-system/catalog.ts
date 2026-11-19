@@ -78,7 +78,7 @@ export const STORIES: Story[] = [
     'charts',
     sourceMessage('copy.catalog.a066fd16b4'),
     sourceMessage('copy.catalog.701cef250c'),
-    ['pages/club/ui/Chart', 'entities/match/ui/HeatPitch', 'entities/player/ui/FormationPitch'],
+    ['pages/club/ui/Chart', 'entities/match/ui/MaterialPitch', 'entities/player/ui/FormationPitch'],
     sourceMessage('copy.catalog.e21e9778fe'),
   ),
   story(

@@ -453,6 +453,7 @@ export function hireStaff(
  */
 export function departStaff(w: World, member?: Staff) {
   if (!member) return;
+  // Current-only: a departing member still holds his post here, so memory holds his person.
   const coaching = member.person && w.people?.[member.person]?.coaching;
   if (coaching) {
     coaching.ability = member.ability;
@@ -927,6 +928,7 @@ function developStaff(w: World) {
     return { ...member, ability: next.ability, potential: next.potential };
   });
   for (const member of w.staff || []) {
+    // Current-only: our staff hold their posts, so memory holds their persons (T1014).
     const coaching = member.person && w.people?.[member.person]?.coaching;
     if (coaching) {
       coaching.ability = member.ability;

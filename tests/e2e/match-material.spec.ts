@@ -1,6 +1,6 @@
 import { clubhouseDate, openLeague } from './competition-navigation';
 import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
-import { delegateSales } from './events';
+import { configureResponsibilities, delegateSales } from './events';
 import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow } from './layout';
@@ -25,29 +25,18 @@ test('opens an own match material from its report and from the fixture notebook'
   await expect(report).toBeVisible();
   const date = await page.getByTestId('game-date').innerText();
 
-  // From the final analysis (→WEB-84): four tabs on the 1.9:1 pitch, the shot map first.
+  // From the final analysis (→WEB-84): the three retained materials, with the shot map first.
   await report.getByRole('button', { name: '경기 자료', exact: true }).click();
   const material = report.getByRole('region', { name: '경기 자료', exact: true });
   const tabs = material.getByRole('tablist', { name: '경기 자료 보기' }).getByRole('tab');
-  await expect(tabs).toHaveText(['슛 지도', '히트맵', '패스 연결망', '전술 해설']);
+  await expect(tabs).toHaveText(['슛 지도', '패스 연결망', '전술 해설']);
   expect(await material.getByTestId('shot-dot').count()).toBeGreaterThan(0);
   const pitch = material.getByTestId('material-pitch');
   const box = (await pitch.boundingBox())!;
   expect(box.width / box.height).toBeCloseTo(1.9, 1);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
-  // A tap names the cell under it.
   await tabs.nth(1).click();
-  await expect(material.getByRole('combobox', { name: '히트맵 대상' })).toBeVisible();
-  await material
-    .getByTestId('material-pitch')
-    .click({ position: { x: box.width * 0.5, y: box.height * 0.2 } });
-  await expect(material.locator('figcaption')).toContainText('왼쪽 측면');
-  await chooseOption(material.getByRole('combobox', { name: '히트맵 대상' }), 'opponent');
-  await expect(material).toContainText('상대 팀 · 터치');
-  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-
-  await tabs.nth(2).click();
   await expect(material).toContainText('선 굵기 = 두 선수 사이 성공 패스');
   const networkPitch = material.getByRole('group', { name: /^패스 연결망:/ });
   const circles = networkPitch.getByRole('button').and(networkPitch.locator('[data-network-node]'));
@@ -86,7 +75,7 @@ test('opens an own match material from its report and from the fixture notebook'
     expect(networkBox.width / networkBox.height).toBeCloseTo(1.9, 1);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   }
-  await tabs.nth(3).click();
+  await tabs.nth(2).click();
   await expect(material).toContainText('세트피스');
   await expect(material.getByRole('table')).toContainText('되찾기');
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
@@ -107,10 +96,46 @@ test('opens an own match material from its report and from the fixture notebook'
   );
   await notebook.getByRole('button', { name: '경기 자료', exact: true }).first().click();
   const sheet = page.getByRole('dialog', { name: '일정 경기 자료' });
-  await expect(sheet.getByRole('tab')).toHaveCount(4);
+  await expect(sheet.getByRole('tab')).toHaveCount(3);
   expect(await sheet.getByTestId('shot-dot').count()).toBeGreaterThan(0);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
   // Reading the material changes nothing in the world.
   await expect(await clubhouseDate(page)).toHaveText(date);
+});
+
+test('explains missing maps for an own match settled by automatic play', async ({ page }) => {
+  await page.goto('/');
+  await startCareer(page);
+  await configureResponsibilities(page, {
+    observations: { matchEve: false, windowOpen: false },
+  });
+  const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
+  await chooseOption(pace, 'x10');
+  await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+  const round = page.getByTestId('game-round');
+  await expect
+    .poll(async () => Number((await round.innerText()).split('/')[0]!.trim()), {
+      timeout: 60000,
+    })
+    .toBeGreaterThan(0);
+  await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+
+  await openLeague(page);
+  await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
+  await page
+    .getByRole('group', { name: '일정·결과 보기' })
+    .getByRole('button', { name: '우리 경기', exact: true })
+    .click();
+  await page.getByText('우리 팀 일정 노트', { exact: true }).click();
+  const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
+  await chooseOption(
+    notebook.getByRole('combobox', { name: '일정 진행 상태', exact: true }),
+    'completed',
+  );
+  const fixture = notebook.getByTestId('fixture-card').first();
+  await expect(fixture).toContainText('이 경기는 관전하지 않아 지도가 없어요.');
+  await fixture.getByRole('button', { name: '이 경기 분석 보기' }).click();
+  const report = page.getByRole('dialog', { name: '일정 경기 분석' });
+  await expect(report).toContainText('이 경기는 관전하지 않아 지도가 없어요.');
 });

@@ -755,7 +755,7 @@ test('unseen routed locale and theme change actual resources while game facts, t
   expect((await savedWorld(page)).events).toEqual(world.events);
 });
 
-test('a read-only game tab changes presentation without claiming ownership or issuing game commands', async ({
+test('a tab whose game plays elsewhere changes presentation without taking the game or issuing game commands', async ({
   page,
   context,
 }) => {
@@ -765,16 +765,8 @@ test('a read-only game tab changes presentation without claiming ownership or is
   await routeSyntheticPresentation(viewer);
   await observeCommands(viewer);
   await viewer.goto('/');
-  // The second tab can continue the current slot for inspection without taking its lock.
-  await viewer.waitForFunction(() =>
-    [
-      ...document.querySelectorAll<HTMLElement>(
-        '[data-testid="game-slots"], [data-testid="club-hub"]',
-      ),
-    ].some((element) => element.getClientRects().length > 0),
-  );
-  if (await viewer.getByTestId('game-slots').isVisible()) await continueSlot(viewer);
-  await expect(viewer.getByRole('button', { name: '읽기 전용', exact: true })).toBeVisible();
+  // The second tab only says the game plays elsewhere; it never takes it (→SAVE-6, →WEB-90).
+  await expect(viewer.getByTestId('playing-elsewhere')).toBeVisible();
   const sent = await commands(viewer);
   await openSettings(viewer, 'locale');
   await chooseOption(viewer.getByTestId('presentation-locale'), FIXTURE_LOCALE);
@@ -785,7 +777,7 @@ test('a read-only game tab changes presentation without claiming ownership or is
   await expect(viewer.locator('html')).toHaveAttribute('lang', FIXTURE_LOCALE);
   await expect.poll(() => background(viewer)).toBe(FIXTURE_BACKGROUND);
   await closeSettings(viewer);
-  await expect(viewer.getByRole('button', { name: '읽기 전용', exact: true })).toBeVisible();
+  await expect(viewer.getByTestId('playing-elsewhere')).toBeVisible();
   expect(await commands(viewer)).toBe(sent);
   await viewer.close();
 });

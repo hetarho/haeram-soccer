@@ -19,10 +19,7 @@ const world = () => ({ id: 'office', settings: defaultSettings() }) as World;
 const publish = (w: World) => gameStore.setState({ view: { world: w } as View });
 beforeEach(() => {
   vi.mocked(pendingWorkPreview).mockReturnValue([]);
-  gameStore.setState(
-    { ...initialClientState, readonly: false, busy: false, processing: false },
-    true,
-  );
+  gameStore.setState({ ...initialClientState, busy: false, processing: false }, true);
   publish(world());
 });
 afterEach(() => gameStore.setState(initialClientState, true));
@@ -112,7 +109,7 @@ describe('reviewed office changes', () => {
       observations: { matchEve: false, windowOpen: true },
     });
   });
-  it.each(['world', 'authority', 'pending', 'readonly', 'error', 'critical'])(
+  it.each(['world', 'authority', 'pending', 'error', 'critical'])(
     'rejects stale or protected %s after waiting',
     async (change) => {
       const proposal = officeProposal(world(), { responsibilities: { recruitment: 'delegated' } });
@@ -124,7 +121,6 @@ describe('reviewed office changes', () => {
           vi.mocked(pendingWorkPreview).mockReturnValue([
             { key: 'recruitment', to: 'delegated', count: 1, refs: ['new'] },
           ]);
-        if (change === 'readonly') gameStore.setState({ readonly: true });
         if (change === 'error') gameStore.setState({ error: 'failed' });
         if (change === 'critical') publish({ ...world(), critical: 'stop' });
       });

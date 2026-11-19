@@ -22,15 +22,24 @@ describe('persistent season calendar', () => {
     expect(skipped?.script).toBeUndefined();
     expect(skipped?.staging).toBeUndefined();
     expect(skipped?.frames).toEqual([]);
-    expect(skipped?.record).toEqual(watched?.record);
+    expect(watched?.record.material).toBeDefined();
+    expect(skipped?.record.material).toBeUndefined();
+    const withoutMaterial = (w: typeof observed) => {
+      const copy = structuredClone(w);
+      for (const match of copy.ownMatches) delete match.material;
+      return canonical(copy);
+    };
+    const { material: _material, ...watchedRecord } = watched!.record;
+    void _material;
+    expect(skipped?.record).toEqual(watchedRecord);
     expect(skipped?.record.players.length).toBeGreaterThan(0);
-    expect(canonical(fast)).toBe(canonical(observed));
+    expect(withoutMaterial(fast)).toBe(withoutMaterial(observed));
     // A few rounds, not a whole observed season: observing is the same rule match by match, which
     // scripted-match.test keeps for watched and skipped own fixtures (→MATCH-7), and
     // calendar.progression-eng keeps the fast path through a season close.
     while (observed.round < ROUNDS) advanceRound(observed);
     while (fast.round < ROUNDS) advanceRound(fast, undefined, false);
-    expect(canonical(fast)).toBe(canonical(observed));
+    expect(withoutMaterial(fast)).toBe(withoutMaterial(observed));
     expect(fast.rankHistory?.filter((s) => s.year === CAREER_YEAR)).toHaveLength(ROUNDS + 1);
   });
 });

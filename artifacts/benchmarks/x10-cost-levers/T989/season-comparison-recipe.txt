@@ -1,0 +1,19 @@
+import {writeFileSync} from 'node:fs';
+import v8 from 'node:v8';
+import {isDeepStrictEqual} from 'node:util';
+import * as a from '/tmp/t989-base.mjs';
+import * as b from '/tmp/t989-cand.mjs';
+const out=process.argv[2]; const year=Number(process.argv[3]);
+const initial=a.makeWorld(year); writeFileSync(`/tmp/t989-world-${year}.bin`,v8.serialize(initial));
+const x=a.open(`/tmp/t989-world-${year}.bin`,false), y=b.open(`/tmp/t989-world-${year}.bin`,false);
+const result={year,seasons:[]};
+function diff(p,q,path='',acc={}) { if(isDeepStrictEqual(p,q)) return acc; if(p && q && typeof p==='object' && typeof q==='object') { for(const k of new Set([...Object.keys(p),...Object.keys(q)])) diff(p[k],q[k],path+'/'+k,acc); } else { const key=path.replace(/\/\d+/g,'/#'); const entry=acc[key]??={count:0,example:[path,p,q]}; entry.count++; } return acc; }
+for(let season=0;season<4;season++) {
+ const start=x.w.year;
+ while(x.w.year===start && x.w.round<a.ROUNDS) {x.step();y.step();}
+ const s=a.stats(x.w),t=b.stats(y.w); const diffs=diff(x.w,y.w); const roles=[];
+ for(const [pos,metrics] of Object.entries(s.positions)) for(const [metric,v] of Object.entries(metrics)) {const z=t.positions[pos]?.[metric]; if(z && v.mean) roles.push({pos,metric,base:v.mean,candidate:z.mean,relative:Math.abs(z.mean-v.mean)/Math.abs(v.mean)});}
+ roles.sort((u,v)=>v.relative-u.relative);
+ result.seasons.push({year:start,hashesBase:s.hashes,hashesCandidate:t.hashes,roles,differences:diffs}); writeFileSync(out,JSON.stringify(result,null,2)); console.error(year,start,'done',Object.keys(diffs).length,roles[0]);
+ while(x.w.year===start){x.step();y.step();}
+}

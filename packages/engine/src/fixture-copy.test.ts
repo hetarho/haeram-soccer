@@ -64,6 +64,26 @@ describe('fixture roster read copy', () => {
     };
     expect(jobPlayback(w, { fixture: f }, result)?.squads[0]).toEqual(expected);
   });
+  it('reads a stored-squad roster alike whether an inactive person is a stub or absent (→SAVE-32)', () => {
+    const w = worldMarketFixture();
+    w.clubs[2]!.representative = true;
+    foundSquads(w);
+    const c = w.clubs[1]!,
+      f = {
+        id: 'fixture',
+        home: c.id,
+        away: w.clubs[2]!.id,
+        kind: 'league',
+        year: w.year,
+      } as Fixture,
+      expected = startingSquad(w, c, f),
+      remote = JSON.parse(JSON.stringify(readCopy(w))) as World,
+      stubs = Object.values(remote.people ?? {}).filter((p) => p.playing !== 'active');
+    // A cold person (T1014) is missing from the copy: drop every inactive stub, as cold rows would.
+    for (const p of stubs) delete remote.people![p.id];
+    remote.people!['ghost:retired'] = { id: 'ghost:retired', playing: 'retired' } as PersonCareer;
+    expect(startingSquad(remote, c, f)).toEqual(expected);
+  });
   it('keeps active identities and every reserved ID without copying lifetime career data', () => {
     const raw = npcSquad('read-copy', 2000, club),
       active = { ...retained(raw[0]), name: 'Retained native', origin: { club: club.id, slot: 0 } },

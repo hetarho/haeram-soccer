@@ -99,7 +99,6 @@ function state(): ClientState {
     ...initialClientState,
     busy: false,
     processing: false,
-    readonly: false,
     clockRunning: true,
     view: {
       world,

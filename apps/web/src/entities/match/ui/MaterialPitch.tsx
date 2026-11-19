@@ -1,0 +1,175 @@
+import { localizeValue, useTextLocale } from '../../../presentation/text';
+import { useId, useRef, useState, type MouseEvent, type ReactNode } from 'react';
+import {
+  BAND_EDGES,
+  LANE_EDGES,
+  PITCH,
+  cellName,
+} from '../../../../../../packages/engine/src/match/pitch';
+import { VIEW, cellAt, cellRect, px, py } from '../lib/materialView';
+import s from '../../../shared/ui/styles/MatchMaterial.module.css';
+import { usePitchSkin } from '../model/usePitchSkin';
+
+export const FIELD = {
+  x: VIEW.pad,
+  y: VIEW.pad,
+  width: VIEW.width - VIEW.pad * 2,
+  height: VIEW.height - VIEW.pad * 2,
+};
+
+/** The pitch lines at their real places, so the 40 cells sit on the boxes they are named after. */
+function Markings() {
+  useTextLocale();
+  const box = [LANE_EDGES[1], LANE_EDGES[4]] as const;
+  const six = [LANE_EDGES[2], LANE_EDGES[3]] as const;
+  const end = (x: number, depth: number, span: readonly [number, number]) => (
+    <rect
+      x={px(Math.min(x, x + depth))}
+      y={py(span[0])}
+      width={px(Math.abs(depth)) - px(0)}
+      height={py(span[1]) - py(span[0])}
+    />
+  );
+  return (
+    <g className={s.lines}>
+      <rect {...FIELD} />
+      <line x1={px(PITCH.length / 2)} y1={FIELD.y} x2={px(PITCH.length / 2)} y2={py(PITCH.width)} />
+      <circle
+        cx={px(PITCH.length / 2)}
+        cy={py(PITCH.width / 2)}
+        r={Math.min(FIELD.width * 0.09, FIELD.height * 0.15)}
+      />
+      <circle
+        cx={px(PITCH.length / 2)}
+        cy={py(PITCH.width / 2)}
+        r="0.7"
+        fill="currentColor"
+        stroke="none"
+      />
+      {localizeValue(end(0, BAND_EDGES[2], box))}
+      {localizeValue(end(0, BAND_EDGES[1], six))}
+      {localizeValue(end(PITCH.length, -BAND_EDGES[2], box))}
+      {localizeValue(end(PITCH.length, -BAND_EDGES[1], six))}
+    </g>
+  );
+}
+
+/**
+ * The 1.9:1 pitch with the side it describes attacking right. Tapping it names the cell under the
+ * finger (→WEB-84), or what a marked shape stands for.
+ */
+export function MaterialPitch({
+  label,
+  children,
+  describe,
+  describeMark,
+  legend,
+}: {
+  label: string;
+  children?: ReactNode;
+  /** What a tap on a cell says beyond its name. */
+  describe?: (cell: number) => string;
+  /** Interactive diagrams expose their marked buttons and resolve selection in the current locale. */
+  describeMark?: (key: string) => string;
+  legend?: ReactNode;
+}) {
+  useTextLocale();
+  const [note, setNote] = useState<{ cell?: number; mark?: string; text: string }>();
+  const groundId = useId();
+  const pitch = useRef<SVGSVGElement>(null);
+  const skin = usePitchSkin(pitch);
+  const tap = (event: MouseEvent<SVGSVGElement>) => {
+    const marked = (event.target as Element).closest('[data-label]');
+    if (marked)
+      return setNote({
+        mark: marked.getAttribute('data-mark') ?? undefined,
+        text: marked.getAttribute('data-label')!,
+      });
+    const box = event.currentTarget.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+    const cell = cellAt(
+      ((event.clientX - box.left) / box.width) * VIEW.width,
+      ((event.clientY - box.top) / box.height) * VIEW.height,
+    );
+    setNote(cell === undefined ? undefined : { cell, text: describe?.(cell) ?? cellName(cell) });
+  };
+  const stripe = FIELD.width / 10;
+  return (
+    <figure className={s.figure}>
+      <svg
+        ref={pitch}
+        className={s.pitch}
+        viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
+        role={describeMark ? 'group' : 'img'}
+        aria-label={localizeValue(label)}
+        onClick={tap}
+        onKeyDown={(event) => {
+          if (!describeMark || (event.key !== 'Enter' && event.key !== ' ')) return;
+          const marked = (event.target as Element).closest('[data-mark][role="button"]');
+          if (!marked) return;
+          event.preventDefault();
+          setNote({ mark: marked.getAttribute('data-mark')!, text: '' });
+        }}
+        data-testid="material-pitch"
+        data-ui="analysis-pitch"
+      >
+        <rect className={s.grass} width={VIEW.width} height={VIEW.height} />
+        {localizeValue(
+          Array.from({ length: 10 }, (_, i) => (
+            <rect
+              key={i}
+              className={i % 2 ? s.stripe : s.stripeAlt}
+              x={FIELD.x + stripe * i}
+              y={FIELD.y}
+              width={stripe + 0.2}
+              height={FIELD.height}
+            />
+          )),
+        )}
+        {localizeValue(
+          skin.textureUrl && (
+            <>
+              <defs>
+                <pattern
+                  id={groundId}
+                  width={skin.textureSize / 4}
+                  height={skin.textureSize / 4}
+                  patternUnits="userSpaceOnUse"
+                >
+                  <image
+                    href={skin.textureUrl}
+                    width={skin.textureSize / 4}
+                    height={skin.textureSize / 4}
+                  />
+                </pattern>
+              </defs>
+              <rect
+                width={VIEW.width}
+                height={VIEW.height}
+                fill={`url(#${groundId})`}
+                opacity={skin.textureOpacity}
+                pointerEvents="none"
+              />
+            </>
+          ),
+        )}
+        <Markings />
+        <path
+          className={s.arrow}
+          d={`M ${VIEW.width - 30} 6 h 18 m -4 -2.5 l 4 2.5 l -4 2.5`}
+          aria-hidden="true"
+        />
+        {localizeValue(children)}
+        {localizeValue(
+          note?.cell !== undefined && (
+            <rect className={s.picked} {...cellRect(note.cell)} pointerEvents="none" />
+          ),
+        )}
+      </svg>
+      <figcaption className={s.caption} aria-live="polite">
+        {note?.mark && describeMark ? describeMark(note.mark) : localizeValue(note?.text ?? '')}
+      </figcaption>
+      {localizeValue(legend)}
+    </figure>
+  );
+}

@@ -36,7 +36,7 @@ export function stagingSides(
 }
 
 /**
- * Both watch and skip write the same material. Only a validated script crosses to presentation;
+ * A watched match writes material. Only a validated script crosses to presentation;
  * any detail/writer/recount failure keeps the original settled record without material. The
  * writer argument is the test seam for forcing a bad count, without changing the football draw.
  */

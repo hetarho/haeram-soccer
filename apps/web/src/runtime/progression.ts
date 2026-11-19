@@ -357,10 +357,7 @@ export class ProgressionController {
       // A critical alert or the career's end stops the clock once its day is shown.
       if (
         (this.store.getState().running || this.draining) &&
-        (state.error ||
-          state.readonly ||
-          state.view?.world.critical ||
-          (state.view && careerEnded(state.view.world)))
+        (state.error || state.view?.world.critical || (state.view && careerEnded(state.view.world)))
       ) {
         this.stop(
           state.view && careerEnded(state.view.world)
@@ -377,8 +374,7 @@ export class ProgressionController {
     return this.mode === 'automatic' &&
       record?.running &&
       record.pace in PACE_MS &&
-      Number.isFinite(record.at) &&
-      !gameStore.getSnapshot().readonly
+      Number.isFinite(record.at)
       ? record
       : undefined;
   }
@@ -484,7 +480,7 @@ export class ProgressionController {
   /** Keeps this world's clock on disk (at most once a second unless forced) for a later return. */
   writeClock(force = false) {
     const id = this.worldId;
-    if (!id || gameStore.getSnapshot().readonly) return;
+    if (!id) return;
     const now = Date.now();
     if (!force && now - this.clockWrittenAt < 1000) return;
     this.clockWrittenAt = now;
@@ -515,7 +511,6 @@ export class ProgressionController {
         !w ||
         this.inFlight ||
         state.processing ||
-        state.readonly ||
         state.error ||
         w.critical ||
         careerEnded(w) ||
@@ -591,7 +586,6 @@ export class ProgressionController {
       !w ||
       this.inFlight ||
       state.processing ||
-      state.readonly ||
       state.error ||
       w.critical ||
       careerEnded(w) ||
@@ -722,7 +716,6 @@ export class ProgressionController {
       state.processing ||
       state.busy ||
       state.pendingActions ||
-      state.readonly ||
       state.error ||
       state.view?.world.critical ||
       !state.view ||
@@ -756,6 +749,7 @@ export class ProgressionController {
     if (this.inFlight) this.client.cancel();
     this.flush();
     this.lock();
+    this.restoreStoppedReads();
     if (!was) return;
     this.writeClock(true);
     // A clock that stops for any reason saves its automatic progress at once (→SAVE-8).
@@ -766,7 +760,25 @@ export class ProgressionController {
     const locked = this.store.getState().running || this.draining;
     if (locked === this.locked) return;
     this.locked = locked;
+    if (locked) this.needsStoppedReads = true;
     this.client.setClockRunning(locked);
+    if (!locked) this.restoreStoppedReads();
+  }
+  private needsStoppedReads = false;
+  /** A cancelled in-flight step can still publish a day after the lock first lifts. */
+  private restoreStoppedReads() {
+    if (
+      this.disposed ||
+      !this.needsStoppedReads ||
+      this.locked ||
+      this.inFlight ||
+      this.ahead.length
+    )
+      return;
+    const view = gameStore.getSnapshot().view;
+    this.needsStoppedReads = false;
+    if (!view) return;
+    void this.client.refreshStoppedReads().catch(() => {});
   }
   /** Stops on the eve of an own match the owner wants to decide; true when it stopped. */
   private eveStop(w: World) {
@@ -862,8 +874,7 @@ export class ProgressionController {
     const state = gameStore.getSnapshot(),
       shown = state.view?.world,
       last = this.ahead.at(-1);
-    if (this.inFlight || this.reads || state.processing || !shown || state.readonly || state.error)
-      return;
+    if (this.inFlight || this.reads || state.processing || !shown || state.error) return;
     if (last?.stops) return;
     const head = last?.after ?? shown;
     if (head.critical || careerEnded(head)) return;
@@ -899,6 +910,7 @@ export class ProgressionController {
       this.flush();
       if (!progress.running) this.client.saveSoon();
     } else void this.tick();
+    this.restoreStoppedReads();
     this.summarize();
   }
   /**
@@ -1029,13 +1041,7 @@ export class ProgressionController {
   private async catchUp() {
     const state = gameStore.getSnapshot();
     if (this.inFlight || state.processing) return;
-    if (
-      !state.view ||
-      state.readonly ||
-      state.error ||
-      state.view.world.critical ||
-      careerEnded(state.view.world)
-    )
+    if (!state.view || state.error || state.view.world.critical || careerEnded(state.view.world))
       return;
     // Saving runs in the background (→SAVE-8): an unsaved revision never holds the next step.
     let w = state.view.world;
@@ -1079,6 +1085,7 @@ export class ProgressionController {
     }
     // A stop that came while the step ran saved before the step landed; save what it played.
     else this.client.saveSoon();
+    this.restoreStoppedReads();
     this.summarize();
   }
   /**

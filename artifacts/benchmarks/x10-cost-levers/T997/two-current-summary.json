@@ -1,0 +1,74 @@
+{
+  "base": "dda3c198442bc3bc7a2767c4c09777810a701b9a",
+  "candidate": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/start-x10-d3a275d5",
+  "modes": [
+    "helpers",
+    "helpers"
+  ],
+  "procs": 4,
+  "days": 70,
+  "warm": 14,
+  "seed": "perf-261027",
+  "machine": {
+    "node": "v24.22.1",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "bundles": [
+    "590e186c297e4465e5f41e91fb5097a479e1169858d348c2ac6268806638cf92",
+    "16894a34cd09e1ce8928699430f3a19d4d68f074a4c5aa5dd841799b67f121e4"
+  ],
+  "sameHash": true,
+  "hashes": [
+    "98e1bc2d7cc078d6f571ced74f608795b1dad4d3abe7349a4a84cfdbef51568a"
+  ],
+  "total": {
+    "wall": {
+      "ratio": 1.0049,
+      "lo": 0.936,
+      "hi": 1.0706,
+      "call": "no difference"
+    },
+    "processCpu": {
+      "ratio": 0.9642,
+      "lo": 0.9275,
+      "hi": 0.9969,
+      "call": "faster"
+    },
+    "mainCpu": {
+      "ratio": 1.4284,
+      "lo": 1.3648,
+      "hi": 1.4832,
+      "call": "slower"
+    }
+  },
+  "own": {
+    "wall": {
+      "ratio": 0.9944,
+      "lo": 0.956,
+      "hi": 1.0311,
+      "call": "no difference"
+    },
+    "processCpu": {
+      "ratio": 0.9619,
+      "lo": 0.9463,
+      "hi": 0.9718,
+      "call": "faster"
+    },
+    "mainCpu": {
+      "ratio": 2.0365,
+      "lo": 1.9543,
+      "hi": 2.1527,
+      "call": "slower"
+    }
+  },
+  "load1": [
+    6.74,
+    5.76,
+    5.19,
+    4.6,
+    3.87
+  ],
+  "rssMax": 1903538176
+}

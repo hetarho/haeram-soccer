@@ -1,4 +1,5 @@
 /** Explicit persisted-player setup for tests; real career defaults stay untouched. */
+import { personOf } from './person-reads';
 import type { Club, Player, World } from '../../contracts/src/types';
 import { FREE_AGENT_CAP } from '../../contracts/src/player';
 import { joinFreeAgents } from './free-agents';
@@ -29,7 +30,7 @@ export function persistedFixturePlayer(w: World): { club: Club; player: Player }
   for (const club of w.clubs) {
     if (club.id === w.playerClub || club.representative || !w.squads?.[club.id]) continue;
     const player = clubPlayers(w, club).find((p) => {
-      const person = w.people?.[p.id];
+      const person = personOf(w, p.id);
       return p.status === 'active' && person?.playing === 'active' && person.club === club.id;
     });
     if (player) return { club, player };

@@ -71,11 +71,10 @@ export interface FixtureKitViewProps {
   fixture: Fixture | undefined;
   /** The role in the preview; `null` shows automatic selection. */
   role: KitRole | null;
-  /** No choice can be committed: a command in flight, an error, a critical alert or read-only. */
+  /** No choice can be committed: a command in flight, an error, or a critical alert. */
   disabled: boolean;
   /** Local kit previews remain available while calendar play locks commitment. */
   previewDisabled?: boolean;
-  readonly: boolean;
   /** Why the preview started again, after the next fixture changed under it. */
   notice: string;
   /** The last commit's outcome or error. */
@@ -92,7 +91,6 @@ export function FixtureKitView({
   role,
   disabled,
   previewDisabled = disabled,
-  readonly,
   notice,
   message,
   onSelect,
@@ -312,9 +310,6 @@ export function FixtureKitView({
             {richMessage('copy.FixtureKitSelector.e1c6eebb77')}
           </button>
         </div>
-        {localizeValue(
-          readonly && <p className={s.note}>{richMessage('copy.FixtureKitSelector.af6bd86117')}</p>,
-        )}
         <p className={s.message} aria-live="polite" data-testid="fixture-kit-message">
           {localizeValue(message)}
         </p>
@@ -344,7 +339,6 @@ export function FixtureKitSelector({ client, blocked }: { client: GameClient; bl
   const w = useGameState(selectKitWorld);
   const actionBlocked = useGameState(gameActionsBlocked);
   const previewBlocked = useGameState((state) => gameActionsBlocked(state, { preview: true }));
-  const readonly = useGameState((state) => state.readonly);
   const fixture = w ? nextOwnFixture(w) : undefined;
   // The previewed fixture and role; `pending` while the role differs from what is stored for it.
   const [draft, setDraft] = useState(() => ({
@@ -423,7 +417,6 @@ export function FixtureKitSelector({ client, blocked }: { client: GameClient; bl
       role={role}
       disabled={blocked || actionBlocked || sending || stale}
       previewDisabled={previewBlocked || sending || stale || !!w.critical}
-      readonly={readonly}
       notice={notice}
       message={message}
       onSelect={(kit) => {

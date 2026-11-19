@@ -118,7 +118,7 @@ export const ProgressControls = memo(function ProgressControls({
   const w = state.view!.world;
   const mode = settingsOf(w).mode;
   const manual = mode === 'manual';
-  const blocked = !!(state.readonly || state.error || w.critical || careerEnded(w));
+  const blocked = !!(state.error || w.critical || careerEnded(w));
   const buttons = manual ? (
     <div
       className={p.buttons}

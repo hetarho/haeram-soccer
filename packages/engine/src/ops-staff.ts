@@ -363,6 +363,7 @@ export function yearlyStaff(w: World) {
       );
     m.ability = next.ability;
     m.potential = next.potential;
+    // Current-only: our manager holds the post, so memory holds his person (T1014).
     if (m.person && w.people?.[m.person]?.management)
       Object.assign(w.people[m.person].management!, next);
   }

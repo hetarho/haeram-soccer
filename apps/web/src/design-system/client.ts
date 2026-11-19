@@ -22,7 +22,6 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
     view: sample.view,
     busy: false,
     processing: false,
-    readonly: false,
     activity: 'idle',
     playback: sample.playback,
   };

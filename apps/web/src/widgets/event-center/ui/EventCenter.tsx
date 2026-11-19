@@ -47,6 +47,8 @@ import { Money } from '../../../shared/ui/Money';
 import { bidPlayer, bidTerms } from '../../../shared/routing/bidFacts';
 import { contractLine } from '../../../presentation/format';
 import { Dialog } from '../../../shared/ui/Dialog';
+import { RunningDimmer } from '../../../shared/ui/RunningDimmer';
+import { useStoppedRead } from '../../../shared/lib/useStoppedRead';
 import { TabList, TabPanel } from '../../../shared/ui/PageTabs';
 import s from '../../../shared/ui/styles/EventCenter.module.css';
 import { fadeOutOnRemove } from '../../../shared/ui/motion';
@@ -374,7 +376,7 @@ export const EventCard = memo(function EventCard({
 }) {
   useTextLocale();
   const w = useGameState((state) => state.view!.world);
-  const market = useGameState((state) => state.view?.transfers) || [];
+  const market = useStoppedRead('transfers') || [];
   const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
   const decide = async (item: InboxItem, action?: () => Promise<unknown>) => {
     const reply = await action?.();
@@ -505,14 +507,16 @@ export const EventCard = memo(function EventCard({
             </>
           ) : item.kind === 'window-open' ? (
             <>
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={acting}
-                onClick={showMarket}
-              >
-                {richMessage('copy.EventCenter.bff84e4f71')}
-              </button>
+              <RunningDimmer>
+                <button
+                  data-ui="primary"
+                  className={s.primary}
+                  disabled={acting}
+                  onClick={showMarket}
+                >
+                  {richMessage('copy.EventCenter.bff84e4f71')}
+                </button>
+              </RunningDimmer>
               <button disabled={acting} onClick={() => void decide(item)}>
                 {richMessage('copy.stories.1aacb54c49')}
               </button>

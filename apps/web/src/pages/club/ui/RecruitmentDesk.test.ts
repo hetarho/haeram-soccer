@@ -85,9 +85,7 @@ vi.mock('../../../shared/routing/taskMemory', async (original) => {
 vi.mock('../../../runtime/store', async (original) => ({
   ...(await original<typeof import('../../../runtime/store')>()),
   useGameState: (selector: (state: ClientState) => unknown) =>
-    reads.blocked
-      ? true
-      : selector({ ...initialClientState, busy: false, processing: false, readonly: false }),
+    reads.blocked ? true : selector({ ...initialClientState, busy: false, processing: false }),
 }));
 vi.mock('../../../shared/ui/Dialog', () => ({
   Dialog: ({ children, actions }: { children: ReactNode; actions: ReactNode }) =>
@@ -215,7 +213,6 @@ beforeEach(() => {
     ...initialClientState,
     busy: false,
     processing: false,
-    readonly: false,
     clockRunning: false,
     error: undefined,
   });
@@ -737,7 +734,7 @@ describe('paged whole-world recruitment desk', () => {
     (refreshed.props.onRecruit as (loan: boolean) => void)(false);
     expect(client.command).toHaveBeenCalledOnce();
   });
-  it.each(['clockRunning', 'processing', 'readonly', 'error', 'critical', 'revision'] as const)(
+  it.each(['clockRunning', 'processing', 'error', 'critical', 'revision'] as const)(
     'rechecks live %s protection for bids and contracts after rendering an eligible preview',
     async (guard) => {
       choices['world-market-bidding'] = { target: offer.target, asking: offer.fee };
@@ -807,7 +804,6 @@ async function mountedBid(initial = structuredClone(w)) {
       ...initialClientState,
       busy: false,
       processing: false,
-      readonly: false,
       clockRunning: false,
       view: { world, transfers: [] },
     },
@@ -1068,7 +1064,6 @@ async function mountedSnapshot(values: Record<string, unknown> = {}) {
     state: {
       ...initialClientState,
       busy: false,
-      readonly: false,
       processing: false,
       clockRunning: true,
       view: { world, transfers: [] },

@@ -69,7 +69,6 @@ function fixture() {
     ...initialClientState,
     busy: false,
     processing: false,
-    readonly: false,
     activity: 'idle' as const,
     view: { world } as View,
   };
@@ -175,12 +174,10 @@ describe('place activity units', () => {
     ]);
   });
 
-  it('renders the inspectable academy in read-only mode without submitting', () => {
+  it('renders the inspectable academy without submitting', () => {
     const { world, state, client, command } = fixture();
-    state.readonly = true;
     const html = renderToStaticMarkup(createElement(PlaceActivities, { state, client }));
     expect(html).toContain('place-activities-academy');
-    expect(html).toContain('읽기 전용');
     expect(html).toContain('시장 급여');
     expect(html).toContain('육성 기회를 잃어요');
     expect(html).toContain('U-17 ×1.3');
@@ -194,7 +191,6 @@ describe('place activity units', () => {
 
 describe('place command guard units', () => {
   it.each([
-    { readonly: true },
     { clockRunning: true },
     { processing: true },
     { busy: true },

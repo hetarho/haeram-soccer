@@ -85,7 +85,8 @@ export interface StartFlowProps {
   /** Back to the slot screen when another slot holds a game. */
   onBack?: () => void;
   busy?: boolean;
-  readonly?: boolean;
+  /** A game that failed to load is replaced only explicitly (→WEB-62). */
+  locked?: boolean;
   /** Choices to open with, such as a restored start; otherwise 중견 사업가, no trait, 1950. */
   initial?: Partial<StartChoice>;
 }
@@ -107,7 +108,7 @@ export function StartFlow({
   slot = 0,
   onBack,
   busy = false,
-  readonly = false,
+  locked = false,
   initial,
 }: StartFlowProps) {
   useTextLocale();
@@ -134,7 +135,7 @@ export function StartFlow({
   const update = (change: Partial<StartChoice>) =>
     setChoice((current) => ({ ...current, ...change }));
   const generate = () => {
-    if (busy || readonly) return;
+    if (busy || locked) return;
     setGenerating(true);
     onGenerate({ ...choice, seed: choice.seed.trim() || randomSeed() });
   };
@@ -197,7 +198,7 @@ export function StartFlow({
             error={error}
             onRetry={generate}
             onChange={() => setGenerating(false)}
-            blocked={busy || readonly}
+            blocked={busy || locked}
           />
         ),
       )}
@@ -208,7 +209,7 @@ export function StartFlow({
             fortune={fortune}
             year={takeoverYear(choice.decade)}
             busy={busy}
-            readonly={readonly}
+            locked={locked}
             loadClub={loadClub}
             onTakeOver={onTakeOver}
           />
@@ -234,7 +235,7 @@ export function StartFlow({
                   type="button"
                   data-ui="primary"
                   className={s.next}
-                  disabled={busy || readonly}
+                  disabled={busy || locked}
                   onClick={generate}
                 >
                   {localizeValue(

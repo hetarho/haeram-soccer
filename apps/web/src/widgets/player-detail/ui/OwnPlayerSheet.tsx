@@ -4,19 +4,16 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import { PersonCareerLink } from '../../../features/person-career';
 import type { GameClient } from '../../../runtime/client';
 import type { Tallies } from '../../../runtime/playerTallies';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { Player, World } from '../../../../../../packages/contracts/src/types';
 import { agentOf, clausesLabel, talkFor } from '../../../../../../packages/engine/src/contracts';
 import { yellowWarning } from '../../../../../../packages/engine/src/discipline';
-import { seasonHeat, type HeatMap } from '../../../../../../packages/engine/src/material';
-import { HeatPitch } from '../../../entities/match';
 import { Attributes } from '../../../entities/player';
 import { clubRanks } from '../../../entities/player';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { number, percent, seasonName } from '../../../presentation/format';
+import { number, percent } from '../../../presentation/format';
 import { PlayerAdvancedStats } from '../../../entities/player';
 import { bansOf, banText } from '../../../entities/player';
-import { Select } from '../../../shared/ui/Select';
 import { appearanceText, ofScope, playerStatus, type PlayerTally } from '../../../entities/player';
 import type { PlayerScope } from '../../../entities/player';
 import { PlayerPerformance } from '../../../entities/player';
@@ -46,7 +43,7 @@ export function OwnPlayerSheet({
   scope: PlayerScope;
   onClose: () => void;
   client: GameClient;
-  /** His appearances, cards and season heat over every own match (the view's tallies). */
+  /** His appearances and cards over every own match (the view's tallies). */
   tally?: PlayerTally;
   /** Complete retained counts, needed to compare his appearances with every other own identity. */
   tallies?: Readonly<Tallies['players']>;
@@ -213,7 +210,6 @@ export function OwnPlayerSheet({
       </p>
       <PlayerAdvancedStats w={w} player={player} scope={scope} />
       <Discipline w={w} player={player} tally={tally} />
-      <SeasonHeat w={w} player={player} tally={tally} />
       <button onClick={onClose}>{richMessage('copy.EventCenter.1e8c10206f')}</button>
     </Dialog>
   );
@@ -255,79 +251,6 @@ function Discipline({ w, player, tally }: { w: World; player: Player; tally?: Pl
               yellowWarning(w, player) && <span>{richMessage('copy.Rich.51b23b5112')}</span>,
             )}
           </div>
-        ),
-      )}
-    </section>
-  );
-}
-/** This season's heat map from its matches, earlier seasons' from the archive (→MATCH-5). */
-function SeasonHeat({ w, player, tally }: { w: World; player: Player; tally?: PlayerTally }) {
-  useTextLocale();
-  const seasons = useMemo(
-    () => [
-      ...(tally?.heat
-        ? [
-            {
-              year: w.year,
-              map: { cells: tally.heat, touches: tally.heat.reduce((a, b) => a + b, 0) },
-            },
-          ]
-        : []),
-      ...w.history
-        .map((archive) => ({ year: archive.year, map: seasonHeat(archive, player.id) }))
-        .filter((season): season is { year: number; map: HeatMap } => !!season.map)
-        .reverse(),
-    ],
-    [tally?.heat, w.year, w.history, player.id],
-  );
-  const [year, setYear] = useState(seasons[0]?.year);
-  const shown = seasons.find((season) => season.year === year) ?? seasons[0];
-  return (
-    <section
-      data-surface="sheet"
-      className={a.clubCareer}
-      aria-label={displayMessage('copy.OwnPlayerSheet.e74c8b29cf')}
-      data-testid="player-heat"
-    >
-      <h3>{richMessage('copy.OwnPlayerSheet.e74c8b29cf')}</h3>
-      {localizeValue(
-        shown ? (
-          <>
-            {localizeValue(
-              seasons.length > 1 && (
-                <label>
-                  {richMessage('copy.LeagueInsights.c73072b6a4', {
-                    p0: ' ',
-                    p1: (
-                      <Select
-                        aria-label={displayMessage('copy.OwnPlayerSheet.ddfad4d645')}
-                        value={shown.year}
-                        onValueChange={(value) => setYear(Number(value))}
-                      >
-                        {localizeValue(
-                          seasons.map((season) => (
-                            <option key={season.year} value={season.year}>
-                              {localizeValue(seasonName(season.year))}
-                            </option>
-                          )),
-                        )}
-                      </Select>
-                    ),
-                  })}
-                </label>
-              ),
-            )}
-            {/* His attack frame, toward the goal on the right (→WEB-99). */}
-            <HeatPitch
-              map={shown.map}
-              label={displayMessage('copy.OwnPlayerSheet.345cb4c0b5', { p0: shown.map.touches })}
-            />
-            <p className={a.note}>
-              {richMessage('copy.OwnPlayerSheet.ec92b57fca', { p0: seasonName(shown.year) })}
-            </p>
-          </>
-        ) : (
-          <p className={a.note}>{richMessage('copy.OwnPlayerSheet.e1fdde39bb')}</p>
         ),
       )}
     </section>

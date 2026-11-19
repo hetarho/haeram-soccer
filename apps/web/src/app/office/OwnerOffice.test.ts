@@ -42,7 +42,6 @@ beforeEach(() =>
       ...initialClientState,
       busy: false,
       processing: false,
-      readonly: false,
       view: {
         world: { ...baseWorld, settings: defaultSettings() },
         office: officeRead(baseWorld),
@@ -61,13 +60,16 @@ describe('owner office page', () => {
       expect(buttons).toHaveLength(20);
       expect(buttons.every(([, attributes]) => attributes.includes('disabled=""'))).toBe(true);
       expect(markup).toMatch(/<input[^>]*disabled=""/);
-      // Delegated work carries its spending request, read-only while the clock runs.
-      expect(markup).toContain('data-testid="delegation-request-staff"');
+      // Withhold the stale plan while keeping a localized reason in its place.
+      expect(markup).toContain('data-running="true"');
+      expect(markup).not.toContain('data-testid="delegation-request-staff"');
     }
     gameStore.setState({ clockRunning: false, processing: true });
     expect(render()).toMatch(/<button[^>]*disabled=""/);
     gameStore.setState({ processing: false });
-    expect(render()).toMatch(/aria-pressed="true"(?![^>]*disabled)/);
+    const stopped = render();
+    expect(stopped).toMatch(/aria-pressed="true"(?![^>]*disabled)/);
+    expect(stopped).toContain('data-testid="delegation-request-staff"');
   });
   it('renders applied authority pairs with no enclosing dialog or global apply footer', () => {
     const markup = render();
@@ -209,20 +211,10 @@ describe('owner office page', () => {
     const markup = render();
     expect(markup).not.toMatch(/data-ui="secondary" aria-pressed="true"[^>]*>전체 (직접|자동)/);
   });
-  it('disables every mutation in readonly state', () => {
-    gameStore.setState({ readonly: true });
-    const markup = render();
-    expect(markup).toContain('읽기 전용');
-    expect(
-      [...markup.matchAll(/<button[^>]*aria-pressed[^>]*>/g)].every(([tag]) =>
-        tag.includes('disabled=""'),
-      ),
-    ).toBe(true);
-  });
 });
 
 describe('approval return controls', () => {
-  it('holds the named return for queued and active submissions, then allows it even in read-only mode', () => {
+  it('holds the named return for queued and active submissions, then allows it', () => {
     const request: ApprovalRequest = {
       world: 'office',
       desk: 'players',
@@ -242,13 +234,12 @@ describe('approval return controls', () => {
         return gameStore.getState();
       },
     } as GameClient;
-    for (const [busy, pendingActions, readonly] of [
-      [false, 0, false],
-      [false, 1, false],
-      [true, 0, false],
-      [false, 0, true],
+    for (const [busy, pendingActions] of [
+      [false, 0],
+      [false, 1],
+      [true, 0],
     ] as const) {
-      gameStore.setState({ busy, pendingActions, readonly });
+      gameStore.setState({ busy, pendingActions });
       const markup = renderToStaticMarkup(
         createElement(ApprovalRequestHost, {
           client,

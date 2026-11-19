@@ -1,11 +1,11 @@
 /**
- * Post-match material of an own match (→MATCH-25) and its season heat maps (→MATCH-5, HIST-16).
+ * Post-match material of an own match (→MATCH-25).
  * The grid and script material writers use the flat integer rows of `match/record.ts`; these helpers
  * decode them for the UI. MATERIAL_LAYOUT and REPORT_SLOTS below define the layouts.
  */
-import type { MatchMaterial, MatchRecord, SeasonArchive, World } from '../../contracts/src/types';
+import type { MatchRecord, SeasonArchive, World } from '../../contracts/src/types';
 
-/** Ints per shot, per network node, per network pair, cells per heat map and report ints per side. */
+/** Ints per shot, per network node, per network pair and report ints per side. */
 export const MATERIAL_LAYOUT = { shot: 7, node: 3, pair: 3, cells: 40, report: 30 } as const;
 
 /** Where each tactical-report value sits within a side's 30 ints. */
@@ -46,12 +46,6 @@ export interface MaterialShot {
   xg: number;
   outcome: ShotResult;
   header: boolean;
-}
-
-export interface HeatMap {
-  /** Touches per cell (`band * 5 + lane`) in that side's attack frame. */
-  cells: number[];
-  touches: number;
 }
 
 export interface NetworkNode {
@@ -132,9 +126,6 @@ export function ownSideOf(record: MatchRecord, ownClub?: string): 0 | 1 | undefi
   return undefined;
 }
 
-/** Own lines the material describes. */
-const ownLines = (m: MatchMaterial) => m.heat.length / MATERIAL_LAYOUT.cells - 2;
-
 export function shotMap(record: MatchRecord): MaterialShot[] {
   const rows = record.material?.shots ?? [];
   const shots: MaterialShot[] = [];
@@ -156,40 +147,13 @@ export function shotMap(record: MatchRecord): MaterialShot[] {
   return shots;
 }
 
-/**
- * A heat map: an own player's (by id), the own side's total or the opponent's. `own` is the own side,
- * needed to find a player on a record that still keeps both sides' lines.
- */
-export function heatMap(
-  record: MatchRecord,
-  who: string,
-  own: 0 | 1 | undefined = ownSideOf(record),
-): HeatMap | undefined {
-  const m = record.material;
-  if (!m) return undefined;
-  const C = MATERIAL_LAYOUT.cells;
-  const lines = ownLines(m);
-  let block: number;
-  if (who === 'own') block = lines;
-  else if (who === 'opponent') block = lines + 1;
-  else {
-    if (own === undefined) return undefined;
-    const [first, count] = linesOf(record, own);
-    const at = record.players.slice(first, first + count).findIndex((p) => p.id === who);
-    if (at < 0 || at >= lines) return undefined;
-    block = at;
-  }
-  const cells = m.heat.slice(block * C, block * C + C);
-  return { cells, touches: cells.reduce((a, b) => a + b, 0) };
-}
-
 export function passNetwork(
   record: MatchRecord,
   own: 0 | 1 | undefined = ownSideOf(record),
 ): PassNetwork | undefined {
   const m = record.material;
   if (!m) return undefined;
-  const lines = ownLines(m);
+  const lines = own === undefined ? 0 : linesOf(record, own)[1];
   const id = (line: number) => (own === undefined ? undefined : playerAt(record, own, line));
   const nodes: NetworkNode[] = [];
   for (let line = 0; line < lines; line++) {
@@ -251,34 +215,9 @@ export function tacticalReport(record: MatchRecord, side: 0 | 1): TacticalReport
   };
 }
 
-/** An own player's season heat map from the archive (→MATCH-5). */
-export function seasonHeat(archive: SeasonArchive, playerId: string): HeatMap | undefined {
-  const cells = archive.heat?.[playerId];
-  return cells ? { cells: [...cells], touches: cells.reduce((a, b) => a + b, 0) } : undefined;
-}
-
-/**
- * The season close (→MATCH-5, HIST-16): the season's own matches become one heat map per own player
- * with touches on `archive`, then their material is deleted. This is material's defined lifetime,
- * not pruning of retained facts (HIST-8).
- */
+/** Delete the closed season's own-match material (→MATCH-5, HIST-16). */
 export function reduceSeasonMaterial(w: World, archive: SeasonArchive): void {
-  const C = MATERIAL_LAYOUT.cells;
-  const heat: Record<string, number[]> = {};
   for (const m of w.ownMatches) {
-    if (m.year !== archive.year || !m.material) continue;
-    const own = ownSideOf(m, w.playerClub);
-    if (own !== undefined) {
-      const [first, count] = linesOf(m, own);
-      const lines = Math.min(count, ownLines(m.material));
-      for (let line = 0; line < lines; line++) {
-        const id = m.players[first + line]!.id;
-        const sum = (heat[id] ??= new Array<number>(C).fill(0));
-        for (let c = 0; c < C; c++) sum[c]! += m.material.heat[line * C + c]!;
-      }
-    }
-    delete m.material;
+    if (m.year === archive.year) delete m.material;
   }
-  for (const id of Object.keys(heat)) if (!heat[id]!.some((n) => n > 0)) delete heat[id];
-  if (Object.keys(heat).length) archive.heat = heat;
 }

@@ -39,50 +39,75 @@ function transfer(w: World) {
   movePerson(w, player, to.id);
 }
 
+/**
+ * A complete season, a retained-player transfer, a reload and the next season's opening, played
+ * once by the engine alone and once through `pool`; the worlds stay equal throughout.
+ */
+async function playSeasonAgainstReference(pool: HelperPool) {
+  // Synthetic funding avoids bankruptcy while every club, fixture and business day is simulated.
+  let reference = careerWorld({ country: 'BEL', seed: 'replica-season' }, MATCH_MODEL_RELEASE);
+  reference.cash = '99999999999';
+  let helped = structuredClone(reference);
+  const year = reference.year,
+    maxDays = seasonLength(reference) + 15;
+  let days = 0;
+  while (reference.year === year || currentDay(reference) < 8) {
+    expect(days++).toBeLessThan(maxDays);
+    for (const w of [reference, helped]) {
+      // The host's explicit acknowledgement resumes an informational critical stop.
+      if (w.critical) {
+        delete w.critical;
+        w.revision++;
+      }
+    }
+    if (days === 29) {
+      transfer(reference);
+      transfer(helped);
+    }
+    if (days === 43) {
+      reference = structuredClone(reference);
+      helped = structuredClone(helped);
+    }
+    const before = [reference.year, currentDay(reference)];
+    advanceDays(reference, 1, undefined, false);
+    await playDay(pool, helped, false, { advanceDays, prepareRound, completeRound });
+    expect(reference.bankrupt).toBeFalsy();
+    expect([reference.year, currentDay(reference)]).not.toEqual(before);
+    if (days % 7 === 0 || reference.year !== year)
+      expect(canonical(helped)).toBe(canonical(reference));
+  }
+  expect(helped.year).toBe(year + 1);
+  expect(helped.round).toBeGreaterThan(0);
+  expect(canonical(helped)).toBe(canonical(reference));
+  expect(pool.active).toBe(true);
+}
+
+// One configuration per test: each plays its own season against the engine alone (ARCH-6).
 describe('incremental fixture helpers through campaign transitions', () => {
   it('matches a complete season, a retained-player transfer, reload and the next season', async () => {
-    // Synthetic funding avoids bankruptcy while every club, fixture and business day is simulated.
-    let reference = careerWorld({ country: 'BEL', seed: 'replica-season' }, MATCH_MODEL_RELEASE);
-    reference.cash = '99999999999';
-    let helped = structuredClone(reference);
-    const year = reference.year,
-      maxDays = seasonLength(reference) + 15,
-      ports = [channel(), channel()];
-    const pool = new HelperPool(ports.map((p) => p.port));
-    let days = 0;
-    while (reference.year === year || currentDay(reference) < 8) {
-      expect(days++).toBeLessThan(maxDays);
-      for (const w of [reference, helped]) {
-        // The host's explicit acknowledgement resumes an informational critical stop.
-        if (w.critical) {
-          delete w.critical;
-          w.revision++;
-        }
-      }
-      if (days === 29) {
-        transfer(reference);
-        transfer(helped);
-      }
-      if (days === 43) {
-        reference = structuredClone(reference);
-        helped = structuredClone(helped);
-      }
-      const before = [reference.year, currentDay(reference)];
-      advanceDays(reference, 1, undefined, false);
-      await playDay(pool, helped, false, { advanceDays, prepareRound, completeRound });
-      expect(reference.bankrupt).toBeFalsy();
-      expect([reference.year, currentDay(reference)]).not.toEqual(before);
-      if (days % 7 === 0 || reference.year !== year)
-        expect(canonical(helped)).toBe(canonical(reference));
-    }
-    expect(helped.year).toBe(year + 1);
-    expect(helped.round).toBeGreaterThan(0);
-    expect(canonical(helped)).toBe(canonical(reference));
-    expect(pool.active).toBe(true);
+    const ports = [channel(), channel()];
+    await playSeasonAgainstReference(
+      new HelperPool(
+        ports.map((p) => p.port),
+        undefined,
+        undefined,
+        false,
+      ),
+    );
     for (const p of ports) {
       expect(p.sent.filter((j) => j.copy !== undefined).length).toBeGreaterThanOrEqual(3);
       expect(p.sent.some((j) => j.patch !== undefined)).toBe(true);
       expect(new Set(p.sent.map((j) => j.session)).size).toBe(2);
     }
+  });
+
+  it('matches the same season when the engine worker takes a share beside two helpers', async () => {
+    await playSeasonAgainstReference(new HelperPool([channel().port, channel().port]));
+  });
+
+  it('matches the same season with three helpers and the engine share', async () => {
+    await playSeasonAgainstReference(
+      new HelperPool([channel().port, channel().port, channel().port]),
+    );
   });
 });

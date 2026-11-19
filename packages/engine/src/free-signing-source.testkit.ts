@@ -1,4 +1,5 @@
 /** Exact observed source proof for tests; never inferred from a generated ID or origin. */
+import { personOf } from './person-reads';
 import type { CareerDate, PlayerMove, World } from '../../contracts/src/types';
 import { careerDate, compareCareerDates } from './person-careers';
 
@@ -13,7 +14,7 @@ export function freeSigningSourceWitness() {
     },
     accepts(w: World, id: string, move: PlayerMove) {
       const released = releases.get(id);
-      const person = w.people?.[id];
+      const person = personOf(w, id);
       const record = w.playerRecords?.[id];
       const last = record?.moves.at(-1);
       if (

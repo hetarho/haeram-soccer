@@ -50,7 +50,7 @@ export interface ClubListingProps {
   /** The takeover season the amounts are valued in. */
   year: number;
   busy?: boolean;
-  readonly?: boolean;
+  locked?: boolean;
   /** Reads a club's profile (squad, 코치진, stadium, history) for its detail. */
   loadClub?: (clubId: string) => Promise<ClubProfile | undefined>;
   /** Takes the club over with standard operating defaults (→WEB-15, ECON-22). */
@@ -67,7 +67,7 @@ export function ClubListing({
   fortune,
   year,
   busy = false,
-  readonly = false,
+  locked = false,
   loadClub,
   onTakeOver,
 }: ClubListingProps) {
@@ -255,7 +255,7 @@ export function ClubListing({
             listing={selected}
             fortune={fortune}
             year={year}
-            blocked={busy || readonly}
+            blocked={busy || locked}
             loadClub={loadClub}
             onClose={() => setOpen(undefined)}
             onReview={() => setConfirming(selected.clubId)}
@@ -269,7 +269,7 @@ export function ClubListing({
             fortune={fortune}
             year={year}
             busy={busy}
-            blocked={busy || readonly || !canAfford(selected, fortune)}
+            blocked={busy || locked || !canAfford(selected, fortune)}
             onBack={() => setConfirming(undefined)}
             onConfirm={() => onTakeOver(selected.clubId)}
           />

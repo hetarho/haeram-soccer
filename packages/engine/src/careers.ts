@@ -1,4 +1,5 @@
 import { retirePlayerRecord } from './player-records';
+import { personOf } from './person-reads';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { hasOwner } from './owner';
 import { decideCoachingIntention, initializeCoaching } from './coaching-entry';
@@ -95,7 +96,7 @@ export function announceNpcRetirements(w: World) {
     const starters = new Set(players.slice(0, 11).map((p) => p.id));
     for (const p of players) {
       live.add(p.id);
-      const person = w.people?.[p.id];
+      const person = personOf(w, p.id);
       if (person?.retirement) {
         p.retiring = person.retirement.year;
         continue;

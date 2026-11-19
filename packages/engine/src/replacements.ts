@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { cloneWorld } from '../../contracts/src/record-store';
 import { callUpFor, SQUAD_TARGET } from './squad-target';
 import { activePlayers } from './player-state';
 import { refillPosition } from './world';
@@ -59,7 +60,7 @@ export function windowCallUps(w: World) {
   const direct = !isDelegated(w, 'academy');
   const ref = `callups:${w.year}:${currentDay(w)}`;
   if (direct && w.inbox?.some((item) => item.ref === ref)) return;
-  const target = direct ? structuredClone(w) : w;
+  const target = direct ? cloneWorld(w) : w;
   const existing = new Set(w.academy?.players.map((p) => p.id));
   const recommendations: string[] = [];
   const add = (line: import('../../contracts/src/types').Line, source: 'replacement' | 'short') => {

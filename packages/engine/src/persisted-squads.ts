@@ -1,4 +1,5 @@
 /** Live squads of the playable associations (→WORLD-16). Reads never generate a new person. */
+import { hasPerson, personIdsWithPrefix } from './person-reads';
 import type { Club, Player, World } from '../../contracts/src/types';
 import { continuousSquad } from './npc-continuity';
 import { coachingGrade } from './aptitude';
@@ -133,7 +134,7 @@ export function foundSquads(w: World) {
     .map((c) => ({ c, players: continuousSquad(w, c) }));
   // Existing people keep their identity even outside a reconstructed first team.
   const reserved = new Set([
-    ...Object.keys(w.people ?? {}),
+    ...personIdsWithPrefix(w, ''),
     ...Object.keys(w.playerRecords ?? {}),
     ...w.players.map((p) => p.id),
     ...(w.academy?.players ?? []).map((p) => p.id),
@@ -267,7 +268,7 @@ export function moveSquadPlayer(
       live.career = zeroMetrics();
       live.season = zeroMetrics();
       w.squads[club] = [...w.squads[club], live];
-      if (!w.people?.[live.id])
+      if (!hasPerson(w, live.id))
         enrollSquadPlayer(
           w,
           w.clubs.find((c) => c.id === club)!,

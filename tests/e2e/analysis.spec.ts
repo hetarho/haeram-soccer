@@ -422,6 +422,16 @@ test('reveals the recorded match report only after choosing the final result', a
   if (lines > 11) await expect(report).toContainText('교체 투입');
   await expect(report).toContainText('박스 진입');
   await expect(report).toContainText('패스 성공률');
+  await report.getByRole('button', { name: '경기 자료', exact: true }).click();
+  const material = report.getByRole('region', { name: '경기 자료', exact: true });
+  const materialTabs = material.getByRole('tablist', { name: '경기 자료 보기' }).getByRole('tab');
+  await expect(materialTabs).toHaveText(['슛 지도', '패스 연결망', '전술 해설']);
+  await expect(material.getByRole('tab', { name: '히트맵', exact: true })).toHaveCount(0);
+  for (const tab of await materialTabs.all()) {
+    await tab.click();
+    await expect(tab).toHaveAttribute('aria-selected', 'true');
+    await expect(material.getByRole('tabpanel')).toBeVisible();
+  }
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 

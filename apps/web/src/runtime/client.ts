@@ -12,7 +12,13 @@ import {
   type SAVE_COMPATIBILITY_CODE,
 } from '../../../../packages/contracts/src/versions';
 import { applyViewDelta, PUBLISHED_VIEWS, type Body, type Reply, type View } from './protocol';
-import { NOTIFICATIONS_KEY, notificationStore, shareValue, shareView } from './store';
+import {
+  NOTIFICATIONS_KEY,
+  notificationStore,
+  shareValue,
+  shareView,
+  withoutStoppedReads,
+} from './store';
 import { HELPER_CONFIG } from './helperPool';
 import {
   isSaveCorruptedError,
@@ -21,6 +27,7 @@ import {
   type SAVE_CORRUPTED_CODE,
 } from './seasonBackup';
 import { PlaybackStaging } from './staging';
+import { PlayingTab, type Elsewhere, type LockPort } from './playingTab';
 /**
  * How long opening, creating, saving or exporting a game may take in the engine worker: a save
  * may queue behind a long command that reports only its own progress, and a new career's first
@@ -62,7 +69,11 @@ export interface ClientState {
   /** Continuous automatic play, including the gaps between worker day calculations. */
   clockRunning?: boolean;
   activity: 'idle' | 'foreground' | 'background';
-  readonly: boolean;
+  /**
+   * The game plays in another tab (→SAVE-6): this tab shows that, with 여기서 이어 하기, and
+   * opens no game database.
+   */
+  elsewhere?: Elsewhere;
   savedRevision: number;
   /** When this tab last committed a checkpoint (epoch ms); unknown for a checkpoint it loaded. */
   savedAt?: number;
@@ -75,11 +86,6 @@ export interface ClientState {
    * (→SAVE-31): the recovery offer. Compatibility failures never set it (→SAVE-11).
    */
   recovery?: { gameId: string; backup?: BackupInfo };
-  /**
-   * Why this tab is read-only, for its HUD badge (→WEB-10). App notices are system notifications
-   * in the inbox instead (→WEB-66).
-   */
-  notice?: string;
   progress: number;
   playback?: Reply['playback'];
   /** The latest committed player command and the world it changed, for outcome feedback. */
@@ -125,11 +131,11 @@ function gameIdFor(worldId: string) {
 }
 export class GameClient {
   private automaticPending = 0;
+  private clockEpoch = 0;
   state: ClientState = {
     busy: true,
     processing: true,
     activity: 'foreground',
-    readonly: true,
     savedRevision: -1,
     progress: 0,
   };
@@ -198,12 +204,12 @@ export class GameClient {
    * a read waits until the days computed ahead are shown (→WEB-18).
    */
   readGate?: ReadGate;
-  private release?: () => void;
-  private lockWait?: AbortController;
+  private tab?: PlayingTab;
+  /** Set by the app: stops the clock before this tab gives the game to another (→SAVE-6). */
+  onHandOver?: () => void;
   private cancelled = false;
+  /** Carries another tab's request to continue the game there (→ARCH-17). */
   private channel = new BroadcastChannel('haeram-soccor:updates');
-  private refreshPending = false;
-  private refreshSerial = 0;
   private storageListener = (event: StorageEvent) => {
     if (event.key === NOTIFICATIONS_KEY) notificationStore.sync();
   };
@@ -211,7 +217,7 @@ export class GameClient {
     this.worker.onmessage = (event: MessageEvent<Reply>) => this.received(event.data);
     this.worker.onerror = () => this.failWorker();
     this.startHelpers();
-    this.channel.onmessage = () => this.refresh();
+    this.channel.onmessage = (event: MessageEvent<unknown>) => void this.tab?.heard(event.data);
     window.addEventListener('storage', this.storageListener);
     notificationStore.sync();
   }
@@ -224,7 +230,9 @@ export class GameClient {
     if (!((navigator.hardwareConcurrency ?? 0) >= HELPER_CONFIG.minCores)) return;
     const ports: MessagePort[] = [];
     try {
-      for (let i = 0; i < HELPER_CONFIG.count; i++) {
+      const count =
+        HELPER_CONFIG.countByCores[navigator.hardwareConcurrency] ?? HELPER_CONFIG.count;
+      for (let i = 0; i < count; i++) {
         const helper = new Worker(new URL('./fixtureHelper.ts', import.meta.url), {
           type: 'module',
         });
@@ -269,7 +277,8 @@ export class GameClient {
         ? this.take(shared ? view : shareView(this.head, view)!, taking)
         : undefined;
     if (taken && r.viewSeq !== undefined) {
-      this.views.set(r.viewSeq, taken);
+      // Keep the worker's unmodified base for later deltas even when the displayed copy is dimmed.
+      this.views.set(r.viewSeq, view!);
       this.viewSeq = r.viewSeq;
       while (this.views.size > PUBLISHED_VIEWS) this.views.delete(this.views.keys().next().value!);
     }
@@ -290,26 +299,6 @@ export class GameClient {
     for (const helper of this.helpers.splice(0)) helper.terminate();
     this.worker.postMessage({ type: 'helpers-failed' });
   }
-  private refresh() {
-    if (!this.state.readonly) return;
-    this.refreshSerial++;
-    if (this.refreshPending) return;
-    this.refreshPending = true;
-    void this.enqueue(
-      async () => {
-        while (true) {
-          const observed = this.refreshSerial;
-          await this.load();
-          // Drain notices that arrived during this load; another notification asks again.
-          if (this.refreshSerial === observed) break;
-        }
-      },
-      { background: !!this.state.view },
-    ).finally(() => {
-      this.refreshPending = false;
-    });
-  }
-
   private failWorker() {
     this.failed = true;
     this.worker.terminate();
@@ -337,57 +326,75 @@ export class GameClient {
       return;
     }
     if (!navigator.locks) {
-      // No tab may write without the lock, so this one stays read-only and its badge says why.
-      this.state.notice = sourceMessage('copy.client.2313251099');
-      await this.enqueue(() => this.load());
+      // No tab may play without the lock, so none opens a game (→SAVE-6, →ARCH-17).
+      this.state.busy = false;
+      this.state.processing = false;
+      this.state.activity = 'idle';
+      this.state.error = sourceMessage('copy.client.2313251099');
+      this.emit();
       return;
     }
-    await new Promise<void>((resolve) => {
-      void navigator.locks.request('haeram-soccor:writer', { ifAvailable: true }, async (lock) => {
-        this.state.readonly = !lock;
-        if (!lock) this.state.notice = sourceMessage('shell.readonlyNotice');
-        await this.enqueue(() => this.load());
-        resolve();
-        if (lock)
-          await new Promise<void>((done) => {
-            this.release = done;
-          });
-        else this.awaitOwnership();
-      });
-    });
+    this.tab = new PlayingTab(
+      navigator.locks as unknown as LockPort,
+      (message) => this.channel.postMessage(message),
+      {
+        acquired: (moved) => this.acquired(moved),
+        giveUp: () => this.giveUp(),
+        changed: () => {
+          this.state.elsewhere = this.tab?.elsewhere;
+          this.emit();
+        },
+      },
+    );
+    await this.tab.start();
+    if (this.tab.playing || this.failed) return;
+    // Another tab plays: this one waits without opening the game's database (→SAVE-6).
+    this.state.elsewhere = this.tab.elsewhere;
+    this.state.busy = false;
+    this.state.processing = false;
+    this.state.activity = 'idle';
+    this.emit();
+  }
+  /** This tab now plays: it opens the game in play, saying so when it took it from another tab. */
+  private async acquired(moved: boolean) {
+    delete this.state.elsewhere;
+    if (moved) notificationStore.add(sourceMessage('tab.takenHere'));
+    await this.enqueue(() => this.load());
   }
   /**
-   * A read-only tab queues for the writer lock. When the playing tab closes (browsers may release
-   * the lock a moment later), this tab reloads the latest checkpoint and continues as the writer.
+   * Another tab asked for the game (→SAVE-6): the clock stops, the game is saved and its database
+   * closed and the pool paused, so that tab can open it. A failed save keeps the game here.
    */
-  private awaitOwnership() {
-    if (this.failed || !navigator.locks) return;
-    this.lockWait = new AbortController();
-    void navigator.locks
-      .request('haeram-soccor:writer', { signal: this.lockWait.signal }, async (lock) => {
-        if (!lock || this.failed) return;
-        this.state.readonly = false;
-        delete this.state.notice;
-        notificationStore.add(sourceMessage('copy.client.b912d5c1e3'));
-        await this.enqueue(() => this.load());
-        await new Promise<void>((done) => {
-          this.release = done;
-        });
-      })
-      .catch(() => {
-        /* aborted on dispose */
-      });
+  private async giveUp() {
+    if (this.failed) throw new Error(sourceMessage('copy.client.0747dd4e85'));
+    this.onHandOver?.();
+    let closed = false;
+    await this.enqueue(async () => {
+      clearTimeout(this.autosaveTimer);
+      this.autosaveTimer = undefined;
+      await this.save();
+      await this.rpc({ type: 'close-game', pause: true }, undefined, STORAGE_TIMEOUT_MS);
+      this.leaveGame();
+      this.gameFiles = undefined;
+      closed = true;
+    });
+    // The queue reports its own failure as the error shown; the game then stays in this tab.
+    if (!closed) throw new Error(this.state.error);
+  }
+  /** 여기서 이어 하기: asks the tab playing the game to hand it to this one (→SAVE-6). */
+  continueHere() {
+    this.tab?.request();
   }
   /**
    * Opens the game in play — the slot index's active game — in the engine worker, which validates
    * its database and commits any writer upgrade at once (→SAVE-5, →SAVE-10). A game without a
-   * database file reads as an empty slot (→SAVE-29). A read-only tab opens nothing: a game's
+   * database file reads as an empty slot (→SAVE-29). Only the playing tab calls it: a game's
    * database opens in one tab only (→SAVE-6).
    */
   private async load() {
     await this.whenSaved();
-    if (!this.state.readonly) await this.listGames();
-    const gameId = this.state.readonly ? undefined : activeGameId();
+    await this.listGames();
+    const gameId = activeGameId();
     if (gameId) await this.open(gameId);
     this.emit();
   }
@@ -485,7 +492,6 @@ export class GameClient {
       // A catalog pin, missing club designs (→SAVE-21) or the full match model (→SAVE-23) are
       // updated, never the gameplay rules or a settled fact.
       notificationStore.add(SAVE_DATA_UPDATED);
-      this.channel.postMessage({ revision: this.state.savedRevision });
     }
   }
   /**
@@ -508,6 +514,7 @@ export class GameClient {
   }
   /** Takes a view as `taking` says; held days share structure with the day before (→WEB-18). */
   private take(view: View, taking: Taking) {
+    if (this.state.clockRunning) view = withoutStoppedReads(view);
     const same = this.head?.world.id === view.world.id;
     if (!same) this.staging.replace();
     if (taking === 'hold' && same) this.held.push(view);
@@ -606,7 +613,6 @@ export class GameClient {
     return task;
   }
   private async mutate(body: Body, automatic = false) {
-    if (this.state.readonly) throw new Error(sourceMessage('copy.client.ef47a5dab0'));
     // A new career's first world, the club taken over, is saved whole (→SAVE-3).
     const starts = body.type === 'take-over';
     if (starts) {
@@ -642,7 +648,7 @@ export class GameClient {
   }
   /** Automatic progress is saved within AUTOSAVE_MS, or sooner when anything else saves. */
   private autosave() {
-    if (this.autosaveTimer !== undefined || this.state.readonly) return;
+    if (this.autosaveTimer !== undefined) return;
     this.autosaveTimer = window.setTimeout(() => {
       this.autosaveTimer = undefined;
       this.saveSoon();
@@ -676,7 +682,7 @@ export class GameClient {
    */
   private async saveOnce() {
     const w = this.head?.world;
-    if (!w || this.state.readonly || w.revision === this.state.savedRevision) return;
+    if (!w || w.revision === this.state.savedRevision) return;
     const gameId = this.gameId;
     if (!gameId) throw new Error(sourceMessage('copy.host.c64421732a'));
     if (!this.stored && this.replacedGame) {
@@ -708,8 +714,6 @@ export class GameClient {
     this.state.savedRevision = saved.revision;
     this.state.savedAt = Date.now();
     this.state.saveFailed = false;
-    // Read-only tabs hear of every commit.
-    this.channel.postMessage({ revision: saved.revision });
     this.emit();
   }
   /**
@@ -723,7 +727,6 @@ export class GameClient {
       this.state.progress = 0;
       this.emit();
       try {
-        if (this.state.readonly) throw new Error(sourceMessage('copy.client.ef47a5dab0'));
         const reply = await this.rpc(
           { type: 'generate', choice, replace },
           undefined,
@@ -831,7 +834,10 @@ export class GameClient {
       let reply: Reply | undefined;
       try {
         if (!this.cancelled)
-          reply = await this.mutate({ type: 'command', command } as Body, options.automatic);
+          reply = await this.mutate(
+            { type: 'command', command, automatic: options.automatic } as Body,
+            options.automatic,
+          );
       } finally {
         if (reply) {
           if (options.automatic) this.autosave();
@@ -854,7 +860,9 @@ export class GameClient {
   /** The progression controller owns this flag; worker activity cannot clear it between days. */
   setClockRunning(running: boolean) {
     if (!!this.state.clockRunning === running) return;
+    if (running) this.clockEpoch++;
     this.state.clockRunning = running;
+    if (running && this.state.view) this.state.view = withoutStoppedReads(this.state.view);
     this.emit();
   }
   /** Settle already admitted work before opening a manual decision or match. */
@@ -938,6 +946,44 @@ export class GameClient {
     if (!reply.clubRecords) throw new Error(sourceMessage('copy.client.3a2136dd0f'));
     return reply.clubRecords;
   }
+  /**
+   * The five slow projection parts for the current world with its identity and revision (→WEB-119),
+   * read like head-to-head without the command queue; changes no fact and publishes no view. A reply
+   * for another career is refused.
+   */
+  async stoppedReads() {
+    const world = this.state.view?.world.id;
+    if (!world) throw new Error(sourceMessage('copy.client.a198ec6115'));
+    const reply = await this.read({ type: 'stopped-reads', world });
+    if (!reply.ok || !reply.stoppedReads)
+      throw new Error(reply.error ?? sourceMessage('copy.host.f8fc259198'));
+    if (this.state.view?.world.id !== world || reply.stoppedReads.world !== world)
+      throw new Error(sourceMessage('copy.host.f8fc259198'));
+    return reply.stoppedReads;
+  }
+  /** Apply a stopped read only to the same displayed revision, never to a restarted clock. */
+  async refreshStoppedReads() {
+    const epoch = this.clockEpoch;
+    const reads = await this.stoppedReads();
+    const view = this.state.view;
+    if (
+      this.state.clockRunning ||
+      epoch !== this.clockEpoch ||
+      !view ||
+      view.world.id !== reads.world ||
+      view.world.revision !== reads.revision
+    )
+      return;
+    this.state.view = {
+      ...view,
+      coaches: reads.coaches,
+      managers: reads.managers,
+      transfers: reads.transfers,
+      office: reads.office,
+      world: { ...view.world, disciplineNames: reads.disciplineNames },
+    };
+    this.emit();
+  }
   /** Bounded market page, admitted through the same displayed-day read gate as other previews. */
   async worldMarket(query: Omit<WorldMarketQuery, 'world'> = {}) {
     const world = this.state.view?.world.id;
@@ -1009,7 +1055,6 @@ export class GameClient {
    */
   exportGame(gameId: string) {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       // A save that fails keeps the progress exportable from memory (→SAVE-3, →SAVE-10).
       let memory = false;
       if (gameId === this.gameId) await this.save().catch(() => (memory = true));
@@ -1039,7 +1084,6 @@ export class GameClient {
     return this.enqueue(async () => {
       const recovery = this.state.recovery;
       if (!recovery) return;
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       await this.open(recovery.gameId, { type: 'restore-backup', gameId: recovery.gameId });
       const backup = recovery.backup;
       if (backup)
@@ -1055,7 +1099,6 @@ export class GameClient {
    */
   importFile(file: Uint8Array) {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       await this.whenSaved();
       // A file of another format is refused here, before the worker is asked.
       const { header } = readSaveFileHeader(file);
@@ -1089,7 +1132,6 @@ export class GameClient {
   async switchTo(gameId: string) {
     return (
       (await this.enqueue(async () => {
-        if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
         const previous = this.gameId;
         clearTimeout(this.autosaveTimer);
         this.autosaveTimer = undefined;
@@ -1112,7 +1154,6 @@ export class GameClient {
   /** Saves the game in play, so another game may take its slot or its place (→SAVE-14). */
   saveGame() {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       await this.save();
     });
   }
@@ -1141,7 +1182,6 @@ export class GameClient {
    */
   deleteGame(gameId: string) {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       // No autosave may bring the removed game back.
       clearTimeout(this.autosaveTimer);
       this.autosaveTimer = undefined;
@@ -1164,8 +1204,7 @@ export class GameClient {
       waiter.reject(new Error(sourceMessage('copy.client.250bdea6bf')));
     }
     this.waiters.clear();
-    this.lockWait?.abort();
-    this.release?.();
+    this.tab?.dispose();
     this.channel.close();
     this.worker.terminate();
     for (const helper of this.helpers) helper.terminate();

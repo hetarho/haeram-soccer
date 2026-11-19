@@ -101,7 +101,6 @@ const render = (props: Partial<FixtureKitViewProps> & { w?: World }) =>
       fixture: HOME,
       role: null,
       disabled: false,
-      readonly: false,
       notice: '',
       message: '',
       onSelect: () => {
@@ -126,12 +125,11 @@ describe('fixture kit selector markup (→WEB-88)', () => {
     expect(html).not.toContain('role="radio"');
   });
 
-  it('names the fixture and its automatic pairing, with every action disabled read-only', () => {
+  it('names the fixture and its automatic pairing, with every action disabled', () => {
     const automatic = fixtureKitAppearance(W, HOME, null);
-    const html = render({ readonly: true, disabled: true, role: 'away' });
+    const html = render({ disabled: true, role: 'away' });
     expect(html).toContain(`data-fixture-id="${HOME.id}"`);
     expect(html).toContain(fixtureKitContext(W, HOME));
-    expect(html).toContain('읽기 전용 탭에서는 유니폼을 정할 수 없어요.');
     expect(html).toContain(
       `자동 추천: 우리 ${['홈', '어웨이', '세컨'][KIT_ROLES.indexOf(automatic.sides[0].role)]} 유니폼`,
     );

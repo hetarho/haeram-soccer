@@ -25,17 +25,15 @@ export {
   UNRECORDED_LOOK,
 } from './lib/matchAppearance';
 export {
-  heatChoices,
-  heatOf,
   networkView,
   NETWORK_VIEW,
+  missingMaterialMessageId,
   ownSide,
   px,
   py,
   shotDots,
   shotTotals,
   sideReport,
-  topToucher,
 } from './lib/materialView';
 export { drawNumberTag, numberTagStyle, placeNumberTags } from './lib/numberTags';
 export {

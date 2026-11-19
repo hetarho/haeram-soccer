@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { personOf } from './person-reads';
 import type { InboxItem, ResponsibilityKey, World } from '../../contracts/src/types';
 import { currentDay, daysUntilNextMatch, nextOwnFixture } from './calendar';
 import { activePlayers } from './player-state';
@@ -69,7 +70,7 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
     // He is one of our players: the browser's projection, which carries no `people`, names him
     // from the squad as the worker does from his career record.
     const name =
-      w.people?.[proposal.person]?.name ?? w.players.find((p) => p.id === proposal.person)?.name;
+      personOf(w, proposal.person)?.name ?? w.players.find((p) => p.id === proposal.person)?.name;
     reasons.push({
       id: `decision:playing-coach:${proposal.person}`,
       year,

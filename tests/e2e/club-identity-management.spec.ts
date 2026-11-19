@@ -255,7 +255,7 @@ test('another game never sees the commission, which waits in its own game', asyn
   expect((await savedWorld(page)).designCommission).toEqual(waiting);
 });
 
-test('a read-only tab inspects the design and the drafts but cannot commission or adopt', async ({
+test('a tab whose game plays elsewhere shows no design and cannot commission or adopt', async ({
   page,
   context,
 }) => {
@@ -266,23 +266,13 @@ test('a read-only tab inspects the design and the drafts but cannot commission o
   try {
     await viewer.setViewportSize({ width: 390, height: 844 });
     await viewer.goto('/club-operations?view=identity');
-    let view = designView(viewer);
-    await expect(appliedPanel(view)).toBeVisible();
-    await expect(view).toContainText('읽기 전용 상태에서는 의뢰할 수 없어요.');
-    await expect(requestButton(view)).toBeDisabled();
-    await expect(crestFill(view, applied.crest.primary)).not.toHaveCount(0);
-    // The writer commissions; the reader sees the delivered drafts, every action disabled (→KIT-9).
-    const { drafts } = await commission(page, await openDesign(page), [ROYAL, GOLD]);
+    // The game plays in the first tab: this one opens no design to commission from (→KIT-9).
+    await expect(viewer.getByTestId('playing-elsewhere')).toBeVisible();
+    await expect(designView(viewer)).toHaveCount(0);
+    await commission(page, await openDesign(page), [ROYAL, GOLD]);
     await viewer.reload();
-    view = designView(viewer);
-    await expect(draftsPanel(view)).toBeVisible();
-    await expect(draftItems(view)).toHaveCount(drafts.length);
-    for (const [index, draft] of drafts.entries()) {
-      await expect(crestFill(draftItems(view).nth(index), draft.crest.primary)).not.toHaveCount(0);
-      await expect(adoptButton(view, index)).toBeDisabled();
-    }
-    await expect(discardButton(view)).toBeDisabled();
-    await expect(redrawButton(view)).toBeDisabled();
+    await expect(viewer.getByTestId('playing-elsewhere')).toBeVisible();
+    await expect(designView(viewer)).toHaveCount(0);
   } finally {
     await viewer.close();
   }

@@ -9,6 +9,8 @@ import type { GoalScorer, World } from '../../../../../../packages/contracts/src
 import { useGameState } from '../../../runtime/store';
 import type { GameClient } from '../../../runtime/client';
 import { banText, leagueDiscipline } from '../../../entities/player';
+import { useStoppedRead } from '../../../shared/lib/useStoppedRead';
+import { RunningDimmer } from '../../../shared/ui/RunningDimmer';
 import { number, seasonName } from '../../../presentation/format';
 import {
   FULL_STATS_FAILED,
@@ -526,91 +528,100 @@ export function DisciplineTable({
 }) {
   useTextLocale();
   const w = useGameState(selectDisciplineWorld)!;
+  const running = useStoppedRead('running');
+  const disciplineNames = useStoppedRead('disciplineNames');
+  const disciplineWorld = useMemo(
+    () => ({ ...w, disciplineNames: disciplineNames ?? {} }),
+    [w, disciplineNames],
+  );
   const scope = useMemo(() => leagueStatsScope(w, league), [w, league]);
   const full = useFullStats(client, w, scope, { keepPrevious: false });
   const read = full.status === 'ready' ? full.read : undefined;
   const rows = useMemo(
-    () => leagueDiscipline(w, leagueIds(w, league), {}, read ?? null),
-    [w, league, read],
+    () =>
+      running ? [] : leagueDiscipline(disciplineWorld, leagueIds(w, league), {}, read ?? null),
+    [running, disciplineWorld, w, league, read],
   );
   return (
-    <section
-      data-surface="panel"
-      className={s.panel}
-      aria-label={displayMessage('copy.ScorerPanels.d5224cfdfe')}
-      data-testid="league-discipline"
-    >
-      <div className={s.head}>
-        <div>
-          <h3>{richMessage('copy.ScorerPanels.5b16495c71')}</h3>
-          <p>{richMessage('copy.ScorerPanels.957903df3a', { p0: seasonName(w.year) })}</p>
-        </div>
-      </div>
-      <p className={s.note} data-testid="league-red-coverage">
-        <b>{richMessage('copy.LabPage.68e69c7b9c')}</b> ·{' '}
-        {localizeValue(
-          full.status === 'loading'
-            ? sourceMessage('copy.LeagueFullStats.3cb5c68f5c')
-            : full.status === 'failed'
-              ? FULL_STATS_FAILED
-              : fullStatsCoverage(read, w.year).text,
-        )}
-        {full.status === 'failed' && (
-          <button type="button" onClick={full.retry}>
-            {richMessage('copy.ConstantsPage.9cee01b433')}
-          </button>
-        )}
-      </p>
-      {localizeValue(
-        rows.length ? (
-          <div className={s.tableWrap}>
-            <table
-              className={s.standings}
-              aria-label={displayMessage('copy.ScorerPanels.2913b18cd3')}
-            >
-              <thead>
-                <tr>
-                  <th scope="col">{richMessage('team.column.player')}</th>
-                  <th scope="col">{richMessage('copy.matchModelPacking.6d641f69b7')}</th>
-                  <th scope="col">{richMessage('copy.LabPage.6c0f751064')}</th>
-                  <th scope="col">{richMessage('copy.LabPage.68e69c7b9c')}</th>
-                  <th scope="col">{richMessage('copy.ScorerPanels.5bd265a724')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {localizeValue(
-                  rows.map((row) => (
-                    <tr key={row.id} className={row.club === w.playerClub ? s.own : ''}>
-                      <th scope="row" className={s.player}>
-                        {localizeValue(
-                          row.club === w.playerClub ? (
-                            <PlayerLink id={row.id} name={row.name} scope="season" />
-                          ) : (
-                            row.name
-                          ),
-                        )}
-                      </th>
-                      <td className={s.club}>
-                        {row.clubs.map((club, i) => (
-                          <span key={club}>
-                            {i > 0 && ' · '}
-                            <ClubLink w={w} id={club} crest={14} />
-                          </span>
-                        ))}
-                      </td>
-                      <td>{number(row.yellows)}</td>
-                      <td>{row.reds === undefined ? '—' : number(row.reds)}</td>
-                      <td>{localizeValue(row.bans.map(banText).join(' · ') || '—')}</td>
-                    </tr>
-                  )),
-                )}
-              </tbody>
-            </table>
+    <RunningDimmer>
+      <section
+        data-surface="panel"
+        className={s.panel}
+        aria-label={displayMessage('copy.ScorerPanels.d5224cfdfe')}
+        data-testid="league-discipline"
+      >
+        <div className={s.head}>
+          <div>
+            <h3>{richMessage('copy.ScorerPanels.5b16495c71')}</h3>
+            <p>{richMessage('copy.ScorerPanels.957903df3a', { p0: seasonName(w.year) })}</p>
           </div>
-        ) : read && !read.untracked ? (
-          <p className={s.empty}>{richMessage('copy.ScorerPanels.37400b7127')}</p>
-        ) : null,
-      )}
-    </section>
+        </div>
+        <p className={s.note} data-testid="league-red-coverage">
+          <b>{richMessage('copy.LabPage.68e69c7b9c')}</b> ·{' '}
+          {localizeValue(
+            full.status === 'loading'
+              ? sourceMessage('copy.LeagueFullStats.3cb5c68f5c')
+              : full.status === 'failed'
+                ? FULL_STATS_FAILED
+                : fullStatsCoverage(read, w.year).text,
+          )}
+          {full.status === 'failed' && (
+            <button type="button" onClick={full.retry}>
+              {richMessage('copy.ConstantsPage.9cee01b433')}
+            </button>
+          )}
+        </p>
+        {localizeValue(
+          rows.length ? (
+            <div className={s.tableWrap}>
+              <table
+                className={s.standings}
+                aria-label={displayMessage('copy.ScorerPanels.2913b18cd3')}
+              >
+                <thead>
+                  <tr>
+                    <th scope="col">{richMessage('team.column.player')}</th>
+                    <th scope="col">{richMessage('copy.matchModelPacking.6d641f69b7')}</th>
+                    <th scope="col">{richMessage('copy.LabPage.6c0f751064')}</th>
+                    <th scope="col">{richMessage('copy.LabPage.68e69c7b9c')}</th>
+                    <th scope="col">{richMessage('copy.ScorerPanels.5bd265a724')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {localizeValue(
+                    rows.map((row) => (
+                      <tr key={row.id} className={row.club === w.playerClub ? s.own : ''}>
+                        <th scope="row" className={s.player}>
+                          {localizeValue(
+                            row.club === w.playerClub ? (
+                              <PlayerLink id={row.id} name={row.name} scope="season" />
+                            ) : (
+                              row.name
+                            ),
+                          )}
+                        </th>
+                        <td className={s.club}>
+                          {row.clubs.map((club, i) => (
+                            <span key={club}>
+                              {i > 0 && ' · '}
+                              <ClubLink w={w} id={club} crest={14} />
+                            </span>
+                          ))}
+                        </td>
+                        <td>{number(row.yellows)}</td>
+                        <td>{row.reds === undefined ? '—' : number(row.reds)}</td>
+                        <td>{localizeValue(row.bans.map(banText).join(' · ') || '—')}</td>
+                      </tr>
+                    )),
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : read && !read.untracked ? (
+            <p className={s.empty}>{richMessage('copy.ScorerPanels.37400b7127')}</p>
+          ) : null,
+        )}
+      </section>
+    </RunningDimmer>
   );
 }

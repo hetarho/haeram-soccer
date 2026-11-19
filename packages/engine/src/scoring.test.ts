@@ -143,6 +143,12 @@ describe('actual league scorer standings', () => {
   it('stores cumulative real goals and exact ranking each round, independent of observation', () => {
     const observed = world();
     const fast = structuredClone(observed);
+    // Only a watched own match keeps post-match material (→MATCH-7/25); every other fact is equal.
+    const withoutMaterial = (w: typeof observed) => {
+      const copy = structuredClone(w);
+      for (const match of copy.ownMatches) delete match.material;
+      return copy;
+    };
     for (let round = 0; round < 5; round++) {
       advanceRound(observed);
       advanceRound(fast, undefined, false);
@@ -153,7 +159,7 @@ describe('actual league scorer standings', () => {
         player.appearances,
       ]);
       expect(season.history.at(-1)?.rows).toEqual(rows);
-      expect(canonical(fast)).toBe(canonical(observed));
+      expect(canonical(withoutMaterial(fast))).toBe(canonical(withoutMaterial(observed)));
     }
     expect(observed.scorerSeason!.history.map((h) => h.round)).toEqual([0, 1, 2, 3, 4, 5]);
     expect(observed.scorerSeason!.history[0].rows).toEqual([]);

@@ -475,7 +475,7 @@ describe('background worker publication', () => {
     expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
   });
 
-  it('keeps a second tab read-only even for silent background commands', async () => {
+  it('opens no game in a second tab, which waits behind its playing tab', async () => {
     await start();
     vi.stubGlobal('navigator', {
       locks: {
@@ -486,30 +486,28 @@ describe('background worker publication', () => {
     const reader = new GameClient(() => {});
     clients.push(reader);
     await reader.start();
-    expect(reader.state.readonly).toBe(true);
     // The game's database opens in the playing tab only (→SAVE-6).
     expect(reader.state.view).toBeUndefined();
-    await reader.command({ type: 'advance-days', days: 1 }, { background: true });
-    expect(reader.state.error).toContain('읽기 전용');
+    expect(reader.state.elsewhere).toEqual({});
+    expect(reader.state.busy).toBe(false);
     expect(reader.state.savedRevision).toBe(-1);
     expect(
-      WorkerPort.instances[1].requests.some((request) => request.body.type === 'command'),
+      WorkerPort.instances[1].requests.some((request) => request.body.type === 'open-game'),
     ).toBe(false);
   });
 
-  it('keeps a tab without Web Locks read-only, its badge saying why, with no notification', async () => {
+  it('opens no game in a tab without Web Locks, saying why, with no notification', async () => {
     await start();
     vi.stubGlobal('navigator', {});
     const reader = new GameClient(() => {});
     clients.push(reader);
     await reader.start();
-    expect(reader.state.readonly).toBe(true);
-    expect(reader.state.notice).toContain('Web Locks');
+    expect(reader.state.error).toContain('Web Locks');
     expect(reader.state.view).toBeUndefined();
     expect(notifications()).toHaveLength(0);
   });
 
-  it('takes over writing once the playing tab releases the writer lock', async () => {
+  it('takes over writing on 여기서 이어 하기 once the playing tab releases the writer lock', async () => {
     await start();
     let release: (lock: object) => void = () => {};
     const granted = new Promise<object>((resolve) => (release = resolve));
@@ -525,10 +523,11 @@ describe('background worker publication', () => {
     const reader = new GameClient(() => {});
     clients.push(reader);
     await reader.start();
-    expect(reader.state.readonly).toBe(true);
+    expect(reader.state.elsewhere).toEqual({});
+    // 여기서 이어 하기 queues for the lock (→SAVE-6).
+    reader.continueHere();
     release({ name: 'haeram-soccor:writer' });
-    await vi.waitFor(() => expect(reader.state.readonly).toBe(false));
-    expect(reader.state.notice).toBeUndefined();
+    await vi.waitFor(() => expect(reader.state.elsewhere).toBeUndefined());
     expect(notifications()).toMatchObject([{ text: expect.stringContaining('이어서 플레이') }]);
     await vi.waitFor(() => expect(reader.state.view?.world.revision).toBe(0));
   });
@@ -842,7 +841,7 @@ describe('full match-model activation (→SAVE-23)', () => {
       canonical(career),
     );
   });
-  it('a read-only tab neither opens, activates nor writes', async () => {
+  it('a tab behind the playing tab neither opens, activates nor writes', async () => {
     WorkerPort.release = ENABLED_RELEASE;
     const { career, gameId } = preModelCheckpoint();
     vi.stubGlobal('navigator', {
@@ -854,7 +853,6 @@ describe('full match-model activation (→SAVE-23)', () => {
     const reader = new GameClient(() => {});
     clients.push(reader);
     await reader.start();
-    expect(reader.state.readonly).toBe(true);
     expect(reader.state.view).toBeUndefined();
     expect(committed(gameId)).toBe(career.revision);
   });
@@ -1302,7 +1300,7 @@ it('exports the world in play and never another world at the same revision', asy
   expect(current.id).toBe(client.state.view!.world.id);
 });
 
-it('opens no game in a read-only tab, however many commits it hears of (→SAVE-6)', async () => {
+it('opens no game in a tab behind the playing tab, however many commits it hears of (→SAVE-6)', async () => {
   const writer = await start();
   vi.stubGlobal('navigator', {
     locks: {
@@ -1319,7 +1317,6 @@ it('opens no game in a read-only tab, however many commits it hears of (→SAVE-
     data: { revision: writer.state.savedRevision },
   } as unknown as MessageEvent<{ generation: number }>);
   await reader.whenIdle();
-  expect(reader.state.readonly).toBe(true);
   expect(reader.state.view).toBeUndefined();
   expect(WorkerPort.instances[1].requests).toHaveLength(0);
 });

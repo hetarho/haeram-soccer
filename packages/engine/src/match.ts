@@ -252,8 +252,8 @@ export class UnreleasedMatchModelError extends Error {
 /**
  * How a fixture is settled (→MATCH-22): before the takeover nobody owns a club and every fixture
  * is results-only (→WORLD-13); from it every fixture takes the aggregate path, the own club's with
- * transient action detail for its script and post-match material (→MATCH-38/25). A fixture takes
- * the same path observed or not (→MATCH-7); observing only stages its picture, and every record
+ * transient action detail only when watched (→MATCH-38/25). A fixture takes
+ * the same path observed or not (→MATCH-7); watching writes its script and material, and every record
  * keeps its lines. `decide` is a knockout tie's rule. The record passes the full record check once,
  * in `recordMatch`, before anything settles it (→MATCH-27).
  */
@@ -269,6 +269,10 @@ export function simulateMatch(
   if (f.home !== w.playerClub && f.away !== w.playerClub) return simulateAggregate(w, f, decide);
   const prepared = prepareMatch(w, f);
   const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+  if (!observe) {
+    const match = playAggregate(w, f, prepared, rosters, decide);
+    return { record: aggregateRecord(f, rosters, match, model), squads: rosters, frames: [] };
+  }
   const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
   const match = playAggregate(w, f, prepared, rosters, decide, undefined, trace);
   const record = aggregateRecord(f, rosters, match, model);

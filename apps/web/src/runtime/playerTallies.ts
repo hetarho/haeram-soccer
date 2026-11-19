@@ -1,10 +1,10 @@
 import type { Incident, MatchRecord, World } from '../../../../packages/contracts/src/types';
-import { heatMap, MATERIAL_LAYOUT, ownSideOf } from '../../../../packages/engine/src/material';
+import { ownSideOf } from '../../../../packages/engine/src/material';
 
 /**
  * The counts every view carries (→HIST-13, HIST-16, MATCH-19, LEAGUE-15): appearances, cards and
- * season heat from the lines and incidents of own matches, shared by the Worker host and the UI's
- * read models. Nothing here changes the world.
+ * cards from the lines and incidents of own matches, shared by the Worker host and the UI's read
+ * models. Nothing here changes the world.
  */
 
 type Matches = Pick<World, 'ownMatches' | 'year' | 'careerReads'>;
@@ -130,15 +130,13 @@ export interface PlayerTally {
   sub: [number, number];
   yellow: [number, number];
   red: [number, number];
-  /** This season's touches per heat-map cell, while its matches keep their material (→MATCH-5). */
-  heat?: number[];
 }
 /**
  * Counts every view carries: the client keeps only the latest own matches, so the host derives them
  * from all of them, again only when an own match is added or the season turns.
  */
 export interface Tallies {
-  /** Own players, past and present, with an appearance, a card or a touch; absent is none. */
+  /** Own players, past and present, with an appearance or a card; absent is none. */
   players: Record<string, PlayerTally>;
   /** This season's league reds by player, either side of every own match (→LEAGUE-15). */
   leagueReds: Record<string, number>;
@@ -149,42 +147,29 @@ export const tallies = perOwnMatches(
       const players: Record<string, PlayerTally> = {};
       for (const player of w.players) {
         const p = w.careerReads.players[player.id];
-        if (!p || (!p.apps[1] && !p.yellow[1] && !p.red[1] && !p.heat)) continue;
+        if (!p || (!p.apps[1] && !p.yellow[1] && !p.red[1])) continue;
         const season = p.year === w.year;
         players[player.id] = {
           apps: [season ? p.apps[0] : 0, p.apps[1]],
           sub: [season ? p.sub[0] : 0, p.sub[1]],
           yellow: [season ? p.yellow[0] : 0, p.yellow[1]],
           red: [season ? p.red[0] : 0, p.red[1]],
-          ...(season && p.heat ? { heat: p.heat } : {}),
         };
       }
       return { players, leagueReds: leagueReds(w) };
     }
     const apps = appearanceCounts(w),
       cards = cardCounts(w);
-    const heat: Record<string, number[]> = {};
-    for (const m of w.ownMatches) {
-      if (m.year !== w.year || !m.material) continue;
-      const own = ownSideOf(m, w.playerClub);
-      for (const line of m.players) {
-        const map = heatMap(m, line.id, own);
-        if (!map?.touches) continue;
-        const sum = (heat[line.id] ??= Array<number>(MATERIAL_LAYOUT.cells).fill(0));
-        map.cells.forEach((n, i) => (sum[i] += n));
-      }
-    }
     const players: Record<string, PlayerTally> = {};
     for (const p of w.players) {
       const a = apps.get(p.id),
         c = cards.get(p.id);
-      if (!a && !c && !heat[p.id]) continue;
+      if (!a && !c) continue;
       players[p.id] = {
         apps: [a?.season ?? 0, a?.career ?? 0],
         sub: [a?.seasonSub ?? 0, a?.careerSub ?? 0],
         yellow: [c?.season.yellow ?? 0, c?.career.yellow ?? 0],
         red: [c?.season.red ?? 0, c?.career.red ?? 0],
-        ...(heat[p.id] ? { heat: heat[p.id] } : {}),
       };
     }
     return { players, leagueReds: leagueReds(w) };

@@ -795,6 +795,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
       expect(played.playback!.record.model).toBe(MATCH_MODEL_REVISION);
       expect(played.playback!.record.material).toBeDefined();
       expect(played.playback!.script).toBeDefined();
+      expect(played.playback!.staging).toBeDefined();
     }
     // A fixture asked of a world still on an earlier model is refused by name, never played on
     // a path that no longer exists.
@@ -1051,7 +1052,17 @@ async function throughFirstMatch(h: Host) {
       }),
     );
     expect(reply.ok, reply.error).toBe(true);
+    expect(reply.playback).toBeUndefined();
   }
+  expect(h.world!.ownMatches[0]!.material).toBeUndefined();
+  const continued = await h.handle(
+    req('after-match', h.world!.revision, {
+      type: 'command',
+      command: { type: 'advance-days', days: 1 },
+    }),
+  );
+  expect(continued.ok, continued.error).toBe(true);
+  expect(continued.playback).toBeUndefined();
   return canonical(h.world!);
 }
 describe('fixture helpers', () => {

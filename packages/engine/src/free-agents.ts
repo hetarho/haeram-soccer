@@ -1,4 +1,5 @@
 import { distressFreeNeed, distressSigningReason, forcedSales } from './distress';
+import { personOf } from './person-reads';
 import { retirePlayerRecord } from './player-records';
 import { recordRetirementNews } from './news';
 import { message as sourceMessage } from '../../contracts/src/messages';
@@ -134,6 +135,7 @@ function byAbility(pool: readonly FreeAgent[]) {
 
 /** A free agent stops playing; linked profiles and registered people's careers survive. */
 function retireFreeAgent(w: World, p: Player) {
+  // Current-only: a free agent has not retired from playing, so memory holds him (T1014).
   const person = w.people?.[p.id];
   const club =
     person?.employment.filter((job) => job.role === 'player').at(-1)?.club ??
@@ -149,7 +151,7 @@ function admit(w: World, joining: readonly FreeAgent[], source?: string) {
   for (const p of fresh) {
     held.add(p.id);
     p.wage = freeAgentWage(w, p);
-    const from = w.people?.[p.id]?.club;
+    const from = personOf(w, p.id)?.club;
     movePerson(w, p, undefined, false, undefined, source);
     FREE_AGENT_FLOW.observe?.('release', p, from);
     freePlace(w, p.id);
@@ -172,7 +174,7 @@ export function capFreeAgents(w: World) {
 export function closeFreeAgents(w: World, closedYear: number) {
   const stayed: FreeAgent[] = [];
   for (const p of freeAgentsOf(w)) {
-    if (p.freeSince <= closedYear || w.people?.[p.id]?.retirement) {
+    if (p.freeSince <= closedYear || personOf(w, p.id)?.retirement) {
       retireFreeAgent(w, p);
       freePlace(w, p.id);
     } else {
@@ -295,7 +297,7 @@ class WantedLines {
 export function refreshFreeAgents(w: World, year = w.year) {
   // A war gap or an older checkpoint may leave an announced retiree in the held pool.
   w.freeAgents = freeAgentsOf(w).filter((p) => {
-    const person = w.people?.[p.id];
+    const person = personOf(w, p.id);
     if (
       year - p.born < RETIREMENT.lastAge &&
       person?.playing !== 'retired' &&

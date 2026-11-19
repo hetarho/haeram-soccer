@@ -223,6 +223,7 @@ export function takeOver(
     }
     // The owner's contracts are his players' own (`until`), as for any he signs: an end the club
     // nobody owned wrote on the job would outlive his renewals and date a later departure after it.
+    // Current-only: he was just enrolled with an open job at the bought club, so memory holds him.
     const job = w.people?.[p.id]?.employment.find((held) => !held.to && held.role === 'player');
     if (job) delete job.contractUntil;
   }

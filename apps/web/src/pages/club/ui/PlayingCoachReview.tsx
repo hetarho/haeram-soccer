@@ -24,7 +24,6 @@ export function PlayingCoachReview({
 }) {
   useTextLocale();
   const disabled = useGameState(gameActionsBlocked);
-  const readonly = useGameState((state) => state.readonly);
   const proposal = w.playingCoachProposals?.[player.id];
   if (proposal?.status !== 'pending') return null;
   const money = (value: string) => (
@@ -42,13 +41,7 @@ export function PlayingCoachReview({
       <h3>{richMessage('copy.PlayingCoachReview.00abd151ca')}</h3>
       {localizeValue(
         disabled && (
-          <p role="status">
-            {localizeValue(
-              readonly
-                ? sourceMessage('copy.PlayingCoachReview.671bbc4d59')
-                : sourceMessage('copy.MediationReview.dde347e328'),
-            )}
-          </p>
+          <p role="status">{localizeValue(sourceMessage('copy.MediationReview.dde347e328'))}</p>
         ),
       )}
       <DecisionOwner

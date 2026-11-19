@@ -1,4 +1,5 @@
 import { recordRenewalBid } from './renewal-bids';
+import { personOf } from './person-reads';
 import {
   DISTRESS,
   distressSalePlan,
@@ -346,7 +347,7 @@ function completeSigning(
     // Inactive rows are not reset at rollover. Only restore minutes earned in this season;
     // the employment/transfer facts date the departure without inventing absent history.
     const sameSeason =
-      w.people?.[p.id]?.employment.some(
+      personOf(w, p.id)?.employment.some(
         (job) => job.role === 'player' && job.club === w.playerClub && job.to?.year === w.year,
       ) ||
       w.transfers?.facts.some(

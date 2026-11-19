@@ -1,4 +1,5 @@
 import type { Grade } from '../../contracts/src/player';
+import { personOf } from './person-reads';
 import type { Player, World } from '../../contracts/src/types';
 import { coachingGrade, managerialGrade } from './aptitude';
 import { coachingSpecialty } from './coaching-entry';
@@ -19,7 +20,7 @@ export function aptitudeLabel(
 }
 /** Display-safe current assessment; true eligibility never uses the displayed range. */
 export function careerAssessment(w: World, player: Player, own: boolean) {
-  const person = w.people?.[player.id],
+  const person = personOf(w, player.id),
     scout = staffMember(w, 'scout')?.ability,
     scale = scoutRangeScale(w);
   return {

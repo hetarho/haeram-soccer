@@ -1,5 +1,5 @@
 /** Host integration gate: real own fixtures and season settlement, never task-tier execution. */
-import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -13,7 +13,6 @@ import { simulateMatch, prepareMatch } from './match';
 import { validateFullMatchRecord } from './match-model';
 import { MATCH_MODEL_RELEASE } from './match-model-release';
 import { advanceRound, closeSeason } from './season';
-import * as material from './material';
 import { advanceToNextMatch, handTo, holdRows } from './testing';
 import { matchDetail } from './script/detail';
 import { validateScript } from './script/validate';
@@ -69,19 +68,22 @@ describe('revision 11 own matches on the result path', () => {
     }
     // T825/T827's unchanged sixty-fixture corpus remains in script/build.test.ts and sample.test.ts.
   });
-  it('an own match carries its material, xG, detail and incidents, and hands over staging only when watched', () => {
+  it('an own match keeps its facts and supplies material and staging only when watched', () => {
     const w = world(),
       f = ownFixtures(w)[0]!;
     const watched = simulateMatch(w, f, true),
       skipped = simulateMatch(w, f, false);
     fullPlayback(watched);
-    fullPlayback(skipped);
+    expect(validateFullMatchRecord(skipped.record)).toEqual([]);
     expect(watched.record.xg).toHaveLength(2);
     expect(watched.record.detail).toHaveLength(2);
     expect(watched.record.incidents).toBeDefined();
     expect(watched.staging).toHaveLength(2);
     expect(watched.staging!.map((s) => s.players.length)).toEqual(watched.record.lineCounts);
-    expect(skipped.record).toEqual(watched.record);
+    const { material: _material, ...record } = watched.record;
+    void _material;
+    expect(skipped.record).toEqual(record);
+    expect(skipped.record.material).toBeUndefined();
     expect(skipped.script).toBeUndefined();
     expect(skipped.staging).toBeUndefined();
   });
@@ -94,11 +96,15 @@ describe('revision 11 own matches on the result path', () => {
       expect(a).toBeDefined();
       expect(b).toBeDefined();
       fullPlayback(a!);
-      fullPlayback(b!);
-      expect(a!.record).toEqual(b!.record);
+      expect(validateFullMatchRecord(b!.record)).toEqual([]);
+      const { material: _material, ...record } = a!.record;
+      void _material;
+      expect(record).toEqual(b!.record);
       expect(a!.script).toBeDefined();
       expect(b!.script).toBeUndefined();
-      expect(canonical(watched)).toBe(canonical(skipped));
+      const comparable = structuredClone(watched);
+      for (const match of comparable.ownMatches) delete match.material;
+      expect(canonical(comparable)).toBe(canonical(skipped));
     }
   });
   it('an own cup tie level after ninety minutes plays extra time and a shoot-out on the same path', () => {
@@ -117,13 +123,15 @@ describe('revision 11 own matches on the result path', () => {
       expect(p.script!.beats.some((b) => b.kind === 'shootoutKick')).toBe(true);
       expect(validateScript(detail, p.script!)).toEqual([]);
       expect(compareRecord(detail, countScript(p.script!, detail), p.record)).toEqual([]);
-      expect(simulateMatch(w, f, false, { awayGoals: false }).record).toEqual(p.record);
+      const { material: _material, ...record } = p.record;
+      void _material;
+      expect(simulateMatch(w, f, false, { awayGoals: false }).record).toEqual(record);
       found = p;
       break;
     }
     expect(found).toBeDefined();
   });
-  it('a whole own season settles and the close reduces its material to season heat maps', () => {
+  it('a whole own season settles and the close deletes its material', () => {
     const w = handTo(world(), 4),
       year = w.year;
     // Financial failure is independent of this settlement integration case.
@@ -137,7 +145,7 @@ describe('revision 11 own matches on the result path', () => {
           fullPlayback(p);
           seen.push(p);
         },
-        false,
+        true,
       );
     expect(w.ended).toBeUndefined();
     expect(w.round).toBe(SEASON_ROUNDS);
@@ -160,26 +168,9 @@ describe('revision 11 own matches on the result path', () => {
     expect(w.players.some((p) => p.career[M.minutes]! > 0)).toBe(true);
     expect({ morale: w.morale, fatigue: w.players.map((p) => p.fatigue) }).not.toEqual(before);
     for (const m of w.ownMatches.filter((m) => m.year === year)) expect(m.material).toBeDefined();
-    // The close may first play the own club's promotion playoffs, whose material counts too: the
-    // expected maps sum every own match of the season as the reduction finds them.
-    const heat: Record<string, number[]> = {};
-    const reduce = material.reduceSeasonMaterial;
-    const spy = vi.spyOn(material, 'reduceSeasonMaterial').mockImplementation((at, archive) => {
-      for (const m of at.ownMatches.filter((m) => m.year === year)) {
-        expect(m.material).toBeDefined();
-        m.players.forEach((p, line) => {
-          const cells = (heat[p.id] ??= Array<number>(40).fill(0));
-          for (let c = 0; c < 40; c++) cells[c]! += m.material!.heat[line * 40 + c]!;
-        });
-      }
-      reduce(at, archive);
-    });
-    onTestFinished(() => spy.mockRestore());
     closeSeason(w);
-    expect(spy).toHaveBeenCalledTimes(1);
-    for (const id of Object.keys(heat)) if (!heat[id]!.some((n) => n > 0)) delete heat[id];
     const archived = w.history.find((s) => s.year === year)!;
-    expect(archived.heat).toEqual(heat);
+    expect(archived.heat).toBeUndefined();
     expect(w.ownMatches.filter((m) => m.year === year).every((m) => !m.material)).toBe(true);
     expect(w.year).toBe(year + 1);
   });

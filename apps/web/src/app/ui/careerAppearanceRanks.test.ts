@@ -25,7 +25,6 @@ function publish(players: Tallies['players'] | undefined) {
     ...initialClientState,
     busy: false,
     processing: false,
-    readonly: false,
     view: { world: w, tallies: { players, leagueReds: {} } } as unknown as ClientState['view'],
   });
 }

@@ -187,9 +187,12 @@ const facts = (w: World) => ({
 // mr18's world (0.8.13: spread founding squads in force, individual ageing curves, the loyalty
 // trait's draw, ability-fit wages, the distress ladder) changes every founding squad and so both;
 // efb1b0e2dc8517ba and e04477da1bf7dfb3 before.
+// T990 (MATCH-7/25): an own match the owner does not watch keeps its record without script or
+// material, so the unobserved candidate rounds lose their own material and move; every record and
+// ledger is unchanged (the aggregate records keep theirs). a797ee48156e555f before.
 const BEFORE = {
   aggregateRecords: '3c38762494d8fc4b',
-  candidateRounds: 'a797ee48156e555f',
+  candidateRounds: '4bebd5994ee4b5ed',
 };
 
 describe('complete-result throughput (T285)', () => {

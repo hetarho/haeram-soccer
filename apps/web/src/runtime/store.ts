@@ -39,11 +39,17 @@ export function shareView(previous: View | undefined, next: View | undefined): V
   return shareValue(previous, next) as View;
 }
 
+export function withoutStoppedReads(view: View): View {
+  const { coaches, managers, transfers, office, ...rest } = view;
+  const { disciplineNames, ...world } = rest.world;
+  void [coaches, managers, transfers, office, disciplineNames];
+  return { ...rest, world };
+}
+
 export const initialClientState: ClientState = {
   busy: true,
   processing: true,
   activity: 'foreground',
-  readonly: true,
   savedRevision: -1,
   progress: 0,
 };
@@ -56,6 +62,9 @@ export function createGameStore(initial: ClientState = initialClientState) {
     getSnapshot: store.getState,
     /** GameClient already shares immutable views; other publishers restore their references here. */
     publish(state: ClientState, options: { viewShared?: boolean } = {}) {
+      if (state.clockRunning && state.view) {
+        state = { ...state, view: withoutStoppedReads(state.view) };
+      }
       const previous = store.getState(),
         next = {
           ...state,
@@ -83,7 +92,6 @@ export function gameActionsBlocked(
     (!options?.preview && (state.clockRunning || state.processing)) ||
     state.busy ||
     state.pendingActions ||
-    state.readonly ||
     (state.error && !options?.recovery)
   );
 }

@@ -81,7 +81,6 @@ beforeEach(() => {
       ...initialClientState,
       busy: false,
       processing: false,
-      readonly: false,
       view: { world: world() } as View,
     },
     true,
@@ -315,6 +314,7 @@ describe('the home briefing and the office team content (→WEB-11/39)', () => {
   it('keeps the season card, NEXT MATCH and the illustrated entrance only on home', () => {
     vi.mocked(approvalRequests).mockReturnValue([]);
     vi.mocked(clubSituation).mockReturnValue(facts);
+    gameStore.setState({ clockRunning: true });
     const w = world();
     w.tables = {} as World['tables'];
     const markup = renderToStaticMarkup(createElement(ClubHub, { w, client }));
@@ -325,6 +325,10 @@ describe('the home briefing and the office team content (→WEB-11/39)', () => {
     expect(season).toBeLessThan(fixture);
     expect(fixture).toBeLessThan(office);
     expect(markup).toContain('data-facility-art="manager"');
+    const areas = markup.indexOf('data-running="true"');
+    expect(markup.indexOf('>들어가기</button>')).toBeLessThan(areas);
+    expect(markup.slice(areas)).toContain('data-home-part="areas"');
+    expect(markup.slice(areas)).toContain('aria-disabled="true"');
     // No section bar or team summary stays on home.
     for (const moved of ['club-situation', 'role="tablist"', '팀 전력'])
       expect(markup, moved).not.toContain(moved);

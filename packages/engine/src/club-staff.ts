@@ -8,6 +8,7 @@ import type {
   StaffRole,
   World,
 } from '../../contracts/src/types';
+import { personOf } from './person-reads';
 import { TAKEOVER_DECADES } from '../../contracts/src/owner';
 import { clamp, compareIds, integer, random, ratio } from './primitives';
 import { DELEGATED_TERM, STAFF_INFO, STAFF_ROLES } from './staff-info';
@@ -323,7 +324,7 @@ export function takeStaff(
 }
 /** A former player coaching for us, who waits as the person he is rather than in a pool (→STAFF-27). */
 const formerPlayerCoach = (w: World, member: Pick<Staff, 'person'>) =>
-  !!member.person && !!w.people?.[member.person]?.coaching;
+  !!member.person && !!personOf(w, member.person)?.coaching;
 /**
  * A paid coach who leaves our club, replaced, released or unrenewed, joins his post's free agents
  * at the going wage for his ability (→STAFF-49), with his record (→STAFF-50) once he has one.
