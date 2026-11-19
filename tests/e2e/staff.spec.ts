@@ -282,8 +282,9 @@ test('with the manager post delegated a resignation is filled at once and the cl
 test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   // Runs the clock from August to April at the fastest pace with the manager's renewal kept by the
   // owner (→WEB-45); approvals waiting never stop it (→WEB-42). On the released model those eight
-  // months ran past the slow 90 s budget on CI Firefox (run 40243569140).
-  test.setTimeout(180_000);
+  // months ran past the slow 90 s budget on CI Firefox (run 40243569140), and with every stop's
+  // save in the engine worker (→SAVE-3/8) past 150 s on CI Chromium (run 44551084336: 1931.02.12).
+  test.setTimeout(360_000);
   await found(page);
   // The hire is paid from the club's cash, and eight months must not run the club into the red.
   await fundClub(page);
@@ -315,7 +316,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
     else if (await cardText()) await acknowledgeEvents(page);
     if (await play.isVisible()) await play.click();
     throw new Error(`still ${await date.innerText()}`);
-  }).toPass({ timeout: 150_000, intervals: [1000] });
+  }).toPass({ timeout: 300_000, intervals: [1000] });
   if (await pause.isVisible()) await pause.click();
   await expect(play).toBeVisible();
   const tray = await approvalTray(page);

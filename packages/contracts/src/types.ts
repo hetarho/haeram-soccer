@@ -734,8 +734,6 @@ export interface Incident {
 export interface MatchMaterial {
   /** Per shot 7 ints: side, line index in `players`, x×10, y×10, xG×100, outcome, header. */
   shots: number[];
-  /** Own side: 40 cell touch counts per own line, then the own side total, then the opponent's. */
-  heat?: number[];
   /** Own side: [avgX×10, avgY×10, touches] per own line, then [from, to, completed] per pair. */
   network: number[];
   /** Per side 30 ints of the tactical report. */
@@ -1022,8 +1020,6 @@ export interface SeasonArchive extends Partial<LeagueDeduction> {
   eloRange?: [number, number, number, number];
   /** The own country's cup and every continental knockout but the Super Cup. */
   brackets?: BracketArchive[];
-  /** Own player ID → his 40 cell touch counts over the season's own matches (→MATCH-5). */
-  heat?: Record<string, number[]>;
   /**
    * The season's Ballon d'Or podium, winner first (→PLAYER-27, HIST-13); absent before 1955/56,
    * for a season not tracked whole and for closes before the award existed.
@@ -1467,6 +1463,8 @@ export interface World {
   academyFacility: number;
   /** Facility works in progress, one per part: the step or level it builds and the day it began. */
   facilityWorks?: Partial<Record<FacilityPart, { to: number; year: number; day: number }>>;
+  /** Owner's continuation settings. Only a completed work can authorize a funded successor. */
+  facilityAutoUpgrade?: Partial<Record<FacilityPart, 'armed' | 'awaiting-funds'>>;
   ticket: number;
   campaigns: Campaign[];
   /**
@@ -1545,6 +1543,7 @@ export type Command =
   | { type: 'delegation-request'; responsibility: BudgetResponsibility; level: SpendRequest }
   | { type: 'coaching-investment'; choice: 'volunteer' | 'cheap' | 'standard' | 'elite' }
   | { type: 'facility-upgrade'; part: FacilityPart; from: number; cost: string }
+  | { type: 'facility-auto-upgrade'; part: FacilityPart; enabled: boolean }
   | { type: 'next-event' }
   | { type: 'advance'; rounds: number }
   /** Stops early on the day a new unread attention item of a `stop` kind arrives. */

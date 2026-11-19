@@ -1,7 +1,7 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import type {
   DirectionKey,
   FacilityPart,
@@ -389,7 +389,7 @@ function FacilitySnapshot({
   );
 }
 
-function FacilityUpgrade({
+export function FacilityUpgrade({
   w,
   client,
   part,
@@ -405,6 +405,10 @@ function FacilityUpgrade({
   const preview = office.facilities[part];
   const running = facilityWork(w, part);
   const next = preview.next;
+  const top = partTop(part);
+  const atTop = level >= top;
+  const continuation = atTop ? undefined : w.facilityAutoUpgrade?.[part];
+  const statusId = useId();
   const action = useInvestmentAction(client);
   const [quote, setQuote] = useState<{
     from: number;
@@ -436,14 +440,14 @@ function FacilityUpgrade({
           eager
         />
         <div className={`${s.overlay} ${s.facilityCaption}`}>
-          <b>{richMessage('copy.InvestmentView.5186c5563f', { p0: level, p1: partTop(part) })}</b>
+          <b>{richMessage('copy.InvestmentView.5186c5563f', { p0: level, p1: top })}</b>
           <p>{localizeValue(facilityEffect(part, level))}</p>
         </div>
       </div>
       {localizeValue(
         running ? (
           <div className={s.selection} data-surface="inset" role="status">
-            <b>
+            <b id={statusId}>
               {richMessage('copy.InvestmentView.5619d2ed25', { p0: running.to, p1: running.left })}
             </b>
             <progress
@@ -495,8 +499,41 @@ function FacilityUpgrade({
             </div>
           </>
         ) : (
-          <p className={s.note}>{richMessage('copy.InvestmentView.c36d1bbda5')}</p>
+          <p className={s.note} id={atTop ? statusId : undefined}>
+            {richMessage('copy.InvestmentView.c36d1bbda5')}
+          </p>
         ),
+      )}
+      <label className={s.facilityAuto}>
+        <input
+          type="checkbox"
+          checked={continuation !== undefined}
+          disabled={action.blocked || atTop}
+          aria-describedby={running || atTop || continuation ? statusId : undefined}
+          onChange={(event) => {
+            const enabled = event.currentTarget.checked;
+            void action.apply(
+              { type: 'facility-auto-upgrade', part, enabled },
+              sourceMessage(enabled ? 'facility.auto.enabled' : 'facility.auto.disabled', {
+                part: label,
+              }),
+            );
+          }}
+        />
+        <span>
+          {part === 'stadium'
+            ? richMessage('facility.auto.stadiumLabel')
+            : richMessage('facility.auto.label', { part: label })}
+        </span>
+      </label>
+      {continuation && !running && (
+        <p className={s.note} id={statusId} role="status">
+          {richMessage(
+            continuation === 'awaiting-funds'
+              ? 'facility.auto.awaitingFunds'
+              : 'facility.auto.manualStart',
+          )}
+        </p>
       )}
       {localizeValue(action.error && !quote && <p role="alert">{localizeValue(action.error)}</p>)}
       {localizeValue(

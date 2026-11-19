@@ -5,7 +5,9 @@ import {
   databaseDriver,
   gameFileName,
   hasOpfsSyncAccess,
+  heldElsewhere,
   openGamePool,
+  retryWhileHeld,
   STORAGE_CAPABILITY_CODE,
   StorageCapabilityError,
 } from './sqliteWasm';
@@ -65,5 +67,63 @@ describe('sqliteWasm files and capability', () => {
     const error = await openGamePool().catch((e: unknown) => e);
     expect(error).toBeInstanceOf(StorageCapabilityError);
     expect(error).toMatchObject({ code: STORAGE_CAPABILITY_CODE, capability: 'opfs' });
+  });
+});
+
+describe('sqliteWasm pool held by a previous page', () => {
+  const held = () =>
+    Object.assign(new Error('Access Handles cannot be created'), {
+      name: 'NoModificationAllowedError',
+    });
+
+  it('recognises a held handle, also wrapped as a cause', () => {
+    expect(heldElsewhere(held())).toBe(true);
+    expect(heldElsewhere(new Error('wrapped', { cause: held() }))).toBe(true);
+    expect(heldElsewhere(new Error('Missing required OPFS APIs.'))).toBe(false);
+    expect(heldElsewhere(undefined)).toBe(false);
+  });
+
+  it('retries a held pool until it frees, asking SQLite to try again', async () => {
+    const retries: boolean[] = [],
+      waits: number[] = [];
+    const pool = await retryWhileHeld(
+      async (retry) => {
+        retries.push(retry);
+        if (retries.length < 4) throw held();
+        return 'pool';
+      },
+      15_000,
+      async (ms) => void waits.push(ms),
+    );
+    expect(pool).toBe('pool');
+    expect(retries).toEqual([false, true, true, true]);
+    expect(waits).toEqual([50, 100, 200]);
+  });
+
+  it('fails at once on another error and after the limit on a pool that stays held', async () => {
+    const other = new Error('Missing required OPFS APIs.');
+    let calls = 0;
+    await expect(
+      retryWhileHeld(
+        async () => {
+          calls++;
+          throw other;
+        },
+        15_000,
+        async () => {},
+      ),
+    ).rejects.toBe(other);
+    expect(calls).toBe(1);
+    const waits: number[] = [];
+    await expect(
+      retryWhileHeld(
+        async () => {
+          throw held();
+        },
+        1_000,
+        async (ms) => void waits.push(ms),
+      ),
+    ).rejects.toMatchObject({ name: 'NoModificationAllowedError' });
+    expect(waits.reduce((a, b) => a + b, 0)).toBe(1_000);
   });
 });

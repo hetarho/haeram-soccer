@@ -72,6 +72,24 @@ it('refuses the withdrawn design, intervention and sponsor commands (→KIT-9, W
   expect(accepts({ type: 'campaign', kind: 'outreach' })).toBe(false);
 });
 
+it('requires an explicit boolean and a known facility part for continuation settings', () => {
+  const command = { type: 'facility-auto-upgrade', part: 'stadium', enabled: true };
+  for (const part of ['stadium', 'training', 'academy']) {
+    const body = { type: 'command', command: { ...command, part, enabled: false } };
+    expect(requestSchema.parse(request(body)).body).toEqual(body);
+  }
+  for (const invalid of [
+    { ...command, part: 'offices' },
+    { ...command, enabled: undefined },
+    { ...command, enabled: 'true' },
+    { ...command, cost: '1' },
+  ]) {
+    expect(requestSchema.safeParse(request({ type: 'command', command: invalid })).success).toBe(
+      false,
+    );
+  }
+});
+
 it('takes a next-fixture kit role in the engine vocabulary or null, nothing else (→KIT-6)', () => {
   const accepts = (command: unknown) =>
     requestSchema.safeParse(request({ type: 'command', command })).success;

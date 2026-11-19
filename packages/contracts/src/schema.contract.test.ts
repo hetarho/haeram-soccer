@@ -277,7 +277,7 @@ describe('rules 4 match facts (→MATCH-13, →MATCH-19, →HIST-16)', () => {
     const m = w.ownMatches.at(-1)!;
     return { w, m, side: m.home === w.playerClub ? (0 as const) : (1 as const) };
   };
-  it('round-trips incidents, line counts, added time, shoot-outs, material, discipline and season heat', () => {
+  it('round-trips incidents, line counts, added time, shoot-outs, material and discipline', () => {
     const { w, m, side } = played();
     const other = side === 0 ? 1 : 0,
       [booked, replaced] = m.players;
@@ -292,7 +292,6 @@ describe('rules 4 match facts (→MATCH-13, →MATCH-19, →HIST-16)', () => {
     m.shootout = { home: 4, away: 3 };
     m.material = {
       shots: [side, 0, 820, 340, 12, 1, 0],
-      heat: Array.from({ length: 120 }, (_, i) => i % 7),
       network: [500, 300, 20, 0, 1, 4],
       report: Array<number>(60).fill(2),
     };
@@ -316,20 +315,13 @@ describe('rules 4 match facts (→MATCH-13, →MATCH-19, →HIST-16)', () => {
       ],
       out: [{ player: 'synthetic:opponent', club: m.away, until: { year: w.year, day: 40 } }],
     };
-    w.history[0].heat = { [booked.id]: Array.from({ length: 40 }, (_, i) => i * 3) };
-    expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
-    const withoutHeat = structuredClone(w);
-    delete withoutHeat.ownMatches.at(-1)!.material!.heat;
-    expect(canonical(validateWorld(structuredClone(withoutHeat)))).toBe(canonical(withoutHeat));
-    const invalidHeat = structuredClone(w);
-    invalidHeat.ownMatches.at(-1)!.material!.heat = [-1];
-    expect(() => validateWorld(invalidHeat)).toThrow();
+    const legacy = structuredClone(w);
+    Object.assign(legacy.ownMatches.at(-1)!.material!, { heat: [1, 2] });
+    Object.assign(legacy.history[0], { heat: { [booked.id]: [3] } });
+    expect(canonical(validateWorld(legacy))).toBe(canonical(w));
     const loose = structuredClone(w);
     loose.discipline!.yellows[booked.id] = { friendly: 1 } as never;
     expect(() => validateWorld(loose)).toThrow();
-    const shortHeat = structuredClone(w);
-    shortHeat.history[0].heat![booked.id] = [1, 2, 3];
-    expect(() => validateWorld(shortHeat)).toThrow();
   });
   it('refuses completions above attempts in the new counters', () => {
     for (const mutate of [

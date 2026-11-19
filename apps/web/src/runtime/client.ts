@@ -28,6 +28,7 @@ import {
 } from './seasonBackup';
 import { PlaybackStaging } from './staging';
 import { PlayingTab, type Elsewhere, type LockPort } from './playingTab';
+import { waitsBehindLonger } from './requestTimers';
 /**
  * How long opening, creating, saving or exporting a game may take in the engine worker: a save
  * may queue behind a long command that reports only its own progress, and a new career's first
@@ -253,7 +254,7 @@ export class GameClient {
     const pending = this.waiters.get(r.requestId);
     if (!pending) return;
     clearTimeout(pending.timer);
-    pending.timer = window.setTimeout(() => this.failWorker(), pending.timeout);
+    pending.timer = window.setTimeout(() => this.expire(r.requestId), pending.timeout);
     if (r.progress !== undefined) {
       if (r.season !== undefined && this.state.start)
         this.state.start = {
@@ -298,6 +299,20 @@ export class GameClient {
     if (!this.helpers.length) return;
     for (const helper of this.helpers.splice(0)) helper.terminate();
     this.worker.postMessage({ type: 'helpers-failed' });
+  }
+  /**
+   * A request went unanswered for its whole timeout. One still queued behind a longer request — a
+   * background save after an owner decision — is waiting its turn, not lost, so it waits again
+   * (→SAVE-8: the UI never waits for a save, and a save never fails the command after it).
+   */
+  private expire(requestId: string) {
+    const pending = this.waiters.get(requestId);
+    if (!pending) return;
+    if (waitsBehindLonger(this.waiters, requestId)) {
+      pending.timer = window.setTimeout(() => this.expire(requestId), pending.timeout);
+      return;
+    }
+    this.failWorker();
   }
   private failWorker() {
     this.failed = true;
@@ -557,7 +572,7 @@ export class GameClient {
       this.waiters.set(requestId, {
         resolve,
         reject,
-        timer: window.setTimeout(() => this.failWorker(), timeout),
+        timer: window.setTimeout(() => this.expire(requestId), timeout),
         timeout,
         publishView:
           body.type === 'take-over' ||

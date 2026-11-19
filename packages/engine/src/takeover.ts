@@ -249,6 +249,7 @@ export function takeOver(
   w.trainingGround = stage.trainingGround;
   w.academyFacility = stage.academyFacility;
   delete w.facilityWorks;
+  delete w.facilityAutoUpgrade;
   w.ticket = DEFAULT_TICKET;
   w.campaigns = [];
   for (const key of [

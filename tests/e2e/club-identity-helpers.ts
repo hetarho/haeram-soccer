@@ -35,10 +35,19 @@ export { gameHud as hud } from './layout';
 /** SVG crest parts painted in `fill`, exactly as stored. */
 export const crestFill = (scope: Locator, fill: string) => scope.locator(`[fill="${fill}"]`);
 
-/** The settings menu lives in the HUD, which the office hides (→WEB-39). */
+/**
+ * The settings menu lives in the HUD, which the office hides (→WEB-39). A journey reads the saved
+ * world through it (→SAVE-9) while a sheet such as the match preparation is still open over the
+ * HUD; the click then goes to the button itself, so the menu opens above that sheet and the sheet
+ * stays as the journey left it.
+ */
 async function openMenu(page: Page) {
-  await page.getByRole('button', { name: '설정', exact: true }).click();
-  return page.getByRole('dialog', { name: '설정', exact: true });
+  const button = page.getByRole('button', { name: '설정', exact: true });
+  if (await page.getByRole('dialog').count()) await button.dispatchEvent('click');
+  else await button.click();
+  const menu = page.getByRole('dialog', { name: '설정', exact: true });
+  await expect(menu).toBeVisible();
+  return menu;
 }
 const closeMenu = (menu: Locator) =>
   menu.getByRole('button', { name: '창 닫기', exact: true }).click();

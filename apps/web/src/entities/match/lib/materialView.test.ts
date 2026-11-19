@@ -38,7 +38,6 @@ function savedRecord() {
     material: {
       // Own goal by p1 (0.45 xG, header); opponent miss (0.05 xG, foot).
       shots: [1, 0, 950, 340, 45, 0, 1, 0, 3, 800, 200, 5, 3, 0],
-      heat: Array(4 * 40).fill(0),
       network: [600, 300, 8, 400, 340, 0],
       report,
     },
@@ -60,7 +59,6 @@ function networkRecord(touches: number[], pairs: number[]) {
   record.lineCounts = [0, touches.length];
   record.material = {
     shots: [],
-    heat: Array((touches.length + 2) * 40).fill(0),
     report: [],
     network: [...touches.flatMap((touches, i) => [100 + i * 80, 100 + i * 30, touches]), ...pairs],
   };

@@ -13,7 +13,6 @@ export const playerReadSchema = z.object({
   yellow: pair,
   red: pair,
   leagueReds: count,
-  heat: z.array(count).max(10000).optional(),
 });
 export type PlayerRead = z.infer<typeof playerReadSchema>;
 export const careerReadsSchema = z.object({
@@ -28,7 +27,6 @@ export const careerReadsSchema = z.object({
   bestFans: count,
   bestWon: count,
   lastTier: count.optional(),
-  heatPlayers: z.array(z.string().min(1).max(100)).max(100000).optional(),
   players: z.record(z.string().min(1).max(100), playerReadSchema),
   europe: z.record(z.string().regex(/^\d{4}$/), count),
 });

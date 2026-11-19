@@ -59,9 +59,48 @@ export function hasOpfsSyncAccess(scope: typeof globalThis = globalThis): boolea
 
 let opening: Promise<GamePool> | undefined;
 
+/** How long a pool still held by this tab's previous page is waited for before failing. */
+export const POOL_HELD_WAIT_MS = 15_000;
+
+/** Whether `error` (or an error it wraps) is OPFS refusing a handle another context still holds. */
+export function heldElsewhere(error: unknown): boolean {
+  for (let e = error, depth = 0; e && depth < 5; depth++) {
+    const { name, message, cause } = e as { name?: unknown; message?: unknown; cause?: unknown };
+    if (name === 'NoModificationAllowedError') return true;
+    if (typeof message === 'string' && message.includes('NoModificationAllowedError')) return true;
+    e = cause;
+  }
+  return false;
+}
+
+/**
+ * Runs `attempt` until it stops failing because the pool's files are still held, waiting longer
+ * each time, for at most `limitMs`. A reloaded page takes the playing-tab lock as soon as its
+ * predecessor unloads, while that page's engine worker may still hold the pool's access handles
+ * for a moment; the handles free once it ends. `retry` is false on the first attempt only.
+ */
+export async function retryWhileHeld<T>(
+  attempt: (retry: boolean) => Promise<T>,
+  limitMs = POOL_HELD_WAIT_MS,
+  wait: (ms: number) => Promise<void> = (ms) => new Promise((done) => setTimeout(done, ms)),
+): Promise<T> {
+  let waited = 0;
+  for (let delay = 50, retry = false; ; delay = Math.min(delay * 2, 1000), retry = true) {
+    try {
+      return await attempt(retry);
+    } catch (error) {
+      if (!heldElsewhere(error) || waited >= limitMs) throw error;
+      const ms = Math.min(delay, limitMs - waited);
+      waited += ms;
+      await wait(ms);
+    }
+  }
+}
+
 /**
  * The game pool, installed once per worker; a failed install is reported and tried again on the
- * next call. Only one tab may hold the pool at a time (→ARCH-17).
+ * next call. Only one tab may hold the pool at a time (→ARCH-17); a pool its previous page still
+ * holds is waited for (→SAVE-6).
  */
 export function openGamePool(): Promise<GamePool> {
   if (!hasOpfsSyncAccess()) return Promise.reject(new StorageCapabilityError('opfs'));
@@ -69,10 +108,16 @@ export function openGamePool(): Promise<GamePool> {
     try {
       const { default: sqlite3InitModule } = await import('@sqlite.org/sqlite-wasm');
       const sqlite3 = await sqlite3InitModule();
-      return await sqlite3.installOpfsSAHPoolVfs({
-        name: GAME_POOL_NAME,
-        initialCapacity: GAME_POOL_CAPACITY,
-        preserveOnInitFailure: true,
+      return await retryWhileHeld((retry) => {
+        const options = {
+          name: GAME_POOL_NAME,
+          initialCapacity: GAME_POOL_CAPACITY,
+          preserveOnInitFailure: true,
+          // SQLite caches a failed install; a retry has to ask it to try again. The package's
+          // declarations omit this documented option, so it travels in a plain object.
+          forceReinitIfPreviouslyFailed: retry,
+        };
+        return sqlite3.installOpfsSAHPoolVfs(options);
       });
     } catch (cause) {
       opening = undefined;

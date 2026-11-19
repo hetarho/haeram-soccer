@@ -39,6 +39,23 @@ function tinyWorld() {
 const reload = (store: RecordStore, includeCold = true) => rowsToWorld(store, { includeCold });
 
 describe('world rows', () => {
+  it('round-trips a facility setting row through additions, saved waits and removal', () => {
+    const w = tinyWorld();
+    const store = memoryRecordStore();
+    const saver = new RowSaver(store);
+    saver.save(w);
+    expect(reload(store)).not.toHaveProperty('facilityAutoUpgrade');
+    w.facilityAutoUpgrade = { training: 'armed', academy: 'awaiting-funds' };
+    expect(saver.save(w)).toMatchObject({ written: 1, deleted: 0 });
+    expect(reload(store).facilityAutoUpgrade).toEqual(w.facilityAutoUpgrade);
+    w.facilityAutoUpgrade = { academy: 'awaiting-funds' };
+    expect(saver.save(w)).toMatchObject({ written: 1, deleted: 0 });
+    expect(reload(store).facilityAutoUpgrade).toEqual(w.facilityAutoUpgrade);
+    delete w.facilityAutoUpgrade;
+    expect(saver.save(w)).toMatchObject({ written: 0, deleted: 1 });
+    expect(reload(store)).not.toHaveProperty('facilityAutoUpgrade');
+  });
+
   it('round-trips a world with its record key order and index columns', () => {
     const w = tinyWorld();
     const store = memoryRecordStore();

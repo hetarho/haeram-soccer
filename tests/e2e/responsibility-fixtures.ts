@@ -61,14 +61,15 @@ export function pendingAcquisitionCareer() {
 export async function importResponsibilityCareer(page: Page, world: World) {
   await page.goto('/');
   await expect(startFlow(page)).toBeVisible();
-  await page
-    .locator('input[type=file]')
-    .last()
-    .setInputFiles({
-      name: 'responsibilities.haeram-save',
-      mimeType: 'application/octet-stream',
-      buffer: Buffer.from(await saveFileOf(world)),
-    });
+  const input = page.locator('input[type=file]').last();
+  // The input stays disabled while the engine worker starts its database pool, and a file set on
+  // it then is dropped; setInputFiles does not wait for enabled on its own.
+  await expect(input).toBeEnabled({ timeout: 60_000 });
+  await input.setInputFiles({
+    name: 'responsibilities.haeram-save',
+    mimeType: 'application/octet-stream',
+    buffer: Buffer.from(await saveFileOf(world)),
+  });
   // A 35-round career on the released model: CI WebKit 40233059787 opened it in over 5 s.
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 15000 });
 }

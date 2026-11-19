@@ -34,6 +34,7 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     case 'club-ticket':
     case 'delegation-request':
     case 'coaching-investment':
+    case 'facility-auto-upgrade':
     case 'facility-upgrade':
       investmentCommand(w, cmd);
       break;

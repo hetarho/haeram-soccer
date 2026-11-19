@@ -431,6 +431,11 @@ const incident = z.strictObject({
 });
 /** One flat row of post-match material (→MATCH-25): bounded non-negative integers. */
 const materialRow = (max: number) => z.array(z.number().int().min(0).max(100000)).max(max);
+export const matchMaterialSchema = z.object({
+  shots: materialRow(7 * 80),
+  network: materialRow(3 * 30 + 3 * 300),
+  report: materialRow(60),
+});
 const match = fixture
   .extend({
     score,
@@ -458,14 +463,7 @@ const match = fixture
       .refine((periods) => periods.length === 2 || periods.length === 4)
       .optional(),
     regulation: score.optional(),
-    material: z
-      .strictObject({
-        shots: materialRow(7 * 80),
-        heat: materialRow(40 * 34).optional(),
-        network: materialRow(3 * 30 + 3 * 300),
-        report: materialRow(60),
-      })
-      .optional(),
+    material: matchMaterialSchema.optional(),
     appearance: matchAppearanceSchema.optional(),
     model: z.enum(MATCH_MODEL_REVISIONS).optional(),
     managerTenure: id.optional(),
@@ -565,7 +563,7 @@ const bracket = z.strictObject({
     )
     .max(6),
 });
-const archive = z.object({
+export const seasonArchiveSchema = z.object({
   year: number,
   tier: number,
   group: number,
@@ -664,7 +662,6 @@ const archive = z.object({
     )
     .optional(),
   brackets: z.array(bracket).max(8).optional(),
-  heat: z.record(id, z.array(z.number().int().min(0).max(1000000)).length(40)).optional(),
   // The podium, winner first (→PLAYER-27): three distinct players at most.
   ballonDor: z
     .array(
@@ -1077,6 +1074,8 @@ const takeoverLoan = z.strictObject({
   installment: amount,
   seasonsLeft: z.number().int().min(0).max(100),
 });
+export const facilityPartSchema = z.enum(['stadium', 'training', 'academy']);
+
 const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
@@ -1349,7 +1348,7 @@ const worldSchema: z.ZodType<World> = z.object({
   managerHistory: managerHistoryFactsSchema.optional(),
   transfers: transferRecords.optional(),
   historyBase: z.number().int().nonnegative().optional(),
-  history: z.array(archive).max(2200),
+  history: z.array(seasonArchiveSchema).max(2200),
   eventsBase: z.number().int().nonnegative().optional(),
   events: z.array(event).max(100000),
   managerDepartures: z.number().int().nonnegative().optional(),
@@ -1364,9 +1363,12 @@ const worldSchema: z.ZodType<World> = z.object({
   academyFacility: z.number().int().min(0).max(5),
   facilityWorks: z
     .partialRecord(
-      z.enum(['stadium', 'training', 'academy']),
+      facilityPartSchema,
       z.strictObject({ to: z.number().int().min(1).max(8), year: season, day: seasonDay }),
     )
+    .optional(),
+  facilityAutoUpgrade: z
+    .partialRecord(facilityPartSchema, z.enum(['armed', 'awaiting-funds']))
     .optional(),
   ticket: z.number().finite().min(0.01).max(10),
   campaigns: z

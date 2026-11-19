@@ -170,7 +170,7 @@ describe('revision 11 own matches on the result path', () => {
     for (const m of w.ownMatches.filter((m) => m.year === year)) expect(m.material).toBeDefined();
     closeSeason(w);
     const archived = w.history.find((s) => s.year === year)!;
-    expect(archived.heat).toBeUndefined();
+    expect(archived).not.toHaveProperty('heat');
     expect(w.ownMatches.filter((m) => m.year === year).every((m) => !m.material)).toBe(true);
     expect(w.year).toBe(year + 1);
   });

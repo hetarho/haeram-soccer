@@ -629,8 +629,10 @@ describe('background worker publication', () => {
     // An owner decision asks at once; its command settles while the save's answer is held.
     let release = () => {};
     WorkerPort.saveGate = new Promise<void>((resolve) => (release = resolve));
-    await client.command({ type: 'advance-days', days: 1 });
+    const decision = { type: 'facility-auto-upgrade', part: 'academy', enabled: true } as const;
+    expect((await client.command(decision, { background: true }))?.ok).toBe(true);
     expect(client.state.view?.world.revision).toBe(baseRevision + 3);
+    expect(client.state.view?.world.facilityAutoUpgrade).toEqual({ academy: 'armed' });
     await vi.waitFor(() => expect(saves()).toBe(baseSaves + 2));
     expect(client.state.savedRevision).toBe(baseRevision + 2);
     expect(client.state.processing).toBe(false);
@@ -638,6 +640,9 @@ describe('background worker publication', () => {
     await client.whenSaved();
     expect(client.state.savedRevision).toBe(baseRevision + 3);
     expect(committed(gameId)).toBe(baseRevision + 3);
+    expect(rowsToWorld(files.get(gameId)!, { includeCold: false }).facilityAutoUpgrade).toEqual({
+      academy: 'armed',
+    });
     expect(due).toHaveLength(1);
   });
 
