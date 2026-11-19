@@ -171,7 +171,6 @@
 - 261119 decided T989: Split the interrupted tolerance work into fit implementation, actual-role season evidence, and fixture refresh (alternatives: repeat the entire unit | weaken the 0.1% criterion); T990 waits for the full chain and the measured position-average failure remains recorded.
 - 261119 parked T989: Planning split commit 5a982897ceb9e1397cbd19fdab17ec1c05d3c7d2 could not plan-push: origin/main has the original todo T989 while this session carries its doing state and prior implementation evidence; plan-sync reported no changes and the CLI reports a T989 conflict. Reconcile the planning branch against both histories before implementing the split.
 - 261119 suggest ARCH-30: move task check `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests` to the final gate (ARCH batch): it averaged 118s over 2 runs
-- 261119 suggest T993: T993 writer outputs without heat but contracts schema.ts requires material.heat and career-reads.ts requires heatPlayers; both files belong to downstream T1019 and lie outside T993 touches. Replan the contract boundary so the writer and schema change land atomically before closing T993; otherwise new saves fail validation.
 - 261119 decided T993: Writer and save schemas must land together → make legacy heat fields optional in T993, leaving removal and legacy-key dropping to T1019 (alt: ship an unreadable writer | defer the writer).
 - 261119 decided T1006: Game ID for a new career: the client creates a UUID at takeover and slots.sync lists the slot under it (one line in slots.ts), and activated imports reuse the ID the index lists for that world with create-game replace (alt: a game ID derived from the world ID | leave new careers unlisted until T1007). The under-10% save check is read on an ordinary day: the first day after a 1930 takeover opens every club's business and writes 420 of 2504 rows, later days 3 to 14.
 - 261119 decided T994: T994 read boundary exceeds five files → prepare undefined-safe consumers and world-only benchmark digest as T1026/T1027, then keep host, protocol, client, store and progression in T994 with its acceptance intact (alt: broaden one task beyond five files | leave consumers unsafe).
@@ -265,6 +264,7 @@
 | T998 | x10 | gusta-session-start-x10-d3a275d5 | 8a8ed90c788b | 2026-11-19T06:47Z |
 
 ## log
+- 261119 resolved by 3ca3e2c8f: T993 took the schemas with optional heat fields; T993 done
 - 261119 replanned: T1026/T1027 split, then T994/T1028/T1029 (decided 261119)
 - 261119 published by the coordinator as e2defed18 (T994 T1020 T1026 T1027 T1028 T1029 and their STATE rows); session merge clean
 - 261119 T998 done
@@ -284,4 +284,3 @@
 - 261119 T992 done
 - 261119 T1004 done
 - 261119 T1003 done
-- 261119 T991 done
