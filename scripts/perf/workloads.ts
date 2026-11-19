@@ -202,7 +202,11 @@ export function workloadOf(name: string, seed: string): Workload {
           generation: 1,
           parentGeneration: 0,
           viewBase: base,
-          body: { type: 'command', command: { type: 'advance-days', days: 1, stop: [] } },
+          body: {
+            type: 'command',
+            automatic: true,
+            command: { type: 'advance-days', days: 1, stop: [] },
+          },
         });
         if (!reply.ok) throw new Error(`View benchmark day failed: ${reply.error}`);
         structuredClone(forPosting(reply));
