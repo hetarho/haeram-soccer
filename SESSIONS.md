@@ -174,6 +174,7 @@
 - 261119 suggest ARCH-30: move task check `pnpm exec vitest run --project unit --changed "$GUSTA_DIFF_BASE" --passWithNoTests` to the final gate (ARCH batch): it averaged 118s over 2 runs
 - 261119 suggest T993: T993 writer outputs without heat but contracts schema.ts requires material.heat and career-reads.ts requires heatPlayers; both files belong to downstream T1019 and lie outside T993 touches. Replan the contract boundary so the writer and schema change land atomically before closing T993; otherwise new saves fail validation.
 - 261119 decided T993: Writer and save schemas must land together → make legacy heat fields optional in T993, leaving removal and legacy-key dropping to T1019 (alt: ship an unreadable writer | defer the writer).
+- 261119 decided T1006: Game ID for a new career: the client creates a UUID at takeover and slots.sync lists the slot under it (one line in slots.ts), and activated imports reuse the ID the index lists for that world with create-game replace (alt: a game ID derived from the world ID | leave new careers unlisted until T1007). The under-10% save check is read on an ordinary day: the first day after a 1930 takeover opens every club's business and writes 420 of 2504 rows, later days 3 to 14.
 
 ## unlanded
 | id | tag | branch | commit | at |
