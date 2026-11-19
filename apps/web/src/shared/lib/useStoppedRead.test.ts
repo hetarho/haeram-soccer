@@ -58,3 +58,12 @@ it('exposes the same running state to navigation and withholds stopped reads unt
   await render('transfers');
   expect(output).toEqual([{ id: 'scout-offer' }]);
 });
+
+it('can scope a stopped read to the world that owns its preview', async () => {
+  const ScopedProbe = () => {
+    output = useStoppedRead('office', 'another-world');
+    return null;
+  };
+  await act(async () => root.render(createElement(ScopedProbe)));
+  expect(output).toBeUndefined();
+});

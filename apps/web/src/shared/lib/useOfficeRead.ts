@@ -1,6 +1,6 @@
 import type { World } from '../../../../../packages/contracts/src/types';
-import { useGameState } from '../../runtime/store';
+import { useStoppedRead } from './useStoppedRead';
 
 export function useOfficeRead(w: World) {
-  return useGameState((state) => (state.view?.world.id === w.id ? state.view.office : undefined));
+  return useStoppedRead('office', w.id);
 }
