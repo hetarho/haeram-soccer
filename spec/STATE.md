@@ -26,7 +26,7 @@
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 11 | 11 | - | 0 |
 | CLUB | 83 | 83 | - | 0 |
-| MATCH | 69 | 69 | - | 0 |
+| MATCH | 70 | 70 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
 | ECON | 64 | 64 | - | 0 |
@@ -68,7 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | doing@261119.x10 |
 | T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T989 | todo |
 | T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | todo |
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
