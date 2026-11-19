@@ -257,6 +257,9 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
 test('a page that closed with the clock running plays the time away on return and sums it up', async ({
   page,
 }) => {
+  // The 30 days away are played in steps that end on news and match days, each one a worker
+  // command that may wait behind a save (→SAVE-3/8): about a day a second on CI.
+  test.setTimeout(240_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await startCareer(page);
@@ -290,7 +293,7 @@ test('a page that closed with the clock running plays the time away on return an
   }, worldId);
   await page.reload();
   const summary = page.getByRole('dialog', { name: '자리를 비운 동안' });
-  await expect(summary).toBeVisible({ timeout: 30000 });
+  await expect(summary).toBeVisible({ timeout: 120_000 });
   await expect(summary).toContainText('1930년 8월 1일 →');
   await expect(summary).toContainText(/\d+경기 · \d+승 \d+무 \d+패|경기 없음/);
   await expect(summary).toContainText('리그 순위');
