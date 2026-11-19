@@ -237,6 +237,7 @@
 | T1001 | sv19 | gusta-session-start-sv19-0cc2a73b | 8d3ed6124 | 2026-11-19T03:28Z |
 
 ## log
+- 261119 261119 mr18cx (T953–T980) + cx19 (T981) landed on main 36bcf488 as 0.8.13 after merging np19; verify:batch on 95e03065 (8 load timeouts rerun green), known +15–19% lived-season cost
 - 261119 T1001 done
 - 261119 T1000 done
 - 261119 T999 done
@@ -256,4 +257,3 @@
 - 261118 T981 done
 - 261118 gusta-create-task ARCH start
 - 261118 gusta-update-ssot ARCH r49: ARCH-23✎ ARCH-30✎ CI browser shards only
-- 261118 gusta-update-ssot ARCH start
