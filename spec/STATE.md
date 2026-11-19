@@ -20,7 +20,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 48 | 48 | - | 2 |
+| ARCH | 49 | 49 | - | 2 |
 | WEB | 222 | 222 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
@@ -63,10 +63,12 @@
 | game-runtime-speed-261110 | converted@261110 |
 | match-engine-split-261110 | converted@261111 |
 | market-levels-261118 | converted@261118 |
+| night-perf-261119 | converted@261119 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T981 | CI runs only the Chromium browser shards | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -77,7 +79,11 @@
 | tm17-market | 4 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-17T11:45:09.928Z | [history](work/tm17-market.json) |
 | lc17-perf | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T08:28:58.113Z | [history](work/lc17-perf.json) |
 | xf18-market | 3 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-17T22:03:36.102Z | [history](work/xf18-market.json) |
+| np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- inspect work board for remaining tasks
+- np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked). mr18cx must merge main (npc-market.ts) and re-prepare 0.8.13.
 - Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.
+- T981 (ARCH r49, from gusta-update 0.17.8): CI keeps only the Chromium browser shards; run `gusta-implement-task T981` independently of T953–T980.

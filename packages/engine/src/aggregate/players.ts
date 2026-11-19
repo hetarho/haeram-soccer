@@ -246,6 +246,14 @@ class SideLines {
     Array<(readonly number[] | undefined)[] | undefined>(roleCount).fill(undefined),
     Array<(readonly number[] | undefined)[] | undefined>(roleCount).fill(undefined),
   ];
+  /**
+   * Per period, each role's `share` of every exposure by its `id` (T983): a share does not depend
+   * on the cell, so `weights` and every cell's `weightsAt` read the same values once computed.
+   */
+  private readonly sharesByRole: (number[] | undefined)[][] = [
+    Array<number[] | undefined>(roleCount).fill(undefined),
+    Array<number[] | undefined>(roleCount).fill(undefined),
+  ];
   /** One split's buffers of the side's line count, reused by every move group (T326). */
   readonly attempts: number[];
   readonly completed: number[];
@@ -362,6 +370,27 @@ class SideLines {
     return cache;
   }
 
+  /** A role's `share` of each of the period's exposures, in exposure order, computed once. */
+  private sharesOf(period: AggregatePeriod, role: Role): readonly number[] {
+    const cache = this.sharesByRole[period === 'regulation' ? 0 : 1]!;
+    let out = cache[role.id];
+    if (!out) {
+      const list = this.exposuresOf(period);
+      const terms = this.termsOf(
+        period,
+        role.call ? `${role.attribute}:call` : role.attribute,
+        list.length,
+      );
+      out = Array<number>(list.length);
+      for (let at = 0; at < list.length; at++) {
+        const e = list[at]!;
+        out[at] = this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at);
+      }
+      cache[role.id] = out;
+    }
+    return out;
+  }
+
   /** Each line's weight for a role over a period: its minutes there, by slot, role and skill. */
   weights(period: AggregatePeriod, role: Role): number[] {
     const cache = this.byRole[period === 'regulation' ? 0 : 1]!;
@@ -370,15 +399,8 @@ class SideLines {
       // Plain doubles: the same sums as a Float64Array, without its costly creation (T326).
       out = Array<number>(this.rows.length).fill(0);
       const list = this.exposuresOf(period);
-      const terms = this.termsOf(
-        period,
-        role.call ? `${role.attribute}:call` : role.attribute,
-        list.length,
-      );
-      for (let at = 0; at < list.length; at++) {
-        const e = list[at]!;
-        out[e.line]! += this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at);
-      }
+      const shares = this.sharesOf(period, role);
+      for (let at = 0; at < list.length; at++) out[list[at]!.line]! += shares[at]!;
       // Nobody of the role's lines played: whoever was on the pitch, by his minutes.
       if (!out.some((w) => w > 0)) for (const e of list) out[e.line]! += e.minutes;
       cache[role.id] = out;
@@ -417,16 +439,12 @@ class SideLines {
     if (cached) return cached;
     const places = this.placesAt(cell, inPossession);
     const list = this.exposuresOf(period);
-    const terms = this.termsOf(
-      period,
-      role.call ? `${role.attribute}:call` : role.attribute,
-      list.length,
-    );
+    const shares = this.sharesOf(period, role);
     const out = Array<number>(this.rows.length).fill(0);
     let total = 0;
     for (let at = 0; at < list.length; at++) {
       const e = list[at]!;
-      const w = this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at);
+      const w = shares[at]!;
       total += w;
       out[e.line]! += w * places[e.slot]!;
     }
@@ -873,12 +891,15 @@ function attributeSide(
     for (let line = 0; line < n; line++)
       if (attempts[line]! > 0)
         creditMove(own.rows[line]!, traits, attempts[line]!, completed[line]!, broke[line]!);
+    // An untraced placed call keeps a scratch move only for the pairs read below (`offsidePairs`,
+    // `wins`); the line copies are made only for a recorded trace, which alone reads them (T986).
+    const recorded = moveTrace?.[index];
     const traced: AggregateTraceMove | undefined =
-      moveTrace?.[index] ?? (placed ? emptyTraceMove() : undefined);
-    if (traced) {
-      traced.attempts = attempts.slice();
-      traced.completed = completed.slice();
-      traced.broke = broke.slice();
+      recorded ?? (placed ? emptyTraceMove() : undefined);
+    if (recorded) {
+      recorded.attempts = attempts.slice();
+      recorded.completed = completed.slice();
+      recorded.broke = broke.slice();
     }
     if (move.offside > 0) {
       let offside: number[];
@@ -903,15 +924,24 @@ function attributeSide(
       }
       for (let line = 0; line < offside.length; line++)
         own.rows[line]!.detail[PD.offsides]! += offside[line]!;
-      if (traced) traced.offside = offside.slice();
+      if (recorded) recorded.offside = offside.slice();
     }
     // This is the same failed-attempt order the detail expands, after its explicit offsides.
     const failures = placed ? attempts.map((a, line) => a - completed[line]!) : [];
     for (const pair of traced?.offsidePairs ?? []) failures[pair.actor]!--;
-    const failedLines = failures.flatMap((k, line) => Array<number>(k).fill(line));
+    // The failed attempts laid out line by line, `failures[line]` each: how many of positions
+    // `offset`..`offset + count` fall on each line, read without building the layout (T983).
     const actorCounts = (offset: number, count: number) => {
       const counts = own.rows.map(() => 0);
-      for (const line of failedLines.slice(offset, offset + count)) counts[line]!++;
+      const end = offset + count;
+      let start = 0;
+      for (let line = 0; line < failures.length && start < end; line++) {
+        const next = start + failures[line]!;
+        const from = Math.max(start, offset),
+          to = Math.min(next, end);
+        if (to > from) counts[line]! += to - from;
+        start = next;
+      }
       return counts;
     };
     // The ball won from this group: interceptions where the pass was played to, tackles on a
@@ -950,7 +980,7 @@ function attributeSide(
         for (const pair of pairs) split[pair.other]!++;
         traced!.wins = pairs;
       }
-      if (traced) traced.won = split.slice();
+      if (recorded) recorded.won = split.slice();
       for (let line = 0; line < split.length; line++) {
         const k = split[line]!;
         if (k === 0) continue;

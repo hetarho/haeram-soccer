@@ -16,7 +16,7 @@ import { FORMATIONS, mainOvr } from './player';
 import { closeNpcSummer, closeNpcWindow, intakeNpcYouth } from './npc-careers';
 import { foundSquads } from './persisted-squads';
 import { clubStyle, generatedPlayer, invalidateNpcSquad, stature } from './world';
-import { formationOf, slotOvr } from './player-state';
+import { formationOf, freshSlotOvr, slotOvr, withSlotRatings } from './player-state';
 import { compareIds, random } from './primitives';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
@@ -49,6 +49,17 @@ vi.mock('./primitives', async (importOriginal) => {
       if (seed.includes(':npc-bid:')) return () => answerDraws.bid;
       return actual.random(seed);
     },
+  };
+});
+
+/** Slot ratings a case sets by player id: a NaN or -0 no attribute sum gives. Empty, they pass through. */
+const ratingOverrides = vi.hoisted(() => new Map<string, number>());
+vi.mock('./player-state', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('./player-state')>();
+  return {
+    ...actual,
+    freshSlotOvr: (...args: Parameters<typeof actual.freshSlotOvr>) =>
+      ratingOverrides.get(args[0].id) ?? actual.freshSlotOvr(...args),
   };
 });
 
@@ -154,6 +165,77 @@ describe('isolated NPC transfer windows', () => {
     // No rating outlives its settlement.
     for (const attr of ATTRIBUTES) q!.attrs[attr] = 20;
     expect(new SettlementRatings().of(q!, b)).toBe(slotOvr(q!, b!));
+  });
+
+  it("reads a squad's best rating per slot as Math.max(0, ...ratings): NaN, -0 and empty kept", () => {
+    const { w, seller } = fixture();
+    const squad = w.squads![seller.id]!.slice(0, 4);
+    const slots = [...formationOf('possession'), { ...formationOf('possession')[0]! }];
+    const expected = (ratings: SettlementRatings, players: typeof squad) =>
+      slots.map((slot) => Math.max(0, ...players.map((p) => ratings.of(p, slot))));
+    const same = (players: typeof squad) => {
+      const ratings = new SettlementRatings(1);
+      const bests = ratings.bests(players, slots);
+      // Read against a fresh settlement, and against the one `bests` filled.
+      expect(bests.map((x) => (Object.is(x, 0) ? '+0' : x))).toEqual(
+        expected(new SettlementRatings(1), players).map((x) => (Object.is(x, 0) ? '+0' : x)),
+      );
+      expect(bests).toEqual(expected(ratings, players));
+      return bests;
+    };
+    try {
+      expect(same([])).toEqual(slots.map(() => 0));
+      same(squad);
+      // A -0 rating leaves +0, as Math.max(0, -0) does.
+      for (const p of squad) ratingOverrides.set(p.id, -0);
+      expect(same(squad).every((x) => Object.is(x, 0))).toBe(true);
+      // A NaN rating anywhere makes the slot's best NaN, read before or after an abler player.
+      ratingOverrides.set(squad[1]!.id, NaN);
+      ratingOverrides.delete(squad[2]!.id);
+      expect(same(squad).every(Number.isNaN)).toBe(true);
+      // Each slot read once a player: a slot outside the formations takes the plain path.
+      ratingOverrides.clear();
+      const ratings = new SettlementRatings(1);
+      const inside = ratings.bests(squad, slots.slice(0, -1));
+      for (const p of squad) for (const attr of ATTRIBUTES) p.attrs[attr] = 1;
+      expect(ratings.bests(squad, slots.slice(0, -1))).toEqual(inside);
+      expect(ratings.bests(squad, slots).slice(0, -1)).toEqual(inside);
+    } finally {
+      ratingOverrides.clear();
+    }
+  });
+
+  it('reads slot ratings through an open settlement and afresh once it closes, a throw included', () => {
+    const { w, seller } = fixture();
+    const p = w.squads![seller.id]!.find((q) => q.position !== 'GK')!;
+    const slots = Object.values(FORMATIONS).flatMap((formation) => formation.slots);
+    const slot = slots[0]!;
+    const open = new SettlementRatings(1);
+    withSlotRatings(open, () => {
+      // Inside, every read equals the unscoped computation bit for bit.
+      for (const s of slots) expect(Object.is(slotOvr(p, s), freshSlotOvr(p, s))).toBe(true);
+      const read = slotOvr(p, slot);
+      for (const a of ATTRIBUTES) p.attrs[a] = 30;
+      // The settlement's value stands; another multiplier is never cached.
+      expect(slotOvr(p, slot, 1)).toBe(read);
+      expect(slotOvr(p, slot, 0.9)).toBe(freshSlotOvr(p, slot, 0.9));
+      expect(freshSlotOvr(p, slot)).not.toBe(read);
+    });
+    expect(slotOvr(p, slot)).toBe(freshSlotOvr(p, slot));
+    const thrown = new SettlementRatings(1);
+    expect(() =>
+      withSlotRatings(thrown, () => {
+        slotOvr(p, slot);
+        throw new Error('settlement failed');
+      }),
+    ).toThrow('settlement failed');
+    for (const a of ATTRIBUTES) p.attrs[a] = 70;
+    expect(slotOvr(p, slot)).toBe(freshSlotOvr(p, slot));
+    expect(thrown.of(p, slot)).not.toBe(slotOvr(p, slot));
+    // A market day closes its settlement however it ends.
+    npcMarket(w);
+    for (const a of ATTRIBUTES) p.attrs[a] = 55;
+    expect(slotOvr(p, slot)).toBe(freshSlotOvr(p, slot));
   });
 
   it('refreshes ratings between settlements and between independent quote mutations', () => {

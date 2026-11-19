@@ -7,7 +7,7 @@ import { countScript, compareRecord } from './count';
 import { invalidDetail } from './failure';
 import { scriptMaterial } from './material';
 import { validateScript } from './validate';
-import { writeScript } from './write';
+import { writeCounted, writeScript } from './write';
 
 /** Record-line order includes substitutes; the first stint supplies their actual entry slot. */
 export function stagingSides(
@@ -61,13 +61,20 @@ export function ownMatchPlayback(
   const playback: MatchPlayback = { record, squads, frames: [] };
   try {
     const detail = detailFor();
-    const written = writer(detail, seed);
+    // The production writer returns a script only when its validation found nothing and its
+    // count matched the detail, so its count is reused against the settled record; a test-seam
+    // writer is validated and counted again (T986).
+    const production = writer === writeScript ? writeCounted(detail, seed) : undefined;
+    const written = production ?? writer(detail, seed);
     if ('problems' in written) return { ...playback, problems: written.problems };
     const { script } = written;
-    const problems = [
-      ...validateScript(detail, script),
-      ...compareRecord(detail, countScript(script, detail), record),
-    ];
+    const problems =
+      production && 'counted' in production
+        ? compareRecord(detail, production.counted, record)
+        : [
+            ...validateScript(detail, script),
+            ...compareRecord(detail, countScript(script, detail), record),
+          ];
     if (problems.length) return { ...playback, problems };
     const material = scriptMaterial(detail, script, own);
     return {

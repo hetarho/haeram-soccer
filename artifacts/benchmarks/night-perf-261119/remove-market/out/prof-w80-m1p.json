@@ -1,0 +1,36 @@
+[
+ {
+  "day": 31,
+  "kind": "market",
+  "engineCpu": 488.9,
+  "wall": 489.8,
+  "market": 455.3,
+  "clubs": 450,
+  "ph": {
+   "returns": 2,
+   "windowMoves": 2.2,
+   "listings": 16.2,
+   "index": 5.6,
+   "needs": 22.7,
+   "defs": 0,
+   "loop": 406.7
+  }
+ },
+ {
+  "day": 184,
+  "kind": "market",
+  "engineCpu": 551.8,
+  "wall": 553.9,
+  "market": 520.3,
+  "clubs": 450,
+  "ph": {
+   "returns": 1.6,
+   "windowMoves": 2.2,
+   "listings": 14.2,
+   "index": 5.2,
+   "needs": 22.6,
+   "defs": 0,
+   "loop": 474.6
+  }
+ }
+]

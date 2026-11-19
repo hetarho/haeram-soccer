@@ -200,26 +200,51 @@ export function npcContractTerm(age: number) {
   return age <= 23 ? 5 : age <= 27 ? 4 : age <= 30 ? 3 : age <= 33 ? 2 : 1;
 }
 
-/** The missing lines take priority over topping up the standing squad. */
-function settlementFacts(w: World, club: World['clubs'][number], year: number) {
-  const players = w.squads![club.id]!;
-  const missing = (Object.keys(LINE_MINIMUM) as Line[]).filter(
-    (line) => players.filter((q) => lineOf(q.position) === line).length < LINE_MINIMUM[line],
-  );
-  const wanted = missing.length
-    ? missing
-    : players.length >= NPC_SQUAD.size
-      ? []
-      : [lineOf(refillPlace(clubStyle(club), players))];
-  return {
-    wanted,
-    registration: clubRegistration(club, year, players),
-    bill: npcWageBill(w, club),
-    limit: npcWageLimit(w, club, year),
-  };
+type SettlingClub = World['clubs'][number];
+/**
+ * A settling club's facts for one refresh. The missing lines take priority over topping up the
+ * standing squad. Only clubs wanting a free agent's line read the rest, so registration, and the
+ * wage bill with the wage limit, are computed on first read: until then only a signing club
+ * changes, and its facts are rebuilt as soon as it signs.
+ */
+class SettlementFacts {
+  readonly wanted: Line[];
+  private readonly players: Player[];
+  private registered?: ReturnType<typeof clubRegistration>;
+  private money?: { bill: bigint; limit: bigint | undefined };
+  constructor(
+    private readonly w: World,
+    private readonly club: SettlingClub,
+    private readonly year: number,
+  ) {
+    const players = (this.players = w.squads![club.id]!);
+    const missing = (Object.keys(LINE_MINIMUM) as Line[]).filter(
+      (line) => players.filter((q) => lineOf(q.position) === line).length < LINE_MINIMUM[line],
+    );
+    this.wanted = missing.length
+      ? missing
+      : players.length >= NPC_SQUAD.size
+        ? []
+        : [lineOf(refillPlace(clubStyle(club), players))];
+  }
+  get registration() {
+    return (this.registered ??= clubRegistration(this.club, this.year, this.players));
+  }
+  get bill() {
+    return this.wages().bill;
+  }
+  get limit() {
+    return this.wages().limit;
+  }
+  private wages() {
+    return (this.money ??= {
+      bill: npcWageBill(this.w, this.club),
+      limit: npcWageLimit(this.w, this.club, this.year),
+    });
+  }
 }
 
-function wantsFreeAgent(facts: ReturnType<typeof settlementFacts>, p: FreeAgent, year: number) {
+function wantsFreeAgent(facts: SettlementFacts, p: FreeAgent, year: number) {
   if (!facts.wanted.includes(lineOf(p.position))) return false;
   const state = facts.registration;
   return (
@@ -229,7 +254,6 @@ function wantsFreeAgent(facts: ReturnType<typeof settlementFacts>, p: FreeAgent,
   );
 }
 
-type SettlingClub = World['clubs'][number];
 /**
  * For each line, the clubs whose settlement facts want it, in the settling clubs' order. A club
  * missing from a line's list is exactly one `wantsFreeAgent` turns away on that line; its lists
@@ -238,10 +262,7 @@ type SettlingClub = World['clubs'][number];
 class WantedLines {
   private readonly lists = new Map<Line, SettlingClub[]>();
   private readonly order = new Map<SettlingClub, number>();
-  constructor(
-    clubs: readonly SettlingClub[],
-    facts: ReadonlyMap<string, ReturnType<typeof settlementFacts>>,
-  ) {
+  constructor(clubs: readonly SettlingClub[], facts: ReadonlyMap<string, SettlementFacts>) {
     for (const line of Object.keys(LINE_MINIMUM) as Line[]) this.lists.set(line, []);
     clubs.forEach((club, at) => {
       this.order.set(club, at);
@@ -288,7 +309,7 @@ export function refreshFreeAgents(w: World, year = w.year) {
   const clubs = w.clubs.filter(
     (c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id],
   );
-  const facts = new Map(clubs.map((club) => [club.id, settlementFacts(w, club, year)]));
+  const facts = new Map(clubs.map((club) => [club.id, new SettlementFacts(w, club, year)]));
   const wanting = new WantedLines(clubs, facts);
   // Stature depends only on the seed and the club, so one read per club serves the whole call.
   const statures = new Map(clubs.map((club) => [club.id, stature(w.seed, club.id)]));
@@ -324,7 +345,7 @@ export function refreshFreeAgents(w: World, year = w.year) {
       // A pooled free agent is in no squad (`admit` took him out of his), so no squad is searched.
       withMoveReason('free-signing', () => movePerson(w, player, club.id, false, undefined, null));
       FREE_AGENT_FLOW.observe?.('sign', player, club.id);
-      const recomputed = settlementFacts(w, club, year);
+      const recomputed = new SettlementFacts(w, club, year);
       facts.set(club.id, recomputed);
       wanting.relist(club, recomputed.wanted);
       signed = true;

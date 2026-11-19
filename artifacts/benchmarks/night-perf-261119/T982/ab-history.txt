@@ -1,0 +1,71 @@
+process 1/6: cpu ×0.867
+process 2/6: cpu ×0.886
+process 3/6: cpu ×0.907
+process 4/6: cpu ×0.874
+process 5/6: cpu ×0.885
+process 6/6: cpu ×0.866
+{
+  "workload": "history",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "c34862786c6f682bf0a092ba3f335b5469092957",
+  "cand": "/private/tmp/claude-501/-Users-ihaelam-project--gusta-worktrees-haeram-soccer-7b6c81df-np19-perf-T982-81015110/bc905b3d-503a-4825-9533-b2e97406eba9/scratchpad/candC",
+  "procs": 6,
+  "jobs": 1,
+  "reps": 10,
+  "warm": 1,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "5f8d37978ac8a908",
+    "cand": "abdf0493fa7859b9"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "717e11ee8690e16b"
+    ],
+    "cand": [
+      "717e11ee8690e16b"
+    ]
+  },
+  "season": {
+    "pairs": 60,
+    "ms": {
+      "base": {
+        "cpu": 2941.121500000001,
+        "wall": 3077.2953125000004
+      },
+      "cand": {
+        "cpu": 2577.9045000000006,
+        "wall": 2765.2766250000004
+      }
+    },
+    "cpu": {
+      "ratio": 0.8808,
+      "lo": 0.8707,
+      "hi": 0.8928,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.8736,
+      "lo": 0.8455,
+      "hi": 0.9001,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    30.271484375,
+    19.8232421875,
+    17.7421875,
+    13.29541015625,
+    12.7451171875,
+    9.5751953125,
+    18.70751953125
+  ]
+}

@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r48 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r49 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -167,7 +167,8 @@
   - `verify` runs type/lint/format, unit/integration/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.
   - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.
 - ARCH-23 [o] CI and release use a reproducible static build.
-  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit and integration tests in separate jobs (integration in three shards), each restoring the simulated test worlds (→ARCH-21); built-preview browser tests for each →!ARCH-35 supported browser — Chromium in three shards — each installing only its pinned browser and restoring the simulated test worlds its journeys set up (→ARCH-21). Every job has a time limit (checks and unit 20 min, integration 75 min, browser shards 120 min) so a hung run fails instead of holding main's run queue for the platform's six hours; an integration shard's limit covers a cold world cache after an engine change (measured 261117: 11 min of world warm-up and over 34 min of cases in one shard). Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
+  - GitHub Actions runs only browser tests on every code push: the built preview on each →!ARCH-35 supported browser — Chromium in three parallel shards — each on the pinned toolchain with `pnpm install --frozen-lockfile`, installing only its pinned browser and restoring the simulated test worlds its journeys set up (→ARCH-21). Each shard has a 120-minute time limit, so a hung run fails instead of holding main's run queue for the platform's six hours, and retains its test reports. ← one serial job took about 22 minutes, 15½ of them browser tests
+  - No CI job runs the batch gate's deterministic checks (type/lint/format, contract, catalog, presentation, i18n, unit, integration, production build) as a check of its own; they run once on the candidate before the push, on the gate host (→ARCH-30), and the contract fixtures get no second-platform run. The browser jobs build only the preview they test. Locally `pnpm run verify` runs the batch checks and the browser journeys in one go. ← separate checks, unit and integration jobs repeated the batch gate's scope on the same commit, about 41 runner-minutes a push (measured 261119)
   - The storage and first-play benchmarks against the production build run only on demand, in their own manually dispatched workflow that retains `apps/web/dist` and the benchmark reports; a storage or release gate task (→ARCH-14) runs `pnpm run benchmark` locally or has the owner dispatch that workflow. ← the 100-season benchmark took about 90 minutes on every push once own-league matches played the grid engine
   - Require verification checks on the protected production branch; Netlify production deploys only that branch and uses the pinned install/build commands.
   - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
@@ -214,7 +215,7 @@
   - Run task commands through `vibe check --tier task`; task acceptance names task-tier checks only. Maintain affected integration and browser tests with the implementation and hand off their commands/specs in result limits; unexecuted checks never count as passed.
   - batch, before code push or final completion: `pnpm run verify:batch`. It covers type/lint/format, i18n, catalogs, presentation, unit, integration, contract, world warm-up and build; it runs no browser spec.
   - Builds, integration and full suites belong to the initiating coordinator's final batch gate, including changes to UI, browser journeys, storage and workers.
-  - CI, after code push: the GitHub Actions run of →ARCH-23, including every browser journey on →ARCH-35's supported browsers. Browser journeys run only there. A push touching only `spec/`, `artifacts/` or Markdown starts none. ← the Chromium journeys took about 18 minutes of every local gate
+  - CI, after code push: the GitHub Actions run of →ARCH-23 — every browser journey on →ARCH-35's supported browsers and no deterministic check the batch already ran. Browser journeys run only there. A push touching only `spec/`, `artifacts/` or Markdown starts none. ← the Chromium journeys took about 18 minutes of every local gate
   - Reuse successful checks only with unchanged definitions, inputs, environment and scope; recovery checks failed, affected or unrun items. An external script is one check unless an explicit verification plan declares its parts; never infer stage-level reuse from a partial script run.
   - A failed batch/group gate is repaired and run again within the original session, deadline and unit limits; cancellation, timeout and unfinished coverage are not passes.
 
@@ -266,7 +267,7 @@
 - Presentation: locale/theme registry → selected validated JSON pack → shared presentation consumers; a preference change loads resources without issuing a game command.
 - Save: safe game boundary → background candidate envelope/codec/checksum → validated checkpoint commit (→SAVE-3) → committed acknowledgment.
 - Recovery: startup → capability check → save validation → load(current|previous compatible|export/recovery) → worker initialization.
-- Verification: task checks per task → batch once on the final candidate before a code push → CI after the push (→ARCH-30).
+- Verification: task checks per task → batch once on the final candidate before a code push → CI browser journeys after the push (→ARCH-30).
 - Release: locked install → verification → static build → preview smoke checks → stable production deployment → compatible rollback path.
 - Future mobile: portable contracts/catalogs/fixtures → Dart engine parity → Flutter views/persistence → commercial-release validation.
 
@@ -279,6 +280,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r49 261119 ARCH-23✎ CI checks, unit and three integration jobs beside the browser shards (limits 20/20/75 min)→browser shards only; deterministic checks run once in the batch on the gate host, no second-platform contract run · ARCH-30✎ CI including every browser journey→CI only the browser journeys
 - r48 261117 ARCH-33✎ measurement provenance without a durable recipe requirement→versioned calibration recipes, exact patches/manifests and hash-matched independent review before heavy execution
 - r47 261117 ARCH-30✎ batch command carrying its own frozen offline install→prepare `pnpm install --frozen-lockfile --offline` in every CLI-created worktree; no task or batch command installs dependencies
 - r46 261117 ARCH-30✎ tier commands in prose with one chained task command, reuse keyed to the whole tree→per-check plan `scripts/verification-plan.json` (task five checks, batch verify:batch), each success kept and reused on declared inputs that leave out Markdown outside the code, test, script and artifact folders; rationale task checks about a minute→about four minutes in a fresh worktree

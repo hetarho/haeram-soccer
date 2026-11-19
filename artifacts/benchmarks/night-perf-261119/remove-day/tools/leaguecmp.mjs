@@ -1,0 +1,13 @@
+import { readFileSync } from 'node:fs';
+const [a, b] = process.argv.slice(2).map((f) => JSON.parse(readFileSync(f, 'utf8')).stats);
+const A = Object.fromEntries(a.pointsSd.map((x) => [x.group, x.ppgSd])), B = Object.fromEntries(b.pointsSd.map((x) => [x.group, x.ppgSd]));
+const d = Object.keys(A).filter((k) => k in B).map((k) => B[k] - A[k]);
+const m = d.reduce((s, x) => s + x, 0) / d.length, sd = Math.sqrt(d.reduce((s, x) => s + (x - m) ** 2, 0) / (d.length - 1));
+console.log('ppg SD per league: base', (a.meanPpgSd).toFixed(3), 'variant', b.meanPpgSd.toFixed(3), 'paired diff', m.toFixed(3), '±', (1.96 * sd / Math.sqrt(d.length)).toFixed(3), `(${d.filter((x) => x < 0).length}/${d.length} leagues lower)`);
+const SA = Object.fromEntries(a.scorers.map((x) => [x.group, x.top])), SB = Object.fromEntries(b.scorers.map((x) => [x.group, x.top]));
+const ds = Object.keys(SA).filter((k) => k in SB).map((k) => SB[k] - SA[k]);
+const ms = ds.reduce((s, x) => s + x, 0) / ds.length, sds = Math.sqrt(ds.reduce((s, x) => s + (x - ms) ** 2, 0) / (ds.length - 1));
+console.log('top scorer per league: paired diff', ms.toFixed(2), '±', (1.96 * sds / Math.sqrt(ds.length)).toFixed(2), 'goals');
+const n = a.leagueMatches;
+const se = (p) => Math.sqrt((p * (1 - p)) / n);
+console.log('goals/match', a.goalsPerMatch, '->', b.goalsPerMatch, '; home', a.home, '->', b.home, `(±${(1.96 * se(a.home) * Math.SQRT2).toFixed(4)})`, '; draw', a.draw, '->', b.draw, `(±${(1.96 * se(a.draw) * Math.SQRT2).toFixed(4)})`, '; away', a.away, '->', b.away);

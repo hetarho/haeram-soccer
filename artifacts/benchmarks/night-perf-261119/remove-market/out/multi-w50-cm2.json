@@ -1,0 +1,1061 @@
+{
+ "world": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-market/../days/world-perf-261027.bin",
+ "seasons": [
+  {
+   "year": 1950,
+   "results": {
+    "goalsPerMatch": 2.5785,
+    "home": 0.4394,
+    "draw": 0.2331,
+    "meanPpgSd": 0.3655,
+    "meanTopScorer": 28.043,
+    "pointsSd": [
+     {
+      "group": "ENG:2:0",
+      "clubs": 24,
+      "ppgSd": 0.292
+     },
+     {
+      "group": "ENG:0:0",
+      "clubs": 20,
+      "ppgSd": 0.328
+     },
+     {
+      "group": "ENG:1:0",
+      "clubs": 24,
+      "ppgSd": 0.367
+     },
+     {
+      "group": "ENG:3:0",
+      "clubs": 24,
+      "ppgSd": 0.389
+     },
+     {
+      "group": "ESP:1:0",
+      "clubs": 22,
+      "ppgSd": 0.358
+     },
+     {
+      "group": "ESP:0:0",
+      "clubs": 20,
+      "ppgSd": 0.282
+     },
+     {
+      "group": "GER:2:0",
+      "clubs": 20,
+      "ppgSd": 0.325
+     },
+     {
+      "group": "GER:0:0",
+      "clubs": 18,
+      "ppgSd": 0.433
+     },
+     {
+      "group": "GER:1:0",
+      "clubs": 18,
+      "ppgSd": 0.338
+     },
+     {
+      "group": "ITA:0:0",
+      "clubs": 20,
+      "ppgSd": 0.334
+     },
+     {
+      "group": "ITA:2:0",
+      "clubs": 20,
+      "ppgSd": 0.356
+     },
+     {
+      "group": "ITA:1:0",
+      "clubs": 20,
+      "ppgSd": 0.342
+     },
+     {
+      "group": "ITA:2:1",
+      "clubs": 20,
+      "ppgSd": 0.473
+     },
+     {
+      "group": "ITA:2:2",
+      "clubs": 20,
+      "ppgSd": 0.319
+     },
+     {
+      "group": "FRA:0:0",
+      "clubs": 18,
+      "ppgSd": 0.352
+     },
+     {
+      "group": "FRA:1:0",
+      "clubs": 18,
+      "ppgSd": 0.424
+     },
+     {
+      "group": "FRA:2:0",
+      "clubs": 18,
+      "ppgSd": 0.443
+     },
+     {
+      "group": "POR:0:0",
+      "clubs": 18,
+      "ppgSd": 0.463
+     },
+     {
+      "group": "POR:1:0",
+      "clubs": 18,
+      "ppgSd": 0.434
+     },
+     {
+      "group": "NED:0:0",
+      "clubs": 18,
+      "ppgSd": 0.287
+     },
+     {
+      "group": "NED:1:0",
+      "clubs": 20,
+      "ppgSd": 0.329
+     },
+     {
+      "group": "BEL:0:0",
+      "clubs": 18,
+      "ppgSd": 0.44
+     },
+     {
+      "group": "BEL:1:0",
+      "clubs": 15,
+      "ppgSd": 0.298
+     }
+    ],
+    "hashes": {
+     "fixtureScores": "a4024a7cdb96",
+     "fixturesPlayed": 8502,
+     "cupScores": "90b669dd4eb1",
+     "tables": "3d6c32f2b0f1",
+     "leagueGoalsAssists": "caf578f324af",
+     "discipline": "027f6bf6f519",
+     "squads": "55498413c3cf",
+     "elo": "9079ebe19f6f"
+    }
+   },
+   "mY": {
+    "year": 1950,
+    "ownCountry": "ENG",
+    "moves": {
+     "fee:own": 322,
+     "loan:own": 32
+    },
+    "movesTotal": 354,
+    "byDay": {
+     "0": 51,
+     "16": 88,
+     "31": 39,
+     "153": 57,
+     "169": 87,
+     "184": 32
+    },
+    "feeSum": "153105641",
+    "sizes": {
+     "own": {
+      "n": 91,
+      "mean": 24.593,
+      "sd": 1.105,
+      "min": 22,
+      "max": 28,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 24.889,
+      "sd": 1.313,
+      "min": 22,
+      "max": 32,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "strength": {
+     "own": {
+      "n": 91,
+      "mean": 67.713,
+      "sd": 8.614,
+      "min": 51.44737224056289,
+      "max": 84.19748866084896,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 72.335,
+      "sd": 6.734,
+      "min": 57.50878326330531,
+      "max": 85.4766068645407,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "leagueStrengthSd": {
+     "own": 3.634,
+     "other": 3.288,
+     "nOwn": 4,
+     "nOther": 19
+    },
+    "hashSquads": "55498413c3cf"
+   },
+   "mN": {
+    "year": 1951,
+    "ownCountry": "ENG",
+    "moves": {
+     "fee:own": 155,
+     "loan:own": 20
+    },
+    "movesTotal": 175,
+    "byDay": {
+     "0": 59,
+     "16": 86,
+     "31": 30
+    },
+    "feeSum": "75885478",
+    "sizes": {
+     "own": {
+      "n": 91,
+      "mean": 24.615,
+      "sd": 0.997,
+      "min": 22,
+      "max": 28,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 24.813,
+      "sd": 1.137,
+      "min": 22,
+      "max": 31,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "strength": {
+     "own": {
+      "n": 91,
+      "mean": 67.518,
+      "sd": 8.493,
+      "min": 52.328071095104704,
+      "max": 84.20741642426201,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 71.811,
+      "sd": 6.711,
+      "min": 56.060780973928026,
+      "max": 85.39886268674137,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "leagueStrengthSd": {
+     "own": 3.225,
+     "other": 3.311,
+     "nOwn": 4,
+     "nOther": 19
+    },
+    "hashSquads": "83bf75e09d68"
+   }
+  },
+  {
+   "year": 1951,
+   "results": {
+    "goalsPerMatch": 2.562,
+    "home": 0.4175,
+    "draw": 0.2435,
+    "meanPpgSd": 0.3616,
+    "meanTopScorer": 28.435,
+    "pointsSd": [
+     {
+      "group": "ENG:1:0",
+      "clubs": 24,
+      "ppgSd": 0.28
+     },
+     {
+      "group": "ENG:0:0",
+      "clubs": 20,
+      "ppgSd": 0.337
+     },
+     {
+      "group": "ENG:2:0",
+      "clubs": 24,
+      "ppgSd": 0.287
+     },
+     {
+      "group": "ENG:3:0",
+      "clubs": 24,
+      "ppgSd": 0.357
+     },
+     {
+      "group": "ESP:1:0",
+      "clubs": 22,
+      "ppgSd": 0.266
+     },
+     {
+      "group": "ESP:0:0",
+      "clubs": 20,
+      "ppgSd": 0.365
+     },
+     {
+      "group": "GER:2:0",
+      "clubs": 20,
+      "ppgSd": 0.364
+     },
+     {
+      "group": "GER:0:0",
+      "clubs": 18,
+      "ppgSd": 0.43
+     },
+     {
+      "group": "GER:1:0",
+      "clubs": 18,
+      "ppgSd": 0.297
+     },
+     {
+      "group": "ITA:0:0",
+      "clubs": 20,
+      "ppgSd": 0.376
+     },
+     {
+      "group": "ITA:2:0",
+      "clubs": 20,
+      "ppgSd": 0.479
+     },
+     {
+      "group": "ITA:1:0",
+      "clubs": 20,
+      "ppgSd": 0.355
+     },
+     {
+      "group": "ITA:2:1",
+      "clubs": 20,
+      "ppgSd": 0.402
+     },
+     {
+      "group": "ITA:2:2",
+      "clubs": 20,
+      "ppgSd": 0.361
+     },
+     {
+      "group": "FRA:1:0",
+      "clubs": 18,
+      "ppgSd": 0.327
+     },
+     {
+      "group": "FRA:0:0",
+      "clubs": 18,
+      "ppgSd": 0.322
+     },
+     {
+      "group": "FRA:2:0",
+      "clubs": 18,
+      "ppgSd": 0.372
+     },
+     {
+      "group": "POR:1:0",
+      "clubs": 18,
+      "ppgSd": 0.36
+     },
+     {
+      "group": "POR:0:0",
+      "clubs": 18,
+      "ppgSd": 0.414
+     },
+     {
+      "group": "NED:0:0",
+      "clubs": 18,
+      "ppgSd": 0.465
+     },
+     {
+      "group": "NED:1:0",
+      "clubs": 20,
+      "ppgSd": 0.363
+     },
+     {
+      "group": "BEL:0:0",
+      "clubs": 18,
+      "ppgSd": 0.32
+     },
+     {
+      "group": "BEL:1:0",
+      "clubs": 15,
+      "ppgSd": 0.417
+     }
+    ],
+    "hashes": {
+     "fixtureScores": "3772691e02dd",
+     "fixturesPlayed": 8502,
+     "cupScores": "e728efd1f39e",
+     "tables": "64da9ec3c73a",
+     "leagueGoalsAssists": "b45f2925e7a3",
+     "discipline": "2a3bc66f7a27",
+     "squads": "e1ab4f9458cc",
+     "elo": "b536782fc7d2"
+    }
+   },
+   "mY": {
+    "year": 1951,
+    "ownCountry": "ENG",
+    "moves": {
+     "fee:own": 319,
+     "loan:own": 31
+    },
+    "movesTotal": 350,
+    "byDay": {
+     "0": 59,
+     "16": 86,
+     "31": 30,
+     "153": 50,
+     "169": 86,
+     "184": 39
+    },
+    "feeSum": "159645073",
+    "sizes": {
+     "own": {
+      "n": 91,
+      "mean": 24.626,
+      "sd": 0.985,
+      "min": 22,
+      "max": 28,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 24.813,
+      "sd": 1.137,
+      "min": 22,
+      "max": 31,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "strength": {
+     "own": {
+      "n": 91,
+      "mean": 67.681,
+      "sd": 8.466,
+      "min": 52.976864468864456,
+      "max": 83.59724936705452,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 71.944,
+      "sd": 6.754,
+      "min": 56.15153727644903,
+      "max": 85.58840114827981,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "leagueStrengthSd": {
+     "own": 3.144,
+     "other": 3.308,
+     "nOwn": 4,
+     "nOther": 19
+    },
+    "hashSquads": "e1ab4f9458cc"
+   },
+   "mN": {
+    "year": 1952,
+    "ownCountry": "ENG",
+    "moves": {
+     "fee:own": 158,
+     "loan:own": 20
+    },
+    "movesTotal": 178,
+    "byDay": {
+     "0": 56,
+     "16": 87,
+     "31": 35
+    },
+    "feeSum": "83304277",
+    "sizes": {
+     "own": {
+      "n": 91,
+      "mean": 24.604,
+      "sd": 0.842,
+      "min": 22,
+      "max": 28,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 24.78,
+      "sd": 1.07,
+      "min": 22,
+      "max": 30,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "strength": {
+     "own": {
+      "n": 91,
+      "mean": 67.37,
+      "sd": 8.473,
+      "min": 52.65223432449903,
+      "max": 82.94206594753287,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 71.651,
+      "sd": 6.688,
+      "min": 57.64326097105509,
+      "max": 85.92748046846945,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "leagueStrengthSd": {
+     "own": 3.844,
+     "other": 3.326,
+     "nOwn": 4,
+     "nOther": 19
+    },
+    "hashSquads": "a9c6ae9121ed"
+   }
+  },
+  {
+   "year": 1952,
+   "results": {
+    "goalsPerMatch": 2.5466,
+    "home": 0.4121,
+    "draw": 0.2428,
+    "meanPpgSd": 0.3562,
+    "meanTopScorer": 27.478,
+    "pointsSd": [
+     {
+      "group": "ENG:1:0",
+      "clubs": 24,
+      "ppgSd": 0.371
+     },
+     {
+      "group": "ENG:0:0",
+      "clubs": 20,
+      "ppgSd": 0.398
+     },
+     {
+      "group": "ENG:3:0",
+      "clubs": 24,
+      "ppgSd": 0.412
+     },
+     {
+      "group": "ENG:2:0",
+      "clubs": 24,
+      "ppgSd": 0.363
+     },
+     {
+      "group": "ESP:1:0",
+      "clubs": 22,
+      "ppgSd": 0.393
+     },
+     {
+      "group": "ESP:0:0",
+      "clubs": 20,
+      "ppgSd": 0.301
+     },
+     {
+      "group": "GER:1:0",
+      "clubs": 18,
+      "ppgSd": 0.376
+     },
+     {
+      "group": "GER:0:0",
+      "clubs": 18,
+      "ppgSd": 0.34
+     },
+     {
+      "group": "GER:2:0",
+      "clubs": 20,
+      "ppgSd": 0.328
+     },
+     {
+      "group": "ITA:0:0",
+      "clubs": 20,
+      "ppgSd": 0.344
+     },
+     {
+      "group": "ITA:2:0",
+      "clubs": 20,
+      "ppgSd": 0.372
+     },
+     {
+      "group": "ITA:1:0",
+      "clubs": 20,
+      "ppgSd": 0.308
+     },
+     {
+      "group": "ITA:2:1",
+      "clubs": 20,
+      "ppgSd": 0.384
+     },
+     {
+      "group": "ITA:2:2",
+      "clubs": 20,
+      "ppgSd": 0.47
+     },
+     {
+      "group": "FRA:1:0",
+      "clubs": 18,
+      "ppgSd": 0.247
+     },
+     {
+      "group": "FRA:0:0",
+      "clubs": 18,
+      "ppgSd": 0.362
+     },
+     {
+      "group": "FRA:2:0",
+      "clubs": 18,
+      "ppgSd": 0.363
+     },
+     {
+      "group": "POR:1:0",
+      "clubs": 18,
+      "ppgSd": 0.325
+     },
+     {
+      "group": "POR:0:0",
+      "clubs": 18,
+      "ppgSd": 0.339
+     },
+     {
+      "group": "NED:0:0",
+      "clubs": 18,
+      "ppgSd": 0.316
+     },
+     {
+      "group": "NED:1:0",
+      "clubs": 20,
+      "ppgSd": 0.287
+     },
+     {
+      "group": "BEL:0:0",
+      "clubs": 18,
+      "ppgSd": 0.377
+     },
+     {
+      "group": "BEL:1:0",
+      "clubs": 15,
+      "ppgSd": 0.417
+     }
+    ],
+    "hashes": {
+     "fixtureScores": "052f77dd7284",
+     "fixturesPlayed": 8502,
+     "cupScores": "7975dd74f72d",
+     "tables": "00caf7bcc061",
+     "leagueGoalsAssists": "ec95df562cf0",
+     "discipline": "f662fcced6c0",
+     "squads": "5b4dd5a387b4",
+     "elo": "379e6d1696f8"
+    }
+   },
+   "mY": {
+    "year": 1952,
+    "ownCountry": "ENG",
+    "moves": {
+     "fee:own": 329,
+     "loan:own": 28
+    },
+    "movesTotal": 357,
+    "byDay": {
+     "0": 56,
+     "16": 87,
+     "31": 35,
+     "153": 70,
+     "169": 90,
+     "184": 19
+    },
+    "feeSum": "197383010",
+    "sizes": {
+     "own": {
+      "n": 91,
+      "mean": 24.604,
+      "sd": 0.868,
+      "min": 22,
+      "max": 28,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 24.78,
+      "sd": 1.07,
+      "min": 22,
+      "max": 30,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "strength": {
+     "own": {
+      "n": 91,
+      "mean": 67.51,
+      "sd": 8.501,
+      "min": 52.7358949579832,
+      "max": 83.04250942877151,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 71.815,
+      "sd": 6.74,
+      "min": 57.84835901027077,
+      "max": 86.11993338809883,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "leagueStrengthSd": {
+     "own": 3.998,
+     "other": 3.33,
+     "nOwn": 4,
+     "nOther": 19
+    },
+    "hashSquads": "5b4dd5a387b4"
+   },
+   "mN": {
+    "year": 1953,
+    "ownCountry": "ENG",
+    "moves": {
+     "fee:own": 168,
+     "loan:own": 10
+    },
+    "movesTotal": 178,
+    "byDay": {
+     "0": 62,
+     "16": 89,
+     "31": 27
+    },
+    "feeSum": "121020442",
+    "sizes": {
+     "own": {
+      "n": 91,
+      "mean": 24.484,
+      "sd": 1.158,
+      "min": 22,
+      "max": 28,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 24.772,
+      "sd": 1.164,
+      "min": 22,
+      "max": 31,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "strength": {
+     "own": {
+      "n": 91,
+      "mean": 67.343,
+      "sd": 8.249,
+      "min": 54.26308974358975,
+      "max": 83.06234812001723,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 71.424,
+      "sd": 6.829,
+      "min": 54.616337535014,
+      "max": 86.12318183940245,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "leagueStrengthSd": {
+     "own": 3.576,
+     "other": 3.371,
+     "nOwn": 4,
+     "nOther": 19
+    },
+    "hashSquads": "d7740e11f2ea"
+   }
+  },
+  {
+   "year": 1953,
+   "results": {
+    "goalsPerMatch": 2.5422,
+    "home": 0.4227,
+    "draw": 0.241,
+    "meanPpgSd": 0.3595,
+    "meanTopScorer": 26.87,
+    "pointsSd": [
+     {
+      "group": "ENG:2:0",
+      "clubs": 24,
+      "ppgSd": 0.358
+     },
+     {
+      "group": "ENG:0:0",
+      "clubs": 20,
+      "ppgSd": 0.369
+     },
+     {
+      "group": "ENG:1:0",
+      "clubs": 24,
+      "ppgSd": 0.321
+     },
+     {
+      "group": "ENG:3:0",
+      "clubs": 24,
+      "ppgSd": 0.414
+     },
+     {
+      "group": "ESP:1:0",
+      "clubs": 22,
+      "ppgSd": 0.315
+     },
+     {
+      "group": "ESP:0:0",
+      "clubs": 20,
+      "ppgSd": 0.298
+     },
+     {
+      "group": "GER:2:0",
+      "clubs": 20,
+      "ppgSd": 0.337
+     },
+     {
+      "group": "GER:0:0",
+      "clubs": 18,
+      "ppgSd": 0.332
+     },
+     {
+      "group": "GER:1:0",
+      "clubs": 18,
+      "ppgSd": 0.363
+     },
+     {
+      "group": "ITA:0:0",
+      "clubs": 20,
+      "ppgSd": 0.382
+     },
+     {
+      "group": "ITA:2:0",
+      "clubs": 20,
+      "ppgSd": 0.432
+     },
+     {
+      "group": "ITA:1:0",
+      "clubs": 20,
+      "ppgSd": 0.287
+     },
+     {
+      "group": "ITA:2:1",
+      "clubs": 20,
+      "ppgSd": 0.334
+     },
+     {
+      "group": "ITA:2:2",
+      "clubs": 20,
+      "ppgSd": 0.368
+     },
+     {
+      "group": "FRA:0:0",
+      "clubs": 18,
+      "ppgSd": 0.418
+     },
+     {
+      "group": "FRA:2:0",
+      "clubs": 18,
+      "ppgSd": 0.42
+     },
+     {
+      "group": "FRA:1:0",
+      "clubs": 18,
+      "ppgSd": 0.377
+     },
+     {
+      "group": "POR:1:0",
+      "clubs": 18,
+      "ppgSd": 0.36
+     },
+     {
+      "group": "POR:0:0",
+      "clubs": 18,
+      "ppgSd": 0.302
+     },
+     {
+      "group": "NED:0:0",
+      "clubs": 18,
+      "ppgSd": 0.334
+     },
+     {
+      "group": "NED:1:0",
+      "clubs": 20,
+      "ppgSd": 0.396
+     },
+     {
+      "group": "BEL:0:0",
+      "clubs": 18,
+      "ppgSd": 0.387
+     },
+     {
+      "group": "BEL:1:0",
+      "clubs": 15,
+      "ppgSd": 0.365
+     }
+    ],
+    "hashes": {
+     "fixtureScores": "9a935ca3cacf",
+     "fixturesPlayed": 8502,
+     "cupScores": "0d2317c93c90",
+     "tables": "cf3c9b520ae1",
+     "leagueGoalsAssists": "a67c0300fb10",
+     "discipline": "c1690b2299c3",
+     "squads": "13a84d831017",
+     "elo": "5505664fb000"
+    }
+   },
+   "mY": {
+    "year": 1953,
+    "ownCountry": "ENG",
+    "moves": {
+     "fee:own": 339,
+     "loan:own": 15
+    },
+    "movesTotal": 354,
+    "byDay": {
+     "0": 62,
+     "16": 89,
+     "31": 27,
+     "153": 55,
+     "169": 88,
+     "184": 33
+    },
+    "feeSum": "235931473",
+    "sizes": {
+     "own": {
+      "n": 91,
+      "mean": 24.505,
+      "sd": 1.233,
+      "min": 22,
+      "max": 28,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 24.772,
+      "sd": 1.164,
+      "min": 22,
+      "max": 31,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "strength": {
+     "own": {
+      "n": 91,
+      "mean": 67.526,
+      "sd": 8.293,
+      "min": 53.7902994236156,
+      "max": 83.4822313258637,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 71.605,
+      "sd": 6.88,
+      "min": 54.862179871948776,
+      "max": 86.43232282913166,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "leagueStrengthSd": {
+     "own": 3.528,
+     "other": 3.374,
+     "nOwn": 4,
+     "nOther": 19
+    },
+    "hashSquads": "13a84d831017"
+   },
+   "mN": {
+    "year": 1954,
+    "ownCountry": "ENG",
+    "moves": {
+     "fee:own": 166,
+     "loan:own": 10
+    },
+    "movesTotal": 176,
+    "byDay": {
+     "0": 64,
+     "16": 87,
+     "31": 25
+    },
+    "feeSum": "118575897",
+    "sizes": {
+     "own": {
+      "n": 91,
+      "mean": 24.374,
+      "sd": 1.297,
+      "min": 22,
+      "max": 31,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 24.663,
+      "sd": 1.187,
+      "min": 22,
+      "max": 31,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "strength": {
+     "own": {
+      "n": 91,
+      "mean": 67.347,
+      "sd": 8.295,
+      "min": 50.18588778011205,
+      "max": 84.3371837985194,
+      "under18": 0,
+      "under16": 0
+     },
+     "other": {
+      "n": 359,
+      "mean": 71.392,
+      "sd": 6.923,
+      "min": 55.78859250366815,
+      "max": 87.5709185520362,
+      "under18": 0,
+      "under16": 0
+     }
+    },
+    "leagueStrengthSd": {
+     "own": 3.601,
+     "other": 3.664,
+     "nOwn": 4,
+     "nOther": 19
+    },
+    "hashSquads": "614ac297163d"
+   }
+  }
+ ]
+}

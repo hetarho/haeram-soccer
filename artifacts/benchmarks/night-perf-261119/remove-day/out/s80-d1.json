@@ -1,0 +1,3641 @@
+{
+ "world": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/late/world-hist-1980.bin",
+ "days": 322,
+ "cpu": 13092.537,
+ "byKind": {
+  "other": {
+   "n": 270,
+   "engine": 1878.3749999999955,
+   "view": 0
+  },
+  "round-own": {
+   "n": 46,
+   "engine": 8461.998000000001,
+   "view": 0
+  },
+  "market": {
+   "n": 5,
+   "engine": 2641.5549999999985,
+   "view": 0
+  },
+  "cup-own": {
+   "n": 1,
+   "engine": 108.02899999999954,
+   "view": 0
+  }
+ },
+ "rows": [
+  {
+   "day": 1,
+   "year": 1980,
+   "engine": 1125.6349999999998,
+   "kind": "other"
+  },
+  {
+   "day": 2,
+   "year": 1980,
+   "engine": 10.235000000000127,
+   "kind": "other"
+  },
+  {
+   "day": 3,
+   "year": 1980,
+   "engine": 7.419999999999845,
+   "kind": "other"
+  },
+  {
+   "day": 4,
+   "year": 1980,
+   "engine": 0.39400000000000546,
+   "kind": "other"
+  },
+  {
+   "day": 5,
+   "year": 1980,
+   "engine": 0.21900000000005093,
+   "kind": "other"
+  },
+  {
+   "day": 6,
+   "year": 1980,
+   "engine": 4.880000000000109,
+   "kind": "other"
+  },
+  {
+   "day": 7,
+   "year": 1980,
+   "engine": 392.44500000000016,
+   "kind": "round-own"
+  },
+  {
+   "day": 8,
+   "year": 1980,
+   "engine": 0.23500000000012733,
+   "kind": "other"
+  },
+  {
+   "day": 9,
+   "year": 1980,
+   "engine": 4.790999999999713,
+   "kind": "other"
+  },
+  {
+   "day": 10,
+   "year": 1980,
+   "engine": 0.3009999999999309,
+   "kind": "other"
+  },
+  {
+   "day": 11,
+   "year": 1980,
+   "engine": 0.1959999999999127,
+   "kind": "other"
+  },
+  {
+   "day": 12,
+   "year": 1980,
+   "engine": 26.912000000000262,
+   "kind": "other"
+  },
+  {
+   "day": 13,
+   "year": 1980,
+   "engine": 0.2689999999997781,
+   "kind": "other"
+  },
+  {
+   "day": 14,
+   "year": 1980,
+   "engine": 266.78099999999995,
+   "kind": "round-own"
+  },
+  {
+   "day": 15,
+   "year": 1980,
+   "engine": 4.0890000000003965,
+   "kind": "other"
+  },
+  {
+   "day": 16,
+   "year": 1980,
+   "engine": 836.6000000000004,
+   "kind": "market"
+  },
+  {
+   "day": 17,
+   "year": 1980,
+   "engine": 14.327000000000226,
+   "kind": "other"
+  },
+  {
+   "day": 18,
+   "year": 1980,
+   "engine": 4.2979999999997744,
+   "kind": "other"
+  },
+  {
+   "day": 19,
+   "year": 1980,
+   "engine": 18.996000000000095,
+   "kind": "other"
+  },
+  {
+   "day": 20,
+   "year": 1980,
+   "engine": 0.29700000000002547,
+   "kind": "other"
+  },
+  {
+   "day": 21,
+   "year": 1980,
+   "engine": 214.40700000000015,
+   "kind": "round-own"
+  },
+  {
+   "day": 22,
+   "year": 1980,
+   "engine": 0.2660000000000764,
+   "kind": "other"
+  },
+  {
+   "day": 23,
+   "year": 1980,
+   "engine": 0.40099999999983993,
+   "kind": "other"
+  },
+  {
+   "day": 24,
+   "year": 1980,
+   "engine": 3.1140000000000327,
+   "kind": "other"
+  },
+  {
+   "day": 25,
+   "year": 1980,
+   "engine": 0.34300000000030195,
+   "kind": "other"
+  },
+  {
+   "day": 26,
+   "year": 1980,
+   "engine": 0.17200000000002547,
+   "kind": "other"
+  },
+  {
+   "day": 27,
+   "year": 1980,
+   "engine": 3.242999999999938,
+   "kind": "other"
+  },
+  {
+   "day": 28,
+   "year": 1980,
+   "engine": 300.82000000000016,
+   "kind": "round-own"
+  },
+  {
+   "day": 29,
+   "year": 1980,
+   "engine": 0.24099999999998545,
+   "kind": "other"
+  },
+  {
+   "day": 30,
+   "year": 1980,
+   "engine": 3.625,
+   "kind": "other"
+  },
+  {
+   "day": 31,
+   "year": 1980,
+   "engine": 264.0450000000001,
+   "kind": "market"
+  },
+  {
+   "day": 32,
+   "year": 1980,
+   "engine": 108.02899999999954,
+   "kind": "cup-own"
+  },
+  {
+   "day": 33,
+   "year": 1980,
+   "engine": 0.2429999999994834,
+   "kind": "other"
+  },
+  {
+   "day": 34,
+   "year": 1980,
+   "engine": 0.22100000000045839,
+   "kind": "other"
+  },
+  {
+   "day": 35,
+   "year": 1980,
+   "engine": 194.71299999999974,
+   "kind": "round-own"
+  },
+  {
+   "day": 36,
+   "year": 1980,
+   "engine": 0.2179999999998472,
+   "kind": "other"
+  },
+  {
+   "day": 37,
+   "year": 1980,
+   "engine": 0.1999999999998181,
+   "kind": "other"
+  },
+  {
+   "day": 38,
+   "year": 1980,
+   "engine": 0.18800000000010186,
+   "kind": "other"
+  },
+  {
+   "day": 39,
+   "year": 1980,
+   "engine": 0.1859999999996944,
+   "kind": "other"
+  },
+  {
+   "day": 40,
+   "year": 1980,
+   "engine": 0.20200000000022555,
+   "kind": "other"
+  },
+  {
+   "day": 41,
+   "year": 1980,
+   "engine": 0.18499999999949068,
+   "kind": "other"
+  },
+  {
+   "day": 42,
+   "year": 1980,
+   "engine": 120.82600000000002,
+   "kind": "round-own"
+  },
+  {
+   "day": 43,
+   "year": 1980,
+   "engine": 0.2110000000002401,
+   "kind": "other"
+  },
+  {
+   "day": 44,
+   "year": 1980,
+   "engine": 0.2029999999995198,
+   "kind": "other"
+  },
+  {
+   "day": 45,
+   "year": 1980,
+   "engine": 0.1890000000003056,
+   "kind": "other"
+  },
+  {
+   "day": 46,
+   "year": 1980,
+   "engine": 67.44800000000032,
+   "kind": "other"
+  },
+  {
+   "day": 47,
+   "year": 1980,
+   "engine": 0.2680000000000291,
+   "kind": "other"
+  },
+  {
+   "day": 48,
+   "year": 1980,
+   "engine": 0.1999999999998181,
+   "kind": "other"
+  },
+  {
+   "day": 49,
+   "year": 1980,
+   "engine": 179.8199999999997,
+   "kind": "round-own"
+  },
+  {
+   "day": 50,
+   "year": 1980,
+   "engine": 0.2069999999994252,
+   "kind": "other"
+  },
+  {
+   "day": 51,
+   "year": 1980,
+   "engine": 0.19100000000071304,
+   "kind": "other"
+  },
+  {
+   "day": 52,
+   "year": 1980,
+   "engine": 0.18299999999999272,
+   "kind": "other"
+  },
+  {
+   "day": 53,
+   "year": 1980,
+   "engine": 0.17799999999988358,
+   "kind": "other"
+  },
+  {
+   "day": 54,
+   "year": 1980,
+   "engine": 0.18000000000029104,
+   "kind": "other"
+  },
+  {
+   "day": 55,
+   "year": 1980,
+   "engine": 0.22800000000006548,
+   "kind": "other"
+  },
+  {
+   "day": 56,
+   "year": 1980,
+   "engine": 223.3099999999995,
+   "kind": "round-own"
+  },
+  {
+   "day": 57,
+   "year": 1980,
+   "engine": 0.23499999999967258,
+   "kind": "other"
+  },
+  {
+   "day": 58,
+   "year": 1980,
+   "engine": 0.18299999999999272,
+   "kind": "other"
+  },
+  {
+   "day": 59,
+   "year": 1980,
+   "engine": 0.19700000000011642,
+   "kind": "other"
+  },
+  {
+   "day": 60,
+   "year": 1980,
+   "engine": 59.016999999999825,
+   "kind": "other"
+  },
+  {
+   "day": 61,
+   "year": 1980,
+   "engine": 0.3609999999998763,
+   "kind": "other"
+  },
+  {
+   "day": 62,
+   "year": 1980,
+   "engine": 0.19400000000041473,
+   "kind": "other"
+  },
+  {
+   "day": 63,
+   "year": 1980,
+   "engine": 169.6309999999994,
+   "kind": "round-own"
+  },
+  {
+   "day": 64,
+   "year": 1980,
+   "engine": 0.21999999999934516,
+   "kind": "other"
+  },
+  {
+   "day": 65,
+   "year": 1980,
+   "engine": 0.1750000000001819,
+   "kind": "other"
+  },
+  {
+   "day": 66,
+   "year": 1980,
+   "engine": 0.17000000000007276,
+   "kind": "other"
+  },
+  {
+   "day": 67,
+   "year": 1980,
+   "engine": 0.16600000000016735,
+   "kind": "other"
+  },
+  {
+   "day": 68,
+   "year": 1980,
+   "engine": 0.1749999999992724,
+   "kind": "other"
+  },
+  {
+   "day": 69,
+   "year": 1980,
+   "engine": 0.16700000000037107,
+   "kind": "other"
+  },
+  {
+   "day": 70,
+   "year": 1980,
+   "engine": 181.98699999999917,
+   "kind": "round-own"
+  },
+  {
+   "day": 71,
+   "year": 1980,
+   "engine": 0.20200000000022555,
+   "kind": "other"
+  },
+  {
+   "day": 72,
+   "year": 1980,
+   "engine": 0.17199999999957072,
+   "kind": "other"
+  },
+  {
+   "day": 73,
+   "year": 1980,
+   "engine": 0.1890000000003056,
+   "kind": "other"
+  },
+  {
+   "day": 74,
+   "year": 1980,
+   "engine": 93.96700000000055,
+   "kind": "other"
+  },
+  {
+   "day": 75,
+   "year": 1980,
+   "engine": 0.27400000000034197,
+   "kind": "other"
+  },
+  {
+   "day": 76,
+   "year": 1980,
+   "engine": 0.23300000000017462,
+   "kind": "other"
+  },
+  {
+   "day": 77,
+   "year": 1980,
+   "engine": 166.26299999999992,
+   "kind": "round-own"
+  },
+  {
+   "day": 78,
+   "year": 1980,
+   "engine": 0.2429999999994834,
+   "kind": "other"
+  },
+  {
+   "day": 79,
+   "year": 1980,
+   "engine": 0.20600000000013097,
+   "kind": "other"
+  },
+  {
+   "day": 80,
+   "year": 1980,
+   "engine": 0.1999999999998181,
+   "kind": "other"
+  },
+  {
+   "day": 81,
+   "year": 1980,
+   "engine": 16.60199999999986,
+   "kind": "other"
+  },
+  {
+   "day": 82,
+   "year": 1980,
+   "engine": 0.2249999999994543,
+   "kind": "other"
+  },
+  {
+   "day": 83,
+   "year": 1980,
+   "engine": 0.25900000000001455,
+   "kind": "other"
+  },
+  {
+   "day": 84,
+   "year": 1980,
+   "engine": 161.46800000000076,
+   "kind": "round-own"
+  },
+  {
+   "day": 85,
+   "year": 1980,
+   "engine": 0.2849999999998545,
+   "kind": "other"
+  },
+  {
+   "day": 86,
+   "year": 1980,
+   "engine": 0.2069999999994252,
+   "kind": "other"
+  },
+  {
+   "day": 87,
+   "year": 1980,
+   "engine": 0.20900000000074215,
+   "kind": "other"
+  },
+  {
+   "day": 88,
+   "year": 1980,
+   "engine": 0.20200000000022555,
+   "kind": "other"
+  },
+  {
+   "day": 89,
+   "year": 1980,
+   "engine": 0.20200000000022555,
+   "kind": "other"
+  },
+  {
+   "day": 90,
+   "year": 1980,
+   "engine": 0.20200000000022555,
+   "kind": "other"
+  },
+  {
+   "day": 91,
+   "year": 1980,
+   "engine": 171.47800000000007,
+   "kind": "round-own"
+  },
+  {
+   "day": 92,
+   "year": 1980,
+   "engine": 0.30599999999958527,
+   "kind": "other"
+  },
+  {
+   "day": 93,
+   "year": 1980,
+   "engine": 0.21599999999943975,
+   "kind": "other"
+  },
+  {
+   "day": 94,
+   "year": 1980,
+   "engine": 0.2029999999995198,
+   "kind": "other"
+  },
+  {
+   "day": 95,
+   "year": 1980,
+   "engine": 30.746000000000095,
+   "kind": "other"
+  },
+  {
+   "day": 96,
+   "year": 1980,
+   "engine": 0.2029999999995198,
+   "kind": "other"
+  },
+  {
+   "day": 97,
+   "year": 1980,
+   "engine": 0.18400000000019645,
+   "kind": "other"
+  },
+  {
+   "day": 98,
+   "year": 1980,
+   "engine": 172.23799999999937,
+   "kind": "round-own"
+  },
+  {
+   "day": 99,
+   "year": 1980,
+   "engine": 0.2319999999999709,
+   "kind": "other"
+  },
+  {
+   "day": 100,
+   "year": 1980,
+   "engine": 0.19100000000071304,
+   "kind": "other"
+  },
+  {
+   "day": 101,
+   "year": 1980,
+   "engine": 0.18400000000019645,
+   "kind": "other"
+  },
+  {
+   "day": 102,
+   "year": 1980,
+   "engine": 0.181999999999789,
+   "kind": "other"
+  },
+  {
+   "day": 103,
+   "year": 1980,
+   "engine": 0.17999999999938154,
+   "kind": "other"
+  },
+  {
+   "day": 104,
+   "year": 1980,
+   "engine": 0.19800000000032014,
+   "kind": "other"
+  },
+  {
+   "day": 105,
+   "year": 1980,
+   "engine": 162.29200000000037,
+   "kind": "round-own"
+  },
+  {
+   "day": 106,
+   "year": 1980,
+   "engine": 0.2070000000003347,
+   "kind": "other"
+  },
+  {
+   "day": 107,
+   "year": 1980,
+   "engine": 0.2139999999999418,
+   "kind": "other"
+  },
+  {
+   "day": 108,
+   "year": 1980,
+   "engine": 0.18999999999959982,
+   "kind": "other"
+  },
+  {
+   "day": 109,
+   "year": 1980,
+   "engine": 85.8139999999994,
+   "kind": "other"
+  },
+  {
+   "day": 110,
+   "year": 1980,
+   "engine": 0.21600000000034925,
+   "kind": "other"
+  },
+  {
+   "day": 111,
+   "year": 1980,
+   "engine": 0.17999999999938154,
+   "kind": "other"
+  },
+  {
+   "day": 112,
+   "year": 1980,
+   "engine": 212.00900000000001,
+   "kind": "round-own"
+  },
+  {
+   "day": 113,
+   "year": 1980,
+   "engine": 0.21299999999973807,
+   "kind": "other"
+  },
+  {
+   "day": 114,
+   "year": 1980,
+   "engine": 0.16199999999935244,
+   "kind": "other"
+  },
+  {
+   "day": 115,
+   "year": 1980,
+   "engine": 0.13699999999971624,
+   "kind": "other"
+  },
+  {
+   "day": 116,
+   "year": 1980,
+   "engine": 8.539999999999964,
+   "kind": "other"
+  },
+  {
+   "day": 117,
+   "year": 1980,
+   "engine": 0.1570000000001528,
+   "kind": "other"
+  },
+  {
+   "day": 118,
+   "year": 1980,
+   "engine": 0.1390000000001237,
+   "kind": "other"
+  },
+  {
+   "day": 119,
+   "year": 1980,
+   "engine": 183.86300000000028,
+   "kind": "round-own"
+  },
+  {
+   "day": 120,
+   "year": 1980,
+   "engine": 0.18999999999959982,
+   "kind": "other"
+  },
+  {
+   "day": 121,
+   "year": 1980,
+   "engine": 0.14199999999982538,
+   "kind": "other"
+  },
+  {
+   "day": 122,
+   "year": 1980,
+   "engine": 0.21299999999973807,
+   "kind": "other"
+  },
+  {
+   "day": 123,
+   "year": 1980,
+   "engine": 0.1500000000005457,
+   "kind": "other"
+  },
+  {
+   "day": 124,
+   "year": 1980,
+   "engine": 0.14000000000032742,
+   "kind": "other"
+  },
+  {
+   "day": 125,
+   "year": 1980,
+   "engine": 0.13400000000001455,
+   "kind": "other"
+  },
+  {
+   "day": 126,
+   "year": 1980,
+   "engine": 121.33600000000024,
+   "kind": "round-own"
+  },
+  {
+   "day": 127,
+   "year": 1980,
+   "engine": 0.1750000000001819,
+   "kind": "other"
+  },
+  {
+   "day": 128,
+   "year": 1980,
+   "engine": 0.1570000000001528,
+   "kind": "other"
+  },
+  {
+   "day": 129,
+   "year": 1980,
+   "engine": 0.14499999999952706,
+   "kind": "other"
+  },
+  {
+   "day": 130,
+   "year": 1980,
+   "engine": 4.740000000000691,
+   "kind": "other"
+  },
+  {
+   "day": 131,
+   "year": 1980,
+   "engine": 0.14500000000043656,
+   "kind": "other"
+  },
+  {
+   "day": 132,
+   "year": 1980,
+   "engine": 0.13000000000010914,
+   "kind": "other"
+  },
+  {
+   "day": 133,
+   "year": 1980,
+   "engine": 180.95899999999983,
+   "kind": "round-own"
+  },
+  {
+   "day": 134,
+   "year": 1980,
+   "engine": 0.16000000000076398,
+   "kind": "other"
+  },
+  {
+   "day": 135,
+   "year": 1980,
+   "engine": 0.13300000000072032,
+   "kind": "other"
+  },
+  {
+   "day": 136,
+   "year": 1980,
+   "engine": 0.1289999999999054,
+   "kind": "other"
+  },
+  {
+   "day": 137,
+   "year": 1980,
+   "engine": 0.15599999999994907,
+   "kind": "other"
+  },
+  {
+   "day": 138,
+   "year": 1980,
+   "engine": 0.13500000000021828,
+   "kind": "other"
+  },
+  {
+   "day": 139,
+   "year": 1980,
+   "engine": 0.14500000000043656,
+   "kind": "other"
+  },
+  {
+   "day": 140,
+   "year": 1980,
+   "engine": 218.86399999999958,
+   "kind": "round-own"
+  },
+  {
+   "day": 141,
+   "year": 1980,
+   "engine": 0.21199999999953434,
+   "kind": "other"
+  },
+  {
+   "day": 142,
+   "year": 1980,
+   "engine": 0.13299999999981083,
+   "kind": "other"
+  },
+  {
+   "day": 143,
+   "year": 1980,
+   "engine": 0.15599999999994907,
+   "kind": "other"
+  },
+  {
+   "day": 144,
+   "year": 1980,
+   "engine": 0.125,
+   "kind": "other"
+  },
+  {
+   "day": 145,
+   "year": 1980,
+   "engine": 0.12399999999979627,
+   "kind": "other"
+  },
+  {
+   "day": 146,
+   "year": 1980,
+   "engine": 0.12600000000020373,
+   "kind": "other"
+  },
+  {
+   "day": 147,
+   "year": 1980,
+   "engine": 161.39800000000014,
+   "kind": "round-own"
+  },
+  {
+   "day": 148,
+   "year": 1980,
+   "engine": 0.1570000000001528,
+   "kind": "other"
+  },
+  {
+   "day": 149,
+   "year": 1980,
+   "engine": 0.1359999999995125,
+   "kind": "other"
+  },
+  {
+   "day": 150,
+   "year": 1980,
+   "engine": 0.13000000000010914,
+   "kind": "other"
+  },
+  {
+   "day": 151,
+   "year": 1980,
+   "engine": 0.12699999999949796,
+   "kind": "other"
+  },
+  {
+   "day": 152,
+   "year": 1980,
+   "engine": 0.12399999999979627,
+   "kind": "other"
+  },
+  {
+   "day": 153,
+   "year": 1980,
+   "engine": 435.0799999999999,
+   "kind": "market"
+  },
+  {
+   "day": 154,
+   "year": 1980,
+   "engine": 179.17699999999968,
+   "kind": "round-own"
+  },
+  {
+   "day": 155,
+   "year": 1980,
+   "engine": 0.1859999999996944,
+   "kind": "other"
+  },
+  {
+   "day": 156,
+   "year": 1980,
+   "engine": 3.800999999999476,
+   "kind": "other"
+  },
+  {
+   "day": 157,
+   "year": 1980,
+   "engine": 0.36199999999917054,
+   "kind": "other"
+  },
+  {
+   "day": 158,
+   "year": 1980,
+   "engine": 41.79999999999927,
+   "kind": "other"
+  },
+  {
+   "day": 159,
+   "year": 1980,
+   "engine": 33.1869999999999,
+   "kind": "other"
+  },
+  {
+   "day": 160,
+   "year": 1980,
+   "engine": 0.397000000000844,
+   "kind": "other"
+  },
+  {
+   "day": 161,
+   "year": 1980,
+   "engine": 78.16500000000087,
+   "kind": "round-own"
+  },
+  {
+   "day": 162,
+   "year": 1980,
+   "engine": 3.287000000000262,
+   "kind": "other"
+  },
+  {
+   "day": 163,
+   "year": 1980,
+   "engine": 0.2890000000006694,
+   "kind": "other"
+  },
+  {
+   "day": 164,
+   "year": 1980,
+   "engine": 0.12600000000020373,
+   "kind": "other"
+  },
+  {
+   "day": 165,
+   "year": 1980,
+   "engine": 4.013999999999214,
+   "kind": "other"
+  },
+  {
+   "day": 166,
+   "year": 1980,
+   "engine": 0.2899999999990541,
+   "kind": "other"
+  },
+  {
+   "day": 167,
+   "year": 1980,
+   "engine": 17.37699999999859,
+   "kind": "other"
+  },
+  {
+   "day": 168,
+   "year": 1980,
+   "engine": 260.1040000000012,
+   "kind": "round-own"
+  },
+  {
+   "day": 169,
+   "year": 1980,
+   "engine": 834.4979999999996,
+   "kind": "market"
+  },
+  {
+   "day": 170,
+   "year": 1980,
+   "engine": 0.39400000000023283,
+   "kind": "other"
+  },
+  {
+   "day": 171,
+   "year": 1980,
+   "engine": 3.9420000000009168,
+   "kind": "other"
+  },
+  {
+   "day": 172,
+   "year": 1980,
+   "engine": 0.28800000000046566,
+   "kind": "other"
+  },
+  {
+   "day": 173,
+   "year": 1980,
+   "engine": 0.18999999999869033,
+   "kind": "other"
+  },
+  {
+   "day": 174,
+   "year": 1980,
+   "engine": 3.308999999999287,
+   "kind": "other"
+  },
+  {
+   "day": 175,
+   "year": 1980,
+   "engine": 161.48799999999937,
+   "kind": "round-own"
+  },
+  {
+   "day": 176,
+   "year": 1980,
+   "engine": 0.20100000000093132,
+   "kind": "other"
+  },
+  {
+   "day": 177,
+   "year": 1980,
+   "engine": 3.308000000000902,
+   "kind": "other"
+  },
+  {
+   "day": 178,
+   "year": 1980,
+   "engine": 0.23300000000017462,
+   "kind": "other"
+  },
+  {
+   "day": 179,
+   "year": 1980,
+   "engine": 0.11700000000018917,
+   "kind": "other"
+  },
+  {
+   "day": 180,
+   "year": 1980,
+   "engine": 2.9140000000006694,
+   "kind": "other"
+  },
+  {
+   "day": 181,
+   "year": 1980,
+   "engine": 0.2249999999985448,
+   "kind": "other"
+  },
+  {
+   "day": 182,
+   "year": 1980,
+   "engine": 169.18199999999888,
+   "kind": "round-own"
+  },
+  {
+   "day": 183,
+   "year": 1980,
+   "engine": 3.430000000000291,
+   "kind": "other"
+  },
+  {
+   "day": 184,
+   "year": 1980,
+   "engine": 271.3319999999985,
+   "kind": "market"
+  },
+  {
+   "day": 185,
+   "year": 1980,
+   "engine": 0.37000000000080036,
+   "kind": "other"
+  },
+  {
+   "day": 186,
+   "year": 1980,
+   "engine": 0.11900000000059663,
+   "kind": "other"
+  },
+  {
+   "day": 187,
+   "year": 1980,
+   "engine": 0.1069999999999709,
+   "kind": "other"
+  },
+  {
+   "day": 188,
+   "year": 1980,
+   "engine": 0.10600000000158616,
+   "kind": "other"
+  },
+  {
+   "day": 189,
+   "year": 1980,
+   "engine": 128.21100000000115,
+   "kind": "round-own"
+  },
+  {
+   "day": 190,
+   "year": 1980,
+   "engine": 0.13999999999941792,
+   "kind": "other"
+  },
+  {
+   "day": 191,
+   "year": 1980,
+   "engine": 0.10900000000037835,
+   "kind": "other"
+  },
+  {
+   "day": 192,
+   "year": 1980,
+   "engine": 0.1069999999999709,
+   "kind": "other"
+  },
+  {
+   "day": 193,
+   "year": 1980,
+   "engine": 24.306000000000495,
+   "kind": "other"
+  },
+  {
+   "day": 194,
+   "year": 1980,
+   "engine": 0.1710000000002765,
+   "kind": "other"
+  },
+  {
+   "day": 195,
+   "year": 1980,
+   "engine": 0.09500000000116415,
+   "kind": "other"
+  },
+  {
+   "day": 196,
+   "year": 1980,
+   "engine": 273.1910000000007,
+   "kind": "round-own"
+  },
+  {
+   "day": 197,
+   "year": 1980,
+   "engine": 0.21700000000055297,
+   "kind": "other"
+  },
+  {
+   "day": 198,
+   "year": 1980,
+   "engine": 0.1180000000003929,
+   "kind": "other"
+  },
+  {
+   "day": 199,
+   "year": 1980,
+   "engine": 0.1000000000003638,
+   "kind": "other"
+  },
+  {
+   "day": 200,
+   "year": 1980,
+   "engine": 0.09399999999914144,
+   "kind": "other"
+  },
+  {
+   "day": 201,
+   "year": 1980,
+   "engine": 0.08799999999973807,
+   "kind": "other"
+  },
+  {
+   "day": 202,
+   "year": 1980,
+   "engine": 0.08799999999973807,
+   "kind": "other"
+  },
+  {
+   "day": 203,
+   "year": 1980,
+   "engine": 142.78400000000147,
+   "kind": "round-own"
+  },
+  {
+   "day": 204,
+   "year": 1980,
+   "engine": 0.17799999999988358,
+   "kind": "other"
+  },
+  {
+   "day": 205,
+   "year": 1980,
+   "engine": 0.1000000000003638,
+   "kind": "other"
+  },
+  {
+   "day": 206,
+   "year": 1980,
+   "engine": 0.08899999999994179,
+   "kind": "other"
+  },
+  {
+   "day": 207,
+   "year": 1980,
+   "engine": 0.08899999999994179,
+   "kind": "other"
+  },
+  {
+   "day": 208,
+   "year": 1980,
+   "engine": 0.08599999999933061,
+   "kind": "other"
+  },
+  {
+   "day": 209,
+   "year": 1980,
+   "engine": 0.08699999999953434,
+   "kind": "other"
+  },
+  {
+   "day": 210,
+   "year": 1980,
+   "engine": 190.67199999999866,
+   "kind": "round-own"
+  },
+  {
+   "day": 211,
+   "year": 1980,
+   "engine": 0.13500000000021828,
+   "kind": "other"
+  },
+  {
+   "day": 212,
+   "year": 1980,
+   "engine": 0.1610000000000582,
+   "kind": "other"
+  },
+  {
+   "day": 213,
+   "year": 1980,
+   "engine": 0.09000000000014552,
+   "kind": "other"
+  },
+  {
+   "day": 214,
+   "year": 1980,
+   "engine": 11.715000000000146,
+   "kind": "other"
+  },
+  {
+   "day": 215,
+   "year": 1980,
+   "engine": 0.1320000000014261,
+   "kind": "other"
+  },
+  {
+   "day": 216,
+   "year": 1980,
+   "engine": 0.09499999999934516,
+   "kind": "other"
+  },
+  {
+   "day": 217,
+   "year": 1980,
+   "engine": 142.1800000000003,
+   "kind": "round-own"
+  },
+  {
+   "day": 218,
+   "year": 1980,
+   "engine": 0.16300000000046566,
+   "kind": "other"
+  },
+  {
+   "day": 219,
+   "year": 1980,
+   "engine": 0.09399999999914144,
+   "kind": "other"
+  },
+  {
+   "day": 220,
+   "year": 1980,
+   "engine": 0.09100000000034925,
+   "kind": "other"
+  },
+  {
+   "day": 221,
+   "year": 1980,
+   "engine": 0.08799999999973807,
+   "kind": "other"
+  },
+  {
+   "day": 222,
+   "year": 1980,
+   "engine": 0.08800000000155705,
+   "kind": "other"
+  },
+  {
+   "day": 223,
+   "year": 1980,
+   "engine": 0.08699999999953434,
+   "kind": "other"
+  },
+  {
+   "day": 224,
+   "year": 1980,
+   "engine": 261.08300000000054,
+   "kind": "round-own"
+  },
+  {
+   "day": 225,
+   "year": 1980,
+   "engine": 0.19499999999970896,
+   "kind": "other"
+  },
+  {
+   "day": 226,
+   "year": 1980,
+   "engine": 1.4760000000005675,
+   "kind": "other"
+  },
+  {
+   "day": 227,
+   "year": 1980,
+   "engine": 8.534999999999854,
+   "kind": "other"
+  },
+  {
+   "day": 228,
+   "year": 1980,
+   "engine": 11.462999999999738,
+   "kind": "other"
+  },
+  {
+   "day": 229,
+   "year": 1980,
+   "engine": 0.10499999999956344,
+   "kind": "other"
+  },
+  {
+   "day": 230,
+   "year": 1980,
+   "engine": 0.08300000000053842,
+   "kind": "other"
+  },
+  {
+   "day": 231,
+   "year": 1980,
+   "engine": 165.0550000000003,
+   "kind": "round-own"
+  },
+  {
+   "day": 232,
+   "year": 1980,
+   "engine": 0.12599999999838474,
+   "kind": "other"
+  },
+  {
+   "day": 233,
+   "year": 1980,
+   "engine": 0.08399999999892316,
+   "kind": "other"
+  },
+  {
+   "day": 234,
+   "year": 1980,
+   "engine": 0.08100000000013097,
+   "kind": "other"
+  },
+  {
+   "day": 235,
+   "year": 1980,
+   "engine": 0.07899999999972351,
+   "kind": "other"
+  },
+  {
+   "day": 236,
+   "year": 1980,
+   "engine": 0.07799999999951979,
+   "kind": "other"
+  },
+  {
+   "day": 237,
+   "year": 1980,
+   "engine": 0.07699999999931606,
+   "kind": "other"
+  },
+  {
+   "day": 238,
+   "year": 1980,
+   "engine": 180.13999999999942,
+   "kind": "round-own"
+  },
+  {
+   "day": 239,
+   "year": 1980,
+   "engine": 0.12299999999959255,
+   "kind": "other"
+  },
+  {
+   "day": 240,
+   "year": 1980,
+   "engine": 0.09000000000014552,
+   "kind": "other"
+  },
+  {
+   "day": 241,
+   "year": 1980,
+   "engine": 0.08300000000053842,
+   "kind": "other"
+  },
+  {
+   "day": 242,
+   "year": 1980,
+   "engine": 10.729999999999563,
+   "kind": "other"
+  },
+  {
+   "day": 243,
+   "year": 1980,
+   "engine": 34.34899999999834,
+   "kind": "other"
+  },
+  {
+   "day": 244,
+   "year": 1980,
+   "engine": 0.27999999999883585,
+   "kind": "other"
+  },
+  {
+   "day": 245,
+   "year": 1980,
+   "engine": 74.02099999999882,
+   "kind": "round-own"
+  },
+  {
+   "day": 246,
+   "year": 1980,
+   "engine": 0.11999999999898137,
+   "kind": "other"
+  },
+  {
+   "day": 247,
+   "year": 1980,
+   "engine": 0.07599999999911233,
+   "kind": "other"
+  },
+  {
+   "day": 248,
+   "year": 1980,
+   "engine": 0.07200000000011642,
+   "kind": "other"
+  },
+  {
+   "day": 249,
+   "year": 1980,
+   "engine": 4.096999999999753,
+   "kind": "other"
+  },
+  {
+   "day": 250,
+   "year": 1980,
+   "engine": 0.10900000000037835,
+   "kind": "other"
+  },
+  {
+   "day": 251,
+   "year": 1980,
+   "engine": 0.07300000000032014,
+   "kind": "other"
+  },
+  {
+   "day": 252,
+   "year": 1980,
+   "engine": 264.9419999999991,
+   "kind": "round-own"
+  },
+  {
+   "day": 253,
+   "year": 1980,
+   "engine": 0.16300000000046566,
+   "kind": "other"
+  },
+  {
+   "day": 254,
+   "year": 1980,
+   "engine": 0.07599999999911233,
+   "kind": "other"
+  },
+  {
+   "day": 255,
+   "year": 1980,
+   "engine": 0.08999999999832653,
+   "kind": "other"
+  },
+  {
+   "day": 256,
+   "year": 1980,
+   "engine": 0.07099999999991269,
+   "kind": "other"
+  },
+  {
+   "day": 257,
+   "year": 1980,
+   "engine": 0.06799999999930151,
+   "kind": "other"
+  },
+  {
+   "day": 258,
+   "year": 1980,
+   "engine": 0.06999999999970896,
+   "kind": "other"
+  },
+  {
+   "day": 259,
+   "year": 1980,
+   "engine": 167.27100000000064,
+   "kind": "round-own"
+  },
+  {
+   "day": 260,
+   "year": 1980,
+   "engine": 0.10800000000017462,
+   "kind": "other"
+  },
+  {
+   "day": 261,
+   "year": 1980,
+   "engine": 0.0750000000007276,
+   "kind": "other"
+  },
+  {
+   "day": 262,
+   "year": 1980,
+   "engine": 0.06999999999970896,
+   "kind": "other"
+  },
+  {
+   "day": 263,
+   "year": 1980,
+   "engine": 7.825999999999112,
+   "kind": "other"
+  },
+  {
+   "day": 264,
+   "year": 1980,
+   "engine": 0.09100000000034925,
+   "kind": "other"
+  },
+  {
+   "day": 265,
+   "year": 1980,
+   "engine": 0.0749999999989086,
+   "kind": "other"
+  },
+  {
+   "day": 266,
+   "year": 1980,
+   "engine": 167.92499999999927,
+   "kind": "round-own"
+  },
+  {
+   "day": 267,
+   "year": 1980,
+   "engine": 0.1110000000007858,
+   "kind": "other"
+  },
+  {
+   "day": 268,
+   "year": 1980,
+   "engine": 0.0790000000015425,
+   "kind": "other"
+  },
+  {
+   "day": 269,
+   "year": 1980,
+   "engine": 0.06500000000050932,
+   "kind": "other"
+  },
+  {
+   "day": 270,
+   "year": 1980,
+   "engine": 0.06500000000050932,
+   "kind": "other"
+  },
+  {
+   "day": 271,
+   "year": 1980,
+   "engine": 0.06500000000050932,
+   "kind": "other"
+  },
+  {
+   "day": 272,
+   "year": 1980,
+   "engine": 0.07599999999911233,
+   "kind": "other"
+  },
+  {
+   "day": 273,
+   "year": 1980,
+   "engine": 120.71700000000055,
+   "kind": "round-own"
+  },
+  {
+   "day": 274,
+   "year": 1980,
+   "engine": 0.1069999999999709,
+   "kind": "other"
+  },
+  {
+   "day": 275,
+   "year": 1980,
+   "engine": 0.06500000000050932,
+   "kind": "other"
+  },
+  {
+   "day": 276,
+   "year": 1980,
+   "engine": 0.06000000000130967,
+   "kind": "other"
+  },
+  {
+   "day": 277,
+   "year": 1980,
+   "engine": 0.06300000000010186,
+   "kind": "other"
+  },
+  {
+   "day": 278,
+   "year": 1980,
+   "engine": 0.058999999999286956,
+   "kind": "other"
+  },
+  {
+   "day": 279,
+   "year": 1980,
+   "engine": 0.06199999999989814,
+   "kind": "other"
+  },
+  {
+   "day": 280,
+   "year": 1980,
+   "engine": 261.9490000000005,
+   "kind": "round-own"
+  },
+  {
+   "day": 281,
+   "year": 1980,
+   "engine": 0.16200000000026193,
+   "kind": "other"
+  },
+  {
+   "day": 282,
+   "year": 1980,
+   "engine": 0.06599999999889405,
+   "kind": "other"
+  },
+  {
+   "day": 283,
+   "year": 1980,
+   "engine": 0.06300000000010186,
+   "kind": "other"
+  },
+  {
+   "day": 284,
+   "year": 1980,
+   "engine": 0.07699999999931606,
+   "kind": "other"
+  },
+  {
+   "day": 285,
+   "year": 1980,
+   "engine": 0.058999999999286956,
+   "kind": "other"
+  },
+  {
+   "day": 286,
+   "year": 1980,
+   "engine": 0.05799999999908323,
+   "kind": "other"
+  },
+  {
+   "day": 287,
+   "year": 1980,
+   "engine": 111.1200000000008,
+   "kind": "round-own"
+  },
+  {
+   "day": 288,
+   "year": 1980,
+   "engine": 0.10299999999915599,
+   "kind": "other"
+  },
+  {
+   "day": 289,
+   "year": 1980,
+   "engine": 0.06499999999869033,
+   "kind": "other"
+  },
+  {
+   "day": 290,
+   "year": 1980,
+   "engine": 0.06099999999969441,
+   "kind": "other"
+  },
+  {
+   "day": 291,
+   "year": 1980,
+   "engine": 5.533999999999651,
+   "kind": "other"
+  },
+  {
+   "day": 292,
+   "year": 1980,
+   "engine": 0.1319999999996071,
+   "kind": "other"
+  },
+  {
+   "day": 293,
+   "year": 1980,
+   "engine": 0.06499999999869033,
+   "kind": "other"
+  },
+  {
+   "day": 294,
+   "year": 1980,
+   "engine": 171.4250000000011,
+   "kind": "round-own"
+  },
+  {
+   "day": 295,
+   "year": 1980,
+   "engine": 0.1180000000003929,
+   "kind": "other"
+  },
+  {
+   "day": 296,
+   "year": 1980,
+   "engine": 0.06199999999989814,
+   "kind": "other"
+  },
+  {
+   "day": 297,
+   "year": 1980,
+   "engine": 0.06699999999909778,
+   "kind": "other"
+  },
+  {
+   "day": 298,
+   "year": 1980,
+   "engine": 5.032999999999447,
+   "kind": "other"
+  },
+  {
+   "day": 299,
+   "year": 1980,
+   "engine": 0.0860000000011496,
+   "kind": "other"
+  },
+  {
+   "day": 300,
+   "year": 1980,
+   "engine": 0.06099999999969441,
+   "kind": "other"
+  },
+  {
+   "day": 301,
+   "year": 1980,
+   "engine": 130.9310000000005,
+   "kind": "round-own"
+  },
+  {
+   "day": 302,
+   "year": 1980,
+   "engine": 0.0860000000011496,
+   "kind": "other"
+  },
+  {
+   "day": 303,
+   "year": 1980,
+   "engine": 0.04900000000088767,
+   "kind": "other"
+  },
+  {
+   "day": 304,
+   "year": 1980,
+   "engine": 0.13300000000162981,
+   "kind": "other"
+  },
+  {
+   "day": 305,
+   "year": 1980,
+   "engine": 0.050000000001091394,
+   "kind": "other"
+  },
+  {
+   "day": 306,
+   "year": 1980,
+   "engine": 0.043000000001484295,
+   "kind": "other"
+  },
+  {
+   "day": 307,
+   "year": 1980,
+   "engine": 0.04200000000128057,
+   "kind": "other"
+  },
+  {
+   "day": 308,
+   "year": 1980,
+   "engine": 258.02700000000004,
+   "kind": "round-own"
+  },
+  {
+   "day": 309,
+   "year": 1980,
+   "engine": 0.1320000000014261,
+   "kind": "other"
+  },
+  {
+   "day": 310,
+   "year": 1980,
+   "engine": 0.04800000000068394,
+   "kind": "other"
+  },
+  {
+   "day": 311,
+   "year": 1980,
+   "engine": 0.04400000000168802,
+   "kind": "other"
+  },
+  {
+   "day": 312,
+   "year": 1980,
+   "engine": 0.04399999999986903,
+   "kind": "other"
+  },
+  {
+   "day": 313,
+   "year": 1980,
+   "engine": 0.042999999999665306,
+   "kind": "other"
+  },
+  {
+   "day": 314,
+   "year": 1980,
+   "engine": 0.04200000000128057,
+   "kind": "other"
+  },
+  {
+   "day": 315,
+   "year": 1980,
+   "engine": 176.17799999999988,
+   "kind": "round-own"
+  },
+  {
+   "day": 316,
+   "year": 1980,
+   "engine": 0.08300000000053842,
+   "kind": "other"
+  },
+  {
+   "day": 317,
+   "year": 1980,
+   "engine": 0.04799999999886495,
+   "kind": "other"
+  },
+  {
+   "day": 318,
+   "year": 1980,
+   "engine": 0.04500000000007276,
+   "kind": "other"
+  },
+  {
+   "day": 319,
+   "year": 1980,
+   "engine": 0.04199999999946158,
+   "kind": "other"
+  },
+  {
+   "day": 320,
+   "year": 1980,
+   "engine": 0.04199999999946158,
+   "kind": "other"
+  },
+  {
+   "day": 321,
+   "year": 1980,
+   "engine": 0.042999999999665306,
+   "kind": "other"
+  },
+  {
+   "day": 322,
+   "year": 1980,
+   "engine": 69.15200000000004,
+   "kind": "round-own"
+  }
+ ],
+ "stats": {
+  "year": 1980,
+  "round": 46,
+  "leagueMatches": 8502,
+  "goalsPerMatch": 2.9232,
+  "home": 0.4434,
+  "draw": 0.2178,
+  "away": 0.3387,
+  "pointsSd": [
+   {
+    "group": "ENG:3:0",
+    "clubs": 24,
+    "ppgSd": 0.469
+   },
+   {
+    "group": "ENG:2:0",
+    "clubs": 24,
+    "ppgSd": 0.408
+   },
+   {
+    "group": "ENG:1:0",
+    "clubs": 24,
+    "ppgSd": 0.277
+   },
+   {
+    "group": "ENG:0:0",
+    "clubs": 20,
+    "ppgSd": 0.448
+   },
+   {
+    "group": "ESP:1:0",
+    "clubs": 22,
+    "ppgSd": 0.323
+   },
+   {
+    "group": "ESP:0:0",
+    "clubs": 20,
+    "ppgSd": 0.383
+   },
+   {
+    "group": "GER:1:0",
+    "clubs": 18,
+    "ppgSd": 0.283
+   },
+   {
+    "group": "GER:0:0",
+    "clubs": 18,
+    "ppgSd": 0.387
+   },
+   {
+    "group": "GER:2:0",
+    "clubs": 20,
+    "ppgSd": 0.497
+   },
+   {
+    "group": "ITA:0:0",
+    "clubs": 20,
+    "ppgSd": 0.376
+   },
+   {
+    "group": "ITA:2:0",
+    "clubs": 20,
+    "ppgSd": 0.426
+   },
+   {
+    "group": "ITA:1:0",
+    "clubs": 20,
+    "ppgSd": 0.349
+   },
+   {
+    "group": "ITA:2:1",
+    "clubs": 20,
+    "ppgSd": 0.343
+   },
+   {
+    "group": "ITA:2:2",
+    "clubs": 20,
+    "ppgSd": 0.448
+   },
+   {
+    "group": "FRA:0:0",
+    "clubs": 18,
+    "ppgSd": 0.392
+   },
+   {
+    "group": "FRA:1:0",
+    "clubs": 18,
+    "ppgSd": 0.337
+   },
+   {
+    "group": "FRA:2:0",
+    "clubs": 18,
+    "ppgSd": 0.441
+   },
+   {
+    "group": "POR:0:0",
+    "clubs": 18,
+    "ppgSd": 0.328
+   },
+   {
+    "group": "POR:1:0",
+    "clubs": 18,
+    "ppgSd": 0.353
+   },
+   {
+    "group": "NED:0:0",
+    "clubs": 18,
+    "ppgSd": 0.33
+   },
+   {
+    "group": "NED:1:0",
+    "clubs": 20,
+    "ppgSd": 0.294
+   },
+   {
+    "group": "BEL:0:0",
+    "clubs": 18,
+    "ppgSd": 0.406
+   },
+   {
+    "group": "BEL:1:0",
+    "clubs": 15,
+    "ppgSd": 0.473
+   }
+  ],
+  "meanPpgSd": 0.3813,
+  "scorers": [
+   {
+    "group": "ENG:3:0",
+    "top": 53,
+    "top5": 221
+   },
+   {
+    "group": "ENG:2:0",
+    "top": 40,
+    "top5": 178
+   },
+   {
+    "group": "ENG:1:0",
+    "top": 37,
+    "top5": 172
+   },
+   {
+    "group": "ENG:0:0",
+    "top": 31,
+    "top5": 139
+   },
+   {
+    "group": "ESP:1:0",
+    "top": 47,
+    "top5": 162
+   },
+   {
+    "group": "ESP:0:0",
+    "top": 39,
+    "top5": 150
+   },
+   {
+    "group": "GER:1:0",
+    "top": 31,
+    "top5": 124
+   },
+   {
+    "group": "GER:0:0",
+    "top": 23,
+    "top5": 107
+   },
+   {
+    "group": "GER:2:0",
+    "top": 37,
+    "top5": 143
+   },
+   {
+    "group": "ITA:0:0",
+    "top": 35,
+    "top5": 130
+   },
+   {
+    "group": "ITA:2:0",
+    "top": 31,
+    "top5": 131
+   },
+   {
+    "group": "ITA:1:0",
+    "top": 33,
+    "top5": 133
+   },
+   {
+    "group": "ITA:2:1",
+    "top": 31,
+    "top5": 143
+   },
+   {
+    "group": "ITA:2:2",
+    "top": 46,
+    "top5": 162
+   },
+   {
+    "group": "FRA:0:0",
+    "top": 27,
+    "top5": 108
+   },
+   {
+    "group": "FRA:1:0",
+    "top": 33,
+    "top5": 128
+   },
+   {
+    "group": "FRA:2:0",
+    "top": 36,
+    "top5": 148
+   },
+   {
+    "group": "POR:0:0",
+    "top": 25,
+    "top5": 111
+   },
+   {
+    "group": "POR:1:0",
+    "top": 29,
+    "top5": 120
+   },
+   {
+    "group": "NED:0:0",
+    "top": 26,
+    "top5": 108
+   },
+   {
+    "group": "NED:1:0",
+    "top": 25,
+    "top5": 117
+   },
+   {
+    "group": "BEL:0:0",
+    "top": 26,
+    "top5": 116
+   },
+   {
+    "group": "BEL:1:0",
+    "top": 28,
+    "top5": 111
+   }
+  ],
+  "meanTopScorer": 33.435,
+  "appearances": 204048,
+  "starts": 187044,
+  "playersWithMinutes": 8391,
+  "yellow": 31742,
+  "npcInjured": 0,
+  "positions": {
+   "GK": {
+    "goals": {
+     "mean": 0.003,
+     "sd": 0.017,
+     "n": 756
+    },
+    "assists": {
+     "mean": 0.001,
+     "sd": 0.01,
+     "n": 756
+    },
+    "passes": {
+     "mean": 0.008,
+     "sd": 0.062,
+     "n": 756
+    },
+    "completed": {
+     "mean": 0.007,
+     "sd": 0.057,
+     "n": 756
+    },
+    "shots": {
+     "mean": 0.025,
+     "sd": 0.07,
+     "n": 756
+    },
+    "onTarget": {
+     "mean": 0.009,
+     "sd": 0.033,
+     "n": 756
+    },
+    "tackles": {
+     "mean": 0,
+     "sd": 0.003,
+     "n": 756
+    },
+    "interceptions": {
+     "mean": 0,
+     "sd": 0.003,
+     "n": 756
+    },
+    "dribbles": {
+     "mean": 0,
+     "sd": 0.004,
+     "n": 756
+    },
+    "saves": {
+     "mean": 2.084,
+     "sd": 1.292,
+     "n": 756
+    },
+    "d.keyPasses": {
+     "mean": 0.016,
+     "sd": 0.05,
+     "n": 756
+    },
+    "d.progressivePasses": {
+     "mean": 0.003,
+     "sd": 0.025,
+     "n": 756
+    },
+    "d.takeOns": {
+     "mean": 0,
+     "sd": 0.004,
+     "n": 756
+    },
+    "d.highTurnovers": {
+     "mean": 0,
+     "sd": 0.004,
+     "n": 756
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0,
+     "sd": 0,
+     "n": 756
+    },
+    "d.crosses": {
+     "mean": 0,
+     "sd": 0.005,
+     "n": 756
+    },
+    "d.fouls": {
+     "mean": 0,
+     "sd": 0.004,
+     "n": 756
+    },
+    "d.foulsWon": {
+     "mean": 0,
+     "sd": 0.002,
+     "n": 756
+    },
+    "d.yellowCards": {
+     "mean": 0.083,
+     "sd": 0.097,
+     "n": 756
+    },
+    "d.offsides": {
+     "mean": 0.001,
+     "sd": 0.013,
+     "n": 756
+    }
+   },
+   "CM": {
+    "goals": {
+     "mean": 0.129,
+     "sd": 0.082,
+     "n": 1041
+    },
+    "assists": {
+     "mean": 0.124,
+     "sd": 0.088,
+     "n": 1041
+    },
+    "passes": {
+     "mean": 0.559,
+     "sd": 4.902,
+     "n": 1041
+    },
+    "completed": {
+     "mean": 0.473,
+     "sd": 3.936,
+     "n": 1041
+    },
+    "shots": {
+     "mean": 1.269,
+     "sd": 0.493,
+     "n": 1041
+    },
+    "onTarget": {
+     "mean": 0.437,
+     "sd": 0.199,
+     "n": 1041
+    },
+    "tackles": {
+     "mean": 0.011,
+     "sd": 0.14,
+     "n": 1041
+    },
+    "interceptions": {
+     "mean": 0.005,
+     "sd": 0.044,
+     "n": 1041
+    },
+    "dribbles": {
+     "mean": 0.007,
+     "sd": 0.067,
+     "n": 1041
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0.006,
+     "n": 1041
+    },
+    "d.keyPasses": {
+     "mean": 1.4,
+     "sd": 0.548,
+     "n": 1041
+    },
+    "d.progressivePasses": {
+     "mean": 0.134,
+     "sd": 1.124,
+     "n": 1041
+    },
+    "d.takeOns": {
+     "mean": 0.013,
+     "sd": 0.123,
+     "n": 1041
+    },
+    "d.highTurnovers": {
+     "mean": 0.004,
+     "sd": 0.043,
+     "n": 1041
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.019,
+     "sd": 0.165,
+     "n": 1041
+    },
+    "d.crosses": {
+     "mean": 0.004,
+     "sd": 0.059,
+     "n": 1041
+    },
+    "d.fouls": {
+     "mean": 0.01,
+     "sd": 0.093,
+     "n": 1041
+    },
+    "d.foulsWon": {
+     "mean": 0.011,
+     "sd": 0.124,
+     "n": 1041
+    },
+    "d.yellowCards": {
+     "mean": 0.19,
+     "sd": 0.079,
+     "n": 1041
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0.002,
+     "n": 1041
+    }
+   },
+   "RB": {
+    "goals": {
+     "mean": 0.026,
+     "sd": 0.032,
+     "n": 460
+    },
+    "assists": {
+     "mean": 0.071,
+     "sd": 0.102,
+     "n": 460
+    },
+    "passes": {
+     "mean": 0.092,
+     "sd": 0.389,
+     "n": 460
+    },
+    "completed": {
+     "mean": 0.076,
+     "sd": 0.324,
+     "n": 460
+    },
+    "shots": {
+     "mean": 0.265,
+     "sd": 0.162,
+     "n": 460
+    },
+    "onTarget": {
+     "mean": 0.093,
+     "sd": 0.077,
+     "n": 460
+    },
+    "tackles": {
+     "mean": 0.003,
+     "sd": 0.016,
+     "n": 460
+    },
+    "interceptions": {
+     "mean": 0.003,
+     "sd": 0.016,
+     "n": 460
+    },
+    "dribbles": {
+     "mean": 0.001,
+     "sd": 0.004,
+     "n": 460
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0.001,
+     "n": 460
+    },
+    "d.keyPasses": {
+     "mean": 0.548,
+     "sd": 0.642,
+     "n": 460
+    },
+    "d.progressivePasses": {
+     "mean": 0.029,
+     "sd": 0.123,
+     "n": 460
+    },
+    "d.takeOns": {
+     "mean": 0.001,
+     "sd": 0.005,
+     "n": 460
+    },
+    "d.highTurnovers": {
+     "mean": 0.001,
+     "sd": 0.005,
+     "n": 460
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.003,
+     "sd": 0.017,
+     "n": 460
+    },
+    "d.crosses": {
+     "mean": 0.005,
+     "sd": 0.034,
+     "n": 460
+    },
+    "d.fouls": {
+     "mean": 0.003,
+     "sd": 0.014,
+     "n": 460
+    },
+    "d.foulsWon": {
+     "mean": 0.001,
+     "sd": 0.007,
+     "n": 460
+    },
+    "d.yellowCards": {
+     "mean": 0.206,
+     "sd": 0.086,
+     "n": 460
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0,
+     "n": 460
+    }
+   },
+   "CB": {
+    "goals": {
+     "mean": 0.051,
+     "sd": 0.047,
+     "n": 977
+    },
+    "assists": {
+     "mean": 0.01,
+     "sd": 0.022,
+     "n": 977
+    },
+    "passes": {
+     "mean": 0.106,
+     "sd": 1.081,
+     "n": 977
+    },
+    "completed": {
+     "mean": 0.085,
+     "sd": 0.831,
+     "n": 977
+    },
+    "shots": {
+     "mean": 0.459,
+     "sd": 0.203,
+     "n": 977
+    },
+    "onTarget": {
+     "mean": 0.164,
+     "sd": 0.095,
+     "n": 977
+    },
+    "tackles": {
+     "mean": 0.006,
+     "sd": 0.064,
+     "n": 977
+    },
+    "interceptions": {
+     "mean": 0.006,
+     "sd": 0.059,
+     "n": 977
+    },
+    "dribbles": {
+     "mean": 0.001,
+     "sd": 0.007,
+     "n": 977
+    },
+    "saves": {
+     "mean": 0.001,
+     "sd": 0.013,
+     "n": 977
+    },
+    "d.keyPasses": {
+     "mean": 0.118,
+     "sd": 0.1,
+     "n": 977
+    },
+    "d.progressivePasses": {
+     "mean": 0.035,
+     "sd": 0.351,
+     "n": 977
+    },
+    "d.takeOns": {
+     "mean": 0.001,
+     "sd": 0.01,
+     "n": 977
+    },
+    "d.highTurnovers": {
+     "mean": 0.001,
+     "sd": 0.009,
+     "n": 977
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.003,
+     "sd": 0.038,
+     "n": 977
+    },
+    "d.crosses": {
+     "mean": 0,
+     "sd": 0.003,
+     "n": 977
+    },
+    "d.fouls": {
+     "mean": 0.002,
+     "sd": 0.024,
+     "n": 977
+    },
+    "d.foulsWon": {
+     "mean": 0.003,
+     "sd": 0.032,
+     "n": 977
+    },
+    "d.yellowCards": {
+     "mean": 0.204,
+     "sd": 0.087,
+     "n": 977
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0.002,
+     "n": 977
+    }
+   },
+   "RW": {
+    "goals": {
+     "mean": 0.195,
+     "sd": 0.106,
+     "n": 350
+    },
+    "assists": {
+     "mean": 0.28,
+     "sd": 0.2,
+     "n": 350
+    },
+    "passes": {
+     "mean": 0.121,
+     "sd": 0.534,
+     "n": 350
+    },
+    "completed": {
+     "mean": 0.088,
+     "sd": 0.389,
+     "n": 350
+    },
+    "shots": {
+     "mean": 1.834,
+     "sd": 0.68,
+     "n": 350
+    },
+    "onTarget": {
+     "mean": 0.627,
+     "sd": 0.268,
+     "n": 350
+    },
+    "tackles": {
+     "mean": 0.001,
+     "sd": 0.007,
+     "n": 350
+    },
+    "interceptions": {
+     "mean": 0.002,
+     "sd": 0.01,
+     "n": 350
+    },
+    "dribbles": {
+     "mean": 0.009,
+     "sd": 0.044,
+     "n": 350
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0.002,
+     "n": 350
+    },
+    "d.keyPasses": {
+     "mean": 1.909,
+     "sd": 1.152,
+     "n": 350
+    },
+    "d.progressivePasses": {
+     "mean": 0.02,
+     "sd": 0.09,
+     "n": 350
+    },
+    "d.takeOns": {
+     "mean": 0.016,
+     "sd": 0.077,
+     "n": 350
+    },
+    "d.highTurnovers": {
+     "mean": 0.002,
+     "sd": 0.01,
+     "n": 350
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.002,
+     "sd": 0.013,
+     "n": 350
+    },
+    "d.crosses": {
+     "mean": 0.02,
+     "sd": 0.1,
+     "n": 350
+    },
+    "d.fouls": {
+     "mean": 0.001,
+     "sd": 0.005,
+     "n": 350
+    },
+    "d.foulsWon": {
+     "mean": 0.003,
+     "sd": 0.014,
+     "n": 350
+    },
+    "d.yellowCards": {
+     "mean": 0.141,
+     "sd": 0.073,
+     "n": 350
+    },
+    "d.offsides": {
+     "mean": 0.001,
+     "sd": 0.006,
+     "n": 350
+    }
+   },
+   "ST": {
+    "goals": {
+     "mean": 0.478,
+     "sd": 0.206,
+     "n": 836
+    },
+    "assists": {
+     "mean": 0.088,
+     "sd": 0.074,
+     "n": 836
+    },
+    "passes": {
+     "mean": 0.125,
+     "sd": 1.353,
+     "n": 836
+    },
+    "completed": {
+     "mean": 0.09,
+     "sd": 0.906,
+     "n": 836
+    },
+    "shots": {
+     "mean": 3.607,
+     "sd": 1.053,
+     "n": 836
+    },
+    "onTarget": {
+     "mean": 1.341,
+     "sd": 0.444,
+     "n": 836
+    },
+    "tackles": {
+     "mean": 0.002,
+     "sd": 0.026,
+     "n": 836
+    },
+    "interceptions": {
+     "mean": 0.005,
+     "sd": 0.066,
+     "n": 836
+    },
+    "dribbles": {
+     "mean": 0.01,
+     "sd": 0.114,
+     "n": 836
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0.005,
+     "n": 836
+    },
+    "d.keyPasses": {
+     "mean": 0.738,
+     "sd": 0.408,
+     "n": 836
+    },
+    "d.progressivePasses": {
+     "mean": 0.021,
+     "sd": 0.22,
+     "n": 836
+    },
+    "d.takeOns": {
+     "mean": 0.018,
+     "sd": 0.212,
+     "n": 836
+    },
+    "d.highTurnovers": {
+     "mean": 0.007,
+     "sd": 0.086,
+     "n": 836
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.003,
+     "sd": 0.031,
+     "n": 836
+    },
+    "d.crosses": {
+     "mean": 0.012,
+     "sd": 0.155,
+     "n": 836
+    },
+    "d.fouls": {
+     "mean": 0.004,
+     "sd": 0.039,
+     "n": 836
+    },
+    "d.foulsWon": {
+     "mean": 0.005,
+     "sd": 0.064,
+     "n": 836
+    },
+    "d.yellowCards": {
+     "mean": 0.132,
+     "sd": 0.066,
+     "n": 836
+    },
+    "d.offsides": {
+     "mean": 0.002,
+     "sd": 0.03,
+     "n": 836
+    }
+   },
+   "LB": {
+    "goals": {
+     "mean": 0.028,
+     "sd": 0.035,
+     "n": 792
+    },
+    "assists": {
+     "mean": 0.089,
+     "sd": 0.118,
+     "n": 792
+    },
+    "passes": {
+     "mean": 0.163,
+     "sd": 1.451,
+     "n": 792
+    },
+    "completed": {
+     "mean": 0.129,
+     "sd": 1.113,
+     "n": 792
+    },
+    "shots": {
+     "mean": 0.289,
+     "sd": 0.192,
+     "n": 792
+    },
+    "onTarget": {
+     "mean": 0.1,
+     "sd": 0.078,
+     "n": 792
+    },
+    "tackles": {
+     "mean": 0.012,
+     "sd": 0.119,
+     "n": 792
+    },
+    "interceptions": {
+     "mean": 0.01,
+     "sd": 0.096,
+     "n": 792
+    },
+    "dribbles": {
+     "mean": 0.001,
+     "sd": 0.02,
+     "n": 792
+    },
+    "saves": {
+     "mean": 0.004,
+     "sd": 0.036,
+     "n": 792
+    },
+    "d.keyPasses": {
+     "mean": 0.665,
+     "sd": 0.736,
+     "n": 792
+    },
+    "d.progressivePasses": {
+     "mean": 0.046,
+     "sd": 0.387,
+     "n": 792
+    },
+    "d.takeOns": {
+     "mean": 0.002,
+     "sd": 0.026,
+     "n": 792
+    },
+    "d.highTurnovers": {
+     "mean": 0.002,
+     "sd": 0.025,
+     "n": 792
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.005,
+     "sd": 0.042,
+     "n": 792
+    },
+    "d.crosses": {
+     "mean": 0.007,
+     "sd": 0.063,
+     "n": 792
+    },
+    "d.fouls": {
+     "mean": 0.007,
+     "sd": 0.072,
+     "n": 792
+    },
+    "d.foulsWon": {
+     "mean": 0.004,
+     "sd": 0.038,
+     "n": 792
+    },
+    "d.yellowCards": {
+     "mean": 0.211,
+     "sd": 0.085,
+     "n": 792
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0.005,
+     "n": 792
+    }
+   },
+   "DM": {
+    "goals": {
+     "mean": 0.07,
+     "sd": 0.068,
+     "n": 344
+    },
+    "assists": {
+     "mean": 0.081,
+     "sd": 0.08,
+     "n": 344
+    },
+    "passes": {
+     "mean": 0.127,
+     "sd": 0.737,
+     "n": 344
+    },
+    "completed": {
+     "mean": 0.112,
+     "sd": 0.658,
+     "n": 344
+    },
+    "shots": {
+     "mean": 0.698,
+     "sd": 0.355,
+     "n": 344
+    },
+    "onTarget": {
+     "mean": 0.236,
+     "sd": 0.153,
+     "n": 344
+    },
+    "tackles": {
+     "mean": 0.004,
+     "sd": 0.024,
+     "n": 344
+    },
+    "interceptions": {
+     "mean": 0.005,
+     "sd": 0.03,
+     "n": 344
+    },
+    "dribbles": {
+     "mean": 0.001,
+     "sd": 0.011,
+     "n": 344
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0,
+     "n": 344
+    },
+    "d.keyPasses": {
+     "mean": 0.864,
+     "sd": 0.399,
+     "n": 344
+    },
+    "d.progressivePasses": {
+     "mean": 0.03,
+     "sd": 0.176,
+     "n": 344
+    },
+    "d.takeOns": {
+     "mean": 0.002,
+     "sd": 0.016,
+     "n": 344
+    },
+    "d.highTurnovers": {
+     "mean": 0.002,
+     "sd": 0.011,
+     "n": 344
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.005,
+     "sd": 0.027,
+     "n": 344
+    },
+    "d.crosses": {
+     "mean": 0.001,
+     "sd": 0.006,
+     "n": 344
+    },
+    "d.fouls": {
+     "mean": 0.003,
+     "sd": 0.02,
+     "n": 344
+    },
+    "d.foulsWon": {
+     "mean": 0.002,
+     "sd": 0.01,
+     "n": 344
+    },
+    "d.yellowCards": {
+     "mean": 0.197,
+     "sd": 0.092,
+     "n": 344
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0,
+     "n": 344
+    }
+   },
+   "LW": {
+    "goals": {
+     "mean": 0.227,
+     "sd": 0.128,
+     "n": 127
+    },
+    "assists": {
+     "mean": 0.228,
+     "sd": 0.149,
+     "n": 127
+    },
+    "passes": {
+     "mean": 0.086,
+     "sd": 0.45,
+     "n": 127
+    },
+    "completed": {
+     "mean": 0.065,
+     "sd": 0.342,
+     "n": 127
+    },
+    "shots": {
+     "mean": 1.916,
+     "sd": 0.612,
+     "n": 127
+    },
+    "onTarget": {
+     "mean": 0.679,
+     "sd": 0.252,
+     "n": 127
+    },
+    "tackles": {
+     "mean": 0.001,
+     "sd": 0.006,
+     "n": 127
+    },
+    "interceptions": {
+     "mean": 0.001,
+     "sd": 0.012,
+     "n": 127
+    },
+    "dribbles": {
+     "mean": 0.009,
+     "sd": 0.047,
+     "n": 127
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0,
+     "n": 127
+    },
+    "d.keyPasses": {
+     "mean": 1.619,
+     "sd": 0.88,
+     "n": 127
+    },
+    "d.progressivePasses": {
+     "mean": 0.016,
+     "sd": 0.085,
+     "n": 127
+    },
+    "d.takeOns": {
+     "mean": 0.016,
+     "sd": 0.084,
+     "n": 127
+    },
+    "d.highTurnovers": {
+     "mean": 0.001,
+     "sd": 0.008,
+     "n": 127
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.003,
+     "sd": 0.017,
+     "n": 127
+    },
+    "d.crosses": {
+     "mean": 0.009,
+     "sd": 0.044,
+     "n": 127
+    },
+    "d.fouls": {
+     "mean": 0.001,
+     "sd": 0.006,
+     "n": 127
+    },
+    "d.foulsWon": {
+     "mean": 0.002,
+     "sd": 0.016,
+     "n": 127
+    },
+    "d.yellowCards": {
+     "mean": 0.131,
+     "sd": 0.08,
+     "n": 127
+    },
+    "d.offsides": {
+     "mean": 0.001,
+     "sd": 0.005,
+     "n": 127
+    }
+   },
+   "RM": {
+    "goals": {
+     "mean": 0.083,
+     "sd": 0.072,
+     "n": 208
+    },
+    "assists": {
+     "mean": 0.325,
+     "sd": 0.234,
+     "n": 208
+    },
+    "passes": {
+     "mean": 0.055,
+     "sd": 0.356,
+     "n": 208
+    },
+    "completed": {
+     "mean": 0.041,
+     "sd": 0.266,
+     "n": 208
+    },
+    "shots": {
+     "mean": 0.896,
+     "sd": 0.481,
+     "n": 208
+    },
+    "onTarget": {
+     "mean": 0.295,
+     "sd": 0.187,
+     "n": 208
+    },
+    "tackles": {
+     "mean": 0.001,
+     "sd": 0.007,
+     "n": 208
+    },
+    "interceptions": {
+     "mean": 0.001,
+     "sd": 0.007,
+     "n": 208
+    },
+    "dribbles": {
+     "mean": 0.001,
+     "sd": 0.009,
+     "n": 208
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0,
+     "n": 208
+    },
+    "d.keyPasses": {
+     "mean": 2.458,
+     "sd": 1.427,
+     "n": 208
+    },
+    "d.progressivePasses": {
+     "mean": 0.013,
+     "sd": 0.091,
+     "n": 208
+    },
+    "d.takeOns": {
+     "mean": 0.002,
+     "sd": 0.014,
+     "n": 208
+    },
+    "d.highTurnovers": {
+     "mean": 0,
+     "sd": 0,
+     "n": 208
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.001,
+     "sd": 0.012,
+     "n": 208
+    },
+    "d.crosses": {
+     "mean": 0.005,
+     "sd": 0.035,
+     "n": 208
+    },
+    "d.fouls": {
+     "mean": 0.001,
+     "sd": 0.009,
+     "n": 208
+    },
+    "d.foulsWon": {
+     "mean": 0.001,
+     "sd": 0.006,
+     "n": 208
+    },
+    "d.yellowCards": {
+     "mean": 0.185,
+     "sd": 0.079,
+     "n": 208
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0.003,
+     "n": 208
+    }
+   },
+   "AM": {
+    "goals": {
+     "mean": 0.146,
+     "sd": 0.096,
+     "n": 96
+    },
+    "assists": {
+     "mean": 0.101,
+     "sd": 0.074,
+     "n": 96
+    },
+    "passes": {
+     "mean": 0.273,
+     "sd": 2.022,
+     "n": 96
+    },
+    "completed": {
+     "mean": 0.214,
+     "sd": 1.546,
+     "n": 96
+    },
+    "shots": {
+     "mean": 1.527,
+     "sd": 0.553,
+     "n": 96
+    },
+    "onTarget": {
+     "mean": 0.537,
+     "sd": 0.225,
+     "n": 96
+    },
+    "tackles": {
+     "mean": 0.003,
+     "sd": 0.034,
+     "n": 96
+    },
+    "interceptions": {
+     "mean": 0.006,
+     "sd": 0.049,
+     "n": 96
+    },
+    "dribbles": {
+     "mean": 0.007,
+     "sd": 0.056,
+     "n": 96
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0,
+     "n": 96
+    },
+    "d.keyPasses": {
+     "mean": 1.236,
+     "sd": 0.428,
+     "n": 96
+    },
+    "d.progressivePasses": {
+     "mean": 0.073,
+     "sd": 0.556,
+     "n": 96
+    },
+    "d.takeOns": {
+     "mean": 0.009,
+     "sd": 0.071,
+     "n": 96
+    },
+    "d.highTurnovers": {
+     "mean": 0.001,
+     "sd": 0.007,
+     "n": 96
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.008,
+     "sd": 0.058,
+     "n": 96
+    },
+    "d.crosses": {
+     "mean": 0,
+     "sd": 0,
+     "n": 96
+    },
+    "d.fouls": {
+     "mean": 0.006,
+     "sd": 0.048,
+     "n": 96
+    },
+    "d.foulsWon": {
+     "mean": 0.01,
+     "sd": 0.095,
+     "n": 96
+    },
+    "d.yellowCards": {
+     "mean": 0.22,
+     "sd": 0.076,
+     "n": 96
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0,
+     "n": 96
+    }
+   },
+   "RWB": {
+    "goals": {
+     "mean": 0.025,
+     "sd": 0.038,
+     "n": 47
+    },
+    "assists": {
+     "mean": 0.26,
+     "sd": 0.167,
+     "n": 47
+    },
+    "passes": {
+     "mean": 0.532,
+     "sd": 3.5,
+     "n": 47
+    },
+    "completed": {
+     "mean": 0.373,
+     "sd": 2.454,
+     "n": 47
+    },
+    "shots": {
+     "mean": 0.257,
+     "sd": 0.236,
+     "n": 47
+    },
+    "onTarget": {
+     "mean": 0.09,
+     "sd": 0.094,
+     "n": 47
+    },
+    "tackles": {
+     "mean": 0.054,
+     "sd": 0.365,
+     "n": 47
+    },
+    "interceptions": {
+     "mean": 0.016,
+     "sd": 0.111,
+     "n": 47
+    },
+    "dribbles": {
+     "mean": 0.009,
+     "sd": 0.054,
+     "n": 47
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0,
+     "n": 47
+    },
+    "d.keyPasses": {
+     "mean": 1.796,
+     "sd": 0.824,
+     "n": 47
+    },
+    "d.progressivePasses": {
+     "mean": 0.124,
+     "sd": 0.824,
+     "n": 47
+    },
+    "d.takeOns": {
+     "mean": 0.011,
+     "sd": 0.071,
+     "n": 47
+    },
+    "d.highTurnovers": {
+     "mean": 0.005,
+     "sd": 0.031,
+     "n": 47
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0.016,
+     "sd": 0.111,
+     "n": 47
+    },
+    "d.crosses": {
+     "mean": 0.1,
+     "sd": 0.642,
+     "n": 47
+    },
+    "d.fouls": {
+     "mean": 0.021,
+     "sd": 0.138,
+     "n": 47
+    },
+    "d.foulsWon": {
+     "mean": 0.012,
+     "sd": 0.08,
+     "n": 47
+    },
+    "d.yellowCards": {
+     "mean": 0.203,
+     "sd": 0.087,
+     "n": 47
+    },
+    "d.offsides": {
+     "mean": 0.001,
+     "sd": 0.004,
+     "n": 47
+    }
+   },
+   "LM": {
+    "goals": {
+     "mean": 0.088,
+     "sd": 0.069,
+     "n": 112
+    },
+    "assists": {
+     "mean": 0.347,
+     "sd": 0.214,
+     "n": 112
+    },
+    "passes": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "completed": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "shots": {
+     "mean": 1.023,
+     "sd": 0.444,
+     "n": 112
+    },
+    "onTarget": {
+     "mean": 0.351,
+     "sd": 0.174,
+     "n": 112
+    },
+    "tackles": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "interceptions": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "dribbles": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "d.keyPasses": {
+     "mean": 2.611,
+     "sd": 1.264,
+     "n": 112
+    },
+    "d.progressivePasses": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "d.takeOns": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "d.highTurnovers": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "d.crosses": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "d.fouls": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "d.foulsWon": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    },
+    "d.yellowCards": {
+     "mean": 0.192,
+     "sd": 0.088,
+     "n": 112
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0,
+     "n": 112
+    }
+   },
+   "LWB": {
+    "goals": {
+     "mean": 0.047,
+     "sd": 0.041,
+     "n": 4
+    },
+    "assists": {
+     "mean": 0.237,
+     "sd": 0.033,
+     "n": 4
+    },
+    "passes": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "completed": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "shots": {
+     "mean": 0.269,
+     "sd": 0.132,
+     "n": 4
+    },
+    "onTarget": {
+     "mean": 0.116,
+     "sd": 0.07,
+     "n": 4
+    },
+    "tackles": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "interceptions": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "dribbles": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "saves": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "d.keyPasses": {
+     "mean": 1.694,
+     "sd": 0.448,
+     "n": 4
+    },
+    "d.progressivePasses": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "d.takeOns": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "d.highTurnovers": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "d.lineBreakingPasses": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "d.crosses": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "d.fouls": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "d.foulsWon": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    },
+    "d.yellowCards": {
+     "mean": 0.222,
+     "sd": 0.014,
+     "n": 4
+    },
+    "d.offsides": {
+     "mean": 0,
+     "sd": 0,
+     "n": 4
+    }
+   }
+  }
+ }
+}

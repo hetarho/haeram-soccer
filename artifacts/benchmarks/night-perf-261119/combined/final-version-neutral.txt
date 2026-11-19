@@ -1,0 +1,4 @@
+Final head 40360d9d (T982–T988, version 0.8.12) prints worldHash 2652b256e3a9ea2f91289e19522a1e7b7256fec28ef72433172c635a6e0a278f for the 1950 generation (final-gen-40360d9d.txt): the world records the engine version.
+The same tree with only packages/contracts/src/versions.ts restored from 490a2bc5^ (CURRENT_ENGINE_VERSION 0.8.11) prints the base worldHash 4161b5e0d829175a3b1fc1ad959a4d5243ea43c5509c266f1a1202dea25435ce (generationMs 38859 at load ~20).
+final-vn-ab-*: ab.mjs --base d999af70 --cand <that version-neutral tree> --procs 3: history-five CPU 0.6701 [0.6507, 0.6876], hashes equal b0e9f0e763c79d50; day own 0.7881 [0.7807, 0.7931], other 0.8338 [0.8024, 0.8631], hashes equal a56436ea3e565194.
+final-ab-*: the same against the 0.8.12 tree itself (hashes differ only by the version string): history-five 0.6757 [0.6564, 0.6889]; day own 0.8171 [0.7954, 0.8303], other 0.9246 [0.8006, 1.0012].

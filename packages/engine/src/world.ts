@@ -677,38 +677,57 @@ export function lineup(
 /**
  * `lineup` over finite values, `values[player * width + slot]`: the best pair whose slot and
  * player are both still free goes first, under the order the sort gives (value descending, slot
- * ascending, id ascending, squad order). Taking the best free pair each time is the sorted greedy
- * pass, without a pair object per player and slot. A player's id, not his place, makes him used.
+ * ascending, id ascending, squad order). Each free slot keeps its best free player (value
+ * descending, id ascending, squad order); a pick takes the best of those slot bests (value
+ * descending, slot ascending) and looks again only in the slots whose best it just used, which is
+ * the sorted greedy pass without rescanning every pair. A player's id, not his place, makes him
+ * used.
  */
 function bestFreePairs(players: readonly Player[], width: number, values: Float64Array) {
+  const n = players.length;
   const chosen: (Player | undefined)[] = Array(width);
-  const used = new Uint8Array(players.length);
-  for (;;) {
-    let bestPlayer = -1;
-    let bestSlot = -1;
+  const used = new Uint8Array(n);
+  const best = new Int32Array(width);
+  const slotBest = (s: number) => {
+    let b = -1;
     let bestValue = 0;
-    for (let i = 0; i < players.length; i++) {
+    for (let i = 0; i < n; i++) {
       if (used[i]) continue;
-      for (let s = 0; s < width; s++) {
-        if (chosen[s]) continue;
-        const value = values[i * width + s]!;
-        if (
-          bestPlayer < 0 ||
-          value > bestValue ||
-          (value === bestValue &&
-            (s < bestSlot ||
-              (s === bestSlot && compareIds(players[i]!.id, players[bestPlayer]!.id) < 0)))
-        ) {
-          bestPlayer = i;
-          bestSlot = s;
-          bestValue = value;
-        }
+      const value = values[i * width + s]!;
+      if (
+        b < 0 ||
+        value > bestValue ||
+        (value === bestValue && compareIds(players[i]!.id, players[b]!.id) < 0)
+      ) {
+        b = i;
+        bestValue = value;
       }
     }
-    if (bestPlayer < 0) break;
-    const p = players[bestPlayer]!;
+    return b;
+  };
+  for (let s = 0; s < width; s++) best[s] = slotBest(s);
+  for (;;) {
+    let bestSlot = -1;
+    let bestValue = 0;
+    for (let s = 0; s < width; s++) {
+      if (chosen[s]) continue;
+      const b = best[s]!;
+      if (b < 0) continue;
+      const value = values[b * width + s]!;
+      if (bestSlot < 0 || value > bestValue) {
+        bestSlot = s;
+        bestValue = value;
+      }
+    }
+    if (bestSlot < 0) break;
+    const p = players[best[bestSlot]!]!;
     chosen[bestSlot] = p;
-    for (let i = 0; i < players.length; i++) if (players[i]!.id === p.id) used[i] = 1;
+    for (let i = 0; i < n; i++) if (players[i]!.id === p.id) used[i] = 1;
+    for (let s = 0; s < width; s++) {
+      if (chosen[s]) continue;
+      const b = best[s]!;
+      if (b >= 0 && players[b]!.id === p.id) best[s] = slotBest(s);
+    }
   }
   return chosen.filter((p): p is Player => !!p);
 }

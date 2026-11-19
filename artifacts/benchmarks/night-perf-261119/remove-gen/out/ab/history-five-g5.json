@@ -1,0 +1,121 @@
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/base",
+  "cand": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/g5",
+  "procs": 3,
+  "jobs": 1,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "c6c8d77e6c7ad187",
+    "cand": "ec6b0e330959bf3d"
+  },
+  "sameBundle": false,
+  "sameHash": false,
+  "hashes": {
+    "base": [
+      "b0e9f0e763c79d50"
+    ],
+    "cand": [
+      "8050f4d360036ef8"
+    ]
+  },
+  "season": {
+    "pairs": 3,
+    "ms": {
+      "base": {
+        "cpu": 12541.988,
+        "wall": 27590.949875000002
+      },
+      "cand": {
+        "cpu": 12093.509,
+        "wall": 36075.336083
+      }
+    },
+    "cpu": {
+      "ratio": 0.9823,
+      "lo": 0.9603,
+      "hi": 1.0267,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 1.107,
+      "lo": 0.6807,
+      "hi": 1.7006,
+      "call": "no difference"
+    }
+  },
+  "load1": [
+    21.61279296875,
+    38.0146484375,
+    38.30810546875,
+    28.64697265625
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 11981.218,
+            "wall": 25751.311042
+          },
+          "b": {
+            "cpu": 12301.035,
+            "wall": 43792.514708
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "8050f4d360036ef8"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 12541.988,
+            "wall": 30785.091582999994
+          },
+          "b": {
+            "cpu": 12044.207,
+            "wall": 36075.336083
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "8050f4d360036ef8"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 12580.448,
+            "wall": 27590.949875000002
+          },
+          "b": {
+            "cpu": 12093.509,
+            "wall": 18780.499833
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "8050f4d360036ef8"
+      ]
+    }
+  ]
+}

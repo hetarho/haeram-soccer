@@ -60,15 +60,38 @@ export const ownMultiplier = (p: Player) => adaptationMultiplier(p.adaptation);
 export const cohesionMultiplier = (c: Club) => adaptationMultiplier(c.cohesion ?? 0.8);
 /**
  * 실효 OVR at a formation slot: his OVR there in its role × his level there × his multiplier, less
- * the unhappy penalty (→PLAYER-6).
+ * the unhappy penalty (→PLAYER-6). Computed afresh, whatever settlement is open.
  */
-export function slotOvr(p: Player, slot: Slot, multiplier = 1) {
+export function freshSlotOvr(p: Player, slot: Slot, multiplier = 1) {
   return (
     ovrAt(p.attrs, slot.position, slot.role) *
       levelFactor(p.positions, slot.position) *
       multiplier -
     unhappyPenalty(p)
   );
+}
+/** A settlement's slot ratings, each equal to `freshSlotOvr(p, slot)` while the settlement lasts. */
+export type SlotRatings = { of(p: Player, slot: Slot): number };
+let openRatings: SlotRatings | undefined;
+/**
+ * 실효 OVR at a formation slot (`freshSlotOvr`). While a settlement is open (`withSlotRatings`) a
+ * multiplier of 1 reads its ratings: nothing inside one changes a player's attributes, positions or
+ * unhappiness, and `x * 1 === x`, so the value is the same bit for bit.
+ */
+export function slotOvr(p: Player, slot: Slot, multiplier = 1) {
+  return multiplier === 1 && openRatings
+    ? openRatings.of(p, slot)
+    : freshSlotOvr(p, slot, multiplier);
+}
+/** Runs one settlement with its ratings open to `slotOvr`; they close however it ends. */
+export function withSlotRatings<T>(ratings: SlotRatings, run: () => T): T {
+  const outer = openRatings;
+  openRatings = ratings;
+  try {
+    return run();
+  } finally {
+    openRatings = outer;
+  }
 }
 export const formationOf = (tactic: Tactic) => FORMATIONS[tactic].slots;
 

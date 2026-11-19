@@ -287,4 +287,50 @@ describe('process place tables and shared placed weights (T941)', () => {
       { seed: 941, numRuns: 200 },
     );
   });
+
+  it('fits distinct placed arrays exactly as the reference, typed rows included (T983)', () => {
+    const vector = () =>
+      fc.array(fc.integer({ min: 0, max: 100 }), { minLength: 11, maxLength: 11 });
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            count: fc.integer({ min: 1, max: 30 }),
+            weights: vector(),
+            placed: vector(),
+          }),
+          { minLength: 1, maxLength: 30 },
+        ),
+        (rows) => {
+          const groups = rows.map((row) => ({
+            count: row.count,
+            weights: row.weights,
+            placed: row.placed.map((x) => x / 13),
+          }));
+          expect(fitPlaceWeights(groups)).toEqual(fitPerGroup(groups));
+        },
+      ),
+      { seed: 983, numRuns: 200 },
+    );
+  });
+
+  it('stops at the iteration cap exactly as the reference when the fit cannot converge', () => {
+    // The third line is expected to take attempts but no group places it, so its scale falls to
+    // zero and its expectation is never met: every one of the capped iterations runs.
+    const shared = [1, 0.3, 0];
+    const groups = [
+      { count: 9, weights: [1, 1, 1], placed: shared },
+      { count: 5, weights: [2, 1, 3], placed: [0.2, 1.5, 0] },
+      { count: 7, weights: [1, 3, 2], placed: shared },
+    ];
+    const fitted = fitPlaceWeights(groups);
+    expect(fitted).toEqual(fitPerGroup(groups));
+    const reached = [0, 0, 0];
+    fitted.forEach((row, i) => {
+      const sum = row.reduce((n, w) => n + w, 0);
+      row.forEach((w, p) => (reached[p]! += (groups[i]!.count * w) / sum));
+    });
+    expect(reached[2]).toBe(0);
+    expect(AC.place.iterations).toBeGreaterThan(0);
+  });
 });

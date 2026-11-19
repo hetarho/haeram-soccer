@@ -1,0 +1,93 @@
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "node": "v26.8.1",
+    "cpu": "Apple M1 Max",
+    "cores": 10
+  },
+  "base": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/base",
+  "cand": "/private/tmp/claude-501/-Users-ihaelam-project-haeram-soccer/c45bcc06-66c2-4d18-afd2-e8636426f0dc/scratchpad/remove-gen/g8b",
+  "procs": 3,
+  "jobs": 3,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "c6c8d77e6c7ad187",
+    "cand": "477c4705cc1f0f9d"
+  },
+  "completedProcesses": 3,
+  "completedProcessIndices": [
+    0,
+    1,
+    2
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 12161.811000000002,
+            "wall": 32618.156125
+          },
+          "b": {
+            "cpu": 8247.006,
+            "wall": 22171.951458000003
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "cb2cebfc039e367b"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 12351.555,
+            "wall": 33737.4285
+          },
+          "b": {
+            "cpu": 8077.985999999999,
+            "wall": 21869.402791
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "cb2cebfc039e367b"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 12049.498000000001,
+            "wall": 32586.834583
+          },
+          "b": {
+            "cpu": 8217.050000000001,
+            "wall": 22829.308916
+          }
+        }
+      ],
+      "hashes": [
+        "b0e9f0e763c79d50",
+        "cb2cebfc039e367b"
+      ]
+    }
+  ],
+  "load1": [
+    20.322265625,
+    27.6181640625,
+    27.6181640625,
+    27.6181640625
+  ],
+  "complete": false
+}
