@@ -177,7 +177,6 @@
 - 261119 suggest T994: T994 needs client.ts for the private read/RPC boundary and consumer files for undefined-safe access; its five-file touches omit these required paths. Replan the active task after releasing its claim, preserving acceptance and the 5-file limit, before implementation.
 - 261119 decided T994: T994 read boundary exceeds five files → prepare undefined-safe consumers and world-only benchmark digest as T1026/T1027, then keep host, protocol, client, store and progression in T994 with its acceptance intact (alt: broaden one task beyond five files | leave consumers unsafe).
 - 261119 decided T994: Repeated unit cuts on T994 → split an unchanged read boundary first, clock/store activation second and paired measurement last; dimming depends on activation (alt: one cross-boundary unit | omit the speed gate).
-- 261119 parked T994: Planning commit 4530c1a5 could not be plan-pushed: origin/main T994 result differs from the session parent; plan-sync reported no action and retry still conflicted. Reconcile the planning commit against origin/main before implementing T994.
 - 261119 decided T997: ARCH-6 helper threshold after measurement → two helpers from three cores, none below or unknown (alt: retain two despite slowdown | disable helpers); paired wall interval is slower on two and faster on three.
 - 261119 decided T997: T997 measured two helpers slower on two cores → ARCH r52 starts the two helpers from three cores (HELPER_CONFIG.minCores 3), keeps the engine share wherever helpers run, and a two-core device computes alone; T997's first acceptance reads three cores and its fallback clause is now the rule (alt: keep two cores and accept 9% slower | drop the engine share)
 - 261119 decided T998: Use three helpers only at measured 6, 8 and 12 cores; keep two at all other eligible counts, including 4 where a repeat did not clear noise (alternatives: four helpers or extrapolate to unmeasured counts). Three clears noise on each adopted class and has the lower measured ratio at 6 and 12.
@@ -267,6 +266,7 @@
 | T998 | x10 | gusta-session-start-x10-d3a275d5 | 8a8ed90c788b | 2026-11-19T06:47Z |
 
 ## log
+- 261119 published by the coordinator as e2defed18 (T994 T1020 T1026 T1027 T1028 T1029 and their STATE rows); session merge clean
 - 261119 T998 done
 - 261119 T1030 done
 - 261119 T997 done
@@ -286,4 +286,3 @@
 - 261119 T1003 done
 - 261119 T991 done
 - 261119 T1002 done
-- 261119 261119 mr18cx (T953–T980) + cx19 (T981) landed on main 36bcf488 as 0.8.13 after merging np19; verify:batch on 95e03065 (8 load timeouts rerun green), known +15–19% lived-season cost
