@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { integer, random } from '../../../../packages/engine/src/primitives';
-import { base64, integers, reader, unbase64 } from './packing';
+import { integers, reader } from './packing';
+import { base64, unbase64 } from './base64';
 
 // Frozen copy of packing.ts's helpers before T789 (planning commit aeb2c618): the oracle the integer
 // paths must match byte for byte. Do not update it when the codec changes.

@@ -32,7 +32,6 @@
     "verify:batch": "node scripts/verify.mjs --batch"
   },
   "dependencies": {
-    "brotli": "2.1.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "4.6.5",

@@ -5,6 +5,7 @@ import {
   type PackedPlayerRecords,
 } from './playerRecordPacking';
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { base64, unbase64 } from './base64';
 import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
 import { packAppearances, readAppearances, type PackedAppearances } from './identityPacking';
 import { packMatchModel, unpackMatchModel, type PackedMatchModel } from './matchModelPacking';
@@ -28,12 +29,6 @@ import type {
   MatchMaterial,
 } from '../../../../packages/contracts/src/types';
 // Lossless archive encoding. Statistics use unsigned LEB128, never a fixed-width truncation.
-const BASE64_CODES = Uint8Array.from(
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
-  (char) => char.charCodeAt(0),
-);
-const BASE64_PAD = '='.charCodeAt(0);
-const ascii = new TextDecoder();
 /**
  * Values below this are written with 32-bit shifts and masks. Larger ones (money, ids up to 53 bits)
  * stay on exact floating-point arithmetic, which `<<`/`>>>` would truncate.
@@ -42,36 +37,6 @@ const INTEGER_LIMIT = 2 ** 31;
 /** Bytes the widest safe integer takes in LEB128 (53 bits, 7 per byte). */
 const MAX_VARINT_BYTES = 8;
 
-/** Padded standard base64, the same text `btoa` gives, written as ASCII codes (as bitpacking.ts). */
-export function base64(bytes: Uint8Array) {
-  const length = bytes.length,
-    text = new Uint8Array(Math.ceil(length / 3) * 4);
-  let at = 0,
-    i = 0;
-  for (; i + 2 < length; i += 3) {
-    const triple = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
-    text[at++] = BASE64_CODES[triple >>> 18];
-    text[at++] = BASE64_CODES[(triple >>> 12) & 63];
-    text[at++] = BASE64_CODES[(triple >>> 6) & 63];
-    text[at++] = BASE64_CODES[triple & 63];
-  }
-  if (i < length) {
-    const pair = i + 1 < length;
-    const triple = (bytes[i] << 16) | (pair ? bytes[i + 1] << 8 : 0);
-    text[at++] = BASE64_CODES[triple >>> 18];
-    text[at++] = BASE64_CODES[(triple >>> 12) & 63];
-    text[at++] = pair ? BASE64_CODES[(triple >>> 6) & 63] : BASE64_PAD;
-    text[at] = BASE64_PAD;
-  }
-  return ascii.decode(text);
-}
-export function unbase64(s: string) {
-  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(s)) throw new Error(sourceMessage('copy.packing.0e84000039'));
-  const binary = atob(s),
-    bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
-}
 /** A season archive without its heat map, which has its own stream. */
 function withoutHeat<T extends { heat?: unknown }>(season: T): T {
   const copy = { ...season };

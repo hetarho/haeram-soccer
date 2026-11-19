@@ -20,7 +20,7 @@ import { sharedTransferredScorer } from '../../../../tests/fixtures/transferred-
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
-import { checkpoint, encode, decode, recognizedLegacy } from './persistence';
+import { checkpoint, encode, decode } from './persistence';
 import { pack, unpack } from './packing';
 import { CAREER, legacyIntegers } from './persistence.testkit';
 
@@ -94,9 +94,7 @@ describe('own-manager history checkpoints (→SAVE-24)', () => {
     expect(loaded.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(canonical(loaded.world)).toBe(canonical(w));
     expect((await checkpoint(w)).envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
-    // Its header still names its rules for recognition; it is never legacy-reset data.
     expect(envelopeEngine(raw)).toBe(w.engine);
-    expect(await recognizedLegacy(raw)).toBe(false);
   });
 
   it('keeps an untracked career in its older container with attribution absent', async () => {

@@ -1,7 +1,5 @@
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
-import { denseBytes, denseText } from './dense';
-import { bmpBytes, bmpText } from './bmp127';
-import { unbase64 } from './packing';
+import { base64, unbase64 } from './base64';
 import type { SaveCodec } from './repository';
 const LIMIT = 32 * 1024 * 1024;
 async function gzip(bytes: Uint8Array, compress: boolean) {
@@ -33,29 +31,15 @@ export interface EncodedPayload {
   codec: SaveCodec;
   payload: string;
 }
-export async function encodePayload(
-  bytes: Uint8Array,
-  acceptsFast?: (candidate: EncodedPayload) => boolean,
-): Promise<EncodedPayload> {
+/** Every checkpoint and export is gzip in base64 (→SAVE-2, →ARCH-12): no other codec exists. */
+export async function encodePayload(bytes: Uint8Array): Promise<EncodedPayload> {
   if (bytes.length > LIMIT) throw new Error(sourceMessage('copy.compression.32374943f3'));
-  const fast = await gzip(bytes, true);
-  const candidate: EncodedPayload = { codec: 'gzip-cjk14', payload: denseText(fast) };
-  if (fast.length <= 1_200_000 || acceptsFast?.(candidate)) return candidate;
-  const { compress } = await import('brotli/compress');
-  const packed = await compress(bytes, { quality: 11, lgwin: 24 });
-  if (!packed) throw new Error(sourceMessage('copy.compression.799ea5e9b6'));
-  return { codec: 'brotli-bmp127', payload: bmpText(packed) };
+  return { codec: 'gzip-base64', payload: base64(await gzip(bytes, true)) };
 }
 export function payloadBytes(codec: SaveCodec, payload: string): Uint8Array {
-  return codec === 'brotli-bmp127'
-    ? bmpBytes(payload)
-    : codec === 'gzip-base64'
-      ? unbase64(payload)
-      : denseBytes(payload);
+  if (codec !== 'gzip-base64') throw new Error(sourceMessage('copy.persistence.62a3396f6d'));
+  return unbase64(payload);
 }
 export async function decodePayload(codec: SaveCodec, payload: string): Promise<Uint8Array> {
-  const bytes = payloadBytes(codec, payload);
-  if (codec !== 'brotli-bmp127') return gzip(bytes, false);
-  const { decompress } = await import('brotli/decompress');
-  return decompress(bytes, undefined, LIMIT);
+  return gzip(payloadBytes(codec, payload), false);
 }

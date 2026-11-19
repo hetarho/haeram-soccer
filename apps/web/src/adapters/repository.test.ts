@@ -59,7 +59,7 @@ function checkpoint(generation: number, size = 100, worldId = 'w1') {
     worldId,
     generation,
     parentGeneration: generation - 1,
-    codec: 'gzip-cjk14',
+    codec: 'gzip-base64',
     checksum: '0'.repeat(64),
     payload: 'x'.repeat(size),
   };

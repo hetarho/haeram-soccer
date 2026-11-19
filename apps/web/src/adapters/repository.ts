@@ -17,8 +17,8 @@ function checkpointGeneration(raw: string | null) {
   }
 }
 /** Codec vocabulary is shared by recovery ownership and the validating worker. */
-export const SAVE_CODECS: readonly string[] = ['gzip-cjk14', 'gzip-base64', 'brotli-bmp127'];
-export type SaveCodec = 'gzip-cjk14' | 'gzip-base64' | 'brotli-bmp127';
+export const SAVE_CODECS: readonly string[] = ['gzip-base64'];
+export type SaveCodec = 'gzip-base64';
 export interface StoragePort {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;

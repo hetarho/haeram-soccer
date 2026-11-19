@@ -157,7 +157,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   const file = await download;
   await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   const raw = readFileSync((await file.path())!);
-  expect(JSON.parse(raw.toString()).codec).toBe('gzip-cjk14');
+  expect(JSON.parse(raw.toString()).codec).toBe('gzip-base64');
   await openClubhouse(page);
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');

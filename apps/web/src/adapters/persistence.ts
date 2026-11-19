@@ -24,24 +24,16 @@ import {
   FULL_MODEL_CHECKPOINT_SCHEMA,
   MANAGER_HISTORY_CHECKPOINT_SCHEMA,
   isCheckpointSchema,
-  LEGACY_ENGINE_VERSIONS,
   earlierRulesMessage,
   isEarlierEngine,
   NEWER_GAME_MESSAGE,
   PARITY_LEVEL_CATALOGS,
   PRIOR_CATALOG_HASHES,
   RELEVELLED_MONEY_MESSAGE,
-  RULES_FOUR_VERSIONS,
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
-import {
-  SAVE_CODECS,
-  INDEXED_CHECKPOINT_LIMIT,
-  PORTABLE_FILE_LIMIT,
-  ACTIVE,
-  type Envelope,
-} from './repository';
+import { SAVE_CODECS, PORTABLE_FILE_LIMIT, type Envelope } from './repository';
 export { INDEXED_CHECKPOINT_LIMIT, PORTABLE_FILE_LIMIT } from './repository';
 export type { Envelope, StoragePort, SaveInspector, PreviousStore } from './repository';
 async function digest(bytes: Uint8Array) {
@@ -66,13 +58,7 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
     checksum,
     payload: payload.payload,
   });
-  const payload = await encodePayload(bytes, (candidate) => {
-    const raw = JSON.stringify(envelope(candidate));
-    return (
-      2 * (raw.length + ACTIVE.length) <= INDEXED_CHECKPOINT_LIMIT &&
-      new TextEncoder().encode(raw).length <= PORTABLE_FILE_LIMIT
-    );
-  });
+  const payload = await encodePayload(bytes);
   return JSON.stringify(envelope(payload));
 }
 /**
@@ -160,36 +146,6 @@ async function readCheckpoint(
   if (!history && carriesMatchModel(value) !== (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA))
     throw new SaveCompatibilityError(sourceMessage('copy.persistence.bbef3363d2'));
   return { value, envelope };
-}
-/**
- * Integrity and known historical metadata, independently of today's unpacking and world schema:
- * an earlier rules' career is recognized even though this version can no longer read it (→SAVE-18).
- */
-export async function recognizedLegacy(raw: string): Promise<boolean> {
-  try {
-    const { json, envelope } = await readEnvelope(raw, LEGACY_ENGINE_VERSIONS);
-    // Rules before 4.0.0 were never written in the match-model or manager-history container; the
-    // rules-4.0.0 line was (→SAVE-23/24, SAVE-26).
-    if (
-      (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA ||
-        envelope.schema === MANAGER_HISTORY_CHECKPOINT_SCHEMA) &&
-      !RULES_FOUR_VERSIONS.includes(envelope.engine)
-    )
-      return false;
-    const packed = json as { format?: unknown; world?: Partial<World> } | null;
-    const world = packed?.world;
-    return (
-      packed?.format === 'compact1' &&
-      !!world &&
-      typeof world === 'object' &&
-      world.id === envelope.worldId &&
-      world.engine === envelope.engine &&
-      world.catalog === envelope.catalog &&
-      world.catalogHash === envelope.catalogHash
-    );
-  } catch {
-    return false;
-  }
 }
 export async function decode(raw: string): Promise<{ world: World; envelope: Envelope }> {
   const { value, envelope: e } = await readCheckpoint(raw, SUPPORTED_ENGINE_VERSIONS, true);

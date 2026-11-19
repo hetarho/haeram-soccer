@@ -33,11 +33,8 @@ import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, type PreviousStore, type StoragePort } from './persistence';
 import { MANIFEST } from './repository';
-import { base64, pack, unpack } from './packing';
-import { denseBytes } from './dense';
-import { bmpText } from './bmp127';
+import { pack, unpack } from './packing';
 import { encodePayload } from './compression';
-import { brotliCompressSync } from 'node:zlib';
 import {
   COMPATIBLE_ENGINE_VERSIONS,
   CURRENT_CHECKPOINT_SCHEMA,
@@ -251,20 +248,17 @@ describe('recoverable persistence', () => {
     history.scorerSeason!.history.at(-1)!.rows[0][0] = history.scorerSeason!.players.length;
     await expect(decode(await encode(history))).rejects.toThrow('득점 순위 추이');
   });
-  it('writes dense checkpoints and still loads earlier Base64 checkpoints', async () => {
+  it('writes gzip-base64 checkpoints only and refuses any other codec as incompatible', async () => {
     const w = observed(1);
-    const dense = JSON.parse(await encode(w));
-    expect(dense.codec).toBe('gzip-cjk14');
-    const legacy = JSON.stringify({
-      ...dense,
-      codec: 'gzip-base64',
-      payload: base64(denseBytes(dense.payload)),
-    });
-    expect(legacy.length).toBeGreaterThan(JSON.stringify(dense).length * 2);
-    expect(canonical((await decode(legacy)).world)).toBe(canonical(w));
-    await expect(
-      decode(JSON.stringify({ ...dense, payload: dense.payload + 'A' })),
-    ).rejects.toThrow('저장 인코딩');
+    const raw = await encode(w);
+    const e = JSON.parse(raw);
+    expect(e.codec).toBe('gzip-base64');
+    expect(canonical((await decode(raw)).world)).toBe(canonical(w));
+    for (const codec of ['gzip-cjk14', 'brotli-bmp127', 'unknown'])
+      await expect(decode(JSON.stringify({ ...e, codec }))).rejects.toBeInstanceOf(
+        SaveCompatibilityError,
+      );
+    await expect(decode(JSON.stringify({ ...e, payload: e.payload + 'A' }))).rejects.toThrow();
   });
   it('rejects payload corruption and future versions', async () => {
     const e = JSON.parse(await encode(world()));
@@ -1167,19 +1161,14 @@ it('feature-state-lossless-roundtrip and continued-career-parity preserve roles,
   expect(canonical((await decode(await encode(restored))).world)).toBe(canonical(original));
 });
 
-it('validates Brotli envelope checksums, world metadata and future codecs before activation', async () => {
+it('validates envelope checksums and world metadata before activation', async () => {
   const w = features();
   const e = JSON.parse(await encode(w));
-  e.codec = 'brotli-bmp127';
-  e.payload = bmpText(brotliCompressSync(new TextEncoder().encode(canonical(pack(w)))));
   expect(canonical((await decode(JSON.stringify(e))).world)).toBe(canonical(w));
   await expect(decode(JSON.stringify({ ...e, checksum: '0'.repeat(64) }))).rejects.toThrow(
     '체크섬',
   );
   await expect(decode(JSON.stringify({ ...e, worldId: 'wrong-world' }))).rejects.toThrow('헤더');
-  await expect(decode(JSON.stringify({ ...e, codec: 'brotli-bmp128' }))).rejects.toBeInstanceOf(
-    SaveCompatibilityError,
-  );
 });
 
 it('rejects malformed compact optional shapes and expanded person facts on the full-world validation path', async () => {
@@ -1208,9 +1197,8 @@ it('rejects malformed compact optional shapes and expanded person facts on the f
     const bytes = new TextEncoder().encode(canonical(packed));
     const raw = JSON.stringify({
       ...envelope,
-      codec: 'brotli-bmp127',
       checksum: await sha256(bytes),
-      payload: bmpText(brotliCompressSync(bytes)),
+      payload: (await encodePayload(bytes)).payload,
     });
     await expect(decode(raw)).rejects.toThrow();
   }
