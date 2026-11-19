@@ -181,6 +181,7 @@
 - 261119 parked T994: Planning commit 4530c1a5 could not be plan-pushed: origin/main T994 result differs from the session parent; plan-sync reported no action and retry still conflicted. Reconcile the planning commit against origin/main before implementing T994.
 - 261119 suggest T997: ARCH-6 requires helpers from two cores, but T997 requires the lowest measured faster threshold: paired own-day wall is 1.094 (95% 1.0548–1.1396) on CPUs 0,1 and 0.8993 (0.8910–0.9077) on CPUs 0–2 versus no helpers. Reconcile ARCH and the active task contract before enabling the measured three-core threshold; the full-season comparison is integration-stage handoff under ARCH-30.
 - 261119 decided T997: ARCH-6 helper threshold after measurement → two helpers from three cores, none below or unknown (alt: retain two despite slowdown | disable helpers); paired wall interval is slower on two and faster on three.
+- 261119 decided T997: T997 measured two helpers slower on two cores → ARCH r52 starts the two helpers from three cores (HELPER_CONFIG.minCores 3), keeps the engine share wherever helpers run, and a two-core device computes alone; T997's first acceptance reads three cores and its fallback clause is now the rule (alt: keep two cores and accept 9% slower | drop the engine share)
 
 ## unlanded
 | id | tag | branch | commit | at |
