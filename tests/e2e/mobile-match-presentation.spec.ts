@@ -158,9 +158,10 @@ test('mobile result-only continuation preserves the exiting card position', asyn
 
 /** An early home goal for presentation checks; later goals follow the current model. */
 function goalWorld() {
-  // The current seeded record has home goals at 3′, 69′ and 87′, each with its full staged
-  // build-up; scripts/find-goal-seeds.ts verifies the same opening/footage/pause criteria.
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-53' });
+  // The current seeded record opens with a home goal at 5′ and holds six goals, each with its full
+  // staged build-up (re-found for 0.8.13's world); scripts/find-goal-seeds.ts verifies the same
+  // opening/footage/pause criteria.
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-473' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }
