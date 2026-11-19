@@ -69,7 +69,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T989 | todo |
-| T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | todo |
+| T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | doing@261119.x10 |
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
 | T994 | Slow view reads wait for a stopped clock | WEB ARCH | - | todo |
 | T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T994 | todo |

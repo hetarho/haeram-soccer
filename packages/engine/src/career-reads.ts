@@ -1,7 +1,7 @@
 import type { World } from '../../contracts/src/types';
 import { CAREER_READS_FORMAT } from '../../contracts/src/career-reads';
 import type { CareerReads, PlayerRead } from '../../contracts/src/career-reads';
-import { heatMap, MATERIAL_LAYOUT, ownSideOf } from './material';
+import { ownSideOf } from './material';
 import { clubOf, isOwnSeason } from './player-state';
 
 function playerRow(s: CareerReads, id: string, year: number): PlayerRead {
@@ -87,17 +87,6 @@ export function refreshCareerReads(w: World) {
         p.red[1] += red;
       }
       if (m.kind === 'league') p.leagueReds += red;
-    }
-    if (m.year === w.year && m.material) {
-      const side = ownSideOf(m, w.playerClub);
-      for (const line of m.players) {
-        const map = heatMap(m, line.id, side);
-        if (!map?.touches) continue;
-        const p = playerRow(s, line.id, m.year);
-        if (!p.heat) s.heatPlayers.push(line.id);
-        const heat = (p.heat ??= Array<number>(MATERIAL_LAYOUT.cells).fill(0));
-        map.cells.forEach((n, i) => (heat[i] += n));
-      }
     }
   }
   while (s.events < w.events.length)

@@ -4,22 +4,13 @@ import type { MatchMaterial, MatchRecord } from '../../contracts/src/types';
 import { ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { CAREER } from './finance.testkit';
-import { cellOf } from './match/pitch';
 import { MaterialTally } from './match/record';
 import { country } from '../../catalogs/src/index';
 import { closeSeason, simulateMatch } from './index';
 import { careerWorld, CAREER_YEAR } from './career.testkit';
 import { ranked } from './season';
 import { clubOf } from './world';
-import {
-  heatMap,
-  ownSideOf,
-  passNetwork,
-  seasonHeat,
-  shotMap,
-  tacticalReport,
-  type MaterialShot,
-} from './material';
+import { ownSideOf, passNetwork, shotMap, tacticalReport, type MaterialShot } from './material';
 
 const XI = Array.from({ length: 11 }, (_, i) => i);
 /** A record around `material` with both sides' lines: home `h0…`, away `a0…`. */
@@ -54,7 +45,7 @@ describe('post-match material', () => {
     const m = own.material!;
     const side = ownSideOf(own, w.playerClub)!;
     const lines = own.lineCounts![side];
-    expect(m.heat).toHaveLength((lines + 2) * 40);
+    expect(m.heat).toBeUndefined();
     expect(m.report).toHaveLength(60);
     // Every shot of both sides is on the map, at the shooter's line.
     const shots = shotMap(own);
@@ -66,16 +57,8 @@ describe('post-match material', () => {
       expect(s.player).toBe(line.id);
       expect(line.metrics[4]).toBeGreaterThan(0);
     }
-    // The own lines add up to the own total, and the network counts the same touches.
-    const total = heatMap(own, 'own', side)!;
     const network = passNetwork(own, side)!;
-    let sum = 0;
-    for (const node of network.nodes) {
-      expect(heatMap(own, node.player!, side)!.touches).toBe(node.touches);
-      sum += node.touches;
-    }
-    expect(total.touches).toBe(sum);
-    expect(heatMap(own, 'opponent', side)!.touches).toBeGreaterThan(0);
+    expect(network.nodes).toHaveLength(lines);
     expect(m.network.length).toBe(lines * 3 + network.pairs.length * 3);
     for (const s of [0, 1] as const) {
       const report = tacticalReport(own, s)!;
@@ -86,7 +69,7 @@ describe('post-match material', () => {
     }
   });
 
-  it('counts touches per cell', () => {
+  it('counts touches for average positions', () => {
     const t = new MaterialTally(0, 14);
     // Home attacks toward x = 105: its frame is the engine frame.
     t.touch(0, 3, [60, 30], 'progression');
@@ -96,14 +79,6 @@ describe('post-match material', () => {
     t.touch(1, 4, [10, 30], 'finalThird');
     const m = t.finish([XI, XI]);
     const r = recordOf(m);
-    const cells = heatMap(r, 'h3', 0)!.cells;
-    expect(cells[cellOf([60, 30])]).toBe(2);
-    expect(heatMap(r, 'h3', 0)!.touches).toBe(2);
-    expect(heatMap(r, 'h9', 0)!.cells[cellOf([95, 34])]).toBe(1);
-    expect(heatMap(r, 'own', 0)!.touches).toBe(3);
-    expect(heatMap(r, 'opponent', 0)!.cells[cellOf([95, 38])]).toBe(1);
-    // An away player is not an own line.
-    expect(heatMap(r, 'a4', 0)).toBeUndefined();
     expect(passNetwork(r, 0)!.nodes[3]).toEqual({
       line: 3,
       player: 'h3',
@@ -135,7 +110,7 @@ describe('post-match material', () => {
     ]);
   });
 
-  it('reduces material to season heat maps at the close', () => {
+  it('deletes material at the close', () => {
     // This local career must genuinely finish outside the playoff places; the next case covers
     // material from a playoff played during the close.
     const w = simulatedWorld(CAREER, { rounds: 46 });
@@ -174,15 +149,6 @@ describe('post-match material', () => {
     expect(season.length).toBeGreaterThan(0);
     // The saved own record keeps only the own lines and its material.
     for (const m of season) expect(m.material).toBeDefined();
-    const expected: Record<string, number[]> = {};
-    for (const m of season)
-      for (const p of m.players) {
-        const cells = heatMap(m, p.id)!.cells;
-        const sum = (expected[p.id] ??= new Array<number>(40).fill(0));
-        cells.forEach((n, c) => (sum[c]! += n));
-      }
-    for (const id of Object.keys(expected))
-      if (expected[id]!.every((n) => n === 0)) delete expected[id];
     const year = w.year;
 
     closeSeason(w);
@@ -190,10 +156,7 @@ describe('post-match material', () => {
     expect(w.ownMatches.filter((m) => m.year === year).map((m) => m.id)).toEqual(ownMatchIds);
     expect(w.ownMatches.some((m) => m.id.startsWith(playoff))).toBe(false);
     const archive = w.history.find((h) => h.year === year)!;
-    expect(archive.heat).toEqual(expected);
-    const [first] = Object.keys(expected);
-    expect(seasonHeat(archive, first!)!.cells).toEqual(expected[first!]);
-    expect(seasonHeat(archive, 'nobody')).toBeUndefined();
+    expect(archive.heat).toBeUndefined();
     for (const m of w.ownMatches.filter((m) => m.year === year)) {
       expect(m.material).toBeUndefined();
       // Outcomes, xG and counters stay (→MATCH-5).
@@ -218,13 +181,6 @@ describe('post-match material', () => {
     w.tables[w.playerClub] = { ...w.tables[ranked(w, division)[automatic + 1]!.id]! };
     // Its ties are named by the boundary it plays for, read before the close moves any club.
     const ties = `${year}:promotion:${own.country}:${own.tier - 1}:`;
-    const touches = (heat: Record<string, number[]> = {}) =>
-      Object.values(heat)
-        .flat()
-        .reduce((s, n) => s + n, 0);
-    let league = 0;
-    for (const m of w.ownMatches.filter((m) => m.year === year))
-      for (const p of m.players) league += heatMap(m, p.id)!.touches;
 
     closeSeason(w);
 
@@ -241,8 +197,7 @@ describe('post-match material', () => {
       expect(m.metrics).toHaveLength(2);
       expect(m.detail).toHaveLength(2);
     }
-    // The season heat maps take the playoff touches too.
-    expect(touches(w.history.find((h) => h.year === year)!.heat)).toBeGreaterThan(league);
+    expect(w.history.find((h) => h.year === year)!.heat).toBeUndefined();
   });
 
   it('decodes what it encodes', () => {
@@ -283,7 +238,7 @@ describe('post-match material', () => {
     const saved = recordOf(r.material!, [11, 0]);
     expect(shotMap(saved)[1]).not.toHaveProperty('player');
     expect(ownSideOf(saved)).toBe(0);
-    expect(heatMap(saved, 'h9')!.touches).toBe(1);
+    expect(passNetwork(saved)!.nodes[9]!.touches).toBe(1);
 
     expect(tacticalReport(r, 0)).toEqual({
       finalThirdEntries: [0, 0, 1, 0, 0],
@@ -311,7 +266,5 @@ describe('post-match material', () => {
       counterShots: 1,
       cutBacks: 1,
     });
-    // The header was the header taker's touch, in his own frame.
-    expect(heatMap(r, 'opponent', 0)!.cells[cellOf([90, 40])]).toBe(1);
   });
 });

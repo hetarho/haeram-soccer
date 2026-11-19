@@ -677,7 +677,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
   retainRecentResults(w);
   refreshReadModels(w);
-  // The season's own match material, the playoff's included, becomes one heat map per own player
+  // The season's own match material, the playoff's included, expires at the close
   // (→MATCH-5).
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   // The final table and any promotion are credited before the close's departures (→HIST-19).

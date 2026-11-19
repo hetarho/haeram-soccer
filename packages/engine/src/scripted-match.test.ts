@@ -1,5 +1,5 @@
 /** Host integration gate: real own fixtures and season settlement, never task-tier execution. */
-import { describe, expect, it, onTestFinished, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -13,7 +13,6 @@ import { simulateMatch, prepareMatch } from './match';
 import { validateFullMatchRecord } from './match-model';
 import { MATCH_MODEL_RELEASE } from './match-model-release';
 import { advanceRound, closeSeason } from './season';
-import * as material from './material';
 import { advanceToNextMatch, handTo, holdRows } from './testing';
 import { matchDetail } from './script/detail';
 import { validateScript } from './script/validate';
@@ -123,7 +122,7 @@ describe('revision 11 own matches on the result path', () => {
     }
     expect(found).toBeDefined();
   });
-  it('a whole own season settles and the close reduces its material to season heat maps', () => {
+  it('a whole own season settles and the close deletes its material', () => {
     const w = handTo(world(), 4),
       year = w.year;
     // Financial failure is independent of this settlement integration case.
@@ -160,26 +159,9 @@ describe('revision 11 own matches on the result path', () => {
     expect(w.players.some((p) => p.career[M.minutes]! > 0)).toBe(true);
     expect({ morale: w.morale, fatigue: w.players.map((p) => p.fatigue) }).not.toEqual(before);
     for (const m of w.ownMatches.filter((m) => m.year === year)) expect(m.material).toBeDefined();
-    // The close may first play the own club's promotion playoffs, whose material counts too: the
-    // expected maps sum every own match of the season as the reduction finds them.
-    const heat: Record<string, number[]> = {};
-    const reduce = material.reduceSeasonMaterial;
-    const spy = vi.spyOn(material, 'reduceSeasonMaterial').mockImplementation((at, archive) => {
-      for (const m of at.ownMatches.filter((m) => m.year === year)) {
-        expect(m.material).toBeDefined();
-        m.players.forEach((p, line) => {
-          const cells = (heat[p.id] ??= Array<number>(40).fill(0));
-          for (let c = 0; c < 40; c++) cells[c]! += m.material!.heat[line * 40 + c]!;
-        });
-      }
-      reduce(at, archive);
-    });
-    onTestFinished(() => spy.mockRestore());
     closeSeason(w);
-    expect(spy).toHaveBeenCalledTimes(1);
-    for (const id of Object.keys(heat)) if (!heat[id]!.some((n) => n > 0)) delete heat[id];
     const archived = w.history.find((s) => s.year === year)!;
-    expect(archived.heat).toEqual(heat);
+    expect(archived.heat).toBeUndefined();
     expect(w.ownMatches.filter((m) => m.year === year).every((m) => !m.material)).toBe(true);
     expect(w.year).toBe(year + 1);
   });

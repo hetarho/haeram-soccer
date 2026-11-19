@@ -735,7 +735,7 @@ export interface MatchMaterial {
   /** Per shot 7 ints: side, line index in `players`, x×10, y×10, xG×100, outcome, header. */
   shots: number[];
   /** Own side: 40 cell touch counts per own line, then the own side total, then the opponent's. */
-  heat: number[];
+  heat?: number[];
   /** Own side: [avgX×10, avgY×10, touches] per own line, then [from, to, completed] per pair. */
   network: number[];
   /** Per side 30 ints of the tactical report. */
