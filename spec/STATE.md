@@ -80,7 +80,6 @@
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
 | T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
 | T998 | Helper count by core class | ARCH | T997 | todo |
-| T1008 | Export and import the gzip-compressed database as `.haeram-save` | SAVE ARCH | T1007 | todo |
 | T1009 | IndexedDB checkpoints, the repository and the JSON envelope are retired | SAVE ARCH | T1008 | todo |
 | T1010 | Each game keeps a season backup and offers recovery from it | SAVE ARCH WEB | T1009 | todo |
 | T1011 | One tab plays a game; another tab offers 여기서 이어 하기 | SAVE ARCH WEB | T1007 | todo |
@@ -110,8 +109,9 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- gusta-implement-task T1009
 - gusta-implement-task T1026
-- gusta-implement-task T1008 T1011 T990
+- gusta-implement-task T1011 T990
 - gusta-implement-task T994
 - gusta-implement-task T989 T991
 - gusta-implement-task T953 T954
