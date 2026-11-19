@@ -97,7 +97,6 @@
 | T1027 | Prepare automatic-play view measurement | ARCH | - | todo |
 | T1028 | Activate stopped-clock reads | WEB ARCH | T994 | todo |
 | T1029 | Measure stopped-clock reads | WEB ARCH | T1028 | todo |
-| T1030 | Fix phase 1 gate failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -111,7 +110,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1030
+- gusta-implement-task T1026
 - gusta-implement-task T1008 T1011 T990
 - gusta-implement-task T994
 - gusta-implement-task T989 T991
