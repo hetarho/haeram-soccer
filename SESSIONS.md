@@ -180,7 +180,6 @@
 - 261119 decided T997: T997 measured two helpers slower on two cores → ARCH r52 starts the two helpers from three cores (HELPER_CONFIG.minCores 3), keeps the engine share wherever helpers run, and a two-core device computes alone; T997's first acceptance reads three cores and its fallback clause is now the rule (alt: keep two cores and accept 9% slower | drop the engine share)
 - 261119 decided T998: Use three helpers only at measured 6, 8 and 12 cores; keep two at all other eligible counts, including 4 where a repeat did not clear noise (alternatives: four helpers or extrapolate to unmeasured counts). Three clears noise on each adopted class and has the lower measured ratio at 6 and 12.
 - 261119 decided T998: Hand off the three-helper full-season parity assertion to the shared integration gate, preserving its full coverage (alternative: run integration inside this task); ARCH-30 and the assigned unit contract reserve integration for the fixed candidate.
-- 261119 suggest T1019: T1019 needs its test scope reconciled before implementation: career-reads.test.ts and schema.contract.test.ts require legacy heat preservation, while match-viewer/materialView and engine tests reference deleted heat fields. These files are outside touches; revising them is necessary for typecheck and truthful regression coverage. T1002 removed packing but SQLite record store is not yet present here.
 - 261119 decided T1019: T1019 test scope → every test that references the removed heat fields is part of this task: career-reads.test.ts and schema.contract.test.ts change from 'heat is preserved' to 'a legacy heat key is dropped on load', MatchMaterial.test.ts, materialView.test.ts and engine tests drop heat fixtures; test files never count against touches, so do not edit the task file or its touches; the record store does not exist yet (sv19 T1003+), so the heat removal covers contracts, schema and career reads only and the save-size measurement uses the current plain-world checkpoint (alt: park T1019 until the record store lands | split a test-only task)
 
 ## unlanded
@@ -267,6 +266,7 @@
 | T998 | x10 | gusta-session-start-x10-d3a275d5 | 8a8ed90c788b | 2026-11-19T06:47Z |
 
 ## log
+- 261119 answered by decided T1019 (tests belong to the task; no task-file edit)
 - 261119 resolved by 3ca3e2c8f: T993 took the schemas with optional heat fields; T993 done
 - 261119 replanned: T1026/T1027 split, then T994/T1028/T1029 (decided 261119)
 - 261119 published by the coordinator as e2defed18 (T994 T1020 T1026 T1027 T1028 T1029 and their STATE rows); session merge clean
@@ -286,4 +286,3 @@
 - 261119 T1005 done
 - 261119 T992 done
 - 261119 T1004 done
-- 261119 T1003 done
