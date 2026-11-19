@@ -756,6 +756,7 @@ export class ProgressionController {
     if (this.inFlight) this.client.cancel();
     this.flush();
     this.lock();
+    this.restoreStoppedReads();
     if (!was) return;
     this.writeClock(true);
     // A clock that stops for any reason saves its automatic progress at once (→SAVE-8).
@@ -766,7 +767,25 @@ export class ProgressionController {
     const locked = this.store.getState().running || this.draining;
     if (locked === this.locked) return;
     this.locked = locked;
+    if (locked) this.needsStoppedReads = true;
     this.client.setClockRunning(locked);
+    if (!locked) this.restoreStoppedReads();
+  }
+  private needsStoppedReads = false;
+  /** A cancelled in-flight step can still publish a day after the lock first lifts. */
+  private restoreStoppedReads() {
+    if (
+      this.disposed ||
+      !this.needsStoppedReads ||
+      this.locked ||
+      this.inFlight ||
+      this.ahead.length
+    )
+      return;
+    const view = gameStore.getSnapshot().view;
+    this.needsStoppedReads = false;
+    if (!view) return;
+    void this.client.refreshStoppedReads().catch(() => {});
   }
   /** Stops on the eve of an own match the owner wants to decide; true when it stopped. */
   private eveStop(w: World) {
@@ -899,6 +918,7 @@ export class ProgressionController {
       this.flush();
       if (!progress.running) this.client.saveSoon();
     } else void this.tick();
+    this.restoreStoppedReads();
     this.summarize();
   }
   /**
@@ -1079,6 +1099,7 @@ export class ProgressionController {
     }
     // A stop that came while the step ran saved before the step landed; save what it played.
     else this.client.saveSoon();
+    this.restoreStoppedReads();
     this.summarize();
   }
   /**

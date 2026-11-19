@@ -286,7 +286,7 @@ export const requestSchema = z.object({
       playerId: ref,
       world: z.string().min(1).max(300),
     }),
-    z.object({ type: z.literal('command'), command }),
+    z.object({ type: z.literal('command'), command, automatic: z.boolean().optional() }),
     z.object({ type: z.literal('export') }),
     z.object({ type: z.literal('save') }),
     z.strictObject({
@@ -384,12 +384,12 @@ export type ProjectedWorld = Omit<
 };
 export interface View {
   world: ProjectedWorld;
-  coaches: Partial<Record<StaffRole, ReturnType<typeof staffCandidates>>>;
+  coaches?: Partial<Record<StaffRole, ReturnType<typeof staffCandidates>>>;
   totalMatches: number;
   milestones: ReturnType<typeof clubMilestones>;
   /** The manager market (→STAFF-17): free agents, then other clubs' managers. */
-  managers: ReturnType<typeof managerCandidates>;
-  transfers: ReturnType<typeof transferOffers>;
+  managers?: ReturnType<typeof managerCandidates>;
+  transfers?: ReturnType<typeof transferOffers>;
   /** Every sponsor slot with its contract or offers (→WEB-39). */
   sponsors: ReturnType<typeof sponsorSlots>;
   annualCost: string;
@@ -426,9 +426,9 @@ export interface View {
 export interface StoppedReads {
   world: string;
   revision: number;
-  coaches: View['coaches'];
-  managers: View['managers'];
-  transfers: View['transfers'];
+  coaches: NonNullable<View['coaches']>;
+  managers: NonNullable<View['managers']>;
+  transfers: NonNullable<View['transfers']>;
   disciplineNames: NonNullable<ProjectedWorld['disciplineNames']>;
   office: OfficeRead;
 }

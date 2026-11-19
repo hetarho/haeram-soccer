@@ -19,7 +19,7 @@ describe('world market worker integration', () => {
     );
     expect(page.ok).toBe(true);
     expect(page.worldMarket!.items).toHaveLength(3);
-    expect(page.worldMarket!.total).toBeGreaterThan(founded.view!.transfers.length);
+    expect(page.worldMarket!.total).toBeGreaterThan(founded.view!.transfers!.length);
     expect(page.view).toBeUndefined();
     expect(page.viewDelta).toBeUndefined();
     expect(host.world).toEqual(before);

@@ -444,9 +444,9 @@ export class Host {
    * This world's view, projected inside one read scope (→ARCH-6): the projection is synchronous and
    * changes nothing, so the parts that read the own XI share one choice of it.
    */
-  private view(w = this.world): View | undefined {
+  private view(w = this.world, deferSlow = false): View | undefined {
     if (!w) return;
-    return readingOnce(w, () => this.projection(w));
+    return readingOnce(w, () => this.projection(w, deferSlow));
   }
   /**
    * The five parts of the projection that cost the most each day (→WEB-119), shared by the full
@@ -462,8 +462,8 @@ export class Host {
       office: officeRead(w),
     };
   }
-  private projection(w: World): View {
-    const slow = this.slowReads(w);
+  private projection(w: World, deferSlow = false): View {
+    const slow = deferSlow ? undefined : this.slowReads(w);
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
     const next = nextOwnFixture(w);
@@ -474,11 +474,11 @@ export class Host {
     // so are the manager-history facts; the free-agent pool stays on the worker (→CLUB-49).
     const projected = projectWorldFacts(w);
     return {
-      coaches: slow.coaches,
+      ...(slow ? { coaches: slow.coaches } : {}),
       world: {
         ...projected,
         clubs: w.clubs.map((club) => ({ ...club, rating: rating(w, club) })),
-        disciplineNames: slow.disciplineNames,
+        ...(slow ? { disciplineNames: slow.disciplineNames } : {}),
         renewalChances: contractRenewalReads(w),
         // Browser projections omit `people`; resolving names there would regenerate old identities.
         nextOpponentLineup:
@@ -532,13 +532,12 @@ export class Host {
       totalMatches: w.ownMatches.length,
       tallies: tallies(w),
       milestones: clubMilestones(w),
-      managers: slow.managers,
-      transfers: slow.transfers,
+      ...(slow ? { managers: slow.managers, transfers: slow.transfers } : {}),
       sponsors: sponsorSlots(w),
       annualCost: operatingCost(w),
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
-      office: slow.office,
+      ...(slow ? { office: slow.office } : {}),
       news: this.news(w),
       newsTotal: newsTotal(w),
       managerHistoryKey: managerHistoryKey(w),
@@ -547,8 +546,8 @@ export class Host {
     };
   }
   /** The view for a reply (→ARCH-6): this world's view, whole or as the changes since `base`. */
-  private publish(base?: number): Pick<Reply, 'view' | 'viewSeq' | 'viewDelta'> {
-    return this.views.publish(this.view(), base);
+  private publish(base?: number, deferSlow = false): Pick<Reply, 'view' | 'viewSeq' | 'viewDelta'> {
+    return this.views.publish(this.view(this.world, deferSlow), base);
   }
   /**
    * Read-only requests, validated like commands but answered from the live world without a
@@ -895,7 +894,12 @@ export class Host {
       const reply: Reply = {
         requestId: r.requestId,
         ok: true,
-        ...this.publish(r.viewBase),
+        ...this.publish(
+          r.viewBase,
+          r.body.type === 'command' &&
+            r.body.automatic === true &&
+            r.body.command.type === 'advance-days',
+        ),
         playback,
         raw,
         envelope,

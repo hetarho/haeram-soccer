@@ -131,6 +131,37 @@ describe('worker command protocol', () => {
 });
 
 describe('the stopped-reads read (→WEB-119)', () => {
+  it('omits slow parts only for automatic day commands', async () => {
+    const { host: h } = await startedHost(undefined, undefined, host());
+    const w = h.world!;
+    const automatic = await h.handle(
+      req('automatic', w.revision, {
+        type: 'command',
+        automatic: true,
+        command: { type: 'advance-days', days: 1 },
+      }),
+    );
+    const view = automatic.view!;
+    expect([
+      view.coaches,
+      view.managers,
+      view.transfers,
+      view.office,
+      view.world.disciplineNames,
+    ]).toEqual([undefined, undefined, undefined, undefined, undefined]);
+    const manual = await h.handle(
+      req('manual', w.revision, { type: 'command', command: { type: 'advance-days', days: 1 } }),
+    );
+    expect(
+      [
+        manual.view!.coaches,
+        manual.view!.managers,
+        manual.view!.transfers,
+        manual.view!.office,
+        manual.view!.world.disciplineNames,
+      ].every(Boolean),
+    ).toBe(true);
+  });
   it('answers the five slow parts as the projection does, changing and publishing nothing', async () => {
     const { host: h, reply: taken } = await startedHost(undefined, undefined, host());
     const w = h.world!;
