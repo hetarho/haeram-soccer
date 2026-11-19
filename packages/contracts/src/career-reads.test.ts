@@ -16,21 +16,11 @@ const summary = () => ({
   bestPlayed: 0,
   bestFans: 0,
   bestWon: 0,
-  heatPlayers: [],
   players: {},
   europe: {},
 });
 
 describe('current career-read contract', () => {
-  it('accepts absent legacy heat while preserving and validating existing values', () => {
-    const withoutHeat: Omit<ReturnType<typeof summary>, 'heatPlayers'> & {
-      heatPlayers?: string[];
-    } = summary();
-    delete withoutHeat.heatPlayers;
-    expect(careerReadsSchema.parse(withoutHeat)).toEqual(withoutHeat);
-    const legacy = { ...summary(), heatPlayers: ['person'] };
-    expect(careerReadsSchema.parse(legacy)).toEqual(legacy);
-  });
   it('accepts only the current summary format', () => {
     const current = summary();
     expect(careerReadsSchema.parse(current)).toEqual(current);
@@ -46,7 +36,7 @@ describe('current career-read contract', () => {
     },
   );
 
-  it('bounds years, player pairs, heat data and season keys', () => {
+  it('bounds years, player pairs and season keys', () => {
     const player = {
       year: 1930,
       apps: [0, 1],
@@ -61,13 +51,11 @@ describe('current career-read contract', () => {
     for (const invalid of [
       { year: 1900 },
       { year: 4001 },
-      { heatPlayers: [''] },
       { europe: { nope: 1 } },
       { players: { person: { ...player, year: 4001 } } },
       { players: { person: { ...player, yellow: [0, -1] } } },
       { players: { person: { ...player, red: [0] } } },
       { players: { person: { ...player, leagueReds: 0.1 } } },
-      { players: { person: { ...player, heat: Array(10001).fill(0) } } },
     ])
       expect(careerReadsSchema.safeParse({ ...summary(), ...invalid }).success).toBe(false);
   });

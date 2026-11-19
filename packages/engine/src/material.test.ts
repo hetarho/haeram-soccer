@@ -44,7 +44,7 @@ describe('post-match material', () => {
     const m = own.material!;
     const side = ownSideOf(own, w.playerClub)!;
     const lines = own.lineCounts![side];
-    expect(m.heat).toBeUndefined();
+    expect(m).not.toHaveProperty('heat');
     expect(m.report).toHaveLength(60);
     // Every shot of both sides is on the map, at the shooter's line.
     const shots = shotMap(own);
@@ -156,7 +156,7 @@ describe('post-match material', () => {
     expect(w.ownMatches.filter((m) => m.year === year).map((m) => m.id)).toEqual(ownMatchIds);
     expect(w.ownMatches.some((m) => m.id.startsWith(playoff))).toBe(false);
     const archive = w.history.find((h) => h.year === year)!;
-    expect(archive.heat).toBeUndefined();
+    expect(archive).not.toHaveProperty('heat');
     for (const m of w.ownMatches.filter((m) => m.year === year)) {
       expect(m.material).toBeUndefined();
       // Outcomes, xG and counters stay (→MATCH-5).
@@ -197,7 +197,7 @@ describe('post-match material', () => {
       expect(m.metrics).toHaveLength(2);
       expect(m.detail).toHaveLength(2);
     }
-    expect(w.history.find((h) => h.year === year)!.heat).toBeUndefined();
+    expect(w.history.find((h) => h.year === year)!).not.toHaveProperty('heat');
   });
 
   it('decodes what it encodes', () => {

@@ -1,0 +1,122 @@
+{
+  "label": "ten-rich-after",
+  "source": ".tmp/save-db-bench/ten-rich.bin",
+  "at": "2026-11-19T14:41:55.510Z",
+  "runs": 1,
+  "limits": {
+    "exportMib": 256,
+    "databaseMib": 1024
+  },
+  "environment": {
+    "node": "v26.8.1",
+    "platform": "darwin",
+    "cpu": "Apple M1 Max",
+    "cores": 10,
+    "loadavg": [
+      18.40625,
+      12.41748046875,
+      7.8349609375
+    ],
+    "commit": "76576857a7d067a8250a02b4da3f35b6cde84270"
+  },
+  "summary": {
+    "firstSaveMs": 332.76324999999997,
+    "firstSaveRows": 27519,
+    "save7Ms": 407.41704100000015,
+    "save7Rows": 13166,
+    "save7PeopleInMemory": 5960,
+    "save14Ms": 258.2441670000003,
+    "save14Rows": 5,
+    "save63Ms": 131.43575000000055,
+    "save63Rows": 36,
+    "save70Ms": 80.63195799999994,
+    "save70Rows": 7,
+    "openMs": 1749.5552500000003,
+    "completeJsonMb": 26.44580078125,
+    "memoryJsonMb": 19.962369918823242,
+    "peopleStart": 16244,
+    "peopleInMemoryAfterOpen": 5960,
+    "peopleComplete": 16244,
+    "databaseMb": 30.95703125,
+    "exportMb": 4.288671493530273,
+    "exportMs": 750.9101250000003
+  },
+  "results": [
+    {
+      "firstSave": {
+        "ms": 332.76324999999997,
+        "cpuMs": 227.09299999999996,
+        "rowsPut": 27519,
+        "rowsDeleted": 0
+      },
+      "saves": [
+        {
+          "saveMs": 407.41704100000015,
+          "saveCpuMs": 227.75700000000006,
+          "rowsPut": 13166,
+          "rowsDeleted": 1,
+          "daysMs": 799.2345,
+          "daysPlayed": 7,
+          "year": 1960,
+          "round": 0,
+          "ownMatches": 0,
+          "peopleInMemory": 5960,
+          "players": 91
+        },
+        {
+          "saveMs": 258.2441670000003,
+          "saveCpuMs": 63.653999999999996,
+          "rowsPut": 5,
+          "rowsDeleted": 0,
+          "daysMs": 482.25587499999983,
+          "daysPlayed": 7,
+          "year": 1960,
+          "round": 0,
+          "ownMatches": 0,
+          "peopleInMemory": 5960,
+          "players": 91
+        },
+        {
+          "saveMs": 131.43575000000055,
+          "saveCpuMs": 70.39800000000014,
+          "rowsPut": 36,
+          "rowsDeleted": 0,
+          "daysMs": 1602.0384999999997,
+          "daysPlayed": 49,
+          "year": 1960,
+          "round": 1,
+          "ownMatches": 1,
+          "peopleInMemory": 5960,
+          "players": 91
+        },
+        {
+          "saveMs": 80.63195799999994,
+          "saveCpuMs": 57.85100000000011,
+          "rowsPut": 7,
+          "rowsDeleted": 0,
+          "daysMs": 201.47150000000056,
+          "daysPlayed": 7,
+          "year": 1960,
+          "round": 1,
+          "ownMatches": 1,
+          "peopleInMemory": 5960,
+          "players": 91
+        }
+      ],
+      "openMs": 1749.5552500000003,
+      "openCpuMs": 1068.388,
+      "heapAfterOpenMb": 374.33374786376953,
+      "rssAfterOpenMb": 564.484375,
+      "completeJsonMb": 26.44580078125,
+      "memoryJsonMb": 19.962369918823242,
+      "peopleStart": 16244,
+      "peopleInMemoryAfterOpen": 5960,
+      "peopleComplete": 16244,
+      "playersStart": 91,
+      "databaseMb": 30.95703125,
+      "exportMb": 4.288671493530273,
+      "exportMs": 750.9101250000003,
+      "exportOverLimit": false
+    }
+  ]
+}

@@ -46,7 +46,6 @@ const record = {
     })),
   },
   material: {
-    heat: Array(8 * 40).fill(0),
     shots: [],
     report: [],
     network: [
