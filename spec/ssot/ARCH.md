@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r51 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r52 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -62,7 +62,7 @@
   - Duplicate requests do not repeat recruitment fees, sponsor payments, currency transitions, or fixture settlement.
   - Publish bounded UI projections/deltas, not the complete world on every simulation step.
   - On a day with our league fixture, the day's other league fixtures may be computed on helper workers from a read-only copy of what those fixtures read, while the engine worker plays our match; the engine worker stays the sole writer and records every result in fixture order. Without helpers (creation failure or a single core) it computes them itself. Both paths give identical worlds, checked by a test comparing a season played each way. ← other clubs' fixtures are about 40% of an own match day (measured 261027)
-  - every device with two or more cores runs two helpers, never one, and more than two only where more measured faster (→ARCH-34); the engine worker takes its own share of those fixtures once our match is played. ← below four cores the engine worker used to compute them all alone; on two or three cores one helper is slower than none and two are faster (estimated 261119)
+  - every device with three or more cores runs two helpers, never one, and more than two only where more measured faster (→ARCH-34); the engine worker takes its own share of those fixtures once our match is played; a device with fewer cores computes them on the engine worker alone. ← measured 261119 on own match days against no helpers: two helpers with the engine share were 9% slower on two cores, 10% faster on three and 26% faster on twelve
   - Read-only requests (head-to-head) are validated like commands but answered between simulation steps, without the revision check, receipt or view, so a read never waits behind a season command or flickers the busy state.
   - A watched match is staged off the UI thread by a worker of its own from the script the engine worker sent: it reads no world, writes nothing and delivers frames in bounded steps ahead of the presentation (→MATCH-39).
   - A worker failure restores the last committed save and reports any uncommitted progress; it does not silently invent a continuation.
@@ -284,6 +284,7 @@
 - Current product rules live in `spec/ssot/` (repository-relative path); archived ideation under `spec/ideation/done/` is background, never a current rule.
 
 ## chg
+- r52 261119 ARCH-6✎ two helpers from two cores→from three cores, fewer cores compute on the engine worker alone (two cores measured 9% slower)
 - r51 261119 ARCH-2✎ +SQLite save database · ARCH-3✎ runtime codec worker, adapters save codec and packing→SQLite record store, game files, export/import · ARCH-4✎ engine imports DTOs and catalogs→+an injected record store · ARCH-6✎ +the engine worker owns the game database; restores the last committed checkpoint→save · ARCH-11✎ IndexedDB checkpoints with UI-thread storage and worker codec→one SQLite database per game shared by web and app (official WASM build, OPFS pool), schema version · ARCH-12✎ JSON envelope with gzip/pure-JS Brotli and .haeram-save.json→gzip database behind a versioned SHA-256 header, no other codec/encoding/packing · ARCH-13✎ validated candidate in a codec worker with verified predecessor→changed rows in one transaction, season-backup recovery offered · ARCH-14✎ UTF-16 localStorage budgets, optimize encoding→SAVE-4 limits, database size/save/open/memory measured, schema change within retention · ARCH-16✎ envelope/codec validation→header/integrity validation · ARCH-17✎ read-only second tab→one playing tab, another offers 여기서 이어 하기 · ARCH-36+ record-store port, ordered reads, synchronous in the engine worker
 - r50 261119 ARCH-6✎ helpers from four cores, the engine worker idle while they run→two helpers from two cores (never one), more only where measured faster, the engine worker takes a share
 - r49 261119 ARCH-23✎ CI checks, unit and three integration jobs beside the browser shards (limits 20/20/75 min)→browser shards only; deterministic checks run once in the batch on the gate host, no second-platform contract run · ARCH-30✎ CI including every browser journey→CI only the browser journeys
