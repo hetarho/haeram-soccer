@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
 | tk19 | ihaelam-ui-MacBookPro | autopilot | 2026-11-19T16:07Z | 2026-11-19T16:27Z | T1038 | gusta-session-start-tk19-9706a3bf | c534b4bb3a1a | 853e43a2919794e4c665f452 |
-| facauto | ihaelam-ui-MacBookPro | pair | 2026-11-19T16:26Z | 2026-11-19T16:26Z | T1033 | gusta-session-start-facauto-7fb6ee3c | 40a746bf2485 | bdd614ebd62a8dd70a0866a2 |
+| facauto | ihaelam-ui-MacBookPro | pair | 2026-11-19T16:26Z | 2026-11-19T16:30Z | - | gusta-session-start-facauto-7fb6ee3c | df1d3ebecf8f | bdd614ebd62a8dd70a0866a2 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -197,7 +197,13 @@
 - 261119 decided WEB-14 T1037: 시설 화면의 진입과 표시 → 시설별 수동 견적 카드에 체크 상태와 수동·자금 대기 이유를 두고, 1군 훈련 페이지와 유소년 페이지는 해당 카드로 연결합니다. 대안은 각 팀 페이지에 별도 편집기 또는 별도 설정 화면을 두는 방식입니다. 어느 진입점에서나 동일한 구단 상태와 견적을 읽도록 합니다.
 - 261119 parked T1033 T1034 T1035 T1036 T1037: 시설 자동 증축 기획 커밋 3dccf57860e29164b1e823bf3703c15192f539ab. 기획 관문과 task-tier 정적 검사 통과(109초, 영향 단위 테스트 없음). main의 기존 공유 통합이 잠겨 plan-push가 integration-frozen으로 보류됐습니다. 잠금 해제 후 같은 기획 커밋을 vibe plan-push --commit 3dccf57860e29164b1e823bf3703c15192f539ab로 발행한 뒤 이 다섯 태스크를 진행합니다.
 
+## unlanded
+| id | tag | branch | commit | at |
+|---|---|---|---|---|
+| T1033 | facauto | gusta-session-start-facauto-7fb6ee3c | df1d3ebecf8f | 2026-11-19T16:30Z |
+
 ## log
+- 261119 T1033 done
 - 261119 Planning verification pass in 108835 ms: typecheck, lint, format, i18n (12 locales); affected unit selection empty for spec-only changes. Spec lint has one pre-existing warning. Browser acceptance remains host-owned.
 - 261119 gusta-create-task T1033 T1034 T1035 T1036 T1037: saved state, copy, command, settlement and UI
 - 261119 gusta-create-task ECON CLUB WEB SAVE start
@@ -217,4 +223,3 @@
 - 261119 T1014 done
 - 261119 T1013 done
 - 261119 T1012 done
-- 261119 T1011 done
