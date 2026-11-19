@@ -135,6 +135,11 @@ import {
   ownMatchesOfSeason,
   ownMatchSummaries,
 } from '../../../../packages/engine/src/own-matches';
+import {
+  eventCount,
+  eventsOfKindPrefix,
+  eventsOfYear,
+} from '../../../../packages/engine/src/events';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { transferLedger } from '../../../../packages/engine/src/transfer-records';
 import { seasonsBeforeOwner } from '../../../../packages/engine/src/club-past';
@@ -291,7 +296,8 @@ function managerHistorySource(w: World): ManagerHistorySource {
       competition: kindLabel[match.kind] ?? match.kind,
     })),
     seasons,
-    personnelEvents: w.events.flatMap((event, index) =>
+    // Absolute indices, earlier seasons' cold events counted (→SAVE-32).
+    personnelEvents: eventsOfKindPrefix(w, 'manager-').flatMap(({ event, index }) =>
       (event.kind === 'manager-hire' || event.kind === 'manager-departure') && older(event)
         ? [
             {
@@ -967,7 +973,7 @@ export class Host {
       w.year,
       w.round,
       ownMatchCount(w),
-      w.events.length,
+      eventCount(w),
       w.rankHistory?.length,
       w.history.length,
       w.newsJournal?.events,
@@ -981,7 +987,7 @@ export class Host {
    * read again only while the boundary moves.
    */
   private transferLedger(w: World): View['transferLedger'] {
-    const end = w.transfers?.ledgerBefore ?? w.events.length;
+    const end = w.transfers?.ledgerBefore ?? eventCount(w);
     if (this.ledgerCache?.events !== w.events || this.ledgerCache.end !== end)
       this.ledgerCache = { events: w.events, end, ledger: transferLedger(w) };
     return this.ledgerCache.ledger;
@@ -1207,8 +1213,8 @@ export class Host {
           archive: {
             season: w.history.find((h) => h.year === body.year),
             matches: ownMatchesOfSeason(w, body.year),
-            events: w.events.filter((e) => e.year === body.year),
-            managers: w.events.filter((e) => e.kind.startsWith('manager-')),
+            events: eventsOfYear(w, body.year),
+            managers: eventsOfKindPrefix(w, 'manager-').map(({ event }) => event),
           },
         };
       if (body.type === 'manager-history') {

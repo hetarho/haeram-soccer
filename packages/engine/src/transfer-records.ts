@@ -1,4 +1,5 @@
 import { linkPlayer } from './player-records';
+import { eventCount, eventsOfKindPrefix } from './events';
 /**
  * Our club's fee transfers (→HIST-20): the facts the writers record as a signing, sale or loan
  * completes, and their ranking in today's money. A read leaf: the records room imports it.
@@ -36,7 +37,7 @@ export interface TransferMove {
  */
 export function recordTransfer(w: World, fact: TransferMove): TransferFact | undefined {
   if (BigInt(fact.fee) <= 0n) return undefined;
-  const records = (w.transfers ??= { ledgerBefore: w.events.length, facts: [] });
+  const records = (w.transfers ??= { ledgerBefore: eventCount(w), facts: [] });
   const recorded: TransferFact = {
     direction: fact.direction,
     loan: fact.loan,
@@ -54,7 +55,7 @@ export function recordTransfer(w: World, fact: TransferMove): TransferFact | und
   return recorded;
 }
 
-/** An older career's fee entry: its ledger line and its place in `w.events`. */
+/** An older career's fee entry: its ledger line and its absolute index among the events. */
 export interface TransferLedgerEntry {
   event: Event;
   index: number;
@@ -64,11 +65,15 @@ export interface TransferLedgerEntry {
  * The older career's fee entries (→HIST-20, SAVE-24): transfer-in and transfer-out lines with an
  * amount before the first recorded fact, all of them while none is. They keep only their own text.
  */
-export function transferLedger(w: Pick<World, 'transfers' | 'events'>): TransferLedgerEntry[] {
+export function transferLedger(
+  w: Pick<World, 'transfers' | 'events' | 'eventsBase'>,
+): TransferLedgerEntry[] {
   const entries: TransferLedgerEntry[] = [],
-    end = Math.min(w.transfers?.ledgerBefore ?? w.events.length, w.events.length);
-  for (let index = 0; index < end; index++) {
-    const event = w.events[index]!;
+    count = eventCount(w),
+    end = Math.min(w.transfers?.ledgerBefore ?? count, count);
+  // Earlier seasons' cold events count too (→SAVE-32): the read spans memory and the store.
+  for (const { event, index } of eventsOfKindPrefix(w, 'transfer-')) {
+    if (index >= end) break;
     if (
       (event.kind === 'transfer-in' || event.kind === 'transfer-out') &&
       event.amount &&

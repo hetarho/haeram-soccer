@@ -1431,7 +1431,17 @@ export interface World {
   /** Our club's fee transfers (→HIST-20); absent until the first is recorded. */
   transfers?: TransferRecords;
   history: SeasonArchive[];
+  /**
+   * Events of seasons before last season that left memory at a save and are read from the record
+   * store (→SAVE-32): an event's absolute index is this base plus its place in `events`. Absent is 0.
+   */
+  eventsBase?: number;
   events: Event[];
+  /**
+   * How many manager departures the career has recorded, counted as each is added; absent until
+   * the first after this field, then initialised once from the events present.
+   */
+  managerDepartures?: number;
   cash: string;
   income: string;
   expense: string;

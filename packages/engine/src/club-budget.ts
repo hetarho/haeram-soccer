@@ -8,6 +8,7 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Event, TransferFact, World } from '../../contracts/src/types';
 import { eventsInSeason } from './season-index';
+import { eventsOfYear } from './events';
 import { ownSeasons } from './player-state';
 
 export type BudgetGroup = 'income' | 'fixed' | 'spend';
@@ -168,7 +169,7 @@ export function seasonBudget(
 ): SeasonBudget {
   const archive = year === w.year ? undefined : ownSeasons(w).find((s) => s.year === year);
   const currency = archive?.currency ?? w.currency,
-    entries = eventsInSeason(w, year).filter(
+    entries = eventsOfYear(w, year).filter(
       (event) => event.amount !== undefined && event.currency === currency && ruleOf(event.kind),
     );
   const lines: BudgetLine[] = [];

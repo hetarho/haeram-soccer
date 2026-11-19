@@ -1,5 +1,6 @@
 import type { World } from '../../contracts/src/types';
 import { ownMatchAt, ownMatchCount } from './own-matches';
+import { eventAt, eventCount } from './events';
 import { CAREER_READS_FORMAT } from '../../contracts/src/career-reads';
 import type { CareerReads, PlayerRead } from '../../contracts/src/career-reads';
 import { ownSideOf } from './material';
@@ -87,8 +88,9 @@ export function refreshCareerReads(w: World) {
       if (m.kind === 'league') p.leagueReds += red;
     }
   }
-  while (s.events < w.events.length)
-    if (w.events[s.events++].kind === 'promotion') s.promoted = true;
+  // `s.events` counts every event recorded, so it is an absolute index (→SAVE-32).
+  while (s.events < eventCount(w))
+    if (eventAt(w, s.events++)!.kind === 'promotion') s.promoted = true;
   while (s.history < w.history.length) {
     const h = w.history[s.history++];
     // The world's seasons before the takeover are the club's past, not the owner's (→HIST-21).

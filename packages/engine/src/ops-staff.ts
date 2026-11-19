@@ -260,8 +260,8 @@ function resign(w: World, reason: string, departure: ManagerDeparture) {
     sourceMessage('copy.ops_staff.1ef8ab17e1', { p0: old.name }),
     `${old.since}–${w.year} · ${reason}`,
   );
-  // Counting this departure keeps two caretakers on the same day apart.
-  const departures = w.events.filter((event) => event.kind === 'manager-departure').length;
+  // Counting this departure keeps two caretakers on the same day apart; `addEvent` counted it.
+  const departures = w.managerDepartures!;
   const interim = makeManager(
     clubOf(w).country,
     `${w.seed}:interim:${w.year}:${careerDate(w).day}:${departures}`,

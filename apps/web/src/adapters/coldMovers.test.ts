@@ -7,6 +7,8 @@ import {
 import type { PersonCareer, World } from '../../../../packages/contracts/src/types';
 import { peopleOf, personOf, restorePerson } from '../../../../packages/engine/src/person-careers';
 import { memoryRecordStore } from '../../../../tests/fixtures/node-sqlite';
+import { addEvent, eventAt, eventsOfKindPrefix } from '../../../../packages/engine/src/events';
+import { newsBefore, newsPage, newsTotal } from '../../../../packages/engine/src/news';
 import { moveColdPeople, saveMovingCold } from './coldMovers';
 import { RowSaver } from './rowSaver';
 import { rowsToWorld, worldFacts } from './worldRows';
@@ -36,6 +38,7 @@ function tinyWorld() {
     players: [],
     manager: { id: 'm', person: 'kept' },
     ownMatches: [],
+    events: [],
     people: {
       gone1: person('gone1'),
       active: person('active', { playing: 'active', club: 'c1' }),
@@ -238,5 +241,94 @@ describe('own matches of earlier seasons leave memory at a save (→SAVE-32, →
     // The base override does not outlive the failed write: a plain save writes none.
     saver.save(w);
     expect(rowsToWorld(store, { includeCold: false }).ownMatchesBase).toBeUndefined();
+  });
+});
+
+describe('events and news before last season leave memory at a save (→SAVE-32)', () => {
+  const event = (year: number, kind: string) => ({ year, round: 1, kind, title: kind, detail: '' });
+  const headline = (year: number, n: number) => ({
+    id: `${year}:event-${n}`,
+    year,
+    round: 1,
+    order: n,
+    tag: 'club',
+    tone: 'neutral',
+    weight: 'minor',
+    title: `t${n}`,
+    sequence: n + 1,
+  });
+  /** The tiny world in 1960 with events and headlines of 1958, 1959 and 1960. */
+  function eventsWorld() {
+    const w = tinyWorld();
+    w.events = [
+      event(1958, 'manager-departure'),
+      event(1958, 'transfer-in'),
+      event(1959, 'manager-hire'),
+      event(1960, 'promotion'),
+    ] as never;
+    w.newsJournal = {
+      format: 1,
+      year: 1960,
+      matches: 0,
+      events: 4,
+      count: 4,
+      peakUnbeaten: 0,
+      peakWinning: 0,
+      years: [1958, 1959, 1960],
+      seasons: {
+        1958: [headline(1958, 1), headline(1958, 0)],
+        1959: [headline(1959, 2)],
+        1960: [headline(1960, 3)],
+      },
+    } as never;
+    return w;
+  }
+
+  it('writes them cold with the grown base in the one save; reads answer the same', () => {
+    const store = memoryRecordStore();
+    const w = attachRecordStore(eventsWorld(), store);
+    const saver = new RowSaver(store);
+    saver.save(w);
+    const complete = worldFacts(w);
+    const before = { page: newsPage(w, 0, 10), total: newsTotal(w), older: newsBefore(w) };
+    saveMovingCold(w, saver);
+    expect(w.events.map((e) => e.year)).toEqual([1959, 1960]);
+    expect(w.eventsBase).toBe(2);
+    expect(store.get('event', '1')).toMatchObject({ cold: true, kind: 'transfer-in' });
+    expect(store.get('event', '2')?.cold).toBe(false);
+    expect(Object.keys(w.newsJournal!.seasons)).toEqual(['1959', '1960']);
+    expect(w.newsJournal!.years).toEqual([1958, 1959, 1960]);
+    expect(store.get('news_bucket', '1958')?.cold).toBe(true);
+    expect(worldFacts(w)).toBe(complete);
+    expect(eventAt(w, 1)?.kind).toBe('transfer-in');
+    expect(eventsOfKindPrefix(w, 'manager-').map(({ index }) => index)).toEqual([0, 2]);
+    expect(newsPage(w, 0, 10)).toEqual(before.page);
+    expect(newsTotal(w)).toBe(before.total);
+    expect(newsBefore(w)).toEqual(before.older);
+    expect(newsBefore(w, '1959:event-2')).toEqual(before.older.slice(2));
+    // The database alone opens with the base, and validation finds the cold bucket.
+    const opened = rowsToWorld(store, { includeCold: false });
+    expect(opened.eventsBase).toBe(2);
+    expect(opened.events).toHaveLength(2);
+    // A later departure counts the cold one: the count never needs a full scan again.
+    addEvent(w, 'manager-departure', 'x', 'y');
+    expect(w.managerDepartures).toBe(2);
+    expect(saveMovingCold(w, saver)).toMatchObject({ deleted: 0 });
+    expect(store.get('event', '4')).toMatchObject({ cold: false, kind: 'manager-departure' });
+  });
+
+  it('keeps every event, headline and the base when the write fails', () => {
+    const fail = { now: false };
+    const store = failingStore(fail);
+    const w = attachRecordStore(eventsWorld(), store);
+    const saver = new RowSaver(store);
+    saver.save(w);
+    fail.now = true;
+    expect(() => saveMovingCold(w, saver)).toThrow('quota');
+    expect(w.events).toHaveLength(4);
+    expect(w.eventsBase).toBeUndefined();
+    expect(Object.keys(w.newsJournal!.seasons)).toHaveLength(3);
+    expect(store.get('event', '0')?.cold).toBe(false);
+    expect(store.get('news_bucket', '1958')?.cold).toBe(false);
   });
 });

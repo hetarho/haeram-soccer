@@ -6,7 +6,8 @@ import {
   seasonTurnover,
 } from './finance-read';
 export { lastSeasonTurnover, seasonTurnover } from './finance-read';
-import { eventsInSeason, matchesInSeason } from './season-index';
+import { matchesInSeason } from './season-index';
+import { eventsOfYear } from './events';
 import { baseEffects } from './bases';
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
@@ -517,7 +518,7 @@ const expenseKinds: Record<string, string> = {
 };
 /** A season's money entries in the currency its books were kept in. */
 function seasonEntries(w: World, year: number, money: string) {
-  return eventsInSeason(w, year).filter(
+  return eventsOfYear(w, year).filter(
     (event) => event.currency === money && event.amount !== undefined,
   );
 }

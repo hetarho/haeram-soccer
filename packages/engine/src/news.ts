@@ -3,6 +3,8 @@ import { ownMatchAt, ownMatchCount, ownMatchesFrom, ownMatchesOfSeason } from '.
 import { archivedLeaguePoints, leaguePoints } from './league-fixtures';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
+import { eventAt, eventCount, eventsFrom } from './events';
+import { recordStoreOf } from '../../contracts/src/record-store';
 import type { Event, MatchRecord, Player, SeasonArchive, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
@@ -307,7 +309,8 @@ export function deriveClubNews(w: World): NewsItem[] {
       news.push(...keptNews(ctx, m));
     });
   news.push(...tableNews(w, ctx.name));
-  w.events.forEach((event, index) => {
+  // Event ids keep the absolute index, earlier seasons' cold events counted (→SAVE-32).
+  eventsFrom(w, 0).forEach((event, index) => {
     const item = eventNews(w, ctx.name, event, index);
     if (item) news.push(item);
   });
@@ -1676,14 +1679,42 @@ function numberJournal(j: NewsJournal) {
       j.seasons[year][index].sequence = ++count;
   j.count = count;
 }
+/** Cold season buckets read from a store, parsed once: a cold bucket never changes. */
+const coldBuckets = new WeakMap<object, Map<number, NewsItem[]>>();
+/**
+ * A season's headlines, wherever the journal keeps them: buckets of seasons before last season
+ * leave memory at a save (→SAVE-32) and are read from their cold `news_bucket` row; `j.years`
+ * still lists every season. A season with neither reads as empty.
+ */
+export function newsBucket(w: World, j: NewsJournal, year: number): NewsItem[] {
+  const held = j.seasons[year];
+  if (held) return held;
+  const store = recordStoreOf(w);
+  if (!store) return [];
+  let cache = coldBuckets.get(store);
+  const hit = cache?.get(year);
+  if (hit) return hit;
+  const row = store.get('news_bucket', String(year));
+  if (!row?.cold) return [];
+  const bucket = JSON.parse(row.data) as NewsItem[];
+  if (!cache) coldBuckets.set(store, (cache = new Map()));
+  cache.set(year, bucket);
+  return bucket;
+}
 export function newsTotal(w: World): number {
   const j = w.newsJournal;
   return j
-    ? (j.count ?? j.years.reduce((n, year) => n + j.seasons[year].length, 0))
+    ? (j.count ?? j.years.reduce((n, year) => n + newsBucket(w, j, year).length, 0))
     : deriveClubNews(w).length;
 }
 function appendHeadline(w: World, j: NewsJournal, item: NewsItem) {
   let bucket = j.seasons[item.year];
+  if (!bucket && j.years.includes(item.year)) {
+    // A headline for a season whose bucket left memory brings it back, to be saved warm again.
+    bucket = j.seasons[item.year] = [...newsBucket(w, j, item.year)];
+    const store = recordStoreOf(w);
+    if (store) coldBuckets.get(store)?.delete(item.year);
+  }
   if (!bucket) {
     bucket = j.seasons[item.year] = [];
     j.years.push(item.year);
@@ -1762,7 +1793,7 @@ export function refreshNewsJournal(w: World) {
   const sources = journalSources.get(j);
   if (
     j.matches === ownMatchCount(w) &&
-    j.events === w.events.length &&
+    j.events === eventCount(w) &&
     j.year === w.year &&
     sources?.table === table &&
     sources.honour === honour
@@ -1792,9 +1823,10 @@ export function refreshNewsJournal(w: World) {
   }
   if (j.year !== w.year) ctx = resetNewsSeason(w, j, w.year, ctx);
   ctx.w = w;
-  while (j.events < w.events.length) {
+  // `j.events` counts every event recorded, so it is an absolute index (→SAVE-32).
+  while (j.events < eventCount(w)) {
     const index = j.events++,
-      event = w.events[index];
+      event = eventAt(w, index)!;
     const item = eventNews(
       event.year === w.year ? w : { ...w, year: event.year },
       ctx.name,
@@ -1826,7 +1858,7 @@ export function newsPage(w: World, offset = 0, limit: number = NEWS_LIMITS.page)
   if (!j) return deriveClubNews(w).slice(offset, offset + limit);
   const out: NewsItem[] = [];
   for (let i = j.years.length - 1; i >= 0; i--) {
-    const bucket = j.seasons[j.years[i]];
+    const bucket = newsBucket(w, j, j.years[i]);
     if (offset >= bucket.length) {
       offset -= bucket.length;
       continue;
@@ -1859,13 +1891,13 @@ export function newsBefore(w: World, before?: string, tag?: NewsTag): NewsItem[]
   if (before) {
     const year = Number(before.split(':')[0]);
     index = j.years.indexOf(year);
-    const at = j.seasons[year]?.findIndex((item) => item.id === before) ?? -1;
+    const at = index < 0 ? -1 : newsBucket(w, j, year).findIndex((item) => item.id === before);
     if (index < 0 || at < 0) throw new Error(sourceMessage('copy.news.534fe04a9e'));
     offset = at + 1;
   }
   const result: NewsItem[] = [];
   for (; index >= 0 && result.length < NEWS_LIMITS.page; index--) {
-    const bucket = j.seasons[j.years[index]];
+    const bucket = newsBucket(w, j, j.years[index]);
     for (; offset < bucket.length && result.length < NEWS_LIMITS.page; offset++) {
       const item = bucket[offset];
       if (!tag || item.tag === tag) result.push(item);
@@ -1896,4 +1928,22 @@ export function recordRetirementNews(w: World, player: Player, club?: string) {
       : {}),
     players: [player.id],
   });
+}
+
+/**
+ * The seasons whose headline buckets leave memory at the next save (→SAVE-32): those before last
+ * season, whose headlines are all written (honours land in the season just closed). A journal
+ * still waiting for its stable numbering keeps every bucket.
+ */
+export function coldNewsYears(w: Pick<World, 'newsJournal' | 'year'>): number[] {
+  const j = w.newsJournal;
+  if (!j || j.count === undefined) return [];
+  return j.years.filter((year) => year < w.year - 1 && j.seasons[year]);
+}
+
+/** Drops these seasons' buckets from memory once their rows are saved cold; `j.years` keeps them. */
+export function releaseNewsBuckets(w: Pick<World, 'newsJournal'>, years: readonly number[]) {
+  const j = w.newsJournal;
+  if (!j) return;
+  for (const year of years) delete j.seasons[year];
 }

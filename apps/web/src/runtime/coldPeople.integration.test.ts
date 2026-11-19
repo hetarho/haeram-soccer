@@ -18,6 +18,9 @@ import {
   ownMatchesOfSeason,
 } from '../../../../packages/engine/src/own-matches';
 import type { World } from '../../../../packages/contracts/src/types';
+import { addEvent, eventsOfYear } from '../../../../packages/engine/src/events';
+import { newsBefore, newsPage, newsTotal } from '../../../../packages/engine/src/news';
+import { transferLedger } from '../../../../packages/engine/src/transfer-records';
 import { clubRecords } from './clubRecords';
 import { createFixtureHelper } from './fixtureHelper';
 import { headToHead } from './headToHead';
@@ -62,6 +65,13 @@ function expectSameMatchReads(saved: World, reference: World) {
     expect(ownMatchesOfSeason(saved, year)).toEqual(
       reference.ownMatches.filter((m) => m.year === year),
     );
+  // Events and news of seasons before last season read alike from their cold rows (T1017).
+  for (const year of new Set(reference.events.map((e) => e.year)))
+    expect(eventsOfYear(saved, year)).toEqual(reference.events.filter((e) => e.year === year));
+  expect(transferLedger(saved)).toEqual(transferLedger(reference));
+  expect(newsTotal(saved)).toBe(newsTotal(reference));
+  expect(newsPage(saved, 0, 50)).toEqual(newsPage(reference, 0, 50));
+  expect(newsBefore(saved)).toEqual(newsBefore(reference));
 }
 
 describe('people, player records and own matches leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
@@ -121,7 +131,24 @@ describe('people, player records and own matches leaving memory at every save (�
     expect(saved.ownMatches.every((m) => m.year === saved.year)).toBe(true);
     expect(store.count('own_match', { cold: true })).toBe(saved.ownMatchesBase);
     expect(store.count('own_match', { cold: true, year })).toBeGreaterThan(0);
+    // Events and news buckets before last season left memory too (T1017).
+    expect(saved.events.every((e) => e.year >= saved.year - 1)).toBe(true);
+    expect(saved.eventsBase).toBeGreaterThan(0);
+    expect(store.count('event', { cold: true })).toBe(saved.eventsBase);
+    expect(
+      Object.keys(saved.newsJournal?.seasons ?? {}).every((y) => Number(y) >= saved.year - 1),
+    ).toBe(true);
     expectSameMatchReads(saved, reference);
     expect(worldFacts(saved)).toBe(canonical(reference));
   }, 900_000);
+
+  it('seeds the next caretaker from the same departure count as the career scan (T1017)', () => {
+    const w = structuredClone(simulatedWorld(CAREER, { seasons: 1 }));
+    delete w.managerDepartures;
+    addEvent(w, 'manager-departure', 'a', 'b');
+    // `resign` names the interim by this count; it was the scan of every departure event.
+    expect(w.managerDepartures).toBe(
+      w.events.filter((event) => event.kind === 'manager-departure').length,
+    );
+  });
 });

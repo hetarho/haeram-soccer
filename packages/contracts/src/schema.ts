@@ -1349,7 +1349,9 @@ const worldSchema: z.ZodType<World> = z.object({
   managerHistory: managerHistoryFactsSchema.optional(),
   transfers: transferRecords.optional(),
   history: z.array(archive).max(2200),
+  eventsBase: z.number().int().nonnegative().optional(),
   events: z.array(event).max(100000),
+  managerDepartures: z.number().int().nonnegative().optional(),
   cash: money,
   income: money,
   expense: money,
@@ -1556,10 +1558,11 @@ export function validateWorld(
   };
   // Cursors count every own match, earlier seasons' cold ones too (→SAVE-32).
   const ownMatchCount = (w.ownMatchesBase ?? 0) + w.ownMatches.length;
+  const eventCount = (w.eventsBase ?? 0) + w.events.length;
   if (
     w.careerReads &&
     (w.careerReads.matches > ownMatchCount ||
-      w.careerReads.events > w.events.length ||
+      w.careerReads.events > eventCount ||
       w.careerReads.history > w.history.length ||
       w.careerReads.year > w.year)
   )
@@ -1568,17 +1571,19 @@ export function validateWorld(
     const j = w.newsJournal;
     if (
       j.matches > ownMatchCount ||
-      j.events > w.events.length ||
+      j.events > eventCount ||
       j.year > w.year ||
       new Set(j.years).size !== j.years.length ||
-      Object.keys(j.seasons).length !== j.years.length ||
+      Object.keys(j.seasons).some((year) => !j.years.includes(Number(year))) ||
       j.years.some(
         (year, i) =>
           year > w.year ||
           (i > 0 && year <= j.years[i - 1]) ||
-          !j.seasons[year] ||
-          j.seasons[year].some((item) => item.year !== year) ||
-          new Set(j.seasons[year].map((item) => item.id)).size !== j.seasons[year].length,
+          // A season's bucket that left memory is its cold row in the game's store (→SAVE-32).
+          (!j.seasons[year] && !store?.get('news_bucket', String(year))?.cold) ||
+          j.seasons[year]?.some((item) => item.year !== year) ||
+          (j.seasons[year] &&
+            new Set(j.seasons[year].map((item) => item.id)).size !== j.seasons[year].length),
       )
     )
       throw new Error(sourceMessage('copy.schema.d80020f916'));

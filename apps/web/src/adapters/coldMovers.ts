@@ -22,6 +22,8 @@ import {
   ownMatchesBase,
   releaseOwnMatches,
 } from '../../../../packages/engine/src/own-matches';
+import { coldEventCount, eventsBase, releaseEvents } from '../../../../packages/engine/src/events';
+import { coldNewsYears, releaseNewsBuckets } from '../../../../packages/engine/src/news';
 import type { RowSaver, SaveStats } from './rowSaver';
 
 /** What a mover does once the write holding its cold rows has committed. */
@@ -89,6 +91,39 @@ export function moveColdOwnMatches(
 }
 
 /**
+ * Marks the events of seasons before last season cold in the next save (→SAVE-32), with
+ * `eventsBase` grown by their count in the same write; after it commits they leave `w.events` and
+ * the base counts them, so every absolute index, row key and news id stays, and every read of them
+ * goes to their cold rows (`eventAt` and the other accessors). Last season stays in memory.
+ */
+export function moveColdEvents(
+  w: World,
+  saver: Pick<RowSaver, 'markCold' | 'setField'>,
+): AfterCommit {
+  const n = coldEventCount(w);
+  if (!n) return () => {};
+  const base = eventsBase(w);
+  saver.markCold(
+    'event',
+    Array.from({ length: n }, (_, i) => String(base + i)),
+  );
+  saver.setField('eventsBase', base + n);
+  return () => releaseEvents(w, n);
+}
+
+/**
+ * Marks the news buckets of seasons before last season cold in the next save (→SAVE-32); after it
+ * commits they leave `w.newsJournal.seasons`, whose `years` still lists them, and every read of
+ * them goes to their cold rows (`newsBucket`).
+ */
+export function moveColdNews(w: World, saver: Pick<RowSaver, 'markCold'>): AfterCommit {
+  const years = coldNewsYears(w);
+  if (!years.length) return () => {};
+  saver.markCold('news_bucket', years.map(String));
+  return () => releaseNewsBuckets(w, years);
+}
+
+/**
  * Saves `w` as one write with every mover's cold rows (→SAVE-3, →SAVE-32); only a committed write
  * moves anything out of memory.
  */
@@ -98,6 +133,8 @@ export function saveMovingCold(w: World, saver: RowSaver): SaveStats {
     moveColdPeople(w, saver, people),
     moveColdPlayerRecords(w, saver, new Set(people)),
     moveColdOwnMatches(w, saver),
+    moveColdEvents(w, saver),
+    moveColdNews(w, saver),
   ];
   const stats = saver.save(w);
   for (const done of after) done();

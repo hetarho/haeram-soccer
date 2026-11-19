@@ -1,6 +1,7 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { ownMatchCount, ownMatchesFrom } from './own-matches';
 import { careerPromotion } from './career-reads';
+import { eventsOfKindPrefix } from './events';
 import type { World } from '../../contracts/src/types';
 import { clubOf, ownSeasons } from './player-state';
 
@@ -49,7 +50,9 @@ export function clubMilestones(w: World) {
           : match.score.away > match.score.home,
       ).length;
   const hasPromotion =
-    (w.careerReads ? careerPromotion(w) : w.events.some((event) => event.kind === 'promotion')) ||
+    (w.careerReads
+      ? careerPromotion(w)
+      : eventsOfKindPrefix(w, 'promotion').some(({ event }) => event.kind === 'promotion')) ||
     archived.some((season, index) => season.tier > (archived[index + 1]?.tier ?? own.tier));
   const goals: ClubGoal[] = [
     goal(

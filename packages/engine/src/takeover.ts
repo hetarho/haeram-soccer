@@ -291,6 +291,8 @@ export function takeOver(
   else delete w.loan;
   // The owner's era starts with the takeover (→HIST-5).
   w.events = [];
+  delete w.eventsBase;
+  delete w.managerDepartures;
   addEvent(
     w,
     'takeover',

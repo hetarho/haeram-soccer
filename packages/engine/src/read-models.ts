@@ -1,5 +1,6 @@
 /** Explicit writer maintenance; reads of either model remain pure. */
 import { ownMatchCount } from './own-matches';
+import { eventCount } from './events';
 import type { World } from '../../contracts/src/types';
 import { initializeNewsJournal, refreshNewsJournal } from './news';
 import { initializeCareerReads, refreshCareerReads } from './career-reads';
@@ -25,10 +26,10 @@ export function needsReadModels(w: World) {
     !s ||
     j.count === undefined ||
     j.matches !== ownMatchCount(w) ||
-    j.events !== w.events.length ||
+    j.events !== eventCount(w) ||
     j.year !== w.year ||
     s.matches !== ownMatchCount(w) ||
-    s.events !== w.events.length ||
+    s.events !== eventCount(w) ||
     s.history !== w.history.length ||
     s.year !== w.year
   );
