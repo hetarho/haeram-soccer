@@ -18,7 +18,11 @@ export async function continueSlot(page: Page, slot = 1) {
  */
 export async function seedSaveFile(page: Page, file: Uint8Array) {
   await page.goto('/');
-  await page.getByLabel('기록 파일 가져오기').setInputFiles({
+  const input = page.getByLabel('기록 파일 가져오기');
+  // The input stays disabled while the engine worker starts its database pool, and a file set on
+  // it then is dropped; setInputFiles does not wait for enabled on its own.
+  await expect(input).toBeEnabled({ timeout: 60_000 });
+  await input.setInputFiles({
     name: 'seed.haeram-save',
     mimeType: 'application/octet-stream',
     buffer: Buffer.from(file),
