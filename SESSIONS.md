@@ -263,6 +263,7 @@
 | T1007 | sv19 | gusta-session-start-sv19-0cc2a73b | 5cdbd6182e5b | 2026-11-19T05:56Z |
 
 ## log
+- 261119 gusta-update-ssot ARCH-6 start; T997 doing is affected by the measured threshold revision
 - 261119 T1007 done
 - 261119 T1027 done
 - 261119 T1026 done
@@ -282,4 +283,3 @@
 - 261119 T1000 done
 - 261119 T999 done
 - 261119 plan save-storage: ARCH r51 SAVE r72 WEB r224 KIT r11, T999–T1018 T1022 pushed 2edc3dbf0
-- 261119 gusta-create-task x10 cost levers: T989-T998 T1019-T1021
