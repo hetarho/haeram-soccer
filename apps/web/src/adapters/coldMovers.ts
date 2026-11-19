@@ -17,6 +17,11 @@ import {
   coldPlayerRecordIds,
   releasePlayerRecords,
 } from '../../../../packages/engine/src/player-records';
+import {
+  coldOwnMatchCount,
+  ownMatchesBase,
+  releaseOwnMatches,
+} from '../../../../packages/engine/src/own-matches';
 import type { RowSaver, SaveStats } from './rowSaver';
 
 /** What a mover does once the write holding its cold rows has committed. */
@@ -63,6 +68,27 @@ export function moveColdPlayerRecords(
 }
 
 /**
+ * Marks the own matches of seasons before the current one cold in the next save (→SAVE-32,
+ * →MATCH-5), with `ownMatchesBase` grown by their count in the same write; after it commits they
+ * leave `w.ownMatches` and the base counts them, so every absolute index and row key stays, and
+ * every read of them goes to their cold rows (`ownMatchAt` and the other accessors).
+ */
+export function moveColdOwnMatches(
+  w: World,
+  saver: Pick<RowSaver, 'markCold' | 'setField'>,
+): AfterCommit {
+  const n = coldOwnMatchCount(w);
+  if (!n) return () => {};
+  const base = ownMatchesBase(w);
+  saver.markCold(
+    'own_match',
+    Array.from({ length: n }, (_, i) => String(base + i)),
+  );
+  saver.setField('ownMatchesBase', base + n);
+  return () => releaseOwnMatches(w, n);
+}
+
+/**
  * Saves `w` as one write with every mover's cold rows (→SAVE-3, →SAVE-32); only a committed write
  * moves anything out of memory.
  */
@@ -71,6 +97,7 @@ export function saveMovingCold(w: World, saver: RowSaver): SaveStats {
   const after = [
     moveColdPeople(w, saver, people),
     moveColdPlayerRecords(w, saver, new Set(people)),
+    moveColdOwnMatches(w, saver),
   ];
   const stats = saver.save(w);
   for (const done of after) done();

@@ -1331,6 +1331,7 @@ const worldSchema: z.ZodType<World> = z.object({
   tables: z.record(id, table),
   kitChoice: fixtureKitChoiceSchema.optional(),
   designCommission: designCommissionSchema.optional(),
+  ownMatchesBase: z.number().int().nonnegative().optional(),
   ownMatches: z.array(match).max(100000),
   newsJournal: newsJournalSchema.optional(),
   careerReads: z.preprocess((value) => {
@@ -1553,9 +1554,11 @@ export function validateWorld(
     }
     return coldPeople.get(key);
   };
+  // Cursors count every own match, earlier seasons' cold ones too (→SAVE-32).
+  const ownMatchCount = (w.ownMatchesBase ?? 0) + w.ownMatches.length;
   if (
     w.careerReads &&
-    (w.careerReads.matches > w.ownMatches.length ||
+    (w.careerReads.matches > ownMatchCount ||
       w.careerReads.events > w.events.length ||
       w.careerReads.history > w.history.length ||
       w.careerReads.year > w.year)
@@ -1564,7 +1567,7 @@ export function validateWorld(
   if (w.newsJournal) {
     const j = w.newsJournal;
     if (
-      j.matches > w.ownMatches.length ||
+      j.matches > ownMatchCount ||
       j.events > w.events.length ||
       j.year > w.year ||
       new Set(j.years).size !== j.years.length ||

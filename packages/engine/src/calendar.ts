@@ -25,7 +25,7 @@ export function dayCountedFrom(w: World, year: number) {
   return day;
 }
 /** League matches on the weekend; cup and continental ties three days earlier, midweek. */
-export function fixtureDay(f: Fixture) {
+export function fixtureDay(f: Pick<Fixture, 'round' | 'kind'>) {
   return f.round * ROUND_INTERVAL_DAYS - (f.kind === 'europe' || f.kind === 'cup' ? 3 : 0);
 }
 function dateLabel(year: number, day: number) {

@@ -35,6 +35,7 @@ function tinyWorld() {
     playerClub: 'c1',
     players: [],
     manager: { id: 'm', person: 'kept' },
+    ownMatches: [],
     people: {
       gone1: person('gone1'),
       active: person('active', { playing: 'active', club: 'c1' }),
@@ -176,5 +177,66 @@ describe('player records leave memory at a save (→SAVE-32)', () => {
     expect(() => saveMovingCold(w, saver)).toThrow('quota');
     expect(Object.keys(w.playerRecords!)).toEqual(['gone1', 'active', 'nobody']);
     expect(store.get('player_record', 'nobody')?.cold).toBe(false);
+  });
+});
+
+describe('own matches of earlier seasons leave memory at a save (→SAVE-32, →MATCH-5)', () => {
+  const played = (id: string, year: number) => ({ id, year, home: 'c1', away: 'c2' });
+  /** The tiny world in 1960 with two matches of 1959 and one of 1960. */
+  function matchesWorld() {
+    const w = tinyWorld();
+    w.ownMatches = [played('a', 1959), played('b', 1959), played('c', 1960)] as never;
+    return w;
+  }
+
+  it('writes them cold with the grown base in the one save, then drops them', () => {
+    const store = memoryRecordStore();
+    const w = attachRecordStore(matchesWorld(), store);
+    let writes = 0;
+    const counted: RecordStore = {
+      ...store,
+      write: (changes) => {
+        writes++;
+        store.write(changes);
+      },
+    };
+    const saver = new RowSaver(counted);
+    saver.save(w);
+    const complete = worldFacts(w);
+    writes = 0;
+    saveMovingCold(w, saver);
+    expect(writes).toBe(1);
+    expect(w.ownMatches.map((m) => m.id)).toEqual(['c']);
+    expect(w.ownMatchesBase).toBe(2);
+    expect(store.get('own_match', '0')).toMatchObject({ cold: true, id: 'a' });
+    expect(store.get('own_match', '1')).toMatchObject({ cold: true, id: 'b' });
+    expect(store.get('own_match', '2')).toMatchObject({ cold: false, id: 'c' });
+    expect(worldFacts(w)).toBe(complete);
+    // The database alone opens with the base the same write committed.
+    const opened = rowsToWorld(store, { includeCold: false });
+    expect(opened.ownMatchesBase).toBe(2);
+    expect(opened.ownMatches.map((m) => m.id)).toEqual(['c']);
+    expect(rowsToWorld(store, { includeCold: true }).ownMatchesBase).toBeUndefined();
+    // A later match keeps the absolute key; nothing is rewritten for the moved ones.
+    w.ownMatches.push(played('d', 1960) as never);
+    expect(saveMovingCold(w, saver)).toMatchObject({ written: 1, deleted: 0 });
+    expect(store.get('own_match', '3')).toMatchObject({ cold: false, id: 'd' });
+  });
+
+  it('keeps every match and the base when the write fails', () => {
+    const fail = { now: false };
+    const store = failingStore(fail);
+    const w = attachRecordStore(matchesWorld(), store);
+    const saver = new RowSaver(store);
+    saver.save(w);
+    fail.now = true;
+    expect(() => saveMovingCold(w, saver)).toThrow('quota');
+    expect(w.ownMatches).toHaveLength(3);
+    expect(w.ownMatchesBase).toBeUndefined();
+    expect(store.get('own_match', '0')?.cold).toBe(false);
+    fail.now = false;
+    // The base override does not outlive the failed write: a plain save writes none.
+    saver.save(w);
+    expect(rowsToWorld(store, { includeCold: false }).ownMatchesBase).toBeUndefined();
   });
 });

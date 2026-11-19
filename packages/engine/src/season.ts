@@ -1,4 +1,5 @@
 import { applyPendingDeductions } from './distress';
+import { hasOwnMatch, ownMatchById, ownMatchesOfSeason } from './own-matches';
 import { archiveLeagueDeductions } from './league-fixtures';
 import { closePlayerLines, linkOwnMatchPlayers, linkPlayer } from './player-records';
 import { message as sourceMessage } from '../../contracts/src/messages';
@@ -239,7 +240,7 @@ function settleTable(row: TableRow, gf: number, ga: number) {
 export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   const m = playback.record;
   const own = m.home === w.playerClub || m.away === w.playerClub;
-  if (own && w.ownMatches.some((existing) => existing.id === m.id)) return;
+  if (own && hasOwnMatch(w, m.id)) return;
   if (m.model !== undefined) assertFullMatchRecord(m);
   // The shirts and crests worn, frozen before the live playback and the saved record share it.
   if (own) captureAppearance(w, m);
@@ -337,7 +338,7 @@ function injuriesFromMatch(w: World, m: MatchRecord) {
   }
 }
 export function resolveTie(w: World, f: Fixture) {
-  const existing = w.ownMatches.find((m) => m.id === f.id);
+  const existing = ownMatchById(w, f.id);
   if (existing) return winnerOf(f, existing);
   // A single match that must produce a winner: extra time, then a shoot-out (→MATCH-6).
   const p = simulateMatch(w, f, false, { awayGoals: false });
@@ -646,9 +647,10 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     fans: own.fans,
     rating: rating(w, own),
     manager: w.manager.name,
-    metrics: w.ownMatches
-      .filter((m) => m.year === w.year)
-      .reduce((s, m) => addMetrics(s, m.metrics[m.home === w.playerClub ? 0 : 1]), zeroMetrics()),
+    metrics: ownMatchesOfSeason(w, w.year).reduce(
+      (s, m) => addMetrics(s, m.metrics[m.home === w.playerClub ? 0 : 1]),
+      zeroMetrics(),
+    ),
     standings: worldStandings(w),
     ...archiveLeagueDeductions(w),
     champions,

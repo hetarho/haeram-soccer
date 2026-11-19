@@ -38,6 +38,8 @@ export interface RowFilter {
   year?: number;
   opponent?: string;
   kindPrefix?: string;
+  /** A record's own stable ID column, where its table has one. */
+  id?: string;
   seqFrom?: number;
   seqTo?: number;
   limit?: number;

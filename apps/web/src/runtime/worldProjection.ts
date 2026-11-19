@@ -56,6 +56,7 @@ export const WORLD_VIEW_FIELDS = {
   recentResults: 'include',
   kitChoice: 'include',
   designCommission: 'include',
+  ownMatchesBase: 'exclude',
   ownMatches: 'include',
   newsJournal: 'exclude',
   careerReads: 'exclude',

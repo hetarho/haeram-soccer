@@ -5,6 +5,7 @@
  * stays there. A world without facts is a career not yet tracked: every hook leaves it as it is,
  * so missing attribution stays absent. Nothing here draws, pays or changes a result.
  */
+import { ownMatchCount } from './own-matches';
 import {
   currentManagerTenure,
   managerHistoryDateKey,
@@ -47,10 +48,7 @@ export function ensureManagerHistory(w: World, takeover = false): ManagerHistory
   if (w.managerHistory) return w.managerHistory;
   const at = careerDate(w);
   const founding =
-    (takeover || w.history.length === 0) &&
-    w.ownMatches.length === 0 &&
-    w.round === 0 &&
-    at.day === 0;
+    (takeover || w.history.length === 0) && ownMatchCount(w) === 0 && w.round === 0 && at.day === 0;
   // A service year after today is no known earlier year: it is left out, never moved.
   const since = w.manager.since <= at.year ? w.manager.since : undefined;
   return (w.managerHistory = createManagerHistoryFacts({

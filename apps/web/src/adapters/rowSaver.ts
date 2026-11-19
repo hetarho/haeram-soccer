@@ -50,6 +50,8 @@ export class RowSaver {
   /** Per positional table, the highest `seq` the store holds or this saver wrote. */
   private top: Map<TableName, number> | undefined;
   private readonly cold = new Map<string, { table: RecordTable; key: string }>();
+  /** World fields this save writes with another value than memory holds (`setField`). */
+  private readonly fields = new Map<string, unknown>();
   /** The positional tables the store holds cold rows of, read once and kept as saves add them. */
   private coldTables: Set<TableName> | undefined;
 
@@ -82,17 +84,51 @@ export class RowSaver {
     for (const key of keys) this.cold.set(id(table, key), { table, key });
   }
 
+  /**
+   * Writes world field `field` as `value` in the next save only, committed or not: a mover whose
+   * records leave memory after the commit saves the base counting them in the same write
+   * (→SAVE-3, →SAVE-32), and sets the field in memory once the write has committed. A field the
+   * world does not hold yet is written after its other fields, where setting it later puts it.
+   */
+  setField(field: string, value: unknown): void {
+    this.fields.set(field, value);
+  }
+
   /** Writes the rows of `w` changed since the previous save, with its metadata, in one write. */
   save(w: World): SaveStats {
     try {
       return this.write(w);
     } finally {
       this.cold.clear();
+      this.fields.clear();
     }
   }
 
+  /** The rows of `w` with this save's field values (`setField`) in place. */
+  private rowsOf(w: World): StoredRow[] {
+    const rows = worldToRows(w);
+    if (!this.fields.size) return rows;
+    const pending = new Map(this.fields);
+    const out = rows.map((stored) => {
+      if (stored.table !== 'world_field' || !pending.has(stored.key)) return stored;
+      const value = pending.get(stored.key);
+      pending.delete(stored.key);
+      return { ...stored, data: JSON.stringify(value) };
+    });
+    let position = rows.filter((stored) => stored.table === 'world_field').length;
+    for (const [key, value] of pending)
+      out.push({
+        table: 'world_field',
+        key,
+        seq: position++,
+        cold: false,
+        data: JSON.stringify(value),
+      });
+    return out;
+  }
+
   private write(w: World): SaveStats {
-    const rows = this.stable(worldToRows(w));
+    const rows = this.stable(this.rowsOf(w));
     const put: StoredRow[] = [];
     const current = new Set<string>();
     const cooled = new Set<string>();

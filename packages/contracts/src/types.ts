@@ -1410,6 +1410,11 @@ export interface World {
   kitChoice?: FixtureKitChoice;
   /** The designer's drafts waiting for the owner's pick; absent when none was commissioned. */
   designCommission?: DesignCommission;
+  /**
+   * Own matches of earlier seasons that left memory at a save and are read from the record store
+   * (→SAVE-32): a match's absolute index is this base plus its place in `ownMatches`. Absent is 0.
+   */
+  ownMatchesBase?: number;
   ownMatches: MatchRecord[];
   /** Source-linked headlines and incremental record counters; absent in older saves. */
   newsJournal?: NewsJournal;

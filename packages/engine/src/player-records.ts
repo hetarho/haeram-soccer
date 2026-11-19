@@ -4,6 +4,7 @@
  * `playerRecordOf`, `hasPlayerRecord` or `lastPlayerMove`, which read its cold row, and every writer
  * through `playerRecord`, which brings it back first.
  */
+import { ownMatchesFrom } from './own-matches';
 import { recordStoreOf } from '../../contracts/src/record-store';
 import type {
   MatchRecord,
@@ -168,7 +169,7 @@ export function restorePlayerLinks(w: World) {
     if (id && available.has(id)) linkPlayer(w, id);
   };
   for (const season of w.history) for (const place of season.ballonDor ?? []) restore(place.id);
-  for (const match of w.ownMatches) {
+  for (const match of ownMatchesFrom(w, 0)) {
     for (const line of match.players) if (line.metrics[M.minutes]! > 0) restore(line.id);
     for (const incident of match.incidents ?? []) {
       restore(incident.player);

@@ -1,4 +1,5 @@
 import { retirePlayerRecord } from './player-records';
+import { ownMatchesFrom } from './own-matches';
 import { personOf } from './person-reads';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { hasOwner } from './owner';
@@ -133,7 +134,7 @@ export function announceNpcRetirements(w: World) {
 
 function careerLine(w: World, p: Player) {
   // A match counts when he played in it (→HIST-13), not when an unused substitute was listed.
-  const apps = w.ownMatches.filter((m) =>
+  const apps = ownMatchesFrom(w, 0).filter((m) =>
     m.players.some((line) => line.id === p.id && line.metrics[10]! > 0),
   ).length;
   return sourceMessage('copy.careers.62fb838450', { p0: apps, p1: p.career[0], p2: p.career[1] });

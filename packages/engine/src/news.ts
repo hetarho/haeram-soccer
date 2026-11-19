@@ -1,4 +1,5 @@
 import { linkPlayer, playerRecordOf } from './player-records';
+import { ownMatchAt, ownMatchCount, ownMatchesFrom, ownMatchesOfSeason } from './own-matches';
 import { archivedLeaguePoints, leaguePoints } from './league-fixtures';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
@@ -199,7 +200,9 @@ function advanceRuns(ctx: NewsContext, p: Played) {
 function newsContext(w: World): NewsContext {
   const people = new Map(w.players.map((p) => [p.id, p.name]));
   const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
-  const earlier = w.ownMatches.filter((m) => m.year < w.year).map((m) => played(w, m, clubNames));
+  const earlier = ownMatchesFrom(w, 0)
+    .filter((m) => m.year < w.year)
+    .map((m) => played(w, m, clubNames));
   const ctx: NewsContext = {
     w,
     name: clubOf(w).name,
@@ -294,8 +297,7 @@ export function deriveClubNews(w: World): NewsItem[] {
   const ctx = newsContext(w),
     news: NewsItem[] = [];
   const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
-  w.ownMatches
-    .filter((m) => m.year === w.year)
+  ownMatchesOfSeason(w, w.year)
     .map((m) => played(w, m, clubNames))
     .forEach((p, index) => {
       ctx.season.push(p.result);
@@ -1699,7 +1701,7 @@ function appendHeadline(w: World, j: NewsJournal, item: NewsItem) {
 }
 function resetNewsSeason(w: World, j: NewsJournal, year: number, ctx: NewsContext) {
   // Season-scoped comparisons restart against the completed career's records.
-  const empty = newsContext({ ...w, ownMatches: [] });
+  const empty = newsContext({ ...w, ownMatches: [], ownMatchesBase: 0 });
   const next: NewsContext = {
     ...empty,
     hasHistory: j.matches > 0,
@@ -1728,8 +1730,8 @@ export function initializeNewsJournal(w: World) {
     numberJournal(w.newsJournal);
     return;
   }
-  const firstYear = w.ownMatches[0]?.year ?? w.year;
-  const ctx = newsContext({ ...w, ownMatches: [] });
+  const firstYear = ownMatchAt(w, 0)?.year ?? w.year;
+  const ctx = newsContext({ ...w, ownMatches: [], ownMatchesBase: 0 });
   w.newsJournal = {
     format: 1,
     year: firstYear,
@@ -1753,7 +1755,7 @@ export function refreshNewsJournal(w: World) {
   const honour = w.history.at(-1)?.year;
   const sources = journalSources.get(j);
   if (
-    j.matches === w.ownMatches.length &&
+    j.matches === ownMatchCount(w) &&
     j.events === w.events.length &&
     j.year === w.year &&
     sources?.table === table &&
@@ -1767,8 +1769,9 @@ export function refreshNewsJournal(w: World) {
   const names = new Map(w.players.map((p) => [p.id, p.name]));
   ctx.who = (id) => names.get(id) ?? sourceMessage('team.column.player');
   const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
-  while (j.matches < w.ownMatches.length) {
-    const m = w.ownMatches[j.matches];
+  // `j.matches` counts every own match settled, so it is an absolute index (→SAVE-32).
+  while (j.matches < ownMatchCount(w)) {
+    const m = ownMatchAt(w, j.matches)!;
     if (m.year !== j.year) ctx = resetNewsSeason(w, j, m.year, ctx);
     const p = played(w, m, clubNames),
       index = ctx.season.length;

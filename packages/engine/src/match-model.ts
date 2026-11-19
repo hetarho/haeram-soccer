@@ -3,6 +3,7 @@ import { message as sourceMessage } from '../../contracts/src/messages';
  * The full match model's activation and the exact record check both result paths share
  * (→MATCH-13, MATCH-27, SAVE-23; spec/ssot/MATCH.md).
  */
+import { ownMatchCount } from './own-matches';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../contracts/src/detail';
 import {
   carriesMatchModel,
@@ -56,7 +57,7 @@ export function activateMatchModel(w: World, release: MatchModelRelease): boolea
     revision: release.revision,
     activated: { year: w.year, day: currentDay(w), revision: w.revision },
     trackedFrom,
-    coverage: w.round === 0 && w.ownMatches.length === 0 ? 'founding' : 'activation',
+    coverage: w.round === 0 && ownMatchCount(w) === 0 ? 'founding' : 'activation',
   };
   openNpcSeason(w, trackedFrom);
   return true;
