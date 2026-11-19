@@ -504,6 +504,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   const critical = playing ? state.view?.world.critical : undefined;
   const blocked = state.busy || state.readonly;
   const error = state.error || localError;
+  const recovery = state.recovery;
   return (
     <>
       {localizeValue(
@@ -512,10 +513,28 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
             {localizeValue(
               error && (
                 <div data-surface="inset" className={s.error} role="alert">
-                  {localizeValue(error)}
+                  {localizeValue(
+                    recovery?.backup
+                      ? t('backup.offer', {
+                          season: String(recovery.backup.season),
+                          date: recovery.backup.date,
+                        })
+                      : error,
+                  )}
                   <button onClick={() => location.reload()}>
                     {localizeValue(t('save.reload'))}
                   </button>
+                  {localizeValue(
+                    recovery?.backup && (
+                      <button
+                        data-ui="primary"
+                        disabled={state.busy || state.readonly}
+                        onClick={() => void client.recoverFromBackup()}
+                      >
+                        {localizeValue(t('backup.restore'))}
+                      </button>
+                    ),
+                  )}
                   {localizeValue(
                     state.error && !playing && (
                       <button disabled={state.busy} onClick={() => void onDownload()}>

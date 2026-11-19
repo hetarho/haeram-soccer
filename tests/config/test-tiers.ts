@@ -23,6 +23,7 @@ export const INTEGRATION_FILES = [
   'apps/web/src/runtime/next-event.test.ts',
   'apps/web/src/runtime/personCareer.test.ts',
   'apps/web/src/runtime/saveRoundTrip.test.ts',
+  'apps/web/src/runtime/seasonBackup.host.test.ts',
   'apps/web/src/pages/club/lib/analysisDataset.test.ts',
   'apps/web/src/pages/cups/lib/bracketTree.test.ts',
   'apps/web/src/pages/cups/lib/cupRoute.test.ts',

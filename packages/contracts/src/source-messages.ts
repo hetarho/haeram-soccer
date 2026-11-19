@@ -3242,6 +3242,15 @@ export const sourceMessages = {
   'copy.FormationPitch.a5fd657a29': '포지션 {p0}',
   'copy.GameOver.83a2c32286': '함께한 시즌',
   'copy.GameOver.c320bee1f5': '최다 서포터',
+  'backup.corrupted':
+    '저장 파일이 손상되었어요. 복구할 수 있는 백업이 없다면 손상된 파일을 내보내 보관해 두세요.',
+  'backup.incomplete': '백업 복사가 끝까지 쓰이지 않았어요. 이전 백업은 그대로 남아 있어요.',
+  'backup.missing': '복구할 백업을 찾지 못했어요.',
+  'backup.unreadable': '백업도 읽을 수 없어요. 손상된 파일은 그대로 남아 있어요.',
+  'backup.offer':
+    '저장 파일이 손상되었어요. {season} 시즌 {date}의 백업으로 복구할 수 있어요. 복구하면 그 이후의 진행은 사라져요. 먼저 손상된 파일을 내보낼 수 있어요.',
+  'backup.restore': '백업으로 복구',
+  'backup.restored': '{season} 시즌 {date}의 백업에서 게임을 복구했어요.',
   'save.export': '기록 내보내기',
   'copy.GameOver.fcd78ecc40': '이 슬롯에서 새 게임',
   'save.fileTooLarge': '파일 크기는 8 MiB 이하이어야 합니다.',

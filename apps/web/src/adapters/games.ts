@@ -1,6 +1,7 @@
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { deviceOwner, ownerOf, type Owner } from './profile';
 import type { StoragePort } from './repository';
+import type { BackupInfo } from './sqliteWasm';
 
 /**
  * Game slots (→SAVE-14, →WEB-62). The index lists what each slot holds and which one is in play;
@@ -33,6 +34,8 @@ export interface GameEntry {
   playedAt: string;
   /** The rules version its checkpoint was written under (→SAVE-16); absent before it was kept. */
   engine?: string;
+  /** The game's current season backup (→SAVE-31): which file, its season and game date. */
+  backup?: BackupInfo;
 }
 // Plain guards keep a validator library out of the entry bundle (→ARCH-28).
 const text = (value: unknown, max: number, min = 1): value is string =>
@@ -42,6 +45,16 @@ const object = (value: unknown) =>
     ? (value as Record<string, unknown>)
     : undefined;
 const colour = (value: unknown) => typeof value === 'string' && /^#[0-9a-fA-F]{6}$/.test(value);
+const backupOf = (value: unknown) => {
+  if (value === undefined) return true;
+  const backup = object(value);
+  return (
+    !!backup &&
+    (backup.side === 'a' || backup.side === 'b') &&
+    Number.isSafeInteger(backup.season) &&
+    text(backup.date, 40)
+  );
+};
 function entryOf(value: unknown): GameEntry | null {
   const entry = object(value),
     summary = object(entry?.summary),
@@ -52,6 +65,7 @@ function entryOf(value: unknown): GameEntry | null {
     text(entry.worldId, 100) &&
     text(entry.playedAt, 40, 0) &&
     (entry.engine === undefined || text(entry.engine, 20)) &&
+    backupOf(entry.backup) &&
     text(summary.club, 80) &&
     text(summary.country, 40) &&
     text(summary.division, 40) &&
@@ -88,6 +102,18 @@ export class GameIndexStore {
   }
   write(index: GameIndex) {
     this.storage.setItem(GAMES_KEY, JSON.stringify({ v: 1, ...index }));
+  }
+  /** The season backup the index records for a game (→SAVE-31). */
+  backupOf(gameId: string) {
+    return this.read().slots.find((entry) => entry?.id === gameId)?.backup;
+  }
+  /** Records a game's current season backup in its entry; a game the index lists no entry for has none. */
+  setBackup(gameId: string, backup: BackupInfo) {
+    const index = this.read();
+    const slot = index.slots.findIndex((entry) => entry?.id === gameId);
+    if (slot < 0) return;
+    index.slots[slot] = { ...index.slots[slot]!, backup };
+    this.write(index);
   }
   /** Whether any slot is listed; a listed game without its file is found out at startup (→SAVE-29). */
   hasGames() {
