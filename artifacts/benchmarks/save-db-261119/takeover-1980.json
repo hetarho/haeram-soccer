@@ -1,0 +1,274 @@
+{
+  "label": "takeover-1980",
+  "source": ".tmp/save-db-bench/takeover-1980.bin",
+  "at": "2026-11-19T14:34:09.770Z",
+  "runs": 3,
+  "limits": {
+    "exportMib": 256,
+    "databaseMib": 1024
+  },
+  "environment": {
+    "node": "v26.8.1",
+    "platform": "darwin",
+    "cpu": "Apple M1 Max",
+    "cores": 10,
+    "loadavg": [
+      2.73095703125,
+      3.35009765625,
+      3.8798828125
+    ],
+    "commit": "21455f48ad55a0b0911adee0a4e20e58796deb60"
+  },
+  "summary": {
+    "firstSaveMs": 481.005459,
+    "firstSaveRows": 68177,
+    "save7Ms": 510.8083330000004,
+    "save7Rows": 49865,
+    "save7PeopleInMemory": 11625,
+    "save14Ms": 80.59091699999772,
+    "save14Rows": 4,
+    "save63Ms": 99.40195800000038,
+    "save63Rows": 75,
+    "save70Ms": 131.20108400000026,
+    "save70Rows": 647,
+    "openMs": 1394.6498339999998,
+    "completeJsonMb": 60.38358211517334,
+    "memoryJsonMb": 41.70889186859131,
+    "peopleStart": 61198,
+    "peopleInMemoryAfterOpen": 11625,
+    "peopleComplete": 61200,
+    "databaseMb": 72.10546875,
+    "exportMb": 9.911234855651855,
+    "exportMs": 890.3548750000009
+  },
+  "results": [
+    {
+      "firstSave": {
+        "ms": 468.09062500000005,
+        "cpuMs": 442.65600000000006,
+        "rowsPut": 68177,
+        "rowsDeleted": 0
+      },
+      "saves": [
+        {
+          "saveMs": 510.8083330000004,
+          "saveCpuMs": 482.92599999999993,
+          "rowsPut": 49865,
+          "rowsDeleted": 0,
+          "daysMs": 1450.985083,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 0,
+          "ownMatches": 0,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 88.58433300000024,
+          "saveCpuMs": 84.6840000000002,
+          "rowsPut": 4,
+          "rowsDeleted": 0,
+          "daysMs": 266.7510000000002,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 0,
+          "ownMatches": 0,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 105.14533300000039,
+          "saveCpuMs": 102.11700000000019,
+          "rowsPut": 75,
+          "rowsDeleted": 0,
+          "daysMs": 1461.4201670000002,
+          "daysPlayed": 49,
+          "year": 1980,
+          "round": 2,
+          "ownMatches": 2,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 140.48612499999945,
+          "saveCpuMs": 129.26700000000073,
+          "rowsPut": 647,
+          "rowsDeleted": 0,
+          "daysMs": 1055.9544580000002,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 3,
+          "ownMatches": 3,
+          "peopleInMemory": 11625,
+          "players": 29
+        }
+      ],
+      "openMs": 1428.6624579999998,
+      "openCpuMs": 1397.844,
+      "heapAfterOpenMb": 820.2012176513672,
+      "rssAfterOpenMb": 1089.34375,
+      "completeJsonMb": 60.38358211517334,
+      "memoryJsonMb": 41.70889186859131,
+      "peopleStart": 61198,
+      "peopleInMemoryAfterOpen": 11625,
+      "peopleComplete": 61200,
+      "playersStart": 29,
+      "databaseMb": 72.10546875,
+      "exportMb": 9.911234855651855,
+      "exportMs": 913.0013330000002,
+      "exportOverLimit": false
+    },
+    {
+      "firstSave": {
+        "ms": 486.13495800000055,
+        "cpuMs": 464.10000000000036,
+        "rowsPut": 68177,
+        "rowsDeleted": 0
+      },
+      "saves": [
+        {
+          "saveMs": 523.5006660000017,
+          "saveCpuMs": 492.0610000000015,
+          "rowsPut": 49865,
+          "rowsDeleted": 0,
+          "daysMs": 1535.1636249999992,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 0,
+          "ownMatches": 0,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 79.80400000000009,
+          "saveCpuMs": 78.11299999999937,
+          "rowsPut": 4,
+          "rowsDeleted": 0,
+          "daysMs": 265.5908330000002,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 0,
+          "ownMatches": 0,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 99.40195800000038,
+          "saveCpuMs": 92.54999999999927,
+          "rowsPut": 75,
+          "rowsDeleted": 0,
+          "daysMs": 1361.029958000001,
+          "daysPlayed": 49,
+          "year": 1980,
+          "round": 2,
+          "ownMatches": 2,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 128.88566700000047,
+          "saveCpuMs": 119.52700000000004,
+          "rowsPut": 647,
+          "rowsDeleted": 0,
+          "daysMs": 1019.9811669999999,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 3,
+          "ownMatches": 3,
+          "peopleInMemory": 11625,
+          "players": 29
+        }
+      ],
+      "openMs": 1394.6498339999998,
+      "openCpuMs": 1357.8869999999988,
+      "heapAfterOpenMb": 829.6725616455078,
+      "rssAfterOpenMb": 1646.75,
+      "completeJsonMb": 60.38358211517334,
+      "memoryJsonMb": 41.70889186859131,
+      "peopleStart": 61198,
+      "peopleInMemoryAfterOpen": 11625,
+      "peopleComplete": 61200,
+      "playersStart": 29,
+      "databaseMb": 72.10546875,
+      "exportMb": 9.911234855651855,
+      "exportMs": 890.3548750000009,
+      "exportOverLimit": false
+    },
+    {
+      "firstSave": {
+        "ms": 481.005459,
+        "cpuMs": 449.83600000000297,
+        "rowsPut": 68177,
+        "rowsDeleted": 0
+      },
+      "saves": [
+        {
+          "saveMs": 496.35370799999873,
+          "saveCpuMs": 466.22699999999895,
+          "rowsPut": 49865,
+          "rowsDeleted": 0,
+          "daysMs": 1504.099542,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 0,
+          "ownMatches": 0,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 80.59091699999772,
+          "saveCpuMs": 78.16600000000108,
+          "rowsPut": 4,
+          "rowsDeleted": 0,
+          "daysMs": 257.61945900000137,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 0,
+          "ownMatches": 0,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 98.02787499999977,
+          "saveCpuMs": 93.25500000000102,
+          "rowsPut": 75,
+          "rowsDeleted": 0,
+          "daysMs": 1297.3663749999978,
+          "daysPlayed": 49,
+          "year": 1980,
+          "round": 2,
+          "ownMatches": 2,
+          "peopleInMemory": 11625,
+          "players": 29
+        },
+        {
+          "saveMs": 131.20108400000026,
+          "saveCpuMs": 121.18799999999828,
+          "rowsPut": 647,
+          "rowsDeleted": 0,
+          "daysMs": 1005.6493330000012,
+          "daysPlayed": 7,
+          "year": 1980,
+          "round": 3,
+          "ownMatches": 3,
+          "peopleInMemory": 11625,
+          "players": 29
+        }
+      ],
+      "openMs": 1383.5485829999998,
+      "openCpuMs": 1345.9149999999972,
+      "heapAfterOpenMb": 839.365608215332,
+      "rssAfterOpenMb": 1645.125,
+      "completeJsonMb": 60.38358211517334,
+      "memoryJsonMb": 41.70889186859131,
+      "peopleStart": 61198,
+      "peopleInMemoryAfterOpen": 11625,
+      "peopleComplete": 61200,
+      "playersStart": 29,
+      "databaseMb": 72.10546875,
+      "exportMb": 9.911234855651855,
+      "exportMs": 862.0852500000001,
+      "exportOverLimit": false
+    }
+  ]
+}

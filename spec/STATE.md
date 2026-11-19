@@ -69,7 +69,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
-| T1022 | Save database measurements and release preparation | ARCH SAVE | T1018 T1012 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -83,7 +82,6 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1022
 - gusta-implement-task T1019
 - gusta-implement-task T1019 (after sv19 lands T1003/T1004)
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
