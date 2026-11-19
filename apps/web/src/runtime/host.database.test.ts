@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import type { RecordChanges, RecordStore } from '../../../../packages/contracts/src/record-store';
 import { memoryRecordStore } from '../../../../tests/fixtures/node-sqlite';
-import { Host, type OpenStore } from './host';
+import { Host, type GameFiles, type OpenStore } from './host';
 import { req, startedHost } from './host.testkit';
 
 /**
@@ -30,7 +30,11 @@ function databases() {
     if (!store && create) files.set(gameId, (store = wrap(memoryRecordStore())));
     return store;
   };
-  return { files, puts, openStore, failWrite: () => (failNext = true) };
+  const gameFiles: GameFiles = {
+    list: () => [...files.keys()],
+    remove: (gameId) => void files.delete(gameId),
+  };
+  return { files, puts, openStore, gameFiles, failWrite: () => (failNext = true) };
 }
 
 describe('the game in play in its database (→SAVE-2/3, →ARCH-6/13)', () => {
@@ -135,5 +139,31 @@ describe('the game in play in its database (→SAVE-2/3, →ARCH-6/13)', () => {
     const reopened = new Host(undefined, db);
     await reopened.handle(req('open', -1, { type: 'open-game', gameId: 'g' }));
     expect(canonical(reopened.world)).toBe(canonical(host.world));
+  });
+
+  it('closes the game in play, lists the files and deletes a game with its file (→SAVE-14/29)', async () => {
+    const db = databases();
+    const { host } = await startedHost(undefined, {}, new Host(undefined, db));
+    await host.handle(req('create', host.world!.revision, { type: 'create-game', gameId: 'a' }));
+    expect((await host.handle(req('close', -1, { type: 'close-game' }))).ok).toBe(true);
+    expect(host.world).toBeUndefined();
+    // Closed, nothing is in play to save.
+    expect((await host.handle(req('save', -1, { type: 'save' }))).ok).toBe(false);
+    expect((await host.handle(req('list', -1, { type: 'list-games' }))).games).toEqual(['a']);
+    // The closed file opens again as it was saved.
+    const reopened = await host.handle(req('open', -1, { type: 'open-game', gameId: 'a' }));
+    expect(reopened.opened?.found).toBe(true);
+    // Deleting the game in play releases it and removes the file; a file never made is no error.
+    expect((await host.handle(req('delete', -1, { type: 'delete-game', gameId: 'a' }))).ok).toBe(
+      true,
+    );
+    expect(host.world).toBeUndefined();
+    expect(db.files.has('a')).toBe(false);
+    expect((await host.handle(req('none', -1, { type: 'delete-game', gameId: 'a' }))).ok).toBe(
+      true,
+    );
+    expect((await host.handle(req('empty', -1, { type: 'list-games' }))).games).toEqual([]);
+    const bad = await host.handle(req('bad', -1, { type: 'delete-game', gameId: '../x' }));
+    expect(bad.ok).toBe(false);
   });
 });

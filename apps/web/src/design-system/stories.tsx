@@ -690,12 +690,7 @@ function Dialogs() {
 function Slots({ runtime }: { runtime: Runtime }) {
   useTextLocale();
   const [slots] = useState(
-    () =>
-      new GameSlots(runtime.client, new GameIndexStore(memoryStorage()), {
-        get: async () => undefined,
-        put: async () => {},
-        remove: async () => {},
-      }),
+    () => new GameSlots(runtime.client, new GameIndexStore(memoryStorage())),
   );
   return (
     <GameSlotScreen

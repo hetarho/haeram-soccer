@@ -38,7 +38,7 @@ export function GameSlotScreen({
 }: {
   slots: GameSlots;
   onEnter: () => void;
-  /** Readies the slot (parking the game in play) and opens founding for it. */
+  /** Readies the slot (saving the game in play) and opens founding for it. */
   onNew: (slot: number) => Promise<void>;
   onExport: (raw: string, label: string) => void;
   /** The game in play was deleted: a fresh page reads what remains, on this screen. */
@@ -64,16 +64,6 @@ export function GameSlotScreen({
   useEffect(() => {
     if (!loading) setIndex(slots.display(gameStoreWorld()));
   }, [slots, loading, clientError]);
-  // Games parked before slots kept their rules version learn it from their header (→SAVE-16).
-  useEffect(() => {
-    let live = true;
-    void slots.resolveEngines().then((found) => {
-      if (found && live) setIndex(slots.display(gameStoreWorld()));
-    });
-    return () => {
-      live = false;
-    };
-  }, [slots]);
   const [working, setWorking] = useState('');
   const [error, setError] = useState('');
   const [confirm, setConfirm] = useState<{ kind: 'delete' | 'overwrite'; slot: number }>();
@@ -134,7 +124,7 @@ export function GameSlotScreen({
         ),
       )}
       {localizeValue(
-        !slots.canPark && (
+        !slots.available && (
           <p data-surface="inset" className={s.note} role="status">
             {localizeValue(t('slots.storageUnavailable'))}
           </p>
@@ -174,7 +164,7 @@ export function GameSlotScreen({
                     <button
                       data-ui="primary"
                       className={a.primary}
-                      disabled={locked || (!!world && !slots.canPark)}
+                      disabled={locked || (!!world && !slots.available)}
                       onClick={() => void run('slots.preparing', async () => onNew(slot))}
                     >
                       {localizeValue(t('slots.new'))}
@@ -185,7 +175,7 @@ export function GameSlotScreen({
                         className={a.fileInput}
                         type="file"
                         accept="application/json,.json"
-                        disabled={locked || (!!world && !slots.canPark)}
+                        disabled={locked || (!!world && !slots.available)}
                         onChange={(event) => {
                           importInto(slot, event.target.files?.[0]);
                           event.target.value = '';

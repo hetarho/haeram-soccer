@@ -14,6 +14,7 @@ import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { officeRead } from './officeRead';
 import {
   gameDriver,
+  deleteFile,
   gameFileName,
   listFiles,
   openGamePool,
@@ -305,6 +306,15 @@ export type OpenStore = (
   gameId: string,
   options: { create: boolean },
 ) => RecordStore | undefined | Promise<RecordStore | undefined>;
+/**
+ * The game database files of this browser (→SAVE-14): the IDs whose file exists and the removal of
+ * one, with the game's backup too once seasons keep one (→SAVE-31).
+ */
+export interface GameFiles {
+  list(): string[] | Promise<string[]>;
+  remove(gameId: string): void | Promise<void>;
+}
+const GAME_FILE = /^\/game-([A-Za-z0-9:_-]{1,100})\.sqlite3$/;
 /** A game's database in the engine worker's OPFS pool (→ARCH-11). */
 function poolStore(pool: GamePool, gameId: string, create: boolean) {
   const fileName = gameFileName(gameId);
@@ -388,6 +398,7 @@ export class Host {
    */
   private game?: { id: string; store: RecordStore; saver: RowSaver };
   private openStore: OpenStore;
+  private files: GameFiles;
   /** The client's fixture helpers, when it created them (→ARCH-6); without, every fixture plays here. */
   helpers?: HelperPool;
   /** An own match day waiting for its helpers: the world is mid-day, so reads wait for it. */
@@ -404,9 +415,14 @@ export class Host {
   private gamePool?: Promise<GamePool>;
   constructor(
     private progress: (reply: Reply) => void = () => {},
-    options: { release?: MatchModelRelease; openStore?: OpenStore } = {},
+    options: { release?: MatchModelRelease; openStore?: OpenStore; gameFiles?: GameFiles } = {},
   ) {
     this.release = options.release ?? MATCH_MODEL_RELEASE;
+    this.files = options.gameFiles ?? {
+      list: async () =>
+        listFiles(await this.databases()).flatMap((name) => GAME_FILE.exec(name)?.[1] ?? []),
+      remove: async (gameId) => void deleteFile(await this.databases(), gameFileName(gameId)),
+    };
     this.openStore =
       options.openStore ??
       (async (gameId, { create }) => poolStore(await this.databases(), gameId, create));
@@ -475,6 +491,31 @@ export class Host {
       upgraded: activated !== world || undefined,
       ...this.publish(r.viewBase),
     };
+  }
+  /**
+   * Releases the game in play's database after the client's save (→SAVE-14): no game is in play
+   * until the next `open-game`. A world not yet in a database stays what it is, nobody's file.
+   */
+  private releaseGame(r: Request): Reply {
+    if (this.game) {
+      this.closeGame();
+      this.world = undefined;
+      this.inspected = undefined;
+    }
+    return { requestId: r.requestId, ok: true };
+  }
+  /**
+   * Removes a game's database (→SAVE-14, →WEB-62): the game in play first leaves memory, and a
+   * game without a file is already gone.
+   */
+  private async deleteGame(r: Request, gameId: string): Promise<Reply> {
+    if (this.game?.id === gameId) {
+      this.closeGame();
+      this.world = undefined;
+      this.inspected = undefined;
+    }
+    await this.files.remove(gameId);
+    return { requestId: r.requestId, ok: true };
   }
   /**
    * Writes every row of the world in play into its game's new database (→SAVE-2): after a takeover,
@@ -896,6 +937,10 @@ export class Host {
       if (previous) return previous;
       if (r.body.type === 'save') return this.save(r);
       if (r.body.type === 'open-game') return await this.openGame(r, r.body.gameId);
+      if (r.body.type === 'close-game') return this.releaseGame(r);
+      if (r.body.type === 'delete-game') return await this.deleteGame(r, r.body.gameId);
+      if (r.body.type === 'list-games')
+        return { requestId: r.requestId, ok: true, games: [...(await this.files.list())] };
       if (r.body.type === 'create-game')
         return await this.createGame(r, r.body.gameId, !!r.body.replace);
       if (r.body.type !== 'inspect' && r.expectedRevision !== (this.world?.revision ?? -1))

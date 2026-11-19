@@ -14,7 +14,7 @@ import { AUTOSAVE_MS, GameClient, SAVE_DATA_UPDATED, type ClientState } from './
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
 import type { World } from '../../../../packages/contracts/src/types';
-import { Host, type OpenStore } from './host';
+import { Host, type GameFiles, type OpenStore } from './host';
 import type { RecordStore } from '../../../../packages/contracts/src/record-store';
 import { memoryRecordStore } from '../../../../tests/fixtures/node-sqlite';
 import { RowSaver } from '../adapters/rowSaver';
@@ -23,7 +23,7 @@ import { HELPER_CONFIG, HelperPool, type HelperPort } from './helperPool';
 import type { Reply, Request } from './protocol';
 import { earlierRules, GameSlots, summarize } from './slots';
 import { rowsToWorld } from '../adapters/worldRows';
-import { GameIndexStore, type ParkedStore } from '../adapters/games';
+import { GameIndexStore } from '../adapters/games';
 import { createGameStore, NOTIFICATIONS_KEY, type SystemNotification } from './store';
 import { START } from './host.testkit';
 import { divisionName } from '../presentation/competitionLabels';
@@ -83,6 +83,10 @@ const openStore: OpenStore = (gameId, { create }) => {
   }
   return store;
 };
+const gameFiles: GameFiles = {
+  list: () => [...files.keys()],
+  remove: (gameId) => void files.delete(gameId),
+};
 /** The revision a game's database last committed. */
 const committed = (gameId: string) => Number(files.get(gameId)?.meta().revision ?? -1);
 /** Lists the world in play in the slot index, as the app does once it is shown (→SAVE-14). */
@@ -112,7 +116,11 @@ class WorkerPort {
   onerror?: () => void;
   /** Save answers wait for this, so a test can hold a commit's answer while the game moves on. */
   static saveGate = Promise.resolve();
-  host = new Host((reply) => this.deliver(reply), { release: WorkerPort.release, openStore });
+  host = new Host((reply) => this.deliver(reply), {
+    release: WorkerPort.release,
+    openStore,
+    gameFiles,
+  });
   private helperPorts: MessagePort[] = [];
   constructor() {
     WorkerPort.instances.push(this);
@@ -1081,29 +1089,19 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
 });
 
 describe('game slots', () => {
-  class MemoryParked implements ParkedStore {
-    data = new Map<string, string>();
-    async get(id: string) {
-      return this.data.get(id);
-    }
-    async put(id: string, raw: string) {
-      this.data.set(id, raw);
-    }
-    async remove(id: string) {
-      this.data.delete(id);
-    }
-  }
-  it('parks the game in play, starts another in an empty slot and switches back intact', async () => {
+  /** The game ID each slot lists, in slot order. */
+  const ids = (slots: GameSlots) => slots.read().slots.map((entry) => entry?.id);
+  it('saves and closes the game in play, starts another in an empty slot and switches back intact', async () => {
     const client = await start();
-    const parked = new MemoryParked();
-    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const slots = new GameSlots(client, new GameIndexStore(storage));
     const first = client.state.view!.world.id,
       firstClub = clubName(client.state.view!.world);
     expect(slots.sync(client.state.view!.world)).toMatchObject({ active: 0 });
+    const firstGame = client.gameId!;
 
     await slots.prepare(1);
-    expect(parked.data.size).toBe(1);
     await startGame(client, 'second-slot', true);
+    await client.whenSaved();
     const second = client.state.view!.world.id;
     expect(second).not.toBe(first);
     let index = slots.sync(client.state.view!.world, true);
@@ -1113,40 +1111,81 @@ describe('game slots', () => {
       clubName(client.state.view!.world),
       undefined,
     ]);
+    // A new game creates its own file; the first game's stays as it was saved.
+    expect([...files.keys()].sort()).toEqual([firstGame, client.gameId!].sort());
     await client.command({ type: 'advance-days', days: 1 });
+    const secondGame = client.gameId!;
 
     await slots.continue(0);
     expect(client.state.view!.world.id).toBe(first);
     expect(slots.read().active).toBe(0);
-    // Back in play, its game's database holds it as switched in.
-    expect(client.gameId).toBe(slots.read().slots[0]!.id);
-    expect(committed(client.gameId!)).toBe(client.state.view!.world.revision);
-    // The second game kept the day it had played before it was parked.
+    // Switching saved the game left, and the one come back is its database as saved.
+    expect(client.gameId).toBe(firstGame);
+    expect(committed(firstGame)).toBe(client.state.view!.world.revision);
+    expect(committed(secondGame)).toBe(1);
+    // The second game kept the day it had played before it was closed.
     await slots.continue(1);
     expect(client.state.view!.world.id).toBe(second);
     expect(client.state.view!.world.calendar?.day).toBe(1);
 
-    // A parked game is deleted with its copy; the game in play takes its checkpoints with it.
+    // Deleting a game not in play removes its file only; the game in play's takes its file with it.
     expect(await slots.remove(0)).toBe(false);
     index = slots.read();
     expect(index.slots[0]).toBeNull();
-    expect([...parked.data.keys()]).toEqual([index.slots[1]!.id]);
+    expect([...files.keys()]).toEqual([secondGame]);
     expect(await slots.remove(1)).toBe(true);
-    expect(
-      ['haeram-soccor:manifest', 'indexed:active', 'indexed:previous'].every(
-        (key) => storage.getItem(key) === null,
-      ),
-    ).toBe(true);
+    expect(files.size).toBe(0);
+    expect(client.state.view).toBeUndefined();
     expect(slots.read()).toMatchObject({ active: null, slots: [null, null, null] });
+  });
+
+  it('a failed open leaves both files untouched and the previous game in play (→SAVE-14)', async () => {
+    const client = await start();
+    const slots = new GameSlots(client, new GameIndexStore(storage));
+    const first = client.state.view!.world.id;
+    slots.sync(client.state.view!.world);
+    await slots.prepare(1);
+    await startGame(client, 'second-slot', true);
+    await client.whenSaved();
+    slots.sync(client.state.view!.world, true);
+    const [firstGame, secondGame] = ids(slots) as string[];
+    await slots.continue(0);
+    // The second game's file now belongs to a newer game.
+    files.get(secondGame)!.write({ put: [], delete: [], meta: { engine: '99.0.0' } });
+    const kept = JSON.stringify([files.get(secondGame)!.meta(), committed(firstGame)]);
+    await expect(slots.continue(1)).rejects.toThrow();
+    expect(client.state.view!.world.id).toBe(first);
+    expect(client.gameId).toBe(firstGame);
+    expect(slots.read().active).toBe(0);
+    expect(JSON.stringify([files.get(secondGame)!.meta(), committed(firstGame)])).toBe(kept);
+    // The reopened game plays and saves as before.
+    await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    await client.whenSaved();
+    expect(committed(firstGame)).toBe(client.state.view!.world.revision);
+  });
+
+  it('a new game over an occupied slot deletes the old file once the new one is created', async () => {
+    const client = await start();
+    const slots = new GameSlots(client, new GameIndexStore(storage));
+    slots.sync(client.state.view!.world);
+    const old = client.gameId!;
+    await slots.prepare(0);
+    // Nothing is deleted before the takeover (→WEB-62): the confirmed replacement may still be left.
+    expect(files.has(old)).toBe(true);
+    await startGame(client, 'replacing', true);
+    await client.whenSaved();
+    expect(files.has(old)).toBe(false);
+    expect([...files.keys()]).toEqual([client.gameId!]);
+    expect(slots.sync(client.state.view!.world, true).slots[0]!.id).toBe(client.gameId);
   });
 
   it('slot import applies only to its intended world', async () => {
     const client = await start();
-    const parked = new MemoryParked();
-    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const slots = new GameSlots(client, new GameIndexStore(storage));
     const first = client.state.view!.world.id;
     slots.sync(client.state.view!.world);
-    const firstRaw = await client.checkpoint();
+    const firstGame = client.gameId!,
+      firstRevision = client.state.view!.world.revision;
     const imported = withoutIdentities(
       simulatedWorld({ ...founding, seed: 'identityless-import' }),
     );
@@ -1157,24 +1196,24 @@ describe('game slots', () => {
     for (const club of w.clubs) expect(club.identity).toEqual(identityOf(imported, club.id));
     const index = slots.read();
     expect(index.slots.map((entry) => entry?.worldId)).toEqual([first, imported.id, undefined]);
-    // The parked game is byte for byte what it was; only the imported world was adopted.
-    expect(parked.data.get(index.slots[0]!.id)).toBe(firstRaw);
-    const saved = (await decode((await client.checkpoint())!)).world;
+    // The first game's database is what it was; only the imported world was adopted.
+    expect(committed(firstGame)).toBe(firstRevision);
+    const saved = (await decode((await client.exportFile())!)).world;
     expect(saved.id).toBe(imported.id);
     expect(saved.clubs.every((club) => club.identity)).toBe(true);
   });
 
-  it('lists a save from before slots as slot 1 and refuses a slot whose copy is gone', async () => {
+  it('lists a save from before slots as slot 1 and reads a slot without its file as empty (→SAVE-29)', async () => {
     const client = await start();
-    const slots = new GameSlots(client, new GameIndexStore(storage), new MemoryParked());
-    expect(new GameIndexStore(storage).hasGames()).toBe(true);
+    const slots = new GameSlots(client, new GameIndexStore(storage));
     const index = slots.sync(client.state.view!.world);
     expect(index.active).toBe(0);
+    expect(new GameIndexStore(storage).hasGames()).toBe(true);
     const own = client.state.view!.world.clubs.find(
       (club) => club.id === client.state.view!.world.playerClub,
     )!;
     expect(index.slots[0]!.summary.division).toBe(divisionName(own.country, own.tier, own.group));
-    // A slot listed without its parked checkpoint is reported, and the game in play stays.
+    // A slot listed without its database file reads as empty, and the game in play stays.
     storage.setItem(
       'haeram-soccor:games',
       JSON.stringify({
@@ -1182,34 +1221,42 @@ describe('game slots', () => {
         slots: [index.slots[0], { ...index.slots[0], id: 'lost', worldId: 'gone' }, null],
       }),
     );
-    await expect(slots.continue(1)).rejects.toThrow('찾지 못했어요');
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    await reader.whenIdle();
+    const afterStartup = new GameSlots(reader, new GameIndexStore(storage));
+    expect(afterStartup.read().slots.map((entry) => entry?.id)).toEqual([
+      index.slots[0]!.id,
+      undefined,
+      undefined,
+    ]);
+    await expect(slots.continue(1)).rejects.toThrow();
     expect(client.state.view!.world.id).toBe(index.slots[0]!.worldId);
   });
 
   it('keeps the rules of each slot: an earlier-rules game is listed as such and never continues', async () => {
+    // Its file exists when the tab starts, so the startup listing holds it (→SAVE-29).
+    files.set('old', memoryRecordStore());
     const client = await start();
-    const parked = new MemoryParked();
-    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const slots = new GameSlots(client, new GameIndexStore(storage));
     const index = slots.sync(client.state.view!.world);
     expect(index.slots[0]!.engine).toBe(CURRENT_ENGINE_VERSION);
-    // A game parked before slots kept their rules, saved under rules 1.22.0.
-    const earlier = JSON.stringify({
-      ...JSON.parse((await client.exportFile())!),
-      engine: '1.22.0',
-    });
-    const unversioned = { ...index.slots[0]!, id: 'old', worldId: 'old' };
-    delete unversioned.engine;
     storage.setItem(
       'haeram-soccor:games',
-      JSON.stringify({ ...index, slots: [index.slots[0], unversioned, null] }),
+      JSON.stringify({
+        ...index,
+        slots: [
+          index.slots[0],
+          { ...index.slots[0], id: 'old', worldId: 'old', engine: '1.22.0' },
+          null,
+        ],
+      }),
     );
-    await parked.put('old', earlier);
-    expect(earlierRules(slots.read().slots[1]!)).toBeUndefined();
-    expect(await slots.resolveEngines()).toBe(true);
     expect(earlierRules(slots.read().slots[1]!)).toBe('1.22.0');
     await expect(slots.continue(1)).rejects.toThrow('규칙 1.22.0 커리어');
-    // Its file is still there to keep, exactly as parked.
-    expect(await slots.exportRaw(1)).toBe(earlier);
+    // Its file is still there to keep, exactly as it was.
+    expect(files.has('old')).toBe(true);
   });
 });
 

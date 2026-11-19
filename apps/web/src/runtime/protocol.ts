@@ -300,6 +300,12 @@ export const requestSchema = z.object({
       replace: z.boolean().optional(),
     }),
     z.object({ type: z.literal('save') }),
+    // Slots are database files (→SAVE-14): `close-game` releases the game in play's database after
+    // its save, `delete-game` removes a game's file (closing it first when it is in play) and
+    // `list-games` answers the game IDs whose files exist (→SAVE-29).
+    z.strictObject({ type: z.literal('close-game') }),
+    z.strictObject({ type: z.literal('delete-game'), gameId }),
+    z.strictObject({ type: z.literal('list-games') }),
     z.strictObject({
       type: z.literal('news-page'),
       tag: newsItemSchema.shape.tag.optional(),
@@ -587,4 +593,6 @@ export interface Reply {
    * when the game has no database file, an empty slot (→SAVE-29).
    */
   opened?: { gameId: string; found: boolean; revision?: number };
+  /** `list-games`' answer: the IDs of the games whose database files exist (→SAVE-29). */
+  games?: string[];
 }

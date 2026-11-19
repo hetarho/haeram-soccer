@@ -145,6 +145,13 @@ export class GameClient {
   gameId?: string;
   private stored = false;
   private createReplaces = false;
+  /**
+   * The game IDs whose database files exist, from the startup listing and kept as this tab creates
+   * and deletes games (→SAVE-29); undefined while unknown.
+   */
+  private gameFiles?: Set<string>;
+  /** The game a new one replaces in its slot: its file goes when the new game's is created. */
+  private replacedGame?: string;
   /** The fixture helpers, computing an own match day's other fixtures for the engine (→ARCH-6). */
   private helpers: Worker[] = [];
   /** The save being committed, and whether a newer one was asked for meanwhile. */
@@ -400,53 +407,77 @@ export class GameClient {
    */
   private async load() {
     await this.whenSaved();
+    if (!this.state.readonly) await this.listGames();
     const gameId = this.state.readonly ? undefined : activeGameId();
-    if (gameId) {
-      const playback = this.state.playback,
-        before = this.state.view?.world,
-        career = before?.id;
-      let reply: Reply;
-      try {
-        reply = await this.rpc({ type: 'open-game', gameId }, undefined, STORAGE_TIMEOUT_MS);
-      } catch (error) {
-        const opened = this.state.view?.world;
-        if (!opened || (opened.id === career && opened.revision === before?.revision)) throw error;
-        // The upgraded game is in play, its commit failed: memory keeps it, exportable (→SAVE-10).
-        this.gameId = gameId;
-        this.stored = true;
-        this.state.savedRevision = -1;
-        this.state.saveFailed = true;
-        throw new Error(sourceMessage('copy.client.042fb5736b', { p0: String(error) }));
-      }
-      if (reply.opened?.found) {
-        // A revealed playback of this career whose match the game holds finishes under the model
-        // it was settled with, even when this load activates a newer one (→SAVE-23).
-        const world = this.state.view?.world;
-        this.staging.replace(
-          playback &&
-            world?.id === career &&
-            world?.ownMatches.some((match) => match.id === playback.record.id)
-            ? playback.script
-              ? { ...playback, frames: [] }
-              : playback
-            : undefined,
-        );
-        this.gameId = gameId;
-        this.stored = true;
-        this.createReplaces = false;
-        this.state.savedRevision = reply.opened.revision ?? -1;
-        this.state.savedAt = undefined;
-        this.state.saveFailed = false;
-        if (reply.upgraded) {
-          this.state.savedAt = Date.now();
-          // A catalog pin, missing club designs (→SAVE-21) or the full match model (→SAVE-23) are
-          // updated, never the gameplay rules or a settled fact.
-          notificationStore.add(SAVE_DATA_UPDATED);
-          this.channel.postMessage({ revision: this.state.savedRevision });
-        }
-      }
-    }
+    if (gameId) await this.open(gameId);
     this.emit();
+  }
+  /**
+   * The game IDs whose database files exist, asked of the engine worker at startup (→SAVE-29): a
+   * slot-index entry outside them reads as an empty slot. Unknown, so nothing is hidden, when the
+   * worker cannot list its files.
+   */
+  private async listGames() {
+    try {
+      const reply = await this.rpc({ type: 'list-games' }, undefined, STORAGE_TIMEOUT_MS);
+      this.gameFiles = new Set(reply.games ?? []);
+    } catch {
+      this.gameFiles = undefined;
+    }
+  }
+  /** Whether a slot-index game has its database file, or is not known to lack one (→SAVE-29). */
+  hasGameFile(gameId: string) {
+    return !this.gameFiles || this.gameFiles.has(gameId) || gameId === this.gameId;
+  }
+  /** Opens one game's database as the game in play; false when it has no file. */
+  private async open(gameId: string) {
+    const playback = this.state.playback,
+      before = this.state.view?.world,
+      career = before?.id;
+    let reply: Reply;
+    try {
+      reply = await this.rpc({ type: 'open-game', gameId }, undefined, STORAGE_TIMEOUT_MS);
+    } catch (error) {
+      const opened = this.state.view?.world;
+      if (!opened || (opened.id === career && opened.revision === before?.revision)) throw error;
+      // The upgraded game is in play, its commit failed: memory keeps it, exportable (→SAVE-10).
+      this.gameId = gameId;
+      this.stored = true;
+      this.state.savedRevision = -1;
+      this.state.saveFailed = true;
+      throw new Error(sourceMessage('copy.client.042fb5736b', { p0: String(error) }));
+    }
+    if (!reply.opened?.found) {
+      this.gameFiles?.delete(gameId);
+      return false;
+    }
+    // A revealed playback of this career whose match the game holds finishes under the model it
+    // was settled with, even when this load activates a newer one (→SAVE-23).
+    const world = this.state.view?.world;
+    this.staging.replace(
+      playback &&
+        world?.id === career &&
+        world?.ownMatches.some((match) => match.id === playback.record.id)
+        ? playback.script
+          ? { ...playback, frames: [] }
+          : playback
+        : undefined,
+    );
+    this.gameId = gameId;
+    this.stored = true;
+    this.createReplaces = false;
+    this.gameFiles?.add(gameId);
+    this.state.savedRevision = reply.opened.revision ?? -1;
+    this.state.savedAt = undefined;
+    this.state.saveFailed = false;
+    if (reply.upgraded) {
+      this.state.savedAt = Date.now();
+      // A catalog pin, missing club designs (→SAVE-21) or the full match model (→SAVE-23) are
+      // updated, never the gameplay rules or a settled fact.
+      notificationStore.add(SAVE_DATA_UPDATED);
+      this.channel.postMessage({ revision: this.state.savedRevision });
+    }
+    return true;
   }
   /**
    * The whole view a reply carries, rebuilt on the base it names when it sends only changes;
@@ -641,12 +672,24 @@ export class GameClient {
     if (!w || this.state.readonly || w.revision === this.state.savedRevision) return;
     const gameId = this.gameId;
     if (!gameId) throw new Error(sourceMessage('copy.host.c64421732a'));
+    if (!this.stored && this.replacedGame) {
+      // A game replaced in its slot (after the owner confirmed it, →WEB-62) loses its file first.
+      if (this.replacedGame !== gameId)
+        await this.rpc(
+          { type: 'delete-game', gameId: this.replacedGame },
+          undefined,
+          STORAGE_TIMEOUT_MS,
+        );
+      this.gameFiles?.delete(this.replacedGame);
+      this.replacedGame = undefined;
+    }
     const body: Body = this.stored
       ? { type: 'save' }
       : { type: 'create-game', gameId, ...(this.createReplaces ? { replace: true } : {}) };
     const reply = await this.rpc(body, undefined, STORAGE_TIMEOUT_MS);
     const saved = reply.saved;
     if (!saved) throw new Error(sourceMessage('copy.client.d9dbcef838'));
+    this.gameFiles?.add(saved.gameId);
     if (saved.gameId === this.gameId) {
       this.stored = true;
       this.createReplaces = false;
@@ -998,9 +1041,44 @@ export class GameClient {
   importFile(raw: string) {
     return this.enqueue(() => this.activate(raw));
   }
-  /** Brings a parked game into play; resolves true once it is the committed game (→SAVE-14). */
-  async switchTo(raw: string) {
-    return (await this.enqueue(async () => (await this.activate(raw), true))) === true;
+  /**
+   * Switches games (→SAVE-14): the game in play is saved and closed, then the next game's database
+   * is opened and validated. A failed open leaves both files untouched and reopens the previous
+   * game; resolves true once the next game is in play.
+   */
+  async switchTo(gameId: string) {
+    return (
+      (await this.enqueue(async () => {
+        if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
+        const previous = this.gameId;
+        clearTimeout(this.autosaveTimer);
+        this.autosaveTimer = undefined;
+        await this.save();
+        const opened = this.stored && previous !== undefined;
+        if (opened) await this.rpc({ type: 'close-game' }, undefined, STORAGE_TIMEOUT_MS);
+        this.leaveGame();
+        let failure: unknown;
+        try {
+          if (await this.open(gameId)) return true;
+          failure = new Error(sourceMessage('copy.slots.148750cdf5'));
+        } catch (error) {
+          failure = error;
+        }
+        if (opened) await this.open(previous).catch(() => false);
+        throw failure;
+      })) === true
+    );
+  }
+  /** Saves the game in play, so another game may take its slot or its place (→SAVE-14). */
+  saveGame() {
+    return this.enqueue(async () => {
+      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
+      await this.save();
+    });
+  }
+  /** The game whose file goes when the next new game's is created, in the same slot (→WEB-62). */
+  replaceOnCreate(gameId: string | undefined) {
+    this.replacedGame = gameId;
   }
   /**
    * The game in play as a checkpoint envelope, saved first if the latest revision is not yet in
@@ -1019,25 +1097,31 @@ export class GameClient {
   reload() {
     return this.enqueue(() => this.load());
   }
-  /** Removes the game in play's checkpoints; the app reloads into the slot screen after. */
-  forget() {
+  /** Nothing of the game in play stays in this page: no view, no database, no pending save. */
+  private leaveGame() {
+    this.gameId = undefined;
+    this.stored = false;
+    this.state.view = undefined;
+    delete this.state.start;
+    this.held = [];
+    this.views.clear();
+    this.staging.replace();
+    this.emit();
+  }
+  /**
+   * Deletes a game's database (→SAVE-14, →WEB-62); the game in play leaves this page with it, and
+   * the app reloads into the slot screen after.
+   */
+  deleteGame(gameId: string) {
     return this.enqueue(async () => {
       if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       // No autosave may bring the removed game back.
       clearTimeout(this.autosaveTimer);
       this.autosaveTimer = undefined;
       await this.whenSaved();
-      await this.saves.clearActive();
-      await this.saves.clearPrevious().catch(() => {});
-      // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
-      this.gameId = undefined;
-      this.stored = false;
-      this.state.view = undefined;
-      delete this.state.start;
-      this.held = [];
-      this.views.clear();
-      this.staging.replace();
-      this.emit();
+      await this.rpc({ type: 'delete-game', gameId }, undefined, STORAGE_TIMEOUT_MS);
+      this.gameFiles?.delete(gameId);
+      if (gameId === this.gameId) this.leaveGame();
     });
   }
   retrySave() {
