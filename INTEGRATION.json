@@ -1428,11 +1428,56 @@
       "host": "ihaelam-ui-MacBookPro",
       "device": "ihaelam-ui-MacBookPro",
       "branch": "gusta-session-start-facauto-7fb6ee3c",
-      "head": "ccd7f36f4737fc0c19a1aa7b6aa0e8c7cd0199bf",
+      "head": "d15ec6dbbcb2a442b4d46d8b0160e2af092bbc8c",
       "land": "main",
       "status": "working",
-      "at": "2026-11-19T16:13:22.395Z",
-      "agentChecks": [],
+      "at": "2026-11-19T16:24:16.760Z",
+      "agentChecks": [
+        {
+          "id": "facility-auto-controls",
+          "scenario": "모든 시설 작업 진입점에서 시설별 체크박스와 저장 상태를 확인한다.",
+          "steps": [
+            "홈 카드, 재정·투자의 효과 링크, 직접 주소에서 경기장·유소년·1군 훈련장 작업 카드를 연다.",
+            "팀의 유소년과 훈련 화면에서 시설 작업 카드로 이동하고 돌아온다.",
+            "한 시설만 체크하고 다른 시설을 확인한 뒤 저장, 새로고침, 언어 전환을 수행한다."
+          ],
+          "expected": "세 시설의 체크 상태가 서로 독립적으로 저장된다. 키보드로 조작할 수 있고, 체크한 유휴 시설은 수동 시작 대기로 표시된다. 경기장 라벨에는 재건축 포함이 명시되며 언어를 바꾸면 표시 문구도 바뀐다.",
+          "observed": "미실행",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "기획 단위에 컴퓨터 사용 도구가 없습니다. 호스트가 이 요청의 고정 후보에서 확인합니다.",
+          "replaces": [
+            "e2e:facility-auto-upgrade:controls-and-reload"
+          ],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "facility-auto-progression",
+          "scenario": "실제 구단 진행에서 완공, 재건축, 자금 대기, 취소와 최대 단계를 확인한다.",
+          "steps": [
+            "짧은 검증용 커리어에서 경기장 자동 증축을 켜고 첫 공사를 수동 견적으로 시작한 뒤 완공일까지 진행한다.",
+            "자금이 부족한 완공 사례를 저장하고 다시 연 뒤, 자금이 확보되는 첫 일일 정산까지 진행한다.",
+            "공사 중 체크를 해제하고 완공까지 진행한다. 별도로 최대 단계 완공을 확인한다."
+          ],
+          "expected": "경기장은 완공 뒤 다음 재건축을 한 번 시작한다. 자금 대기는 저장 후에도 유지되며, 자금 조건을 처음 충족한 정산에서 기존 견적 금액이 한 번 청구되고 공사 기록이 한 건 생긴다. 체크 해제 후에도 진행 중인 공사는 완공되며 다음 공사는 시작되지 않는다. 최대 단계에서 체크가 꺼진다.",
+          "observed": "미실행",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "기획 단위에 컴퓨터 사용 도구가 없습니다. 호스트가 이 요청의 고정 후보에서 확인합니다.",
+          "replaces": [
+            "e2e:facility-auto-upgrade:completion-and-retry"
+          ],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
       "verificationCommands": []
     }
   },
