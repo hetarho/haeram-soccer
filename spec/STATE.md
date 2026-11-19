@@ -68,7 +68,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
+| T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | doing@261119.x10 |
 | T994 | Prepare the stopped-clock read boundary | WEB ARCH | T1026 T1027 | todo |
 | T1028 | Activate stopped-clock reads | WEB ARCH | T994 | todo |
 | T1029 | Measure stopped-clock reads | WEB ARCH | T1028 | todo |
