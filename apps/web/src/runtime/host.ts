@@ -884,6 +884,7 @@ export class Host {
       type === 'league-fixtures' ||
       type === 'full-stats' ||
       type === 'club-records' ||
+      type === 'stopped-reads' ||
       type === 'archive' ||
       type === 'manager-history' ||
       type === 'club-profile' ||
@@ -965,11 +966,26 @@ export class Host {
    * This world's view, projected inside one read scope (→ARCH-6): the projection is synchronous and
    * changes nothing, so the parts that read the own XI share one choice of it.
    */
-  private view(w = this.world): View | undefined {
+  private view(w = this.world, deferSlow = false): View | undefined {
     if (!w) return;
-    return readingOnce(w, () => this.projection(w));
+    return readingOnce(w, () => this.projection(w, deferSlow));
   }
-  private projection(w: World): View {
+  /**
+   * The five parts of the projection that cost the most each day (→WEB-119), shared by the full
+   * projection and the `stopped-reads` read so both give the same answer for the same world. Call it
+   * inside a read scope (→ARCH-6): the parts that read the own XI then share one choice of it.
+   */
+  private slowReads(w: World) {
+    return {
+      coaches: staffMarket(w),
+      managers: managerCandidates(w),
+      transfers: transferOffers(w),
+      disciplineNames: disciplineNames(w),
+      office: officeRead(w),
+    };
+  }
+  private projection(w: World, deferSlow = false): View {
+    const slow = deferSlow ? undefined : this.slowReads(w);
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
     const next = nextOwnFixture(w);
@@ -980,11 +996,11 @@ export class Host {
     // so are the manager-history facts; the free-agent pool stays on the worker (→CLUB-49).
     const projected = projectWorldFacts(w);
     return {
-      coaches: staffMarket(w),
+      ...(slow ? { coaches: slow.coaches } : {}),
       world: {
         ...projected,
         clubs: w.clubs.map((club) => ({ ...club, rating: rating(w, club) })),
-        disciplineNames: disciplineNames(w),
+        ...(slow ? { disciplineNames: slow.disciplineNames } : {}),
         renewalChances: contractRenewalReads(w),
         // Browser projections omit `people`; resolving names there would regenerate old identities.
         nextOpponentLineup:
@@ -1038,13 +1054,12 @@ export class Host {
       totalMatches: w.ownMatches.length,
       tallies: tallies(w),
       milestones: clubMilestones(w),
-      managers: managerCandidates(w),
-      transfers: transferOffers(w),
+      ...(slow ? { managers: slow.managers, transfers: slow.transfers } : {}),
       sponsors: sponsorSlots(w),
       annualCost: operatingCost(w),
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
-      office: officeRead(w),
+      ...(slow ? { office: slow.office } : {}),
       news: this.news(w),
       newsTotal: newsTotal(w),
       managerHistoryKey: managerHistoryKey(w),
@@ -1053,8 +1068,8 @@ export class Host {
     };
   }
   /** The view for a reply (→ARCH-6): this world's view, whole or as the changes since `base`. */
-  private publish(base?: number): Pick<Reply, 'view' | 'viewSeq' | 'viewDelta'> {
-    return this.views.publish(this.view(), base);
+  private publish(base?: number, deferSlow = false): Pick<Reply, 'view' | 'viewSeq' | 'viewDelta'> {
+    return this.views.publish(this.view(this.world, deferSlow), base);
   }
   /**
    * Read-only requests, validated like commands but answered from the live world without a
@@ -1076,6 +1091,18 @@ export class Host {
         return { requestId: request.requestId, ok: true, clubProfile: profile };
       }
       if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
+      if (body.type === 'stopped-reads') {
+        if (body.world !== w.id) throw new Error(sourceMessage('copy.host.f8fc259198'));
+        return {
+          requestId: request.requestId,
+          ok: true,
+          stoppedReads: {
+            world: w.id,
+            revision: w.revision,
+            ...readingOnce(w, () => this.slowReads(w)),
+          },
+        };
+      }
       if (body.type === 'news-page') {
         if (body.world !== w.id) throw new Error(sourceMessage('copy.host.ef27d088a0'));
         const items = newsBefore(w, body.before, body.tag);
@@ -1372,7 +1399,12 @@ export class Host {
       const reply: Reply = {
         requestId: r.requestId,
         ok: true,
-        ...this.publish(r.viewBase),
+        ...this.publish(
+          r.viewBase,
+          r.body.type === 'command' &&
+            r.body.automatic === true &&
+            r.body.command.type === 'advance-days',
+        ),
         playback,
         start,
         cancelled: this.cancelled,

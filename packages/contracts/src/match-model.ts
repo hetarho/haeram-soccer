@@ -49,8 +49,8 @@ import { SaveCompatibilityError } from './versions';
  * marker a man, its back line holding while midfielders take the men between the lines, and a
  * runner in behind along his run (T599, →MATCH-17, MATCH-32, MATCH-34);
  * careers on revisions 1–9 take it the same way.
- * Revision 11 settles every fixture on the joint aggregate path and writes the own match script
- * and material from that result; watching stages its picture without settling again (T838).
+ * Revision 11 settles every fixture on the joint aggregate path; a watched own match writes its
+ * script and material from that result and stages its picture without settling again (T838).
  * Earlier revisions have no code since T845: their ids stay so a settled record's label stays
  * readable, and a career on one moves to the released revision at its writer load (→SAVE-23).
  */

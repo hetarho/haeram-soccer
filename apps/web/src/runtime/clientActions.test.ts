@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { GameClient } from './client';
-import { gameActionsBlocked, initialClientState } from './store';
-import type { Reply } from './protocol';
+import { createGameStore, gameActionsBlocked, initialClientState } from './store';
+import type { Reply, StoppedReads, View } from './protocol';
 
 /** Isolate public admission from worker, saves and engine execution. */
 function clientWithQueue(result = Promise.resolve({ ok: true } as Reply)) {
@@ -16,6 +16,7 @@ function clientWithQueue(result = Promise.resolve({ ok: true } as Reply)) {
       readonly: false,
     },
     automaticPending: 0,
+    clockEpoch: 0,
     cancelled: true,
     enqueue,
     notify,
@@ -24,6 +25,81 @@ function clientWithQueue(result = Promise.resolve({ ok: true } as Reply)) {
 }
 
 describe('calendar edit protection', () => {
+  it('drops slow fields during play and refuses stale stopped-read replies', async () => {
+    const { client } = clientWithQueue();
+    const view = {
+      world: {
+        id: 'world',
+        revision: 1,
+        disciplineNames: { p: { name: 'P', club: 'C' } },
+        inbox: [],
+      },
+      coaches: {},
+      managers: [],
+      transfers: [],
+      office: {},
+    } as unknown as View;
+    client.state.view = view;
+    const store = createGameStore();
+    client.setClockRunning(true);
+    store.publish(client.state);
+    expect(store.getState().view).toMatchObject({ world: { id: 'world' } });
+    expect(store.getState().view!.managers).toBeUndefined();
+    expect(store.getState().view!.world.disciplineNames).toBeUndefined();
+    store.publish({
+      ...client.state,
+      view: {
+        ...client.state.view!,
+        world: { ...client.state.view!.world, approvalWaits: { request: 8 } },
+      },
+    });
+    expect(store.getState().view!.world.approvalWaits).toEqual({ request: 8 });
+    client.setClockRunning(false);
+    let answer!: (value: StoppedReads) => void;
+    client.stoppedReads = () =>
+      new Promise((resolve) => {
+        answer = resolve;
+      });
+    const reads = {
+      world: 'world',
+      revision: 1,
+      coaches: {},
+      managers: [],
+      transfers: [],
+      office: {},
+      disciplineNames: {},
+    } as unknown as StoppedReads;
+    const stale = client.refreshStoppedReads();
+    client.state.view = {
+      ...client.state.view!,
+      world: { ...client.state.view!.world, revision: 2 },
+    };
+    answer(reads);
+    await stale;
+    expect(client.state.view!.managers).toBeUndefined();
+    const replacement = client.refreshStoppedReads();
+    client.state.view = {
+      ...client.state.view!,
+      world: { ...client.state.view!.world, id: 'replacement' },
+    };
+    answer({ ...reads, revision: 2 });
+    await replacement;
+    expect(client.state.view!.managers).toBeUndefined();
+    client.state.view = {
+      ...client.state.view!,
+      world: { ...client.state.view!.world, id: 'world' },
+    };
+    const current = client.refreshStoppedReads();
+    answer({ ...reads, revision: 2 });
+    await current;
+    expect(client.state.view!.managers).toEqual([]);
+    const restarted = client.refreshStoppedReads();
+    client.setClockRunning(true);
+    client.setClockRunning(false);
+    answer({ ...reads, revision: 2 });
+    await restarted;
+    expect(client.state.view!.managers).toBeUndefined();
+  });
   it('stays locked between day calculations and until the final operation settles', () => {
     const { client } = clientWithQueue();
     expect(gameActionsBlocked(client.state)).toBe(false);

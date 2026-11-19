@@ -14,11 +14,16 @@ import {
 export type { HelperJob, HelperReply } from './fixtureReplica';
 
 /**
- * Helper workers for an own match day's other league fixtures (→ARCH-6). Two suffice: our match
- * is the critical path, and four measured no faster. Below `minCores` the engine worker computes
+ * Helper workers for an own match day's other league fixtures (→ARCH-6). The measured core
+ * counts use three; other eligible devices use two. Below `minCores` the engine worker computes
  * them itself. A helper failing or answering later than `timeoutMs` ends their use for the session.
  */
-export const HELPER_CONFIG = { count: 2, minCores: 4, timeoutMs: 8000 } as const;
+export const HELPER_CONFIG = {
+  count: 2,
+  countByCores: { 6: 3, 8: 3, 12: 3 } as Readonly<Record<number, number>>,
+  minCores: 3,
+  timeoutMs: 8000,
+} as const;
 
 /** The engine worker's end of a helper's channel (a MessagePort in the browser). */
 export interface HelperPort {
@@ -38,6 +43,11 @@ export class HelperPool {
   constructor(
     private ports: readonly HelperPort[],
     private timeoutMs: number = HELPER_CONFIG.timeoutMs,
+    private simulate = async (copy: FixtureReadCopy, jobs: readonly RoundJob[]) => {
+      const { simulateRoundJob } = await import('../../../../packages/engine/src/round-jobs');
+      return jobs.map((job) => simulateRoundJob(copy, job));
+    },
+    private engineShare = true,
   ) {
     this.revisions = ports.map(() => 0);
   }
@@ -63,9 +73,9 @@ export class HelperPool {
     this.abandon?.();
   }
   /**
-   * Splits the jobs across the helpers in contiguous shares and resolves their results in job
-   * order, or `undefined` when the pool is off or any helper fails or runs out of time. It never
-   * throws: it runs inside `prepareRound`, which has already begun the day.
+   * Splits jobs into contiguous helper and engine shares and resolves them in job order, or
+   * `undefined` when a helper fails or runs out of time. The engine share starts after our match.
+   * It never throws into `prepareRound`, which has already begun the day.
    */
   run(
     copy: FixtureReadCopy,
@@ -87,16 +97,20 @@ export class HelperPool {
       this.disable();
       return Promise.resolve(undefined);
     }
-    const helpers = Math.min(this.ports.length, jobs.length);
+    const helpers = Math.min(
+      this.ports.length,
+      this.engineShare ? Math.max(1, jobs.length - 1) : jobs.length,
+    );
+    const participants = Math.min(helpers + (this.engineShare ? 1 : 0), jobs.length);
     const shares = Array.from({ length: helpers }, (_, i) =>
       jobs.slice(
-        Math.floor((i * jobs.length) / helpers),
-        Math.floor(((i + 1) * jobs.length) / helpers),
+        Math.floor((i * jobs.length) / participants),
+        Math.floor(((i + 1) * jobs.length) / participants),
       ),
     );
     return new Promise((resolve) => {
-      const answers: (RoundJobResult[] | undefined)[] = new Array(helpers);
-      let left = helpers;
+      const answers: (RoundJobResult[] | undefined)[] = new Array(participants);
+      let left = participants;
       let settled = false;
       const finish = (results: RoundJobResult[] | undefined) => {
         if (settled) return;
@@ -140,6 +154,21 @@ export class HelperPool {
             jobs: share,
           });
         });
+        if (participants > helpers && !settled) {
+          const local = jobs.slice(Math.floor((helpers * jobs.length) / participants));
+          // The microtask starts only after prepareRound has played our match.
+          queueMicrotask(() => {
+            if (settled) return;
+            void this.simulate(copy, local)
+              .then((results) => {
+                if (settled) return;
+                if (results.length !== local.length) return this.disable();
+                answers[helpers] = results;
+                if (--left === 0) finish(answers.flatMap((answer) => answer!));
+              })
+              .catch(() => this.disable());
+          });
+        }
       } catch {
         // A port that cannot take the share (closed, uncloneable) fails the pool like a helper.
         this.disable();

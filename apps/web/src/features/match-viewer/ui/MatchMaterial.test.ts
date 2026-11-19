@@ -193,3 +193,21 @@ describe('pass network tab', () => {
     );
   });
 });
+
+describe('missing post-match material', () => {
+  it('shows why current-season and earlier-season maps are unavailable without a false touch caption', async () => {
+    const currentWorld = { ...world, year: 1950 } as World;
+    const unwatched = { ...record, year: 1950, material: undefined } as MatchRecord;
+    await act(async () =>
+      root.render(createElement(MatchMaterial, { record: unwatched, w: currentWorld })),
+    );
+    expect(container.textContent).toContain('이 경기는 관전하지 않아 지도가 없어요.');
+    expect(container.textContent).not.toContain('최다 터치');
+
+    const older = { ...unwatched, year: 1949 };
+    await act(async () =>
+      root.render(createElement(MatchMaterial, { record: older, w: currentWorld })),
+    );
+    expect(container.textContent).toContain('경기 지도는 시즌이 끝나면 보관하지 않아요.');
+  });
+});

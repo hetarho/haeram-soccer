@@ -1,0 +1,121 @@
+{
+  "workload": "history-five",
+  "machine": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v24.22.1",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "cores": 12
+  },
+  "base": ".",
+  "cand": "/home/deep/haeram/haeram-soccor/.tmp/x10-gate",
+  "procs": 3,
+  "jobs": 1,
+  "reps": 1,
+  "warm": 0,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "6a7be2f9751ae60a",
+    "cand": "e494e6b126ef4b13"
+  },
+  "sameBundle": false,
+  "sameHash": false,
+  "hashes": {
+    "base": [
+      "e97882a37555a428"
+    ],
+    "cand": [
+      "e609adefd524092c"
+    ]
+  },
+  "season": {
+    "pairs": 3,
+    "ms": {
+      "base": {
+        "cpu": 30994.505,
+        "wall": 42965.157425
+      },
+      "cand": {
+        "cpu": 29332.267,
+        "wall": 44517.761692
+      }
+    },
+    "cpu": {
+      "ratio": 0.9703,
+      "lo": 0.8156,
+      "hi": 1.1833,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 0.9783,
+      "lo": 0.7298,
+      "hi": 1.2384,
+      "call": "no difference"
+    }
+  },
+  "load1": [
+    17.6,
+    19.44,
+    18.74,
+    17.79
+  ],
+  "runs": [
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 29744.881,
+            "wall": 40235.96749
+          },
+          "b": {
+            "cpu": 35197.162,
+            "wall": 49826.525378000006
+          }
+        }
+      ],
+      "hashes": [
+        "e97882a37555a428",
+        "e609adefd524092c"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 30994.505,
+            "wall": 42965.157425
+          },
+          "b": {
+            "cpu": 29332.267,
+            "wall": 44517.761692
+          }
+        }
+      ],
+      "hashes": [
+        "e97882a37555a428",
+        "e609adefd524092c"
+      ]
+    },
+    {
+      "pairs": [
+        {
+          "label": "season",
+          "a": {
+            "cpu": 35556.081000000006,
+            "wall": 52084.193744
+          },
+          "b": {
+            "cpu": 29001.216999999997,
+            "wall": 38010.99422600001
+          }
+        }
+      ],
+      "hashes": [
+        "e97882a37555a428",
+        "e609adefd524092c"
+      ]
+    }
+  ]
+}

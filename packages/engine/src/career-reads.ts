@@ -1,7 +1,7 @@
 import type { World } from '../../contracts/src/types';
 import { CAREER_READS_FORMAT } from '../../contracts/src/career-reads';
 import type { CareerReads, PlayerRead } from '../../contracts/src/career-reads';
-import { heatMap, MATERIAL_LAYOUT, ownSideOf } from './material';
+import { ownSideOf } from './material';
 import { clubOf, isOwnSeason } from './player-state';
 
 function playerRow(s: CareerReads, id: string, year: number): PlayerRead {
@@ -22,7 +22,6 @@ function playerRow(s: CareerReads, id: string, year: number): PlayerRead {
     p.yellow[0] = 0;
     p.red[0] = 0;
     p.leagueReds = 0;
-    delete p.heat;
   }
   return p;
 }
@@ -38,7 +37,6 @@ export function initializeCareerReads(w: World) {
     promoted: false,
     bestPlayed: 0,
     bestFans: 0,
-    heatPlayers: [],
     bestWon: 0,
     players: {},
     europe: {},
@@ -50,8 +48,6 @@ export function refreshCareerReads(w: World) {
   const s = w.careerReads;
   if (!s) return;
   if (s.year !== w.year) {
-    for (const id of s.heatPlayers) delete s.players[id]?.heat;
-    s.heatPlayers = [];
     s.year = w.year;
   }
   while (s.matches < w.ownMatches.length) {
@@ -87,17 +83,6 @@ export function refreshCareerReads(w: World) {
         p.red[1] += red;
       }
       if (m.kind === 'league') p.leagueReds += red;
-    }
-    if (m.year === w.year && m.material) {
-      const side = ownSideOf(m, w.playerClub);
-      for (const line of m.players) {
-        const map = heatMap(m, line.id, side);
-        if (!map?.touches) continue;
-        const p = playerRow(s, line.id, m.year);
-        if (!p.heat) s.heatPlayers.push(line.id);
-        const heat = (p.heat ??= Array<number>(MATERIAL_LAYOUT.cells).fill(0));
-        map.cells.forEach((n, i) => (heat[i] += n));
-      }
     }
   }
   while (s.events < w.events.length)

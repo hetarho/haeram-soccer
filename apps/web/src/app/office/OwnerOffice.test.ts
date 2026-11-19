@@ -61,13 +61,16 @@ describe('owner office page', () => {
       expect(buttons).toHaveLength(20);
       expect(buttons.every(([, attributes]) => attributes.includes('disabled=""'))).toBe(true);
       expect(markup).toMatch(/<input[^>]*disabled=""/);
-      // Delegated work carries its spending request, read-only while the clock runs.
-      expect(markup).toContain('data-testid="delegation-request-staff"');
+      // Withhold the stale plan while keeping a localized reason in its place.
+      expect(markup).toContain('data-running="true"');
+      expect(markup).not.toContain('data-testid="delegation-request-staff"');
     }
     gameStore.setState({ clockRunning: false, processing: true });
     expect(render()).toMatch(/<button[^>]*disabled=""/);
     gameStore.setState({ processing: false });
-    expect(render()).toMatch(/aria-pressed="true"(?![^>]*disabled)/);
+    const stopped = render();
+    expect(stopped).toMatch(/aria-pressed="true"(?![^>]*disabled)/);
+    expect(stopped).toContain('data-testid="delegation-request-staff"');
   });
   it('renders applied authority pairs with no enclosing dialog or global apply footer', () => {
     const markup = render();

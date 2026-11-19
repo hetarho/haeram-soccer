@@ -5,7 +5,6 @@ import {
   BAND_EDGES,
   cellBand,
   cellLane,
-  cellOf,
   inBox,
   laneOf,
   PITCH,
@@ -76,7 +75,6 @@ const PRESS_FROM = BAND_EDGES[COUNTER_ZONES.press];
 /** The schema's caps on a match's material rows: shots and network pairs. */
 const MAX_SHOTS = 80;
 const MAX_PAIRS = 300;
-const C = MATERIAL_LAYOUT.cells;
 const RS = MATERIAL_LAYOUT.report;
 
 /**
@@ -85,9 +83,6 @@ const RS = MATERIAL_LAYOUT.report;
  */
 export class MaterialTally {
   private readonly size: number;
-  /** Own players' touches per cell, roster index × 40. */
-  private readonly heat: Uint16Array;
-  private readonly totals = [new Uint16Array(C), new Uint16Array(C)] as const;
   /** Own players' summed touch positions (x, y) and touch counts. */
   private readonly sum: Float64Array;
   private readonly touches: Uint16Array;
@@ -104,7 +99,6 @@ export class MaterialTally {
     roster: number,
   ) {
     this.size = roster;
-    this.heat = new Uint16Array(roster * C);
     this.sum = new Float64Array(roster * 2);
     this.touches = new Uint16Array(roster);
     this.pairs = new Uint16Array(roster * roster);
@@ -116,10 +110,7 @@ export class MaterialTally {
 
   /** A touch at `p` in the player's attack frame. */
   private touchAt(side: 0 | 1, idx: number, p: Point) {
-    const cell = cellOf(p);
-    this.totals[side][cell]!++;
     if (side !== this.own) return;
-    this.heat[idx * C + cell]!++;
     this.sum[idx * 2]! += p[0];
     this.sum[idx * 2 + 1]! += p[1];
     this.touches[idx]!++;
@@ -226,10 +217,8 @@ export class MaterialTally {
     for (let i = 0; i < shots.length; i += MATERIAL_LAYOUT.shot)
       shots[i + 1] = lineOf[shots[i]!]!.get(shots[i + 1]!) ?? 0;
     const own = played[this.own]!;
-    const heat: number[] = [];
     const network: number[] = [];
     for (const idx of own) {
-      for (let c = 0; c < C; c++) heat.push(this.heat[idx * C + c]!);
       const n = this.touches[idx]!;
       network.push(
         n ? Math.round((this.sum[idx * 2]! / n) * 10) : 0,
@@ -237,13 +226,12 @@ export class MaterialTally {
         n,
       );
     }
-    heat.push(...this.totals[this.own], ...this.totals[1 - this.own]!);
     let kept = 0;
     for (let a = 0; a < own.length; a++)
       for (let b = 0; b < own.length; b++) {
         const n = this.pairs[own[a]! * this.size + own[b]!]!;
         if (n >= minimumPair && kept++ < MAX_PAIRS) network.push(a, b, n);
       }
-    return { shots, heat, network, report: Array.from(this.report) };
+    return { shots, network, report: Array.from(this.report) };
   }
 }

@@ -29,6 +29,7 @@ import { InvestmentGallery } from './InvestmentGallery';
 import { Card } from '../../../shared/ui/Card';
 import { PixelIcon } from '../../../shared/ui/PixelIcon';
 import { HomeAwayBadge } from '../../../shared/ui/HomeAwayBadge';
+import { RunningDimmer } from '../../../shared/ui/RunningDimmer';
 
 export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
   useTextLocale();
@@ -357,7 +358,11 @@ export function ClubHub({ w, client }: { w: World; client: GameClient }) {
       <SeasonCard w={w} active={!away} />
       <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
       <OfficeEntrance w={w} />
-      <InvestmentGallery w={w} className={s.areas} />
+      <div className={s.areas}>
+        <RunningDimmer>
+          <InvestmentGallery w={w} />
+        </RunningDimmer>
+      </div>
 
       {localizeValue(
         preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />,

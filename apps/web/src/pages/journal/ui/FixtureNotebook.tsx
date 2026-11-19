@@ -10,6 +10,7 @@ import type { GameClient } from '../../../runtime/client';
 import { fixtureDate, nextOwnFixture } from '../../../../../../packages/engine/src/calendar';
 import { ownSeasonFixtures } from '../../../entities/league';
 import { resultFor } from '../../../entities/league';
+import { missingMaterialMessageId } from '../../../entities/match';
 import { competitionLabel, kindLabel } from '../../../presentation/format';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { MatchMaterial, MatchReport } from '../../../features/match-viewer';
@@ -53,6 +54,9 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
       valid = false;
     };
   }, [client, selected]);
+  const materialMatches = new Set(
+    w.ownMatches.filter((match) => match.material).map((match) => match.id),
+  );
   const fixtures = ownSeasonFixtures(w).filter(
     (f) =>
       (scope === 'all' || (scope === 'completed' ? !!f.score : !f.score)) &&
@@ -203,14 +207,21 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                               >
                                 {richMessage('copy.FixtureNotebook.5624f76fe0')}
                               </button>
-                              <button
-                                onClick={() => {
-                                  setLoaded(undefined);
-                                  setSelected({ id: f.id, year: f.year, view: 'material' });
-                                }}
-                              >
-                                {richMessage('copy.stories.a3b55318c6')}
-                              </button>
+                              {materialMatches.has(f.id) && (
+                                <button
+                                  onClick={() => {
+                                    setLoaded(undefined);
+                                    setSelected({ id: f.id, year: f.year, view: 'material' });
+                                  }}
+                                >
+                                  {richMessage('copy.stories.a3b55318c6')}
+                                </button>
+                              )}
+                              {!materialMatches.has(f.id) && (
+                                <span className={s.fixtureNote} role="status">
+                                  {richMessage(missingMaterialMessageId(f.year, w.year))}
+                                </span>
+                              )}
                             </>
                           ) : undefined
                         }

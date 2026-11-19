@@ -12,7 +12,13 @@ import {
   type SAVE_COMPATIBILITY_CODE,
 } from '../../../../packages/contracts/src/versions';
 import { applyViewDelta, PUBLISHED_VIEWS, type Body, type Reply, type View } from './protocol';
-import { NOTIFICATIONS_KEY, notificationStore, shareValue, shareView } from './store';
+import {
+  NOTIFICATIONS_KEY,
+  notificationStore,
+  shareValue,
+  shareView,
+  withoutStoppedReads,
+} from './store';
 import { HELPER_CONFIG } from './helperPool';
 import {
   isSaveCorruptedError,
@@ -125,6 +131,7 @@ function gameIdFor(worldId: string) {
 }
 export class GameClient {
   private automaticPending = 0;
+  private clockEpoch = 0;
   state: ClientState = {
     busy: true,
     processing: true,
@@ -224,7 +231,9 @@ export class GameClient {
     if (!((navigator.hardwareConcurrency ?? 0) >= HELPER_CONFIG.minCores)) return;
     const ports: MessagePort[] = [];
     try {
-      for (let i = 0; i < HELPER_CONFIG.count; i++) {
+      const count =
+        HELPER_CONFIG.countByCores[navigator.hardwareConcurrency] ?? HELPER_CONFIG.count;
+      for (let i = 0; i < count; i++) {
         const helper = new Worker(new URL('./fixtureHelper.ts', import.meta.url), {
           type: 'module',
         });
@@ -269,7 +278,8 @@ export class GameClient {
         ? this.take(shared ? view : shareView(this.head, view)!, taking)
         : undefined;
     if (taken && r.viewSeq !== undefined) {
-      this.views.set(r.viewSeq, taken);
+      // Keep the worker's unmodified base for later deltas even when the displayed copy is dimmed.
+      this.views.set(r.viewSeq, view!);
       this.viewSeq = r.viewSeq;
       while (this.views.size > PUBLISHED_VIEWS) this.views.delete(this.views.keys().next().value!);
     }
@@ -508,6 +518,7 @@ export class GameClient {
   }
   /** Takes a view as `taking` says; held days share structure with the day before (→WEB-18). */
   private take(view: View, taking: Taking) {
+    if (this.state.clockRunning) view = withoutStoppedReads(view);
     const same = this.head?.world.id === view.world.id;
     if (!same) this.staging.replace();
     if (taking === 'hold' && same) this.held.push(view);
@@ -831,7 +842,10 @@ export class GameClient {
       let reply: Reply | undefined;
       try {
         if (!this.cancelled)
-          reply = await this.mutate({ type: 'command', command } as Body, options.automatic);
+          reply = await this.mutate(
+            { type: 'command', command, automatic: options.automatic } as Body,
+            options.automatic,
+          );
       } finally {
         if (reply) {
           if (options.automatic) this.autosave();
@@ -854,7 +868,9 @@ export class GameClient {
   /** The progression controller owns this flag; worker activity cannot clear it between days. */
   setClockRunning(running: boolean) {
     if (!!this.state.clockRunning === running) return;
+    if (running) this.clockEpoch++;
     this.state.clockRunning = running;
+    if (running && this.state.view) this.state.view = withoutStoppedReads(this.state.view);
     this.emit();
   }
   /** Settle already admitted work before opening a manual decision or match. */
@@ -937,6 +953,44 @@ export class GameClient {
     const reply = await this.read({ type: 'club-records' });
     if (!reply.clubRecords) throw new Error(sourceMessage('copy.client.3a2136dd0f'));
     return reply.clubRecords;
+  }
+  /**
+   * The five slow projection parts for the current world with its identity and revision (→WEB-119),
+   * read like head-to-head without the command queue; changes no fact and publishes no view. A reply
+   * for another career is refused.
+   */
+  async stoppedReads() {
+    const world = this.state.view?.world.id;
+    if (!world) throw new Error(sourceMessage('copy.client.a198ec6115'));
+    const reply = await this.read({ type: 'stopped-reads', world });
+    if (!reply.ok || !reply.stoppedReads)
+      throw new Error(reply.error ?? sourceMessage('copy.host.f8fc259198'));
+    if (this.state.view?.world.id !== world || reply.stoppedReads.world !== world)
+      throw new Error(sourceMessage('copy.host.f8fc259198'));
+    return reply.stoppedReads;
+  }
+  /** Apply a stopped read only to the same displayed revision, never to a restarted clock. */
+  async refreshStoppedReads() {
+    const epoch = this.clockEpoch;
+    const reads = await this.stoppedReads();
+    const view = this.state.view;
+    if (
+      this.state.clockRunning ||
+      epoch !== this.clockEpoch ||
+      !view ||
+      view.world.id !== reads.world ||
+      view.world.revision !== reads.revision
+    )
+      return;
+    this.state.view = {
+      ...view,
+      coaches: reads.coaches,
+      managers: reads.managers,
+      transfers: reads.transfers,
+      office: reads.office,
+      world: { ...view.world, disciplineNames: reads.disciplineNames },
+    };
+    this.emit();
   }
   /** Bounded market page, admitted through the same displayed-day read gate as other previews. */
   async worldMarket(query: Omit<WorldMarketQuery, 'world'> = {}) {

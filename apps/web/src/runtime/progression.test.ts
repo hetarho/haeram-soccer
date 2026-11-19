@@ -59,6 +59,7 @@ function setup(current?: MatchPlayback, world = w) {
     },
     cancel: vi.fn(),
     saveSoon,
+    refreshStoppedReads: vi.fn(async () => {}),
     setClockRunning: (clockRunning: boolean) => gameStore.setState({ clockRunning }),
   } as unknown as GameClient;
   const controller = new ProgressionController(client, ONE_DAY_AT_A_TIME);

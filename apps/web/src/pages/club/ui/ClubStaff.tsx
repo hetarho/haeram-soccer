@@ -69,6 +69,8 @@ import { ClubLink } from '../../../entities/club';
 import { Money } from '../../../shared/ui/Money';
 import s from './ClubStaff.module.css';
 import management from './ManagementView.module.css';
+import { RunningDimmer } from '../../../shared/ui/RunningDimmer';
+import { useStoppedRead } from '../../../shared/lib/useStoppedRead';
 
 function useActing() {
   return useGameState(gameActionsBlocked);
@@ -451,6 +453,7 @@ export function CoachingStaff({
 }) {
   useTextLocale();
   const acting = useActing();
+  const clockRunning = useStoppedRead('running');
   const request = useStaffRequest((store) => store.request);
   const [role, setRole] = useTaskState<StaffRole | undefined>(w.id, 'staff-role', () =>
     selected && !w.staff?.some((member) => member.role === selected) ? selected : undefined,
@@ -485,10 +488,8 @@ export function CoachingStaff({
     plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
   const members = new Map((w.staff || []).map((member) => [member.role, member]));
-  const projectedCandidates = useGameState((state) =>
-    role ? state.view?.coaches[role] : undefined,
-  );
-  const candidates = role ? (projectedCandidates ?? staffCandidates(w, role)) : [];
+  const coaches = useStoppedRead('coaches');
+  const candidates = role && coaches ? (coaches[role] ?? staffCandidates(w, role)) : [];
   const chosen = candidates.find((candidate) => candidate.id === pick);
   const current = role ? members.get(role) : undefined;
   const owed = releaseCost(w, current);
@@ -693,181 +694,185 @@ export function CoachingStaff({
         )}
       </ul>
       {localizeValue(
-        role && (
-          <Dialog
-            label={displayMessage('copy.ClubStaff.aeb9824561', { p0: STAFF_INFO[role].label })}
-            onClose={() => {
-              setRole(undefined);
-              onCancel?.();
-            }}
-            actions={
-              <div className={s.sheetActions}>
-                {localizeValue(
-                  current && (
-                    <button
-                      disabled={acting}
-                      onClick={() => {
-                        void client.command({ type: 'release-staff', role });
-                        setRole(undefined);
-                      }}
-                    >
-                      {richMessage('copy.ClubStaff.0021ae0ba5', {
-                        p0: owed !== '0' && <> · {localizeValue(plain(owed))}</>,
-                      })}
-                    </button>
-                  ),
-                )}
-                <button
-                  data-ui="primary"
-                  className={s.primary}
-                  disabled={acting || !chosen}
-                  onClick={async () => {
-                    if (!chosen) return;
-                    const reply = await client.command({
-                      type: 'hire-staff',
-                      role,
-                      candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
-                      candidateId: chosen.id,
-                      term,
-                    });
-                    if (reply?.ok) setRole(undefined);
-                  }}
-                >
+        role && (coaches || clockRunning) && (
+          <RunningDimmer>
+            <Dialog
+              label={displayMessage('copy.ClubStaff.aeb9824561', { p0: STAFF_INFO[role].label })}
+              onClose={() => {
+                setRole(undefined);
+                onCancel?.();
+              }}
+              actions={
+                <div className={s.sheetActions}>
                   {localizeValue(
-                    chosen
-                      ? sourceMessage('copy.ClubStaff.269839005c', { p0: chosen.name, p1: term })
-                      : sourceMessage('copy.ClubStaff.2d573f96ab'),
-                  )}
-                </button>
-              </div>
-            }
-          >
-            <p className={s.note}>
-              {richMessage('copy.ClubStaff.66fe115236', {
-                p0: STAFF_INFO[role].duty,
-                p1: ' ',
-                p2: current
-                  ? sourceMessage('copy.ClubStaff.578433e364', {
-                      p0: current.name,
-                      p1: Math.round(current.ability),
-                    })
-                  : sourceMessage('team.vacant'),
-              })}
-            </p>
-            {localizeValue(
-              candidates.length ? (
-                <div
-                  className={s.candidates}
-                  role="radiogroup"
-                  aria-label={displayMessage('copy.ClubStaff.f6184e4c8d')}
-                >
-                  {localizeValue(
-                    candidates.map((candidate) => (
+                    current && (
                       <button
-                        key={candidate.id}
-                        role="radio"
-                        aria-checked={pick === candidate.id}
-                        className={pick === candidate.id ? s.picked : undefined}
-                        onClick={() => setPick(candidate.id)}
+                        disabled={acting}
+                        onClick={() => {
+                          void client.command({ type: 'release-staff', role });
+                          setRole(undefined);
+                        }}
                       >
-                        <div className={s.candidateHead}>
-                          <OvrBadge
-                            value={Math.round(candidate.ability)}
-                            role="OVR"
-                            potential={candidate.potential}
-                          />
-                          <div>
-                            <b>{candidate.name}</b>
-                            <span>
-                              {localizeValue(coachAge(w, candidate).replace(/^ · /, ''))}
-                              {localizeValue(
-                                candidate.ability > (current?.ability ?? 0)
-                                  ? sourceMessage('copy.ClubStaff.63a8535984', {
-                                      p0: Math.round(candidate.ability - (current?.ability ?? 0)),
-                                    })
-                                  : '',
-                              )}
-                              {localizeValue(
-                                (candidate.potential ?? 0) > candidate.ability
-                                  ? sourceMessage('copy.ClubStaff.4719fc8cca', {
-                                      p0: candidate.potential! - candidate.ability,
-                                    })
-                                  : '',
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                        <Meter value={candidate.ability} />
-                        <small>
-                          {localizeValue(
-                            candidate.trait
-                              ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
-                              : sourceMessage('copy.ClubStaff.7cff642737'),
-                          )}
-                        </small>
-                        <small className={s.impact}>
-                          {richMessage('copy.ClubStaff.ff36a2eafa', {
-                            p0: hiredImpact(w, role, candidate),
-                            p1: staffImpact(w, role),
-                          })}
-                        </small>
-                        <StaffTerms w={w} candidate={candidate} link={false} />
+                        {richMessage('copy.ClubStaff.0021ae0ba5', {
+                          p0: owed !== '0' && <> · {localizeValue(plain(owed))}</>,
+                        })}
                       </button>
-                    )),
+                    ),
                   )}
+                  <button
+                    data-ui="primary"
+                    className={s.primary}
+                    disabled={acting || !chosen}
+                    onClick={async () => {
+                      if (!chosen) return;
+                      const reply = await client.command({
+                        type: 'hire-staff',
+                        role,
+                        candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
+                        candidateId: chosen.id,
+                        term,
+                      });
+                      if (reply?.ok) setRole(undefined);
+                    }}
+                  >
+                    {localizeValue(
+                      chosen
+                        ? sourceMessage('copy.ClubStaff.269839005c', { p0: chosen.name, p1: term })
+                        : sourceMessage('copy.ClubStaff.2d573f96ab'),
+                    )}
+                  </button>
                 </div>
-              ) : (
-                <p className={s.note}>{richMessage('copy.ClubStaff.6696051fed')}</p>
-              ),
-            )}
-            {localizeValue(
-              chosen?.person && (
-                <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
-              ),
-            )}
-            {localizeValue(
-              chosen?.club && (
-                <p className={s.note}>
-                  {richMessage('copy.Rich.dc1e71653d', { p0: <ClubLink w={w} id={chosen.club} /> })}
-                </p>
-              ),
-            )}
-            {localizeValue(
-              candidates.length > 0 && (
-                <TermDial
-                  label={displayMessage('copy.ClubStaff.7c33f611a8')}
-                  value={term}
-                  disabled={acting}
-                  onChange={setTerm}
-                />
-              ),
-            )}
-            {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
-            {localizeValue(
-              chosen && (
-                <TermCosts
-                  w={w}
-                  wage={chosen.wage}
-                  fee={chosen.fee}
-                  compensation={chosen.compensation}
-                  term={term}
-                  until={w.year + term}
-                />
-              ),
-            )}
-            {localizeValue(
-              current && owed !== '0' && (
-                <p className={s.note}>
-                  {richMessage('copy.ClubStaff.be3b746167', {
-                    p0: current.name,
-                    p1: format(owed),
-                    p2: ' ',
-                    p3: seasonsLeft(w, current.until),
-                  })}
-                </p>
-              ),
-            )}
-          </Dialog>
+              }
+            >
+              <p className={s.note}>
+                {richMessage('copy.ClubStaff.66fe115236', {
+                  p0: STAFF_INFO[role].duty,
+                  p1: ' ',
+                  p2: current
+                    ? sourceMessage('copy.ClubStaff.578433e364', {
+                        p0: current.name,
+                        p1: Math.round(current.ability),
+                      })
+                    : sourceMessage('team.vacant'),
+                })}
+              </p>
+              {localizeValue(
+                candidates.length ? (
+                  <div
+                    className={s.candidates}
+                    role="radiogroup"
+                    aria-label={displayMessage('copy.ClubStaff.f6184e4c8d')}
+                  >
+                    {localizeValue(
+                      candidates.map((candidate) => (
+                        <button
+                          key={candidate.id}
+                          role="radio"
+                          aria-checked={pick === candidate.id}
+                          className={pick === candidate.id ? s.picked : undefined}
+                          onClick={() => setPick(candidate.id)}
+                        >
+                          <div className={s.candidateHead}>
+                            <OvrBadge
+                              value={Math.round(candidate.ability)}
+                              role="OVR"
+                              potential={candidate.potential}
+                            />
+                            <div>
+                              <b>{candidate.name}</b>
+                              <span>
+                                {localizeValue(coachAge(w, candidate).replace(/^ · /, ''))}
+                                {localizeValue(
+                                  candidate.ability > (current?.ability ?? 0)
+                                    ? sourceMessage('copy.ClubStaff.63a8535984', {
+                                        p0: Math.round(candidate.ability - (current?.ability ?? 0)),
+                                      })
+                                    : '',
+                                )}
+                                {localizeValue(
+                                  (candidate.potential ?? 0) > candidate.ability
+                                    ? sourceMessage('copy.ClubStaff.4719fc8cca', {
+                                        p0: candidate.potential! - candidate.ability,
+                                      })
+                                    : '',
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                          <Meter value={candidate.ability} />
+                          <small>
+                            {localizeValue(
+                              candidate.trait
+                                ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
+                                : sourceMessage('copy.ClubStaff.7cff642737'),
+                            )}
+                          </small>
+                          <small className={s.impact}>
+                            {richMessage('copy.ClubStaff.ff36a2eafa', {
+                              p0: hiredImpact(w, role, candidate),
+                              p1: staffImpact(w, role),
+                            })}
+                          </small>
+                          <StaffTerms w={w} candidate={candidate} link={false} />
+                        </button>
+                      )),
+                    )}
+                  </div>
+                ) : (
+                  <p className={s.note}>{richMessage('copy.ClubStaff.6696051fed')}</p>
+                ),
+              )}
+              {localizeValue(
+                chosen?.person && (
+                  <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
+                ),
+              )}
+              {localizeValue(
+                chosen?.club && (
+                  <p className={s.note}>
+                    {richMessage('copy.Rich.dc1e71653d', {
+                      p0: <ClubLink w={w} id={chosen.club} />,
+                    })}
+                  </p>
+                ),
+              )}
+              {localizeValue(
+                candidates.length > 0 && (
+                  <TermDial
+                    label={displayMessage('copy.ClubStaff.7c33f611a8')}
+                    value={term}
+                    disabled={acting}
+                    onChange={setTerm}
+                  />
+                ),
+              )}
+              {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
+              {localizeValue(
+                chosen && (
+                  <TermCosts
+                    w={w}
+                    wage={chosen.wage}
+                    fee={chosen.fee}
+                    compensation={chosen.compensation}
+                    term={term}
+                    until={w.year + term}
+                  />
+                ),
+              )}
+              {localizeValue(
+                current && owed !== '0' && (
+                  <p className={s.note}>
+                    {richMessage('copy.ClubStaff.be3b746167', {
+                      p0: current.name,
+                      p1: format(owed),
+                      p2: ' ',
+                      p3: seasonsLeft(w, current.until),
+                    })}
+                  </p>
+                ),
+              )}
+            </Dialog>
+          </RunningDimmer>
         ),
       )}
       {localizeValue(
@@ -954,188 +959,192 @@ export function StaffMarket({
   const [term, setTerm] = useTaskState<ContractTerm>(w.id, 'staff-market-term', DELEGATED_TERM);
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
-  const projected = useGameState((state) => state.view?.coaches[role]);
-  const candidates = projected ?? staffCandidates(w, role);
+  const coaches = useStoppedRead('coaches');
+  const candidates = coaches ? (coaches[role] ?? staffCandidates(w, role)) : [];
   const current = w.staff?.find((member) => member.role === role);
   const chosen = candidates.find((candidate) => candidate.id === pick);
   const owed = releaseCost(w, current);
   return (
-    <section
-      data-surface="panel"
-      className={s.staff}
-      aria-label={displayMessage('copy.ClubStaff.2d43ec39f3', { p0: STAFF_INFO[role].label })}
-    >
-      <header>
-        <h3>{richMessage('copy.ClubStaff.6011c13d9d', { p0: STAFF_INFO[role].label })}</h3>
-        <span>
-          {richMessage('copy.ClubStaff.ceb2ec9df3', {
-            p0: current
-              ? `${current.name} · OVR ${Math.round(current.ability)}`
-              : sourceMessage('team.vacant'),
+    <RunningDimmer>
+      <section
+        data-surface="panel"
+        className={s.staff}
+        aria-label={displayMessage('copy.ClubStaff.2d43ec39f3', { p0: STAFF_INFO[role].label })}
+      >
+        <header>
+          <h3>{richMessage('copy.ClubStaff.6011c13d9d', { p0: STAFF_INFO[role].label })}</h3>
+          <span>
+            {richMessage('copy.ClubStaff.ceb2ec9df3', {
+              p0: current
+                ? `${current.name} · OVR ${Math.round(current.ability)}`
+                : sourceMessage('team.vacant'),
+            })}
+          </span>
+        </header>
+        {localizeValue(
+          roles.length > 1 && (
+            <Segments
+              label={displayMessage('copy.ClubStaff.fda279cf16')}
+              options={roles.map((id) => [id, STAFF_INFO[id].label] as const)}
+              value={role}
+              onChange={(id) => {
+                setRole(id);
+                setPick(undefined);
+              }}
+              wrap
+            />
+          ),
+        )}
+        <p className={s.note}>
+          {richMessage('copy.ClubStaff.d8d9b7ea7c', {
+            p0: STAFF_INFO[role].duty,
+            p1: staffImpact(w, role),
           })}
-        </span>
-      </header>
-      {localizeValue(
-        roles.length > 1 && (
-          <Segments
-            label={displayMessage('copy.ClubStaff.fda279cf16')}
-            options={roles.map((id) => [id, STAFF_INFO[id].label] as const)}
-            value={role}
-            onChange={(id) => {
-              setRole(id);
-              setPick(undefined);
-            }}
-            wrap
-          />
-        ),
-      )}
-      <p className={s.note}>
-        {richMessage('copy.ClubStaff.d8d9b7ea7c', {
-          p0: STAFF_INFO[role].duty,
-          p1: staffImpact(w, role),
-        })}
-      </p>
-      {localizeValue(
-        candidates.length ? (
-          <div className={s.marketCards}>
-            {localizeValue(
-              candidates.map((candidate) => (
-                <article key={candidate.id} className={s.marketCard} data-surface="inset">
-                  <div className={s.candidateHead}>
-                    <OvrBadge
-                      value={Math.round(candidate.ability)}
-                      role="OVR"
-                      potential={candidate.potential}
-                    />
-                    <div>
-                      <b>{candidate.name}</b>
-                      <span>
-                        {localizeValue(coachAge(w, candidate).replace(/^ · /, ''))}
-                        {localizeValue(
-                          candidate.ability > (current?.ability ?? 0)
-                            ? sourceMessage('copy.ClubStaff.63a8535984', {
-                                p0: Math.round(candidate.ability - (current?.ability ?? 0)),
-                              })
-                            : '',
-                        )}
-                      </span>
+        </p>
+        {localizeValue(
+          candidates.length ? (
+            <div className={s.marketCards}>
+              {localizeValue(
+                candidates.map((candidate) => (
+                  <article key={candidate.id} className={s.marketCard} data-surface="inset">
+                    <div className={s.candidateHead}>
+                      <OvrBadge
+                        value={Math.round(candidate.ability)}
+                        role="OVR"
+                        potential={candidate.potential}
+                      />
+                      <div>
+                        <b>{candidate.name}</b>
+                        <span>
+                          {localizeValue(coachAge(w, candidate).replace(/^ · /, ''))}
+                          {localizeValue(
+                            candidate.ability > (current?.ability ?? 0)
+                              ? sourceMessage('copy.ClubStaff.63a8535984', {
+                                  p0: Math.round(candidate.ability - (current?.ability ?? 0)),
+                                })
+                              : '',
+                          )}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <Meter value={candidate.ability} />
-                  <small>
-                    {localizeValue(
-                      candidate.trait
-                        ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
-                        : sourceMessage('copy.ClubStaff.7cff642737'),
-                    )}
-                  </small>
-                  <small className={s.impact}>
-                    {richMessage('copy.ClubStaff.999145c9b0', {
-                      p0: hiredImpact(w, role, candidate),
-                    })}
-                  </small>
-                  <StaffTerms w={w} candidate={candidate} />
+                    <Meter value={candidate.ability} />
+                    <small>
+                      {localizeValue(
+                        candidate.trait
+                          ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
+                          : sourceMessage('copy.ClubStaff.7cff642737'),
+                      )}
+                    </small>
+                    <small className={s.impact}>
+                      {richMessage('copy.ClubStaff.999145c9b0', {
+                        p0: hiredImpact(w, role, candidate),
+                      })}
+                    </small>
+                    <StaffTerms w={w} candidate={candidate} />
+                    <button
+                      type="button"
+                      data-ui="primary"
+                      className={s.primary}
+                      disabled={acting}
+                      onClick={() => {
+                        setPick(candidate.id);
+                        setTerm(DELEGATED_TERM);
+                      }}
+                    >
+                      {richMessage('copy.ClubStaff.6e1d7a0faf')}
+                    </button>
+                  </article>
+                )),
+              )}
+            </div>
+          ) : (
+            <p className={s.note}>{richMessage('copy.ClubStaff.6696051fed')}</p>
+          ),
+        )}
+        {localizeValue(
+          chosen && (
+            <Dialog
+              label={displayMessage('copy.ClubStaff.c037a387ca', { p0: STAFF_INFO[role].label })}
+              onClose={() => setPick(undefined)}
+              actions={
+                <div className={s.sheetActions}>
+                  <button onClick={() => setPick(undefined)}>{richMessage('common.cancel')}</button>
                   <button
-                    type="button"
                     data-ui="primary"
                     className={s.primary}
                     disabled={acting}
-                    onClick={() => {
-                      setPick(candidate.id);
-                      setTerm(DELEGATED_TERM);
+                    onClick={async () => {
+                      const reply = await client.command({
+                        type: 'hire-staff',
+                        role,
+                        candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
+                        candidateId: chosen.id,
+                        term,
+                      });
+                      if (reply?.ok) setPick(undefined);
                     }}
                   >
-                    {richMessage('copy.ClubStaff.6e1d7a0faf')}
+                    {richMessage('copy.ClubStaff.7fcc7e0be2', { p0: chosen.name, p1: term })}
                   </button>
-                </article>
-              )),
-            )}
-          </div>
-        ) : (
-          <p className={s.note}>{richMessage('copy.ClubStaff.6696051fed')}</p>
-        ),
-      )}
-      {localizeValue(
-        chosen && (
-          <Dialog
-            label={displayMessage('copy.ClubStaff.c037a387ca', { p0: STAFF_INFO[role].label })}
-            onClose={() => setPick(undefined)}
-            actions={
-              <div className={s.sheetActions}>
-                <button onClick={() => setPick(undefined)}>{richMessage('common.cancel')}</button>
-                <button
-                  data-ui="primary"
-                  className={s.primary}
-                  disabled={acting}
-                  onClick={async () => {
-                    const reply = await client.command({
-                      type: 'hire-staff',
-                      role,
-                      candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
-                      candidateId: chosen.id,
-                      term,
-                    });
-                    if (reply?.ok) setPick(undefined);
-                  }}
-                >
-                  {richMessage('copy.ClubStaff.7fcc7e0be2', { p0: chosen.name, p1: term })}
-                </button>
-              </div>
-            }
-          >
-            <p className={s.note}>
-              {richMessage('copy.ClubStaff.e995612837', {
-                p0: chosen.name,
-                p1: Math.round(chosen.ability),
-                p2: STAFF_INFO[role].label,
-                p3: ' ',
-                p4: current
-                  ? `${current.name} (OVR ${Math.round(current.ability)})`
-                  : sourceMessage('team.vacant'),
-              })}
-            </p>
-            {localizeValue(
-              chosen.person && (
-                <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
-              ),
-            )}
-            {localizeValue(
-              chosen.club && (
-                <p className={s.note}>
-                  {richMessage('copy.Rich.dc1e71653d', { p0: <ClubLink w={w} id={chosen.club} /> })}
-                </p>
-              ),
-            )}
-            <TermDial
-              label={displayMessage('copy.ClubStaff.7c33f611a8')}
-              value={term}
-              disabled={acting}
-              onChange={setTerm}
-            />
-            <TermCosts
-              w={w}
-              wage={chosen.wage}
-              fee={chosen.fee}
-              compensation={chosen.compensation}
-              term={term}
-              until={w.year + term}
-            />
-            {localizeValue(
-              current && owed !== '0' && (
-                <p className={s.note}>
-                  {richMessage('copy.ClubStaff.e5fab9815d', {
-                    p0: current.name,
-                    p1: format(owed),
-                    p2: ' ',
-                    p3: seasonsLeft(w, current.until),
-                  })}
-                </p>
-              ),
-            )}
-          </Dialog>
-        ),
-      )}
-    </section>
+                </div>
+              }
+            >
+              <p className={s.note}>
+                {richMessage('copy.ClubStaff.e995612837', {
+                  p0: chosen.name,
+                  p1: Math.round(chosen.ability),
+                  p2: STAFF_INFO[role].label,
+                  p3: ' ',
+                  p4: current
+                    ? `${current.name} (OVR ${Math.round(current.ability)})`
+                    : sourceMessage('team.vacant'),
+                })}
+              </p>
+              {localizeValue(
+                chosen.person && (
+                  <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
+                ),
+              )}
+              {localizeValue(
+                chosen.club && (
+                  <p className={s.note}>
+                    {richMessage('copy.Rich.dc1e71653d', {
+                      p0: <ClubLink w={w} id={chosen.club} />,
+                    })}
+                  </p>
+                ),
+              )}
+              <TermDial
+                label={displayMessage('copy.ClubStaff.7c33f611a8')}
+                value={term}
+                disabled={acting}
+                onChange={setTerm}
+              />
+              <TermCosts
+                w={w}
+                wage={chosen.wage}
+                fee={chosen.fee}
+                compensation={chosen.compensation}
+                term={term}
+                until={w.year + term}
+              />
+              {localizeValue(
+                current && owed !== '0' && (
+                  <p className={s.note}>
+                    {richMessage('copy.ClubStaff.e5fab9815d', {
+                      p0: current.name,
+                      p1: format(owed),
+                      p2: ' ',
+                      p3: seasonsLeft(w, current.until),
+                    })}
+                  </p>
+                ),
+              )}
+            </Dialog>
+          ),
+        )}
+      </section>
+    </RunningDimmer>
   );
 }
 
@@ -1170,97 +1179,109 @@ export function ManagerPost({ w }: { w: World; client?: GameClient }) {
 /** Whom 선호 학파 and 감독 기조 would appoint if the post fell vacant (→STAFF-18), or why nobody. */
 function ManagerPreview({ w, title }: { w: World; title: string }) {
   useTextLocale();
-  const preview = managerPickPreview(w),
-    pick = preview.pick,
+  const managers = useStoppedRead('managers');
+  const preview = managers ? managerPickPreview(w) : undefined,
+    pick = preview?.pick,
     club = clubOf(w),
     money = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   return (
-    <div data-surface="tile" className={s.preview} data-testid="manager-pick">
-      <b>{localizeValue(title)}</b>
-      {localizeValue(
-        pick ? (
-          <div className={s.pick}>
-            <OvrBadge
-              value={pick.ability}
-              role={sourceMessage('staff.role.manager')}
-              potential={pick.potential}
-            />
-            <div>
-              <span>
-                {pick.name} · {localizeValue(STYLE_INFO[pick.style].label)}
-              </span>
-              <small>
-                {richMessage('copy.ClubStaff.c2d7bdbaae', {
-                  p0: money(pick.wage),
-                  p1: money(pick.fee),
-                  p2: pick.compensation && (
-                    <>
-                      {richMessage('copy.ClubStaff.3e2995c1db', { p0: money(pick.compensation) })}
-                    </>
-                  ),
-                })}
-              </small>
-              <small>
-                {localizeValue(
-                  preview.fallback
-                    ? sourceMessage('copy.ClubStaff.276ae46c9a')
-                    : sourceMessage('copy.ClubStaff.8eb8e5a49d'),
-                )}
-              </small>
-            </div>
-          </div>
-        ) : (
-          <p>{localizeValue(preview.reason)}</p>
-        ),
+    <RunningDimmer>
+      {managers && (
+        <div data-surface="tile" className={s.preview} data-testid="manager-pick">
+          <b>{localizeValue(title)}</b>
+          {localizeValue(
+            pick ? (
+              <div className={s.pick}>
+                <OvrBadge
+                  value={pick.ability}
+                  role={sourceMessage('staff.role.manager')}
+                  potential={pick.potential}
+                />
+                <div>
+                  <span>
+                    {pick.name} · {localizeValue(STYLE_INFO[pick.style].label)}
+                  </span>
+                  <small>
+                    {richMessage('copy.ClubStaff.c2d7bdbaae', {
+                      p0: money(pick.wage),
+                      p1: money(pick.fee),
+                      p2: pick.compensation && (
+                        <>
+                          {richMessage('copy.ClubStaff.3e2995c1db', {
+                            p0: money(pick.compensation),
+                          })}
+                        </>
+                      ),
+                    })}
+                  </small>
+                  <small>
+                    {localizeValue(
+                      preview?.fallback
+                        ? sourceMessage('copy.ClubStaff.276ae46c9a')
+                        : sourceMessage('copy.ClubStaff.8eb8e5a49d'),
+                    )}
+                  </small>
+                </div>
+              </div>
+            ) : (
+              <p>{localizeValue(preview?.reason)}</p>
+            ),
+          )}
+        </div>
       )}
-    </div>
+    </RunningDimmer>
   );
 }
 
 /** Whom 코치 기조 would hire today in a department (→STAFF-15), or why nobody. */
 function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: string }) {
   useTextLocale();
-  const preview = coachPickPreview(w, role),
-    pick = preview.pick,
+  const coaches = useStoppedRead('coaches');
+  const preview = coaches ? coachPickPreview(w, role) : undefined,
+    pick = preview?.pick,
     c = coachCriteriaOf(w),
     member = (w.staff || []).find((one) => one.role === role),
     contracted = !!member && BigInt(member.wage) > 0n,
     club = clubOf(w),
     money = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   return (
-    <div data-surface="tile" className={s.preview} data-testid={`coach-pick-${role}`}>
-      <b>{localizeValue(title)}</b>
-      {localizeValue(
-        pick ? (
-          <div className={s.pick}>
-            <OvrBadge value={Math.round(pick.ability)} role="OVR" potential={pick.potential} />
-            <div>
-              <span>
-                {pick.name} ·{' '}
-                {localizeValue(
-                  pick.trait
-                    ? STAFF_TRAIT_INFO[pick.trait].label
-                    : sourceMessage('copy.ClubStaff.7cff642737'),
-                )}
-              </span>
-              <StaffTerms w={w} candidate={pick} costs={false} />
-              <small>
-                {richMessage('copy.ClubStaff.adbb8848ea', {
-                  p0: money(pick.wage),
-                  p1: money(pick.fee),
-                  p2: c.term,
-                })}
-              </small>
-              {localizeValue(
-                contracted && <small>{richMessage('copy.ClubStaff.c2c0b38fa9')}</small>,
-              )}
-            </div>
-          </div>
-        ) : (
-          <p>{localizeValue(preview.reason)}</p>
-        ),
+    <RunningDimmer>
+      {coaches && (
+        <div data-surface="tile" className={s.preview} data-testid={`coach-pick-${role}`}>
+          <b>{localizeValue(title)}</b>
+          {localizeValue(
+            pick ? (
+              <div className={s.pick}>
+                <OvrBadge value={Math.round(pick.ability)} role="OVR" potential={pick.potential} />
+                <div>
+                  <span>
+                    {pick.name} ·{' '}
+                    {localizeValue(
+                      pick.trait
+                        ? STAFF_TRAIT_INFO[pick.trait].label
+                        : sourceMessage('copy.ClubStaff.7cff642737'),
+                    )}
+                  </span>
+                  <StaffTerms w={w} candidate={pick} costs={false} />
+                  <small>
+                    {richMessage('copy.ClubStaff.adbb8848ea', {
+                      p0: money(pick.wage),
+                      p1: money(pick.fee),
+                      p2: c.term,
+                    })}
+                  </small>
+                  {localizeValue(
+                    contracted && <small>{richMessage('copy.ClubStaff.c2c0b38fa9')}</small>,
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p>{localizeValue(preview?.reason)}</p>
+            ),
+          )}
+        </div>
       )}
-    </div>
+    </RunningDimmer>
   );
 }
 

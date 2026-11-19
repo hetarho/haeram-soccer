@@ -77,7 +77,7 @@ test('stages a scripted own match ahead of its theatre and retains the Node resu
   await expect(report).toBeVisible();
   await report.getByRole('button', { name: '경기 자료', exact: true }).click();
   const material = report.getByRole('region', { name: '경기 자료', exact: true });
-  for (const name of ['슛 지도', '히트맵', '패스 연결망', '전술 해설']) {
+  for (const name of ['슛 지도', '패스 연결망', '전술 해설']) {
     const tab = material.getByRole('tab', { name, exact: true });
     await tab.click();
     await expect(tab).toHaveAttribute('aria-selected', 'true');

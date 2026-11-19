@@ -37,6 +37,7 @@ import {
 import type { World } from '../../../../../packages/contracts/src/types';
 import { priceIndex } from '../../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../../runtime/client';
+import { useStoppedRead } from '../../shared/lib/useStoppedRead';
 import { BOTTOM_ORDER, NAV, TABS, type NavEntry } from '../model/navigationTabs';
 import { personnelRoute } from '../../shared/routing/personnelNavigation';
 import { HudCash } from './HudCash';
@@ -254,7 +255,7 @@ function useContentState(): ClientState {
   const annualCost = useGameState((state) => state.view?.annualCost);
   const milestones = useGameState((state) => state.view?.milestones);
   const managers = useGameState((state) => state.view?.managers);
-  const transfers = useGameState((state) => state.view?.transfers);
+  const transfers = useStoppedRead('transfers');
   const sponsors = useGameState((state) => state.view?.sponsors);
   const state = gameStore.getSnapshot();
   return {

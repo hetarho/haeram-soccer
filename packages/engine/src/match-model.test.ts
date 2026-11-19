@@ -318,7 +318,7 @@ describe('a career on an earlier revision (→SAVE-23)', () => {
     );
     const added = career.ownMatches.slice(before.ownMatches.length);
     expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === MATCH_MODEL_REVISION && m.material)).toBe(true);
+    expect(added.every((m) => m.model === MATCH_MODEL_REVISION && !m.material)).toBe(true);
   });
 });
 

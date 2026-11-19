@@ -87,7 +87,7 @@ describe('post-match material from a script', () => {
     expect(scriptMaterial(d, s, 0).network[2 * 3 + 2]).toBe(2); // both completed deliveries received
   });
 
-  it("a player's average position is the mean of his scripted touches, and each touch reaches the heat map", () => {
+  it("a player's average position is the mean of his scripted touches", () => {
     for (const { d, s } of corpus()) {
       const touches = d.sides.map((side) =>
         side.lines.map(() => [] as (readonly [number, number])[]),
@@ -98,19 +98,10 @@ describe('post-match material from a script', () => {
         if (received(b)) touches[b.side]![b.receiver!]!.push(toAttack(b.side, b.to));
       }
       for (const own of [0, 1] as const) {
-        const m = scriptMaterial(d, s, own),
-          totals = [Array<number>(40).fill(0), Array<number>(40).fill(0)];
+        const m = scriptMaterial(d, s, own);
         for (const side of [0, 1] as const)
           touches[side]!.forEach((points, line) => {
-            const cells = Array<number>(40).fill(0);
-            for (const p of points) {
-              cells[cellOf(p)]!++;
-              totals[side]![cellOf(p)]!++;
-            }
             if (side !== own) return;
-            expect(m.heat.slice(line * 40, (line + 1) * 40), `${d.id}:${own}:${line}`).toEqual(
-              cells,
-            );
             const mean = (axis: 0 | 1) =>
               points.length
                 ? Math.round((points.reduce((sum, p) => sum + p[axis], 0) * 10) / points.length)
@@ -121,10 +112,6 @@ describe('post-match material from a script', () => {
               points.length,
             ]);
           });
-        expect(m.heat.slice(d.sides[own].lines.length * 40)).toEqual([
-          ...totals[own]!,
-          ...totals[1 - own]!,
-        ]);
       }
     }
   });
@@ -147,7 +134,6 @@ describe('post-match material from a script', () => {
     ]);
     const m = scriptMaterial(d, s, 1);
     expect(m.network.slice(11 * 3, 12 * 3)).toEqual([950, 380, 1]);
-    expect(m.heat.slice(11 * 40, 12 * 40).reduce((a, b) => a + b, 0)).toBe(1);
     expect(m.shots).toEqual([1, 11, 950, 380, 25, 0, 1]);
   });
 
@@ -230,14 +216,13 @@ describe('post-match material from a script', () => {
   });
 
   it("the rows fit the save schema's unchanged integer and length caps", () => {
-    // schema.ts materialRow: integers 0..100000, shots 7*80, heat 40*34,
+    // schema.ts materialRow: integers 0..100000, shots 7*80,
     // network 3*30+3*300, report 60. No world or checkpoint is needed to test the rows.
     for (const { d, s } of corpus())
       for (const own of [0, 1] as const) {
         const m = scriptMaterial(d, s, own);
         for (const [key, cap] of [
           ['shots', 560],
-          ['heat', 1360],
           ['network', 990],
           ['report', 60],
         ] as const) {
@@ -274,7 +259,6 @@ describe('post-match material from a script', () => {
       m = scriptMaterial(d, materialScript([]), 0);
     expect(m).toEqual({
       shots: [],
-      heat: Array(13 * 40).fill(0),
       network: Array(11 * 3).fill(0),
       report: Array(60).fill(0),
     });

@@ -277,7 +277,7 @@ export const requestSchema = z.object({
       playerId: ref,
       world: z.string().min(1).max(300),
     }),
-    z.object({ type: z.literal('command'), command }),
+    z.object({ type: z.literal('command'), command, automatic: z.boolean().optional() }),
     // The game in play's database (→SAVE-2, →ARCH-6): `open-game` loads and validates it, then
     // plays it; `create-game` writes every row of the world in play into it after a takeover (or
     // an activated import, `replace`); `save` commits the rows changed since the last save.
@@ -358,6 +358,8 @@ export const requestSchema = z.object({
       kind: z.enum(FULL_STATS_KINDS),
       groupKey: ref,
     }),
+    // The five slow projection parts for the current world (→WEB-119), read without publishing a view.
+    z.strictObject({ type: z.literal('stopped-reads'), world: z.string().min(1).max(300) }),
     z.object({ type: z.literal('ack-critical') }),
   ]),
 });
@@ -405,12 +407,12 @@ export type ProjectedWorld = Omit<
 };
 export interface View {
   world: ProjectedWorld;
-  coaches: Partial<Record<StaffRole, ReturnType<typeof staffCandidates>>>;
+  coaches?: Partial<Record<StaffRole, ReturnType<typeof staffCandidates>>>;
   totalMatches: number;
   milestones: ReturnType<typeof clubMilestones>;
   /** The manager market (→STAFF-17): free agents, then other clubs' managers. */
-  managers: ReturnType<typeof managerCandidates>;
-  transfers: ReturnType<typeof transferOffers>;
+  managers?: ReturnType<typeof managerCandidates>;
+  transfers?: ReturnType<typeof transferOffers>;
   /** Every sponsor slot with its contract or offers (→WEB-39). */
   sponsors: ReturnType<typeof sponsorSlots>;
   annualCost: string;
@@ -420,7 +422,7 @@ export interface View {
   /** Club news derived from the full career; the projected world keeps only recent records. */
   news: NewsItem[];
   newsTotal?: number;
-  /** Appearances, cards and this season's heat maps from every own match (→HIST-13, HIST-16). */
+  /** Appearances and cards from every own match (→HIST-13, HIST-16). */
   tallies: Tallies;
   /**
    * Changes whenever the `manager-history` read would answer differently: the facts, a settled own
@@ -438,6 +440,20 @@ export interface View {
    * brackets the projected world leaves out; absent in a founded career.
    */
   preOwner?: PreOwnerSeason[];
+}
+/**
+ * The view parts that cost the most to compute each day (→WEB-119): the manager and staff markets,
+ * the transfer offers, the discipline table's player names and the office's previews, as a read
+ * answers them for one world revision; the projection carries the same five.
+ */
+export interface StoppedReads {
+  world: string;
+  revision: number;
+  coaches: NonNullable<View['coaches']>;
+  managers: NonNullable<View['managers']>;
+  transfers: NonNullable<View['transfers']>;
+  disciplineNames: NonNullable<ProjectedWorld['disciplineNames']>;
+  office: OfficeRead;
 }
 /**
  * Published views each side keeps, so a reply can still name the base a client holds after a
@@ -560,6 +576,8 @@ export interface Reply {
   managerHistory?: ManagerHistoryPage;
   worldMarket?: WorldMarketPage;
   worldMarketDetail?: ReturnType<typeof worldMarketDetail>;
+  /** The slow projection parts of the current world, answered by a `stopped-reads` read. */
+  stoppedReads?: StoppedReads;
   progress?: number;
   /** The season a world's generation has reached, with `progress` (→WEB-15, WORLD-13). */
   season?: number;

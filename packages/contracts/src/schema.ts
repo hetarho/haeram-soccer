@@ -460,7 +460,7 @@ const match = fixture
     material: z
       .strictObject({
         shots: materialRow(7 * 80),
-        heat: materialRow(40 * 34),
+        heat: materialRow(40 * 34).optional(),
         network: materialRow(3 * 30 + 3 * 300),
         report: materialRow(60),
       })

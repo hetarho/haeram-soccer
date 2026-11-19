@@ -79,6 +79,7 @@ function worker(
     },
     cancel: vi.fn(),
     saveSoon,
+    refreshStoppedReads: vi.fn(async () => {}),
     setClockRunning: (clockRunning: boolean) => gameStore.setState({ clockRunning }),
     rpc: (body: Body) =>
       new Promise<Reply>((answer, fail) =>
@@ -139,6 +140,29 @@ afterEach(() => {
 });
 
 describe('computing ahead of the shown date (WEB-18)', () => {
+  it('refreshes stopped reads once after all admitted days are shown', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    controller.pause();
+    expect(fake.client.refreshStoppedReads).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(fake.showing()).toBe(fake.head());
+    expect(locked()).toBe(false);
+    expect(fake.client.refreshStoppedReads).toHaveBeenCalledOnce();
+  });
+  it('refreshes after an immediate stop flushes the held days', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    controller.stop();
+    expect(fake.showing()).toBe(fake.head());
+    expect(fake.client.refreshStoppedReads).toHaveBeenCalledOnce();
+  });
   it('x10 for 30 s shows no skipped day and fewer stalls than computing a day at a time', async () => {
     const play = async (depth?: Record<Pace, number>) => {
       const fake = worker(quiet(), measured);
@@ -781,6 +805,7 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     ['manager-history', (c) => c.managerHistory()],
     ['league-fixtures', (c) => c.leagueFixtures({ code: 'GER', tier: 0, group: 0 })],
     ['full-stats', (c) => c.fullStats({ kind: 'league', groupKey: 'ENG:0:0' })],
+    ['stopped-reads', (c) => c.stoppedReads()],
   ])('the %s read goes only once the held days are shown at the pace', async (type, read) => {
     const fake = worker(quiet());
     const controller = clock(fake);
