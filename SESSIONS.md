@@ -177,6 +177,7 @@
 - 261119 decided T1006: Game ID for a new career: the client creates a UUID at takeover and slots.sync lists the slot under it (one line in slots.ts), and activated imports reuse the ID the index lists for that world with create-game replace (alt: a game ID derived from the world ID | leave new careers unlisted until T1007). The under-10% save check is read on an ordinary day: the first day after a 1930 takeover opens every club's business and writes 420 of 2504 rows, later days 3 to 14.
 - 261119 suggest T994: T994 needs client.ts for the private read/RPC boundary and consumer files for undefined-safe access; its five-file touches omit these required paths. Replan the active task after releasing its claim, preserving acceptance and the 5-file limit, before implementation.
 - 261119 decided T994: T994 read boundary exceeds five files → prepare undefined-safe consumers and world-only benchmark digest as T1026/T1027, then keep host, protocol, client, store and progression in T994 with its acceptance intact (alt: broaden one task beyond five files | leave consumers unsafe).
+- 261119 decided T994: Repeated unit cuts on T994 → split an unchanged read boundary first, clock/store activation second and paired measurement last; dimming depends on activation (alt: one cross-boundary unit | omit the speed gate).
 
 ## unlanded
 | id | tag | branch | commit | at |
