@@ -1428,7 +1428,7 @@
       "host": "ihaelam-ui-MacBookPro.local",
       "pid": 28897
     },
-    "phase": "preparing",
+    "phase": "checking",
     "land": "main",
     "base": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
     "cohort": [
@@ -1598,10 +1598,17 @@
     ],
     "at": "2026-11-19T16:07:36.295Z",
     "deadline": "2026-11-19T17:07:24.995Z",
-    "candidate": null,
+    "candidate": "1b88214d718614dcbff5f957716f70912fbffc64",
     "checks": [],
     "agentChecks": [],
-    "rounds": []
+    "rounds": [],
+    "path": "/Users/ihaelam/project/.gusta-worktrees/haeram-soccer-7b6c81df/integration-4da79c0b-6a57-4ddf-befd-9f3c22437a9e",
+    "branch": "integration/4da79c0b-6a57-4ddf-befd-9f3c22437a9e",
+    "version": {
+      "level": "patch",
+      "from": "0.8.16",
+      "to": "0.8.17"
+    }
   },
   "history": [
     {
