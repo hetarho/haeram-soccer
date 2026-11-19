@@ -254,6 +254,19 @@
   width: 100%;
   min-height: 44px;
 }
+.facilityAuto {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-block-size: 44px;
+  margin-block-start: 6px;
+}
+.facilityAuto input {
+  flex-shrink: 0;
+}
+.facilityAuto input:disabled + span {
+  color: var(--text-muted);
+}
 .upgradeFinances {
   display: grid;
   grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1.3fr);

@@ -86,7 +86,8 @@ import {
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
 import { runAcademyIntake, seasonAcademy } from './academy';
-import { progressFacilityWorks } from './facilities';
+import { continueFacilityWorks, progressFacilityWorks } from './facilities';
+import { tryDebit } from './transactions';
 import { dailyMarket } from './transfers';
 import { moraleAfterMatch } from './morale';
 import { managerStyleEffects } from './styles';
@@ -1176,6 +1177,7 @@ export function clubDay(w: World, settleNpc = true) {
   transferRequests(w);
   clearHealed(w);
   ownerDay(w);
+  continueFacilityWorks(w, tryDebit);
   refreshReadModels(w);
 }
 /** A day's business before anyone owns a club: other clubs' coaches, managers and retirements. */

@@ -4,9 +4,11 @@ import type { Reply } from './protocol';
 import { RESPONSIBILITY_KEYS } from '../../../../packages/engine/src/responsibilities';
 import {
   currentDay,
+  daysInSeason,
   daysUntilNextMatch,
   nextOwnFixture,
 } from '../../../../packages/engine/src/calendar';
+import { nextWork, workDays } from '../../../../packages/engine/src/facilities';
 import { transferOffers } from '../../../../packages/engine/src/scout-search';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { bidOutlook } from '../../../../packages/engine/src/transfers';
@@ -27,12 +29,29 @@ async function host() {
 describe('manual next-event sole-writer protocol', () => {
   it('returns one final event date, caches duplicate requests and rejects stale/session writes', async () => {
     const { h, progress } = await host();
+    const w = h.world!;
+    w.academyFacility = 1;
+    const to = w.academyFacility + 1;
+    const completion = currentDay(w) + 1;
+    w.facilityAutoUpgrade = { academy: 'armed' };
+    w.facilityWorks = {
+      academy: {
+        to,
+        year: w.year - 1,
+        day: daysInSeason(w.year - 1) + completion - workDays('academy', to),
+      },
+    };
+    const successor = nextWork({ ...w, academyFacility: to }, 'academy')!;
     const request = req('next', h.world!.revision, {
       type: 'command',
       command: { type: 'next-event' },
     });
     const reply = await h.handle(request);
     expect(reply.ok).toBe(true);
+    expect(w.facilityWorks?.academy).toEqual({ to: successor.to, year: w.year, day: completion });
+    expect(w.events.filter((event) => event.kind === 'facility')).toMatchObject([
+      { amount: successor.cost },
+    ]);
     expect(daysUntilNextMatch(h.world!)).toBe(1);
     expect(h.world!.ownMatches).toHaveLength(0);
     expect(progress).toEqual([]);

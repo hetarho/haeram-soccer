@@ -79,6 +79,7 @@ export const WORLD_VIEW_FIELDS = {
   trainingGround: 'include',
   academyFacility: 'include',
   facilityWorks: 'include',
+  facilityAutoUpgrade: 'include',
   ticket: 'include',
   campaigns: 'include',
   sponsor: 'include',

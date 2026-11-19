@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r225 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r226 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -46,7 +46,7 @@
   - an area page opens with one note per decision whose work it holds (1군: 선수 계약, 선수 매각; 유소년: 유소년 운영; 코치진: 감독 인사, 스태프 인사; 스카우팅: 선수 영입): 위임 중 with the 단장, his temperament, the owner's request, his plan and what his next plan would change, or 직접 결정, each opening 위임 설정 (→WEB-79). While a decision is delegated, the dials and rows set for it (→ECON-39) show at their value, read only, with 위임 중 and who sets them in place of the apply.
   - 구단 예산's page is →WEB-118; 유소년 also shows 유스 디렉터의 지도: academy growth, intake potential and, for a developer, under-21 growth — his effect, never his pay.
   - The 경기장, 유소년 and 1군 facility cards each have an accessible checkbox beside their existing work controls, with the saved setting for that part (→!ECON-43, →=SAVE-33). Checking it authorizes only a continuation after completion. The stadium checkbox explicitly includes rebuilds. A checked card distinguishes waiting for a manual start, work in progress and waiting for funds to start the next work. At the completed maximum the checkbox is off and unavailable.
-  - Home cards, investment-effect links and direct area addresses reach the same facility controls. The team's first-team training and academy pages link to their work cards in 재정·투자 and offer a way back.
+  - Home cards, investment-effect links, direct area addresses and the existing academy detour reach the same facility controls. The academy detour offers a way back.
 
 - WEB-15 [o] The start is a compact mobile flow: wealth tier cards, each naming the clubs it reaches (→OWNER-3); trait picks with the count read as difficulty, 0 hardest to 5 easiest (→OWNER-5); decade cards with their lines (→WEB-2); the world's history while it is generated (→!WEB-115); then the club list and one take-over action.
   - The basic screen, including recovery/import tools and footer, fits 360x740 and 390x844 without document scrolling across supported browser/platform font metrics. Text remains readable and primary touch targets stay at least 44 CSS px; no overflow masking is allowed.
@@ -626,6 +626,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r226 261119 WEB-14✎ first-team training and academy work links→existing facility entries, including the academy detour
 - r225 261119 WEB-14✎ facility cards offer manual quotes→manual quotes and independent automatic-continuation checkboxes with saved status and stadium rebuild disclosure
 - r224 261119 WEB-5/10/18/31/50/66/79/90/96/97/102/108✎ read-only ownership protections, badge and tab wording→removed, a tab whose game plays elsewhere keeps only preferences (SAVE-6) · WEB-62✎ a read-only tab continues the game in play read-only→while another tab plays, this tab offers only 여기서 이어 하기 · WEB-66✎ recovery from the previous checkpoint, play taken over when another tab closed→recovery from the season backup, the game moved to or taken from another tab
 - r223 261119 WEB-22✎ post-match material opens from every final analysis→only a watched match's · WEB-59✎ his season heat maps→removed · WEB-84✎ heat maps by player and side, every own match→no heat maps, a watched match's material, an unwatched match says why it has none · WEB-99- broadcast heat maps (no heat map is drawn) · WEB-119+ slow places dimmed and not computed during automatic play

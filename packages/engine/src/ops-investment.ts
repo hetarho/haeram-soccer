@@ -5,7 +5,14 @@ import { DIRECTION_DEFAULT, DIRECTION_INFO } from './direction';
 import { BUILD_CARDS, BUILD_SLOT_INFO } from './build';
 import { BUILD_OPTIONS } from '../../contracts/src/build';
 import { TICKET_LEVELS } from './tickets';
-import { nextWork, partLevel, startFacilityWork } from './facilities';
+import {
+  FACILITY_PART_LABEL,
+  nextWork,
+  partLevel,
+  partTop,
+  setFacilityContinuation,
+  startFacilityWork,
+} from './facilities';
 import { addEvent } from './events';
 import { debit } from './transactions';
 import { setDelegationRequest } from './delegation';
@@ -20,6 +27,7 @@ type InvestmentCommand = Extract<
       | 'club-build'
       | 'club-ticket'
       | 'coaching-investment'
+      | 'facility-auto-upgrade'
       | 'facility-upgrade'
       | 'delegation-request';
   }
@@ -111,6 +119,23 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
         'coaching-investment',
         sourceMessage('copy.ops_investment.4bd80a1eee', { p0: option.name }),
         option.summary,
+      );
+      return;
+    }
+    case 'facility-auto-upgrade': {
+      const { part, enabled } = command;
+      const label = FACILITY_PART_LABEL[part];
+      if (enabled && partLevel(w, part) >= partTop(part))
+        throw new Error(sourceMessage('copy.facilities.198b4bded8', { p0: label }));
+      if (enabled === !!w.facilityAutoUpgrade?.[part]) return;
+      setFacilityContinuation(w, part, enabled ? 'armed' : undefined);
+      addEvent(
+        w,
+        'facility-auto-upgrade',
+        sourceMessage(enabled ? 'facility.auto.enabled' : 'facility.auto.disabled', {
+          part: label,
+        }),
+        '',
       );
       return;
     }

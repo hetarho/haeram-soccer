@@ -2,6 +2,7 @@ import type { FacilityPart, World } from '../../contracts/src/types';
 import { SEASON_ROUNDS } from './calendar';
 import { operatingCosts } from './finance';
 import { facilityPartUpkeep, facilityWork, nextWork, stadiumCapacity } from './facilities';
+import { canAfford } from './transactions';
 
 /** Fixed costs only: future gates, bonuses, sponsorship and other income are excluded. */
 export function fixedCostRunway(cash: string, annual: string): number {
@@ -36,7 +37,7 @@ export function facilityInvestmentPreview(w: World, part: FacilityPart) {
     before = operatingCosts(w),
     after = operatingCosts(built),
     cashAfter = (BigInt(w.cash) - BigInt(cost)).toString(),
-    affordable = BigInt(w.cash) >= BigInt(cost);
+    affordable = canAfford(w, cost);
   return {
     part,
     next,
