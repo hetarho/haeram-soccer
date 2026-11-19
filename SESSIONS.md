@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| tk19 | ihaelam-ui-MacBookPro | autopilot | 2026-11-19T13:06Z | 2026-11-19T14:36Z | T1022 | gusta-session-start-tk19-9706a3bf | 21455f48ad55 | 853e43a2919794e4c665f452 |
+| tk19 | ihaelam-ui-MacBookPro | autopilot | 2026-11-19T13:06Z | 2026-11-19T14:38Z | - | gusta-session-start-tk19-9706a3bf | 21455f48ad55 | 853e43a2919794e4c665f452 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -294,8 +294,10 @@
 | T1032 | sv19 | gusta-session-start-sv19-0cc2a73b | c2355b2f3da3 | 2026-11-19T12:55Z |
 | T1017 | tk19 | gusta-session-start-tk19-9706a3bf | 72a7eda15c9a | 2026-11-19T13:16Z |
 | T1018 | tk19 | gusta-session-start-tk19-9706a3bf | 615dae4b02fb | 2026-11-19T13:30Z |
+| T1022 | tk19 | gusta-session-start-tk19-9706a3bf | 21455f48ad55 | 2026-11-19T14:38Z |
 
 ## log
+- 261119 T1022 done
 - 261119 T1018 done
 - 261119 T1017 done
 - 261119 T1019 unparked: T1003/T1004 are on the tk19 candidate (taken over from sv19), landing together
@@ -315,4 +317,3 @@
 - 261119 T1031 done
 - 261119 T1029 done
 - 261119 T1020 done
-- 261119 T1008 done
