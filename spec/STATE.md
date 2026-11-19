@@ -81,7 +81,6 @@
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
 | T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
 | T998 | Helper count by core class | ARCH | T997 | todo |
-| T1005 | SQLite runs in the engine worker on OPFS | ARCH SAVE | T1003 | todo |
 | T1006 | The engine worker opens and saves the game in play in its database | SAVE ARCH | T1004 T1005 | todo |
 | T1007 | Game slots are database files | SAVE WEB | T1006 | todo |
 | T1008 | Export and import the gzip-compressed database as `.haeram-save` | SAVE ARCH | T1007 | todo |
@@ -109,8 +108,8 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- gusta-implement-task T1006
 - gusta-implement-task T994
-- gusta-implement-task T1005
 - gusta-implement-task T989 T991
 - gusta-implement-task T953 T954
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
