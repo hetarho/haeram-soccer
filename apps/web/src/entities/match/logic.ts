@@ -27,13 +27,13 @@ export {
 export {
   networkView,
   NETWORK_VIEW,
+  missingMaterialMessageId,
   ownSide,
   px,
   py,
   shotDots,
   shotTotals,
   sideReport,
-  topToucher,
 } from './lib/materialView';
 export { drawNumberTag, numberTagStyle, placeNumberTags } from './lib/numberTags';
 export {

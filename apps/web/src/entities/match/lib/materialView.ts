@@ -320,23 +320,9 @@ export function sideReport(record: MatchRecord, side: 0 | 1) {
   return report && reportView(report);
 }
 
-/**
- * The own player with the most passes when an older match has no retained material.
- */
-export function topToucher(record: MatchRecord, w: Pick<World, 'players' | 'playerClub'>) {
-  const own = ownSide(record, w);
-  const counts = record.lineCounts;
-  const first = counts && own === 1 ? counts[0] : 0;
-  const lines = counts ? record.players.slice(first, first + counts[own]) : record.players;
-  let best: { id: string; score: [number, number] } | undefined;
-  for (const line of lines) {
-    const score: [number, number] = [line.metrics[2] ?? 0, line.metrics[0] ?? 0];
-    if (
-      !best ||
-      score[0] > best.score[0] ||
-      (score[0] === best.score[0] && score[1] > best.score[1])
-    )
-      best = { id: line.id, score };
-  }
-  return best && { id: best.id, name: nameOf(w, best.id) ?? best.id };
+/** Existing copy for a match whose post-match maps are not retained. */
+export function missingMaterialMessageId(matchYear: number, currentYear: number) {
+  return matchYear === currentYear
+    ? ('copy.MatchMaterial.d59195b9a8' as const)
+    : ('copy.MatchMaterial.d12e529078' as const);
 }

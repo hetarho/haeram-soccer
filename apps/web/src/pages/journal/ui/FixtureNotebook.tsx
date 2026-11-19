@@ -10,6 +10,7 @@ import type { GameClient } from '../../../runtime/client';
 import { fixtureDate, nextOwnFixture } from '../../../../../../packages/engine/src/calendar';
 import { ownSeasonFixtures } from '../../../entities/league';
 import { resultFor } from '../../../entities/league';
+import { missingMaterialMessageId } from '../../../entities/match';
 import { competitionLabel, kindLabel } from '../../../presentation/format';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { MatchMaterial, MatchReport } from '../../../features/match-viewer';
@@ -215,6 +216,11 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                                 >
                                   {richMessage('copy.stories.a3b55318c6')}
                                 </button>
+                              )}
+                              {!materialMatches.has(f.id) && (
+                                <span className={s.fixtureNote} role="status">
+                                  {richMessage(missingMaterialMessageId(f.year, w.year))}
+                                </span>
                               )}
                             </>
                           ) : undefined

@@ -6,6 +6,7 @@ import type { MatchRecord, World } from '../../../../../../packages/contracts/sr
 import { BAND_EDGES, LANE_EDGES, PITCH } from '../../../../../../packages/engine/src/match/pitch';
 import { FIELD, MaterialPitch } from '../../../entities/match';
 import {
+  missingMaterialMessageId,
   networkView,
   NETWORK_VIEW,
   matchLook,
@@ -15,13 +16,11 @@ import {
   shotDots,
   shotTotals,
   sideReport,
-  topToucher,
 } from '../../../entities/match';
 import { number } from '../../../presentation/format';
 import { scoreboardHalves } from '../lib/scoreboardHalves';
 import networkStyle from './PassNetwork.module.css';
 import { TabList } from '../../../shared/ui/PageTabs';
-import { openPlayer } from '../../../entities/player';
 import { Segments } from '../../../shared/ui/Segments';
 import s from '../../../shared/ui/styles/MatchMaterial.module.css';
 import app from '../../../shared/ui/styles/App.module.css';
@@ -42,38 +41,11 @@ export function MatchMaterial({ record, w }: { record: MatchRecord; w: World }) 
   const [tab, setTab] = useState<Tab>('shots');
   const id = `material-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   if (!record.material) {
-    const top = topToucher(record, w);
     return (
       <section className={s.material} aria-label={displayMessage('copy.stories.a3b55318c6')}>
         <p data-surface="inset" className={s.missing} role="status">
-          {richMessage(
-            record.year === w.year
-              ? 'copy.MatchMaterial.d59195b9a8'
-              : 'copy.MatchMaterial.d12e529078',
-          )}
+          {richMessage(missingMaterialMessageId(record.year, w.year))}
         </p>
-        {localizeValue(
-          top && (
-            <p className={s.caption}>
-              {richMessage('copy.MatchMaterial.6a8d34feb6', {
-                p0: ' ',
-                p1: (
-                  <button
-                    type="button"
-                    className={s.playerLink}
-                    aria-label={displayMessage('copy.MatchMaterial.1a923aba55', { p0: top.name })}
-                    onClick={(event) => {
-                      event.currentTarget.focus();
-                      openPlayer({ id: top.id });
-                    }}
-                  >
-                    {top.name}
-                  </button>
-                ),
-              })}
-            </p>
-          ),
-        )}
       </section>
     );
   }

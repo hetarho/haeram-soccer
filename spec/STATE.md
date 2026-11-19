@@ -86,7 +86,6 @@
 | T1017 | Events and news before last season leave memory at save | SAVE ARCH HIST | T1016 | todo |
 | T1018 | Season archives older than seven seasons leave memory at save | SAVE ARCH HIST | T1017 | todo |
 | T1022 | Save database measurements and release preparation | ARCH SAVE | T1018 T1012 | todo |
-| T1025 | An unwatched match's analysis and fixture row say why it has no maps | WEB MATCH ARCH | T992 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -101,7 +100,6 @@
 
 ## next
 - gusta-implement-task T1019
-- gusta-implement-task T1025
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 cost levers (261119, owner from reports/261119-np19 D2/D4/D5/D8): T989–T998 and T1019–T1021 — NPC place-fit tolerance, unwatched own matches without script/material and heat maps removed, slow view reads only on a stopped clock with dimmed places, helpers from two cores; T998 is explore (1h). Start with `gusta-implement-task T989` (or /gusta-start).
 - inspect work board for remaining tasks

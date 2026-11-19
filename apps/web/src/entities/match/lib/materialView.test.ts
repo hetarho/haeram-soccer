@@ -5,6 +5,7 @@ import {
   dotRadius,
   networkView,
   NETWORK_VIEW,
+  missingMaterialMessageId,
   VIEW,
   px,
   py,
@@ -149,6 +150,11 @@ describe('pass network circles and lines', () => {
 });
 
 describe('post-match material views', () => {
+  it('uses the watched-state message for current-season and older matches', () => {
+    expect(missingMaterialMessageId(1950, 1950)).toBe('copy.MatchMaterial.d59195b9a8');
+    expect(missingMaterialMessageId(1949, 1950)).toBe('copy.MatchMaterial.d12e529078');
+  });
+
   it('scales shot dots by xG', () => {
     const dots = shotDots(savedRecord(), w);
     expect(dots).toHaveLength(2);

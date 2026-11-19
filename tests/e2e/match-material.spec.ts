@@ -1,6 +1,6 @@
 import { clubhouseDate, openLeague } from './competition-navigation';
 import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
-import { delegateSales } from './events';
+import { configureResponsibilities, delegateSales } from './events';
 import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow } from './layout';
@@ -102,4 +102,40 @@ test('opens an own match material from its report and from the fixture notebook'
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
   // Reading the material changes nothing in the world.
   await expect(await clubhouseDate(page)).toHaveText(date);
+});
+
+test('explains missing maps for an own match settled by automatic play', async ({ page }) => {
+  await page.goto('/');
+  await startCareer(page);
+  await configureResponsibilities(page, {
+    observations: { matchEve: false, windowOpen: false },
+  });
+  const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
+  await chooseOption(pace, 'x10');
+  await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+  const round = page.getByTestId('game-round');
+  await expect
+    .poll(async () => Number((await round.innerText()).split('/')[0]!.trim()), {
+      timeout: 60000,
+    })
+    .toBeGreaterThan(0);
+  await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+
+  await openLeague(page);
+  await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
+  await page
+    .getByRole('group', { name: '일정·결과 보기' })
+    .getByRole('button', { name: '우리 경기', exact: true })
+    .click();
+  await page.getByText('우리 팀 일정 노트', { exact: true }).click();
+  const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
+  await chooseOption(
+    notebook.getByRole('combobox', { name: '일정 진행 상태', exact: true }),
+    'completed',
+  );
+  const fixture = notebook.getByTestId('fixture-card').first();
+  await expect(fixture).toContainText('이 경기는 관전하지 않아 지도가 없어요.');
+  await fixture.getByRole('button', { name: '이 경기 분석 보기' }).click();
+  const report = page.getByRole('dialog', { name: '일정 경기 분석' });
+  await expect(report).toContainText('이 경기는 관전하지 않아 지도가 없어요.');
 });
