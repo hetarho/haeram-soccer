@@ -549,10 +549,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-sv19-0cc2a73b",
-      "head": "82e7ae4206dc04710ddcf9e06689d26b283fcdec",
+      "head": "c79bfc8a54cf17ae1df0ebe4741a6016c81772f2",
       "land": "main",
       "status": "working",
-      "at": "2026-11-19T10:02:04.469Z",
+      "at": "2026-11-19T10:13:20.827Z",
       "agentChecks": [
         {
           "id": "T999-integration-e2e",
@@ -627,6 +627,235 @@
           "owner": "capable host",
           "candidate": null,
           "duplicationReason": "No duplicate e2e suite was added. Existing gate coverage is reused."
+        },
+        {
+          "id": "T1003-batch-gate",
+          "scenario": "Shared final batch gate and CI browser journeys over the candidate including T1003",
+          "steps": [
+            "Run pnpm run verify:batch on the final candidate",
+            "Push and let CI run the Chromium shards"
+          ],
+          "expected": "Batch checks and CI pass with the new record-store files and eslint rule",
+          "observed": "Not run in this unit; only the task tier ran (typecheck, lint, format, i18n, affected units all passed at 461f8fbe)",
+          "evidence": [
+            "vibe check --tier task --task T1003 ok:true, sqlRecordStore.test.ts 6 passed"
+          ],
+          "status": "not-run",
+          "reason": "Builds, integration and full suites belong to the host's shared final gate (ARCH-30); no UI or browser behaviour changed",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1004-batch-integration",
+          "scenario": "Whole-world row round trip and one-day changed-row save on simulated worlds, rerun inside the shared batch gate",
+          "steps": [
+            "pnpm run verify:batch on the integration candidate (includes apps/web/src/adapters/worldRows.world.test.ts, newly registered in tests/config/test-tiers.ts)"
+          ],
+          "expected": "careerWorld and tenRichSeasons() round-trip canonically with people key order; a one-day save writes under 10% of rows and reloads equal",
+          "observed": "Not run by this unit inside the batch gate; the same file passed once by hand on d3337881dd43 plus the working tree (2 tests, 200 of 27,525 rows written after advanceDays(w, 1))",
+          "evidence": [
+            "pnpm exec vitest run --project integration apps/web/src/adapters/worldRows.world.test.ts: 2 passed",
+            "vibe check --tier task: typecheck, lint, format, i18n, affected-units passed"
+          ],
+          "status": "not-run",
+          "reason": "Integration and full suites belong to the shared final batch gate (ARCH-30)",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1005-opfs-store-e2e",
+          "scenario": "In the preview build, a worker on the app origin creates, writes, reopens, exports and deletes a game file in the OPFS SAH pool through apps/web/src/adapters/sqliteWasm.ts",
+          "steps": [
+            "pnpm exec playwright test --project=chromium tests/e2e/sqlite-store.spec.ts on the CI preview build"
+          ],
+          "expected": "reopened row reads {\"n\":1}, file listed, export has bytes, delete returns true and the file is no longer listed",
+          "observed": "not run locally (ARCH-30: browser journeys run only in CI)",
+          "evidence": [
+            "tests/e2e/sqlite-store.spec.ts",
+            "spec/tasks/done/T1005.sqlite-wasm-opfs.md result limits"
+          ],
+          "status": "not-run",
+          "reason": "Browser specs are CI-only per ARCH-30; this unit has no browser to run them",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1006-browser-save-reload",
+          "scenario": "In Chromium, a player takes over a club, plays some days, reloads the page and continues the same game from its OPFS SQLite database (save/reload journey over the engine worker's database).",
+          "steps": [
+            "Start a new game and take over a club",
+            "Advance several days with automatic play and let the autosave run, or stop the clock to save",
+            "Reload the tab",
+            "Confirm the same club, date and saved revision are shown and play continues"
+          ],
+          "expected": "The reloaded tab opens the slot index's active game from its database at the last committed revision with no recovery prompt, and the HUD shows when it was last saved.",
+          "observed": "Not run in this unit. Browser journeys run only in CI on Chromium (ARCH-30). The host unit test and client integration tests cover the same flow with in-memory SQLite stores.",
+          "evidence": [
+            "apps/web/src/runtime/host.database.test.ts (3 unit tests passed under vibe check --tier task)",
+            "apps/web/src/runtime/client.test.ts 39/39 passed by hand (integration project)"
+          ],
+          "status": "not-run",
+          "reason": "Browser journeys are CI-only (ARCH-30/ARCH-35). This headless unit has no browser or computer-use tool.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host (CI Chromium shards after push)",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1007-slots-e2e",
+          "scenario": "Slot journeys over database files: switch games, start a new game over an occupied slot, delete the game in play and reload onto the slot screen",
+          "steps": [
+            "Open the slot screen with two games",
+            "Continue the other slot",
+            "Start a new game in an occupied slot and confirm replacement",
+            "Delete the game in play"
+          ],
+          "expected": "Each switch saves and closes one database and opens the next; a replacement deletes the old file only after the takeover; deleting the game in play reloads onto the slot screen",
+          "observed": "Not run in this unit: browser journeys run only in CI on Chromium (ARCH-30). Covered at unit/integration level by client.test.ts game slots (6 cases, 41/41) and host.database.test.ts.",
+          "evidence": [
+            "apps/web/src/runtime/client.test.ts",
+            "apps/web/src/runtime/host.database.test.ts"
+          ],
+          "status": "not-run",
+          "reason": "No browser or computer-use tooling in this unit; browser journeys belong to CI (ARCH-30) and the existing IndexedDB-seeding slot specs need rework with T1008/T1009",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "capable host / CI",
+          "candidate": null,
+          "duplicationReason": "No new e2e suite added; the existing slot e2e journeys are the CI handoff and the logic is covered by the unit/integration tests listed"
+        },
+        {
+          "id": "T1008-saveFile-unit",
+          "scenario": "A `.haeram-save` file round-trips its database bytes and refuses bad files",
+          "steps": [
+            "encode a real node:sqlite database with encodeSaveFile",
+            "decode it and open the bytes with sqlRecordStore",
+            "decode truncated, wrong-checksum or wrong-size, oversize (file and database limits, a gunzip bomb), JSON-envelope, no-magic and malformed-header files"
+          ],
+          "expected": "Exact bytes come back and the database opens; each bad file is refused with its localized error, and a missing magic or other format is a SaveCompatibilityError",
+          "observed": "apps/web/src/adapters/saveFile.test.ts passed 8/8 inside the 314-file affected-units run of vibe check --tier task",
+          "evidence": [
+            "apps/web/src/adapters/saveFile.test.ts"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1008-host-import-export",
+          "scenario": "The worker exports a game's file and imports it only after every check, leaving slots untouched on failure",
+          "steps": [
+            "export-game of a saved game and import-game into another host over in-memory node:sqlite files",
+            "export a game of unsupported rules; export from memory after a failed save",
+            "import an envelope, a truncated file, non-SQLite bytes, damaged SQLite, a header naming another world, a failing integrity check, a newer engine and an unknown schema",
+            "replace a slot's game"
+          ],
+          "expected": "The same world is in play after import; every refused file leaves files, the game in play and the scratch database as they were, compatibility failures carry the compatibility code, and the replaced file goes only after the import succeeds",
+          "observed": "apps/web/src/runtime/host.database.test.ts passed 11/11 (affected-units run and a separate rerun); apps/web/src/runtime/client.test.ts (integration, run by hand) passed 42/42 including the slot export and failed-save memory export cases",
+          "evidence": [
+            "apps/web/src/runtime/host.database.test.ts",
+            "apps/web/src/runtime/client.test.ts"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [],
+          "stage": "unit",
+          "required": true,
+          "owner": "implementer",
+          "candidate": null,
+          "duplicationReason": "client.test.ts is an integration file run by hand; the unit host test covers the same worker behaviour at its boundary"
+        },
+        {
+          "id": "T1008-browser-file-flows",
+          "scenario": "In Chrome, download a `.haeram-save` from the HUD and a slot, import it from the start screen, the HUD and a slot; an old JSON export is refused",
+          "steps": [
+            "export from the settings menu and from a slot's menu",
+            "import the file on the start screen, in the HUD (replace and import) and into an empty slot",
+            "upload a JSON envelope"
+          ],
+          "expected": "Downloads are named haeram-<name>.haeram-save, inputs accept .haeram-save, imports open the same career, and the JSON file shows the unsupported-file message",
+          "observed": "Not run: this unit has no browser, and browser journeys run only in CI",
+          "evidence": [],
+          "status": "not-run",
+          "reason": "Browser journeys run only in CI on Chromium (ARCH-30); the specs that use the file flow were moved to tests/fixtures/save-file.ts and are listed in T1008's result limits",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1009-e2e-seed-by-import",
+          "scenario": "Browser journeys that seed a game by importing a .haeram-save at the start screen instead of writing IndexedDB checkpoints (seedSlot/seedSaveFile, savedFacts/exportWorld, save-upgrade earlier-rules import refusal, club-identity-continuity future-data import refusal and pre-identity adoption)",
+          "steps": [
+            "Open the start screen of an empty browser profile",
+            "Import a .haeram-save built by saveFileOf(world) through the 기록 파일 가져오기 input",
+            "Continue the slot after a reload and read the committed world through the HUD export",
+            "Import a file of earlier or newer rules and check that the alert shows and no slot is taken"
+          ],
+          "expected": "The imported game opens as the game in play and is listed in slot 1. Exporting returns the committed world. Earlier- or newer-rules files are refused with the rules message and leave every slot untouched.",
+          "observed": "Not run. The unit's host has no browser or CI. The specs and helpers typecheck, lint and format clean, and the file import path itself is covered by host.database.test.ts and client.test.ts.",
+          "evidence": [
+            "tests/e2e/slots.ts",
+            "tests/e2e/club-identity-helpers.ts",
+            "tests/e2e/save-upgrade.spec.ts",
+            "tests/e2e/club-identity-continuity.spec.ts",
+            "spec/tasks/done/T1009.retire-indexeddb-checkpoints.md"
+          ],
+          "status": "not-run",
+          "reason": "Browser journeys run only in CI (ARCH-30, ARCH-35); this unit has no browser tool",
+          "replaces": [
+            "IndexedDB checkpoint seeding journeys (seedCheckpoints, seedRawCheckpoint, idbGet/idbPut)"
+          ],
+          "stage": "integration",
+          "required": true,
+          "owner": "capable host (CI Chromium shards)",
+          "candidate": null,
+          "duplicationReason": "Replaces the removed IndexedDB-seeding journeys one for one. It adds no new suite, only the same journeys seeded through the file import."
+        },
+        {
+          "id": "T1010-recovery-journey",
+          "scenario": "A corrupted game offers recovery from its season backup in the browser, and restoring it adds a 시스템 notification.",
+          "steps": [
+            "Play a game across a season close so a backup exists.",
+            "Corrupt the game's database file in OPFS.",
+            "Reload the page and read the recovery offer.",
+            "Export the corrupted file, then accept the recovery."
+          ],
+          "expected": "The offer names the backup's season and date and says later progress is lost. Accepting opens the backed-up game and adds a 시스템 notification. An incompatible database is never offered this.",
+          "observed": "Not run: this unit has no browser tool. The host-level behaviour (season-close backup, upgrade backup, corrupted-open offer, restore, delete) passes in seasonBackup.host.test.ts with the node store.",
+          "evidence": [
+            "apps/web/src/runtime/seasonBackup.host.test.ts"
+          ],
+          "status": "not-run",
+          "reason": "This unit has no browser or computer-use tool, and browser journeys run only in CI (ARCH-30).",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "capable host (CI Chromium)",
+          "candidate": null,
+          "duplicationReason": ""
         }
       ],
       "verificationCommands": [
