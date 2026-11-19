@@ -181,6 +181,7 @@
 - 261119 decided T998: Hand off the three-helper full-season parity assertion to the shared integration gate, preserving its full coverage (alternative: run integration inside this task); ARCH-30 and the assigned unit contract reserve integration for the fixed candidate.
 - 261119 parked T1019: T1019 waits for sv19's SQLite record store and world-row saver (T1003/T1004): run it after they land on main, with the test scope of decided 00230e4a; heat is already never written since T993, so leaving the optional legacy fields until then has no gameplay or speed cost. The x10 loop skips it.
 - 261119 decided T994: T994 runs on claude/sonnet@high instead of codex/gpt-6.1-terra@high: the last unit there ended it unfinished with no commit or newly checked acceptance (alt: the same route again)
+- 261119 decided T1013: T1013 runs on codex/gpt-6.1-terra@ultra instead of claude/opus@high: the last unit there ended it unfinished with no commit or newly checked acceptance (alt: the same route again)
 
 ## unlanded
 | id | tag | branch | commit | at |
