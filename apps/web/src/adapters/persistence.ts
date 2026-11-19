@@ -10,18 +10,13 @@ import {
   validateWorld,
   type World,
 } from '../../../../packages/contracts/src/index';
-import { pack, unpack } from './packing';
 import { encodePayload, decodePayload } from './compression';
 import {
   assertMatchModelFormat,
-  carriesMatchModel,
+  checkpointSchemaFor,
 } from '../../../../packages/contracts/src/match-model';
-import { readMatchModelFormat } from './matchModelPacking';
-import { checkpointContainerFor, readManagerHistoryFormat } from './managerHistoryPacking';
 import {
-  carriesManagerHistory,
-  FULL_MODEL_CHECKPOINT_SCHEMA,
-  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+  PLAIN_WORLD_CHECKPOINT_SCHEMA,
   isCheckpointSchema,
   earlierRulesMessage,
   isEarlierEngine,
@@ -43,11 +38,12 @@ async function digest(bytes: Uint8Array) {
 }
 /** Encodes once; the length is that of the exact uncompressed bytes the checksum covers. */
 async function encodeChecked(w: World, generation: number, parentGeneration: number) {
-  const bytes = new TextEncoder().encode(JSON.stringify(pack(w)));
+  // The plain world, exactly as it is held in memory (→SAVE-2, →ARCH-12): no packing.
+  const bytes = new TextEncoder().encode(JSON.stringify(w));
   const checksum = await digest(bytes);
   const payload = await encodePayload(bytes);
   const envelope: Envelope = {
-    schema: checkpointContainerFor(w),
+    schema: checkpointSchemaFor(),
     engine: w.engine,
     catalog: w.catalog,
     catalogHash: w.catalogHash,
@@ -77,6 +73,10 @@ async function readEnvelope(raw: string, supported: readonly string[]) {
   if (!e || typeof e !== 'object' || typeof e.schema !== 'number')
     throw new Error(sourceMessage('copy.persistence.830e86ddaf'));
   if (!isCheckpointSchema(e.schema))
+    throw new SaveCompatibilityError(sourceMessage('copy.persistence.52d3e36f5e'));
+  // Containers 1–4 (compact packing) and any later number are no writer this version reads; they
+  // stay protected as incompatible, never recovered over (→SAVE-11/29).
+  if (e.schema !== PLAIN_WORLD_CHECKPOINT_SCHEMA)
     throw new SaveCompatibilityError(sourceMessage('copy.persistence.52d3e36f5e'));
   if (typeof e.engine !== 'string') throw new Error(sourceMessage('copy.persistence.6025cca94a'));
   if (!supported.includes(e.engine))
@@ -116,41 +116,16 @@ async function readEnvelope(raw: string, supported: readonly string[]) {
     envelope: e,
   };
 }
-async function readCheckpoint(
-  raw: string,
-  supported: readonly string[],
-  validateExpandedWorld = false,
-) {
+async function readCheckpoint(raw: string, supported: readonly string[]) {
   const { json, envelope } = await readEnvelope(raw, supported);
-  // A newer game's identity or match-model data is a compatibility failure before unpacking can
+  // A newer game's identity or match-model data is a compatibility failure before validation can
   // call it corrupt.
-  const packed = json as {
-    format?: unknown;
-    world?: unknown;
-    model?: unknown;
-    managerHistory?: unknown;
-  } | null;
-  const compact = packed?.format === 'compact1';
-  const world = compact ? packed.world : json;
-  assertIdentityFormatVersions(world);
-  assertMatchModelFormat(world);
-  if (compact && packed.model !== undefined) readMatchModelFormat(packed.model);
-  if (compact && packed.managerHistory !== undefined)
-    readManagerHistoryFormat(packed.managerHistory);
-  const value = unpack(json as Parameters<typeof unpack>[0], validateExpandedWorld);
-  // Manager history travels only in its own container, with or without model data, and model
-  // data otherwise only in the full-model container, each refused by an older reader (→SAVE-23/24).
-  // A checksum-valid payload in another container is no writer this version knows, so it is kept
-  // as incompatible rather than recovered over (→SAVE-11).
-  const history = carriesManagerHistory(value);
-  if (history !== (envelope.schema === MANAGER_HISTORY_CHECKPOINT_SCHEMA))
-    throw new SaveCompatibilityError(sourceMessage('copy.persistence.030fddf291'));
-  if (!history && carriesMatchModel(value) !== (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA))
-    throw new SaveCompatibilityError(sourceMessage('copy.persistence.bbef3363d2'));
-  return { value, envelope };
+  assertIdentityFormatVersions(json);
+  assertMatchModelFormat(json);
+  return { value: json, envelope };
 }
 export async function decode(raw: string): Promise<{ world: World; envelope: Envelope }> {
-  const { value, envelope: e } = await readCheckpoint(raw, SUPPORTED_ENGINE_VERSIONS, true);
+  const { value, envelope: e } = await readCheckpoint(raw, SUPPORTED_ENGINE_VERSIONS);
   const world = validateWorld(value, LOAD_CATALOG);
   const country = world.clubs.find((c) => c.id === world.playerClub)!.country;
   if (

@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import type { World } from '../../../../packages/contracts/src/types';
-import {
-  CURRENT_CHECKPOINT_SCHEMA,
-  FULL_MODEL_CHECKPOINT_SCHEMA,
-  isSaveCompatibilityError,
-  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
-} from '../../../../packages/contracts/src/versions';
+import { isSaveCompatibilityError } from '../../../../packages/contracts/src/versions';
 import {
   advanceRound,
   captureCupTitle,
@@ -23,7 +18,7 @@ import {
   withoutManagerHistory,
 } from '../../../../tests/fixtures/worlds';
 import { pack, unpack } from './packing';
-import { checkpointContainerFor, type PackedManagerHistory } from './managerHistoryPacking';
+import type { PackedManagerHistory } from './managerHistoryPacking';
 
 /**
  * A tracked career two rounds in whose facts hold every field shape: an owner hire, a resignation
@@ -85,23 +80,12 @@ describe('manager-history packing (→SAVE-24)', () => {
     expect(canonical(roundTrip(plain))).toBe(canonical(plain));
   });
 
-  it('selects the manager-history container whether or not the full model is active', () => {
-    // Saved before the full model's release: it is active only where the case records it.
+  it('packs a link alone as history, and without its facts it cannot be written', () => {
     const w = withoutMatchModel(career());
-    expect(checkpointContainerFor(w)).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     const modelled = withCandidateModel(structuredClone(w));
-    expect(checkpointContainerFor(modelled)).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(canonical(roundTrip(modelled))).toBe(canonical(modelled));
-    expect(checkpointContainerFor(withoutManagerHistory(structuredClone(modelled)))).toBe(
-      FULL_MODEL_CHECKPOINT_SCHEMA,
-    );
-    expect(checkpointContainerFor(withoutManagerHistory(structuredClone(w)))).toBe(
-      CURRENT_CHECKPOINT_SCHEMA,
-    );
-    // A link alone is history too, and without its facts it cannot be written.
     const link = withoutManagerHistory(structuredClone(w));
     link.ownMatches[1]!.managerTenure = `${w.playerClub}:tenure:1`;
-    expect(checkpointContainerFor(link)).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(() => pack(link)).toThrow('감독 이력');
   });
 

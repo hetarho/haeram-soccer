@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { canonical } from '../../packages/contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
-import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
+import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { seasonName } from '../../apps/web/src/presentation/format';
 import {
   managerActivationCareer,
@@ -206,7 +206,7 @@ test('starts tracking an older career at the writer, never in a read-only tab', 
 
   // Older facts and the known service year as they were; nothing before tracking attributed.
   const activated = await decode(await exportRaw(page));
-  expect(activated.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+  expect(activated.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
   const facts = activated.world.managerHistory!;
   expect(facts.coverage).toBe('activation');
   // The same writer load moves the career to the released revision there too (→SAVE-23).

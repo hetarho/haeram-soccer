@@ -7,13 +7,10 @@ import {
   type ManagerOutcome,
   type ManagerTenure,
 } from '../../../../packages/contracts/src/manager-history';
-import { checkpointSchemaFor } from '../../../../packages/contracts/src/match-model';
 import type { CareerDate, World } from '../../../../packages/contracts/src/types';
 import {
   carriesManagerHistory,
-  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
   SaveCompatibilityError,
-  type CheckpointSchema,
 } from '../../../../packages/contracts/src/versions';
 
 /**
@@ -62,15 +59,6 @@ const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 const isCount = (value: unknown, max = Number.MAX_SAFE_INTEGER): value is number =>
   Number.isSafeInteger(value) && (value as number) >= 0 && (value as number) <= max;
-
-/**
- * The container a world is written in: manager history needs its own, whether or not the full
- * match model is active; otherwise the full-model or the current one (`checkpointSchemaFor`).
- */
-export const checkpointContainerFor = (
-  w: Pick<World, 'managerHistory' | 'matchModel' | 'npcSeason' | 'ownMatches'>,
-): CheckpointSchema =>
-  carriesManagerHistory(w) ? MANAGER_HISTORY_CHECKPOINT_SCHEMA : checkpointSchemaFor(w);
 
 const date = (d: CareerDate | undefined) => (d ? [d.year, d.day] : [0, 0]);
 

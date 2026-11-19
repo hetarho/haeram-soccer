@@ -5,6 +5,7 @@ import {
   envelopeEngine,
   FULL_MODEL_CHECKPOINT_SCHEMA,
   MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+  PLAIN_WORLD_CHECKPOINT_SCHEMA,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
 import { LOAD_CATALOG } from '../../../../packages/catalogs/src/index';
@@ -21,8 +22,7 @@ import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode } from './persistence';
-import { pack, unpack } from './packing';
-import { CAREER, legacyIntegers } from './persistence.testkit';
+import { CAREER } from './persistence.testkit';
 
 // The archive's history, not the match model, is the subject of the two round trips below.
 it('preserves first and second European phases and global standings in a historical checkpoint', async () => {
@@ -34,21 +34,6 @@ it('preserves first and second European phases and global standings in a histori
   });
   expect(w.history[0].europe.find((e) => e.kind === 'ucl')?.secondStandings).toHaveLength(16);
   expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
-  const legacy = pack(w);
-  legacy.standings = legacyIntegers(
-    w.history
-      .flatMap((history) => [
-        history.standings.flat(),
-        ...history.europe.flatMap((europe) => [
-          (europe.standings || []).flat(),
-          (europe.secondStandings || []).flat(),
-        ]),
-      ])
-      .flat(),
-    6,
-  );
-  delete legacy.standingsDeltas;
-  expect(canonical(unpack(legacy))).toBe(canonical(w));
 });
 
 it('roundtrips one transferred league scorer with both real club contributions', async () => {
@@ -82,48 +67,43 @@ describe('own-manager history checkpoints (→SAVE-24)', () => {
     return w;
   }
 
-  it('writes a tracked career in its own container and reads every fact back', async () => {
+  it('writes a tracked career in the plain container and reads every fact back', async () => {
     const w = tracked();
     expect(w.managerHistory!.tenures).toHaveLength(2);
     expect(w.ownMatches.every((m) => m.managerTenure === w.managerHistory!.tenures[0]!.id)).toBe(
       true,
     );
     const raw = await encode(w, 2, 1);
-    expect(JSON.parse(raw).schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(JSON.parse(raw).schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     const loaded = await decode(raw);
-    expect(loaded.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(loaded.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(canonical(loaded.world)).toBe(canonical(w));
-    expect((await checkpoint(w)).envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect((await checkpoint(w)).envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(envelopeEngine(raw)).toBe(w.engine);
   });
 
-  it('keeps an untracked career in its older container with attribution absent', async () => {
+  it('keeps an untracked career in the same container with attribution absent', async () => {
     // A career saved before both features: no manager history and no full model.
     const w = withoutManagerHistory(withoutMatchModel(tracked()));
     const loaded = await decode(await encode(w));
-    expect(loaded.envelope.schema).toBe(CURRENT_CHECKPOINT_SCHEMA);
+    expect(loaded.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(loaded.world).not.toHaveProperty('managerHistory');
     expect(loaded.world.ownMatches.every((m) => !('managerTenure' in m))).toBe(true);
     expect(canonical(loaded.world)).toBe(canonical(w));
   });
 
-  it('is a container an older reader cannot know, and only this one holds the facts', async () => {
-    // Every container before it was read by versions without manager history; they refuse it.
-    expect(MANAGER_HISTORY_CHECKPOINT_SCHEMA).toBeGreaterThan(FULL_MODEL_CHECKPOINT_SCHEMA);
-    const w = tracked(),
-      raw = JSON.parse(await encode(w));
-    for (const schema of [1, CURRENT_CHECKPOINT_SCHEMA, FULL_MODEL_CHECKPOINT_SCHEMA])
+  it('is one container for every career, and any other number is refused as incompatible', async () => {
+    const raw = JSON.parse(await encode(tracked()));
+    for (const schema of [
+      1,
+      CURRENT_CHECKPOINT_SCHEMA,
+      FULL_MODEL_CHECKPOINT_SCHEMA,
+      MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+      PLAIN_WORLD_CHECKPOINT_SCHEMA + 1,
+    ])
       await expect(decode(JSON.stringify({ ...raw, schema }))).rejects.toBeInstanceOf(
         SaveCompatibilityError,
       );
-    const plain = JSON.parse(await encode(withoutManagerHistory(tracked())));
-    await expect(
-      decode(JSON.stringify({ ...plain, schema: MANAGER_HISTORY_CHECKPOINT_SCHEMA })),
-    ).rejects.toBeInstanceOf(SaveCompatibilityError);
-    // A newer one after it is refused before decompression.
-    await expect(
-      decode(JSON.stringify({ ...raw, schema: MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1 })),
-    ).rejects.toBeInstanceOf(SaveCompatibilityError);
   });
 
   it('refuses dangling, foreign or duplicate attribution before activation', () => {

@@ -16,8 +16,7 @@ import type {
   World,
 } from './types';
 import {
-  CURRENT_CHECKPOINT_SCHEMA,
-  FULL_MODEL_CHECKPOINT_SCHEMA,
+  PLAIN_WORLD_CHECKPOINT_SCHEMA,
   SaveCompatibilityError,
   type CheckpointSchema,
 } from './versions';
@@ -107,15 +106,8 @@ export const activeMatchModel = (w: Pick<World, 'matchModel'>): MatchModelRevisi
 /** Whether a world holds anything only the full model writes: its metadata, aggregates or records. */
 export const carriesMatchModel = (w: Pick<World, 'matchModel' | 'npcSeason' | 'ownMatches'>) =>
   !!w.matchModel || !!w.npcSeason || w.ownMatches.some((m) => m.model !== undefined);
-/**
- * The checkpoint container a world is written in (→SAVE-23): a world carrying full-model data needs
- * `FULL_MODEL_CHECKPOINT_SCHEMA`, which an older reader refuses instead of dropping its fields;
- * unactivated worlds keep the current container.
- */
-export const checkpointSchemaFor = (
-  w: Pick<World, 'matchModel' | 'npcSeason' | 'ownMatches'>,
-): CheckpointSchema =>
-  carriesMatchModel(w) ? FULL_MODEL_CHECKPOINT_SCHEMA : CURRENT_CHECKPOINT_SCHEMA;
+/** The checkpoint container every world is written in (→SAVE-2): the plain world, container 5. */
+export const checkpointSchemaFor = (): CheckpointSchema => PLAIN_WORLD_CHECKPOINT_SCHEMA;
 
 const count = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const day = z.number().int().min(0).max(365);
