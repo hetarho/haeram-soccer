@@ -7054,6 +7054,7 @@
     "renewal.guide.summary": "Sous le plancher enregistré, l’offre est refusée. Au-dessus, salaire, division adaptée et ambition, offre plus réputée lors de ce mercato ou du précédent, temps de jeu, âge, loyauté et difficultés financières fixent la probabilité. Le tirage est fixé par joueur, saison et mercato ; après un refus, une nouvelle offre est possible au prochain mercato.",
     "renewal.guide.wage": "Un salaire au-dessus du plancher augmente la probabilité d’acceptation. La demande et le plancher restent ceux enregistrés à l’ouverture.",
     "renewal.guide.staff": "Si les règles de conservation et de finances le permettent, le directeur délégué propose ; le joueur applique le même calcul que pour une offre du propriétaire.",
-    "copy.MatchMaterial.d59195b9a8": "Ce match n’a pas de cartes car il n’a pas été regardé."
+    "copy.MatchMaterial.d59195b9a8": "Ce match n’a pas de cartes car il n’a pas été regardé.",
+    "progression.clockRunning.dimReason": "Cette section est indisponible pendant que le calendrier avance, car les informations du jour ne sont pas encore calculées."
   }
 }

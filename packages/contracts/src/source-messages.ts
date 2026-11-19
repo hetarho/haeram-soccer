@@ -1,5 +1,7 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'progression.clockRunning.dimReason':
+    '자동 진행 중에는 현재 날짜의 정보가 아직 계산되지 않아 이 영역을 볼 수 없습니다.',
   'fans.disposition.title': '팬 성향',
   'fans.disposition.results': '성적파 {percent}% · 리그 경기 결과와 시즌 성과를 중시합니다.',
   'fans.disposition.identity':

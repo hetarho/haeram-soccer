@@ -7051,6 +7051,7 @@
     "renewal.guide.summary": "Below the saved floor is refused. Above it, wages, suitable division and ambition, a higher-reputation bid this window or last, playing time, age, loyalty and distress set the chance. The draw is fixed by player, season and window; a refusal can be approached again next window.",
     "renewal.guide.wage": "Wages above the floor raise acceptance chance. An open talk keeps the demand and floor recorded when it opened.",
     "renewal.guide.staff": "When retention and finance rules permit, the delegated director offers; the player uses the same acceptance calculation as for an owner offer.",
-    "copy.MatchMaterial.d59195b9a8": "This match has no maps because it was not watched."
+    "copy.MatchMaterial.d59195b9a8": "This match has no maps because it was not watched.",
+    "progression.clockRunning.dimReason": "This area is unavailable while the calendar is running because its current-day information is not ready yet."
   }
 }

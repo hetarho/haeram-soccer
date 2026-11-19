@@ -7054,6 +7054,7 @@
     "renewal.guide.summary": "Abaixo do piso salvo, a oferta é recusada. Acima, salário, divisão adequada e ambição, oferta de maior reputação nesta janela ou na anterior, tempo de jogo, idade, lealdade e dificuldades financeiras definem a chance. O sorteio é fixo por jogador, temporada e janela; após recusa, uma nova oferta pode ser feita na próxima janela.",
     "renewal.guide.wage": "Salário acima do piso aumenta a chance de aceitação. A negociação mantém a exigência e o piso registrados na abertura.",
     "renewal.guide.staff": "Se as regras de manutenção e finanças permitirem, o diretor delegado oferece; o jogador usa o mesmo cálculo das ofertas do proprietário.",
-    "copy.MatchMaterial.d59195b9a8": "Esta partida não tem mapas porque não foi assistida."
+    "copy.MatchMaterial.d59195b9a8": "Esta partida não tem mapas porque não foi assistida.",
+    "progression.clockRunning.dimReason": "Esta área fica indisponível enquanto o calendário avança porque as informações do dia atual ainda não foram calculadas."
   }
 }

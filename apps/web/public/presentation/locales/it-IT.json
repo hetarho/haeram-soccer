@@ -7054,6 +7054,7 @@
     "renewal.guide.summary": "Sotto il minimo salvato l’offerta è rifiutata. Sopra, stipendio, divisione adatta e ambizione, offerta più prestigiosa in questa finestra o nella precedente, impiego, età, fedeltà e difficoltà finanziarie determinano la probabilità. Il sorteggio è fisso per giocatore, stagione e finestra; dopo un rifiuto si può riprovare dalla prossima finestra.",
     "renewal.guide.wage": "Uno stipendio sopra il minimo aumenta la probabilità di accettazione. Richiesta e minimo restano quelli registrati all’apertura.",
     "renewal.guide.staff": "Se le regole di permanenza e finanza lo consentono, il direttore delegato offre; il giocatore usa lo stesso calcolo delle offerte del proprietario.",
-    "copy.MatchMaterial.d59195b9a8": "Questa partita non ha mappe perché non è stata guardata."
+    "copy.MatchMaterial.d59195b9a8": "Questa partita non ha mappe perché non è stata guardata.",
+    "progression.clockRunning.dimReason": "Questa sezione non è disponibile mentre il calendario avanza perché le informazioni del giorno corrente non sono ancora state calcolate."
   }
 }

@@ -7051,6 +7051,7 @@
     "renewal.guide.summary": "Onder de opgeslagen ondergrens volgt weigering. Daarboven bepalen loon, passend divisieniveau en ambitie, een bod met meer aanzien deze of vorige periode, speeltijd, leeftijd, trouw en financiële nood de kans. De trekking staat vast per speler, seizoen en transferperiode; na weigering kan het volgende periode opnieuw.",
     "renewal.guide.wage": "Loon boven de ondergrens verhoogt de acceptatiekans. De looneis en ondergrens blijven zoals vastgelegd bij de opening.",
     "renewal.guide.staff": "Als behoudsbeleid en financiën het toelaten, biedt de gedelegeerde directeur; de speler gebruikt dezelfde berekening als bij een bod van de eigenaar.",
-    "copy.MatchMaterial.d59195b9a8": "Deze wedstrijd heeft geen kaarten omdat hij niet is bekeken."
+    "copy.MatchMaterial.d59195b9a8": "Deze wedstrijd heeft geen kaarten omdat hij niet is bekeken.",
+    "progression.clockRunning.dimReason": "Dit onderdeel is niet beschikbaar zolang de kalender loopt, omdat de informatie voor de huidige dag nog niet is berekend."
   }
 }

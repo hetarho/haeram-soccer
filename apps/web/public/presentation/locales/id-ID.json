@@ -7048,6 +7048,7 @@
     "renewal.guide.summary": "Di bawah batas minimum tersimpan, tawaran ditolak. Di atasnya, gaji, divisi yang sesuai dan ambisi, tawaran bereputasi lebih tinggi pada bursa ini atau sebelumnya, waktu bermain, usia, loyalitas dan kesulitan keuangan menentukan peluang. Undian tetap menurut pemain, musim dan bursa; setelah penolakan, tawaran baru bisa diajukan pada bursa berikutnya.",
     "renewal.guide.wage": "Gaji di atas batas minimum meningkatkan peluang penerimaan. Negosiasi tetap memakai permintaan dan batas minimum yang dicatat saat dibuka.",
     "renewal.guide.staff": "Jika kebijakan retensi dan keuangan mengizinkan, direktur yang diberi wewenang menawar; pemain memakai perhitungan yang sama dengan tawaran pemilik.",
-    "copy.MatchMaterial.d59195b9a8": "Pertandingan ini tidak memiliki peta karena tidak ditonton."
+    "copy.MatchMaterial.d59195b9a8": "Pertandingan ini tidak memiliki peta karena tidak ditonton.",
+    "progression.clockRunning.dimReason": "Bagian ini tidak tersedia saat kalender berjalan karena informasi hari ini belum dihitung."
   }
 }

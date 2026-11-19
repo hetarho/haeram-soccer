@@ -7051,6 +7051,7 @@
     "renewal.guide.summary": "Unter der gespeicherten Untergrenze wird abgelehnt. Darüber bestimmen Gehalt, passende Liga und Ehrgeiz, ein angeseheneres Gebot in diesem oder letzten Fenster, Einsatzzeit, Alter, Treue und Finanznot die Chance. Der Zufallswert gilt je Spieler, Saison und Fenster; nach Ablehnung ist ab dem nächsten Fenster ein neues Angebot möglich.",
     "renewal.guide.wage": "Gehalt über der Untergrenze erhöht die Annahmechance. Forderung und Untergrenze bleiben ab Verhandlungsbeginn gespeichert.",
     "renewal.guide.staff": "Erlauben Bindungs- und Finanzregeln das Angebot, bietet der beauftragte Direktor an; der Spieler nutzt dieselbe Annahmeberechnung wie beim Eigentümer.",
-    "copy.MatchMaterial.d59195b9a8": "Dieses Spiel hat keine Karten, weil es nicht angesehen wurde."
+    "copy.MatchMaterial.d59195b9a8": "Dieses Spiel hat keine Karten, weil es nicht angesehen wurde.",
+    "progression.clockRunning.dimReason": "Dieser Bereich ist während des laufenden Kalenders nicht verfügbar, da die Informationen für den aktuellen Tag noch nicht berechnet sind."
   }
 }

@@ -7054,6 +7054,7 @@
     "renewal.guide.summary": "Se rechaza por debajo del mínimo guardado. Por encima, salario, división adecuada y ambición, una puja de mayor reputación en este mercado o el anterior, minutos, edad, lealtad y dificultades económicas determinan la probabilidad. El sorteo queda fijado por jugador, temporada y mercado; tras un rechazo se puede volver a ofrecer en el siguiente mercado.",
     "renewal.guide.wage": "Un salario superior al mínimo aumenta la probabilidad de aceptación. La negociación conserva la demanda y el mínimo de su apertura.",
     "renewal.guide.staff": "Si las políticas de retención y finanzas lo permiten, el director delegado ofrece; el jugador usa el mismo cálculo que ante una oferta del propietario.",
-    "copy.MatchMaterial.d59195b9a8": "Este partido no tiene mapas porque no se vio."
+    "copy.MatchMaterial.d59195b9a8": "Este partido no tiene mapas porque no se vio.",
+    "progression.clockRunning.dimReason": "Esta sección no está disponible mientras avanza el calendario porque aún no se ha calculado la información del día actual."
   }
 }
