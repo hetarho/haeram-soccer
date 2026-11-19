@@ -18,7 +18,7 @@ export type { HelperJob, HelperReply } from './fixtureReplica';
  * is the critical path, and four measured no faster. Below `minCores` the engine worker computes
  * them itself. A helper failing or answering later than `timeoutMs` ends their use for the session.
  */
-export const HELPER_CONFIG = { count: 2, minCores: 2, timeoutMs: 8000 } as const;
+export const HELPER_CONFIG = { count: 2, minCores: 3, timeoutMs: 8000 } as const;
 
 /** The engine worker's end of a helper's channel (a MessagePort in the browser). */
 export interface HelperPort {

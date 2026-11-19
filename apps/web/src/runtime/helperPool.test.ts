@@ -65,8 +65,9 @@ afterEach(() => {
 describe('HelperPool', () => {
   it('enables two helpers only from the configured core threshold', () => {
     expect(HELPER_CONFIG.count).toBe(2);
-    expect(HELPER_CONFIG.minCores).toBe(2);
-    expect([undefined, 1, 2].map((cores) => (cores ?? 0) >= HELPER_CONFIG.minCores)).toEqual([
+    expect(HELPER_CONFIG.minCores).toBe(3);
+    expect([undefined, 1, 2, 3].map((cores) => (cores ?? 0) >= HELPER_CONFIG.minCores)).toEqual([
+      false,
       false,
       false,
       true,
