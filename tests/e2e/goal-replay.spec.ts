@@ -23,9 +23,10 @@ import {
 
 /** The mobile presentation journey's fixture: an early home goal, then more on the current model. */
 function goalWorld() {
-  // The current seeded record opens with a home goal at 3′, then home goals at 69′ and 87′.
-  // scripts/find-goal-seeds.ts verifies all footage, full build-ups and space before the second cue.
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-53' });
+  // The current seeded record opens with a home goal at 5′, then goals at 24′, 29′, 32′, 48′ and
+  // 69′ (re-found for 0.8.13's world). scripts/find-goal-seeds.ts verifies all footage, full
+  // build-ups and space before the second cue.
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-473' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }

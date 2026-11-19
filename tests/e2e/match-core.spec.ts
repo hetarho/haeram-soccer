@@ -367,13 +367,13 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
   // A settled own match is replayed as its record alone: one sample per minute (→WEB-23,
-  // SAVE-23). scripts/find-goal-seeds.ts verifies this exact archive adapter and seek: seven
-  // distinct goal minutes, home goals at 2′ and 8′ first, retaining both halves and repeated goal
-  // crossings (re-found for 0.8.11's division levels, which moved goal-feedback-56's first to 4′).
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-34' });
+  // SAVE-23). scripts/find-goal-seeds.ts verifies this exact archive adapter and seek: four
+  // distinct goal minutes, the visitors' goals at 2′ and 27′ first, retaining both halves and
+  // repeated goal crossings (re-found for 0.8.13's world, in which goal-feedback-34 scores three).
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-156' });
   world.settings!.responsibilities.sales = 'delegated';
   const played = advanceToNextMatch(world)!.record;
-  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 8, 10, 29, 49, 67, 77]);
+  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 27, 54, 80]);
   // The page's own record replay, read the way it presents it.
   const archive = archivePlayback(played);
   const { samples } = presentationSamples(archive.frames);
@@ -440,7 +440,7 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await expect(score).toHaveText(`${played.score.home} : ${played.score.away}`);
   await expect(cue).toHaveCount(0);
   await expect(replay.getByRole('button', { name: '재생', exact: true })).toBeVisible();
-  // Going back before the 8′ goal lets playback cross it again: the minute just before its own.
+  // Going back before the 27′ goal lets playback cross it again: the minute just before its own.
   await scrubber.fill(String(scoredAt(second!) - 1));
   await expect(score).toHaveText(running(first!));
   await closeMatchDetails(page);

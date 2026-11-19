@@ -73,8 +73,8 @@
 | T992 | Post-match material without heat maps, and an unwatched match says why it has none | WEB MATCH ARCH | T991 | todo |
 | T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | todo |
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
-| T994 | Slow view reads wait for a stopped clock | WEB ARCH | - | todo |
-| T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T994 | todo |
+| T994 | Prepare the stopped-clock read boundary | WEB ARCH | T1026 T1027 | todo |
+| T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T1028 | todo |
 | T995 | Manager, staff and discipline places dim while the clock runs | WEB ARCH | T1020 | todo |
 | T996 | The scout's shortlist dims while the clock runs | WEB ARCH | T1020 T995 | todo |
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
@@ -93,6 +93,10 @@
 | T1018 | Season archives older than seven seasons leave memory at save | SAVE ARCH HIST | T1017 | todo |
 | T1022 | Save database measurements and release preparation | ARCH SAVE | T1018 T1012 | todo |
 | T1025 | An unwatched match's analysis and fixture row say why it has no maps | WEB MATCH ARCH | T992 | todo |
+| T1026 | Prepare consumers for stopped-clock reads | WEB ARCH | - | todo |
+| T1027 | Prepare automatic-play view measurement | ARCH | - | todo |
+| T1028 | Activate stopped-clock reads | WEB ARCH | T994 | todo |
+| T1029 | Measure stopped-clock reads | WEB ARCH | T1028 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
