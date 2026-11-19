@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
 | tk19 | ihaelam-ui-MacBookPro | autopilot | 2026-11-19T16:07Z | 2026-11-19T16:27Z | T1038 | gusta-session-start-tk19-9706a3bf | c534b4bb3a1a | 853e43a2919794e4c665f452 |
-| facauto | ihaelam-ui-MacBookPro | pair | 2026-11-19T16:26Z | 2026-11-19T16:35Z | T1035 | gusta-session-start-facauto-7fb6ee3c | cde4562fbef0 | bdd614ebd62a8dd70a0866a2 |
+| facauto | ihaelam-ui-MacBookPro | pair | 2026-11-19T16:26Z | 2026-11-19T16:39Z | - | gusta-session-start-facauto-7fb6ee3c | f36f55b25376 | bdd614ebd62a8dd70a0866a2 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -202,8 +202,10 @@
 |---|---|---|---|---|
 | T1033 | facauto | gusta-session-start-facauto-7fb6ee3c | df1d3ebecf8f | 2026-11-19T16:30Z |
 | T1034 | facauto | gusta-session-start-facauto-7fb6ee3c | 8f5410d55959 | 2026-11-19T16:35Z |
+| T1035 | facauto | gusta-session-start-facauto-7fb6ee3c | f36f55b25376 | 2026-11-19T16:39Z |
 
 ## log
+- 261119 T1035 done
 - 261119 T1034 done
 - 261119 T1033 done
 - 261119 Planning verification pass in 108835 ms: typecheck, lint, format, i18n (12 locales); affected unit selection empty for spec-only changes. Spec lint has one pre-existing warning. Browser acceptance remains host-owned.
@@ -223,4 +225,3 @@
 - 261119 T1016 done
 - 261119 T1015 done
 - 261119 T1014 done
-- 261119 T1013 done
