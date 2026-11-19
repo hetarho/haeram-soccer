@@ -78,6 +78,8 @@ import {
 import { transferWindow } from '../../../../../../packages/engine/src/transfer-window';
 import { buildOf, cardOf } from '../../../../../../packages/engine/src/build';
 import { Dialog } from '../../../shared/ui/Dialog';
+import { RunningDimmer } from '../../../shared/ui/RunningDimmer';
+import { useStoppedRead } from '../../../shared/lib/useStoppedRead';
 import { OvrBadge } from '../../../entities/player';
 import { positionsLabel } from '../../../entities/player';
 import {
@@ -469,27 +471,28 @@ export function ManagerMarket({
   useTextLocale();
   const v = state.view!,
     w = v.world,
+    managers = useStoppedRead('managers'),
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [hiring, setHiring] = useTaskState<string | undefined>(w.id, 'manager-hiring', undefined),
     [term, setTerm] = useTaskState<ContractTerm>(w.id, 'manager-hire-term', 1);
   const disabled = useGameState(gameActionsBlocked);
-  if (!v.managers) return null;
+  if (!managers) return <RunningDimmer>{null}</RunningDimmer>;
   const format = (value: bigint | string) => <Money value={value} code={c.country} year={w.year} />;
   // Replacing a contracted manager pays him 25% of his wage per season left; an interim leaves
   // freely.
   const payoff = BigInt(managerPayoff(w));
-  const outlay = (candidate: NonNullable<typeof v.managers>[number]) =>
+  const outlay = (candidate: NonNullable<typeof managers>[number]) =>
     BigInt(candidate.fee) +
     BigInt(candidate.compensation ?? '0') +
     BigInt(candidate.coachingRelease ?? '0') +
     payoff;
-  const chosen = v.managers.find((candidate) => candidate.id === hiring);
-  const free = v.managers.filter(
+  const chosen = managers.find((candidate) => candidate.id === hiring);
+  const free = managers.filter(
       (candidate) => candidate.source === 'free' || candidate.source === 'internal',
     ),
-    others = v.managers.filter((candidate) => candidate.source === 'club');
-  const card = (candidate: NonNullable<typeof v.managers>[number]) => (
+    others = managers.filter((candidate) => candidate.source === 'club');
+  const card = (candidate: NonNullable<typeof managers>[number]) => (
     <article data-surface="panel" className={s.card} key={candidate.id}>
       <div className={s.personHead}>
         <OvrBadge
@@ -607,146 +610,153 @@ export function ManagerMarket({
     </>
   );
   return (
-    <>
-      {localizeValue(
-        inline ? (
-          <div className={s.inlineMarket} aria-label={displayMessage('copy.Rich.3d2202fddf')}>
-            {localizeValue(lists)}
-          </div>
-        ) : (
-          <Dialog
-            label={localizeValue(
-              m.interim
-                ? sourceMessage('copy.ClubStaff.10451c4909')
-                : sourceMessage('copy.influences.4e0080bed2'),
-            )}
-            wide
-            onClose={onClose}
-          >
-            {localizeValue(lists)}
-          </Dialog>
-        ),
-      )}
-      {localizeValue(
-        chosen && (
-          <Dialog
-            label={displayMessage('copy.Rich.fdb9dc19b7')}
-            onClose={() => {
-              setHiring(undefined);
-              onCancel?.();
-            }}
-          >
-            <h2>{richMessage('copy.Rich.4a24e4c4d9', { p0: chosen.name })}</h2>
-            <ul className={s.consequences}>
-              <li>
-                {richMessage('copy.Rich.9130b27af6', {
-                  p0: <b>{localizeValue(format(outlay(chosen)))}</b>,
-                  p1: format(chosen.fee),
-                  p2: chosen.compensation && (
-                    <>{richMessage('copy.Rich.5ef1f043f3', { p0: format(chosen.compensation) })}</>
-                  ),
-                  p3: chosen.coachingRelease && (
-                    <>
-                      {richMessage('copy.Rich.73439e559e', { p0: format(chosen.coachingRelease) })}
-                    </>
-                  ),
-                  p4: payoff > 0n && (
-                    <>{richMessage('copy.Rich.a489973b55', { p0: format(payoff) })}</>
-                  ),
-                })}
-              </li>
-              {localizeValue(chosen.person && <li>{richMessage('copy.Rich.88d000783a')}</li>)}
-              {localizeValue(
-                chosen.club && !chosen.person && (
-                  <li>
-                    {richMessage('copy.Rich.479539aad2', {
-                      p0: <ClubLink w={w} id={chosen.club} />,
-                    })}
-                  </li>
-                ),
-              )}
-              <li>
-                {richMessage('copy.Rich.027ad1b267', {
-                  p0: <b>{localizeValue(chosen.ability)}</b>,
-                  p1: ' ',
-                  p2: <b>{localizeValue(chosen.potential ?? chosen.ability)}</b>,
-                  p3: personAge(w, chosen.born),
-                  p4:
-                    (chosen.potential ?? 0) > chosen.ability
-                      ? sourceMessage('copy.Rich.7f6873b93c')
-                      : '',
-                })}
-              </li>
-              <li>
-                {richMessage('copy.Rich.65a5c3a480', {
-                  p0: m.name,
-                  p1: !m.interim && m.style ? sourceMessage('copy.Rich.7b582ac330') : '',
-                })}
-              </li>
-              <li>
-                {richMessage('copy.Rich.ee201ac20b', {
-                  p0: <b>{localizeValue(STYLE_INFO[chosen.style].label)}</b>,
-                  p1: ' ',
-                  p2: [...STYLE_INFO[chosen.style].pros, ...STYLE_INFO[chosen.style].cons].join(
-                    ' · ',
-                  ),
-                })}
-              </li>
-              <li>
-                <TraitNote trait={chosen.trait} />
-              </li>
-              <li>
-                {richMessage('copy.Rich.699ba564b7', {
-                  p0: tacticLabel[w.tactic],
-                  p1: <b>{localizeValue(tacticLabel[chosen.philosophy])}</b>,
-                })}
-              </li>
-              <li>
-                {richMessage('copy.Rich.a6d26aef12', {
-                  p0: format(chosen.wage),
-                  p1: contractLine(w.year + term, w.year),
-                  p2: STYLE_INFO[chosen.style].term === 1 && sourceMessage('copy.Rich.e6f9de0b3b'),
-                  p3: (
-                    <ManagerHireTerm
-                      w={w}
-                      candidate={chosen}
-                      term={term}
-                      disabled={disabled}
-                      onChange={setTerm}
-                    />
-                  ),
-                })}
-              </li>
-            </ul>
-            <div className={s.actions}>
-              <button
-                onClick={() => {
-                  setHiring(undefined);
-                  onCancel?.();
-                }}
-              >
-                {richMessage('common.cancel')}
-              </button>
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={disabled}
-                onClick={async () => {
-                  const reply = await client.command({ type: 'hire', id: chosen.id, term });
-                  if (reply?.ok) {
-                    setHiring(undefined);
-                    onClose();
-                  }
-                }}
-              >
-                {richMessage('copy.Rich.b3d797b51d')}
-              </button>
+    <RunningDimmer>
+      <>
+        {localizeValue(
+          inline ? (
+            <div className={s.inlineMarket} aria-label={displayMessage('copy.Rich.3d2202fddf')}>
+              {localizeValue(lists)}
             </div>
-            {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
-          </Dialog>
-        ),
-      )}
-    </>
+          ) : (
+            <Dialog
+              label={localizeValue(
+                m.interim
+                  ? sourceMessage('copy.ClubStaff.10451c4909')
+                  : sourceMessage('copy.influences.4e0080bed2'),
+              )}
+              wide
+              onClose={onClose}
+            >
+              {localizeValue(lists)}
+            </Dialog>
+          ),
+        )}
+        {localizeValue(
+          chosen && (
+            <Dialog
+              label={displayMessage('copy.Rich.fdb9dc19b7')}
+              onClose={() => {
+                setHiring(undefined);
+                onCancel?.();
+              }}
+            >
+              <h2>{richMessage('copy.Rich.4a24e4c4d9', { p0: chosen.name })}</h2>
+              <ul className={s.consequences}>
+                <li>
+                  {richMessage('copy.Rich.9130b27af6', {
+                    p0: <b>{localizeValue(format(outlay(chosen)))}</b>,
+                    p1: format(chosen.fee),
+                    p2: chosen.compensation && (
+                      <>
+                        {richMessage('copy.Rich.5ef1f043f3', { p0: format(chosen.compensation) })}
+                      </>
+                    ),
+                    p3: chosen.coachingRelease && (
+                      <>
+                        {richMessage('copy.Rich.73439e559e', {
+                          p0: format(chosen.coachingRelease),
+                        })}
+                      </>
+                    ),
+                    p4: payoff > 0n && (
+                      <>{richMessage('copy.Rich.a489973b55', { p0: format(payoff) })}</>
+                    ),
+                  })}
+                </li>
+                {localizeValue(chosen.person && <li>{richMessage('copy.Rich.88d000783a')}</li>)}
+                {localizeValue(
+                  chosen.club && !chosen.person && (
+                    <li>
+                      {richMessage('copy.Rich.479539aad2', {
+                        p0: <ClubLink w={w} id={chosen.club} />,
+                      })}
+                    </li>
+                  ),
+                )}
+                <li>
+                  {richMessage('copy.Rich.027ad1b267', {
+                    p0: <b>{localizeValue(chosen.ability)}</b>,
+                    p1: ' ',
+                    p2: <b>{localizeValue(chosen.potential ?? chosen.ability)}</b>,
+                    p3: personAge(w, chosen.born),
+                    p4:
+                      (chosen.potential ?? 0) > chosen.ability
+                        ? sourceMessage('copy.Rich.7f6873b93c')
+                        : '',
+                  })}
+                </li>
+                <li>
+                  {richMessage('copy.Rich.65a5c3a480', {
+                    p0: m.name,
+                    p1: !m.interim && m.style ? sourceMessage('copy.Rich.7b582ac330') : '',
+                  })}
+                </li>
+                <li>
+                  {richMessage('copy.Rich.ee201ac20b', {
+                    p0: <b>{localizeValue(STYLE_INFO[chosen.style].label)}</b>,
+                    p1: ' ',
+                    p2: [...STYLE_INFO[chosen.style].pros, ...STYLE_INFO[chosen.style].cons].join(
+                      ' · ',
+                    ),
+                  })}
+                </li>
+                <li>
+                  <TraitNote trait={chosen.trait} />
+                </li>
+                <li>
+                  {richMessage('copy.Rich.699ba564b7', {
+                    p0: tacticLabel[w.tactic],
+                    p1: <b>{localizeValue(tacticLabel[chosen.philosophy])}</b>,
+                  })}
+                </li>
+                <li>
+                  {richMessage('copy.Rich.a6d26aef12', {
+                    p0: format(chosen.wage),
+                    p1: contractLine(w.year + term, w.year),
+                    p2:
+                      STYLE_INFO[chosen.style].term === 1 && sourceMessage('copy.Rich.e6f9de0b3b'),
+                    p3: (
+                      <ManagerHireTerm
+                        w={w}
+                        candidate={chosen}
+                        term={term}
+                        disabled={disabled}
+                        onChange={setTerm}
+                      />
+                    ),
+                  })}
+                </li>
+              </ul>
+              <div className={s.actions}>
+                <button
+                  onClick={() => {
+                    setHiring(undefined);
+                    onCancel?.();
+                  }}
+                >
+                  {richMessage('common.cancel')}
+                </button>
+                <button
+                  data-ui="primary"
+                  className={s.primary}
+                  disabled={disabled}
+                  onClick={async () => {
+                    const reply = await client.command({ type: 'hire', id: chosen.id, term });
+                    if (reply?.ok) {
+                      setHiring(undefined);
+                      onClose();
+                    }
+                  }}
+                >
+                  {richMessage('copy.Rich.b3d797b51d')}
+                </button>
+              </div>
+              {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
+            </Dialog>
+          ),
+        )}
+      </>
+    </RunningDimmer>
   );
 }
 /**
