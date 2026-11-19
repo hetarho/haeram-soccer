@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
 | sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T04:31Z | 2026-11-19T05:33Z | T1007 | gusta-session-start-sv19-0cc2a73b | 42f92af25d3b | ea1a0db8eec814a3c131d34b |
-| x10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T05:52Z | 2026-11-19T05:53Z | T1027 | gusta-session-start-x10-d3a275d5 | 5c9e970ea804 | fa6c66b81ed935a24bc56d8b |
+| x10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T05:52Z | 2026-11-19T05:55Z | - | gusta-session-start-x10-d3a275d5 | 5c9e970ea804 | fa6c66b81ed935a24bc56d8b |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -257,8 +257,10 @@
 | T1006 | sv19 | gusta-session-start-sv19-0cc2a73b | a7e1b7b22aa1 | 2026-11-19T05:32Z |
 | T993 | x10 | gusta-session-start-x10-d3a275d5 | b6af87d6f7c0 | 2026-11-19T05:35Z |
 | T1026 | x10 | gusta-session-start-x10-d3a275d5 | 155b2d17b44d | 2026-11-19T05:50Z |
+| T1027 | x10 | gusta-session-start-x10-d3a275d5 | 5c9e970ea804 | 2026-11-19T05:55Z |
 
 ## log
+- 261119 T1027 done
 - 261119 T1026 done
 - 261119 superseded by the x10 unit's decision 67384b15: consumers and the measurement split into T1026/T1027, T994 keeps its five touches
 - 261119 T993 done
@@ -278,4 +280,3 @@
 - 261119 plan save-storage: ARCH r51 SAVE r72 WEB r224 KIT r11, T999–T1018 T1022 pushed 2edc3dbf0
 - 261119 gusta-create-task x10 cost levers: T989-T998 T1019-T1021
 - 261119 gusta-update-ssot MATCH r69 HIST r28 WEB r223 ARCH r50 SAVE r71 (x10 cost levers D2 D4 D5 D8, heat maps removed)
-- 261119 plan x10-cost-levers start
