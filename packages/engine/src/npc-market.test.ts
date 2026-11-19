@@ -333,6 +333,8 @@ describe('isolated NPC transfer windows', () => {
   it('buys a needed keeper at its accepted bid, settles both books and preserves one live identity', () => {
     const { w, seller, buyer, other } = fixture();
     const p = listedKeeper(w, seller);
+    p.graduate = true;
+    p.joined = w.year - 2;
     const before = structuredClone(p),
       untouched = w.squads![other.id];
     missingKeeper(w, buyer);
@@ -351,6 +353,8 @@ describe('isolated NPC transfer windows', () => {
     expect(BigInt(paid)).toBeLessThan(BigInt(value));
     expect(locations(w, p.id)).toEqual([buyer.id]);
     const live = w.squads![buyer.id]!.find((q) => q.id === p.id)!;
+    expect(live.joined).toBe(w.year);
+    expect(live.graduate).toBeUndefined();
     expect(live.attrs).toEqual(before.attrs);
     expect(live.name).toBe(before.name);
     expect(live.born).toBe(before.born);

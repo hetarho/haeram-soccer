@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import * as finance from './finance';
-import { LINE_MINIMUM } from './player';
+import { AGEING, ageingCurve, LINE_MINIMUM } from './player';
 import { activePlayers, clubOf, formationOf, lineOfPlayer, slotOvr } from './player-state';
 import { recruitmentFit, type TransferOffer } from './recruitment';
 import { scoutVerdict, VERDICT_CONFIG } from './scout-verdict';
@@ -17,12 +17,13 @@ function world() {
   w.cash = '999999999999';
   return w;
 }
-/** A fee-bearing candidate aged 26 with no growth room: no prospect, no decline, no free agent. */
+/** A fee-bearing candidate aged at most 26, before his decline, with no growth room: no prospect, no decline, no free agent. */
 function candidate(w: ReturnType<typeof world>): TransferOffer {
   const offer = structuredClone(
     transferOffers(w).find((o) => o.available && !o.freeAgent && !o.player.loanUntil)!,
   );
-  offer.player.born = w.year - 26;
+  const declineAge = AGEING.pace.declineFrom + ageingCurve(w.seed, offer.player.id).shift;
+  offer.player.born = w.year - Math.min(26, declineAge - 1);
   offer.player.potential = 30;
   return offer;
 }
@@ -122,17 +123,16 @@ describe("the scout's verdict (→CLUB-47)", () => {
     revenue.mockRestore();
 
     const old = structuredClone(offer);
-    old.player.born = w.year - VERDICT_CONFIG.declineAge;
+    const declineAge = AGEING.pace.declineFrom + ageingCurve(w.seed, old.player.id).shift;
+    old.player.born = w.year - declineAge;
     w.cash = '0';
     const against = scoutVerdict(w, old, fitAt(w, old, 58, 60, { arrival: 55 }))!;
     expect(against.cons).toEqual([
       '적응 전 55 · 적응 후 58',
-      `${VERDICT_CONFIG.declineAge}세 · 속도·체력이 해마다 떨어지는 나이`,
+      `${declineAge}세 · 속도·체력이 해마다 떨어지는 나이`,
     ]);
     const settled = scoutVerdict(w, old, fitAt(w, old, 61, 60))!;
-    expect(settled.cons[0]).toBe(
-      `${VERDICT_CONFIG.declineAge}세 · 속도·체력이 해마다 떨어지는 나이`,
-    );
+    expect(settled.cons[0]).toBe(`${declineAge}세 · 속도·체력이 해마다 떨어지는 나이`);
     expect(settled.cons[1]).toMatch(/단장 판단/);
 
     const prospect = structuredClone(offer);

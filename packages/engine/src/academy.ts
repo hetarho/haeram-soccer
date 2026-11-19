@@ -20,7 +20,7 @@ import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { isDelegated } from './responsibilities';
 import { debutRule, directionOf, directionOption, releaseRule } from './direction';
-import { insolvencyStop } from './delegation';
+import { insolvencyStop, warnCashFloor } from './delegation';
 import { academyFacilityTerms } from './facilities';
 import { intakePotential } from './owner-traits';
 import { WARTIME } from './season-years';
@@ -379,6 +379,7 @@ export function promoteYouth(w: World, id: string): void {
   player.graduate = true;
   joinClub(player, 'academy', w.year);
   w.players.push(player);
+  if (isDelegated(w, 'academy')) warnCashFloor(w);
   movePerson(w, player, w.playerClub, true);
   addEvent(
     w,

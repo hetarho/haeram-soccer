@@ -184,7 +184,10 @@ export function retainedPromiseCareer() {
       expect(w.people![free.player.id].club).toBeUndefined();
       expect(recruitmentPreview(w, free)).toMatchObject({ eligible: true, affordable: true });
       // The original zero-reserve conflict remains: the owner explicitly signs the fee-free keeper.
-      expect(signingVerdict(w, free.player, free.fee, 'short').ok).toBe(false);
+      expect(
+        signingVerdict(w, free.player, free.fee, 'short', undefined, { freeAgent: free.freeAgent })
+          .ok,
+      ).toBe(false);
       operate(w, { type: 'recruit', target: free.target });
       w.calendar = { day: transferWindowDays(w.year).winterClose + 1 };
       w.round = Math.floor(w.calendar.day / 7);

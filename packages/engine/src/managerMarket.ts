@@ -1,5 +1,6 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { hasOwner } from './owner';
+import { leaguePoints } from './league-fixtures';
 import { cancelPromises } from './promises';
 import {
   closeEmployment,
@@ -598,7 +599,7 @@ export function refreshManagerMarket(w: World, relegated?: Set<string>) {
       .filter((entry) => entry.row)
       .sort(
         (a, b) =>
-          a.row.points - b.row.points ||
+          leaguePoints(a.row) - leaguePoints(b.row) ||
           a.row.gf - a.row.ga - (b.row.gf - b.row.ga) ||
           (a.club.id < b.club.id ? -1 : 1),
       );

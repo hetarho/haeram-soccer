@@ -1,3 +1,4 @@
+import { contractRenewalReads } from './contractRenewals';
 import { projectWorldFacts } from './worldProjection';
 import { disciplineNames } from './disciplineNames';
 import { adoptSquads } from './squadActivation';
@@ -462,6 +463,7 @@ export class Host {
         ...projected,
         clubs: w.clubs.map((club) => ({ ...club, rating: rating(w, club) })),
         disciplineNames: disciplineNames(w),
+        renewalChances: contractRenewalReads(w),
         // Browser projections omit `people`; resolving names there would regenerate old identities.
         nextOpponentLineup:
           next && opponent

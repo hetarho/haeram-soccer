@@ -10,6 +10,7 @@ import { activeTrainingFocus } from '../../../../../packages/engine/src/training
 import { seasonDate } from '../../../../../packages/engine/src/calendar';
 import { activePlayers, clubOf } from '../../../../../packages/engine/src/player-state';
 import { tacticLabel } from '../../../../../packages/engine/src/tactics';
+import { leaguePoints } from '../../../../../packages/engine/src/league-fixtures';
 import { compactMoney, number } from '../../presentation/format';
 import { orderIds, ownLeagueIds } from '../../entities/league';
 import { STADIUM_STEPS } from '../../../../../packages/engine/src/facilities';
@@ -193,8 +194,8 @@ export function describeOutcome(
         p0: b.won - a.won,
         p1: b.drawn - a.drawn,
         p2: b.lost - a.lost,
-        p3: a.points,
-        p4: b.points,
+        p3: leaguePoints(a),
+        p4: leaguePoints(b),
       }),
     });
   compare(

@@ -5,6 +5,7 @@ import {
   affordableLevel,
   bidsOnDay,
   compareSellDown,
+  NPC_BID_FLOW,
   NPC_MARKET,
   npcBidFee,
   npcMarket,
@@ -18,6 +19,8 @@ import {
   type SellDownRow,
 } from './npc-market';
 import { foundSquads } from './persisted-squads';
+import { returnLoan } from './npc-continuity';
+import { retainPerson } from './person-careers';
 import { lineOf } from './player';
 import { formationOf, slotOvr } from './player-state';
 import { clubStyle } from './tactics';
@@ -31,7 +34,8 @@ import {
 } from './world';
 import { worldMarketFixture } from './world-market.testkit';
 import { marketValueAt, marketWageAt } from './market-prices';
-import { npcWageBill, npcWageBudget, npcWageLimit } from './books';
+import * as marketPrices from './market-prices';
+import { npcFixedCosts, npcWageBill, npcWageBudget, npcWageLimit } from './books';
 import { operatingExpensesAt } from './finance';
 import { npcSaleContext, saleShare } from './sale-answer';
 import { npcTermsContext, termsChance } from './personal-terms';
@@ -186,6 +190,18 @@ function observe(act: () => void) {
   return seen;
 }
 
+function observeBids(act: () => void) {
+  const seen: Parameters<NonNullable<typeof NPC_BID_FLOW.observe>>[0][] = [];
+  const before = NPC_BID_FLOW.observe;
+  NPC_BID_FLOW.observe = (bid) => seen.push(bid);
+  try {
+    act();
+  } finally {
+    NPC_BID_FLOW.observe = before;
+  }
+  return seen;
+}
+
 describe('the pull market (→WORLD-16)', () => {
   it('buys an unlisted starter at a bid that reaches the reservation, and not below it', () => {
     for (const [bid, sale, moves] of [
@@ -198,7 +214,16 @@ describe('the pull market (→WORLD-16)', () => {
       expect(startingSquad(w, seller)).toContain(p);
       draws.bid = bid;
       draws.sale = sale;
-      const seen = observe(() => npcMarket(w));
+      let seen: ReturnType<typeof observe> = [];
+      const bids = observeBids(() => {
+        seen = observe(() => npcMarket(w));
+      });
+      expect(bids).toContainEqual({
+        from: { id: seller.id, country: seller.country, tier: seller.tier },
+        to: { id: buyer.id, country: buyer.country, tier: buyer.tier },
+        playerId: p.id,
+        outcome: moves ? 'completed' : 'seller-refused',
+      });
       expect(at(w, p.id)).toEqual([moves ? buyer.id : seller.id]);
       if (moves) {
         expect(seen).toEqual([
@@ -222,6 +247,25 @@ describe('the pull market (→WORLD-16)', () => {
     const seen = observe(() => npcMarket(w));
     expect(at(w, p.id)).toEqual([buyer.id]);
     expect(seen[0]!.move.fee).toBe(asking.toString());
+  });
+
+  it('reports an unaffordable seller counter as the buyer refusing the counted bid', () => {
+    const { w, seller, buyer } = fixture();
+    const p = target(w, seller);
+    const asking = modestBuyer(w, buyer, p, seller);
+    const wage = BigInt(marketWageAt('ENG', w.year, buyer.tier, p));
+    const affordable = npcWageBill(w, buyer) + wage + (asking * 9n) / 10n;
+    buyer.books!.debt = (npcWageLimit(w, buyer)! - affordable).toString();
+    draws.bid = 0.6;
+    draws.sale = 1;
+    const bids = observeBids(() => npcMarket(w));
+    expect(bids).toContainEqual(
+      expect.objectContaining({
+        playerId: p.id,
+        outcome: 'buyer-refused',
+      }),
+    );
+    expect(at(w, p.id)).toEqual([seller.id]);
   });
 
   it('lets the player refuse by his CLUB-53 draw, and then nothing moves', () => {
@@ -630,13 +674,28 @@ describe('asking again in a window (→CLUB-52/53)', () => {
     draws.keys.length = 0;
     const [first, second] = npcMarketDays(w.year)[0]!;
     expect(bidsOnDay(npcMarketCaps(w.year).bids, 1, 3)).toBe(1);
-    // The first day's one bid goes to him blind, and he refuses.
-    settle(w, [first!]);
-    expect(asked('npc-sale', buyer, best)).toHaveLength(1);
-    expect(asked('npc-sale', buyer, next)).toEqual([]);
-    expect(at(w, best.id)).toEqual([seller.id]);
-    // The second day reads his answer again, skips him, and its one bid still buys the next keeper.
-    settle(w, [second!]);
+    const bids = observeBids(() => {
+      // The first day's one bid goes to him blind, and he refuses.
+      settle(w, [first!]);
+      expect(asked('npc-sale', buyer, best)).toHaveLength(1);
+      expect(asked('npc-sale', buyer, next)).toEqual([]);
+      expect(at(w, best.id)).toEqual([seller.id]);
+      // The second day skips that refusal and spends its bid on the next keeper.
+      settle(w, [second!]);
+    });
+    expect(
+      bids.flatMap((bid) =>
+        bid.to.id === buyer.id ? [[bid.from.id, bid.playerId, bid.outcome]] : [],
+      ),
+    ).toEqual([
+      [seller.id, best.id, 'player-refused'],
+      [seller.id, next.id, 'completed'],
+    ]);
+    // Only the counted first-day bid is stored. Previewing the refusal on day two adds no row.
+    expect(best.renewalBids).toEqual([
+      { club: seller.id, year: w.year, window: 'summer', reputation: buyer.reputation },
+    ]);
+    expect(next.renewalBids).toBeUndefined(); // The completed move begins a new stint.
     expect(asked('npc-sale', buyer, best)).toHaveLength(2);
     expect(asked('npc-sale', buyer, next)).toHaveLength(1);
     expect(at(w, best.id)).toEqual([seller.id]);
@@ -754,5 +813,194 @@ describe('targets by value, means from the wage budget, paid moves down (→WORL
         expect(at(w, p.id)).toEqual([seller.id]);
       }
     }
+  });
+});
+
+describe('loan returns preserve each club’s recorded origin', () => {
+  it.each([true, false])(
+    'keeps the borrower row when its own academy flag is %s',
+    (ownGraduate) => {
+      const { w, seller } = fixture(2000);
+      const p = target(w, seller);
+      w.squads![seller.id] = w.squads![seller.id]!.filter((q) => q.id !== p.id);
+      p.joined = w.year;
+      if (ownGraduate) p.graduate = true;
+      p.loanUntil = w.year + 1;
+      w.players.push(p);
+      w.playerRecords = {
+        [p.id]: {
+          moves: [],
+          loan: {
+            club: seller.id,
+            until: w.year + 1,
+            wage: p.wage,
+            contractUntil: w.year + 2,
+            year: w.year,
+            joined: w.year - 4,
+            ...(!ownGraduate ? { graduate: true } : {}),
+          },
+        },
+      };
+      returnNpcLoans(w);
+      expect(w.players.find((q) => q.id === p.id)).toMatchObject({
+        status: 'sold',
+        joined: w.year,
+      });
+      expect(p.graduate).toBe(ownGraduate ? true : undefined);
+      const returned = w.squads![seller.id]!.find((q) => q.id === p.id)!;
+      expect(returned.joined).toBe(w.year - 4);
+      expect(returned.graduate).toBe(ownGraduate ? undefined : true);
+    },
+  );
+
+  it.each(['recorded-graduate', 'recorded-stint', 'unknown', 'owned-parent'])(
+    'rollover fallback restores only known parent facts: %s',
+    (scenario) => {
+      const { w, seller } = fixture();
+      const ownedParent = scenario === 'owned-parent';
+      const p = target(w, seller, { joined: w.year, graduate: true });
+      const parent = ownedParent ? w.playerClub : seller.id;
+      if (ownedParent) {
+        w.players.push({ ...structuredClone(p), status: 'sold', joined: w.year - 5 });
+        delete p.graduate;
+      } else {
+        w.squads![seller.id] = w.squads![seller.id]!.filter((q) => q.id !== p.id);
+        w.players.push(p);
+      }
+      retainPerson(w, p, ownedParent ? seller.id : w.playerClub).loan = {
+        club: parent,
+        until: w.year + 1,
+      };
+      p.loanUntil = w.year + 1;
+      if (scenario.startsWith('recorded'))
+        w.playerRecords = {
+          [p.id]: {
+            moves: [],
+            loan: {
+              club: parent,
+              until: w.year + 1,
+              wage: p.wage,
+              contractUntil: w.year + 2,
+              year: w.year,
+              joined: w.year - 4,
+              ...(scenario === 'recorded-graduate' ? { graduate: true as const } : {}),
+            },
+          },
+        };
+      const identity = structuredClone({ id: p.id, name: p.name, born: p.born, attrs: p.attrs });
+      returnLoan(w, p);
+      const returned = ownedParent
+        ? w.players.find((q) => q.id === p.id)!
+        : w.squads![parent]!.find((q) => q.id === p.id)!;
+      expect(returned).toMatchObject(identity);
+      expect(returned.joined).toBe(
+        ownedParent ? w.year - 5 : scenario === 'unknown' ? undefined : w.year - 4,
+      );
+      expect(returned.graduate).toBe(
+        ownedParent || scenario === 'recorded-graduate' ? true : undefined,
+      );
+      if (!ownedParent) {
+        expect(w.players.find((q) => q.id === p.id)).toBe(p);
+        expect(p).toMatchObject({ ...identity, status: 'sold', joined: w.year, graduate: true });
+        expect(returned).not.toBe(p);
+      }
+    },
+  );
+
+  it('resumes an owned parent’s recorded stint for an old loan without people or optional facts', () => {
+    const { w, seller } = fixture();
+    const p = target(w, seller, { joined: w.year, graduate: undefined });
+    const prior = structuredClone(p);
+    prior.status = 'sold';
+    prior.joined = w.year - 5;
+    prior.graduate = true;
+    w.players.push(prior);
+    delete w.people;
+    w.playerRecords = {
+      [p.id]: {
+        moves: [],
+        loan: {
+          club: w.playerClub,
+          until: w.year + 1,
+          wage: p.wage,
+          contractUntil: w.year + 2,
+          year: w.year,
+        },
+      },
+    };
+    returnNpcLoans(w);
+    expect(w.players.find((q) => q.id === p.id)).toMatchObject({
+      status: 'active',
+      joined: w.year - 5,
+      graduate: true,
+    });
+    expect(w.squads![seller.id]!.some((q) => q.id === p.id)).toBe(false);
+  });
+});
+
+describe('a young target’s expected gain (→WORLD-16)', () => {
+  it.each([20, 25])(
+    'ranks a lower-division player aged %i at equal current gain and cost',
+    (age) => {
+      const { w, seller, buyer } = fixture();
+      for (const q of w.squads![seller.id]!.filter((q) => q.position === 'GK').slice(0, 2)) {
+        const weak = { ...structuredClone(q), id: `weak-${q.id}` };
+        for (const a of ATTRIBUTES) weak.attrs[a] = 55;
+        w.squads![buyer.id]!.push(weak);
+      }
+      buyer.books!.openingIncome = npcWageBill(w, buyer).toString();
+      buyer.levels = { academy: 3, ground: 3, coaching: 3 };
+      invalidateNpcSquad(w, buyer.id);
+      const lower = secondSeller(w, seller, 1);
+      // Other clubs have no keeper upgrade to pursue; the buyer has a slot need, not a short line.
+      target(w, seller, { retiring: w.year }, 90);
+      const older = keeperAt(w, lower, 'a-older-keeper', 75, { born: w.year - 26 });
+      const prospect = keeperAt(w, lower, 'z-prospect-keeper', 75, {
+        born: w.year - age,
+        potential: 95,
+      });
+      const ids = new Set([older.id, prospect.id]);
+      const valueAt = marketPrices.marketValueAt,
+        wageAt = marketPrices.marketWageAt;
+      const value = vi
+        .spyOn(marketPrices, 'marketValueAt')
+        .mockImplementation((...args) => (ids.has(args[3].id) ? '1000' : valueAt(...args)));
+      const wage = vi
+        .spyOn(marketPrices, 'marketWageAt')
+        .mockImplementation((...args) => (ids.has(args[3].id) ? '1000' : wageAt(...args)));
+      try {
+        const bids = observeBids(() => npcMarket(w)).filter((bid) => bid.to.id === buyer.id);
+        expect(bids[0]).toMatchObject({
+          playerId: age === 20 ? prospect.id : older.id,
+          outcome: 'completed',
+        });
+      } finally {
+        value.mockRestore();
+        wage.mockRestore();
+      }
+    },
+  );
+});
+
+describe('distress on the real NPC market path', () => {
+  it('lists its most valuable player under forced sales even within the funded envelope', () => {
+    const { w, seller, buyer } = fixture();
+    const p = target(w, seller, {}, 90);
+    seller.books!.distress = { stage: 2 };
+    seller.books!.cash = '0';
+    seller.books!.debt = (npcFixedCosts(w, seller) * 2n).toString();
+    seller.books!.openingIncome = '999999999999';
+    expect(npcWageBill(w, seller)).toBeLessThan(npcWageLimit(w, seller)!);
+    const moves = observe(() => npcMarket(w));
+    expect(at(w, p.id)).toEqual([buyer.id]);
+    expect(moves.find((m) => m.id === p.id)?.reason).toBe('forced-sale');
+  });
+  it('places no fee or loan bids when its buyer enters stage 2', () => {
+    const { w, seller, buyer } = fixture();
+    const p = target(w, seller);
+    buyer.books!.distress = { stage: 2 };
+    const bids = observeBids(() => npcMarket(w));
+    expect(bids.filter((b) => b.to.id === buyer.id)).toHaveLength(0);
+    expect(at(w, p.id)).toEqual([seller.id]);
   });
 });

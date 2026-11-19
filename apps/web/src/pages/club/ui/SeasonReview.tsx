@@ -5,9 +5,10 @@ import { useMemo, useState, type PointerEvent } from 'react';
 import { ClubCrest } from '../../../entities/club';
 import type { World } from '../../../../../../packages/contracts/src/types';
 import { clubOf, ownSeasons } from '../../../../../../packages/engine/src/player-state';
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import { number, seasonName, signed } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
-import { divisionName } from '../../../entities/league';
+import { divisionName, LeaguePoints } from '../../../entities/league';
 import type { SeasonFiles } from '../../../entities/league';
 import { seasonStats, share, type Leader, type SeasonStats } from '../lib/seasonStats';
 import s from '../../../shared/ui/styles/SeasonReview.module.css';
@@ -275,10 +276,12 @@ export function SeasonReview({
       <ul data-ui="inset-list" className={s.kpis}>
         <li>
           <span>{richMessage('copy.ClubTrends.e8fd75919a')}</span>
-          <b>{localizeValue(season.points)}</b>
+          <b>
+            <LeaguePoints row={season} />
+          </b>
           <small>
             {richMessage('copy.SeasonReview.9cf0edf807', {
-              p0: season.played ? (season.points / season.played).toFixed(2) : '0',
+              p0: season.played ? (leaguePoints(season) / season.played).toFixed(2) : '0',
             })}
           </small>
         </li>

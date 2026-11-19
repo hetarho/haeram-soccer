@@ -1,0 +1,25 @@
+{
+  "reviewProvider": "Claude",
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "verdict": "approved",
+  "gitHead": "6ca1487a2b9381b40d71e580e60db94df83e58bc",
+  "recipeSha256": "660e94ba7f4202d698fefe6f26e751c38d794b9989f387d3385fa56aa0afbb89",
+  "sourceSha256": "2cc7bcaefa6eead2d8ec882a6fbdd239fd524a5f673a4c7629f1506e5f6a2073",
+  "inputSha256": [
+    "3e7da8daef37725f31371856c0b69c4475ff23ab166e3e3956ab8eecdffa905f"
+  ],
+  "findings": [
+    "No concrete gating defects found for phase A.",
+    "Hash limits: this review had read-only tools, so I did not recompute any SHA-256 and did not confirm HEAD. The pinned source.json and constants.json hashes equal the lines in artifacts/benchmarks/T978/recipe.sha256. recipe.sha256 does not hash itself, so its pinned value rests on your statement. At run time run-worlds.sh enforces it with `sha256sum --check` and enforces source.json's dependency fingerprints, Node and pnpm versions through verify-source.ts.",
+    "Constants: every block in constants.json equals the current engine value. I checked MARKET_CONFIG, NPC_MARKET, NPC_MARKET_ERA, SALE_SHARE, SALE_FACTOR_VALUES, TERMS_VALUES, RENEWAL, DISTRESS, NPC_YOUTH, CLUB_LEVELS, SQUAD_SPREAD_CONFIG (floor 15 and ceiling 95 come from GENERATED_ATTRIBUTES), CLUB_BOOKS, AGEING_CURVE and FREE_AGENT_CONFIG (cap 200 from FREE_AGENT_CAP).",
+    "Year count: the 39 seasons are correct. Fresh 1930 with --burn-in 2 --seasons 37 plays 1930–38 (9 seasons) and 1946–75 (30 seasons). FRESH_MIN_BURN_IN is 2, so the run is valid. The README's 2 burn-in plus 37 measured wording is consistent.",
+    "Starts: build-lived.ts runs liveHistory(historyWorld('market-N'), 1995). It saves only the 1951 and 1995 snapshots, via saveStartWorld into $output/snapshots, keyed by the history.ts identity. The fresh run uses the normal historyWorld path. The lived sweeps load the same key, so they get those bytes.",
+    "Snapshot check: check-lived-inputs.py asserts seeds market-0..3 and years [1951, 1995] in each build. It then requires each path's parent to be $output/snapshots and each file's SHA-256 to equal its sidecar. The with_suffix('') then with_suffix('.sha256') mapping matches the `.json.gz` and `.sha256` names. The store cap of 12 does not prune the 8 snapshots.",
+    "Renewal and distress observers: HAERAM_CALIBRATION_REQUIRE_OBSERVERS=1 is exported and market-seasons.ts asserts that both are hooked. NPC_RENEWAL_FLOW exists in npc-careers.ts and DISTRESS_FLOW is re-exported by books.ts. Forked children inherit the environment. Presence of facts in the output is still a post-run summary check.",
+    "Receipts and restart: run_measured accepts a skip only when the receipt's first line equals `sha256sum recipe.sha256` and its second line equals the output file's SHA-256. It writes via .part and moves the data and receipt into place, so a killed run reruns. The builder or fresh failure paths wait for the sibling job and exit 1 before the snapshot manifest is written. Nothing is published for phase B in that case.",
+    "Phase B scope: run-lived.sh and the other later scripts check continued-recipe.sha256 and lived-inputs.sha256. Both are absent at this stage, as you said, so they need their own exact review before they are run. run-lived.sh stays untouched by phase A."
+  ],
+  "summary": "T978 phase A is approved at HEAD 6ca1487a. I did not recompute any hashes, since this review had no execution tools. The pinned source.json and constants.json hashes match their lines in recipe.sha256, and run-worlds.sh re-checks the recipe and the source fingerprints before running. The constants, the 39-season count (2 burn-in plus 37 measured), the four builders, snapshot verification, observer requirement and receipt and restart logic all check out. I found no concrete gating defects."
+}

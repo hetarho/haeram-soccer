@@ -46,7 +46,7 @@ export function bestRoles(player: Pick<Player, 'attrs' | 'position'>, count = 3)
  * chief scout's range ("보통~높음"), as wide as the scout's ability allows and `scale` narrows it
  * (원석 감별사, →OWNER-5).
  */
-export function gradeLabel(grade: Grade, own: boolean, scoutAbility?: number, scale = 1) {
+export function gradeLabel(grade: Grade = 3, own: boolean, scoutAbility?: number, scale = 1) {
   if (own) return GRADE_LABEL[grade];
   const [low, high] = personalityRange(grade, scoutAbility, scale);
   return low === high ? GRADE_LABEL[low] : `${GRADE_LABEL[low]}~${GRADE_LABEL[high]}`;
@@ -145,7 +145,15 @@ export function PlayerProfile({
             {localizeValue(
               (Object.keys(PERSONALITY_LABEL) as (keyof Personality)[]).map((key) => (
                 <div key={key}>
-                  <dt>{localizeValue(PERSONALITY_LABEL[key])}</dt>
+                  <dt
+                    title={
+                      key === 'loyalty'
+                        ? displayMessage('player.personality.loyalty.description')
+                        : undefined
+                    }
+                  >
+                    {localizeValue(PERSONALITY_LABEL[key])}
+                  </dt>
                   <dd>{localizeValue(gradeLabel(player.personality[key], own, scout, range))}</dd>
                 </div>
               )),

@@ -1,0 +1,20 @@
+{
+  "reviewProvider": "Claude",
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "verdict": "approved",
+  "gitHead": "8c8118a4ae11c73bd45e0c1b00a5f02195998bb9",
+  "recipeSha256": "4b9e4baf9c97403cd0807fc50dc6f1031172d51dbd62ce84112555a4cacd4d17",
+  "sourceSha256": "19efc86f60fc1b863a80fa391f6198738d4c9b0795bc3ef29f456acf8e01a45a",
+  "inputSha256": [
+    "964bd94887f7957795753f12ec4776eadff338610d1994dba2c93b828e528b20",
+    "b6b33f2925ae2a3cfecdc793c85e294873c6b2da2a4acf6de46891c677351e8a"
+  ],
+  "findings": [
+    "No defects found by the integrity checks.",
+    "I did not re-read summarize.py, build-lived.ts or the engine observer sites in this turn. The approval rests on the four integrity commands and on the prior review's finding of no concrete script defect.",
+    "The first attempt at the --check and verify-source commands was denied because I appended '; echo rc=$?'. The exact commands you gave then ran cleanly. Both printed nothing and returned no error, so I take that as a pass, but I did not capture an explicit exit code."
+  ],
+  "summary": "Approved. All four commands succeeded. (1) `git rev-parse HEAD` returned 8c8118a4ae11c73bd45e0c1b00a5f02195998bb9, as expected. (2) `sha256sum` of continued-recipe.sha256, source.json, lived-inputs.sha256 and continued-inputs.sha256 gave 4b9e4baf…4d17, 19efc86f…a45a, 964bd948…b20 and b6b33f29…51e8, which match all four expected hashes. (3) `sha256sum --check --quiet` over recipe.sha256, continued-recipe.sha256, lived-inputs.sha256 and continued-inputs.sha256 ran with no mismatch output. (4) `pnpm exec tsx artifacts/benchmarks/T977/verify-source.ts artifacts/benchmarks/T978/source.json .` ran with no error output. I made no edits and ran no benchmark workloads."
+}

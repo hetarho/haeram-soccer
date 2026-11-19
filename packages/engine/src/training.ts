@@ -4,6 +4,7 @@ import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import {
   adaptationAfter,
   AGEING,
+  ageingCurve,
   mainOvr,
   overshootFactor,
   PROFESSIONALISM_RATE,
@@ -32,6 +33,7 @@ import { settleMorale } from './morale';
 import { managerStyleEffects, STYLE_INFO } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
 import { trainingGroundTerms } from './facility-model';
+import { SEASON_ROUNDS } from './calendar';
 
 export const trainingFocusInfo: Record<
   TrainingFocus,
@@ -406,6 +408,80 @@ export function settleTraining(w: World) {
   w.trainingAt = at;
 }
 
+/** The shared seasonal growth rate, before noise and the age-group filter. */
+function annualGrowth(
+  player: Player,
+  age: number,
+  gap: number,
+  youth: number,
+  ground: number,
+  seasonAge = age,
+) {
+  const prodigy = prodigyGrowth(player, seasonAge);
+  return age < 27
+    ? Math.min(3 * prodigy, (gap / 20 + youth / 100) * ground * prodigy)
+    : age <= 30
+      ? 0.3
+      : 0;
+}
+
+export interface ExpectedDevelopmentLevels {
+  year: number;
+  youth: number;
+  ground: number;
+  /** The club's coaching department multiplier, as used by NPC round development. */
+  coaching: number;
+  /** The player's actual career-fixed curve, resolved by the caller, never sampled here. */
+  ageing: ReturnType<typeof ageingCurve>;
+}
+
+/**
+ * Mean-path ability after complete seasons at a club (→WORLD-16, PLAYER-15/17). Replays the
+ * shared round steps and seasonal growth/ageing on a private attribute copy, with zero noise,
+ * no potential revision and no overshoot past today's potential. Reads no random stream.
+ */
+export function expectedOvr(player: Player, seasons: number, levels: ExpectedDevelopmentLevels) {
+  const projected = { ...player, attrs: { ...player.attrs } };
+  const coaching = () => levels.coaching;
+  for (let season = 0; season < seasons; season++) {
+    const age = levels.year + season - player.born;
+    settlePlayerGrowth(
+      projected,
+      {
+        age,
+        youth: levels.youth,
+        ground: levels.ground,
+        focus: 'balanced',
+        adaptation: 0,
+      },
+      SEASON_ROUNDS,
+      coaching,
+    );
+    const nextAge = age + 1;
+    const growing = (a: Attribute) => nextAge <= AGEING[a].growUntil + levels.ageing.shift;
+    growAttributes(
+      projected,
+      annualGrowth(
+        projected,
+        nextAge,
+        Math.max(0, projected.potential - mainOvr(projected)),
+        levels.youth,
+        levels.ground,
+      ),
+      undefined,
+      { only: growing, share: 1, adaptation: 0 },
+    );
+    ageWithCurve(
+      projected,
+      nextAge,
+      () => 0.5,
+      levels.ageing,
+      (a) => nextAge < 27 && growing(a),
+    );
+  }
+  return Math.min(player.potential, mainOvr(projected));
+}
+
 /**
  * A season's development and ageing (→PLAYER-15, PLAYER-17): attributes still in their growing
  * years take the season's growth by the main position's weights; those past it hold; those past
@@ -436,15 +512,16 @@ export function developAnnually(
   const age = context.year - player.born,
     gap = Math.max(0, player.potential - mainOvr(player)),
     variation = random(`${w.seed}:growth:${player.id}:${context.year}`);
-  // A prodigy takes three times the season's growth and its limit until 18 (→PLAYER-15).
-  const prodigy = prodigyGrowth(player, (context.season ?? context.year) - player.born);
-  const growth =
-    age < 27
-      ? Math.min(3 * prodigy, (gap / 20 + context.youth / 100) * context.ground * prodigy)
-      : age <= 30
-        ? 0.3
-        : 0;
-  const growing = (a: Attribute) => age <= AGEING[a].growUntil;
+  const growth = annualGrowth(
+    player,
+    age,
+    gap,
+    context.youth,
+    context.ground,
+    (context.season ?? context.year) - player.born,
+  );
+  const curve = ageingCurve(w.seed, player.id);
+  const growing = (a: Attribute) => age <= AGEING[a].growUntil + curve.shift;
   const before = mainOvr(player);
   // A season's growth reaches the main OVR whole. Under 27 its noise rides inside it, so it never
   // carries him past his potential; later every attribute takes its own.
@@ -454,7 +531,7 @@ export function developAnnually(
     share: 1,
     adaptation: context.adaptation,
   });
-  ageAttributes(player, age, variation, (a) => young && growing(a));
+  ageAttributes(w.seed, player, age, variation, (a) => young && growing(a));
   recordDevelopment(player, hundredths(mainOvr(player) - before));
   revisePotential(w, player, context.year, context.report);
 }
@@ -465,14 +542,26 @@ export function developAnnually(
  * order. Growth is not part of it, so a player nobody trains (→CLUB-49) ages by it alone.
  */
 export function ageAttributes(
+  seed: string,
   player: Player,
   age: number,
   noise: () => number,
   skip: (a: Attribute) => boolean = () => false,
 ) {
+  ageWithCurve(player, age, noise, ageingCurve(seed, player.id), skip);
+}
+
+function ageWithCurve(
+  player: Player,
+  age: number,
+  noise: () => number,
+  curve: ReturnType<typeof ageingCurve>,
+  skip: (a: Attribute) => boolean,
+) {
   for (const a of ATTRIBUTES) {
     if (skip(a)) continue;
-    const decline = age >= AGEING[a].declineFrom ? AGEING[a].perSeason : 0;
+    const decline =
+      age >= AGEING[a].declineFrom + curve.shift ? AGEING[a].perSeason * curve.rate : 0;
     player.attrs[a] = hundredths(clamp(player.attrs[a] + noise() - 0.5 - decline, 5, TOP));
   }
 }

@@ -25,7 +25,11 @@ export const SALE_SHARE = {
   counterReach: 0.25,
 } as const;
 /** CLUB-52's factor table: what each one adds to the share. */
+/** Asking-bar points under a delegated cash-floor shortfall (→CLUB-18). */
+export const SALE_FLOOR_REDUCTION = 5;
+
 export const SALE_FACTOR_VALUES = {
+  stature: { giant: 0.1, big: 0.05, small: -0.05 },
   place: { core: 0.1, starter: 0.05, outside: -0.1 },
   contract: { final: -0.15, next: -0.05 },
   age: { veteran: -0.1, old: -0.2 },
@@ -33,7 +37,7 @@ export const SALE_FACTOR_VALUES = {
   oldAge: 33,
   prospect: 0.05,
   cashCrisis: -0.15,
-  wageLine: { over: -0.05, far: -0.1 },
+  distress: { warning: -0.05, forced: -0.25 },
   sellingDown: -0.1,
   /** A club nobody owns relegated at the last close, for one of its starters. */
   relegatedStarter: -0.1,

@@ -1,6 +1,8 @@
 import type { Club, World } from '../../contracts/src/types';
 import { clubOf } from './player-state';
 import { stature } from './world';
+import { FAN_MOOD } from './owner-config';
+import { clamp } from './primitives';
 
 /**
  * Supporters follow a club's standing, not its stadium (→ECON-23). Every league round they move
@@ -16,6 +18,16 @@ export const FAN_CONFIG = {
   win: 0.004,
   loss: 0.001,
 };
+/** The owner's standing scales the following target and home demand, never NPC books (→ECON-23). */
+export const FAN_MOOD_FOLLOWING = { scale: 80, min: 0.4, max: 1.5 } as const;
+export function fanMoodFollowing(w: Pick<World, 'owner' | 'playerClub'>) {
+  if (!w.owner || w.owner.takeover.clubId !== w.playerClub) return 1;
+  return clamp(
+    1 + (w.owner.fanMood - FAN_MOOD.start) / FAN_MOOD_FOLLOWING.scale,
+    FAN_MOOD_FOLLOWING.min,
+    FAN_MOOD_FOLLOWING.max,
+  );
+}
 export const MIN_FANS = 200;
 /** The following a reputation commands, which supporters drift toward. */
 export function fanFollowing(reputation: number) {

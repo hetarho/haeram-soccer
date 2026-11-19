@@ -17,7 +17,7 @@ import { isDelegated } from './responsibilities';
 import { addEvent } from './events';
 import { debit } from './transactions';
 import { ratio } from './primitives';
-import { offerContract, staffTalkVerdict, talkFor, talkWindow } from './contracts';
+import { offerContract, renewalBlocked, staffTalkVerdict, talkFor, talkWindow } from './contracts';
 import { moneyLabel } from './finance';
 
 export function playingCoachDurations(w: World, id: string): (1 | 2)[] {
@@ -25,6 +25,7 @@ export function playingCoachDurations(w: World, id: string): (1 | 2)[] {
   const person = w.people?.[id];
   if (
     !p ||
+    renewalBlocked(w, p) ||
     p.retiring === undefined ||
     !!p.loanUntil ||
     !person?.intention?.willing ||
@@ -131,18 +132,23 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
     p = trial.players.find((p) => p.id === id)!,
     person = trial.people![id];
   atCareerDate(trial, careerDate(w), () => {
-    const previous = staffMember(trial, proposal.role);
-    if (previous) releaseStaff(trial, proposal.role);
-    debit(trial, proposal.fee);
+    const combined = trial.playingCoachProposals![id];
     if (talkFor(trial, p)) {
       const term = (proposal.playerUntil -
         trial.year -
         (talkWindow(trial) === 'winter' ? 1 : 0)) as 0 | ContractTerm;
-      offerContract(trial, id, proposal.playerWage, term);
+      if (!offerContract(trial, id, proposal.playerWage, term)) {
+        combined.status = 'declined';
+        combined.settled = careerDate(trial);
+        return;
+      }
     } else {
       p.wage = proposal.playerWage;
       p.until = proposal.playerUntil;
     }
+    const previous = staffMember(trial, proposal.role);
+    if (previous) releaseStaff(trial, proposal.role);
+    debit(trial, proposal.fee);
     p.retiring = proposal.playingEnd;
     if (person.retirement) person.retirement.year = proposal.playingEnd;
     const coaching = person.coaching!;
@@ -165,8 +171,8 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
       ...(trial.staff || []).filter((other) => other.role !== proposal.role),
       member,
     ].sort((a, b) => STAFF_ROLES.indexOf(a.role) - STAFF_ROLES.indexOf(b.role));
-    trial.playingCoachProposals![id].status = 'accepted';
-    trial.playingCoachProposals![id].settled = careerDate(trial);
+    combined.status = 'accepted';
+    combined.settled = careerDate(trial);
     addEvent(
       trial,
       'playing-coach-accept',
@@ -178,11 +184,12 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
       }),
       proposal.upfront,
     );
-    Object.assign(w, trial);
   });
+  Object.assign(w, trial);
 }
 export function automaticPlayingCoachFits(w: World, proposal: PlayingCoachProposal) {
   const p = w.players.find((p) => p.id === proposal.person)!;
+  if (renewalBlocked(w, p)) return false;
   const current = staffMember(w, proposal.role),
     coaching = w.people![p.id].coaching!;
   if (current && BigInt(current.wage) > 0n && current.until > w.year) return false;

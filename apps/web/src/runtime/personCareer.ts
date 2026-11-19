@@ -50,7 +50,7 @@ function tenures(w: World, employment: readonly CareerEmployment[], at: CareerDa
         end = careerOrdinal({ year: seasonAfter(year), day: 0 });
       if (Math.max(from, start) >= Math.min(to, end)) continue;
       const archive = archives.get(year),
-        finish = archive && archivedFinish(w, archive.standings, club);
+        finish = archive && archivedFinish(w, archive.standings, club, archive.leagueDeductions);
       seasons.push({
         year,
         ...(finish ? { finish } : !archive && year === w.year ? { current: true as const } : {}),

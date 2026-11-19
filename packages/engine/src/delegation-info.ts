@@ -1,6 +1,6 @@
 /**
  * Delegation's vocabulary, a read leaf the UI may import (→ARCH-4): the owner's spending request
- * per responsibility, the loss runway and cash reserve each request asks the 단장 to plan with, the
+ * per responsibility, the spending step each request asks the 단장 to plan with, the
  * person each responsibility goes to once delegated and that person's temperament, and which club
  * settings a delegated person sets in the owner's place. The plans built from them live in
  * `delegation.ts`.
@@ -22,19 +22,6 @@ import { staffMember, STAFF_INFO } from './staff-info';
 
 export const SPEND_REQUESTS: readonly SpendRequest[] = [1, 2, 3, 4, 5];
 /**
- * The 단장 plans on the season's income and on the club's cash (→ECON-33): spending may run past
- * income — a planned loss — while the cash above a reserve covers that loss for the seasons the
- * step he acts on allows, its loss runway: none at 최소한만 (wages and costs within income), then
- * 6, 4, 2 and 1 seasons. A longer runway is the more careful plan.
- */
-export const LOSS_RUNWAY: Readonly<Record<SpendRequest, number>> = {
-  1: 0,
-  2: 6,
-  3: 4,
-  4: 2,
-  5: 1,
-};
-/**
  * The 단장's looks with recruitment delegated (→CLUB-33): on a window's opening day and every
  * `lookDays`th day after it, making moves until his pending bids reach `pendingByStep` by the 선수
  * 영입 step he acts on (1–5). Read by the signings and by the pages that explain them.
@@ -43,8 +30,6 @@ export const RECRUITMENT_LOOKS = {
   lookDays: 3,
   pendingByStep: [1, 1, 1, 2, 3] as readonly number[],
 };
-/** The loss runway, in seasons, of the step acted on; 0 means none: no planned loss at all. */
-export const planRunway = (level: SpendRequest) => LOSS_RUNWAY[level];
 /**
  * Youth money: the youth director's pay and the academy investment, a share of income in basis
  * points. The youth director is paid first — the 단장 may hire one up to the whole share — and the
@@ -67,16 +52,6 @@ export const ACADEMY_AIM: Readonly<Record<SpendRequest, PolicyLevel>> = {
 };
 /** Rounds of fixed costs the plain insolvency stop keeps in cash after any delegated spend. */
 export const SAFETY_ROUNDS = 4;
-/**
- * Years of current annual fixed costs kept in cash before any is available capital, by the
- * temperament and the step acted on (→ECON-33).
- */
-export const RESERVE_YEARS: Readonly<Record<Temperament, Readonly<Record<SpendRequest, number>>>> =
-  {
-    cautious: { 1: 1, 2: 1, 3: 0.5, 4: 0.5, 5: 0.25 },
-    balanced: { 1: 1, 2: 0.5, 3: 0.25, 4: 0, 5: 0 },
-    bold: { 1: 0.5, 2: 0.25, 3: 0, 4: 0, 5: 0 },
-  };
 /** The cash buffer is waived only for the bold director's most expansive request. */
 export function safetyRounds(w: World, key: BudgetResponsibility): number {
   const temperament = delegateOf(w).temperament;

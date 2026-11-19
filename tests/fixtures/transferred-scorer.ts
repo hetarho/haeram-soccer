@@ -37,6 +37,9 @@ export function transferredScorerWorld(
   const buyer = ownLeagueClubs(w)
     .filter((c) => c.id !== w.playerClub)
     .reduce((best, c) => (c.strength > best.strength ? c : best));
+  // The scorer is deliberately exceptional. Give his buyer room for the real fee and wage.
+  buyer.books = { ...buyer.books!, cash: '999999999999', debt: '0' };
+  delete buyer.books.distress;
   (w.bids ??= []).push({
     id: 'in:scorer-transfer',
     direction: 'in',

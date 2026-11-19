@@ -12,10 +12,10 @@ import { matchdayRosters } from './aggregate/engine';
 import { currentDay, ROUND_INTERVAL_DAYS } from './calendar';
 import { eraRules } from './match/rules';
 import { prepareMatch, simulateMatch } from './match';
-import { lineOf } from './player';
+import { formationOf, slotOvr } from './player-state';
 import { advanceDays, advanceRound } from './season';
 import { founded } from './season.testkit';
-import { squad } from './world';
+import { clubStyle, squad } from './world';
 import { withCandidateModel } from '../../../tests/fixtures/worlds';
 import { careerWorld } from './career.testkit';
 
@@ -143,7 +143,8 @@ describe('discipline (→MATCH-19)', () => {
     applyDiscipline(w, booked(f, ownSide(w, f), a.id, 'red', 'serious'));
     applyDiscipline(w, booked(f, ownSide(w, f), b.id));
     const trackedClub = w.clubs.find((club) => club.id !== w.playerClub && w.squads?.[club.id])!;
-    const tracked = w.squads![trackedClub.id][0];
+    // A persisted player the people registry follows (not every founding place is a person).
+    const tracked = w.squads![trackedClub.id].find((p) => w.people?.[p.id])!;
     expect(w.people![tracked.id].club).toBe(trackedClub.id);
     const untrackedClub = w.clubs.find((club) => club.representative && !w.squads?.[club.id])!;
     const untracked = squad(w, untrackedClub)[0];
@@ -187,8 +188,11 @@ describe('discipline (→MATCH-19)', () => {
     expect(replaced.map((p) => p.id)).not.toContain(out.id);
     const comes = replaced[5];
     expect(xi).not.toContain(comes);
-    expect(squad(w, club).slice(xi.length, 18)).toContain(comes);
-    expect(lineOf(comes.position)).toBe(lineOf(out.position));
+    const bench = squad(w, club).slice(xi.length, 18);
+    expect(bench).toContain(comes);
+    // The bench player who rates best at the vacated slot, whatever his line.
+    const slot = formationOf(clubStyle(club))[5]!;
+    for (const q of bench) expect(slotOvr(comes, slot)).toBeGreaterThanOrEqual(slotOvr(q, slot));
     // Everyone else keeps his place.
     expect(replaced.filter((_, i) => i !== 5)).toEqual(xi.filter((_, i) => i !== 5));
   });

@@ -4,7 +4,6 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import type { ReactNode } from 'react';
 import type { BudgetResponsibility, World } from '../../../../../../packages/contracts/src/types';
 import {
-  personOf,
   requestLabel,
   RESPONSIBILITY_NAMES,
   sharePercent,
@@ -52,7 +51,7 @@ export interface FlowStep {
 
 /**
  * A plan's money read left to right as one sentence (→`PlanPreview`): the season's income, the
- * capital above the reserve, the work's money, what it already pays, and what is left to spend. The steps are the
+ * spendable money above the floor, the work's money, what it already pays, and what is left to spend. The steps are the
  * shared stat tiles joined by arrows; on a phone they stack two by two.
  */
 export function PlanFlow({ label, steps }: { label: string; steps: readonly FlowStep[] }) {
@@ -72,40 +71,28 @@ export function PlanFlow({ label, steps }: { label: string; steps: readonly Flow
   );
 }
 
-/**
- * The plan's loss runway in words (→ECON-33): the seasons of planned loss the cash must cover, or
- * that the plan stays within income.
- */
-export function runwayLine(plan: Pick<DelegatePlan, 'runway'>) {
-  return plan.runway > 0
-    ? sourceMessage('delegation.runway.allowed', { seasons: plan.runway })
-    : sourceMessage('delegation.runway.withinIncome');
+/** Current closing cash, required floor and spendable money, formatted at presentation. */
+export function floorLine(w: World, plan: DelegatePlan) {
+  const money = (value: string) => compactMoney(value, clubOf(w).country, w.year);
+  return displayMessage('delegation.floor.summary', {
+    projected: money(plan.projected),
+    floor: money(plan.floor),
+    spendable: money(plan.spendable),
+  });
 }
-/** A count of seasons or years with the decimals it has (at most two), in the reader's locale. */
-function figure(value: number) {
-  const places = [0, 1, 2].find(
-    (digits) => Math.abs(value * 10 ** digits - Math.round(value * 10 ** digits)) < 1e-9,
-  );
-  return decimal(value, places ?? 2);
-}
-/** The planned loss now and the seasons of it the available capital covers. */
-function coversLine(w: World, plan: DelegatePlan) {
-  return coverageLine(plan, compactMoney(plan.loss, clubOf(w).country, w.year));
-}
-/**
- * The coverage note for a planned loss already written as `loss`. Coverage is kept to one decimal,
- * so capital covering less than a tenth of a season reads so, never as no cash at all.
- */
-export function coverageLine(
-  plan: Pick<DelegatePlan, 'loss' | 'covers' | 'capital'>,
-  loss: string,
-) {
-  if (BigInt(plan.loss) === 0n) return sourceMessage('delegation.runway.noLoss');
-  return plan.covers
-    ? sourceMessage('delegation.runway.covers', { loss, seasons: figure(plan.covers) })
-    : BigInt(plan.capital) > 0n
-      ? sourceMessage('delegation.runway.coversLittle', { loss, seasons: figure(0.1) })
-      : sourceMessage('delegation.runway.coversNone', { loss });
+
+/** Explain the commitment horizon on the first view of a plan. */
+export function floorRule(w: World, plan: DelegatePlan) {
+  if (plan.key === 'academy') return displayMessage('delegation.flow.academyLine');
+  if (plan.key === 'sales')
+    return displayMessage(
+      BigInt(plan.projected) < BigInt(plan.floor) || w.distress?.stage
+        ? 'delegation.floor.salesPressed'
+        : 'delegation.floor.salesCalm',
+    );
+  return displayMessage('delegation.floor.commitment', {
+    floor: compactMoney(plan.floor, clubOf(w).country, w.year),
+  });
 }
 
 /** The plan's money as steps, for the works the 단장 plans with money. */
@@ -121,19 +108,17 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
         : undefined,
     },
     capital: FlowStep = {
-      label: sourceMessage('delegation.flow.capital'),
-      value: amount(plan.capital),
-      note: sourceMessage('delegation.flow.reserve', { years: figure(plan.reserveYears) }),
+      label: sourceMessage('delegation.floor.available'),
+      value: amount(plan.spendable),
+      note: displayMessage('delegation.floor.reservations', { reserved: money(plan.reserved) }),
     },
     carried: FlowStep = {
       label: sourceMessage('delegation.flow.wageRoom'),
       value: amount(plan.budget),
-      note: runwayLine(plan),
     },
     wages: FlowStep = {
       label: sourceMessage('delegation.flow.wages'),
       value: amount(plan.committed),
-      note: coversLine(w, plan),
       tone: 'minus',
     };
   switch (plan.key) {
@@ -162,25 +147,31 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
         },
       ];
     case 'academy': {
-      const youth = plan.youth!;
+      const youth = plan.youth!,
+        share = sharePercent(plan.share);
       return [
         revenue,
         capital,
         {
           label: sourceMessage('delegation.flow.budget'),
           value: amount(plan.budget),
+          note: displayMessage('delegation.floor.youth', {
+            share: decimal(share, Number.isInteger(share) ? 0 : 1),
+            budget: money(plan.budget),
+            pay: money(youth.pay),
+            level: POLICY_INFO.academy.levels[youth.level - 1].name,
+            cost: money(youth.cost),
+          }),
         },
         {
-          label: sourceMessage('delegation.flow.youthPay'),
-          value: amount(youth.pay),
-          note: sourceMessage('delegation.flow.youthPayNote'),
+          label: sourceMessage('delegation.floor.committed'),
+          value: amount(plan.committed),
           tone: 'minus',
         },
         {
-          label: sourceMessage('delegation.flow.academy'),
-          value: POLICY_INFO.academy.levels[youth.level - 1].name,
-          note: sourceMessage('delegation.flow.academyNote', { cost: money(youth.cost) }),
-          tone: 'result',
+          label: sourceMessage('delegation.floor.left'),
+          value: amount(plan.left),
+          tone: BigInt(plan.left) > 0n ? 'result' : 'empty',
         },
       ];
     }
@@ -198,42 +189,22 @@ export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined 
 
 /** The plan in one or two plain sentences under its steps. */
 function planSentence(w: World, plan: DelegatePlan): ReactNode {
-  const seasons = plan.runway;
-  switch (plan.key) {
-    case 'recruitment':
-      return plan.over
-        ? richMessage(
-            seasons > 0
-              ? 'delegation.flow.recruitmentShort'
-              : 'delegation.flow.recruitmentShortIncome',
-          )
-        : seasons > 0
-          ? richMessage('delegation.flow.recruitmentRunway', { seasons })
-          : richMessage('delegation.flow.recruitmentIncome');
-    case 'contracts':
-      return plan.over
-        ? richMessage(
-            seasons > 0 ? 'delegation.flow.contractsShort' : 'delegation.flow.contractsShortIncome',
-          )
-        : seasons > 0
-          ? richMessage('delegation.flow.contractsRunway', { seasons })
-          : richMessage('delegation.flow.contractsIncome');
-    case 'academy':
-      return (
+  if (plan.key === 'manager' || plan.key === 'staff') return undefined;
+  return (
+    <>
+      {floorLine(w, plan)} {floorRule(w, plan)}
+      {plan.level === 1 && (plan.key === 'recruitment' || plan.key === 'contracts') && (
         <>
-          {richMessage('delegation.flow.academyLine')}{' '}
-          {richMessage('delegation.flow.youthCoach', { name: personOf(w, 'youth').name })}
+          {' '}
+          {richMessage(
+            plan.key === 'contracts'
+              ? 'delegation.flow.contractsIncome'
+              : 'delegation.flow.recruitmentIncome',
+          )}
         </>
-      );
-    case 'sales':
-      return seasons > 0
-        ? richMessage(plan.over ? 'delegation.plan.salesPressed' : 'delegation.plan.salesCalm')
-        : richMessage(
-            plan.over ? 'delegation.plan.salesPressedIncome' : 'delegation.plan.salesCalmIncome',
-          );
-    default:
-      return undefined;
-  }
+      )}
+    </>
+  );
 }
 
 /** The posts whose pay the 단장's criteria decide: the setting he sets and the pay now. */
@@ -266,7 +237,7 @@ function pending(w: World, plan: DelegatePlan) {
 
 /**
  * The 단장's plan for a request (→`delegatePlan`): how he heard it, the money as income → capital →
- * the wage bill the runway carries → already committed → left to spend, one plain sentence, and the settings he sets. The delegation
+ * the affordable annual wage bill → already committed → left to spend, one plain sentence, and the settings he sets. The delegation
  * page shows it for the request being chosen; a work's page for the request in force.
  */
 export function PlanPreview({

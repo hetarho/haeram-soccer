@@ -174,6 +174,8 @@ interface Packed {
   recentResults?: Record<string, Tuple[]>;
   matches: Tuple[];
   matchFields?: string;
+  /** Optional leg metadata, 0 for an absent field; older records remain absent. */
+  matchLegs?: (0 | 1 | 2)[];
   matchActors?: string;
   matchActorColumns?: {
     dimensions: string;
@@ -530,6 +532,9 @@ export function pack(w: World): Packed {
     ...(recentResults ? { recentResults } : {}),
     matches: [],
     matchFields: integers(matchFields, 10),
+    ...(w.ownMatches.some((m) => m.leg !== undefined)
+      ? { matchLegs: w.ownMatches.map((m) => m.leg ?? 0) }
+      : {}),
     matchActors: '',
     matchActorColumns: {
       dimensions: integers(actorDimensions, 2),
@@ -903,7 +908,15 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   const materialLengths = materialData && reader(materialData.lengths, MATERIAL_KEYS.length);
   const materialStreams =
     materialData && MATERIAL_KEYS.map((key) => readBitColumns(materialData[key], 1));
-  const matches = packedMatches.map((t) => {
+  if (
+    p.matchLegs !== undefined &&
+    (!Array.isArray(p.matchLegs) ||
+      p.matchLegs.length !== packedMatches.length ||
+      p.matchLegs.some((leg) => leg !== 0 && leg !== 1 && leg !== 2))
+  )
+    throw new Error(sourceMessage('copy.packing.2d2f66dd00'));
+  const matches = packedMatches.map((t, index) => {
+    const leg = p.matchLegs?.[index];
     const xgRow = xgStream?.take(3);
     const extraRow = extraStream?.take(EXTRAS_WIDTH);
     const flags = extraRow?.[0] ?? 0;
@@ -969,6 +982,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     const metrics = [takeMetrics(), takeMetrics()] as MatchRecord['metrics'];
     return {
       ...f(t),
+      ...(leg ? { leg } : {}),
       metrics,
       players: (t[9] as number[]).map((n) => ({
         id: str(n),

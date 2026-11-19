@@ -4,10 +4,13 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import { Select } from '../../../shared/ui/Select';
 import { useMemo, useState, type ReactNode } from 'react';
 import type { Fixture, World } from '../../../../../../packages/contracts/src/types';
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import { nextOwnFixture } from '../../../../../../packages/engine/src/calendar';
-import { kindLabel, seasonName } from '../../../presentation/format';
+import { kindLabel, number, seasonName } from '../../../presentation/format';
 import {
   archivedTimeline,
+  LeaguePoints,
+  PointsDeduction,
   divisionName,
   finalZones,
   formFor,
@@ -197,7 +200,9 @@ export function Standings({
                         {localizeValue(clubOvr(w, club))}
                       </span>
                     </td>
-                    <td className={s.points}>{localizeValue(t.points)}</td>
+                    <td className={s.points}>
+                      <LeaguePoints row={t} />
+                    </td>
                     <td>{localizeValue(t.played)}</td>
                     <td>{localizeValue(t.won)}</td>
                     <td>{localizeValue(t.drawn)}</td>
@@ -446,7 +451,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
               !t.played
                 ? '—'
                 : cushion === undefined
-                  ? sourceMessage('copy.LeagueInsights.788a732efc', { p0: t.points })
+                  ? sourceMessage('copy.LeagueInsights.788a732efc', { p0: number(leaguePoints(t)) })
                   : sourceMessage('copy.LeagueInsights.b0b32a2aa4', {
                       p0: cushion > 0 ? '+' : '',
                       p1: cushion,
@@ -524,9 +529,9 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
                   leagueGame && rivalTable && t.played
                     ? sourceMessage('copy.LeagueInsights.30a9314f22', {
                         p0: sorted.indexOf(rival.id) + 1,
-                        p1: Math.abs(t.points - rivalTable.points),
+                        p1: number(Math.abs(leaguePoints(t) - leaguePoints(rivalTable))),
                         p2:
-                          Math.abs(t.points - rivalTable.points) <= 3
+                          Math.abs(leaguePoints(t) - leaguePoints(rivalTable)) <= 3
                             ? sourceMessage('copy.LeagueInsights.7f6bcf9428')
                             : sourceMessage('copy.LeagueInsights.1c7fe7ca29'),
                       })
@@ -540,13 +545,15 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
                   className={s.projection}
                   aria-label={displayMessage('copy.LeagueInsights.67faa67d5c')}
                 >
-                  <h5>{richMessage('copy.LeagueInsights.20720713c4', { p0: t.points })}</h5>
+                  <h5>
+                    {richMessage('copy.LeagueInsights.20720713c4', { p0: number(leaguePoints(t)) })}
+                  </h5>
                   <span>
                     {richMessage('copy.LeagueInsights.a208ff1d5f', {
                       p0: (
                         <b>
                           {richMessage('copy.LeagueInsights.788a732efc', {
-                            p0: t.points + RESULT_POINTS.win,
+                            p0: number(leaguePoints(t) + RESULT_POINTS.win),
                           })}
                         </b>
                       ),
@@ -558,7 +565,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
                       p0: (
                         <b>
                           {richMessage('copy.LeagueInsights.788a732efc', {
-                            p0: t.points + RESULT_POINTS.draw,
+                            p0: number(leaguePoints(t) + RESULT_POINTS.draw),
                           })}
                         </b>
                       ),
@@ -570,7 +577,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
                       p0: (
                         <b>
                           {richMessage('copy.LeagueInsights.788a732efc', {
-                            p0: t.points + RESULT_POINTS.loss,
+                            p0: number(leaguePoints(t) + RESULT_POINTS.loss),
                           })}
                         </b>
                       ),
@@ -825,7 +832,7 @@ export function RankHistoryGraph({
                                       p0: name(id),
                                       p1: i + 1,
                                       p2: row.rank,
-                                      p3: row.points,
+                                      p3: number(row.points),
                                     })}
                                   </title>
                                 </circle>
@@ -888,10 +895,11 @@ export function RankHistoryGraph({
                                     row
                                       ? sourceMessage('copy.LeagueInsights.73769a8d11', {
                                           p0: row.rank,
-                                          p1: row.points,
+                                          p1: number(row.points),
                                         })
                                       : '—',
                                   )}
+                                  <PointsDeduction row={row} />
                                 </td>
                               );
                             }),

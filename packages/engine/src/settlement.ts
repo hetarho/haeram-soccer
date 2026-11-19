@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { reportDistress, stepDistress } from './distress';
 import { eventsInSeason } from './season-index';
 import { baseEffects, settleBases } from './bases';
 import type { MatchRecord, World } from '../../contracts/src/types';
@@ -27,8 +28,8 @@ import {
   roundShare,
   SPONSOR_SLOT_LABELS,
 } from './finance';
-import { currentDay, SEASON_ROUNDS } from './calendar';
-import { driftFans, MIN_FANS } from './fans';
+import { SEASON_ROUNDS } from './calendar';
+import { driftFans, fanMoodFollowing, MIN_FANS } from './fans';
 import { pushInbox } from './inbox';
 import { marketingFanGain, policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
@@ -219,7 +220,7 @@ export function settleLeagueMerit(w: World, rank: number, clubs: number) {
     amount,
   );
 }
-export function settleRound(w: World) {
+export function settleRound(w: World, leagueSettled = true) {
   const cost = operatingCosts(w, w.round);
   debit(w, cost.nextRound, true);
   const club = clubOf(w),
@@ -233,7 +234,11 @@ export function settleRound(w: World) {
   // The bases move first (→ECON-34); supporters drift toward the following the club's
   // reputation commands, scaled by 글로벌 인지도, without a ceiling.
   settleBases(w);
-  club.fans = driftFans(club.fans + fansGained, club.reputation, baseEffects(w).following);
+  club.fans = driftFans(
+    club.fans + fansGained,
+    club.reputation,
+    baseEffects(w).following * fanMoodFollowing(w),
+  );
   settleDistribution(w);
   const money = (amount: string) => moneyLabel(w, amount);
   addEvent(
@@ -336,38 +341,25 @@ export function settleRound(w: World) {
       sourceMessage('copy.settlement.ad22a9114c'),
     );
   }
-  insolvency(w, cost.annual);
+  if (leagueSettled) insolvency(w, cost.annual);
   // The 단장 plans again when the season's income or its sales moved a lot (→`replanIfMoved`).
   replanIfMoved(w);
 }
-/** Debt duration is warning history only; bankruptcy depends on its amount (→ECON-24). */
+
+/** One debt-ladder check after a settled league round; never produces bankruptcy (→ECON-24). */
 function insolvency(w: World, annual: string) {
-  if (BigInt(w.cash) >= 0n) {
-    delete w.insolvent;
-    return;
-  }
-  w.insolvent = (w.insolvent ?? 0) + 1;
-  if (BigInt(w.cash) < -BigInt(annual)) {
-    w.bankrupt = { year: w.year, round: w.round, day: currentDay(w) };
-    // A taken-over club's bankruptcy ends the owner's career by its cause (→OWNER-16).
-    if (w.owner) w.ended = 'club';
-    delete w.critical;
-    addEvent(
+  if (!(w.distress?.lastRound?.year === w.year && w.distress.lastRound.round === w.round)) {
+    if (BigInt(w.cash) < 0n) w.insolvent = (w.insolvent ?? 0) + 1;
+    else delete w.insolvent;
+    const before = w.distress;
+    const after = stepDistress(
+      before,
+      BigInt(w.cash) < 0n ? -BigInt(w.cash) : 0n,
+      BigInt(annual),
       w,
-      'bankruptcy',
-      sourceMessage('copy.ownerFigures.f933e937de', { p0: clubOf(w).name }),
-      sourceMessage('copy.settlement.31e9d41431', { p0: moneyLabel(w, w.cash), p1: w.insolvent }),
     );
-    return;
+    if (after) w.distress = after;
+    else delete w.distress;
+    reportDistress(w, w.playerClub, before, after);
   }
-  if (w.insolvent === 1)
-    pushInbox(w, {
-      kind: 'finance',
-      title: sourceMessage('finance.debt.title'),
-      detail: sourceMessage('finance.debt.warning', {
-        cash: moneyLabel(w, w.cash),
-        limit: moneyLabel(w, (-BigInt(annual)).toString()),
-      }),
-      attention: false,
-    });
 }

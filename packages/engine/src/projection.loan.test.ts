@@ -130,6 +130,8 @@ describe('takeover loan cash projections', () => {
     w.income = '4600000000000';
     // A plan with room for anything, so only the stop speaks.
     w.budgetPlan = { year: w.year, revenue: '999999999999999', sales: '0' };
+    // Allow debt down to stage 1 so this case isolates the stricter cautious insolvency stop.
+    w.delegationRequests = { recruitment: 5 };
     const plain = structuredClone(w);
     delete plain.loan;
     const floor = (BigInt(operatingCosts(w).annual) / BigInt(SEASON_ROUNDS)) * 4n;

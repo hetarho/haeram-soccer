@@ -9,7 +9,7 @@ import { measurementIdentity } from './lib/measurement-identity';
  *   pnpm exec tsx scripts/match-parity.ts --report [--partition calibration|validation]
  *     [--round N] [--scale S] [--only core,tactics,gap,tier,fatigue,era,knockout,rare]
  *     [--conditions id,…] [--rare-scale S] [--seasons N] [--jobs N] [--out FILE] [--patch JSON]
- *     [--sizes id=N,…] [--setting flat|spread] [--smoke]
+ *     [--sizes id=N,…] [--setting spread] [--smoke]
  *   default: calibration partition, round 0, scale 1, every match family, output
  *   artifacts/benchmarks/aggregate-model-calibration.json; `--seasons N` also plays N founded
  *   worlds one season each through ordinary settlement (season:league-20; `--only season` plays
@@ -61,6 +61,7 @@ import { ledgerDiagnostics } from '../packages/engine/src/lab/diagnostics';
 export { ledgerDiagnostics } from '../packages/engine/src/lab/diagnostics';
 import { inMatchFatigue } from '../packages/engine/src/match/changes';
 import { M } from '../packages/engine/src/match/record';
+import { leaguePoints, ranked } from '../packages/engine/src/league-fixtures';
 import { eraRules, type DecideRule } from '../packages/engine/src/match/rules';
 import { npcMatchContext, type Prepared } from '../packages/engine/src/match';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
@@ -597,33 +598,29 @@ export function seasonSample(partition: Partition, round: number, index: number)
   const seed = `${CORPUS_CONFIG.partitions[partition].prefix}:r${round}:${season.id}:${index}`;
   const w = withCandidateModel(careerWorld({ ...p.world, seed }));
   while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
+  return readAggregateSeason(w);
+}
+
+/** Reads the full aggregate season that actually settled, before the close resets its ledger. */
+export function readAggregateSeason(w: World) {
+  const seed = w.seed;
   const stats = w.npcSeason!;
   const leagues = stats.competitions.filter((c) => c.kind === 'league');
   const divisions = leagues.flatMap((c) => {
+    if (c.groupKey?.split(':')[1] !== '0') return [];
     const fixtures = w.fixtures.filter(
       (f) => f.kind === 'league' && f.groupKey === c.groupKey && f.score,
     );
     const clubs = new Set(fixtures.flatMap((f) => [f.home, f.away]));
     if (clubs.size !== 20) return [];
-    const table = new Map([...clubs].map((id) => [id, { points: 0, gd: 0, played: 0 }]));
-    let goals = 0;
-    for (const f of fixtures) {
-      const s = f.score!;
-      const h = table.get(f.home)!,
-        a = table.get(f.away)!;
-      h.played++;
-      a.played++;
-      h.gd += s.home - s.away;
-      a.gd += s.away - s.home;
-      goals += s.home + s.away;
-      if (s.home > s.away) h.points += 3;
-      else if (s.home < s.away) a.points += 3;
-      else {
-        h.points++;
-        a.points++;
-      }
-    }
-    const order = [...table.values()].sort((x, y) => y.points - x.points || y.gd - x.gd);
+    const goals = fixtures.reduce(
+      (sum, fixture) => sum + fixture.score!.home + fixture.score!.away,
+      0,
+    );
+    const order = ranked(
+      w,
+      w.clubs.filter((club) => clubs.has(club.id)),
+    ).map((club) => w.tables[club.id]);
     const scorers = c.players
       .map((pl) => ({
         position: pl.position,
@@ -647,8 +644,8 @@ export function seasonSample(partition: Partition, round: number, index: number)
       {
         groupKey: c.groupKey,
         matches: fixtures.length,
-        championPpg: order[0]!.points / order[0]!.played,
-        bottomPpg: order.at(-1)!.points / order.at(-1)!.played,
+        championPpg: leaguePoints(order[0]!) / order[0]!.played,
+        bottomPpg: leaguePoints(order.at(-1)!) / order.at(-1)!.played,
         goalsPerMatch: goals / fixtures.length,
         topScorerGoals: scorers[0]?.goals ?? 0,
         clubTopScorerShare: topShare.reduce((a, b) => a + b, 0) / topShare.length,
@@ -811,7 +808,7 @@ function sourceFingerprint() {
 }
 
 const args = process.argv.slice(2);
-// T808: `--setting flat|spread` draws every generated squad on that squad spread (→WORLD-6), here and
+// T808: `--setting spread` draws every generated squad on that squad spread (→WORLD-6), here and
 // in every worker.
 const squadSetting = squadSpreadSetting(args);
 // A measurement's config overrides (`--patch <json>`): the result path's configs patched in this

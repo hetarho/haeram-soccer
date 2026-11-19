@@ -1,3 +1,4 @@
+import { distressFreeNeed, distressSigningReason, forcedSales } from './distress';
 import { retirePlayerRecord } from './player-records';
 import { recordRetirementNews } from './news';
 import { message as sourceMessage } from '../../contracts/src/messages';
@@ -17,10 +18,15 @@ import { movePerson } from './npc-continuity';
 import { withMoveReason } from './npc-market';
 import { RETIREMENT, retirePerson } from './careers';
 import { ageAttributes } from './training';
-import { AGEING, lineOf } from './player';
+import { AGEING, ageingCurve, lineOf } from './player';
 import { divisionFor, signingClauses } from './contracts';
 import { marketWage, marketWageAt } from './market-prices';
-import { clubRegistration, registrationExempt, registrationRoom } from './registration';
+import {
+  clubRegistration,
+  graduateIds,
+  registrationExempt,
+  registrationRoom,
+} from './registration';
 import { isForeignCandidate } from './scout-search';
 import { addEvent } from './events';
 import { moneyLabel } from './finance';
@@ -100,12 +106,14 @@ function freeAgentOf(p: Player, since: number): FreeAgent {
  */
 function declineFreeAgent(w: World, p: FreeAgent, season: number) {
   const age = season - p.born,
-    before = { ...p.attrs };
+    before = { ...p.attrs },
+    curve = ageingCurve(w.seed, p.id);
   ageAttributes(
+    w.seed,
     p,
     age,
     random(`${w.seed}:free-agent-age:${p.id}:${season}`),
-    (a) => age < AGEING[a].declineFrom,
+    (a) => age < AGEING[a].declineFrom + curve.shift,
   );
   for (const a of ATTRIBUTES) p.attrs[a] = Math.min(p.attrs[a], before[a]);
 }
@@ -241,7 +249,8 @@ function wantsFreeAgent(facts: SettlementFacts, p: FreeAgent, year: number) {
   const state = facts.registration;
   return (
     state.total < state.ceiling &&
-    (registrationExempt(state.rule, year, { ...p, joined: year }) || state.counted < state.allowed)
+    (registrationExempt(state.rule, year, { ...p, joined: year, graduate: undefined }) ||
+      state.counted < state.allowed)
   );
 }
 
@@ -310,7 +319,11 @@ export function refreshFreeAgents(w: World, year = w.year) {
     for (const agent of byAbility(freeAgentsOf(w))) {
       const offers = wanting
         .of(lineOf(agent.position))
-        .filter((c) => wantsFreeAgent(facts.get(c.id)!, agent, year))
+        .filter(
+          (c) =>
+            wantsFreeAgent(facts.get(c.id)!, agent, year) &&
+            (!forcedSales(c.books?.distress) || distressFreeNeed(w.squads![c.id]!, agent)),
+        )
         .map((club) => {
           const wage = marketWageAt(club.country, year, club.tier, agent);
           return { club, wage, pounds: BigInt(inPounds(club.country, year, wage)) };
@@ -365,8 +378,10 @@ export function signFreeAgentAtClose(
   const agent = byAbility(
     freeAgentsOf(w).filter((p) => lineOf(p.position) === line && overall(p) <= level),
   )[0];
-  if (!agent) return undefined;
-  if (registrationRoom(w, { ...agent, joined: w.year })) return 'full';
+  if (!agent || distressSigningReason(w, agent, true)) return undefined;
+  const graduate = graduateIds(w).has(agent.id);
+  if (registrationRoom(w, { ...agent, joined: w.year, graduate: graduate ? true : undefined }))
+    return 'full';
   const p = takeFreeAgent(w, agent.id)!;
   p.wage = marketWage(w, p);
   p.until = w.year + FREE_AGENT_CONFIG.term;
@@ -375,10 +390,9 @@ export function signFreeAgentAtClose(
   const prior = w.players.findIndex((row) => row.id === p.id);
   if (prior >= 0) {
     p.career = [...w.players[prior]!.career];
-    if (w.players[prior]!.graduate) p.graduate = true;
     w.players[prior] = p;
   } else w.players.push(p);
-  joinClub(p, isForeignCandidate(w, p.id) ? 'abroad' : 'domestic', w.year);
+  joinClub(p, isForeignCandidate(w, p.id) ? 'abroad' : 'domestic', w.year, graduate);
   movePerson(w, p, w.playerClub, true, undefined, null);
   addEvent(
     w,

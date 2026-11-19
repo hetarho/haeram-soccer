@@ -82,11 +82,8 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
         amount(book!.income) - amount(book!.wages) - amount(book!.costs),
       );
       const result = amount(book!.result) + amount(book!.ownerCapital!),
-        ceiling = amount(scaleBy(book!.income, CLUB_BOOKS.cashSeasons, 1000n)),
-        floor = -amount(scaleBy(book!.income, CLUB_BOOKS.debtSeasons, 1000n));
-      expect(amount(books.cash) - amount(books.debt)).toBe(
-        result > ceiling ? ceiling : result < floor ? floor : result,
-      );
+        ceiling = amount(scaleBy(book!.income, CLUB_BOOKS.cashSeasons, 1000n));
+      expect(amount(books.cash) - amount(books.debt)).toBe(result > ceiling ? ceiling : result);
     }
     // A first season pays its division's operating expenses (→ECON-30).
     expect(a.seasons[0]!.costs).toBe(operatingExpensesAt('ENG', w.year, 0));
@@ -96,7 +93,7 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     expect(amount(a.seasons[0]!.wages)).toBeGreaterThan(amount(b.seasons[0]!.wages));
   });
 
-  it('caps cash and writes off debt beyond the income bounds, without ending the club', () => {
+  it('caps cash and retains all debt without ending the club', () => {
     const w = world();
     const target = club(w, 'ESP', 1);
     // The season's result on its own, then the same season over a balance.
@@ -105,7 +102,13 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     target.books = { seasons: [], cash: '0', debt: huge.toString() };
     const indebted = settleNpcBooks(w, target);
     expect(indebted.cash).toBe('0');
-    expect(indebted.debt).toBe(scaleBy(income, CLUB_BOOKS.debtSeasons, 1000n));
+    expect(indebted.debt).toBe(
+      (
+        huge -
+        BigInt(indebted.seasons[0]!.result) -
+        BigInt(indebted.seasons[0]!.ownerCapital!)
+      ).toString(),
+    );
     target.books = { seasons: [], cash: huge.toString(), debt: '0' };
     const rich = settleNpcBooks(w, target);
     expect([rich.cash, rich.debt]).toEqual([scaleBy(income, CLUB_BOOKS.cashSeasons, 1000n), '0']);
@@ -151,7 +154,9 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     // The season's own amounts stay in francs; the balance is in euros, far fewer units.
     expect(amount(books.debt)).toBeLessThan(10n ** 12n - amount(book!.result));
     expect(books.debt).toBe(
-      currencyChange('FRA', 1998, 1999)!(scaleBy(book!.income, CLUB_BOOKS.debtSeasons, 1000n)),
+      currencyChange('FRA', 1998, 1999)!(
+        (10n ** 12n - BigInt(book!.result) - BigInt(book!.ownerCapital!)).toString(),
+      ),
     );
   });
 

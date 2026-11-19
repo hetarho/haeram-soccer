@@ -26,7 +26,6 @@
  *            --growth (T700: the sources of the rise below the top flight, read-only, kept per season)
  *            --sources (with --in: only the growth sources report)
  *            --compare a.json,dir (with --in: the season rows that differ from those careers)
- *            --ability-fit (T712: CLUB-25 r61's ability-fit wage, a measurement override)
  *
  * Policies: none, the reference; dividend, the 배당 dial at 50% (dividend25 at 25%); patron, a
  * quarter of the fortune above zero put in on each season's first day (within FFP); mixed, a tenth
@@ -79,11 +78,7 @@ import {
   startFacilityWork,
 } from '../packages/engine/src/index';
 import { FAN_MOOD, OWNER_LIVING, OWNER_TIERS } from '../packages/engine/src/owner-config';
-import {
-  ABILITY_FIT,
-  marketWageAt,
-  STAR_SPREAD_CONFIG,
-} from '../packages/engine/src/market-prices';
+import { marketWageAt, STAR_SPREAD_CONFIG } from '../packages/engine/src/market-prices';
 import { npcWageBill, npcWageLimit } from '../packages/engine/src/books';
 import { divisionFor } from '../packages/engine/src/contracts';
 import { ownStarters, rating, tierLevel } from '../packages/engine/src/world';
@@ -153,13 +148,6 @@ if (SPREAD) {
  */
 const CUPS = args.includes('--cups');
 if (CUPS) BOOK_COMPETITIONS.inForce = true;
-/**
- * --ability-fit: CLUB-25 r61's ability-fit wage in the careers and their worlds (→T712), a
- * measurement override of `ABILITY_FIT`, never a game setting; its worlds belong in their own
- * --world-dir.
- */
-const FIT = args.includes('--ability-fit');
-if (FIT) ABILITY_FIT.inForce = true;
 /**
  * --growth (T700): where a delegated club's rise below the top flight comes from, read at each
  * close of a season it played below the top flight, without a random draw or a world change: its
@@ -1630,7 +1618,7 @@ function main() {
       .map((t) => t.multiple)
       .join(
         '/',
-      )}, living ${SSOT_LIVING * 100}% a season${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''}${ABILITY_FIT.inForce ? `, CLUB-25's ability-fit wage on${FIT ? ' (--ability-fit)' : ''}` : ''})`,
+      )}, living ${SSOT_LIVING * 100}% a season${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''})`,
   );
   /** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
   if (option('note', '')) console.log(`\n${option('note', '')}`);

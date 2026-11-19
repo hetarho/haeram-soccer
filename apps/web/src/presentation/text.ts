@@ -79,6 +79,7 @@ export const decimalParameters: Readonly<Record<string, readonly string[]>> = {
   'delegation.plan.runway': ['years'],
   'delegation.plan.runwayNone': ['years'],
   'delegation.plan.youth': ['share'],
+  'delegation.floor.youth': ['share'],
 };
 /** A source-digit number in the locale's notation, with the decimal places it was written with. */
 function localDecimal(locale: LoadedLocale, value: string) {

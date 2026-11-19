@@ -52,6 +52,7 @@ import { trackingBoundary } from './npc-stats';
 import { defaultSettings } from './responsibilities';
 import { prepareSeason } from './season';
 import { openShortlistWindow } from './signings';
+import { takeoverFanDisposition } from './fan-disposition';
 import { basicStaff } from './staff';
 
 /**
@@ -204,7 +205,14 @@ export function takeOver(
     p.fatigue = 0;
     p.clauses = settleClauses(w.seed, p, p.agent!, year, 0);
     // Every player taken over starts at the club's 조직력 (→OWNER-4, LEAGUE-12).
+    const { joined, graduate } = p;
     joinClub(p, 'founding', year);
+    if (roster.some((held) => held.id === p.id)) {
+      // Ownership changes preserve known club history, including absent legacy facts.
+      if (joined === undefined) delete p.joined;
+      else p.joined = joined;
+      if (graduate) p.graduate = graduate;
+    }
     if (club.cohesion !== undefined) p.adaptation = club.cohesion;
   }
   w.players = players;
@@ -222,6 +230,9 @@ export function takeOver(
   // so were its coaches, who leave as the owner's staff starts as a new club's (→OWNER-4).
   for (const { person, job } of activeCoachingEmployment(w))
     if (job.club === club.id) closeEmployment(w, person.id, job.role);
+  // Ownership never removes an existing sanction or its settled-round counter.
+  if (books?.distress) w.distress = structuredClone(books.distress);
+  else delete w.distress;
   delete club.books;
   delete club.cohesion;
   delete club.project;
@@ -258,6 +269,7 @@ export function takeOver(
     stake: OWNER_BUSINESS.stake.start,
     dividendShare: OWNER_DIVIDEND.start,
     fanMood: FAN_MOOD.start,
+    fanDisposition: takeoverFanDisposition(w, club),
     ffpInjections: [],
     takeover: {
       year,

@@ -1,6 +1,7 @@
+import { distressSigningReason } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { registrationRoom } from './registration';
-import type { Line, ScoutOffer, World } from '../../contracts/src/types';
+import type { Line, Player, ScoutOffer, World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost } from './transactions';
@@ -45,9 +46,8 @@ export function recruitmentContext(w: World) {
   };
 }
 
-/** Only selection/fit facts, without registration, financial runway or a full signing preview. */
-export function recruitmentFit(w: World, offer: TransferOffer, context = recruitmentContext(w)) {
-  const { before, opponentTactic, beforeStrength, beforeFit } = context;
+/** Automatic selection after the candidate arrives, including a squad with vacant slots. */
+export function recruitmentSelection(w: World, offer: TransferOffer, before: readonly Player[]) {
   const alreadyOwned = w.players.some(
     (player) => player.id === offer.player.id && player.status === 'active',
   );
@@ -66,6 +66,17 @@ export function recruitmentFit(w: World, offer: TransferOffer, context = recruit
         { ...w, players: [...w.players.filter((p) => p.id !== arriving.id), arriving] },
         clubOf(w),
       );
+  return {
+    arriving,
+    after,
+    willStart: !alreadyOwned && after.some((player) => player.id === offer.player.id),
+  };
+}
+
+/** Only selection/fit facts, without registration, financial runway or a full signing preview. */
+export function recruitmentFit(w: World, offer: TransferOffer, context = recruitmentContext(w)) {
+  const { before, opponentTactic, beforeStrength, beforeFit } = context;
+  const { arriving, after, willStart } = recruitmentSelection(w, offer, before);
   // The slot he would take (→CLUB-14): where he beats the starter by most at the slot, else the
   // weakest of his main position's; his 실효 OVR there on arrival and once settled (→PLAYER-11).
   const slots = formationOf(w.tactic);
@@ -104,7 +115,7 @@ export function recruitmentFit(w: World, offer: TransferOffer, context = recruit
     beforeFit,
     afterFit,
     fitDelta: afterFit - beforeFit,
-    willStart: !alreadyOwned && after.some((player) => player.id === offer.player.id),
+    willStart,
   };
 }
 
@@ -120,16 +131,18 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
     }),
     full = !!registrationReason,
     fit = recruitmentFit(w, offer);
+  const distress = distressSigningReason(w, offer.player, offer.freeAgent, loan);
   const fee = loan ? offer.loanFee : offer.fee,
     wage = offer.player.wage,
     annualAfter = BigInt(operatingCost(w)) + BigInt(wage),
     cashAfter = BigInt(w.cash) - BigInt(fee),
     affordable = BigInt(w.cash) >= BigInt(fee),
-    eligible = offer.available && !alreadyOwned && !full;
+    eligible = offer.available && !alreadyOwned && !full && !distress;
   const runway =
     cashAfter > 0n && annualAfter > 0n ? (cashAfter * BigInt(SEASON_ROUNDS)) / annualAfter : 0n;
   const reason =
-    !offer.available || alreadyOwned
+    distress ??
+    (!offer.available || alreadyOwned
       ? sourceMessage('copy.recruitment.a831dc1d01')
       : full
         ? registrationReason!
@@ -137,7 +150,7 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
           ? sourceMessage('copy.playing_coach.8791d586e5')
           : fit.willStart
             ? sourceMessage('copy.recruitment.d02fa95e5e')
-            : sourceMessage('copy.recruitment.220bcc37f2');
+            : sourceMessage('copy.recruitment.220bcc37f2'));
   return {
     ...fit,
     fee,

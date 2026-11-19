@@ -1,3 +1,5 @@
+import { renewalAnswer, renewalContext, RENEWAL } from './renewal-answer';
+import { pruneRenewalBids } from './renewal-bids';
 import { retirePlayerRecord, settleAbsentPlayerRecords } from './player-records';
 import { recordRetirementNews } from './news';
 /** The shared summer of every playable club nobody owns (→WORLD-16). */
@@ -16,14 +18,7 @@ import { departmentMultiplier } from './staff';
 import { clubStyle } from './tactics';
 import { marketWageAt } from './market-prices';
 import { npcCanPay } from './books';
-import {
-  capFreeAgents,
-  closeFreeAgents,
-  joinFreeAgents,
-  npcContractTerm,
-  refreshFreeAgents,
-} from './free-agents';
-import { SQUAD_MINIMUM } from './squad-size';
+import { capFreeAgents, closeFreeAgents, joinFreeAgents, refreshFreeAgents } from './free-agents';
 import { compareIds } from './primitives';
 import { currentDay } from './calendar';
 import { transferWindowDays } from './transfer-window';
@@ -33,6 +28,7 @@ import {
   clubById,
   divisionLevel,
   generatedPlayer,
+  joinClub,
   invalidateNpcSquad,
   invalidateNpcSquads,
   clubStrength,
@@ -211,8 +207,7 @@ export function intakeNpcYouth(
     p.potential = Math.max(mainOvr(p), potential);
     // Its wage is quoted on that final OVR and potential: a young player's quote reads both.
     if (refillOnly) p.wage = marketWageAt(c.country, year, c.tier, p);
-    p.graduate = true;
-    p.joined = year;
+    joinClub(p, 'academy', year);
     p.fatigue = clubStyle(c) === 'press' ? PRESS_LOAD_FATIGUE : 0;
     p.until = year + integer(random(`${w.seed}:${id}:contract`), 1, 5);
     if (!registrationExempt(state.rule, year, p) && state.counted >= state.allowed) break;
@@ -223,11 +218,36 @@ export function intakeNpcYouth(
   }
 }
 
-/** Needed expiring players renew at their new division's wage; the rest leave as themselves. */
+/** Scoped observation only: immutable facts, never live club/player objects. */
+export const NPC_RENEWAL_FLOW: {
+  observe?: (
+    event: Readonly<{
+      club: string;
+      kind: 'offered' | 'accepted' | 'refused' | 'releasedUnoffered';
+    }>,
+  ) => void;
+} = {};
+const renewalEvent = (
+  club: string,
+  kind: Parameters<NonNullable<typeof NPC_RENEWAL_FLOW.observe>>[0]['kind'],
+) => NPC_RENEWAL_FLOW.observe?.(Object.freeze({ club, kind }));
+
+/** The close offers needed expiring players terms; only an actually expired contract is released. */
 export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
   const players = w.squads?.[c.id];
   if (!players) return;
+  for (const p of players) pruneRenewalBids(w, p, c);
   const xi = new Set(startingSquad(w, c).map((p) => p.id));
+  const cover = new Set<string>();
+  const counts = { GK: 0, DF: 0, MF: 0, FW: 0 };
+  for (const p of players) if (xi.has(p.id)) counts[lineOf(p.position)]++;
+  for (const p of players) {
+    const line = lineOf(p.position);
+    if (!xi.has(p.id) && counts[line] < LINE_MINIMUM[line]) {
+      cover.add(p.id);
+      counts[line]++;
+    }
+  }
   const expiring = players
     .filter((p) => p.until < year)
     .sort(
@@ -236,26 +256,38 @@ export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
         mainOvr(b) - mainOvr(a) ||
         compareIds(a.id, b.id),
     );
-  // Release surplus first, so its old contracts do not consume the renewal budget.
   const renewing: Player[] = [];
-  for (const p of [...expiring].reverse()) {
-    const current = w.squads![c.id]!;
-    const line = lineOf(p.position);
+  for (const p of expiring) {
     const needed =
       xi.has(p.id) ||
-      current.length <= SQUAD_MINIMUM ||
-      current.filter((q) => lineOf(q.position) === line).length <= LINE_MINIMUM[line];
+      cover.has(p.id) ||
+      (year - p.born <= RENEWAL.prospectAge &&
+        p.potential >= divisionLevel(c.tier) + RENEWAL.prospectAbove);
     if (needed) renewing.push(p);
-    else joinFreeAgents(w, p, year, c.id);
+    else {
+      joinFreeAgents(w, p, year, c.id);
+      renewalEvent(c.id, 'releasedUnoffered');
+    }
   }
-  for (const p of renewing.reverse()) {
+  for (const p of renewing) {
     const wage = marketWageAt(c.country, year, c.tier, p);
-    if (npcCanPay(w, c, wage, p.id, year)) {
-      p.wage = wage;
-      p.until = year + npcContractTerm(year - p.born) - 1;
-      const job = w.people?.[p.id]?.employment.find((j) => j.role === 'player' && !j.to);
-      if (job) job.contractUntil = { year: p.until, day: 365 };
-    } else joinFreeAgents(w, p, year, c.id);
+    if (!npcCanPay(w, c, wage, p.id, year)) {
+      joinFreeAgents(w, p, year, c.id);
+      renewalEvent(c.id, 'releasedUnoffered');
+      continue;
+    }
+    renewalEvent(c.id, 'offered');
+    const answer = renewalAnswer(w, p, renewalContext(w, c, p, wage, wage, year));
+    renewalEvent(c.id, answer.accept ? 'accepted' : 'refused');
+    if (!answer.accept) {
+      joinFreeAgents(w, p, year, c.id);
+      continue;
+    }
+    p.wage = wage;
+    const term = year - p.born >= RENEWAL.veteranTermAge ? 1 : RENEWAL.maxTerm;
+    p.until = year + term - 1;
+    const job = w.people?.[p.id]?.employment.find((j) => j.role === 'player' && !j.to);
+    if (job) job.contractUntil = { year: p.until, day: 365 };
   }
 }
 

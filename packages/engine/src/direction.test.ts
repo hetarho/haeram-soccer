@@ -32,7 +32,7 @@ import {
 } from './index';
 import { careerWorld } from './career.testkit';
 import { spendingStance } from './delegation';
-import { holdTemperament } from './delegation.testkit';
+import { holdTemperament, projectCashTo } from './delegation.testkit';
 
 const world = (seed = 'direction') => careerWorld({ seed });
 /** Cash covering `rounds` rounds of the club's fixed costs. */
@@ -89,9 +89,8 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(coachCriteriaOf(w).volunteer).toBe(true);
   });
 
-  it('only the plain insolvency stop reads the cash; the runway test sets the sale steps', () => {
+  it('keeps fixed-cost cash safety and actual distress sale rows distinct', () => {
     const w = world('direction-finance');
-    // Five rounds of costs pass the stop (a month), three do not, whoever the 단장 is.
     for (const temperament of ['balanced', 'cautious', 'bold'] as const) {
       holdTemperament(w, 'director', temperament);
       w.cash = cashFor(w, 5);
@@ -99,47 +98,48 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
       w.cash = cashFor(w, 3);
       expect(affordable(w, 0n, 0n)).toBe(false);
     }
-
-    // The 단장's runway test (→ECON-33) failing at the current wage bill is a factor of his answer
-    // as the selling club, failing at half the runway a stronger one; a cash crisis too
-    // (→CLUB-52): 0 while it passes, 1 failing, 2 failing at half, 'crisis' in a crisis.
-    const pressure = () => {
-      const context = saleContext(w, { playerId: p.id, sellerId: w.playerClub, fee: '1' })!;
-      return context.cashCrisis ? 'crisis' : context.wageLine;
-    };
-    const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
-    p.born = w.year - 26;
-    p.until = w.year + 3;
-    holdTemperament(w, 'director', 'balanced');
-    const annual = BigInt(operatingCosts(w).annual),
-      loss = annual / 5n;
-    w.budgetPlan = { year: w.year, revenue: (annual - loss).toString(), sales: '0' };
-    // 적당히 at 균형: four seasons of the loss to cover above a quarter of a year kept back.
-    const capital = (seasons: bigint) => (w.cash = (loss * seasons + annual / 4n).toString());
-    capital(4n);
-    expect(pressure()).toBe(0);
-    capital(3n);
-    expect(pressure()).toBe(1);
-    capital(1n);
-    expect(pressure()).toBe(2);
-    // Asked to hold at all costs a 균형형 단장 allows one season of the loss; asked to sell
-    // readily, none at all.
-    w.delegationRequests = { sales: 5 };
-    expect(pressure()).toBe(0);
-    w.delegationRequests = { sales: 1 };
-    capital(10n);
-    expect(pressure()).toBe(2);
-    delete w.delegationRequests;
-    w.cash = cashFor(w, 3);
-    expect(pressure()).toBe('crisis');
-    // An untouchable star: the runway test failing at half the runway lowers the price by 25.
-    capital(4n);
+    const p = activePlayers(w)[0];
+    const context = () => saleContext(w, { playerId: p.id, sellerId: w.playerClub, fee: '1' })!;
+    w.cash = cashFor(w, 50);
+    expect(context()).toMatchObject({ cashCrisis: false, distress: undefined });
     expect(untouchableVerdict(w, 180, false).accept).toBe(false);
-    capital(1n);
+    w.distress = { stage: 1, overHalfRounds: 0 };
+    expect(context().distress).toBe(1);
+    expect(untouchableVerdict(w, 180, false).accept).toBe(false);
+    w.distress.stage = 2;
+    expect(context().distress).toBe(2);
     expect(untouchableVerdict(w, 180, false).accept).toBe(true);
-    // A cash crisis sells.
     w.cash = cashFor(w, 3);
+    expect(context().cashCrisis).toBe(true);
     expect(untouchableVerdict(w, 100, false).accept).toBe(true);
+  });
+
+  it('lowers only an open delegated asking bar below the live floor outside distress', () => {
+    const w = world('direction-sale-floor');
+    handTo(w, 4);
+    holdTemperament(w, 'director', 'balanced');
+    w.delegationRequests = { sales: 4 };
+    const p = activePlayers(w)[0];
+    p.born = w.year - 27;
+    const context = () => saleContext(w, { playerId: p.id, sellerId: w.playerClub, fee: '1' })!;
+    projectCashTo(w, 0n);
+    expect(saleBar(w, p).percent).toBe(130);
+    projectCashTo(w, -1n);
+    expect(saleBar(w, p)).toMatchObject({ percent: 125, reduction: 5 });
+    expect(context().asking).toBe(((BigInt(context().value!) * 125n) / 100n).toString());
+    expect(context().saleBar).toMatchObject({ percent: 125, reduction: 5 });
+    p.stance = 'listed';
+    expect(saleBar(w, p).percent).toBe(130);
+    p.stance = 'untouchable';
+    expect(saleBar(w, p).percent).toBe(130);
+    delete p.stance;
+    for (const stage of [1, 2, 3] as const) {
+      w.distress = { stage, overHalfRounds: 0 };
+      expect(saleBar(w, p).percent).toBe(130);
+    }
+    delete w.distress;
+    w.settings!.responsibilities.sales = 'direct';
+    expect(saleBar(w, p).percent).toBe(130);
   });
 
   it('매각 기조 sets the sale bar, the asking fee of value and for a prospect', () => {
@@ -161,7 +161,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     }
     p.born = w.year - 19;
     p.potential = 99;
-    expect(saleBar(w, p)).toEqual({ percent: 250, prospect: true });
+    expect(saleBar(w, p)).toMatchObject({ percent: 250, prospect: true });
     holdRows(w, { build: { market: 'selling' } });
     expect(saleBar(w, p).percent).toBe(160);
   });

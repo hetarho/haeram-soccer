@@ -8,7 +8,7 @@ import app from '../../../shared/ui/styles/App.module.css';
 import s from './GameOver.module.css';
 
 /**
- * The end of a career (→WEB-56, OWNER-16): its cause — 구단 파산, 구단주 파산 or 구단주 퇴진 — the
+ * The end of a career (→WEB-56, OWNER-16): its owner cause or a neutral label for a persisted club end, the
  * season it ended in, what the club achieved before it, its records to keep and a new game.
  */
 export function GameOver({

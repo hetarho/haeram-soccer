@@ -37,9 +37,14 @@ function world(strong = false, released = false) {
   if (released) releaseFixturePlayers(w);
   return w;
 }
-/** The first of another club's players on the scout's list, and the first free agent. */
-const clubIndex = (w: ReturnType<typeof world>) =>
-  transferOffers(w).findIndex((offer) => !offer.freeAgent);
+/**
+ * The first of another club's players on the scout's list who agrees to our terms (→CLUB-53) at
+ * the asking fee, and the first free agent.
+ */
+const clubIndex = (w: ReturnType<typeof world>, loan = false) =>
+  transferOffers(w).findIndex(
+    (offer, i) => !offer.freeAgent && wouldJoin(w, offer.player.id, (c) => buyOffer(c, i, loan)),
+  );
 const freeIndex = (w: ReturnType<typeof world>) =>
   transferOffers(w).findIndex((offer) => offer.freeAgent);
 
@@ -47,7 +52,10 @@ describe('recruitment build and budget previews', () => {
   it('matches real automatic starters, match actors and the exact post-recruitment ledger', () => {
     const w = world(),
       index = transferOffers(w).findIndex(
-        (one) => !one.freeAgent && recruitmentPreview(w, one).fitDelta > 0,
+        (one, i) =>
+          !one.freeAgent &&
+          recruitmentPreview(w, one).fitDelta > 0 &&
+          wouldJoin(w, one.player.id, (c) => buyOffer(c, i)),
       ),
       offer = transferOffers(w)[index]!,
       before = canonical(w),
@@ -107,7 +115,7 @@ describe('recruitment build and budget previews', () => {
 
   it('uses actual loan cost and full wages and retains the signed identity after reload', async () => {
     const w = world(),
-      index = clubIndex(w),
+      index = clubIndex(w, true),
       offer = transferOffers(w)[index]!,
       preview = recruitmentPreview(w, offer, true);
     expect(preview.fee).toBe(offer.loanFee);

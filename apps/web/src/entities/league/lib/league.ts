@@ -2,25 +2,24 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import type {
   Club,
   Fixture,
+  LeagueDeduction,
   TableRow,
   World,
 } from '../../../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../../../packages/catalogs/src/index';
-import { groupKey } from '../../../../../../packages/engine/src/league-fixtures';
+import {
+  archivedLeaguePoints,
+  emptyTable,
+  leaguePoints,
+  ranked,
+  groupKey,
+} from '../../../../../../packages/engine/src/league-fixtures';
 import { currentDay, fixtureDay } from '../../../../../../packages/engine/src/calendar';
 import { divisionName } from '../../../presentation/competitionLabels';
 
 export { divisionName };
 
-const emptyRow = (): TableRow => ({
-  played: 0,
-  won: 0,
-  drawn: 0,
-  lost: 0,
-  gf: 0,
-  ga: 0,
-  points: 0,
-});
+const emptyRow = emptyTable;
 
 /** League points for a win, a draw and a loss: the settled tables, last results and projections. */
 export const RESULT_POINTS = { win: 3, draw: 1, loss: 0 } as const;
@@ -28,7 +27,13 @@ export const RESULT_POINTS = { win: 3, draw: 1, loss: 0 } as const;
 export interface LeagueRound {
   year: number;
   round: number;
-  rows: { id: string; rank: number; points: number; gf: number; ga: number }[];
+  rows: ({
+    id: string;
+    rank: number;
+    points: number;
+    gf: number;
+    ga: number;
+  } & Partial<LeagueDeduction>)[];
 }
 
 export function ownLeagueIds(w: World): string[] {
@@ -89,16 +94,10 @@ export function clubDivision(w: World, club: Club) {
 }
 
 export function orderIds(ids: string[], tables: Record<string, TableRow>): string[] {
-  return [...ids].sort((a, b) => {
-    const x = tables[a] || emptyRow(),
-      y = tables[b] || emptyRow();
-    return (
-      y.points - x.points ||
-      y.gf - y.ga - (x.gf - x.ga) ||
-      y.gf - x.gf ||
-      (a < b ? -1 : a > b ? 1 : 0)
-    );
-  });
+  return ranked(
+    { tables },
+    ids.map((id) => ({ id })),
+  ).map((club) => club.id);
 }
 
 /** A league of the pyramid: country, division (tier) and regional group. */
@@ -220,7 +219,8 @@ export function archivedTimeline(w: World, year: number): ArchivedRound[] {
         rows: snapshot.rows.map(([index, points, gf, ga], i) => ({
           id: w.clubs[index].id,
           rank: i + 1,
-          points,
+          points: archivedLeaguePoints(snapshot, w.clubs[index].id, points),
+          ...snapshot.leagueDeductions?.[w.clubs[index].id],
           gf,
           ga,
         })),
@@ -287,13 +287,25 @@ export function leagueTimeline(w: World, ids: string[]): LeagueRound[] {
         }
       }
     }
+    // Earlier reconstruction has no dated sanctions; only the terminal table reads current receipts.
+    if (round === rounds.at(-1))
+      for (const id of ids) {
+        const live = w.tables[id];
+        if (live?.deducted !== undefined) {
+          tables[id].deducted = live.deducted;
+          tables[id].deductionReason = live.deductionReason;
+        }
+      }
     return {
       year: w.year,
       round,
       rows: orderIds(ids, tables).map((id, i) => ({
         id,
         rank: i + 1,
-        points: tables[id].points,
+        points: leaguePoints(tables[id]),
+        ...(tables[id].deducted !== undefined
+          ? { deducted: tables[id].deducted, deductionReason: tables[id].deductionReason }
+          : {}),
         gf: tables[id].gf,
         ga: tables[id].ga,
       })),
@@ -371,8 +383,8 @@ export function leagueOverviewModel(w: World) {
     change: rankChange(timeline, w.playerClub),
     threshold,
     inside,
-    gap: target ? Math.abs(table.points - target.points) : 0,
-    cushion: relegationId ? table.points - w.tables[relegationId].points : undefined,
+    gap: target ? Math.abs(leaguePoints(table) - leaguePoints(target)) : 0,
+    cushion: relegationId ? leaguePoints(table) - leaguePoints(w.tables[relegationId]) : undefined,
     /** The latest result and how many matches in a row (of the last five) ended that way. */
     streak: { result: last, length: run < 0 ? form.length : run },
     lastMatch,

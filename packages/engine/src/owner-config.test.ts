@@ -100,6 +100,9 @@ describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
       starSale: { change: -4, top: 3 },
       identity: -20,
       ticket: { perStep: -0.2 },
+      debt: -0.2,
+      distress: { 1: -5, 2: -10, 3: -20 },
+      homegrownSale: -3,
     });
     // One number for 팬들의 친구, read by the trait and the drivers alike.
     expect(FAN_MOOD.friendly).toBe(OWNER_TRAITS.fansFriend.drop);

@@ -338,7 +338,7 @@ describe('outgoing bids', () => {
     }
   });
 
-  it('answers modest bids with counters or refusals and is deterministic per seed', () => {
+  it('counters modest bids and refuses low bids deterministically per seed', () => {
     // One run from a world founded here, so the founding's determinism is checked too.
     const first = bidAll(80),
       again = bidAll(80, undefined, true);
@@ -348,8 +348,6 @@ describe('outgoing bids', () => {
     expect(statuses).not.toContain('pending');
     const other = bidAll(80, 'another-market');
     expect(canonical(outBids(other.w))).not.toBe(canonical(outBids(first.w)));
-    // Across both markets some modest bids are refused outright.
-    expect([...statuses, ...outBids(other.w).map((b) => b.status)]).toContain('rejected');
     const lowball = bidEvery(biddingMarket(), 1);
     expect(outBids(lowball.w).filter((b) => b.status === 'rejected').length).toBeGreaterThanOrEqual(
       6,
@@ -605,7 +603,7 @@ describe('personal terms (→CLUB-53)', () => {
   });
 
   it('ends the bid when he refuses: no fee paid, no player, a report naming his factors', () => {
-    const w = world(),
+    const w = biddingMarket(),
       i = whoAnswers(w, clubIndexes(w), (trial, j) => generous(trial, j), false),
       offer = transferOffers(w)[i]!,
       cash = w.cash;
@@ -626,14 +624,14 @@ describe('personal terms (→CLUB-53)', () => {
   });
 
   it('answers the same terms the same way and a bigger step can win him', () => {
-    const w = world(),
+    const w = biddingMarket(),
       i = whoAnswers(w, clubIndexes(w), (trial, j) => generous(trial, j), false);
-    const again = world();
+    const again = biddingMarket();
     generous(again, i);
     generous(w, i);
     expect(canonical(outBids(again))).toBe(canonical(outBids(w)));
     // His chance rises with the step; the draw stays his own.
-    const steps = bidOutlook(world(), i, '1').terms!.steps;
+    const steps = bidOutlook(biddingMarket(), i, '1').terms!.steps;
     expect(steps[3]!.chance).toBeGreaterThan(steps[0]!.chance);
   });
 

@@ -6,7 +6,6 @@ import {
   makePlayer,
   npcSquad,
   squad,
-  SQUAD_SPREAD,
   squadPlaceAge,
   squadPlaces,
   spreadTerm,
@@ -171,10 +170,14 @@ describe('the refill of a sold place', () => {
     ],
     mentors: [],
   });
-  /** How far below the club's strength a place's player plays at its slot. */
-  const below = (c: Club, slot: number, p: Player) => {
+  /** The refill discount after the player’s fixed class and current age term. */
+  const below = (c: Club, slot: number, p: Player, seed: string, year: number) => {
     const place = squadPlaces(clubStyle(c))[slot]!;
-    return c.strength - ovrAt(p.attrs, place.position, place.role);
+    return (
+      c.strength +
+      spreadTerm(seed, p.id, year - p.born) -
+      ovrAt(p.attrs, place.position, place.role)
+    );
   };
   const cases = (['r-a', 'r-b', 'r-c'] as const).flatMap((seed) =>
     Array.from({ length: 8 }, (_, k) => ({
@@ -201,7 +204,7 @@ describe('the refill of a sold place', () => {
       expect(year - refill.born).toBeLessThanOrEqual(35);
       offsets.add(offset);
       // A generated player's OVR lands within about a point of his level (attributes are whole).
-      const gap = below(c, slot, refill);
+      const gap = below(c, slot, refill, seed, year);
       expect(gap, `${seed} ${c.id} ${slot}`).toBeGreaterThanOrEqual(1);
       expect(gap, `${seed} ${c.id} ${slot}`).toBeLessThanOrEqual(7);
       gaps.push(gap);
@@ -224,7 +227,7 @@ describe('the refill of a sold place', () => {
         next = continuousSquad(worldOf(seed, year + 1, c, [record]), c)[slot]!;
       expect([next.id, next.name, next.born]).toEqual([now.id, now.name, now.born]);
       expect(year + 1 - next.born).toBe(year - now.born + 1);
-      expect(Math.abs(below(c, slot, next))).toBeLessThanOrEqual(1.2);
+      expect(Math.abs(below(c, slot, next, seed, year + 1))).toBeLessThanOrEqual(1.2);
       checked++;
     }
     expect(checked).toBeGreaterThan(5);
@@ -239,7 +242,7 @@ describe('the refill of a sold place', () => {
         second = squadAfter[slot]!;
       expect(second.id).toBe(`${first.id}:1`);
       expect(second.name === first.name && second.born === first.born).toBe(false);
-      expect(below(c, slot, second)).toBeGreaterThanOrEqual(1);
+      expect(below(c, slot, second, seed, year)).toBeGreaterThanOrEqual(1);
       expect(new Set(squadAfter.map((p) => p.id)).size).toBe(squadAfter.length);
       expect(squadAfter.some((p) => people.some((person) => person.id === p.id))).toBe(false);
     }
@@ -260,28 +263,7 @@ describe('the refill of a sold place', () => {
         expect(refill.id).toBe(
           `${c.id}:vacancy:${slot}:${squadPlaceAge(seed, c.id, year, slot).cohort}`,
         );
-        expect(Math.abs(below(c, slot, refill))).toBeLessThanOrEqual(1.2);
-      }
-    }
-  });
-
-  it('takes his class and age term on top with `SQUAD_SPREAD` at `spread`', () => {
-    for (const { seed, c, year, slot } of cases.slice(0, 12)) {
-      const gone = npcSquad(seed, year, c)[slot]!,
-        w = worldOf(seed, year, c, [sold(gone, c.id, year)]),
-        flat = continuousSquad(w, c)[slot]!;
-      SQUAD_SPREAD.inForce = 'spread';
-      try {
-        const spread = continuousSquad(w, c)[slot]!,
-          term = spreadTerm(seed, spread.id, year - spread.born);
-        expect([spread.id, spread.name, spread.born]).toEqual([flat.id, flat.name, flat.born]);
-        expect(
-          below(c, slot, flat) - below(c, slot, spread) - term,
-          `${seed} ${c.id} ${slot}`,
-        ).toBeLessThanOrEqual(2);
-        expect(below(c, slot, flat) - below(c, slot, spread) - term).toBeGreaterThanOrEqual(-2);
-      } finally {
-        SQUAD_SPREAD.inForce = 'flat';
+        expect(Math.abs(below(c, slot, refill, seed, year))).toBeLessThanOrEqual(1.2);
       }
     }
   });

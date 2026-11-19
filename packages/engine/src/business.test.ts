@@ -108,12 +108,17 @@ describe('business delegation and cash warnings', () => {
     clubOf(w).fans = 800;
     const perRound = BigInt(operatingCosts(w).annual) / 46n;
     w.cash = (perRound * BigInt(CASH_WARNING_ROUNDS - 4)).toString();
+    // The delegated 단장's season-end floor warning (→ECON-33) is its own item, also once a season.
+    const runway = () =>
+      finance(w).filter((item) => /^운영자금이 약 \d+주분 남았어요$/.test(item.title));
+    const floor = () => finance(w).filter((item) => item.title === '단장 경고 · 시즌 말 현금');
     advanceRound(w, undefined, false);
-    const [warning] = finance(w);
+    const [warning] = runway();
     expect(warning).toMatchObject({ attention: false });
-    expect(warning.title).toMatch(/^운영자금이 약 \d+주분 남았어요$/);
+    expect(finance(w)).toHaveLength(runway().length + floor().length);
     advanceRound(w, undefined, false);
-    expect(finance(w)).toHaveLength(1);
+    expect(runway()).toHaveLength(1);
+    expect(floor().length).toBeLessThanOrEqual(1);
     // A healthy club is never warned.
     const rich = world();
     rich.cash = (perRound * 1000n).toString();

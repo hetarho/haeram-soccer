@@ -7,7 +7,11 @@ import type {
   World,
 } from '../../../../../../packages/contracts/src/types';
 import { country } from '../../../../../../packages/catalogs/src/index';
-import { compareIds } from '../../../../../../packages/engine/src/primitives';
+import {
+  archivedLeaguePoints,
+  emptyTable,
+  ranked,
+} from '../../../../../../packages/engine/src/league-fixtures';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
 import type { GameClient } from '../../../runtime/client';
 
@@ -130,12 +134,23 @@ export function finalRows(
   standings?: number[][],
 ): FinalRow[] | undefined {
   const last = seasonSnapshots(w, season).at(-1);
-  if (last) return last.rows.map(([club, points, gf, ga]) => [club, points, gf, ga]);
-  return leagueRows(w, standings, {
-    code: clubOf(w).country,
-    tier: season.tier,
-    group: season.group,
-  });
+  if (last)
+    return last.rows.map(([club, points, gf, ga]) => [
+      club,
+      archivedLeaguePoints(last, w.clubs[club].id, points),
+      gf,
+      ga,
+    ]);
+  return leagueRows(
+    w,
+    standings,
+    {
+      code: clubOf(w).country,
+      tier: season.tier,
+      group: season.group,
+    },
+    season,
+  );
 }
 /**
  * Any professional league's final table from a closed season's archived standings (→WEB-65):
@@ -145,20 +160,34 @@ export function leagueRows(
   w: World,
   standings: number[][] | undefined,
   league: { code: string; tier: number; group: number },
+  archive: Pick<SeasonArchive, 'leagueDeductions'> = {},
 ): FinalRow[] | undefined {
   const id = (index: number) => w.clubs[index]?.id ?? '';
   if (!standings || league.tier >= country(league.code).groups.length) return undefined;
-  const rows = standings
-    .filter(
-      (row) =>
-        w.clubs[row[0]]?.country === league.code &&
-        row[1] === league.tier &&
-        row[2] === league.group,
-    )
-    .sort(
-      (a, b) =>
-        b[3] - a[3] || b[4] - b[5] - (a[4] - a[5]) || b[4] - a[4] || compareIds(id(a[0]), id(b[0])),
-    )
-    .map((row): FinalRow => [row[0], row[3], row[4], row[5]]);
-  return rows.length ? rows : undefined;
+  const rows = standings.filter(
+    (row) =>
+      w.clubs[row[0]]?.country === league.code && row[1] === league.tier && row[2] === league.group,
+  );
+  const tables = Object.fromEntries(
+    rows.map((row) => [
+      id(row[0]),
+      {
+        ...emptyTable(),
+        points: row[3],
+        gf: row[4],
+        ga: row[5],
+        ...archive.leagueDeductions?.[id(row[0])],
+      },
+    ]),
+  );
+  const sorted = ranked(
+    { tables },
+    rows.map((row) => ({ id: id(row[0]), row })),
+  ).map(({ row }): FinalRow => [
+    row[0],
+    archivedLeaguePoints(archive, id(row[0]), row[3]),
+    row[4],
+    row[5],
+  ]);
+  return sorted.length ? sorted : undefined;
 }

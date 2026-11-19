@@ -62,6 +62,11 @@ describe('the bought club’s seasons before the owner (→HIST-21)', () => {
     expect(archivedFinish({ clubs }, standings, INDEX)).toEqual({ tier: 0, group: 0, place: 2 });
     expect(archivedFinish({ clubs }, standings, 3)).toEqual({ tier: 1, group: 0, place: 1 });
     expect(archivedFinish({ clubs }, [], INDEX)).toBeUndefined();
+    expect(
+      archivedFinish({ clubs }, standings, INDEX, {
+        'eng-a': { deducted: 10, deductionReason: 'administration' },
+      })?.place,
+    ).toBe(1);
   });
 
   it('reads finish, title and the cup runs the archive keeps, oldest first', () => {

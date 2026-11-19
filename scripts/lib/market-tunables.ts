@@ -16,7 +16,7 @@ import {
   SALE_FACTOR_VALUES,
   SALE_SHARE,
 } from '../../packages/engine/src/transfer-policy';
-import { NPC_SQUAD, SQUAD_SPREAD } from '../../packages/engine/src/world';
+import { NPC_SQUAD, SQUAD_SPREAD_CONFIG } from '../../packages/engine/src/world';
 import { applyTunables, plainClone } from './market-seasons';
 
 export const MARKET_TUNABLES: Record<string, object> = {
@@ -28,7 +28,7 @@ export const MARKET_TUNABLES: Record<string, object> = {
   SALE_SHARE,
   SALE_FACTOR_VALUES,
   TERMS_VALUES,
-  SQUAD_SPREAD,
+  SQUAD_SPREAD_CONFIG,
   CLUB_BOOKS,
   MARKET_CONFIG,
   FREE_AGENT_CONFIG,

@@ -1,0 +1,20 @@
+{
+  "reviewer": "independent Claude Sonnet session",
+  "author": "Codex",
+  "candidateCommit": "c68ac0542c8dd391d9f299a47d60c0cb99c3c201",
+  "outcome": "approved",
+  "resultSha256": {
+    "results.json": "dd729d7dacbcd836c0776da1f27d741a158ddf68db757fc8547de718935ae183",
+    "diagnostic-results.json": "abc63d78e50f31634ecb4f2fc0a29490475598af976728024035259b626ad8c6",
+    "save-repair-replay.json": "070d9ffd16cbeb8b0b71abc20716f3931a66f134702343cd738eda01f884e307"
+  },
+  "observed": [
+    "The portable fixture definitions preserve all fields outside the expected blocks.",
+    "Only the diagnostic postprocessor digest changed in the replay recipe.",
+    "The executed manifest matches the original lived-recipe receipt byte for byte.",
+    "Raw completions, anchored counts, and disclosed misses support the result summary."
+  ],
+  "limits": [
+    "Reviewed independently without repeating the full simulations or task checks."
+  ]
+}

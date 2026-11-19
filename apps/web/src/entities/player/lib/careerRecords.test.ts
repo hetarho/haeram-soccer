@@ -62,6 +62,15 @@ it('uses denominator-aware season records and retains inactive leaders without m
   expect(JSON.stringify(w)).toBe(before);
 });
 
+it('uses the deducted league points when selecting the points-per-game record', () => {
+  const w = world();
+  w.history = [
+    season(1951, { points: 30, played: 10, deducted: 10, deductionReason: 'administration' }),
+    season(1952, { points: 25, played: 10 }),
+  ];
+  expect(careerRecords(w).points?.year).toBe(1952);
+});
+
 it('starts the record book and the cabinet at the takeover (→HIST-21, WEB-28)', () => {
   const w = world();
   expect(w.owner!.takeover.year).toBe(1950);

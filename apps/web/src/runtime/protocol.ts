@@ -1,3 +1,4 @@
+import type { contractRenewalReads } from './contractRenewals';
 import type { Club } from '../../../../packages/contracts/src/types';
 import { newsItemSchema } from '../../../../packages/contracts/src/news';
 import type { NewsItem } from '../../../../packages/contracts/src/news';
@@ -366,6 +367,8 @@ export type ProjectedWorld = Omit<
   /** Always supplied by the worker; optional for earlier prepared views. */
   clubs: (Club & { rating?: number })[];
   disciplineNames?: Record<string, { name: string; club: string }>;
+  /** Bounded own-talk facts computed with the worker's retained bid/stint history. */
+  renewalChances?: ReturnType<typeof contractRenewalReads>;
   /**
    * The next opponent's actual eligible XI and its manager, resolved on the worker: the person
    * registry names the XI, and the manager market (orchestration, →ARCH-4) names the manager.

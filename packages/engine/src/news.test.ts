@@ -149,10 +149,14 @@ describe('club news', () => {
     for (const id of Object.keys(champion.tables))
       if (id !== champion.playerClub) champion.tables[id].points = 0;
     champion.tables[champion.playerClub].points = 999;
+    champion.tables[champion.playerClub].deducted = 10;
+    champion.tables[champion.playerClub].deductionReason = 'administration';
     closeSeason(champion);
     const honour = clubNews(champion).find((n) => n.id === `${champion.year - 1}:honour:league`);
     expect(honour).toMatchObject({ celebrate: true });
     expect(honour!.title).toContain('우승');
+    expect(honour!.detail).toContain('989');
+    expect(honour!.detail).not.toContain('999');
   });
 
   it('reports the closed season’s Ballon d’Or, celebrating only our own winner (→HIST-11)', () => {

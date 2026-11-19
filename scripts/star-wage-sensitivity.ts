@@ -32,9 +32,7 @@ const results = [];
 for (const variant of ['baseline', 'candidate']) {
   Object.assign(
     MARKET_CONFIG.star,
-    variant === 'baseline'
-      ? { from: 100, full: 101, maximum: 1, globalFrom: 100, globalFull: 101 }
-      : current.star,
+    variant === 'baseline' ? { from: 100, full: 101, maximum: 1 } : current.star,
   );
   Object.assign(
     BALLON_DOR_CONFIG.premium,

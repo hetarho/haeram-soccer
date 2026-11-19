@@ -68,6 +68,25 @@ describe('the current game version (→SAVE-10, SAVE-26)', () => {
     }
   });
 
+  it('preserves an active owner and optional fan mix through compatible writer activation', () => {
+    for (const engine of COMPATIBLE_ENGINE_VERSIONS)
+      for (const mix of [undefined, { results: 45, identity: 20, finance: 10, stars: 25 }]) {
+        const stored = career(engine);
+        stored.owner = {
+          fanMood: 37.25,
+          traits: ['fansFriend'],
+          takeover: { year: 1950, clubId: 'club' },
+          ...(mix ? { fanDisposition: mix } : {}),
+        } as World['owner'];
+        const before = structuredClone(stored);
+        const upgraded = upgradeWorldRules(stored, PIN);
+        expect(upgraded.owner).toEqual(before.owner);
+        expect(upgraded.owner).toBe(stored.owner);
+        expect(Object.hasOwn(upgraded.owner!, 'fanDisposition')).toBe(!!mix);
+        expect(stored).toEqual(before);
+      }
+  });
+
   it('a current checkpoint moves only its catalog pin and revision on activation', () => {
     const stored = career(CURRENT_ENGINE_VERSION);
     const before = structuredClone(stored);

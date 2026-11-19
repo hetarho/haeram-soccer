@@ -1,3 +1,4 @@
+import { takeoverFanDisposition } from './fan-disposition';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/schema';
 import type { OwnerTrait, WealthTier } from '../../contracts/src/owner';
@@ -13,7 +14,7 @@ import {
   TAKEOVER_DEBT,
 } from './owner-config';
 import { clubManager, managerOffers } from './managerMarket';
-import { clubPlayers, makePlayer } from './world';
+import { clubPlayers, invalidateNpcSquad, makePlayer } from './world';
 import { formationOf, isOwnSeason, lastOwnSeason, ownSeasons } from './player-state';
 import { lineOf } from './player';
 import { fanFollowing } from './fans';
@@ -60,12 +61,32 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
   it('makes the club as it stands the owner’s, its squad his players at the club’s 조직력', () => {
     const { w, club } = setup();
     club.cohesion = 0.62;
+    club.books!.distress = {
+      stage: 3,
+      overHalfRounds: 8,
+      deductionSeason: w.year,
+      lastRound: { year: w.year, round: 3 },
+      pendingDeduction: { season: w.year + 1, points: 10 },
+    };
+    w.tables[club.id] = { ...w.tables[club.id]!, deducted: 10, deductionReason: 'administration' };
+    const penalized = w.clubs.find((c) => c.id !== club.id)!;
+    w.tables[penalized.id] = {
+      ...w.tables[penalized.id]!,
+      deducted: 10,
+      deductionReason: 'administration',
+    };
+    expect(clubPlayers(w, club).length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
+    // Intentionally leave the keeper slot uncovered to exercise takeover's fill path.
+    w.squads![club.id] = clubPlayers(w, club).filter((p) => (p.positions.GK ?? 0) < 2);
+    invalidateNpcSquad(w, club.id);
     const roster = clubPlayers(w, club);
+    roster[0]!.joined = w.year - 3;
+    roster[0]!.graduate = true;
     const inherited = roster.map(({ id, name, born, attrs, positions, wage, until }) =>
       structuredClone({ id, name, born, attrs, positions, wage, until }),
     );
+    const tenure = roster.map(({ id, joined, graduate }) => ({ id, joined, graduate }));
     const fielded = roster.map((p) => p.id);
-    expect(roster.length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
     expect(
       uncoveredSlots(roster, formationOf(clubManager(w, club).philosophy)).length,
     ).toBeGreaterThan(0);
@@ -80,16 +101,37 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     expect(uncoveredSlots(w.players, formationOf(w.tactic))).toEqual([]);
     for (const player of inherited)
       expect(w.players.find((p) => p.id === player.id)).toMatchObject(player);
+    for (const held of tenure) {
+      const p = w.players.find((one) => one.id === held.id)!;
+      expect(p.joined).toBe(held.joined);
+      expect(p.graduate).toBe(held.graduate);
+    }
     for (const p of w.players) {
-      expect(p).toMatchObject({ status: 'active', fatigue: 0, adaptation: 0.62, joined: w.year });
+      expect(p).toMatchObject({ status: 'active', fatigue: 0, adaptation: 0.62 });
+      if (!fielded.includes(p.id)) expect(p.joined).toBe(w.year);
       expect(p.clauses).toBeDefined();
       expect(w.people?.[p.id]?.club).toBe(club.id);
     }
+    expect(w.players.some((p) => !fielded.includes(p.id))).toBe(true);
     // The generated places are at the club's level, in its division's money.
     for (const p of w.players.filter((q) => !fielded.includes(q.id)))
       expect(p.id.startsWith(`${club.id}:takeover:`)).toBe(true);
     expect(club.cohesion).toBeUndefined();
     expect(club.books).toBeUndefined();
+    expect(w.distress).toEqual({
+      stage: 3,
+      overHalfRounds: 8,
+      deductionSeason: w.year,
+      lastRound: { year: w.year, round: 3 },
+      pendingDeduction: { season: w.year + 1, points: 10 },
+    });
+    expect(w.tables[club.id]).toMatchObject({ deducted: 10, deductionReason: 'administration' });
+    expect(w.tables[penalized.id]).toMatchObject({
+      deducted: 10,
+      deductionReason: 'administration',
+    });
+    expect(w.events.some((e) => e.kind === 'distress-entry')).toBe(false);
+    expect(() => validateWorld(structuredClone(w))).not.toThrow();
   });
 
   it('keeps the manager with his school, style and level; a new club’s staff and settings', () => {
@@ -171,6 +213,7 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
       stake: OWNER_BUSINESS.stake.start,
       dividendShare: OWNER_DIVIDEND.start,
       fanMood: FAN_MOOD.start,
+      fanDisposition: takeoverFanDisposition(w, club),
       ffpInjections: [],
       takeover: {
         year: w.year,
