@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T04:31Z | 2026-11-19T06:31Z | - | gusta-session-start-sv19-0cc2a73b | bc88380b8900 | ea1a0db8eec814a3c131d34b |
+| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T04:31Z | 2026-11-19T06:31Z | T1008 | gusta-session-start-sv19-0cc2a73b | 8c53bba37124 | ea1a0db8eec814a3c131d34b |
 | x10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T05:52Z | 2026-11-19T06:21Z | T998 | gusta-session-start-x10-d3a275d5 | 8a8ed90c788b | fa6c66b81ed935a24bc56d8b |
 
 ## inbox
