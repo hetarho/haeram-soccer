@@ -39,6 +39,7 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'delegation-request': sourceMessage('delegation.outcome.request'),
   'coaching-investment': sourceMessage('copy.outcome.5253fe14dc'),
   'facility-upgrade': sourceMessage('copy.outcome.3340839018'),
+  'facility-auto-upgrade': sourceMessage('facility.auto.outcome'),
   advance: sourceMessage('copy.outcome.52adfbeec0'),
   'advance-days': sourceMessage('copy.outcome.28561aab52'),
   'next-match': sourceMessage('copy.outcome.21a5a9c5ed'),

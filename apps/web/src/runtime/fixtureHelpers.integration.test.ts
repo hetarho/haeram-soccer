@@ -5,10 +5,17 @@ import {
   advanceDays,
   completeRound,
   MATCH_MODEL_RELEASE,
+  nextWork,
   prepareRound,
+  workDays,
 } from '../../../../packages/engine/src/index';
 import { careerWorld } from '../../../../packages/engine/src/career.testkit';
-import { currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
+import {
+  currentDay,
+  daysInSeason,
+  ROUND_INTERVAL_DAYS,
+  seasonLength,
+} from '../../../../packages/engine/src/calendar';
 import { movePerson } from '../../../../packages/engine/src/npc-continuity';
 import { persistedFixturePlayer } from '../../../../packages/engine/src/player-fixtures.testkit';
 import { createFixtureHelper } from './fixtureHelper';
@@ -47,6 +54,17 @@ async function playSeasonAgainstReference(pool: HelperPool) {
   // Synthetic funding avoids bankruptcy while every club, fixture and business day is simulated.
   let reference = careerWorld({ country: 'BEL', seed: 'replica-season' }, MATCH_MODEL_RELEASE);
   reference.cash = '99999999999';
+  const completion = ROUND_INTERVAL_DAYS;
+  const trainingLevel = reference.trainingGround + 1;
+  reference.facilityAutoUpgrade = { training: 'armed' };
+  reference.facilityWorks = {
+    training: {
+      to: trainingLevel,
+      year: reference.year - 1,
+      day: daysInSeason(reference.year - 1) + completion - workDays('training', trainingLevel),
+    },
+  };
+  const successor = nextWork({ ...reference, trainingGround: trainingLevel }, 'training')!;
   let helped = structuredClone(reference);
   const year = reference.year,
     maxDays = seasonLength(reference) + 15;
@@ -73,6 +91,16 @@ async function playSeasonAgainstReference(pool: HelperPool) {
     await playDay(pool, helped, false, { advanceDays, prepareRound, completeRound });
     expect(reference.bankrupt).toBeFalsy();
     expect([reference.year, currentDay(reference)]).not.toEqual(before);
+    if (days === completion) {
+      expect(helped.facilityWorks?.training).toEqual({
+        to: successor.to,
+        year,
+        day: completion,
+      });
+      expect(helped.events.filter((event) => event.kind === 'facility')).toMatchObject([
+        { amount: successor.cost },
+      ]);
+    }
     if (days % 7 === 0 || reference.year !== year)
       expect(canonical(helped)).toBe(canonical(reference));
   }

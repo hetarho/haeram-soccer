@@ -257,6 +257,15 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     expect(w.owner?.takeover.debt).toBe('0');
   });
 
+  it('clears facility work and continuation authorization on takeover', () => {
+    const { w, club } = setup();
+    w.facilityWorks = { training: { to: 1, year: w.year, day: 0 } };
+    w.facilityAutoUpgrade = { training: 'armed', academy: 'awaiting-funds' };
+    takeOver(w, club.id, choice('industrial'));
+    expect(w).not.toHaveProperty('facilityWorks');
+    expect(w).not.toHaveProperty('facilityAutoUpgrade');
+  });
+
   it('lets 석유 재벌 buy the dearest club, the match model recording from the takeover', () => {
     const w = ownerlessWorld('takeover-oil');
     const giant = atPlace(w, 0, 1);

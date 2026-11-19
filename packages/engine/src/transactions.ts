@@ -10,10 +10,20 @@ export function credit(w: World, amount: string) {
   w.cash = (BigInt(w.cash) + BigInt(amount)).toString();
   w.income = (BigInt(w.income) + BigInt(amount)).toString();
 }
+export function canAfford(w: Pick<World, 'cash'>, amount: string) {
+  return BigInt(w.cash) >= BigInt(amount);
+}
 export function debit(w: World, amount: string, mandatory = false) {
   if (BigInt(amount) < 0) throw new Error(sourceMessage('copy.transactions.f9995b6e0b'));
-  if (!mandatory && BigInt(w.cash) < BigInt(amount))
+  if (!mandatory && !canAfford(w, amount))
     throw new Error(sourceMessage('copy.playing_coach.8791d586e5'));
   w.cash = (BigInt(w.cash) - BigInt(amount)).toString();
   w.expense = (BigInt(w.expense) + BigInt(amount)).toString();
+}
+
+/** A discretionary payment that can wait until the club has enough cash. */
+export function tryDebit(w: World, amount: string) {
+  if (!canAfford(w, amount)) return false;
+  debit(w, amount);
+  return true;
 }

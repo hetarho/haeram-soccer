@@ -233,6 +233,7 @@ const selectContentWorld = worldSelector([
   'trainingGround',
   'academyFacility',
   'facilityWorks',
+  'facilityAutoUpgrade',
   'campaigns',
   'sponsors',
   'europe',

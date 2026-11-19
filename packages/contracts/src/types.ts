@@ -1463,6 +1463,8 @@ export interface World {
   academyFacility: number;
   /** Facility works in progress, one per part: the step or level it builds and the day it began. */
   facilityWorks?: Partial<Record<FacilityPart, { to: number; year: number; day: number }>>;
+  /** Owner's continuation settings. Only a completed work can authorize a funded successor. */
+  facilityAutoUpgrade?: Partial<Record<FacilityPart, 'armed' | 'awaiting-funds'>>;
   ticket: number;
   campaigns: Campaign[];
   /**
@@ -1541,6 +1543,7 @@ export type Command =
   | { type: 'delegation-request'; responsibility: BudgetResponsibility; level: SpendRequest }
   | { type: 'coaching-investment'; choice: 'volunteer' | 'cheap' | 'standard' | 'elite' }
   | { type: 'facility-upgrade'; part: FacilityPart; from: number; cost: string }
+  | { type: 'facility-auto-upgrade'; part: FacilityPart; enabled: boolean }
   | { type: 'next-event' }
   | { type: 'advance'; rounds: number }
   /** Stops early on the day a new unread attention item of a `stop` kind arrives. */

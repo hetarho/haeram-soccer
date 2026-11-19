@@ -21,7 +21,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 52 | 52 | - | 2 |
-| WEB | 225 | 225 | - | 0 |
+| WEB | 226 | 226 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 11 | 11 | - | 0 |
@@ -68,11 +68,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1033 | Persist per-facility continuation state | ECON SAVE WEB | - | todo |
-| T1034 | Localize facility continuation controls and status | ARCH ECON WEB | - | todo |
-| T1035 | Route owner facility continuation commands | ARCH ECON SAVE WEB | T1033 T1034 | todo |
-| T1036 | Continue funded facility work in daily club settlement | ARCH CLUB ECON SAVE | T1035 | todo |
-| T1037 | Expose continuation on the three facility work cards | ARCH ECON SAVE WEB | T1036 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -87,7 +82,6 @@
 
 ## next
 - no runnable task: resolve blocked, parked or deps
-- gusta-implement-task T1033
 - gusta-implement-task T1019 (after sv19 lands T1003/T1004)
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 (261119): landed as 0.8.15 (9c3a60796) — unwatched own matches without script/material, heat maps removed, slow view reads only on a stopped clock with dimmed places, fixture helpers from three cores (three on 6–12 cores); a 10x automatic-play day ×0.72 on own match days and ×0.11 on other days (reports/261119-x10). T989 withdrawn, T1019 parked until T1003/T1004.

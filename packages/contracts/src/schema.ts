@@ -1074,6 +1074,8 @@ const takeoverLoan = z.strictObject({
   installment: amount,
   seasonsLeft: z.number().int().min(0).max(100),
 });
+export const facilityPartSchema = z.enum(['stadium', 'training', 'academy']);
+
 const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
@@ -1361,9 +1363,12 @@ const worldSchema: z.ZodType<World> = z.object({
   academyFacility: z.number().int().min(0).max(5),
   facilityWorks: z
     .partialRecord(
-      z.enum(['stadium', 'training', 'academy']),
+      facilityPartSchema,
       z.strictObject({ to: z.number().int().min(1).max(8), year: season, day: seasonDay }),
     )
+    .optional(),
+  facilityAutoUpgrade: z
+    .partialRecord(facilityPartSchema, z.enum(['armed', 'awaiting-funds']))
     .optional(),
   ticket: z.number().finite().min(0.01).max(10),
   campaigns: z
