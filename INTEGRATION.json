@@ -1937,17 +1937,17 @@
           "On the host's fixed integration candidate, inspect a career with more than eight archived seasons before and after saving; open an older season's archive detail."
         ],
         "expected": "The season list and retained archive detail match before and after the cold move.",
-        "observed": "Not observed in this tool-less unit.",
+        "observed": "",
         "evidence": [
-          "Unit checks passed; the earlier integration run passed before the final player-records fix and must be rerun on the combined candidate."
+          "apps/web/src/runtime/coldPeople.integration.test.ts passed (2) in the batch gate on the candidate"
         ],
         "status": "not-run",
-        "reason": "Computer-use acceptance is assigned to the capable host at the integration gate.",
+        "reason": "No browser is run locally under ARCH-30 and no computer-use host took this optional check; the same before/after archive equality is covered deterministically by coldPeople.integration.test.ts on the candidate",
         "replaces": [],
         "stage": "integration",
         "required": false,
         "owner": "host",
-        "candidate": null,
+        "candidate": "e16be77cfc6f871140bbdb820384d5d5a0a07307",
         "duplicationReason": ""
       },
       {
