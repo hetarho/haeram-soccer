@@ -229,6 +229,7 @@
 | T987 | work | gusta-session-self-improve-np19-f1c9b1b9 | b6c1737afb34 | 2026-11-18T19:19Z |
 
 ## log
+- 261119 plan save-storage: ARCH r51 SAVE r72 WEB r224 KIT r11, T999–T1018 T1022 pushed 2edc3dbf0
 - 261119 gusta-create-task x10 cost levers: T989-T998 T1019-T1021
 - 261119 gusta-update-ssot MATCH r69 HIST r28 WEB r223 ARCH r50 SAVE r71 (x10 cost levers D2 D4 D5 D8, heat maps removed)
 - 261119 plan x10-cost-levers start
@@ -248,4 +249,3 @@
 - 261118 T978 done
 - 261118 T977 done
 - 261118 T976 done
-- 261118 T975 done
