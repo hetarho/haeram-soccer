@@ -187,6 +187,7 @@
 - 261119 decided T1018: T1018 runs on codex/gpt-6.1-terra@ultra instead of claude/opus@high: the last unit there ended it unfinished with no commit or newly checked acceptance (alt: the same route again)
 
 ## log
+- 261119 fix e2e: seeding waits for the enabled import input (53 of 77 Chromium failures on eb5c6882, CI 44551084336)
 - 261119 gusta-update-ssot ARCH r53: verification plan and phase checks aligned; implemented in 0f7037407
 - 261119 gusta-update-ssot ARCH start: verification tiers on chore/gusta-update-0.17.9
 - 261119 T1019 done
@@ -206,4 +207,3 @@
 - 261119 T1025 done
 - 261119 T1021 done
 - 261119 T996 done
-- 261119 T995 done
