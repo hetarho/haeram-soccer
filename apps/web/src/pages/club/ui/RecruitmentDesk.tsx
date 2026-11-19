@@ -37,6 +37,8 @@ import { SEASON_ROUNDS } from '../../../../../../packages/engine/src/calendar';
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { Dialog } from '../../../shared/ui/Dialog';
+import { RunningDimmer } from '../../../shared/ui/RunningDimmer';
+import { useStoppedRead } from '../../../shared/lib/useStoppedRead';
 import { compactMoney } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
 import { OvrBadge } from '../../../entities/player';
@@ -655,6 +657,7 @@ export function RecruitmentDesk({
   useTextLocale();
   const w = state.view!.world,
     club = clubOf(w);
+  const shortlist = useStoppedRead('transfers');
   const [query, setQuery] = useTaskState<MarketQuery>(
     w.id,
     youth ? 'youth-market-query' : 'world-market-query',
@@ -1638,16 +1641,18 @@ export function RecruitmentDesk({
                   : sourceMessage('copy.RecruitmentDesk.fcdba43502'),
               )}
             </p>
-            {state.view?.transfers && (
-              <RecruitmentNeeds
-                w={w}
-                offers={state.view!.transfers}
-                onRole={(line) => {
-                  changeQuery({ line });
-                  setPanel(undefined);
-                }}
-              />
-            )}
+            <RunningDimmer>
+              {shortlist && (
+                <RecruitmentNeeds
+                  w={w}
+                  offers={shortlist}
+                  onRole={(line) => {
+                    changeQuery({ line });
+                    setPanel(undefined);
+                  }}
+                />
+              )}
+            </RunningDimmer>
             {/* The 영입 area of the club's direction as founded (→ECON-25); it only reads. */}
             <DirectionFacts w={w} rows={['scouting', 'recruitment', 'recruitmentSupport']} />
             <div data-surface="sheet" className={s.summary}>
@@ -1673,28 +1678,30 @@ export function RecruitmentDesk({
               ),
             )}
             <RecruitmentCommitments w={w} client={client} />
-            {state.view?.transfers && (
-              <ScoutShortlist
-                w={w}
-                offers={state.view!.transfers}
-                disabled={false}
-                onOpen={(index) => {
-                  const offer = state.view?.transfers?.[index];
-                  if (!offer) return;
-                  setPanel(undefined);
-                  setViewing(
-                    offer.source.kind === 'club'
-                      ? {
-                          world: w.id,
-                          kind: 'club',
-                          clubId: offer.source.club,
-                          playerId: offer.player.id,
-                        }
-                      : { world: w.id, kind: 'offer', playerId: offer.player.id },
-                  );
-                }}
-              />
-            )}
+            <RunningDimmer>
+              {shortlist && (
+                <ScoutShortlist
+                  w={w}
+                  offers={shortlist}
+                  disabled={false}
+                  onOpen={(index) => {
+                    const offer = shortlist[index];
+                    if (!offer) return;
+                    setPanel(undefined);
+                    setViewing(
+                      offer.source.kind === 'club'
+                        ? {
+                            world: w.id,
+                            kind: 'club',
+                            clubId: offer.source.club,
+                            playerId: offer.player.id,
+                          }
+                        : { world: w.id, kind: 'offer', playerId: offer.player.id },
+                    );
+                  }}
+                />
+              )}
+            </RunningDimmer>
             <OfferAnswers w={w} />
           </Dialog>
         ),

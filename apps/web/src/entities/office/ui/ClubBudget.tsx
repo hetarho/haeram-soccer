@@ -13,7 +13,7 @@ import { POLICY_INFO } from '../../../../../../packages/engine/src/policy';
 import { isDelegated } from '../../../../../../packages/engine/src/responsibilities';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
 import type { OfficeRead } from '../../../runtime/officeRead';
-import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
+import { useStoppedRead } from '../../../shared/lib/useStoppedRead';
 import { openDecisionSettings } from '../../../shared/routing/state';
 import { Card } from '../../../shared/ui/Card';
 import { Money } from '../../../shared/ui/Money';
@@ -362,7 +362,7 @@ function Forecast({ w, code }: { w: World; code: string }) {
  */
 export function ClubBudget({ w, titled = true }: { w: World; titled?: boolean }) {
   useTextLocale();
-  const office = useOfficeRead(w);
+  const office = useStoppedRead('office');
   const [chosen, setYear] = useState(w.year);
   if (!office) return <p role="status">{richMessage('copy.InvestmentView.d6008342de')}</p>;
   const years = office.budgets.map((season) => season.year),

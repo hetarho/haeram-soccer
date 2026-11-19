@@ -7,7 +7,7 @@ import { useStoppedRead } from './useStoppedRead';
 
 let root: Root;
 let output: unknown;
-function Probe({ part }: { part: 'running' | 'office' | 'disciplineNames' }) {
+function Probe({ part }: { part: 'running' | 'office' | 'disciplineNames' | 'transfers' }) {
   output = useStoppedRead(part);
   return null;
 }
@@ -23,6 +23,7 @@ beforeEach(() => {
         disciplineNames: { p1: { name: 'Player', club: 'Club' } },
       },
       office: { summary: 'office' },
+      transfers: [{ id: 'scout-offer' }],
     } as never,
     clockRunning: false,
   } as never);
@@ -34,7 +35,7 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 
-const render = async (part: 'running' | 'office' | 'disciplineNames') =>
+const render = async (part: 'running' | 'office' | 'disciplineNames' | 'transfers') =>
   act(async () => root.render(createElement(Probe, { part })));
 
 it('exposes the same running state to navigation and withholds stopped reads until the clock stops', async () => {
@@ -42,7 +43,11 @@ it('exposes the same running state to navigation and withholds stopped reads unt
   expect(output).toBe(false);
   await render('office');
   expect(output).toEqual({ summary: 'office' });
+  await render('transfers');
+  expect(output).toEqual([{ id: 'scout-offer' }]);
   await act(async () => gameStore.setState({ clockRunning: true }));
+  expect(output).toBeUndefined();
+  await render('transfers');
   expect(output).toBeUndefined();
   await render('running');
   expect(output).toBe(true);
@@ -50,4 +55,6 @@ it('exposes the same running state to navigation and withholds stopped reads unt
   expect(output).toBe(false);
   await render('disciplineNames');
   expect(output).toEqual({ p1: { name: 'Player', club: 'Club' } });
+  await render('transfers');
+  expect(output).toEqual([{ id: 'scout-offer' }]);
 });
