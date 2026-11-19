@@ -1,7 +1,6 @@
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import {
   ACTIVE,
-  INDEXED_CHECKPOINT_LIMIT,
   PORTABLE_FILE_LIMIT,
   MANIFEST,
   PREVIOUS,
@@ -20,10 +19,8 @@ export async function writeCheckpoint(
   raw: string,
   lineage: Lineage,
 ): Promise<Source> {
-  if (
-    2 * (raw.length + ACTIVE.length) > INDEXED_CHECKPOINT_LIMIT ||
-    new TextEncoder().encode(raw).length > PORTABLE_FILE_LIMIT
-  )
+  // The envelope is ASCII (base64 payload), so its length is its byte count.
+  if (raw.length > PORTABLE_FILE_LIMIT)
     throw new Error(sourceMessage('copy.checkpointWriter.4a44044c3b'));
   if (committed !== null && source !== PREVIOUS) await indexed.previous.write(committed);
   if (committed === null) await indexed.previous.clear();

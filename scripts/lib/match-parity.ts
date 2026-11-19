@@ -14,10 +14,7 @@ import { inBoxCell, inGoalAreaCell } from '../../packages/engine/src/aggregate/l
 import { M } from '../../packages/engine/src/match/record';
 import { eraRules, isLevel, type DecideRule } from '../../packages/engine/src/match/rules';
 import { random, zeroMetrics } from '../../packages/engine/src/primitives';
-import {
-  INDEXED_CHECKPOINT_LIMIT,
-  PORTABLE_FILE_LIMIT,
-} from '../../apps/web/src/adapters/repository';
+import { DECOMPRESSED_LIMIT, PORTABLE_FILE_LIMIT } from '../../apps/web/src/adapters/repository';
 
 /** Changes whenever an entry, unit, band, condition, partition, size or tolerance changes (→MATCH-28). */
 export const MATCH_PARITY_VERSION = 'match-parity-7';
@@ -1483,11 +1480,9 @@ export const PERFORMANCE_CONFIG = {
   /** Paired evidence needs the same machine, toolchain and worlds; other runs are context only. */
   pairing: ['machine', 'toolchain', 'worlds'] as const,
   storage: {
-    checkpointBytes: INDEXED_CHECKPOINT_LIMIT,
+    /** SAVE-4's caps, enforced in apps/web/src/adapters (persistence.ts, compression.ts). */
     portableFileBytes: PORTABLE_FILE_LIMIT,
-    /** SAVE-4's import caps, enforced in apps/web/src/adapters (persistence.ts, compression.ts). */
-    importFileBytes: 8 * 1024 * 1024,
-    decompressedBytes: 32 * 1024 * 1024,
+    decompressedBytes: DECOMPRESSED_LIMIT,
   },
   /**
    * ARCH-28's budgets as scripts/first-play.mjs enforces them on a served production build;

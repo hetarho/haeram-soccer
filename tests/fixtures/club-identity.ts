@@ -1,7 +1,7 @@
 import { encode } from '../../apps/web/src/adapters/persistence';
 import type { ClubIdentity, KitRole } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
-import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
+import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import {
   activateMatchModel,
   ensureManagerHistory,
@@ -80,15 +80,12 @@ export function preIdentityCareer(): World {
   return w;
 }
 /**
- * The checkpoint a container-1 writer made of `w`: today's canonical payload and its checksum
- * (which covers only the payload) under envelope schema 1. Without identities or appearances the
- * payload holds nothing a container-1 reader would drop.
+ * The checkpoint of a pre-identity career `w` in the plain-world container (→SAVE-2): without
+ * identities or appearances it holds nothing a later writer adds, and it is what a supported
+ * earlier career looks like once it is saved by this version.
  */
-export async function containerOneCheckpoint(w: World, generation = 1, parentGeneration = 0) {
-  return JSON.stringify({
-    ...JSON.parse(await encode(w, generation, parentGeneration)),
-    schema: 1,
-  });
+export async function legacyCareerCheckpoint(w: World, generation = 1, parentGeneration = 0) {
+  return encode(w, generation, parentGeneration);
 }
 /**
  * What writer activation makes of a pre-identity career: missing designs, one revision, the full
@@ -122,15 +119,15 @@ export const FUTURE_CHECKPOINTS: Record<
   string,
   (w: World, generation: number, parentGeneration: number) => Promise<string>
 > = {
-  // The container after the manager-history one (→SAVE-24), which this version cannot know.
-  [`envelope schema ${MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1}`]: async (
+  // The container after the plain-world one (→SAVE-2), which this version cannot know.
+  [`envelope schema ${PLAIN_WORLD_CHECKPOINT_SCHEMA + 1}`]: async (
     w,
     generation,
     parentGeneration,
   ) =>
     JSON.stringify({
       ...JSON.parse(await encode(w, generation, parentGeneration)),
-      schema: MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1,
+      schema: PLAIN_WORLD_CHECKPOINT_SCHEMA + 1,
     }),
   'identity format 3': async (w, generation, parentGeneration) => {
     const future = structuredClone(w);

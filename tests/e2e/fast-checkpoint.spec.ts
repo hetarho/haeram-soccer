@@ -1,10 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { initializeReadModels } from '../../packages/engine/src/read-models';
-import {
-  INDEXED_CHECKPOINT_LIMIT,
-  PORTABLE_FILE_LIMIT,
-} from '../../apps/web/src/adapters/repository';
+import { PORTABLE_FILE_LIMIT } from '../../apps/web/src/adapters/repository';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { committedRaw } from './club-identity-helpers';
@@ -38,9 +35,8 @@ test('saves and reloads a larger portable gzip checkpoint through IndexedDB', as
   const raw = await committedRaw(page);
   if (raw === null) throw new Error('저장된 체크포인트가 없습니다.');
   expect(raw.length * 2).toBeGreaterThan(3 * 1024 * 1024);
-  expect(raw.length * 2).toBeLessThan(INDEXED_CHECKPOINT_LIMIT);
   expect(Buffer.byteLength(raw)).toBeLessThan(PORTABLE_FILE_LIMIT);
-  expect(JSON.parse(raw).codec).toBe('gzip-cjk14');
+  expect(JSON.parse(raw).codec).toBe('gzip-base64');
   const saved = (await decode(raw)).world;
   expect(saved.events).toEqual(w.events);
   expect(saved.newsJournal).toEqual(w.newsJournal);

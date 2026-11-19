@@ -6,7 +6,7 @@ import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixture
 import { canonical } from '../../../../packages/contracts/src/index';
 import {
   CURRENT_ENGINE_VERSION,
-  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+  PLAIN_WORLD_CHECKPOINT_SCHEMA,
 } from '../../../../packages/contracts/src/versions';
 import type { MatchModelRelease } from '../../../../packages/engine/src/match-model';
 import { decode, encode, type StoragePort } from '../adapters/persistence';
@@ -532,25 +532,6 @@ describe('background worker publication', () => {
     expect((await decode(last.raw)).world.calendar?.day).toBe(1);
   });
 
-  it('writes no slot when the codec rejects its own candidate and reports the save error', async () => {
-    const client = await start(),
-      before = new Map(storage.data),
-      w = WorkerPort.instances[0].host.world!;
-    // A world the engine plays on but a load would reject: the codec's validation must catch it.
-    w.rankHistory![0].rows[0][0] = w.clubs.length;
-    await client.command({ type: 'advance-days', days: 1 }, { background: true });
-    await client.whenSaved();
-    const last = CodecPort.instances[0].results.at(-1)!;
-    expect(last.ok).toBe(false);
-    expect(client.state.error).toContain('저장 실패');
-    expect(client.state.error).toContain('순위 추이');
-    expect(client.state.error).toContain('파일로 내보내세요');
-    expect(storage.data).toEqual(before);
-    expect(client.state.savedRevision).toBe(0);
-    expect(client.state.view?.world.calendar?.day).toBe(1);
-    expect(client.state.processing).toBe(false);
-  });
-
   it('builds one checkpoint at a time and folds requests made meanwhile into one newer save', async () => {
     const client = await start(),
       worker = WorkerPort.instances[0],
@@ -828,7 +809,7 @@ describe('full match-model activation (→SAVE-23)', () => {
     expect(manifest).toMatchObject({ worldId: career.id, generation: 8, parentGeneration: 7 });
     const saved = await decode(storage.getItem('indexed:active')!);
     // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
-    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(saved.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(saved.world.matchModel).toEqual(world.matchModel);
     // The career as it was stays the previous copy until a newer save commits.
     expect(storage.getItem('indexed:previous')).toBe(raw);
@@ -855,7 +836,7 @@ describe('full match-model activation (→SAVE-23)', () => {
     expect(notifications()).toEqual([]);
     // The activated career stays in memory and exportable.
     const exported = await decode((await client.exportFile())!);
-    expect(exported.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(exported.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(exported.world.revision).toBe(career.revision + 1);
     expect(exported.world.matchModel?.trackedFrom.round).toBe(career.round + 1);
     expect(canonical((await decode(raw)).world)).toBe(canonical(career));

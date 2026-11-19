@@ -6,7 +6,7 @@ import type { World } from './types';
  * screens print. 0.8.0 starts the rules-5.0.0 line, a career begun by taking a club over
  * (→SAVE-26); a match-model revision ships inside a version (→SAVE-23).
  */
-export const CURRENT_ENGINE_VERSION = '0.8.13';
+export const CURRENT_ENGINE_VERSION = '0.8.14';
 /**
  * The rules-4.0.0 line: its own label and game version 0.7.0, which continued it. Its careers were
  * written in the match-model and manager-history containers too (→SAVE-23/24), so the legacy
@@ -103,6 +103,7 @@ export const COMPATIBLE_ENGINE_VERSIONS: readonly string[] = [
   '0.8.10',
   '0.8.11',
   '0.8.12',
+  '0.8.13',
 ];
 export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
   CURRENT_ENGINE_VERSION,
@@ -158,19 +159,29 @@ export const FULL_MODEL_CHECKPOINT_SCHEMA = 3;
  * refuses them instead of dropping the attribution.
  */
 export const MANAGER_HISTORY_CHECKPOINT_SCHEMA = 4;
+/**
+ * The container after the packed ones: the plain world, `JSON.stringify(world)` gzipped (→SAVE-2,
+ * →ARCH-12). It is the only container this version writes and reads; it carries every world,
+ * whatever match-model or manager-history data it holds.
+ */
+export const PLAIN_WORLD_CHECKPOINT_SCHEMA = 5;
 /** Containers this version reads; any other is a compatibility failure, never corruption. */
-export const SUPPORTED_CHECKPOINT_SCHEMAS = [
+export const SUPPORTED_CHECKPOINT_SCHEMAS = [PLAIN_WORLD_CHECKPOINT_SCHEMA] as const;
+/** Every container number a version has ever written (1–4 packed, 5 plain). */
+export const KNOWN_CHECKPOINT_SCHEMAS = [
   1,
   CURRENT_CHECKPOINT_SCHEMA,
   FULL_MODEL_CHECKPOINT_SCHEMA,
   MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+  PLAIN_WORLD_CHECKPOINT_SCHEMA,
 ] as const;
 /** Whether a world holds own-manager history facts or an own record linked to a tenure. */
 export const carriesManagerHistory = (w: Pick<World, 'managerHistory' | 'ownMatches'>) =>
   !!w.managerHistory || w.ownMatches.some((m) => m.managerTenure !== undefined);
-export type CheckpointSchema = (typeof SUPPORTED_CHECKPOINT_SCHEMAS)[number];
+export type CheckpointSchema = (typeof KNOWN_CHECKPOINT_SCHEMAS)[number];
+/** Recognises every known container so an older number fails as compatibility, not corruption. */
 export const isCheckpointSchema = (value: unknown): value is CheckpointSchema =>
-  (SUPPORTED_CHECKPOINT_SCHEMAS as readonly unknown[]).includes(value);
+  (KNOWN_CHECKPOINT_SCHEMAS as readonly unknown[]).includes(value);
 export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;
 
 export class SaveCompatibilityError extends Error {

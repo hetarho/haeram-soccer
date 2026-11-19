@@ -17,6 +17,7 @@ import {
   isCheckpointSchema,
   isEarlierEngine,
   MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+  PLAIN_WORLD_CHECKPOINT_SCHEMA,
   isSaveCompatibilityError,
   LEGACY_ENGINE_VERSIONS,
   SaveCompatibilityError,
@@ -71,35 +72,31 @@ describe('match-model metadata (→SAVE-23)', () => {
     rejects({ ownMatches: [oldRecord, { ...oldRecord, model: future }] });
     expect(matchModelStateSchema.safeParse({ ...state, revision: future }).success).toBe(false);
     expect(matchModelStateSchema.safeParse({ ...state, extra: 1 }).success).toBe(false);
-    // The full-model container follows the identity container and is read beside the older ones;
-    // the manager-history container follows it, and the one after is a future one, whose header is
-    // no evidence of earlier rules.
-    expect(FULL_MODEL_CHECKPOINT_SCHEMA).toBe(CURRENT_CHECKPOINT_SCHEMA + 1);
-    expect(MANAGER_HISTORY_CHECKPOINT_SCHEMA).toBe(FULL_MODEL_CHECKPOINT_SCHEMA + 1);
-    expect(isCheckpointSchema(CURRENT_CHECKPOINT_SCHEMA)).toBe(true);
-    expect(isCheckpointSchema(1)).toBe(true);
-    expect(isCheckpointSchema(FULL_MODEL_CHECKPOINT_SCHEMA)).toBe(true);
-    expect(isCheckpointSchema(MANAGER_HISTORY_CHECKPOINT_SCHEMA)).toBe(true);
-    expect(isCheckpointSchema(MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1)).toBe(false);
+    // The plain-world container follows the packed ones; every earlier number is still recognised
+    // (so it fails as compatibility, not corruption) and the one after is a future one, whose
+    // header is no evidence of earlier rules.
+    expect(PLAIN_WORLD_CHECKPOINT_SCHEMA).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1);
+    for (const known of [
+      1,
+      CURRENT_CHECKPOINT_SCHEMA,
+      FULL_MODEL_CHECKPOINT_SCHEMA,
+      MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+      PLAIN_WORLD_CHECKPOINT_SCHEMA,
+    ])
+      expect(isCheckpointSchema(known)).toBe(true);
+    expect(isCheckpointSchema(PLAIN_WORLD_CHECKPOINT_SCHEMA + 1)).toBe(false);
     expect(
       envelopeEngine(
         `{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA},"engine":"${CURRENT_ENGINE_VERSION}"}`,
       ),
     ).toBe(CURRENT_ENGINE_VERSION);
-    expect(
-      envelopeEngine(`{"schema":${MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1},"engine":"3.0.0"}`),
-    ).toBe(undefined);
+    expect(envelopeEngine(`{"schema":${PLAIN_WORLD_CHECKPOINT_SCHEMA + 1},"engine":"3.0.0"}`)).toBe(
+      undefined,
+    );
   });
 
-  it('keeps the current container for unactivated worlds and writes model data only in its own', () => {
-    const plain = { ownMatches: [oldRecord] } as unknown as World;
-    expect(checkpointSchemaFor(plain)).toBe(CURRENT_CHECKPOINT_SCHEMA);
-    for (const activated of [
-      { ...plain, matchModel: state },
-      { ...plain, npcSeason: { model: MATCH_MODEL_REVISION } },
-      { ownMatches: [oldRecord, { ...oldRecord, model: MATCH_MODEL_REVISION }] },
-    ])
-      expect(checkpointSchemaFor(activated as unknown as World)).toBe(FULL_MODEL_CHECKPOINT_SCHEMA);
+  it('writes every world in the plain-world container', () => {
+    expect(checkpointSchemaFor()).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
   });
 });
 

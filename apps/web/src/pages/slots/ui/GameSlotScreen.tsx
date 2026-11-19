@@ -3,6 +3,7 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import { localizeValue, useTextLocale } from '../../../presentation/text';
 import { useEffect, useState } from 'react';
 import type { GameEntry } from '../../../adapters/games';
+import { PORTABLE_FILE_LIMIT } from '../../../adapters/repository';
 import { BetaMark } from '../../../shared/ui/BetaMark';
 import { earlierRules, summarize, type GameSlots } from '../../../runtime/slots';
 import { gameStore, useGameState } from '../../../runtime/store';
@@ -100,7 +101,7 @@ export function GameSlotScreen({
     });
   const importInto = (slot: number, file?: File) => {
     if (!file) return;
-    if (file.size > 8 * 1024 * 1024) {
+    if (file.size > PORTABLE_FILE_LIMIT) {
       setError(sourceMessage('save.fileTooLarge'));
       return;
     }

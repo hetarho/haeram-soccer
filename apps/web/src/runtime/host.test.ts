@@ -27,12 +27,10 @@ import {
   MATCH_MODEL_REVISION,
   type MatchModelState,
 } from '../../../../packages/contracts/src/match-model';
-import { pack } from '../adapters/packing';
 import { encodePayload } from '../adapters/compression';
-import { checkpointContainerFor } from '../adapters/managerHistoryPacking';
 import type { KitRole } from '../../../../packages/contracts/src/identity';
 import {
-  MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+  PLAIN_WORLD_CHECKPOINT_SCHEMA,
   PRIOR_CATALOG_HASHES,
 } from '../../../../packages/contracts/src/versions';
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
@@ -846,13 +844,13 @@ it('consumes only an exact validated inspection without sharing a live world or 
   }
 });
 
-/** A checkpoint of `w` in the container a writer selects for it, without validating `w` first. */
+/** A checkpoint of `w` in the plain-world container, without validating `w` first. */
 async function sealed(w: World) {
-  const bytes = new TextEncoder().encode(canonical(pack(w)));
+  const bytes = new TextEncoder().encode(JSON.stringify(w));
   const { codec, payload } = await encodePayload(bytes);
   const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
   return JSON.stringify({
-    schema: checkpointContainerFor(w),
+    schema: PLAIN_WORLD_CHECKPOINT_SCHEMA,
     engine: w.engine,
     catalog: w.catalog,
     catalogHash: w.catalogHash,
@@ -995,7 +993,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     // It is written in the container of a tracked career, model data included, validated as any
     // checkpoint (→SAVE-23/24).
     const written = await decode(reply.raw!);
-    expect(written.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(written.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(canonical(written.world)).toBe(canonical(w));
     // Loading it again keeps the recorded boundary and writes nothing.
     const again = enabled();
@@ -1052,7 +1050,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
       req('model-export', host.world!.revision, { type: 'export' }),
     );
     const saved = await decode(exported.raw!);
-    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(saved.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(canonical(saved.world)).toBe(canonical(host.world));
     expect(canonical((await decode(disk)).world)).toBe(canonical(source));
     // A retry from the kept checkpoint activates at the same boundary.
@@ -1123,7 +1121,7 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
     expect(canonical(rest)).toBe(canonical(before));
     expect(canonical(w.npcSeason)).toBe(canonical(source.npcSeason));
     expect(w.ownMatches.every((m) => m.managerTenure === undefined)).toBe(true);
-    expect((await decode(reply.raw!)).envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect((await decode(reply.raw!)).envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     // New results are attributed; the heavy facts never travel in a view.
     const played = await round(host, 'track-round');
     expect(played.ok, played.error).toBe(true);
@@ -1181,7 +1179,7 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
       req('track-export', host.world!.revision, { type: 'export' }),
     );
     const saved = await decode(exported.raw!);
-    expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(saved.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     expect(canonical(saved.world)).toBe(canonical(host.world));
     expect((await decode(disk)).world).not.toHaveProperty('managerHistory');
     // A retry from the kept checkpoint starts at the same boundary.

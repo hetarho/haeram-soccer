@@ -14,7 +14,7 @@ import { eventsInSeason } from '../packages/engine/src/season-index';
 import { tallies } from '../apps/web/src/runtime/playerTallies';
 import { decode, checkpoint } from '../apps/web/src/adapters/persistence';
 import { careerWorld } from '../packages/engine/src/career.testkit';
-import { INDEXED_CHECKPOINT_LIMIT, ACTIVE } from '../apps/web/src/adapters/repository';
+import { PORTABLE_FILE_LIMIT } from '../apps/web/src/adapters/repository';
 
 const arg = (flag: string) => process.argv[process.argv.indexOf(flag) + 1];
 const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)];
@@ -146,7 +146,7 @@ async function codec(w: World) {
           canonical({ ...restored, newsJournal: undefined, careerReads: undefined }) ===
           canonical(old),
         checkpointUtf16Bytes: raw.length * 2,
-        withinCheckpointLimit: 2 * (raw.length + ACTIVE.length) <= INDEXED_CHECKPOINT_LIMIT,
+        withinPortableLimit: Buffer.byteLength(raw) <= PORTABLE_FILE_LIMIT,
         encodeValidateMs: checkpointMs,
         independentVerificationMs: performance.now() - verificationStarted,
         summariesSurvive:

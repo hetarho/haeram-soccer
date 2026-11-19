@@ -61,6 +61,5 @@ export function dependencyReport(root: string) {
     webTestsReachingShape: affected.filter((file) => relative(root, file).startsWith('apps/web/'))
       .length,
     aggregateExecution: reaches('packages/engine/src/aggregate/engine.ts'),
-    packing: reaches('apps/web/src/adapters/packing.ts'),
   };
 }

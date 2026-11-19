@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { canonical } from '../../packages/contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
-import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
+import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
 import { continuityCareer, FAST_MINUTE_MS, FAST_SPEED } from '../fixtures/full-model-continuity';
 import { exportRaw, exportWorld } from './club-identity-helpers';
@@ -236,7 +236,7 @@ for (const viewport of VIEWPORTS)
     const raw = await exportRaw(page);
     const file = await decode(raw);
     // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
-    expect(file.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(file.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
     const saved = file.world;
     expect(saved.matchModel).toEqual(activated.matchModel);
     expect(saved.npcSeason!.trackedFrom).toEqual(activated.matchModel!.trackedFrom);

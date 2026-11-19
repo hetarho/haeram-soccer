@@ -24,7 +24,6 @@ export const COLD_COSTS: Readonly<Record<string, number>> = {
   'apps/web/src/runtime/fixtureHelpers.integration.test.ts': 201,
   'packages/engine/src/calendar.test.ts': 197,
   'apps/web/src/runtime/host.archive.test.ts': 193,
-  'apps/web/src/adapters/packing.test.ts': 166,
   'packages/engine/src/season.test.ts': 149,
   'packages/engine/src/calendar.fast-path.test.ts': 148,
   'packages/engine/src/world.test.ts': 144,
