@@ -68,7 +68,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | doing@261119.x10 |
+| T1019 | Career reads drop heat fields | SAVE MATCH HIST ARCH | T993 T1002 | doing@261119.x10 |
+| T1031 | Match and archive contracts drop heat | SAVE MATCH HIST ARCH | T1019 | todo |
+| T1032 | Heat-free save persistence and evidence | SAVE MATCH HIST ARCH | T1019 T1031 T1003 T1004 | todo |
 | T994 | Prepare the stopped-clock read boundary | WEB ARCH | T1026 T1027 | todo |
 | T1028 | Activate stopped-clock reads | WEB ARCH | T994 | todo |
 | T1029 | Measure stopped-clock reads | WEB ARCH | T1028 | todo |
