@@ -1430,8 +1430,8 @@
       "branch": "gusta-session-start-facauto-7fb6ee3c",
       "head": "d15ec6dbbcb2a442b4d46d8b0160e2af092bbc8c",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-19T16:24:16.760Z",
+      "status": "ready",
+      "at": "2026-11-19T16:24:21.826Z",
       "agentChecks": [
         {
           "id": "facility-auto-controls",
