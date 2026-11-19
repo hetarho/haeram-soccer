@@ -53,7 +53,7 @@ export async function importPreparedCareer(
   page: import('@playwright/test').Page,
   w: import('../../packages/contracts/src/types').World,
 ) {
-  const { encode } = await import('../../apps/web/src/adapters/persistence');
+  const { saveFileOf } = await import('./save-file');
   const { openSaveMenu } = await import('../e2e/save-menu');
   const { openClubhouse } = await import('../e2e/competition-navigation');
   const { expect } = await import('@playwright/test');
@@ -62,9 +62,9 @@ export async function importPreparedCareer(
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'prepared-career.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(await encode(w)),
+      name: 'prepared-career.haeram-save',
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(await saveFileOf(w)),
     });
   await expect(page.getByRole('dialog', { name: '기록 가져오기 확인' })).toBeVisible();
   await page.getByRole('button', { name: '기록 교체하고 가져오기', exact: true }).click();

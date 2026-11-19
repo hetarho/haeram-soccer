@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import { generateHistory } from '../../packages/engine/src/history';
 import { takeOver } from '../../packages/engine/src/takeover';
 import type { World } from '../../packages/contracts/src/types';
@@ -22,9 +22,9 @@ async function exportWorld(page: Page): Promise<World> {
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const file = await downloading;
-  const raw = await readFile((await file.path())!, 'utf8');
+  const raw = await readFile((await file.path())!);
   await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  return (await decode(raw)).world;
+  return worldOfSaveFile(raw);
 }
 
 /**

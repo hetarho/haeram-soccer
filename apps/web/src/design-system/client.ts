@@ -60,8 +60,8 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
       notify(sourceMessage('copy.client.62b45e9016'));
       return undefined;
     },
-    checkpoint: async () => {
-      await command();
+    exportGame: async () => {
+      notify(sourceMessage('copy.client.62b45e9016'));
       return undefined;
     },
     switchTo: async () => {
@@ -74,9 +74,14 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
     reload: async () => {
       await command();
     },
-    forget: async () => {
+    deleteGame: async () => {
       await command();
     },
+    saveGame: async () => {
+      await command();
+    },
+    replaceOnCreate: () => {},
+    hasGameFile: () => true,
     archive: async (year) => (await read({ type: 'archive', year })).archive,
     fullStats: async (scope) => (await read({ type: 'full-stats', ...scope })).fullStats,
     managerHistory: async (cursor) =>

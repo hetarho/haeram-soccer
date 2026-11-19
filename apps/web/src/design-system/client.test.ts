@@ -18,7 +18,7 @@ describe('sample client boundary', () => {
     const { client, controller } = previewRuntime(fixture, notify);
     await client.command({ type: 'next-event' });
     await client.save();
-    await client.forget();
+    await client.deleteGame('sample');
     controller.start();
     controller.setPace('x5');
     expect(controller.store.getState()).toMatchObject({ running: true, pace: 'x5' });

@@ -110,7 +110,7 @@ export async function qualifiedCoachFixture(kind: 'internal' | 'club') {
  */
 export async function exportedCareer(page: Page) {
   const { readFile } = await import('node:fs/promises');
-  const { decode } = await import('../../apps/web/src/adapters/persistence');
+  const { worldOfSaveFile } = await import('../fixtures/save-file');
   await dismissMatchReport(page);
   return aroundOffice(page, async () => {
     await page.getByRole('button', { name: '설정', exact: true }).click();
@@ -120,7 +120,7 @@ export async function exportedCareer(page: Page) {
     const file = await event;
     await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-    return (await decode(await readFile((await file.path())!, 'utf8'))).world;
+    return worldOfSaveFile(await readFile((await file.path())!));
   });
 }
 

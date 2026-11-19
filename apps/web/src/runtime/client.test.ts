@@ -4,26 +4,26 @@ import { ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { canonical } from '../../../../packages/contracts/src/index';
-import {
-  CURRENT_ENGINE_VERSION,
-  PLAIN_WORLD_CHECKPOINT_SCHEMA,
-} from '../../../../packages/contracts/src/versions';
+import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import type { MatchModelRelease } from '../../../../packages/engine/src/match-model';
-import { decode, encode, type StoragePort } from '../adapters/persistence';
+import type { StoragePort } from '../adapters/persistence';
 import { AUTOSAVE_MS, GameClient, SAVE_DATA_UPDATED, type ClientState } from './client';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
 import type { World } from '../../../../packages/contracts/src/types';
-import { Host, type OpenStore } from './host';
+import { Host, type DatabaseBytes, type GameFiles, type OpenStore } from './host';
 import type { RecordStore } from '../../../../packages/contracts/src/record-store';
-import { memoryRecordStore } from '../../../../tests/fixtures/node-sqlite';
+import { nodeSqliteDriver, type SerializableDriver } from '../../../../tests/fixtures/node-sqlite';
+import { saveFileOf } from '../../../../tests/fixtures/save-file';
+import { decodeSaveFile, saveMetaOf } from '../adapters/saveFile';
+import { sqlRecordStore } from '../adapters/sqlRecordStore';
 import { RowSaver } from '../adapters/rowSaver';
 import { serve as serveHelper } from './fixtureHelper';
 import { HELPER_CONFIG, HelperPool, type HelperPort } from './helperPool';
 import type { Reply, Request } from './protocol';
 import { earlierRules, GameSlots, summarize } from './slots';
 import { rowsToWorld } from '../adapters/worldRows';
-import { GameIndexStore, type ParkedStore } from '../adapters/games';
+import { GameIndexStore } from '../adapters/games';
 import { createGameStore, NOTIFICATIONS_KEY, type SystemNotification } from './store';
 import { START } from './host.testkit';
 import { divisionName } from '../presentation/competitionLabels';
@@ -66,23 +66,55 @@ class MemoryStorage implements StoragePort {
  * files do; every write fails while `failWrites` holds, before it touches a row.
  */
 let files = new Map<string, RecordStore>();
+/** The SQLite behind each game's store, to write its file out as bytes (→SAVE-9). */
+let drivers = new Map<string, SerializableDriver>();
 let failWrites = false;
-const openStore: OpenStore = (gameId, { create }) => {
-  let store = files.get(gameId);
-  if (!store && create) {
-    const inner = memoryRecordStore();
-    store = {
-      ...inner,
-      write(changes) {
-        if (failWrites) throw new Error('QuotaExceededError');
-        inner.write(changes);
-      },
-      close() {},
-    };
-    files.set(gameId, store);
-  }
+const keepStore = (gameId: string, driver: SerializableDriver) => {
+  const inner = sqlRecordStore(driver);
+  const store: RecordStore = {
+    ...inner,
+    write(changes) {
+      if (failWrites) throw new Error('QuotaExceededError');
+      inner.write(changes);
+    },
+    close() {},
+  };
+  files.set(gameId, store);
+  drivers.set(gameId, driver);
   return store;
 };
+const openStore: OpenStore = (gameId, { create }) =>
+  files.get(gameId) ?? (create ? keepStore(gameId, nodeSqliteDriver()) : undefined);
+const gameFiles: GameFiles = {
+  list: () => [...files.keys()],
+  remove: (gameId) => {
+    files.delete(gameId);
+    drivers.delete(gameId);
+  },
+};
+/** The same files as bytes, as the pool gives the engine worker. */
+const databaseBytes: DatabaseBytes = {
+  read: (gameId) => drivers.get(gameId)?.serialize(),
+  meta: (gameId) => {
+    const store = files.get(gameId);
+    return store && saveMetaOf(store.meta());
+  },
+  scratch: async (bytes) => {
+    const driver = nodeSqliteDriver(':memory:', bytes);
+    return { driver, bytes: () => driver.serialize(), release: () => driver.close() };
+  },
+  write: async (gameId, bytes) => void keepStore(gameId, nodeSqliteDriver(':memory:', bytes)),
+};
+/** The world the game in play exports as a `.haeram-save` file, read back out of its database. */
+async function exportedWorld(client: GameClient) {
+  const file = await client.exportFile();
+  expect(file).toBeDefined();
+  const { dbBytes } = await decodeSaveFile(file!);
+  const driver = nodeSqliteDriver(':memory:', dbBytes);
+  const world = rowsToWorld(sqlRecordStore(driver), { includeCold: false });
+  driver.close();
+  return world;
+}
 /** The revision a game's database last committed. */
 const committed = (gameId: string) => Number(files.get(gameId)?.meta().revision ?? -1);
 /** Lists the world in play in the slot index, as the app does once it is shown (→SAVE-14). */
@@ -92,6 +124,7 @@ function listGame(client: GameClient) {
 /** `w` committed whole as the database of `gameId`, listed as the game in play in slot 1. */
 function seedGame(w: World, gameId = 'seeded') {
   files.delete(gameId);
+  drivers.delete(gameId);
   new RowSaver(openStore(gameId, { create: true }) as RecordStore).save(w);
   const index = new GameIndexStore(storage);
   const slots = index.read();
@@ -112,7 +145,12 @@ class WorkerPort {
   onerror?: () => void;
   /** Save answers wait for this, so a test can hold a commit's answer while the game moves on. */
   static saveGate = Promise.resolve();
-  host = new Host((reply) => this.deliver(reply), { release: WorkerPort.release, openStore });
+  host = new Host((reply) => this.deliver(reply), {
+    release: WorkerPort.release,
+    openStore,
+    gameFiles,
+    databaseBytes,
+  });
   private helperPorts: MessagePort[] = [];
   constructor() {
     WorkerPort.instances.push(this);
@@ -230,6 +268,7 @@ beforeEach(() => {
   WorkerPort.release = undefined;
   WorkerPort.saveGate = Promise.resolve();
   files = new Map();
+  drivers = new Map();
   failWrites = false;
   HelperWorker.instances = [];
   ChannelPort.instances = [];
@@ -696,7 +735,7 @@ describe('background worker publication', () => {
     const client = await start(),
       replacement = simulatedWorld({ ...founding, seed: 'replacement' });
     initializeReadModels(replacement);
-    await client.importFile(await encode(replacement));
+    await client.importFile(await saveFileOf(replacement));
     expect(client.state.view?.world.id).toBe(replacement.id);
     expect(client.state.savedRevision).toBe(0);
     const before = client.state.view;
@@ -767,7 +806,7 @@ describe('supported-career identity adoption (→SAVE-21)', () => {
     expect(committed(gameId)).toBe(legacy.revision);
     expect(notifications()).toEqual([]);
     // The adopted career stays in memory and exportable.
-    const exported = (await decode((await client.exportFile())!)).world;
+    const exported = await exportedWorld(client);
     expect(exported.id).toBe(legacy.id);
     expect(exported.revision).toBe(legacy.revision + 1);
     expect(exported.clubs.every((club) => club.identity)).toBe(true);
@@ -820,10 +859,9 @@ describe('full match-model activation (→SAVE-23)', () => {
     expect(committed(gameId)).toBe(career.revision);
     expect(notifications()).toEqual([]);
     // The activated career stays in memory and exportable.
-    const exported = await decode((await client.exportFile())!);
-    expect(exported.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-    expect(exported.world.revision).toBe(career.revision + 1);
-    expect(exported.world.matchModel?.trackedFrom.round).toBe(career.round + 1);
+    const exported = await exportedWorld(client);
+    expect(exported.revision).toBe(career.revision + 1);
+    expect(exported.matchModel?.trackedFrom.round).toBe(career.round + 1);
     expect(canonical(rowsToWorld(files.get(gameId)!, { includeCold: false }))).toBe(
       canonical(career),
     );
@@ -846,7 +884,7 @@ describe('full match-model activation (→SAVE-23)', () => {
   });
   it('keeps a revealed playback of this career across a reload that holds its match', async () => {
     const client = await start();
-    const founded = (await decode((await client.exportFile())!)).world;
+    const founded = await exportedWorld(client);
     await client.command({ type: 'advance', rounds: 1 });
     await client.whenSaved();
     const playback = client.state.playback!;
@@ -1058,52 +1096,48 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
     expect(JSON.stringify(files.get(gameId)!.meta())).toBe(before);
   });
 
-  it('keeps an explicitly imported replacement exportable and retryable after a write failure', async () => {
+  it('imports a file as a whole game and keeps it exportable and retryable after a write failure', async () => {
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
-    failWrites = true;
     const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery-quota' });
     initializeReadModels(replacement);
-    await client.importFile(await encode(replacement));
-    expect(client.state.error).toContain('Quota');
+    await client.importFile(await saveFileOf(replacement));
+    expect(client.state.error).toBeUndefined();
     expect(client.state.view?.world.id).toBe(replacement.id);
-    expect(client.state.savedRevision).toBe(-1);
-    expect(canonical((await decode((await client.exportFile())!)).world)).toBe(
-      canonical(replacement),
-    );
+    expect(client.state.savedRevision).toBe(0);
+    expect(committed(client.gameId!)).toBe(0);
+    expect(canonical(await exportedWorld(client))).toBe(canonical(replacement));
+    // A day later its save fails: the progress stays exportable from memory, and a retry commits.
+    failWrites = true;
+    await client.command({ type: 'advance-days', days: 1 });
+    await client.save().catch(() => {});
+    expect(client.state.error).toContain('Quota');
+    const revision = client.state.view!.world.revision;
+    expect(revision).toBeGreaterThan(0);
+    expect(committed(client.gameId!)).toBe(0);
+    expect((await exportedWorld(client)).revision).toBe(revision);
     failWrites = false;
     await client.retrySave();
     expect(client.state.error).toBeUndefined();
-    expect(client.state.savedRevision).toBe(0);
-    expect(committed(client.gameId!)).toBe(0);
+    expect(committed(client.gameId!)).toBe(revision);
   });
 });
 
 describe('game slots', () => {
-  class MemoryParked implements ParkedStore {
-    data = new Map<string, string>();
-    async get(id: string) {
-      return this.data.get(id);
-    }
-    async put(id: string, raw: string) {
-      this.data.set(id, raw);
-    }
-    async remove(id: string) {
-      this.data.delete(id);
-    }
-  }
-  it('parks the game in play, starts another in an empty slot and switches back intact', async () => {
+  /** The game ID each slot lists, in slot order. */
+  const ids = (slots: GameSlots) => slots.read().slots.map((entry) => entry?.id);
+  it('saves and closes the game in play, starts another in an empty slot and switches back intact', async () => {
     const client = await start();
-    const parked = new MemoryParked();
-    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const slots = new GameSlots(client, new GameIndexStore(storage));
     const first = client.state.view!.world.id,
       firstClub = clubName(client.state.view!.world);
     expect(slots.sync(client.state.view!.world)).toMatchObject({ active: 0 });
+    const firstGame = client.gameId!;
 
     await slots.prepare(1);
-    expect(parked.data.size).toBe(1);
     await startGame(client, 'second-slot', true);
+    await client.whenSaved();
     const second = client.state.view!.world.id;
     expect(second).not.toBe(first);
     let index = slots.sync(client.state.view!.world, true);
@@ -1113,68 +1147,131 @@ describe('game slots', () => {
       clubName(client.state.view!.world),
       undefined,
     ]);
+    // A new game creates its own file; the first game's stays as it was saved.
+    expect([...files.keys()].sort()).toEqual([firstGame, client.gameId!].sort());
     await client.command({ type: 'advance-days', days: 1 });
+    const secondGame = client.gameId!;
 
     await slots.continue(0);
     expect(client.state.view!.world.id).toBe(first);
     expect(slots.read().active).toBe(0);
-    // Back in play, its game's database holds it as switched in.
-    expect(client.gameId).toBe(slots.read().slots[0]!.id);
-    expect(committed(client.gameId!)).toBe(client.state.view!.world.revision);
-    // The second game kept the day it had played before it was parked.
+    // Switching saved the game left, and the one come back is its database as saved.
+    expect(client.gameId).toBe(firstGame);
+    expect(committed(firstGame)).toBe(client.state.view!.world.revision);
+    expect(committed(secondGame)).toBe(1);
+    // The second game kept the day it had played before it was closed.
     await slots.continue(1);
     expect(client.state.view!.world.id).toBe(second);
     expect(client.state.view!.world.calendar?.day).toBe(1);
 
-    // A parked game is deleted with its copy; the game in play takes its checkpoints with it.
+    // Deleting a game not in play removes its file only; the game in play's takes its file with it.
     expect(await slots.remove(0)).toBe(false);
     index = slots.read();
     expect(index.slots[0]).toBeNull();
-    expect([...parked.data.keys()]).toEqual([index.slots[1]!.id]);
+    expect([...files.keys()]).toEqual([secondGame]);
     expect(await slots.remove(1)).toBe(true);
-    expect(
-      ['haeram-soccor:manifest', 'indexed:active', 'indexed:previous'].every(
-        (key) => storage.getItem(key) === null,
-      ),
-    ).toBe(true);
+    expect(files.size).toBe(0);
+    expect(client.state.view).toBeUndefined();
     expect(slots.read()).toMatchObject({ active: null, slots: [null, null, null] });
+  });
+
+  it('a failed open leaves both files untouched and the previous game in play (→SAVE-14)', async () => {
+    const client = await start();
+    const slots = new GameSlots(client, new GameIndexStore(storage));
+    const first = client.state.view!.world.id;
+    slots.sync(client.state.view!.world);
+    await slots.prepare(1);
+    await startGame(client, 'second-slot', true);
+    await client.whenSaved();
+    slots.sync(client.state.view!.world, true);
+    const [firstGame, secondGame] = ids(slots) as string[];
+    await slots.continue(0);
+    // The second game's file now belongs to a newer game.
+    files.get(secondGame)!.write({ put: [], delete: [], meta: { engine: '99.0.0' } });
+    const kept = JSON.stringify([files.get(secondGame)!.meta(), committed(firstGame)]);
+    await expect(slots.continue(1)).rejects.toThrow();
+    expect(client.state.view!.world.id).toBe(first);
+    expect(client.gameId).toBe(firstGame);
+    expect(slots.read().active).toBe(0);
+    expect(JSON.stringify([files.get(secondGame)!.meta(), committed(firstGame)])).toBe(kept);
+    // The reopened game plays and saves as before.
+    await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    await client.whenSaved();
+    expect(committed(firstGame)).toBe(client.state.view!.world.revision);
+  });
+
+  it('a new game over an occupied slot deletes the old file once the new one is created', async () => {
+    const client = await start();
+    const slots = new GameSlots(client, new GameIndexStore(storage));
+    slots.sync(client.state.view!.world);
+    const old = client.gameId!;
+    await slots.prepare(0);
+    // Nothing is deleted before the takeover (→WEB-62): the confirmed replacement may still be left.
+    expect(files.has(old)).toBe(true);
+    await startGame(client, 'replacing', true);
+    await client.whenSaved();
+    expect(files.has(old)).toBe(false);
+    expect([...files.keys()]).toEqual([client.gameId!]);
+    expect(slots.sync(client.state.view!.world, true).slots[0]!.id).toBe(client.gameId);
   });
 
   it('slot import applies only to its intended world', async () => {
     const client = await start();
-    const parked = new MemoryParked();
-    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const slots = new GameSlots(client, new GameIndexStore(storage));
     const first = client.state.view!.world.id;
     slots.sync(client.state.view!.world);
-    const firstRaw = await client.checkpoint();
+    const firstGame = client.gameId!,
+      firstRevision = client.state.view!.world.revision;
     const imported = withoutIdentities(
       simulatedWorld({ ...founding, seed: 'identityless-import' }),
     );
-    await slots.importInto(1, await encode(imported));
+    await slots.importInto(1, await saveFileOf(imported));
     const w = client.state.view!.world;
     expect(w.id).toBe(imported.id);
     expect(w.revision).toBe(imported.revision + 1);
     for (const club of w.clubs) expect(club.identity).toEqual(identityOf(imported, club.id));
     const index = slots.read();
     expect(index.slots.map((entry) => entry?.worldId)).toEqual([first, imported.id, undefined]);
-    // The parked game is byte for byte what it was; only the imported world was adopted.
-    expect(parked.data.get(index.slots[0]!.id)).toBe(firstRaw);
-    const saved = (await decode((await client.checkpoint())!)).world;
+    // The first game's database is what it was; only the imported world was adopted.
+    expect(committed(firstGame)).toBe(firstRevision);
+    const saved = await exportedWorld(client);
     expect(saved.id).toBe(imported.id);
     expect(saved.clubs.every((club) => club.identity)).toBe(true);
   });
 
-  it('lists a save from before slots as slot 1 and refuses a slot whose copy is gone', async () => {
+  it('exports any slot as a file: the game in play as it stands, another as last saved (→SAVE-9)', async () => {
     const client = await start();
-    const slots = new GameSlots(client, new GameIndexStore(storage), new MemoryParked());
-    expect(new GameIndexStore(storage).hasGames()).toBe(true);
+    const slots = new GameSlots(client, new GameIndexStore(storage));
+    const first = client.state.view!.world.id;
+    slots.sync(client.state.view!.world);
+    const imported = simulatedWorld({ ...founding, seed: 'slot-export' });
+    initializeReadModels(imported);
+    await slots.importInto(1, await saveFileOf(imported));
+    // Slot 2's game is in play now and slot 1's rests in its file; both export, an empty slot not.
+    const worldOf = async (slot: number) =>
+      (await decodeSaveFile((await slots.exportFile(slot))!)).header.worldId;
+    expect(await worldOf(0)).toBe(first);
+    expect(await worldOf(1)).toBe(imported.id);
+    expect(await slots.exportFile(2)).toBeUndefined();
+    // A day played and not yet saved is in the file of the game in play: it is saved first.
+    await client.command({ type: 'advance-days', days: 1 });
+    const { dbBytes } = await decodeSaveFile((await slots.exportFile(1))!);
+    const driver = nodeSqliteDriver(':memory:', dbBytes);
+    expect(Number(sqlRecordStore(driver).meta().revision)).toBe(client.state.view!.world.revision);
+    driver.close();
+  });
+
+  it('lists a save from before slots as slot 1 and reads a slot without its file as empty (→SAVE-29)', async () => {
+    const client = await start();
+    const slots = new GameSlots(client, new GameIndexStore(storage));
     const index = slots.sync(client.state.view!.world);
     expect(index.active).toBe(0);
+    expect(new GameIndexStore(storage).hasGames()).toBe(true);
     const own = client.state.view!.world.clubs.find(
       (club) => club.id === client.state.view!.world.playerClub,
     )!;
     expect(index.slots[0]!.summary.division).toBe(divisionName(own.country, own.tier, own.group));
-    // A slot listed without its parked checkpoint is reported, and the game in play stays.
+    // A slot listed without its database file reads as empty, and the game in play stays.
     storage.setItem(
       'haeram-soccor:games',
       JSON.stringify({
@@ -1182,44 +1279,52 @@ describe('game slots', () => {
         slots: [index.slots[0], { ...index.slots[0], id: 'lost', worldId: 'gone' }, null],
       }),
     );
-    await expect(slots.continue(1)).rejects.toThrow('찾지 못했어요');
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    await reader.whenIdle();
+    const afterStartup = new GameSlots(reader, new GameIndexStore(storage));
+    expect(afterStartup.read().slots.map((entry) => entry?.id)).toEqual([
+      index.slots[0]!.id,
+      undefined,
+      undefined,
+    ]);
+    await expect(slots.continue(1)).rejects.toThrow();
     expect(client.state.view!.world.id).toBe(index.slots[0]!.worldId);
   });
 
   it('keeps the rules of each slot: an earlier-rules game is listed as such and never continues', async () => {
+    // Its file exists when the tab starts, so the startup listing holds it (→SAVE-29).
+    openStore('old', { create: true });
     const client = await start();
-    const parked = new MemoryParked();
-    const slots = new GameSlots(client, new GameIndexStore(storage), parked);
+    const slots = new GameSlots(client, new GameIndexStore(storage));
     const index = slots.sync(client.state.view!.world);
     expect(index.slots[0]!.engine).toBe(CURRENT_ENGINE_VERSION);
-    // A game parked before slots kept their rules, saved under rules 1.22.0.
-    const earlier = JSON.stringify({
-      ...JSON.parse((await client.exportFile())!),
-      engine: '1.22.0',
-    });
-    const unversioned = { ...index.slots[0]!, id: 'old', worldId: 'old' };
-    delete unversioned.engine;
     storage.setItem(
       'haeram-soccor:games',
-      JSON.stringify({ ...index, slots: [index.slots[0], unversioned, null] }),
+      JSON.stringify({
+        ...index,
+        slots: [
+          index.slots[0],
+          { ...index.slots[0], id: 'old', worldId: 'old', engine: '1.22.0' },
+          null,
+        ],
+      }),
     );
-    await parked.put('old', earlier);
-    expect(earlierRules(slots.read().slots[1]!)).toBeUndefined();
-    expect(await slots.resolveEngines()).toBe(true);
     expect(earlierRules(slots.read().slots[1]!)).toBe('1.22.0');
     await expect(slots.continue(1)).rejects.toThrow('규칙 1.22.0 커리어');
-    // Its file is still there to keep, exactly as parked.
-    expect(await slots.exportRaw(1)).toBe(earlier);
+    // Its file is still there to keep, exactly as it was.
+    expect(files.has('old')).toBe(true);
   });
 });
 
 it('exports the world in play and never another world at the same revision', async () => {
   const client = await start(),
-    oldWorld = (await decode((await client.exportFile())!)).world;
+    oldWorld = await exportedWorld(client);
   expect(oldWorld.id).toBe(client.state.view!.world.id);
   await startGame(client, 'other-world-same-revision', true);
   await client.whenSaved();
-  const current = (await decode((await client.exportFile())!)).world;
+  const current = await exportedWorld(client);
   expect(current.revision).toBe(oldWorld.revision);
   expect(current.id).not.toBe(oldWorld.id);
   expect(current.id).toBe(client.state.view!.world.id);

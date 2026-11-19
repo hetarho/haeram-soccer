@@ -122,7 +122,8 @@ test('support changes retain the preview and confirm only the latest conditions'
   await expect(confirm).toBeDisabled();
   await expect(preview).toContainText('미뤘어요');
   await expect(confirm).toBeEnabled();
-  expect((await preview.boundingBox())!.height).toBeGreaterThanOrEqual(height);
+  // Another result's text: equal lines may lay out a subpixel apart, never a line shorter.
+  expect((await preview.boundingBox())!.height).toBeGreaterThanOrEqual(height - 0.5);
   await review.getByRole('radio', { name: '균형', exact: true }).check();
   await expect(confirm).toBeDisabled();
   await expect(preview).toHaveAttribute('aria-busy', 'false');

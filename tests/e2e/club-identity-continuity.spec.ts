@@ -2,6 +2,7 @@ import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import { canonical } from '../../packages/contracts/src/index';
 import {
   KIT_ROLES,
@@ -217,7 +218,7 @@ test.describe(() => {
       await expect(crestFill(hud(page), edited.crest.primary)).not.toHaveCount(0);
 
       const raw = await exportRaw(page);
-      const exported = (await decode(raw)).world;
+      const exported = await worldOfSaveFile(raw);
       expect(ownClub(exported).identity).toEqual(edited);
       expect(ownClub(exported).color).toBe(edited.colours[0]);
       const kept = exported.ownMatches.find((match) => match.id === record.id)!;
@@ -236,8 +237,8 @@ test.describe(() => {
           .locator('input[type=file]')
           .last()
           .setInputFiles({
-            name: 'continuity.haeram-save.json',
-            mimeType: 'application/json',
+            name: 'continuity.haeram-save',
+            mimeType: 'application/octet-stream',
             buffer: Buffer.from(raw),
           });
         await expect(other.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });

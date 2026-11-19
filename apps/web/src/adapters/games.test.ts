@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
-import { GAMES_KEY, GameIndexStore, type GameEntry, type SlotSummary } from './games';
+import {
+  checkedGameId,
+  GAMES_KEY,
+  GameIndexStore,
+  type GameEntry,
+  type SlotSummary,
+} from './games';
 
 const memory = (games?: unknown) => {
   const data = new Map<string, string>();
@@ -67,5 +73,23 @@ describe('slot summaries with one to three crest colours (→WEB-62, SAVE-14)', 
     expect(index.slots.map((slot) => slot?.id ?? null)).toEqual([null, 'b', 'c']);
     // The slot in play pointed at the skipped entry; it no longer claims a game.
     expect(index.active).toBeNull();
+  });
+});
+
+describe('slots as database files (→SAVE-14, SAVE-29)', () => {
+  it('reads only the slot index, never a checkpoint manifest, to know whether games exist', () => {
+    const port = memory();
+    port.setItem('haeram-soccor:manifest', '{"worldId":"w"}');
+    expect(new GameIndexStore(port).hasGames()).toBe(false);
+    const store = new GameIndexStore(port);
+    store.write({ ...store.read(), active: 0, slots: [entry('a', twoColour), null, null] });
+    expect(store.hasGames()).toBe(true);
+  });
+  it('names a database file by the game ID only when it matches the file-name pattern', () => {
+    expect(checkedGameId('3f2c1d9e-7a5b-4c60-9d2e-1a2b3c4d5e6f')).toBe(
+      '3f2c1d9e-7a5b-4c60-9d2e-1a2b3c4d5e6f',
+    );
+    for (const id of ['', '../x', 'a/b', 'a b', 'g.sqlite3', 'x'.repeat(101)])
+      expect(() => checkedGameId(id)).toThrow();
   });
 });

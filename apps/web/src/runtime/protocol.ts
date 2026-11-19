@@ -300,6 +300,27 @@ export const requestSchema = z.object({
       replace: z.boolean().optional(),
     }),
     z.object({ type: z.literal('save') }),
+    // Slots are database files (→SAVE-14): `close-game` releases the game in play's database after
+    // its save, `delete-game` removes a game's file (closing it first when it is in play) and
+    // `list-games` answers the game IDs whose files exist (→SAVE-29).
+    z.strictObject({ type: z.literal('close-game') }),
+    z.strictObject({ type: z.literal('delete-game'), gameId }),
+    z.strictObject({ type: z.literal('list-games') }),
+    // The portable save file (→SAVE-9): `export-game` answers a game's database as one file
+    // (the client has saved the game in play first); `import-game` checks a file whole in a
+    // temporary database and only then makes it the game `gameId`'s file and the game in play,
+    // after which the file of the game it `replaces` goes. Any failure changes nothing.
+    // `memory` exports the game in play as it stands in memory, its unsaved changes written into a
+    // copy of its committed file: the progress a failed save leaves exportable (→SAVE-3, →SAVE-10).
+    z.strictObject({ type: z.literal('export-game'), gameId, memory: z.boolean().optional() }),
+    z.strictObject({
+      type: z.literal('import-game'),
+      gameId,
+      replaces: gameId.optional(),
+      file: z.custom<Uint8Array>(
+        (bytes) => bytes instanceof Uint8Array && bytes.length <= PORTABLE_FILE_LIMIT,
+      ),
+    }),
     z.strictObject({
       type: z.literal('news-page'),
       tag: newsItemSchema.shape.tag.optional(),
@@ -587,4 +608,8 @@ export interface Reply {
    * when the game has no database file, an empty slot (→SAVE-29).
    */
   opened?: { gameId: string; found: boolean; revision?: number };
+  /** `list-games`' answer: the IDs of the games whose database files exist (→SAVE-29). */
+  games?: string[];
+  /** `export-game`'s answer: the game's database as a portable `.haeram-save` file (→SAVE-9). */
+  file?: Uint8Array;
 }

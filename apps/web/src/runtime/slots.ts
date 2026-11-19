@@ -3,7 +3,6 @@ import type { World } from '../../../../packages/contracts/src/types';
 import {
   CURRENT_ENGINE_VERSION,
   earlierRulesMessage,
-  envelopeEngine,
   isEarlierEngine,
   NEWER_GAME_MESSAGE,
   SUPPORTED_ENGINE_VERSIONS,
@@ -12,11 +11,10 @@ import { country } from '../../../../packages/catalogs/src/index';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
 import { clubOf, ownSeasons } from '../../../../packages/engine/src/player-state';
 import {
+  checkedGameId,
   GameIndexStore,
-  IndexedDbParkedStore,
   type GameEntry,
   type GameIndex,
-  type ParkedStore,
   type SlotSummary,
 } from '../adapters/games';
 import { divisionName } from '../presentation/competitionLabels';
@@ -71,9 +69,10 @@ const unreadSummary = (): SlotSummary => ({
 });
 
 /**
- * Three game slots over one game in play (→WEB-62, →SAVE-14). Switching parks the game in play in
- * IndexedDB, read back equal, before the next one is activated through the import path; only the
- * writer tab switches, starts, imports or deletes games.
+ * Three game slots over one game in play (→WEB-62, →SAVE-14). Every occupied slot is its game's
+ * database file: switching saves and closes the game in play and opens the next one's, a new game
+ * creates its file, deleting removes it. Only the writer tab switches, starts, imports or deletes
+ * games.
  */
 export class GameSlots {
   /** The slot a new or imported game is going into, until its world is in play. */
@@ -81,12 +80,17 @@ export class GameSlots {
   constructor(
     private client: GameClient,
     private index = new GameIndexStore(browserStorage),
-    private parked: ParkedStore | undefined = IndexedDbParkedStore.available()
-      ? new IndexedDbParkedStore()
-      : undefined,
   ) {}
+  /**
+   * The slot index with the games whose database file is missing read as empty (→SAVE-29); the
+   * file listing is the engine worker's, so a tab without one hides nothing.
+   */
   read(): GameIndex {
-    return this.index.read();
+    const index = this.index.read();
+    for (const [slot, entry] of index.slots.entries())
+      if (entry && !this.client.hasGameFile(entry.id)) index.slots[slot] = null;
+    if (index.active !== null && !index.slots[index.active]) index.active = null;
+    return index;
   }
   /** The slot an unlisted world in play goes into. */
   private home(index: GameIndex) {
@@ -98,7 +102,7 @@ export class GameSlots {
    * read-only tab that may not write the index.
    */
   display(w: World | undefined): GameIndex {
-    const index = this.index.read();
+    const index = this.read();
     // An earlier-rules checkpoint in play never loads: its slot says so (→SAVE-16).
     const earlier = w ? undefined : this.client.earlierRules();
     if (earlier) {
@@ -122,27 +126,9 @@ export class GameSlots {
     index.active = slot;
     return index;
   }
-  get canPark() {
-    return !!this.parked;
-  }
-  /**
-   * Fills in the rules version of parked games listed before slots kept it, from each envelope's
-   * header (never its payload); true when any was found.
-   */
-  async resolveEngines() {
-    if (!this.parked || this.client.state.readonly) return false;
-    const index = this.index.read();
-    let found = false;
-    for (const [slot, entry] of index.slots.entries()) {
-      if (!entry || entry.engine) continue;
-      const raw = await this.parked.get(entry.id).catch(() => undefined);
-      const engine = raw ? envelopeEngine(raw) : undefined;
-      if (!engine) continue;
-      index.slots[slot] = { ...entry, engine };
-      found = true;
-    }
-    if (found) this.index.write(index);
-    return found;
+  /** Whether the browser can hold game databases (OPFS); the worker reports the rest. */
+  get available() {
+    return typeof navigator !== 'undefined' && !!navigator.storage?.getDirectory;
   }
   private writable() {
     if (this.client.state.readonly) throw new Error(sourceMessage('copy.slots.6a26f8d2c4'));
@@ -158,9 +144,6 @@ export class GameSlots {
     const now = new Date().toISOString();
     if (slot < 0) {
       slot = this.home(index);
-      // The game this one replaces was confirmed away; its parked copy goes with it.
-      const replaced = index.slots[slot];
-      if (replaced) void this.parked?.remove(replaced.id).catch(() => {});
       index.slots[slot] = {
         // The game's database is named by the ID its client created it under (→SAVE-14).
         id: this.client.gameId ?? crypto.randomUUID(),
@@ -183,18 +166,11 @@ export class GameSlots {
     this.index.write(index);
     return index;
   }
-  /** Stores the game in play in IndexedDB, saved first; true when there is none to keep. */
-  private async park() {
-    const w = this.client.state.view?.world;
-    if (!w) return true;
-    if (!this.parked) throw new Error(sourceMessage('copy.slots.9f2337b4c0'));
-    const raw = await this.client.checkpoint();
-    if (!raw) throw new Error(this.client.state.error || sourceMessage('copy.slots.ac2d19aa56'));
-    const index = this.sync(w, true);
-    await this.parked.put(index.slots[index.active!]!.id, raw);
-    return true;
-  }
-  /** Continues a slot's game, bringing it into play when it is parked. */
+  /**
+   * Continues a slot's game: the game in play is saved and closed, then this one's database is
+   * opened and validated; a failed open leaves both files as they were and the previous game in
+   * play (→SAVE-14).
+   */
   async continue(slot: number) {
     const inPlay = this.client.state.view?.world;
     const entry = this.display(inPlay).slots[slot];
@@ -207,51 +183,54 @@ export class GameSlots {
       return;
     }
     this.writable();
-    if (!this.parked) throw new Error(sourceMessage('copy.slots.9f2337b4c0'));
-    const raw = await this.parked.get(entry.id);
-    if (!raw) throw new Error(sourceMessage('copy.slots.148750cdf5'));
-    await this.park();
+    checkedGameId(entry.id);
     this.pending = slot;
-    if (!(await this.client.switchTo(raw))) {
+    if (!(await this.client.switchTo(entry.id))) {
       this.pending = undefined;
-      const error = this.client.state.error;
-      // The game in play stays what is on disk; a half-finished switch never lingers in memory.
-      await this.client.reload();
-      throw new Error(error || sourceMessage('copy.slots.f5da590ae2'));
+      throw new Error(this.client.state.error || sourceMessage('copy.slots.f5da590ae2'));
     }
     this.sync(this.client.state.view?.world, true);
   }
-  /** Readies a slot for a new or imported game, parking the game in play first. */
+  /**
+   * Readies a slot for a new or imported game: the game in play is saved first, and the game the
+   * slot holds loses its file when the new game's is created (→WEB-62).
+   */
   async prepare(slot: number) {
     this.writable();
-    const index = this.index.read();
-    if (index.active !== slot) await this.park();
+    const entry = this.read().slots[slot];
+    if (entry) checkedGameId(entry.id);
+    await this.client.saveGame();
+    if (this.client.state.error) throw new Error(this.client.state.error);
+    this.client.replaceOnCreate(entry?.id);
     this.pending = slot;
   }
   cancel() {
     this.pending = undefined;
+    this.client.replaceOnCreate(undefined);
   }
-  async importInto(slot: number, raw: string) {
+  async importInto(slot: number, file: Uint8Array) {
     await this.prepare(slot);
-    await this.client.importFile(raw);
+    await this.client.importFile(file);
     if (this.client.state.error) {
-      this.pending = undefined;
+      this.cancel();
       throw new Error(this.client.state.error);
     }
     this.sync(this.client.state.view?.world, true);
   }
-  /** A slot's checkpoint envelope for export: the game in play's, or its parked copy. */
-  async exportRaw(slot: number) {
-    const index = this.display(this.client.state.view?.world);
-    const entry = index.slots[slot];
+  /**
+   * A slot's game as a `.haeram-save` file (→SAVE-9): the game in play is saved first, any other
+   * game is exported as last saved, one of earlier or newer rules included (→SAVE-11).
+   */
+  async exportFile(slot: number) {
+    const entry = this.display(this.client.state.view?.world).slots[slot];
     if (!entry) return undefined;
-    // The game in play, or an earlier-rules checkpoint kept raw in its place.
-    if (
-      this.client.state.view?.world.id === entry.worldId ||
-      (index.active === slot && this.client.earlierRules())
-    )
-      return this.client.exportFile();
-    return this.parked?.get(entry.id);
+    // A world in play the index never listed is exported under the ID its database has; an entry
+    // that only names an unread earlier checkpoint has no database to export (→SAVE-29).
+    const id = entry.id === 'in-play' ? this.client.gameId : entry.id;
+    if (!id || id === 'earlier') return undefined;
+    const file = await this.client.exportGame(checkedGameId(id));
+    if (!file && this.client.state.error) throw new Error(this.client.state.error);
+    return file;
   }
   /** Deletes a slot's game; true when it was the game in play, which the app then reloads away. */
   async remove(slot: number) {
@@ -262,8 +241,13 @@ export class GameSlots {
     const entry = index.slots[slot] ?? (shown.active === slot ? shown.slots[slot] : null);
     if (!entry) return false;
     const inPlay = index.active === slot || shown.active === slot;
-    if (inPlay) await this.client.forget();
-    await this.parked?.remove(entry.id).catch(() => {});
+    // A world in play the index never listed is deleted under the ID its database has; an entry
+    // that only names an unread checkpoint has no database file to delete.
+    const id = entry.id === 'in-play' ? this.client.gameId : entry.id;
+    if (id && id !== 'earlier') {
+      await this.client.deleteGame(checkedGameId(id));
+      if (this.client.state.error) throw new Error(this.client.state.error);
+    }
     index.slots[slot] = null;
     if (inPlay) index.active = null;
     this.index.write(index);

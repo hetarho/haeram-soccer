@@ -1,7 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { expect, test } from '@playwright/test';
-import { encode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf } from '../fixtures/save-file';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
 import { horizontalOverflow, settle } from './layout';
@@ -143,9 +143,9 @@ test('floating warnings leave the HUD and content fixed on low and phone screens
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'low-screen.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(await encode(fixture)),
+      name: 'low-screen.haeram-save',
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(await saveFileOf(fixture)),
     });
   await expect(page.getByTestId('cash-alarm')).toBeVisible();
   const alerts = page.getByTestId('runtime-alerts');

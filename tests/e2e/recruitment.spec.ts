@@ -18,7 +18,7 @@ import { finishSeason } from './season-progression';
 import { chooseOption } from './select';
 import { expect, test, type Page, type Locator } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { transferOffers, operatingCost } from '../../packages/engine/src/operations';
 import { operatingCosts } from '../../packages/engine/src/finance';
@@ -38,9 +38,9 @@ async function exportWorld(page: Page): Promise<World> {
   const downloading = page.waitForEvent('download');
   await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
   const download = await downloading;
-  const raw = await readFile((await download.path())!, 'utf8');
+  const raw = await readFile((await download.path())!);
   await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  return (await decode(raw)).world;
+  return worldOfSaveFile(raw);
 }
 
 /**
@@ -682,7 +682,7 @@ test('the market ends with who answers offers and reads the recruitment level as
 
   // The sale bar the staff apply shows at every level.
   await expect(offers).toContainText('130%');
-  await expect(offers).toContainText('80% 밑으로는 팔지 않아요');
+  await expect(offers).toContainText('평소에는 평가 가치의 80% 밑으로 팔지 않으며');
   await closeMarketPanel(page, '영입 정보');
   await chooseLevel(page, 4);
   await marketInfo(page);

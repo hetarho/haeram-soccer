@@ -2,6 +2,7 @@ import { message as sourceMessage } from '../../../../../packages/contracts/src/
 import { localizeValue, useTextLocale } from '../../presentation/text';
 import { richMessage } from '../../presentation/LocalizedMessage';
 import { PORTABLE_FILE_LIMIT } from '../../adapters/repository';
+import { SAVE_FILE_EXTENSION } from '../../adapters/saveFile';
 import { ClubNavigation } from './ClubNavigation';
 import {
   ApprovalInboxHost,
@@ -678,7 +679,7 @@ function SaveActions({
         <input
           className={s.fileInput}
           type="file"
-          accept="application/json,.json"
+          accept={SAVE_FILE_EXTENSION}
           disabled={gameActionsBlocked(state, { recovery: true })}
           onChange={(event) => {
             void onImport(event.target.files?.[0]);
@@ -700,7 +701,7 @@ function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) 
         <input
           className={s.fileInput}
           type="file"
-          accept="application/json,.json"
+          accept={SAVE_FILE_EXTENSION}
           disabled={state.busy || state.readonly}
           onChange={(event) => {
             void onImport(event.target.files?.[0]);
@@ -725,7 +726,7 @@ export function App() {
     [screen, setScreen] = useState(initialScreen),
     [slots, setSlots] = useState<GameSlots>(),
     [targetSlot, setTargetSlot] = useState<number>(),
-    [pendingImport, setPendingImport] = useState<string>(),
+    [pendingImport, setPendingImport] = useState<Uint8Array>(),
     [moreOpen, setMoreOpen] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
   const { page, replacePage } = useNavigation();
@@ -940,17 +941,19 @@ export function App() {
       window.clearTimeout(timer);
     };
   }, [page, contentPage, worldId, replacing, screen, taskLocation]);
-  const saveFile = (raw: string, name: string) => {
-    const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' })),
+  const saveFile = (file: Uint8Array, name: string) => {
+    const url = URL.createObjectURL(
+        new Blob([new Uint8Array(file)], { type: 'application/octet-stream' }),
+      ),
       a = document.createElement('a');
     a.href = url;
-    a.download = `haeram-${name}.haeram-save.json`;
+    a.download = `haeram-${name}${SAVE_FILE_EXTENSION}`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
   const download = async () => {
-    const raw = await client?.exportFile();
-    if (raw) saveFile(raw, String(gameStore.getSnapshot().view?.world.year || 'backup'));
+    const file = await client?.exportFile();
+    if (file) saveFile(file, String(gameStore.getSnapshot().view?.world.year || 'backup'));
   };
   const importFile = async (file?: File) => {
     if (!file || gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
@@ -959,13 +962,13 @@ export function App() {
       return;
     }
     setLocalError('');
-    const raw = await file.text();
+    const bytes = new Uint8Array(await file.arrayBuffer());
     if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
     // The stored game in play counts its IndexedDB active copy (→SAVE-3).
     if (w || client?.hasStoredGame()) {
       setMoreOpen(false);
-      setPendingImport(raw);
-    } else await client?.importFile(raw);
+      setPendingImport(bytes);
+    } else await client?.importFile(bytes);
   };
   const menuDisabled = !playing;
   return (
@@ -1247,9 +1250,11 @@ export function App() {
                 disabled={importBlocked}
                 onClick={() => {
                   if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
-                  const raw = pendingImport;
+                  const file = pendingImport;
                   setPendingImport(undefined);
-                  void client?.importFile(raw);
+                  // The game in play is the one the import replaces (→WEB-62).
+                  client?.replaceOnCreate(client.gameId);
+                  void client?.importFile(file);
                 }}
               >
                 {localizeValue(t('save.replaceAndImport'))}

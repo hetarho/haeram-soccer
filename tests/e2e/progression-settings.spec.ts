@@ -324,7 +324,7 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
     expect(prepared.people![id]!.club).toBe(destination.id);
   }
   const target = prepared.players.find((p) => p.id === 'ENG:0:0:12:p:16:108')!;
-  expect(npcOffer(prepared, buyer, target, clubOf(prepared), '1978685')).toBeDefined();
+  expect(npcOffer(prepared, buyer, target, clubOf(prepared), '4131020')).toBeDefined();
   expect(pendingDecisions(prepared)).toEqual([]);
   validateWorld(prepared);
   await importPreparedCareer(page, prepared);
@@ -402,7 +402,8 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
     day: 2,
     due: 7,
     status: 'pending',
-    fee: '1978685',
+    // His value at our division on the 0.8.13 wage curve (→CLUB-25), the bid's drawn share of it.
+    fee: '4131020',
   });
   // The pull market picks the bidder among every club that needs him (0.8.11), so the offer is
   // read from the world: another real club's, never our own.

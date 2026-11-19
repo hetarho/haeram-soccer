@@ -1,7 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { saveFileOf, worldOfSaveFile } from '../fixtures/save-file';
 import type { ClubIdentity, DesignStudio } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { currentDay, DESIGNERS, designFee, redrawFee } from '../../packages/engine/src/index';
@@ -299,7 +299,7 @@ test('an imported file brings its own design and none of the drafts waiting in t
   const view = await openDesign(page);
   await commission(page, view, [ROYAL, GOLD]);
   // The same game comes back from a file whose applied crest has changed since then.
-  const { world } = await decode(raw);
+  const world = await worldOfSaveFile(raw);
   // A designer's later draft in a new home colour, its crest led by it (→KIT-10).
   const older = ownClub(world).identity!;
   const newer: ClubIdentity = {
@@ -316,9 +316,9 @@ test('an imported file brings its own design and none of the drafts waiting in t
     .locator('input[type=file]')
     .last()
     .setInputFiles({
-      name: 'newer-design.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(await encode(world)),
+      name: 'newer-design.haeram-save',
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(await saveFileOf(world)),
     });
   await page
     .getByRole('dialog', { name: '기록 가져오기 확인' })

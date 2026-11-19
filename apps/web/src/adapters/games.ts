@@ -1,11 +1,10 @@
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { deviceOwner, ownerOf, type Owner } from './profile';
-import { MANIFEST, type StoragePort } from './repository';
+import type { StoragePort } from './repository';
 
 /**
  * Game slots (→SAVE-14, →WEB-62). The index lists what each slot holds and which one is in play;
- * the game in play keeps its active checkpoint and previous copy (→SAVE-3) and every other game waits in
- * IndexedDB as the same checkpoint envelope an export file carries.
+ * every occupied slot is its game's database file, named by the entry's ID (→ARCH-11).
  */
 export const GAMES_KEY = 'haeram-soccor:games';
 export const SLOT_COUNT = 3;
@@ -90,21 +89,22 @@ export class GameIndexStore {
   write(index: GameIndex) {
     this.storage.setItem(GAMES_KEY, JSON.stringify({ v: 1, ...index }));
   }
-  /** Whether a current slot or the game in play's commit manifest exists. */
+  /** Whether any slot is listed; a listed game without its file is found out at startup (→SAVE-29). */
   hasGames() {
-    return this.read().slots.some(Boolean) || this.storage.getItem(MANIFEST) !== null;
+    return this.read().slots.some(Boolean);
   }
 }
-
-/** Checkpoint envelopes of games not in play, keyed by game ID. */
-export interface ParkedStore {
-  get(id: string): Promise<string | undefined>;
-  put(id: string, raw: string): Promise<void>;
-  remove(id: string): Promise<void>;
+/**
+ * The file name a game's ID gives its database (→SAVE-14): the ID is used verbatim after it passes
+ * the pattern the protocol also checks; anything else is a storage error.
+ */
+export const GAME_ID = /^[A-Za-z0-9:_-]{1,100}$/;
+export function checkedGameId(id: string) {
+  if (!GAME_ID.test(id)) throw new Error(sourceMessage('copy.games.a38061aa70'));
+  return id;
 }
 
-const DB = 'haeram-soccor',
-  STORE = 'games';
+const DB = 'haeram-soccor';
 /**
  * One request on a store of the shared `haeram-soccor` database: version 2 adds the checkpoint
  * store of the game in play, keys active and previous (→SAVE-3), beside parked games, leaving
@@ -144,23 +144,4 @@ export function idbRequest<T>(
       };
     };
   });
-}
-const request = <T>(run: (store: IDBObjectStore) => IDBRequest<T>, mode: IDBTransactionMode) =>
-  idbRequest(STORE, run, mode);
-export class IndexedDbParkedStore implements ParkedStore {
-  static available() {
-    return typeof indexedDB !== 'undefined';
-  }
-  async get(id: string) {
-    const value = await request<unknown>((store) => store.get(id), 'readonly');
-    return typeof value === 'string' ? value : undefined;
-  }
-  /** Writes and reads back, so a switch never relies on a copy it has not seen. */
-  async put(id: string, raw: string) {
-    await request((store) => store.put(raw, id), 'readwrite');
-    if ((await this.get(id)) !== raw) throw new Error(sourceMessage('copy.games.399fdb1db0'));
-  }
-  async remove(id: string) {
-    await request((store) => store.delete(id), 'readwrite');
-  }
 }

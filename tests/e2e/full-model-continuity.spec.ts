@@ -1,9 +1,8 @@
 import { openClubRecords, openLeague } from './competition-navigation';
 import { expect, test, type Page } from '@playwright/test';
-import { decode } from '../../apps/web/src/adapters/persistence';
+import { worldOfSaveFile } from '../fixtures/save-file';
 import { canonical } from '../../packages/contracts/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
-import { PLAIN_WORLD_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
 import { continuityCareer, FAST_MINUTE_MS, FAST_SPEED } from '../fixtures/full-model-continuity';
 import { exportRaw, exportWorld } from './club-identity-helpers';
@@ -74,7 +73,7 @@ for (const viewport of VIEWPORTS)
 
     // The model is recorded at the next unplayed day, one revision on, by the build's writer load
     // once the switch is on, and nothing settled before it changed (→SAVE-23).
-    const loaded = (await decode(await exportRaw(page))).world;
+    const loaded = await worldOfSaveFile(await exportRaw(page));
     expect(loaded.matchModel).toEqual(activated.matchModel);
     expect(loaded.matchModel!.coverage).toBe('activation');
     expect(loaded.revision).toBe(world.revision + 1);
@@ -222,7 +221,7 @@ for (const viewport of VIEWPORTS)
     const row = await seasonMatches(page);
     for (const match of world.ownMatches)
       await expect(row(match.round, match.score).first()).toBeVisible();
-    const exported = (await decode(await exportRaw(page))).world;
+    const exported = await worldOfSaveFile(await exportRaw(page));
     const settled = exported.ownMatches.find((match) => match.id === next.id)!;
     await expect(row(settled.round, settled.score).first()).toBeVisible();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
@@ -234,10 +233,7 @@ for (const viewport of VIEWPORTS)
     // The records load after the page: wait for the line rather than read it at once.
     await expect(await coverageLine(page)).toHaveText(played);
     const raw = await exportRaw(page);
-    const file = await decode(raw);
-    // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
-    expect(file.envelope.schema).toBe(PLAIN_WORLD_CHECKPOINT_SCHEMA);
-    const saved = file.world;
+    const saved = await worldOfSaveFile(raw);
     expect(saved.matchModel).toEqual(activated.matchModel);
     expect(saved.npcSeason!.trackedFrom).toEqual(activated.matchModel!.trackedFrom);
     expect(saved.npcSeason!.competitions.length).toBeGreaterThan(0);
@@ -263,8 +259,8 @@ for (const viewport of VIEWPORTS)
         .locator('input[type=file]')
         .last()
         .setInputFiles({
-          name: 'full-model.haeram-save.json',
-          mimeType: 'application/json',
+          name: 'full-model.haeram-save',
+          mimeType: 'application/octet-stream',
           buffer: Buffer.from(raw),
         });
       await expect(other.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });

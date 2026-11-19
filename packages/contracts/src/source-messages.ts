@@ -252,6 +252,10 @@ export const sourceMessages = {
   'copy.sqliteWasm.sqliteFailed':
     '게임 데이터베이스(SQLite)를 시작하지 못했습니다. 다른 탭에서 게임을 닫거나 페이지를 새로 고쳐 주세요.',
   'copy.compression.799ea5e9b6': '저장 압축에 실패했습니다.',
+  'copy.saveFile.notSaveFile':
+    '이 파일은 이 버전의 저장 파일(.haeram-save)이 아닙니다. 이전 버전의 내보내기 파일은 지원하지 않습니다.',
+  'copy.saveFile.truncated': '저장 파일이 잘렸거나 손상되었습니다.',
+  'copy.saveFile.integrity': '저장 데이터베이스가 손상되었습니다. 무결성 검사에 실패했습니다.',
   'copy.csv.d355613952': 'CSV에는 유한한 숫자가 필요합니다.',
   'copy.dense.70b715337f': '저장 인코딩 헤더 손상',
   'copy.dense.16b27fbb19': '저장 인코딩 길이 손상',

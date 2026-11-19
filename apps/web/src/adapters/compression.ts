@@ -1,7 +1,8 @@
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { base64, unbase64 } from './base64';
 import { DECOMPRESSED_LIMIT, type SaveCodec } from './repository';
-async function gzip(bytes: Uint8Array, compress: boolean, limit: number) {
+/** Gzips or gunzips raw bytes, stopping at `limit` output bytes. */
+export async function gzip(bytes: Uint8Array, compress: boolean, limit: number) {
   const stream = new Blob([new Uint8Array(bytes).buffer])
     .stream()
     .pipeThrough(compress ? new CompressionStream('gzip') : new DecompressionStream('gzip'));

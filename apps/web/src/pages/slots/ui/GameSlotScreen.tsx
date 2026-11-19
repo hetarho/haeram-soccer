@@ -4,6 +4,7 @@ import { localizeValue, useTextLocale } from '../../../presentation/text';
 import { useEffect, useState } from 'react';
 import type { GameEntry } from '../../../adapters/games';
 import { PORTABLE_FILE_LIMIT } from '../../../adapters/repository';
+import { SAVE_FILE_EXTENSION } from '../../../adapters/saveFile';
 import { BetaMark } from '../../../shared/ui/BetaMark';
 import { earlierRules, summarize, type GameSlots } from '../../../runtime/slots';
 import { gameStore, useGameState } from '../../../runtime/store';
@@ -38,9 +39,9 @@ export function GameSlotScreen({
 }: {
   slots: GameSlots;
   onEnter: () => void;
-  /** Readies the slot (parking the game in play) and opens founding for it. */
+  /** Readies the slot (saving the game in play) and opens founding for it. */
   onNew: (slot: number) => Promise<void>;
-  onExport: (raw: string, label: string) => void;
+  onExport: (file: Uint8Array, label: string) => void;
   /** The game in play was deleted: a fresh page reads what remains, on this screen. */
   onRemovedInPlay: () => void;
 }) {
@@ -64,16 +65,6 @@ export function GameSlotScreen({
   useEffect(() => {
     if (!loading) setIndex(slots.display(gameStoreWorld()));
   }, [slots, loading, clientError]);
-  // Games parked before slots kept their rules version learn it from their header (→SAVE-16).
-  useEffect(() => {
-    let live = true;
-    void slots.resolveEngines().then((found) => {
-      if (found && live) setIndex(slots.display(gameStoreWorld()));
-    });
-    return () => {
-      live = false;
-    };
-  }, [slots]);
   const [working, setWorking] = useState('');
   const [error, setError] = useState('');
   const [confirm, setConfirm] = useState<{ kind: 'delete' | 'overwrite'; slot: number }>();
@@ -95,9 +86,9 @@ export function GameSlotScreen({
     world && entry.worldId === world.id ? summarize(world) : entry.summary;
   const exportSlot = (slot: number) =>
     run('slots.exporting', async () => {
-      const raw = await slots.exportRaw(slot);
-      if (!raw) throw new Error(t('slots.missingRecord'));
-      onExport(raw, entryOf(slot)!.summary.club);
+      const file = await slots.exportFile(slot);
+      if (!file) throw new Error(t('slots.missingRecord'));
+      onExport(file, entryOf(slot)!.summary.club);
     });
   const importInto = (slot: number, file?: File) => {
     if (!file) return;
@@ -106,7 +97,7 @@ export function GameSlotScreen({
       return;
     }
     void run('slots.importing', async () => {
-      await slots.importInto(slot, await file.text());
+      await slots.importInto(slot, new Uint8Array(await file.arrayBuffer()));
       onEnter();
     });
   };
@@ -134,7 +125,7 @@ export function GameSlotScreen({
         ),
       )}
       {localizeValue(
-        !slots.canPark && (
+        !slots.available && (
           <p data-surface="inset" className={s.note} role="status">
             {localizeValue(t('slots.storageUnavailable'))}
           </p>
@@ -174,7 +165,7 @@ export function GameSlotScreen({
                     <button
                       data-ui="primary"
                       className={a.primary}
-                      disabled={locked || (!!world && !slots.canPark)}
+                      disabled={locked || (!!world && !slots.available)}
                       onClick={() => void run('slots.preparing', async () => onNew(slot))}
                     >
                       {localizeValue(t('slots.new'))}
@@ -184,8 +175,8 @@ export function GameSlotScreen({
                       <input
                         className={a.fileInput}
                         type="file"
-                        accept="application/json,.json"
-                        disabled={locked || (!!world && !slots.canPark)}
+                        accept={SAVE_FILE_EXTENSION}
+                        disabled={locked || (!!world && !slots.available)}
                         onChange={(event) => {
                           importInto(slot, event.target.files?.[0]);
                           event.target.value = '';
