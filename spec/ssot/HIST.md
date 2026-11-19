@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r27 | Define the browser-demo rules for durable metrics and history.
+> r28 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -51,7 +51,7 @@
 
 - HIST-16 [o] Own players keep season and career totals of the spatial counters and discipline — box entries, front-of-box entries, line-breaking passes, xT added, cut-backs, crosses, through balls, progressive carries, yellow and red cards, bans served (→MATCH-13, →MATCH-19). ← fans compare these across a career
   - Yellow/red career and season contributions belong to the club on the incident's recorded match side, including earlier own-club contributions from players who later leave. An opposing-side incident never adds to our club totals; league discipline still counts both sides under →=LEAGUE-15.
-  - per-match shot maps, heat maps, pass networks and tactical reports live for the current season only; at the season close they become one season heat map per own player, kept with the season (→MATCH-5).
+  - per-match shot maps, pass networks and tactical reports of watched matches (→MATCH-25) live for the current season only and are deleted at the season close (→MATCH-5); no season map is kept.
   - other leagues' discipline tables are current-season facts (→LEAGUE-15); a closed season keeps none for players of clubs nobody owns.
 
 - HIST-17 [o] Every settled match's complete numerical result (→MATCH-26/27) enters the same world records and current-season comparison system.
@@ -100,6 +100,7 @@
 
 
 ## chg
+- r28 261119 HIST-16✎ per-match material with heat maps, reduced at the close to one season heat map per own player→watched matches' shot maps, pass networks and tactical reports, deleted at the close with no season map
 - r27 261113 HIST-23✎ season lines from the season's settled aggregates, scope and start unstated→all competitions together, aggregates kept from the world's first season with or without an owner (before: none in a world nobody owns until 1955/56), no line for a season with no tracked aggregates
 - r26 261113 HIST-3✎ career/season summaries represent older NPC history→each persisted player's season lines; HIST-23+ persisted players' season lines (appearances, goals, assists, keeper saves and clean sheets) and honours, kept at retirement with the last profile when a retained record links them, removed otherwise
 - r25 261111 HIST-17✎ results on either engine path→every settled match's result (one result path, →MATCH-22)

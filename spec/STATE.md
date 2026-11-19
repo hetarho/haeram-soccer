@@ -20,19 +20,19 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 49 | 49 | - | 2 |
-| WEB | 222 | 222 | - | 0 |
+| ARCH | 51 | 51 | - | 2 |
+| WEB | 224 | 224 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
-| KIT | 10 | 10 | - | 0 |
+| KIT | 11 | 11 | - | 0 |
 | CLUB | 83 | 83 | - | 0 |
-| MATCH | 68 | 68 | - | 0 |
+| MATCH | 69 | 69 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
 | ECON | 64 | 64 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 27 | 27 | - | 0 |
-| SAVE | 70 | 70 | - | 0 |
+| HIST | 28 | 28 | - | 0 |
+| SAVE | 72 | 72 | - | 0 |
 | OWNER | 8 | 8 | - | 0 |
 | PLAYER | 20 | 20 | - | 0 |
 
@@ -68,6 +68,40 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | todo |
+| T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T989 | todo |
+| T991 | Player sheets and tallies without season heat maps | WEB HIST MATCH ARCH | - | todo |
+| T992 | Post-match material without heat maps, and an unwatched match says why it has none | WEB MATCH ARCH | T991 | todo |
+| T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | todo |
+| T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 | todo |
+| T994 | Slow view reads wait for a stopped clock | WEB ARCH | - | todo |
+| T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T994 | todo |
+| T995 | Manager, staff and discipline places dim while the clock runs | WEB ARCH | T1020 | todo |
+| T996 | The scout's shortlist dims while the clock runs | WEB ARCH | T1020 T995 | todo |
+| T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
+| T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
+| T998 | Helper count by core class | ARCH | T997 | todo |
+| T999 | Checkpoints are always gzip, with no Brotli or CJK text codec | SAVE ARCH | - | todo |
+| T1000 | A save verifies its checksum; storage limits follow the browser quota | SAVE ARCH | T999 | todo |
+| T1001 | Checkpoints carry the plain world in one container | SAVE | T1000 | todo |
+| T1002 | The compact packing layer is deleted | SAVE ARCH KIT | T1001 | todo |
+| T1003 | Record-store port, save schema and an in-memory SQLite store for tests | ARCH SAVE | T1002 | todo |
+| T1004 | The world maps to rows and a saver writes only changed rows | SAVE ARCH | T1003 | todo |
+| T1005 | SQLite runs in the engine worker on OPFS | ARCH SAVE | T1003 | todo |
+| T1006 | The engine worker opens and saves the game in play in its database | SAVE ARCH | T1004 T1005 | todo |
+| T1007 | Game slots are database files | SAVE WEB | T1006 | todo |
+| T1008 | Export and import the gzip-compressed database as `.haeram-save` | SAVE ARCH | T1007 | todo |
+| T1009 | IndexedDB checkpoints, the repository and the JSON envelope are retired | SAVE ARCH | T1008 | todo |
+| T1010 | Each game keeps a season backup and offers recovery from it | SAVE ARCH WEB | T1009 | todo |
+| T1011 | One tab plays a game; another tab offers 여기서 이어 하기 | SAVE ARCH WEB | T1007 | todo |
+| T1012 | The read-only game state is removed | SAVE WEB KIT | T1011 | todo |
+| T1013 | Person reads go through accessors that also see the record store | SAVE ARCH | T1009 | todo |
+| T1014 | People without a current role leave memory when the game saves | SAVE ARCH | T1013 T1010 | todo |
+| T1015 | Player records of people without a current role leave memory at save | SAVE ARCH | T1014 | todo |
+| T1016 | Past seasons' own matches leave memory at save | SAVE ARCH MATCH | T1015 | todo |
+| T1017 | Events and news before last season leave memory at save | SAVE ARCH HIST | T1016 | todo |
+| T1018 | Season archives older than seven seasons leave memory at save | SAVE ARCH HIST | T1017 | todo |
+| T1022 | Save database measurements and release preparation | ARCH SAVE | T1018 T1012 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -81,6 +115,8 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
+- x10 cost levers (261119, owner from reports/261119-np19 D2/D4/D5/D8): T989–T998 and T1019–T1021 — NPC place-fit tolerance, unwatched own matches without script/material and heat maps removed, slow view reads only on a stopped clock with dimmed places, helpers from two cores; T998 is explore (1h). Start with `gusta-implement-task T989` (or /gusta-start).
 - inspect work board for remaining tasks
 - np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked).
 - mr18cx (T953–T980, owner plan mr18) and cx19 (T981) landed together on main as 0.8.13 after merging np19; T978's measured calibration misses are in reports/261118-mr18cx.
