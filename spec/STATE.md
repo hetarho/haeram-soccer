@@ -81,7 +81,7 @@
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
 | T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
 | T998 | Helper count by core class | ARCH | T997 | todo |
-| T1003 | Record-store port, save schema and an in-memory SQLite store for tests | ARCH SAVE | T1002 | todo |
+| T1003 | Record-store port, save schema and an in-memory SQLite store for tests | ARCH SAVE | T1002 | doing@261119.sv19 |
 | T1004 | The world maps to rows and a saver writes only changed rows | SAVE ARCH | T1003 | todo |
 | T1005 | SQLite runs in the engine worker on OPFS | ARCH SAVE | T1003 | todo |
 | T1006 | The engine worker opens and saves the game in play in its database | SAVE ARCH | T1004 T1005 | todo |

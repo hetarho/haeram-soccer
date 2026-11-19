@@ -35,6 +35,19 @@ export default tseslint.config(
     ],
     ignores: ['**/*.test.*', '**/*.testkit.*', 'packages/engine/src/portable-math.ts'],
     rules: {
+      // The engine reaches the game database only through the record-store port (→ARCH-4/36).
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [{ name: 'node:sqlite', message: 'Use the record-store port (→ARCH-36).' }],
+          patterns: [
+            {
+              group: ['@sqlite.org/*', 'sql.js', '**/sqlRecordStore', '**/node-sqlite'],
+              message: 'Use the record-store port (→ARCH-36).',
+            },
+          ],
+        },
+      ],
       'no-restricted-properties': [
         'error',
         ...'exp expm1 log log1p log2 log10 sin cos tan asin acos atan atan2 sinh cosh tanh asinh acosh atanh cbrt hypot pow'
