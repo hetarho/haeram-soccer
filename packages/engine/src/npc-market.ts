@@ -508,6 +508,7 @@ function settleMove(
   delete p.clauses;
   recordNpcTransferFee(w, seller, fee, true);
   recordNpcTransferFee(w, offer.club, offer.paid, false);
+  // Current-only: a player a club sells plays for it, so memory holds his person (T1014).
   if (w.people?.[p.id]) {
     movePerson(w, p, offer.club.id, false, p.loanUntil, seller.id);
     const job = w.people[p.id]!.employment.find((j) => j.role === 'player' && !j.to);
@@ -545,6 +546,7 @@ export function returnNpcLoans(w: World) {
       // The borrower keeps its own history; only the returning copy resumes the parent's stint.
       const returning = borrower?.id === w.playerClub ? structuredClone(p) : p;
       restoreLoanStint(w, returning, parent.id, loan);
+      // Current-only: a person on loan holds his loan, so memory holds him (T1014).
       if (w.people?.[id]) {
         movePerson(w, returning, parent.id, borrower?.id === w.playerClub, undefined, borrower?.id);
         delete w.people[id]!.loan;

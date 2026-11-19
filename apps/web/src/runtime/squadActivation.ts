@@ -1,4 +1,5 @@
 import type { World } from '../../../../packages/contracts/src/types';
+import { cloneWorld } from '../../../../packages/contracts/src/record-store';
 import { message } from '../../../../packages/contracts/src/messages';
 import { foundSquads } from '../../../../packages/engine/src/persisted-squads';
 import { restorePlayerLinks } from '../../../../packages/engine/src/player-records';
@@ -6,7 +7,7 @@ import { restorePlayerLinks } from '../../../../packages/engine/src/player-recor
 /** Writer activation only; an inspection must never call this compatibility step. */
 export function adoptSquads(w: World, revised: boolean): World {
   if (w.squads !== undefined) return w;
-  const candidate = structuredClone(w);
+  const candidate = cloneWorld(w);
   foundSquads(candidate);
   restorePlayerLinks(candidate);
   if (!revised) {

@@ -3,6 +3,7 @@ import { linkPlayer } from './player-records';
  * Our club's fee transfers (→HIST-20): the facts the writers record as a signing, sale or loan
  * completes, and their ranking in today's money. A read leaf: the records room imports it.
  */
+import { hasPerson } from './person-reads';
 import type { Event, Player, TransferFact, World } from '../../contracts/src/types';
 import { currentDay } from './calendar';
 import { clubOf } from './player-state';
@@ -40,7 +41,7 @@ export function recordTransfer(w: World, fact: TransferMove): TransferFact | und
     direction: fact.direction,
     loan: fact.loan,
     player: fact.player.id,
-    ...(w.people?.[fact.player.id] ? { person: fact.player.id } : {}),
+    ...(hasPerson(w, fact.player.id) ? { person: fact.player.id } : {}),
     name: fact.player.name,
     ...(fact.club ? { club: fact.club } : {}),
     fee: fact.fee,

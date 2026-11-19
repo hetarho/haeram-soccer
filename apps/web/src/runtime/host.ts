@@ -51,6 +51,7 @@ import { rowsToWorld } from '../adapters/worldRows';
 import { SAVE_SCHEMA_VERSION } from '../adapters/saveSchema';
 import {
   attachRecordStore,
+  cloneWorld,
   type RecordStore,
 } from '../../../../packages/contracts/src/record-store';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
@@ -145,7 +146,7 @@ import { divisionName, kindLabel } from '../presentation/competitionLabels';
  */
 function adoptIdentities(w: World, revised: boolean): World {
   if (w.clubs.every((club) => club.identity)) return w;
-  const candidate = structuredClone(w);
+  const candidate = cloneWorld(w);
   if (!installMissingIdentities(candidate)) return w;
   if (!revised) {
     if (!Number.isSafeInteger(candidate.revision + 1))
@@ -580,7 +581,7 @@ export class Host {
     const squadWorld = adoptSquads(modelled, modelled !== w);
     let activated = this.adoptManagerHistory(squadWorld, squadWorld !== w);
     if (needsReadModels(activated) && !settledAhead(this.world, activated)) {
-      const journalled = structuredClone(activated);
+      const journalled = cloneWorld(activated);
       initializeReadModels(journalled);
       if (activated === w) journalled.revision++;
       activated = journalled;
@@ -870,7 +871,7 @@ export class Host {
    */
   private adoptModel(w: World, revised: boolean): World {
     if (!activatesMatchModel(w, this.release) || settledAhead(this.world, w)) return w;
-    const candidate = structuredClone(w);
+    const candidate = cloneWorld(w);
     if (!revised) {
       if (!Number.isSafeInteger(candidate.revision + 1))
         throw new Error(sourceMessage('copy.host.b53dad7fec'));

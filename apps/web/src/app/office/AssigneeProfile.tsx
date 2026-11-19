@@ -67,6 +67,7 @@ export function AssigneeProfile({
               ]}
             />
             {localizeValue(
+              // Current-only: the holder of a post has a current role, so the view holds him.
               current.person && w.people?.[current.person] && (
                 <PersonCareerLink id={current.person} name={current.name} client={client} />
               ),

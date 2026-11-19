@@ -1,4 +1,5 @@
 import type { World } from '../../contracts/src/types';
+import { hasPerson } from './person-reads';
 import { temperamentOf, type DelegatePost, type Temperament } from './delegation-info';
 import { financeProjection } from './projection';
 import { staffMember } from './staff-info';
@@ -17,7 +18,7 @@ export function keyWith(temperament: Temperament, prefix = 'person') {
 export function holdTemperament(w: World, post: DelegatePost, temperament: Temperament) {
   const member = staffMember(w, post);
   if (!member) throw new Error(`no ${post}`);
-  if (member.person && w.people?.[member.person]) {
+  if (member.person && hasPerson(w, member.person)) {
     if (temperamentOf(member.person) !== temperament)
       throw new Error(`${post} is a registered person whose temperament is fixed`);
   } else {

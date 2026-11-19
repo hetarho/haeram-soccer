@@ -78,6 +78,7 @@ describe('runtime architecture boundaries', () => {
     'competition-keys',
     'elo',
     'transfer-records',
+    'person-reads',
     'kit-wear',
     'kit-patterns',
   ])('%s stays below world generation, campaign and match orchestration', (leaf) => {

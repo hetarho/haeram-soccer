@@ -1,5 +1,6 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 export { SQUAD_TARGET } from './squad-size';
+import { hasPerson } from './person-reads';
 import type { Line, Position, World } from '../../contracts/src/types';
 import { academyPlayers, promoteYouth, promotionAge } from './academy';
 import { clubOf, overall } from './player-state';
@@ -38,7 +39,10 @@ export function callUpFor(w: World, line: Line, source: CallUpSource) {
           ? `${own.id}:youth:${w.year}:`
           : `${own.id}:callup:${w.year}:${currentDay(w)}:`;
     let serial = 0;
-    while (w.players.some((p) => p.id === `${prefix}${serial}`) || w.people?.[`${prefix}${serial}`])
+    while (
+      w.players.some((p) => p.id === `${prefix}${serial}`) ||
+      hasPerson(w, `${prefix}${serial}`)
+    )
       serial++;
     const suggested = refillPosition(w),
       position: Position =

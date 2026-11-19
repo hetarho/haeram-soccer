@@ -5,6 +5,7 @@ import { message as sourceMessage } from '../../contracts/src/messages';
  * best of each line as 영입's rows shape his search (→ECON-16, →ECON-22). Reading, filtering or
  * changing a setting never creates a player: switching one away and back finds the same players.
  */
+import { personOf } from './person-reads';
 import type { Club, FreeAgent, Line, Player, ScoutOffer, World } from '../../contracts/src/types';
 import { BUILD_SLOTS } from '../../contracts/src/build';
 import { LINES } from '../../contracts/src/player';
@@ -394,7 +395,7 @@ export function locateOffer(w: World, id: string, club?: string): ScoutOffer | u
     };
   };
   if (club) return at(clubById(w, club));
-  const recorded = w.people?.[id]?.club;
+  const recorded = personOf(w, id)?.club;
   const found = (recorded ? at(clubById(w, recorded)) : undefined) ?? at(originClub(w, id));
   if (found) return found;
   const agent = freeAgentsOf(w).find((p) => p.id === id);

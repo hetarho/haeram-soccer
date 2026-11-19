@@ -11,6 +11,7 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { currentDay } from './calendar';
+export { forgetColdPerson, hasPerson, personIdsWithPrefix, personOf } from './person-reads';
 const settlementDates = new WeakMap<World, CareerDate>();
 /** Rollover skips summer in the live clock; contracts settled at the close keep their actual date. */
 export function atCareerDate<T>(w: World, date: CareerDate, settle: () => T): T {
@@ -28,6 +29,10 @@ export const careerDate = (w: World): CareerDate => ({
 });
 export const compareCareerDates = (a: CareerDate, b: CareerDate) =>
   a.year - b.year || a.day - b.day;
+/**
+ * The person `id` as held in memory, for a writer: a change only lasts on a person `w.people`
+ * holds. Every read of someone who may lack a current role goes through `personOf` instead.
+ */
 export function resolvePerson(w: World, id: string) {
   return w.people?.[id];
 }
@@ -183,7 +188,7 @@ export function retainStaffPerson(
   }
   return person;
 }
-function personOf(w: World, id: string) {
+function heldPerson(w: World, id: string) {
   const person = resolvePerson(w, id);
   if (!person) throw new Error(sourceMessage('copy.person_careers.8e330cf8cd'));
   return person;
@@ -200,7 +205,7 @@ export function openEmployment(
   from = careerDate(w),
   observed = true,
 ): CareerEmployment {
-  const person = personOf(w, id);
+  const person = heldPerson(w, id);
   if (!w.clubs.some((c) => c.id === club))
     throw new Error(sourceMessage('copy.person_careers.063ee6cae9'));
   const active = person.employment.filter((job) => !job.to);
@@ -244,7 +249,7 @@ export function openEmployment(
   return job;
 }
 export function closeEmployment(w: World, id: string, role: CareerRole, to = careerDate(w)) {
-  const person = personOf(w, id);
+  const person = heldPerson(w, id);
   const job = person.employment.find((job) => !job.to && job.role === role);
   if (!job) return;
   if (compareCareerDates(to, job.from) < 0)

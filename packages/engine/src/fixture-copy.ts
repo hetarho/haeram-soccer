@@ -55,6 +55,13 @@ export function seasonPlayerJobs(
   );
 }
 
+/**
+ * The copy a helper computes a round's other fixtures from. Its people are those in memory only:
+ * an inactive one is a stub that just reserves his ID, and a person kept only as a cold row of
+ * the record store (→SAVE-32) is absent. A helper reads people only for stored-squad clubs
+ * (season.ts sends it no other round), where every read asks after active people alone
+ * (`playingFor`, `soldThisSeason`), so an absent ID reads exactly as a retired stub.
+ */
 export function readCopy(w: World): FixtureReadCopy {
   const copy: Partial<Record<FixtureReadKey, unknown>> = {};
   for (const key of FIXTURE_READ_KEYS)

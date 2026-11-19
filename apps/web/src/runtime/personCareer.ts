@@ -9,6 +9,7 @@ import {
   coachingService,
   careerOrdinal,
   isCoachingRole,
+  personOf,
 } from '../../../../packages/engine/src/person-careers';
 import { archivedFinish } from '../../../../packages/engine/src/club-past';
 import { seasonAfter, seasonFrom } from '../../../../packages/engine/src/wartime';
@@ -63,7 +64,7 @@ function tenures(w: World, employment: readonly CareerEmployment[], at: CareerDa
 
 /** A selected person's retained facts, answered only from canonical worker state. */
 export function personCareer(w: World, id: string) {
-  const person = w.people?.[id];
+  const person = personOf(w, id);
   if (!person) return undefined;
   const at = careerDate(w),
     player = w.players.find((p) => p.id === id);

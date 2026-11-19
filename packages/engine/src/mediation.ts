@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { cloneWorld } from '../../contracts/src/record-store';
 import type { RecruitmentMediation, SigningRequest, World } from '../../contracts/src/types';
 import { careerDate, careerOrdinal, atCareerDate } from './person-careers';
 import { transferWindow, transferWindowDays } from './transfer-window';
@@ -189,7 +190,7 @@ export function resolveMediation(
   const coverage =
     actor === 'delegated' ? requestCoverage(w, current.target, current.created) : undefined;
   if (coverage === 'pending') return current;
-  const trial = structuredClone(w),
+  const trial = cloneWorld(w),
     mediation = trial.mediations!.find((m) => m.id === id)!;
   return atCareerDate(trial, careerDate(w), () => {
     let result: string = sourceMessage('copy.mediation.4eefc3915b'),
@@ -293,7 +294,7 @@ export function resolveDelegatedMediations(w: World) {
 
 /** A selected-case preview uses a private canonical copy; it cannot create real bids or promises. */
 export function mediationPreview(w: World, id: string, support: RecruitmentMediation['support']) {
-  const trial = structuredClone(w),
+  const trial = cloneWorld(w),
     beforeBids = new Set((w.bids ?? []).map((b) => b.id)),
     beforeArrivals = w.recruitmentArrivals?.length ?? 0;
   const record = resolveMediation(trial, id, support, 'owner');

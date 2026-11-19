@@ -529,6 +529,7 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
     ].slice(-freeAgentRange(w).max);
   }
   if (replaced.person) {
+    // Current-only: the manager being replaced still holds the post, so memory holds him (T1014).
     const person = w.people?.[replaced.person];
     if (person?.management)
       Object.assign(person.management, {
@@ -538,6 +539,7 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
     closeEmployment(w, replaced.person, 'manager');
   }
   if (candidate.person) {
+    // Current-only: a career candidate has `management` and is under 70, so memory holds him (T1014).
     const person = w.people![candidate.person];
     const member = w.staff?.find((member) => member.person === person.id);
     if (member && person.coaching)

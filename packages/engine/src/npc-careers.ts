@@ -5,6 +5,7 @@ import { recordRetirementNews } from './news';
 /** The shared summer of every playable club nobody owns (→WORLD-16). */
 import type { Club, Player, World } from '../../contracts/src/types';
 import { atCareerDate } from './person-careers';
+import { personIdsWithPrefix, personOf } from './person-reads';
 import { announceNpcRetirements, RETIREMENT, retirePerson, retirementAnnounceDay } from './careers';
 import { TRAINING_GROUND } from './facility-model';
 import { clubManager } from './managerMarket';
@@ -182,6 +183,8 @@ export function intakeNpcYouth(
   if (!players || !c.levels) return;
   const count = refillOnly ? 0 : NPC_YOUTH.byAcademy[c.levels.academy]!.count;
   let added = 0;
+  // `used` holds the people in memory; a cold person's ID is never taken again either (→SAVE-32).
+  const kept = personIdsWithPrefix(w, `${c.id}:y:${year}:`);
   for (
     let serial = 0;
     added < count || players.length < NPC_SQUAD.size || lacksLine(players);
@@ -190,7 +193,7 @@ export function intakeNpcYouth(
     const state = clubRegistration(c, year, players);
     if (state.total >= state.ceiling) break;
     const id = `${c.id}:y:${year}:${serial}`;
-    if (used.has(id)) continue;
+    if (used.has(id) || kept.has(id)) continue;
     const { age, level, potential } = youthDraw(w, c, id, added >= count, refillOnly);
     const p = generatedPlayer(
       c.country,
@@ -286,6 +289,7 @@ export function renewNpcContracts(w: World, c: Club, year = w.year + 1) {
     p.wage = wage;
     const term = year - p.born >= RENEWAL.veteranTermAge ? 1 : RENEWAL.maxTerm;
     p.until = year + term - 1;
+    // Current-only: a player renewing at a club holds a current role, so memory holds him (T1014).
     const job = w.people?.[p.id]?.employment.find((j) => j.role === 'player' && !j.to);
     if (job) job.contractUntil = { year: p.until, day: 365 };
   }
@@ -317,7 +321,7 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
     announceNpcRetirements(w),
   );
   const retiring = (p: Player) => {
-    const person = w.people?.[p.id];
+    const person = personOf(w, p.id);
     const year = person?.retirement?.year ?? p.retiring;
     return (
       person?.playing === 'retired' ||
@@ -345,6 +349,7 @@ export function closeNpcSummer(w: World, afterRetirements?: () => void, matches 
   }
   for (const [id, players] of Object.entries(w.squads ?? {})) {
     w.squads![id] = players.filter((p) => {
+      // Current-only: a squad player holds a current role, so memory holds him (T1014).
       const person = w.people?.[p.id];
       const retire = retiring(p);
       if (retire && person) retirePerson(w, person, false);

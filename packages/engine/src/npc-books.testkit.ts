@@ -12,6 +12,7 @@ export function npcBooksFixture(year = 1950) {
   const players = clubPlayers(w, c);
   for (const p of players) {
     p.born = year - 24;
+    // Current-only: a squad player of a test world, held in memory.
     if (w.people?.[p.id]) w.people[p.id]!.born = p.born;
     p.until = year + 3;
   }

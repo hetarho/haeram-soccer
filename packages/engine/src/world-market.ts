@@ -1,5 +1,6 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 /** Whole-world recruitment reads: every club's players and the world's free agents (→WEB-43). */
+import { personOf } from './person-reads';
 import type {
   Club,
   FreeAgent,
@@ -50,8 +51,8 @@ export function unavailableAtClub(w: World, player: Player) {
     player.status !== 'active' ||
     !!player.loanUntil ||
     !!player.retiring ||
-    !!w.people?.[player.id]?.loan ||
-    !!w.people?.[player.id]?.retirement
+    !!personOf(w, player.id)?.loan ||
+    !!personOf(w, player.id)?.retirement
   );
 }
 /**
@@ -101,7 +102,7 @@ export function freeAgentTerms(w: World, agent: FreeAgent, graduates = graduateI
 /** A player at a club, if he really is there now: in its squad and, when recorded, active there. */
 export function clubPlayer(w: World, club: Club, id: string): Player | undefined {
   const player = clubPlayers(w, club).find((p) => p.id === id);
-  const person = player && w.people?.[id];
+  const person = player && personOf(w, id);
   if (person && (person.club !== club.id || person.playing !== 'active')) return undefined;
   return player;
 }

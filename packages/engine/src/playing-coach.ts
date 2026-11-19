@@ -1,7 +1,8 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ContractTerm, PlayingCoachProposal, Staff, World } from '../../contracts/src/types';
 import { initializeCoaching, personCoachingGrade } from './coaching-entry';
-import { atCareerDate, careerDate, openEmployment } from './person-careers';
+import { atCareerDate, careerDate, openEmployment, personOf } from './person-careers';
+import { cloneWorld } from '../../contracts/src/record-store';
 import {
   coachWage,
   releaseCost,
@@ -22,7 +23,7 @@ import { moneyLabel } from './finance';
 
 export function playingCoachDurations(w: World, id: string): (1 | 2)[] {
   const p = w.players.find((p) => p.id === id && p.status === 'active');
-  const person = w.people?.[id];
+  const person = personOf(w, id);
   if (
     !p ||
     renewalBlocked(w, p) ||
@@ -47,7 +48,7 @@ export function playingCoachQuote(
   if (!playingCoachDurations(w, id).includes(years) || ![1, 2, 3, 4, 5].includes(term))
     return undefined;
   const p = w.players.find((p) => p.id === id)!,
-    coaching = w.people![id].coaching;
+    coaching = personOf(w, id)!.coaching;
   if (!coaching) return undefined;
   const current = staffMember(w, coaching.role),
     talk = talkFor(w, p);
@@ -96,7 +97,7 @@ export function submitPlayingCoachProposal(w: World, proposal: PlayingCoachPropo
   addEvent(
     w,
     'playing-coach-proposal',
-    sourceMessage('copy.playing_coach.945e4a3bfc', { p0: w.people![id].name }),
+    sourceMessage('copy.playing_coach.945e4a3bfc', { p0: personOf(w, id)!.name }),
     sourceMessage('copy.playing_coach.53c58855ec', {
       p0: moneyLabel(w, proposal.playerWage),
       p1: moneyLabel(w, proposal.coachWage),
@@ -118,7 +119,7 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
     addEvent(
       w,
       'playing-coach-decline',
-      sourceMessage('copy.playing_coach.bcfbb8b86d', { p0: w.people![id].name }),
+      sourceMessage('copy.playing_coach.bcfbb8b86d', { p0: personOf(w, id)!.name }),
       sourceMessage('copy.playing_coach.589044d483'),
     );
     return;
@@ -128,7 +129,8 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
     throw new Error(sourceMessage('copy.playing_coach.8165d8718b'));
   if (BigInt(w.cash) < BigInt(proposal.upfront))
     throw new Error(sourceMessage('copy.playing_coach.8791d586e5'));
-  const trial = structuredClone(w),
+  // Current-only: the proposal's player plays for us, so the trial's memory holds his person.
+  const trial = cloneWorld(w),
     p = trial.players.find((p) => p.id === id)!,
     person = trial.people![id];
   atCareerDate(trial, careerDate(w), () => {
@@ -191,7 +193,7 @@ export function automaticPlayingCoachFits(w: World, proposal: PlayingCoachPropos
   const p = w.players.find((p) => p.id === proposal.person)!;
   if (renewalBlocked(w, p)) return false;
   const current = staffMember(w, proposal.role),
-    coaching = w.people![p.id].coaching!;
+    coaching = personOf(w, p.id)!.coaching!;
   if (current && BigInt(current.wage) > 0n && current.until > w.year) return false;
   const coach = { ability: coaching.ability, wage: proposal.coachWage };
   const talk = talkFor(w, p) ?? {
@@ -240,6 +242,7 @@ export function considerPlayingCoach(w: World, role: Staff['role']) {
   for (const player of w.players) {
     if (w.playingCoachProposals?.[player.id] || !playingCoachDurations(w, player.id).length)
       continue;
+    // Current-only: one of our active players, so memory holds the person his coaching is set on.
     const person = w.people![player.id];
     initializeCoaching(w, person);
     if (person.coaching?.role !== role) continue;
@@ -253,7 +256,8 @@ export function considerPlayingCoach(w: World, role: Staff['role']) {
   }
   candidates.sort(
     criteria.priority === 'ability'
-      ? (a, b) => w.people![b.person].coaching!.ability - w.people![a.person].coaching!.ability
+      ? (a, b) =>
+          personOf(w, b.person)!.coaching!.ability - personOf(w, a.person)!.coaching!.ability
       : (a, b) =>
           BigInt(a.coachWage) < BigInt(b.coachWage)
             ? -1
@@ -267,7 +271,7 @@ export function considerPlayingCoach(w: World, role: Staff['role']) {
   if (
     ordinary &&
     (criteria.priority === 'ability'
-      ? ordinary.ability >= w.people![selected.person].coaching!.ability
+      ? ordinary.ability >= personOf(w, selected.person)!.coaching!.ability
       : BigInt(ordinary.wage) <= BigInt(selected.coachWage))
   )
     return false;
