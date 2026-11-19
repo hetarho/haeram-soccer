@@ -25,7 +25,7 @@ import {
   WATCH_MINUTE_MS,
 } from '../../apps/web/src/entities/match/lib/presentationClock';
 import { expectCompressedPreparation, longPreparation } from './preparation';
-import { leaveOffice, openOfficeArea } from './office';
+import { homeAreas, leaveOffice, openOfficeArea } from './office';
 import { startCareer } from './start';
 test.use({ viewport: { width: 390, height: 844 } });
 
@@ -82,19 +82,15 @@ test('surveys every management destination during uninterrupted calendar play', 
   await expect(office.getByRole('button', { name: '전체 직접', exact: true })).toBeDisabled();
   await page.keyboard.press('Escape');
   await continues();
-  // 재정·투자 only reads: the owner adds no capital and starts no works (→WEB-14).
-  await openOfficeArea(page, '투자');
-  await expect(page.getByRole('button', { name: /출자|공사/ })).toHaveCount(0);
-  await continues();
-  await openOfficeArea(page, '구단 디자인');
-  // A design commission opens to its colour steps, whose picks stay locked while the clock runs.
-  await page.getByRole('button', { name: '변경 의뢰', exact: true }).click();
-  const palette = page.getByRole('group', { name: '메인 색', exact: true });
-  await expect(palette.getByRole('button')).not.toHaveCount(0);
-  await expect(palette.getByRole('button', { disabled: false })).toHaveCount(0);
-  await continues();
   // Leaving is also ordinary navigation; the clock continues.
   await leaveOffice(page);
+  await continues();
+  // Home's investment areas are built from the office's previews, which wait for a stopped clock
+  // (→WEB-119): they stay in view, dimmed and unavailable, while the stop stays offered.
+  await openClubhouse(page);
+  await expect(
+    homeAreas(page).getByRole('button', { name: '구단 예산 투자 관리', exact: true }),
+  ).toBeDisabled();
   await continues();
   await stop.click();
 });
