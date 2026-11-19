@@ -28,6 +28,7 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import {
   budgetResponsibilitySchema,
+  facilityPartSchema,
   gameSettingsSchema,
   spendRequestSchema,
   wageStep,
@@ -139,9 +140,14 @@ const command = z.discriminatedUnion('type', [
   }),
   z.strictObject({
     type: z.literal('facility-upgrade'),
-    part: z.enum(['training', 'academy', 'stadium']),
+    part: facilityPartSchema,
     from: z.number().int().min(0).max(8),
     cost: z.string().regex(/^\d{1,40}$/),
+  }),
+  z.strictObject({
+    type: z.literal('facility-auto-upgrade'),
+    part: facilityPartSchema,
+    enabled: z.boolean(),
   }),
   z.strictObject({ type: z.literal('next-event') }),
   z.object({ type: z.literal('advance'), rounds: z.number().int().min(1).max(46) }),

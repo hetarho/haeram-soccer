@@ -6,6 +6,8 @@ import {
   facilityWork,
   gateProjection,
   nextWork,
+  operate,
+  partTop,
   progressFacilityWorks,
   stadiumCapacity,
   trainingGroundTerms,
@@ -103,5 +105,61 @@ describe('facility works (→ECON-32)', () => {
     // The stand is still being built.
     expect(w.stadium).toBe(0);
     expect(stadiumCapacity(w)).toBe(2250);
+  });
+});
+
+describe('owner facility continuation settings (→ECON-43)', () => {
+  it('arms only the selected part, records changes once and leaves active work alone', () => {
+    const w = world();
+    startWork(w, 'stadium');
+    const works = w.facilityWorks;
+    const balance = { cash: w.cash, expense: w.expense };
+    const enable = { type: 'facility-auto-upgrade', part: 'training', enabled: true } as const;
+    operate(w, enable);
+    const armed = w.facilityAutoUpgrade;
+    expect(armed).toEqual({ training: 'armed' });
+    operate(w, enable);
+    expect(w.facilityAutoUpgrade).toBe(armed);
+    expect(w.events.filter((event) => event.kind === 'facility-auto-upgrade')).toHaveLength(1);
+    expect(w.facilityWorks).toBe(works);
+    expect(w).toMatchObject(balance);
+
+    operate(w, { ...enable, part: 'stadium' });
+    operate(w, { ...enable, part: 'stadium', enabled: false });
+    expect(w.facilityAutoUpgrade).toEqual(armed);
+    expect(w.facilityWorks).toBe(works);
+    expect(w).toMatchObject(balance);
+    operate(w, { ...enable, enabled: false });
+    expect(w).not.toHaveProperty('facilityAutoUpgrade');
+
+    w.academyFacility = partTop('academy');
+    expect(() => operate(w, { ...enable, part: 'academy' })).toThrow('최고 단계');
+    expect(w).not.toHaveProperty('facilityAutoUpgrade');
+  });
+
+  it('keeps a saved wait until a manual start succeeds', () => {
+    const w = world();
+    w.trainingGround = 1;
+    w.facilityAutoUpgrade = { training: 'awaiting-funds', academy: 'armed' };
+    const waiting = w.facilityAutoUpgrade;
+    const { cost, to } = nextWork(w, 'training')!;
+    const start = { type: 'facility-upgrade', part: 'training', from: 1, cost } as const;
+    const count = w.events.length;
+    operate(w, { type: 'facility-auto-upgrade', part: 'training', enabled: true });
+    expect(w.events).toHaveLength(count);
+    expect(w.facilityAutoUpgrade).toBe(waiting);
+    expect(() => operate(w, { ...start, cost: '0' })).toThrow();
+    w.cash = '0';
+    expect(() => operate(w, start)).toThrow();
+    expect(w.facilityAutoUpgrade).toBe(waiting);
+    expect(w.facilityWorks).toBeUndefined();
+
+    w.cash = cost;
+    operate(w, start);
+    expect(w.cash).toBe('0');
+    expect(w.facilityWorks?.training?.to).toBe(to);
+    expect(w.facilityAutoUpgrade).toEqual({ training: 'armed', academy: 'armed' });
+    expect(waiting.training).toBe('awaiting-funds');
+    expect(w.events.slice(count)).toMatchObject([{ kind: 'facility', amount: cost }]);
   });
 });

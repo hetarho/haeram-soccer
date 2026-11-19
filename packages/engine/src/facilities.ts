@@ -92,6 +92,18 @@ export function nextWork(w: World, part: FacilityPart) {
   };
 }
 
+export function setFacilityContinuation(
+  w: World,
+  part: FacilityPart,
+  state: NonNullable<World['facilityAutoUpgrade']>[FacilityPart],
+) {
+  const settings = { ...w.facilityAutoUpgrade };
+  if (state) settings[part] = state;
+  else delete settings[part];
+  if (Object.keys(settings).length) w.facilityAutoUpgrade = settings;
+  else delete w.facilityAutoUpgrade;
+}
+
 /**
  * Starts the next work on a part, paying for it now (→ECON-32). The owner's investment command
  * validates its displayed quote first; the calibration harness can also build by its own rule.
@@ -121,6 +133,7 @@ export function startFacilityWork(w: World, part: FacilityPart, pay: (amount: st
     }),
     next.cost,
   );
+  if (w.facilityAutoUpgrade?.[part] === 'awaiting-funds') setFacilityContinuation(w, part, 'armed');
 }
 
 /** Daily: works whose days are done open, their effect and upkeep starting now. */

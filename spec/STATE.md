@@ -68,7 +68,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T1035 | Route owner facility continuation commands | ARCH ECON SAVE WEB | T1033 T1034 | todo |
+| T1035 | Route owner facility continuation commands | ARCH ECON SAVE WEB | T1033 T1034 | doing@261119.facauto |
 | T1036 | Continue funded facility work in daily club settlement | ARCH CLUB ECON SAVE | T1035 | todo |
 | T1037 | Expose continuation on the three facility work cards | ARCH ECON SAVE WEB | T1036 | todo |
 
