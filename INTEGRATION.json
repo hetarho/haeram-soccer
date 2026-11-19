@@ -1279,7 +1279,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 4088237
     },
-    "phase": "preparing",
+    "phase": "conflict",
     "land": "main",
     "base": "833d8ef224f340c2ea5bb906cacd89c5cfea7372",
     "cohort": [
@@ -1617,7 +1617,8 @@
     "candidate": null,
     "checks": [],
     "agentChecks": [],
-    "rounds": []
+    "rounds": [],
+    "error": "Command failed: git -C /home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-52e8f1a3-77fc-44d4-a10f-34eddcb68874 -c core.attributesFile=/home/deep/haeram/haeram-soccor/.git/gusta/v1/state.gitattributes -c merge.gusta-state.name=gusta STATE sections -c merge.gusta-state.driver=\"/home/deep/.nvm/versions/node/v24.22.1/bin/node\" \"/home/deep/.npm/_npx/c183f26c8545da3b/node_modules/@haeram/gusta/bin/gusta.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet c79bfc8a54cf17ae1df0ebe4741a6016c81772f2\n"
   },
   "history": [
     {
