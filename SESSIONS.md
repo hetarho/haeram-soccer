@@ -182,6 +182,7 @@
 - 261119 decided T997: ARCH-6 helper threshold after measurement → two helpers from three cores, none below or unknown (alt: retain two despite slowdown | disable helpers); paired wall interval is slower on two and faster on three.
 - 261119 decided T997: T997 measured two helpers slower on two cores → ARCH r52 starts the two helpers from three cores (HELPER_CONFIG.minCores 3), keeps the engine share wherever helpers run, and a two-core device computes alone; T997's first acceptance reads three cores and its fallback clause is now the rule (alt: keep two cores and accept 9% slower | drop the engine share)
 - 261119 decided T998: Use three helpers only at measured 6, 8 and 12 cores; keep two at all other eligible counts, including 4 where a repeat did not clear noise (alternatives: four helpers or extrapolate to unmeasured counts). Three clears noise on each adopted class and has the lower measured ratio at 6 and 12.
+- 261119 decided T998: Hand off the three-helper full-season parity assertion to the shared integration gate, preserving its full coverage (alternative: run integration inside this task); ARCH-30 and the assigned unit contract reserve integration for the fixed candidate.
 
 ## unlanded
 | id | tag | branch | commit | at |
