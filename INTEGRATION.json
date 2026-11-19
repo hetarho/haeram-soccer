@@ -643,12 +643,142 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-x10-d3a275d5",
-      "head": "155b2d17b44d7debc3105cf7f7036c53cb24243c",
+      "head": "df4f4876a46727d17b9f9efb842333809b5f0c5c",
       "land": "main",
       "status": "working",
-      "at": "2026-11-19T05:44:03.974Z",
-      "agentChecks": [],
-      "verificationCommands": [],
+      "at": "2026-11-19T05:51:23.941Z",
+      "agentChecks": [
+        {
+          "id": "T993-save-integration",
+          "scenario": "Save and reopen a career containing newly written match material without heat.",
+          "steps": [
+            "On the fixed integration candidate, play a watched own match, save the career, and reopen it."
+          ],
+          "expected": "The save validates and reopens with the match material and pass network intact and no heat fields written.",
+          "observed": "Not run; the current schema still requires material.heat, and no integration candidate was observed.",
+          "evidence": [
+            "Inbox e52f9238",
+            "T993 result limits"
+          ],
+          "status": "not-run",
+          "reason": "Integration verification is reserved for the capable host after the schema boundary is reconciled.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T990-integration",
+          "scenario": "Unwatched own-match progression and watched playback",
+          "steps": [
+            "Run the updated calendar and host integration tests on the fixed candidate.",
+            "Confirm automatic play continues without playback or material, and next-match provides script, staging and material.",
+            "Compare watched and unwatched worlds after removing own-match material."
+          ],
+          "expected": "Both paths retain identical match facts; only watched matches produce playback and material.",
+          "observed": "Not run in this unit; integration tests were updated for the shared final gate.",
+          "evidence": [
+            "spec/tasks/done/T990.unwatched-own-match-record-only.md",
+            "commit c1af906a5"
+          ],
+          "status": "not-run",
+          "reason": "Integration is reserved for the capable host's shared final gate.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T993-integration",
+          "scenario": "Save and career-read compatibility with absent and legacy heat fields",
+          "steps": [
+            "Run the shared batch gate, including the updated schema contract test."
+          ],
+          "expected": "New records without heat validate; legacy heat remains valid and malformed heat is rejected.",
+          "observed": "Deferred to the shared final gate; no integration candidate was observed.",
+          "evidence": [
+            "packages/contracts/src/schema.contract.test.ts",
+            "Task-tier check: 2100 affected unit tests passed; lint passed on rerun."
+          ],
+          "status": "not-run",
+          "reason": "Integration checks belong to the capable host's shared final gate.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T994-integration",
+          "scenario": "공동 후보에서 자동 진행 중 읽기와 정지 후 갱신을 확인한다.",
+          "steps": [
+            "고정된 통합 후보에서 자동 진행, 정지 및 선행 계산분 소진을 확인한다."
+          ],
+          "expected": "승인함은 진행 중 갱신되고, 지연된 읽기는 정지 후 현재 날짜에 맞게 복원된다.",
+          "observed": "통합 후보와 computer-use 관찰은 이 단위에서 실행하지 않았다.",
+          "evidence": [
+            "T994 acceptance",
+            "기획 커밋 b58ac19a2dd81c4998ac28845f0117699dcdd793"
+          ],
+          "status": "not-run",
+          "reason": "공동 고정 후보와 computer-use 도구는 호스트가 담당한다.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "capable host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T994-host-integration",
+          "scenario": "Verify stopped-clock reads on the shared integration candidate",
+          "steps": [
+            "Run the host's integration acceptance after the implementation tasks are ready."
+          ],
+          "expected": "Deferred reads, revision-safe refresh and live approval counts work together on the fixed candidate.",
+          "observed": "Not run; this unit only produced planning documents and observed no integration candidate.",
+          "evidence": [
+            "Planning commit 4530c1a5ed4f4bb2a051f028fc135f1dcd6f79f4",
+            "Task-tier receipt check-9ea2de8b-556d-459e-ab20-229e4dd27024"
+          ],
+          "status": "not-run",
+          "reason": "Integration belongs to the shared host gate; no computer-use acceptance tool was available in this unit.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1026-market-transition",
+          "scenario": "Market views across automatic play and stopping",
+          "steps": [
+            "Open the manager, staff and recruitment views, start automatic play, then stop and wait for the current date's projections."
+          ],
+          "expected": "Absent market projections show no stale candidates or previews; current data returns after stopping.",
+          "observed": "Not observed in this tool-less unit.",
+          "evidence": [
+            "Task-tier checks passed: 87 affected unit tests; absent-projection guards inspected."
+          ],
+          "status": "not-run",
+          "reason": "Computer-use tooling is unavailable in this unit.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "capable host",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
+      "verificationCommands": [
+        "pnpm run verify:batch"
+      ],
       "reason": "session-ended"
     }
   },
