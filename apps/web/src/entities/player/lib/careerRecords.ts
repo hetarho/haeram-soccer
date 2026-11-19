@@ -1,6 +1,7 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import type { Player, SeasonArchive, World } from '../../../../../../packages/contracts/src/types';
 import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import { divisionName } from '../../../presentation/competitionLabels';
 import type { Tallies } from '../../../runtime/playerTallies';
 
@@ -124,7 +125,7 @@ export function careerRecords(w: World) {
   return {
     seasons: own.length,
     finish: bestFinish(own),
-    points: best((a, b) => b.points * a.played - a.points * b.played),
+    points: best((a, b) => leaguePoints(b) * a.played - leaguePoints(a) * b.played),
     attack: best((a, b) => b.gf * a.played - a.gf * b.played),
     supporters: own.slice().sort((a, b) => b.fans - a.fans || a.year - b.year)[0],
     scorer: leader('goals'),

@@ -1,3 +1,5 @@
+import { contractRenewalChance } from '../../packages/engine/src/contracts';
+import { message } from '../../packages/contracts/src/messages';
 import { approvalQueue } from './office';
 import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
@@ -30,6 +32,7 @@ async function talking() {
   // Routine notifications are marked read; the one canonical contract decision remains pending.
   for (const item of w.inbox ?? []) if (item.kind !== 'contract-talk') item.read = true;
   return {
+    renewal: contractRenewalChance(w, player, player.talk!),
     raw: await encode(w, 1, 0),
     name: player.name,
     dueDay: currentDay(w) + UNHAPPY_CONFIG.requestDays,
@@ -49,7 +52,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // 1 January. On the takeover the journey reached its last check as the slow 90 s ran out
   // (dfa39857's Chromium run), so it has the 180 s of the other journeys that live a season first.
   test.setTimeout(180_000);
-  const { raw, name, dueDay } = await talking();
+  const { raw, name, dueDay, renewal } = await talking();
   await seed(page, raw);
   await page.goto('/');
   await continueSlot(page);
@@ -63,6 +66,10 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(sheet.getByRole('heading', { name: `${name} 재계약 협상` })).toBeVisible();
   await expect(sheet).toContainText('요구');
   await expect(sheet).toContainText('하한');
+  const response = sheet.getByTestId('renewal-chance');
+  await expect(response).toContainText(`선수 수락 확률 ${Math.round(renewal.chance * 100)}%`);
+  for (const line of renewal.lines)
+    await expect(response).toContainText(message(line.message, line.params));
   // His agent's rating and the clauses the new contract would carry (→CLUB-29, CLUB-30).
   await expect(sheet).toContainText(/에이전트 [1-5]등급/);
   await expect(sheet).toContainText('새 계약 조항');
@@ -134,10 +141,8 @@ test('the talk rule shows under 선수 as the club was taken over', async ({ pag
   await expect(talks.getByRole('button', { name: /^재계약 기조/ })).toHaveCount(0);
   await expect(talks).toContainText('시장가까지만');
   await expect(talks).toContainText('32세부터 1시즌');
-  // 짠물 plans no loss runway, so the money line is the income rule, not a share of revenue (T948).
-  await expect(talks).toContainText(
-    '인상 뒤에도 지출이 수입 안에 머물고 현금이 바닥나지 않을 때만',
-  );
+  // The delegated money line states the live cash floor and the commitment horizon (T972).
+  await expect(talks).toContainText('새 연봉·인상분은 이번 시즌 남은 기간과 다음 시즌까지 계산해');
   await expect(talks).toContainText('언해피');
   await expect(page.getByRole('dialog', { name: '재정 업무 기준', exact: true })).toHaveCount(0);
 });

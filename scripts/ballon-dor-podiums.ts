@@ -10,7 +10,7 @@
  * `--variants` (default every one) limits the variants played.
  *
  *   pnpm exec tsx scripts/ballon-dor-podiums.ts --seeds a,b --seasons N --variants released --out FILE
- *     [--setting flat|spread]   WORLD-6's squad spread for the run (T808), else the released default
+ *     [--setting spread]   WORLD-6's squad spread for the run (T808), else the released default
  */
 import { writeFileSync } from 'node:fs';
 import type { BallonDorPlace, World } from '../packages/contracts/src/types';
@@ -26,7 +26,7 @@ import { type Winner, winnerSummary } from './lib/ballon-dor-winners';
 import { squadSpreadSetting } from './lib/squad-spread-setting';
 
 const args = process.argv.slice(2);
-// T808: `--setting flat|spread` lives the careers on that squad spread (→WORLD-6).
+// T808: `--setting spread` lives the careers on that squad spread (→WORLD-6).
 const SETTING = squadSpreadSetting(args)[1] ?? '';
 const opt = (name: string, fallback: string) => {
   const i = args.indexOf(`--${name}`);

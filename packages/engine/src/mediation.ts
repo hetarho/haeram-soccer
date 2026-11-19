@@ -10,6 +10,8 @@ import {
   signingVerdict,
   requestLabel,
   pursueRequest,
+  recruitmentProjection,
+  meetsRequest,
 } from './signings';
 import { staffMember } from './staff';
 import { isDelegated } from './responsibilities';
@@ -20,21 +22,34 @@ import { activePlayers, overall } from './player-state';
 import { transferOffers } from './scout-search';
 export const requestTargetKey = (request: SigningRequest) =>
   request.kind === 'short' ? `line:${request.line}` : `slot:${request.slot}:${request.position}`;
-export function requestMet(w: World, request: SigningRequest, from: { year: number; day: number }) {
+/** Arrivals use the retained [creation, now] interval. Open coverage instead belongs to the
+ * current transfer window, including bids already open when the mediation was created. */
+function requestCoverage(w: World, request: SigningRequest, from: { year: number; day: number }) {
   const now = careerOrdinal(careerDate(w));
-  return (w.recruitmentArrivals ?? []).some(
-    (arrival) =>
-      careerOrdinal(arrival.at) >= careerOrdinal(from) &&
-      careerOrdinal(arrival.at) <= now &&
-      (request.position
-        ? (arrival.positions[request.position] ?? 0) >= 2
-        : lineOf(arrival.position) === request.line),
-  );
+  if (
+    (w.recruitmentArrivals ?? []).some(
+      (arrival) =>
+        careerOrdinal(arrival.at) >= careerOrdinal(from) &&
+        careerOrdinal(arrival.at) <= now &&
+        (request.position
+          ? (arrival.positions[request.position] ?? 0) >= 2
+          : lineOf(arrival.position) === request.line),
+    )
+  )
+    return 'arrival';
+  return recruitmentProjection(w).arriving.some((p) => meetsRequest(request, p))
+    ? 'pending'
+    : undefined;
+}
+export function requestMet(w: World, request: SigningRequest, from: { year: number; day: number }) {
+  return requestCoverage(w, request, from) !== undefined;
 }
 /** T170 consumes this explicit delegated resolver queue; no fabricated resolution is recorded. */
 export function delegatedMediations(w: World) {
   return isDelegated(w, 'recruitment')
-    ? (w.mediations ?? []).filter((m) => m.status === 'pending')
+    ? (w.mediations ?? []).filter(
+        (m) => m.status === 'pending' && requestCoverage(w, m.target, m.created) !== 'pending',
+      )
     : [];
 }
 export function detectMediations(w: World): RecruitmentMediation[] {
@@ -73,7 +88,9 @@ export function detectMediations(w: World): RecruitmentMediation[] {
     }
     const { offer } = picked,
       fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n),
-      verdict = signingVerdict(w, offer.player, fee);
+      verdict = signingVerdict(w, offer.player, fee, undefined, undefined, {
+        freeAgent: offer.freeAgent,
+      });
     if (verdict.ok) continue;
     const mediation: RecruitmentMediation = {
       id: `mediation:${w.year}:${w.mediations?.length ?? 0}`,
@@ -168,6 +185,10 @@ export function resolveMediation(
   if (current.status === 'resolved') return current;
   if (!['director', 'balanced', 'manager'].includes(support))
     throw new Error(sourceMessage('copy.mediation.baa4a1f437'));
+  // Re-read immediately before each delegated row: an earlier row may have just bid or signed.
+  const coverage =
+    actor === 'delegated' ? requestCoverage(w, current.target, current.created) : undefined;
+  if (coverage === 'pending') return current;
   const trial = structuredClone(w),
     mediation = trial.mediations!.find((m) => m.id === id)!;
   return atCareerDate(trial, careerDate(w), () => {
@@ -175,6 +196,7 @@ export function resolveMediation(
       promise: string | undefined;
     if (trial.manager.id !== mediation.manager.id)
       result = sourceMessage('copy.mediation.ca080636ac');
+    else if (coverage === 'arrival') result = sourceMessage('mediation.request.arrived');
     else if (support !== 'director') {
       const pool = requestCandidates(trial, mediation.target),
         named = pool.find(({ offer }) => offer.player.id === mediation.target.pick);
@@ -256,14 +278,17 @@ export function resolveMediation(
 }
 export function resolveDelegatedMediations(w: World) {
   const pending = delegatedMediations(w);
-  for (const mediation of pending)
-    resolveMediation(
+  let resolved = 0;
+  for (const mediation of pending) {
+    const record = resolveMediation(
       w,
       mediation.id,
       directionOption(w, 'recruitmentSupport').id as RecruitmentMediation['support'],
       'delegated',
     );
-  return pending.length;
+    if (record.status === 'resolved') resolved++;
+  }
+  return resolved;
 }
 
 /** A selected-case preview uses a private canonical copy; it cannot create real bids or promises. */

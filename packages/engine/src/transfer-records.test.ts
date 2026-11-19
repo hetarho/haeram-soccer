@@ -27,6 +27,11 @@ const fact = (w: World, year: number, fee: string, name: string): TransferFact =
 describe('own-club transfer facts (→HIST-20)', () => {
   it('records a fee signing, a loan and a sale', () => {
     const w = world();
+    // A chief scout who searches the whole country (→CLUB-51): likely takers come first in each
+    // line (→CLUB-53), so a basic scout's short list can hold a single other club's player.
+    w.staff = w.staff!.map((member) =>
+      member.role === 'scout' ? { ...member, ability: 80 } : member,
+    );
     // Each joins when he agrees to our terms at the 200% step too (→CLUB-53): the first and then the
     // next of the list whose seeded answers do.
     const offers = transferOffers(w),

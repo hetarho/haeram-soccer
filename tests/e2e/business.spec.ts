@@ -3,7 +3,7 @@ import { importLegacyDirection } from './legacy-direction';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import { advanceRound } from '../../packages/engine/src/index';
+import { ownerClose } from '../../packages/engine/src/owner';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { operatingLossWorld } from '../fixtures/business';
 import { startWork } from '../../packages/engine/src/testing';
@@ -343,14 +343,15 @@ test.describe('negative operating balance', () => {
   });
 });
 
-test('ends a bankrupt career on the game-over page and starts a new game from it', async ({
+test('ends an owner bankruptcy career on the game-over page and starts a new game from it', async ({
   page,
 }) => {
   const fixture = careerWorld({ country: 'ENG', seed: 'business-bankruptcy' });
-  // Debt deeper than half a season's fixed costs ends the career at the next settlement.
-  fixture.cash = '-999999999';
-  advanceRound(fixture, undefined, false);
-  expect(fixture.bankrupt).toBeDefined();
+  // A negative fortune after the season-close settlement ends the owner's career.
+  fixture.owner!.fortune = '-999999999';
+  ownerClose(fixture);
+  expect(fixture.ended).toBe('owner');
+  expect(fixture.bankrupt).toBeUndefined();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(startFlow(page)).toBeVisible();
@@ -364,7 +365,8 @@ test('ends a bankrupt career on the game-over page and starts a new game from it
     });
   const over = page.getByTestId('game-over');
   // The page names the club taken over, not a founding's chosen name (→WEB-56).
-  await expect(over).toContainText(`${clubOf(fixture).name} 파산`);
+  await expect(over).toContainText('구단주 파산');
+  await expect(over).toContainText(clubOf(fixture).name);
   await expect(over).toContainText('함께한 시즌');
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);

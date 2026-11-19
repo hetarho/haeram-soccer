@@ -1,3 +1,4 @@
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
@@ -13,7 +14,7 @@ import { useGameState } from '../../../runtime/store';
 import { useRead } from '../../../shared/lib';
 import { ClubCrest } from '../../../entities/club';
 import { competitionLabel, kindLabel, number, seasonName } from '../../../presentation/format';
-import { clubDivision, leagueOf, orderIds } from '../../../entities/league';
+import { clubDivision, leagueOf, orderIds, PointsDeduction } from '../../../entities/league';
 import { worldSelector } from '../../../shared/lib/liveState';
 import { clubOvr, cohesionLine, OvrBadge } from '../../../entities/player';
 import { PersonCareer } from '../../../features/person-career';
@@ -212,10 +213,14 @@ function SeasonOverview({ w, id, client }: { w: World; id: string; client: GameC
             {localizeValue(
               table
                 ? table.played
-                  ? sourceMessage('copy.LeagueInsights.73769a8d11', { p0: rank, p1: table.points })
+                  ? sourceMessage('copy.LeagueInsights.73769a8d11', {
+                      p0: rank,
+                      p1: number(leaguePoints(table)),
+                    })
                   : sourceMessage('copy.LeagueInsights.df47c98b9c')
                 : '—',
             )}
+            <PointsDeduction row={table} />
           </dd>
         </div>
         <div data-surface="detail">

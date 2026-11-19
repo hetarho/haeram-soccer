@@ -68,41 +68,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T953 | Market harness reads books, upward-move funnel, renewals, ageing and distress | ECON WORLD CLUB PLAYER LEAGUE | - | todo |
-| T954 | Each player ages on his own curve | PLAYER WORLD | - | todo |
-| T955 | A fourth personality trait, 충성심 | PLAYER | - | todo |
-| T979 | Seasons at a club, academy origin and the loyalty term | CLUB WORLD PLAYER | T955 | todo |
-| T956 | Show 충성심 with the other personality traits | PLAYER ARCH | T955 | todo |
-| T957 | Founding squads hold stars, regulars and a bench | WORLD LEAGUE | - | todo |
-| T958 | Players ask the wage their ability suits at every club | CLUB WORLD | - | todo |
-| T959 | Expiring contracts are free transfers in every era | CLUB WORLD | - | todo |
-| T960 | Buyers value a young player's gain two seasons on | WORLD PLAYER CLUB | - | todo |
-| T961 | The chief scout lists players who would come first | CLUB | - | todo |
-| T962 | Mediation counts a request an open bid covers | CLUB | - | todo |
-| T963 | The first leg of a tie at index 2 is a first leg | MATCH | - | todo |
-| T964 | Angry fans stop coming, a loved owner's club draws more | ECON OWNER | - | todo |
-| T965 | Bigger clubs are slower to sell | CLUB LEAGUE | - | todo |
-| T966 | A loyal player is harder to lure away | CLUB PLAYER | T979 | todo |
-| T967 | Financial distress ladder replaces bankruptcy | ECON WORLD OWNER | - | todo |
-| T968 | Clubs in distress cannot buy and must sell | ECON WORLD CLUB | T967 | todo |
-| T969 | Administration deducts 10 points and writes off half the debt | ECON LEAGUE | T967 | todo |
-| T970 | Show distress stages instead of bankruptcy | WEB OWNER ECON ARCH | T967 T969 | todo |
-| T980 | League tables show deducted points | ECON LEAGUE ARCH | T969 | todo |
-| T971 | The 단장 plans to a season-end cash floor, not a loss runway | ECON CLUB STAFF | T967 | todo |
-| T972 | The budget page and verdicts speak of the cash floor | WEB ECON ARCH | T971 | todo |
-| T973 | Players answer renewal offers; clubs nobody owns offer by need | CLUB WORLD | T979 T967 | todo |
-| T974 | Our players may turn down a renewal | CLUB WEB ARCH | T973 | todo |
-| T975 | Each club's fans have their own disposition | OWNER ECON CLUB | T979 T967 | todo |
-| T976 | The takeover confirmation shows the fans' disposition | WEB OWNER ARCH | T975 | todo |
-| T977 | Rebase the wage curve's level on the 80/70/60/50 world | CLUB ECON | T953 T958 T967 T968 | todo |
-| T978 | Calibrate the combined world: levels, moves, books, distress, ageing | LEAGUE WORLD ECON PLAYER CLUB MATCH | T953 T954 T955 T957 T958 T959 T960 T961 T962 T963 T964 T965 T966 T967 T968 T969 T970 T971 T972 T973 T974 T975 T976 T977 T979 T980 | todo |
-| T981 | CI runs only the Chromium browser shards | ARCH | - | todo |
 | T989 | Other fixtures stop the place fit within 0.1% | MATCH ARCH | - | todo |
 | T990 | An unwatched own match keeps its record without a script or material | MATCH ARCH | T989 | todo |
 | T991 | Player sheets and tallies without season heat maps | WEB HIST MATCH ARCH | - | todo |
 | T992 | Post-match material without heat maps, and an unwatched match says why it has none | WEB MATCH ARCH | T991 | todo |
 | T993 | The engine writes and keeps no heat map | MATCH HIST ARCH | T991 T992 | todo |
-| T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 | todo |
+| T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
 | T994 | Slow view reads wait for a stopped clock | WEB ARCH | - | todo |
 | T1020 | A shared dimmed state for places that wait for a stopped clock | WEB ARCH | T994 | todo |
 | T995 | Manager, staff and discipline places dim while the clock runs | WEB ARCH | T1020 | todo |
@@ -110,11 +81,6 @@
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
 | T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
 | T998 | Helper count by core class | ARCH | T997 | todo |
-| T1002 | The compact packing layer is deleted | SAVE ARCH KIT | T1001 | todo |
-| T1003 | Record-store port, save schema and an in-memory SQLite store for tests | ARCH SAVE | T1002 | todo |
-| T1004 | The world maps to rows and a saver writes only changed rows | SAVE ARCH | T1003 | todo |
-| T1005 | SQLite runs in the engine worker on OPFS | ARCH SAVE | T1003 | todo |
-| T1006 | The engine worker opens and saves the game in play in its database | SAVE ARCH | T1004 T1005 | todo |
 | T1007 | Game slots are database files | SAVE WEB | T1006 | todo |
 | T1008 | Export and import the gzip-compressed database as `.haeram-save` | SAVE ARCH | T1007 | todo |
 | T1009 | IndexedDB checkpoints, the repository and the JSON envelope are retired | SAVE ARCH | T1008 | todo |
@@ -141,12 +107,13 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1002
+- gusta-implement-task T1007
+- gusta-implement-task T994
+- gusta-implement-task T989 T991
 - gusta-implement-task T953 T954
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 cost levers (261119, owner from reports/261119-np19 D2/D4/D5/D8): T989–T998 and T1019–T1021 — NPC place-fit tolerance, unwatched own matches without script/material and heat maps removed, slow view reads only on a stopped clock with dimmed places, helpers from two cores; T998 is explore (1h). Start with `gusta-implement-task T989` (or /gusta-start).
 - inspect work board for remaining tasks
-- np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked). mr18cx must merge main (npc-market.ts) and re-prepare 0.8.13.
-- Owner plan mr18 (261118, reviewing xf18's parked items): T953–T980 — distress ladder instead of bankruptcy, the 단장's cash floor, fan disposition, renewal answers and loyalty, ability-fit wages and a rebased wage curve, individual ageing, spread founding squads; explore T977 then T978 calibrate. Start with `gusta-implement-task T953` (or /gusta-start).
 - Historical era rules parked in ideation/historical-era-rules.
-- T981 (ARCH r49, from gusta-update 0.17.8): CI keeps only the Chromium browser shards; run `gusta-implement-task T981` independently of T953–T980.
+- np19 (261119, gusta-self-improve): engine speed-ups T982–T988 landed on main as 0.8.12 (generation ×0.67, 10x own match days ×0.79, worlds identical); measured removal levers, the save codec cliff and the 1980 slowdown wait for the owner in reports/261119-np19 (parked).
+- mr18cx (T953–T980, owner plan mr18) and cx19 (T981) landed together on main as 0.8.13 after merging np19; T978's measured calibration misses are in reports/261118-mr18cx. Follow-up: profile mr18's added per-season cost (+15–19% a lived owner season against 0.8.12); the cash and debt warnings still speak of bankruptcy (parked there).

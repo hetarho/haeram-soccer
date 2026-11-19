@@ -1,0 +1,14 @@
+{
+  "runHead": "d938bccfa77b837bf215e7ea95dad8cca491b239",
+  "source": "bf6b2af8e0a9543205ef2b1831ad47181cf9a335",
+  "recipeSha256": "660e94ba7f4202d698fefe6f26e751c38d794b9989f387d3385fa56aa0afbb89",
+  "status": "invalidated",
+  "cause": "A retained round marker captured the World and made lived snapshots circular.",
+  "rawSha256": {
+    "build-0.log": "009daab17051873b0bf277c487432107f8b7fb35338f8a511c72e677be3fe281",
+    "build-1.log": "c5aaf0042b7d9adb465141753fd4bd9a75e8686db7fd3b8088a55f9a3030037c",
+    "build-2.log": "a123767675ebbdb4c7eb11f84688db2841e613ad554f73f3e043572c1ebaf6cb",
+    "build-3.log": "afe06256efcbae425c236f37e6e771262c5ab56ba36cad19076af3c471543fb7",
+    "fresh-1930.json": "99e899b433e49d13101aaff382f8997a6ae9fa84b45125856215e31edf0ff5f5"
+  }
+}

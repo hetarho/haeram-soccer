@@ -1,13 +1,7 @@
-/**
- * T806's squad spread (→WORLD-6) behind `SQUAD_SPREAD`: `flat` keeps the released draw byte for
- * byte; `spread` gives each generated player a class and an age term, the bench below the
- * starters, the starters re-centred on the club's strength and a headroom that narrows with age.
- */
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { COUNTRIES } from '../../catalogs/src/index';
-import type { Club, Player, PersonCareer, World } from '../../contracts/src/types';
+import type { Club, Player, World } from '../../contracts/src/types';
 import { marketWageAt } from './market-prices';
-import { continuousSquad } from './npc-continuity';
 import { ovrAt } from './player';
 import {
   ageLadder,
@@ -18,11 +12,11 @@ import {
   npcSquad,
   overall,
   PRESS_LOAD_FATIGUE,
-  SQUAD_SPREAD,
   SQUAD_SPREAD_CONFIG,
   spreadAgeTerm,
   spreadClass,
   spreadHeadroom,
+  spreadLevels,
   squadPlaceAge,
   squadPlaces,
   squadSurname,
@@ -34,16 +28,6 @@ const clubs = (code: string, count: number, strength = 60) =>
     { length: count },
     (_, k) => ({ id: `${code}:0:0:${k}`, country: code, strength, tier: k % 3 }) as Club,
   );
-const spread = <T>(run: () => T) => {
-  SQUAD_SPREAD.inForce = 'spread';
-  try {
-    return run();
-  } finally {
-    SQUAD_SPREAD.inForce = 'flat';
-  }
-};
-afterEach(() => expect(SQUAD_SPREAD.inForce).toBe('flat'));
-
 /** The released draw (T805): every place at the club's strength through `makePlayer`. */
 function released(seed: string, year: number, c: Club): Player[] {
   const code = COUNTRIES.some((p) => p.code === c.country) ? c.country : 'ENG';
@@ -80,52 +64,7 @@ const sd = (xs: readonly number[]) => {
   return Math.sqrt(mean(xs.map((x) => (x - m) ** 2)));
 };
 
-describe('SQUAD_SPREAD `flat` (the default)', () => {
-  it('draws every generated squad and potential as released, and a refill as `makePlayer` does', () => {
-    expect(SQUAD_SPREAD.inForce).toBe('flat');
-    for (const seed of ['spread-a', 'spread-b'])
-      for (const year of [1930, 1966, 2004])
-        for (const c of [...clubs('ENG', 4, 70), ...clubs('ITA', 2, 85), ...clubs('euro', 1, 55)])
-          expect(npcSquad(seed, year, c)).toEqual(released(seed, year, c));
-    // A refill of a place someone left (→WORLD-11) is `makePlayer`'s draw at T807's level and age:
-    // at the club's strength, since a retirement and not a sale emptied it, within 4 of the
-    // place's age.
-    const c = clubs('ESP', 1, 66)[0]!,
-      gone = npcSquad('spread-a', 1977, c)[4]!,
-      place = squadPlaceAge('spread-a', c.id, 1977, 4),
-      w = {
-        seed: 'spread-a',
-        year: 1977,
-        playerClub: 'own',
-        clubs: [c],
-        people: { [gone.id]: { id: gone.id, playing: 'retired' } as PersonCareer },
-      } as unknown as World;
-    const refill = continuousSquad(w, c)[4]!;
-    expect(refill.id).toBe(`${c.id}:vacancy:4:${place.cohort}`);
-    expect(Math.abs(1977 - refill.born - place.age)).toBeLessThanOrEqual(4);
-    expect(refill).toEqual({
-      ...makePlayer(
-        'ESP',
-        'spread-a',
-        refill.id,
-        1977,
-        66,
-        gone.position,
-        1977 - refill.born,
-        c.tier,
-        squadPlaces(clubStyle(c))[4]!.role,
-      ),
-      fatigue: gone.fatigue,
-    });
-    // `generatedPlayer` is `makePlayer` while flat, potential and agent included.
-    for (const age of [18, 24, 31])
-      expect(generatedPlayer('NED', 's', `x:${age}`, 1990, 72, 'CM', age, 1)).toEqual(
-        makePlayer('NED', 's', `x:${age}`, 1990, 72, 'CM', age, 1),
-      );
-  });
-});
-
-describe('SQUAD_SPREAD `spread`', () => {
+describe('generated squad spread (→WORLD-6)', () => {
   it('takes WORLD-6’s age term and headroom tables', () => {
     expect([18, 19, 20, 22, 24, 27, 29, 30, 31, 33, 34, 35].map(spreadAgeTerm)).toEqual([
       -7, -5.5, -4, -1, 0, 0, 0, -0.5, -1, -3, -4, -5,
@@ -135,6 +74,10 @@ describe('SQUAD_SPREAD `spread`', () => {
     expect(spreadHeadroom(27)).toEqual([0, 4]);
     expect(spreadHeadroom(33)).toEqual([0, 4]);
     expect(spreadHeadroom(24)).toEqual([4, 17]);
+    const levels = spreadLevels(70, Array(18).fill(0), 11);
+    const benchGap = mean(levels.slice(0, 11)) - mean(levels.slice(11));
+    expect(benchGap).toBeGreaterThanOrEqual(3);
+    expect(benchGap).toBeLessThanOrEqual(8);
   });
 
   it('gives each person a class within ±6, the same every season of his cohort', () => {
@@ -148,24 +91,19 @@ describe('SQUAD_SPREAD `spread`', () => {
     );
   });
 
-  it('narrows the potential headroom with age, the agent drawn as before', () =>
-    spread(() => {
-      for (const [age, low, high] of [
-        [18, 80, 95],
-        [24, 74, 87],
-        [30, 70, 74],
-      ] as const)
-        for (let k = 0; k < 40; k++) {
-          const p = generatedPlayer('ENG', 'room', `h:${age}:${k}`, 1990, 70, 'CM', age, 0);
-          expect(p.potential).toBeGreaterThanOrEqual(low);
-          expect(p.potential).toBeLessThanOrEqual(high);
-          SQUAD_SPREAD.inForce = 'flat';
-          expect(p.agent).toEqual(
-            makePlayer('ENG', 'room', `h:${age}:${k}`, 1990, 70, 'CM', age, 0).agent,
-          );
-          SQUAD_SPREAD.inForce = 'spread';
-        }
-    }));
+  it('narrows potential headroom with age without changing the agent draw', () => {
+    for (const [age, low, high] of [
+      [18, 80, 95],
+      [24, 74, 87],
+      [30, 70, 74],
+    ] as const)
+      for (let k = 0; k < 40; k++) {
+        const p = generatedPlayer('ENG', 'room', `h:${age}:${k}`, 1990, 70, 'CM', age, 0);
+        expect(p.potential).toBeGreaterThanOrEqual(low);
+        expect(p.potential).toBeLessThanOrEqual(high);
+        expect(p.agent).toEqual(makePlayer('ENG', 'room', p.id, 1990, 70, 'CM', age, 0).agent);
+      }
+  });
 
   it('fields an eleven at the club’s strength with stars, regulars and a bench below them', () => {
     for (const strength of [50, 55, 60, 65, 70, 75, 80, 85, 90, 95])
@@ -174,18 +112,16 @@ describe('SQUAD_SPREAD `spread`', () => {
         const pool = clubs('ENG', 60, strength)
           .filter((c) => clubStyle(c) === tactic)
           .slice(0, 12);
-        const flatMean = mean(pool.map((c) => mean(eleven(npcSquad('field', 1985, c), c))));
+        const flatMean = mean(pool.map((c) => mean(eleven(released('field', 1985, c), c))));
         const xis: number[][] = [],
           benches: number[] = [],
           young: number[] = [];
-        spread(() => {
-          for (const c of pool) {
-            const squad = npcSquad('field', 1985, c);
-            xis.push(eleven(squad, c));
-            benches.push(...squad.slice(11).map(overall));
-            young.push(...squad.filter((p) => 1985 - p.born <= 20).map(overall));
-          }
-        });
+        for (const c of pool) {
+          const squad = npcSquad('field', 1985, c);
+          xis.push(eleven(squad, c));
+          benches.push(...squad.slice(11).map(overall));
+          young.push(...squad.filter((p) => 1985 - p.born <= 20).map(overall));
+        }
         const xiMean = mean(xis.flat()),
           at = `${strength} ${tactic}`;
         if (strength <= 85)
@@ -200,20 +136,16 @@ describe('SQUAD_SPREAD `spread`', () => {
       }
   });
 
-  it('draws the same squad again from the same seed, club and year', () =>
-    spread(() => {
-      const c = clubs('POR', 1, 77)[0]!;
-      expect(npcSquad('again', 1999, c)).toEqual(npcSquad('again', 1999, c));
-      SQUAD_SPREAD.inForce = 'flat';
-      const flat = npcSquad('again', 1999, c);
-      SQUAD_SPREAD.inForce = 'spread';
-      const spreadSquad = npcSquad('again', 1999, c);
-      // Same people, other levels.
-      expect(spreadSquad.map((p) => [p.id, p.name, p.born])).toEqual(
-        flat.map((p) => [p.id, p.name, p.born]),
-      );
-      expect(spreadSquad.map(overall)).not.toEqual(flat.map(overall));
-    }));
+  it('draws the same identities and deterministic spread from the seed, club and year', () => {
+    const c = clubs('POR', 1, 77)[0]!;
+    const squad = npcSquad('again', 1999, c);
+    expect(squad).toEqual(npcSquad('again', 1999, c));
+    const baseline = released('again', 1999, c);
+    expect(squad.map((p) => [p.id, p.name, p.born])).toEqual(
+      baseline.map((p) => [p.id, p.name, p.born]),
+    );
+    expect(squad.map(overall)).not.toEqual(baseline.map(overall));
+  });
 
   it('keeps the squad’s market cost near the flat draw’s (T806’s measured bound)', () => {
     const w = { seed: 'cost' } as World;
@@ -222,15 +154,13 @@ describe('SQUAD_SPREAD `spread`', () => {
         let flat = 0n,
           spreadCost = 0n;
         for (const c of [...clubs('ENG', 8), ...clubs('ESP', 8)]) {
-          flat += npcSquad(w.seed, year, { ...c, strength, tier: 0 }).reduce(
+          flat += released(w.seed, year, { ...c, strength, tier: 0 }).reduce(
             (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)),
             0n,
           );
-          spreadCost += spread(() =>
-            npcSquad(w.seed, year, { ...c, strength, tier: 0 }).reduce(
-              (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)),
-              0n,
-            ),
+          spreadCost += npcSquad(w.seed, year, { ...c, strength, tier: 0 }).reduce(
+            (sum, p) => sum + BigInt(marketWageAt(c.country, year, 0, p)),
+            0n,
           );
         }
         const ratio = Number(spreadCost) / Number(flat);

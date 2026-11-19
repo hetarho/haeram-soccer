@@ -1,12 +1,9 @@
 /**
- * T808: a measurement run's choice of WORLD-6's squad spread (`SQUAD_SPREAD`). `--setting flat` or
- * `--setting spread` sets it in this process, as T784's `--setting` names seller-spread.ts's rules;
- * without the flag the run reads the released default. A measurement override, never a game setting.
+ * Accept the historical `--setting spread` measurement argument. WORLD-6's spread is always in
+ * force; no measurement option can restore flat generated squads.
  */
-import { SQUAD_SPREAD } from '../../packages/engine/src/world';
-
-export type SquadSpread = (typeof SQUAD_SPREAD)['inForce'];
-export const SQUAD_SPREAD_CHOICES: readonly SquadSpread[] = ['flat', 'spread'];
+export type SquadSpread = 'spread';
+export const SQUAD_SPREAD_CHOICES: readonly SquadSpread[] = ['spread'];
 
 /** Whether `value` names a squad spread. */
 export function isSquadSpread(value: string): value is SquadSpread {
@@ -14,7 +11,7 @@ export function isSquadSpread(value: string): value is SquadSpread {
 }
 
 /**
- * Applies `--setting flat|spread` from `args` and returns the arguments a forked worker repeats to
+ * Accepts `--setting spread` from `args` and returns the arguments a forked worker repeats to
  * live on the same squads (none when the run reads the default).
  */
 export function squadSpreadSetting(args: readonly string[]): string[] {
@@ -23,6 +20,5 @@ export function squadSpreadSetting(args: readonly string[]): string[] {
   const value = args[index + 1] ?? '';
   if (!isSquadSpread(value))
     throw new Error(`--setting takes ${SQUAD_SPREAD_CHOICES.join(' or ')}, not ${value}`);
-  SQUAD_SPREAD.inForce = value;
   return ['--setting', value];
 }

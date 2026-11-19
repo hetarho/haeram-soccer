@@ -1,3 +1,4 @@
+import { tierLevel } from './tier-levels';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { continuousSquad } from './npc-continuity';
 import { matchdaySquad } from './persisted-squads';
@@ -26,6 +27,7 @@ import {
   adaptationStart,
   GENERATED_ATTRIBUTES,
   generateProfile,
+  gradeOf,
   LINE_MINIMUM,
   lineOf,
   type Joined,
@@ -66,8 +68,12 @@ export {
 };
 
 /** Where a player joining the club starts to settle (→PLAYER-11). */
-export function joinClub(p: Player, joined: Joined, year: number) {
+export function joinClub(p: Player, joined: Joined, year: number, graduate = false) {
+  delete p.renewalBids;
+  delete p.renewalRefused;
   p.joined = year;
+  if (joined === 'academy' || graduate) p.graduate = true;
+  else delete p.graduate;
   p.adaptation = adaptationStart(p.personality.adaptability, joined);
   p.clubRounds = 0;
   delete p.unsettled;
@@ -126,11 +132,7 @@ export function makePlayer(
     RELEASED_HEADROOM,
   );
 }
-/**
- * A generated squad member or a refill of his place at `level` (→WORLD-6): `makePlayer` as
- * released, or with `SQUAD_SPREAD` at `spread` his potential headroom narrowing with his age
- * (`spreadHeadroom`), drawn with the same one draw so his agent stays as it was.
- */
+/** A generated player whose potential headroom narrows with age (→WORLD-6). */
 export function generatedPlayer(
   code: string,
   seed: string,
@@ -143,8 +145,19 @@ export function generatedPlayer(
   role?: RoleId,
   surname?: number,
 ): Player {
-  const headroom = SQUAD_SPREAD.inForce === 'spread' ? spreadHeadroom(age) : RELEASED_HEADROOM;
-  return drawPlayer(code, seed, id, year, level, position, age, division, role, surname, headroom);
+  return drawPlayer(
+    code,
+    seed,
+    id,
+    year,
+    level,
+    position,
+    age,
+    division,
+    role,
+    surname,
+    spreadHeadroom(age),
+  );
 }
 function drawPlayer(
   code: string,
@@ -167,6 +180,7 @@ function drawPlayer(
     Math.round(rating),
     role,
     age,
+    gradeOf(random(`${seed}:loyalty:${id}`)),
   );
   const player: Player = {
     id,
@@ -190,6 +204,9 @@ function drawPlayer(
   };
   // His overall, read once: it moves with his attributes alone (T669).
   const ovr = overall(player);
+  // Headroom is drawn over his level; attributes drawn at that level can read a point above it,
+  // and a generated player's potential is never below his OVR (→WORLD-6, PLAYER-15).
+  if (player.potential < ovr) player.potential = Math.min(99, ovr);
   player.wage = marketWageAt(code, year, division ?? divisionFor(code, ovr), player, ovr);
   player.agent = drawAgent(r, ovr);
   return player;
@@ -246,7 +263,7 @@ export { tierLevel, tierStrengthRange } from './tier-levels';
  * divisions' band (→LEAGUE-10) and academy intakes (→WORLD-16) are read against it.
  */
 export function divisionLevel(tier: number) {
-  return 90 - 10 * (tier + 1);
+  return tierLevel(tier);
 }
 /**
  * Long-run size of each club relative to its division, stable for the career (→LEAGUE-10). Every
@@ -450,13 +467,6 @@ export function squadPlaceAge(
   return { age: 18 + (step % SQUAD_AGES), cohort: Math.floor(step / SQUAD_AGES) };
 }
 /**
- * T806's squad spread (→WORLD-6), a setting held at `flat` until T808 reads its gate: `flat` draws
- * every generated place at the club's strength, as released; `spread` gives each generated player
- * his own class and an age term, sits the bench below the starters, re-centres the starters on the
- * club's strength and narrows a player's potential headroom with his age (`SQUAD_SPREAD_CONFIG`).
- */
-export const SQUAD_SPREAD: { inForce: 'flat' | 'spread' } = { inForce: 'flat' };
-/**
  * WORLD-6's spread terms. `class` and `bench` are chosen within WORLD-6's ranges (±6, 3–8) to keep a
  * founding squad's market cost nearest the flat
  * draw's over strengths 50–95 and the star pay spread's eras: spread squads cost less (the age term
@@ -509,10 +519,10 @@ export function spreadClass(seed: string, id: string) {
 }
 /**
  * What a generated person's class and age put on his place's level (→WORLD-6), the one term a
- * squad's member and a refill of his place take alike; nothing while `SQUAD_SPREAD` is `flat`.
+ * squad's member and a refill of his place take alike.
  */
 export function spreadTerm(seed: string, id: string, age: number) {
-  return SQUAD_SPREAD.inForce === 'spread' ? spreadClass(seed, id) + spreadAgeTerm(age) : 0;
+  return spreadClass(seed, id) + spreadAgeTerm(age);
 }
 /** WORLD-6's potential headroom at `age`, rounded to whole points. */
 export function spreadHeadroom(age: number): readonly [number, number] {
@@ -567,8 +577,8 @@ function wholeLevels(levels: readonly number[]) {
 }
 /**
  * The 18 generated players of a club nobody owns, renewed by cohort each year (→WORLD-6); `style`
- * builds them for another tactic's formation (measurement of forced tactics, T321). With
- * `SQUAD_SPREAD` at `spread` each takes his level from `spreadLevels`, else the club's strength.
+ * builds them for another tactic's formation (measurement of forced tactics, T321). Each takes
+ * his level from `spreadLevels` (→WORLD-6).
  */
 export function npcSquad(
   seed: string,
@@ -583,14 +593,11 @@ export function npcSquad(
     const { age, cohort } = squadPlaceAge(seed, c.id, year, i, ladder);
     return { ...place, age, id: `${c.id}:p:${i}:${cohort}` };
   });
-  const levels =
-    SQUAD_SPREAD.inForce === 'spread'
-      ? spreadLevels(
-          c.strength,
-          places.map((place) => spreadTerm(seed, place.id, place.age)),
-          formationOf(style).length,
-        )
-      : undefined;
+  const levels = spreadLevels(
+    c.strength,
+    places.map((place) => spreadTerm(seed, place.id, place.age)),
+    formationOf(style).length,
+  );
   return places.map((place, i) => {
     // The year he turned 18 keeps his surname through his cohort; a season's 18 hold 18
     // consecutive ones.
@@ -599,7 +606,7 @@ export function npcSquad(
       seed,
       place.id,
       year,
-      levels?.[i] ?? c.strength,
+      levels[i]!,
       place.position,
       place.age,
       c.tier,

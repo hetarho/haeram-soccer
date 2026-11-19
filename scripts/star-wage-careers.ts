@@ -26,9 +26,7 @@ const seasons = Number(option('seasons', '4'));
 async function run(job: Job) {
   Object.assign(
     MARKET_CONFIG.star,
-    job.variant === 'baseline'
-      ? { from: 100, full: 101, maximum: 1, globalFrom: 100, globalFull: 101 }
-      : candidate.star,
+    job.variant === 'baseline' ? { from: 100, full: 101, maximum: 1 } : candidate.star,
   );
   Object.assign(
     BALLON_DOR_CONFIG.premium,

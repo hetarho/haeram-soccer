@@ -74,6 +74,20 @@ describe('explicit long-codec owner support', () => {
     expect([w.ended, w.bankrupt]).toEqual([undefined, undefined]);
   });
 
+  it('budgets enough genuine capital for the fans’ actual injection response', () => {
+    const w = ownerState();
+    w.owner!.fanDisposition = { results: 30, identity: 30, finance: 30, stars: 10 };
+    w.owner!.fortune = '2200409';
+    const before = canonical(w);
+    expect(() => supportCodecOwner(w)).toThrow();
+    expect(canonical(w)).toBe(before);
+
+    w.owner!.fortune = '2200410';
+    const receipts = supportCodecOwner(w);
+    expect(receipts.map((receipt) => receipt.after.mood)).toEqual([67, 74, 81, 88, 95, 100]);
+    expect(w.owner!.fortune).toBe('0');
+  });
+
   it('ceil-rounds a genuine turnover budget excluding earlier owner capital', () => {
     const w = ownerState();
     w.year = 1951;

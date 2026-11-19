@@ -11,7 +11,14 @@ import type {
   MatchAppearance,
 } from './identity';
 import type { ManagerHistoryFacts } from './manager-history';
-import type { ClubBooks, DividendShare, EndCause, OwnerState, TakeoverLoan } from './owner';
+import type {
+  ClubBooks,
+  DistressState,
+  DividendShare,
+  EndCause,
+  OwnerState,
+  TakeoverLoan,
+} from './owner';
 import type { RecentResults } from './recent-results';
 import type { MatchScript, StagingSide } from './match-script';
 import type {
@@ -365,9 +372,11 @@ export interface Player {
   attrs: Attributes;
   personality: Personality;
   qualities?: OffPitchQualities;
-  /** Season of joining our first team; absent history never grants bandiera places. */
+  /** Season of joining his current club's first team; absent history never grants bandiera places. */
   joined?: number;
   graduate?: true;
+  /** Maximum bidding reputation in each of the last two real windows at the current club. */
+  renewalBids?: { club: string; year: number; window: 'summer' | 'winter'; reputation: number }[];
   /** A prodigy (신동, →WORLD-18), growing three times faster until 18 (→PLAYER-15). */
   prodigy?: true;
   traits: PlayTrait[];
@@ -395,10 +404,14 @@ export interface Player {
   injury?: { year: number; day: number; label: string };
   /** Market standing (→CLUB-22); absent means open to offers. */
   stance?: Exclude<TransferStance, 'open'>;
+  /** Stance to restore when a distress-only listing is no longer required. */
+  distressListing?: TransferStance;
   /** Season year whose close ends the career he has announced he will finish (→CLUB-3). */
   retiring?: number;
   /** The contract talk he opened (→CLUB-26). */
   talk?: ContractTalk;
+  /** A player's own refusal blocks another approach until the next real window (CLUB-54). */
+  renewalRefused?: { year: number; window: 'summer' | 'winter'; kind: ContractTalk['kind'] };
   /** Season year he last asked for an improved contract: at most once a season (→CLUB-26). */
   improveAsked?: number;
   /** Unhappy since this day, and why (→CLUB-27). */
@@ -639,11 +652,18 @@ export interface Fixture {
   away: string;
   country: string;
   groupKey: string;
+  /** First or return leg of a two-legged tie; absent for single matches and older fixtures. */
+  leg?: 1 | 2;
   score?: Score;
   /** Kicks scored in the shoot-out of a knockout fixture decided on penalties (→MATCH-6). */
   shootout?: Score;
 }
-export interface TableRow {
+export interface LeagueDeduction {
+  /** Positive administrative deduction; match points remain unchanged. */
+  deducted: number;
+  deductionReason: 'administration';
+}
+export interface TableRow extends Partial<LeagueDeduction> {
   played: number;
   won: number;
   drawn: number;
@@ -658,8 +678,10 @@ export interface StandingSnapshot {
   day: number;
   tier: number;
   group: number;
-  /** Sorted by rank. Each row is [club index, points, goals for, goals against]. */
+  /** Sorted by rank. Each row is [club index, settled match points, goals for, goals against]. */
   rows: [number, number, number, number][];
+  /** Deductions effective at this round, keyed by the club's retained ID. */
+  leagueDeductions?: Record<string, LeagueDeduction>;
 }
 export interface GoalScorer {
   /** Actual contributions by club, present after an in-league move. */
@@ -940,7 +962,9 @@ export interface AssociationCoefficient {
   points: number;
   clubs: number;
 }
-export interface SeasonArchive {
+export interface SeasonArchive extends Partial<LeagueDeduction> {
+  /** League-row deductions keyed by stable club ID; absent from older season archives. */
+  leagueDeductions?: Record<string, LeagueDeduction>;
   year: number;
   tier: number;
   group: number;
@@ -1441,6 +1465,8 @@ export interface World {
    * season, the plans read the income projection live.
    */
   budgetPlan?: { year: number; revenue: string; sales: string };
+  /** Last season the delegated cash-floor warning was emitted; independent of pruned prose. */
+  delegationWarningSeason?: number;
   /** 지역 기반 and 글로벌 인지도, 0–100 (→ECON-34); absent is 0. */
   localBase?: number;
   globalReach?: number;
@@ -1452,7 +1478,9 @@ export interface World {
   critical?: string;
   /** League rounds settled in a row with negative cash (→ECON-24); absent while solvent. */
   insolvent?: number;
-  /** The day the club went bankrupt: the career is over and nothing advances (→ECON-24). */
+  /** Financial distress of the owned club (→ECON-24); absent in older saves. */
+  distress?: DistressState;
+  /** Recorded legacy bankruptcy, preserved for already ended careers (→SAVE-10). */
   bankrupt?: { year: number; round: number; day: number };
   receiptIds: string[];
   /** Yellow cards, bans and NPC injuries of every club (→MATCH-19, →LEAGUE-15); from rules 4.0.0. */

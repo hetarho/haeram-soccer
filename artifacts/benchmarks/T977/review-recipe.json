@@ -1,0 +1,15 @@
+{
+  "reviewProvider": "Claude",
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "verdict": "approved",
+  "gitHead": "cb1431d923d7b2721f90d9755960f6ac45f3cff1",
+  "recipeSha256": "52921951013d8b4a0a41a29b856a66fef23f8ea9ce369aeeeed535092f69fab6",
+  "sourceSha256": "28201dcf1ba6b1f741431fba7e715a03248b2350de5e90de62982e6bcbdb39d1",
+  "inputSha256": [
+    "c538007b17abe4a9fee9c868829c755e9bc8fe0cc4e6149c64e0a9bc9477389a"
+  ],
+  "findings": [],
+  "summary": "Static review found no correctness or provenance issues. All six wage arms share the same three 1951 and 1995 starts and luck 0, and only MARKET_CONFIG.wage differs. Five book seasons per era and the exact 2003 reference are read. Band misses are kept in the output. The hash checks cover the recipe, snapshots and source, and complete arms are reused only when the recipe and output hashes match. Hashes were not recomputed in this read-only review."
+}

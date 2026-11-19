@@ -178,7 +178,11 @@ describe('bounded whole-world market', () => {
     expect(ids).toContain(young.id);
     expect(ids).toContain(limit.id);
     expect(youth.items.every((o) => w.year - o.player.born <= 20)).toBe(true);
-    expect(youth.total).toBe(all.items.filter((o) => w.year - o.player.born <= 20).length);
+    const allItems = Array.from(
+      { length: Math.ceil(all.total / all.pageSize) },
+      (_, page) => query(w, { page, pageSize: all.pageSize }).items,
+    ).flat();
+    expect(youth.total).toBe(allItems.filter((o) => w.year - o.player.born <= 20).length);
     expect(youth.total).toBeLessThan(all.total);
   });
 
@@ -424,6 +428,38 @@ describe('stable-identity approaches', () => {
         graduate: true,
       });
       expect(registration(saved)).toMatchObject({ counted: 25, exempt: 1, total: 26 });
+    },
+  );
+
+  it.each([false, true])(
+    'counts another club academy graduate in previews and pinned completion (loan=%s)',
+    (loan) => {
+      const { w, original, target } = spanishReturnFixture(22, false);
+      const source = squad(w, w.clubs[1]).find((p) => p.id === original.id)!;
+      source.graduate = true;
+      source.joined = w.year - 3;
+      const before = structuredClone(w);
+      const offer = worldMarketOffer(w, target)!;
+      expect(offer.player.graduate).toBeUndefined();
+      expect(worldMarketDetail(w, target).buy.eligible).toBe(false);
+      expect(worldMarketDetail(w, target).loan.eligible).toBe(false);
+      expect(w).toEqual(before);
+      w.players.pop();
+      placeBid(w, target, loan ? offer.loanFee : offer.fee, loan);
+      const bid = w.bids![0];
+      // Old pinned offers could still carry the selling club's academy fact.
+      bid.offer!.player.graduate = true;
+      bid.status = 'countered';
+      respondBid(w, bid.id, true);
+      expect(bid.status).toBe('completed');
+      expect(w.players.find((p) => p.id === original.id)).toMatchObject({ joined: w.year });
+      expect(w.players.find((p) => p.id === original.id)!.graduate).toBeUndefined();
+      expect(registration(w)).toMatchObject({ counted: 25, exempt: 0, total: 25 });
+      if (loan)
+        expect(w.playerRecords![original.id].loan).toMatchObject({
+          joined: w.year - 3,
+          graduate: true,
+        });
     },
   );
 

@@ -19,20 +19,24 @@
  * plays on the full model, about 27 s a season; used sparingly) with --owner-tier <wealth tier>
  * (default oil). Measurement reads the clubs nobody owns. Wrap long runs in `caffeinate -ims`.
  */
-import { fork } from 'node:child_process';
+import assert from 'node:assert/strict';
+import { execFileSync, fork } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { currency } from '../packages/catalogs/src/index';
 import { careerEnded, WEALTH_TIER_IDS, type WealthTier } from '../packages/contracts/src/owner';
-import type { World } from '../packages/contracts/src/types';
+import type { Player, World } from '../packages/contracts/src/types';
+import * as bookEngine from '../packages/engine/src/books';
+import * as careerEngine from '../packages/engine/src/npc-careers';
 import { currentDay, SEASON_END_DAY } from '../packages/engine/src/calendar';
 import { FREE_AGENT_FLOW } from '../packages/engine/src/free-agents';
 import { historyWorld, liveHistory } from '../packages/engine/src/history';
 import { MATCH_MODEL_RELEASE } from '../packages/engine/src/match-model-release';
 import { inPounds } from '../packages/engine/src/club-value';
 import { npcWageBill, npcWageLimit } from '../packages/engine/src/books';
-import { NPC_MARKET, PLAYER_MOVE_FLOW } from '../packages/engine/src/npc-market';
+import { groupKey, ranked } from '../packages/engine/src/league-fixtures';
+import { NPC_BID_FLOW, NPC_MARKET, PLAYER_MOVE_FLOW } from '../packages/engine/src/npc-market';
 import { LINE_MINIMUM, lineOf, mainOvr } from '../packages/engine/src/player';
 import { overall } from '../packages/engine/src/player-state';
 import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
@@ -42,8 +46,11 @@ import { takeOver } from '../packages/engine/src/takeover';
 import { transferWindowDays } from '../packages/engine/src/transfer-window';
 import { clubById, NPC_SQUAD, squad } from '../packages/engine/src/world';
 import { measurementIdentity } from './lib/measurement-identity';
+import { fingerprintFiles } from './lib/source-graph';
 import { setTunables } from './lib/market-tunables';
 import { toolMessage } from './lib/tool-messages';
+import { MarketAgeingCareers } from './lib/market-ageing';
+import { transferValues } from './lib/market-values';
 import {
   FRESH_MIN_BURN_IN,
   inferReason,
@@ -59,6 +66,9 @@ import {
   windowOf,
   type ClubRef,
   type EndBook,
+  type BidFact,
+  type RenewalFact,
+  type DistressFact,
   type MoveFact,
   type MoveKind,
   type RunJob,
@@ -80,6 +90,7 @@ const option = (key: string, fallback: string) => {
   return index < 0 ? fallback : (args[index + 1] ?? fallback);
 };
 const SELF = fileURLToPath(import.meta.url);
+const snapshotDir = process.env.MARKET_SEASONS_START_DIR ?? START_WORLD_DIR;
 
 /** The defaults with `config` over them (scripts/lib/market-tunables.ts). */
 const setConfig = (config: Record<string, unknown>) => setTunables(config);
@@ -90,8 +101,32 @@ const setConfig = (config: Record<string, unknown>) => setTunables(config);
 interface Collector {
   moves: MoveFact[];
   releases: number;
+  bids: BidFact[];
+  renewalAnswers?: RenewalFact[];
+  distress?: DistressFact[];
 }
-let collector: Collector = { moves: [], releases: 0 };
+let collector: Collector = { moves: [], releases: 0, bids: [] };
+
+/**
+ * The engine may expose these hooks after the corresponding game rules are implemented.
+ */
+function optionalObserver<T>(module: object, name: string, observe: (fact: T) => void) {
+  const flow: unknown = (module as Record<string, unknown>)[name];
+  if (!flow || typeof flow !== 'object') return false;
+  (flow as { observe?: (fact: T) => void }).observe = observe;
+  return true;
+}
+const observed = {
+  renewals: optionalObserver<RenewalFact>(careerEngine, 'NPC_RENEWAL_FLOW', (fact) =>
+    collector.renewalAnswers?.push(fact),
+  ),
+  distress: optionalObserver<DistressFact>(bookEngine, 'DISTRESS_FLOW', (fact) =>
+    collector.distress?.push(fact),
+  ),
+};
+if (process.env.HAERAM_CALIBRATION_REQUIRE_OBSERVERS === '1') {
+  assert(observed.renewals && observed.distress);
+}
 const ref = (c: { id: string; country: string; tier: number }): ClubRef => ({
   id: c.id,
   country: c.country,
@@ -155,6 +190,9 @@ function observeMove(
   });
 }
 PLAYER_MOVE_FLOW.observe = observeMove;
+NPC_BID_FLOW.observe = (fact) => {
+  collector.bids.push(fact);
+};
 FREE_AGENT_FLOW.observe = (kind) => {
   if (kind === 'release') collector.releases++;
 };
@@ -162,7 +200,8 @@ FREE_AGENT_FLOW.observe = (kind) => {
 // ---------------------------------------------------------------------------------------------
 // Worlds and seasons
 
-const ownerless = (w: World) => w.clubs.filter((c) => !c.representative && w.squads?.[c.id]);
+const ownerless = (w: World) =>
+  w.clubs.filter((c) => c.id !== w.playerClub && !c.representative && w.squads?.[c.id]);
 const poundsOf = (country: string, year: number, amount: string) =>
   Number(inPounds(country, year, amount)) / currency('ENG', year).units;
 
@@ -179,6 +218,7 @@ function advance(w: World, days: number) {
 
 function playSeason(w: World, salt: string): SeasonStats {
   const year = w.year;
+  const values = transferValues(w);
   const clubs = ownerless(w);
   const startClubs: StartClub[] = clubs.map((c) => ({
     ...ref(c),
@@ -187,20 +227,60 @@ function playSeason(w: World, salt: string): SeasonStats {
   }));
   const xiStart: Record<string, string[]> = {};
   const topThree: Record<string, string> = {};
+  const divisionCandidates = new Map<string, { player: Player; club: string }[]>();
+  const bestFirst = (a: Player, b: Player) => overall(b) - overall(a) || a.id.localeCompare(b.id);
+  // Retain references as well as IDs so players retiring at this close remain in the cohort.
+  const ageingStart = new Map<string, { player: Player; age: number; ovr: number }>();
   for (const c of clubs) {
+    for (const p of w.squads![c.id]!) {
+      const age = year + 1 - p.born;
+      if (age >= 24 && age <= 38) ageingStart.set(p.id, { player: p, age, ovr: overall(p) });
+    }
     xiStart[c.id] = squad(w, c)
       .slice(0, 11)
       .map((p) => p.id);
-    if (c.tier > 0)
-      for (const p of [...w.squads![c.id]!]
-        .sort((a, b) => overall(b) - overall(a) || a.id.localeCompare(b.id))
-        .slice(0, 3))
+    if (c.tier > 0) {
+      const division = `${c.country}:${c.tier}`;
+      const candidates = divisionCandidates.get(division) ?? [];
+      for (const p of [...w.squads![c.id]!].sort(bestFirst).slice(0, 3)) {
         topThree[p.id] = c.id;
+        candidates.push({ player: p, club: c.id });
+      }
+      divisionCandidates.set(division, candidates);
+    }
   }
-  collector = { moves: [], releases: 0 };
+  const divisionTopThree = Object.fromEntries(
+    [...divisionCandidates.values()].flatMap((candidates) =>
+      candidates
+        .sort((a, b) => bestFirst(a.player, b.player))
+        .slice(0, 3)
+        .map(({ player, club }) => [player.id, club]),
+    ),
+  );
+  collector = {
+    moves: [],
+    releases: 0,
+    bids: [],
+    ...(observed.renewals ? { renewalAnswers: [] } : {}),
+    ...(observed.distress ? { distress: [] } : {}),
+  };
   RESULTS_LUCK.salt = salt;
   RESULTS_LUCK.season = year;
   advance(w, SEASON_END_DAY - currentDay(w));
+
+  // Rank each final league group separately, including an owned club in its group's size.
+  const groups = new Map<string, typeof w.clubs>();
+  for (const c of w.clubs.filter((c) => !c.representative)) {
+    const key = groupKey(c);
+    const group = groups.get(key) ?? [];
+    group.push(c);
+    groups.set(key, group);
+  }
+  const finishes = new Map<string, { rank: number; groupSize: number }>();
+  for (const group of groups.values())
+    ranked(w, group).forEach((c, index) =>
+      finishes.set(c.id, { rank: index + 1, groupSize: group.length }),
+    );
 
   const before = new Set([
     ...clubs.flatMap((c) => w.squads![c.id]!.map((p) => p.id)),
@@ -238,6 +318,8 @@ function playSeason(w: World, salt: string): SeasonStats {
   const intake = [...after]
     .filter(([id]) => !before.has(id))
     .map(([, row]) => ({ tier: row.tier, potential: row.potential }));
+  // Read c.books.seasons[0] after settlement. Historical flows keep the closing season's
+  // currency; live cash/debt have already been converted into the following season's currency.
   const books: EndBook[] = clubs.flatMap((c) => {
     const book = c.books?.seasons[0];
     if (!book || book.year !== year) return [];
@@ -248,22 +330,43 @@ function playSeason(w: World, salt: string): SeasonStats {
         tier: startClubs.find((s) => s.id === c.id)!.tier,
         wages: poundsOf(c.country, year, book.wages),
         income: poundsOf(c.country, year, book.income),
+        costs: poundsOf(c.country, year, book.costs),
+        ...(book.transfersReceived === undefined
+          ? {}
+          : { transfersReceived: poundsOf(c.country, year, book.transfersReceived) }),
+        ...(book.transfersPaid === undefined
+          ? {}
+          : { transfersPaid: poundsOf(c.country, year, book.transfersPaid) }),
         cash: poundsOf(c.country, w.year, c.books!.cash),
+        debt: poundsOf(c.country, w.year, c.books!.debt),
+        ...finishes.get(c.id),
         nextTier: c.tier,
       },
     ];
   });
+  const playersNow = new Map(
+    [...Object.values(w.squads ?? {}).flat(), ...(w.freeAgents ?? [])].map((p) => [p.id, p]),
+  );
   return seasonStats({
     year,
+    transferValues: values,
     clubs: startClubs,
     moves: collector.moves,
     xiStart,
     xiLost,
     topThree,
+    divisionTopThree,
     contracts: { releases: collector.releases, renewals, expiring: expiring.size },
     retirements,
     intake,
     books,
+    bids: collector.bids,
+    renewalAnswers: collector.renewalAnswers,
+    distress: collector.distress,
+    ageing: [...ageingStart].map(([id, start]) => ({
+      age: start.age,
+      change: overall(playersNow.get(id) ?? start.player) - start.ovr,
+    })),
   });
 }
 
@@ -285,11 +388,11 @@ function startWorld(spec: StartSpec, seed: string, config: Record<string, unknow
     seed,
     year: spec.year,
   };
-  let w = loadStartWorld<World>(START_WORLD_DIR, key);
+  let w = loadStartWorld<World>(snapshotDir, key);
   if (!w) {
     setConfig({});
     w = liveHistory(historyWorld(seed), spec.year);
-    saveStartWorld(START_WORLD_DIR, key, w);
+    saveStartWorld(snapshotDir, key, w);
     console.error(toolMessage('marketSeasons.stored', { seed, year: String(spec.year) }));
   }
   setConfig(config);
@@ -318,8 +421,10 @@ function runOne(plan: Plan, job: RunJob): RunResult {
   const salt = luckSalt(job.luck);
   const burnIn: SeasonStats[] = [],
     seasons: SeasonStats[] = [];
+  const careers = new MarketAgeingCareers();
   const t0 = performance.now();
   for (let n = 0; n < plan.burnIn + plan.seasons; n++) {
+    careers.read(w);
     (n < plan.burnIn ? burnIn : seasons).push(playSeason(w, salt));
     console.error(
       toolMessage('marketSeasons.progress', {
@@ -332,7 +437,16 @@ function runOne(plan: Plan, job: RunJob): RunResult {
     );
   }
   RESULTS_LUCK.salt = '';
-  return { seed: job.seed, luck: job.luck, start: plan.start, burnIn, seasons };
+  careers.read(w);
+  return {
+    seed: job.seed,
+    luck: job.luck,
+    start: plan.start,
+    burnIn,
+    seasons,
+    finalYear: w.year,
+    ageingCareers: careers.summarize(),
+  };
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -362,8 +476,13 @@ if (args.includes('--child')) {
   const files: string[] = [];
   for (let i = at; i < args.length && !args[i]!.startsWith('--'); i++) files.push(args[i]!);
   if (!files.length) throw usageError();
-  const runs: RunResult[] = files.flatMap((f) => JSON.parse(readFileSync(f, 'utf8')).runs ?? []);
-  writeOut(option('out', ''), { meta: { merged: files }, merged: mergeRuns(runs) });
+  const sources = files.map((file) => ({ file, data: JSON.parse(readFileSync(file, 'utf8')) }));
+  const runs: RunResult[] = sources.flatMap(({ data }) => data.runs ?? []);
+  writeOut(option('out', ''), {
+    meta: { merged: files, sources: sources.map(({ file, data }) => ({ file, meta: data.meta })) },
+    runs,
+    merged: mergeRuns(runs),
+  });
 } else {
   const ownerClub = option('owner', ''),
     ownerTier = option('owner-tier', 'oil');
@@ -441,6 +560,47 @@ if (args.includes('--child')) {
       startedAt,
       seconds: (performance.now() - t0) / 1000,
       identity: measurementIdentity('scripts/market-seasons.ts'),
+      source: {
+        head: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+        dirty: execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
+        fingerprint: fingerprintFiles(
+          process.cwd(),
+          execFileSync(
+            'git',
+            [
+              'ls-files',
+              '-z',
+              '--cached',
+              '--others',
+              '--exclude-standard',
+              '--',
+              'apps/web/src',
+              'apps/web/public',
+              'apps/web/index.html',
+              'packages',
+              'scripts',
+              'patches',
+              'package.json',
+              'pnpm-lock.yaml',
+              'pnpm-workspace.yaml',
+              'tsconfig.json',
+              'apps/web/vite.config.ts',
+            ],
+            { encoding: 'utf8' },
+          )
+            .split('\0')
+            .filter(Boolean),
+        ),
+      },
+      environment: { node: process.version, platform: process.platform, arch: process.arch },
+      observers: observed,
+      reads: {
+        books: 'closed-book-after-settlement',
+        thirds: 'one-based-rank-divided-by-group-size',
+        netFees: 'received-minus-paid',
+        fixedCosts: 'wages-plus-operating-costs',
+        ageing: 'opening-squad-cohort-by-age-at-annual-close-including-retirees',
+      },
       start,
       burnIn,
       seasons,

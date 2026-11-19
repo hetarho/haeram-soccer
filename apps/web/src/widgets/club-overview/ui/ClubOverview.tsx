@@ -1,3 +1,4 @@
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
@@ -14,7 +15,7 @@ import {
 import { Card } from '../../../shared/ui/Card';
 import { ClubCrest } from '../../../entities/club';
 import { Money } from '../../../shared/ui/Money';
-import { clubDivision, orderIds, ownLeagueIds } from '../../../entities/league';
+import { clubDivision, orderIds, ownLeagueIds, PointsDeduction } from '../../../entities/league';
 import { number, seasonName } from '../../../presentation/format';
 import { fanMovers, mood, moodChange } from '../../../entities/office';
 import { squadRegistration } from '../../../entities/player';
@@ -180,11 +181,12 @@ export function ClubOverview({ w }: { w: World }) {
             table?.played
               ? sourceMessage('copy.ClubOverview.954ae9121b', {
                   p0: league.indexOf(club.id) + 1,
-                  p1: table.points,
+                  p1: number(leaguePoints(table)),
                   p2: table.played,
                 })
               : sourceMessage('copy.ClubOverview.1c22f8706b'),
           )}
+          <PointsDeduction row={table} />
         </span>
       </header>
 

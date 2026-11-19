@@ -94,7 +94,9 @@ describe('incoming bids', () => {
     expect(w.events.some((event) => event.kind === 'retirement-announce')).toBe(false);
     expect(seen.size).toBeGreaterThan(0);
     expect(inBids(w).some((b) => b.status === 'expired')).toBe(true);
-    expect(w.players.every((p) => p.status === 'active')).toBe(true);
+    // Players can leave at contract expiry. Ignoring the bids must never produce a sale.
+    expect(inBids(w).filter((bid) => bid.status === 'completed')).toEqual([]);
+    expect(w.events.filter((event) => event.kind === 'transfer-out')).toEqual([]);
     expect(validateWorld(w).id).toBe(w.id);
   });
 
@@ -153,16 +155,16 @@ describe('incoming bids', () => {
     p.born = w.year - 26;
     p.until = w.year + 3;
     w.cash = '999999999999';
-    expect(saleBar(w, p)).toEqual({ percent: 130, prospect: false });
+    expect(saleBar(w, p)).toMatchObject({ percent: 130, prospect: false });
     // Age, contract, money and the sales line are the selling-club answer's factors now
     // (→CLUB-52), not cuts of the bar.
     p.born = w.year - 34;
     p.until = w.year + 1;
     w.cash = '0';
-    expect(saleBar(w, p)).toEqual({ percent: 130, prospect: false });
+    expect(saleBar(w, p)).toMatchObject({ percent: 130, prospect: false });
     p.born = w.year - 19;
     p.potential = overall(p) + 20;
-    expect(saleBar(w, p)).toEqual({ percent: 200, prospect: true });
+    expect(saleBar(w, p)).toMatchObject({ percent: 200, prospect: true });
     p.potential = overall(p) + 3;
     expect(saleBar(w, p).percent).toBe(130);
   });

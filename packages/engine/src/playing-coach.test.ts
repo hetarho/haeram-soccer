@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import * as primitives from './primitives';
 import { moneyLabel, operate } from './index';
 import {
   answerPlayingCoach,
@@ -100,6 +101,42 @@ describe('combined playing-coach agreement', () => {
     const after = JSON.stringify(w);
     answerPlayingCoach(w, id, true);
     expect(JSON.stringify(w)).toBe(after);
+  });
+  it('settles a refused player extension without accepting either part of the agreement', () => {
+    const { w, id } = world();
+    const p = w.players.find((p) => p.id === id)!;
+    w.settings!.responsibilities.staff = 'direct';
+    p.until = w.year + 1;
+    p.talk = { kind: 'renew', demand: p.wage, floor: p.wage, ...careerDate(w) };
+    const proposal = stagePlayingCoach(w, id, 1, 2);
+    const before = { wage: p.wage, until: p.until, retiring: p.retiring };
+    const staff = structuredClone(w.staff);
+    const cash = w.cash;
+    const employment = structuredClone(w.people![id].employment);
+    const random = primitives.random;
+    const spy = vi
+      .spyOn(primitives, 'random')
+      .mockImplementation((key) => (key.includes(':renew:') ? () => 0.999999 : random(key)));
+    try {
+      operate(w, { type: 'answer-playing-coach', player: id, accept: true });
+    } finally {
+      spy.mockRestore();
+    }
+    expect(w.playingCoachProposals![id]).toMatchObject({
+      status: 'declined',
+      settled: careerDate(w),
+    });
+    expect(w.players.find((p) => p.id === id)).toMatchObject({
+      ...before,
+      renewalRefused: { year: w.year },
+    });
+    expect(w.staff).toEqual(staff);
+    expect(w.cash).toBe(cash);
+    expect(w.people![id].employment).toEqual(employment);
+    expect(w.events.at(-1)?.kind).toBe('contract-decline');
+    expect(w.inbox!.at(-1)?.ref).toBe(id);
+    expect(playingCoachQuote(w, id, 1, 2)).toBeUndefined();
+    expect(automaticPlayingCoachFits(w, proposal)).toBe(false);
   });
   it('rejects invalid ages/durations, changed posts and missing funds without partial changes', () => {
     const { w, id } = world();

@@ -1,0 +1,411 @@
+{
+  "NPC_SQUAD": {
+    "size": 22
+  },
+  "NPC_YOUTH": {
+    "ages": [
+      17,
+      18
+    ],
+    "byAcademy": [
+      {
+        "count": 2
+      },
+      {
+        "count": 2
+      },
+      {
+        "count": 3
+      },
+      {
+        "count": 3
+      },
+      {
+        "count": 4
+      },
+      {
+        "count": 5
+      }
+    ],
+    "divisionCentre": 3,
+    "skew": [
+      [
+        0,
+        -20
+      ],
+      [
+        0.6666666666666666,
+        -0.5
+      ],
+      [
+        0.95,
+        9.5
+      ],
+      [
+        1,
+        14
+      ]
+    ],
+    "refillBelow": 10,
+    "headroom": [
+      12,
+      24
+    ],
+    "warRefill": {
+      "ages": [
+        19,
+        24
+      ],
+      "below": 0,
+      "headroom": 4
+    }
+  },
+  "CLUB_LEVELS": {
+    "coachingAbility": [
+      30,
+      40,
+      50,
+      60,
+      70,
+      80
+    ],
+    "investment": 0.5,
+    "decay": 0.05,
+    "aboveTarget": 0,
+    "moveAfterChange": 1
+  },
+  "NPC_MARKET": {
+    "days": [
+      0,
+      0.5,
+      1
+    ],
+    "upgrade": 4,
+    "blocked": 4,
+    "loanAge": 23,
+    "minimum": 18,
+    "termAge": 27,
+    "prospectAge": 23,
+    "prospectSeasons": 2,
+    "targetsPerNeed": 2,
+    "bidShare": {
+      "min": 0.5,
+      "max": 1
+    },
+    "richMultiple": 3,
+    "abroad": 0.15,
+    "searchSlack": 6,
+    "searchSpare": 2,
+    "valueWeight": 0.5,
+    "valueYears": 3,
+    "cashRunway": 3
+  },
+  "NPC_MARKET_ERA": {
+    "anchors": [
+      [
+        1950,
+        {
+          "bids": 3,
+          "buys": 2,
+          "sales": 2
+        }
+      ],
+      [
+        1960,
+        {
+          "bids": 3,
+          "buys": 2,
+          "sales": 2
+        }
+      ],
+      [
+        1965,
+        {
+          "bids": 4,
+          "buys": 3,
+          "sales": 3
+        }
+      ],
+      [
+        1980,
+        {
+          "bids": 5,
+          "buys": 3,
+          "sales": 3
+        }
+      ],
+      [
+        1995,
+        {
+          "bids": 6,
+          "buys": 4,
+          "sales": 4
+        }
+      ],
+      [
+        2010,
+        {
+          "bids": 8,
+          "buys": 5,
+          "sales": 5
+        }
+      ]
+    ]
+  },
+  "SALE_SHARE": {
+    "base": 0.85,
+    "spread": 0.08,
+    "min": 0.5,
+    "max": 1,
+    "ownFloor": 0.8,
+    "counterReach": 0.25
+  },
+  "SALE_FACTOR_VALUES": {
+    "stature": {
+      "giant": 0.1,
+      "big": 0.05,
+      "small": -0.05
+    },
+    "place": {
+      "core": 0.1,
+      "starter": 0.05,
+      "outside": -0.1
+    },
+    "contract": {
+      "final": -0.15,
+      "next": -0.05
+    },
+    "age": {
+      "veteran": -0.1,
+      "old": -0.2
+    },
+    "veteranAge": 30,
+    "oldAge": 33,
+    "prospect": 0.05,
+    "cashCrisis": -0.15,
+    "distress": {
+      "warning": -0.05,
+      "forced": -0.25
+    },
+    "sellingDown": -0.1,
+    "relegatedStarter": -0.1,
+    "aboveDivision": -0.1,
+    "aboveDivisionPoints": 5,
+    "contractFullFrom": 1995,
+    "contractEarlyShare": 0.5,
+    "listed": -0.15,
+    "requestOrUnhappy": -0.1,
+    "directorNeutral": 50,
+    "directorScale": 250,
+    "negotiator": -0.05,
+    "vacant": 0.05,
+    "deadlineDays": 3,
+    "deadline": -0.05
+  },
+  "TERMS_VALUES": {
+    "base": 1.5,
+    "wageBelow": 3,
+    "wageAbove": 1.5,
+    "wageCap": 2.5,
+    "division": -1.2,
+    "reputationScale": 20,
+    "europe": {
+      "ucl": 0.6,
+      "cwc": 0.3,
+      "uel": 0.3,
+      "uecl": 0.15
+    },
+    "leavingEurope": -0.4,
+    "wouldStart": 0.4,
+    "losesPlace": -0.9,
+    "freeAgent": 1,
+    "ambitionWeights": [
+      0.6,
+      0.8,
+      1,
+      1.25,
+      1.5
+    ],
+    "ambitionHalvedAge": 31
+  },
+  "SQUAD_SPREAD_CONFIG": {
+    "class": 6,
+    "bench": 3,
+    "age": [
+      [
+        18,
+        -7
+      ],
+      [
+        20,
+        -4
+      ],
+      [
+        22,
+        -1
+      ],
+      [
+        24,
+        0
+      ],
+      [
+        29,
+        0
+      ],
+      [
+        31,
+        -1
+      ],
+      [
+        33,
+        -3
+      ],
+      [
+        35,
+        -5
+      ]
+    ],
+    "headroom": {
+      "from": 20,
+      "young": [
+        10,
+        35
+      ],
+      "to": 27,
+      "old": [
+        0,
+        4
+      ]
+    },
+    "floor": 15,
+    "ceiling": 95
+  },
+  "CLUB_BOOKS": {
+    "opening": 0.5,
+    "cashSeasons": 1,
+    "debtSeasons": 1.5
+  },
+  "MARKET_CONFIG": {
+    "wage": 2700,
+    "pivot": 70,
+    "perPoint": 1.105,
+    "star": {
+      "from": 80,
+      "full": 95,
+      "maximum": 2
+    },
+    "premium": [
+      [
+        1950,
+        0.5
+      ],
+      [
+        1957,
+        0.75
+      ],
+      [
+        1967,
+        0.85
+      ],
+      [
+        1977,
+        1.2
+      ],
+      [
+        1979,
+        1.8
+      ],
+      [
+        1993,
+        2
+      ],
+      [
+        1996,
+        3.2
+      ],
+      [
+        2008,
+        3.2
+      ],
+      [
+        2013,
+        3.9
+      ],
+      [
+        2025,
+        5.2
+      ]
+    ],
+    "premiumSpan": 10,
+    "divisions": [
+      1,
+      0.4,
+      0.15,
+      0.07,
+      0.03
+    ],
+    "promise": {
+      "full": 18,
+      "none": 24,
+      "wage": 0.2,
+      "value": 0.4
+    },
+    "junior": 30,
+    "veteran": 30,
+    "years": 2,
+    "peak": 28,
+    "minYears": 1,
+    "loan": 0.1
+  },
+  "FREE_AGENT_CONFIG": {
+    "cap": 200,
+    "term": 3
+  },
+  "DISTRESS": {
+    "warning": 0.25,
+    "forcedSales": 0.5,
+    "administration": 1,
+    "saleRounds": 8,
+    "saleShare": 0.7,
+    "points": 10,
+    "writeOff": 0.5
+  },
+  "RENEWAL": {
+    "base": 1.5,
+    "wage": 1.5,
+    "wageCap": 2.5,
+    "division": -1.2,
+    "higherBid": -0.6,
+    "starter": 0.4,
+    "bench": -0.9,
+    "olderAge": 30,
+    "older": 0.5,
+    "veteranAge": 33,
+    "veteran": 1,
+    "distress": -0.5,
+    "prospectAge": 23,
+    "prospectAbove": 5,
+    "veteranTermAge": 31,
+    "maxTerm": 3
+  },
+  "AGEING_CURVE": {
+    "shiftShares": [
+      1,
+      2,
+      5,
+      15,
+      37,
+      18,
+      10,
+      6,
+      4,
+      2
+    ],
+    "minShift": -4,
+    "rate": {
+      "min": 0.6,
+      "mode": 1,
+      "max": 1.8
+    }
+  }
+}

@@ -96,6 +96,30 @@ const seasonsIn = (html: string) =>
   [...html.matchAll(/>(\d{4}\/\d{2})<|구단 인수/g)].map((match) => match[1] ?? match[0]);
 
 describe('시즌별 기록 as one history (→WEB-54, HIST-21, OWNER-17)', () => {
+  it('shows net points and the sanction in current and closed season lines', () => {
+    const w = careerWorld({ country: 'ENG', seed: 'season-table-deduction' });
+    w.tables[w.playerClub] = {
+      played: 10,
+      won: 8,
+      drawn: 1,
+      lost: 1,
+      points: 25,
+      gf: 20,
+      ga: 5,
+      deducted: 10,
+      deductionReason: 'administration',
+    };
+    const closed = season(w, w.year);
+    w.year++;
+    closed.deducted = 10;
+    closed.deductionReason = 'administration';
+    w.history.push(closed);
+    const html = render(w);
+    expect(html.match(/−10점 · 법정관리/g)).toHaveLength(2);
+    expect(html).toContain('>15 ');
+    expect(html).toContain('>50 ');
+    expect(closed.points).toBe(60);
+  });
   it('lists the owner’s seasons, the takeover rule, then the seasons before, under 순위 or 재정', () => {
     const w = careerWorld({ country: 'ENG', seed: 'season-table' });
     const takeover = w.year;

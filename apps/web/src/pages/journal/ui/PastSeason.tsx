@@ -23,13 +23,14 @@ import {
   rankAxis,
   ZoneLegend,
 } from '../../../widgets/league-insights';
-import { seasonName, signed } from '../../../presentation/format';
+import { number, seasonName, signed } from '../../../presentation/format';
 import { divisionName, finalZones, sameLeague, type LeagueChoice } from '../../../entities/league';
 import { LeaguePicker } from '../../../entities/league';
 import { CompetitionHeader } from '../../../shared/ui/CompetitionTabs';
 import { selectReviewWorld } from '../../../shared/lib/liveState';
 import {
   finalRows,
+  PointsDeduction,
   leagueRows,
   seasonRecords,
   seasonSnapshots,
@@ -94,6 +95,9 @@ function FinalTable({
     ) : (
       <Pending read={read} />
     );
+  const deductions =
+    (!league && seasonSnapshots(w, season).at(-1)?.leagueDeductions) ||
+    (read?.files?.season ?? season).leagueDeductions;
   const code = league?.code ?? clubOf(w).country,
     tier = league?.tier ?? season.tier,
     group = league?.group ?? season.group,
@@ -169,7 +173,10 @@ function FinalTable({
                         ),
                       )}
                     </td>
-                    <td className={r.points}>{localizeValue(points)}</td>
+                    <td className={r.points}>
+                      {localizeValue(number(points))}{' '}
+                      <PointsDeduction row={id ? deductions?.[id] : undefined} />
+                    </td>
                     {localizeValue(
                       records && (
                         <>
@@ -603,7 +610,8 @@ export const ClosedSeason = memo(function ClosedSeason({
   const w = useGameState(selectReviewWorld)!;
   const season = w.history.find((h) => h.year === year);
   const read = useSeasonFiles(client, season);
-  const rows = season && finalRows(w, season, read?.files?.season?.standings);
+  const rows =
+    season && finalRows(w, read?.files?.season ?? season, read?.files?.season?.standings);
   // Another league's table that season; our own that season keeps its round snapshots.
   const ownThen = useMemo(
     () => season && { code: clubOf(w).country, tier: season.tier, group: season.group },
@@ -614,7 +622,9 @@ export const ClosedSeason = memo(function ClosedSeason({
     () => (season && !other ? seasonRecords(w, season) : undefined),
     [w, season, other],
   );
-  const tableRows = other ? leagueRows(w, read?.files?.season?.standings, other) : rows;
+  const tableRows = other
+    ? leagueRows(w, read?.files?.season?.standings, other, read?.files?.season ?? season)
+    : rows;
   if (!season)
     return (
       <section

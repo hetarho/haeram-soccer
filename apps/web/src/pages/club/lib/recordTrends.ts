@@ -1,3 +1,4 @@
+import { leaguePoints } from '../../../../../../packages/engine/src/league-fixtures';
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import type { Club, SeasonArchive, World } from '../../../../../../packages/contracts/src/types';
 import { country } from '../../../../../../packages/catalogs/src/index';
@@ -34,7 +35,10 @@ export function leaguePositionDetail(
       p0: divisionName(code, h.tier, h.group),
       p1: h.rank,
     }),
-    sourceMessage('copy.ClubHub.7776cad992', { p0: h.points }),
+    sourceMessage('copy.ClubHub.7776cad992', { p0: leaguePoints(h) }),
+    ...(h.deducted && h.deductionReason === 'administration'
+      ? [sourceMessage('league.points.administration', { points: h.deducted })]
+      : []),
     sourceMessage('copy.recordTrends.542d2ae702', { p0: pyramidPosition(code, h) }),
     ...(h.rank === 1 ? [sourceMessage('copy.CupHistory.31e52393f3')] : []),
     ...(next < h.tier

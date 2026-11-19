@@ -134,9 +134,17 @@ describe('source prose and display translation', () => {
         level: '기본 운영',
         cost: '£50',
       });
+    const currentYouth = message('delegation.floor.youth', {
+      share: 1.6,
+      budget: '£100',
+      pay: '£50',
+      level: '기본 운영',
+      cost: '£50',
+    });
     expect(runway).toContain('0.25');
     setTextLocale(createLoadedLocale(registry, pack('de-DE.json'), korean));
     expect(localizeText(runway)).toContain('0,25');
+    expect(localizeText(currentYouth)).toContain('1,6');
     expect(localizeText(runway)).not.toContain('0.25');
     expect(localizeText(runway)).toContain('£9,000');
     expect(localizeText(youth)).toContain('0,5');

@@ -1,0 +1,23 @@
+{
+  "reviewProvider": "Claude",
+  "models": [
+    "claude-sonnet-5-5"
+  ],
+  "verdict": "approved",
+  "gitHead": "87d236c1e00de453b21573cc888c0ea74c934012",
+  "recipeSha256": "4fff480c9b09d7185b27371fd6376c1fcfda717514f48e9a9ec0df537f623432",
+  "sourceSha256": "19efc86f60fc1b863a80fa391f6198738d4c9b0795bc3ef29f456acf8e01a45a",
+  "inputSha256": [
+    "3e7da8daef37725f31371856c0b69c4475ff23ab166e3e3956ab8eecdffa905f"
+  ],
+  "findings": [
+    "Not verified: I had read-only tools, so I recomputed no SHA-256 and did not confirm that the checked-out HEAD equals 87d236c1e. recipe.sha256 does not hash itself, so its pinned value 4fff480c... rests on your statement. run-worlds.sh enforces it at run time with sha256sum --check and verify-source.ts.",
+    "Pins in the files: source.json has sourceCommit c24568bc9fe94fcf5bd5ecd0034520094673154c, sourceTree 64b6039db7d8fe65f353bdb909f6fb255b04d770, Node v24.22.1, pnpm 10.34.6, x64 linux, 12 CPUs, Xeon Silver 4214, memoryBytes 33577496576. Its six dependency fingerprints are: market-seasons.ts dc3b328d... (242 files), match-parity.ts 5eb9d9ee... (255), history.ts 4a683056... (225), build-lived.ts c27784e6... (236), continue-history.ts 984feb92... (234), lived-parity.ts e5478cc3... (262). The source.json hash 19efc86f... and constants.json hash 3e7da8da... equal lines 5 and 6 of recipe.sha256.",
+    "Runtime repair: sourceCommit c24568bc9 is the fix(engine) commit, one commit before HEAD. HEAD 87d236c1e is the chore(bench) pin commit above it. At this tree, distress.ts:63 copies only year and round into lastRound, so a World passed as the date can no longer leak into saved state. All three callers in books.ts and settlement.ts pass w as the date, which is the case that failed before. The remaining lastRound readers are settlement.ts:351 and the contracts schema. The schema is a strict {year, round} object, which this change satisfies. The log shows 3 test files and 22 tests passed.",
+    "Test coverage: the new assertions check lastRound equals {year, round} and that a JSON round-trip of the World's distress state (owner) and of the club's books.distress (NPC) equals the original. A circular World would throw in JSON.stringify, so both paths are covered. The save change is small and I found no behaviour change beyond the copy.",
+    "No reuse of old outputs: first-world-attempt.json marks the old attempt invalidated (runHead d938bccfa, source bf6b2af8, recipe 660e94ba..., with raw hashes for build-0 to build-3 and fresh-1930). The cause it records is a retained round marker that captured the World. Those hashes belong to the old recipe and source. run_measured skips a run only if the receipt's line 1 equals the sha256sum of the current recipe.sha256 and line 2 equals the output's hash. No old receipt can match 4fff480c..., so none can be reused. I also found no files at all under .tmp/mr18cx/T978/, so nothing stale exists to reuse.",
+    "Unchanged workload: README, run-worlds.sh and the reviewed constants.json are consistent with the earlier approval at 6ca1487a. That approval covered the four builders, 39 seasons (2 burn-in plus 37 measured) and snapshot checks. Its recipe hash was 660e94ba..., and the current recipe hash is different, as the source pin changed. T978-phase-a-repair-review.json is empty (0 bytes), so this review is the only record for the repaired pin.",
+    "No concrete blocker for phase A. Before running, execute sha256sum --check on recipe.sha256 and the verify-source.ts check, which run-worlds.sh already does. Also confirm that git rev-parse HEAD returns 87d236c1e00de453b21573cc888c0ea74c934012. Phase B must separately bind the actual output bytes."
+  ],
+  "summary": "Approved for the T978 phase A retry at HEAD 87d236c1e, with limits. I recomputed no hashes and confirmed no HEAD, because I had read-only tools. The distress.ts fix and its JSON round-trip tests are sound, and the source pin names the repair commit c24568bc9. The old attempt is recorded as invalidated and no old output or receipt can match the new recipe. The pinned recipe hash rests on your statement, because recipe.sha256 does not hash itself. Fields are pinned as above, and no blocker found."
+}

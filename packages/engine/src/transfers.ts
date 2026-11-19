@@ -1,9 +1,17 @@
+import { recordRenewalBid } from './renewal-bids';
+import {
+  DISTRESS,
+  distressSalePlan,
+  distressSaleFee,
+  distressSigningReason,
+  forcedSales,
+} from './distress';
 import { message as sourceMessage, type SourceMessageId } from '../../contracts/src/messages';
 import { INCOMING_BID_CHANCE, SALE_BARS } from './transfer-policy';
-import { worldMarketOffer } from './world-market';
+import { clubPlayer, worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
-import { registrationRoom } from './registration';
+import { graduateIds, registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
 import { npcMarket, npcOffer, recordPlayerMove } from './npc-market';
@@ -66,7 +74,8 @@ import { ownStarters } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './transactions';
 import { locateOffer, transferOffers } from './scout-search';
-import { applyDelegatePlans, wagePressure } from './delegation';
+import { applyDelegatePlans, delegatePlan, warnCashFloor } from './delegation';
+import { SALE_FLOOR_REDUCTION } from './transfer-policy';
 import { SAFETY_ROUNDS } from './delegation-info';
 import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
@@ -239,6 +248,8 @@ export function termsReport(chance: number, lines: readonly FactorLine[], room =
 }
 /** The selling club's reservation and the factors behind it, for its answer's report. */
 function saleReason(w: World, answer: SaleAnswer, room?: number) {
+  if (answer.forced)
+    return sourceMessage('finance.distress.forcedSaleShare', { percent: DISTRESS.saleShare * 100 });
   return reservationReport(moneyLabel(w, answer.reservation), answer.share, answer.lines, room);
 }
 /** An inbox item's longest title and detail (the save schema's bounds, →SAVE-5). */
@@ -293,8 +304,8 @@ function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
   if (!bid.offer) return current;
   const { player, fee, loanFee } = bid.offer;
   return {
-    // Older pinned offers may lack the returning player's own academy qualification.
-    player: current?.player.graduate ? { ...player, graduate: true } : player,
+    // Pinned offers retain their terms, but registration reads our recorded academy origin.
+    player: { ...player, graduate: graduateIds(w).has(player.id) ? true : undefined },
     fee,
     loanFee,
     freeAgent: false,
@@ -308,6 +319,8 @@ function askingFee(offer: Pick<MarketOffer, 'fee' | 'loanFee'>, loan?: boolean) 
 }
 function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string, loan = false) {
   if (!offer?.available) return sourceMessage('copy.ops_squad.c94b14b4dc');
+  const distress = distressSigningReason(w, offer.player, offer.freeAgent, loan);
+  if (distress) return distress;
   const room = registrationRoom(w, {
     ...offer.player,
     joined: w.year,
@@ -326,6 +339,7 @@ function completeSigning(
 ) {
   // The bid keeps its record of him; the squad gets its own copy, on the wage he agreed to.
   const p = structuredClone(offer.player);
+  p.graduate = graduateIds(w).has(p.id) ? true : undefined;
   p.wage = wage;
   const prior = w.players.findIndex((player) => player.id === p.id);
   if (prior >= 0) {
@@ -340,7 +354,6 @@ function completeSigning(
       );
     p.career = [...w.players[prior].career];
     p.season = sameSeason ? [...w.players[prior].season] : zeroMetrics();
-    if (w.players[prior].graduate) p.graduate = true;
   }
   debit(w, fee);
   // A loan keeps his club's contract, its clauses his club's; a transfer signs one with its own
@@ -371,8 +384,9 @@ function completeSigning(
         contractUntil: offer.player.until,
         year: w.year,
       };
-      if (offer.player.graduate) record.loan.graduate = true;
-      if (offer.player.joined !== undefined) record.loan.joined = offer.player.joined;
+      const parent = clubPlayer(w, seller, p.id);
+      if (parent?.graduate) record.loan.graduate = true;
+      if (parent?.joined !== undefined) record.loan.joined = parent.joined;
     }
   }
   noteSigning(w, p, bid.club);
@@ -397,6 +411,7 @@ function completeSigning(
     fee,
   );
   bid.status = 'completed';
+  if (bid.staff) warnCashFloor(w);
 }
 function saleBlocker(w: World, p: Player | undefined) {
   if (!p || p.status !== 'active' || p.loanUntil) return sourceMessage('copy.transfers.b0b5964d37');
@@ -413,16 +428,20 @@ function completeSale(w: World, bid: TransferBid, p: Player, fee = bid.fee) {
   const club = w.clubs.find((c) => c.id === bid.club);
   const offer = club && npcOffer(w, club, p, clubOf(w), fee);
   if (!offer) throw new Error(sourceMessage('copy.transfers.30aac47a5f'));
-  if (BigInt(w.cash) + BigInt(fee) < BigInt(playingCoachDepartureCost(w, p.id)))
+  const release = BigInt(playingCoachDepartureCost(w, p.id));
+  if (release > 0n && BigInt(w.cash) + BigInt(fee) < release)
     throw new Error(sourceMessage('copy.transfers.4c1042837b'));
   const wasStarter = ownStarters(w).some((starter) => starter.id === p.id);
+  const homegrownStarter = wasStarter && graduateIds(w).has(p.id);
   credit(w, fee);
   endPlayingCoachForDeparture(w, p.id);
   p.status = 'sold';
   delete p.stance;
+  delete p.distressListing;
   // His sale ends his talk, his unhappiness and his transfer request (→CLUB-27).
   leaveContract(w, p);
   const live = { ...p, wage: offer.wage, until: w.year + npcContractTerm(w.year - p.born) - 1 };
+  delete live.renewalBids;
   live.joined = w.year;
   delete live.graduate;
   delete live.clauses;
@@ -443,7 +462,7 @@ function completeSale(w: World, bid: TransferBid, p: Player, fee = bid.fee) {
     club: bid.club,
     fee,
   });
-  if (fact) fanMoodTransfer(w, fact);
+  if (fact) fanMoodTransfer(w, fact, homegrownStarter);
   addEvent(
     w,
     'transfer-out',
@@ -486,6 +505,8 @@ export function placeBid(
   const offer = typeof candidate === 'number' ? scouted : worldMarketOffer(w, candidate);
   if (!offer?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
   if (offer.freeAgent) throw new Error(sourceMessage('copy.transfers.79ea9f1dde'));
+  const distress = distressSigningReason(w, offer.player, false, loan);
+  if (distress) throw new Error(distress);
   // The selling club, whichever list named him: a bid concerns him there (→CLUB-14).
   const club =
     typeof candidate === 'number'
@@ -533,6 +554,10 @@ export function placeBid(
     ...(wage !== undefined ? { wage } : {}),
   };
   w.bids = [...(w.bids || []), bid];
+  const seller = club && w.clubs.find((c) => c.id === club);
+  const livePlayer = seller && clubPlayer(w, seller, bid.playerId);
+  if (seller && livePlayer) recordRenewalBid(w, livePlayer, seller, clubOf(w));
+  if (bid.staff) warnCashFloor(w);
   addEvent(
     w,
     'transfer-bid',
@@ -839,7 +864,10 @@ function decideOutgoing(w: World, bid: TransferBid) {
   const attention = !bid.staff;
   if (answer.kind === 'accept') {
     const financial = bid.staff
-      ? signingVerdict(w, atOfferedWage(bid, p), bid.fee, undefined, bid.id)
+      ? signingVerdict(w, atOfferedWage(bid, p), bid.fee, undefined, bid.id, {
+          freeAgent: offer.freeAgent,
+          loan: bid.loan,
+        })
       : undefined;
     const blocker =
       financial && !financial.ok ? financial.reason : signingBlocker(w, offer, bid.fee, bid.loan);
@@ -933,7 +961,10 @@ function answerStaffCounter(
 ) {
   const p = offer.player,
     fee = bid.counterFee!,
-    verdict = signingVerdict(w, atOfferedWage(bid, p), fee, undefined, bid.id),
+    verdict = signingVerdict(w, atOfferedWage(bid, p), fee, undefined, bid.id, {
+      freeAgent: offer.freeAgent,
+      loan: bid.loan,
+    }),
     blocker = signingBlocker(w, offer, fee, bid.loan),
     belowCeiling = BigInt(bid.fee) < BigInt(ratio(asking, BigInt(bidCeiling(w)), 100n)),
     bargaining = haggling(w) && belowCeiling,
@@ -1041,7 +1072,12 @@ export function isProspect(w: World, p: Player) {
 export function saleBar(w: World, p: Player) {
   const prospect = isProspect(w, p),
     bars = SALE_BARS[w.build?.market ?? 'standard'] ?? SALE_BARS.standard!;
-  return { percent: bars[prospect ? 1 : 0], prospect };
+  const plan =
+    isDelegated(w, 'sales') && !w.distress?.stage && transferStance(p) === 'open'
+      ? delegatePlan(w, 'sales')
+      : undefined;
+  const reduction = plan && BigInt(plan.projected) < BigInt(plan.floor) ? SALE_FLOOR_REDUCTION : 0;
+  return { percent: bars[prospect ? 1 : 0] - reduction, prospect, reduction };
 }
 /**
  * The sale bar's base by the 매각 기조 card (→CLUB-18), of value and for a prospect: the club's
@@ -1125,6 +1161,47 @@ export function listingAppeal(w: World, p: Player) {
 export function expectedOfferDays(w: World, p: Player) {
   return Math.round(1 / (LISTED_OFFER.chance * listingAppeal(w, p)));
 }
+/** Forced sales run even when the owner retains sales decisions (→ECON-24). */
+export function forceDistressSales(w: World) {
+  if (!transferWindow(w).open) return;
+  const commitments = (w.bids ?? [])
+    .filter((b) => b.direction === 'out' && b.year === w.year && isOpen(b))
+    .reduce(
+      (sum, b) => sum + BigInt(b.status === 'countered' ? (b.counterFee ?? b.fee) : b.fee),
+      0n,
+    );
+  const debt = commitments - BigInt(w.cash);
+  const plan = forcedSales(w.distress)
+    ? distressSalePlan(
+        activePlayers(w),
+        debt,
+        BigInt(operatingCosts(w).annual),
+        (p) => BigInt(playerValue(w, p)),
+        (remaining, p) =>
+          !p.loanUntil &&
+          p.retiring === undefined &&
+          remaining.length > SQUAD_MINIMUM &&
+          (p.position !== 'GK' || remaining.filter((q) => q.position === 'GK').length > 1),
+      )
+    : [];
+  const selected = new Set(plan.map((p) => p.id));
+  for (const p of activePlayers(w)) {
+    if (p.distressListing !== undefined && !selected.has(p.id)) {
+      const previous = p.distressListing;
+      delete p.distressListing;
+      if (p.stance === 'listed') {
+        if (previous === 'open') delete p.stance;
+        else p.stance = previous;
+      }
+    }
+  }
+  for (const p of plan)
+    if (p.stance !== 'listed') {
+      const previous = transferStance(p);
+      setTransferStance(w, p.id, 'listed');
+      p.distressListing = previous;
+    }
+}
 /**
  * At a window opening with transfers delegated (→CLUB-22), the staff set stances by the direction,
  * for players at 협상 가능 only: 셀링 클럽 lists non-starters aged 30+, 육성 목표 판매용 육성 lists
@@ -1173,6 +1250,7 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
   if (p.retiring !== undefined) throw new Error(sourceMessage('copy.transfers.e8c146ef48'));
   if (p.transferRequest && stance === 'untouchable')
     throw new Error(sourceMessage('copy.transfers.2c9aecab5e'));
+  delete p.distressListing;
   if (transferStance(p) === stance) return;
   if (stance === 'open') delete p.stance;
   else p.stance = stance;
@@ -1198,15 +1276,14 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
 export const UNTOUCHABLE_PRICE = { standard: 200, selling: 150, showcase: 175, hardball: 225 };
 /**
  * The staff and manager's answer to a big offer for an untouchable player when transfers are
- * delegated: the market card sets the price, the 단장's runway test failing at half the runway at
- * the current wage bill (→ECON-33) lowers it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
+ * delegated: the market card sets the price, forced sales in financial distress
+ * lower it by 25 points, a cash crisis sells, and the manager holds out 25 points longer for a starter
  * nobody can replace.
  */
 export function untouchableVerdict(w: World, offered: number, essential: boolean) {
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     market = w.build?.market,
-    card = cardOf(buildOf(w), 'market').label,
-    pressure = wagePressure(w);
+    card = cardOf(buildOf(w), 'market').label;
   if (runway < SAFETY_ROUNDS)
     return { accept: true, reason: sourceMessage('copy.transfers.838216488c', { p0: runway }) };
   if (market === 'hold')
@@ -1214,16 +1291,9 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   const base = UNTOUCHABLE_PRICE[market ?? 'standard'],
     steps = [sourceMessage('copy.transfers.363d93e2b9', { p0: card, p1: base })];
   let bar = base;
-  if (pressure.level === 2) {
+  if (forcedSales(w.distress)) {
     bar -= 25;
-    // Within income (step 1) no loss is allowed: any planned loss is what presses him.
-    steps.push(
-      sourceMessage(
-        pressure.runway > 0
-          ? 'delegation.sale.runwayUntouchable'
-          : 'delegation.sale.incomeUntouchable',
-      ),
-    );
+    steps.push(sourceMessage('delegation.floor.forcedSale'));
   }
   if (essential) {
     bar += 25;
@@ -1268,13 +1338,14 @@ function listedOffers(w: World, day: number, until: number) {
       status: 'pending',
     };
     w.bids = [...(w.bids || []), bid];
+    recordRenewalBid(w, p, clubOf(w), club);
     const summary = sourceMessage('copy.transfers.0a9e8d6e85', {
       p0: p.position,
       p1: w.year - p.born,
       p2: overall(p),
       p3: moneyLabel(w, value),
     });
-    if (isDelegated(w, 'sales')) {
+    if (isDelegated(w, 'sales') || forcedSales(w.distress)) {
       answerIncoming(w, bid, p, club, value, fee);
       continue;
     }
@@ -1336,6 +1407,7 @@ function incomingBid(w: World, day: number, until: number) {
     status: 'pending',
   };
   w.bids = [...(w.bids || []), bid];
+  recordRenewalBid(w, player!, clubOf(w), club);
   answerIncoming(w, bid, player, club, value, fee);
 }
 
@@ -1348,6 +1420,7 @@ function answerIncoming(
   fee: string,
 ) {
   if (
+    !forcedSales(w.distress) &&
     isDelegated(w, 'sales') &&
     !isDelegated(w, 'staff') &&
     w.staff?.some((member) => member.person === player.id)
@@ -1382,7 +1455,8 @@ function answerIncoming(
       accept = false;
       detail = sourceMessage('copy.transfers.30aac47a5f');
     }
-    if (accept && BigInt(w.cash) + BigInt(deal) < BigInt(playingCoachDepartureCost(w, player.id))) {
+    const release = BigInt(playingCoachDepartureCost(w, player.id));
+    if (accept && release > 0n && BigInt(w.cash) + BigInt(deal) < release) {
       accept = false;
       detail = sourceMessage('copy.transfers.7017097137');
     }
@@ -1410,6 +1484,16 @@ function answerIncoming(
     });
     if (!accept) resent(w, bid, player);
   };
+  if (forcedSales(w.distress) && BigInt(fee) >= distressSaleFee(BigInt(value))) {
+    const blocker = saleBlocker(w, player);
+    report(
+      !blocker,
+      blocker ??
+        sourceMessage('finance.distress.forcedSaleShare', { percent: DISTRESS.saleShare * 100 }),
+      sourceMessage('copy.transfers.e744d7026d'),
+    );
+    return;
+  }
   if (untouchable && offered < UNTOUCHABLE_BAR) {
     // Whoever decides, an untouchable player is not discussed below the bar.
     report(false, sourceMessage('copy.transfers.b100c715c7', { p0: offered, p1: UNTOUCHABLE_BAR }));
@@ -1498,14 +1582,27 @@ function answerAsSeller(
   const answer = saleAnswer(context, random(`${w.seed}:sale:${bid.id}`)()),
     terms = {
       asking: moneyLabel(w, context.asking),
-      bar: saleBar(w, player).percent,
+      bar: context.saleBar!.percent,
       fee: moneyLabel(w, bid.fee),
       offered,
     },
     detail =
       (id: SourceMessageId, extra: Record<string, string> = {}) =>
       (room: number) =>
-        sourceMessage(id, { ...terms, ...extra, reason: saleReason(w, answer, room) });
+        sourceMessage(id, {
+          ...terms,
+          ...extra,
+          reason: [
+            ...(context.saleBar?.reduction
+              ? [
+                  sourceMessage('delegation.floor.saleReduction', {
+                    points: context.saleBar.reduction,
+                  }),
+                ]
+              : []),
+            saleReason(w, answer, room),
+          ].join(' · '),
+        });
   if (answer.kind === 'accept') {
     report(true, detail('market.sale.own.accepted'));
     return;
@@ -1595,7 +1692,9 @@ export function dailyMarket(w: World, settleNpc = true): void {
     window = transferWindow(w, day);
   announceWindows(w, day);
   settleBids(w, window.open);
+  if (window.open && forcedSales(w.distress)) handoverSales(w, true);
   if (window.open) {
+    forceDistressSales(w);
     incomingBid(w, day, window.until!);
     listedOffers(w, day, window.until!);
     // With transfers delegated the 단장 looks for players (→CLUB-33).
@@ -1628,7 +1727,7 @@ export function handoverRecruitment(w: World, delegated: boolean) {
     answerStaffCounter(w, bid, offer, askingFee(offer, bid.loan));
   }
 }
-export function handoverSales(w: World) {
+export function handoverSales(w: World, forcedOnly = false) {
   for (const bid of w.bids || []) {
     if (bid.direction !== 'in' || bid.status !== 'pending') continue;
     const player = activePlayers(w).find((p) => p.id === bid.playerId),
@@ -1639,6 +1738,12 @@ export function handoverSales(w: World) {
       bid.year !== w.year ||
       bid.due < currentDay(w) ||
       !transferWindow(w).open
+    )
+      continue;
+    if (
+      forcedOnly &&
+      (!forcedSales(w.distress) ||
+        BigInt(bid.fee) < distressSaleFee(BigInt(playerValue(w, player))))
     )
       continue;
     answerIncoming(w, bid, player, club, playerValue(w, player), bid.fee);

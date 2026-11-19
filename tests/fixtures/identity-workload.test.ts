@@ -118,12 +118,14 @@ describe('identity workload stays cosmetic (→KIT-13)', () => {
       expect(canonical(w[key] ?? null), key).toBe(canonical(before[key] ?? null));
   });
 
-  it('plays the following rounds exactly as without it', () => {
+  it('plays identical football and books with the same mood and different kits', () => {
     const control = started();
     const edited = structuredClone(control);
     const workload = identityWorkload();
     workload.edit(edited, 0);
     const choice = workload.chooseKit(edited);
+    // Give both careers the adoption's mood effect because mood drives attendance and following.
+    control.owner!.fanMood = fanMoodAfterAdoption(control, control.owner!.fanMood);
     // The same rounds for both, until the chosen fixture has settled.
     let rounds = 0;
     for (; rounds < 6 && !edited.ownMatches.some((m) => m.id === choice.fixtureId); rounds++)

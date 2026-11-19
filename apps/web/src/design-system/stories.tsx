@@ -740,6 +740,7 @@ function previewStart(w: World, tier: WealthTier, year: number) {
     const price = pounds(club.strength);
     const amount = (share: number) => previewMinor(price * share, club.country, year);
     const listing: ClubListing = {
+      fanDisposition: { results: 25, identity: 25, finance: 25, stars: 25 },
       clubId: club.id,
       name: club.name,
       country: club.country as ClubListing['country'],
@@ -1065,7 +1066,15 @@ function Alerts({ runtime }: { runtime: Runtime }) {
           <button
             onClick={() =>
               gameStore.setState({
-                view: { ...view, world: { ...w, cash: '-50000', insolvent: 2 } },
+                view: {
+                  ...view,
+                  world: {
+                    ...w,
+                    cash: '-50000',
+                    insolvent: 2,
+                    distress: { stage: 1, overHalfRounds: 0 },
+                  },
+                },
               })
             }
           >

@@ -12,7 +12,7 @@
  *   pnpm exec tsx scripts/calibrate.ts --quick    smaller samples
  *   options: --matches N (gap sample), --tier N (sample per tier), --seasons N (season rows),
  *            --own-seasons N, --only curves|tiers|seasons|own,
- *            --setting flat|spread (WORLD-6's squad spread for the run, T808; else the default)
+ *            --setting spread (WORLD-6's squad spread for the run, T808; else the default)
  */
 import { ATTRIBUTES } from '../packages/contracts/src/player';
 import { weightsFor } from '../packages/engine/src/player';
@@ -38,7 +38,7 @@ import { careerWorld } from '../packages/engine/src/career.testkit';
 import { squadSpreadSetting } from './lib/squad-spread-setting';
 
 const args = process.argv.slice(2);
-// T808: `--setting flat|spread` draws the generated squads on that squad spread (→WORLD-6).
+// T808: `--setting spread` draws the generated squads on that squad spread (→WORLD-6).
 squadSpreadSetting(args);
 const option = (name: string, fallback: number) => {
   const index = args.indexOf(`--${name}`);

@@ -11,13 +11,10 @@ export const TEST_GLOBS = [
 ];
 export const INTEGRATION_FILES = [
   'apps/web/src/adapters/newsJournal.test.ts',
-  'apps/web/src/adapters/careerPacking.test.ts',
-  'apps/web/src/adapters/managerHistoryPacking.test.ts',
-  'apps/web/src/adapters/matchModelPacking.test.ts',
-  'apps/web/src/adapters/packing.test.ts',
   'apps/web/src/adapters/persistence.history.test.ts',
   'apps/web/src/adapters/persistence.long-career.test.ts',
   'apps/web/src/adapters/persistence.test.ts',
+  'apps/web/src/adapters/worldRows.world.test.ts',
   'apps/web/src/runtime/client.test.ts',
   'apps/web/src/runtime/fixtureHelpers.integration.test.ts',
   'apps/web/src/runtime/host.archive.test.ts',
@@ -95,6 +92,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/identity-operations.test.ts',
   'packages/engine/src/investment.test.ts',
   'packages/engine/src/kit-selection.test.ts',
+  'packages/engine/src/knockout-legs.test.ts',
   'packages/engine/src/knockout.test.ts',
   'packages/engine/src/manager-history-capture.test.ts',
   'packages/engine/src/managerMarket.test.ts',

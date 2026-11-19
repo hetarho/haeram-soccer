@@ -192,7 +192,7 @@ describe('director trait bidding', () => {
     w.cash = '0';
     detectMediations(w);
     expect(w.mediations).toEqual([expect.objectContaining({ status: 'pending' })]);
-    w.cash = '160000';
+    w.cash = '720000'; // T977 raises both commitments and their fee quotes at the same wage level.
     w.calendar!.day = look;
     // Without the haggle the same cash buys the mediation's midfielder.
     const alone = structuredClone(w);

@@ -16,12 +16,12 @@ export const MARKET_CONFIG = {
    * Yearly wage of a top-flight player rated `pivot` in his prime at football index 1, sized so a
    * top-flight wage bill weighs against the gate as it does in real football.
    */
-  wage: 900,
+  wage: 2700,
   pivot: 70,
   /** Each ability point multiplies wage and value, so 80 earns 7.4× 60 (CLUB-25: 6–10×). */
   perPoint: 1.105,
   /** Exceptional ability commands a convex premium; ordinary squad wages stay unchanged. */
-  star: { from: 80, full: 95, maximum: 2, globalFrom: 85, globalFull: 90 },
+  star: { from: 80, full: 95, maximum: 2 },
   /**
    * The transfer market's own growth beyond the football index (→CLUB-46), [year, multiple]
    * anchors, geometric between them and flat outside. Fees grew with football's income until the
@@ -187,13 +187,9 @@ export function ordinaryWageUnits(division: number, age: number, potential: numb
 }
 /** CLUB-25's wage with every star term counted in full. */
 function starredWageUnits(division: number, ability: number, age: number, potential: number) {
-  const star = MARKET_CONFIG.star;
-  const global = clamp((ability - star.globalFrom) / (star.globalFull - star.globalFrom), 0, 1);
   return (
-    scaleUnits(
-      marketPoints(ability, age, potential, MARKET_CONFIG.promise.wage),
-      division * (1 - global),
-    ) * starWagePremium(ability)
+    scaleUnits(marketPoints(ability, age, potential, MARKET_CONFIG.promise.wage), division) *
+    starWagePremium(ability)
   );
 }
 
@@ -234,18 +230,9 @@ export function divisionFor(code: string, ability: number) {
   return clamp((top - ability) / (top - tierLevel(1)), 0, country(code).groups.length);
 }
 
-/**
- * CLUB-25 r61's ability-fit wage: a player is paid on his club's division or on the division his
- * ability suits (`divisionFor`) when that is higher, every club alike. Built behind this switch
- * (T712) and in force only once CLUB-25's gate passes on LEAGUE-13's careers and CLUB-48's books
- * and champions; `--ability-fit` in the balance scripts sets it for a measurement, never a game
- * setting.
- */
-export const ABILITY_FIT = { inForce: false };
-
 /** The division a player of overall `ovr` is paid on at a club of `division` (→CLUB-25). */
 export function wageDivision(code: string, division: number, ovr: number) {
-  return ABILITY_FIT.inForce ? Math.min(division, divisionFor(code, ovr)) : division;
+  return Math.min(division, divisionFor(code, ovr));
 }
 
 /**

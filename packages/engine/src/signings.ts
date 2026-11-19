@@ -1,8 +1,10 @@
+import { financeProjection } from './projection';
+import { distressSigningReason, distressArrivalAllowed } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { closeNeedFor, openNeeds } from './replacements';
 import { bidCeiling, directorTrait, staffBidShare } from './director-bidding';
 import { SQUAD_TARGET } from './squad-size';
-import { registration, registrationRoom } from './registration';
+import { graduateIds, registration, registrationRoom } from './registration';
 import { detectMediations, resolveDelegatedMediations } from './mediation';
 import { careerDate, openEmployment, retainPerson } from './person-careers';
 import { movePerson } from './npc-continuity';
@@ -38,7 +40,8 @@ import {
   delegatePlan,
   insolvencyStop,
   planLabel,
-  runwayTest,
+  floorTest,
+  warnCashFloor,
   spendingStance,
   type SpendingStance,
 } from './delegation';
@@ -208,18 +211,22 @@ export function signingVerdict(
   fee: string,
   need?: SigningNeed['kind'],
   bidId?: string,
+  facts: { freeAgent: boolean; loan?: boolean } = { freeAgent: false },
 ) {
+  const distress = distressSigningReason(w, player, facts.freeAgent, facts.loan, bidId);
+  if (distress) return { ok: false as const, reason: distress };
   // A bid being settled replaces its own reservation; other live bids still tie up cash.
   const planning = bidId ? { ...w, bids: w.bids?.filter((bid) => bid.id !== bidId) } : w;
-  const plan = delegatePlan(planning, 'recruitment'),
+  const projection = financeProjection(planning),
+    plan = delegatePlan(planning, 'recruitment', undefined, undefined, projection),
     label = planLabel(w, 'recruitment'),
     wage = BigInt(player.wage);
   const no = (reason: string) => ({
     ok: false as const,
     reason: sourceMessage('delegation.verdict.wrap', { reason, plan: label }),
   });
-  if (need === 'short' && BigInt(fee) === 0n) {
-    const stop = insolvencyStop(planning, 0n, wage);
+  if (need === 'short' && facts.freeAgent && !facts.loan) {
+    const stop = insolvencyStop(planning, 0n, wage, false, 'recruitment', projection);
     return stop
       ? no(stop)
       : {
@@ -227,36 +234,16 @@ export function signingVerdict(
           reason: sourceMessage('delegation.verdict.shortFree', { plan: label }),
         };
   }
-  const bill = BigInt(plan.committed) + wage;
-  if (wage > 0n && bill > BigInt(plan.budget))
-    return no(
-      sourceMessage('delegation.verdict.wageRoom', {
-        bill: moneyLabel(w, bill.toString()),
-        budget: moneyLabel(w, plan.budget),
-      }),
-    );
-  const check = runwayTest(planning, plan, { fee: BigInt(fee), wage });
+  const check = floorTest(planning, plan, { fee: BigInt(fee), wage }, projection);
   if (!check.ok)
     return no(
-      check.runway === 0
-        ? check.loss > 0n
-          ? sourceMessage('delegation.verdict.incomeLoss', {
-              wage: moneyLabel(w, player.wage),
-              loss: moneyLabel(w, check.loss.toString()),
-            })
-          : sourceMessage('delegation.verdict.incomeFee', {
-              fee: moneyLabel(w, fee),
-              capital: moneyLabel(w, check.capital.toString()),
-            })
-        : sourceMessage('delegation.verdict.runwayFee', {
-            fee: moneyLabel(w, fee),
-            wage: moneyLabel(w, player.wage),
-            loss: moneyLabel(w, check.loss.toString()),
-            seasons: check.runway,
-            capital: moneyLabel(w, check.capital.toString()),
-          }),
+      sourceMessage('delegation.floor.refused', {
+        projected: moneyLabel(w, check.projected.toString()),
+        floor: moneyLabel(w, check.floor.toString()),
+        loss: moneyLabel(w, check.loss.toString()),
+      }),
     );
-  const stop = insolvencyStop(planning, BigInt(fee), wage);
+  const stop = insolvencyStop(planning, BigInt(fee), wage, false, 'recruitment', projection);
   if (stop) return no(stop);
   return {
     ok: true as const,
@@ -317,7 +304,9 @@ export function wageOffer(
       asked = { ...context, demand, offer: wage },
       read = termsChance(asked);
     if (read.chance < SIGNING_CONFIG.termsChance) continue;
-    const verdict = signingVerdict(w, { ...offer.player, wage }, fee, need);
+    const verdict = signingVerdict(w, { ...offer.player, wage }, fee, need, undefined, {
+      freeAgent: offer.freeAgent,
+    });
     if (verdict.ok)
       return {
         ok: true,
@@ -628,7 +617,7 @@ export function noteSigning(w: World, player: Player, sourceClub?: string) {
     positions: { ...player.positions },
     at: careerDate(w),
   });
-  joinClub(player, foreign ? 'abroad' : 'domestic', w.year);
+  joinClub(player, foreign ? 'abroad' : 'domestic', w.year, player.graduate === true);
   const window = w.shortlist?.window;
   if (
     window &&
@@ -685,21 +674,17 @@ function lineStarters(w: World) {
  */
 export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'signed' };
 /**
- * The money the bar reads (→ECON-33, →CLUB-33): the capital the runway test leaves at the current
- * wage bill (the recruitment plan's fee room), and the seasons a new wage must be carried for: the
- * step's runway plus one. None at the steps without a bar or when nothing is left.
+ * The money bar reads live spendable money at the current wage bill for two seasons. None at the steps without a bar or when nothing is left.
  */
 function barMoney(w: World) {
   const plan = delegatePlan(w, 'recruitment'),
     money = BigInt(plan.left);
-  return plan.stance.signing.bar && money > 0n
-    ? { money, seasons: BigInt(plan.runway + 1) }
-    : undefined;
+  return plan.stance.signing.bar && money > 0n ? { money, seasons: 2n } : undefined;
 }
 /**
  * The 단장's money bar (→CLUB-33, →ECON-33), at the 선수 영입 steps he acts on with one (넉넉히,
  * 아낌없이): the highest OVR whose market wage at our division for a player aged `barAge` (→CLUB-25),
- * for the step's runway plus one season, fits the capital the runway test leaves at the current
+ * for two seasons, fits the spendable money left at the current
  * wage bill; none at the other steps or when not even the lowest fits. As NPC clubs read the level
  * a place can carry (`affordableLevel`), on money.
  */
@@ -900,6 +885,7 @@ function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, terms
     return false;
   }
   const p = signFreeAgent(w, offer, terms.wage);
+  warnCashFloor(w);
   w.bids = [...(w.bids || []), bid];
   addEvent(
     w,
@@ -1060,7 +1046,7 @@ const raises = (bids: TransferBid[], bid: TransferBid) =>
  * negotiator's haggles waiting for their raise, so no other move takes a raise's place.
  */
 function heldStaffBids(w: World, day: number) {
-  const bids = windowBids(w, day);
+  const bids = windowBids(w, day).filter((bid) => distressArrivalAllowed(w, bid));
   return [...bids.filter((bid) => bid.staff && isOpen(bid)), ...haggles(w, bids)];
 }
 /**
@@ -1108,15 +1094,21 @@ function targetOf(w: World, offer: Offer): number | WorldMarketTarget {
  * reserved already (→ECON-33), the owner's come out of the cash as his deals would pay them.
  * `raising`: a haggle left out, as its raise is checked as his move.
  */
-function projection(w: World, day: number, raising?: TransferBid) {
-  const bids = windowBids(w, day),
+export function recruitmentProjection(w: World, day = currentDay(w), raising?: TransferBid) {
+  const graduates = graduateIds(w),
+    bids = windowBids(w, day),
     open = bids.filter(isOpen),
     arriving = [...open, ...haggles(w, bids)].flatMap((bid) => {
-      if (!bid.offer || bid === raising) return [];
+      if (!bid.offer || bid === raising || !distressArrivalAllowed(w, bid)) return [];
       const p = structuredClone(bid.offer.player);
       p.wage = stepWage(p.wage, bid.wage ?? 1);
       if (bid.loan) p.loanUntil = w.year + 1;
-      joinClub(p, isForeignCandidate(w, p.id, bid.club) ? 'abroad' : 'domestic', w.year);
+      joinClub(
+        p,
+        isForeignCandidate(w, p.id, bid.club) ? 'abroad' : 'domestic',
+        w.year,
+        graduates.has(p.id),
+      );
       return [p];
     }),
     // An owner's countered bid pays the counter if he accepts it (→CLUB-52).
@@ -1157,8 +1149,8 @@ function replacementNeeds(w: World, day: number, arriving: readonly Player[]): S
  * every `lookDays`th day after it, every day while a replacement need no pending player would close
  * is open (plus a negotiator's next-day raises), he makes moves — a free agent signed or a
  * trait-priced bid — until the places his bids hold reach the step's count (`pendingLimit`), each
- * for the first need of the club as the window's bids would leave it (`projection`) that a
- * candidate meets within the runway test, each pending fee reserved (→ECON-33). A negotiator's
+ * for the first need of the club as the window's bids would leave it (`recruitmentProjection`) that a
+ * candidate meets within the floor test, each pending fee reserved (→ECON-33). A negotiator's
  * haggle keeps its place until its raise the day after the answer (→CLUB-41), which comes before a
  * mediation's move and the look's. Short roles come before replacements and upgrades, and the
  * manager's requested roles before the others.
@@ -1184,7 +1176,7 @@ export function staffSignings(w: World) {
   if (moved || heldStaffBids(w, day).length >= limit) return;
   // Off a regular look he looks while a replacement need no pending player would close is open
   // (→CLUB-42), or past a negotiator's ended haggle.
-  const replacing = replacementNeeds(w, day, projection(w, day).arriving).length > 0;
+  const replacing = replacementNeeds(w, day, recruitmentProjection(w, day).arriving).length > 0;
   if (!regular && !replacing && !ended) return;
   // Every move records a bid for its player, who is never asked again in the window, so the look
   // ends when the places his bids hold reach the step's count or no candidate is left to move for.
@@ -1213,7 +1205,7 @@ function raiseHaggles(w: World, day: number) {
     }
     const previous = bids.filter((bid) => bid.staff && bid.playerId === retry.playerId).length;
     const fee = ratio(offer.fee, BigInt(staffBidShare(w, previous)), 100n);
-    const { club } = projection(w, day, retry),
+    const { club } = recruitmentProjection(w, day, retry),
       terms = wageOffer(club, offer, fee);
     const room =
       registrationRoom(club, { ...offer.player, joined: w.year }) ??
@@ -1252,7 +1244,7 @@ function raiseHaggles(w: World, day: number) {
 function staffMove(w: World, day: number) {
   // Every need, the registration ceiling and the step's room read the club as it stands once the
   // window's bids go through, so a pending player covers what his arrival would.
-  const { club, arriving } = projection(w, day),
+  const { club, arriving } = recruitmentProjection(w, day),
     players = activePlayers(club);
   if (players.length >= registration(club).ceiling) return false;
   const bids = windowBids(w, day),
@@ -1290,7 +1282,8 @@ function staffMove(w: World, day: number) {
     .map(({ need }) => need);
   if (!needs.length) return false;
   const offers = reachOffers(w),
-    plan = delegatePlan(club, 'recruitment');
+    projection = financeProjection(club),
+    plan = delegatePlan(club, 'recruitment', undefined, undefined, projection);
   for (const need of needs)
     for (const { offer } of candidates(
       w,
@@ -1301,10 +1294,10 @@ function staffMove(w: World, day: number) {
       club,
     )) {
       const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
-      // His lowest wage step already failing the runway test rules out every higher one.
+      // His lowest wage step already failing the floor test rules out every higher one.
       if (
         !(need.kind === 'short' && offer.freeAgent) &&
-        !runwayTest(club, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }).ok
+        !floorTest(club, plan, { fee: BigInt(fee), wage: BigInt(offer.player.wage) }, projection).ok
       )
         continue;
       const terms = wageOffer(club, offer, fee, need.kind);
@@ -1350,7 +1343,7 @@ export function pursueRequest(
     { offer, index } = picked,
     // His pursuit is his move: it reads the squad and wage bill the window's bids will leave; the
     // owner's own move reads the club as it is (→CLUB-33).
-    squad = actor === 'delegated' ? projection(w, day).club : w;
+    squad = actor === 'delegated' ? recruitmentProjection(w, day).club : w;
   const room = registrationRoom(squad, { ...offer.player, joined: w.year });
   if (room) return room;
   const fee = offer.freeAgent

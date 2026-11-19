@@ -133,8 +133,8 @@ function soldThisSeason(w: World, club: string, id: string) {
  * once he too is accounted for elsewhere. From his own stream he is up to `REFILL.age` years from
  * the place's age, so a year older each season (held at `REFILL.ages`' ends where the place's age
  * and his offset would leave them), and, while a sale or a loan emptied the place this season,
- * `REFILL.below` under the club's strength; from the next summer he plays at it. With
- * `SQUAD_SPREAD` at `spread` his class and age term (`spreadTerm`) go on top, as a squad member's.
+ * `REFILL.below` under the club's strength; from the next summer he plays at it. His class and age
+ * term (`spreadTerm`) go on top, as a squad member's.
  */
 function replacement(w: World, c: Club, p: Player, slot: number) {
   const place = squadPlaceAge(w.seed, c.id, w.year, slot),
@@ -285,12 +285,32 @@ export function movePerson(
   if (club && !chosenAgain.includes(club)) invalidateNpcSquad(w, club);
   return person;
 }
+/** Resume only the parent's recorded stint; the borrower's facts never identify its origin. */
+export function restoreLoanStint(
+  w: World,
+  returning: Player,
+  parent?: string,
+  loan = w.playerRecords?.[returning.id]?.loan,
+) {
+  const prior = parent === w.playerClub ? w.players.find((q) => q.id === returning.id) : undefined;
+  const graduate = loan?.graduate ?? prior?.graduate;
+  const joined = loan?.joined ?? prior?.joined;
+  delete returning.renewalBids;
+  delete returning.renewalRefused;
+  delete returning.graduate;
+  delete returning.joined;
+  if (graduate) returning.graduate = true;
+  if (joined !== undefined) returning.joined = joined;
+}
 export function returnLoan(w: World, p: Player) {
   endPlayingCoachForDeparture(w, p.id, true);
   const person = retainPerson(w, p, undefined, true);
   const parent = person.loan?.club;
   delete p.loanUntil;
-  movePerson(w, p, parent);
+  // Keep our departed row's borrower history when the live player returns to an NPC parent.
+  const returning = parent !== w.playerClub && w.players.includes(p) ? structuredClone(p) : p;
+  restoreLoanStint(w, returning, parent);
+  movePerson(w, returning, parent);
   delete person.loan;
   p.status = parent === w.playerClub ? 'active' : 'sold';
 }

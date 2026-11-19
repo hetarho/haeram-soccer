@@ -1,3 +1,5 @@
+import { takeOver } from './takeover';
+import type { SeasonArchive } from '../../contracts/src/types';
 import { describe, expect, it } from 'vitest';
 import { COUNTRIES, currency } from '../../catalogs/src/index';
 import { clubListings } from './listing';
@@ -29,6 +31,26 @@ describe('the takeover list (→WEB-15)', () => {
         affordable: false,
       });
     }
+  });
+
+  it('previews exactly the mix recorded at takeover without mutating the historical world', () => {
+    const w = ownerlessWorld('listing-fans');
+    const id = w.clubs.find((club) => club.country === 'ENG' && club.tier === 1)!.id;
+    // Five actual closes span the war; the oldest available is still recent.
+    w.history = [1936, 1937, 1938, 1946, 1947, 1948].map((year) => ({
+      year,
+      champions: [{ country: 'ENG', club: year === 1937 ? id : 'other', cup: 'other' }],
+    })) as SeasonArchive[];
+    const before = structuredClone(w);
+    const listing = clubListings(w, 'oil').find((listing) => listing.clubId === id)!;
+    expect(w).toEqual(before);
+    expect(Object.values(listing.fanDisposition).reduce((sum, share) => sum + share, 0)).toBe(100);
+    takeOver(w, id, { tier: 'oil', traits: [] });
+    expect(w.owner!.fanDisposition).toEqual(listing.fanDisposition);
+    const saved = JSON.parse(JSON.stringify(w)) as typeof w;
+    saved.year++;
+    saved.history.push({ year: 1950, champions: [{ club: id }] } as SeasonArchive);
+    expect(saved.owner!.fanDisposition).toEqual(listing.fanDisposition);
   });
 
   it('orders countries as the catalog does, then divisions, then the dearest first', () => {

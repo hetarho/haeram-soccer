@@ -1,3 +1,6 @@
+import { renewalAnswer, renewalChance, renewalContext } from './renewal-answer';
+import { pruneRenewalBids, renewalWindow } from './renewal-bids';
+import { financeProjection } from './projection';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { endPlayingCoachForDeparture } from './playing-coach';
 import { movePerson } from './npc-continuity';
@@ -15,7 +18,7 @@ import type {
 import { clamp, random, ratio, scaleBy } from './primitives';
 import { activePlayers, clubOf, overall, UNHAPPY_PENALTY } from './player-state';
 import { addEvent } from './events';
-import { marketValue, marketWage, marketWageAt, starPaySpread } from './market-prices';
+import { marketWage, marketWageAt, starPaySpread } from './market-prices';
 export {
   MARKET_CONFIG,
   STAR_SPREAD_CONFIG,
@@ -32,7 +35,6 @@ export {
   marketWage,
   marketValue,
   divisionFor,
-  ABILITY_FIT,
   wageDivision,
 } from './market-prices';
 import { ownStarters } from './world';
@@ -45,11 +47,10 @@ import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
 import { moneyLabel } from './finance';
 import { directionOption } from './direction';
-import { delegatePlan, insolvencyStop, planLabel, runwayTest } from './delegation';
+import { delegatePlan, insolvencyStop, planLabel, floorTest, warnCashFloor } from './delegation';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom } from './calendar';
-import { credit } from './transactions';
-import { suitorFor } from './transfers';
+import { suitorFor, termsReport } from './transfers';
 import { joinAtClose, npcContractTerm } from './free-agents';
 import { npcOffer, recordPlayerMove } from './npc-market';
 import { recordNpcTransferFee } from './books';
@@ -443,11 +444,25 @@ export function talksRound(w: World, p: Player, talk: ContractTalk) {
   return random(`${w.seed}:talk-round:${p.id}:${talk.year}:${talk.day}`)() < talkRoundChance(w);
 }
 const percentLabel = (chance: number) => `${Math.round(chance * 100)}%`;
+/** A refusal is binding until the next real opening, including across the year turn. */
+export function renewalBlocked(w: World, p: Player) {
+  const now = renewalWindow(w),
+    refusal = p.renewalRefused;
+  return !!refusal && refusal.year === now.year && refusal.window === now.window;
+}
+/** Shared by the chance/factor view and both actual offer paths. Frozen talk floors stay facts. */
+function talkRenewalContext(w: World, p: Player, talk: ContractTalk, wage = talk.floor) {
+  return renewalContext(w, clubOf(w), p, talk.floor, wage);
+}
+export function contractRenewalChance(w: World, p: Player, talk: ContractTalk, wage = talk.floor) {
+  return renewalChance(talkRenewalContext(w, p, talk, wage));
+}
 /**
  * The talk an offer answers: his open talk or, for an unhappy player, the floor he holds out for
  * today (→CLUB-27). Loan players and announced retirements have none to answer.
  */
 export function talkFor(w: World, p: Player): ContractTalk | undefined {
+  if (renewalBlocked(w, p)) return undefined;
   if (p.talk) return p.talk;
   // Nothing he is paid ends an ambitious player's resentment (→CLUB-27).
   if (!p.unhappy || p.unhappy.reason === 'ambition' || p.loanUntil || p.retiring !== undefined)
@@ -540,6 +555,8 @@ export function endAmbition(w: World) {
 }
 /** A player leaving the club takes his talk, unhappiness and transfer request with him. */
 export function leaveContract(w: World, p: Player) {
+  delete p.renewalRefused;
+  delete p.renewalBids;
   delete p.talk;
   delete p.unhappy;
   delete p.transferRequest;
@@ -558,6 +575,7 @@ function signTalk(
   staff: boolean,
 ) {
   const before = p.wage;
+  delete p.renewalRefused;
   p.wage = wage;
   p.until = talkUntil(w, term);
   p.clauses = talk.clauses ?? signingClauses(w, p);
@@ -631,8 +649,8 @@ function declineTalk(w: World, p: Player, reason: string) {
  * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
  * ending before the running contract (→staffTerm), when 재계약 기조 keeps the player (the floor
  * within its wage cap, a starter when it keeps only the XI, younger than its age limit) and
- * the 단장's plan allows the raise (`delegatePlan`): the runway test passes with the raise
- * (→`runwayTest`, ECON-33), and the plain insolvency stop lets it through;
+ * the 단장's plan allows the raise (`delegatePlan`): the floor test passes with the raise
+ * (→`floorTest`, ECON-33), and the plain insolvency stop lets it through;
  * otherwise they decline. Either way the talk's inbox item says why.
  */
 export function staffTalkVerdict(w: World, p: Player) {
@@ -677,26 +695,28 @@ export function staffTalkVerdict(w: World, p: Player) {
       accept: false as const,
       reason: sourceMessage('copy.contracts.129ed2f743', { p0: age, p1: renewal, p2: rule.maxAge }),
     };
+  const projection = financeProjection(w);
   if (raise > 0n) {
-    const check = runwayTest(w, delegatePlan(w, 'contracts'), { wage: raise });
+    const check = floorTest(
+      w,
+      delegatePlan(w, 'contracts', undefined, undefined, projection),
+      { wage: raise },
+      projection,
+    );
     if (!check.ok)
       return {
         accept: false as const,
-        reason:
-          check.runway === 0
-            ? sourceMessage('delegation.verdict.incomeRaise', {
-                loss: moneyLabel(w, check.loss.toString()),
-                plan: finance,
-              })
-            : sourceMessage('delegation.verdict.runwayRaise', {
-                loss: moneyLabel(w, check.loss.toString()),
-                capital: moneyLabel(w, check.capital.toString()),
-                seasons: check.runway,
-                plan: finance,
-              }),
+        reason: sourceMessage('delegation.verdict.wrap', {
+          plan: finance,
+          reason: sourceMessage('delegation.floor.refused', {
+            projected: moneyLabel(w, check.projected.toString()),
+            floor: moneyLabel(w, check.floor.toString()),
+            loss: moneyLabel(w, check.loss.toString()),
+          }),
+        }),
       };
   }
-  const stop = insolvencyStop(w, 0n, raise > 0n ? raise : 0n, false, 'contracts');
+  const stop = insolvencyStop(w, 0n, raise > 0n ? raise : 0n, false, 'contracts', projection);
   if (stop)
     return {
       accept: false as const,
@@ -704,15 +724,39 @@ export function staffTalkVerdict(w: World, p: Player) {
     };
   return { accept: true as const, term };
 }
+/** The player declines the club's offer; his contract and any existing unhappiness continue. */
+function refuseRenewal(w: World, p: Player, talk: ContractTalk, report: string) {
+  p.renewalRefused = { ...renewalWindow(w), kind: talk.kind };
+  delete p.talk;
+  settleTalkItems(w, p.id);
+  const detail = sourceMessage('renewal.refused', { name: p.name, report });
+  addEvent(
+    w,
+    'contract-decline',
+    sourceMessage('renewal.refused.title', { name: p.name, kind: talkLabel(talk) }),
+    detail,
+  );
+  return detail;
+}
 function staffAnswer(w: World, p: Player) {
+  if (renewalBlocked(w, p)) return;
   const talk = p.talk!,
     verdict = staffTalkVerdict(w, p);
   let detail: string;
-  if (verdict.accept)
-    detail = sourceMessage('copy.contracts.341cbc23e8', {
-      p0: signTalk(w, p, talk, talk.floor, verdict.term, true),
-    });
-  else {
+  let agreed = false,
+    playerRefused = false;
+  if (verdict.accept) {
+    const answer = renewalAnswer(w, p, talkRenewalContext(w, p, talk));
+    const report = termsReport(answer.chance, answer.lines);
+    agreed = answer.accept;
+    playerRefused = !answer.accept;
+    detail = answer.accept
+      ? sourceMessage('renewal.accepted.report', {
+          detail: signTalk(w, p, talk, talk.floor, verdict.term, true),
+          report,
+        })
+      : refuseRenewal(w, p, talk, report);
+  } else {
     const { outcome } = declineTalk(
       w,
       p,
@@ -720,15 +764,18 @@ function staffAnswer(w: World, p: Player) {
     );
     detail = `${playerLine(w, p)} · ${verdict.reason} ${outcome}.`;
   }
+  if (agreed) warnCashFloor(w);
   pushInbox(w, {
     kind: 'contract-talk',
-    title: sourceMessage('copy.contracts.39744c8470', {
-      p0: p.name,
-      p1: talkLabel(talk),
-      p2: verdict.accept
-        ? sourceMessage('copy.contracts.5fe6ff27f1')
-        : sourceMessage('copy.contracts.7cf83f2735'),
-    }),
+    title: playerRefused
+      ? sourceMessage('renewal.refused.title', { name: p.name, kind: talkLabel(talk) })
+      : sourceMessage('copy.contracts.39744c8470', {
+          p0: p.name,
+          p1: talkLabel(talk),
+          p2: agreed
+            ? sourceMessage('copy.contracts.5fe6ff27f1')
+            : sourceMessage('copy.contracts.7cf83f2735'),
+        }),
     detail,
     attention: false,
     ref: p.id,
@@ -751,6 +798,8 @@ export function talksOpen(w: World, day = currentDay(w)) {
 export function contractTalks(w: World) {
   const opening = talksOpen(w);
   for (const p of activePlayers(w)) {
+    pruneRenewalBids(w, p, clubOf(w));
+    if (renewalBlocked(w, p)) continue;
     if (w.playingCoachProposals?.[p.id]?.status === 'pending') continue;
     if (p.loanUntil) continue;
     if (p.retiring !== undefined) {
@@ -763,7 +812,11 @@ export function contractTalks(w: World) {
     if (p.unhappy || !opening) continue;
     const left = p.until - w.year;
     if (left <= 1) openTalk(w, p, 'renew');
-    else if (left <= TALK_CONFIG.improveSeasons && p.improveAsked !== w.year && underpaid(w, p))
+    else if (
+      left <= TALK_CONFIG.improveSeasons &&
+      (p.improveAsked !== w.year || p.renewalRefused?.kind === 'improve') &&
+      underpaid(w, p)
+    )
       openTalk(w, p, 'improve');
   }
   if (isDelegated(w, 'contracts')) answerPendingContracts(w);
@@ -777,6 +830,8 @@ export function transferRequests(w: World) {
     if (!p.unhappy || p.transferRequest || p.loanUntil || p.retiring !== undefined) continue;
     if (dayCountedFrom(w, p.unhappy.year) - p.unhappy.day < UNHAPPY_CONFIG.requestDays) continue;
     p.transferRequest = { year: w.year, day: currentDay(w) };
+    // The request now keeps him listed independently of the club's sale plan.
+    delete p.distressListing;
     p.stance = 'listed';
     const why = sourceMessage('copy.contracts.c3df0a8d04', {
       p0: UNHAPPY_REASON[p.unhappy.reason],
@@ -801,22 +856,11 @@ export function transferRequests(w: World) {
     });
   }
 }
-/** Before the 1995 Bosman ruling's first summer an expiring contract still earned a fee (→CLUB-28). */
-export const BOSMAN_YEAR = 1996;
-/** The share of his value, in percent, his new club pays for a player whose contract ran out. */
-export const EXPIRY_COMPENSATION = 50;
-/**
- * Season close, once the new season's books are open (→CLUB-28): every player whose contract has
- * run out leaves. From 1996 he leaves on a free; before, the club he joins pays 50% of his value,
- * at `division`, the one he played in, and one no club signs brings nothing and joins the free
- * agents (→CLUB-49). Loan players go back when the loan ends, and announced retirements have
- * already retired.
- */
-export function expireContracts(w: World, division = clubOf(w).tier) {
+/** Unrenewed contracts end on a free transfer in every era (→CLUB-28/49). */
+export function expireContracts(w: World) {
   for (const p of activePlayers(w)) {
     if (p.loanUntil || p.until > w.year) continue;
-    const value = marketValue(w, p, division),
-      amount = w.year >= BOSMAN_YEAR ? '0' : ratio(value, BigInt(EXPIRY_COMPENSATION), 100n),
+    const amount = '0',
       club = suitorFor(w, p, random(`${w.seed}:expiry:${p.id}:${w.year}`), amount),
       where = club
         ? sourceMessage('copy.contracts.09184ea14a', { p0: club.name })
@@ -841,26 +885,11 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     } else movePerson(w, p, undefined, true);
     // One no club signs is a free agent (→CLUB-49).
     if (!club) joinAtClose(w, p);
-    if (w.year >= BOSMAN_YEAR || !club) {
-      addEvent(
-        w,
-        'contract-expiry',
-        sourceMessage('copy.contracts.41d78072fe', { p0: p.name }),
-        `${where} · ${w.year >= BOSMAN_YEAR ? sourceMessage('copy.contracts.185bbfe3e3') : sourceMessage('copy.contracts.cd546d58a6')}`,
-      );
-      continue;
-    }
-    credit(w, amount);
     addEvent(
       w,
-      'free-transfer-compensation',
-      sourceMessage('copy.contracts.721315c6c2', { p0: p.name }),
-      sourceMessage('copy.contracts.d063824c2b', {
-        p0: where,
-        p1: moneyLabel(w, value),
-        p2: EXPIRY_COMPENSATION,
-      }),
-      amount,
+      'contract-expiry',
+      sourceMessage('copy.contracts.41d78072fe', { p0: p.name }),
+      `${where} · ${sourceMessage('copy.contracts.185bbfe3e3')}`,
     );
   }
 }
@@ -868,9 +897,9 @@ function activePlayer(w: World, id: string) {
   return w.players.find((x) => x.id === id && x.status === 'active');
 }
 /**
- * The owner's offer (→CLUB-26): at or above his floor it signs for `term` in the window's terms;
+ * The owner's offer (→CLUB-26/54): at or above his floor the player answers for the offered term;
  * below it is refused with the floor stated. An unhappy player takes his floor as it stands today
- * and the unhappiness ends (→CLUB-27).
+ * and agreement ends the unhappiness (→CLUB-27).
  */
 export function offerContract(w: World, id: string, wage: string, term: TalkTerm) {
   const p = activePlayer(w, id),
@@ -884,7 +913,20 @@ export function offerContract(w: World, id: string, wage: string, term: TalkTerm
     throw new Error(
       sourceMessage('copy.contracts.aa91ac6b14', { p0: p.name, p1: moneyLabel(w, talk.floor) }),
     );
-  signTalk(w, p, talk, wage, term, false);
+  const answer = renewalAnswer(w, p, talkRenewalContext(w, p, talk, wage));
+  if (answer.accept) {
+    signTalk(w, p, talk, wage, term, false);
+    return true;
+  }
+  const detail = refuseRenewal(w, p, talk, termsReport(answer.chance, answer.lines));
+  pushInbox(w, {
+    kind: 'contract-talk',
+    title: sourceMessage('renewal.refused.title', { name: p.name, kind: talkLabel(talk) }),
+    detail,
+    attention: false,
+    ref: p.id,
+  });
+  return false;
 }
 /** The owner declines; the manager then tries to talk him round (→CLUB-27). */
 export function declineContract(w: World, id: string) {
@@ -908,5 +950,6 @@ export function declineContract(w: World, id: string) {
 /** Resolve only existing talks; changing authority must not open unrelated negotiations. */
 export function answerPendingContracts(w: World) {
   for (const p of activePlayers(w))
-    if (p.talk && w.playingCoachProposals?.[p.id]?.status !== 'pending') staffAnswer(w, p);
+    if (p.talk && !renewalBlocked(w, p) && w.playingCoachProposals?.[p.id]?.status !== 'pending')
+      staffAnswer(w, p);
 }

@@ -27,7 +27,7 @@ import {
   stature,
 } from './world';
 import { clubStyle } from './tactics';
-import { marketWageAt } from './market-prices';
+import { divisionFor, marketWageAt } from './market-prices';
 import { NPC_WAGE_DECISIONS, npcWageBill } from './books';
 import { LINE_MINIMUM, lineOf } from './player';
 import { operatingExpensesAt } from './finance';
@@ -198,6 +198,19 @@ describe('observed released-player source proof', () => {
 });
 
 describe('NPC contracts and need-based free agents on isolated squads', () => {
+  it('prices a released player on the division his ability suits', () => {
+    const { w, c, players } = npcBooksFixture();
+    c.country = 'ENG'; // Synthetic ids use the pool's English nationality fallback.
+    const p = players[0]!;
+    for (const a of ATTRIBUTES) p.attrs[a] = 65;
+    p.potential = 65;
+    const fits = divisionFor(c.country, 65);
+    joinFreeAgents(w, p, w.year, c.id);
+    expect(w.freeAgents!.find((q) => q.id === p.id)!.wage).toBe(
+      marketWageAt(c.country, w.year, fits, p),
+    );
+  });
+
   it.each([1951, 2020])(
     'matches the pre-change settlement for sparse and dense squads in %i',
     (year) => {
@@ -266,7 +279,7 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
     c.tier = 1;
     renewNpcContracts(w, c);
     expect(starter.wage).toBe(marketWageAt(c.country, 1951, 1, starter));
-    expect(starter.until).toBe(1951 + npcContractTerm(1951 - starter.born) - 1);
+    expect(starter.until).toBe(1951 + 3 - 1);
     expect(running).toMatchObject(old);
     expect(w.freeAgents ?? []).toEqual([]);
   });
@@ -274,11 +287,13 @@ describe('NPC contracts and need-based free agents on isolated squads', () => {
   it('releases an unnecessary expiry, while preserving identity and attributes', () => {
     const { w, c, players } = npcBooksFixture();
     const xi = new Set(startingSquad(w, c).map((p) => p.id));
-    const p = players.find(
-      (p) =>
-        !xi.has(p.id) &&
-        players.filter((q) => lineOf(q.position) === lineOf(p.position)).length > 6,
-    )!;
+    const p = players
+      .slice(18)
+      .find(
+        (p) =>
+          !xi.has(p.id) &&
+          players.filter((q) => lineOf(q.position) === lineOf(p.position)).length > 6,
+      )!;
     p.until = w.year;
     const before = structuredClone(p);
     renewNpcContracts(w, c);

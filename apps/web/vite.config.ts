@@ -29,6 +29,9 @@ const labAddress = (): Plugin => ({
 export default defineConfig({
   root: page('.'),
   plugins: [react(), sharedSourceWatch(), labAddress(), gameplayInfluences(), designSystem()],
+  // The SQLite build finds its wasm beside its module (`new URL(..., import.meta.url)`); prebundling
+  // would move the module away from it (→ARCH-11).
+  optimizeDeps: { exclude: ['@sqlite.org/sqlite-wasm'] },
   build: {
     outDir: 'dist',
     emptyOutDir: true,

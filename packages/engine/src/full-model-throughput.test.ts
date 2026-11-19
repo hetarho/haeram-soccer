@@ -184,9 +184,12 @@ const facts = (w: World) => ({
 // T951's market (value-ranked targets, wage-budget means, paid moves down, refusal skip) changes
 // which players clubs nobody owns hold, so the candidate rounds' signature moves (3025a6623928c81f
 // before it); the aggregate records keep theirs.
+// mr18's world (0.8.13: spread founding squads in force, individual ageing curves, the loyalty
+// trait's draw, ability-fit wages, the distress ladder) changes every founding squad and so both;
+// efb1b0e2dc8517ba and e04477da1bf7dfb3 before.
 const BEFORE = {
-  aggregateRecords: 'efb1b0e2dc8517ba',
-  candidateRounds: 'e04477da1bf7dfb3',
+  aggregateRecords: '3c38762494d8fc4b',
+  candidateRounds: 'a797ee48156e555f',
 };
 
 describe('complete-result throughput (T285)', () => {

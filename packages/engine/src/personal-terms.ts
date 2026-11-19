@@ -9,11 +9,12 @@
  */
 import type { Grade } from '../../contracts/src/player';
 import type { Club, Player, World } from '../../contracts/src/types';
+import { loyaltyTerm } from './loyalty';
 import { freeAgentsOf } from './free-agents';
 import { divisionFor } from './market-prices';
 import { exp, log } from './portable-math';
 import { clubOf, overall } from './player-state';
-import { recruitmentFit } from './recruitment';
+import { recruitmentSelection, type TransferOffer } from './recruitment';
 import type { AnswerFactor, FactorLine } from './sale-answer';
 import { clubById, startingSquad } from './world';
 import { clubPlayer, worldMarketOffer } from './world-market';
@@ -45,6 +46,8 @@ export interface TermsContext {
   wouldStart: boolean;
   startsNow: boolean;
   freeAgent: boolean;
+  /** His loyalty term at the selling club; zero for free agents (→CLUB-54). */
+  loyalty: number;
 }
 
 /** CLUB-53's log-odds; starting values, tuned by measurement. */
@@ -159,6 +162,13 @@ export const TERMS_FACTORS: readonly AnswerFactor<TermsContext>[] = [
     read: (c) =>
       c.freeAgent ? line('freeAgent', T.freeAgent, 'market.terms.freeAgent') : undefined,
   },
+  {
+    id: 'loyalty',
+    read: (c) =>
+      !c.freeAgent && c.loyalty > 0
+        ? line('loyalty', -c.loyalty, 'market.terms.loyalty')
+        : undefined,
+  },
 ];
 
 /** His chance of agreeing, σ(1.5 + Σ), with the lines of the factors that moved it. */
@@ -220,24 +230,57 @@ export function termsContext(w: World, terms: TermsOffer): TermsContext | undefi
       : { world: w.id, kind: 'offer', playerId: player.id },
   );
   if (!offer) return undefined;
+  return resolvedTermsContext(w, { player, club, offer, step: terms.step });
+}
+
+/** Query-local facts shared by all candidates; no cache survives a world mutation. */
+export function termsSearchContext(w: World) {
+  const entries = new Map<string, ReturnType<typeof europeOf>>(),
+    starters = new Map<string, Set<string>>();
+  return {
+    ownStarters: startingSquad(w, clubOf(w)),
+    europe: (id: string) => {
+      if (!entries.has(id)) entries.set(id, europeOf(w, id));
+      return entries.get(id);
+    },
+    starters: (club: Club) => {
+      let ids = starters.get(club.id);
+      if (!ids) starters.set(club.id, (ids = new Set(startingSquad(w, club).map((p) => p.id))));
+      return ids;
+    },
+  };
+}
+
+/** Use the resolved source player (including his club history), and the buyer's quote separately. */
+export function resolvedTermsContext(
+  w: World,
+  {
+    player,
+    club,
+    offer,
+    step,
+  }: { player: Player; club?: Club; offer: TransferOffer; step: number },
+  context = termsSearchContext(w),
+): TermsContext {
   const ours = clubOf(w),
     demand = BigInt(offer.player.wage),
-    step = BigInt(Math.round(terms.step * 10000)),
+    share = BigInt(Math.round(step * 10000)),
     hisDivision = club ? club.tier : Math.round(divisionFor(ours.country, overall(player))),
-    ourEurope = europeOf(w, ours.id);
+    ourEurope = context.europe(ours.id);
   return {
     demand: demand.toString(),
-    offer: ((demand * step) / 10000n).toString(),
+    offer: ((demand * share) / 10000n).toString(),
     divisionsBelow: Math.max(0, ours.tier - hisDivision),
     ourReputation: ours.reputation,
     ...(club ? { hisReputation: club.reputation } : {}),
     ambition: player.personality.ambition,
     age: w.year - player.born,
     ...(ourEurope ? { ourEurope } : {}),
-    hisEurope: !!club && !!europeOf(w, club.id),
-    wouldStart: recruitmentFit(w, offer).willStart,
-    startsNow: !!club && startingSquad(w, club).some((p) => p.id === player.id),
+    hisEurope: !!club && !!context.europe(club.id),
+    wouldStart: recruitmentSelection(w, offer, context.ownStarters).willStart,
+    startsNow: !!club && context.starters(club).has(player.id),
     freeAgent: !club,
+    loyalty: club ? loyaltyTerm(player, w.year) : 0,
   };
 }
 
@@ -272,5 +315,6 @@ export function npcTermsContext(w: World, o: NpcTermsOffer): TermsContext {
     wouldStart: o.wouldStart,
     startsNow: o.startsNow,
     freeAgent: false,
+    loyalty: loyaltyTerm(o.player, w.year),
   };
 }

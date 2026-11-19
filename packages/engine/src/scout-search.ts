@@ -17,6 +17,7 @@ import { buildEffects, buildOf } from './build';
 import { staffMember } from './staff-info';
 import { associationAccessOrder } from './europe-access';
 import { askedFeeFactor } from './owner-traits';
+import { termsChance, resolvedTermsContext, termsSearchContext } from './personal-terms';
 import { freeAgentsOf, nationalityOf, originClub } from './free-agents';
 import {
   askingMultiplier,
@@ -49,6 +50,9 @@ export const SCOUT_CONFIG = {
   /** However the cards cut it, he lists at least this many per line. */
   minPerLine: 1,
 } as const;
+
+/** A player's chance at his demand that makes him a likely taker (→CLUB-51). */
+export const SCOUT_LIST = { likelyChance: 0.3 } as const;
 
 /**
  * T784's candidate shapes of the list (→CLUB-51), a measurement setting off in play: `line` lists a
@@ -173,6 +177,8 @@ function reachClubs(w: World, reach: ScoutReach) {
 }
 
 interface Found {
+  offer: ScoutOffer;
+  likely: boolean;
   player: Player;
   club?: Club;
   line: Line;
@@ -181,14 +187,20 @@ interface Found {
   first: number;
   second: number;
 }
-/** Sporting measures first, then free status and stable id (→CLUB-33). */
+/** Likely takers first, then sporting measures, free status and stable id (→CLUB-51/33). */
 const byRank = (a: Found, b: Found) =>
+  Number(b.likely) - Number(a.likely) ||
   b.first - a.first ||
   b.second - a.second ||
   Number(!b.club) - Number(!a.club) ||
   compareIds(a.player.id, b.player.id);
 
-function offerOf(w: World, found: Found, multiplier: number, graduates: Set<string>): ScoutOffer {
+function offerOf(
+  w: World,
+  found: Pick<Found, 'club' | 'player' | 'abroad'>,
+  multiplier: number,
+  graduates: Set<string>,
+): ScoutOffer {
   const source = found.club
     ? ({ kind: 'club', club: found.club.id } as const)
     : ({ kind: 'free' } as const);
@@ -211,8 +223,8 @@ function abilities(players: readonly Player[]) {
 
 /**
  * The players within the reach (→CLUB-51) whose age and ability fit the search, ranked
- * by ability and potential (potential first where the search says so), then free status and
- * id; per line the reach's count, keeping its places abroad for the ablest found there. With
+ * by willingness at his demand, ability and potential (potential first where the search says so),
+ * then free status and id; per line the reach's count, keeping its places abroad for the ablest found there. With
  * `everyone`, every player within the reach whatever his age and ability (the search's bands
  * shape the list alone, →ECON-16), all of them. Our players, players on loan at their club and
  * announced retirements are never listed.
@@ -220,7 +232,10 @@ function abilities(players: readonly Player[]) {
 function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
   const own = clubOf(w).country,
     owned = new Set(activePlayers(w).map((p) => p.id)),
-    found: Found[] = [];
+    found: Found[] = [],
+    context = termsSearchContext(w),
+    multiplier = askingMultiplier(w),
+    graduates = graduateIds(w);
   const consider = (player: Player, ovr: number, club: Club | undefined, country: string) => {
     const age = w.year - player.born;
     if (owned.has(player.id)) return;
@@ -229,7 +244,11 @@ function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
     const potentialFirst =
       reach.potentialFirst === 'all' ||
       (reach.potentialFirst === 'young' && age <= SCOUT_CONFIG.youngAge);
+    const offer = offerOf(w, { player, club, abroad: country !== own }, multiplier, graduates),
+      terms = resolvedTermsContext(w, { player, club, offer, step: 1 }, context);
     found.push({
+      offer,
+      likely: termsChance(terms).chance >= SCOUT_LIST.likelyChance,
       player,
       ...(club ? { club } : {}),
       line: lineOfPlayer(player),
@@ -253,17 +272,15 @@ function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
     if (agent.status === 'active' && (country === own || reach.abroad.includes(country)))
       consider(agent, ovrs[i]!, undefined, country);
   });
-  const multiplier = askingMultiplier(w),
-    graduates = graduateIds(w),
-    spread = LIST_SPREAD.inForce,
+  const spread = LIST_SPREAD.inForce,
     listedClubs = new Set<string>();
   return LINES.flatMap((line) => {
     const ranked = found.filter((f) => f.line === line).sort(byRank);
-    if (everyone) return ranked.map((f) => offerOf(w, f, multiplier, graduates));
+    if (everyone) return ranked.map((f) => f.offer);
     if (spread === 'none') {
       const kept = new Set(ranked.filter((f) => f.abroad).slice(0, reach.abroadPlaces));
       for (const f of ranked) if (kept.size < reach.perLine) kept.add(f);
-      return ranked.filter((f) => kept.has(f)).map((f) => offerOf(w, f, multiplier, graduates));
+      return ranked.filter((f) => kept.has(f)).map((f) => f.offer);
     }
     const seen = spread === 'list' ? listedClubs : new Set<string>(),
       kept = new Set<Found>();
@@ -281,7 +298,7 @@ function search(w: World, reach: ScoutReach, everyone = false): ScoutOffer[] {
       reach.abroadPlaces,
     );
     take(ranked, reach.perLine);
-    return ranked.filter((f) => kept.has(f)).map((f) => offerOf(w, f, multiplier, graduates));
+    return ranked.filter((f) => kept.has(f)).map((f) => f.offer);
   });
 }
 
@@ -301,6 +318,11 @@ function listKey(w: World, reach: ScoutReach) {
     own.id,
     own.tier,
     own.group,
+    w.tactic,
+    ownStarters(w),
+    // Club-level inputs are cheap to read even on a hit; never walk the world's players here.
+    w.clubs.map((club) => [club.id, club.reputation]),
+    w.europe.map((entry) => [entry.key, entry.name, entry.clubs]),
     w.players.length,
     activePlayers(w).length,
     reach,

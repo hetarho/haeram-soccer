@@ -108,7 +108,7 @@ describe('transfer stance', () => {
     }
   });
 
-  it('lets delegated staff and the manager weigh big offers by market card, the runway test, a cash crisis and the XI (→CLUB-24, →ECON-33, →ECON-41)', () => {
+  it('lets delegated staff and the manager weigh big offers by market card, distress, a cash crisis and the XI (→CLUB-24, →ECON-33, →ECON-41)', () => {
     const w = world('stance-verdict');
     expect(untouchableVerdict(w, 199, false).accept).toBe(false);
     expect(untouchableVerdict(w, 200, false).accept).toBe(true);
@@ -121,32 +121,19 @@ describe('transfer stance', () => {
     expect(untouchableVerdict(w, 224, false).accept).toBe(false);
     w.build = { market: 'hold' };
     expect(untouchableVerdict(w, 400, false).accept).toBe(false);
-    // The 단장's runway test failing at half the runway at the current wage bill (→ECON-33) lowers
-    // the price 25 points; failing only at the full runway moves nothing. 균형 at 적당히: four
-    // seasons of the planned loss to cover, a quarter of a year's fixed costs kept back.
+    // Actual forced sales lower the bar by 25; warning alone and a projected shortfall do not.
     w.build = {};
     holdTemperament(w, 'director', 'balanced');
-    const annual = BigInt(operatingCosts(w).annual),
-      loss = annual / 5n;
-    w.budgetPlan = { year: w.year, revenue: (annual - loss).toString(), sales: '0' };
-    const capital = (seasons: bigint) => (w.cash = (loss * seasons + annual / 4n).toString());
-    capital(5n);
+    w.cash = (BigInt(operatingCosts(w).annual) * 5n).toString();
+    w.distress = { stage: 1, overHalfRounds: 0 };
     expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: false });
-    capital(3n);
-    expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: false });
-    capital(1n);
+    w.distress.stage = 2;
     expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: true });
-    expect(untouchableVerdict(w, 175, false).reason).toContain('절반도 버티지 못함');
+    expect(untouchableVerdict(w, 175, false).reason).toContain('강제 매각');
     expect(untouchableVerdict(w, 174, false)).toMatchObject({ accept: false });
-    // At 적극 매각 (step 1) no loss is allowed: any planned loss lowers the price, however much
-    // cash there is, and the report says the spending is above income, not that cash runs short.
-    w.delegationRequests = { sales: 1 };
-    capital(50n);
+    w.distress.stage = 3;
     expect(untouchableVerdict(w, 175, false)).toMatchObject({ accept: true });
-    expect(untouchableVerdict(w, 175, false).reason).toContain('계획 수입을 넘음');
-    expect(untouchableVerdict(w, 175, false).reason).not.toContain('절반도 버티지 못함');
-    delete w.delegationRequests;
-    delete w.budgetPlan;
+    delete w.distress;
     // A cash crisis sells, whatever the card.
     w.build = { market: 'hold' };
     w.cash = '0';

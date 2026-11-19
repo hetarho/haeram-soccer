@@ -257,13 +257,100 @@ export interface EndBook {
   tier: number;
   wages: number;
   income: number;
+  costs: number;
+  transfersReceived?: number;
+  transfersPaid?: number;
   cash: number;
+  debt: number;
+  /** Final position within its own league group, captured before promotion/relegation. */
+  rank?: number;
+  groupSize?: number;
   /** Its division the next season (promotion and relegation applied). */
   nextTier: number;
 }
 
+/** Optional measurement hooks use facts only; missing hooks never imply zero events. */
+export interface BidFact {
+  from: ClubRef;
+  to: ClubRef;
+  playerId: string;
+  outcome: 'seller-refused' | 'player-refused' | 'completed' | 'buyer-refused';
+}
+export type RenewalKind = 'offered' | 'accepted' | 'refused' | 'releasedUnoffered';
+export interface RenewalFact {
+  club: string;
+  kind: RenewalKind;
+}
+export interface DistressFact {
+  club: string;
+  /** Entry, not continued occupancy of a stage. */
+  stage?: 1 | 2 | 3;
+  pointsDeducted?: number;
+}
+export interface AgeingFact {
+  /** Age at the annual close, matching the engine's annual development read. */
+  age: number;
+  change: number;
+}
+
+export function tableThird(rank: number, size: number): 'top' | 'middle' | 'bottom' {
+  return rank / size <= 1 / 3 ? 'top' : rank / size <= 2 / 3 ? 'middle' : 'bottom';
+}
+
+/** Ordinary median (the middle pair's mean for even samples), not nearest-rank p50. */
+export function median(values: readonly number[]): number | null {
+  if (!values.length) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+}
+
+/** Ratios are per club, then median; an undefined/zero denominator is an absent read. */
+export function bookStats(books: readonly EndBook[]) {
+  const ratios = (read: (b: EndBook) => number | undefined, denominator: (b: EndBook) => number) =>
+    books.flatMap((b) => {
+      const numerator = read(b),
+        divisor = denominator(b);
+      return numerator !== undefined && divisor > 0 ? [numerator / divisor] : [];
+    });
+  const income = (b: EndBook) => b.income;
+  const fixedCosts = (b: EndBook) => b.wages + b.costs;
+  const reads = {
+    wagesToIncome: ratios((b) => b.wages, income),
+    costsToIncome: ratios((b) => b.costs, income),
+    operatingResultToIncome: ratios((b) => b.income - b.wages - b.costs, income),
+    feesReceivedToIncome: ratios((b) => b.transfersReceived, income),
+    netFeesToIncome: ratios(
+      (b) =>
+        b.transfersReceived === undefined || b.transfersPaid === undefined
+          ? undefined
+          : b.transfersReceived - b.transfersPaid,
+      income,
+    ),
+    cashToIncome: ratios((b) => b.cash, income),
+    debtToFixedCosts: ratios((b) => b.debt, fixedCosts),
+  };
+  return {
+    clubs: books.length,
+    median: Object.fromEntries(Object.entries(reads).map(([key, values]) => [key, median(values)])),
+    samples: Object.fromEntries(Object.entries(reads).map(([key, values]) => [key, values.length])),
+    operatingLossShare: books.length
+      ? books.filter((b) => b.income - b.wages - b.costs < 0).length / books.length
+      : null,
+  };
+}
+
 export interface SeasonInput {
   year: number;
+  transferValues?: {
+    players: number;
+    dearest: number;
+    mean: number;
+    record: number;
+    dearestToRecord: number;
+    publishedMean?: number;
+    meanToPublishedFee?: number;
+  };
   clubs: StartClub[];
   moves: MoveFact[];
   /** Season-start XI by club. */
@@ -272,11 +359,18 @@ export interface SeasonInput {
   xiLost: { club: string; player: string }[];
   /** Each lower-division club's three best players at the season's start: player → club. */
   topThree: Record<string, string>;
+  /** The three best players in each lower division when the season opens. */
+  divisionTopThree: Record<string, string>;
   contracts: { releases: number; renewals: number; expiring: number };
   retirements: number;
   /** Players new to the world's squads at the close (youth), by the tier of the club they joined. */
   intake: { tier: number; potential: number }[];
   books: EndBook[];
+  /** Undefined means the engine has no corresponding observer. */
+  bids?: BidFact[];
+  renewalAnswers?: RenewalFact[];
+  distress?: DistressFact[];
+  ageing?: AgeingFact[];
 }
 
 const tierKey = (tier: number) => `tier${tier}`;
@@ -365,17 +459,16 @@ export function seasonStats(input: SeasonInput) {
     }),
   );
 
-  const movedUp = new Set<string>();
-  for (const m of input.moves) {
+  const upwardMoves = input.moves.filter((m) => {
     const home = input.topThree[m.playerId];
-    if (
+    return (
       (m.kind === 'paid' || m.kind === 'loan') &&
-      home &&
+      !!home &&
       m.from?.id === home &&
       m.to.tier < m.from.tier
-    )
-      movedUp.add(m.playerId);
-  }
+    );
+  });
+  const movedUp = new Set(upwardMoves.map((m) => m.playerId));
   const trackedBy = new Map<number, { tracked: number; movedUp: number }>();
   for (const [player, home] of Object.entries(input.topThree)) {
     const tier = club.get(home)?.tier;
@@ -431,8 +524,161 @@ export function seasonStats(input: SeasonInput) {
     }),
   );
 
+  const countries = [...new Set(input.clubs.map((c) => c.country))].sort();
+  const divisionLevels = Object.fromEntries(
+    countries.map((country) => [
+      country,
+      Object.fromEntries(
+        tiers.flatMap((tier) => {
+          const clubs = input.clubs.filter(
+            (club) => club.country === country && club.tier === tier,
+          );
+          return clubs.length
+            ? [
+                [
+                  tierKey(tier),
+                  { clubs: clubs.length, mean: mean(clubs.map((club) => club.strength)) },
+                ],
+              ]
+            : [];
+        }),
+      ),
+    ]),
+  );
+  const books = Object.fromEntries(
+    countries.map((country) => {
+      const rows = input.books.filter((b) => b.country === country);
+      return [
+        country,
+        {
+          byTier: Object.fromEntries(
+            tiers
+              .filter((tier) => input.clubs.some((c) => c.country === country && c.tier === tier))
+              .map((tier) => [tierKey(tier), bookStats(rows.filter((b) => b.tier === tier))]),
+          ),
+          topFlightThirds: Object.fromEntries(
+            (['top', 'middle', 'bottom'] as const).map((third) => [
+              third,
+              bookStats(
+                rows.filter(
+                  (b) =>
+                    b.tier === 0 &&
+                    b.rank !== undefined &&
+                    b.groupSize !== undefined &&
+                    tableThird(b.rank, b.groupSize) === third,
+                ),
+              ),
+            ]),
+          ),
+        },
+      ];
+    }),
+  );
+  const upwardFunnel = Object.fromEntries(
+    countries.map((country) => [
+      country,
+      Object.fromEntries(
+        tiers
+          .filter(
+            (tier) => tier > 0 && input.clubs.some((c) => c.country === country && c.tier === tier),
+          )
+          .map((tier) => {
+            const homes = new Set(
+              input.clubs.filter((c) => c.country === country && c.tier === tier).map((c) => c.id),
+            );
+            const tracked = Object.values(input.divisionTopThree).filter((home) =>
+              homes.has(home),
+            ).length;
+            const bids = input.bids?.filter(
+              (b) =>
+                homes.has(b.from.id) &&
+                input.divisionTopThree[b.playerId] === b.from.id &&
+                b.to.tier < b.from.tier,
+            );
+            const completed = upwardMoves.filter(
+              (m) => input.divisionTopThree[m.playerId] === m.from!.id && homes.has(m.from!.id),
+            );
+            return [
+              tierKey(tier),
+              {
+                tracked,
+                status: bids ? 'observed' : 'absent',
+                bids: bids?.length ?? null,
+                sellerRefused: bids
+                  ? bids.filter((b) => b.outcome === 'seller-refused').length
+                  : null,
+                playerRefused: bids
+                  ? bids.filter((b) => b.outcome === 'player-refused').length
+                  : null,
+                buyerRefused: bids
+                  ? bids.filter((b) => b.outcome === 'buyer-refused').length
+                  : null,
+                completed: completed.length,
+                shareMovedUp: tracked
+                  ? new Set(completed.map((m) => m.playerId)).size / tracked
+                  : null,
+              },
+            ];
+          }),
+      ),
+    ]),
+  );
+  const renewalAnswers = input.renewalAnswers;
+  const renewals = {
+    status: renewalAnswers ? 'observed' : 'absent',
+    ...Object.fromEntries(
+      (['offered', 'accepted', 'refused', 'releasedUnoffered'] as const).map((kind) => [
+        kind,
+        renewalAnswers
+          ? renewalAnswers.filter((r) => club.has(r.club) && r.kind === kind).length
+          : null,
+      ]),
+    ),
+  };
+  const distress = {
+    status: input.distress ? 'observed' : 'absent',
+    byCountry: Object.fromEntries(
+      countries.map((country) => {
+        const facts = input.distress?.filter((f) => club.get(f.club)?.country === country);
+        return [
+          country,
+          {
+            entries: Object.fromEntries(
+              [1, 2, 3].map((stage) => [
+                `stage${stage}`,
+                facts
+                  ? new Set(facts.filter((f) => f.stage === stage).map((f) => f.club)).size
+                  : null,
+              ]),
+            ),
+            pointsDeducted: facts
+              ? facts.reduce((sum, f) => sum + (f.pointsDeducted ?? 0), 0)
+              : null,
+          },
+        ];
+      }),
+    ),
+  };
+  const ageing = Object.fromEntries(
+    Array.from({ length: 15 }, (_, index) => {
+      const age = index + 24;
+      const players = (input.ageing ?? []).filter((p) => p.age === age);
+      return [
+        age,
+        {
+          players: players.length,
+          declinedShare: players.length
+            ? players.filter((p) => p.change < 0).length / players.length
+            : null,
+          meanOvrChange: players.length ? mean(players.map((p) => p.change)) : null,
+        },
+      ];
+    }),
+  );
+
   return {
     year: input.year,
+    ...(input.transferValues ? { transferValues: input.transferValues } : {}),
     moves,
     byWindow,
     reasons,
@@ -446,6 +692,13 @@ export function seasonStats(input: SeasonInput) {
     retirements: input.retirements,
     youth,
     tiers: tierRows,
+    books,
+    upwardFunnel,
+    divisionLevels,
+    lowerClubsAbove85: input.clubs.filter((club) => club.tier > 0 && club.strength > 85).length,
+    renewals,
+    ageing,
+    distress,
     promoted: input.books.filter((b) => b.nextTier < b.tier).length,
     relegated: input.books.filter((b) => b.nextTier > b.tier).length,
   };
@@ -457,11 +710,17 @@ export type SeasonStats = ReturnType<typeof seasonStats>;
 
 /** Every numeric leaf of a JSON value by dotted path. */
 export function flattenNumbers(value: unknown, prefix = '', out: Record<string, number> = {}) {
-  if (typeof value === 'number') {
-    if (Number.isFinite(value)) out[prefix] = value;
-  } else if (value && typeof value === 'object')
+  for (const [key, measure] of Object.entries(flattenMeasures(value, prefix)))
+    if (typeof measure === 'number') out[key] = measure;
+  return out;
+}
+
+/** Nulls distinguish an absent observation from an observed zero in new calibration reads. */
+function flattenMeasures(value: unknown, prefix = '', out: Record<string, number | null> = {}) {
+  if (value === null || (typeof value === 'number' && Number.isFinite(value))) out[prefix] = value;
+  else if (value && typeof value === 'object')
     for (const [key, child] of Object.entries(value))
-      flattenNumbers(child, prefix ? `${prefix}.${key}` : key, out);
+      flattenMeasures(child, prefix ? `${prefix}.${key}` : key, out);
   return out;
 }
 
@@ -482,25 +741,38 @@ export function spread(values: readonly number[]): Spread {
 }
 
 /**
- * Mean and spread of every numeric measure per season position over the runs' season lists. A
- * measure a run lacks (a flow cell nobody made) counts as 0 in it.
+ * Mean and spread of every numeric measure per season position over the runs' season lists.
+ * Sparse legacy flow cells count as zero. Nullable calibration reads and reads absent from old
+ * output versions contribute no sample, preserving the difference between absent and zero.
  */
 export function mergeSeasons(runs: readonly (readonly object[])[]) {
   const length = Math.max(0, ...runs.map((r) => r.length));
   return Array.from({ length }, (_, index) => {
-    const seasons = runs.flatMap((r) => (r[index] ? [flattenNumbers(r[index])] : []));
+    const seasons = runs.flatMap((r) => (r[index] ? [flattenMeasures(r[index])] : []));
     const paths = [...new Set(seasons.flatMap((s) => Object.keys(s)))].sort();
     return {
       index,
       runs: seasons.length,
       measures: Object.fromEntries(
-        paths.map((path) => [path, spread(seasons.map((s) => s[path] ?? 0))]),
+        paths.map((path) => {
+          const nullable = /^(books|upwardFunnel|renewals|ageing|distress)\./.test(path);
+          const values = seasons.flatMap((s) => {
+            const value = s[path];
+            return typeof value === 'number' ? [value] : value === null || nullable ? [] : [0];
+          });
+          return [
+            path,
+            values.length ? spread(values) : { n: 0, mean: null, sd: null, min: null, max: null },
+          ];
+        }),
       ),
     };
   });
 }
 
 export interface RunResult {
+  finalYear?: number;
+  ageingCareers?: ReturnType<import('./market-ageing').MarketAgeingCareers['summarize']>;
   seed: string;
   luck: number;
   start: string;

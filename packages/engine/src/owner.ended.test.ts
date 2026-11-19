@@ -15,6 +15,15 @@ const world = () => {
 };
 
 describe('an ended career (→OWNER-16)', () => {
+  it('preserves legacy facts on an already ended career', () => {
+    const w = world();
+    w.ended = 'club';
+    w.bankrupt = { year: w.year, round: 1, day: 1 };
+    expect(careerEnded(w)).toBe(true);
+    operate(w, { type: 'read-inbox' });
+    expect(w.ended).toBe('club');
+    expect(w.bankrupt).toEqual({ year: w.year, round: 1, day: 1 });
+  });
   it.each(['club', 'owner', 'fans'] as const)(
     'advances nothing and reads only the inbox after %s',
     (cause) => {

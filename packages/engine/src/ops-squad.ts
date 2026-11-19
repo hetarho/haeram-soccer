@@ -1,6 +1,7 @@
+import { distressSigningReason } from './distress';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { worldMarketOffer } from './world-market';
-import { registrationRoom } from './registration';
+import { graduateIds, registrationRoom } from './registration';
 import type { Command, Player, World } from '../../contracts/src/types';
 import { addEvent } from './events';
 import { recordTransfer } from './transfer-records';
@@ -53,12 +54,12 @@ export function signFreeAgent(w: World, offer: { player: Player }, wage?: string
   if (!takeFreeAgent(w, offer.player.id))
     throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
   const p = structuredClone(offer.player);
+  p.graduate = graduateIds(w).has(p.id) ? true : undefined;
   if (wage !== undefined) p.wage = wage;
   p.clauses = signingClauses(w, p);
   const prior = w.players.findIndex((row) => row.id === p.id);
   if (prior >= 0) {
     p.career = [...w.players[prior]!.career];
-    if (w.players[prior]!.graduate) p.graduate = true;
     w.players[prior] = p;
   } else w.players.push(p);
   noteSigning(w, p);
@@ -132,6 +133,8 @@ export function squadCommand(w: World, cmd: SquadCommand) {
         );
         break;
       }
+      const distress = distressSigningReason(w, o.player, true, cmd.loan);
+      if (distress) throw new Error(distress);
       if (cmd.loan) throw new Error(sourceMessage('copy.ops_squad.a2b1b34469'));
       if (cmd.wage !== undefined && !isWageStep(cmd.wage))
         throw new Error(sourceMessage('market.bid.invalidWage'));

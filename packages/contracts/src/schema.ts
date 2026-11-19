@@ -123,8 +123,19 @@ export const budgetResponsibilitySchema = z.enum([
 ]);
 /** The owner's spending request to a delegated person (→ SpendRequest). */
 export const spendRequestSchema = z.literal([1, 2, 3, 4, 5]);
+const distress = z.strictObject({
+  stage: z.literal([1, 2, 3]).optional(),
+  overHalfRounds: z.number().int().min(0).optional(),
+  deductionSeason: season.optional(),
+  pendingDeduction: z
+    .strictObject({ season, points: z.number().int().positive().max(1000000) })
+    .optional(),
+  lastRound: z.strictObject({ year: season, round: z.number().int().min(0).max(46) }).optional(),
+});
 /** A club's books while nobody owns it (→ECON-36): the current and the last closed season. */
 export const clubBooksSchema = z.strictObject({
+  distress: distress.optional(),
+  debtWriteOff: amount.optional(),
   openingIncome: amount.optional(),
   transfersPaid: amount.optional(),
   transfersReceived: amount.optional(),
@@ -142,6 +153,7 @@ export const clubBooksSchema = z.strictObject({
           })
           .optional(),
         ownerCapital: amount.optional(),
+        debtWriteOff: amount.optional(),
         wages: amount,
         costs: amount,
         transfersPaid: amount.optional(),
@@ -196,7 +208,12 @@ const playerShape = {
   graduate: z.literal(true).optional(),
   prodigy: z.literal(true).optional(),
   attrs: attributes,
-  personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
+  personality: z.strictObject({
+    professionalism: grade,
+    adaptability: grade,
+    ambition: grade,
+    loyalty: grade.optional(),
+  }),
   qualities: z.strictObject({ understanding: grade, teaching: grade, judgement: grade }).optional(),
   traits: z.array(z.enum(PLAY_TRAITS)).max(3),
   adaptation: z.number().finite().min(0.3).max(1),
@@ -221,6 +238,7 @@ const playerShape = {
     })
     .optional(),
   stance: z.enum(['listed', 'untouchable']).optional(),
+  distressListing: z.enum(['open', 'listed', 'untouchable']).optional(),
   retiring: z.number().int().optional(),
   talk: z
     .strictObject({
@@ -230,6 +248,24 @@ const playerShape = {
       year: season,
       day: seasonDay,
       clauses: clauses.optional(),
+    })
+    .optional(),
+  renewalBids: z
+    .array(
+      z.strictObject({
+        club: id,
+        year: season,
+        window: z.enum(['summer', 'winter']),
+        reputation: rating,
+      }),
+    )
+    .max(2)
+    .optional(),
+  renewalRefused: z
+    .strictObject({
+      year: season,
+      window: z.enum(['summer', 'winter']),
+      kind: z.enum(['renew', 'improve']),
     })
     .optional(),
   improveAsked: season.optional(),
@@ -296,10 +332,16 @@ const fixture = z.object({
   away: id,
   country: text,
   groupKey: text,
+  leg: z.literal([1, 2]).optional(),
   score: score.optional(),
   shootout: score.optional(),
 });
+const leagueDeduction = z.strictObject({
+  deducted: z.number().int().positive().max(1000000),
+  deductionReason: z.literal('administration'),
+});
 const table = z.object({
+  ...leagueDeduction.partial().shape,
   played: number,
   won: number,
   drawn: number,
@@ -324,6 +366,10 @@ const snapshot = z.object({
       ]),
     )
     .max(100),
+  leagueDeductions: z
+    .record(id, leagueDeduction)
+    .refine((rows) => Object.keys(rows).length <= 100)
+    .optional(),
 });
 const scorerSeason = z.object({
   year: z.number().int().min(1901).max(4000),
@@ -538,6 +584,11 @@ const archive = z.object({
   rating: number,
   manager: text,
   metrics,
+  ...leagueDeduction.partial().shape,
+  leagueDeductions: z
+    .record(id, leagueDeduction)
+    .refine((rows) => Object.keys(rows).length <= 1000)
+    .optional(),
   standings: z.array(z.array(number).max(10)).max(1000),
   champions,
   europe: z
@@ -982,6 +1033,15 @@ const ownerState = z.strictObject({
   stake: z.number().int().min(0).max(100),
   dividendShare: z.literal(DIVIDEND_SHARES),
   fanMood: rating,
+  fanDisposition: z
+    .strictObject({
+      results: z.number().int().min(10).max(45),
+      identity: z.number().int().min(10).max(45),
+      finance: z.number().int().min(10).max(45),
+      stars: z.number().int().min(10).max(45),
+    })
+    .refine((mix) => Object.values(mix).reduce((sum, share) => sum + share, 0) === 100)
+    .optional(),
   starSaleWindow: z.strictObject({ year: season, kind: z.enum(['summer', 'winter']) }).optional(),
   ownerCrisis: z.strictObject({ since: careerDate }).optional(),
   fanCrisis: z.strictObject({ rounds: z.number().int().min(1).max(100) }).optional(),
@@ -1342,6 +1402,7 @@ const worldSchema: z.ZodType<World> = z.object({
     })
     .optional(),
   delegationRequests: z.partialRecord(budgetResponsibilitySchema, spendRequestSchema).optional(),
+  delegationWarningSeason: season.optional(),
   budgetPlan: z.strictObject({ year: season, revenue: amount, sales: amount }).optional(),
   cupWinners: z.record(id, id),
   cups: z.array(domesticCup).max(10).optional(),
@@ -1349,6 +1410,7 @@ const worldSchema: z.ZodType<World> = z.object({
   lastChampions: champions,
   critical: text.optional(),
   insolvent: z.number().int().min(1).optional(),
+  distress: distress.optional(),
   bankrupt: z
     .strictObject({
       year: z.number().int(),
@@ -1833,7 +1895,10 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       s.year > w.year ||
       s.day < s.round * 7 ||
       new Set(s.rows.map((row) => row[0])).size !== s.rows.length ||
-      s.rows.some((row) => row[0] >= w.clubs.length)
+      s.rows.some((row) => row[0] >= w.clubs.length) ||
+      Object.keys(s.leagueDeductions ?? {}).some(
+        (club) => !s.rows.some(([index]) => w.clubs[index]?.id === club),
+      )
     )
       throw new Error(sourceMessage('copy.schema.5c3b1c6347'));
     snapshotKeys.add(key);
@@ -1992,7 +2057,9 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   for (const [clubId, row] of Object.entries(w.tables)) {
     if (
       !ids.has(clubId) ||
-      Object.values(row).some((n) => !Number.isInteger(n) || n < 0) ||
+      Object.entries(row).some(
+        ([key, n]) => key !== 'deductionReason' && (!Number.isInteger(n) || Number(n) < 0),
+      ) ||
       row.played !== row.won + row.drawn + row.lost
     )
       throw new Error(sourceMessage('copy.schema.2c83d17d53'));
@@ -2015,6 +2082,8 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       )
         throw new Error(sourceMessage('copy.schema.4a1531878b'));
   for (const h of w.history) {
+    if (Object.keys(h.leagueDeductions ?? {}).some((club) => !ids.has(club)))
+      throw new Error(sourceMessage('copy.schema.4a1531878b'));
     if (
       h.scorers?.some(
         (scorer) =>

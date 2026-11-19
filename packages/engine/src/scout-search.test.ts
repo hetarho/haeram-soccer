@@ -103,10 +103,13 @@ describe('the chief scout reach (CLUB-51)', () => {
 
   it('searches our league and the divisions above and below, or our whole country', () => {
     const own = clubOf(world());
-    const clubs = (w: World) =>
-      transferOffers(w).flatMap((offer) =>
+    const clubs = (w: World) => {
+      // Isolate club reach from the free agents' rank in the shortlist.
+      w.freeAgents = [];
+      return transferOffers(w).flatMap((offer) =>
         offer.source.kind === 'club' ? [clubById(w, offer.source.club)!] : [],
       );
+    };
     const near = clubs(scoutAt(world(), 50));
     expect(near.length).toBeGreaterThan(0);
     for (const club of near) {
@@ -435,6 +438,7 @@ describe('found players (CLUB-50)', () => {
 
   it('bids for another club’s player at his club and lapses a bid on a generated one', () => {
     const w = world();
+    w.freeAgents = [];
     const index = transferOffers(w).findIndex((offer) => !offer.freeAgent);
     const offer = transferOffers(w)[index]!;
     // A club's player joins through a bid at his asking fee, never instantly (→CLUB-4).
@@ -562,7 +566,7 @@ describe('the ceiling above our eleven (ECON-16, T809)', () => {
   });
 
   it('finds the same players after switching the dial away and back (CLUB-14)', () => {
-    const w = elevenAt(scoutAt(world(), 85), 88),
+    const w = freeAgentsAt(elevenAt(scoutAt(world(), 85), 88), 93),
       before = structuredClone(transferOffers(w));
     expect(Math.max(...before.map((offer) => overall(offer.player)))).toBeGreaterThan(85);
     holdRows(w, { policy: { recruitment: 1 } });
@@ -626,8 +630,9 @@ describe("T784's seller candidates (measurement settings off in play)", () => {
 
   it("REFILL_SALE `kept`: a club does not sell the player filling a departure's place", () => {
     expect(REFILL_SALE.inForce).toBe('sold');
-    const w = world(),
-      listed = transferOffers(w).find((offer) => offer.source.kind === 'club')!,
+    const w = world();
+    w.freeAgents = [];
+    const listed = transferOffers(w).find((offer) => offer.source.kind === 'club')!,
       refill = {
         ...listed.player,
         id: `${listed.source.kind === 'club' ? listed.source.club : ''}:vacancy:0:${w.year}`,

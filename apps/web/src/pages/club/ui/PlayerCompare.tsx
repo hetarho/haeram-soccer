@@ -42,7 +42,13 @@ export type CompareSide = {
 
 type Better = 'higher' | 'lower' | undefined;
 type Cell = { text: ReactNode; value?: number | bigint };
-type Row = { label: string; cells: readonly [Cell, Cell]; better?: Better; bars?: boolean };
+type Row = {
+  description?: string;
+  label: string;
+  cells: readonly [Cell, Cell];
+  better?: Better;
+  bars?: boolean;
+};
 
 /** Which side reads better on a row, if the row has a direction and the values differ. */
 function winner(row: Row): 0 | 1 | undefined {
@@ -210,6 +216,8 @@ export function PlayerCompare({
       },
       ...(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[]).map((key) => ({
         label: PERSONALITY_LABEL[key],
+        description:
+          key === 'loyalty' ? sourceMessage('player.personality.loyalty.description') : undefined,
         cells: both((side) => ({
           text: gradeLabel(side.player.personality[key], side.own, scout, range),
         })),
@@ -295,7 +303,7 @@ export function PlayerCompare({
                           return index === 0
                             ? [
                                 td,
-                                <th key="label" scope="row">
+                                <th key="label" scope="row" title={localizeValue(row.description)}>
                                   {localizeValue(row.label)}
                                 </th>,
                               ]

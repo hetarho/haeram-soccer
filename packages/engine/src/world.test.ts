@@ -94,13 +94,15 @@ describe('world progression', () => {
       const squad = npcSquad(w.seed, w.year, club),
         slots = formationOf(clubStyle(club));
       expect(squad).toHaveLength(18);
-      slots.forEach((slot, i) => {
-        expect(squad[i]!.position).toBe(slot.position);
-        expect(squad[i]!.positions[slot.position]).toBe(3);
-        expect(
-          Math.abs(ovrAt(squad[i]!.attrs, slot.position, slot.role) - club.strength),
-        ).toBeLessThanOrEqual(1.5);
+      const starterRatings = slots.map((slot, i) => {
+        const starter = squad[i]!;
+        expect(starter.position).toBe(slot.position);
+        expect(starter.positions[slot.position]).toBe(3);
+        return ovrAt(starter.attrs, slot.position, slot.role);
       });
+      // The spread squad centers its starting eleven on the club strength (→WORLD-6).
+      const average = starterRatings.reduce((sum, rating) => sum + rating, 0) / slots.length;
+      expect(Math.abs(average - club.strength)).toBeLessThanOrEqual(1.5);
       for (const line of LINES)
         expect(squad.filter((p) => lineOf(p.position) === line)).toHaveLength(LINE_MINIMUM[line]);
     }

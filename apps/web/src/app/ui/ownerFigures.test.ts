@@ -412,6 +412,25 @@ describe('팬 민심 and the crises (→OWNER-12–15, WEB-56)', () => {
     expect(movers.map((mover) => mover.label).join(' / ')).toContain('배당');
     expect(movers.at(-1)).toMatchObject({ change: -5, direction: 'down' });
   });
+  it('uses the result disposition and the ordinary drift in the mood summary', () => {
+    const w = owned();
+    w.owner!.fanMood = 80;
+    w.owner!.traits = ['fansFriend'];
+    w.owner!.fanDisposition = { results: 45, finance: 15, identity: 20, stars: 20 };
+    w.ownMatches = [
+      {
+        year: w.year,
+        kind: 'league',
+        round: 1,
+        home: w.playerClub,
+        away: w.clubs.find((club) => club.id !== w.playerClub)!.id,
+        score: { home: 0, away: 1 },
+      } as (typeof w.ownMatches)[number],
+    ];
+    const [result, drift] = fanMovers(w);
+    expect(result.change).toBeCloseTo(-1.4 * FAN_MOOD.friendly);
+    expect(drift.change).toBeCloseTo((FAN_MOOD.start - 80) * FAN_MOOD.drift);
+  });
   it('shows 구단주 파산 위기 and 퇴진 압박 as statuses with what remains', () => {
     const w = owned();
     expect(ownerStatuses(w)).toEqual([]);
@@ -428,6 +447,17 @@ describe('팬 민심 and the crises (→OWNER-12–15, WEB-56)', () => {
     w.ended = 'fans';
     expect(ownerStatuses(w)).toEqual([]);
   });
+  it.each([1, 2, 3] as const)('shows stage %s and its next or recovery debt line', (stage) => {
+    const w = owned();
+    w.cash = '-1000';
+    w.distress = { stage, overHalfRounds: 8 };
+    show(w);
+    const band = renderToStaticMarkup(createElement(CashAlarm));
+    expect(band).toContain(['재정 경고', '매각 요구', '법정관리'][stage - 1]);
+    expect(band).toContain(stage === 3 ? '시즌 마감 시 부채' : '다음 단계 부채 기준');
+    expect(band).not.toContain('파산');
+    expect(band).not.toContain('4단계');
+  });
   it('renders the statuses beside the cash band, never as a dialog', () => {
     const w = owned();
     w.owner!.fanCrisis = { rounds: 2 };
@@ -441,7 +471,9 @@ describe('팬 민심 and the crises (→OWNER-12–15, WEB-56)', () => {
     plain.cash = '-1';
     show(plain);
     const band = renderToStaticMarkup(createElement(CashAlarm));
-    expect(band).toContain('<b>파산 위기</b>');
+    expect(band).toContain('<b>자금 위기</b>');
+    expect(band).toContain('다음 단계 부채 기준');
+    expect(band).not.toContain('파산');
     expect(band).not.toContain('crisis');
   });
 });
@@ -496,9 +528,10 @@ describe('the game-over page (→WEB-56, OWNER-16)', () => {
     w.insolvent = 8;
     expect(endCause(w)).toBe('club');
     const club = gameOverFacts(w);
-    expect(club.title).toBe(`${own(w).name} 파산`);
-    expect(club.line).toContain('구단이 파산해 문을 닫았어요');
-    expect(club.club).toBeUndefined();
+    expect(club.title).toBe('구단 운영이 끝났어요.');
+    expect(club.line).toContain('구단 운영이 끝났어요');
+    expect(club.line).not.toContain('파산');
+    expect(club.club).toBe(own(w).name);
     w.ended = 'club';
     expect(endCause(w)).toBe('club');
   });
