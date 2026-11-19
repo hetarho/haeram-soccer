@@ -22,6 +22,15 @@ const summary = () => ({
 });
 
 describe('current career-read contract', () => {
+  it('accepts absent legacy heat while preserving and validating existing values', () => {
+    const withoutHeat: Omit<ReturnType<typeof summary>, 'heatPlayers'> & {
+      heatPlayers?: string[];
+    } = summary();
+    delete withoutHeat.heatPlayers;
+    expect(careerReadsSchema.parse(withoutHeat)).toEqual(withoutHeat);
+    const legacy = { ...summary(), heatPlayers: ['person'] };
+    expect(careerReadsSchema.parse(legacy)).toEqual(legacy);
+  });
   it('accepts only the current summary format', () => {
     const current = summary();
     expect(careerReadsSchema.parse(current)).toEqual(current);

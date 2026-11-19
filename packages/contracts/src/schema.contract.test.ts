@@ -318,6 +318,12 @@ describe('rules 4 match facts (→MATCH-13, →MATCH-19, →HIST-16)', () => {
     };
     w.history[0].heat = { [booked.id]: Array.from({ length: 40 }, (_, i) => i * 3) };
     expect(canonical(validateWorld(structuredClone(w)))).toBe(canonical(w));
+    const withoutHeat = structuredClone(w);
+    delete withoutHeat.ownMatches.at(-1)!.material!.heat;
+    expect(canonical(validateWorld(structuredClone(withoutHeat)))).toBe(canonical(withoutHeat));
+    const invalidHeat = structuredClone(w);
+    invalidHeat.ownMatches.at(-1)!.material!.heat = [-1];
+    expect(() => validateWorld(invalidHeat)).toThrow();
     const loose = structuredClone(w);
     loose.discipline!.yellows[booked.id] = { friendly: 1 } as never;
     expect(() => validateWorld(loose)).toThrow();

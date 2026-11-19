@@ -22,7 +22,6 @@ function playerRow(s: CareerReads, id: string, year: number): PlayerRead {
     p.yellow[0] = 0;
     p.red[0] = 0;
     p.leagueReds = 0;
-    delete p.heat;
   }
   return p;
 }
@@ -38,7 +37,6 @@ export function initializeCareerReads(w: World) {
     promoted: false,
     bestPlayed: 0,
     bestFans: 0,
-    heatPlayers: [],
     bestWon: 0,
     players: {},
     europe: {},
@@ -50,8 +48,6 @@ export function refreshCareerReads(w: World) {
   const s = w.careerReads;
   if (!s) return;
   if (s.year !== w.year) {
-    for (const id of s.heatPlayers) delete s.players[id]?.heat;
-    s.heatPlayers = [];
     s.year = w.year;
   }
   while (s.matches < w.ownMatches.length) {
