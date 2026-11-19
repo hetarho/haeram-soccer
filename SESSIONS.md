@@ -5,7 +5,7 @@
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
 | sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T04:31Z | 2026-11-19T07:37Z | T1009 | gusta-session-start-sv19-0cc2a73b | 266903ff104f | ea1a0db8eec814a3c131d34b |
-| x10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T06:57Z | 2026-11-19T07:33Z | T995 | gusta-session-start-x10-d3a275d5 | 6657c4c43f0d | fa6c66b81ed935a24bc56d8b |
+| x10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T06:57Z | 2026-11-19T07:42Z | - | gusta-session-start-x10-d3a275d5 | 6657c4c43f0d | fa6c66b81ed935a24bc56d8b |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -271,8 +271,10 @@
 | T1020 | x10 | gusta-session-start-x10-d3a275d5 | 587f7e251e0e | 2026-11-19T07:26Z |
 | T1029 | x10 | gusta-session-start-x10-d3a275d5 | 5b0d4c6fc79d | 2026-11-19T07:33Z |
 | T1031 | sv19 | gusta-session-start-sv19-0cc2a73b | ebb994c62305 | 2026-11-19T07:37Z |
+| T995 | x10 | gusta-session-start-x10-d3a275d5 | 6657c4c43f0d | 2026-11-19T07:42Z |
 
 ## log
+- 261119 T995 done
 - 261119 T1031 done
 - 261119 T1029 done
 - 261119 T1020 done
@@ -292,4 +294,3 @@
 - 261119 T997 done
 - 261119 reconciled by the coordinator: ARCH r52 (5efe7d2ad) starts helpers from three cores; T997 implements minCores 3 with the engine share
 - 261119 gusta-update-ssot ARCH-6 start; T997 doing is affected by the measured threshold revision
-- 261119 T1007 done
