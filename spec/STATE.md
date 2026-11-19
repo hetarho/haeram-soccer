@@ -110,7 +110,6 @@
 | T1021 | Office previews dim while the clock runs, and the inventory closes | WEB ARCH | T1020 T996 | todo |
 | T997 | Two helpers from two cores, and the engine worker takes a share | ARCH | - | todo |
 | T998 | Helper count by core class | ARCH | T997 | todo |
-| T1000 | A save verifies its checksum; storage limits follow the browser quota | SAVE ARCH | T999 | todo |
 | T1001 | Checkpoints carry the plain world in one container | SAVE | T1000 | todo |
 | T1002 | The compact packing layer is deleted | SAVE ARCH KIT | T1001 | todo |
 | T1003 | Record-store port, save schema and an in-memory SQLite store for tests | ARCH SAVE | T1002 | todo |
@@ -143,7 +142,8 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1000 T953 T954
+- gusta-implement-task T1001
+- gusta-implement-task T953 T954
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 cost levers (261119, owner from reports/261119-np19 D2/D4/D5/D8): T989–T998 and T1019–T1021 — NPC place-fit tolerance, unwatched own matches without script/material and heat maps removed, slow view reads only on a stopped clock with dimmed places, helpers from two cores; T998 is explore (1h). Start with `gusta-implement-task T989` (or /gusta-start).
 - inspect work board for remaining tasks
