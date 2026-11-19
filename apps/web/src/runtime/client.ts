@@ -27,6 +27,7 @@ import {
   type SAVE_CORRUPTED_CODE,
 } from './seasonBackup';
 import { PlaybackStaging } from './staging';
+import { PlayingTab, type Elsewhere, type LockPort } from './playingTab';
 /**
  * How long opening, creating, saving or exporting a game may take in the engine worker: a save
  * may queue behind a long command that reports only its own progress, and a new career's first
@@ -69,6 +70,11 @@ export interface ClientState {
   clockRunning?: boolean;
   activity: 'idle' | 'foreground' | 'background';
   readonly: boolean;
+  /**
+   * The game plays in another tab (→SAVE-6): this tab shows that, with 여기서 이어 하기, and
+   * opens no game database.
+   */
+  elsewhere?: Elsewhere;
   savedRevision: number;
   /** When this tab last committed a checkpoint (epoch ms); unknown for a checkpoint it loaded. */
   savedAt?: number;
@@ -205,12 +211,12 @@ export class GameClient {
    * a read waits until the days computed ahead are shown (→WEB-18).
    */
   readGate?: ReadGate;
-  private release?: () => void;
-  private lockWait?: AbortController;
+  private tab?: PlayingTab;
+  /** Set by the app: stops the clock before this tab gives the game to another (→SAVE-6). */
+  onHandOver?: () => void;
   private cancelled = false;
+  /** Carries another tab's request to continue the game there (→ARCH-17). */
   private channel = new BroadcastChannel('haeram-soccor:updates');
-  private refreshPending = false;
-  private refreshSerial = 0;
   private storageListener = (event: StorageEvent) => {
     if (event.key === NOTIFICATIONS_KEY) notificationStore.sync();
   };
@@ -218,7 +224,7 @@ export class GameClient {
     this.worker.onmessage = (event: MessageEvent<Reply>) => this.received(event.data);
     this.worker.onerror = () => this.failWorker();
     this.startHelpers();
-    this.channel.onmessage = () => this.refresh();
+    this.channel.onmessage = (event: MessageEvent<unknown>) => void this.tab?.heard(event.data);
     window.addEventListener('storage', this.storageListener);
     notificationStore.sync();
   }
@@ -300,26 +306,6 @@ export class GameClient {
     for (const helper of this.helpers.splice(0)) helper.terminate();
     this.worker.postMessage({ type: 'helpers-failed' });
   }
-  private refresh() {
-    if (!this.state.readonly) return;
-    this.refreshSerial++;
-    if (this.refreshPending) return;
-    this.refreshPending = true;
-    void this.enqueue(
-      async () => {
-        while (true) {
-          const observed = this.refreshSerial;
-          await this.load();
-          // Drain notices that arrived during this load; another notification asks again.
-          if (this.refreshSerial === observed) break;
-        }
-      },
-      { background: !!this.state.view },
-    ).finally(() => {
-      this.refreshPending = false;
-    });
-  }
-
   private failWorker() {
     this.failed = true;
     this.worker.terminate();
@@ -352,41 +338,56 @@ export class GameClient {
       await this.enqueue(() => this.load());
       return;
     }
-    await new Promise<void>((resolve) => {
-      void navigator.locks.request('haeram-soccor:writer', { ifAvailable: true }, async (lock) => {
-        this.state.readonly = !lock;
-        if (!lock) this.state.notice = sourceMessage('shell.readonlyNotice');
-        await this.enqueue(() => this.load());
-        resolve();
-        if (lock)
-          await new Promise<void>((done) => {
-            this.release = done;
-          });
-        else this.awaitOwnership();
-      });
-    });
+    this.tab = new PlayingTab(
+      navigator.locks as unknown as LockPort,
+      (message) => this.channel.postMessage(message),
+      {
+        acquired: (moved) => this.acquired(moved),
+        giveUp: () => this.giveUp(),
+        changed: () => {
+          this.state.elsewhere = this.tab?.elsewhere;
+          this.emit();
+        },
+      },
+    );
+    await this.tab.start();
+    if (this.tab.playing || this.failed) return;
+    // Another tab plays: this one waits without opening the game's database (→SAVE-6).
+    this.state.elsewhere = this.tab.elsewhere;
+    await this.enqueue(() => this.load());
+  }
+  /** This tab now plays: it opens the game in play, saying so when it took it from another tab. */
+  private async acquired(moved: boolean) {
+    this.state.readonly = false;
+    delete this.state.notice;
+    delete this.state.elsewhere;
+    if (moved) notificationStore.add(sourceMessage('tab.takenHere'));
+    await this.enqueue(() => this.load());
   }
   /**
-   * A read-only tab queues for the writer lock. When the playing tab closes (browsers may release
-   * the lock a moment later), this tab reloads the latest checkpoint and continues as the writer.
+   * Another tab asked for the game (→SAVE-6): the clock stops, the game is saved and its database
+   * closed and the pool paused, so that tab can open it. A failed save keeps the game here.
    */
-  private awaitOwnership() {
-    if (this.failed || !navigator.locks) return;
-    this.lockWait = new AbortController();
-    void navigator.locks
-      .request('haeram-soccor:writer', { signal: this.lockWait.signal }, async (lock) => {
-        if (!lock || this.failed) return;
-        this.state.readonly = false;
-        delete this.state.notice;
-        notificationStore.add(sourceMessage('copy.client.b912d5c1e3'));
-        await this.enqueue(() => this.load());
-        await new Promise<void>((done) => {
-          this.release = done;
-        });
-      })
-      .catch(() => {
-        /* aborted on dispose */
-      });
+  private async giveUp() {
+    if (this.failed) throw new Error(sourceMessage('copy.client.0747dd4e85'));
+    this.onHandOver?.();
+    let closed = false;
+    await this.enqueue(async () => {
+      clearTimeout(this.autosaveTimer);
+      this.autosaveTimer = undefined;
+      await this.save();
+      await this.rpc({ type: 'close-game', pause: true }, undefined, STORAGE_TIMEOUT_MS);
+      this.leaveGame();
+      this.gameFiles = undefined;
+      this.state.readonly = true;
+      closed = true;
+    });
+    // The queue reports its own failure as the error shown; the game then stays in this tab.
+    if (!closed) throw new Error(this.state.error);
+  }
+  /** 여기서 이어 하기: asks the tab playing the game to hand it to this one (→SAVE-6). */
+  continueHere() {
+    this.tab?.request();
   }
   /**
    * Opens the game in play — the slot index's active game — in the engine worker, which validates
@@ -495,7 +496,6 @@ export class GameClient {
       // A catalog pin, missing club designs (→SAVE-21) or the full match model (→SAVE-23) are
       // updated, never the gameplay rules or a settled fact.
       notificationStore.add(SAVE_DATA_UPDATED);
-      this.channel.postMessage({ revision: this.state.savedRevision });
     }
   }
   /**
@@ -719,8 +719,6 @@ export class GameClient {
     this.state.savedRevision = saved.revision;
     this.state.savedAt = Date.now();
     this.state.saveFailed = false;
-    // Read-only tabs hear of every commit.
-    this.channel.postMessage({ revision: saved.revision });
     this.emit();
   }
   /**
@@ -1218,8 +1216,7 @@ export class GameClient {
       waiter.reject(new Error(sourceMessage('copy.client.250bdea6bf')));
     }
     this.waiters.clear();
-    this.lockWait?.abort();
-    this.release?.();
+    this.tab?.dispose();
     this.channel.close();
     this.worker.terminate();
     for (const helper of this.helpers) helper.terminate();

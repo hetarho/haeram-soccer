@@ -509,7 +509,7 @@ describe('background worker publication', () => {
     expect(notifications()).toHaveLength(0);
   });
 
-  it('takes over writing once the playing tab releases the writer lock', async () => {
+  it('takes over writing on 여기서 이어 하기 once the playing tab releases the writer lock', async () => {
     await start();
     let release: (lock: object) => void = () => {};
     const granted = new Promise<object>((resolve) => (release = resolve));
@@ -526,6 +526,9 @@ describe('background worker publication', () => {
     clients.push(reader);
     await reader.start();
     expect(reader.state.readonly).toBe(true);
+    expect(reader.state.elsewhere).toEqual({});
+    // 여기서 이어 하기 queues for the lock (→SAVE-6).
+    reader.continueHere();
     release({ name: 'haeram-soccor:writer' });
     await vi.waitFor(() => expect(reader.state.readonly).toBe(false));
     expect(reader.state.notice).toBeUndefined();

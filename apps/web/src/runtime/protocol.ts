@@ -290,8 +290,9 @@ export const requestSchema = z.object({
     z.object({ type: z.literal('save') }),
     // Slots are database files (→SAVE-14): `close-game` releases the game in play's database after
     // its save, `delete-game` removes a game's file (closing it first when it is in play) and
-    // `list-games` answers the game IDs whose files exist (→SAVE-29).
-    z.strictObject({ type: z.literal('close-game') }),
+    // `list-games` answers the game IDs whose files exist (→SAVE-29). `pause` also releases the
+    // database pool, so another tab can take the game (→SAVE-6); the pool resumes on its next use.
+    z.strictObject({ type: z.literal('close-game'), pause: z.literal(true).optional() }),
     z.strictObject({ type: z.literal('delete-game'), gameId }),
     z.strictObject({ type: z.literal('list-games') }),
     // `restore-backup` copies a game's season backup over its database file and opens it (→SAVE-31);

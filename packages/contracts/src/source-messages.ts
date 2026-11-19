@@ -2174,6 +2174,7 @@ export const sourceMessages = {
     '안전한 저장을 위해 Web Locks가 지원되는 HTTPS 또는 localhost 환경이 필요합니다.',
   'shell.readonlyNotice': '다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.',
   'copy.client.b912d5c1e3': '다른 탭이 닫혀 이 탭에서 이어서 플레이합니다.',
+  'tab.takenHere': '다른 탭에서 게임을 옮겨 와 이 탭에서 이어서 플레이합니다.',
   'copy.client.6138a2ccc4': '이전의 정상 체크포인트로 복구했습니다.',
   'copy.client.042fb5736b':
     '현재 진행은 메모리에 있습니다. 갱신한 저장 데이터를 저장하지 못했어요: {p0} · 파일로 내보내세요.',

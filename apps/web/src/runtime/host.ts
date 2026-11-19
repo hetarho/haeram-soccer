@@ -20,7 +20,9 @@ import {
   importFile,
   listFiles,
   openGamePool,
+  pause as pausePool,
   poolBackupFiles,
+  unpause as unpausePool,
   type BackupFiles,
   type GamePool,
 } from '../adapters/sqliteWasm';
@@ -485,6 +487,9 @@ export class Host {
   private release: MatchModelRelease;
   /** The game database pool, installed on first use; games open through it (→ARCH-11). */
   private gamePool?: Promise<GamePool>;
+  /** Whether the pool's handles were given to another tab (→SAVE-6), and their return under way. */
+  private poolPaused = false;
+  private resuming?: Promise<void>;
   constructor(
     private progress: (reply: Reply) => void = () => {},
     options: {
@@ -769,10 +774,20 @@ export class Host {
    * Releases the game in play's database after the client's save (→SAVE-14): no game is in play
    * until the next `open-game`. A world not yet in a database stays what it is, nobody's file.
    */
-  private releaseGame(r: Request): Reply {
-    if (this.game) {
+  private async releaseGame(r: Request, pause: boolean): Promise<Reply> {
+    if (this.game || pause) {
       this.closeGame();
       this.world = undefined;
+    }
+    if (pause) {
+      // Another tab takes the game (→SAVE-6): nothing of it stays here, and the pool lets go.
+      this.start = undefined;
+      const pool = await this.gamePool?.catch(() => undefined);
+      if (pool && !this.poolPaused) {
+        await this.resuming;
+        pausePool(pool);
+        this.poolPaused = true;
+      }
     }
     return { requestId: r.requestId, ok: true };
   }
@@ -828,12 +843,22 @@ export class Host {
    * The engine worker's game database pool, opened once on first use; a capability failure is
    * reported to the caller and tried again on the next call (→ARCH-11, →ARCH-17).
    */
-  databases(): Promise<GamePool> {
+  async databases(): Promise<GamePool> {
     this.gamePool ??= openGamePool().catch((error: unknown) => {
       this.gamePool = undefined;
       throw error;
     });
-    return this.gamePool;
+    const pool = await this.gamePool;
+    // A pool paused for another tab takes its handles back once this tab plays again (→SAVE-6).
+    if (this.poolPaused)
+      await (this.resuming ??= unpausePool(pool)
+        .then(() => {
+          this.poolPaused = false;
+        })
+        .finally(() => {
+          this.resuming = undefined;
+        }));
+    return pool;
   }
   /**
    * SAVE-23: a copy of the validated candidate on the full match model, or on its later revision
@@ -1248,7 +1273,7 @@ export class Host {
       if (r.body.type === 'save') return await this.save(r);
       if (r.body.type === 'restore-backup') return await this.restoreBackup(r, r.body.gameId);
       if (r.body.type === 'open-game') return await this.openGame(r, r.body.gameId);
-      if (r.body.type === 'close-game') return this.releaseGame(r);
+      if (r.body.type === 'close-game') return await this.releaseGame(r, !!r.body.pause);
       if (r.body.type === 'delete-game') return await this.deleteGame(r, r.body.gameId);
       if (r.body.type === 'export-game')
         return await this.exportGame(r, r.body.gameId, r.body.memory);

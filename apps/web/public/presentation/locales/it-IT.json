@@ -7049,6 +7049,14 @@
     "renewal.guide.wage": "Uno stipendio sopra il minimo aumenta la probabilità di accettazione. Richiesta e minimo restano quelli registrati all’apertura.",
     "renewal.guide.staff": "Se le regole di permanenza e finanza lo consentono, il direttore delegato offre; il giocatore usa lo stesso calcolo delle offerte del proprietario.",
     "copy.MatchMaterial.d59195b9a8": "Questa partita non ha mappe perché non è stata guardata.",
-    "progression.clockRunning.dimReason": "Questa sezione non è disponibile mentre il calendario avanza perché le informazioni del giorno corrente non sono ancora state calcolate."
+    "progression.clockRunning.dimReason": "Questa sezione non è disponibile mentre il calendario avanza perché le informazioni del giorno corrente non sono ancora state calcolate.",
+    "tab.elsewhere.title": "In gioco in un'altra scheda",
+    "tab.elsewhere.description": "Questa partita è in corso in un'altra scheda. Continua qui e quella scheda salva la partita e la passa a questa.",
+    "tab.moved.title": "La partita è passata a un'altra scheda",
+    "tab.moved.description": "La partita è stata salvata e passata a un'altra scheda. Continua qui per riprenderla allo stesso modo.",
+    "tab.continueHere": "Continua qui",
+    "tab.waiting": "In attesa che l'altra scheda salvi la partita e la passi.",
+    "tab.unanswered": "L'altra scheda non risponde. La partita continuerà qui quando quella scheda si chiude.",
+    "tab.takenHere": "La partita è arrivata da un'altra scheda e continua in questa."
   }
 }

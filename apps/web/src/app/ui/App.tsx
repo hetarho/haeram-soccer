@@ -111,6 +111,12 @@ const GameSlotScreen = lazy(() =>
     default: module.GameSlotScreen,
   })),
 );
+/** A tab whose game plays in another tab (→SAVE-6) shows only this page, loaded on its own. */
+const PlayingElsewhere = lazy(() =>
+  import('../../pages/slots/ui/GameSlotScreen').then((module) => ({
+    default: module.PlayingElsewhere,
+  })),
+);
 
 /** Set while this tab is in a game, so a reload continues it instead of showing the slots. */
 const IN_GAME = 'haeram-soccor:in-game';
@@ -770,6 +776,8 @@ export function App() {
       const c = new GameClient((state) => gameStore.publish(state, { viewShared: true }));
       const progression = new ProgressionController(c);
       const library = new GameSlots(c);
+      // Another tab takes the game: the clock stops first, days computed ahead shown at once.
+      c.onHandOver = () => progression.pause(true);
       // A hidden tab plays on at its wall-clock pace unless the owner chose to pause it
       // (→WEB-64). Leaving also refreshes the slot card, so the slot screen shows where this
       // game stood, and stores the clock so a later visit can play the time away. Hiding and
@@ -803,7 +811,9 @@ export function App() {
     }
   }, []);
   const w = state?.view?.world;
-  const playing = screen === 'game' && !!w && !replacing;
+  // The game plays in another tab: this one shows only that, with 여기서 이어 하기 (→SAVE-6).
+  const elsewhere = useGameState((state) => !!state.elsewhere);
+  const playing = screen === 'game' && !!w && !replacing && !elsewhere;
   const officePending = playing ? approvalRequests(w).length : 0;
   const marketOpen = useMarketOpen();
   const current = (id: NavEntry) =>
@@ -1030,7 +1040,9 @@ export function App() {
       </aside>
       <main className={s.main}>
         {localizeValue(
-          screen === 'game' && <GameHud client={client} onMenu={openMenu} playing={playing} />,
+          screen === 'game' && !elsewhere && (
+            <GameHud client={client} onMenu={openMenu} playing={playing} />
+          ),
         )}
         {localizeValue(
           !client && localError && (
@@ -1042,7 +1054,7 @@ export function App() {
           ),
         )}
         {localizeValue(
-          client && screen === 'game' && (
+          client && screen === 'game' && !elsewhere && (
             <RuntimeFeedback
               client={client}
               localError={localError}
@@ -1059,7 +1071,17 @@ export function App() {
           )}
           {localizeValue(
             client && controller ? (
-              screen === 'slots' && slots ? (
+              elsewhere ? (
+                <Suspense
+                  fallback={
+                    <div className={s.loading} role="status">
+                      {localizeValue(t('shell.loadingSlots'))}
+                    </div>
+                  }
+                >
+                  <PlayingElsewhere onContinue={() => client.continueHere()} />
+                </Suspense>
+              ) : screen === 'slots' && slots ? (
                 <Suspense
                   fallback={
                     <div className={s.loading} role="status">

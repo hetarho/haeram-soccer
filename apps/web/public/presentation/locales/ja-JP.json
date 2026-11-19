@@ -7043,6 +7043,14 @@
     "renewal.guide.wage": "下限を上回る年俸は承諾確率を上げます。進行中の交渉は開始時の要求額と下限を保持します。",
     "renewal.guide.staff": "維持方針と財政条件を満たせば委任された部長が提示し、選手はオーナーの提示と同じ確率計算で答えます。",
     "copy.MatchMaterial.d59195b9a8": "この試合は観戦されなかったため、マップがありません。",
-    "progression.clockRunning.dimReason": "カレンダーの進行中は当日の情報がまだ計算されていないため、この領域を表示できません。"
+    "progression.clockRunning.dimReason": "カレンダーの進行中は当日の情報がまだ計算されていないため、この領域を表示できません。",
+    "tab.elsewhere.title": "別のタブでプレイ中",
+    "tab.elsewhere.description": "このゲームは別のタブでプレイ中です。ここで続けると、そのタブがゲームを保存してこのタブに引き渡します。",
+    "tab.moved.title": "ゲームは別のタブに移りました",
+    "tab.moved.description": "ゲームを保存して別のタブに引き渡しました。ここで続けると、同じ方法で取り戻せます。",
+    "tab.continueHere": "ここで続ける",
+    "tab.waiting": "別のタブがゲームを保存して引き渡すのを待っています。",
+    "tab.unanswered": "別のタブが応答しません。そのタブが閉じられると、このタブで続けます。",
+    "tab.takenHere": "別のタブからゲームを移し、このタブで続けます。"
   }
 }

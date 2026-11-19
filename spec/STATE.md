@@ -69,7 +69,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1019 | Contracts and saves carry no heat map | SAVE MATCH HIST ARCH | T993 T1002 | todo |
-| T1011 | One tab plays a game; another tab offers 여기서 이어 하기 | SAVE ARCH WEB | T1007 | todo |
+| T1011 | One tab plays a game; another tab offers 여기서 이어 하기 | SAVE ARCH WEB | T1007 | doing@261119.sv19 |
 | T1012 | The read-only game state is removed | SAVE WEB KIT | T1011 | todo |
 | T1013 | Person reads go through accessors that also see the record store | SAVE ARCH | T1009 | todo |
 | T1014 | People without a current role leave memory when the game saves | SAVE ARCH | T1013 T1010 | todo |

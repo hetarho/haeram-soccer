@@ -7046,6 +7046,14 @@
     "renewal.guide.wage": "Taban üzerindeki ücret kabul olasılığını artırır. Görüşme, açılışta kaydedilen talep ve tabanı korur.",
     "renewal.guide.staff": "Tutma ve mali kurallar izin verirse yetkili direktör teklif verir; oyuncu, sahibin teklifiyle aynı kabul hesabını kullanır.",
     "copy.MatchMaterial.d59195b9a8": "Bu maç izlenmediği için haritası yok.",
-    "progression.clockRunning.dimReason": "Takvim ilerlerken bu alan kullanılamaz; geçerli güne ait bilgiler henüz hesaplanmadı."
+    "progression.clockRunning.dimReason": "Takvim ilerlerken bu alan kullanılamaz; geçerli güne ait bilgiler henüz hesaplanmadı.",
+    "tab.elsewhere.title": "Başka bir sekmede oynanıyor",
+    "tab.elsewhere.description": "Bu oyun başka bir sekmede oynanıyor. Burada devam edersen o sekme oyunu kaydedip bu sekmeye devreder.",
+    "tab.moved.title": "Oyun başka bir sekmeye geçti",
+    "tab.moved.description": "Oyun kaydedilip başka bir sekmeye devredildi. Aynı şekilde geri almak için burada devam et.",
+    "tab.continueHere": "Burada devam et",
+    "tab.waiting": "Diğer sekmenin oyunu kaydedip devretmesi bekleniyor.",
+    "tab.unanswered": "Diğer sekme yanıt vermiyor. O sekme kapanınca oyun burada devam eder.",
+    "tab.takenHere": "Oyun başka bir sekmeden buraya geçti ve bu sekmede devam ediyor."
   }
 }

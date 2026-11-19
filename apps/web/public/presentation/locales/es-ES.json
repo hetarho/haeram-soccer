@@ -7049,6 +7049,14 @@
     "renewal.guide.wage": "Un salario superior al mínimo aumenta la probabilidad de aceptación. La negociación conserva la demanda y el mínimo de su apertura.",
     "renewal.guide.staff": "Si las políticas de retención y finanzas lo permiten, el director delegado ofrece; el jugador usa el mismo cálculo que ante una oferta del propietario.",
     "copy.MatchMaterial.d59195b9a8": "Este partido no tiene mapas porque no se vio.",
-    "progression.clockRunning.dimReason": "Esta sección no está disponible mientras avanza el calendario porque aún no se ha calculado la información del día actual."
+    "progression.clockRunning.dimReason": "Esta sección no está disponible mientras avanza el calendario porque aún no se ha calculado la información del día actual.",
+    "tab.elsewhere.title": "Jugando en otra pestaña",
+    "tab.elsewhere.description": "Esta partida se está jugando en otra pestaña. Si continúas aquí, esa pestaña guarda la partida y la pasa a esta.",
+    "tab.moved.title": "La partida se ha trasladado a otra pestaña",
+    "tab.moved.description": "La partida se guardó y pasó a otra pestaña. Continúa aquí para recuperarla del mismo modo.",
+    "tab.continueHere": "Continuar aquí",
+    "tab.waiting": "Esperando a que la otra pestaña guarde la partida y la entregue.",
+    "tab.unanswered": "La otra pestaña no responde. La partida continuará aquí cuando esa pestaña se cierre.",
+    "tab.takenHere": "La partida se trasladó aquí desde otra pestaña y continúa en esta."
   }
 }

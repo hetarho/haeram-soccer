@@ -7046,6 +7046,14 @@
     "renewal.guide.wage": "Wages above the floor raise acceptance chance. An open talk keeps the demand and floor recorded when it opened.",
     "renewal.guide.staff": "When retention and finance rules permit, the delegated director offers; the player uses the same acceptance calculation as for an owner offer.",
     "copy.MatchMaterial.d59195b9a8": "This match has no maps because it was not watched.",
-    "progression.clockRunning.dimReason": "This area is unavailable while the calendar is running because its current-day information is not ready yet."
+    "progression.clockRunning.dimReason": "This area is unavailable while the calendar is running because its current-day information is not ready yet.",
+    "tab.elsewhere.title": "Playing in another tab",
+    "tab.elsewhere.description": "This game is being played in another tab. Continue here and that tab saves the game and hands it to this one.",
+    "tab.moved.title": "The game moved to another tab",
+    "tab.moved.description": "The game was saved and handed to another tab. Continue here to take it back the same way.",
+    "tab.continueHere": "Continue here",
+    "tab.waiting": "Waiting for the other tab to save the game and hand it over.",
+    "tab.unanswered": "The other tab is not answering. The game continues here once that tab closes.",
+    "tab.takenHere": "The game moved here from another tab and continues in this tab."
   }
 }

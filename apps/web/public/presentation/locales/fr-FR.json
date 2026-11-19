@@ -7049,6 +7049,14 @@
     "renewal.guide.wage": "Un salaire au-dessus du plancher augmente la probabilité d’acceptation. La demande et le plancher restent ceux enregistrés à l’ouverture.",
     "renewal.guide.staff": "Si les règles de conservation et de finances le permettent, le directeur délégué propose ; le joueur applique le même calcul que pour une offre du propriétaire.",
     "copy.MatchMaterial.d59195b9a8": "Ce match n’a pas de cartes car il n’a pas été regardé.",
-    "progression.clockRunning.dimReason": "Cette section est indisponible pendant que le calendrier avance, car les informations du jour ne sont pas encore calculées."
+    "progression.clockRunning.dimReason": "Cette section est indisponible pendant que le calendrier avance, car les informations du jour ne sont pas encore calculées.",
+    "tab.elsewhere.title": "Partie en cours dans un autre onglet",
+    "tab.elsewhere.description": "Cette partie est jouée dans un autre onglet. Continuez ici et cet onglet enregistre la partie puis vous la transmet.",
+    "tab.moved.title": "La partie est passée dans un autre onglet",
+    "tab.moved.description": "La partie a été enregistrée et transmise à un autre onglet. Continuez ici pour la reprendre de la même façon.",
+    "tab.continueHere": "Continuer ici",
+    "tab.waiting": "En attente que l'autre onglet enregistre la partie et la transmette.",
+    "tab.unanswered": "L'autre onglet ne répond pas. La partie continuera ici dès sa fermeture.",
+    "tab.takenHere": "La partie a été reprise depuis un autre onglet et continue ici."
   }
 }

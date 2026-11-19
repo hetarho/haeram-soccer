@@ -7046,6 +7046,14 @@
     "renewal.guide.wage": "Loon boven de ondergrens verhoogt de acceptatiekans. De looneis en ondergrens blijven zoals vastgelegd bij de opening.",
     "renewal.guide.staff": "Als behoudsbeleid en financiën het toelaten, biedt de gedelegeerde directeur; de speler gebruikt dezelfde berekening als bij een bod van de eigenaar.",
     "copy.MatchMaterial.d59195b9a8": "Deze wedstrijd heeft geen kaarten omdat hij niet is bekeken.",
-    "progression.clockRunning.dimReason": "Dit onderdeel is niet beschikbaar zolang de kalender loopt, omdat de informatie voor de huidige dag nog niet is berekend."
+    "progression.clockRunning.dimReason": "Dit onderdeel is niet beschikbaar zolang de kalender loopt, omdat de informatie voor de huidige dag nog niet is berekend.",
+    "tab.elsewhere.title": "Wordt in een ander tabblad gespeeld",
+    "tab.elsewhere.description": "Dit spel wordt in een ander tabblad gespeeld. Speel je hier verder, dan slaat dat tabblad het spel op en geeft het aan dit tabblad.",
+    "tab.moved.title": "Het spel is naar een ander tabblad gegaan",
+    "tab.moved.description": "Het spel is opgeslagen en aan een ander tabblad gegeven. Speel hier verder om het op dezelfde manier terug te halen.",
+    "tab.continueHere": "Hier verderspelen",
+    "tab.waiting": "Wachten tot het andere tabblad het spel opslaat en overdraagt.",
+    "tab.unanswered": "Het andere tabblad reageert niet. Het spel gaat hier verder zodra dat tabblad sluit.",
+    "tab.takenHere": "Het spel is overgenomen van een ander tabblad en gaat in dit tabblad verder."
   }
 }

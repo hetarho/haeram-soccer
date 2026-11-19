@@ -361,3 +361,45 @@ export function GameSlotScreen({
     </section>
   );
 }
+
+/**
+ * The whole page of a tab whose game plays in another tab (→SAVE-6, →WEB-62): it says so, or that
+ * the game moved there from this tab, and offers only 여기서 이어 하기; the language and theme
+ * choices stay usable (→WEB-90).
+ */
+export function PlayingElsewhere({ onContinue }: { onContinue: () => void }) {
+  useTextLocale();
+  const { t } = useLocale();
+  const elsewhere = useGameState((state) => state.elsewhere);
+  const moved = !!elsewhere?.moved;
+  const waiting = !!elsewhere?.requested && !elsewhere.unanswered;
+  return (
+    <section
+      className={s.screen}
+      data-testid="playing-elsewhere"
+      aria-label={localizeValue(t(moved ? 'tab.moved.title' : 'tab.elsewhere.title'))}
+    >
+      <header className={s.head}>
+        <div className={s.brand}>
+          <span>{richMessage('copy.GameSlotScreen.0980486ee1')}</span>
+          <BetaMark version />
+        </div>
+        <h2>{localizeValue(t(moved ? 'tab.moved.title' : 'tab.elsewhere.title'))}</h2>
+        <PresentationSettingsTrigger />
+        <p>{localizeValue(t(moved ? 'tab.moved.description' : 'tab.elsewhere.description'))}</p>
+      </header>
+      {localizeValue(
+        elsewhere?.requested && (
+          <p data-surface="inset" className={s.note} role="status">
+            {localizeValue(t(elsewhere.unanswered ? 'tab.unanswered' : 'tab.waiting'))}
+          </p>
+        ),
+      )}
+      <div className={s.actions}>
+        <button data-ui="primary" className={a.primary} disabled={waiting} onClick={onContinue}>
+          {localizeValue(t('tab.continueHere'))}
+        </button>
+      </div>
+    </section>
+  );
+}

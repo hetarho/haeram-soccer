@@ -7043,6 +7043,14 @@
     "renewal.guide.wage": "Gaji di atas batas minimum meningkatkan peluang penerimaan. Negosiasi tetap memakai permintaan dan batas minimum yang dicatat saat dibuka.",
     "renewal.guide.staff": "Jika kebijakan retensi dan keuangan mengizinkan, direktur yang diberi wewenang menawar; pemain memakai perhitungan yang sama dengan tawaran pemilik.",
     "copy.MatchMaterial.d59195b9a8": "Pertandingan ini tidak memiliki peta karena tidak ditonton.",
-    "progression.clockRunning.dimReason": "Bagian ini tidak tersedia saat kalender berjalan karena informasi hari ini belum dihitung."
+    "progression.clockRunning.dimReason": "Bagian ini tidak tersedia saat kalender berjalan karena informasi hari ini belum dihitung.",
+    "tab.elsewhere.title": "Dimainkan di tab lain",
+    "tab.elsewhere.description": "Gim ini sedang dimainkan di tab lain. Lanjutkan di sini, dan tab itu menyimpan gim lalu menyerahkannya ke tab ini.",
+    "tab.moved.title": "Gim pindah ke tab lain",
+    "tab.moved.description": "Gim disimpan dan diserahkan ke tab lain. Lanjutkan di sini untuk mengambilnya kembali dengan cara yang sama.",
+    "tab.continueHere": "Lanjutkan di sini",
+    "tab.waiting": "Menunggu tab lain menyimpan gim dan menyerahkannya.",
+    "tab.unanswered": "Tab lain tidak merespons. Gim berlanjut di sini setelah tab itu ditutup.",
+    "tab.takenHere": "Gim dipindahkan dari tab lain dan berlanjut di tab ini."
   }
 }

@@ -7046,6 +7046,14 @@
     "renewal.guide.wage": "Gehalt über der Untergrenze erhöht die Annahmechance. Forderung und Untergrenze bleiben ab Verhandlungsbeginn gespeichert.",
     "renewal.guide.staff": "Erlauben Bindungs- und Finanzregeln das Angebot, bietet der beauftragte Direktor an; der Spieler nutzt dieselbe Annahmeberechnung wie beim Eigentümer.",
     "copy.MatchMaterial.d59195b9a8": "Dieses Spiel hat keine Karten, weil es nicht angesehen wurde.",
-    "progression.clockRunning.dimReason": "Dieser Bereich ist während des laufenden Kalenders nicht verfügbar, da die Informationen für den aktuellen Tag noch nicht berechnet sind."
+    "progression.clockRunning.dimReason": "Dieser Bereich ist während des laufenden Kalenders nicht verfügbar, da die Informationen für den aktuellen Tag noch nicht berechnet sind.",
+    "tab.elsewhere.title": "Wird in einem anderen Tab gespielt",
+    "tab.elsewhere.description": "Dieses Spiel läuft in einem anderen Tab. Spielst du hier weiter, speichert jener Tab das Spiel und übergibt es diesem.",
+    "tab.moved.title": "Das Spiel ist in einen anderen Tab gewechselt",
+    "tab.moved.description": "Das Spiel wurde gespeichert und an einen anderen Tab übergeben. Spiele hier weiter, um es auf dieselbe Weise zurückzuholen.",
+    "tab.continueHere": "Hier weiterspielen",
+    "tab.waiting": "Warte darauf, dass der andere Tab das Spiel speichert und übergibt.",
+    "tab.unanswered": "Der andere Tab antwortet nicht. Das Spiel geht hier weiter, sobald jener Tab geschlossen ist.",
+    "tab.takenHere": "Das Spiel wurde aus einem anderen Tab übernommen und geht in diesem Tab weiter."
   }
 }

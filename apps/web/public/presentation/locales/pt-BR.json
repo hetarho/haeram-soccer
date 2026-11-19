@@ -7049,6 +7049,14 @@
     "renewal.guide.wage": "Salário acima do piso aumenta a chance de aceitação. A negociação mantém a exigência e o piso registrados na abertura.",
     "renewal.guide.staff": "Se as regras de manutenção e finanças permitirem, o diretor delegado oferece; o jogador usa o mesmo cálculo das ofertas do proprietário.",
     "copy.MatchMaterial.d59195b9a8": "Esta partida não tem mapas porque não foi assistida.",
-    "progression.clockRunning.dimReason": "Esta área fica indisponível enquanto o calendário avança porque as informações do dia atual ainda não foram calculadas."
+    "progression.clockRunning.dimReason": "Esta área fica indisponível enquanto o calendário avança porque as informações do dia atual ainda não foram calculadas.",
+    "tab.elsewhere.title": "Jogando em outra aba",
+    "tab.elsewhere.description": "Este jogo está aberto em outra aba. Continue aqui e aquela aba salva o jogo e o passa para esta.",
+    "tab.moved.title": "O jogo foi para outra aba",
+    "tab.moved.description": "O jogo foi salvo e passado para outra aba. Continue aqui para recuperá-lo do mesmo jeito.",
+    "tab.continueHere": "Continuar aqui",
+    "tab.waiting": "Aguardando a outra aba salvar o jogo e entregá-lo.",
+    "tab.unanswered": "A outra aba não responde. O jogo continua aqui quando aquela aba fechar.",
+    "tab.takenHere": "O jogo veio de outra aba e continua nesta."
   }
 }

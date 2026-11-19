@@ -7043,6 +7043,14 @@
     "renewal.guide.wage": "하한보다 높은 연봉은 수락 확률을 높입니다. 열린 협상의 요구액과 하한은 협상 시작 때 확정된 금액입니다.",
     "renewal.guide.staff": "위임 시 유지 기준과 재정 기준을 통과하면 단장이 제안하며, 선수는 소유자 제안과 같은 확률 계산으로 답합니다.",
     "copy.MatchMaterial.d59195b9a8": "이 경기는 관전하지 않아 지도가 없어요.",
-    "progression.clockRunning.dimReason": "자동 진행 중에는 현재 날짜의 정보가 아직 계산되지 않아 이 영역을 볼 수 없습니다."
+    "progression.clockRunning.dimReason": "자동 진행 중에는 현재 날짜의 정보가 아직 계산되지 않아 이 영역을 볼 수 없습니다.",
+    "tab.elsewhere.title": "다른 탭에서 플레이 중",
+    "tab.elsewhere.description": "이 게임은 다른 탭에서 플레이 중이에요. 여기서 이어 하면 그 탭이 게임을 저장하고 이 탭으로 넘겨줘요.",
+    "tab.moved.title": "게임이 다른 탭으로 옮겨 갔어요",
+    "tab.moved.description": "게임을 저장하고 다른 탭에 넘겼어요. 여기서 이어 하면 같은 방법으로 다시 가져와요.",
+    "tab.continueHere": "여기서 이어 하기",
+    "tab.waiting": "다른 탭이 게임을 저장하고 넘겨주기를 기다리는 중이에요.",
+    "tab.unanswered": "다른 탭이 응답하지 않아요. 그 탭이 닫히면 이 탭에서 이어 해요.",
+    "tab.takenHere": "다른 탭에서 게임을 옮겨 와 이 탭에서 이어서 플레이합니다."
   }
 }

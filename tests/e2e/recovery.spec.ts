@@ -28,37 +28,49 @@ const advanceRound = async (page: import('@playwright/test').Page) => {
   const revision = await shownRevision(page);
   return revision;
 };
-test('one writer, live read-only updates and ownership after reload', async ({ page, context }) => {
-  // A takeover, a second tab, a round and a reload: Firefox CI 40077037075 ran past 30 s twice.
+test('one playing tab: another offers 여기서 이어 하기, hands over and takes back', async ({
+  page,
+  context,
+}) => {
+  // A takeover, a round and two hand-overs between tabs.
   test.slow();
   await found(page);
+  const revision = await advanceRound(page);
+  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   const second = await context.newPage();
   await second.goto('/');
-  // A new tab opens on the slot screen; read-only, it can only continue the game in play.
-  const slots = second.getByTestId('game-slots');
-  await expect(slots.getByRole('status').filter({ hasText: '읽기 전용' })).toBeVisible();
+  // The game plays in the first tab: the second opens no game and shows only that (→SAVE-6).
+  const waiting = second.getByTestId('playing-elsewhere');
+  await expect(waiting.getByRole('heading', { name: '다른 탭에서 플레이 중' })).toBeVisible();
+  await expect(second.getByTestId('game-slots')).toHaveCount(0);
+  await waiting.getByRole('button', { name: '여기서 이어 하기' }).click();
+  // The playing tab saves, closes the game and says it moved; the second tab takes it.
   await expect(
-    slots
-      .getByRole('listitem', { name: '슬롯 2 · 빈 슬롯' })
-      .getByRole('button', { name: '새 게임' }),
-  ).toBeDisabled();
-  await slots
+    page
+      .getByTestId('playing-elsewhere')
+      .getByRole('heading', { name: '게임이 다른 탭으로 옮겨 갔어요' }),
+  ).toBeVisible({ timeout: 30000 });
+  await expect(waiting).toHaveCount(0, { timeout: 30000 });
+  await second
+    .getByTestId('game-slots')
     .getByRole('listitem', { name: '슬롯 1' })
     .getByRole('button', { name: '이어하기' })
     .click();
-  await expect(second.getByRole('status').filter({ hasText: '읽기 전용' })).toContainText(
-    '읽기 전용',
-  );
-  await expect(second.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeDisabled();
-  await page.bringToFront();
-  const revision = await advanceRound(page);
-  await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
-  await second.bringToFront();
   await expect(second.getByTestId('game-round')).toHaveText('1', { timeout: 10000 });
-  await page.close();
-  await second.reload();
   await clubhouseTab(second).click();
   await expect(second.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
+  // The first tab takes it back the same way.
+  await page.bringToFront();
+  await page
+    .getByTestId('playing-elsewhere')
+    .getByRole('button', { name: '여기서 이어 하기' })
+    .click();
+  await expect(
+    second
+      .getByTestId('playing-elsewhere')
+      .getByRole('heading', { name: '게임이 다른 탭으로 옮겨 갔어요' }),
+  ).toBeVisible({ timeout: 30000 });
+  await expect(page.getByTestId('game-round')).toHaveText('1', { timeout: 30000 });
   await second.close();
 });
 test('unsupported import leaves the current world intact', async ({ page }) => {
@@ -183,11 +195,10 @@ test('a new game goes into another slot, both careers survive switching and back
   await expect(page).toHaveURL(/\/journal$/);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r0');
   await expect(page.getByText(club, { exact: true })).toHaveCount(0);
-  // A fresh window opens on the slot screen.
+  // A fresh window shows that the game plays in this one (→SAVE-6).
   const second = await page.context().newPage();
   await second.goto('/');
-  await expect(second.getByTestId('game-slots')).toBeVisible();
-  await expect(second.getByRole('listitem', { name: '슬롯 2' })).toContainText(club);
+  await expect(second.getByTestId('playing-elsewhere')).toBeVisible();
   await second.close();
 });
 test('deleting the game in play stays on the slot screen, even with every slot empty', async ({
