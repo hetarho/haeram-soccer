@@ -1480,7 +1480,7 @@ export const PERFORMANCE_CONFIG = {
   /** Paired evidence needs the same machine, toolchain and worlds; other runs are context only. */
   pairing: ['machine', 'toolchain', 'worlds'] as const,
   storage: {
-    /** SAVE-4's caps, enforced in apps/web/src/adapters (persistence.ts, compression.ts). */
+    /** SAVE-4's caps, enforced in apps/web/src/adapters (repository.ts, saveFile.ts). */
     portableFileBytes: PORTABLE_FILE_LIMIT,
     decompressedBytes: DECOMPRESSED_LIMIT,
   },

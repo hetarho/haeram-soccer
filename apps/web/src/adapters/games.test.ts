@@ -77,9 +77,9 @@ describe('slot summaries with one to three crest colours (→WEB-62, SAVE-14)', 
 });
 
 describe('slots as database files (→SAVE-14, SAVE-29)', () => {
-  it('reads only the slot index, never a checkpoint manifest, to know whether games exist', () => {
+  it('reads only the slot index, never a retired storage key, to know whether games exist', () => {
     const port = memory();
-    port.setItem('haeram-soccor:manifest', '{"worldId":"w"}');
+    port.setItem('haeram-soccor:slot:a', '{"worldId":"w"}');
     expect(new GameIndexStore(port).hasGames()).toBe(false);
     const store = new GameIndexStore(port);
     store.write({ ...store.read(), active: 0, slots: [entry('a', twoColour), null, null] });
