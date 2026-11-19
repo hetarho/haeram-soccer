@@ -14,6 +14,7 @@ export const INTEGRATION_FILES = [
   'apps/web/src/adapters/persistence.history.test.ts',
   'apps/web/src/adapters/persistence.long-career.test.ts',
   'apps/web/src/adapters/persistence.test.ts',
+  'apps/web/src/adapters/worldRows.world.test.ts',
   'apps/web/src/runtime/client.test.ts',
   'apps/web/src/runtime/fixtureHelpers.integration.test.ts',
   'apps/web/src/runtime/host.archive.test.ts',
