@@ -37,7 +37,7 @@ function open(store: RecordStore) {
   return { w, saver };
 }
 
-describe('people leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
+describe('people and player records leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
   it('plays a season alike with a cold move after every day and without saves', async () => {
     // A season after the takeover, retired people its records link are kept (→HIST-23).
     const start = simulatedWorld(CAREER, { seasons: 1 });
@@ -52,6 +52,9 @@ describe('people leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
     saveMovingCold(saved, saver);
     const everyone = Object.keys(reference.people!).length;
     expect(Object.keys(saved.people!).length).toBeLessThan(everyone);
+    // Retired players' linked records leave with them (T1015).
+    const records = (w: typeof saved) => Object.keys(w.playerRecords ?? {}).length;
+    expect(records(saved)).toBeLessThan(records(reference));
     expect(worldFacts(saved)).toBe(canonical(reference));
 
     // Fixture helpers play the saved world's other matches; the reference plays alone (→ARCH-6).
@@ -80,6 +83,8 @@ describe('people leaving memory at every save (→SAVE-32, →ARCH-5)', () => {
     }
     expect(saved.year).toBe(year + 1);
     expect(store.count('person', { cold: true })).toBeGreaterThan(0);
+    expect(store.count('player_record', { cold: true })).toBeGreaterThan(0);
+    expect(records(saved)).toBeLessThan(records(reference));
     expect(Object.keys(saved.people!).length).toBeLessThan(Object.keys(reference.people!).length);
     expect(worldFacts(saved)).toBe(canonical(reference));
   }, 900_000);

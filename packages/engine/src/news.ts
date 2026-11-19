@@ -1,4 +1,4 @@
-import { linkPlayer } from './player-records';
+import { linkPlayer, playerRecordOf } from './player-records';
 import { archivedLeaguePoints, leaguePoints } from './league-fixtures';
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
@@ -1868,7 +1868,7 @@ export function newsBefore(w: World, before?: string, tag?: NewsTag): NewsItem[]
 
 /** Retirement never creates its own eligibility link; its profile must already be retained. */
 export function recordRetirementNews(w: World, player: Player, club?: string) {
-  if (!w.newsJournal || !w.playerRecords?.[player.id]?.retired) return;
+  if (!w.newsJournal || !playerRecordOf(w, player.id)?.retired) return;
   appendHeadline(w, w.newsJournal, {
     id: `${w.year}:retirement:${player.id}`,
     year: w.year,

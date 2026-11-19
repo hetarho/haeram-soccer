@@ -721,6 +721,7 @@ function squadAtOpening(w: World, day: number): World {
     arrived = new Set(
       (w.recruitmentArrivals ?? []).filter(({ at }) => inWindow(at)).map(({ player }) => player),
     ),
+    // A move this season keeps its record in memory (`isColdPlayerRecord`, →SAVE-32).
     left = (p: Player) =>
       p.status === 'sold' &&
       (w.playerRecords?.[p.id]?.moves ?? []).some(

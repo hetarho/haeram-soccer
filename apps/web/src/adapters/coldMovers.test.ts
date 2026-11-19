@@ -33,6 +33,7 @@ function tinyWorld() {
     revision: 1,
     year: 1960,
     playerClub: 'c1',
+    players: [],
     manager: { id: 'm', person: 'kept' },
     people: {
       gone1: person('gone1'),
@@ -136,5 +137,44 @@ describe('people leave memory at a save (→SAVE-32)', () => {
     expect(Object.keys(w.people!)).toEqual(['active', 'gone2', 'kept']);
     expect(saver.save(w)).toMatchObject({ written: 1, deleted: 0 });
     expect(seqs()).toEqual({ ...before, gone2: [before['gone2']![0], false] });
+  });
+});
+
+describe('player records leave memory at a save (→SAVE-32)', () => {
+  const old = { moves: [{ year: 1950, day: 3, from: 'c1', to: 'c2', fee: '0' }], linked: true };
+  /** The tiny world with records of a person leaving at this save, one in play and one nobody. */
+  function recordsWorld() {
+    const w = tinyWorld();
+    w.playerRecords = structuredClone({ gone1: old, active: old, nobody: old });
+    return w;
+  }
+
+  it('writes them cold in the people save, with the people leaving it counted as gone', () => {
+    const store = memoryRecordStore();
+    const w = attachRecordStore(recordsWorld(), store);
+    const saver = new RowSaver(store);
+    saver.save(w);
+    const complete = worldFacts(w);
+    expect(saveMovingCold(w, saver)).toMatchObject({ written: 4, deleted: 0 });
+    expect(Object.keys(w.playerRecords!)).toEqual(['active']);
+    expect(store.get('player_record', 'gone1')?.cold).toBe(true);
+    expect(store.get('player_record', 'nobody')?.cold).toBe(true);
+    expect(worldFacts(w)).toBe(complete);
+    expect(Object.keys(rowsToWorld(store, { includeCold: false }).playerRecords!)).toEqual([
+      'active',
+    ]);
+  });
+
+  it('keeps every record when the write fails', () => {
+    const fail = { now: false };
+    const store = failingStore(fail);
+    const w = attachRecordStore(recordsWorld(), store);
+    new RowSaver(store).save(w);
+    const saver = new RowSaver(store);
+    saver.prime(rowsToWorld(store, { includeCold: false }));
+    fail.now = true;
+    expect(() => saveMovingCold(w, saver)).toThrow('quota');
+    expect(Object.keys(w.playerRecords!)).toEqual(['gone1', 'active', 'nobody']);
+    expect(store.get('player_record', 'nobody')?.cold).toBe(false);
   });
 });

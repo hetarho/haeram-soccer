@@ -47,6 +47,7 @@ export function higherReputationBid(w: World, p: Player, club: Club) {
     )
   )
     return true;
+  // A held player's record stays in memory (`isColdPlayerRecord`, →SAVE-32).
   const moves = w.playerRecords?.[p.id]?.moves ?? [];
   const last = moves[moves.length - 1];
   return (w.bids ?? []).some((b) => {

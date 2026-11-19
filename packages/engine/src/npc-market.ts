@@ -244,6 +244,7 @@ function clubFacts(w: World, club: Club, settlement?: Settlement): ClubFacts {
 function reservedReturns(w: World, club: string, settlement?: Settlement) {
   if (settlement) return settlement.returns.get(club) ?? 0;
   let count = 0;
+  // Memory holds every record with a loan (`isColdPlayerRecord`, →SAVE-32).
   for (const record of Object.values(w.playerRecords ?? {}))
     if (record.loan?.club === club) count++;
   return count;
@@ -526,6 +527,8 @@ export function returnNpcLoans(w: World) {
         : (w.squads?.[c.id] ?? []);
     for (const player of players) held.set(player.id, { club: c, player });
   }
+  // Memory holds every record with a loan, in the order a world that never saved holds them
+  // (`isColdPlayerRecord`, `restorePlayerRecord`, →SAVE-32).
   for (const [id, record] of Object.entries(w.playerRecords ?? {})) {
     const loan = record.loan;
     if (!loan || loan.until > w.year + 1) continue;
@@ -726,6 +729,7 @@ function windowMoves(w: World, days: readonly number[]) {
     sales = new Map<string, number>();
   const first = days[0]!,
     last = days.at(-1)!;
+  // Memory holds every record with a move this season (`isColdPlayerRecord`, →SAVE-32).
   for (const record of Object.values(w.playerRecords ?? {}))
     for (const move of record.moves)
       if (
@@ -795,6 +799,7 @@ export function npcMarket(w: World) {
   };
   // Every slot rating read while the day settles, through any module, is the settlement's.
   withSlotRatings(settlement.ratings, () => {
+    // Memory holds every record with a loan (`isColdPlayerRecord`, →SAVE-32).
     for (const record of Object.values(w.playerRecords ?? {}))
       if (record.loan)
         settlement.returns.set(

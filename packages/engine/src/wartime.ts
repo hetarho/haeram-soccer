@@ -43,6 +43,7 @@ export function crossWar(w: World, closed: number) {
           p.until++;
           if (p.loanUntil !== undefined) p.loanUntil++;
         }
+      // Memory holds every record with a loan (`isColdPlayerRecord`, →SAVE-32).
       for (const record of Object.values(w.playerRecords ?? {}))
         if (record.loan) {
           record.loan.until++;

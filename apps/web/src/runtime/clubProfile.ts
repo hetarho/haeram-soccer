@@ -16,6 +16,7 @@ import { stadiumCapacity } from '../../../../packages/engine/src/facility-model'
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { archivedFinish } from '../../../../packages/engine/src/club-past';
 import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
+import { playerRecordOf } from '../../../../packages/engine/src/player-records';
 
 /** Last finishes a profile lists, newest first. */
 const PROFILE_SEASONS = 5;
@@ -106,7 +107,7 @@ export function squadPlayer(
   playerId: string,
   clubId?: string,
 ): PlayerProfileRead | undefined {
-  const record = w.playerRecords?.[playerId];
+  const record = playerRecordOf(w, playerId);
   const read = (
     player: Player,
     kind: PlayerProfileRead['kind'],

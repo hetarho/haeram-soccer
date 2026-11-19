@@ -1,5 +1,6 @@
 /** Live squads of the playable associations (→WORLD-16). Reads never generate a new person. */
 import { hasPerson, personIdsWithPrefix } from './person-reads';
+import { hasPlayerRecord } from './player-records';
 import type { Club, Player, World } from '../../contracts/src/types';
 import { continuousSquad } from './npc-continuity';
 import { coachingGrade } from './aptitude';
@@ -155,7 +156,9 @@ export function foundSquads(w: World) {
         age = squadPlaceAge(w.seed, c.id, w.year + 1, 11 + (extra % (places.length - 11))).age;
       let suffix = extra,
         id = `${c.id}:founding:${w.year}:${suffix}`;
-      while (reserved.has(id)) id = `${c.id}:founding:${w.year}:${++suffix}`;
+      // A cold player record's ID is never taken again either (→SAVE-32).
+      while (reserved.has(id) || hasPlayerRecord(w, id))
+        id = `${c.id}:founding:${w.year}:${++suffix}`;
       reserved.add(id);
       const p = generatedPlayer(
         c.country,

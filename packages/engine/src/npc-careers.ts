@@ -1,6 +1,6 @@
 import { renewalAnswer, renewalContext, RENEWAL } from './renewal-answer';
 import { pruneRenewalBids } from './renewal-bids';
-import { retirePlayerRecord, settleAbsentPlayerRecords } from './player-records';
+import { hasPlayerRecord, retirePlayerRecord, settleAbsentPlayerRecords } from './player-records';
 import { recordRetirementNews } from './news';
 /** The shared summer of every playable club nobody owns (→WORLD-16). */
 import type { Club, Player, World } from '../../contracts/src/types';
@@ -183,7 +183,8 @@ export function intakeNpcYouth(
   if (!players || !c.levels) return;
   const count = refillOnly ? 0 : NPC_YOUTH.byAcademy[c.levels.academy]!.count;
   let added = 0;
-  // `used` holds the people in memory; a cold person's ID is never taken again either (→SAVE-32).
+  // `used` holds the people and player records in memory; a cold person's or record's ID is never
+  // taken again either (→SAVE-32).
   const kept = personIdsWithPrefix(w, `${c.id}:y:${year}:`);
   for (
     let serial = 0;
@@ -193,7 +194,7 @@ export function intakeNpcYouth(
     const state = clubRegistration(c, year, players);
     if (state.total >= state.ceiling) break;
     const id = `${c.id}:y:${year}:${serial}`;
-    if (used.has(id) || kept.has(id)) continue;
+    if (used.has(id) || kept.has(id) || hasPlayerRecord(w, id)) continue;
     const { age, level, potential } = youthDraw(w, c, id, added >= count, refillOnly);
     const p = generatedPlayer(
       c.country,
