@@ -179,7 +179,6 @@
 - 261119 decided T997: T997 measured two helpers slower on two cores → ARCH r52 starts the two helpers from three cores (HELPER_CONFIG.minCores 3), keeps the engine share wherever helpers run, and a two-core device computes alone; T997's first acceptance reads three cores and its fallback clause is now the rule (alt: keep two cores and accept 9% slower | drop the engine share)
 - 261119 decided T998: Use three helpers only at measured 6, 8 and 12 cores; keep two at all other eligible counts, including 4 where a repeat did not clear noise (alternatives: four helpers or extrapolate to unmeasured counts). Three clears noise on each adopted class and has the lower measured ratio at 6 and 12.
 - 261119 decided T998: Hand off the three-helper full-season parity assertion to the shared integration gate, preserving its full coverage (alternative: run integration inside this task); ARCH-30 and the assigned unit contract reserve integration for the fixed candidate.
-- 261119 parked T1019: T1019 waits for sv19's SQLite record store and world-row saver (T1003/T1004): run it after they land on main, with the test scope of decided 00230e4a; heat is already never written since T993, so leaving the optional legacy fields until then has no gameplay or speed cost. The x10 loop skips it.
 - 261119 decided T994: T994 runs on claude/sonnet@high instead of codex/gpt-6.1-terra@high: the last unit there ended it unfinished with no commit or newly checked acceptance (alt: the same route again)
 - 261119 decided T1013: T1013 runs on codex/gpt-6.1-terra@ultra instead of claude/opus@high: the last unit there ended it unfinished with no commit or newly checked acceptance (alt: the same route again)
 - 261119 decided T1014: Cold person writes and save marks: resolvePerson (every writer via heldPerson, retainPerson, retainStaffPerson) restores a cold person at his stored seq before writing, RowSaver keeps that seq on his next save and clears cold marks after every save attempt so a failed write never cools someone hired since (alt: restore in each call site | keep marks across a failed write). managerMarket.free is not in the predicate per the task; its people resolve by cold rows in validation and are restored on hire.
@@ -293,6 +292,7 @@
 | T1032 | sv19 | gusta-session-start-sv19-0cc2a73b | c2355b2f3da3 | 2026-11-19T12:55Z |
 
 ## log
+- 261119 T1019 unparked: T1003/T1004 are on the tk19 candidate (taken over from sv19), landing together
 - 261119 T1032 done
 - 261119 T1016 done
 - 261119 T1015 done
@@ -312,4 +312,3 @@
 - 261119 T1008 done
 - 261119 T1028 done
 - 261119 T994 done
-- 261119 split commit dropped by the coordinator (e34ae5858); nothing to publish
