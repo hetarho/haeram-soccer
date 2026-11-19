@@ -1419,7 +1419,189 @@
       "verificationCommands": []
     }
   },
-  "gate": null,
+  "gate": {
+    "token": "90af7969-7868-499d-935d-f4799583157d",
+    "owner": "tk19",
+    "via": "merge",
+    "executor": {
+      "host": "ihaelam-ui-MacBookPro.local",
+      "pid": 43321
+    },
+    "phase": "preparing",
+    "land": "main",
+    "base": "781ae0108be8a0ad4693e59b9107277333337b2c",
+    "cohort": [
+      {
+        "id": "853e43a2919794e4c665f452",
+        "tag": "tk19",
+        "host": "ihaelam-ui-MacBookPro",
+        "device": "ihaelam-ui-MacBookPro",
+        "branch": "gusta-session-start-tk19-9706a3bf",
+        "head": "eb5c6882b04dd2106321c2eda1f04b85f321e580",
+        "agentChecks": [
+          {
+            "id": "T1017-shared-final-gate",
+            "scenario": "The shared final batch gate and the CI browser journeys run on the integrated candidate that holds T1017's events/news cold movers",
+            "steps": [
+              "Run pnpm run verify:batch on the integrated candidate, including worldRows.world.test.ts and host.database.test.ts",
+              "Push and let the CI Chromium shards run every browser journey"
+            ],
+            "expected": "The batch gate and every Chromium journey pass; news, archive and transfer-ledger reads behave the same after a save that moves earlier seasons' events and news buckets cold",
+            "observed": "Not run in this unit. Task-tier checks passed (190 files, 1840 tests). The integration files coldPeople (2/2), host.archive, newsJournal, host, saveRoundTrip and seasonBackup.host (5 files, 59 tests) also passed locally.",
+            "evidence": [
+              "vibe check --tier task --diff-base c727840a4e05add8f6052a8487949d234d93578c --task T1017: ok",
+              "pnpm exec vitest run --project integration apps/web/src/runtime/coldPeople.integration.test.ts: 2 passed",
+              "pnpm exec vitest run --project integration host.archive/newsJournal/host/saveRoundTrip/seasonBackup.host: 5 files, 59 tests passed"
+            ],
+            "status": "not-run",
+            "reason": "Builds, the batch gate, the remaining integration suites and the browser journeys are left to the shared final gate and to CI under ARCH-30",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1018-view-history-identical",
+            "scenario": "The view's season list and archive reads stay identical before and after old season archives move cold at a save",
+            "steps": [
+              "Build a synthetic world with ten archives (1950-1959) in year 1960 and attach an in-memory record store",
+              "Save it, take archiveSummaries, then run saveMovingCold",
+              "Compare the summaries, worldFacts, archiveOf, archiveAt and the reopened database"
+            ],
+            "expected": "1950-1952 are cold with historyBase 3; the summaries and worldFacts are unchanged; a failed write moves nothing",
+            "observed": "coldMovers.test.ts passed 13/13 on a targeted run, and persisted-squads.test.ts passes 31/31 after the fix. The task-tier affected-units check has not been rerun since.",
+            "evidence": [
+              "apps/web/src/adapters/coldMovers.test.ts",
+              "packages/engine/src/persisted-squads.test.ts"
+            ],
+            "status": "pass",
+            "reason": "Deterministic unit tests that were actually run",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1018-saved-run-equals-unsaved",
+            "scenario": "A career spanning more than eight archived seasons, saved with cold moves every day for a season, equals the unsaved run",
+            "steps": [
+              "Run `pnpm exec vitest run --project integration apps/web/src/runtime/coldPeople.integration.test.ts`"
+            ],
+            "expected": "worldFacts(saved) equals canonical(reference), historyBase is above 1, and the archive reads match",
+            "observed": "Test Files 1 passed, Tests 2 passed, duration 254.58 s. It ran on the tree before the one-line player-records fix.",
+            "evidence": [
+              "apps/web/src/runtime/coldPeople.integration.test.ts"
+            ],
+            "status": "pass",
+            "reason": "Affected integration file actually run locally",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "implementer",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1018-season-archives",
+            "scenario": "Season list and archive detail remain identical after a cold save.",
+            "steps": [
+              "On the host's fixed integration candidate, inspect a career with more than eight archived seasons before and after saving; open an older season's archive detail."
+            ],
+            "expected": "The season list and retained archive detail match before and after the cold move.",
+            "observed": "Not observed in this tool-less unit.",
+            "evidence": [
+              "Unit checks passed; the earlier integration run passed before the final player-records fix and must be rerun on the combined candidate."
+            ],
+            "status": "not-run",
+            "reason": "Computer-use acceptance is assigned to the capable host at the integration gate.",
+            "replaces": [],
+            "stage": "integration",
+            "required": false,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1022-save-db-bench",
+            "scenario": "Database save measurements on the same host as the 261119 baseline: 1980 and 2000 takeovers, ten rich seasons and both 100-season profiles, each the median of 3 runs.",
+            "steps": [
+              "Build the worlds once: generateHistory + takeOver for 1980 and 2000, cachedWorld('ten rich seasons'), and scripts/benchmark.ts phases for the baseline and active-management 100-season profiles.",
+              "For each run, load the world afresh, hand it to the worker Host on a node SQLite file and send create-game, then save after 7, 7, 49 and 7 days.",
+              "Open the file in a fresh Host (open-game), read the complete and in-memory world JSON, and export a .haeram-save.",
+              "Compare with the 261119 whole-world autosave figures and with SAVE-4's limits."
+            ],
+            "expected": "Every world measured; saves far below the ~18 s whole-world autosave on the 2000 takeover; the 100-season database at most 1 GiB and its export at most 256 MiB.",
+            "observed": "2000 takeover: first save 0.69 s, an ordinary autosave 0.11-0.15 s (24-165x faster, same host, spread under 10%). 100-season profiles: database 223-225 MiB, export 31 MiB, open 3.1 s. All five worlds measured. Browser OPFS write speed not measured.",
+            "evidence": [
+              "artifacts/benchmarks/save-db-261119/README.md",
+              "artifacts/benchmarks/save-db-261119/takeover-2000.json",
+              "artifacts/benchmarks/save-db-261119/baseline-century-round23.json",
+              "artifacts/benchmarks/save-db-261119/active-management-century-round23.json"
+            ],
+            "status": "pass",
+            "reason": "",
+            "replaces": [],
+            "stage": "unit",
+            "required": true,
+            "owner": "unit",
+            "candidate": null,
+            "duplicationReason": ""
+          },
+          {
+            "id": "T1022-integration-batch",
+            "scenario": "Final batch gate (verify:batch) and Chromium CI shards on the 0.8.16 release candidate.",
+            "steps": [
+              "Sync main, then run pnpm run verify:batch on the candidate.",
+              "After the push, let CI run the three Chromium shards."
+            ],
+            "expected": "Batch checks and browser journeys pass on the candidate.",
+            "observed": "Not run in this unit; only task-tier checks (typecheck, lint, format, i18n, affected unit tests: 219 files, 2051 tests) ran and passed.",
+            "evidence": [],
+            "status": "not-run",
+            "reason": "Builds, integration and full suites belong to the shared final gate; this unit has no integration tool.",
+            "replaces": [],
+            "stage": "integration",
+            "required": true,
+            "owner": "host",
+            "candidate": null,
+            "duplicationReason": ""
+          }
+        ],
+        "verificationCommands": [],
+        "publication": "merge"
+      }
+    ],
+    "deferred": [
+      {
+        "id": "85b2d45965b2d07e73f2e8fb",
+        "tag": "np19",
+        "host": "ihaelam-ui-MacBookPro",
+        "branch": "gusta-session-self-improve-np19-f1c9b1b9",
+        "status": "paused",
+        "at": "2026-11-18T20:53:44.088Z",
+        "reason": "session-ended"
+      },
+      {
+        "id": "ea1a0db8eec814a3c131d34b",
+        "tag": "sv19",
+        "host": "hq-dev1-pve2-vm2",
+        "branch": "gusta-session-start-sv19-0cc2a73b",
+        "status": "paused",
+        "at": "2026-11-19T13:00:21.749Z",
+        "reason": "session-ended"
+      }
+    ],
+    "at": "2026-11-19T14:47:46.589Z",
+    "deadline": "2026-11-19T21:05:56.838Z",
+    "candidate": null,
+    "checks": [],
+    "agentChecks": [],
+    "rounds": []
+  },
   "history": [
     {
       "token": "52e8f1a3-77fc-44d4-a10f-34eddcb68874",
