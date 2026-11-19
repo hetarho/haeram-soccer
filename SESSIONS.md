@@ -179,7 +179,6 @@
 - 261119 decided T994: T994 read boundary exceeds five files → prepare undefined-safe consumers and world-only benchmark digest as T1026/T1027, then keep host, protocol, client, store and progression in T994 with its acceptance intact (alt: broaden one task beyond five files | leave consumers unsafe).
 - 261119 decided T994: Repeated unit cuts on T994 → split an unchanged read boundary first, clock/store activation second and paired measurement last; dimming depends on activation (alt: one cross-boundary unit | omit the speed gate).
 - 261119 parked T994: Planning commit 4530c1a5 could not be plan-pushed: origin/main T994 result differs from the session parent; plan-sync reported no action and retry still conflicted. Reconcile the planning commit against origin/main before implementing T994.
-- 261119 suggest T997: ARCH-6 requires helpers from two cores, but T997 requires the lowest measured faster threshold: paired own-day wall is 1.094 (95% 1.0548–1.1396) on CPUs 0,1 and 0.8993 (0.8910–0.9077) on CPUs 0–2 versus no helpers. Reconcile ARCH and the active task contract before enabling the measured three-core threshold; the full-season comparison is integration-stage handoff under ARCH-30.
 - 261119 decided T997: ARCH-6 helper threshold after measurement → two helpers from three cores, none below or unknown (alt: retain two despite slowdown | disable helpers); paired wall interval is slower on two and faster on three.
 - 261119 decided T997: T997 measured two helpers slower on two cores → ARCH r52 starts the two helpers from three cores (HELPER_CONFIG.minCores 3), keeps the engine share wherever helpers run, and a two-core device computes alone; T997's first acceptance reads three cores and its fallback clause is now the rule (alt: keep two cores and accept 9% slower | drop the engine share)
 
@@ -264,6 +263,7 @@
 | T1007 | sv19 | gusta-session-start-sv19-0cc2a73b | 5cdbd6182e5b | 2026-11-19T05:56Z |
 
 ## log
+- 261119 reconciled by the coordinator: ARCH r52 (5efe7d2ad) starts helpers from three cores; T997 implements minCores 3 with the engine share
 - 261119 gusta-update-ssot ARCH-6 start; T997 doing is affected by the measured threshold revision
 - 261119 T1007 done
 - 261119 T1027 done
@@ -283,4 +283,3 @@
 - 261119 T1001 done
 - 261119 T1000 done
 - 261119 T999 done
-- 261119 plan save-storage: ARCH r51 SAVE r72 WEB r224 KIT r11, T999–T1018 T1022 pushed 2edc3dbf0
