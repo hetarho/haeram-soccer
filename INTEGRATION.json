@@ -1269,6 +1269,22 @@
         "reason": "x10 landed outside the shared gate as 9c3a60796 (0.8.15) after its own verify:batch; sv19 was still mid-loop",
         "verified": false
       }
+    },
+    "853e43a2919794e4c665f452": {
+      "id": "853e43a2919794e4c665f452",
+      "owner": "5e24c55a-f79b-4439-8cb3-6738ec521145",
+      "tag": "tk19",
+      "kind": "start",
+      "publication": "merge",
+      "host": "ihaelam-ui-MacBookPro",
+      "device": "ihaelam-ui-MacBookPro",
+      "branch": "gusta-session-start-tk19-9706a3bf",
+      "head": "781ae0108be8a0ad4693e59b9107277333337b2c",
+      "land": "main",
+      "status": "working",
+      "at": "2026-11-19T13:04:24.724Z",
+      "agentChecks": [],
+      "verificationCommands": []
     }
   },
   "gate": null,
