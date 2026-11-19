@@ -1,6 +1,6 @@
 {
   "name": "haeram-soccor",
-  "version": "0.8.12",
+  "version": "0.8.13",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.34.6",
