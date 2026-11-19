@@ -174,7 +174,6 @@
 - 261119 suggest T993: T993 writer outputs without heat but contracts schema.ts requires material.heat and career-reads.ts requires heatPlayers; both files belong to downstream T1019 and lie outside T993 touches. Replan the contract boundary so the writer and schema change land atomically before closing T993; otherwise new saves fail validation.
 - 261119 decided T993: Writer and save schemas must land together → make legacy heat fields optional in T993, leaving removal and legacy-key dropping to T1019 (alt: ship an unreadable writer | defer the writer).
 - 261119 decided T1006: Game ID for a new career: the client creates a UUID at takeover and slots.sync lists the slot under it (one line in slots.ts), and activated imports reuse the ID the index lists for that world with create-game replace (alt: a game ID derived from the world ID | leave new careers unlisted until T1007). The under-10% save check is read on an ordinary day: the first day after a 1930 takeover opens every club's business and writes 420 of 2504 rows, later days 3 to 14.
-- 261119 suggest T994: T994 needs client.ts for the private read/RPC boundary and consumer files for undefined-safe access; its five-file touches omit these required paths. Replan the active task after releasing its claim, preserving acceptance and the 5-file limit, before implementation.
 - 261119 decided T994: T994 read boundary exceeds five files → prepare undefined-safe consumers and world-only benchmark digest as T1026/T1027, then keep host, protocol, client, store and progression in T994 with its acceptance intact (alt: broaden one task beyond five files | leave consumers unsafe).
 - 261119 decided T994: Repeated unit cuts on T994 → split an unchanged read boundary first, clock/store activation second and paired measurement last; dimming depends on activation (alt: one cross-boundary unit | omit the speed gate).
 - 261119 decided T997: ARCH-6 helper threshold after measurement → two helpers from three cores, none below or unknown (alt: retain two despite slowdown | disable helpers); paired wall interval is slower on two and faster on three.
@@ -266,6 +265,7 @@
 | T998 | x10 | gusta-session-start-x10-d3a275d5 | 8a8ed90c788b | 2026-11-19T06:47Z |
 
 ## log
+- 261119 replanned: T1026/T1027 split, then T994/T1028/T1029 (decided 261119)
 - 261119 published by the coordinator as e2defed18 (T994 T1020 T1026 T1027 T1028 T1029 and their STATE rows); session merge clean
 - 261119 T998 done
 - 261119 T1030 done
@@ -285,4 +285,3 @@
 - 261119 T1004 done
 - 261119 T1003 done
 - 261119 T991 done
-- 261119 T1002 done
