@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T04:31Z | 2026-11-19T06:16Z | T1030 | gusta-session-start-sv19-0cc2a73b | bc88380b8900 | ea1a0db8eec814a3c131d34b |
+| sv19 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T04:31Z | 2026-11-19T06:31Z | - | gusta-session-start-sv19-0cc2a73b | bc88380b8900 | ea1a0db8eec814a3c131d34b |
 | x10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-19T05:52Z | 2026-11-19T06:21Z | T998 | gusta-session-start-x10-d3a275d5 | 8a8ed90c788b | fa6c66b81ed935a24bc56d8b |
 
 ## inbox
@@ -262,8 +262,10 @@
 | T1027 | x10 | gusta-session-start-x10-d3a275d5 | 5c9e970ea804 | 2026-11-19T05:55Z |
 | T1007 | sv19 | gusta-session-start-sv19-0cc2a73b | 5cdbd6182e5b | 2026-11-19T05:56Z |
 | T997 | x10 | gusta-session-start-x10-d3a275d5 | a5619bafc210 | 2026-11-19T06:21Z |
+| T1030 | sv19 | gusta-session-start-sv19-0cc2a73b | bc88380b8900 | 2026-11-19T06:31Z |
 
 ## log
+- 261119 T1030 done
 - 261119 T997 done
 - 261119 reconciled by the coordinator: ARCH r52 (5efe7d2ad) starts helpers from three cores; T997 implements minCores 3 with the engine share
 - 261119 gusta-update-ssot ARCH-6 start; T997 doing is affected by the measured threshold revision
@@ -283,4 +285,3 @@
 - 261119 T1002 done
 - 261119 261119 mr18cx (T953–T980) + cx19 (T981) landed on main 36bcf488 as 0.8.13 after merging np19; verify:batch on 95e03065 (8 load timeouts rerun green), known +15–19% lived-season cost
 - 261119 T1001 done
-- 261119 T1000 done
