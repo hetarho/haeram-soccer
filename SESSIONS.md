@@ -188,6 +188,7 @@
 - 261119 decided T1032: Phase 1 gate repair → retain the three integration cases, use committed database revisions and complete saved facts, and copy mutable squad inputs while retaining the 900 s cap (alt: extend the timeout or shorten the world span) · this keeps the existing save, replay and league evidence and isolates the honour rollover in a small news-journal test.
 - 261119 suggest ARCH-30: move task check `pnpm exec vitest run --project integration apps/web/src/runtime/coldPeople.integration.test.ts` to the final gate (ARCH batch): it averaged 213s over 3 runs
 - 261119 suggest ARCH-30: move task check `pnpm run typecheck` to the final gate (ARCH batch): it averaged 71s over 2 runs
+- 261119 decided T1019: T1019 hold after sv19 stopped at its 22:00 stop-file → tk19 takes over the pushed sv19 branch (T1003-T1016, T1030-T1032 done) and runs T1019 on the record store in the same candidate as T1017/T1018/T1022, landing them together (alt: land sv19 first behind its own batch gate, then T1019 after a second gate). sv19 has no work in flight, so the conflict the hold avoided is gone.
 
 ## unlanded
 | id | tag | branch | commit | at |
