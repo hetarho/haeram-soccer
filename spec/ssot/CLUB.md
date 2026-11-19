@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r83 | Define the browser-demo rules for squad and growth.
+> r84 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its squad (→WORLD-16) becomes its own players, each as the player he was with his contract, filled to 20 with players generated at its level when it holds fewer (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -15,7 +15,7 @@
 - CLUB-6 [o] The starting lineup is always the manager's automatic one: it fills his formation (→STAFF-22) slot by slot with the available player of the highest 실효 OVR there (→PLAYER-6) less his fatigue load and the manager's selection trait (→STAFF-12); the owner sets no lineup. Substitutions pick by level at the slot. ← the manager picks the man who plays that slot best, not the best name
   - the manager also names the substitutes the era allows (→MATCH-20) — a goalkeeper first once three or more may be named, then cover for each line by 실효 OVR — and the set-piece and penalty takers by their attributes (→MATCH-18); injured and suspended players are never named.
 - CLUB-7 [o] Promotion, supporters, facilities, managers, player generations and finance measure growth; history survives transfers and retirement.
-- CLUB-8 [o] Facilities improve development and reach at the level they stand; the owner starts no facility work (→ECON-32).
+- CLUB-8 [o] Facilities improve development and reach at their completed levels (→=ECON-32). The owner starts work through the manual quote and can authorize continuation by part (→=ECON-43).
 
 - CLUB-9 [o] Match fatigue retains a higher cost for pressing than other tactics, modified within bounded ranges by 체력.
 
@@ -401,6 +401,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r84 261119 CLUB-8✎ owner starts no facility work→manual quoted starts and optional per-part continuation
 - r83 261118 CLUB-18✎ projected cash below the floor left the selling mechanism implicit→5-point asking-bar reduction for delegated negotiable players outside a distress stage
 - r82 261118 CLUB-25✎ implicit ability-fit tier anchors→WORLD-15's 80/70/60/50 levels
 - r81 261118 CLUB-33✎ the former runway test in the recruitment line→ECON-33's cash floor test

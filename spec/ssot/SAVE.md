@@ -1,5 +1,5 @@
 # SAVE Game persistence and protocol
-> r72 | Define the game database, its saves, backups and portable files, shared by the web and the app.
+> r73 | Define the game database, its saves, backups and portable files, shared by the web and the app.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -120,7 +120,10 @@
   - screens read such records through bounded, paginated worker reads (→ARCH-6), never the whole history at once.
   - moving a record out of memory never drops it (→SAVE-13).
 
+- SAVE-33 [o] Facility continuation (→~ECON-43) is saved with the owned club. Each part's off, enabled without pending authorization and enabled awaiting funds states are distinct. The active work record stays separate. A supported save without a setting defaults to off for that part, preserving any work under way. Loading or reading a game does not start work or charge the club.
+
 ## chg
+- r73 261119 SAVE-33+ per-part continuation and pending authorization survive save and load; absent settings default to off
 - r72 261119 SAVE-2✎ versioned JSON envelope, canonical-JSON checksum and adaptive gzip-cjk14/pure-JS brotli-bmp127 codecs→one SQLite database per game with versioned metadata, facts stored once, no packing/text encoding/compression · SAVE-3✎ IndexedDB active/previous checkpoints with copy-verify and manifest→changed rows in one transaction in the engine worker, full validation only at open/import · SAVE-4✎ 6 MiB UTF-16 checkpoint, 8 MiB file, 32 MiB decompressed→no database budget beyond the browser quota, export file 256 MiB, database 1 GiB · SAVE-6✎ read-only tabs queue for the lock→one playing tab, another offers 여기서 이어 하기, no read-only view · SAVE-7✎ codec→saves, export, import · SAVE-8✎ background codec worker checkpoint→changed rows between steps · SAVE-9✎ same envelope→gzip database behind a versioned SHA-256 header (.haeram-save), import validation order · SAVE-10✎ upgrade committed through SAVE-3→after a backup; read-only clause removed · SAVE-11✎ recover the validated predecessor→recover from the backup; raw slots/manifest→database untouched · SAVE-12- injected worker codec validator retired · SAVE-13✎ lossless compact encoding v1–v3 within SAVE-4→lossless facts, 100-season profiles save/reopen/export within SAVE-4 · SAVE-14✎ active/previous plus parked envelopes in IndexedDB, copy-verify switch→one database and backup per slot, close/open switch · SAVE-21/23/24/25/27/28✎ read-only, checkpoint container and compact wording→database schema and committed save · SAVE-29✎ earlier localStorage layouts→also IndexedDB checkpoints/parked games and earlier export files; manifest removed · SAVE-31+ season and pre-upgrade backup, offered recovery · SAVE-32+ current season in memory, unchanging records in the database read on demand
 - r71 261119 SAVE-19✎ persisted every own match's material and the season heat maps→watched matches' material only, no heat maps
 - r70 261114 SAVE-10✎ stale 0.7.0-only label→one coherently prepared current release with explicit compatible rules-5 patch labels including 0.8.0; metadata-only writer upgrade preserves facts and absent fields, incompatible/future rules remain refused
