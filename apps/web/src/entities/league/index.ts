@@ -43,7 +43,6 @@ export {
   ownLeagueProgress,
   parseLeague,
   rankChange,
-  rankHistoryYears,
   RESULT_POINTS,
   sameLeague,
   sameMembers,

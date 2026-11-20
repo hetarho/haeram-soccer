@@ -251,7 +251,11 @@ export function rankHistoryYears(w: World, ids: string[]): number[] {
   ].sort((a, b) => b - a);
 }
 
-export function leagueTimeline(w: World, ids: string[]): LeagueRound[] {
+export function leagueTimeline(
+  w: World,
+  ids: string[],
+  schedule: readonly Fixture[] = leagueFixtures(w, ids),
+): LeagueRound[] {
   const savedRounds = archivedTimeline(w, w.year).filter((round) =>
     sameMembers(
       ids,
@@ -260,7 +264,7 @@ export function leagueTimeline(w: World, ids: string[]): LeagueRound[] {
   );
 
   // Scores are the source of truth for older saves and leagues without saved snapshots.
-  const fixtures = leagueFixtures(w, ids)
+  const fixtures = schedule
     .filter((f) => f.score)
     .sort((a, b) => a.round - b.round || a.id.localeCompare(b.id));
   const tables = Object.fromEntries(ids.map((id) => [id, emptyRow()]));

@@ -88,7 +88,6 @@ test('opens an own match material from its report and from the fixture notebook'
     .getByRole('group', { name: '일정·결과 보기' })
     .getByRole('button', { name: '우리 경기', exact: true })
     .click();
-  await page.getByText('우리 팀 일정 노트', { exact: true }).click();
   const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
   await chooseOption(
     notebook.getByRole('combobox', { name: '일정 진행 상태', exact: true }),
@@ -127,7 +126,6 @@ test('explains missing maps for an own match settled by automatic play', async (
     .getByRole('group', { name: '일정·결과 보기' })
     .getByRole('button', { name: '우리 경기', exact: true })
     .click();
-  await page.getByText('우리 팀 일정 노트', { exact: true }).click();
   const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
   await chooseOption(
     notebook.getByRole('combobox', { name: '일정 진행 상태', exact: true }),

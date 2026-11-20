@@ -121,6 +121,10 @@ column labels orient the reader, body values stay readable, and row separators r
 than both. An own-club mark may identify our row without turning every alternate row into a
 large highlighted block.
 
+Sortable numeric headers use text buttons and a small direction mark. Keep sort controls inside
+the header cells so row order can change without moving the sticky identity columns. Keep the
+round and season chevrons in the same shared stepper so their focus and boundary states match.
+
 Background facts that change on their own, such as the world's history while it is generated
 (WEB-115), read as compact text lists rather than tables or cards: one `inset` plane holds the
 lists, rows wrap instead of truncating and carry no touch target, and two lists sit side by side

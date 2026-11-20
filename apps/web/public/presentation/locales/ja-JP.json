@@ -3127,6 +3127,8 @@
     "copy.LeagueInsights.222a9e05c1": "床 {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "ランキングは、同じラウンドの他のチームの結果に依存します。",
     "copy.LeagueInsights.29c853849e": "今シーズンリーグの日程が終わりました。シーズンが終わったら、リーグのシーズンリストで決算と昇降結果を見ることができます。",
+    "league.rank.clubSelection": "順位推移に表示するクラブ",
+    "league.rank.emptySelection": "順位推移を表示するクラブを選択してください。",
     "copy.LeagueInsights.9cfb907bbd": "シーズンランキング推移",
     "copy.LeagueInsights.5ef6d66a2a": " ・当時{p0}",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2}・上がるほど高い順位",

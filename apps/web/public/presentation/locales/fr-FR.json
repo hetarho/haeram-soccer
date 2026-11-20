@@ -3366,6 +3366,8 @@
     "copy.LeagueInsights.222a9e05c1": "Plancher {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "Les classements varient en fonction des résultats des autres équipes lors du même tour.",
     "copy.LeagueInsights.29c853849e": "Le calendrier de la ligue cette saison est terminé.À la fin de la saison, vous pouvez voir les résultats du règlement et de la promotion dans la liste des saisons de la ligue.",
+    "league.rank.clubSelection": "Clubs dans le graphique de classement",
+    "league.rank.emptySelection": "Sélectionnez un club pour afficher son évolution au classement.",
     "copy.LeagueInsights.9cfb907bbd": "Tendance du classement de la saison",
     "copy.LeagueInsights.5ef6d66a2a": " · {p0} à l'époque",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2} · Plus vous montez haut, plus le rang est élevé.",

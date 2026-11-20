@@ -142,14 +142,10 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(page.getByRole('dialog', { name: '경기 리포트' })).toContainText('경기 분석 리포트');
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
-  await pastTab('팀 기록').click();
-  await page
-    .getByRole('group', { name: '팀 기록 보기' })
-    .getByRole('button', { name: '순위 추이', exact: true })
-    .click();
+  await pastTab('순위 추이').click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
   // The bar takes the live bar's keys.
-  await pastTab('팀 기록').press('ArrowRight');
+  await pastTab('순위 추이').press('ArrowRight');
   await expect(pastTab('선수 기록')).toBeFocused();
   await expect(pastTab('선수 기록')).toHaveAttribute('aria-selected', 'true');
   const scorers = page.getByRole('table', { name: '지난 시즌 득점 순위' });
@@ -243,17 +239,15 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
   await openLeague(page);
   await expect(page.getByRole('region', { name: '우리 팀 일정 노트', exact: true })).toHaveCount(0);
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
-  const expand = page.getByRole('button', { name: /전체 \d+팀 순위 보기/ }).first();
-  await expect(expand).toBeVisible();
-  await expand.click();
-  await expect(expand).toHaveCount(0);
+  await expect(page.getByRole('table', { name: '리그 순위표' }).locator('tbody tr')).toHaveCount(
+    20,
+  );
   // The fixture notebook is the own-club lens under schedule/results.
   await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
   await page
     .getByRole('group', { name: '일정·결과 보기' })
     .getByRole('button', { name: '우리 경기', exact: true })
     .click();
-  await page.getByText('우리 팀 일정 노트', { exact: true }).click();
   const notebook = page.getByRole('region', { name: '우리 팀 일정 노트', exact: true });
   await chooseOption(notebook.getByRole('combobox', { name: '일정 홈 원정', exact: true }), 'away');
   const cards = notebook.getByTestId('fixture-card');

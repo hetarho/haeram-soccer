@@ -3134,6 +3134,8 @@
     "copy.LeagueInsights.222a9e05c1": "지면 {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "순위는 같은 라운드 다른 팀의 결과에 따라 달라져요.",
     "copy.LeagueInsights.29c853849e": "이번 시즌 리그 일정이 끝났습니다. 시즌이 마감되면 리그의 시즌 목록에서 결산과 승강 결과를 볼 수 있어요.",
+    "league.rank.clubSelection": "순위 추이 팀 선택",
+    "league.rank.emptySelection": "그래프에 표시할 팀을 선택하세요.",
     "copy.LeagueInsights.9cfb907bbd": "시즌 순위 추이",
     "copy.LeagueInsights.5ef6d66a2a": " · 당시 {p0}",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2}· 위로 올라갈수록 높은 순위",

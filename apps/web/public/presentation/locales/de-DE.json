@@ -3070,6 +3070,8 @@
     "copy.LeagueInsights.222a9e05c1": "Boden {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "Die Platzierungen variieren je nach den Ergebnissen anderer Teams in derselben Runde.",
     "copy.LeagueInsights.29c853849e": "Der Ligaplan dieser Saison ist beendet.Am Ende der Saison können Sie die Abrechnungs- und Aufstiegsergebnisse in der Saisonliste der Liga einsehen.",
+    "league.rank.clubSelection": "Vereine im Rangverlauf",
+    "league.rank.emptySelection": "Wähle einen Verein aus, um seinen Rangverlauf anzuzeigen.",
     "copy.LeagueInsights.9cfb907bbd": "Saisonranking-Trend",
     "copy.LeagueInsights.5ef6d66a2a": " · {p0} damals",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2} · Je höher Sie aufsteigen, desto höher ist der Rang.",

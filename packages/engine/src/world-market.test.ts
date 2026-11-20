@@ -186,6 +186,24 @@ describe('bounded whole-world market', () => {
     expect(youth.total).toBeLessThan(all.total);
   });
 
+  it('applies inclusive OVR bounds to both club players and free agents', () => {
+    const w = worldMarketFixture();
+    const agent = poolPlayer(w, 0);
+    w.freeAgents = [agent];
+    const limit = overall(agent);
+    const players = [...w.clubs.flatMap((club) => squad(w, club)), agent];
+    const capped = query(w, { ovrMax: limit, pageSize: 50 });
+    expect(capped.total).toBe(players.filter((p) => overall(p) <= limit).length);
+    expect(capped.total).toBeLessThan(players.length);
+    const atLimit = query(w, { ovrMin: limit, ovrMax: limit, pageSize: 50 });
+    expect(atLimit.items.map((offer) => offer.player.id).sort()).toEqual(
+      players
+        .filter((p) => overall(p) === limit)
+        .map((p) => p.id)
+        .sort(),
+    );
+  });
+
   it.each(['name', 'age', 'ovr', 'potential', 'fee', 'wage'] as const)(
     'orders %s both ways with stable ID ties across pages',
     (sort) => {
