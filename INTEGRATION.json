@@ -1863,9 +1863,9 @@
     "via": "merge",
     "executor": {
       "host": "hq-dev1-pve2-vm2",
-      "pid": 3700610
+      "pid": 4069580
     },
-    "phase": "failed",
+    "phase": "checking",
     "land": "main",
     "base": "0f6f369100a699b48f2245cca52a152dc10ef535",
     "cohort": [
@@ -2040,7 +2040,7 @@
     ],
     "at": "2026-11-20T06:04:38.896Z",
     "deadline": "2026-11-20T12:58:29.879Z",
-    "candidate": "1d9b9b32db09ff5b4d9c20bd580cc800cfd89d93",
+    "candidate": "e448a23eae08309ba69b75ea875dcd1f99937484",
     "checks": [
       {
         "command": "verification-plan:scripts/verification-plan.json",
