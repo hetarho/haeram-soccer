@@ -575,6 +575,13 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .standings .points > [data-ui='badge'] {
+    display: block;
+    inline-size: max-content;
+    max-inline-size: 5.5em;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 
 /* Panel headers wrap instead of pushing their controls past the panel edge. */
