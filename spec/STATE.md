@@ -70,7 +70,6 @@
 |---|---|---|---|---|
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
 | T1047 | Prepare matchday-print art for the two stadium steps | ECON WEB ARCH | - | todo |
-| T1048 | Prepare pixel art for the two stadium steps | ECON WEB ARCH | - | doing@261120.stad20 |
 | T1049 | Prepare standard art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1050 | Prepare sticker-club art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1051 | Enable the 105,000 and 120,000 stadium steps | ECON SAVE WEB ARCH | T1045 T1047 T1048 T1049 T1050 | todo |
@@ -88,7 +87,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1048
+- gusta-implement-task T1049 T1050
 - gusta-implement-task T1043 T1047
 - gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
@@ -102,5 +101,5 @@
 - gusta-implement-task T1003 T989 T991
 - gusta-implement-task T953 T954
 - T1039 Chromium follow-up: the 0.8.21 candidate includes fixes for the observed worker and fixture boundary failures. Check the post-push CI against this code. See reports/261120-lgux20.
-- gusta-implement-task T1045 T1047 T1048
+- gusta-implement-task T1045 T1047
 - ovr20b (261120): every archived domestic club's closing OVR (T1043) and the closed-table OVR column with a champion-row border instead of the badge (T1044) landed as 0.8.22 on unit checks only (owner); reports/261120-ovr20b.
