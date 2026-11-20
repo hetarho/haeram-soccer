@@ -203,6 +203,7 @@
 - 261120 decided WEB-54: 구단 성장의 OVR 시리즈 → Elo·가치와 같은 시즌 단위 차트와 선택 말풍선을 쓰고 종료 시즌만 표시 (alt: 진행 중 OVR을 마지막 점으로 추가 | 별도 연도별 표). 기존 Elo·가치 차트의 데이터는 종료된 시즌에서 오며 현재 Elo는 별도 패널입니다.
 - 261120 decided SAVE-27 WEB-47 WEB-54: 이전 시즌의 OVR 처리 → 값이 있는 종료 기록만 읽고 결측은 —로 표시 (alt: 현재 선수단으로 역산 | 영으로 대체 | 저장 데이터 이관). 새 스냅샷에서 우리 구단 ID가 기존 시즌 평점을 가리켜 숫자를 한 번만 저장하고, 이 표시가 없는 이전 아카이브는 그대로 둡니다.
 - 261120 decided SAVE-10 SAVE-27: 종료 OVR 저장 필드의 버전 경계 → 기존 시즌 아카이브 JSON에 선택 필드를 추가하고 SAVE-10의 호환 패치로 준비 (alt: 새 게임 규칙 경계 | SQLite 스키마 버전 증가). 테이블과 경기 판정이 유지되므로 공동 검수 전 release:prepare로 이전 호환 규칙 라벨을 보존합니다.
+- 261120 parked T1040 T1041: 기획 커밋 33cba0145의 발행 보류. main의 tk19 통합이 waiting-agent 상태라 plan-push가 integration-frozen을 반환했습니다. 기존 통합 관문이 해제되면 이 worktree에서 vibe plan-push --tag ovr20 --commit 33cba0145091cea300784bfbf7bcbc9a73f36740를 재실행하고, 발행이 확인되면 이 항목을 해제한 뒤 T1040부터 진행합니다.
 
 ## unlanded
 | id | tag | branch | commit | at |
