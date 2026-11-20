@@ -215,6 +215,7 @@
 | T1038 | tk19 | gusta-session-start-tk19-9706a3bf | 9dc24fbd7064 | 2026-11-19T16:57Z |
 
 ## log
+- 261120 gusta-create-task HIST WEB SAVE → T1040 T1041; five inbox decisions; engine archive before web; brief overage also present in baseline
 - 261120 gusta-create-task HIST WEB SAVE start
 - 261120 gusta-update-ssot HIST r29 WEB r227 SAVE r74: season-close Club OVR archive and presentation; no active task cites the changed decisions
 - 261120 gusta-update-ssot HIST WEB SAVE start
@@ -234,4 +235,3 @@
 - 261119 gusta-update-ssot ECON CLUB WEB SAVE start
 - 261119 fix e2e: seeding waits for the enabled import input (53 of 77 Chromium failures on eb5c6882, CI 44551084336)
 - 261119 gusta-update-ssot ARCH r53: verification plan and phase checks aligned; implemented in 0f7037407
-- 261119 gusta-update-ssot ARCH start: verification tiers on chore/gusta-update-0.17.9
