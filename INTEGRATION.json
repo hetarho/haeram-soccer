@@ -1682,12 +1682,131 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-stad20-a4e0e490",
-      "head": "8d940fc57c4e9e05a8e49ad6a6cb2fc5ba67fded",
+      "head": "973cf18562997697c11bc39c523aec0f480320dc",
       "land": "main",
       "status": "working",
-      "at": "2026-11-20T06:00:22.888Z",
-      "agentChecks": [],
-      "verificationCommands": [],
+      "at": "2026-11-20T06:04:29.318Z",
+      "agentChecks": [
+        {
+          "id": "T1049-AC1",
+          "scenario": "Validate the twelve standard stadium and locker-room scenes and their responsive files.",
+          "steps": [
+            "Decode the twelve sources and 24 WebPs; check dimensions, byte budgets, and hashes against the shipped standard pack.",
+            "Run the task-tier checks."
+          ],
+          "expected": "Sources are panoramic and unique; deployed variants decode at 960×320 and 480×160 within budget; task-tier checks pass.",
+          "observed": "All files decoded at the required dimensions, hashes were unique, and sizes were within budget. All five task-tier checks passed.",
+          "evidence": [
+            "commit 14170b928",
+            "vibe check log check-88038b38-efcb-4325-b317-a8c40ea7dc94"
+          ],
+          "status": "pass",
+          "reason": "",
+          "replaces": [
+            "T1049-AC1"
+          ],
+          "stage": "unit",
+          "required": true,
+          "owner": "T1049 unit",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1049-AC2",
+          "scenario": "Inspect completed and in-progress stadium scenes on the shared candidate.",
+          "steps": [
+            "After T1051 enables the stages, walk completed stages 9 and 10 and confirm construction retains the previous completed stage."
+          ],
+          "expected": "The new scenes display in their intended slots and construction retains the previous stage.",
+          "observed": "Handoff recorded; no shared candidate or in-app observation was available in this unit.",
+          "evidence": [
+            "spec/tasks/done/T1049.standard-large-stadium-scenes.md"
+          ],
+          "status": "not-run",
+          "reason": "Integration observation belongs to the capable host after the shared candidate is fixed.",
+          "replaces": [
+            "T1049-AC2"
+          ],
+          "stage": "integration",
+          "required": true,
+          "owner": "stad20-gate-stadium",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1050-AC2",
+          "scenario": "Inspect sticker-club stadium and locker-room scenes for completed stages 9 and 10 and artwork during construction.",
+          "steps": [
+            "On the shared candidate after T1051, inspect both completed stages in each era and start construction."
+          ],
+          "expected": "The new scenes appear in their intended slots, and construction retains the previous completed-stage artwork.",
+          "observed": "Handed off to the host; no shared candidate or computer-use observation was available in this unit.",
+          "evidence": [
+            "spec/tasks/done/T1050.sticker-club-large-stadium-scenes.md"
+          ],
+          "status": "not-run",
+          "reason": "Computer-use and the fixed integration candidate were unavailable in this unit.",
+          "replaces": [
+            "T1050-AC2"
+          ],
+          "stage": "integration",
+          "required": true,
+          "owner": "stad20-gate-stadium",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "stad20-gate-stadium",
+          "scenario": "세 시대의 경기장 및 라커룸 9·10단계 장면과 공사 중 표시를 공동 후보에서 확인",
+          "steps": [
+            "T1051을 포함한 고정 후보에서 각 시대의 완공 단계 9와 10을 반응형 크기로 확인한다.",
+            "공사 중에는 이전 완공 단계의 장면이 유지되고 리소스가 정상적으로 해석되는지 확인한다."
+          ],
+          "expected": "각 장면이 시대와 시설 단계에 맞고 공사 중에는 이전 장면이 유지된다.",
+          "observed": "공동 후보가 아직 확정되지 않아 관찰하지 않았다.",
+          "evidence": [
+            "T1047: 원본 12개와 WebP 24개 디코딩·크기·고유성·용량 검증 통과",
+            "커밋 0935cfbe7; task tier 및 spec lint 통과"
+          ],
+          "status": "not-run",
+          "reason": "고정된 통합 후보와 computer-use 검수는 호스트 담당이다.",
+          "replaces": [],
+          "stage": "integration",
+          "required": false,
+          "owner": "host",
+          "candidate": null,
+          "duplicationReason": ""
+        },
+        {
+          "id": "T1051-AC4",
+          "scenario": "Facility portion of stad20-gate-stadium on the fixed shared candidate: the stadium ladder through 105,000 and 120,000 seats as the owner sees it in 구단 운영 › 경기장",
+          "steps": [
+            "Open a career whose stadium is at step 8 (90,000) and open 구단 운영 › 재정·투자 › 경기장",
+            "Confirm the quote offers the 540-day rebuild to 초대형 구장 (105,000) and start it",
+            "While it is under way, confirm the stadium and locker-room artwork stays at the completed step-8 scene",
+            "At step 9, confirm the quote offers the 180-day 3층 스탠드 expansion to 120,000",
+            "At step 10, confirm the localized stage name, 120,000 seats, the step-10 stadium and locker-room artwork for the era, and that no further quote is offered"
+          ],
+          "expected": "Step 8 offers the rebuild; pending work keeps the completed artwork; step 9 offers the expansion; step 10 shows its localized name, 120,000 seats and step-10 artwork, with no further quote",
+          "observed": "Not observed: this unit has no computer-use tool and no shared candidate. The deterministic equivalents passed in unit tests (facility-parts, investment, facilityScene, text).",
+          "evidence": [
+            "spec/tasks/done/T1051.extend-stadium-ladder.md result",
+            "vibe check --tier task passed on tree 99b994b1 (check-6538cf80, 329 files / 2970 tests)",
+            "pnpm run validate:presentation: 4 themes, 12 locales, 1059 assets valid"
+          ],
+          "status": "not-run",
+          "reason": "No computer-use tool or fixed integration candidate in a headless unit. The task makes the explicit handoff its done condition.",
+          "replaces": [],
+          "stage": "integration",
+          "required": true,
+          "owner": "capable host (stad20-gate-stadium)",
+          "candidate": null,
+          "duplicationReason": ""
+        }
+      ],
+      "verificationCommands": [
+        "pnpm run verify:batch"
+      ],
       "reason": "session-ended"
     },
     "638d095296286bb62a147c78": {
