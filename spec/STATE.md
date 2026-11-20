@@ -83,7 +83,7 @@
 
 ## next
 - no runnable task: resolve blocked, parked or deps
-- gusta-implement-task T1040 — archive season-close Club OVR before T1041 displays it.
+- ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20. Gate f96fd6c3 still blocks plan-push.
 - gusta-implement-task T1039 — main CI is red: 8 Chromium journeys act while the engine worker is still busy after the save redesign (CI 44590362467, 0.8.19); six stop at 다음 이벤트 opening no card.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 (261119): landed as 0.8.15 (9c3a60796) — unwatched own matches without script/material, heat maps removed, slow view reads only on a stopped clock with dimmed places, fixture helpers from three cores (three on 6–12 cores); a 10x automatic-play day ×0.72 on own match days and ×0.11 on other days (reports/261119-x10). T989 withdrawn, T1019 parked until T1003/T1004.
