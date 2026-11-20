@@ -1592,8 +1592,8 @@
       "branch": "gusta-session-start-lgux20-8a35ba80",
       "head": "f65c9c990ce4ced4a3705c94c023a23c83374a2e",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-20T03:55:02.122Z",
+      "status": "landed",
+      "at": "2026-11-20T03:55:17.166Z",
       "agentChecks": [
         {
           "id": "T1042.standings",
@@ -1667,9 +1667,9 @@
       "reason": "session-ended",
       "landed": "f65c9c990ce4ced4a3705c94c023a23c83374a2e",
       "reconciled": {
-        "at": "2026-11-20T03:54:28.295Z",
-        "from": "ready",
-        "reason": "The user requested publishing the checked candidate. It is already on main.",
+        "at": "2026-11-20T03:55:17.166Z",
+        "from": "paused",
+        "reason": "The candidate is on main and Netlify serves its production build.",
         "verified": false
       }
     },
