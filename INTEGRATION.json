@@ -1682,10 +1682,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-stad20-a4e0e490",
-      "head": "ee25397e273d87cd2399851ab3dc502c218383f8",
+      "head": "857e71e9f8a017cd6ecead94ea68333c1bc49e84",
       "land": "main",
       "status": "working",
-      "at": "2026-11-20T04:58:52.084Z",
+      "at": "2026-11-20T05:07:53.935Z",
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "session-ended"
