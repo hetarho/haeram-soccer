@@ -1579,8 +1579,8 @@
       "branch": "gusta-session-start-lgux20-8a35ba80",
       "head": "a8d60ebf738fe9ce0b388833905109dbe5d0a1cf",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-20T03:21:22.122Z",
+      "status": "paused",
+      "at": "2026-11-20T03:21:25.063Z",
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "session-ended"
