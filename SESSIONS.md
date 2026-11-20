@@ -2,9 +2,9 @@
 > Running sessions, their claims, the inbox and the log. Written by the gusta CLI on its own branch; never merged into a code branch.
 
 ## active
-| tag | host | mode | since | at | doing | branch | commit |
-|---|---|---|---|---|---|---|---|
-| tk19 | ihaelam-ui-MacBookPro | pair | 2026-11-19T18:40Z | 2026-11-19T21:13Z | - | gusta-session-start-tk19-9706a3bf | fd7d9858934d |
+| tag | host | mode | since | at | doing | branch | commit | session |
+|---|---|---|---|---|---|---|---|---|
+| ovr20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T01:11Z | 2026-11-20T01:11Z | - | gusta-session-start-ovr20-f773a1bb | fd7d9858934d | fb13eadd7bf9b51d38f9f565 |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
