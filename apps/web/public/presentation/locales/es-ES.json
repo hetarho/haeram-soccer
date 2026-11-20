@@ -2798,7 +2798,7 @@
     "copy.FinancialBreakdown.752828fd69": "Audiencia esperada {p0}–{p1} personas / Capacidad {p2} personas",
     "copy.FinancialBreakdown.a720f9040b": "Aficionados locales {p0} · límite de la zona de influencia {p1} · aficionados que viajan {p2}",
     "copy.FinancialBreakdown.2ee6e23e8b": "Admisión/ingresos de mercancías {p0}–{p1}{p2}/tarifa de alojamiento {p3}–{p4}",
-    "copy.FinancialBreakdown.8d8007a3d1": "La gama de seguidores locales que buscan estadios en función del rendimiento reciente, el precio, la inversión cercana y la base regional, se basa en una oposición similar. Los aficionados de todo el mundo aumentan el valor del patrocinio, no sólo el de espectadores. La distribución de la liga se distribuye para cada ronda, el patrocinio se distribuye para cada partido de liga real y la distribución de la clasificación se establece al final de la temporada.",
+    "copy.FinancialBreakdown.8d8007a3d1": "El alcance de los aficionados locales y de los que viajan que acuden al estadio depende de la forma reciente, el precio, la inversión cercana y la base regional, medido frente a rivales similares. Los que viajan son la parte de los seguidores fuera de la zona de influencia que acude a los partidos en casa; los aficionados de todo el mundo aumentan los seguidores, con lo que suben esa parte y el valor del patrocinio. La distribución de la liga se recibe cada jornada, el patrocinio en cada partido de liga y el pago por clasificación se liquida al final de la temporada.",
     "copy.FinancialBreakdown.dd4938954f": "Liquidación real reciente",
     "copy.FinancialBreakdown.26b12749e4": "{p0} redondo",
     "copy.FinancialBreakdown.37113490b0": "La escasez de financiación continúa. Los fondos no se reponen automáticamente.",

@@ -2791,7 +2791,7 @@
     "copy.FinancialBreakdown.752828fd69": "Beklenen kitle {p0}–{p1} kişi / Kapasite {p2} kişi",
     "copy.FinancialBreakdown.a720f9040b": "Yerel destekçiler {p0} · çekim alanı üst sınırı {p1} · seyahat eden taraftar {p2}",
     "copy.FinancialBreakdown.2ee6e23e8b": "Giriş/ürün geliri {p0}–{p1}{p2}/barındırma ücreti {p3}–{p4}",
-    "copy.FinancialBreakdown.8d8007a3d1": "Benzer muhalefete dayalı olarak yakın zamandaki performans, fiyat, yakındaki yatırım ve bölgesel tabana dayalı olarak stadyum arayan yerel taraftar aralığı. Dünyanın dört bir yanındaki hayranlar sadece seyirci sayısını değil, sponsorluk değerini de artırıyor. Lig dağıtımı her tur için dağıtılır, sponsorluk her lig maçı için dağıtılır ve sıralama dağıtımı sezon sonunda belirlenir.",
+    "copy.FinancialBreakdown.8d8007a3d1": "Stada gelen yerel taraftar ve seyahat eden taraftar aralığı; yakın form, fiyat, yakındaki yatırım ve bölgesel taban ile benzer rakipler karşısında ölçülür. Seyahat eden taraftar, bağlantı alanı dışındaki takipçilerden ev maçlarına gelen paydır; dünyanın dört bir yanındaki hayranlar takipçi sayısını büyüterek bu payı ve sponsorluk değerini artırır. Lig dağıtımı her turda, sponsorluk gerçek her lig maçında alınır, sıralama ödülü sezon sonunda hesaplanır.",
     "copy.FinancialBreakdown.dd4938954f": "Son gerçek yerleşim",
     "copy.FinancialBreakdown.26b12749e4": "{p0} mermiler",
     "copy.FinancialBreakdown.37113490b0": "Finansman sıkıntısı devam ediyor. Fonlar otomatik olarak yenilenmez.",
