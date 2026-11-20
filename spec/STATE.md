@@ -101,6 +101,6 @@
 - Historical era rules parked in ideation/historical-era-rules.
 - gusta-implement-task T1003 T989 T991
 - gusta-implement-task T953 T954
-- gusta-implement-task T1043 — ovr20b continues T1043 and T1044 on top of lgux20's T1042.
+- ovr20b (261120): every archived domestic club's closing OVR (T1043) and the closed-table OVR column with a champion-row border instead of the badge (T1044) landed as 0.8.22 on unit checks only (owner); reports/261120-ovr20b.
 - gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.
 - T1039 Chromium follow-up: the 0.8.21 candidate includes fixes for the observed worker and fixture boundary failures. Check the post-push CI against this code. See reports/261120-lgux20.
