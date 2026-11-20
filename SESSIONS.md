@@ -4,7 +4,6 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| stad20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:32Z | 2026-11-20T03:32Z | - | gusta-session-start-stad20-a4e0e490 | b0619a3ca06f | 59bbbe573858883ac186b857 |
 | lgux20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:38Z | 2026-11-20T03:42Z | - | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 94af01b7afebaf2f46e0b4bb |
 
 ## inbox
