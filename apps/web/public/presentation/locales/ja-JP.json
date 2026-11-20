@@ -5124,6 +5124,8 @@
     "copy.facility_model.4ccce8b5ed": "大きなスタジアム",
     "copy.facility_model.0e3316fb01": "コーナー拡張",
     "copy.facility_model.23ef72e0aa": "名門球場",
+    "facility.stadium.grandGround": "超大型スタジアム",
+    "facility.stadium.upperTier": "3層スタンド",
     "copy.fan_mood.8447102cff": "{p0} ・ファン敏感 {p1}{p2} → {p3}",
     "copy.fan_mood.dc235a5468": "ファン民心{p0}・{p1}ラウンド連続{p2}下・ファンの退陣要求に球団を離れます。",
     "copy.fan_mood.0590215d59": "退陣圧迫・{p0}ラウンド内にファンの民心を{p1}以上に",

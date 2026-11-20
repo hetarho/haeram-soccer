@@ -5233,6 +5233,8 @@
     "copy.facility_model.4ccce8b5ed": "grande stadio",
     "copy.facility_model.0e3316fb01": "estensione d'angolo",
     "copy.facility_model.23ef72e0aa": "stadio prestigioso",
+    "facility.stadium.grandGround": "stadio monumentale",
+    "facility.stadium.upperTier": "terzo anello",
     "copy.fan_mood.8447102cff": "{p0} · Tifoso dell'opinione pubblica {p1}{p2} → {p3}",
     "copy.fan_mood.dc235a5468": "Sentimento pubblico dei tifosi {p0} · {p1}Round consecutivo {p2} sotto · Lascio il club a causa delle richieste di dimissioni dei tifosi.",
     "copy.fan_mood.0590215d59": "Pressioni per le dimissioni · Il sentimento pubblico dei tifosi è aumentato a {p1} o superiore nel round {p0}",

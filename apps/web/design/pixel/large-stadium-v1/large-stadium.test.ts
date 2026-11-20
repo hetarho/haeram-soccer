@@ -78,7 +78,7 @@ describe('large stadium and locker-room pixel scenes', () => {
       expect((dimensions & 0x3fff) + 1).toBe(SCENE_WIDTH);
       expect(((dimensions >>> 14) & 0x3fff) + 1).toBe(SCENE_HEIGHT);
       deployed.add(asset.sha256);
-      expect(shippedHashes.has(asset.sha256)).toBe(false);
+      expect(shippedHashes.has(asset.sha256)).toBe(true);
     }
     expect(deployed.size).toBe(12);
   });

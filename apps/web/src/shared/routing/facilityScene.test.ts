@@ -91,9 +91,40 @@ describe('facility artwork follows the current club', () => {
     expect(facilityScene('academy', w).alt).toContain('3단계 유소년 시설');
   });
 
+  it.each([9, 10])(
+    'gives the completed stadium step %i its own stadium and locker artwork in every theme and era',
+    (stadium) => {
+      const themes = json('../../../public/presentation/themes/index.json').entries as {
+        resource: string;
+      }[];
+      for (const { resource } of themes) {
+        const theme = createThemeResolver(json(`../../../public/presentation/themes/${resource}`), {
+          url: `/presentation/themes/${resource}`,
+        });
+        const sources = new Set<string>();
+        for (const year of [1950, 1980, 2010])
+          for (const kind of ['stadium', 'locker'] as const) {
+            const scene = resolveFacilityScene(
+              kind,
+              { ...base, year, stadium },
+              {
+                ...presentation,
+                theme,
+              },
+            );
+            expect(scene.stage).toBe(stadium);
+            const file = new URL(`../../../public${scene.src}`, import.meta.url);
+            expect(readFileSync(file).byteLength).toBeGreaterThan(0);
+            sources.add(scene.src);
+          }
+        expect(sources.size).toBe(6);
+      }
+    },
+  );
+
   it('bounds scene lookups to available completed stages', () => {
     expect(facilityScene('stadium', { ...base, stadium: -1 }).stage).toBe(0);
-    expect(facilityScene('locker', { ...base, stadium: 99 }).stage).toBe(8);
+    expect(facilityScene('locker', { ...base, stadium: 99 }).stage).toBe(10);
     expect(facilityScene('training', { ...base, trainingGround: 99 }).stage).toBe(5);
     expect(facilityScene('academy', { ...base, academyFacility: -1 }).stage).toBe(0);
     expect(facilityScene('academy', { ...base, academyFacility: 99 }).stage).toBe(5);
@@ -179,12 +210,12 @@ describe('facility artwork follows the current club', () => {
     ) as {
       assets: { file: string; width: number; height: number }[];
     };
-    expect(manifest.assets).toHaveLength(72);
+    expect(manifest.assets).toHaveLength(84);
     const hashes = new Set<string>();
     for (const year of [1950, 1980, 2020]) {
       for (const [kind, count] of [
-        ['stadium', 9],
-        ['locker', 9],
+        ['stadium', 11],
+        ['locker', 11],
         ['training', 6],
       ] as const) {
         for (let stage = 0; stage < count; stage++) {
@@ -204,6 +235,6 @@ describe('facility artwork follows the current club', () => {
         }
       }
     }
-    expect(hashes.size).toBe(72);
+    expect(hashes.size).toBe(84);
   });
 });

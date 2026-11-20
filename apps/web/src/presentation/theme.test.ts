@@ -141,8 +141,8 @@ describe('theme resource resolution', () => {
     const resolved = [];
     for (const era of FACILITY_ERAS)
       for (const [kind, count] of [
-        ['stadium', 9],
-        ['locker', 9],
+        ['stadium', 11],
+        ['locker', 11],
         ['training', 6],
       ] as const)
         for (let stage = 0; stage < count; stage++) {
@@ -152,7 +152,7 @@ describe('theme resource resolution', () => {
           );
           resolved.push(image.src);
         }
-    expect(new Set(resolved).size).toBe(72);
+    expect(new Set(resolved).size).toBe(84);
     expect(() => theme.facility({ era: 'heritage', kind: 'stadium', stage: -1 })).toThrow();
   });
 

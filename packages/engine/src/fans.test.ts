@@ -89,9 +89,9 @@ describe('supporters follow reputation, not the stadium', () => {
 });
 
 describe('facility parts (→ECON-32)', () => {
-  it('climbs the stadium in eight expansion and rebuild steps, each dearer and dearer to keep', () => {
+  it('climbs the stadium in ten expansion and rebuild steps, each dearer and dearer to keep', () => {
     expect(STADIUM_STEPS.map((step) => step.capacity)).toEqual([
-      2500, 5000, 10000, 15000, 30000, 40000, 60000, 75000, 90000,
+      2500, 5000, 10000, 15000, 30000, 40000, 60000, 75000, 90000, 105000, 120000,
     ]);
     expect(STADIUM_STEPS.slice(1).map((step) => step.work)).toEqual([
       'expansion',
@@ -102,9 +102,11 @@ describe('facility parts (→ECON-32)', () => {
       'rebuild',
       'expansion',
       'expansion',
+      'rebuild',
+      'expansion',
     ]);
     const parts = { stadium: 0, trainingGround: 0, academyFacility: 0 };
-    for (let step = 2; step <= 8; step++) {
+    for (let step = 2; step <= 10; step++) {
       // Each step a fixed multiple of the last: no bargain early, no wall later.
       const multiple = partCostUnits('stadium', step) / partCostUnits('stadium', step - 1);
       expect(multiple).toBeGreaterThan(2.4);
@@ -116,7 +118,7 @@ describe('facility parts (→ECON-32)', () => {
     for (let level = 2; level <= 5; level++)
       for (const part of ['training', 'academy'] as const)
         expect(partCostUnits(part, level) / partCostUnits(part, level - 1)).toBe(4);
-    // The three ladders together take a career (→ECON-29).
+    // The three ladders through 90,000 seats take a career (→ECON-29); the elite steps add more.
     const all = { stadium: 8, trainingGround: 5, academyFacility: 5 };
     expect(facilityBuiltUnits(all)).toBeGreaterThan(1_400_000);
     expect(facilityBuiltUnits(all)).toBeLessThan(1_700_000);

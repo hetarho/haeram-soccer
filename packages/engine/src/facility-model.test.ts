@@ -8,6 +8,7 @@ import {
   partCostUnits,
   partLevel,
   partTop,
+  partUpkeepUnits,
   STADIUM_STEPS,
   stadiumCapacity,
   stadiumStep,
@@ -23,11 +24,11 @@ const working = (stadium: number, to: number) => ({
 });
 
 describe('completed facility facts (→ECON-32)', () => {
-  it('limits the stadium to eight steps and the other parts to five levels', () => {
-    expect(partTop('stadium')).toBe(8);
+  it('limits the stadium to ten steps and the other parts to five levels', () => {
+    expect(partTop('stadium')).toBe(10);
     expect(partTop('training')).toBe(5);
     expect(partTop('academy')).toBe(5);
-    expect(STADIUM_STEPS).toHaveLength(9);
+    expect(STADIUM_STEPS).toHaveLength(11);
     expect(TRAINING_GROUND).toHaveLength(6);
     expect(ACADEMY_FACILITY).toHaveLength(6);
     const w = { stadium: 3, trainingGround: 1, academyFacility: 4 };
@@ -51,6 +52,9 @@ describe('completed facility facts (→ECON-32)', () => {
     expect(stadiumCapacity(working(4, 5))).toBe(27000);
     expect(stadiumCapacity(working(5, 6))).toBe(40000);
     expect(stadiumCapacity(working(7, 8))).toBe(67500);
+    // The 105,000-seat ground is a rebuild; the third tier closes a tenth of it.
+    expect(stadiumCapacity(working(8, 9))).toBe(90000);
+    expect(stadiumCapacity(working(9, 10))).toBe(94500);
     // Training and academy works leave every seat open.
     expect(
       stadiumCapacity({
@@ -85,9 +89,14 @@ describe('completed facility facts (→ECON-32)', () => {
     const w = { stadium: 2, trainingGround: 1, academyFacility: 2 };
     expect(facilityUpkeepUnits(w)).toBe(411.25);
     expect(facilityBuiltUnits(w)).toBe(9600);
-    const top = { stadium: 8, trainingGround: 5, academyFacility: 5 };
-    expect(facilityUpkeepUnits(top)).toBe(4411.25);
-    expect(facilityBuiltUnits(top)).toBe(1530450);
+    const through90k = { stadium: 8, trainingGround: 5, academyFacility: 5 };
+    expect(facilityUpkeepUnits(through90k)).toBe(4411.25);
+    expect(facilityBuiltUnits(through90k)).toBe(1530450);
+    // The two elite steps keep the seat formula: L = 20.5 and 23.5.
+    expect(partUpkeepUnits({ ...through90k, stadium: 9 }, 'stadium')).toBe(3101.25);
+    expect(partUpkeepUnits({ ...through90k, stadium: 10 }, 'stadium')).toBe(3881.25);
+    expect([partCostUnits('stadium', 9), partCostUnits('stadium', 10)]).toEqual([915000, 2287500]);
+    expect(facilityBuiltUnits({ ...through90k, stadium: 10 })).toBe(4732950);
   });
 
   it('is the one owner that construction re-exports', () => {

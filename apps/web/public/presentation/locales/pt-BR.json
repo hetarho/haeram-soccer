@@ -5052,6 +5052,8 @@
     "copy.facility_model.4ccce8b5ed": "grande estádio",
     "copy.facility_model.0e3316fb01": "extensão de canto",
     "copy.facility_model.23ef72e0aa": "estádio de prestígio",
+    "facility.stadium.grandGround": "estádio monumental",
+    "facility.stadium.upperTier": "terceiro anel",
     "copy.fan_mood.8447102cff": "{p0} · Opinião pública dos fãs {p1}{p2} → {p3}",
     "copy.fan_mood.dc235a5468": "Sentimento Público dos Torcedores {p0} · {p1} Rodada Consecutiva {p2} Abaixo · Estou deixando o clube devido às demandas dos torcedores pela minha demissão.",
     "copy.fan_mood.0590215d59": "Pressão por demissão · O sentimento público dos fãs aumentou acima de {p1} na rodada {p0}",

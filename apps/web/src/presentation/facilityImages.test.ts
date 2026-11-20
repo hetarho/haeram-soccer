@@ -6,7 +6,7 @@ describe('facility artwork stages', () => {
   it('bounds each kind by its completed-facility ladder', () => {
     expect(
       Object.fromEntries(FACILITY_KINDS.map((kind) => [kind, facilityStageTop(kind)])),
-    ).toEqual({ stadium: 8, locker: 8, training: 5, manager: 0, staff: 0, academy: 5 });
+    ).toEqual({ stadium: 10, locker: 10, training: 5, manager: 0, staff: 0, academy: 5 });
   });
 
   it('selects completed facts and ignores construction targets', () => {

@@ -3,6 +3,7 @@ import { validateWorld } from '../../contracts/src/index';
 import {
   academyIntakeSize,
   developmentBase,
+  facilityPartUpkeep,
   facilityWork,
   gateProjection,
   nextWork,
@@ -71,6 +72,54 @@ describe('facility works (→ECON-32)', () => {
       kind: 'facility-open',
       title: '경기장 완공 · 새 구장',
     });
+    validateWorld(w);
+  });
+
+  it('rebuilds a 90,000 ground to 105,000, adds a third tier to 120,000 and ends the ladder', () => {
+    const w = world('facility-elite-grounds');
+    w.stadium = 8;
+    const upkeep = facilityPartUpkeep(w, 'stadium');
+    expect(nextWork(w, 'stadium')).toMatchObject({
+      to: 9,
+      kind: 'rebuild',
+      capacity: 105000,
+      days: 540,
+      units: 915000,
+    });
+    startWork(w, 'stadium');
+    expect(gateProjection(w).capacity).toBe(90000);
+    pass(w, 'stadium', 539);
+    expect(w.stadium).toBe(8);
+    expect(facilityPartUpkeep(w, 'stadium')).toBe(upkeep);
+    pass(w, 'stadium', 1);
+    expect(w.stadium).toBe(9);
+    expect(gateProjection(w).capacity).toBe(105000);
+    expect(BigInt(facilityPartUpkeep(w, 'stadium'))).toBeGreaterThan(BigInt(upkeep));
+    expect(w.events.at(-1)).toMatchObject({
+      kind: 'facility-open',
+      title: '경기장 완공 · 초대형 구장',
+    });
+    validateWorld(w);
+
+    expect(nextWork(w, 'stadium')).toMatchObject({
+      to: 10,
+      kind: 'expansion',
+      capacity: 120000,
+      days: 180,
+      units: 2287500,
+    });
+    startWork(w, 'stadium');
+    expect(stadiumCapacity(w)).toBe(94500);
+    validateWorld(w);
+    pass(w, 'stadium', 180);
+    expect(w.stadium).toBe(10);
+    expect(gateProjection(w).capacity).toBe(120000);
+    expect(w.events.at(-1)).toMatchObject({
+      kind: 'facility-open',
+      title: '경기장 완공 · 3층 스탠드',
+    });
+    expect(nextWork(w, 'stadium')).toBeUndefined();
+    expect(() => startWork(w, 'stadium')).toThrow('최고');
     validateWorld(w);
   });
 
@@ -228,6 +277,33 @@ describe('daily facility continuation (→ECON-43)', () => {
     expect(w.cash).toBe((BigInt(cash) - BigInt(quote.cost)).toString());
     expect(w.expense).toBe((BigInt(expense) + BigInt(quote.cost)).toString());
     expect(constructionSince(w, count)).toMatchObject([{ amount: quote.cost }]);
+  });
+
+  it('continues the 105,000 rebuild into the third tier and ends the chain at 120,000', () => {
+    const w = dailyWorld();
+    w.stadium = 8;
+    w.facilityWorks = {
+      stadium: { to: 9, year: w.year, day: completionDay - workDays('stadium', 9) },
+    };
+    w.facilityAutoUpgrade = { stadium: 'armed' };
+    const quote = nextWork({ ...w, stadium: 9 }, 'stadium')!;
+    expect(quote).toMatchObject({ to: 10, kind: 'expansion' });
+    const { cash } = w;
+
+    w.calendar = { day: completionDay };
+    clubDay(w, false);
+    expect(w.stadium).toBe(9);
+    expect(w.facilityWorks).toEqual({ stadium: { to: 10, year: w.year, day: completionDay } });
+    expect(w.facilityAutoUpgrade).toEqual({ stadium: 'armed' });
+    expect(stadiumCapacity(w)).toBe(94500);
+    expect(w.cash).toBe((BigInt(cash) - BigInt(quote.cost)).toString());
+
+    w.facilityWorks!.stadium!.day = completionDay + 1 - workDays('stadium', 10);
+    w.calendar = { day: completionDay + 1 };
+    clubDay(w, false);
+    expect(w.stadium).toBe(10);
+    expect(w.facilityWorks).toBeUndefined();
+    expect(w.facilityAutoUpgrade).toBeUndefined();
   });
 
   it('spends by part order and retries an unfunded completion once at exact cost', () => {
