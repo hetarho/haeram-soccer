@@ -218,6 +218,7 @@
 | T1041 | ovr20 | gusta-session-start-ovr20-f773a1bb | 60b2a0a59223 | 2026-11-20T01:34Z |
 
 ## log
+- 261120 gusta-update-ssot WEB start
 - 261120 T1041 done
 - 261120 T1040 done
 - 261120 ovr20 planning 33cba0145 put on main by a spec-only fast-forward (gate f96fd6c3 still frozen, same as T1039)
@@ -237,4 +238,3 @@
 - 261119 T1033 done
 - 261119 Planning verification pass in 108835 ms: typecheck, lint, format, i18n (12 locales); affected unit selection empty for spec-only changes. Spec lint has one pre-existing warning. Browser acceptance remains host-owned.
 - 261119 gusta-create-task T1033 T1034 T1035 T1036 T1037: saved state, copy, command, settlement and UI
-- 261119 gusta-create-task ECON CLUB WEB SAVE start
