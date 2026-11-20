@@ -68,7 +68,13 @@ it('shows full closing ratings and keeps the official champion marked when sorte
     closingClubOvr: { ownClub: 'own', champions: { rival: 75 } },
   } as SeasonArchive;
   await render(earlier);
-  expect(bodyRows().map((row) => row.cells[2]?.textContent)).toEqual(['—', '—', '—']);
+  // A champions-only snapshot still shows what it recorded: our rating and the champion's.
+  expect(bodyRows().map((row) => row.cells[2]?.textContent).sort()).toEqual(['65', '75', '—']);
+  await render({ ...season, closingClubOvr: undefined });
+  expect(container.querySelector('thead')?.textContent).not.toContain(
+    displayMessage('team.column.ovr'),
+  );
+  expect(bodyRows().filter((row) => row.hasAttribute('data-champion'))).toHaveLength(1);
   await act(async () => root.unmount());
   container.remove();
   vi.unstubAllGlobals();

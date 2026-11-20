@@ -109,7 +109,7 @@ export function FinalTable({
     tier = league?.tier ?? season.tier,
     group = league?.group ?? season.group,
     { zones } = finalZones(code, tier, rows.length);
-  const archive = read.files.season;
+  const archive = read.files.season ?? season;
   const standings = rows.map(([club, points, gf, ga], i) => {
     const id = w.clubs[club]?.id;
     const record = records?.get(club);
@@ -118,10 +118,7 @@ export function FinalTable({
       id,
       rank: i + 1,
       zone: zones[i],
-      ovr:
-        id && archive?.closingClubOvr && 'clubs' in archive.closingClubOvr
-          ? archivedClubOvr(archive, id)
-          : undefined,
+      ovr: id ? archivedClubOvr(archive, id) : undefined,
       points,
       played: record ? record[0] + record[1] + record[2] : undefined,
       won: record?.[0],
@@ -132,7 +129,8 @@ export function FinalTable({
       difference: gf - ga,
     };
   });
-  const showOvr = true;
+  // An archive closed before any rating was recorded keeps its table without an empty column.
+  const showOvr = standings.some((row) => row.ovr !== undefined);
   return (
     <section
       data-surface="sheet"
