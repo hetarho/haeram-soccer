@@ -1699,10 +1699,10 @@
       "host": "hq-dev1-pve2-vm2",
       "device": "hq-dev1-pve2-vm2",
       "branch": "gusta-session-start-ovr20b-916c8e5f",
-      "head": "ead29c5864aef1f7aa0050b2d97db4f1c77a49ff",
+      "head": "8e3908017e30bbdf89bad90c07dbf12c72523500",
       "land": "main",
       "status": "working",
-      "at": "2026-11-20T03:53:30.222Z",
+      "at": "2026-11-20T04:10:09.139Z",
       "agentChecks": [
         {
           "id": "closed-league-table-ovr",
