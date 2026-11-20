@@ -72,7 +72,6 @@
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
 | T1043 | Capture closing Club OVR for archived league clubs | ARCH HIST SAVE WEB | - | todo |
 | T1044 | Show Club OVR in closed league tables | ARCH HIST SAVE WEB | T1042 T1043 | todo |
-| T1045 | Model ticket demand for a popular owned club | ECON OWNER ARCH | - | todo |
 | T1046 | Show local and travelling ticket demand in the office | ECON WEB ARCH | T1045 | todo |
 | T1047 | Prepare matchday-print art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1048 | Prepare pixel art for the two stadium steps | ECON WEB ARCH | - | todo |
@@ -93,6 +92,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- gusta-implement-task T1043 T1046 T1047
 - gusta-implement-task T1042
 - gusta-implement-task T1043 — ovr20b builds T1043/T1044 on lgux20's ready T1042 and lands them together (owner 261120).
 - gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.

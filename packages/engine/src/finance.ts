@@ -15,6 +15,7 @@ import { activePlayers, clubOf, isOwnSeason } from './player-state';
 import { broadcastQuote, footballQuote, quote } from './quotes';
 import { clamp, ratio, scaleBy } from './primitives';
 import { exp } from './portable-math';
+import { DEFAULT_TICKET } from './presets';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
@@ -36,6 +37,13 @@ export const FINANCE_CONFIG = {
   drawBonus: 0.5,
   /** How much a far bigger or smaller opponent moves the gate, either way. */
   opponentDraw: 0.12,
+  /** Share of the following outside the catchment who travel to the owned club's home matches (→ECON-9). */
+  travellingShare: 0.45,
+  /**
+   * How strongly default-price demand beyond the seats weakens the premium over the default ticket:
+   * the premium is divided by 1 + gain × (demand ÷ capacity − 1) (→ECON-9).
+   */
+  premiumEasing: 8,
 };
 
 /**
@@ -351,11 +359,24 @@ function opponentDraw(w: World, opponent?: string) {
 export function gateProjection(w: World, excluding?: string, opponent?: string) {
   const club = clubOf(w);
   const capacity = stadiumCapacity(w);
-  const demand = exp(-w.ticket / FINANCE_CONFIG.ticketDemandScale);
+  const scale = FINANCE_CONFIG.ticketDemandScale;
   const form = recentForm(w, excluding);
   // Recent form scales home demand from 0.6 to 1.15.
   const formDemand = 0.6 + form * 0.55;
   const supporters = localSupporters(w);
+  // Only the owner's club draws travelling supporters; every other view keeps the catchment alone.
+  const owned = w.owner?.takeover.clubId === w.playerClub;
+  const travellingSupporters = owned
+    ? Math.max(0, club.fans - supporters) * FINANCE_CONFIG.travellingShare
+    : 0;
+  const pool = supporters + travellingSupporters;
+  // Excess demand at the default price weakens the premium above it, continuously (→ECON-9).
+  const pressure = owned ? Math.max(0, (pool * exp(-DEFAULT_TICKET / scale)) / capacity - 1) : 0;
+  const effectivePrice =
+    w.ticket > DEFAULT_TICKET
+      ? DEFAULT_TICKET + (w.ticket - DEFAULT_TICKET) / (1 + FINANCE_CONFIG.premiumEasing * pressure)
+      : w.ticket;
+  const demand = exp(-effectivePrice / scale);
   const draw = opponentDraw(w, opponent);
   // 주변 투자 while paid and 지역 기반 lift home demand (→ECON-9, →ECON-34).
   const gateBoost = policyEffects(policyOf(w)).gateBoost + baseEffects(w).gate;
@@ -370,13 +391,14 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
   );
   // The club build moves home demand on its own: community clubs fill seats, commercial ones lose some.
   const build = 1 + buildEffects(w).gateDemand;
-  // No campaign brings more than every local supporter.
+  // No campaign brings more than everyone in the pool.
   const wanted = Math.min(
-    supporters,
-    supporters * demand * formDemand * draw * marketing * build * fanMoodFollowing(w),
+    pool,
+    pool * demand * formDemand * draw * marketing * build * fanMoodFollowing(w),
   );
   const expected = Math.min(capacity, wanted);
-  const low = Math.round(expected * 0.8);
+  // The owned club's range is clamped after the 80–100% spread, so sustained excess demand sells out.
+  const low = owned ? Math.min(capacity, Math.round(wanted * 0.8)) : Math.round(expected * 0.8);
   const high = Math.round(expected);
   // Ticket presets and matchday spend are 1901 prices grown with the football index (→ECON-26).
   const perFan = w.ticket + 0.006 + club.reputation * 0.00006;
@@ -395,6 +417,8 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
     marketing,
     /** Local supporters within the catchment, the most who could come. */
     supporters,
+    /** Expected travelling supporters outside the catchment: zero except for the owner's club. */
+    travellingSupporters,
     opponent: draw,
     attendanceLow: low,
     attendanceHigh: high,

@@ -44,7 +44,7 @@ describe('supporters follow reputation, not the stadium', () => {
     expect(rich.events.some((event) => event.kind === 'fan-income')).toBe(false);
   });
 
-  it('lets a club with 2M followers in the third tier draw no more than its catchment', () => {
+  it('lets a club with 2M followers in the third tier draw only its catchment unless the owner holds it', () => {
     const w = world();
     const club = clubOf(w);
     club.tier = 2;
@@ -57,12 +57,19 @@ describe('supporters follow reputation, not the stadium', () => {
     const limit = catchment(w);
     expect(limit).toBeLessThan(20_000);
     expect(localSupporters(w)).toBe(limit);
-    const gate = gateProjection(w);
-    expect(gate.supporters).toBe(limit);
-    expect(gate.capacity).toBeGreaterThan(limit);
+    // The owner's club adds the travelling share of the followers beyond the catchment (→ECON-9).
+    const owned = gateProjection(w);
+    expect(owned.supporters).toBe(limit);
+    expect(owned.travellingSupporters).toBeGreaterThan(0);
+    expect(owned.capacity).toBeGreaterThan(limit);
+    expect(owned.attendanceHigh).toBeGreaterThan(limit);
+    // Any other view keeps the catchment alone: followers beyond it add nobody.
+    const view = structuredClone(w);
+    delete view.owner;
+    const gate = gateProjection(view);
+    expect(gate.travellingSupporters).toBe(0);
     expect(gate.attendanceHigh).toBeLessThanOrEqual(limit);
-    // Followers beyond the catchment add nobody.
-    const local = structuredClone(w);
+    const local = structuredClone(view);
     clubOf(local).fans = limit;
     expect(gateProjection(local)).toEqual(gate);
   });
