@@ -16,6 +16,7 @@ import { country } from '../../../../../../packages/catalogs/src/index';
 import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
 import { ClubLink } from '../../../entities/club';
+import { ovrTier } from '../../../entities/player';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { MatchReport } from '../../../features/match-viewer';
 import { TabList } from '../../../shared/ui/PageTabs';
@@ -76,7 +77,7 @@ const markOf = (own: number, other: number) =>
  * A league's final table under the rules of the division it was played in: ours, or `league`
  * (→WEB-65). Only points and goals survive for every club; wins, draws and losses only for ours.
  */
-function FinalTable({
+export function FinalTable({
   w,
   season,
   rows,
@@ -94,6 +95,7 @@ function FinalTable({
 }) {
   useTextLocale();
   const order = useStandingsSort();
+  if (!read?.files) return <Pending read={read} />;
   if (!rows)
     return read?.files ? (
       <p className={r.loading}>{richMessage('copy.PastSeason.9be7046661')}</p>
@@ -107,7 +109,7 @@ function FinalTable({
     tier = league?.tier ?? season.tier,
     group = league?.group ?? season.group,
     { zones } = finalZones(code, tier, rows.length);
-  const archive = read?.files?.season ?? season;
+  const archive = read.files.season;
   const standings = rows.map(([club, points, gf, ga], i) => {
     const id = w.clubs[club]?.id;
     const record = records?.get(club);
@@ -116,7 +118,10 @@ function FinalTable({
       id,
       rank: i + 1,
       zone: zones[i],
-      ovr: id ? archivedClubOvr(archive, id) : undefined,
+      ovr:
+        id && archive?.closingClubOvr && 'clubs' in archive.closingClubOvr
+          ? archivedClubOvr(archive, id)
+          : undefined,
       points,
       played: record ? record[0] + record[1] + record[2] : undefined,
       won: record?.[0],
@@ -127,7 +132,7 @@ function FinalTable({
       difference: gf - ga,
     };
   });
-  const showOvr = standings.some((row) => row.ovr !== undefined);
+  const showOvr = true;
   return (
     <section
       data-surface="sheet"
@@ -208,25 +213,15 @@ function FinalTable({
                   <tr
                     key={club}
                     data-own={id === w.playerClub || undefined}
+                    data-champion={rank === 1 || undefined}
+                    aria-label={
+                      rank === 1 ? displayMessage('copy.CupHistory.31e52393f3') : undefined
+                    }
                     className={`${id === w.playerClub ? r.own : ''} ${zone ? l[zone] : ''}`}
                   >
                     <td>{localizeValue(number(rank))}</td>
                     <td>
                       {localizeValue(id ? <ClubLink w={w} id={id} crest={14} /> : '—')}
-                      {localizeValue(
-                        rank === 1 && (
-                          <span className={r.champion}>
-                            {richMessage('copy.CupHistory.31e52393f3')}
-                            {!showOvr && (
-                              <>
-                                {' · '}
-                                {richMessage('team.column.ovr')}
-                                {' —'}
-                              </>
-                            )}
-                          </span>
-                        ),
-                      )}
                       {localizeValue(
                         !records && id === w.playerClub && (
                           <small className={r.record}>
@@ -239,7 +234,17 @@ function FinalTable({
                         ),
                       )}
                     </td>
-                    {showOvr && <td>{localizeValue(ovr === undefined ? '—' : number(ovr))}</td>}
+                    {showOvr && (
+                      <td>
+                        {ovr === undefined ? (
+                          '—'
+                        ) : (
+                          <span className={l.teamOvr} data-tier={ovrTier(ovr)}>
+                            {number(ovr)}
+                          </span>
+                        )}
+                      </td>
+                    )}
                     <td className={r.points}>
                       {localizeValue(number(points))}{' '}
                       <PointsDeduction row={id ? deductions?.[id] : undefined} />

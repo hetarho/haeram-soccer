@@ -3417,7 +3417,7 @@
     "copy.PastSeason.9be7046661": "Il n'y a plus de classement final pour cette saison.",
     "copy.PastSeason.a0b4a42470": "classement final",
     "copy.PastSeason.7085c5380c": "{p0} · {p1}{p2} · {p3}Équipe",
-    "copy.PastSeason.3ad2d3bb48": " Il ne reste que des points, des gains et des défaites de la saison dernière dans cette ligue.Les victoires, les nuls et les défaites ne peuvent être observés que dans notre ligue.",
+    "copy.PastSeason.3ad2d3bb48": " Les victoires, matchs nuls et défaites sont disponibles uniquement pour notre ligue.",
     "copy.PastSeason.78244fe6fc": "Les zones sont les règles de promotion de la division pour cette saison.{p0}",
     "copy.PastSeason.3e07185367": "nos matchs de championnat",
     "copy.PastSeason.7a96817f80": "{p0} · {p1} match {p2} gagne {p3} nul {p4}{p5} perd",

@@ -493,16 +493,22 @@
   color: var(--text-muted);
   font-family: var(--display);
 }
-.champion {
-  margin-left: 6px;
-  padding: 1px 6px;
-  border-radius: var(--card-radius);
-  font-size: 12px;
-  font-weight: 700;
-  color: #2a1c00;
-  background: var(--surface-grain, none) var(--gold-fill);
-  vertical-align: middle;
-  font-family: var(--display);
+.table tr[data-champion] > td {
+  box-shadow:
+    inset 0 2px var(--gold),
+    inset 0 -2px var(--gold);
+}
+.table tr[data-champion] > td:first-child {
+  box-shadow:
+    inset 2px 0 var(--gold),
+    inset 0 2px var(--gold),
+    inset 0 -2px var(--gold);
+}
+.table tr[data-champion] > td:last-child {
+  box-shadow:
+    inset -2px 0 var(--gold),
+    inset 0 2px var(--gold),
+    inset 0 -2px var(--gold);
 }
 /* Our record under our name: the only club whose wins, draws and losses survive. */
 .record {
