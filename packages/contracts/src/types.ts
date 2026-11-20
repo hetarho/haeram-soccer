@@ -980,6 +980,7 @@ export interface SeasonArchive extends Partial<LeagueDeduction> {
   expense: string;
   fans: number;
   rating: number;
+  closingClubOvr?: { ownClub?: string; champions: Record<string, number> };
   manager: string;
   metrics: Metrics;
   standings: number[][];
@@ -1077,7 +1078,7 @@ export interface GenerationDigest {
   /** The world's ten best clubs by Club Elo, best first (→HIST-12). */
   elo: (DigestClub & { elo: number })[];
   /** Each playable association's league champion, in WORLD-1's order. */
-  champions: { country: string; club: DigestClub }[];
+  champions: { country: string; club: DigestClub; ovr?: number }[];
   /** The winners of the continental competitions decided that season, the Super Cup aside. */
   europe: { kind: string; name: string; club: DigestClub }[];
   /** The 발롱도르 winner, from 1955/56 (→PLAYER-27). */

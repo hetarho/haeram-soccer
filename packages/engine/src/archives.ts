@@ -19,6 +19,12 @@ export const HOT_ARCHIVE_SEASONS = 7;
 
 type Archives = Pick<World, 'history' | 'historyBase'>;
 
+/** The recorded closing XI, never reconstructed from a later roster. */
+export function archivedClubOvr(season: SeasonArchive, clubId: string): number | undefined {
+  const snapshot = season.closingClubOvr;
+  return snapshot?.ownClub === clubId ? season.rating : snapshot?.champions[clubId];
+}
+
 /** How many archives have left memory: the absolute index of the first one memory holds. */
 export const historyBase = (w: Archives) => w.historyBase ?? 0;
 /** Every season the career has archived, in memory or cold. */

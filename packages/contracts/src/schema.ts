@@ -581,6 +581,12 @@ export const seasonArchiveSchema = z.object({
   expense: money,
   fans: number,
   rating: number,
+  closingClubOvr: z
+    .strictObject({
+      ownClub: id.optional(),
+      champions: z.record(id, z.number().int()).refine((rows) => Object.keys(rows).length <= 1000),
+    })
+    .optional(),
   manager: text,
   metrics,
   ...leagueDeduction.partial().shape,
@@ -948,7 +954,9 @@ export const generationDigestSchema: z.ZodType<GenerationDigest> = z
     elo: z
       .array(z.strictObject({ ...digestClub.shape, elo: z.number().int().min(0).max(4000) }))
       .max(10),
-    champions: z.array(z.strictObject({ country: text, club: digestClub })).max(8),
+    champions: z
+      .array(z.strictObject({ country: text, club: digestClub, ovr: z.number().int().optional() }))
+      .max(8),
     europe: z.array(z.strictObject({ kind: text, name: text, club: digestClub })).max(8),
     ballonDor: z.strictObject({ name: text, club: digestClub }).optional(),
     feat: z
@@ -2110,6 +2118,11 @@ export function validateWorld(
       )
         throw new Error(sourceMessage('copy.schema.4a1531878b'));
   for (const h of w.history) {
+    if (
+      (h.closingClubOvr?.ownClub && !ids.has(h.closingClubOvr.ownClub)) ||
+      Object.keys(h.closingClubOvr?.champions ?? {}).some((club) => !ids.has(club))
+    )
+      throw new Error(sourceMessage('copy.schema.4a1531878b'));
     if (Object.keys(h.leagueDeductions ?? {}).some((club) => !ids.has(club)))
       throw new Error(sourceMessage('copy.schema.4a1531878b'));
     if (

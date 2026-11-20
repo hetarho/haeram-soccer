@@ -24,12 +24,32 @@ import { validateFullMatchRecord } from './match-model';
 import { npcCompetition, playerTotals } from './npc-stats';
 import { advanceDays, advanceRound, recordMatch, resolveTie } from './season';
 import { archiveLastRound, closedSeason, founded } from './season.testkit';
+import { groupKey, ranked } from './league-fixtures';
+import { rating } from './world';
+import { archivedClubOvr } from './archives';
 
 describe('closed season archive', () => {
   it.each(['professional'] as const)(
     'keeps the %s league scorers, the rank after every round and the Elo spread',
     (start) => {
       const { w, live, season } = closedSeason(archiveLastRound(start));
+      expect(archivedClubOvr(season, live.playerClub)).toBe(
+        rating(
+          live,
+          live.clubs.find((c) => c.id === live.playerClub)!,
+        ),
+      );
+      const groups = new Map<string, typeof live.clubs>();
+      for (const club of live.clubs.filter((c) => !c.representative && !c.id.startsWith('euro:'))) {
+        const key = groupKey(club);
+        groups.set(key, [...(groups.get(key) ?? []), club]);
+      }
+      for (const clubs of groups.values()) {
+        const leader = ranked(live, clubs)[0]!;
+        if (live.tables[leader.id]?.played)
+          expect(archivedClubOvr(season, leader.id)).toBe(rating(live, leader));
+      }
+      expect(groups.size).toBeGreaterThan(season.champions.length);
       const scorers = season.scorers!;
       const table = live.scorerSeason!.players.filter((p) => p.goals > 0);
       expect(scorers).toHaveLength(Math.min(10, table.length));

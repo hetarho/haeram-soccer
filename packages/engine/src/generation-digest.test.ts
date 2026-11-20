@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { BallonDorPlace, Club, SeasonArchive } from '../../contracts/src/types';
 import { generationDigestSchema } from '../../contracts/src/schema';
 import { seasonDigest } from './generation-digest';
+import { archivedClubOvr, archiveSummary } from './archives';
 
 /** Three associations in WORLD-1's order, enough for the tie rule. */
 const ASSOCIATIONS = ['ENG', 'ESP', 'GER'];
@@ -64,6 +65,21 @@ const featOf = (history: SeasonArchive[], year?: number) =>
   seasonDigest(world(history, year))?.feat;
 
 describe('seasonDigest (→WEB-115)', () => {
+  it('reads recorded closing ratings and preserves absent values', () => {
+    const season = archive(1965, { champions: { ENG: 'arsenal', ESP: 'madrid', GER: 'bayern' } });
+    season.rating = 77;
+    season.closingClubOvr = { ownClub: 'arsenal', champions: { madrid: 81 } };
+    expect(archivedClubOvr(archiveSummary(season), 'arsenal')).toBe(77);
+    expect(archivedClubOvr(season, 'madrid')).toBe(81);
+    expect(archivedClubOvr(season, 'bayern')).toBeUndefined();
+    expect(seasonDigest(world([season]))!.champions.map((row) => row.ovr)).toEqual([
+      77,
+      81,
+      undefined,
+    ]);
+    delete season.closingClubOvr;
+    expect(archivedClubOvr(season, 'arsenal')).toBeUndefined();
+  });
   it('reads nothing before the first close', () => {
     expect(seasonDigest(world([], 1930))).toBeUndefined();
   });

@@ -60,6 +60,18 @@ describe('legacy heat in a saved record', () => {
     );
     expect(matchMaterialSchema.parse(saved.material)).toEqual(material);
     expect(seasonArchiveSchema.parse(saved.archive)).toEqual(archive);
+    const snapshot = { ownClub: 'own', champions: { rival: 72 } };
+    expect(
+      seasonArchiveSchema.parse({ ...archive, closingClubOvr: snapshot }).closingClubOvr,
+    ).toEqual(snapshot);
+    expect(
+      seasonArchiveSchema.safeParse({ ...archive, closingClubOvr: { champions: { rival: 72.5 } } })
+        .success,
+    ).toBe(false);
+    expect(
+      seasonArchiveSchema.safeParse({ ...archive, closingClubOvr: { champions: { '': 72 } } })
+        .success,
+    ).toBe(false);
     expect(careerReadsSchema.parse(saved.career)).toEqual(career);
   });
 });

@@ -16,7 +16,7 @@ import type {
 } from '../../contracts/src/types';
 import { BALLON_DOR_CONFIG } from './ballon-dor';
 import { eloOf } from './elo';
-import { archiveSummaries } from './archives';
+import { archivedClubOvr, archiveSummaries } from './archives';
 
 /** The feats of WEB-115, greatest first: a season with several shows the first. */
 export const FEAT_ORDER: readonly GenerationFeatKind[] = [
@@ -59,7 +59,10 @@ export function seasonDigest(w: DigestWorld): GenerationDigest | undefined {
     season: w.year,
     closed: last.year,
     elo: eloTop(w.clubs),
-    champions: last.champions.map(({ country, club }) => ({ country, club: named(club) })),
+    champions: last.champions.map(({ country, club }) => {
+      const ovr = archivedClubOvr(last, club);
+      return { country, club: named(club), ...(ovr !== undefined ? { ovr } : {}) };
+    }),
     europe: last.europe
       .filter((entry) => EUROPE_ORDER.includes(entry.kind))
       .sort((a, b) => EUROPE_ORDER.indexOf(a.kind) - EUROPE_ORDER.indexOf(b.kind))
