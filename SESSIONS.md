@@ -198,6 +198,7 @@
 - 261119 parked SAVE-3: Worker save cost after the record store: CI traces of 0.8.16-0.8.17 show 6-7 s of engine-worker save after each owner decision at a 다음 이벤트 stop, so long journeys need widened waits (T1038). Profile the changed-row save on OPFS and cut it before relying on the widened waits; not measured locally (browser journeys run only in CI).
 - 261119 parked ARCH-30: The preview server serves sqlite3 wasm as application/octet-stream, so the worker logs wasm streaming compile failed and falls back to ArrayBuffer instantiation; not fatal. Serve .wasm as application/wasm in scripts/preview.mjs if the preview owns that header.
 - 261119 parked T1039: Shared gate f96fd6c3 (candidate e16be77cf, landed on main as a fast-forward) holds four required checks recorded fail from CI 44574533210 and one optional check not-run, yet stays waiting-agent: integration finish answers waiting-agent and abandon answers integration-not-releasable, so plan-push answers integration-frozen. T1039 was put on main by a spec-only fast-forward instead. Settle the gate before the next plan-push.
+- 261120 decided HIST-12: 우승 당시의 기준 시점 → 리그 최종 순위가 확정되어 시즌 아카이브에 쓰는 순간 (alt: 우승 확정 라운드 | 시즌 평균). 모든 진행 방식에서 같은 시점을 한 번 기록하고 다음 시즌의 선수단 변경과 구분할 수 있습니다.
 
 ## unlanded
 | id | tag | branch | commit | at |
