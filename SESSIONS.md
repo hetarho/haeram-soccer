@@ -224,6 +224,7 @@
 | T1041 | ovr20 | gusta-session-start-ovr20-f773a1bb | 60b2a0a59223 | 2026-11-20T01:34Z |
 
 ## log
+- 261120 gusta-create-task ECON WEB start
 - 261120 gusta-update-ssot ECON@66 WEB@228: owned gate, large stadium steps and matching art
 - 261120 gusta-update-ssot ECON WEB start
 - 261120 gusta-create-task HIST SAVE WEB start
@@ -243,4 +244,3 @@
 - 261120 gusta-update-ssot HIST WEB SAVE start
 - 261119 CI 44590362467 on 75ae6aa60 (0.8.19): 8 failed (6 at season-progression.ts:35, recruitment:461 export, management:22); planned T1039 (fd7d98589 on main). Gate f96fd6c3 has its CI failures recorded but stays waiting-agent: finish and abandon both refuse it.
 - 261119 pushed 75ae6aa60 (0.8.19, slot seeding fix) to main as a fast-forward after verify:batch passed (541 files, 4510 tests)
-- 261119 fix e2e: seedSlot leaves the next start address on the slot screen (51 of 69 failures in CI 44569063692); 0.8.19 prepared
