@@ -1701,8 +1701,8 @@
       "branch": "gusta-session-start-ovr20b-916c8e5f",
       "head": "a71ff85112ca9789303accd584d238c6066ceb22",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-20T04:17:48.555Z",
+      "status": "landed",
+      "at": "2026-11-20T04:28:31.224Z",
       "agentChecks": [
         {
           "id": "closed-league-table-ovr",
@@ -1728,7 +1728,14 @@
         }
       ],
       "verificationCommands": [],
-      "reason": "session-ended"
+      "reason": "session-ended",
+      "landed": "0f6f369100a699b48f2245cca52a152dc10ef535",
+      "reconciled": {
+        "at": "2026-11-20T04:28:31.224Z",
+        "from": "paused",
+        "reason": "ovr20b landed 0.8.22 (0f6f36910) on main by fast-forward after task-tier checks (owner: unit checks only)",
+        "verified": false
+      }
     }
   },
   "gate": null,
