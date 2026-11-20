@@ -218,6 +218,7 @@
 | T1041 | ovr20 | gusta-session-start-ovr20-f773a1bb | 60b2a0a59223 | 2026-11-20T01:34Z |
 
 ## log
+- 261120 gusta-create-task WEB start
 - 261120 gusta-update-ssot WEB r228: WEB-30/40/41/47/65 amended; no active task references those decisions
 - 261120 gusta-update-ssot WEB start
 - 261120 T1041 done
@@ -237,4 +238,3 @@
 - 261119 T1035 done
 - 261119 T1034 done
 - 261119 T1033 done
-- 261119 Planning verification pass in 108835 ms: typecheck, lint, format, i18n (12 locales); affected unit selection empty for spec-only changes. Spec lint has one pre-existing warning. Browser acceptance remains host-owned.
