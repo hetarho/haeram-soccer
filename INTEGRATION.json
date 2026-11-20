@@ -1281,8 +1281,8 @@
       "branch": "gusta-session-start-tk19-9706a3bf",
       "head": "213b7bce748a9ec7a9e966926cdfc8c92bd09d2d",
       "land": "main",
-      "status": "ready",
-      "at": "2026-11-19T16:57:52.666Z",
+      "status": "landed",
+      "at": "2026-11-20T03:44:00.171Z",
       "agentChecks": [
         {
           "id": "T1017-shared-final-gate",
@@ -1464,7 +1464,13 @@
         }
       ],
       "verificationCommands": [],
-      "landed": "eb5c6882b04dd2106321c2eda1f04b85f321e580"
+      "landed": "a87658ab2ce664b6ed138c2cc3c09fc26e4a9df2",
+      "reconciled": {
+        "at": "2026-11-20T03:44:00.171Z",
+        "from": "ready",
+        "reason": "head-in-land",
+        "verified": false
+      }
     },
     "bdd614ebd62a8dd70a0866a2": {
       "id": "bdd614ebd62a8dd70a0866a2",
@@ -1539,10 +1545,17 @@
       "branch": "gusta-session-start-facrel-530a20ac",
       "head": "0df9743ce1df3b94a618be33c50ba5919c459b05",
       "land": "main",
-      "status": "ready",
-      "at": "2026-11-19T16:53:39.355Z",
+      "status": "landed",
+      "at": "2026-11-20T03:44:00.171Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "landed": "a87658ab2ce664b6ed138c2cc3c09fc26e4a9df2",
+      "reconciled": {
+        "at": "2026-11-20T03:44:00.171Z",
+        "from": "ready",
+        "reason": "head-in-land",
+        "verified": false
+      }
     },
     "fb13eadd7bf9b51d38f9f565": {
       "id": "fb13eadd7bf9b51d38f9f565",
