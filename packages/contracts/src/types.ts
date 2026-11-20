@@ -980,7 +980,9 @@ export interface SeasonArchive extends Partial<LeagueDeduction> {
   expense: string;
   fans: number;
   rating: number;
-  closingClubOvr?: { ownClub?: string; champions: Record<string, number> };
+  closingClubOvr?: { ownClub?: string } & (
+    { champions: Record<string, number> } | { clubs: Record<string, number> }
+  );
   manager: string;
   metrics: Metrics;
   standings: number[][];

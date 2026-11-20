@@ -582,10 +582,18 @@ export const seasonArchiveSchema = z.object({
   fans: number,
   rating: number,
   closingClubOvr: z
-    .strictObject({
-      ownClub: id.optional(),
-      champions: z.record(id, z.number().int()).refine((rows) => Object.keys(rows).length <= 1000),
-    })
+    .union([
+      z.strictObject({
+        ownClub: id.optional(),
+        champions: z
+          .record(id, z.number().int())
+          .refine((rows) => Object.keys(rows).length <= 1000),
+      }),
+      z.strictObject({
+        ownClub: id.optional(),
+        clubs: z.record(id, z.number().int()).refine((rows) => Object.keys(rows).length <= 1000),
+      }),
+    ])
     .optional(),
   manager: text,
   metrics,
@@ -2120,7 +2128,13 @@ export function validateWorld(
   for (const h of w.history) {
     if (
       (h.closingClubOvr?.ownClub && !ids.has(h.closingClubOvr.ownClub)) ||
-      Object.keys(h.closingClubOvr?.champions ?? {}).some((club) => !ids.has(club))
+      Object.keys(
+        h.closingClubOvr
+          ? 'clubs' in h.closingClubOvr
+            ? h.closingClubOvr.clubs
+            : h.closingClubOvr.champions
+          : {},
+      ).some((club) => !ids.has(club))
     )
       throw new Error(sourceMessage('copy.schema.4a1531878b'));
     if (Object.keys(h.leagueDeductions ?? {}).some((club) => !ids.has(club)))

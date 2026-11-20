@@ -69,7 +69,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
-| T1043 | Capture closing Club OVR for archived league clubs | ARCH HIST SAVE WEB | - | todo |
 | T1044 | Show Club OVR in closed league tables | ARCH HIST SAVE WEB | T1042 T1043 | todo |
 
 ## work
@@ -84,6 +83,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- gusta-implement-task T1044
 - gusta-implement-task T1043 — ovr20b builds T1043/T1044 on lgux20's ready T1042 and lands them together (owner 261120).
 - T1042 and T1039 have a 0.8.21 candidate in session lgux20. The expired gate f96fd6c3 is in shared history and WEB r228 is published. See reports/261120-lgux20.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
