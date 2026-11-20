@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r229 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r230 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -386,7 +386,7 @@
 - WEB-72 [o] The pixel theme supplies cohesive, lived-in pixel-art football backgrounds for the stadium, match-preparation locker room and training-ground overview; other themes supply the same semantic image slots (→WEB-91).
   - Pixel environments share a restricted grass-green, charcoal, warm-ivory and aged-wood palette, clearly stepped pixels and quiet evening/practical lighting. Pixel environment assets use the same 240×80 logical pixel grid as the existing stadium/locker/training drawings, with coarse readable shapes and pixelated scaling rather than dense high-resolution textures. Preserve believable perspective, material wear and period equipment.
   - Backgrounds stay subordinate to the interface; the default theme uses a light charcoal dim and reduced saturation. Apply image treatments only to the image, preserving the clarity of HTML text and controls.
-  - Stadium, locker-room, training-ground and academy scenes select distinct artwork by the displayed game calendar year and completed facility stage: 1950–1969, 1970–1999 and 2000 onward; all nine stadium stages and all six training-ground and academy levels have their own image in each era. An era changes on 1 January even within a season.
+  - Stadium, locker-room, training-ground and academy scenes select distinct artwork by the displayed game calendar year and completed facility stage. Each stadium stage in →!ECON-32 and each of the six training-ground and academy levels has its own image in each era (1950–1969, 1970–1999 and 2000 onward). An era changes on 1 January even within a season.
   - The locker room follows the completed stadium stage in each era; it is a visual part of that facility, without an independent upgrade stat or cost. Construction keeps the completed-stage image until the world applies the upgrade.
   - The first-team workflow retains its current locker-room illustration. Coaching retains distinct original manager-office and shared coaching-workroom interiors, viewed from the visiting owner's entrance. Manager and staff scenes use period-neutral paper/chalk/wood equipment, without named people, branding, embedded facts or an independent upgrade stat; each has one semantic stage (0), shared across calendar eras. The home office entrance and 결재라인 모아보기 (→~WEB-79) retain the manager-room scene; the office itself has none (→=WEB-39).
   - The youth academy has distinct original training-courtyard illustrations for completed levels 0–5 in each era, with increasing facility scale and quality, youth-sized equipment, academy buildings and a practice pitch. Select from the actual completed academyFacility level; pending construction retains the current image until completion. Show the current level in HTML, without embedded capacities, player identities or extra upgrade stats.
@@ -634,6 +634,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r230 261120 WEB-72✎ distinct artwork for nine stadium stages→distinct artwork for every completed ECON-32 stadium stage, including 105,000 and 120,000
 - r229 261120 WEB-47✎ champion badge and own/champion-only OVR in closed tables→every recorded club's OVR in the sortable column and a border or outline on the champion row
 - r228 261120 WEB-30✎ preview→all clubs · WEB-40✎ team records→rank trend with team stats · WEB-41✎ fixed order→numeric sorting · WEB-47/58✎ champion OVR in final tables→sortable recorded OVR · WEB-65✎ round dropdown, fixture cards, nearby comparison→round stepper, chronological rows, club toggles
 - r227 261120 WEB-47✎ closed champions identified in final tables and lists→also show their recorded OVR or absence · WEB-54✎ existing growth metrics→also archived own-club OVR on the same season chart · WEB-115✎ generation's league champions list→also each champion's archived OVR
