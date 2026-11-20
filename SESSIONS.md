@@ -6,7 +6,7 @@
 |---|---|---|---|---|---|---|---|---|
 | stad20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:32Z | 2026-11-20T03:32Z | - | gusta-session-start-stad20-a4e0e490 | b0619a3ca06f | 59bbbe573858883ac186b857 |
 | ovr20b | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:34Z | 2026-11-20T03:34Z | - | gusta-session-start-ovr20b-916c8e5f | 66a3fe86ce91 | 638d095296286bb62a147c78 |
-| lgux20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:38Z | 2026-11-20T03:38Z | T1042 | gusta-session-start-lgux20-8a35ba80 | c336699a5ec3 | 94af01b7afebaf2f46e0b4bb |
+| lgux20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:38Z | 2026-11-20T03:42Z | - | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 94af01b7afebaf2f46e0b4bb |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
@@ -225,8 +225,10 @@
 | T1038 | tk19 | gusta-session-start-tk19-9706a3bf | 9dc24fbd7064 | 2026-11-19T16:57Z |
 | T1040 | ovr20 | gusta-session-start-ovr20-f773a1bb | 0829da3e8a15 | 2026-11-20T01:32Z |
 | T1041 | ovr20 | gusta-session-start-ovr20-f773a1bb | 60b2a0a59223 | 2026-11-20T01:34Z |
+| T1042 | lgux20 | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 2026-11-20T03:42Z |
 
 ## log
+- 261120 T1042 done
 - 261120 gusta-create-task HIST@30 SAVE@75 WEB@228 done: T1043 T1044
 - 261120 gusta-create-task ECON WEB start
 - 261120 gusta-update-ssot ECON@66 WEB@228: owned gate, large stadium steps and matching art
@@ -246,4 +248,3 @@
 - 261120 gusta-create-task HIST WEB SAVE start
 - 261120 gusta-update-ssot HIST r29 WEB r227 SAVE r74: season-close Club OVR archive and presentation; no active task cites the changed decisions
 - 261120 gusta-update-ssot HIST WEB SAVE start
-- 261119 CI 44590362467 on 75ae6aa60 (0.8.19): 8 failed (6 at season-progression.ts:35, recruitment:461 export, management:22); planned T1039 (fd7d98589 on main). Gate f96fd6c3 has its CI failures recorded but stays waiting-agent: finish and abandon both refuse it.
