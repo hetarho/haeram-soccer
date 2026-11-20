@@ -1677,10 +1677,11 @@
       "branch": "gusta-session-start-stad20-a4e0e490",
       "head": "171450707b70dce95be48505bc0b6d0c0777d2fc",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-20T03:50:59.602Z",
+      "status": "paused",
+      "at": "2026-11-20T03:51:03.285Z",
       "agentChecks": [],
-      "verificationCommands": []
+      "verificationCommands": [],
+      "reason": "session-ended"
     },
     "638d095296286bb62a147c78": {
       "id": "638d095296286bb62a147c78",
