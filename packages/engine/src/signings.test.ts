@@ -72,6 +72,7 @@ import * as personalTerms from './personal-terms';
 import { termsChance, termsContext, WAGE_STEPS } from './personal-terms';
 import { pursueRequest, requestCandidates, wageCeiling, wageOffer } from './signings';
 import { random } from './primitives';
+import { catchment } from './fans';
 import { staffBidShare } from './director-bidding';
 import { openNeed, openNeeds } from './replacements';
 
@@ -317,6 +318,9 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
 
   it("keeps the 단장's money checks", () => {
     const w = club();
+    // The edges below are read against the forecast gate; keep this club's following inside its
+    // catchment so no travelling supporters (→ECON-9) move that forecast.
+    clubOf(w).fans = Math.min(clubOf(w).fans, catchment(w));
     const offer = transferOffers(w)[clubIndex(w)]!;
     // A large fixed bill lets the test start with the fee and reserve in cash.
     w.manager.wage = (BigInt(operatingCosts(w).annual) * 4n).toString();

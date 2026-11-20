@@ -1,6 +1,7 @@
 import type { World } from '../../contracts/src/types';
 import { advanceRound, operate, operatingCosts } from './index';
 import { holdRows } from './testing';
+import { settingsOf } from './responsibilities';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { careerWorld } from './career.testkit';
 
@@ -21,6 +22,10 @@ export const setups = {
   academy: () => {
     const w = world();
     holdRows(w, { policy: { academy: 3 } });
+    // The owner keeps 유소년 운영 so the academy level stays fixed: a delegate re-plans it when the
+    // forecast income moves (→ECON-33/40), and the bill comparison needs one level all season.
+    const settings = settingsOf(w);
+    w.settings = { ...settings, responsibilities: { ...settings.responsibilities, academy: 'direct' } };
     return w;
   },
   recorded: () => {
