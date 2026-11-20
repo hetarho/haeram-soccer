@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r227 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r228 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -245,8 +245,10 @@
   - mode and observation choices remain independent under →WEB-76. Pending decisions follow →WEB-82; settings entry/application follows →WEB-79.
 
 - WEB-47 [o] League uses visible competition selection and starts on standings: the current season first, every closed one by the header's season stepper (→WEB-40). The stable lenses of →WEB-40 keep their purpose across periods; a closed season never forces a club-review tab.
-  - Final tables retain their historical division zones. Our league's closed table shows played, won, drawn and lost for every club, as derived from its retained round snapshots (→HIST-13), and leaves those columns out whenever the snapshots disagree with our archived record; another league's closed table limits its standings statistics to points and goals and says so. Other competition details follow retained scope (→WEB-65). A season close opens no screen automatically.
-  - The final table and every champions list that names a closed league season's champion show the archived Club OVR next to that club (→=HIST-13). An archive without that OVR shows the usual unavailable marker (—).
+  - Final tables retain their historical division zones. Our league's closed table shows played, won, drawn and lost for every club, as derived from its retained round snapshots (→HIST-13), and leaves those columns out whenever the snapshots disagree with our archived record. Another league's closed table presents points and goals as its match-result statistics and explains the scope of the won, drawn and lost columns. Other competition details follow retained scope (→WEB-65). A season close opens no screen automatically.
+  - Each closed domestic division or group table displays recorded Club OVR in its own column immediately after the club (→=HIST-13). Use the live league table's tier chip (→~WEB-58) and keep the column visible at 390 px. Use — in every row of an earlier archive without a full club snapshot and for any missing value.
+  - Mark the first row of each closed division or group table with a border or outline visible on phones in both light and dark themes. The row treatment replaces the champion badge. Convey the champion status in accessible table semantics using the existing champion message (→!ARCH-32).
+  - Champions lists show the archived Club OVR beside each closed league season's champion, with — when it is absent (→=HIST-13).
   - Our archived club-season analytical review is reached through records, alongside our matches and decisions (→WEB-54); an explicitly named link opens that season's league table and preserves the way back.
   - The review preserves these analytical facts without collecting new history:
   - hero band: crest, club, division move, final rank of the division size and last season's rank.
@@ -628,6 +630,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r228 261120 WEB-47✎ champion badge with closing OVR in final tables→visible OVR column for all clubs and an accessible border or outline on the champion row
 - r227 261120 WEB-47✎ closed champions identified in final tables and lists→also show their recorded OVR or absence · WEB-54✎ existing growth metrics→also archived own-club OVR on the same season chart · WEB-115✎ generation's league champions list→also each champion's archived OVR
 - r226 261119 WEB-14✎ first-team training and academy work links→existing facility entries, including the academy detour
 - r225 261119 WEB-14✎ facility cards offer manual quotes→manual quotes and independent automatic-continuation checkboxes with saved status and stadium rebuild disclosure
