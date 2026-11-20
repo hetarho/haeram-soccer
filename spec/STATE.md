@@ -84,7 +84,7 @@
 ## next
 - no runnable task: resolve blocked, parked or deps
 - gusta-implement-task T1043
-- gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.
+- stad20 (261120): popular owned clubs sell out at every preset when demand exceeds seats (ECON-9 r66, travelling share of the following), and the stadium climbs to 105,000 and 120,000 seats (ECON-32, WEB-72 r230). Landed as 0.8.23 (7dddfeca3); reports/261120-stad20. Follow-ups are in that report: sticker-club locker-10 redraw (helmets), top-preset copy, ECON-29 career re-measure, alt-text stage number.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 (261119): landed as 0.8.15 (9c3a60796) — unwatched own matches without script/material, heat maps removed, slow view reads only on a stopped clock with dimmed places, fixture helpers from three cores (three on 6–12 cores); a 10x automatic-play day ×0.72 on own match days and ×0.11 on other days (reports/261119-x10). T989 withdrawn, T1019 parked until T1003/T1004.
