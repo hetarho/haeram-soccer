@@ -1684,8 +1684,8 @@
       "branch": "gusta-session-start-stad20-a4e0e490",
       "head": "973cf18562997697c11bc39c523aec0f480320dc",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-20T06:04:29.318Z",
+      "status": "ready",
+      "at": "2026-11-20T06:04:34.070Z",
       "agentChecks": [
         {
           "id": "T1049-AC1",
