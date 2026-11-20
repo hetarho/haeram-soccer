@@ -1,0 +1,284 @@
+{
+  "method": "built-in image_gen prompts, not yet run; deployment by the shared encodeFacilityPanorama (scripts/art-resources.mjs)",
+  "date": "2026-11-20",
+  "family": "standard large stadium stages 9-10",
+  "purpose": "Painted sports-comic stadium and locker-room scenes for completed stages 9 and 10 (ECON-32, WEB-72). Working artwork awaiting the owner visual review; the stage maximum is not raised here (T1051).",
+  "jobs": [
+    {
+      "id": "heritage-stadium-9",
+      "asset": "heritage/stadium-9",
+      "kind": "stadium",
+      "era": "heritage",
+      "stage": 9,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Football stadium, low sideline viewpoint across grass toward the opposite stand, a near goal/net toward one edge, believable pitch markings and warm sky. Do not turn this into an aerial schematic. Use the layout reference only for the camera and the pitch position; the stands are rebuilt to a much larger scale. A rebuilt, very large, fully enclosed bowl with a continuous roofline falling from the corners to the centre, four tiers of seating on the long sides, deep terraces at the ends, a broad landmark roof on steel trusses and tall floodlight masts above it, built in weathered brick, painted timber and steel. It is the largest ground drawn so far, a new landmark bowl, communicated through architecture only. Period: English football facilities in 1950-1969: weathered brick, timber, corrugated roofs, steel posts, standing terraces, hand-maintained turf and traditional equipment. No LED panels, digital screens, plastic seat mosaics, futuristic roofs or modern sports-science technology. This is completed facility stage 9; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "heritage/stadium-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "heritage/stadium-9.webp",
+        "width": 960,
+        "height": 320,
+        "small": "heritage/stadium-9.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "heritage-stadium-10",
+      "asset": "heritage/stadium-10",
+      "kind": "stadium",
+      "era": "heritage",
+      "stage": 10,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Football stadium, low sideline viewpoint across grass toward the opposite stand, a near goal/net toward one edge, believable pitch markings and warm sky. Do not turn this into an aerial schematic. Use the layout reference only for the camera and the pitch position; the stands are rebuilt to a much larger scale. The same rebuilt, very large, fully enclosed bowl with its roofline raised and carried round the corners, five tiers of seating on the long sides, with a new upper third tier above the existing stands, deep terraces at the ends, a broad landmark roof on steel trusses and tall floodlight masts above it, built in weathered brick, painted timber and steel. It is the grandest completed stage, clearly above the stage 9 bowl in scale, communicated through architecture only. Period: English football facilities in 1950-1969: weathered brick, timber, corrugated roofs, steel posts, standing terraces, hand-maintained turf and traditional equipment. No LED panels, digital screens, plastic seat mosaics, futuristic roofs or modern sports-science technology. This is completed facility stage 10; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "heritage/stadium-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "heritage/stadium-10.webp",
+        "width": 960,
+        "height": 320,
+        "small": "heritage/stadium-10.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "terraces-stadium-9",
+      "asset": "terraces/stadium-9",
+      "kind": "stadium",
+      "era": "terraces",
+      "stage": 9,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Football stadium, low sideline viewpoint across grass toward the opposite stand, a near goal/net toward one edge, believable pitch markings and warm sky. Do not turn this into an aerial schematic. Use the layout reference only for the camera and the pitch position; the stands are rebuilt to a much larger scale. A rebuilt, very large, fully enclosed bowl with a continuous roofline falling from the corners to the centre, four tiers of seating on the long sides, deep terraces at the ends, a broad landmark roof on steel trusses and tall floodlight masts above it, built in concrete terraces, steel roofs and brick. It is the largest ground drawn so far, a new landmark bowl, communicated through architecture only. Period: English football facilities in 1970-1999: concrete terraces, practical steel roofs, brick club buildings, older floodlights and straightforward functional training equipment. No contemporary glass campuses, LED ribbon boards or futuristic technology. This is completed facility stage 9; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "terraces/stadium-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "terraces/stadium-9.webp",
+        "width": 960,
+        "height": 320,
+        "small": "terraces/stadium-9.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "terraces-stadium-10",
+      "asset": "terraces/stadium-10",
+      "kind": "stadium",
+      "era": "terraces",
+      "stage": 10,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Football stadium, low sideline viewpoint across grass toward the opposite stand, a near goal/net toward one edge, believable pitch markings and warm sky. Do not turn this into an aerial schematic. Use the layout reference only for the camera and the pitch position; the stands are rebuilt to a much larger scale. The same rebuilt, very large, fully enclosed bowl with its roofline raised and carried round the corners, five tiers of seating on the long sides, with a new upper third tier above the existing stands, deep terraces at the ends, a broad landmark roof on steel trusses and tall floodlight masts above it, built in concrete terraces, steel roofs and brick. It is the grandest completed stage, clearly above the stage 9 bowl in scale, communicated through architecture only. Period: English football facilities in 1970-1999: concrete terraces, practical steel roofs, brick club buildings, older floodlights and straightforward functional training equipment. No contemporary glass campuses, LED ribbon boards or futuristic technology. This is completed facility stage 10; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "terraces/stadium-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "terraces/stadium-10.webp",
+        "width": 960,
+        "height": 320,
+        "small": "terraces/stadium-10.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "contemporary-stadium-9",
+      "asset": "contemporary/stadium-9",
+      "kind": "stadium",
+      "era": "contemporary",
+      "stage": 9,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Football stadium, low sideline viewpoint across grass toward the opposite stand, a near goal/net toward one edge, believable pitch markings and warm sky. Do not turn this into an aerial schematic. Use the layout reference only for the camera and the pitch position; the stands are rebuilt to a much larger scale. A rebuilt, very large, fully enclosed bowl with a continuous roofline falling from the corners to the centre, four tiers of seating on the long sides, deep terraces at the ends, a broad landmark roof on steel trusses and tall floodlight masts above it, built in steel, glass and concrete. It is the largest ground drawn so far, a new landmark bowl, communicated through architecture only. Period: English football facilities from 2000 onward: modern but believable steel/glass/concrete football architecture, modern covered seating where appropriate, good drainage and professional amenities scaled to the completed facility level. No futuristic or fantasy architecture. This is completed facility stage 9; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "contemporary/stadium-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "contemporary/stadium-9.webp",
+        "width": 960,
+        "height": 320,
+        "small": "contemporary/stadium-9.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "contemporary-stadium-10",
+      "asset": "contemporary/stadium-10",
+      "kind": "stadium",
+      "era": "contemporary",
+      "stage": 10,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Football stadium, low sideline viewpoint across grass toward the opposite stand, a near goal/net toward one edge, believable pitch markings and warm sky. Do not turn this into an aerial schematic. Use the layout reference only for the camera and the pitch position; the stands are rebuilt to a much larger scale. The same rebuilt, very large, fully enclosed bowl with its roofline raised and carried round the corners, five tiers of seating on the long sides, with a new upper third tier above the existing stands, deep terraces at the ends, a broad landmark roof on steel trusses and tall floodlight masts above it, built in steel, glass and concrete. It is the grandest completed stage, clearly above the stage 9 bowl in scale, communicated through architecture only. Period: English football facilities from 2000 onward: modern but believable steel/glass/concrete football architecture, modern covered seating where appropriate, good drainage and professional amenities scaled to the completed facility level. No futuristic or fantasy architecture. This is completed facility stage 10; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "contemporary/stadium-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "contemporary/stadium-10.webp",
+        "width": 960,
+        "height": 320,
+        "small": "contemporary/stadium-10.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "heritage-locker-9",
+      "asset": "heritage/locker-9",
+      "kind": "locker",
+      "era": "heritage",
+      "stage": 9,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Association-football locker/changing room interior, viewed naturally from the entrance across benches and personal changing spaces. Richly painted materials, no people or text. Generic deep green/cream kit only, no real club identity. Warm practical daylight with pendant lamps. A finished large changing room for the rebuilt bowl: a spacious horseshoe team suite with two banks of premium lockers holding shirts, a central table with a ball, a green rug, a broad window band and a tall glass-fronted trophy cabinet holding cups and plaques with no legible lettering. Fittings are timber benches, leather and brass fittings, with broad coherent room proportions and an elegant finish appropriate to the era. Communicate the room's grandeur through materials and architecture only. Period: English football facilities in 1950-1969: weathered brick, timber, corrugated roofs, steel posts, standing terraces, hand-maintained turf and traditional equipment. No LED panels, digital screens, plastic seat mosaics, futuristic roofs or modern sports-science technology. This is completed facility stage 9; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "heritage/locker-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "heritage/locker-9.webp",
+        "width": 960,
+        "height": 320,
+        "small": "heritage/locker-9.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "heritage-locker-10",
+      "asset": "heritage/locker-10",
+      "kind": "locker",
+      "era": "heritage",
+      "stage": 10,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Association-football locker/changing room interior, viewed naturally from the entrance across benches and personal changing spaces. Richly painted materials, no people or text. Generic deep green/cream kit only, no real club identity. Warm practical daylight with pendant lamps. The same finished room as the stage 9 scene, with a gallery rail along an upper walkway and a glass showroom wall on the right that shows cups and kit in warm light. Fittings are timber benches, leather and brass fittings, with broad coherent room proportions and an elegant finish appropriate to the era. Communicate the room's grandeur through materials and architecture only. Period: English football facilities in 1950-1969: weathered brick, timber, corrugated roofs, steel posts, standing terraces, hand-maintained turf and traditional equipment. No LED panels, digital screens, plastic seat mosaics, futuristic roofs or modern sports-science technology. This is completed facility stage 10; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "heritage/locker-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "heritage/locker-10.webp",
+        "width": 960,
+        "height": 320,
+        "small": "heritage/locker-10.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "terraces-locker-9",
+      "asset": "terraces/locker-9",
+      "kind": "locker",
+      "era": "terraces",
+      "stage": 9,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Association-football locker/changing room interior, viewed naturally from the entrance across benches and personal changing spaces. Richly painted materials, no people or text. Generic deep green/cream kit only, no real club identity. Warm practical daylight with pendant lamps. A finished large changing room for the rebuilt bowl: a spacious horseshoe team suite with two banks of premium lockers holding shirts, a central table with a ball, a green rug, a broad window band and a tall glass-fronted trophy cabinet holding cups and plaques with no legible lettering. Fittings are steel lockers, tiled walls and practical fittings, with broad coherent room proportions and an elegant finish appropriate to the era. Communicate the room's grandeur through materials and architecture only. Period: English football facilities in 1970-1999: concrete terraces, practical steel roofs, brick club buildings, older floodlights and straightforward functional training equipment. No contemporary glass campuses, LED ribbon boards or futuristic technology. This is completed facility stage 9; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "terraces/locker-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "terraces/locker-9.webp",
+        "width": 960,
+        "height": 320,
+        "small": "terraces/locker-9.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "terraces-locker-10",
+      "asset": "terraces/locker-10",
+      "kind": "locker",
+      "era": "terraces",
+      "stage": 10,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Association-football locker/changing room interior, viewed naturally from the entrance across benches and personal changing spaces. Richly painted materials, no people or text. Generic deep green/cream kit only, no real club identity. Warm practical daylight with pendant lamps. The same finished room as the stage 9 scene, with a gallery rail along an upper walkway and a glass showroom wall on the right that shows cups and kit in warm light. Fittings are steel lockers, tiled walls and practical fittings, with broad coherent room proportions and an elegant finish appropriate to the era. Communicate the room's grandeur through materials and architecture only. Period: English football facilities in 1970-1999: concrete terraces, practical steel roofs, brick club buildings, older floodlights and straightforward functional training equipment. No contemporary glass campuses, LED ribbon boards or futuristic technology. This is completed facility stage 10; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "terraces/locker-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "terraces/locker-10.webp",
+        "width": 960,
+        "height": 320,
+        "small": "terraces/locker-10.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "contemporary-locker-9",
+      "asset": "contemporary/locker-9",
+      "kind": "locker",
+      "era": "contemporary",
+      "stage": 9,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Association-football locker/changing room interior, viewed naturally from the entrance across benches and personal changing spaces. Richly painted materials, no people or text. Generic deep green/cream kit only, no real club identity. Warm practical daylight with pendant lamps. A finished large changing room for the rebuilt bowl: a spacious horseshoe team suite with two banks of premium lockers holding shirts, a central table with a ball, a green rug, a broad window band and a tall glass-fronted trophy cabinet holding cups and plaques with no legible lettering. Fittings are modern lockers, glass screens and warm timber, with broad coherent room proportions and an elegant finish appropriate to the era. Communicate the room's grandeur through materials and architecture only. Period: English football facilities from 2000 onward: modern but believable steel/glass/concrete football architecture, modern covered seating where appropriate, good drainage and professional amenities scaled to the completed facility level. No futuristic or fantasy architecture. This is completed facility stage 9; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "contemporary/locker-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "contemporary/locker-9.webp",
+        "width": 960,
+        "height": 320,
+        "small": "contemporary/locker-9.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    },
+    {
+      "id": "contemporary-locker-10",
+      "asset": "contemporary/locker-10",
+      "kind": "locker",
+      "era": "contemporary",
+      "stage": 10,
+      "prompt": "Use case: illustration-story. Asset: one panoramic 3:1 facility illustration for a football-management game. Create a NEW scene, not a UI. Image 1 is a STYLE reference, not a request to copy its football stadium into other kinds of room. Match its painted Western sports-comic treatment, hand-crafted detail, foliage/material rendering and late-afternoon warmth. If another reference is supplied it establishes the facility layout/camera. Output one complete horizontal wide illustration around 1920x640, with no border, labels, letters, numbers, logos, branding, speech balloons, watermarks or embedded UI. No people, faces, vehicles or fabricated statistics. Keep image composition usable in a narrow panoramic UI slot, with the main architecture and important equipment in the central horizontal band. Preserve natural proportions and believable football architecture. Forest/stadium greens harmonize with #264532, with warm brick, timber, cream and blue-grey sky, not monochrome green. Contemporary Western painted sports comic / graphic novel background: expressive rough brush inking, layered opaque gouache colour, tactile wood/brick/grass/fabric, textured edges, selective graphic highlights, warm natural light and nuanced shadows. Match the supplied approved stadium reference closely in brushwork, palette and level of crafted detail. Richly rendered and immersive, not flat vector art, pixel art, photorealism or a 3D render. Scene: Association-football locker/changing room interior, viewed naturally from the entrance across benches and personal changing spaces. Richly painted materials, no people or text. Generic deep green/cream kit only, no real club identity. Warm practical daylight with pendant lamps. The same finished room as the stage 9 scene, with a gallery rail along an upper walkway and a glass showroom wall on the right that shows cups and kit in warm light. Fittings are modern lockers, glass screens and warm timber, with broad coherent room proportions and an elegant finish appropriate to the era. Communicate the room's grandeur through materials and architecture only. Period: English football facilities from 2000 onward: modern but believable steel/glass/concrete football architecture, modern covered seating where appropriate, good drainage and professional amenities scaled to the completed facility level. No futuristic or fantasy architecture. This is completed facility stage 10; communicate its scale through architecture only, with no stage number or capacity drawn in the image.",
+      "references": ["heritage/stadium-0.webp", "contemporary/locker-8.webp"],
+      "requestedSize": {
+        "width": 1920,
+        "height": 640
+      },
+      "deploy": {
+        "file": "contemporary/locker-10.webp",
+        "width": 960,
+        "height": 320,
+        "small": "contemporary/locker-10.small.webp",
+        "smallWidth": 480,
+        "smallHeight": 160
+      },
+      "source": null,
+      "status": "awaiting-image-generation"
+    }
+  ]
+}

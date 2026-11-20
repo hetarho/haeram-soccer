@@ -70,7 +70,7 @@
 |---|---|---|---|---|
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
 | T1047 | Prepare matchday-print art for the two stadium steps | ECON WEB ARCH | - | todo |
-| T1049 | Prepare standard art for the two stadium steps | ECON WEB ARCH | - | todo |
+| T1049 | Prepare standard art for the two stadium steps | ECON WEB ARCH | - | doing@261120.stad20 |
 | T1050 | Prepare sticker-club art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1051 | Enable the 105,000 and 120,000 stadium steps | ECON SAVE WEB ARCH | T1045 T1047 T1048 T1049 T1050 | todo |
 | T1052 | Measure top-flight sellout receipts and income mix | ECON ARCH | T1051 | todo |
