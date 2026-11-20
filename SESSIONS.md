@@ -216,7 +216,6 @@
 - 261120 decided ECON-32 WEB-72 T1051: 추가 증축 규격 → 캄 노우의 목표 규모를 참고한 105,000석 재건축과 옛 벤피카 구장의 규모를 참고한 120,000석 증축을 채택합니다 (alt: 105,000석 한 단계만 추가). 비용은 915,000과 2,287,500 단위이고 유지비 식을 적용합니다. 초대형 구장과 3층 스탠드는 현지화하고 각 테마와 시대의 완공 장면을 갖춥니다.
 - 261120 decided ECON-29 T1052: 최고가 매진의 재정 영향 확인 → 1980·2000·2020년 잉글랜드 1부에서 세 수용 규모의 리그 입장 수입과 매출 비중을 같은 조건으로 20분 안에 측정합니다 (alt: 장기 커리어 재보정부터 실행). 시즌 매출의 분모를 기록하고 범위를 벗어난 값은 결과로 남깁니다.
 - 261120 decided ECON-9 ECON-23 T1045: 연고지 밖 홈 관중 수요 → 연고 범위의 서포터에 그 밖의 팔로워 중 홈 경기를 보러 올 몫을 더합니다 (alt: 연고 상한을 일괄 인상). 기존 팔로워 수에 글로벌 인지도가 이미 반영됩니다.
-- 261120 parked WEB-47 T1043 T1044: 기획 커밋 4d65bf177a271b69bd1f653ae260e0182bf9d20b에 T1043·T1044를 보존했습니다. 문서 정합성 및 task-tier 검사 통과. plan-push는 먼저 발행된 T1042의 WEB@228과 같은 WEB-47을 수정해 spec/ssot/WEB.md 충돌로 거절됐습니다. 재개할 때 최신 원격 기획을 동기화하고 T1042의 정렬·리그 탐색 계약과 이번 기록 범위·우승 행 표시를 맞춰 WEB을 새 rev로 올린 뒤 두 태스크의 base를 갱신하고 plan-push를 다시 실행합니다.
 
 ## unlanded
 | id | tag | branch | commit | at |
@@ -232,6 +231,7 @@
 | T1042 | lgux20 | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 2026-11-20T03:42Z |
 
 ## log
+- 261120 ovr20b re-planned onto T1042 as WEB r229 (a8d053944) and put on main by a spec-only fast-forward; T1044 now depends on T1042
 - 261120 gusta-create-task ECON@66 WEB@228: T1045 T1046 T1047 T1048 T1049 T1050 T1051 T1052. Eight units with 2–5 product paths each. Read inherited spec dependencies in pages.
 - 261120 stad20 관중 표현을 연고지 밖의 홈 관중으로 바로잡음
 - 261120 T1042 done
@@ -251,4 +251,3 @@
 - 261120 ovr20 planning 33cba0145 put on main by a spec-only fast-forward (gate f96fd6c3 still frozen, same as T1039)
 - 261120 T1040 T1041 planning verification: spec lint and task tier completed in 172s with no affected unit files. Inherited brief alone counts 197498 chars against 40000. Use whole-block pagination.
 - 261120 gusta-create-task HIST WEB SAVE → T1040 T1041; five inbox decisions; engine archive before web; brief overage also present in baseline
-- 261120 gusta-create-task HIST WEB SAVE start
