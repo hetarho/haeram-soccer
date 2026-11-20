@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r226 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r227 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -56,7 +56,7 @@
   - The takeover confirmation has no club-direction selector; a new career uses standard cards and default operating rows (→!ECON-22/25). Existing saved directions remain effective.
 
 - WEB-115 [o] While the world is generated (→!WORLD-13), the start plays its history at the speed the seasons are made; generation never waits for it. ← a later decade's wait becomes the past the owner buys into
-  - background, refreshed at each season reached: the season, the Club Elo world top 10 (→HIST-12), the league champion of each playable association (→WORLD-1), the winners of the European competitions played that season (→EURO-1/2) and the 발롱도르 winner from 1955/56 (→PLAYER-27).
+  - background, refreshed at each season reached: the season, the Club Elo world top 10 (→HIST-12), the league champion of each playable association (→WORLD-1) with its archived OVR (→=WEB-47), the winners of the European competitions played that season (→EURO-1/2) and the 발롱도르 winner from 1955/56 (→PLAYER-27).
   - foreground: a card for a great feat only, on screen about 3 seconds and closing by itself; it needs no input and never pauses generation.
   - great feats, greatest first: the war stopping league football after 1938/39 and its 1946 restart (→WORLD-14); a treble of league, domestic cup and European Cup in one season (→HIST-13); a European Cup (the Champions League from 1992, →EURO-1) kept three seasons running; a player's third 발롱도르 in a row; a European Cup kept two seasons running; a club's first European Cup; a league title run of five or more.
   - one card at a time: a season with several feats shows the greatest, and a card not shown before the next season's cards arrive is dropped, so cards never fall behind the season reached.
@@ -245,7 +245,8 @@
   - mode and observation choices remain independent under →WEB-76. Pending decisions follow →WEB-82; settings entry/application follows →WEB-79.
 
 - WEB-47 [o] League uses visible competition selection and starts on standings: the current season first, every closed one by the header's season stepper (→WEB-40). The stable lenses of →WEB-40 keep their purpose across periods; a closed season never forces a club-review tab.
-  - Final tables retain their historical division zones. Our league's closed table shows played, won, drawn and lost for every club, as derived from its retained round snapshots (→HIST-13), and leaves those columns out whenever the snapshots disagree with our archived record; another league's closed table shows points and goals only and says so. Other competition details follow retained scope (→WEB-65). A season close opens no screen automatically.
+  - Final tables retain their historical division zones. Our league's closed table shows played, won, drawn and lost for every club, as derived from its retained round snapshots (→HIST-13), and leaves those columns out whenever the snapshots disagree with our archived record; another league's closed table limits its standings statistics to points and goals and says so. Other competition details follow retained scope (→WEB-65). A season close opens no screen automatically.
+  - The final table and every champions list that names a closed league season's champion show the archived Club OVR next to that club (→=HIST-13). An archive without that OVR shows the usual unavailable marker (—).
   - Our archived club-season analytical review is reached through records, alongside our matches and decisions (→WEB-54); an explicitly named link opens that season's league table and preserves the way back.
   - The review preserves these analytical facts without collecting new history:
   - hero band: crest, club, division move, final rank of the division size and last season's rank.
@@ -296,6 +297,7 @@
   - The selected season keeps the existing club analysis (→WEB-47), season figures, venue splits, league-points and goal-difference charts, exports, matches and major decisions. Current competitive context is explicitly in progress. No other club's competition table is embedded as our season record.
   - Separate links open this season's league table and cup run, retaining the selected club season/view/filter on return (→WEB-74).
   - 구단 성장 retains pyramid position, Elo with current world/league standing and spread, values, supporters and season-end cash; financial comparisons clearly say today's money. Show one metric chart at a time with its high/low/latest values and existing season-selection bubble.
+  - 구단 성장 includes Club OVR as a metric in that same season chart, using the own club's recorded OVR from each closed season of its ownership era (→=HIST-12, →!HIST-21). Include the season markers and value readout. Show missing OVR as unavailable (—) without giving that season a plotted value. Points come from closed seasons only.
   - 명예·최고기록 retains the full trophy cabinet, honours/seasons, match records and career record book in named focused subviews. Match runs count 90-minute results, cross seasons and identify an ongoing run.
   - 선수 통산 retains all-time appearance/goal/assist/save boards, including departed players where recorded. Each board shows its top ten; 더 보기 adds the next ten each time, up to 100 players, and disappears when the board is exhausted or at 100. Switching boards starts again at ten. 감독 이력 retains all appointments/departures and the current manager, apart from interim tenures without a match (→WEB-92).
   - 이적 기록 ranks our transfer fees (→HIST-20) on two boards, 영입 and 매각, each over all seasons or one chosen season: rank, player, other club, season, permanent or loan, the fee in today's money with the original amount. Each board shows its top ten with →WEB-54's 더 보기 steps; a player name opens his sheet when his identity is retained (→WEB-59), a club its team sheet (→WEB-58). An empty board says no fee transfer is recorded.
@@ -626,6 +628,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r227 261120 WEB-47✎ closed champions identified in final tables and lists→also show their recorded OVR or absence · WEB-54✎ existing growth metrics→also archived own-club OVR on the same season chart · WEB-115✎ generation's league champions list→also each champion's archived OVR
 - r226 261119 WEB-14✎ first-team training and academy work links→existing facility entries, including the academy detour
 - r225 261119 WEB-14✎ facility cards offer manual quotes→manual quotes and independent automatic-continuation checkboxes with saved status and stadium rebuild disclosure
 - r224 261119 WEB-5/10/18/31/50/66/79/90/96/97/102/108✎ read-only ownership protections, badge and tab wording→removed, a tab whose game plays elsewhere keeps only preferences (SAVE-6) · WEB-62✎ a read-only tab continues the game in play read-only→while another tab plays, this tab offers only 여기서 이어 하기 · WEB-66✎ recovery from the previous checkpoint, play taken over when another tab closed→recovery from the season backup, the game moved to or taken from another tab

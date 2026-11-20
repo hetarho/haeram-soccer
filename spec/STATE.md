@@ -21,7 +21,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 52 | 52 | - | 2 |
-| WEB | 226 | 226 | - | 0 |
+| WEB | 227 | 227 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 18 | 18 | - | 0 |
 | KIT | 11 | 11 | - | 0 |
@@ -31,8 +31,8 @@
 | STAFF | 44 | 44 | - | 0 |
 | ECON | 65 | 65 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 28 | 28 | - | 0 |
-| SAVE | 73 | 73 | - | 0 |
+| HIST | 29 | 29 | - | 0 |
+| SAVE | 74 | 74 | - | 0 |
 | OWNER | 8 | 8 | - | 0 |
 | PLAYER | 20 | 20 | - | 0 |
 
@@ -69,6 +69,8 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
+| T1040 | Archive season-close Club OVR | ARCH HIST LEAGUE MATCH SAVE WEB | - | todo |
+| T1041 | Show Club OVR in league history and club growth | ARCH HIST SAVE WEB | T1040 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -82,6 +84,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
+- gusta-implement-task T1040 — archive season-close Club OVR before T1041 displays it.
 - gusta-implement-task T1039 — main CI is red: 8 Chromium journeys act while the engine worker is still busy after the save redesign (CI 44590362467, 0.8.19); six stop at 다음 이벤트 opening no card.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
 - x10 (261119): landed as 0.8.15 (9c3a60796) — unwatched own matches without script/material, heat maps removed, slow view reads only on a stopped clock with dimmed places, fixture helpers from three cores (three on 6–12 cores); a 10x automatic-play day ×0.72 on own match days and ×0.11 on other days (reports/261119-x10). T989 withdrawn, T1019 parked until T1003/T1004.

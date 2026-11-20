@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r28 | Define the browser-demo rules for durable metrics and history.
+> r29 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -28,13 +28,16 @@
 - HIST-12 [o] Club ratings and values are recorded facts. ← fans follow a club's standing and worth over decades, not only its division
   - every club carries a Club Elo updated after every settled result in every competition: K 20, home advantage 60, margin weight 1 / 1.5 / (11 + margin)/8; it starts at 1350 + 16 × (strength − 60).
   - each season archive keeps the own club's Elo and its rank among all clubs, the squad value (sum of player values), the club value (squad value + half the build cost of the facility parts (→ECON-32) + a brand of one unit per 20 supporters × (1 + reputation/100) + cash) and how far it went in each cup.
+  - each own-club season archive also keeps the own club's Club OVR at the close (→!HIST-21).
+  - the simulation captures Club OVR once at the season archive write, before promotions, relegations and off-season squad changes. It is the same actual starting XI rating used for the live own club and published for rivals (→!MATCH-2, →~LEAGUE-12). Readers use the recorded number as it stood at that close. Rendering and locale never determine it.
   - views convert past money to today's prices and currency; the league position chart counts every club in the divisions above plus the rank.
 - HIST-13 [o] A closed season keeps what its pages need to stay readable. ← a fan rereads old seasons, scorer races and draws, not only the final table
   - live scorer totals keep one retained player identity across transfers within the tracked league, with actual per-club goals/appearances and the latest contributing club. Live and archived scorer displays name every contributing club when totals span clubs.
   - our league's top 10 scorers (name, club, position, goals, appearances; ties as the live table), our rank after every league round, and the Club Elo spread at the close (world lowest/highest, our league lowest/highest).
   - our country's cup and every continental competition except the Super Cup as a bracket from the first round of 32 or fewer clubs (qualifiers skipped) to the final: each tie its two clubs, both legs and how it was decided (penalties, away goals).
   - the Ballon d'Or podium (→PLAYER-27): for each of the three places the player's stable identity, name, club, position, goals, assists, appearances and points, kept in the season itself so every view reads it without the archive request.
-  - a field is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
+  - season-long detail is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
+  - every archived domestic league division and regional group in each implemented country (→!HIST-2) keeps its league champion's Club OVR (→=HIST-12), in seasons before and after the takeover. Capture it for the champion of the settled league table, including deductions.
   - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, and a player's Ballon d'Or wins and podium places from the archived podiums by his stable identity.
   - an appearance counts one recorded match with minutes played > 0, whether starting or coming on as a substitute (→MATCH-20). Minutes / 90 is a denominator for per-90 rates, never the appearance count; a substitute who does not play gains no appearance.
 
@@ -100,6 +103,7 @@
 
 
 ## chg
+- r29 261120 HIST-12✎ own-club Elo and value archive→also own-club actual XI OVR at the archive write · HIST-13✎ closed league standings and champions→also the closing OVR of every archived domestic division or group champion
 - r28 261119 HIST-16✎ per-match material with heat maps, reduced at the close to one season heat map per own player→watched matches' shot maps, pass networks and tactical reports, deleted at the close with no season map
 - r27 261113 HIST-23✎ season lines from the season's settled aggregates, scope and start unstated→all competitions together, aggregates kept from the world's first season with or without an owner (before: none in a world nobody owns until 1955/56), no line for a season with no tracked aggregates
 - r26 261113 HIST-3✎ career/season summaries represent older NPC history→each persisted player's season lines; HIST-23+ persisted players' season lines (appearances, goals, assists, keeper saves and clean sheets) and honours, kept at retirement with the last profile when a retained record links them, removed otherwise
