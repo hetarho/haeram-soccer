@@ -145,9 +145,19 @@ describe('the world before the takeover (→WORLD-13)', () => {
     expect([first!.year, season!.year]).toEqual([1954, 1955]);
     for (const h of w.history) {
       expect(h.closingClubOvr?.ownClub).toBeUndefined();
-      expect(Object.keys(h.closingClubOvr!.champions).length).toBeGreaterThan(h.champions.length);
+      expect(
+        Object.keys(
+          'clubs' in h.closingClubOvr! ? h.closingClubOvr.clubs : h.closingClubOvr!.champions,
+        ).length,
+      ).toBeGreaterThan(h.champions.length);
       for (const champion of h.champions)
-        expect(Number.isInteger(h.closingClubOvr!.champions[champion.club])).toBe(true);
+        expect(
+          Number.isInteger(
+            ('clubs' in h.closingClubOvr! ? h.closingClubOvr.clubs : h.closingClubOvr!.champions)[
+              champion.club
+            ],
+          ),
+        ).toBe(true);
       // Every league club's final row; every country's champion, cup winner and cup final.
       expect(h.standings.length).toBe(w.clubs.filter((c) => !c.id.startsWith('euro:')).length);
       expect(h.champions.map((c) => c.country)).toEqual(COUNTRIES.map((c) => c.code));

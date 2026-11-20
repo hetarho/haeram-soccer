@@ -50,6 +50,11 @@ describe('closed season archive', () => {
           expect(archivedClubOvr(season, leader.id)).toBe(rating(live, leader));
       }
       expect(groups.size).toBeGreaterThan(season.champions.length);
+      for (const row of season.standings) {
+        const club = live.clubs[row[0]];
+        expect(archivedClubOvr(season, club.id)).toBe(rating(live, club));
+      }
+      expect(season.standings.length).toBe(live.clubs.filter((c) => !c.representative).length);
       const scorers = season.scorers!;
       const table = live.scorerSeason!.players.filter((p) => p.goals > 0);
       expect(scorers).toHaveLength(Math.min(10, table.length));
@@ -160,6 +165,12 @@ describe('closed season archive', () => {
     const scorer = structuredClone(w);
     scorer.history[0].scorers![0].club = w.clubs.length;
     expect(() => validateWorld(scorer)).toThrow('시즌 득점 기록 참조 손상');
+    const badOvr = structuredClone(w);
+    badOvr.history[0].closingClubOvr = { clubs: { 'missing-club': 70 } };
+    expect(() => validateWorld(badOvr)).toThrow();
+    const badOwn = structuredClone(w);
+    badOwn.history[0].closingClubOvr = { ownClub: 'missing-club', clubs: {} };
+    expect(() => validateWorld(badOwn)).toThrow();
     const spread = structuredClone(w);
     const [low, high, leagueLow, leagueHigh] = season.eloRange!;
     spread.history[0].eloRange = [leagueLow + 1, high, leagueLow, leagueHigh];

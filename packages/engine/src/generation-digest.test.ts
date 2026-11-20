@@ -77,6 +77,16 @@ describe('seasonDigest (→WEB-115)', () => {
       81,
       undefined,
     ]);
+    season.closingClubOvr = { ownClub: 'arsenal', clubs: { madrid: 81, bayern: 74, other: 60 } };
+    const summary = archiveSummary(season);
+    expect(archivedClubOvr(season, 'other')).toBe(60);
+    expect(archivedClubOvr(summary, 'other')).toBeUndefined();
+    expect(summary.closingClubOvr).toEqual({
+      ownClub: 'arsenal',
+      champions: { madrid: 81, bayern: 74 },
+    });
+    expect(archivedClubOvr(summary, 'arsenal')).toBe(77);
+    expect(seasonDigest(world([summary]))!.champions.map((row) => row.ovr)).toEqual([77, 81, 74]);
     delete season.closingClubOvr;
     expect(archivedClubOvr(season, 'arsenal')).toBeUndefined();
   });

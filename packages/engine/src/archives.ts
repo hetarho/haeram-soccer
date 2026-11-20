@@ -22,7 +22,13 @@ type Archives = Pick<World, 'history' | 'historyBase'>;
 /** The recorded closing XI, never reconstructed from a later roster. */
 export function archivedClubOvr(season: SeasonArchive, clubId: string): number | undefined {
   const snapshot = season.closingClubOvr;
-  return snapshot?.ownClub === clubId ? season.rating : snapshot?.champions[clubId];
+  return snapshot?.ownClub === clubId
+    ? season.rating
+    : snapshot
+      ? 'clubs' in snapshot
+        ? snapshot.clubs[clubId]
+        : snapshot.champions[clubId]
+      : undefined;
 }
 
 /** How many archives have left memory: the absolute index of the first one memory holds. */
@@ -60,6 +66,17 @@ export function archiveSummary(h: SeasonArchive): SeasonArchive {
     standings: [],
     europe: h.europe.map((e) => ({ ...e, standings: [], secondStandings: undefined })),
   };
+  if (h.closingClubOvr && 'clubs' in h.closingClubOvr) {
+    const champions: Record<string, number> = {};
+    for (const { club } of h.champions) {
+      const value = h.closingClubOvr.clubs[club];
+      if (value !== undefined) champions[club] = value;
+    }
+    season.closingClubOvr = {
+      ...(h.closingClubOvr.ownClub ? { ownClub: h.closingClubOvr.ownClub } : {}),
+      champions,
+    };
+  }
   delete season.brackets;
   delete season.scorers;
   return season;

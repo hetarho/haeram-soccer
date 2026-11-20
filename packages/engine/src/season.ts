@@ -582,21 +582,13 @@ function worldStandings(w: World) {
       return [w.clubs.indexOf(c), c.tier, c.group, t.points, t.gf, t.ga];
     });
 }
-/** Capture each played domestic group's settled leader before squads and divisions change. */
+/** Capture the same domestic clubs as the standings before squads and divisions change. */
 function closingClubOvr(w: World, own?: Club) {
-  const groups = new Map<string, Club[]>();
+  const clubs: Record<string, number> = {};
   for (const club of w.clubs) {
-    if (club.representative || club.id.startsWith('euro:')) continue;
-    const key = groupKey(club);
-    groups.set(key, [...(groups.get(key) ?? []), club]);
+    if (!club.representative && club.id !== own?.id) clubs[club.id] = rating(w, club);
   }
-  const champions: Record<string, number> = {};
-  for (const clubs of groups.values()) {
-    const leader = ranked(w, clubs)[0];
-    if (leader && (w.tables[leader.id]?.played ?? 0) > 0 && leader.id !== own?.id)
-      champions[leader.id] = rating(w, leader);
-  }
-  return { ...(own ? { ownClub: own.id } : {}), champions };
+  return { ...(own ? { ownClub: own.id } : {}), clubs };
 }
 /** Every continental competition decided this season, with its standings and final. */
 function europeArchive(w: World) {

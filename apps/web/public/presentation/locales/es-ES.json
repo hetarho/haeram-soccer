@@ -3335,7 +3335,7 @@
     "copy.PastSeason.9be7046661": "No quedan clasificaciones finales para esta temporada.",
     "copy.PastSeason.a0b4a42470": "clasificación final",
     "copy.PastSeason.7085c5380c": "{p0} · {p1}{p2} · {p3}Equipo",
-    "copy.PastSeason.3ad2d3bb48": " De la temporada pasada sólo quedan puntos, ganancias y derrotas en esta liga. Las victorias, los empates y las derrotas sólo se pueden ver en nuestra liga.",
+    "copy.PastSeason.3ad2d3bb48": " Las victorias, los empates y las derrotas solo están disponibles para nuestra liga.",
     "copy.PastSeason.78244fe6fc": "Las zonas son las reglas de promoción de la división para esa temporada.{p0}",
     "copy.PastSeason.3e07185367": "nuestros partidos de liga",
     "copy.PastSeason.7a96817f80": "{p0} · {p1} Partido {p2} Ganar {p3} Empate {p4}{p5} Perder",
