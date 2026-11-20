@@ -1555,8 +1555,8 @@
       "branch": "gusta-session-start-ovr20-f773a1bb",
       "head": "efca60ab8a99fe3d9259e5cc67f71081fb1775d4",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-20T01:25:08.305Z",
+      "status": "working",
+      "at": "2026-11-20T01:26:50.787Z",
       "agentChecks": [],
       "verificationCommands": [],
       "reason": "session-ended"
