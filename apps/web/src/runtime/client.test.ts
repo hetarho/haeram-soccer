@@ -475,6 +475,46 @@ describe('background worker publication', () => {
     expect(client.state.savedRevision).toBe(client.state.view!.world.revision);
   });
 
+  it('lets a slow manual event and a read waiting behind it finish past the ordinary watchdog', async () => {
+    const client = await start();
+    const settings = structuredClone(client.state.view!.world.settings!);
+    settings.mode = 'manual';
+    await client.command({ type: 'settings', settings }, { background: true });
+    await client.whenSaved();
+    const host = WorkerPort.instances[0].host;
+    const handle = host.handle.bind(host);
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    const held = vi.spyOn(host, 'handle').mockImplementation(async (input) => {
+      const { body } = input as Request;
+      if (
+        body.type === 'news-page' ||
+        (body.type === 'command' && body.command.type === 'next-event')
+      )
+        await gate;
+      return handle(input);
+    });
+    vi.useFakeTimers();
+    const browserTimeout = vi.spyOn(window, 'setTimeout').mockImplementation(setTimeout);
+    try {
+      const advancing = client.command({ type: 'next-event' }, { background: true });
+      await vi.advanceTimersByTimeAsync(0);
+      const reading = client.newsPage().catch((error: unknown) => error);
+      await vi.advanceTimersByTimeAsync(16_000);
+      expect(client.state.processing).toBe(true);
+      expect(client.state.error).toBeUndefined();
+      release();
+      expect(await advancing).toMatchObject({ ok: true });
+      expect(await reading).toMatchObject({ world: client.state.view!.world.id });
+      await client.whenSaved();
+    } finally {
+      release();
+      held.mockRestore();
+      browserTimeout.mockRestore();
+      vi.useRealTimers();
+    }
+  });
+
   it('opens no game in a second tab, which waits behind its playing tab', async () => {
     await start();
     vi.stubGlobal('navigator', {
