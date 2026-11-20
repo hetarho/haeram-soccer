@@ -233,6 +233,7 @@
 | T1042 | lgux20 | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 2026-11-20T03:42Z |
 
 ## log
+- 261120 gusta-create-task ECON@66 WEB@228: T1045 T1046 T1047 T1048 T1049 T1050 T1051 T1052. Eight units with 2–5 product paths each. Read inherited spec dependencies in pages.
 - 261120 stad20 관중 표현을 연고지 밖의 홈 관중으로 바로잡음
 - 261120 T1042 done
 - 261120 gusta-create-task HIST@30 SAVE@75 WEB@228 done: T1043 T1044
@@ -252,4 +253,3 @@
 - 261120 T1040 T1041 planning verification: spec lint and task tier completed in 172s with no affected unit files. Inherited brief alone counts 197498 chars against 40000. Use whole-block pagination.
 - 261120 gusta-create-task HIST WEB SAVE → T1040 T1041; five inbox decisions; engine archive before web; brief overage also present in baseline
 - 261120 gusta-create-task HIST WEB SAVE start
-- 261120 gusta-update-ssot HIST r29 WEB r227 SAVE r74: season-close Club OVR archive and presentation; no active task cites the changed decisions
