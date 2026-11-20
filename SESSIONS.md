@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| ovr20b | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:53Z | 2026-11-20T03:53Z | T1043 | gusta-session-start-ovr20b-916c8e5f | ead29c5864ae | 638d095296286bb62a147c78 |
+| ovr20b | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:53Z | 2026-11-20T04:09Z | - | gusta-session-start-ovr20b-916c8e5f | ead29c5864ae | 638d095296286bb62a147c78 |
 | stad20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T03:53Z | 2026-11-20T04:05Z | T1046 | gusta-session-start-stad20-a4e0e490 | f1be765cde35 | 59bbbe573858883ac186b857 |
 
 ## inbox
@@ -231,8 +231,10 @@
 | T1041 | ovr20 | gusta-session-start-ovr20-f773a1bb | 60b2a0a59223 | 2026-11-20T01:34Z |
 | T1042 | lgux20 | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 2026-11-20T03:42Z |
 | T1045 | stad20 | gusta-session-start-stad20-a4e0e490 | 11a71bcbb35c | 2026-11-20T04:04Z |
+| T1043 | ovr20b | gusta-session-start-ovr20b-916c8e5f | ead29c5864ae | 2026-11-20T04:09Z |
 
 ## log
+- 261120 T1043 done
 - 261120 T1045 done
 - 261120 ovr20b re-planned onto T1042 as WEB r229 (a8d053944) and put on main by a spec-only fast-forward; T1044 now depends on T1042
 - 261120 gusta-create-task ECON@66 WEB@228: T1045 T1046 T1047 T1048 T1049 T1050 T1051 T1052. Eight units with 2–5 product paths each. Read inherited spec dependencies in pages.
@@ -252,4 +254,3 @@
 - 261120 T1041 done
 - 261120 T1040 done
 - 261120 ovr20 planning 33cba0145 put on main by a spec-only fast-forward (gate f96fd6c3 still frozen, same as T1039)
-- 261120 T1040 T1041 planning verification: spec lint and task tier completed in 172s with no affected unit files. Inherited brief alone counts 197498 chars against 40000. Use whole-block pagination.
