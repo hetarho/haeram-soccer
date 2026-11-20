@@ -29,7 +29,7 @@
 | MATCH | 70 | 70 | - | 0 |
 | LEAGUE | 23 | 23 | - | 0 |
 | STAFF | 44 | 44 | - | 0 |
-| ECON | 66 | 66 | - | 0 |
+| ECON | 67 | 67 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 30 | 30 | - | 0 |
 | SAVE | 75 | 75 | - | 0 |
@@ -69,7 +69,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
-| T1052 | Measure top-flight sellout receipts and income mix | ECON ARCH | T1051 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -83,7 +82,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1052
+- no runnable task: resolve blocked, parked or deps
 - gusta-implement-task T1043
 - gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.

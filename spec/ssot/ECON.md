@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r66 | Define the browser-demo rules for historical club economy.
+> r67 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -183,6 +183,14 @@
 - ECON-29 [o] The economy is calibrated against real football on 50-season runs of a reference club, and the measured results are recorded here. ← balance is judged on whole careers, not single seasons
   - check the owned club's ticket response at average form and against an even opponent, with neutral club effects. With →!ECON-23's following, a reputation-80 top-flight giant sells out 105,000 seats at every preset. At 0.12 an ordinary reputation-50 English top-flight club in a 40,000-seat ground draws close to its catchment-only baseline and leaves seats empty (→!ECON-9/17).
   - record a bounded English top-flight spot check of the 0.12 sellout in 90,000, 105,000 and 120,000-seat grounds at 1980, 2000 and 2020 nominal values. Record home-league gross gate and matchday share of turnover with the fixture, league distribution and commercial assumptions. Compare with the income-mix bands and record material deviations.
+    - measured 261120 (`scripts/calibrate-economy.ts --sellout`, artifacts/benchmarks/T1052; one owned ENG top-flight fixture at neutral fan mood, average form, an even opponent and no build, policy or campaign; travellingShare 0.45, premiumEasing 8): the reputation-80 club (following 546,348, catchment 60,000, 218,857 travelling, default-price pressure 0.751) fills 105,000 seats at all five presets; the reputation-50 club (following 47,269 inside its 60,000 catchment, none travelling) draws 12,173–15,216 of 40,000 at 0.12, equal to its catchment-only baseline.
+    - the reputation-90 club at 0.12, sold out at every size: 19 home league games ×46/38 (20 clubs, →ECON-19), the mean of the 10th and 11th places' distribution and the guaranteed offers of the open sponsor slots; no cup income, player trading or owner money:
+      | year | seats | season gate | distribution | commercial | matchday share (at 0.05) |
+      |---|---|---|---|---|---|
+      | 1980 | 90,000 / 105,000 / 120,000 | £8.22m / £9.59m / £10.96m | £0.59m | £1.75m (local, kit, shirt) | 77.9% / 80.4% / 82.4% (62.2% / 65.7% / 68.7%) |
+      | 2000 | 90,000 / 105,000 / 120,000 | £74.1m / £86.5m / £98.8m | £13.6m | £18.7m (with stadium naming) | 69.7% / 72.8% / 75.4% (51.8% / 55.6% / 58.9%) |
+      | 2020 | 90,000 / 105,000 / 120,000 | £280m / £326m / £373m | £170m | £78.0m (with sleeve) | 53.0% / 56.8% / 60.1% (34.5% / 38.1% / 41.3%) |
+    - outside the 2000s top-flight mix: matchday 69.7–75.4% against 15–25% and distribution 10.3–12.7% against 40–55%, already 51.8–58.9% matchday at the default price; turnover £106–131m in 2000 and £527–620m in 2020. A giant's sellout of 90,000+ makes the gate its largest income in every era measured.
   - wage/income recalibration reports exact settled player payroll, manager/coaching payroll, their modeled total, operating expenses, central distribution, purchases and sales separately; a pre-round wage sample is not cash paid. NPC book wages are players only, with other staff in operating expenses (→ECON-30), whereas the owned-club wage bill includes its modeled manager/coaches. Real all-employee ratios are context and never silently substituted for player-only payroll.
   - test new wage quotes and the English package separately and together on matched worlds, read contract-transition and mature years separately, then validate the selected candidate on worlds lived under its rules and held-out seeds/countries. Preserve signed contracts and the existing career, books, champions and solvency gates; a short screening experiment does not replace the50-season reference gate. Central commercial money inside the league package remains in the distribution category and is not club sponsorship; state that definition when comparing real broadcast-only income shares.
   - revenue is competition money, matchday and commercial income; player trading is reported beside the bands: the delegated staff sell, and sign only to fill short roles or upgrade by the 단장's plan (→CLUB-33), so the reference club stays a net seller with a youth-heavy wage bill; the measurements below were taken under the retired 재정 기조, before the spending request (→ECON-33). ← net results including those sales measured 10–17% on every constant set that kept every career solvent
@@ -279,6 +287,7 @@
   - funded operating deficits and wages above turnover are permitted. Exhausted backing and unsupported commitments remain observable. No support is chosen to force a title or strength target.
 
 ## chg
+- r67 261120 ECON-29✎ sellout spot check unrecorded→measured attendance cases and 1980/2000/2020 receipts and income mix
 - r66 261120 ECON-9✎ local gate and fixed price response→travelling demand and eased premiums; ECON-23✎ sponsors only→also gate demand; ECON-29✎ career measurements only→also sellout and ticket-response probes; ECON-32✎ 8 steps to 90,000→10 steps to 120,000 via 105,000; ECON-36✎ shared owner gate reference→explicit local book gate
 - r65 261119 ECON-32✎ owner starts each quoted work→owner manual quote plus authorized continuation; ECON-43+ per-part automatic continuation after completion, funding retries and cancellation
 - r64 261118 ECON-38✎ takeover debt conversion left distress implicit→retain the club's distress state and league deductions; ECON-39✎ the former runway test→ECON-33's cash floor test; ECON-42✎ cash/debt bounds→cash ceiling and ECON-24's debt checks
