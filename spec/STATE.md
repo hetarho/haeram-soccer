@@ -69,7 +69,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
-| T1051 | Enable the 105,000 and 120,000 stadium steps | ECON SAVE WEB ARCH | T1045 T1047 T1048 T1049 T1050 | todo |
 | T1052 | Measure top-flight sellout receipts and income mix | ECON ARCH | T1051 | todo |
 
 ## work
@@ -84,7 +83,7 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1051
+- gusta-implement-task T1052
 - gusta-implement-task T1043
 - gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
