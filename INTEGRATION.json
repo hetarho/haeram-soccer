@@ -1592,8 +1592,8 @@
       "branch": "gusta-session-start-lgux20-8a35ba80",
       "head": "f65c9c990ce4ced4a3705c94c023a23c83374a2e",
       "land": "main",
-      "status": "working",
-      "at": "2026-11-20T03:54:59.267Z",
+      "status": "paused",
+      "at": "2026-11-20T03:55:02.122Z",
       "agentChecks": [
         {
           "id": "T1042.standings",
