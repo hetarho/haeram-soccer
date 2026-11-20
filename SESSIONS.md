@@ -220,6 +220,7 @@
 - 261120 decided T1046: 티켓 가격 여정 정리 → tests/e2e/business.spec.ts에서 경기 후 관중·입장 수입 확인을 빼고 가격 표시와 지원 크롬 스모크만 남깁니다. 경기 수입·개최비 산식은 정산 단위 테스트가, 보이는 경기 흐름은 호스트 시나리오(stad20-gate-stadium)가 맡습니다 (alt: 풀 기준 수치를 e2e에 유지). 브라우저 여정은 CI에서만 돌리므로 같은 산식을 두 번 확인하지 않습니다.
 - 261120 decided T1046: 호스트 관찰 인수 기준 → 2번 AC를 관찰 pass 대신 stad20-gate-stadium 인계로 바꾸고, 그 인계를 마감 조건으로 둡니다. 시나리오·기대치와 T1051 조작은 그대로 남깁니다 (alt: 관찰 전까지 미체크로 주차 / 호스트 결과를 pass로 꾸밈). 단위가 공동 후보를 관찰할 수 없으므로 blocked 없이 닫고 결과에 not-run과 담당자를 남깁니다.
 - 261120 decided T1047 T1048 T1049 T1050 T1051: 호스트 관찰 인수 기준(오케스트레이터) → T1046 결정과 같이 T1047·T1049·T1050·T1051의 computer-use AC를 stad20-gate-stadium 인계가 완료 조건인 문구로 바꿨습니다. T1048은 같은 이유로 blocked가 되어 반복 배정됐기 때문입니다 (alt: 각 단위가 blocked로 끝나 T1051이 dep에 막힘). 관찰은 최종 관문 뒤 시작 대화가 고정 후보에서 수행합니다.
+- 261120 parked T1049: 261120 parked T1049: the twelve stage 9/10 standard sources need the built-in image generation tool, which this Claude/Haiku unit lacks (the host assigned Claude; the task run field recommends codex/gpt-6.1-terra@low). Prompts and the resume procedure are in apps/web/design/standard/large-stadium-v1; acceptance 1 is not run and no deployment file is written.
 
 ## unlanded
 | id | tag | branch | commit | at |
