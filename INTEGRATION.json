@@ -1555,11 +1555,18 @@
       "branch": "gusta-session-start-ovr20-f773a1bb",
       "head": "c5756dfeb1e385cd34086caf08a81d6789454e27",
       "land": "main",
-      "status": "paused",
-      "at": "2026-11-20T01:35:17.504Z",
+      "status": "landed",
+      "at": "2026-11-20T02:11:15.400Z",
       "agentChecks": [],
       "verificationCommands": [],
-      "reason": "session-ended"
+      "reason": "session-ended",
+      "landed": "55226f12f8494a84f5b36f57c5646057ec020214",
+      "reconciled": {
+        "at": "2026-11-20T02:11:15.400Z",
+        "from": "paused",
+        "reason": "ovr20 landed 0.8.20 (55226f12f) on main by fast-forward after a hand-run batch gate; gate f96fd6c3 frozen",
+        "verified": false
+      }
     }
   },
   "gate": {
