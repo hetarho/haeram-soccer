@@ -1543,6 +1543,22 @@
       "at": "2026-11-19T16:53:39.355Z",
       "agentChecks": [],
       "verificationCommands": []
+    },
+    "fb13eadd7bf9b51d38f9f565": {
+      "id": "fb13eadd7bf9b51d38f9f565",
+      "owner": "f6b8b523-2bfb-456e-8327-c100ccba8731",
+      "tag": "ovr20",
+      "kind": "start",
+      "publication": "merge",
+      "host": "hq-dev1-pve2-vm2",
+      "device": "hq-dev1-pve2-vm2",
+      "branch": "gusta-session-start-ovr20-f773a1bb",
+      "head": "fd7d9858934d1d3d2d34439f04758f1e2f5ed6c8",
+      "land": "main",
+      "status": "working",
+      "at": "2026-11-20T01:10:08.726Z",
+      "agentChecks": [],
+      "verificationCommands": []
     }
   },
   "gate": {
