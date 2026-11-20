@@ -1732,7 +1732,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 3471485
     },
-    "phase": "checking",
+    "phase": "failed",
     "land": "main",
     "base": "a87658ab2ce664b6ed138c2cc3c09fc26e4a9df2",
     "cohort": [
@@ -1875,16 +1875,205 @@
     "at": "2026-11-20T03:46:31.946Z",
     "deadline": "2026-11-20T04:46:20.827Z",
     "candidate": "f61710107604a66ea166cfb071c49d3a952e3eb1",
-    "checks": [],
-    "agentChecks": [],
-    "rounds": [],
+    "checks": [
+      {
+        "command": "verification-plan:scripts/verification-plan.json",
+        "ok": false,
+        "status": "cancelled",
+        "cancelled": true,
+        "exitCode": 130,
+        "reason": "Requested by the user before completion",
+        "report": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-9aa424f6-474a-41db-b845-0b990972106f/.tmp/verification/2026-11-20T03-46-48-227Z-3473248/report.json",
+        "stages": [
+          {
+            "stage": "typecheck",
+            "status": "passed",
+            "exitCode": 0
+          },
+          {
+            "stage": "lint",
+            "status": "passed",
+            "exitCode": 0
+          },
+          {
+            "stage": "format:check",
+            "status": "passed",
+            "exitCode": 0
+          },
+          {
+            "stage": "validate:catalogs",
+            "status": "passed",
+            "exitCode": 0
+          },
+          {
+            "stage": "validate:presentation",
+            "status": "passed",
+            "exitCode": 0
+          },
+          {
+            "stage": "validate:i18n",
+            "status": "passed",
+            "exitCode": 0
+          },
+          {
+            "stage": "build",
+            "status": "passed",
+            "exitCode": 0
+          },
+          {
+            "stage": "test:unit+integration+contract",
+            "status": "cancelled",
+            "exitCode": null
+          },
+          {
+            "stage": "warm-worlds",
+            "status": "cancelled",
+            "exitCode": null
+          }
+        ]
+      }
+    ],
+    "agentChecks": [
+      {
+        "id": "T1042.standings",
+        "scenario": "Complete League standings and reversible numeric sorts",
+        "steps": [
+          "Open a 20-club division at desktop and phone widths and count the standings rows on entry.",
+          "Activate Club OVR, points and played headers twice each and compare each club's rank, zone, deduction and highlight across orders.",
+          "Open a closed division with partial Club OVR coverage and sort in both directions."
+        ],
+        "expected": "All 20 clubs appear initially in official rank order. Each header reverses the visual order while preserving the clubs' official facts. Missing archival OVR stays last in both directions.",
+        "observed": "",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "The browser host will check the exact shared candidate after the batch build.",
+        "replaces": [
+          "tests/e2e/analysis.spec.ts#standings-expansion"
+        ],
+        "stage": "integration",
+        "required": true,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1042.fixtures",
+        "scenario": "Browse rounds and read the own club's season fixtures",
+        "steps": [
+          "Use both round chevrons and the direct selector in a live league. Check the first and last available rounds.",
+          "Open Our Fixtures after a played match. Verify the calendar order, score and upcoming states, then choose and clear the venue filter.",
+          "Open a retained historical own match and follow its report link."
+        ],
+        "expected": "The arrows and selector stay in sync within the selected competition and season. Own fixtures use the round-result rows in one chronological list and preserve available detail links.",
+        "observed": "",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "The browser host will check the exact shared candidate after the batch build.",
+        "replaces": [
+          "tests/e2e/analysis.spec.ts#own-fixture-venue-filter"
+        ],
+        "stage": "integration",
+        "required": true,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      },
+      {
+        "id": "T1042.rank-trend",
+        "scenario": "Filter rank paths and retain League navigation",
+        "steps": [
+          "Open Rank Trend in a tracked live league and a recent archived own season. Verify the default paths and checked club controls.",
+          "Hide and restore two clubs independently and compare the chart, legend and accessible rank readout.",
+          "Follow a legacy rank link into an older or unavailable scope. Check the selected competition and season, coverage message and access to Player Records."
+        ],
+        "expected": "Every supported path appears by default. Each toggle affects only its club. Older scopes show their retained coverage, and legacy links preserve the requested scope.",
+        "observed": "",
+        "evidence": [],
+        "status": "not-run",
+        "reason": "The browser host will check the exact shared candidate after the batch build.",
+        "replaces": [
+          "tests/e2e/match-core.spec.ts#rank-chart-visibility",
+          "tests/e2e/season-flow.spec.ts#rank-chart-visibility"
+        ],
+        "stage": "integration",
+        "required": true,
+        "owner": "host",
+        "candidate": null,
+        "duplicationReason": ""
+      }
+    ],
+    "rounds": [
+      {
+        "candidate": "f61710107604a66ea166cfb071c49d3a952e3eb1",
+        "checks": [
+          {
+            "command": "verification-plan:scripts/verification-plan.json",
+            "ok": false,
+            "status": "cancelled",
+            "cancelled": true,
+            "exitCode": 130,
+            "reason": "Requested by the user before completion",
+            "report": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-9aa424f6-474a-41db-b845-0b990972106f/.tmp/verification/2026-11-20T03-46-48-227Z-3473248/report.json",
+            "stages": [
+              {
+                "stage": "typecheck",
+                "status": "passed",
+                "exitCode": 0
+              },
+              {
+                "stage": "lint",
+                "status": "passed",
+                "exitCode": 0
+              },
+              {
+                "stage": "format:check",
+                "status": "passed",
+                "exitCode": 0
+              },
+              {
+                "stage": "validate:catalogs",
+                "status": "passed",
+                "exitCode": 0
+              },
+              {
+                "stage": "validate:presentation",
+                "status": "passed",
+                "exitCode": 0
+              },
+              {
+                "stage": "validate:i18n",
+                "status": "passed",
+                "exitCode": 0
+              },
+              {
+                "stage": "build",
+                "status": "passed",
+                "exitCode": 0
+              },
+              {
+                "stage": "test:unit+integration+contract",
+                "status": "cancelled",
+                "exitCode": null
+              },
+              {
+                "stage": "warm-worlds",
+                "status": "cancelled",
+                "exitCode": null
+              }
+            ]
+          }
+        ],
+        "at": "2026-11-20T03:51:50.040Z"
+      }
+    ],
     "path": "/home/deep/haeram/.gusta-worktrees/haeram-soccor-17cecd52/integration-9aa424f6-474a-41db-b845-0b990972106f",
     "branch": "integration/9aa424f6-474a-41db-b845-0b990972106f",
     "version": {
       "skipped": "manual",
       "from": "0.8.20",
       "to": "0.8.21"
-    }
+    },
+    "ciCommands": []
   },
   "history": [
     {
