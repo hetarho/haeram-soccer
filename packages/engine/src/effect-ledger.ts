@@ -554,7 +554,12 @@ export function effectLedger(w: World): EffectLedger {
     unit: 'count',
     value: gate.attendanceHigh,
     factors: [
-      { source: fact('supporters'), value: gate.supporters, unit: 'count' },
+      // The matchday pool: local supporters plus the travelling share outside the catchment (→ECON-9).
+      {
+        source: fact('supporters'),
+        value: Math.round(gate.supporters + gate.travellingSupporters),
+        unit: 'count',
+      },
       { source: { kind: 'ticket' }, value: gate.demand, unit: 'times' },
       { source: fact('form'), value: gate.formDemand, unit: 'times' },
       {

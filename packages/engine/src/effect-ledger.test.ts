@@ -138,6 +138,13 @@ describe('effectLedger', () => {
         reach.ability[0] - policyEffects(policyOf(w)).offer.ability[0],
       );
       expect(effect('attendance').value).toBe(gateProjection(w).attendanceHigh);
+      // The supporter driver reads the whole matchday pool, travelling share included (→ECON-9).
+      const gate = gateProjection(w);
+      expect(
+        effect('attendance').factors.find(
+          (factor) => factor.source.kind === 'fact' && factor.source.term === 'supporters',
+        )?.value,
+      ).toBe(Math.round(gate.supporters + gate.travellingSupporters));
       expect(effect('annualCosts').amount).toBe(operatingCosts(w).annual);
       const ordinary = w.players.find((player) => overall(player) < 70)!;
       expect(effect('goodwill').value).toBeCloseTo(talkGoodwill(w, ordinary).percent, 9);

@@ -147,8 +147,8 @@ export const FinancialBreakdown = memo(
             <p>
               {richMessage('copy.FinancialBreakdown.a720f9040b', {
                 p0: number(breakdown.gate.supporters),
-                p1: ' ',
-                p2: number(breakdown.catchment),
+                p1: number(breakdown.catchment),
+                p2: number(Math.round(breakdown.gate.travellingSupporters)),
               })}
             </p>
             <p>

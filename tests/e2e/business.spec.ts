@@ -8,15 +8,8 @@ import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { operatingLossWorld } from '../fixtures/business';
 import { startWork } from '../../packages/engine/src/testing';
 import { sponsorOffers, sponsorAnnual } from '../../packages/engine/src/operations';
-import {
-  operatingCosts,
-  roundShare,
-  gateProjection,
-  FINANCE_CONFIG,
-  isLeagueMatch,
-  leagueMatchFactor,
-} from '../../packages/engine/src/finance';
-import { clubOf, quote } from '../../packages/engine/src/world';
+import { operatingCosts, roundShare } from '../../packages/engine/src/finance';
+import { clubOf } from '../../packages/engine/src/world';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
 import { acknowledgeEvents, chooseLevel } from './events';
@@ -283,39 +276,16 @@ test('builds 지역 기반 over real rounds from the 지역 investment taken ove
   await expect(local).toContainText(`현재 ${Number(grown.localBase!.toFixed(1))}`);
 });
 
-test('reads the ticket price taken over with and charges it at an actual home gate', async ({
-  page,
-}) => {
+test('reads the ticket price taken over with before any matchday gate', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   // 상업 제국 sets the ticket at 비싸게 (→ECON-17), which 경기장 marks among its presets (→WEB-14).
-  // The seed's club opens its league at home.
+  // The matchday gate's arithmetic is the settlement unit's; its visible flow is the host's (→ECON-9).
   await found(page, 'ticket-draft-ui', 'commercial');
   const before = await exportWorld(page);
   expect(before.ticket).toBe(0.08);
   const stadium = await openArea(page, '경기장');
   await expect(stadium.getByRole('region', { name: '티켓 가격', exact: true })).toContainText(
     '현재 · 비싸게',
-  );
-  await playNext(page);
-  const settled = await exportWorld(page);
-  expect(settled.ticket).toBe(0.08);
-  const match = settled.ownMatches.at(-1)!;
-  expect(match.home).toBe(settled.playerClub);
-  const gate = settled.events.findLast((event) => event.kind === 'gate')!;
-  const attendance = Number(gate.detail.match(/관중 (\d+)명/)?.[1]);
-  expect(attendance).toBeGreaterThan(0);
-  const perFan = gateProjection(settled, match.id).perFan;
-  // League gates are sized for a 46-game season (→ECON-19).
-  const factor = isLeagueMatch(match.kind) ? leagueMatchFactor(settled) : 1;
-  expect(gate.amount).toBe(
-    quote(clubOf(settled).country, settled.year, attendance * perFan * factor),
-  );
-  expect(settled.events.findLast((event) => event.kind === 'match-cost')?.amount).toBe(
-    quote(
-      clubOf(settled).country,
-      settled.year,
-      FINANCE_CONFIG.homeMatchBaseCost + attendance * FINANCE_CONFIG.homeMatchCostPerFan,
-    ),
   );
 });
 

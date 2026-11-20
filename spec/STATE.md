@@ -71,7 +71,7 @@
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
 | T1043 | Capture closing Club OVR for archived league clubs | ARCH HIST SAVE WEB | - | todo |
 | T1044 | Show Club OVR in closed league tables | ARCH HIST SAVE WEB | T1042 T1043 | todo |
-| T1046 | Show local and travelling ticket demand in the office | ECON WEB ARCH | T1045 | todo |
+| T1046 | Show local and travelling ticket demand in the office | ECON WEB ARCH | T1045 | doing@261120.stad20 |
 | T1047 | Prepare matchday-print art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1048 | Prepare pixel art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1049 | Prepare standard art for the two stadium steps | ECON WEB ARCH | - | todo |
