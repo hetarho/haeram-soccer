@@ -4,7 +4,7 @@
 ## active
 | tag | host | mode | since | at | doing | branch | commit | session |
 |---|---|---|---|---|---|---|---|---|
-| lgux20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T02:40Z | 2026-11-20T03:20Z | - | gusta-session-start-lgux20-8a35ba80 | a8d60ebf738f | 94af01b7afebaf2f46e0b4bb |
+| lgux20 | hq-dev1-pve2-vm2 | autopilot | 2026-11-20T02:40Z | 2026-11-20T03:21Z | - | gusta-session-start-lgux20-8a35ba80 | a8d60ebf738f | 94af01b7afebaf2f46e0b4bb |
 
 ## inbox
 - 261113 decided T863: Deferred viability read and initial level coefficients: use investment 0.5 level per season of income spent and decay 0.05 per season without spending, carrying fractional progress and keeping existing NPC_YOUTH values; alternatives were immediate whole-level steps or speculative youth retuning. These are uncalibrated starting coefficients for the approved T863 configs; T866 and the final integrated viability read retain all division, books and champions targets.
