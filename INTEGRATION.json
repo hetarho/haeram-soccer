@@ -1865,7 +1865,7 @@
       "host": "hq-dev1-pve2-vm2",
       "pid": 4117425
     },
-    "phase": "waiting-agent",
+    "phase": "verified",
     "land": "main",
     "base": "0f6f369100a699b48f2245cca52a152dc10ef535",
     "cohort": [
@@ -2144,19 +2144,22 @@
           "After T1051 enables the stages, walk completed stages 9 and 10 and confirm construction retains the previous completed stage."
         ],
         "expected": "The new scenes display in their intended slots and construction retains the previous stage.",
-        "observed": "Handoff recorded; no shared candidate or in-app observation was available in this unit.",
+        "observed": "standard theme, 1955/1985/2020: completed step 9 and 10 load /art/standard/{era}/stadium-9|10.webp on the home 팬·마케팅 card and locker-9|10.webp in 팀 · 1군 (972x324 decoded). Pending work 8→9 keeps stadium-8 and 9→10 keeps locker-9. The 경기장 area card shows the era-independent exterior as before. Scenes on the contact sheet are on-style: soccer balls, period kit, no text. (One-off Playwright/Chromium walk (tests/e2e/stad20-host.spec.ts in a scratch worktree at 7dddfeca34ea7e8d11e8cdc565c0e65da112451f, not added to the suite); worlds seeded via the save import; screenshots and notes read by the starting session.)",
         "evidence": [
-          "spec/tasks/done/T1049.standard-large-stadium-scenes.md"
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/staged-standard.json (9/9 ok)",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/notes.json standard (18/18 locker ok)",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/sheet-standard.png",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/standard-*-10-locker.png"
         ],
-        "status": "not-run",
-        "reason": "Integration observation belongs to the capable host after the shared candidate is fixed.",
+        "status": "pass",
+        "reason": "",
         "replaces": [
           "T1049-AC2"
         ],
         "stage": "integration",
         "required": true,
         "owner": "stad20-gate-stadium",
-        "candidate": null,
+        "candidate": "7dddfeca34ea7e8d11e8cdc565c0e65da112451f",
         "duplicationReason": ""
       },
       {
@@ -2166,19 +2169,22 @@
           "On the shared candidate after T1051, inspect both completed stages in each era and start construction."
         ],
         "expected": "The new scenes appear in their intended slots, and construction retains the previous completed-stage artwork.",
-        "observed": "Handed off to the host; no shared candidate or computer-use observation was available in this unit.",
+        "observed": "sticker-club theme, 1955/1985/2020: steps 9 and 10 resolve to /art/sticker-club/{era}/stadium|locker-9|10.webp in their slots, decode, and pending work keeps the previous completed stage (stadium-8 for 8→9, locker-9 for 9→10). Content defect seen: the heritage and terraces locker-10 paintings show American-football helmets on the kit table. Slots and construction behave as expected. The two paintings go to a follow-up redraw. (One-off Playwright/Chromium walk (tests/e2e/stad20-host.spec.ts in a scratch worktree at 7dddfeca34ea7e8d11e8cdc565c0e65da112451f, not added to the suite); worlds seeded via the save import; screenshots and notes read by the starting session.)",
         "evidence": [
-          "spec/tasks/done/T1050.sticker-club-large-stadium-scenes.md"
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/staged-sticker-club.json (9/9 ok)",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/notes.json sticker-club (18/18 locker ok)",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/sheet-sticker-club.png",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/sticker-club-heritage-10-locker.png"
         ],
-        "status": "not-run",
-        "reason": "Computer-use and the fixed integration candidate were unavailable in this unit.",
+        "status": "pass",
+        "reason": "",
         "replaces": [
           "T1050-AC2"
         ],
         "stage": "integration",
         "required": true,
         "owner": "stad20-gate-stadium",
-        "candidate": null,
+        "candidate": "7dddfeca34ea7e8d11e8cdc565c0e65da112451f",
         "duplicationReason": ""
       },
       {
@@ -2189,18 +2195,20 @@
           "공사 중에는 이전 완공 단계의 장면이 유지되고 리소스가 정상적으로 해석되는지 확인한다."
         ],
         "expected": "각 장면이 시대와 시설 단계에 맞고 공사 중에는 이전 장면이 유지된다.",
-        "observed": "공동 후보가 아직 확정되지 않아 관찰하지 않았다.",
+        "observed": "All four themes (matchday-print, standard, sticker-club, pixel), three eras: the staged stadium scene for steps 9 and 10 resolves and loads, and pending work keeps the completed scene (36/36). Matchday demand at 0.12 in 2020: a reputation-80 top-flight club (following 546,348, 224,257 travelling) in 105,000 seats shows 예상 홈 관중 105,000–105,000명 and 예상 홈 수입 £17.0M per match. Its first home league game settled; the ledger crowd was not read in the UI (the T1045 unit asserts a settled 0.12 crowd at capacity). A reputation-50 club in 40,000 seats shows 12,173–15,216명 at 0.12, leaving seats empty. Copy note: the top preset still says 빈자리가 늘지만, which a sold-out club does not see. (One-off Playwright/Chromium walk (tests/e2e/stad20-host.spec.ts in a scratch worktree at 7dddfeca34ea7e8d11e8cdc565c0e65da112451f, not added to the suite); worlds seeded via the save import; screenshots and notes read by the starting session.)",
         "evidence": [
-          "T1047: 원본 12개와 WebP 24개 디코딩·크기·고유성·용량 검증 통과",
-          "커밋 0935cfbe7; task tier 및 spec lint 통과"
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/giant-area.png",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/ordinary-area.png",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/staged-*.json",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/notes.json"
         ],
-        "status": "not-run",
-        "reason": "고정된 통합 후보와 computer-use 검수는 호스트 담당이다.",
+        "status": "pass",
+        "reason": "",
         "replaces": [],
         "stage": "integration",
         "required": false,
         "owner": "host",
-        "candidate": null,
+        "candidate": "7dddfeca34ea7e8d11e8cdc565c0e65da112451f",
         "duplicationReason": ""
       },
       {
@@ -2214,19 +2222,21 @@
           "At step 10, confirm the localized stage name, 120,000 seats, the step-10 stadium and locker-room artwork for the era, and that no further quote is offered"
         ],
         "expected": "Step 8 offers the rebuild; pending work keeps the completed artwork; step 9 offers the expansion; step 10 shows its localized name, 120,000 seats and step-10 artwork, with no further quote",
-        "observed": "Not observed: this unit has no computer-use tool and no shared candidate. The deterministic equivalents passed in unit tests (facility-parts, investment, facilityScene, text).",
+        "observed": "matchday-print, 2020, 구단 운영 › 경기장: step 8 명문 구장 90,000석 offers 경기장 재건축하기. With the rebuild started it reads 9단계 공사 중 · 완공까지 540일 · 완공 후 105,000석, and the locker scene stays locker-8 (staged stadium-8). Step 9 초대형 구장 105,000석 offers 경기장 증축하기. Step 10 shows 3층 스탠드 · 120,000석 · 10/10단계 · 최고 단계 시설입니다, with no further quote and locker-10 / stadium-10 artwork. (One-off Playwright/Chromium walk (tests/e2e/stad20-host.spec.ts in a scratch worktree at 7dddfeca34ea7e8d11e8cdc565c0e65da112451f, not added to the suite); worlds seeded via the save import; screenshots and notes read by the starting session.)",
         "evidence": [
-          "spec/tasks/done/T1051.extend-stadium-ladder.md result",
-          "vibe check --tier task passed on tree 99b994b1 (check-6538cf80, 329 files / 2970 tests)",
-          "pnpm run validate:presentation: 4 themes, 12 locales, 1059 assets valid"
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/ladder-stage8.png",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/ladder-stage8Pending.png",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/ladder-stage9.png",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/ladder-stage10.png",
+          "/tmp/claude-2378/-home-deep-haeram-haeram-soccor/010916a6-7d89-4384-a255-5d250b514512/scratchpad/host-out/notes.json ladder"
         ],
-        "status": "not-run",
-        "reason": "No computer-use tool or fixed integration candidate in a headless unit. The task makes the explicit handoff its done condition.",
+        "status": "pass",
+        "reason": "",
         "replaces": [],
         "stage": "integration",
         "required": true,
         "owner": "capable host (stad20-gate-stadium)",
-        "candidate": null,
+        "candidate": "7dddfeca34ea7e8d11e8cdc565c0e65da112451f",
         "duplicationReason": ""
       }
     ],
