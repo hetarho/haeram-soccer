@@ -210,6 +210,7 @@
 | T1038 | tk19 | gusta-session-start-tk19-9706a3bf | 9dc24fbd7064 | 2026-11-19T16:57Z |
 
 ## log
+- 261120 gusta-create-task HIST WEB SAVE start
 - 261120 gusta-update-ssot HIST r29 WEB r227 SAVE r74: season-close Club OVR archive and presentation; no active task cites the changed decisions
 - 261120 gusta-update-ssot HIST WEB SAVE start
 - 261119 CI 44590362467 on 75ae6aa60 (0.8.19): 8 failed (6 at season-progression.ts:35, recruitment:461 export, management:22); planned T1039 (fd7d98589 on main). Gate f96fd6c3 has its CI failures recorded but stays waiting-agent: finish and abandon both refuse it.
@@ -229,4 +230,3 @@
 - 261119 fix e2e: seeding waits for the enabled import input (53 of 77 Chromium failures on eb5c6882, CI 44551084336)
 - 261119 gusta-update-ssot ARCH r53: verification plan and phase checks aligned; implemented in 0f7037407
 - 261119 gusta-update-ssot ARCH start: verification tiers on chore/gusta-update-0.17.9
-- 261119 T1019 done
