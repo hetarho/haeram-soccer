@@ -10,6 +10,7 @@ import type {
   World,
 } from '../../../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
+import { fixtureDay } from '../../../../../../packages/engine/src/calendar';
 import { archivedClubOvr } from '../../../../../../packages/engine/src/archives';
 import { country } from '../../../../../../packages/catalogs/src/index';
 import type { GameClient } from '../../../runtime/client';
@@ -19,9 +20,11 @@ import { Dialog } from '../../../shared/ui/Dialog';
 import { MatchReport } from '../../../features/match-viewer';
 import { TabList } from '../../../shared/ui/PageTabs';
 import {
-  RankChart,
+  FixtureResultRow,
   RankHistoryGraph,
-  rankAxis,
+  sortStandings,
+  StandingsHeader,
+  useStandingsSort,
   ZoneLegend,
 } from '../../../widgets/league-insights';
 import { number, seasonName, signed } from '../../../presentation/format';
@@ -90,6 +93,7 @@ function FinalTable({
   records?: Map<number, SeasonRecord>;
 }) {
   useTextLocale();
+  const order = useStandingsSort();
   if (!rows)
     return read?.files ? (
       <p className={r.loading}>{richMessage('copy.PastSeason.9be7046661')}</p>
@@ -103,6 +107,27 @@ function FinalTable({
     tier = league?.tier ?? season.tier,
     group = league?.group ?? season.group,
     { zones } = finalZones(code, tier, rows.length);
+  const archive = read?.files?.season ?? season;
+  const standings = rows.map(([club, points, gf, ga], i) => {
+    const id = w.clubs[club]?.id;
+    const record = records?.get(club);
+    return {
+      club,
+      id,
+      rank: i + 1,
+      zone: zones[i],
+      ovr: id ? archivedClubOvr(archive, id) : undefined,
+      points,
+      played: record ? record[0] + record[1] + record[2] : undefined,
+      won: record?.[0],
+      drawn: record?.[1],
+      lost: record?.[2],
+      gf,
+      ga,
+      difference: gf - ga,
+    };
+  });
+  const showOvr = standings.some((row) => row.ovr !== undefined);
   return (
     <section
       data-surface="sheet"
@@ -122,48 +147,83 @@ function FinalTable({
         <table className={records ? r.full : undefined}>
           <thead>
             <tr>
-              <th scope="col">#</th>
+              <StandingsHeader column="rank" controls={order}>
+                #
+              </StandingsHeader>
               <th scope="col">{richMessage('copy.matchModelPacking.6d641f69b7')}</th>
-              <th scope="col">{richMessage('copy.ClubTrends.e8fd75919a')}</th>
-              {localizeValue(
-                records && (
-                  <>
-                    <th scope="col">{richMessage('copy.LabPage.e56314e9a1')}</th>
-                    <th scope="col">{richMessage('result.win')}</th>
-                    <th scope="col">{richMessage('result.draw')}</th>
-                    <th scope="col">{richMessage('result.loss')}</th>
-                  </>
-                ),
+              {showOvr && (
+                <StandingsHeader column="ovr" controls={order}>
+                  {richMessage('team.column.ovr')}
+                </StandingsHeader>
               )}
-              <th scope="col">{richMessage('copy.LeagueInsights.f0e336df20')}</th>
-              <th scope="col">{richMessage('copy.LeagueInsights.2b47482006')}</th>
-              <th scope="col">{richMessage('copy.CupsView.24734975b3')}</th>
+              <StandingsHeader column="points" controls={order}>
+                {richMessage('copy.ClubTrends.e8fd75919a')}
+              </StandingsHeader>
+              {records && (
+                <>
+                  <StandingsHeader column="played" controls={order}>
+                    {richMessage('copy.LabPage.e56314e9a1')}
+                  </StandingsHeader>
+                  <StandingsHeader column="won" controls={order}>
+                    {richMessage('result.win')}
+                  </StandingsHeader>
+                  <StandingsHeader column="drawn" controls={order}>
+                    {richMessage('result.draw')}
+                  </StandingsHeader>
+                  <StandingsHeader column="lost" controls={order}>
+                    {richMessage('result.loss')}
+                  </StandingsHeader>
+                </>
+              )}
+              <StandingsHeader column="gf" controls={order}>
+                {richMessage('copy.LeagueInsights.f0e336df20')}
+              </StandingsHeader>
+              <StandingsHeader column="ga" controls={order}>
+                {richMessage('copy.LeagueInsights.2b47482006')}
+              </StandingsHeader>
+              <StandingsHeader column="difference" controls={order}>
+                {richMessage('copy.CupsView.24734975b3')}
+              </StandingsHeader>
             </tr>
           </thead>
           <tbody>
             {localizeValue(
-              rows.map(([club, points, gf, ga], i) => {
-                const id = w.clubs[club]?.id,
-                  zone = zones[i],
-                  record = records?.get(club);
+              sortStandings(standings, order.sort).map((row) => {
+                const {
+                  club,
+                  id,
+                  rank,
+                  zone,
+                  ovr,
+                  points,
+                  played,
+                  won,
+                  drawn,
+                  lost,
+                  gf,
+                  ga,
+                  difference,
+                } = row;
                 return (
                   <tr
                     key={club}
                     data-own={id === w.playerClub || undefined}
                     className={`${id === w.playerClub ? r.own : ''} ${zone ? l[zone] : ''}`}
                   >
-                    <td>{localizeValue(i + 1)}</td>
+                    <td>{localizeValue(number(rank))}</td>
                     <td>
                       {localizeValue(id ? <ClubLink w={w} id={id} crest={14} /> : '—')}
                       {localizeValue(
-                        i === 0 && (
+                        rank === 1 && (
                           <span className={r.champion}>
                             {richMessage('copy.CupHistory.31e52393f3')}
-                            {' · '}
-                            {richMessage('team.column.ovr')}{' '}
-                            {id && archivedClubOvr(read?.files?.season ?? season, id) !== undefined
-                              ? number(archivedClubOvr(read?.files?.season ?? season, id)!)
-                              : '—'}
+                            {!showOvr && (
+                              <>
+                                {' · '}
+                                {richMessage('team.column.ovr')}
+                                {' —'}
+                              </>
+                            )}
                           </span>
                         ),
                       )}
@@ -179,6 +239,7 @@ function FinalTable({
                         ),
                       )}
                     </td>
+                    {showOvr && <td>{localizeValue(ovr === undefined ? '—' : number(ovr))}</td>}
                     <td className={r.points}>
                       {localizeValue(number(points))}{' '}
                       <PointsDeduction row={id ? deductions?.[id] : undefined} />
@@ -186,16 +247,16 @@ function FinalTable({
                     {localizeValue(
                       records && (
                         <>
-                          <td>{localizeValue(record ? record[0] + record[1] + record[2] : '—')}</td>
-                          <td>{localizeValue(record?.[0] ?? '—')}</td>
-                          <td>{localizeValue(record?.[1] ?? '—')}</td>
-                          <td>{localizeValue(record?.[2] ?? '—')}</td>
+                          <td>{localizeValue(played ?? '—')}</td>
+                          <td>{localizeValue(won ?? '—')}</td>
+                          <td>{localizeValue(drawn ?? '—')}</td>
+                          <td>{localizeValue(lost ?? '—')}</td>
                         </>
                       ),
                     )}
                     <td>{localizeValue(gf)}</td>
                     <td>{localizeValue(ga)}</td>
-                    <td>{localizeValue(signed(gf - ga))}</td>
+                    <td>{localizeValue(signed(difference))}</td>
                   </tr>
                 );
               }),
@@ -220,12 +281,12 @@ function OwnMatches({ w, season, read }: { w: World; season: SeasonArchive; read
   if (!read?.files) return <Pending read={read} />;
   const games = read.files.matches
     .filter((m) => m.kind === 'league')
-    .sort((a, b) => a.round - b.round || a.id.localeCompare(b.id));
+    .sort((a, b) => fixtureDay(a) - fixtureDay(b) || a.id.localeCompare(b.id));
   const results = games.map((m) => {
     const home = m.home === w.playerClub,
       own = home ? m.score.home : m.score.away,
       other = home ? m.score.away : m.score.home;
-    return { m, home, own, other, mark: markOf(own, other) };
+    return { m, home, mark: markOf(own, other) };
   });
   const count = (mark: string) => results.filter((result) => result.mark === mark).length;
   return (
@@ -251,40 +312,19 @@ function OwnMatches({ w, season, read }: { w: World; season: SeasonArchive; read
       </div>
       {localizeValue(
         results.length ? (
-          <ul className={r.games}>
-            {localizeValue(
-              results.map(({ m, home, own, other, mark }) => {
-                const opponent = home ? m.away : m.home;
-                return (
-                  <li key={m.id}>
-                    <b
-                      className={
-                        mark === sourceMessage('result.win')
-                          ? l.win
-                          : mark === sourceMessage('result.loss')
-                            ? l.loss
-                            : l.draw
-                      }
-                    >
-                      {localizeValue(mark)}
-                    </b>
-                    <span className={r.gameText}>
-                      <small>
-                        {richMessage('copy.PastSeason.9006ce531e', {
-                          p0: m.round,
-                          p1: home ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
-                        })}
-                      </small>
-                      <ClubLink w={w} id={opponent} crest={14} />
-                    </span>
-                    <em
-                      aria-label={displayMessage('copy.LeagueInsights.dcb919d17b', {
-                        p0: own,
-                        p1: other,
-                      })}
-                    >
-                      {localizeValue(own)}–{localizeValue(other)}
-                    </em>
+          <ul className={`${l.results} ${l.seasonResults}`}>
+            {results.map(({ m, home }) => {
+              const opponent = home ? m.away : m.home;
+              return (
+                <FixtureResultRow
+                  key={m.id}
+                  w={w}
+                  fixture={m}
+                  meta={richMessage('copy.PastSeason.9006ce531e', {
+                    p0: m.round,
+                    p1: home ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
+                  })}
+                  actions={
                     <button
                       type="button"
                       aria-label={displayMessage('copy.PastSeason.a0a049d2de', {
@@ -295,10 +335,10 @@ function OwnMatches({ w, season, read }: { w: World; season: SeasonArchive; read
                     >
                       {richMessage('copy.PastSeason.077829edb1')}
                     </button>
-                  </li>
-                );
-              }),
-            )}
+                  }
+                />
+              );
+            })}
           </ul>
         ) : (
           <p className={l.empty}>{richMessage('copy.PastSeason.1ec6718884')}</p>
@@ -320,10 +360,7 @@ function OwnMatches({ w, season, read }: { w: World; season: SeasonArchive; read
   );
 }
 
-/**
- * Our position by round: the live graph while the season's snapshots are kept (about ten
- * seasons), else the ranks archived at the close (rules 1.12.0+) on the same axis.
- */
+/** Prefer league-wide snapshots and fall back to the archived own-club series. */
 function SeasonRanks({
   w,
   season,
@@ -335,120 +372,20 @@ function SeasonRanks({
   clubs?: number;
   read: Read;
 }) {
-  useTextLocale();
-  if (seasonSnapshots(w, season).length) return <RankHistoryGraph w={w} year={season.year} />;
-  const ranks = season.ranks,
-    code = clubOf(w).country,
-    name = clubOf(w).name;
-  // The league's size comes with the archived standings.
-  if (ranks?.length && !read?.files) return <Pending read={read} />;
-  const places = Math.max(clubs ?? 0, ...(ranks ?? [])),
-    axis = rankAxis(ranks?.length ?? 0, places);
+  if (!clubs && season.ranks?.length && !read?.files && !seasonSnapshots(w, season).length)
+    return <Pending read={read} />;
   return (
-    <section
-      data-surface="panel"
-      className={l.panel}
-      aria-label={displayMessage('copy.LeagueInsights.9cfb907bbd')}
-    >
-      <div className={l.panelHead}>
-        <div>
-          <h3>{richMessage('copy.LeagueInsights.9cfb907bbd')}</h3>
-          <span>
-            {richMessage('copy.PastSeason.5535ee5cdd', {
-              p0: seasonName(season.year),
-              p1: divisionName(code, season.tier, season.group),
-            })}
-          </span>
-        </div>
-      </div>
-      {localizeValue(
-        !ranks?.length ? (
-          <p className={l.empty}>{richMessage('copy.PastSeason.a4aeea9842')}</p>
-        ) : (
-          <>
-            <figure className={l.chart}>
-              <RankChart
-                label={displayMessage('copy.LeagueInsights.1dfecabc18', {
-                  p0: name,
-                  p1: ranks
-                    .map((rank, i) =>
-                      sourceMessage('copy.LeagueInsights.d92c13468d', { p0: i + 1, p1: rank }),
-                    )
-                    .join(', '),
-                })}
-                axis={axis}
-                first={1}
-                last={ranks.length}
-              >
-                <polyline
-                  points={ranks.map((rank, i) => `${axis.x(i)},${axis.y(rank)}`).join(' ')}
-                  fill="none"
-                  stroke="#28654b"
-                  strokeWidth={3.5}
-                  strokeLinejoin="round"
-                />
-                {localizeValue(
-                  ranks.map((rank, i) => (
-                    <circle
-                      key={i}
-                      cx={axis.x(i)}
-                      cy={axis.y(rank)}
-                      r={ranks.length > 20 ? 2 : 3}
-                      fill="#28654b"
-                    >
-                      <title>
-                        {richMessage('copy.PastSeason.d3d33cbe3b', {
-                          p0: name,
-                          p1: i + 1,
-                          p2: rank,
-                        })}
-                      </title>
-                    </circle>
-                  )),
-                )}
-              </RankChart>
-              <figcaption>
-                <span>
-                  <i className={l.primaryDot} />
-                  {localizeValue(name)}
-                </span>
-                <span>
-                  {localizeValue(
-                    clubs
-                      ? sourceMessage('copy.PastSeason.1a03622513', { p0: clubs })
-                      : sourceMessage('copy.PastSeason.e7497c42ed'),
-                  )}
-                </span>
-              </figcaption>
-            </figure>
-            <details data-ui="disclosure" className={l.details}>
-              <summary>{richMessage('copy.PastSeason.90b0c0029a')}</summary>
-              <div className={l.tableWrap}>
-                <table aria-label={displayMessage('copy.LeagueInsights.b46914c413')}>
-                  <thead>
-                    <tr>
-                      <th scope="col">{richMessage('copy.ClubHub.0fcb288d12')}</th>
-                      <th scope="col">{localizeValue(name)}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {localizeValue(
-                      ranks.map((rank, i) => (
-                        <tr key={i}>
-                          <th scope="row">{localizeValue(i + 1)}</th>
-                          <td>{richMessage('copy.BallonDorView.5094d45cea', { p0: rank })}</td>
-                        </tr>
-                      )),
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </details>
-            <p className={r.panelNote}>{richMessage('copy.PastSeason.4df937d56d')}</p>
-          </>
-        ),
-      )}
-    </section>
+    <RankHistoryGraph
+      w={w}
+      year={season.year}
+      archive={{
+        ranks: season.ranks,
+        places: clubs,
+        code: clubOf(w).country,
+        tier: season.tier,
+        group: season.group,
+      }}
+    />
   );
 }
 
@@ -683,6 +620,7 @@ export const ClosedSeason = memo(function ClosedSeason({
           tab === 'table' ? (
             <>
               <FinalTable
+                key={`${w.id}:${season.year}:${other?.code}:${other?.tier}:${other?.group}`}
                 w={w}
                 season={season}
                 rows={tableRows}
@@ -710,8 +648,8 @@ export const ClosedSeason = memo(function ClosedSeason({
                 label={displayMessage('copy.LiveSeason.dd0271790e')}
                 options={
                   [
-                    ['table', sourceMessage('copy.LiveSeason.cfb04aa930')],
                     ['rank', sourceMessage('copy.LiveSeason.352637b1e4')],
+                    ['table', sourceMessage('copy.LiveSeason.cfb04aa930')],
                   ] as const
                 }
                 value={teamPart}

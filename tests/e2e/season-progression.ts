@@ -23,24 +23,36 @@ async function manual(page: Page, all = false) {
     observations: { matchEve: true, windowOpen: false },
   });
 }
+async function requestNextEvent(page: Page) {
+  // The prior owner decision publishes its view before the engine commits the save.
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
+}
+
 /** Resolve real observation cards and advance only through the public next-event/match actions. */
-async function step(page: Page) {
+export async function advanceManualEvent(page: Page) {
   const pill = page.getByTestId('event-pill');
   if (await pill.isVisible()) await pill.click();
   await acknowledgeEvents(page);
   const match = eventCard(page).filter({ hasText: '내일 경기' });
-  const before = await page.getByTestId('game-date').innerText();
+  const date = page.getByTestId('game-date');
+  const before = await date.innerText();
   if (!(await match.isVisible())) {
-    await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
-    await expect(eventCard(page).first()).toBeVisible();
+    await requestNextEvent(page);
+    // A reopened report has the same date. A completed step can publish a date without a card.
+    await expect
+      .poll(
+        async () =>
+          (await eventCard(page).first().isVisible()) || (await date.innerText()) !== before,
+      )
+      .toBe(true);
   }
-  // Reopening a dismissed match report deliberately leaves the date unchanged.
-  if ((await match.isVisible()) && (await page.getByTestId('game-date').innerText()) === before) {
+  if ((await match.isVisible()) && (await date.innerText()) === before) {
     await match.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
     // The worker plays the match on the released model first: CI WebKit 40233059787 took over 5 s.
     await expect(match).toHaveCount(0, { timeout: 15000 });
   }
-  await expect(page.getByTestId('game-date')).not.toHaveText(before);
+  await expect(date).not.toHaveText(before);
 }
 /** One domestic round, allowing cup fixtures and real event stops between league fixtures. */
 export async function advanceOneRound(page: Page) {
@@ -54,7 +66,7 @@ export async function advanceOneRound(page: Page) {
       if (!wasManual) await configureResponsibilities(page, { mode: 'automatic' });
       return;
     }
-    await step(page);
+    await advanceManualEvent(page);
   }
   throw new Error('No next domestic round after forty real stopping events');
 }
@@ -73,7 +85,7 @@ export async function finishSeason(page: Page) {
       });
       return;
     }
-    await step(page);
+    await advanceManualEvent(page);
   }
   throw new Error('Season did not close after 240 real stopping events');
 }

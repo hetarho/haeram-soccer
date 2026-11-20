@@ -3052,6 +3052,8 @@
     "copy.LeagueInsights.222a9e05c1": "Floor {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "Rankings vary depending on the results of other teams in the same round.",
     "copy.LeagueInsights.29c853849e": "This season's league schedule is over. When the season ends, you can see the settlement and promotion results in the league's season list.",
+    "league.rank.clubSelection": "Clubs in the rank trend",
+    "league.rank.emptySelection": "Select a club to show its rank trend.",
     "copy.LeagueInsights.9cfb907bbd": "Season ranking trend",
     "copy.LeagueInsights.5ef6d66a2a": " · {p0} at the time",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2} · The higher you go, the higher the rank.",

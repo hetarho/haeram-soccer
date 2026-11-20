@@ -90,20 +90,28 @@ const TABS = [
   ['match', sourceMessage('copy.LabPage.e56314e9a1')],
   ['table', sourceMessage('copy.LiveSeason.a6fecd0870')],
   ['results', sourceMessage('copy.LiveSeason.b5eac83230')],
-  ['teams', sourceMessage('copy.LiveSeason.ae97e3f103')],
+  ['teams', sourceMessage('copy.LiveSeason.352637b1e4')],
   ['players', sourceMessage('copy.stories.c50c28f608')],
 ] as const;
 type Tab = (typeof TABS)[number][0];
 const LEAGUE_TABS = TABS.filter(([id]) => id !== 'match');
-function savedLeagueTab(): Tab {
-  const params = new URLSearchParams(location.search),
-    saved = params.get('view'),
-    past = params.get('tab');
-  if (saved === 'rank' || past === 'rank') return 'teams';
-  if (saved === 'scorers' || saved === 'scorer-trend' || past === 'scorers') return 'players';
-  if (saved === 'results' || past === 'matches') return 'results';
-  return LEAGUE_TABS.find(([id]) => id === saved)?.[0] ?? 'table';
+function savedLeagueTab(params: URLSearchParams): Tab {
+  const view = params.get('view');
+  if (view !== null) {
+    if (view === 'rank') return 'teams';
+    if (view === 'scorers' || view === 'scorer-trend') return 'players';
+    return LEAGUE_TABS.find(([id]) => id === view)?.[0] ?? 'table';
+  }
+  const past = params.get('tab');
+  if (past === 'rank') return 'teams';
+  if (past === 'scorers') return 'players';
+  return past === 'matches' ? 'results' : 'table';
 }
+
+function savedTeamPart(params: URLSearchParams) {
+  return params.get('view') === 'teams' && params.get('detail') !== 'rank' ? 'table' : 'rank';
+}
+
 const pastOf = (tab: Tab): PastTab =>
   tab === 'results'
     ? 'matches'
@@ -323,7 +331,12 @@ const TablePane = memo(function TablePane({
     <>
       <h2 className={s.seasonPaneTitle}>{richMessage('copy.LeagueInsights.7c477b094f')}</h2>
       <section data-surface="panel" className={s.panel}>
-        <Standings w={w} ids={leagueIds(w, league)} fixtures={fixtures} />
+        <Standings
+          key={`${w.id}:${w.year}:${leagueParam(league ?? ownLeague(w))}`}
+          w={w}
+          ids={leagueIds(w, league)}
+          fixtures={fixtures}
+        />
       </section>
     </>
   );
@@ -344,6 +357,7 @@ const TeamPane = memo(function TeamPane({
   useTextLocale();
   const w = useGameState(selectLeagueWorld)!,
     other = league && !sameLeague(league, ownLeague(w));
+  const fixtures = useLeagueFixtures(client, w, part === 'rank' ? league : undefined);
   const rows = leagueIds(w, league).flatMap((id) =>
     w.tables[id] ? [{ id, ...w.tables[id] }] : [],
   );
@@ -353,8 +367,8 @@ const TeamPane = memo(function TeamPane({
         label={displayMessage('copy.LiveSeason.dd0271790e')}
         options={
           [
-            ['table', sourceMessage('copy.LiveSeason.cfb04aa930')],
             ['rank', sourceMessage('copy.LiveSeason.352637b1e4')],
+            ['table', sourceMessage('copy.LiveSeason.cfb04aa930')],
           ] as const
         }
         value={part}
@@ -366,14 +380,18 @@ const TeamPane = memo(function TeamPane({
             <CompetitionRecords w={w} rows={rows} />
             <LeagueFullStats client={client} league={league} lens="teams" />
           </>
-        ) : other ? (
+        ) : other && !fixtures ? (
+          <p className={s.muted} role="status">
+            {richMessage('copy.LiveSeason.f21c11a229', { p0: leagueName(league) })}
+          </p>
+        ) : other && !fixtures?.length ? (
           <UnavailableLeagueRecord
             league={league!}
             label={displayMessage('copy.LiveSeason.72f03b4d8c')}
             onOwn={() => onLeague(undefined)}
           />
         ) : (
-          <RankHistoryGraph w={w} year={w.year} />
+          <RankHistoryGraph w={w} year={w.year} ids={leagueIds(w, league)} fixtures={fixtures} />
         ),
       )}
     </>
@@ -494,14 +512,19 @@ const ResultsPane = memo(function ResultsPane({
               onOwn={() => onLeague(undefined)}
             />
           ) : (
-            <FixtureNotebook w={w} client={client} />
+            <FixtureNotebook key={`${w.id}:${w.year}`} w={w} client={client} />
           )
         ) : other && !fixtures ? (
           <p className={s.muted} role="status">
             {richMessage('copy.LiveSeason.f21c11a229', { p0: leagueName(league!) })}
           </p>
         ) : (
-          <RoundResults w={w} ids={leagueIds(w, league)} fixtures={fixtures} />
+          <RoundResults
+            key={`${w.id}:${w.year}:${leagueParam(league ?? ownLeague(w))}`}
+            w={w}
+            ids={leagueIds(w, league)}
+            fixtures={fixtures}
+          />
         ),
       )}
     </>
@@ -533,12 +556,11 @@ export const LiveSeason = memo(function LiveSeason({
   const [preparing, setPreparing] = useState(false);
   const visibleTabs = LEAGUE_TABS;
   const [leagueTab, setLeagueTab] = useTaskState<Tab>(world, `${context}-tab`, () =>
-    atContext() ? savedLeagueTab() : 'table',
+    atContext() ? savedLeagueTab(new URLSearchParams(location.search)) : 'table',
   );
-  const [teamPart, setTeamPart] = useTaskState<'table' | 'rank'>(world, `${context}-team`, () => {
-    const p = new URLSearchParams(location.search);
-    return p.get('view') === 'rank' || p.get('detail') === 'rank' ? 'rank' : 'table';
-  });
+  const [teamPart, setTeamPart] = useTaskState<'table' | 'rank'>(world, `${context}-team`, () =>
+    atContext() ? savedTeamPart(new URLSearchParams(location.search)) : 'rank',
+  );
   const [playerPart, setPlayerPart] = useTaskState<'scorers' | 'trend'>(
     world,
     `${context}-player`,
@@ -569,6 +591,7 @@ export const LiveSeason = memo(function LiveSeason({
   );
   // A closed season's tab stays while the list steps between closed seasons.
   const pastTab = pastOf(leagueTab);
+  const view = leagueTab === 'teams' && teamPart === 'rank' ? 'rank' : leagueTab;
   const setPastTab = (value: PastTab) =>
     setLeagueTab(
       value === 'matches'
@@ -596,12 +619,10 @@ export const LiveSeason = memo(function LiveSeason({
   const restoreLeague = useCallback(() => {
     if (competitionRoute(location.pathname, location.search)?.page !== context) return;
     const params = new URLSearchParams(location.search);
-    setLeagueTab(savedLeagueTab());
+    setLeagueTab(savedLeagueTab(params));
     setLeague(parseLeague(params.get('league')));
     if (archive) setReviewYear(selectedYear(params));
-    setTeamPart(
-      params.get('detail') === 'rank' || params.get('view') === 'rank' ? 'rank' : 'table',
-    );
+    setTeamPart(savedTeamPart(params));
     setPlayerPart(
       params.get('detail') === 'trend' || params.get('view') === 'scorer-trend'
         ? 'trend'
@@ -628,10 +649,8 @@ export const LiveSeason = memo(function LiveSeason({
   useEffect(() => {
     if (!leaguePage || !settled || !atContext() || entering) return;
     const url = new URL(location.href);
-    url.searchParams.set('view', leagueTab);
-    if (leagueTab === 'teams' && teamPart === 'rank') url.searchParams.set('detail', 'rank');
-    else if (leagueTab === 'players' && playerPart === 'trend')
-      url.searchParams.set('detail', 'trend');
+    url.searchParams.set('view', view);
+    if (leagueTab === 'players' && playerPart === 'trend') url.searchParams.set('detail', 'trend');
     else url.searchParams.delete('detail');
     const chosen = leagueParam(league);
     if (chosen) url.searchParams.set('league', chosen);
@@ -652,7 +671,7 @@ export const LiveSeason = memo(function LiveSeason({
     reviewYear,
     pastTab,
     league,
-    teamPart,
+    view,
     playerPart,
     context,
     entering,
@@ -694,8 +713,9 @@ export const LiveSeason = memo(function LiveSeason({
     const params = new URLSearchParams({
       section: 'league',
       season: String(year),
-      view: leagueTab,
+      view,
     });
+    if (view === 'players' && playerPart === 'trend') params.set('detail', 'trend');
     const chosen = leagueParam(kept);
     if (chosen) params.set('league', chosen);
     useTaskMemory.setState((memory) => ({

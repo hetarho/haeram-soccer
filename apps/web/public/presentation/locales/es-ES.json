@@ -3088,6 +3088,8 @@
     "copy.LeagueInsights.222a9e05c1": "Piso {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "Las clasificaciones varían dependiendo de los resultados de otros equipos en la misma ronda.",
     "copy.LeagueInsights.29c853849e": "El calendario liguero de esta temporada ha terminado. Cuando finalice la temporada, podrás ver los resultados de liquidación y ascenso en la lista de temporadas de la liga.",
+    "league.rank.clubSelection": "Clubes en el gráfico de clasificación",
+    "league.rank.emptySelection": "Selecciona un club para ver su evolución en la clasificación.",
     "copy.LeagueInsights.9cfb907bbd": "Tendencia de clasificación de temporada",
     "copy.LeagueInsights.5ef6d66a2a": " · {p0} en ese momento",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2} · Cuanto más alto llegues, mayor será el rango.",

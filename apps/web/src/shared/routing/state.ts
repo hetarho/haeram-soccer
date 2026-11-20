@@ -490,11 +490,11 @@ export function openLeagueSeason(year: number, currentYear?: number) {
   useNavigation.getState().setPage(target);
 }
 
-/** A closed season's tabs on the league page, in tab-bar order; the review comes first. */
+/** A closed season's tabs on the league page, with the final table first. */
 export const PAST_TABS = [
   ['table', sourceMessage('copy.LiveSeason.a6fecd0870')],
   ['matches', sourceMessage('copy.LiveSeason.b5eac83230')],
-  ['rank', sourceMessage('copy.LiveSeason.ae97e3f103')],
+  ['rank', sourceMessage('copy.LiveSeason.352637b1e4')],
   ['scorers', sourceMessage('copy.stories.c50c28f608')],
 ] as const;
 export type PastTab = (typeof PAST_TABS)[number][0];

@@ -192,18 +192,38 @@
   font-size: 12px;
   font-family: var(--display);
 }
-.coverage {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
+.sortHeader[data-ui='table-sort'] {
+  display: inline-flex;
   align-items: center;
-  padding: 12px;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--display);
+  gap: 2px;
+  padding: 0;
+  min-height: 24px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
-.coverage button {
-  min-height: 48px;
+.sortDirection {
+  opacity: 0.5;
+}
+.sortDirection::after {
+  content: '↕';
+}
+[aria-sort] > .sortHeader .sortDirection {
+  opacity: 1;
+  color: var(--accent-text);
+}
+[aria-sort='ascending'] > .sortHeader .sortDirection::after {
+  content: '↑';
+}
+[aria-sort='descending'] > .sortHeader .sortDirection::after {
+  content: '↓';
+}
+.sortHeader:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
 }
 .standings .club {
   text-align: left;
@@ -261,21 +281,18 @@
   border-top: 1px solid var(--line);
   font-family: var(--display);
 }
-.legend span,
-.chart figcaption span {
+.legend span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-.legend i,
-.chart i {
+.legend i {
   display: inline-block;
   width: 7px;
   height: 7px;
   border-radius: 50%;
 }
-.autoDot,
-.primaryDot {
+.autoDot {
   background: var(--surface-grain, none) var(--accent-fill);
 }
 .playoffDot {
@@ -283,24 +300,6 @@
 }
 .dropDot {
   background: var(--surface-grain, none) var(--warm);
-}
-.compareDot {
-  background: var(--surface-grain, none) var(--warm);
-}
-.compare {
-  font-size: 12px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  font-family: var(--display);
-}
-.graphFilters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.compare :global([data-select-trigger]) {
-  max-width: 180px;
-  margin-left: 5px;
 }
 .chart {
   padding: 20px 20px 12px;
@@ -316,13 +315,43 @@
   fill: var(--text-muted);
   font-family: var(--display);
 }
-.chart figcaption {
+.rankTeams {
+  padding: 8px 14px;
+  margin: 0 12px 10px;
+  min-inline-size: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  font-size: 12px;
+}
+.rankTeams legend {
+  padding-inline: 4px;
+  color: var(--text-muted);
+}
+.rankTeams > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(132px, 100%), 1fr));
+  gap: 0 12px;
+}
+.rankTeams label {
   display: flex;
-  gap: 16px;
-  padding: 10px 5px 0;
+  align-items: center;
+  gap: 5px;
+  min-block-size: 44px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.rankTeams input {
+  flex: 0 0 auto;
+}
+.seriesSwatch {
+  flex: 0 0 9px;
+  block-size: 3px;
+  border-radius: 2px;
+}
+.rankCoverage {
+  margin: 10px 14px;
   font-size: 12px;
   color: var(--text-muted);
-  font-family: var(--display);
 }
 .details {
   border-top: 1px solid var(--line);
@@ -361,6 +390,53 @@
   list-style: none;
   margin: 0;
   padding: 10px 22px 18px;
+}
+.seasonResults {
+  grid-template-columns: minmax(0, 1fr);
+}
+.fixtureFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px 0;
+}
+.fixtureFilters label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 84px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.fixtureFilters :global([data-select-trigger]) {
+  width: 100%;
+  min-width: 0;
+}
+.fixtureCount {
+  margin: 8px 14px 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.fixtureMeta,
+.fixtureActions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  color: var(--text-muted);
+}
+.fixtureMeta {
+  display: block;
+}
+.fixtureMeta strong {
+  margin-inline-start: 8px;
+}
+.fixtureActions button {
+  font-size: inherit;
+}
+.seasonResults li[data-next='true'] {
+  border-bottom-color: var(--accent-text);
 }
 .results li {
   display: grid;
@@ -458,10 +534,6 @@
   .chart {
     padding: 16px 10px 10px;
   }
-  .chart figcaption {
-    flex-wrap: wrap;
-    gap: 6px 12px;
-  }
   .legend {
     padding: var(--table-legend-padding, 12px 16px);
   }
@@ -509,28 +581,9 @@
 .panelHead {
   flex-wrap: wrap;
 }
-.compare {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-  max-width: 100%;
-}
-.compare :global([data-select-trigger]) {
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: 220px;
-  margin-left: 0;
-}
 @media (max-width: 760px) {
   .panelHead {
     padding: 14px 14px;
-  }
-  .compare {
-    flex: 1 1 100%;
-  }
-  .compare :global([data-select-trigger]) {
-    max-width: none;
   }
 }
 

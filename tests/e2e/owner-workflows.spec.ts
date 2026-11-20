@@ -241,7 +241,11 @@ test('keeps a foreign league selected across all competition lenses without subs
   await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toHaveCount(0);
   await expect(players).not.toContainText(club);
   await expect(page).toHaveURL(/league=GER\.0\.0/);
-  await page.getByRole('tab', { name: '팀 기록', exact: true }).click();
+  await page.getByRole('tab', { name: '순위 추이', exact: true }).click();
+  await page
+    .getByRole('group', { name: '팀 기록 보기' })
+    .getByRole('button', { name: '팀 성적', exact: true })
+    .click();
   const teams = page.getByRole('table', { name: '리그 팀 기록표' });
   await expect(teams.getByRole('button', { name: firstClub!, exact: true })).toBeVisible();
   await expect(teams).not.toContainText(club);
@@ -249,8 +253,13 @@ test('keeps a foreign league selected across all competition lenses without subs
     .getByRole('group', { name: '팀 기록 보기' })
     .getByRole('button', { name: '순위 추이', exact: true })
     .click();
-  await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toContainText('독일 1부');
-  await page.getByRole('button', { name: '우리 리그 기록 보기', exact: true }).click();
+  const rankTeams = page.getByRole('group', { name: '순위 추이 팀 선택', exact: true });
+  await expect(rankTeams.getByRole('checkbox')).toHaveCount(18);
+  await expect(rankTeams).not.toContainText(club);
+  await page
+    .getByRole('group', { name: '리그 선택' })
+    .getByRole('button', { name: '우리 리그 보기', exact: true })
+    .click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
   await expect(page).not.toHaveURL(/league=/);
 });

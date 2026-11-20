@@ -2992,6 +2992,8 @@
     "copy.LeagueInsights.222a9e05c1": "Vloer {p0} {p1}",
     "copy.LeagueInsights.a695bf2eb0": "De ranglijsten variëren afhankelijk van de resultaten van andere teams in dezelfde ronde.",
     "copy.LeagueInsights.29c853849e": "Het competitieschema van dit seizoen is voorbij.Wanneer het seizoen eindigt, kun je de afhandelings- en promotieresultaten bekijken in de seizoenslijst van de competitie.",
+    "league.rank.clubSelection": "Clubs in het positieverloop",
+    "league.rank.emptySelection": "Selecteer een club om het positieverloop te tonen.",
     "copy.LeagueInsights.9cfb907bbd": "Seizoensrangschikkingstrend",
     "copy.LeagueInsights.5ef6d66a2a": " · {p0} destijds",
     "copy.LeagueInsights.205acf650d": "{p0}{p1}{p2} · Hoe hoger je komt, hoe hoger de rang.",

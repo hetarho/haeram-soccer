@@ -69,7 +69,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T1042 | Refresh League standings, fixtures and rank trends | ARCH HIST SAVE WEB | - | todo |
-| T1039 | Fix CI failure | ARCH SAVE | - | todo |
+| T1039 | Fix CI failure | ARCH SAVE | - | doing@261120.lgux20 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
