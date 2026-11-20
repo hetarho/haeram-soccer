@@ -71,7 +71,6 @@
 | T1039 | Fix CI failure | ARCH SAVE | - | todo |
 | T1043 | Capture closing Club OVR for archived league clubs | ARCH HIST SAVE WEB | - | todo |
 | T1044 | Show Club OVR in closed league tables | ARCH HIST SAVE WEB | T1042 T1043 | todo |
-| T1046 | Show local and travelling ticket demand in the office | ECON WEB ARCH | T1045 | doing@261120.stad20 |
 | T1047 | Prepare matchday-print art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1048 | Prepare pixel art for the two stadium steps | ECON WEB ARCH | - | todo |
 | T1049 | Prepare standard art for the two stadium steps | ECON WEB ARCH | - | todo |
@@ -91,7 +90,8 @@
 | np19-perf | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-18T19:20:21.325Z | [history](work/np19-perf.json) |
 
 ## next
-- gusta-implement-task T1043 T1046 T1047
+- gusta-implement-task T1048
+- gusta-implement-task T1043 T1047
 - gusta-implement-task T1045 — stad20 (261120): popular clubs sell out at any preset (ECON-9 r66), stadium steps to 105,000 and 120,000 (ECON-32, WEB-72 r230); T1045–T1052.
 - ovr20 (261120): season-close Club OVR landed as 0.8.20 (T1040 archive, T1041 past tables, 구단 성장 and generation champions); reports/261120-ovr20.
 - Save storage redesign (261119, owner): SQLite game database shared by web and app (ARCH r51, SAVE r72, WEB r224, KIT r11). Interim save fix T999–T1002 (no Brotli/CJK/per-save validation/packing, 256 MiB/1 GiB) lands first as its own patch; then T1003–T1018 and T1022 (record store, changed-row saves, slots, .haeram-save export/import, season backup, one playing tab, records out of memory, measurements). Start with `gusta-implement-task T999`.
