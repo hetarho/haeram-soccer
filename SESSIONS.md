@@ -213,7 +213,6 @@
 - 261120 decided HIST-13 T1043 T1044: 닫힌 시즌 순위표에 넣을 OVR 범위 → 국내 모든 디비전·지역 조의 순위표에 기록된 각 구단의 실제 마감 선발 XI OVR을 저장합니다. 전체 스냅샷이 없는 이전 시즌의 OVR 열은 —로 표시합니다. (alt: 우승팀과 우리 구단만 남기고 나머지는 —로 표시 | 우승팀 OVR을 캡션에만 표시) 새 시즌은 모든 행을 읽을 수 있고, 이전 시즌은 현재 전력으로 빈 값을 추정하지 않습니다.
 - 261120 decided SAVE-27 T1043: 닫힌 시즌 OVR 저장과 조회 형태 → 기존 시즌 행에 구단 ID별 정수 OVR을 저장하고 우리 구단은 기존 rating을 참조합니다. 여섯 칸 순위표와 이전 행을 보존하고, 전체 값은 시즌 상세 요청으로 읽습니다. (alt: 순위표와 같은 순서의 별도 배열 | 전체 OVR을 일반 화면 갱신에 포함) 순위나 표시 순서와 무관하게 구단을 찾고 누적 기록의 전송 범위를 작게 유지합니다.
 - 261120 decided HIST-13 T1043: 추가된 마감 계산 비용을 어떻게 확인할까 → 같은 머신·시드·도구에서 1950년까지 기존 생성 드라이버의 변경 전후 실행을 병렬로 비교하고, 시즌 종료 비용이 숨겨지면 마감 자체도 대조합니다. (alt: 0.8.20 실측만 인용 | 후보 실행 시간만 기록) 같은 조건의 비교로 포착 비용과 실행 간 변동을 구별할 수 있습니다.
-- 261120 decided ECON-9 ECON-23 T1045: 원정 관중 풀 → 연고 범위의 서포터에 그 밖의 팔로워 중 경기장을 찾을 몫을 더합니다 (alt: 연고 상한을 일괄 인상). 기존 팔로워 수에 글로벌 인지도가 반영되므로 인지도를 다시 곱하지 않습니다.
 - 261120 decided ECON-9 ECON-17 ECON-29 T1045: 좌석 대비 수요가 커질 때 가격 반응 → 기본가 수요가 수용 인원을 넘는 만큼 할증 반응을 연속으로 약화하고, 경기별 수요 범위 양끝을 좌석 수로 제한합니다 (alt: 평판 기준으로 일괄 매진). 평판 80과 50의 대조 사례로 이동 몫과 가격 반응을 측정합니다.
 - 261120 decided ECON-9 OWNER-12 T1045: 매진 구단의 민심과 경기 수요 → 홈 리그 경기마다 기본가를 넘는 단계별 −0.2 민심 효과를 유지하고 성적, 상대, 민심을 관중 수요에 계속 반영합니다 (alt: 매진 시 민심 감점 면제). 수입과 가격 정책의 장기 비용을 함께 남깁니다.
 - 261120 decided ECON-32 WEB-72 T1051: 추가 증축 규격 → 캄 노우의 목표 규모를 참고한 105,000석 재건축과 옛 벤피카 구장의 규모를 참고한 120,000석 증축을 채택합니다 (alt: 105,000석 한 단계만 추가). 비용은 915,000과 2,287,500 단위이고 유지비 식을 적용합니다. 초대형 구장과 3층 스탠드는 현지화하고 각 테마와 시대의 완공 장면을 갖춥니다.
@@ -233,6 +232,7 @@
 | T1042 | lgux20 | gusta-session-start-lgux20-8a35ba80 | b113a0b8409d | 2026-11-20T03:42Z |
 
 ## log
+- 261120 stad20 관중 표현을 연고지 밖의 홈 관중으로 바로잡음
 - 261120 T1042 done
 - 261120 gusta-create-task HIST@30 SAVE@75 WEB@228 done: T1043 T1044
 - 261120 gusta-create-task ECON WEB start
@@ -252,4 +252,3 @@
 - 261120 gusta-create-task HIST WEB SAVE → T1040 T1041; five inbox decisions; engine archive before web; brief overage also present in baseline
 - 261120 gusta-create-task HIST WEB SAVE start
 - 261120 gusta-update-ssot HIST r29 WEB r227 SAVE r74: season-close Club OVR archive and presentation; no active task cites the changed decisions
-- 261120 gusta-update-ssot HIST WEB SAVE start
